@@ -1,0 +1,60 @@
+{
+  "schema": "margin_horizon_crosscheck_sources_v1",
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "source_input_sha256": "a031323d82e99833ffdd5b35140ee6f686e65ca077a038cfaca57e280de00334",
+  "tradability_input_sha256": "8106d35c0caccfdc000f50652cf5a673605cd2d6e11882ccb28741e85490f7a3",
+  "weight_input_sha256": "30cb9996bf6a39ae1323f20e705ad6e0d685a5a074ea1571dd7304ae57bd85dd",
+  "extras_source_identity": {
+    "bytes": 22092,
+    "sha256": "136ad143dc88aec330085f00f61e1900b5e0f643870a549a22801861163057f1",
+    "git_blob": "11219d650fc06f685b5effbd14f809b97cdcad74"
+  },
+  "extras_capture_note": "Local text capture had one additional terminal newline. Removing only that byte yields the exact immutable-source SHA256 and Git blob shown here.",
+  "detail_prior_receipt": {
+    "bytes": 3713664,
+    "sha256": "64b752ada586acd6af7ac19985a3ee4aa9b8e2bebf686de7ab66471cb29097e4",
+    "git_blob": "cc0ebb8e78c6280586f0997dd2dd8ba0697095f9"
+  },
+  "detail_prior_clock_inventory": {
+    "state": "read",
+    "rows": 155688,
+    "columns": [
+      "ticker",
+      "fin_balance",
+      "fin_balance_prior",
+      "date",
+      "prior_date",
+      "asof",
+      "short_balance",
+      "short_balance_yuan"
+    ],
+    "clock_fields": {
+      "date": {
+        "non_null": 155688,
+        "distinct": 62,
+        "min": "2026-06-30",
+        "max": "2026-10-08"
+      },
+      "prior_date": {
+        "non_null": 155688,
+        "distinct": 62,
+        "min": "2026-06-01",
+        "max": "2026-09-02"
+      },
+      "asof": {
+        "non_null": 155688,
+        "distinct": 62,
+        "min": "2026-07-01",
+        "max": "2026-10-09"
+      }
+    },
+    "payload_keys": {},
+    "payload_clock_keys": {},
+    "duplicated_ticker_rows": 155686
+  },
+  "index_prior_receipt": {
+    "bytes": 132043,
+    "sha256": "3482108489339b7dccbe3529ea3e391bca9424725509fb177bdbe29fb49b8c9b",
+    "git_blob_sha1": "be7404fc467659707334519fde108182f45915b3"
+  }
+}

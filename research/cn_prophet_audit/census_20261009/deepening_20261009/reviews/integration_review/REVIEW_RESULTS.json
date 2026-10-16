@@ -1,0 +1,607 @@
+{
+  "checks": [
+    {
+      "name": "stable_manifest_hash",
+      "status": "PASS"
+    },
+    {
+      "name": "original_file:INTEGRATION_DECISIONS.md",
+      "status": "PASS"
+    },
+    {
+      "name": "original_file:contract_prototype.py",
+      "status": "PASS"
+    },
+    {
+      "name": "original_file:execution.log",
+      "status": "PASS"
+    },
+    {
+      "name": "original_file:execution_receipt.json",
+      "status": "PASS"
+    },
+    {
+      "name": "original_file:integration_fixture.json",
+      "status": "PASS"
+    },
+    {
+      "name": "original_file:integration_results.json",
+      "status": "PASS"
+    },
+    {
+      "name": "original_file:run_lab.py",
+      "status": "PASS"
+    },
+    {
+      "name": "source_pin",
+      "status": "PASS"
+    },
+    {
+      "name": "native_source:engine/prophet_live/cn_clock.py",
+      "status": "PASS"
+    },
+    {
+      "name": "native_source:engine/prophet_live/cn_reconcile.py",
+      "status": "PASS"
+    },
+    {
+      "name": "native_source:engine/prophet_live/cn_states.py",
+      "status": "PASS"
+    },
+    {
+      "name": "native_source:engine/prophet_live/interval.py",
+      "status": "PASS"
+    },
+    {
+      "name": "native_source:engine/prophet_live/live_states.py",
+      "status": "PASS"
+    },
+    {
+      "name": "native_source:engine/prophet_live/r2io.py",
+      "status": "PASS"
+    },
+    {
+      "name": "native_source:lib/cn_calendar.py",
+      "status": "PASS"
+    },
+    {
+      "name": "native_source:lib/exchange_holidays.py",
+      "status": "PASS"
+    },
+    {
+      "name": "native_source:scripts/reconcile_cn_live.py",
+      "status": "PASS"
+    },
+    {
+      "name": "retained_ledger_reproduces_with_native_functions",
+      "status": "PASS"
+    },
+    {
+      "name": "positive_replay_idempotence",
+      "status": "PASS"
+    },
+    {
+      "name": "positive_prior_generation_survives_rollover",
+      "status": "PASS"
+    },
+    {
+      "name": "omission_accepted:first_transition_object",
+      "status": "PASS"
+    },
+    {
+      "name": "omission_accepted:all_transition_objects",
+      "status": "PASS"
+    },
+    {
+      "name": "positive_partial_regression_guard_exists",
+      "status": "PASS"
+    },
+    {
+      "name": "bounded_digest_order_counterexamples_found",
+      "status": "PASS"
+    },
+    {
+      "name": "close_tie_follows_object_key:before",
+      "status": "PASS"
+    },
+    {
+      "name": "close_tie_follows_object_key:after",
+      "status": "PASS"
+    },
+    {
+      "name": "close_tie_receipt_changes_without_time_membership_or_generation_change",
+      "status": "PASS"
+    },
+    {
+      "name": "native_provenance_probe_has_events:None",
+      "status": "PASS"
+    },
+    {
+      "name": "source_adjustment_overstamped:None",
+      "status": "PASS"
+    },
+    {
+      "name": "native_provenance_probe_has_events:split_and_dividend_adjusted",
+      "status": "PASS"
+    },
+    {
+      "name": "source_adjustment_overstamped:split_and_dividend_adjusted",
+      "status": "PASS"
+    },
+    {
+      "name": "native_provenance_probe_has_events:unadjusted_vendor_print",
+      "status": "PASS"
+    },
+    {
+      "name": "source_adjustment_overstamped:unadjusted_vendor_print",
+      "status": "PASS"
+    },
+    {
+      "name": "distinct_source_adjustment_declarations_collapse_to_same_event_identity",
+      "status": "PASS"
+    },
+    {
+      "name": "recorded_native_parquet_receipt_hash",
+      "status": "PASS"
+    },
+    {
+      "name": "recorded_parquet_helper_hash",
+      "status": "PASS"
+    },
+    {
+      "name": "recorded_parquet_subject_and_fixture",
+      "status": "PASS"
+    },
+    {
+      "name": "recorded_parquet_native_sources",
+      "status": "PASS"
+    },
+    {
+      "name": "recorded_parquet_input_bytes",
+      "status": "PASS"
+    },
+    {
+      "name": "recorded_parquet_output_bytes",
+      "status": "PASS"
+    },
+    {
+      "name": "recorded_native_parquet_loss",
+      "status": "PASS"
+    },
+    {
+      "name": "duplicate_order_changes_refusal",
+      "status": "PASS"
+    },
+    {
+      "name": "out_of_range_standalone_score_accepted:-1",
+      "status": "PASS"
+    },
+    {
+      "name": "out_of_range_standalone_score_accepted:100.01",
+      "status": "PASS"
+    },
+    {
+      "name": "huge_integer_breaks_boolean_numeric_predicate",
+      "status": "PASS"
+    },
+    {
+      "name": "huge_integer_escapes_per_name_refusal",
+      "status": "PASS"
+    },
+    {
+      "name": "same_event_identity_can_retain_inconsistent_first_price",
+      "status": "PASS"
+    },
+    {
+      "name": "unchanged_completed_lab:INTEGRATION_MANIFEST.json",
+      "status": "PASS"
+    },
+    {
+      "name": "unchanged_completed_lab:INTEGRATION_DECISIONS.md",
+      "status": "PASS"
+    },
+    {
+      "name": "unchanged_completed_lab:contract_prototype.py",
+      "status": "PASS"
+    },
+    {
+      "name": "unchanged_completed_lab:execution.log",
+      "status": "PASS"
+    },
+    {
+      "name": "unchanged_completed_lab:execution_receipt.json",
+      "status": "PASS"
+    },
+    {
+      "name": "unchanged_completed_lab:integration_fixture.json",
+      "status": "PASS"
+    },
+    {
+      "name": "unchanged_completed_lab:integration_results.json",
+      "status": "PASS"
+    },
+    {
+      "name": "unchanged_completed_lab:run_lab.py",
+      "status": "PASS"
+    }
+  ],
+  "findings": [
+    {
+      "evidence": [
+        {
+          "omitted_daily_keys": [
+            [
+              "2026-10-12",
+              "002460.SZ",
+              "forming"
+            ],
+            [
+              "2026-10-12",
+              "300750.SZ",
+              "crossing_unconfirmed"
+            ],
+            [
+              "2026-10-12",
+              "603799.SS",
+              "forming"
+            ]
+          ],
+          "omitted_event_ids": [
+            "e6a09a3845e94e766c49f134783b4f2b1765a86c522431b17df1a5612307f5db",
+            "7867a35db1899e3f7a74c7183f2ad3832220b91ab8bb31cd653d2357d3baab90",
+            "677f831effe8c898889fed456de4aec1b1e884fd501e2ace5e461b6a42d447d7"
+          ],
+          "omitted_object_keys": [
+            "live_flow/cn_prophet_live_events/2026-10-12/020000-418e6430b7968b17ff4d6180bd746d6540aad27dc7adae8cf08b68cb1e1792dd.json"
+          ],
+          "refused": false,
+          "returned_distinct_events": 1,
+          "returned_rows": 4,
+          "returned_spool_objects": 3,
+          "variant": "first_transition_object"
+        },
+        {
+          "omitted_daily_keys": [
+            [
+              "2026-10-12",
+              "002460.SZ",
+              "forming"
+            ],
+            [
+              "2026-10-12",
+              "300750.SZ",
+              "crossing_unconfirmed"
+            ],
+            [
+              "2026-10-12",
+              "603799.SS",
+              "forming"
+            ],
+            [
+              "2026-10-12",
+              "300750.SZ",
+              "forming"
+            ]
+          ],
+          "omitted_event_ids": [
+            "e6a09a3845e94e766c49f134783b4f2b1765a86c522431b17df1a5612307f5db",
+            "7867a35db1899e3f7a74c7183f2ad3832220b91ab8bb31cd653d2357d3baab90",
+            "677f831effe8c898889fed456de4aec1b1e884fd501e2ace5e461b6a42d447d7",
+            "39d4b3db518f7eec0a20480ceff39c8b375f36772d28b9ba2e96dbc88bef80e8"
+          ],
+          "omitted_object_keys": [
+            "live_flow/cn_prophet_live_events/2026-10-12/020000-418e6430b7968b17ff4d6180bd746d6540aad27dc7adae8cf08b68cb1e1792dd.json",
+            "live_flow/cn_prophet_live_events/2026-10-12/020500-ff9b043721e600de73b3f3f7f011a28577659c11f674b864f5e83cc78a6e536b.json"
+          ],
+          "refused": false,
+          "returned_distinct_events": 0,
+          "returned_rows": 4,
+          "returned_spool_objects": 2,
+          "variant": "all_transition_objects"
+        }
+      ],
+      "id": "F1",
+      "positive_control": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "spool_regression"
+      },
+      "required_behavior": "Before reconstructing/merging rows, compare the union of previously consumed event IDs for every existing row in the requested session with all currently resolved spool IDs. Refuse any unexplained missing key or event; only an explicit adjudicated retention/correction contract may waive it.",
+      "severity": "high",
+      "status": "CONFIRMED",
+      "title": "Whole-key spool omission evades regression detection"
+    },
+    {
+      "evidence": [
+        {
+          "alternate_close_content_sha256": "711393359a3116ea5c5f83ce95862f39c4ebf868efeef05abc05900f4556a4f5",
+          "alternate_key_sorts": "before",
+          "alternate_object_key": "live_flow/cn_prophet_live_events/2026-10-12/070600-15b4a440376c6b2e5ac45b3e3fff7621b4db2c95af89d0e552e84153edbaa146.json",
+          "built_at": "2026-10-12T07:06:00Z",
+          "fixed_close_content_sha256": "e3412d486b1e3936fdfc16fa0e0579fe02b22e7028a67ff74852f0c327a1b544",
+          "fixed_object_key": "live_flow/cn_prophet_live_events/2026-10-12/070600-64e0baccc44ee0d68b9e84fe02ba9cd7c901bac667c3fdb96a494d6cfd121362.json",
+          "inert_review_nonce": 2,
+          "pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+          "receipt": {
+            "adjusted": [],
+            "as_of": "2026-10-12",
+            "built_at": "2026-10-12T12:00:00Z",
+            "confirmed": [
+              "002460.SZ",
+              "300750.SZ"
+            ],
+            "detail": {
+              "added": [],
+              "basis": "close_board lanes vs china_standouts buy/more_actionable/forming",
+              "lane_moves": {},
+              "n_added": 0
+            },
+            "dropped": [],
+            "n_adjusted": 0,
+            "n_confirmed": 2,
+            "n_dropped": 0,
+            "n_total": 2,
+            "schema": "cn_board_confirmation/v1"
+          },
+          "refused": false,
+          "returned_rows": 4
+        },
+        {
+          "alternate_close_content_sha256": "711393359a3116ea5c5f83ce95862f39c4ebf868efeef05abc05900f4556a4f5",
+          "alternate_key_sorts": "after",
+          "alternate_object_key": "live_flow/cn_prophet_live_events/2026-10-12/070600-d958bce3b6bb6474bc534b84b34decac0627cdd6db80b5ba26a4c2dbc1f5c2d8.json",
+          "built_at": "2026-10-12T07:06:00Z",
+          "fixed_close_content_sha256": "e3412d486b1e3936fdfc16fa0e0579fe02b22e7028a67ff74852f0c327a1b544",
+          "fixed_object_key": "live_flow/cn_prophet_live_events/2026-10-12/070600-64e0baccc44ee0d68b9e84fe02ba9cd7c901bac667c3fdb96a494d6cfd121362.json",
+          "inert_review_nonce": 0,
+          "pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+          "receipt": {
+            "adjusted": [],
+            "as_of": "2026-10-12",
+            "built_at": "2026-10-12T12:00:00Z",
+            "confirmed": [
+              "002460.SZ",
+              "300750.SZ"
+            ],
+            "detail": {
+              "added": [],
+              "basis": "close_board lanes vs china_standouts buy/more_actionable/forming",
+              "lane_moves": {},
+              "n_added": 0
+            },
+            "dropped": [
+              "603799.SS"
+            ],
+            "n_adjusted": 0,
+            "n_confirmed": 2,
+            "n_dropped": 1,
+            "n_total": 3,
+            "schema": "cn_board_confirmation/v1"
+          },
+          "refused": false,
+          "returned_rows": 4
+        }
+      ],
+      "id": "F2",
+      "required_behavior": "Group close evidence by source generation and observation/pass identity. Coalesce identical evidence, refuse conflicting evidence at equal authority, and retain the exact selected close object ID in the receipt. Do not let unrelated metadata hashes choose membership truth.",
+      "severity": "high",
+      "status": "CONFIRMED",
+      "title": "Conflicting equal-time close snapshots use digest ordering as authority"
+    },
+    {
+      "evidence": [
+        {
+          "event_ids": [
+            "e6a09a3845e94e766c49f134783b4f2b1765a86c522431b17df1a5612307f5db",
+            "7867a35db1899e3f7a74c7183f2ad3832220b91ab8bb31cd653d2357d3baab90",
+            "677f831effe8c898889fed456de4aec1b1e884fd501e2ace5e461b6a42d447d7"
+          ],
+          "input_price_adjustment": null,
+          "input_price_basis": "regular",
+          "ledger_price_adjustments": [
+            "unadjusted_vendor_print"
+          ],
+          "ledger_rows": 3,
+          "output_event_price_adjustments": [
+            "unadjusted_vendor_print"
+          ],
+          "quote_rejections": {},
+          "refused": false
+        },
+        {
+          "event_ids": [
+            "e6a09a3845e94e766c49f134783b4f2b1765a86c522431b17df1a5612307f5db",
+            "7867a35db1899e3f7a74c7183f2ad3832220b91ab8bb31cd653d2357d3baab90",
+            "677f831effe8c898889fed456de4aec1b1e884fd501e2ace5e461b6a42d447d7"
+          ],
+          "input_price_adjustment": "split_and_dividend_adjusted",
+          "input_price_basis": "regular",
+          "ledger_price_adjustments": [
+            "unadjusted_vendor_print"
+          ],
+          "ledger_rows": 3,
+          "output_event_price_adjustments": [
+            "unadjusted_vendor_print"
+          ],
+          "quote_rejections": {},
+          "refused": false
+        },
+        {
+          "event_ids": [
+            "e6a09a3845e94e766c49f134783b4f2b1765a86c522431b17df1a5612307f5db",
+            "7867a35db1899e3f7a74c7183f2ad3832220b91ab8bb31cd653d2357d3baab90",
+            "677f831effe8c898889fed456de4aec1b1e884fd501e2ace5e461b6a42d447d7"
+          ],
+          "input_price_adjustment": "unadjusted_vendor_print",
+          "input_price_basis": "regular",
+          "ledger_price_adjustments": [
+            "unadjusted_vendor_print"
+          ],
+          "ledger_rows": 3,
+          "output_event_price_adjustments": [
+            "unadjusted_vendor_print"
+          ],
+          "quote_rejections": {},
+          "refused": false
+        }
+      ],
+      "id": "F3",
+      "required_behavior": "Require and validate an adapter/provider price-basis declaration with provenance; preserve its supplied identity. A missing or incompatible adjustment must remain unavailable or be refused. A previous-close numerical match is not proof of an unadjusted basis.",
+      "severity": "high",
+      "status": "CONFIRMED",
+      "title": "Source quote adjustment is replaced by an unsupported raw declaration"
+    },
+    {
+      "evidence": {
+        "after_sha256": "1acd93e4934ecf0ad50849e279c38a4c3b6ece0a795f33941b6a006cedea1351",
+        "before_sha256": "e27b40119ca438c71d81fe89e5cd2cf5f87451cb454b7febc9dbe6435d33ebbd",
+        "execution_origin": "independent_host_native_write_receipt_and_binary_files",
+        "host_execution": {
+          "lab_root": "/private/tmp/mmx-cn-integration-lab-20261009-og849byq",
+          "out": "/private/tmp/mmx-cn-integration-review-20261010-r0xd07ip",
+          "pandas": "3.0.5",
+          "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+          "source_root": "/private/tmp/mmx-cn-integration-lab-20261009-og849byq/source"
+        },
+        "input_row_n": 5,
+        "lost_event_id": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "lost_event_present_after_write": false,
+        "native_writer_row_counts": [
+          4
+        ],
+        "output_row_n": 4,
+        "receipt_sha256": "a70ad278ac1abddd6f27841da68fe50830b1219940f1fc0ccc9ef6075df6d0a9",
+        "reverse_order_refusal": "spool_regression",
+        "reversed_duplicate_order": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "spool_regression"
+        }
+      },
+      "id": "F4",
+      "required_behavior": "Validate existing daily-key uniqueness and key/schema integrity before native merge. Refuse conflicting duplicates before any write and preserve the original bytes; a separately specified exact-duplicate normalization can be considered without silently discarding evidence.",
+      "severity": "high",
+      "status": "CONFIRMED",
+      "title": "Readable duplicate-key Parquet silently loses retained history"
+    },
+    {
+      "evidence": [
+        {
+          "correctly_recomputed_pack_id": "9e1fbd29d41d14b2f3e276c966c906b3aafc483bafdfa7a73483369fb7bcab17",
+          "outcome": "accepted",
+          "score": -1
+        },
+        {
+          "correctly_recomputed_pack_id": "ba9e8606ead2f7da4eac2d5dccd5c165f68917505ee4596c2c21975ad5f87d47",
+          "outcome": "accepted",
+          "score": 100.01
+        }
+      ],
+      "id": "F5",
+      "required_behavior": "Apply the same measured 0-to-100 score domain at the standalone pack trust boundary, not only when loading a canonical board.",
+      "severity": "medium",
+      "status": "CONFIRMED",
+      "title": "Standalone archived-pack validator omits the frozen score range"
+    },
+    {
+      "evidence": {
+        "finite_predicate": {
+          "exception_class": "OverflowError",
+          "outcome": "exception",
+          "reason": "int too large to convert to float"
+        },
+        "integer_decimal_digits": 401,
+        "one_bad_quote_evaluation": {
+          "exception_class": "OverflowError",
+          "outcome": "exception",
+          "reason": "int too large to convert to float"
+        }
+      },
+      "id": "F6",
+      "required_behavior": "Make numeric-domain validation total over JSON values. Reject out-of-domain magnitudes without conversion overflow and preserve the intended per-name refusal or typed ingest refusal channel.",
+      "severity": "medium",
+      "status": "CONFIRMED",
+      "title": "Huge finite JSON integer crashes the numeric validator"
+    },
+    {
+      "evidence": {
+        "daily_key": [
+          "2026-10-12",
+          "002460.SZ",
+          "forming"
+        ],
+        "first_event_id": "e6a09a3845e94e766c49f134783b4f2b1765a86c522431b17df1a5612307f5db",
+        "refused": false,
+        "returned_first_price": 47.1029,
+        "source_event_price": 46.1029,
+        "stored_first_price_before_replay": 47.1029
+      },
+      "id": "F7",
+      "required_behavior": "Bind and compare every immutable denormalized first-observation field with the resolved first event/pack, or validate a canonical first-observation record digest. Refuse discrepancies; do not silently preserve or repair them.",
+      "severity": "high",
+      "status": "CONFIRMED",
+      "title": "First-event identity can coexist with a conflicting stored first price"
+    }
+  ],
+  "limits": [
+    "The actual unmodified native functions and unchanged proposal execute on retained or explicitly mutated synthetic fixtures.",
+    "The compact canonical board in the equal-time conflict case is a newly labeled synthetic fixture, with its hash deliberately bound into a new synthetic settlement generation.",
+    "No claim that the reproduced bad inputs occurred naturally in production, or that historical ledger data was actually lost.",
+    "The first-object omission leaves ledger rows intact but falsely treats missing spool evidence as successful reconciliation.",
+    "The duplicate-key counterexample performs a real native atomic write only to a review-owned temporary Parquet path.",
+    "The three-join architecture remains useful; the reported 63 checks do not establish the stronger completeness, immutability, or provenance claims against these counterexamples."
+  ],
+  "native_source_bundle_sha256": "2c139c0fef2c83296374069aed3338ccc28802bbf535d75054176384ec9ec829",
+  "native_source_sha256": {
+    "engine/prophet_live/cn_clock.py": "3460435acfee8d7cd08b76c0e5502b97784844afe75aa554d64648ecaf679eb3",
+    "engine/prophet_live/cn_reconcile.py": "585f41ce22c5d36d4f1cc6d7f60b182edf146f15c0c5d6db1f507320a08391cb",
+    "engine/prophet_live/cn_states.py": "4a6f64dada3aaa47dfd3c14e881c2b0d353d6b3b5addbd090b5166ba01b51880",
+    "engine/prophet_live/interval.py": "d8e53f26b90ae5a80c3b1e37f9813e3e1005263ed011dbaa03905643b754bfe3",
+    "engine/prophet_live/live_states.py": "a2cdc109d2416c893d95c4a3a6e8d0dedf7883d65e5878803e4af6d43227c012",
+    "engine/prophet_live/r2io.py": "71edb3e4f605f02e6e92c380c58f12a7b343eefa3ec86c3383980a27b5df6271",
+    "lib/cn_calendar.py": "d51b737c9198782d7c1792a2d744b9d1677306c122752a12031faef05c075f4c",
+    "lib/exchange_holidays.py": "1da4d79c1b603432c4b994aef671d60020a0df119d6b7f1420b2a7a35ffc9e2e",
+    "scripts/reconcile_cn_live.py": "aaf1e7e9f892cbd71a6c8fe7faf80659bc9aca588cf841d2cc27aeb20346c7b6"
+  },
+  "original_input_sha256": {
+    "INTEGRATION_DECISIONS.md": "4fd3eccc06dd6d85ffb69b37a15e6ff8c5a7c17cabdcb9e4f9877865a57bcdf0",
+    "INTEGRATION_MANIFEST.json": "d755a012d80469c241a554252e61bee88e604eb445ce7ca03ec1e2eecfdbc8b6",
+    "contract_prototype.py": "df11434734c550715df92596f70cd0a0da1b0e042865c5737c6aa5adc6ecebd0",
+    "execution.log": "0659ce9eb91d9d2a41f1d08ca704e01c4953e5b62f482a44b75689c0921e7469",
+    "execution_receipt.json": "98f31902f3fb9dbbab125ffa570c9bba57133d0e33f15140fc83da69f9f07ff8",
+    "integration_fixture.json": "fe7e1123269eac895eb324cbe3510ec3de9cfbfce10c44518c593d550d34a545",
+    "integration_results.json": "58ab978836c10cc9f6cc6b508e7f93c8aaa68f448e56a39137acb0caace69128",
+    "run_lab.py": "534ec458f607c9c90bb312c629829d100892ae38bd2dc6973548e0cd70acc458"
+  },
+  "positive_baseline": {
+    "distinct_events": 4,
+    "exact_retained_ledger_reproduced": true,
+    "idempotent_replay": true,
+    "ledger_rows": 4,
+    "prior_pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+    "settlement_pack_id": "fb46b4407fcc78ba0f398427efc0ea42779e47323f7cb133dde04e0becec3529"
+  },
+  "review_script_sha256": "d858c3fec1adeef77ac1835ec8a4241d3c61221038618c32ae289caf7a068699",
+  "reviewed_manifest_sha256": "d755a012d80469c241a554252e61bee88e604eb445ce7ca03ec1e2eecfdbc8b6",
+  "safety": {
+    "completed_labs_changed": false,
+    "credential_reads": false,
+    "network_disabled_during_execution": true,
+    "object_store": "memory",
+    "parquet_write_scope": "this review directory only",
+    "production_effects": false,
+    "vendor_calls": false
+  },
+  "schema": "cn_integration_independent_adversarial_review_v1",
+  "status": "BLOCKED_FOR_END_TO_END_IMPLEMENTATION_AS_WRITTEN",
+  "study_source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "verification": {
+    "failed_checks": 0,
+    "findings_confirmed": 7,
+    "local_parquet_engine_available": false,
+    "pandas": "2.2.3",
+    "parquet_execution_origin": "independent_host_native_write_receipt_and_binary_files",
+    "passed_checks": 56,
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+  }
+}

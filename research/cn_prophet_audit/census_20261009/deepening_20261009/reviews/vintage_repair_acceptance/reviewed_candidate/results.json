@@ -1,0 +1,867 @@
+{
+  "code_identities": {
+    "contract.py": "ea8c3d3da6b3d064563f64e3f78b6e4590530fc51bbe92535cf2cce7e1c2bdef",
+    "retention.py": "8da1540ce2d37806dfada0f5cd4ceddc65bd4bc9ebfb926cffc1e727ee95877b",
+    "shape.py": "bb40201be2308dc891e343ccc5a513db445bd9d3a340356475c549b2b81705c7",
+    "verify.py": "99c4f37a099a138d4887c403dea20cb20111810e135ed9f309bd540793258a72"
+  },
+  "families": {
+    "contract": 44,
+    "custody": 1,
+    "empirical_parity": 5,
+    "ledger": 22,
+    "retention": 32
+  },
+  "limits": [
+    "Synthetic byte codec and calendar validate contracts, not vendor history or holiday truth.",
+    "Native _extract is AST-extracted from previously verified immutable bytes; no collector is imported or run.",
+    "No original empirical file, legacy latch, production source, runtime or stored operational record changes.",
+    "All return results are price-mark diagnostics, without actual-fill, total-return or historical knowability certification."
+  ],
+  "source_input_identities": {
+    "reviews/vintage_review/VINTAGE_INDEPENDENT_REVIEW.md": {
+      "bytes": 12489,
+      "sha256": "e7ad8ac0a3aeec15183c542ce8d7f7ba691b19404730e552e28df99f7bc8160b"
+    },
+    "reviews/vintage_review/pinned_china_prices.py": {
+      "bytes": 6386,
+      "sha256": "fddb468e6cb2c6a1bf86235c337d6ad3b52cb34b0702510f3352c91b3e9a3b5a"
+    },
+    "vintage_lab/entry_comparison_rows.json": {
+      "bytes": 1431429,
+      "sha256": "25160d291bec91cb7ba6fe77ac1e69ed5043f89f507dd369d4b32d0314c2e30c"
+    },
+    "vintage_lab/historical_witness_rows.json": {
+      "bytes": 1398096,
+      "sha256": "aaf1d164616d2cd459774360cc8893d9ae181a56caeaa77b2f2aa05a827805fd"
+    }
+  },
+  "status": "PASS",
+  "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "test_count": 104,
+  "tests": [
+    {
+      "details": {
+        "accounting": "Declared consistent price basis per instrument; total return, original decision knowability, costs and actual execution need separate evidence.",
+        "benchmark_return_pct": 10.000000000000009,
+        "calendar_id": "eb3f1c8023305c79f8214128df45d4020f54705093c975842a437086b023aec1",
+        "entry_anchor_at": "2026-09-16T01:30:00+00:00",
+        "excess_pp": 0.0,
+        "execution_status": "MARK_ONLY",
+        "exit_anchor_at": "2026-09-29T07:00:00+00:00",
+        "status": "ALIGNED_MARK_DIAGNOSTIC",
+        "stock_return_pct": 10.000000000000009
+      },
+      "family": "contract",
+      "name": "same-vintage same-anchor arithmetic is admitted with derived endpoint clocks",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "contract",
+      "name": "free entry timestamp is unnecessary; exact calendar-derived clock suffices",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "contract",
+      "name": "equivalent aware timezone and publication at the declared mark boundary",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "PUBLICATION_CLOCK_UNVERIFIED"
+      },
+      "family": "contract",
+      "name": "missing publication clock",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "PUBLICATION_AFTER_ENTRY_ANCHOR"
+      },
+      "family": "contract",
+      "name": "late publication even without supplied anchor",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "ENTRY_CLOCK_BINDING_MISMATCH"
+      },
+      "family": "contract",
+      "name": "V1 unrelated October entry timestamp cannot excuse September entry",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "SESSION_INVALID"
+      },
+      "family": "contract",
+      "name": "V1 impossible September 31 is refused before lexical comparison",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "SESSION_NOT_IN_CALENDAR"
+      },
+      "family": "contract",
+      "name": "valid date absent from supplied calendar remains unqualified",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "CALENDAR_SESSION_CLOCK_MISMATCH"
+      },
+      "family": "contract",
+      "name": "calendar receipt cannot map an unrelated date to the entry",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "CALENDAR_ANCHOR_ORDER_INVALID"
+      },
+      "family": "contract",
+      "name": "calendar open after close",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "CLOCK_TIMEZONE_MISSING"
+      },
+      "family": "contract",
+      "name": "naive calendar clock",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "SOURCE_PRECEDES_FINALIZED_BAR"
+      },
+      "family": "contract",
+      "name": "V1 future finalized bar cannot have an earlier source availability",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "SOURCE_PRECEDES_FINALIZED_BAR"
+      },
+      "family": "contract",
+      "name": "blob-wide early availability cannot hide an unselected future finalized row",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "FUTURE_ANCHOR_AT_GRADING"
+      },
+      "family": "contract",
+      "name": "future exit cannot be graded before its own anchor",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "FUTURE_SOURCE_AT_GRADING"
+      },
+      "family": "contract",
+      "name": "otherwise historical mark uses source unavailable at grading",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "SOURCE_AVAILABILITY_UNVERIFIED"
+      },
+      "family": "contract",
+      "name": "Git clock cannot substitute for producer availability",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "ENTRY_ANCHOR_MISMATCH"
+      },
+      "family": "contract",
+      "name": "close cannot replace benchmark opening comparator",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "EXIT_ANCHOR_MISMATCH"
+      },
+      "family": "contract",
+      "name": "exit comparator must use exact same session",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "HL2_EXACT_TIME_UNAVAILABLE"
+      },
+      "family": "contract",
+      "name": "HL2 never acquires a clock",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "BASIS_ID_MISMATCH"
+      },
+      "family": "contract",
+      "name": "resolved different basis is refused",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "WITHIN_INSTRUMENT_VINTAGE_MISMATCH"
+      },
+      "family": "contract",
+      "name": "same basis does not excuse two source vintages",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "MARK_SOURCE_BINDING_MISMATCH"
+      },
+      "family": "contract",
+      "name": "V3 deserialized mark cannot alter price:80",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "MARK_SOURCE_BINDING_MISMATCH"
+      },
+      "family": "contract",
+      "name": "V3 deserialized mark cannot alter bar_row_sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "MARK_SOURCE_BINDING_MISMATCH"
+      },
+      "family": "contract",
+      "name": "V3 deserialized mark cannot alter basis_id:forged",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "MARK_SOURCE_BINDING_MISMATCH"
+      },
+      "family": "contract",
+      "name": "V3 deserialized mark cannot alter anchor_at:2026-09-17T01:30:00Z",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "MARK_SOURCE_BINDING_MISMATCH"
+      },
+      "family": "contract",
+      "name": "V3 deserialized mark cannot alter calendar_id:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "MARK_SOURCE_BINDING_MISMATCH"
+      },
+      "family": "contract",
+      "name": "V3 deserialized mark cannot alter price:True",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "MARK_SOURCE_BINDING_MISMATCH"
+      },
+      "family": "contract",
+      "name": "source metadata copied onto a mark stays bound: available_at",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "MARK_SOURCE_BINDING_MISMATCH"
+      },
+      "family": "contract",
+      "name": "source metadata copied onto a mark stays bound: price_adjustment",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "MARK_SOURCE_BINDING_MISMATCH"
+      },
+      "family": "contract",
+      "name": "source metadata copied onto a mark stays bound: provider_id",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "SOURCE_BYTES_UNAVAILABLE"
+      },
+      "family": "contract",
+      "name": "a well-shaped free hash cannot stand in for bytes",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "SOURCE_BYTES_HASH_MISMATCH"
+      },
+      "family": "contract",
+      "name": "source bytes cannot be substituted under an unchanged hash",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "SUPPLIED_BAR_SOURCE_MISMATCH"
+      },
+      "family": "contract",
+      "name": "constructor supplied bar must be the exact resolved source row",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "contract",
+      "name": "exact caller bar and source row agree",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "SOURCE_DUPLICATE_SESSION"
+      },
+      "family": "contract",
+      "name": "duplicate source sessions refused even when byte hash is correct",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "SOURCE_DUPLICATE_JSON_KEY"
+      },
+      "family": "contract",
+      "name": "duplicate JSON identity keys refused",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "PRICE_ADJUSTMENT_UNAVAILABLE"
+      },
+      "family": "contract",
+      "name": "source adjustment contract unavailable None",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "PRICE_ADJUSTMENT_UNAVAILABLE"
+      },
+      "family": "contract",
+      "name": "source adjustment contract unavailable ",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "PRICE_ADJUSTMENT_UNAVAILABLE"
+      },
+      "family": "contract",
+      "name": "source adjustment contract unavailable raw-because-the-caller-says-so",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "PRICE_ADJUSTMENT_UNAVAILABLE"
+      },
+      "family": "contract",
+      "name": "source adjustment contract unavailable ['unadjusted']",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "SOURCE_INSTRUMENT_MISMATCH"
+      },
+      "family": "contract",
+      "name": "canonical instrument mismatch",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "SOURCE_ROW_UNAVAILABLE"
+      },
+      "family": "contract",
+      "name": "missing exact source row",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "opening_mark_refusals": [],
+        "qualified_open_rows": 2,
+        "status": "OBSERVATIONS_RETAINED"
+      },
+      "family": "retention",
+      "name": "native extractor loses OHLC; repaired optional retention preserves incumbent required projection",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "retention",
+      "name": "single and MultiIndex provider shapes agree",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "OPEN_INVALID"
+      },
+      "family": "retention",
+      "name": "V3/V4 retention and mark-price admission agree: numeric string open",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "retention",
+      "name": "malformed optional field preserves required observations and close diagnostic: numeric string open",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "OPEN_INVALID"
+      },
+      "family": "retention",
+      "name": "V3/V4 retention and mark-price admission agree: vendor token open",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "retention",
+      "name": "malformed optional field preserves required observations and close diagnostic: vendor token open",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "RANGE_INVALID"
+      },
+      "family": "retention",
+      "name": "V3/V4 retention and mark-price admission agree: vendor token high",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "retention",
+      "name": "malformed optional field preserves required observations and close diagnostic: vendor token high",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "OPEN_INVALID"
+      },
+      "family": "retention",
+      "name": "V3/V4 retention and mark-price admission agree: zero open",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "retention",
+      "name": "malformed optional field preserves required observations and close diagnostic: zero open",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "OPEN_INVALID"
+      },
+      "family": "retention",
+      "name": "V3/V4 retention and mark-price admission agree: negative open",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "retention",
+      "name": "malformed optional field preserves required observations and close diagnostic: negative open",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "OPEN_INVALID"
+      },
+      "family": "retention",
+      "name": "V3/V4 retention and mark-price admission agree: Boolean open",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "retention",
+      "name": "malformed optional field preserves required observations and close diagnostic: Boolean open",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "OPEN_INVALID"
+      },
+      "family": "retention",
+      "name": "V3/V4 retention and mark-price admission agree: huge integer open",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "retention",
+      "name": "malformed optional field preserves required observations and close diagnostic: huge integer open",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "OPEN_UNAVAILABLE"
+      },
+      "family": "retention",
+      "name": "V3/V4 retention and mark-price admission agree: NaN open",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "retention",
+      "name": "malformed optional field preserves required observations and close diagnostic: NaN open",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "OPEN_INVALID"
+      },
+      "family": "retention",
+      "name": "V3/V4 retention and mark-price admission agree: infinite open",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "retention",
+      "name": "malformed optional field preserves required observations and close diagnostic: infinite open",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "OPEN_INVALID"
+      },
+      "family": "retention",
+      "name": "V3/V4 retention and mark-price admission agree: list open",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "retention",
+      "name": "malformed optional field preserves required observations and close diagnostic: list open",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "RANGE_INVALID"
+      },
+      "family": "retention",
+      "name": "V3/V4 retention and mark-price admission agree: dictionary high",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "retention",
+      "name": "malformed optional field preserves required observations and close diagnostic: dictionary high",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "OPEN_OUTSIDE_RANGE"
+      },
+      "family": "retention",
+      "name": "V3/V4 retention and mark-price admission agree: corrupt open outside range",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "retention",
+      "name": "malformed optional field preserves required observations and close diagnostic: corrupt open outside range",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "OPEN_OUTSIDE_RANGE"
+      },
+      "family": "contract",
+      "name": "V3 exact retained corrupt bar cannot become a resolved opening mark",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "opening_mark_refusals": [
+          {
+            "reason": "OPEN_UNAVAILABLE",
+            "session": "2026-09-16"
+          },
+          {
+            "reason": "OPEN_UNAVAILABLE",
+            "session": "2026-09-17"
+          }
+        ],
+        "qualified_open_rows": 0,
+        "status": "OBSERVATIONS_RETAINED"
+      },
+      "family": "retention",
+      "name": "legacy close-only schema stays close-only",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "OPEN_UNAVAILABLE"
+      },
+      "family": "contract",
+      "name": "benchmark opening mark cannot be fabricated from Close",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "accounting": "Declared consistent price basis per instrument; total return, original decision knowability, costs and actual execution need separate evidence.",
+        "benchmark_return_pct": 10.000000000000009,
+        "calendar_id": "eb3f1c8023305c79f8214128df45d4020f54705093c975842a437086b023aec1",
+        "entry_anchor_at": "2026-09-16T07:00:00+00:00",
+        "excess_pp": -1.08910891089109,
+        "execution_status": "MARK_ONLY",
+        "exit_anchor_at": "2026-09-29T07:00:00+00:00",
+        "status": "ALIGNED_MARK_DIAGNOSTIC",
+        "stock_return_pct": 8.910891089108919
+      },
+      "family": "retention",
+      "name": "same-anchor close diagnostic remains available without opening data",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "retention",
+      "name": "incumbent empty/required-field refusal remains: missing Close",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "retention",
+      "name": "incumbent empty/required-field refusal remains: missing Volume",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "retention",
+      "name": "incumbent empty/required-field refusal remains: all closes missing",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "retention",
+      "name": "incumbent empty/required-field refusal remains: empty",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "ledger",
+      "name": "authentic original replay is idempotent and input remains unchanged",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "ledger",
+      "name": "authenticated correction appends separately and replays idempotently",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "EVENT_HASH_MISMATCH"
+      },
+      "family": "ledger",
+      "name": "V2 damaged prior original refused before original replay",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "EVENT_HASH_MISMATCH"
+      },
+      "family": "ledger",
+      "name": "V2 damaged prior original refused before correction lookup",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "ORIGINAL_ENTRY_IMMUTABLE"
+      },
+      "family": "ledger",
+      "name": "rehashed replacement cannot overwrite original",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "ORIGINAL_ENTRY_IMMUTABLE"
+      },
+      "family": "ledger",
+      "name": "V2 changing original entry session cannot evade stable decision/ticker key",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "ORIGINAL_ENTRY_IMMUTABLE"
+      },
+      "family": "ledger",
+      "name": "stored second original refuses even on exact original replay",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "LEDGER_DUPLICATE_EVENT_ID"
+      },
+      "family": "ledger",
+      "name": "duplicate stored event IDs do not get collapsed",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "EVENT_HASH_MISMATCH"
+      },
+      "family": "ledger",
+      "name": "existing correction body also authenticates on replay",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "CORRECTION_IDENTITY_MISMATCH"
+      },
+      "family": "ledger",
+      "name": "different correction ticker",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "CORRECTION_IDENTITY_MISMATCH"
+      },
+      "family": "ledger",
+      "name": "different correction session",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "CORRECTION_REASON_UNAVAILABLE"
+      },
+      "family": "ledger",
+      "name": "missing reason",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "CORRECTION_TARGET_UNAVAILABLE"
+      },
+      "family": "ledger",
+      "name": "missing original target",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "CORRECTION_TARGET_UNAVAILABLE"
+      },
+      "family": "ledger",
+      "name": "correction targets correction",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "CORRECTION_NOT_AFTER_ORIGINAL"
+      },
+      "family": "ledger",
+      "name": "correction recorded earlier than original",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "CORRECTION_NOT_AFTER_ORIGINAL"
+      },
+      "family": "ledger",
+      "name": "correction recorded at equal time to original",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "SESSION_INVALID"
+      },
+      "family": "ledger",
+      "name": "nonexistent original session",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "PRICE_INVALID"
+      },
+      "family": "ledger",
+      "name": "nonnumeric correction price",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "PRICE_INVALID"
+      },
+      "family": "ledger",
+      "name": "Boolean correction price",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "PRICE_INVALID"
+      },
+      "family": "ledger",
+      "name": "huge correction price",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "refused_with": "CORRECTION_TARGET_UNAVAILABLE"
+      },
+      "family": "ledger",
+      "name": "correction cannot precede original in stored append order",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "legacy_row_id": "75e917f30d2bde285d589b08c5e5af5bc8d86aae2c3ebe0cedfec3f8e9f52da2",
+        "original": {
+          "basis_used": "t1_hl2",
+          "corrupt_bar": true,
+          "date": "2026-09-15",
+          "entry": 100,
+          "latched_asof": "2026-09-16T08:00:00Z",
+          "t1_date": "2026-09-16",
+          "ticker": "000001.SZ"
+        },
+        "qualification": "LEGACY_SOURCE_VINTAGE_UNVERIFIED"
+      },
+      "family": "ledger",
+      "name": "original seven legacy fields retained with unresolved vintage qualification",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "checked": 1332,
+        "classifications": {
+          "identical_ohlc": 418,
+          "mixed_field_revision": 52,
+          "open_only_rewrite": 636,
+          "uniform_ohlc_scale": 226
+        }
+      },
+      "family": "empirical_parity",
+      "name": "all retained present-bar witness classifications remain unchanged",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "empirical_parity",
+      "name": "V5 nonpositive scale is refused: 0",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "empirical_parity",
+      "name": "V5 nonpositive scale is refused: -0.8",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "empirical_parity",
+      "name": "positive common scale remains identifiable without causal attribution",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "empirical_parity",
+      "name": "healed open explains basis choice without changing original HL2 or assigning cause",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "family": "custody",
+      "name": "original empirical/source/review files unchanged during repair replay",
+      "status": "PASS"
+    }
+  ]
+}

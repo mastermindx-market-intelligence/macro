@@ -1,0 +1,143 @@
+{
+  "calendar": {
+    "2026-09-16": {
+      "session_close": "2026-09-16T15:00:00+08:00",
+      "session_open": "2026-09-16T09:30:00+08:00"
+    },
+    "2026-09-17": {
+      "session_close": "2026-09-17T15:00:00+08:00",
+      "session_open": "2026-09-17T09:30:00+08:00"
+    },
+    "2026-09-29": {
+      "session_close": "2026-09-29T15:00:00+08:00",
+      "session_open": "2026-09-29T09:30:00+08:00"
+    },
+    "2026-09-30": {
+      "session_close": "2026-09-30T15:00:00+08:00",
+      "session_open": "2026-09-30T09:30:00+08:00"
+    },
+    "2026-10-12": {
+      "session_close": "2026-10-12T15:00:00+08:00",
+      "session_open": "2026-10-12T09:30:00+08:00"
+    }
+  },
+  "kind": "EXPLICITLY_SYNTHETIC",
+  "positive_marks": [
+    {
+      "anchor": "session_open",
+      "anchor_at": "2026-09-16T01:30:00+00:00",
+      "bar_row_sha256": "52fda67a68a9d77bf730e6d46e60edad2a696cb3ecd1210fa5ccc438b29a8434",
+      "basis_id": "DECLARED_SYNTHETIC_000001.SZ",
+      "calendar_id": "eb3f1c8023305c79f8214128df45d4020f54705093c975842a437086b023aec1",
+      "execution_status": "MARK_ONLY",
+      "price": 100.0,
+      "session": "2026-09-16",
+      "source": {
+        "available_at": "2026-09-30T08:00:00+00:00",
+        "basis_id": "DECLARED_SYNTHETIC_000001.SZ",
+        "clock_kind": "producer_available_at",
+        "codec": "research.price_fixture.v2",
+        "price_adjustment": "unadjusted",
+        "provider_id": "INDEPENDENT_SYNTHETIC_FIXTURE",
+        "sha256": "1e8b2658b56be09c947f76bec7fa44d2f50e6446545e6935ddeb498c44537409"
+      },
+      "ticker": "000001.SZ"
+    },
+    {
+      "anchor": "session_close",
+      "anchor_at": "2026-09-29T07:00:00+00:00",
+      "bar_row_sha256": "ef66f683c890cd1dd075399418771161bf4d4ffd3f9501854b194d4016802e7e",
+      "basis_id": "DECLARED_SYNTHETIC_000001.SZ",
+      "calendar_id": "eb3f1c8023305c79f8214128df45d4020f54705093c975842a437086b023aec1",
+      "execution_status": "MARK_ONLY",
+      "price": 121.0,
+      "session": "2026-09-29",
+      "source": {
+        "available_at": "2026-09-30T08:00:00+00:00",
+        "basis_id": "DECLARED_SYNTHETIC_000001.SZ",
+        "clock_kind": "producer_available_at",
+        "codec": "research.price_fixture.v2",
+        "price_adjustment": "unadjusted",
+        "provider_id": "INDEPENDENT_SYNTHETIC_FIXTURE",
+        "sha256": "1e8b2658b56be09c947f76bec7fa44d2f50e6446545e6935ddeb498c44537409"
+      },
+      "ticker": "000001.SZ"
+    },
+    {
+      "anchor": "session_open",
+      "anchor_at": "2026-09-16T01:30:00+00:00",
+      "bar_row_sha256": "a5f82b15d672e3ba4d2ce6e8bf1c6d3e656948ca3c361120b5c19f7cdd105ad5",
+      "basis_id": "DECLARED_SYNTHETIC_510300.SS",
+      "calendar_id": "eb3f1c8023305c79f8214128df45d4020f54705093c975842a437086b023aec1",
+      "execution_status": "MARK_ONLY",
+      "price": 200.0,
+      "session": "2026-09-16",
+      "source": {
+        "available_at": "2026-09-30T08:00:00+00:00",
+        "basis_id": "DECLARED_SYNTHETIC_510300.SS",
+        "clock_kind": "producer_available_at",
+        "codec": "research.price_fixture.v2",
+        "price_adjustment": "unadjusted",
+        "provider_id": "INDEPENDENT_SYNTHETIC_FIXTURE",
+        "sha256": "195b7884648c52d7f97ac74368369659ac051106007077ef1cfaaf99df7872e5"
+      },
+      "ticker": "510300.SS"
+    },
+    {
+      "anchor": "session_close",
+      "anchor_at": "2026-09-29T07:00:00+00:00",
+      "bar_row_sha256": "39d02ccbc36d3b145357d884a0b98e5dd79d8fb1b16a0802e490701e9de7176a",
+      "basis_id": "DECLARED_SYNTHETIC_510300.SS",
+      "calendar_id": "eb3f1c8023305c79f8214128df45d4020f54705093c975842a437086b023aec1",
+      "execution_status": "MARK_ONLY",
+      "price": 220.0,
+      "session": "2026-09-29",
+      "source": {
+        "available_at": "2026-09-30T08:00:00+00:00",
+        "basis_id": "DECLARED_SYNTHETIC_510300.SS",
+        "clock_kind": "producer_available_at",
+        "codec": "research.price_fixture.v2",
+        "price_adjustment": "unadjusted",
+        "provider_id": "INDEPENDENT_SYNTHETIC_FIXTURE",
+        "sha256": "195b7884648c52d7f97ac74368369659ac051106007077ef1cfaaf99df7872e5"
+      },
+      "ticker": "510300.SS"
+    }
+  ],
+  "positive_original": {
+    "basis": "t1_open",
+    "decision_id": "INDEPENDENT_SYNTHETIC_DECISION",
+    "entry_session": "2026-09-16",
+    "event_id": "a97be0b6db3b76599c9a5f10c5f6c03f0a130229bd705bc03e82765fe1f91b41",
+    "kind": "original_entry",
+    "price": 100,
+    "recorded_at": "2026-09-16T08:00:00Z",
+    "ticker": "000001.SZ"
+  },
+  "positive_price_basis_correction": {
+    "basis": "t1_hl2",
+    "correction_of": "a97be0b6db3b76599c9a5f10c5f6c03f0a130229bd705bc03e82765fe1f91b41",
+    "decision_id": "INDEPENDENT_SYNTHETIC_DECISION",
+    "entry_session": "2026-09-16",
+    "event_id": "4316b85ae07d1c7b3a6f510111b5c0161a681511970ad2b210c957960bece73a",
+    "kind": "entry_correction",
+    "price": 80,
+    "reason": "Separate declared price/basis comparison; original retained",
+    "recorded_at": "2026-10-09T08:00:00Z",
+    "ticker": "000001.SZ"
+  },
+  "source_blobs_utf8": {
+    "195b7884648c52d7f97ac74368369659ac051106007077ef1cfaaf99df7872e5": "{\"available_at\":\"2026-09-30T08:00:00Z\",\"basis_id\":\"DECLARED_SYNTHETIC_510300.SS\",\"clock_kind\":\"producer_available_at\",\"fixture_only\":true,\"price_adjustment\":\"unadjusted\",\"provider_id\":\"INDEPENDENT_SYNTHETIC_FIXTURE\",\"rows\":[{\"bar\":{\"close\":204,\"high\":205,\"low\":199,\"open\":200},\"session\":\"2026-09-16\"},{\"bar\":{\"close\":220,\"high\":221,\"low\":217,\"open\":218},\"session\":\"2026-09-29\"}],\"schema\":\"research.price_fixture.v2\",\"ticker\":\"510300.SS\"}",
+    "1e8b2658b56be09c947f76bec7fa44d2f50e6446545e6935ddeb498c44537409": "{\"available_at\":\"2026-09-30T08:00:00Z\",\"basis_id\":\"DECLARED_SYNTHETIC_000001.SZ\",\"clock_kind\":\"producer_available_at\",\"fixture_only\":true,\"price_adjustment\":\"unadjusted\",\"provider_id\":\"INDEPENDENT_SYNTHETIC_FIXTURE\",\"rows\":[{\"bar\":{\"close\":103,\"high\":105,\"low\":99,\"open\":100,\"volume\":17},\"session\":\"2026-09-16\"},{\"bar\":{\"close\":108,\"high\":109,\"low\":106,\"open\":107,\"volume\":19},\"session\":\"2026-09-17\"},{\"bar\":{\"close\":121,\"high\":122,\"low\":118,\"open\":119,\"volume\":23},\"session\":\"2026-09-29\"}],\"schema\":\"research.price_fixture.v2\",\"ticker\":\"000001.SZ\"}",
+    "398eeaf1f47cfc413e0addd266e9df0f3efb56182222afdc0b9ed8f195927ebb": "{\"available_at\":\"2026-09-30T08:00:00Z\",\"basis_id\":\"DECLARED_SYNTHETIC_510300.SS\",\"clock_kind\":\"producer_available_at\",\"fixture_only\":true,\"price_adjustment\":\"unadjusted\",\"provider_id\":\"INDEPENDENT_SYNTHETIC_FIXTURE\",\"rows\":[{\"bar\":{\"close\":4.85,\"high\":4.9,\"low\":4.7,\"open\":9,\"volume\":100},\"session\":\"2026-09-16\"},{\"bar\":{\"close\":5.2},\"session\":\"2026-09-29\"}],\"schema\":\"research.price_fixture.v2\",\"ticker\":\"510300.SS\"}",
+    "3c3a5126cb11a17dfcc7ffaa851c3e481d7d3fac0cfd8042dc74ef521426c3a9": "{\"available_at\":\"2026-09-16T08:00:00Z\",\"basis_id\":\"fixture-v1\",\"clock_kind\":\"producer_available_at\",\"fixture_only\":true,\"price_adjustment\":\"unadjusted\",\"provider_id\":\"synthetic-review-only\",\"rows\":[{\"bar\":{\"close\":110},\"session\":\"2026-10-12\"},{\"bar\":{\"close\":100},\"session\":\"2026-09-16\"}],\"schema\":\"research.price_fixture.v2\",\"ticker\":\"000001.SZ\"}",
+    "5c59af1f1212ff250e0873b27ec453af55cff5d2056ee2502fdff8d2f3a62d15": "{\"available_at\":\"2026-09-16T06:59:59.999999Z\",\"basis_id\":\"DECLARED_SYNTHETIC_000001.SZ\",\"clock_kind\":\"producer_available_at\",\"fixture_only\":true,\"price_adjustment\":\"unadjusted\",\"provider_id\":\"INDEPENDENT_SYNTHETIC_FIXTURE\",\"rows\":[{\"bar\":{\"close\":103,\"high\":105,\"low\":99,\"open\":100,\"volume\":17},\"session\":\"2026-09-16\"}],\"schema\":\"research.price_fixture.v2\",\"ticker\":\"000001.SZ\"}",
+    "80c50b75b3e42cb2c857923021bc29a27cce4a8d01b22a67ac37156801d912e9": "{\"available_at\":\"2026-09-30T08:00:00Z\",\"basis_id\":\"DECLARED_SYNTHETIC_000001.SZ\",\"clock_kind\":\"producer_available_at\",\"fixture_only\":true,\"price_adjustment\":\"unadjusted\",\"provider_id\":\"INDEPENDENT_SYNTHETIC_FIXTURE\",\"rows\":[{\"bar\":{\"close\":103,\"high\":105,\"low\":99,\"open\":100,\"volume\":17},\"session\":\"2026-09-16\"},{\"bar\":{\"close\":103,\"high\":105,\"low\":99,\"open\":100,\"volume\":17},\"session\":\"2026-09-16\"},{\"bar\":{\"close\":108,\"high\":109,\"low\":106,\"open\":107,\"volume\":19},\"session\":\"2026-09-17\"},{\"bar\":{\"close\":121,\"high\":122,\"low\":118,\"open\":119,\"volume\":23},\"session\":\"2026-09-29\"}],\"schema\":\"research.price_fixture.v2\",\"ticker\":\"000001.SZ\"}",
+    "8ea60cd6bb70832f89002cd7f87e7bd0069eec7ff6a040b2d2a864e5fc359e1c": "{\"available_at\":\"2026-09-16T08:00:00Z\",\"basis_id\":\"fixture-v1\",\"clock_kind\":\"producer_available_at\",\"fixture_only\":true,\"price_adjustment\":\"unadjusted\",\"provider_id\":\"synthetic-review-only\",\"rows\":[{\"bar\":{\"close\":100},\"session\":\"2026-09-16\"},{\"bar\":{\"close\":110},\"session\":\"2026-10-12\"}],\"schema\":\"research.price_fixture.v2\",\"ticker\":\"000001.SZ\"}",
+    "b36a223c2d444daa3fcc82f23b8de8425dd6683602c8b81b60269a5b27bb595e": "{\"available_at\":\"2026-09-30T08:00:00Z\",\"basis_id\":\"DECLARED_SYNTHETIC_000001.SZ\",\"clock_kind\":\"producer_available_at\",\"fixture_only\":true,\"price_adjustment\":\"unadjusted\",\"provider_id\":\"INDEPENDENT_SYNTHETIC_FIXTURE\",\"rows\":[{\"bar\":{\"close\":103,\"high\":105,\"low\":99,\"open\":100,\"open\":80,\"volume\":17},\"session\":\"2026-09-16\"},{\"bar\":{\"close\":108,\"high\":109,\"low\":106,\"open\":107,\"volume\":19},\"session\":\"2026-09-17\"},{\"bar\":{\"close\":121,\"high\":122,\"low\":118,\"open\":119,\"volume\":23},\"session\":\"2026-09-29\"}],\"schema\":\"research.price_fixture.v2\",\"ticker\":\"000001.SZ\"}",
+    "b4a699891cc96e6d2fe68220e35282909cfe038a97ae28a73d4337d3fab84796": "{\"available_at\":\"2026-09-16T07:00:00Z\",\"basis_id\":\"DECLARED_SYNTHETIC_000001.SZ\",\"clock_kind\":\"producer_available_at\",\"fixture_only\":true,\"price_adjustment\":\"unadjusted\",\"provider_id\":\"INDEPENDENT_SYNTHETIC_FIXTURE\",\"rows\":[{\"bar\":{\"close\":103,\"high\":105,\"low\":99,\"open\":100,\"volume\":17},\"session\":\"2026-09-16\"}],\"schema\":\"research.price_fixture.v2\",\"ticker\":\"000001.SZ\"}",
+    "cd879bee3fb8a63f3a16d82437a22c2ef4884d0aa67fd126f85fb364a632e958": "{\"available_at\":\"2026-10-09T08:00:00Z\",\"basis_id\":\"DECLARED_SYNTHETIC_000001.SZ\",\"clock_kind\":\"producer_available_at\",\"fixture_only\":true,\"price_adjustment\":\"unadjusted\",\"provider_id\":\"INDEPENDENT_SYNTHETIC_FIXTURE\",\"rows\":[{\"bar\":{\"close\":130},\"session\":\"2026-10-12\"}],\"schema\":\"research.price_fixture.v2\",\"ticker\":\"000001.SZ\"}",
+    "dfb0b51156067a0758c633524d5210cdbf0a603cc1855104242b2fe3932571a6": "{\"available_at\":\"2026-10-12T08:00:00Z\",\"basis_id\":\"DECLARED_SYNTHETIC_000001.SZ\",\"clock_kind\":\"producer_available_at\",\"fixture_only\":true,\"price_adjustment\":\"unadjusted\",\"provider_id\":\"INDEPENDENT_SYNTHETIC_FIXTURE\",\"rows\":[{\"bar\":{\"close\":103,\"high\":105,\"low\":99,\"open\":100,\"volume\":17},\"session\":\"2026-09-16\"},{\"bar\":{\"close\":108,\"high\":109,\"low\":106,\"open\":107,\"volume\":19},\"session\":\"2026-09-17\"},{\"bar\":{\"close\":121,\"high\":122,\"low\":118,\"open\":119,\"volume\":23},\"session\":\"2026-09-29\"},{\"bar\":{\"close\":130},\"session\":\"2026-10-12\"}],\"schema\":\"research.price_fixture.v2\",\"ticker\":\"000001.SZ\"}"
+  },
+  "source_codec_limit": "Test adapter only, with caller-declared availability/basis; no provider authenticity claim."
+}

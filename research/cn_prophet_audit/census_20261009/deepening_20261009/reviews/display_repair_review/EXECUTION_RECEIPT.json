@@ -1,0 +1,25 @@
+{
+  "schema": "cn-display-independent-repair-acceptance-execution/v1",
+  "status": "ACCEPTED_BOUNDED_RESEARCH",
+  "candidate_sha256": "89a9ca53f61db675128ffc31220d278e0f0b29cf7149c4f03888f829690eda49",
+  "subject_manifest_sha256": "c7448f6c4a873a2d4f6cba2e21e153583800d249bc758587186b9416642b5fd7",
+  "independent_execution": {
+    "chunk_id": "3eb888",
+    "wall_time_seconds": 0.011953558,
+    "exit_code": 0,
+    "original_token_count": 63,
+    "output": "{\"status\":\"ACCEPTED_BOUNDED_RESEARCH\",\"counts\":{\"checks\":38,\"pass\":38,\"fail\":0},\"candidate_sha256\":\"89a9ca53f61db675128ffc31220d278e0f0b29cf7149c4f03888f829690eda49\",\"results_sha256\":\"d355145533a8344be1b82782f96894c1aa4f164ac7f2730a4af480f8ddc6374e\"}\n"
+  },
+  "producer_replay": {
+    "chunk_id": "e4eef4",
+    "wall_time_seconds": 0.000040238,
+    "exit_code": 0,
+    "original_token_count": 36,
+    "output": "{\"status\":\"PASS\",\"tests\":30,\"native_failure_cases\":12,\"candidate_sha256\":\"89a9ca53f61db675128ffc31220d278e0f0b29cf7149c4f03888f829690eda49\"}\n"
+  },
+  "independent_controls": 38,
+  "producer_controls": 30,
+  "producer_results_byte_identical": true,
+  "network_calls": 0,
+  "production_writes": 0
+}

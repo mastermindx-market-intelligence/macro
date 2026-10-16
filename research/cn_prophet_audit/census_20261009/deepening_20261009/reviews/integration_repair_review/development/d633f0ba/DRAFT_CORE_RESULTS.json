@@ -1,0 +1,1029 @@
+{
+  "candidate_inputs_sha256": {
+    "contract_prototype.py": "d633f0baeb8d506053387c15f5712ebd49c4b6b9b392a43e8e143e3c3226ee4f",
+    "pinned_quote_adapter.py": "bd8bfd85bf4ff1279d564220b7f3f8b8b4e5f7263323252ae6489ed5163d1074"
+  },
+  "candidate_manifest_files": null,
+  "checks": [
+    {
+      "details": null,
+      "name": "all_original_lab_and_review_payloads_verified",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "pinned_quote_adapter_hash",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "pinned_quote_adapter_git_object",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "independent_native_passes",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "independent_native_daily_rows",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "archived_prior_generation_survives_current_rollover",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "settlement_gate_verdict_authority",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "canonical_membership_authority",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "canonical_exact_byte_binding",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "synthetic_source_qualification_is_explicit",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "complete_replay_idempotence",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "spool_regression"
+      },
+      "name": "F1_first_transition_object",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "spool_regression"
+      },
+      "name": "F1_every_transition_object",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "new_empty_session_with_valid_close_is_supported",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "spool_regression"
+      },
+      "name": "F1_partial_id_regression",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "F2_both_inert_nonce_order_variants_found",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "conflicting_equal_time_close_evidence"
+      },
+      "name": "F2_conflicting_close_after",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "conflicting_equal_time_close_evidence"
+      },
+      "name": "F2_conflicting_close_before",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "equivalent_close_evidence_preserves_rows_and_membership",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "equivalent_close_evidence_retains_both_object_identities",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "F3_unqualified_declaration_None",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "F3_unqualified_declaration_split_and_dividend_adjusted",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "F3_unqualified_declaration_unadjusted_vendor_print",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "caller_qualification_boolean_has_no_authority",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "quote_price_must_equal_replayed_payload",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "exact_source_bytes_remain_distinct",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "source_text_cannot_change_under_existing_byte_hash",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "event_quote_source_disagreement"
+      },
+      "name": "F3_rehashed_event_price_still_binds_source",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "duplicate_existing_daily_key"
+      },
+      "name": "F4_conflict_last",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "duplicate_existing_daily_key"
+      },
+      "name": "F4_conflict_first",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "duplicate_existing_daily_key"
+      },
+      "name": "F4_exact_duplicate",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "invalid_frozen_score"
+      },
+      "name": "F5_standalone_score_-1",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "invalid_frozen_score"
+      },
+      "name": "F5_standalone_score_100.01",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "F5_valid_boundary_score_0",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "F5_valid_boundary_score_100",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "F6_huge_integer_numeric_predicate_is_total",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "F6_bad_quote_does_not_abort_valid_peers",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "invalid_quote_payload_price"
+      },
+      "name": "huge_provider_payload_takes_typed_refusal",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "existing_first_observation_conflict"
+      },
+      "name": "F7_immutable_first_px",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "existing_first_observation_conflict"
+      },
+      "name": "F7_immutable_first_quote_ts",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "existing_first_observation_conflict"
+      },
+      "name": "F7_immutable_quote_payload_sha256",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "existing_first_observation_conflict"
+      },
+      "name": "F7_immutable_first_quote_record_sha256",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "existing_first_observation_conflict"
+      },
+      "name": "F7_immutable_source_board_definition",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "existing_first_observation_conflict"
+      },
+      "name": "F7_immutable_cross_basis_close",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "existing_first_observation_conflict"
+      },
+      "name": "F7_immutable_first_quote_age_min",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "existing_first_observation_conflict"
+      },
+      "name": "F7_immutable_from_state",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "existing_first_observation_conflict"
+      },
+      "name": "F7_rehash_cannot_authorize_first_price_rewrite",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "older_legacy_native_row_is_carried_unchanged",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "legacy_unbound_row"
+      },
+      "name": "target_session_unbound_history_requires_migration",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "repeat_is_a_native_later_transition",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "native_repeat_updates_last_and_count_preserves_first",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "equal_time_conflict_uses_two_authentic_native_events",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "ambiguous_equal_time_events"
+      },
+      "name": "equal_time_first_event_conflict_refuses",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "exact_event_id_replay_deduplicates_before_time_conflict",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "future_quote_source_receipt"
+      },
+      "name": "event_time_authority_R-C1",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "future_pack_build"
+      },
+      "name": "event_time_authority_R-C2",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "original_lab_and_review_unchanged_after_acceptance",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "candidate_unchanged_during_execution_contract_prototype.py",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "candidate_unchanged_during_execution_pinned_quote_adapter.py",
+      "status": "PASS"
+    }
+  ],
+  "effects": {
+    "completed_labs_changed": false,
+    "network_disabled": true,
+    "production_writes": false,
+    "vendor_calls": false
+  },
+  "evidence": {
+    "F1": [
+      {
+        "omitted_keys": [
+          "live_flow/cn_prophet_live_events/2026-10-12/020000-0944301a08961fb33bfc9bb5c8a5a266f9190717962e728b292bd235a29e26c9.json"
+        ],
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "spool_regression"
+        },
+        "variant": "first_transition_object"
+      },
+      {
+        "omitted_keys": [
+          "live_flow/cn_prophet_live_events/2026-10-12/020000-0944301a08961fb33bfc9bb5c8a5a266f9190717962e728b292bd235a29e26c9.json",
+          "live_flow/cn_prophet_live_events/2026-10-12/020500-1846aaa216a0ebbb9d44739afbd102be452f4d8d66304825b4e309a349dfb5f1.json"
+        ],
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "spool_regression"
+        },
+        "variant": "every_transition_object"
+      }
+    ],
+    "F2": {
+      "conflicting_variants": [
+        {
+          "alternative_economics_sha256": "a99ac9eb7349ea90fb978f1718d8db78d8f40847f8b49861e434172c93991965",
+          "alternative_key": "live_flow/cn_prophet_live_events/2026-10-12/070600-88c60a35d1a4830432ec18c0bffcc657491855a4ec6792a2d77d6cba7c5f31c7.json",
+          "fixed_economics_sha256": "48b784d464935f0b2271e2c92cb752816d7628027eb71b582b51c8f43c531386",
+          "fixed_key": "live_flow/cn_prophet_live_events/2026-10-12/070600-7d7015ba4304fdfd77232609708613ead7a24a73bb3ebe60f7e7ffeb1c491dc2.json",
+          "nonce": 1,
+          "relative_order": "after",
+          "result": {
+            "exception_class": "Refused",
+            "outcome": "exception",
+            "reason": "conflicting_equal_time_close_evidence"
+          }
+        },
+        {
+          "alternative_economics_sha256": "a99ac9eb7349ea90fb978f1718d8db78d8f40847f8b49861e434172c93991965",
+          "alternative_key": "live_flow/cn_prophet_live_events/2026-10-12/070600-7420547cef7d6835ed1a8dcc98f64721cf4c2ee5888240401f452b5cafef7c5e.json",
+          "fixed_economics_sha256": "48b784d464935f0b2271e2c92cb752816d7628027eb71b582b51c8f43c531386",
+          "fixed_key": "live_flow/cn_prophet_live_events/2026-10-12/070600-7d7015ba4304fdfd77232609708613ead7a24a73bb3ebe60f7e7ffeb1c491dc2.json",
+          "nonce": 0,
+          "relative_order": "before",
+          "result": {
+            "exception_class": "Refused",
+            "outcome": "exception",
+            "reason": "conflicting_equal_time_close_evidence"
+          }
+        }
+      ],
+      "equivalent_observation_receipt": {
+        "authority": "latest observation time; equivalent economics coalesced; conflicting ties refused",
+        "built_at": "2026-10-12T07:06:00+00:00",
+        "economics_sha256": "48b784d464935f0b2271e2c92cb752816d7628027eb71b582b51c8f43c531386",
+        "object_keys": [
+          "live_flow/cn_prophet_live_events/2026-10-12/070600-7d7015ba4304fdfd77232609708613ead7a24a73bb3ebe60f7e7ffeb1c491dc2.json",
+          "live_flow/cn_prophet_live_events/2026-10-12/070600-aa522b917ac1aab6ee287d7dc987d1efc3ad05b5735f024fbe71aada03927b75.json"
+        ]
+      }
+    },
+    "F3": {
+      "byte_variant_payload_hashes": [
+        "c69aa7f57ae8999b17620cc06f740428905c1ab6929d419da013daa4475e27a0",
+        "8f1a712e366975194dc95e1da31503bea17320fe2cdfd95f9344758df944553c"
+      ],
+      "common_native_record_sha256": "f5b650d86d11086ce373a9cb2f05935d6792c84531d8726af9a2059f1126b202",
+      "contract": {
+        "adapter_function": "parse_yahoo_spark",
+        "adapter_git_blob": "f7ad6ebc550811708a20aaf259b30dd1df0a3699",
+        "adapter_path": "engine/live_quotes.py",
+        "adapter_source_sha256": "bd8bfd85bf4ff1279d564220b7f3f8b8b4e5f7263323252ae6489ed5163d1074",
+        "origin": "SYNTHETIC_RESEARCH_ONLY",
+        "payload_codec": "Retained original UTF-8 source text, hashed before JSON parsing",
+        "previous_close_field": "spark.result[].response[0].meta.previousClose",
+        "price_adjustment": "unadjusted_research_fixture",
+        "price_field": "spark.result[].response[0].meta.regularMarketPrice",
+        "price_unit": "CNY per share in an explicitly synthetic unadjusted scenario",
+        "provider_shape": "Yahoo v7 spark response; synthetic observations",
+        "schema": "cn_prophet_live.synthetic_quote_contract/research-v1",
+        "scope": "Defines the synthetic scenario's units; does not certify natural Yahoo or Tencent adjustment semantics.",
+        "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+        "timestamp_field": "spark.result[].response[0].meta.regularMarketTime"
+      },
+      "unqualified_inputs": [
+        {
+          "events": 0,
+          "input_adjustment": null,
+          "quote_rejections": {
+            "002460.SZ": "quote_basis_evidence_unavailable",
+            "300750.SZ": "quote_basis_evidence_unavailable",
+            "603799.SS": "quote_basis_evidence_unavailable"
+          }
+        },
+        {
+          "events": 0,
+          "input_adjustment": "split_and_dividend_adjusted",
+          "quote_rejections": {
+            "002460.SZ": "quote_basis_evidence_unavailable",
+            "300750.SZ": "quote_basis_evidence_unavailable",
+            "603799.SS": "quote_basis_evidence_unavailable"
+          }
+        },
+        {
+          "events": 0,
+          "input_adjustment": "unadjusted_vendor_print",
+          "quote_rejections": {
+            "002460.SZ": "quote_basis_evidence_unavailable",
+            "300750.SZ": "quote_basis_evidence_unavailable",
+            "603799.SS": "quote_basis_evidence_unavailable"
+          }
+        }
+      ]
+    },
+    "F7": [
+      {
+        "field": "first_px",
+        "proposed_value": 47.1029,
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "existing_first_observation_conflict"
+        }
+      },
+      {
+        "field": "first_quote_ts",
+        "proposed_value": "2026-10-12T02:00:01+00:00",
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "existing_first_observation_conflict"
+        }
+      },
+      {
+        "field": "quote_payload_sha256",
+        "proposed_value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "existing_first_observation_conflict"
+        }
+      },
+      {
+        "field": "first_quote_record_sha256",
+        "proposed_value": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "existing_first_observation_conflict"
+        }
+      },
+      {
+        "field": "source_board_definition",
+        "proposed_value": "forged-definition",
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "existing_first_observation_conflict"
+        }
+      },
+      {
+        "field": "cross_basis_close",
+        "proposed_value": 46.47,
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "existing_first_observation_conflict"
+        }
+      },
+      {
+        "field": "first_quote_age_min",
+        "proposed_value": 1.0,
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "existing_first_observation_conflict"
+        }
+      },
+      {
+        "field": "from_state",
+        "proposed_value": "forged-state",
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "existing_first_observation_conflict"
+        }
+      }
+    ],
+    "compatibility": {
+      "legacy_row": {
+        "close_same_day": null,
+        "confirmed": null,
+        "cross_px": 10.0,
+        "date": "2026-10-09",
+        "first_px": 10.0,
+        "first_ts": "2026-10-09T02:00:00Z",
+        "independent_legacy_note": "pre-existing native history",
+        "kind": "forming",
+        "last_px": 10.1,
+        "last_ts": "2026-10-09T02:05:00Z",
+        "next_close_fill": null,
+        "occurrences": 2,
+        "schema": "cn_prophet_live.forward/v1",
+        "ticker": "002460.SZ"
+      },
+      "native_repeat_event": {
+        "entered": "board",
+        "event_id": "ce575078acfafccf70352e1c7d0b5becef6213b9b72ec05a127838166fc03523",
+        "from": "dark",
+        "kind": "forming",
+        "passes": 1,
+        "price": 46.1029,
+        "price_adjustment": "unadjusted_research_fixture",
+        "quote_age_min": 0.0,
+        "quote_source": "yahoo",
+        "quote_ts": "2026-10-12T02:10:00+00:00",
+        "session_phase": "morning",
+        "source_evidence": {
+          "contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+          "origin": "SYNTHETIC_RESEARCH_ONLY",
+          "payload_sha256": "4609d5fe8d16a8aa17efe3feae9bd1fdf175ab7228b43ff35cd847d32c5d2be1",
+          "payload_utf8": "{\"spark\":{\"result\":[{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":45.47,\"regularMarketPrice\":46.1029,\"regularMarketTime\":1791771000}}],\"symbol\":\"002460.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":297.75,\"regularMarketPrice\":349.1875,\"regularMarketTime\":1791771000}}],\"symbol\":\"300750.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":35.6,\"regularMarketPrice\":36.0955,\"regularMarketTime\":1791771000}}],\"symbol\":\"603799.SS\"}]}}",
+          "quote_record_sha256": "ddedd8e6ce745742cc30faffa949284554bb8fa5cee8bac052b757650a70bd10",
+          "recorded_at": "2026-10-12T02:10:00+00:00",
+          "schema": "cn_prophet_live.quote_source/research-v1"
+        },
+        "ticker": "002460.SZ",
+        "ts": "2026-10-12T02:10:00Z"
+      },
+      "repeat_row": {
+        "close_same_day": null,
+        "confirmation_basis": "same_session_pack_center_buyable",
+        "confirmation_pack_id": "eb7e7b3746342c6e1b3d33141c8cf6625db65cfb0e3dfe80d87ef1f3d23aa99c",
+        "confirmed": true,
+        "cross_basis_adjustment": "split_and_dividend_adjusted",
+        "cross_basis_close": 45.47,
+        "cross_px": 46.1029,
+        "date": "2026-10-12",
+        "entered": "board",
+        "event_ids": [
+          "ce575078acfafccf70352e1c7d0b5becef6213b9b72ec05a127838166fc03523",
+          "dc6824e3affd26a9d95d119806834c53b47f63c06d3624c1446c37056543bc1e"
+        ],
+        "first_event_id": "dc6824e3affd26a9d95d119806834c53b47f63c06d3624c1446c37056543bc1e",
+        "first_observation_sha256": "160a3587af11ca68a38794e2f2677197552e03147954449359be00a7f7154a5a",
+        "first_pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+        "first_passes": 1,
+        "first_px": 46.1029,
+        "first_quote_age_min": 0.0,
+        "first_quote_record_sha256": "f5b650d86d11086ce373a9cb2f05935d6792c84531d8726af9a2059f1126b202",
+        "first_quote_ts": "2026-10-12T02:00:00+00:00",
+        "first_ts": "2026-10-12T02:00:00Z",
+        "from_state": null,
+        "frozen_lane": "featured",
+        "frozen_rank": 1,
+        "frozen_score": 90.0,
+        "frozen_score_rank": 1,
+        "ingest_contract": "cn_prophet_live.evidence/research-v2",
+        "kind": "forming",
+        "last_px": 46.1029,
+        "last_ts": "2026-10-12T02:10:00Z",
+        "next_close_fill": null,
+        "occurrences": 2,
+        "price_adjustment": "unadjusted_research_fixture",
+        "quote_contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+        "quote_payload_sha256": "c69aa7f57ae8999b17620cc06f740428905c1ab6929d419da013daa4475e27a0",
+        "schema": "cn_prophet_live.forward/v1",
+        "session_phase": "morning",
+        "source_board_asof": "2026-10-09",
+        "source_board_definition": "cn_prophet_v4",
+        "source_board_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+        "ticker": "002460.SZ",
+        "via": null
+      }
+    },
+    "equal_time_first_event": {
+      "alternative_key": "live_flow/cn_prophet_live_events/2026-10-12/020000-dd211d0d29a1f75379376e36180d52278fb40e725a18af0aeaac1505a13e4016.json",
+      "alternative_native_event": {
+        "entered": "board",
+        "event_id": "2795f3432b775a903d5afac4b1682261c4cc93735713eb0ddb4497c2e7471a84",
+        "from": null,
+        "kind": "forming",
+        "passes": 1,
+        "price": 46.103,
+        "price_adjustment": "unadjusted_research_fixture",
+        "quote_age_min": 0.0,
+        "quote_source": "yahoo",
+        "quote_ts": "2026-10-12T02:00:00+00:00",
+        "session_phase": "morning",
+        "source_evidence": {
+          "contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+          "origin": "SYNTHETIC_RESEARCH_ONLY",
+          "payload_sha256": "78dd30c31318b042eeaf530d2ac1670cd92871745dd9a3f18e58070451273903",
+          "payload_utf8": "{\"spark\":{\"result\":[{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":45.47,\"regularMarketPrice\":46.103,\"regularMarketTime\":1791770400}}],\"symbol\":\"002460.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":297.75,\"regularMarketPrice\":349.1875,\"regularMarketTime\":1791770400}}],\"symbol\":\"300750.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":35.6,\"regularMarketPrice\":36.0955,\"regularMarketTime\":1791770400}}],\"symbol\":\"603799.SS\"}]}}",
+          "quote_record_sha256": "27632782e4f23ee5ac9d7d07993e640f6f6a812b155ee30157c847f1fb9f4ec8",
+          "recorded_at": "2026-10-12T02:00:00+00:00",
+          "schema": "cn_prophet_live.quote_source/research-v1"
+        },
+        "ticker": "002460.SZ",
+        "ts": "2026-10-12T02:00:00Z"
+      },
+      "result": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "ambiguous_equal_time_events"
+      }
+    },
+    "event_time_authorities": [
+      {
+        "event_ts": "2026-10-12T02:00:00Z",
+        "id": "R-C1",
+        "pack_built_at": "2026-10-09T12:00:00Z",
+        "pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "future_quote_source_receipt"
+        },
+        "source_recorded_at": "2026-10-12T02:01:00+00:00"
+      },
+      {
+        "event_ts": "2026-10-12T02:00:00Z",
+        "id": "R-C2",
+        "pack_built_at": "2026-10-12T02:01:00Z",
+        "pack_id": "1b70edfd8031d2e358dbcc11da8987a16b70d5052e5f2ba25331df6488898249",
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "future_pack_build"
+        },
+        "source_recorded_at": "2026-10-12T02:00:00+00:00"
+      }
+    ],
+    "positive_three_join": {
+      "native_event_counts": [
+        3,
+        1,
+        0,
+        0
+      ],
+      "receipt": {
+        "archived_packs": [
+          "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09"
+        ],
+        "canonical_board_sha256": "8fd54b13930d7b9ed48d8b39f68db6729029773de62ea153061545adbf8afe13",
+        "close_and_fill_labels": "unresolved; this lab does not manufacture price-basis-aligned fills",
+        "close_board_available": true,
+        "distinct_events": 4,
+        "receipt": {
+          "adjusted": [],
+          "as_of": "2026-10-12",
+          "built_at": "2026-10-12T12:00:00Z",
+          "confirmed": [
+            "002460.SZ",
+            "300750.SZ"
+          ],
+          "detail": {
+            "added": [],
+            "basis": "close_board lanes vs china_standouts buy/more_actionable/forming",
+            "lane_moves": {},
+            "n_added": 0
+          },
+          "dropped": [
+            "603799.SS"
+          ],
+          "n_adjusted": 0,
+          "n_confirmed": 2,
+          "n_dropped": 1,
+          "n_total": 3,
+          "schema": "cn_board_confirmation/v1"
+        },
+        "row_count": 4,
+        "selected_close_evidence": {
+          "authority": "latest observation time; equivalent economics coalesced; conflicting ties refused",
+          "built_at": "2026-10-12T07:06:00+00:00",
+          "economics_sha256": "48b784d464935f0b2271e2c92cb752816d7628027eb71b582b51c8f43c531386",
+          "object_keys": [
+            "live_flow/cn_prophet_live_events/2026-10-12/070600-7d7015ba4304fdfd77232609708613ead7a24a73bb3ebe60f7e7ffeb1c491dc2.json"
+          ]
+        },
+        "spool_objects": 4
+      },
+      "rows": [
+        {
+          "close_same_day": null,
+          "confirmation_basis": "same_session_pack_center_buyable",
+          "confirmation_pack_id": "eb7e7b3746342c6e1b3d33141c8cf6625db65cfb0e3dfe80d87ef1f3d23aa99c",
+          "confirmed": true,
+          "cross_basis_adjustment": "split_and_dividend_adjusted",
+          "cross_basis_close": 45.47,
+          "cross_px": 46.1029,
+          "date": "2026-10-12",
+          "entered": "board",
+          "event_ids": [
+            "dc6824e3affd26a9d95d119806834c53b47f63c06d3624c1446c37056543bc1e"
+          ],
+          "first_event_id": "dc6824e3affd26a9d95d119806834c53b47f63c06d3624c1446c37056543bc1e",
+          "first_observation_sha256": "160a3587af11ca68a38794e2f2677197552e03147954449359be00a7f7154a5a",
+          "first_pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+          "first_passes": 1,
+          "first_px": 46.1029,
+          "first_quote_age_min": 0.0,
+          "first_quote_record_sha256": "f5b650d86d11086ce373a9cb2f05935d6792c84531d8726af9a2059f1126b202",
+          "first_quote_ts": "2026-10-12T02:00:00+00:00",
+          "first_ts": "2026-10-12T02:00:00Z",
+          "from_state": null,
+          "frozen_lane": "featured",
+          "frozen_rank": 1,
+          "frozen_score": 90.0,
+          "frozen_score_rank": 1,
+          "ingest_contract": "cn_prophet_live.evidence/research-v2",
+          "kind": "forming",
+          "last_px": 46.1029,
+          "last_ts": "2026-10-12T02:00:00Z",
+          "next_close_fill": null,
+          "occurrences": 1,
+          "price_adjustment": "unadjusted_research_fixture",
+          "quote_contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+          "quote_payload_sha256": "c69aa7f57ae8999b17620cc06f740428905c1ab6929d419da013daa4475e27a0",
+          "schema": "cn_prophet_live.forward/v1",
+          "session_phase": "morning",
+          "source_board_asof": "2026-10-09",
+          "source_board_definition": "cn_prophet_v4",
+          "source_board_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+          "ticker": "002460.SZ",
+          "via": null
+        },
+        {
+          "close_same_day": null,
+          "confirmation_basis": "same_session_pack_center_buyable",
+          "confirmation_pack_id": "eb7e7b3746342c6e1b3d33141c8cf6625db65cfb0e3dfe80d87ef1f3d23aa99c",
+          "confirmed": true,
+          "cross_basis_adjustment": "split_and_dividend_adjusted",
+          "cross_basis_close": 297.75,
+          "cross_px": 349.1875,
+          "date": "2026-10-12",
+          "entered": "cross",
+          "event_ids": [
+            "4b6e8e2120e658a30db16741516a83e43bc64e8c1a6dbf6dc3b9d6f0a6f5097c"
+          ],
+          "first_event_id": "4b6e8e2120e658a30db16741516a83e43bc64e8c1a6dbf6dc3b9d6f0a6f5097c",
+          "first_observation_sha256": "92079cfba261b83fab68b1d0f278088feb7b6bbea77ca1f6e4193f6b3734c768",
+          "first_pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+          "first_passes": 1,
+          "first_px": 349.1875,
+          "first_quote_age_min": 0.0,
+          "first_quote_record_sha256": "ccc6f43c7c0297f70c715a4c57ee15ca6b72228164ae04ac1530ed6446340531",
+          "first_quote_ts": "2026-10-12T02:00:00+00:00",
+          "first_ts": "2026-10-12T02:00:00Z",
+          "from_state": null,
+          "frozen_lane": "forming",
+          "frozen_rank": 162,
+          "frozen_score": 54.0,
+          "frozen_score_rank": 162,
+          "ingest_contract": "cn_prophet_live.evidence/research-v2",
+          "kind": "crossing_unconfirmed",
+          "last_px": 349.1875,
+          "last_ts": "2026-10-12T02:00:00Z",
+          "next_close_fill": null,
+          "occurrences": 1,
+          "price_adjustment": "unadjusted_research_fixture",
+          "quote_contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+          "quote_payload_sha256": "c69aa7f57ae8999b17620cc06f740428905c1ab6929d419da013daa4475e27a0",
+          "schema": "cn_prophet_live.forward/v1",
+          "session_phase": "morning",
+          "source_board_asof": "2026-10-09",
+          "source_board_definition": "cn_prophet_v4",
+          "source_board_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+          "ticker": "300750.SZ",
+          "via": null
+        },
+        {
+          "close_same_day": null,
+          "confirmation_basis": "same_session_pack_center_buyable",
+          "confirmation_pack_id": "eb7e7b3746342c6e1b3d33141c8cf6625db65cfb0e3dfe80d87ef1f3d23aa99c",
+          "confirmed": true,
+          "cross_basis_adjustment": "split_and_dividend_adjusted",
+          "cross_basis_close": 297.75,
+          "cross_px": 349.1875,
+          "date": "2026-10-12",
+          "entered": "cross",
+          "event_ids": [
+            "16c8e6384d845fb95c0b795cdd8146c702db5989cd65f8ffaa2660a25c5fd6fa"
+          ],
+          "first_event_id": "16c8e6384d845fb95c0b795cdd8146c702db5989cd65f8ffaa2660a25c5fd6fa",
+          "first_observation_sha256": "f3f62b105e02704afcfbb8b6c7815c87dccac2092fb515a2dfea46e04f037060",
+          "first_pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+          "first_passes": 2,
+          "first_px": 349.1875,
+          "first_quote_age_min": 0.0,
+          "first_quote_record_sha256": "b2d70cb18b4e0a7601af0ee58ee6771f12e0731c39222c822230be6a1ab0b064",
+          "first_quote_ts": "2026-10-12T02:05:00+00:00",
+          "first_ts": "2026-10-12T02:05:00Z",
+          "from_state": "near",
+          "frozen_lane": "forming",
+          "frozen_rank": 162,
+          "frozen_score": 54.0,
+          "frozen_score_rank": 162,
+          "ingest_contract": "cn_prophet_live.evidence/research-v2",
+          "kind": "forming",
+          "last_px": 349.1875,
+          "last_ts": "2026-10-12T02:05:00Z",
+          "next_close_fill": null,
+          "occurrences": 1,
+          "price_adjustment": "unadjusted_research_fixture",
+          "quote_contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+          "quote_payload_sha256": "91dc1e3c148af21a23a808a64336698e0390700211f082567d51e9afcfa38079",
+          "schema": "cn_prophet_live.forward/v1",
+          "session_phase": "morning",
+          "source_board_asof": "2026-10-09",
+          "source_board_definition": "cn_prophet_v4",
+          "source_board_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+          "ticker": "300750.SZ",
+          "via": null
+        },
+        {
+          "close_same_day": null,
+          "confirmation_basis": "same_session_pack_center_buyable",
+          "confirmation_pack_id": "eb7e7b3746342c6e1b3d33141c8cf6625db65cfb0e3dfe80d87ef1f3d23aa99c",
+          "confirmed": false,
+          "cross_basis_adjustment": "split_and_dividend_adjusted",
+          "cross_basis_close": 35.6,
+          "cross_px": 36.0955,
+          "date": "2026-10-12",
+          "entered": "board",
+          "event_ids": [
+            "aac610a05ceeb7f4b4dde5c8d50305cd9ebdabff6c3211d6e903d2618d37ad86"
+          ],
+          "first_event_id": "aac610a05ceeb7f4b4dde5c8d50305cd9ebdabff6c3211d6e903d2618d37ad86",
+          "first_observation_sha256": "4583c1d5986d5933aaba8e7ad78f9ab4fc48d1add37bec68da73671072ec8166",
+          "first_pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+          "first_passes": 1,
+          "first_px": 36.0955,
+          "first_quote_age_min": 0.0,
+          "first_quote_record_sha256": "ff2f6633da7c39ed7889b7b48784f0d12cb7a140931aa6fd2bfea548ff165d3b",
+          "first_quote_ts": "2026-10-12T02:00:00+00:00",
+          "first_ts": "2026-10-12T02:00:00Z",
+          "from_state": null,
+          "frozen_lane": "featured",
+          "frozen_rank": 2,
+          "frozen_score": 88.0,
+          "frozen_score_rank": 2,
+          "ingest_contract": "cn_prophet_live.evidence/research-v2",
+          "kind": "forming",
+          "last_px": 36.0955,
+          "last_ts": "2026-10-12T02:00:00Z",
+          "next_close_fill": null,
+          "occurrences": 1,
+          "price_adjustment": "unadjusted_research_fixture",
+          "quote_contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+          "quote_payload_sha256": "c69aa7f57ae8999b17620cc06f740428905c1ab6929d419da013daa4475e27a0",
+          "schema": "cn_prophet_live.forward/v1",
+          "session_phase": "morning",
+          "source_board_asof": "2026-10-09",
+          "source_board_definition": "cn_prophet_v4",
+          "source_board_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+          "ticker": "603799.SS",
+          "via": null
+        }
+      ]
+    }
+  },
+  "fixture_generator_sha256": "5ebfc4ced080cc672170503c799115960c76c22387292e18c410ba6f741fa1ef",
+  "independent_fixture_sha256": "b5c2fcc8894c84e4d880ca71d7aa8bf8695818032a43a123f220235e39ac4d30",
+  "limits": [
+    "Independent review-owned synthetic bytes and scenarios execute actual pinned parser/state/reconciliation bodies.",
+    "The producer runner is not imported; its manifest is verified as the exact reviewed package.",
+    "No historical natural occurrence, genuine provider adjustment declaration, market execution or fill is certified.",
+    "Native Parquet execution uses only a review-owned isolated temporary directory.",
+    "Scheduled production operation, real source custody and persistent storage guarantees remain implementation gates."
+  ],
+  "native_bundle_sha256": "2c139c0fef2c83296374069aed3338ccc28802bbf535d75054176384ec9ec829",
+  "native_parquet_execution": null,
+  "native_parquet_receipt_sha256": null,
+  "native_source_sha256": {
+    "engine/prophet_live/cn_clock.py": "3460435acfee8d7cd08b76c0e5502b97784844afe75aa554d64648ecaf679eb3",
+    "engine/prophet_live/cn_reconcile.py": "585f41ce22c5d36d4f1cc6d7f60b182edf146f15c0c5d6db1f507320a08391cb",
+    "engine/prophet_live/cn_states.py": "4a6f64dada3aaa47dfd3c14e881c2b0d353d6b3b5addbd090b5166ba01b51880",
+    "engine/prophet_live/interval.py": "d8e53f26b90ae5a80c3b1e37f9813e3e1005263ed011dbaa03905643b754bfe3",
+    "engine/prophet_live/live_states.py": "a2cdc109d2416c893d95c4a3a6e8d0dedf7883d65e5878803e4af6d43227c012",
+    "engine/prophet_live/r2io.py": "71edb3e4f605f02e6e92c380c58f12a7b343eefa3ec86c3383980a27b5df6271",
+    "lib/cn_calendar.py": "d51b737c9198782d7c1792a2d744b9d1677306c122752a12031faef05c075f4c",
+    "lib/exchange_holidays.py": "1da4d79c1b603432c4b994aef671d60020a0df119d6b7f1420b2a7a35ffc9e2e",
+    "scripts/reconcile_cn_live.py": "aaf1e7e9f892cbd71a6c8fe7faf80659bc9aca588cf841d2cc27aeb20346c7b6"
+  },
+  "passed_checks": 59,
+  "protected_originals_sha256": {
+    "integration_lab": {
+      "INTEGRATION_DECISIONS.md": "4fd3eccc06dd6d85ffb69b37a15e6ff8c5a7c17cabdcb9e4f9877865a57bcdf0",
+      "INTEGRATION_MANIFEST.json": "d755a012d80469c241a554252e61bee88e604eb445ce7ca03ec1e2eecfdbc8b6",
+      "contract_prototype.py": "df11434734c550715df92596f70cd0a0da1b0e042865c5737c6aa5adc6ecebd0",
+      "execution.log": "0659ce9eb91d9d2a41f1d08ca704e01c4953e5b62f482a44b75689c0921e7469",
+      "execution_receipt.json": "98f31902f3fb9dbbab125ffa570c9bba57133d0e33f15140fc83da69f9f07ff8",
+      "integration_fixture.json": "fe7e1123269eac895eb324cbe3510ec3de9cfbfce10c44518c593d550d34a545",
+      "integration_results.json": "58ab978836c10cc9f6cc6b508e7f93c8aaa68f448e56a39137acb0caace69128",
+      "run_lab.py": "534ec458f607c9c90bb312c629829d100892ae38bd2dc6973548e0cd70acc458"
+    },
+    "integration_review": {
+      "MANIFEST.json": "78fcfa3c271d214c751a40220dc92e44cec67409eb49fbe7421b9c22a32698b6",
+      "REVIEW.md": "25fc1ad2aa322e3ef707a1abc690794e6afc5112d8d20043bdf86c52e68187ef",
+      "REVIEW_RESULTS.json": "f5503340395f1fd857b00ffb45441b2d5947d65e85248db98047237bb554bf4c",
+      "native_source_bundle.json": "2c139c0fef2c83296374069aed3338ccc28802bbf535d75054176384ec9ec829",
+      "parquet_cases/duplicate_daily_keys.before.parquet": "e27b40119ca438c71d81fe89e5cd2cf5f87451cb454b7febc9dbe6435d33ebbd",
+      "parquet_cases/duplicate_daily_keys.parquet": "1acd93e4934ecf0ad50849e279c38a4c3b6ece0a795f33941b6a006cedea1351",
+      "parquet_counterexample.py": "8e04205511a6b0c180bd6dd6a6f96ba7d6b8a24914881583d0c5dd25545f0827",
+      "parquet_review_receipt.json": "a70ad278ac1abddd6f27841da68fe50830b1219940f1fc0ccc9ef6075df6d0a9",
+      "review_integration.py": "d858c3fec1adeef77ac1835ec8a4241d3c61221038618c32ae289caf7a068699"
+    }
+  },
+  "review_script_sha256": "31180847adf5cada4537f78e687fd77d80ec21786f30b4d177ef0a695ffcf88d",
+  "review_support_sha256": "43737a5bb58f9977603eeabb6a14658ad2fb21831b9b4a5a679b6f49eb241283",
+  "reviewed_candidate_manifest_sha256": null,
+  "schema": "independent_integration_repair_acceptance/v1",
+  "status": "DRAFT_CORE_CHECKS_PASS_NOT_ACCEPTANCE",
+  "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139"
+}

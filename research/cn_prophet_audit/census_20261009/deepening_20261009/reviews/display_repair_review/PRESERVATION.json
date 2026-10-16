@@ -1,0 +1,26 @@
+{
+  "groups": [
+    {
+      "files_unchanged": 11,
+      "manifest": "display_lab/MANIFEST.json",
+      "manifest_sha256": "5bb6c5b3b76d1f2739bd5f362b042c11b3d4e17d5f57fa4552c38ad83864b549"
+    },
+    {
+      "files_unchanged": 10,
+      "manifest": "reviews/display_review/MANIFEST.json",
+      "manifest_sha256": "059222c1a1c258d11572e331b0a1ff50ae171fa88d2742e59c9886245a6e4776"
+    },
+    {
+      "files_unchanged": 11,
+      "manifest": "repairs/display_contract/MANIFEST.json",
+      "manifest_sha256": "c7448f6c4a873a2d4f6cba2e21e153583800d249bc758587186b9416642b5fd7"
+    },
+    {
+      "files_unchanged": 36,
+      "manifest": "repairs/integration_contract/MANIFEST.json",
+      "manifest_sha256": "371fd67d4ea85307e460772f8aa353609d176ff779f07811a0a42f8ea36c0309"
+    }
+  ],
+  "producer_replay_results_exact": true,
+  "status": "PASS"
+}

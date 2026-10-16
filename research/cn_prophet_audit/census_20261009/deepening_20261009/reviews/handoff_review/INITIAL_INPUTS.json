@@ -1,0 +1,121 @@
+{
+  "files": [
+    {
+      "bytes": 9857,
+      "sha256": "943973764b0a76e87113d3980cb6d2bfe3834f92c1d315441698e35d0d509654",
+      "snapshot_path": "initial_document_inputs/INTERFACE_JOIN_MAP.md",
+      "source_path": "INTERFACE_JOIN_MAP.md"
+    },
+    {
+      "bytes": 16069,
+      "sha256": "b421f5b172296f563569f251a55857cec89931b62a53fe52091fc836fad16d97",
+      "snapshot_path": "initial_document_inputs/repairs/integration_contract/REPAIR_DECISIONS.md",
+      "source_path": "repairs/integration_contract/REPAIR_DECISIONS.md"
+    },
+    {
+      "bytes": 6406,
+      "sha256": "371fd67d4ea85307e460772f8aa353609d176ff779f07811a0a42f8ea36c0309",
+      "snapshot_path": "initial_document_inputs/repairs/integration_contract/MANIFEST.json",
+      "source_path": "repairs/integration_contract/MANIFEST.json"
+    },
+    {
+      "bytes": 10729,
+      "sha256": "770c43696b8426ac8f20801bf970d7eb1a4ae8e582a6c47d822af783cc82ce46",
+      "snapshot_path": "initial_document_inputs/reviews/integration_repair_review/REVIEW.md",
+      "source_path": "reviews/integration_repair_review/REVIEW.md"
+    },
+    {
+      "bytes": 10930,
+      "sha256": "6ab208f6c9a5e9506d053c66a4c67344ab35d5ccb387bc81d5598c9925a3a0ce",
+      "snapshot_path": "initial_document_inputs/reviews/integration_repair_review/MANIFEST.json",
+      "source_path": "reviews/integration_repair_review/MANIFEST.json"
+    },
+    {
+      "bytes": 4129,
+      "sha256": "e9ca4221c2daea2217f3448ea21e35222e95eb79b73040bb26912a608d798fd4",
+      "snapshot_path": "initial_document_inputs/repairs/vintage_contract/DESIGN.md",
+      "source_path": "repairs/vintage_contract/DESIGN.md"
+    },
+    {
+      "bytes": 6487,
+      "sha256": "acbf9537ca282188495be3204b367ac83cc173a658ea344078ad2d002b056196",
+      "snapshot_path": "initial_document_inputs/repairs/vintage_contract/DECISIONS.md",
+      "source_path": "repairs/vintage_contract/DECISIONS.md"
+    },
+    {
+      "bytes": 2317,
+      "sha256": "2ec4ad61150efa1ad01b10137ed3d1a0070ba6412770edc2f4e79a098945eec5",
+      "snapshot_path": "initial_document_inputs/repairs/vintage_contract/MANIFEST.json",
+      "source_path": "repairs/vintage_contract/MANIFEST.json"
+    },
+    {
+      "bytes": 10882,
+      "sha256": "aa41300d26642ae1f045bc05de0da74d0ca697ccc87b1fb0fd9d90757ea85eed",
+      "snapshot_path": "initial_document_inputs/reviews/vintage_repair_acceptance/ACCEPTANCE.md",
+      "source_path": "reviews/vintage_repair_acceptance/ACCEPTANCE.md"
+    },
+    {
+      "bytes": 8177,
+      "sha256": "8fa6b5fdcc7cea12842d8513e07c05088df15f0f0c2c0b1bf014e98e9381256e",
+      "snapshot_path": "initial_document_inputs/reviews/vintage_repair_acceptance/MANIFEST.json",
+      "source_path": "reviews/vintage_repair_acceptance/MANIFEST.json"
+    },
+    {
+      "bytes": 12505,
+      "sha256": "cddde2c2207bb8417112e4632c478a4f7f0b2777a5749399b9cc6b52fb3f9f07",
+      "snapshot_path": "initial_document_inputs/intelligence_lab/INTELLIGENCE_DECISIONS.md",
+      "source_path": "intelligence_lab/INTELLIGENCE_DECISIONS.md"
+    },
+    {
+      "bytes": 1494,
+      "sha256": "f9c168b5baa3aacf262c0cf49ef69d5ce11a052f991627b79cacf82ab69d360c",
+      "snapshot_path": "initial_document_inputs/intelligence_lab/WEIGHT_DESIGN.md",
+      "source_path": "intelligence_lab/WEIGHT_DESIGN.md"
+    },
+    {
+      "bytes": 8573,
+      "sha256": "54ee1d1751e72726aa73bcbb94c1746e03ed0a4077632d8ada1a9ef72c87796c",
+      "snapshot_path": "initial_document_inputs/reviews/intelligence_contract_review/acceptance_f2f5aeeb/ACCEPTANCE.md",
+      "source_path": "reviews/intelligence_contract_review/acceptance_f2f5aeeb/ACCEPTANCE.md"
+    },
+    {
+      "bytes": 2892,
+      "sha256": "922d370c6dfa6fc98b79bfdca11c55f72dc7da90c47c570aab66631b5a346a36",
+      "snapshot_path": "initial_document_inputs/reviews/intelligence_contract_review/acceptance_f2f5aeeb/MANIFEST.json",
+      "source_path": "reviews/intelligence_contract_review/acceptance_f2f5aeeb/MANIFEST.json"
+    },
+    {
+      "bytes": 17184,
+      "sha256": "15786976c52307dd0b083a1b2549634c0730024f95b73faa4371c4706b65904d",
+      "snapshot_path": "initial_document_inputs/matched_controls/DECISION_MEMO.md",
+      "source_path": "matched_controls/DECISION_MEMO.md"
+    },
+    {
+      "bytes": 11625,
+      "sha256": "44c9137a52b295e0beae98463e0c2a99e7aa49221d0b49ea3c67bde95d3bad0f",
+      "snapshot_path": "initial_document_inputs/reviews/matched_controls_review/REVIEW.md",
+      "source_path": "reviews/matched_controls_review/REVIEW.md"
+    },
+    {
+      "bytes": 2733,
+      "sha256": "17536023379200b2965964693da5ea2d9f863a4218ec82888a69ff6ecd2052a1",
+      "snapshot_path": "initial_document_inputs/reviews/matched_controls_review/MANIFEST.json",
+      "source_path": "reviews/matched_controls_review/MANIFEST.json"
+    },
+    {
+      "bytes": 13234,
+      "sha256": "64c0b5ec1fa6dd4122a4dc2ed2c6fadfcc3fbb691320eca375a7a239c0e4774f",
+      "snapshot_path": "initial_document_inputs/tradability_lab/DECISION_MEMO.md",
+      "source_path": "tradability_lab/DECISION_MEMO.md"
+    },
+    {
+      "bytes": 5202,
+      "sha256": "2cb1b5f7cfae2332ada90e1ea1abe1c05c3f055853b751002b3ac7ddaa70dff5",
+      "snapshot_path": "initial_document_inputs/tradability_lab/MANIFEST.json",
+      "source_path": "tradability_lab/MANIFEST.json"
+    }
+  ],
+  "schema": "cross_component_handoff_review_input_snapshot/v1",
+  "scope": "Read-only documentation and claim-to-evidence review; no suite reruns",
+  "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139"
+}

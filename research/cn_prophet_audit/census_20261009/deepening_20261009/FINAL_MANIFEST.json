@@ -1,0 +1,2661 @@
+{
+  "schema": "research.cn_prophet_deepening_final_manifest.v1",
+  "operation": "MMX-CN-PROPHET-CENSUS-20261009",
+  "state": "COMPLETE_BOUNDED_RESEARCH_HANDOFF",
+  "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "protected_procedure_pin": "326c8469a21d7f50fc9ecb1848196bf1c6e66685",
+  "latest_assessed_main": "7bfc9d5cc860443972ae231335b070320bd61d73",
+  "base_carrier_head": "bb3c6ac2a1bcaf909a6bab1829cc7a60ebdd3ff3",
+  "base_carrier_tree": "bd797a18716454b649026d626bf720d6cb2d8d5e",
+  "recorded_at": "2026-10-10T01:14:23.455431+00:00",
+  "scope_allowlist": [
+    "research/cn_prophet_audit/census_20261009/deepening_20261009/**",
+    "agentos/discoveries/DSC-CN-PROPHET-CONTRACT-EXPERIMENTS-20261010.md"
+  ],
+  "original_delivery_manifest_sha256": "b954977d51173faa801cc5e34180e317dd0390d2194a507d2ac3c7fda3deeb02",
+  "original_36_files_preserved": true,
+  "excluded_from_self_manifest": [
+    "research/cn_prophet_audit/census_20261009/deepening_20261009/FINAL_MANIFEST.json",
+    "research/cn_prophet_audit/census_20261009/deepening_20261009/FINAL_REMOTE_VERIFICATION.json"
+  ],
+  "excluded_runtime_artifacts": [
+    "**/__pycache__/**",
+    "**/*.pyc"
+  ],
+  "payload_files": 438,
+  "payload_bytes": 18238055,
+  "files": [
+    {
+      "path": "agentos/discoveries/DSC-CN-PROPHET-CONTRACT-EXPERIMENTS-20261010.md",
+      "bytes": 5383,
+      "sha256": "6c62782110170b4424b0b328318de0ba4feccbb0429a4b9cf89c7ed57748f00e",
+      "git_blob": "d5f1b7aed3db50bce0834dbfc16ecc09f74f97f1"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/ACCEPTANCE_REGISTRY.json",
+      "bytes": 3347,
+      "sha256": "be5b928fedf067dff416c07f3338cb401775b2147cce2eeffc4793979c0e351d",
+      "git_blob": "f712b4c65bb7d8344e5d7cbc520f342c11f5fd90"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/CHECKPOINT_01.md",
+      "bytes": 2032,
+      "sha256": "a027786fa848c05c6a4c1c85f15b6dc444e9ce9f0707d14dec4820031c960af4",
+      "git_blob": "953448493a043bd951137ca27dca7e15262e4108"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/CHECKPOINT_01_MANIFEST.json",
+      "bytes": 17185,
+      "sha256": "07a5928526b00c9e4714cb7d1a9b5450e10a428c7ffb65889e9c4f4c23f23c59",
+      "git_blob": "66130d2a5f78c274ca10c5340415dc80630f5842"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/CHECKPOINT_01_VERIFICATION.json",
+      "bytes": 1464,
+      "sha256": "7ae4fa4573f63a7daffa96c03bc943de2cd68f145ca1adc918d8850926250497",
+      "git_blob": "0c62ac2a8ee21aba7e0cf65cb2242aa19b5d8aa8"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/CHECKPOINT_02.md",
+      "bytes": 1461,
+      "sha256": "45f54b979e02e93b3e4a9bc26c7f4f182fbd4ac675789a72102f9e93a736227b",
+      "git_blob": "1c514805cbed9bf6b1d4b8ceb4d3353462fec65a"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/CHECKPOINT_02_MANIFEST.json",
+      "bytes": 32299,
+      "sha256": "2864e61224ab48dd514c01c0539317c351f06ceada41b7410103ee7a13801f1a",
+      "git_blob": "a9b14a697885b0993f7b12d865c6f711227d61dd"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/CHECKPOINT_02_VERIFICATION.json",
+      "bytes": 1476,
+      "sha256": "355394197ed83bf73efe5130ad636e3341c00b7de9205862c89fd98c13252986",
+      "git_blob": "5b8e1275ce55d27947f7984b21255870270085b7"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/CURRENT_SOURCE_RECONCILIATION.json",
+      "bytes": 12405,
+      "sha256": "c3249de6e9e761800fa11139575795f93ffd8728501cb58926b4c750f401ea14",
+      "git_blob": "f0ec9941ea28c2cb5ebc142d3207bab287ff7f4c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/CURRENT_SOURCE_RECONCILIATION.md",
+      "bytes": 3404,
+      "sha256": "e7f00b46c9fe1015ecbfa5c257a3d393401527886d155a59737a6939d5d0bb96",
+      "git_blob": "acd02d4e0b20733bc0a3f154b1d2588ba1a13f9a"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/EVIDENCE_INDEX.md",
+      "bytes": 11507,
+      "sha256": "d450499c2b47d2143a1a1f7c97771909d65ce007da44cdd3da65a60dfce267b1",
+      "git_blob": "98ef2f2bd64289715d4b48eac71d987149a2968e"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/IMPLEMENTATION_HANDOFF.md",
+      "bytes": 35320,
+      "sha256": "6d98c9e66e3264c6a9543f8f6d1005514f06ae2da0132294abda2b160fb2a728",
+      "git_blob": "9cb57284472433418b562d2f0c71ff1ea17288a9"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/INTERFACE_JOIN_MAP.md",
+      "bytes": 9857,
+      "sha256": "943973764b0a76e87113d3980cb6d2bfe3834f92c1d315441698e35d0d509654",
+      "git_blob": "be4ca9e56fd3e0b9e54abbe2a95e209c36f64210"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/PROCEDURE_READBACK.json",
+      "bytes": 1674,
+      "sha256": "1a3f19418b2789ae8d3f8e8dfa0dcb0aa56b3728171e6d6669f5c1e7ef0d78e7",
+      "git_blob": "5fbd0551234fdc4bab5eed137e87960e1fe4ea60"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/RESEARCH_DECISIONS.md",
+      "bytes": 19931,
+      "sha256": "db3970b0f5860c907cb0b446d27906e813a2d94ecc0fa97500c5c643f0f8add5",
+      "git_blob": "6bf138f6ebdc93b9c33f1db04a3dacc420839eb6"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/RESEARCH_STATUS.md",
+      "bytes": 6841,
+      "sha256": "2f1a84a42e690ae2beee6cd15bfabbf76ad1787ae34aaa0e667792169fe57a1d",
+      "git_blob": "0ca8791656440c2bbef650335c6f894916bcb061"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/display_lab/DESIGN.md",
+      "bytes": 2571,
+      "sha256": "92ad9624c3a990258b63c5ab9306730da0aa5d886d9764c5b9fde3a03f294426",
+      "git_blob": "53a2d05be51f8d756838f709da2b4395da31e991"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/display_lab/DISPLAY_DECISIONS.md",
+      "bytes": 4652,
+      "sha256": "8377fadad11ff6f0c8faa1b49abb0cbf970d60663d58c199207481e6a7fb67b3",
+      "git_blob": "a67802950b5410385cfaf9ed68830d61d782a12d"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/display_lab/EXECUTION_RECEIPT.json",
+      "bytes": 406,
+      "sha256": "3ef02ade28e3067b78e94b93f1efc860c2b4c3c45918f6380a4b9ea9cf898a5f",
+      "git_blob": "4db2c25ce355338a13a7e2fdb003244e27c6dfe3"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/display_lab/MANIFEST.json",
+      "bytes": 2137,
+      "sha256": "5bb6c5b3b76d1f2739bd5f362b042c11b3d4e17d5f57fa4552c38ad83864b549",
+      "git_blob": "d58397ab380a0cda1c7cb48a08ccb2eeb845b8f3"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/display_lab/build_candidate.py",
+      "bytes": 3619,
+      "sha256": "a514012312f32a7d5ba68464d496065273dcba2fe2e1a82c292bd47f4ddd0a82",
+      "git_blob": "43d421e1388c729a0eec833055ca69a1c0f1d043"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/display_lab/candidate.diff",
+      "bytes": 3799,
+      "sha256": "22a76de688ef68583ce2e1bc2127fcf1c3c1b8543d5a32022122855b8c70ac6f",
+      "git_blob": "11f89909120b78573bb76310889358e9c01263e5"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/display_lab/candidate_cn_prophet_live.js",
+      "bytes": 7885,
+      "sha256": "595b83e907eabfb9e0df4ba3df4a2c3aad0f606c993ac345e4fccfd47d2176bc",
+      "git_blob": "ac0206f55310a351794dd2d2496975c1bfe90114"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/display_lab/execution.log",
+      "bytes": 141,
+      "sha256": "026c1d8041d27b9a14cc6af9124017e8524f61d0071a23208d60a306541ed03f",
+      "git_blob": "578d427d2cd73b677a9d89502ff8df9fd51a6b40"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/display_lab/pinned_cn_prophet_live.js",
+      "bytes": 6651,
+      "sha256": "e4bfdad0781eda00f8c940047e637a6f4ac691b057b703f9eba25d9930665147",
+      "git_blob": "5a4d08eab3ee4eebb587d19cbbd085322fb47a73"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/display_lab/results.json",
+      "bytes": 7108,
+      "sha256": "bf41dee7453600d9b6008f8653a74852c453a669bafaa975e6e49a33d63c4dfa",
+      "git_blob": "328c69b0cb53c714c30d184ae1471d34a12e76c7"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/display_lab/verify.mjs",
+      "bytes": 13161,
+      "sha256": "150787696c210036e164d88953288757d78c8274dec96cf899cc026427cc34fa",
+      "git_blob": "c51c6ad7d28ab40fb3006f8b26cc44bcb4438881"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/integration_lab/INTEGRATION_DECISIONS.md",
+      "bytes": 21087,
+      "sha256": "4fd3eccc06dd6d85ffb69b37a15e6ff8c5a7c17cabdcb9e4f9877865a57bcdf0",
+      "git_blob": "4dafeae573e3f2be869394b1369d5b6678ec25ad"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/integration_lab/INTEGRATION_MANIFEST.json",
+      "bytes": 1885,
+      "sha256": "d755a012d80469c241a554252e61bee88e604eb445ce7ca03ec1e2eecfdbc8b6",
+      "git_blob": "f136a2a736aa27b65e64c274236bff6511399811"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/integration_lab/contract_prototype.py",
+      "bytes": 24665,
+      "sha256": "df11434734c550715df92596f70cd0a0da1b0e042865c5737c6aa5adc6ecebd0",
+      "git_blob": "ee6e52a93022dd75a5a42f2bc45709f07c5fcb75"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/integration_lab/execution.log",
+      "bytes": 2207,
+      "sha256": "0659ce9eb91d9d2a41f1d08ca704e01c4953e5b62f482a44b75689c0921e7469",
+      "git_blob": "54cc5ae63a6a6abb66629946c01fb9268a0242bf"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/integration_lab/execution_receipt.json",
+      "bytes": 3177,
+      "sha256": "98f31902f3fb9dbbab125ffa570c9bba57133d0e33f15140fc83da69f9f07ff8",
+      "git_blob": "32e401f9e4224e4081652f74af4a3c30d8e2f57a"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/integration_lab/integration_fixture.json",
+      "bytes": 27278,
+      "sha256": "fe7e1123269eac895eb324cbe3510ec3de9cfbfce10c44518c593d550d34a545",
+      "git_blob": "5bfbf7ca76190ff46ccb11c7f7a5705f9850df52"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/integration_lab/integration_results.json",
+      "bytes": 43009,
+      "sha256": "58ab978836c10cc9f6cc6b508e7f93c8aaa68f448e56a39137acb0caace69128",
+      "git_blob": "7884921446cb7e1efba26035da6c6e0190bc028f"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/integration_lab/run_lab.py",
+      "bytes": 32343,
+      "sha256": "534ec458f607c9c90bb312c629829d100892ae38bd2dc6973548e0cd70acc458",
+      "git_blob": "3332c27a153a05bc762b77a747892eef3d857391"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/DESIGN.md",
+      "bytes": 6738,
+      "sha256": "db0f29ab816fa933f18272b8aae2869361a41730c6d315cf0b03189178c72c58",
+      "git_blob": "f261ff107d8e8e39e3c97a78172297c52af59d73"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/INTELLIGENCE_DECISIONS.md",
+      "bytes": 12505,
+      "sha256": "cddde2c2207bb8417112e4632c478a4f7f0b2777a5749399b9cc6b52fb3f9f07",
+      "git_blob": "661a91278601ba3f9b3d0bc803848cc4974b73f3"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/MANIFEST.json",
+      "bytes": 3809,
+      "sha256": "3478201d07a7f5f3b04dd2e42e601461373ffc3b7059213305804b5296ad6893",
+      "git_blob": "c37a8bd62cd4ab54a3c8834c6e6e41c76929c6b8"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/MARGIN_EXECUTION_RECEIPT.json",
+      "bytes": 469,
+      "sha256": "936149532bc1ad92cdf2e58386e2528b443fce3e8e0b6f1babae698808704a02",
+      "git_blob": "3e0fa871ed3541a5b0e784c1bad8d7348e7b0b94"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/MARGIN_HORIZON_MANIFEST.json",
+      "bytes": 1622,
+      "sha256": "d21ce925119d58094c3248a399374ddd43a4292332588eb92e06046ccb7e8ada",
+      "git_blob": "7cc9ac43b5a0fd7358d4b1cf3d0e079fedf8ae4c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/MARGIN_HORIZON_TRACE.md",
+      "bytes": 6248,
+      "sha256": "9b82fc4f8afd604658c63a1ba5e128a297ccd96f5209ca28dcea9bfe8ac7562e",
+      "git_blob": "927ee33230596f09379f64aaf672bcc3acc38f7c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/WEIGHT_DESIGN.md",
+      "bytes": 1494,
+      "sha256": "f9c168b5baa3aacf262c0cf49ef69d5ce11a052f991627b79cacf82ab69d360c",
+      "git_blob": "243eea69279eccd5bb0a306ece10f5abb99443a6"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/analyst_duplicate_probe.py",
+      "bytes": 6025,
+      "sha256": "c449e0a7510b4b0dce40f400066ddeb826340e06a00f358267710f6e634c6633",
+      "git_blob": "c723dfe6f6b365a5565883ec3b136893c06c0c43"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/analyst_duplicates.json",
+      "bytes": 399233,
+      "sha256": "6f03613836e17e0ec1016d5f244e998b29cc63bd6834dee7bc1f4c1648137c4b",
+      "git_blob": "f7def21694df5a8cd688b1b7ef90624102fb2b84"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/contract_lab.py",
+      "bytes": 23128,
+      "sha256": "f2f5aeeb27b87809123148a642b9d6b848290a82033b7118614288432c8af014",
+      "git_blob": "08a4d4e1e83d2599e33eaa118b36ceb3a656f404"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/margin_horizon_development/MARGIN_EXECUTION_RECEIPT.json",
+      "bytes": 596,
+      "sha256": "78b3bb8ced8d25b629dd871094e1a0a6e34d7a5b83acea514ea6c851e5488e13",
+      "git_blob": "68b3fa6c44c98db5a9531d91d48e190cb8487915"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/margin_horizon_development/margin_horizon_probe.py",
+      "bytes": 6752,
+      "sha256": "bd3875d2cf30fb997b0b04ebbcc72d021d74366977c386526ca77bfc9835c665",
+      "git_blob": "0592add235d596cd5c0fcdabd962c8201bc95423"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/margin_horizon_development/margin_horizon_results.json",
+      "bytes": 15844,
+      "sha256": "75e4780df5326f729657c868c3aebc970d408211a38b421a4da43273e3a0f90d",
+      "git_blob": "d4175489edd3ca6c9474dea1e76200434b28b180"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/margin_horizon_probe.py",
+      "bytes": 8000,
+      "sha256": "1ad0ed0e5bd71011fff7b0f7fe5c54a75d9276528798c2b3ee8df0b4cbeb9fc4",
+      "git_blob": "b4b59799b2c55a015485ee70c461085a67efb344"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/margin_horizon_results.json",
+      "bytes": 17656,
+      "sha256": "b64f137631c288b9bf85fa4adbf7f3cd4c013fccd2ab316aa83affa8c3bd923d",
+      "git_blob": "7d6c22832df2d9dae93910f7e270a3b30603c271"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/pinned_margin_collector.py",
+      "bytes": 12249,
+      "sha256": "55fb01d20519069aec85f23328a5507c95d86cec2d2fd6dbb3e14eb059b0cdd6",
+      "git_blob": "0d5fc5fbe92a61a4327a59359f3b40fc6a9df801"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/results.json",
+      "bytes": 35284,
+      "sha256": "97f51b947a3be417e132b08ebaa98b3f0546c1a629a459cc98fb32e6b0d6fb97",
+      "git_blob": "b1305b6977e6587524e15a5a399c5deecc8b0009"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/source_input.json",
+      "bytes": 40757,
+      "sha256": "a031323d82e99833ffdd5b35140ee6f686e65ca077a038cfaca57e280de00334",
+      "git_blob": "13863a91a4a6dbe7cf2b330700169232c602fdd8"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/source_probe.py",
+      "bytes": 5555,
+      "sha256": "3e50aaba63a0b61811aae88f49ae03c8c39446b9096d7f0e2c438f7ba39f102a",
+      "git_blob": "ca63763ed9c2f61ff30328d4b7d42e133e5a99a3"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/weight_contract_audit.py",
+      "bytes": 8090,
+      "sha256": "9741f0e9e449271fb60bb67f2db3b21d7cb6e2766a247247e942b8910c22fba8",
+      "git_blob": "e2f9acf816c2ef59fa77728ed1d6a6e6e128fb13"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/weight_input.json",
+      "bytes": 63669,
+      "sha256": "30cb9996bf6a39ae1323f20e705ad6e0d685a5a074ea1571dd7304ae57bd85dd",
+      "git_blob": "ce06df72535227b45ef29c8ad6481b011594ec22"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/weight_results.json",
+      "bytes": 8432,
+      "sha256": "82d56837591e19e3af9c1958084aec769ea319dd6c1ee8ded2b7ada1018bb884",
+      "git_blob": "ff2ca6b758323ca79d5761bd1a6cd7f301787243"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/matched_controls/AMENDMENTS.md",
+      "bytes": 1669,
+      "sha256": "69d0e657a319fd4724acfc2af47c0499443ee7008b9c378a1fff7569b578cac7",
+      "git_blob": "c4d64c4b8ea7870eba4a02247c886ea2fd9837d5"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/matched_controls/DECISION_MEMO.md",
+      "bytes": 17184,
+      "sha256": "15786976c52307dd0b083a1b2549634c0730024f95b73faa4371c4706b65904d",
+      "git_blob": "5d82c532c1040479d7a0a93c20e5691010eb7eb3"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/matched_controls/DESIGN.md",
+      "bytes": 11398,
+      "sha256": "d8a40683dd0727d72df7d520a98ee587cf07ea28045901bbc109e0845b2052ef",
+      "git_blob": "b3777a24b79de4336e31507dd60e5204d10c9401"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/matched_controls/FROZEN_MATCHING_RECEIPT.json",
+      "bytes": 1553950,
+      "sha256": "88421899efd56f2d101e60d7fbdd48de0c86c58f3f5739224d2782e225eb16b5",
+      "git_blob": "9019fe5e89beca04d88873d7f47c2e8f1534aa70"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/matched_controls/MANIFEST.json",
+      "bytes": 3169,
+      "sha256": "3d1330cdaf37342e7a185997640e97526c8decdb24c53d3f9650d450250725d5",
+      "git_blob": "f4da0405efa65a3cbae6aa3beadb66df408f6322"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/matched_controls/MATCHED_CONTROLS_RESULTS.json",
+      "bytes": 1226783,
+      "sha256": "6ae06242803a2a7cc59079ebc862f1a5373e01eb77f8606c1bbcb7bf2d1899f8",
+      "git_blob": "933dc1bc3edb6cc4704e25890037a9cf0182d8e8"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/matched_controls/VALIDATION.json",
+      "bytes": 82129,
+      "sha256": "6284c8e9c7b1f6a8e7cf6d1c31f4cf49094c41aa4e7b963257ef19fbf4e46f91",
+      "git_blob": "33f963072dbbb54e51915fede1cb68fe997e6c13"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/matched_controls/analyze_matched_controls.py",
+      "bytes": 47353,
+      "sha256": "6e742491568f313945c77f2e9d47e1591967e804e16484768fc4e13fd6faf606",
+      "git_blob": "76a19eed2b108b43ac8ce5feb31e8a5d502e4bf1"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/matched_controls/benchmark_sessions_input.json",
+      "bytes": 2030,
+      "sha256": "6be35e860db377f8a1a154c65cf55de2581e2ff222191582219e2c286091f30e",
+      "git_blob": "c7e123f2c6389821f37d1827e8703863cc412415"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/matched_controls/validate_matched_controls.py",
+      "bytes": 10038,
+      "sha256": "4ea1ad8fcdc3b72000d5a7758d14f5cd9bc9ea3d67a28c7260a490115c7c5466",
+      "git_blob": "42dc795205bb827b423e9e3a543b55c66b3d67db"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/display_contract/DESIGN.md",
+      "bytes": 1465,
+      "sha256": "c1d02caccba26b4a502ed2df02a48bc32d4eeafb85f07ef314f6889efe6ad97f",
+      "git_blob": "952aab11f0696213b4a8a54d93330bf87fb7dbf1"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/display_contract/EXECUTION_RECEIPT.json",
+      "bytes": 683,
+      "sha256": "483e3b30a9ee2a00dfcfec659792e681a7aac7457c1b4a5078102bbeb9014e44",
+      "git_blob": "0cc78680c8147b4eb3a70f8f342a54610922fd61"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/display_contract/MANIFEST.json",
+      "bytes": 1684,
+      "sha256": "c7448f6c4a873a2d4f6cba2e21e153583800d249bc758587186b9416642b5fd7",
+      "git_blob": "664a9238adff14670ad668ae8de7091a46376c9b"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/display_contract/REPAIR_DECISIONS.md",
+      "bytes": 3463,
+      "sha256": "16fdb0b4b541d30f31c3ec12e14b2528ba8ae43608e7f359b2cd3f38500a7a79",
+      "git_blob": "5ee35a0082123e10b2ac89066e4891fd31817b36"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/display_contract/build_candidate.py",
+      "bytes": 3810,
+      "sha256": "32cba0154c45b0f582b888f6714e0fb25282f3eafad90157b2136a019740b1e9",
+      "git_blob": "16ed28b1df43ff3e9d2ccaf54643d7c1b606a1f2"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/display_contract/candidate.diff",
+      "bytes": 3997,
+      "sha256": "b27daa87ee1178afc2dd807df76842e8db4a6734104b233c799c02057aa572b5",
+      "git_blob": "6f1baec9598a4ad6e9ff9d5685d394f49213f593"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/display_contract/candidate_cn_prophet_live.js",
+      "bytes": 8076,
+      "sha256": "89a9ca53f61db675128ffc31220d278e0f0b29cf7149c4f03888f829690eda49",
+      "git_blob": "be181373bd7f71ed1aef571b4f5b77581e93195c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/display_contract/pinned_cn_prophet_live.js",
+      "bytes": 6651,
+      "sha256": "e4bfdad0781eda00f8c940047e637a6f4ac691b057b703f9eba25d9930665147",
+      "git_blob": "5a4d08eab3ee4eebb587d19cbbd085322fb47a73"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/display_contract/previous_candidate.js",
+      "bytes": 7885,
+      "sha256": "595b83e907eabfb9e0df4ba3df4a2c3aad0f606c993ac345e4fccfd47d2176bc",
+      "git_blob": "ac0206f55310a351794dd2d2496975c1bfe90114"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/display_contract/results.json",
+      "bytes": 8042,
+      "sha256": "5c87aa6acb631c8ef5fe695293e5c05001824ee09baaaf026f8c0b60c77eead2",
+      "git_blob": "ff5e8f8d519cd3b52c00db9b6e510cae9d6b1d5c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/display_contract/verify.mjs",
+      "bytes": 14435,
+      "sha256": "512cd6d2277e9f4c3cefa3a327bb388302a2e522ba3da121b99c1e570769e513",
+      "git_blob": "f52a1fd4aac7e2bae74356c0a84e2841dce1dab7"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/DESIGN.md",
+      "bytes": 7819,
+      "sha256": "16cb68ed065001b8154968ac087c3aea10fb30b1cbbbbde22a3f77950762343a",
+      "git_blob": "0905d9bc0f7f182a4d4ee59428fae25bdfbbb446"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/MANIFEST.json",
+      "bytes": 6406,
+      "sha256": "371fd67d4ea85307e460772f8aa353609d176ff779f07811a0a42f8ea36c0309",
+      "git_blob": "af2b79c73e3f5b5836adfaf5d517b736e57a8449"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/REPAIR_DECISIONS.md",
+      "bytes": 16069,
+      "sha256": "b421f5b172296f563569f251a55857cec89931b62a53fe52091fc836fad16d97",
+      "git_blob": "073258212e986663bb33ec3f6ac18a3f9aa52018"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/baseline_identities.json",
+      "bytes": 4634,
+      "sha256": "42a5933d388f55ba7f44e65765ff4afb0878c54dbab3b7a22321acf0c0861851",
+      "git_blob": "b3e9ee43b3313054701eed05bbcba1a668affa0b"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/baseline_preservation.json",
+      "bytes": 5040,
+      "sha256": "d7d37e9b7cf68ed078c0a8355ff931af781a4aba4ae2c66ab6b9493f8133a97f",
+      "git_blob": "f0019332b1f918ce37ba37bc5cf3d7c58fb7c87f"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/contract_prototype.py",
+      "bytes": 42770,
+      "sha256": "3518cc9f408534cccbe60419b8de8d7143ad42f406c7d9ee262068ef1c5fe2e0",
+      "git_blob": "01b258ebb69ff04d2a1728b199501f6fbc737733"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/execution.log",
+      "bytes": 2237,
+      "sha256": "6056547d9202e47e01b3f7265df999e884745330ec79eb39660559eb8b4fe013",
+      "git_blob": "4a4f3b194c411ec377056a84fc5f5565d4209272"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/execution_receipt.json",
+      "bytes": 3383,
+      "sha256": "4506e3e3e1a8dc9edec46fe41c449c00cc0e88b6bdd45e35d8f3edfb9d097de3",
+      "git_blob": "f969aad35389047c3a07d286d567b5f39acadb66"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/integration_fixture.json",
+      "bytes": 34633,
+      "sha256": "c9dfccae6b07b9c045a49de17b8f1318f1ac0577c116099389a960bcf00efcc7",
+      "git_blob": "ef5747ae0a3773119ce4ba51e25cb4cc47c99a85"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/integration_results.json",
+      "bytes": 64069,
+      "sha256": "d877f157bcfc8c8c74359dd3cdff1bf253724bfc6538cb7058f7385504b2f455",
+      "git_blob": "4c5d2cd19cd3631afa1c706603897b17cc2a8e6d"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/local_verification.json",
+      "bytes": 6397,
+      "sha256": "faeac84ed1db69fdf7b11a735d48b1b138e556b0c5fccab31218803820684a31",
+      "git_blob": "62cc9e1031a7877d44112b49fcdb349317eabad5"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/native_driver_control/close.json",
+      "bytes": 6199,
+      "sha256": "363da8ac7958dbb9c456b6a432f759d435dfee1c17f36c57c28a1d9fcd4585de",
+      "git_blob": "b51f311e6013826ebd6dd19f57ade558ff2ee58d"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/native_driver_control/cn_board_confirmation.json",
+      "bytes": 3509,
+      "sha256": "825bc4d83059d2e80df49ee1fbf57704a51e882363bd1da898817d5044ae29c2",
+      "git_blob": "ec0d86a928010e37ab340e5dad6d394ec6ec877a"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/native_driver_control/corrupt.parquet",
+      "bytes": 7426,
+      "sha256": "da267baf665d359f4577b098e581620551b11551070d9111916509151a928719",
+      "git_blob": "eef999393a3f2508d20dbd0eb2858a1b09591ad7"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/native_driver_control/events.json",
+      "bytes": 912,
+      "sha256": "3da35af33a2474700de371f405b59486a391048ae5d0e2a508d50f13469001bd",
+      "git_blob": "5fa3e90738c3138e5bea4ac9b0d98e923de2b7d0"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/native_driver_control/forward.parquet",
+      "bytes": 7415,
+      "sha256": "27eca1ed6767c3d94eb67a48fd7cd008230de46863d39753bd193bdeb6410d8c",
+      "git_blob": "947ba1756935156a86a014f7500b44f7c463dd1e"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/native_probe_debug.json",
+      "bytes": 4058,
+      "sha256": "677150882d8958e11913bfc1c1616d2074485c7854218c55049c673ac62654ec",
+      "git_blob": "5db93fa10f058a0ebaf1a63d99b003a626fe4a66"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/native_source_bundle.json",
+      "bytes": 174543,
+      "sha256": "2c139c0fef2c83296374069aed3338ccc28802bbf535d75054176384ec9ec829",
+      "git_blob": "2d2b2b60108dfddc1ee2b641ebd5d4dddc07a4b6"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/parquet_cases/conflicting_daily_keys_forward.parquet",
+      "bytes": 28000,
+      "sha256": "0ca741952b057ddd9f66873e3afc09e0350cff79c7eaa6d6e7ce14c2353c23bc",
+      "git_blob": "59c77ddd9207746f0de64641e54392e9991bf6ee"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/parquet_cases/conflicting_daily_keys_reverse.parquet",
+      "bytes": 27999,
+      "sha256": "193ea32d5cb4e3673d6cf0994b1ec4ef3452d3f67ef60122f1bf4110443b1104",
+      "git_blob": "9d29781d89b59760a05234d580315e3ab9726848"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/parquet_cases/exact_duplicate_daily_key.parquet",
+      "bytes": 27993,
+      "sha256": "c6a79c17e1d71fe6fdf559c96cdd1697a0185de69b725215bd7efeb04ff58d11",
+      "git_blob": "9670390767133a25ef2310423ea43ca41c9074b2"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/parquet_cases/legacy_compatibility.parquet",
+      "bytes": 28039,
+      "sha256": "6e3557d0073a5a22d21d23f9f0384d2753b6e9cdd478618eb1dda0904359a671",
+      "git_blob": "338911db300a32413d2072e628ac9909f97cb572"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/parquet_cases/native_empty.parquet",
+      "bytes": 27992,
+      "sha256": "5fe4575776d110f78d9698f039cbcdd4a3f1901ef0a07156cbedb0f35d199660",
+      "git_blob": "ffcfd4633a6953c3bdbaac86c0f5417d55ef5899"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/parquet_cases/readable_empty_unknown_table.parquet",
+      "bytes": 1076,
+      "sha256": "f7a70a148c097942befc0925c522ff0e385ae02ceafe9150d13c0a1581f428e8",
+      "git_blob": "718efda1449525cbb973c84a2966b067410e79cf"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/parquet_cases/readable_unknown_row_schema.parquet",
+      "bytes": 27980,
+      "sha256": "98fc6578ba4c45ff8f5d7946cb3865be15ced0d487bd2cac808103a3006efa49",
+      "git_blob": "fdae71bb020b628dbba949cdd47db20d42330e94"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/parquet_cases/readable_unrelated_table.parquet",
+      "bytes": 1178,
+      "sha256": "6982eac8cad08e855f9e00ad7b1f3881158fbce7256b356deff88e5f649b7853",
+      "git_blob": "44da18bae9cf581e09061c68f376d3457f810463"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/parquet_receipts.json",
+      "bytes": 4934,
+      "sha256": "922d97c50a56aafc7a2d86a2363f78b87b86c70c456882861b8dee7062596bb7",
+      "git_blob": "23c7b44c3514b0295e9ccae5cdfb2c28ecc8d7ad"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/pinned_quote_adapter.py",
+      "bytes": 21383,
+      "sha256": "bd8bfd85bf4ff1279d564220b7f3f8b8b4e5f7263323252ae6489ed5163d1074",
+      "git_blob": "f7ad6ebc550811708a20aaf259b30dd1df0a3699"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/repair_cases.json",
+      "bytes": 231639,
+      "sha256": "ab57d30829ce31da920b90061c3190a58d42aba731bf1b044c2382f7da1e6601",
+      "git_blob": "02679b47fc98d0f7fe8634c8dc49ea62356b970b"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/repair_checks.py",
+      "bytes": 21887,
+      "sha256": "66be097d9f5b77936738dc989ef7f7d280e7bad3d3c3fe17ada0bddc2340aaa7",
+      "git_blob": "90d2cbd19e81ec6233d8198d754caeb19846a5c4"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/run_lab.py",
+      "bytes": 34401,
+      "sha256": "e723e036eacc47b096b508933ac6200d731c3474f2effb64a67eb20efdeb78d5",
+      "git_blob": "688a0562a27dec87f9706139749a3e6b7d48a835"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/synthetic_forward.parquet",
+      "bytes": 27992,
+      "sha256": "5fe4575776d110f78d9698f039cbcdd4a3f1901ef0a07156cbedb0f35d199660",
+      "git_blob": "ffcfd4633a6953c3bdbaac86c0f5417d55ef5899"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/synthetic_settlement_board.json.gz",
+      "bytes": 700097,
+      "sha256": "18bc127682095a27642556b7082c28ea33038b1f83898335cb55847760240c45",
+      "git_blob": "140e0f03ff78a913a61d8ad58e35411cf280fd4c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/transfer_receipt.json",
+      "bytes": 3769,
+      "sha256": "4ffa01a0985ee8b55b98449812ed2cda928bdf2cc4f29a9da5715b359f88797d",
+      "git_blob": "e9a613ea523ce068ad9f48655b87776dac5f6d11"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/unreadable_ledger_guard.parquet",
+      "bytes": 37,
+      "sha256": "9a170269a539970d5dcafa39b976ee7034c8263bdbb21f069997911430ac485a",
+      "git_blob": "4686a87e2ab215d4651e55cec2e55eaadbd890f7"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/verify_contract.py",
+      "bytes": 8976,
+      "sha256": "267bd1e22b62263314e0d4e64fb6efa2506f26cb5a27f588a407dfdfd8732933",
+      "git_blob": "51609317ccc44d23f5defaba2aa2561c1a31f9c3"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/vintage_contract/DECISIONS.md",
+      "bytes": 6487,
+      "sha256": "acbf9537ca282188495be3204b367ac83cc173a658ea344078ad2d002b056196",
+      "git_blob": "eeaf9c0b64d86551c44e73fd28385abaa0640dd0"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/vintage_contract/DESIGN.md",
+      "bytes": 4129,
+      "sha256": "e9ca4221c2daea2217f3448ea21e35222e95eb79b73040bb26912a608d798fd4",
+      "git_blob": "88f24adb91c2e922f8e39a3586857e7cc5c39af4"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/vintage_contract/DEVELOPMENT_NOTES.md",
+      "bytes": 1669,
+      "sha256": "e7b903194a73a65365d0dc9cd40c96352ccbac0faf1b1b0eb7bcf3e7bbbefd80",
+      "git_blob": "b08e1e57541f923fd726bf33e51c676b22c0a35a"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/vintage_contract/EXECUTION_RECEIPT.json",
+      "bytes": 654,
+      "sha256": "b16205fa927ec8f575abd2c85e45d28933787c01a5acc3f4d760b365cf4b102d",
+      "git_blob": "e2ea6a73163736f89f21318680f2c9e6e991e054"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/vintage_contract/MANIFEST.json",
+      "bytes": 2317,
+      "sha256": "2ec4ad61150efa1ad01b10137ed3d1a0070ba6412770edc2f4e79a098945eec5",
+      "git_blob": "e789b5946bf311814a974c136a837fd24cc11116"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/vintage_contract/contract.py",
+      "bytes": 17419,
+      "sha256": "ea8c3d3da6b3d064563f64e3f78b6e4590530fc51bbe92535cf2cce7e1c2bdef",
+      "git_blob": "9bfddf6481d1b56a6b2d7fce43343e9a07c0edae"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/vintage_contract/execution.log",
+      "bytes": 238,
+      "sha256": "e7c280f38c08ba04e2b9ad9ead912de8cbb39e63d4fdaf807f8d2c83a2e65671",
+      "git_blob": "8f769bf595e36ed1868b8311b7bf8df45f9fbe44"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/vintage_contract/fixtures.json",
+      "bytes": 14417,
+      "sha256": "1c53a249606c1c8b8854474c5e670c2ae0e5b457e00229b0822fa5ae59e6fea3",
+      "git_blob": "185cdf9f05c6b1add76af5013ea8559a8169c6be"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/vintage_contract/results.json",
+      "bytes": 24976,
+      "sha256": "9cc6b3c39a93487314f49b8117003f9d06c185322fb8685c8d365d16e4a405ce",
+      "git_blob": "b9fc413808e92d991ba2d289e055f0ae6cb3cfe5"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/vintage_contract/retention.py",
+      "bytes": 1352,
+      "sha256": "8da1540ce2d37806dfada0f5cd4ceddc65bd4bc9ebfb926cffc1e727ee95877b",
+      "git_blob": "b21a6931903771fa9167ab8f2f75bd3284e924ff"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/vintage_contract/shape.py",
+      "bytes": 1221,
+      "sha256": "bb40201be2308dc891e343ccc5a513db445bd9d3a340356475c549b2b81705c7",
+      "git_blob": "064cd1cd9c6ed795328c43cd0e19d3f784625224"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/vintage_contract/verify.py",
+      "bytes": 24563,
+      "sha256": "99c4f37a099a138d4887c403dea20cb20111810e135ed9f309bd540793258a72",
+      "git_blob": "1f4a4969a035bcaf2ea996f36356369d36b5e7ac"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_repair_review/ACCEPTANCE.md",
+      "bytes": 5105,
+      "sha256": "c0970efd6ac1fc1019a463831340b1fdd4213113c5e7158e01ebb5b86df2dca6",
+      "git_blob": "fe26c7b4ef5d7d1110a60dcbcbcda8e4b0e5f16c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_repair_review/EXECUTION_RECEIPT.json",
+      "bytes": 1202,
+      "sha256": "bf1505a47a91b41dec574e06841194f355bb0d7d8a84d1bb3b295c05d9bce9e8",
+      "git_blob": "23b62594101d816f65697d9c144d3d05a997571d"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_repair_review/MANIFEST.json",
+      "bytes": 1789,
+      "sha256": "ba9bb36b7b40680da82a5be996b763a135746f48f43a5a4468586b626c2c0073",
+      "git_blob": "842552270796447630652570fc31a1bf9f36cf83"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_repair_review/PRESERVATION.json",
+      "bytes": 847,
+      "sha256": "09f9cf007d569b16ba1d095547487bf0590db66ccd7b3e8cd6438c5dcc0daffb",
+      "git_blob": "a0860dd5d34e93218cc294d12eeca17275dfc4f3"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_repair_review/REVIEW_RESULTS.json",
+      "bytes": 26422,
+      "sha256": "d355145533a8344be1b82782f96894c1aa4f164ac7f2730a4af480f8ddc6374e",
+      "git_blob": "85d14e963002420bd999c411067d47eefbe432d6"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_repair_review/accept_display.mjs",
+      "bytes": 15401,
+      "sha256": "9c35dbbb14fa1cf9f697561e51ecd15123c054fd1542efc9519fcec22ca66458",
+      "git_blob": "409ca0db557d7060a821ae4011a1a4f42900c11e"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_repair_review/producer_replay/candidate_cn_prophet_live.js",
+      "bytes": 8076,
+      "sha256": "89a9ca53f61db675128ffc31220d278e0f0b29cf7149c4f03888f829690eda49",
+      "git_blob": "be181373bd7f71ed1aef571b4f5b77581e93195c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_repair_review/producer_replay/pinned_cn_prophet_live.js",
+      "bytes": 6651,
+      "sha256": "e4bfdad0781eda00f8c940047e637a6f4ac691b057b703f9eba25d9930665147",
+      "git_blob": "5a4d08eab3ee4eebb587d19cbbd085322fb47a73"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_repair_review/producer_replay/previous_candidate.js",
+      "bytes": 7885,
+      "sha256": "595b83e907eabfb9e0df4ba3df4a2c3aad0f606c993ac345e4fccfd47d2176bc",
+      "git_blob": "ac0206f55310a351794dd2d2496975c1bfe90114"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_repair_review/producer_replay/results.json",
+      "bytes": 8042,
+      "sha256": "5c87aa6acb631c8ef5fe695293e5c05001824ee09baaaf026f8c0b60c77eead2",
+      "git_blob": "ff5e8f8d519cd3b52c00db9b6e510cae9d6b1d5c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_repair_review/producer_replay/verify.mjs",
+      "bytes": 14435,
+      "sha256": "512cd6d2277e9f4c3cefa3a327bb388302a2e522ba3da121b99c1e570769e513",
+      "git_blob": "f52a1fd4aac7e2bae74356c0a84e2841dce1dab7"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_review/EXECUTION_RECEIPT.json",
+      "bytes": 944,
+      "sha256": "2bea42c37d0175b57e9fe5a626377f8789dd1d91a829e20f370b6ef725c83290",
+      "git_blob": "9a3f58ad7cf9578a24a3bdf22ccda870466c9ca3"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_review/MANIFEST.json",
+      "bytes": 1633,
+      "sha256": "059222c1a1c258d11572e331b0a1ff50ae171fa88d2742e59c9886245a6e4776",
+      "git_blob": "ec98b8a66a98e4c8eb13132fe7192c25e3bf2ac7"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_review/REVIEW.md",
+      "bytes": 6743,
+      "sha256": "6cbc0ff5208b22646ef928a178b8f0b5a6d11134f7a4e3aa8de4a276b4333146",
+      "git_blob": "4163d982cd964deb729fde1dff2e81c2dd28b460"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_review/REVIEW_RESULTS.json",
+      "bytes": 18879,
+      "sha256": "0dbfe553c22bb60d6e5fb05b6b92739eb96c0013b0dbd24d1c8d8e1ea03acb72",
+      "git_blob": "45ca92cb239df51296507da7155e51f07bed2e9c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_review/REVIEW_SCOPE.md",
+      "bytes": 1430,
+      "sha256": "9d0d2e7ca98768e667fc7f171e92edc9b6be0d5e52ce9f187047e23c7640c071",
+      "git_blob": "62ec1beae9e576a58ef3977e555e6db29b6f431a"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_review/producer_replay/candidate_cn_prophet_live.js",
+      "bytes": 7885,
+      "sha256": "595b83e907eabfb9e0df4ba3df4a2c3aad0f606c993ac345e4fccfd47d2176bc",
+      "git_blob": "ac0206f55310a351794dd2d2496975c1bfe90114"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_review/producer_replay/pinned_cn_prophet_live.js",
+      "bytes": 6651,
+      "sha256": "e4bfdad0781eda00f8c940047e637a6f4ac691b057b703f9eba25d9930665147",
+      "git_blob": "5a4d08eab3ee4eebb587d19cbbd085322fb47a73"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_review/producer_replay/results.json",
+      "bytes": 7108,
+      "sha256": "bf41dee7453600d9b6008f8653a74852c453a669bafaa975e6e49a33d63c4dfa",
+      "git_blob": "328c69b0cb53c714c30d184ae1471d34a12e76c7"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_review/producer_replay/verify.mjs",
+      "bytes": 13161,
+      "sha256": "150787696c210036e164d88953288757d78c8274dec96cf899cc026427cc34fa",
+      "git_blob": "c51c6ad7d28ab40fb3006f8b26cc44bcb4438881"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_review/review_display.mjs",
+      "bytes": 13559,
+      "sha256": "41cd321eeb6de5b2d1641f2bd0f5d840e99054daa7f2b7de4e0bff90bb994792",
+      "git_blob": "99d6cd696912cb39ba266f2e84c8a4fcd9d972c9"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/ACCEPTED_EVIDENCE_INPUTS.json",
+      "bytes": 12841,
+      "sha256": "17ddba58bd084f2ada80fb7932ba59c4c6a6dfdd40ac08211d33fd07d95b3c55",
+      "git_blob": "4c323b8ab430ed36bf268e5f3ab52ca0d6a84ca1"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/DOCUMENT_INPUTS.json",
+      "bytes": 1001,
+      "sha256": "a996428509f6e7189277b8ea89a0b63a3c9d2e7f0176532cf642f4e7b6c5bc63",
+      "git_blob": "a40e099e5ab898b458104707dc65bf3310b7b571"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/DRAFT_FINDINGS.json",
+      "bytes": 5897,
+      "sha256": "8475698a4bbeb91f257370a919278ac9281a787b48c88e58eb2a746090017ea5",
+      "git_blob": "75d690d7e32a4fa9d20291175ff6468e45c2ea70"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/DRAFT_REFERENCE_CHECK.json",
+      "bytes": 15485,
+      "sha256": "d6c521689b4bd49a6b5560b397fb358a2afa33555e15f787bd33cb7f0771b44c",
+      "git_blob": "2741f037943c6a6c89e096b1cf4926a7d189ea61"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/FINAL_DOCUMENT_INPUTS.json",
+      "bytes": 1570,
+      "sha256": "b747a58c07d25a4aa704ee203cd87c39710af9a2f5e32e53f01ae7459ab78baf",
+      "git_blob": "d1c9781daf1d91110820128e0f013997b249fa19"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/FINAL_REFERENCE_CHECK.json",
+      "bytes": 21554,
+      "sha256": "e5a918126b0d848cfb0c4e146519632ed51c74d6918fb1c607737aad219e2442",
+      "git_blob": "cc0651d59b52ead7a243e6df6252ab8fb16f4ed5"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/INITIAL_INPUTS.json",
+      "bytes": 5500,
+      "sha256": "e8cc9c41c6df8ede9874da9a5329e12b120f8bccc6baffec7725515ccf3dbf5d",
+      "git_blob": "43464865e8e65c5c0198306d41878513a5120a8c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/MANIFEST.json",
+      "bytes": 15326,
+      "sha256": "a4c1c2e03c9084c60676d1db51aa9c6eb6537f50747a7d8f2ac6f53713cf2f96",
+      "git_blob": "35d9175616255b8063c15b4a745479343f4123c5"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/REVIEW.md",
+      "bytes": 9852,
+      "sha256": "a43990ca724d4a791e1b07795153136d80ca59c6580bc304e1ebec496b24e9f3",
+      "git_blob": "7f76eb7e78069d322d4f4201f4606cf132cb1f98"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/REVIEW_RESULTS.json",
+      "bytes": 7396,
+      "sha256": "18bc220b74f50f356690bcf219d788d031d1a701cabf966af9f8143709d979fd",
+      "git_blob": "39932a4a13792fea6f9eb7221f09fa53074c8230"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/REVIEW_SCOPE.md",
+      "bytes": 3099,
+      "sha256": "16386820990902933700e9433ececffde8cda262c09d5e24a17d25a9e2127294",
+      "git_blob": "c8e5890a9a702e3dc5ca0e21425f0cb98090e0f4"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/TERMINAL_VERIFICATION.json",
+      "bytes": 541,
+      "sha256": "04649e0e2136d1b28c652cfcb79d3c09778c983d81d8cd6af6d0d45f56ec4c6a",
+      "git_blob": "fd9ac53faa15fd0118e639c8a55c220ffe669400"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/intelligence_lab/INTELLIGENCE_DECISIONS.md",
+      "bytes": 12505,
+      "sha256": "cddde2c2207bb8417112e4632c478a4f7f0b2777a5749399b9cc6b52fb3f9f07",
+      "git_blob": "661a91278601ba3f9b3d0bc803848cc4974b73f3"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/intelligence_lab/MARGIN_HORIZON_MANIFEST.json",
+      "bytes": 1622,
+      "sha256": "d21ce925119d58094c3248a399374ddd43a4292332588eb92e06046ccb7e8ada",
+      "git_blob": "7cc9ac43b5a0fd7358d4b1cf3d0e079fedf8ae4c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/intelligence_lab/MARGIN_HORIZON_TRACE.md",
+      "bytes": 6248,
+      "sha256": "9b82fc4f8afd604658c63a1ba5e128a297ccd96f5209ca28dcea9bfe8ac7562e",
+      "git_blob": "927ee33230596f09379f64aaf672bcc3acc38f7c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/intelligence_lab/WEIGHT_DESIGN.md",
+      "bytes": 1494,
+      "sha256": "f9c168b5baa3aacf262c0cf49ef69d5ce11a052f991627b79cacf82ab69d360c",
+      "git_blob": "243eea69279eccd5bb0a306ece10f5abb99443a6"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/intelligence_lab/contract_lab.py",
+      "bytes": 23128,
+      "sha256": "f2f5aeeb27b87809123148a642b9d6b848290a82033b7118614288432c8af014",
+      "git_blob": "08a4d4e1e83d2599e33eaa118b36ceb3a656f404"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/intelligence_lab/margin_horizon_probe.py",
+      "bytes": 8000,
+      "sha256": "1ad0ed0e5bd71011fff7b0f7fe5c54a75d9276528798c2b3ee8df0b4cbeb9fc4",
+      "git_blob": "b4b59799b2c55a015485ee70c461085a67efb344"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/matched_controls/DECISION_MEMO.md",
+      "bytes": 17184,
+      "sha256": "15786976c52307dd0b083a1b2549634c0730024f95b73faa4371c4706b65904d",
+      "git_blob": "5d82c532c1040479d7a0a93c20e5691010eb7eb3"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/matched_controls/DESIGN.md",
+      "bytes": 11398,
+      "sha256": "d8a40683dd0727d72df7d520a98ee587cf07ea28045901bbc109e0845b2052ef",
+      "git_blob": "b3777a24b79de4336e31507dd60e5204d10c9401"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/repairs/display_contract/MANIFEST.json",
+      "bytes": 1684,
+      "sha256": "c7448f6c4a873a2d4f6cba2e21e153583800d249bc758587186b9416642b5fd7",
+      "git_blob": "664a9238adff14670ad668ae8de7091a46376c9b"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/repairs/display_contract/REPAIR_DECISIONS.md",
+      "bytes": 3463,
+      "sha256": "16fdb0b4b541d30f31c3ec12e14b2528ba8ae43608e7f359b2cd3f38500a7a79",
+      "git_blob": "5ee35a0082123e10b2ac89066e4891fd31817b36"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/repairs/display_contract/build_candidate.py",
+      "bytes": 3810,
+      "sha256": "32cba0154c45b0f582b888f6714e0fb25282f3eafad90157b2136a019740b1e9",
+      "git_blob": "16ed28b1df43ff3e9d2ccaf54643d7c1b606a1f2"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/repairs/display_contract/candidate_cn_prophet_live.js",
+      "bytes": 8076,
+      "sha256": "89a9ca53f61db675128ffc31220d278e0f0b29cf7149c4f03888f829690eda49",
+      "git_blob": "be181373bd7f71ed1aef571b4f5b77581e93195c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/repairs/integration_contract/MANIFEST.json",
+      "bytes": 6406,
+      "sha256": "371fd67d4ea85307e460772f8aa353609d176ff779f07811a0a42f8ea36c0309",
+      "git_blob": "af2b79c73e3f5b5836adfaf5d517b736e57a8449"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/repairs/integration_contract/REPAIR_DECISIONS.md",
+      "bytes": 16069,
+      "sha256": "b421f5b172296f563569f251a55857cec89931b62a53fe52091fc836fad16d97",
+      "git_blob": "073258212e986663bb33ec3f6ac18a3f9aa52018"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/repairs/integration_contract/contract_prototype.py",
+      "bytes": 42770,
+      "sha256": "3518cc9f408534cccbe60419b8de8d7143ad42f406c7d9ee262068ef1c5fe2e0",
+      "git_blob": "01b258ebb69ff04d2a1728b199501f6fbc737733"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/repairs/vintage_contract/DECISIONS.md",
+      "bytes": 6487,
+      "sha256": "acbf9537ca282188495be3204b367ac83cc173a658ea344078ad2d002b056196",
+      "git_blob": "eeaf9c0b64d86551c44e73fd28385abaa0640dd0"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/repairs/vintage_contract/DESIGN.md",
+      "bytes": 4129,
+      "sha256": "e9ca4221c2daea2217f3448ea21e35222e95eb79b73040bb26912a608d798fd4",
+      "git_blob": "88f24adb91c2e922f8e39a3586857e7cc5c39af4"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/repairs/vintage_contract/MANIFEST.json",
+      "bytes": 2317,
+      "sha256": "2ec4ad61150efa1ad01b10137ed3d1a0070ba6412770edc2f4e79a098945eec5",
+      "git_blob": "e789b5946bf311814a974c136a837fd24cc11116"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/repairs/vintage_contract/contract.py",
+      "bytes": 17419,
+      "sha256": "ea8c3d3da6b3d064563f64e3f78b6e4590530fc51bbe92535cf2cce7e1c2bdef",
+      "git_blob": "9bfddf6481d1b56a6b2d7fce43343e9a07c0edae"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/repairs/vintage_contract/verify.py",
+      "bytes": 24563,
+      "sha256": "99c4f37a099a138d4887c403dea20cb20111810e135ed9f309bd540793258a72",
+      "git_blob": "1f4a4969a035bcaf2ea996f36356369d36b5e7ac"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/reviews/display_repair_review/ACCEPTANCE.md",
+      "bytes": 5105,
+      "sha256": "c0970efd6ac1fc1019a463831340b1fdd4213113c5e7158e01ebb5b86df2dca6",
+      "git_blob": "fe26c7b4ef5d7d1110a60dcbcbcda8e4b0e5f16c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/reviews/display_repair_review/MANIFEST.json",
+      "bytes": 1789,
+      "sha256": "ba9bb36b7b40680da82a5be996b763a135746f48f43a5a4468586b626c2c0073",
+      "git_blob": "842552270796447630652570fc31a1bf9f36cf83"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/reviews/integration_repair_review/MANIFEST.json",
+      "bytes": 10930,
+      "sha256": "6ab208f6c9a5e9506d053c66a4c67344ab35d5ccb387bc81d5598c9925a3a0ce",
+      "git_blob": "81b0ed5f86f0917ff70417d03176601c1c154cfa"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/reviews/integration_repair_review/REVIEW.md",
+      "bytes": 10729,
+      "sha256": "770c43696b8426ac8f20801bf970d7eb1a4ae8e582a6c47d822af783cc82ce46",
+      "git_blob": "fcec7dca28a5540aff1c32edc3e8cc32c645ce09"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/reviews/integration_repair_review/review_support.py",
+      "bytes": 3914,
+      "sha256": "43737a5bb58f9977603eeabb6a14658ad2fb21831b9b4a5a679b6f49eb241283",
+      "git_blob": "e13823921db44ae564a84df07830e226dda30252"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/reviews/intelligence_contract_review/acceptance_f2f5aeeb/ACCEPTANCE.md",
+      "bytes": 8573,
+      "sha256": "54ee1d1751e72726aa73bcbb94c1746e03ed0a4077632d8ada1a9ef72c87796c",
+      "git_blob": "191ebc798df726d1914f472abe1808cfb70f267c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/reviews/intelligence_contract_review/acceptance_f2f5aeeb/MANIFEST.json",
+      "bytes": 2892,
+      "sha256": "922d370c6dfa6fc98b79bfdca11c55f72dc7da90c47c570aab66631b5a346a36",
+      "git_blob": "7dbecae57fc2fb1a82be731046a9a216b643b1ae"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/reviews/margin_horizon_review/MANIFEST.json",
+      "bytes": 4978,
+      "sha256": "649aa9045bcbf29e043acf39a815fead80fdb3cee2c3afda865f458ebfd7dccf",
+      "git_blob": "8ffba07b9c0b610f9f59cb7662270e3f664402d8"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/reviews/margin_horizon_review/REVIEW.md",
+      "bytes": 8389,
+      "sha256": "cd6ef610fee232c492c1ca09087480e5b3d1dea42aa4c5dfe5260bcbbdc2e66d",
+      "git_blob": "e42b337cf90fdc9f835429ae0931d01f0cce0d5e"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/reviews/matched_controls_review/MANIFEST.json",
+      "bytes": 2733,
+      "sha256": "17536023379200b2965964693da5ea2d9f863a4218ec82888a69ff6ecd2052a1",
+      "git_blob": "1d5f0c0a489e0d583af592831b4b34f6e76deb8c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/reviews/matched_controls_review/REVIEW.md",
+      "bytes": 11625,
+      "sha256": "44c9137a52b295e0beae98463e0c2a99e7aa49221d0b49ea3c67bde95d3bad0f",
+      "git_blob": "1d5863897ce6e98cd19e391fae19286d3ef86a43"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/reviews/vintage_repair_acceptance/ACCEPTANCE.md",
+      "bytes": 10882,
+      "sha256": "aa41300d26642ae1f045bc05de0da74d0ca697ccc87b1fb0fd9d90757ea85eed",
+      "git_blob": "c2e5f2c0700b1f44d6a2a1df2caad0af387f7bc4"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/reviews/vintage_repair_acceptance/MANIFEST.json",
+      "bytes": 8177,
+      "sha256": "8fa6b5fdcc7cea12842d8513e07c05088df15f0f0c2c0b1bf014e98e9381256e",
+      "git_blob": "560aaa62d174c1e2f0cdff624ec168f3c4def431"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/reviews/vintage_repair_acceptance/accept_vintage.py",
+      "bytes": 32172,
+      "sha256": "78b558dd988c55d79349a136647aa59257b74f7872c79ae7c061a6761e00eefe",
+      "git_blob": "84c58923d582e631f48dbaf286dede05a1c0278d"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/tradability_lab/DECISION_MEMO.md",
+      "bytes": 13234,
+      "sha256": "64c0b5ec1fa6dd4122a4dc2ed2c6fadfcc3fbb691320eca375a7a239c0e4774f",
+      "git_blob": "d74a2dd1b68367b4da4cde933d0e6057bcb51c42"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/tradability_lab/MANIFEST.json",
+      "bytes": 5202,
+      "sha256": "2cb1b5f7cfae2332ada90e1ea1abe1c05c3f055853b751002b3ac7ddaa70dff5",
+      "git_blob": "a1cd2dbebe914f6ebd671c69939b3c03a438f0eb"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/tradability_lab/run_tradability_lab.py",
+      "bytes": 32037,
+      "sha256": "30099f3140e8bdaa9f727b75a61fa3ff46fb0c35983389472f60ea928417eca7",
+      "git_blob": "7a66b61a410b325940bd47839613f10f0ade093b"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/accepted_evidence/vintage_lab/VINTAGE_FINDINGS.md",
+      "bytes": 19521,
+      "sha256": "5b0fd84b01371502ddfdd758a93083d6ce95d8e37e7d76d4281cc68477766f15",
+      "git_blob": "6216c8a3bc3f8e4ee675ab244dfe96b72434961e"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/final_documents/DSC-CN-PROPHET-CONTRACT-EXPERIMENTS-20261010.md",
+      "bytes": 5383,
+      "sha256": "6c62782110170b4424b0b328318de0ba4feccbb0429a4b9cf89c7ed57748f00e",
+      "git_blob": "d5f1b7aed3db50bce0834dbfc16ecc09f74f97f1"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/final_documents/EVIDENCE_INDEX.md",
+      "bytes": 11507,
+      "sha256": "d450499c2b47d2143a1a1f7c97771909d65ce007da44cdd3da65a60dfce267b1",
+      "git_blob": "98ef2f2bd64289715d4b48eac71d987149a2968e"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/final_documents/IMPLEMENTATION_HANDOFF.md",
+      "bytes": 35320,
+      "sha256": "6d98c9e66e3264c6a9543f8f6d1005514f06ae2da0132294abda2b160fb2a728",
+      "git_blob": "9cb57284472433418b562d2f0c71ff1ea17288a9"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/final_documents/INTERFACE_JOIN_MAP.md",
+      "bytes": 9857,
+      "sha256": "943973764b0a76e87113d3980cb6d2bfe3834f92c1d315441698e35d0d509654",
+      "git_blob": "be4ca9e56fd3e0b9e54abbe2a95e209c36f64210"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/final_documents/RESEARCH_DECISIONS.md",
+      "bytes": 19931,
+      "sha256": "db3970b0f5860c907cb0b446d27906e813a2d94ecc0fa97500c5c643f0f8add5",
+      "git_blob": "6bf138f6ebdc93b9c33f1db04a3dacc420839eb6"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/initial_document_inputs/INTERFACE_JOIN_MAP.md",
+      "bytes": 9857,
+      "sha256": "943973764b0a76e87113d3980cb6d2bfe3834f92c1d315441698e35d0d509654",
+      "git_blob": "be4ca9e56fd3e0b9e54abbe2a95e209c36f64210"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/initial_document_inputs/intelligence_lab/INTELLIGENCE_DECISIONS.md",
+      "bytes": 12505,
+      "sha256": "cddde2c2207bb8417112e4632c478a4f7f0b2777a5749399b9cc6b52fb3f9f07",
+      "git_blob": "661a91278601ba3f9b3d0bc803848cc4974b73f3"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/initial_document_inputs/intelligence_lab/WEIGHT_DESIGN.md",
+      "bytes": 1494,
+      "sha256": "f9c168b5baa3aacf262c0cf49ef69d5ce11a052f991627b79cacf82ab69d360c",
+      "git_blob": "243eea69279eccd5bb0a306ece10f5abb99443a6"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/initial_document_inputs/matched_controls/DECISION_MEMO.md",
+      "bytes": 17184,
+      "sha256": "15786976c52307dd0b083a1b2549634c0730024f95b73faa4371c4706b65904d",
+      "git_blob": "5d82c532c1040479d7a0a93c20e5691010eb7eb3"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/initial_document_inputs/repairs/integration_contract/MANIFEST.json",
+      "bytes": 6406,
+      "sha256": "371fd67d4ea85307e460772f8aa353609d176ff779f07811a0a42f8ea36c0309",
+      "git_blob": "af2b79c73e3f5b5836adfaf5d517b736e57a8449"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/initial_document_inputs/repairs/integration_contract/REPAIR_DECISIONS.md",
+      "bytes": 16069,
+      "sha256": "b421f5b172296f563569f251a55857cec89931b62a53fe52091fc836fad16d97",
+      "git_blob": "073258212e986663bb33ec3f6ac18a3f9aa52018"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/initial_document_inputs/repairs/vintage_contract/DECISIONS.md",
+      "bytes": 6487,
+      "sha256": "acbf9537ca282188495be3204b367ac83cc173a658ea344078ad2d002b056196",
+      "git_blob": "eeaf9c0b64d86551c44e73fd28385abaa0640dd0"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/initial_document_inputs/repairs/vintage_contract/DESIGN.md",
+      "bytes": 4129,
+      "sha256": "e9ca4221c2daea2217f3448ea21e35222e95eb79b73040bb26912a608d798fd4",
+      "git_blob": "88f24adb91c2e922f8e39a3586857e7cc5c39af4"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/initial_document_inputs/repairs/vintage_contract/MANIFEST.json",
+      "bytes": 2317,
+      "sha256": "2ec4ad61150efa1ad01b10137ed3d1a0070ba6412770edc2f4e79a098945eec5",
+      "git_blob": "e789b5946bf311814a974c136a837fd24cc11116"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/initial_document_inputs/reviews/integration_repair_review/MANIFEST.json",
+      "bytes": 10930,
+      "sha256": "6ab208f6c9a5e9506d053c66a4c67344ab35d5ccb387bc81d5598c9925a3a0ce",
+      "git_blob": "81b0ed5f86f0917ff70417d03176601c1c154cfa"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/initial_document_inputs/reviews/integration_repair_review/REVIEW.md",
+      "bytes": 10729,
+      "sha256": "770c43696b8426ac8f20801bf970d7eb1a4ae8e582a6c47d822af783cc82ce46",
+      "git_blob": "fcec7dca28a5540aff1c32edc3e8cc32c645ce09"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/initial_document_inputs/reviews/intelligence_contract_review/acceptance_f2f5aeeb/ACCEPTANCE.md",
+      "bytes": 8573,
+      "sha256": "54ee1d1751e72726aa73bcbb94c1746e03ed0a4077632d8ada1a9ef72c87796c",
+      "git_blob": "191ebc798df726d1914f472abe1808cfb70f267c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/initial_document_inputs/reviews/intelligence_contract_review/acceptance_f2f5aeeb/MANIFEST.json",
+      "bytes": 2892,
+      "sha256": "922d370c6dfa6fc98b79bfdca11c55f72dc7da90c47c570aab66631b5a346a36",
+      "git_blob": "7dbecae57fc2fb1a82be731046a9a216b643b1ae"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/initial_document_inputs/reviews/matched_controls_review/MANIFEST.json",
+      "bytes": 2733,
+      "sha256": "17536023379200b2965964693da5ea2d9f863a4218ec82888a69ff6ecd2052a1",
+      "git_blob": "1d5f0c0a489e0d583af592831b4b34f6e76deb8c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/initial_document_inputs/reviews/matched_controls_review/REVIEW.md",
+      "bytes": 11625,
+      "sha256": "44c9137a52b295e0beae98463e0c2a99e7aa49221d0b49ea3c67bde95d3bad0f",
+      "git_blob": "1d5863897ce6e98cd19e391fae19286d3ef86a43"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/initial_document_inputs/reviews/vintage_repair_acceptance/ACCEPTANCE.md",
+      "bytes": 10882,
+      "sha256": "aa41300d26642ae1f045bc05de0da74d0ca697ccc87b1fb0fd9d90757ea85eed",
+      "git_blob": "c2e5f2c0700b1f44d6a2a1df2caad0af387f7bc4"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/initial_document_inputs/reviews/vintage_repair_acceptance/MANIFEST.json",
+      "bytes": 8177,
+      "sha256": "8fa6b5fdcc7cea12842d8513e07c05088df15f0f0c2c0b1bf014e98e9381256e",
+      "git_blob": "560aaa62d174c1e2f0cdff624ec168f3c4def431"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/initial_document_inputs/tradability_lab/DECISION_MEMO.md",
+      "bytes": 13234,
+      "sha256": "64c0b5ec1fa6dd4122a4dc2ed2c6fadfcc3fbb691320eca375a7a239c0e4774f",
+      "git_blob": "d74a2dd1b68367b4da4cde933d0e6057bcb51c42"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/initial_document_inputs/tradability_lab/MANIFEST.json",
+      "bytes": 5202,
+      "sha256": "2cb1b5f7cfae2332ada90e1ea1abe1c05c3f055853b751002b3ac7ddaa70dff5",
+      "git_blob": "a1cd2dbebe914f6ebd671c69939b3c03a438f0eb"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/reviewed_documents/EVIDENCE_INDEX.md",
+      "bytes": 11350,
+      "sha256": "591f79c79deed95d7b0f7f646774c7838661f85ca43e72a47b2a69c3732e05d0",
+      "git_blob": "e01ed34c0520febac617a5dfeede52c26815f810"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/reviewed_documents/IMPLEMENTATION_HANDOFF.md",
+      "bytes": 35049,
+      "sha256": "b39de0cc227e46d61af028ec3e5ceb3e8595d852c6ec08d0c468fbd960e1124b",
+      "git_blob": "bc4fcb5d8efe64be18c22d04facc3a62b66f2593"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/reviewed_documents/INTERFACE_JOIN_MAP.md",
+      "bytes": 9857,
+      "sha256": "943973764b0a76e87113d3980cb6d2bfe3834f92c1d315441698e35d0d509654",
+      "git_blob": "be4ca9e56fd3e0b9e54abbe2a95e209c36f64210"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/reviewed_documents/RESEARCH_DECISIONS.md",
+      "bytes": 19717,
+      "sha256": "54d5212f3c8a2ecfa79b5b4deeec6b8167772ad448509bdcc5493110eec075ec",
+      "git_blob": "c01b13b3a0940f553717925486e20884cf8bc548"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/handoff_review/verify_manifest.py",
+      "bytes": 1863,
+      "sha256": "1ea8144d53aa4630839ee6a4638fe12a05b2545873e97c9ff9a2f6ba48378774",
+      "git_blob": "f1954b6388309706a7777b49b85eaca13f11d539"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/ACCEPTANCE_RESULTS.json",
+      "bytes": 53240,
+      "sha256": "ee33a08cce51a8ca5322eca0033543c452ad86ea3a15a6742c8ca5ab3a96acdf",
+      "git_blob": "1fa9963fdce5435239e9b0d3cc0af2fd26c04e19"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/ACCEPTANCE_SCOPE.md",
+      "bytes": 3133,
+      "sha256": "732a555fcab4af085d9587e51ea2e307b1d946b91c39e9fffd113ed717992680",
+      "git_blob": "7b6540602c66e4d6bb6e6dfc0f0a2af9b74febe6"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/DRAFT_CORE_RESULTS.json",
+      "bytes": 40992,
+      "sha256": "e6ce74c65af9e004b973667109e8d761885f08780e62ecf8d9e22a3a58b1ebf6",
+      "git_blob": "d0d94259101f48390fc90bbf9f07060eba2df800"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/HOST_EXECUTION_RECEIPT.json",
+      "bytes": 1814,
+      "sha256": "12536f8f95c1cfea875414b3abe4e0e1f0fce959b8237966be801b19830b441e",
+      "git_blob": "ff2910d1d4ab86419c41d05ef1ceec4abb0a7a13"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/MANIFEST.json",
+      "bytes": 10930,
+      "sha256": "6ab208f6c9a5e9506d053c66a4c67344ab35d5ccb387bc81d5598c9925a3a0ce",
+      "git_blob": "81b0ed5f86f0917ff70417d03176601c1c154cfa"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/PARQUET_RECEIPT.json",
+      "bytes": 5672,
+      "sha256": "e998f198656dfde1a424d718efdd836973c5ce7a084fff78cf05a66dc45fed3f",
+      "git_blob": "65d627c7675158507b6680cc21f2220af5e9cd13"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/REVIEW.md",
+      "bytes": 10729,
+      "sha256": "770c43696b8426ac8f20801bf970d7eb1a4ae8e582a6c47d822af783cc82ce46",
+      "git_blob": "fcec7dca28a5540aff1c32edc3e8cc32c645ce09"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/TERMINAL_VERIFICATION.json",
+      "bytes": 1535,
+      "sha256": "840a03b5efd7062058784a85715d719b9431fb21a15224a284223752698005f7",
+      "git_blob": "7a39c7b8ae1d140b27e759400639fc9af97ad5f0"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/accept_repair.py",
+      "bytes": 29585,
+      "sha256": "0ecd335fb6dfab9905f0a9e6589fc5615dedfda26f053f318afc5cacbe68b444",
+      "git_blob": "b1cccb3c4011dfd3427b3d39b7a90ae9b3007a81"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/DRAFT_CORE_RESULTS.json",
+      "bytes": 39737,
+      "sha256": "0f73a7276e53d932a93b918475fe03c67cad0282686e9fb5530670b9c4edee46",
+      "git_blob": "6145b50f673a74d71655c003288842a740fed87c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/HOST_EXECUTION_RECEIPT.json",
+      "bytes": 1474,
+      "sha256": "a283272eec9f1cec2ede69abc824c30fb64ac3874275e4cb83b91455175c3551",
+      "git_blob": "173afe4100632848d0dafe37368f9195b6ba76ad"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/MANIFEST.json",
+      "bytes": 4819,
+      "sha256": "ae0610d7aa93000c522a42b2893ac4e3f6ffb2f9247449a51b245a6dfcd9e262",
+      "git_blob": "f84d14c79fd708c43db631cee7b2b1d99dd49832"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/PARQUET_RECEIPT.json",
+      "bytes": 5420,
+      "sha256": "62a4481b8447b11eb66012672289234f063d9d820d74571141701c09500f3642",
+      "git_blob": "bfa321356c814cbf59eed9bde39d46018e715db7"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/PRECISION_EVIDENCE.json",
+      "bytes": 7439,
+      "sha256": "d87beb934feec097721d52807588c9ffec78c15c83ed06dafcb8966e9cdc2a15",
+      "git_blob": "c008d72e664e71c7e8835718de39a962fcce1243"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/README.md",
+      "bytes": 2868,
+      "sha256": "a37ae9710f3ae87391370952aee317d7be3b5b5034c7ca6d4377512db569b7ed",
+      "git_blob": "16081783f9839c3b4e95fd29e577910ac07cdcf7"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/accept_repair.py",
+      "bytes": 26812,
+      "sha256": "31180847adf5cada4537f78e687fd77d80ec21786f30b4d177ef0a695ffcf88d",
+      "git_blob": "47617bbae692002ba896feb92df616ad5c153012"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/contract_prototype.py",
+      "bytes": 42081,
+      "sha256": "d633f0baeb8d506053387c15f5712ebd49c4b6b9b392a43e8e143e3c3226ee4f",
+      "git_blob": "6474dba04bfbc5a461419dc71e4b618dd74ac9d9"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/independent_fixture.json",
+      "bytes": 47528,
+      "sha256": "b5c2fcc8894c84e4d880ca71d7aa8bf8695818032a43a123f220235e39ac4d30",
+      "git_blob": "32b475159e340d1e5ef46219a04acf4254009a04"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/independent_fixture.py",
+      "bytes": 5506,
+      "sha256": "5ebfc4ced080cc672170503c799115960c76c22387292e18c410ba6f741fa1ef",
+      "git_blob": "3d2dead4dc25ea4f2697f2a0b84530d440c9d34b"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/parquet_acceptance.py",
+      "bytes": 11097,
+      "sha256": "a72b2b4978ba409860e29a2fd18705f0c3d480e80af776f571aa5380a651d7be",
+      "git_blob": "cc6bd628cb5b641a7c8fc84df7a6f5fc55b7f8a0"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/parquet_cases/conflicting_duplicate_first.before.parquet",
+      "bytes": 27901,
+      "sha256": "aaa86f29cce2d1b4617e5f233357b1a44f65db0d3a24e86edb40a0413be2addb",
+      "git_blob": "4a26208d6357e1ea47edd2dae9a73319cb5fa247"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/parquet_cases/conflicting_duplicate_first.parquet",
+      "bytes": 27901,
+      "sha256": "aaa86f29cce2d1b4617e5f233357b1a44f65db0d3a24e86edb40a0413be2addb",
+      "git_blob": "4a26208d6357e1ea47edd2dae9a73319cb5fa247"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/parquet_cases/conflicting_duplicate_last.before.parquet",
+      "bytes": 27915,
+      "sha256": "488000662e8d1d58c166d75f268054edb960a9ffc0632d0d7408a214bea97e83",
+      "git_blob": "dfaa18a5eb8129478968e3af320d9734d070845b"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/parquet_cases/conflicting_duplicate_last.parquet",
+      "bytes": 27915,
+      "sha256": "488000662e8d1d58c166d75f268054edb960a9ffc0632d0d7408a214bea97e83",
+      "git_blob": "dfaa18a5eb8129478968e3af320d9734d070845b"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/parquet_cases/exact_duplicate.before.parquet",
+      "bytes": 27880,
+      "sha256": "6bcdfc42cc31920215e48d8f68f8a71004a9327557a4e0963c9760a85e4f5403",
+      "git_blob": "5fd8b704ac1e7988e54efd5a06b410046c99598f"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/parquet_cases/exact_duplicate.parquet",
+      "bytes": 27880,
+      "sha256": "6bcdfc42cc31920215e48d8f68f8a71004a9327557a4e0963c9760a85e4f5403",
+      "git_blob": "5fd8b704ac1e7988e54efd5a06b410046c99598f"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/parquet_cases/later_repeat.parquet",
+      "bytes": 27963,
+      "sha256": "606b07bca7d3fed6c0bd5e6f2f7dbbd2967cf02ca66744fe33f789fe7d11458e",
+      "git_blob": "f8beab2b444acbf53870be14facb3c3c580f3706"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/parquet_cases/legacy_roundtrip.parquet",
+      "bytes": 28676,
+      "sha256": "08560c686c3b2cdb6d445f91df734b0bfdf3920fd680fc1b499041694d0447ef",
+      "git_blob": "0d83482b19e93767be87a3dd2548f72960dc1791"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/parquet_cases/positive_roundtrip.parquet",
+      "bytes": 27880,
+      "sha256": "ccb15bb3db7b4e3ddf0da6ca013fdc1e073909028c7e6d9524702ab0db8d5b2c",
+      "git_blob": "4b6a862442a4df38901c70512d11c72ade5a0e7e"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/parquet_cases/readable_unknown_schema.before.parquet",
+      "bytes": 1774,
+      "sha256": "dc2b597e4706e8e23861c15536ebf47fc4e7d4325fb0bdbc17a6d5633d66cc48",
+      "git_blob": "f51d457d34dd764b8b44f005647c5d349e231064"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/parquet_cases/readable_unknown_schema.parquet",
+      "bytes": 1774,
+      "sha256": "dc2b597e4706e8e23861c15536ebf47fc4e7d4325fb0bdbc17a6d5633d66cc48",
+      "git_blob": "f51d457d34dd764b8b44f005647c5d349e231064"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/pinned_quote_adapter.py",
+      "bytes": 21383,
+      "sha256": "bd8bfd85bf4ff1279d564220b7f3f8b8b4e5f7263323252ae6489ed5163d1074",
+      "git_blob": "f7ad6ebc550811708a20aaf259b30dd1df0a3699"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/precision_regression.py",
+      "bytes": 3961,
+      "sha256": "ca331ede537e64b4f9e51e31251ac75d403106b233781c4b1107badaed30c68e",
+      "git_blob": "7efbab2a4f24d025805fc9e4dfac20d91c184a69"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/development/d633f0ba/review_support.py",
+      "bytes": 3914,
+      "sha256": "43737a5bb58f9977603eeabb6a14658ad2fb21831b9b4a5a679b6f49eb241283",
+      "git_blob": "e13823921db44ae564a84df07830e226dda30252"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/draft_challenges/CLOCK_EVIDENCE.json",
+      "bytes": 25750,
+      "sha256": "bce7e9781a77ce135e2b9bb62149116714eed6479971fe59912bd3644b791025",
+      "git_blob": "cfc6d6cc4f0fbdd63cba4fd0f1243f858a6f4016"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/draft_challenges/MANIFEST.json",
+      "bytes": 1383,
+      "sha256": "b04d23d56ca26889aa99890f559385d52aa3fbc08403ed9603c27fae16579347",
+      "git_blob": "6eaeef9060fa57cd55b689aeb36087594aa234e3"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/draft_challenges/REVIEW.md",
+      "bytes": 2422,
+      "sha256": "0b64513ba331f377a4481f6581ed24c780872771422f8a701250b89998dce203",
+      "git_blob": "2e045a79d1fe7f76c420dd5139ef21e3a2f937f1"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/draft_challenges/challenged_contract.py",
+      "bytes": 41634,
+      "sha256": "a0c26607448a7f57f296393508f3b0a92c8a1eea9ee44bf4a053464dcb76a335",
+      "git_blob": "5c36ab0885af3c6253be1396d19ca9c5683f4d85"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/draft_challenges/probe_source_clock.py",
+      "bytes": 5506,
+      "sha256": "c200eaed61c23f541d79c200580936ab92abe54461bf97536e9c6041b91993ef",
+      "git_blob": "76a6021d33bc51d199c3e3c0275ab6fa5428a000"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/draft_challenges/source_clock_input.json",
+      "bytes": 17220,
+      "sha256": "98b5da1cbd6afa2d898e78cf3bb7da178d19cd0f797af9ed5012571552fecac3",
+      "git_blob": "ac67d8ecf0af9662f57550ee1f08c5b837c224e2"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/independent_fixture.json",
+      "bytes": 53287,
+      "sha256": "b3c137cb844aa54d82445af738ee2f2ed63f370d65ee5e192df43c2509ee79b6",
+      "git_blob": "bdad0758d56c5074200d55a0880b487ca87fac24"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/independent_fixture.py",
+      "bytes": 5506,
+      "sha256": "5ebfc4ced080cc672170503c799115960c76c22387292e18c410ba6f741fa1ef",
+      "git_blob": "3d2dead4dc25ea4f2697f2a0b84530d440c9d34b"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/parquet_acceptance.py",
+      "bytes": 12053,
+      "sha256": "a421be4b48e5dd159b80a8d4ed613c55a45a8df03b36074745781519e74cc4dc",
+      "git_blob": "1f3197058a12e8992ff1295c16ab810d59de2e1b"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/parquet_cases/conflicting_duplicate_first.before.parquet",
+      "bytes": 28023,
+      "sha256": "f4a4f30a69aa1d079aa7fb9222b29c6a6d8f0decf4b60be08f1845e76fa0d285",
+      "git_blob": "96dafd916ed044157fa388c6f9ec29d0deb851ec"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/parquet_cases/conflicting_duplicate_first.parquet",
+      "bytes": 28023,
+      "sha256": "f4a4f30a69aa1d079aa7fb9222b29c6a6d8f0decf4b60be08f1845e76fa0d285",
+      "git_blob": "96dafd916ed044157fa388c6f9ec29d0deb851ec"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/parquet_cases/conflicting_duplicate_last.before.parquet",
+      "bytes": 28033,
+      "sha256": "316ce6878ef71d2ed8670fc1c5f38967177ac96746ec434c1f53258df996196a",
+      "git_blob": "e3cc3b386375c697ba69649f85b0077b46147399"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/parquet_cases/conflicting_duplicate_last.parquet",
+      "bytes": 28033,
+      "sha256": "316ce6878ef71d2ed8670fc1c5f38967177ac96746ec434c1f53258df996196a",
+      "git_blob": "e3cc3b386375c697ba69649f85b0077b46147399"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/parquet_cases/exact_duplicate.before.parquet",
+      "bytes": 27992,
+      "sha256": "2f21f28f39a6633d70f6065216f71c9d95521ea1a5b6d59946bcd67d8030e52c",
+      "git_blob": "8ed2b58d4131a634184aa4e21136c0b80c7b5f70"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/parquet_cases/exact_duplicate.parquet",
+      "bytes": 27992,
+      "sha256": "2f21f28f39a6633d70f6065216f71c9d95521ea1a5b6d59946bcd67d8030e52c",
+      "git_blob": "8ed2b58d4131a634184aa4e21136c0b80c7b5f70"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/parquet_cases/fractional_event_time.parquet",
+      "bytes": 27571,
+      "sha256": "352685e57ace4626ffae2358028b9446a0d90c1ef68be0e866f3f79e2eb53934",
+      "git_blob": "58341db0843d24c82f9815923d95cc76819d0870"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/parquet_cases/later_repeat.parquet",
+      "bytes": 28087,
+      "sha256": "816465dd89f0a13a16ce990b6f9eb0745274017d94e0fd022911c9c4559a63ff",
+      "git_blob": "03e08ef398edffc660291e79d6d534822521e79d"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/parquet_cases/legacy_roundtrip.parquet",
+      "bytes": 28772,
+      "sha256": "d4bc4a92c35f25c12207c28dc8276d37debfaf1f13340dd17ce2e78c83b3b825",
+      "git_blob": "959d8edfdfd468676bde1a6407498e9e2ca44615"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/parquet_cases/positive_roundtrip.parquet",
+      "bytes": 27992,
+      "sha256": "655d03219a18c83a50217aee25a0f4da52de2a8de668ae37d88e16af30692d75",
+      "git_blob": "89c977fb423ccdd2af488b34f3e6bbd34cf983a5"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/parquet_cases/readable_unknown_schema.before.parquet",
+      "bytes": 1774,
+      "sha256": "dc2b597e4706e8e23861c15536ebf47fc4e7d4325fb0bdbc17a6d5633d66cc48",
+      "git_blob": "f51d457d34dd764b8b44f005647c5d349e231064"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/parquet_cases/readable_unknown_schema.parquet",
+      "bytes": 1774,
+      "sha256": "dc2b597e4706e8e23861c15536ebf47fc4e7d4325fb0bdbc17a6d5633d66cc48",
+      "git_blob": "f51d457d34dd764b8b44f005647c5d349e231064"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/review_support.py",
+      "bytes": 3914,
+      "sha256": "43737a5bb58f9977603eeabb6a14658ad2fb21831b9b4a5a679b6f49eb241283",
+      "git_blob": "e13823921db44ae564a84df07830e226dda30252"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_review/MANIFEST.json",
+      "bytes": 2818,
+      "sha256": "78fcfa3c271d214c751a40220dc92e44cec67409eb49fbe7421b9c22a32698b6",
+      "git_blob": "f217106bc276d87c47e6ac7ac52b9b821512d13d"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_review/REVIEW.md",
+      "bytes": 14847,
+      "sha256": "25fc1ad2aa322e3ef707a1abc690794e6afc5112d8d20043bdf86c52e68187ef",
+      "git_blob": "97ae527a9b5df88d7abb2e5bd42c77f97135c94e"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_review/REVIEW_RESULTS.json",
+      "bytes": 22630,
+      "sha256": "f5503340395f1fd857b00ffb45441b2d5947d65e85248db98047237bb554bf4c",
+      "git_blob": "2872f7f6ab1c28b62be21ef7b3524ceb226d4430"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_review/native_source_bundle.json",
+      "bytes": 174543,
+      "sha256": "2c139c0fef2c83296374069aed3338ccc28802bbf535d75054176384ec9ec829",
+      "git_blob": "2d2b2b60108dfddc1ee2b641ebd5d4dddc07a4b6"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_review/parquet_cases/duplicate_daily_keys.before.parquet",
+      "bytes": 23732,
+      "sha256": "e27b40119ca438c71d81fe89e5cd2cf5f87451cb454b7febc9dbe6435d33ebbd",
+      "git_blob": "3b4e89c4038347bd765b0848ccf7aef20d5c02a3"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_review/parquet_cases/duplicate_daily_keys.parquet",
+      "bytes": 23696,
+      "sha256": "1acd93e4934ecf0ad50849e279c38a4c3b6ece0a795f33941b6a006cedea1351",
+      "git_blob": "ce0f0ae02b715a2ea8cf060210d4b9a6a4fedcf9"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_review/parquet_counterexample.py",
+      "bytes": 6229,
+      "sha256": "8e04205511a6b0c180bd6dd6a6f96ba7d6b8a24914881583d0c5dd25545f0827",
+      "git_blob": "0b79be178ede7fef07a8eba007a606e36a1f2ff0"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_review/parquet_review_receipt.json",
+      "bytes": 2417,
+      "sha256": "a70ad278ac1abddd6f27841da68fe50830b1219940f1fc0ccc9ef6075df6d0a9",
+      "git_blob": "5d229a6763f3f846ebe5e366943ec8a56c7acd24"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_review/review_integration.py",
+      "bytes": 26548,
+      "sha256": "d858c3fec1adeef77ac1835ec8a4241d3c61221038618c32ae289caf7a068699",
+      "git_blob": "92d1588628db31c0b111f8cced348c3fbf0bae24"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/CHALLENGE_RESULTS.json",
+      "bytes": 25994,
+      "sha256": "b70ff1a97c0c576160dbab099b8d26f08b0da02aaeed533b483771ba28fc8ed4",
+      "git_blob": "3b4296402b5d61a9857d008333e9f36be2561792"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/MANIFEST.json",
+      "bytes": 2820,
+      "sha256": "0105976d7a771f47cb824e311a2f9dc221ca14f9c0725cac4bc322ec35832939",
+      "git_blob": "f7c8f2ce7f9e4fc6ce7df466090bf6e7228d60b1"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/REVIEW.md",
+      "bytes": 12209,
+      "sha256": "369f32e88ce6afdc9e89a010af64ad1bdcd459cd77ddaf5acc4c460bacc90287",
+      "git_blob": "67f71723f8bbc1d2ae5745a86f63694d033ab55c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/REVIEW_DESIGN.md",
+      "bytes": 3199,
+      "sha256": "dc3a860cb83497f298714ee9932b24afc79e33cb6326a34b2946cb3990fa5457",
+      "git_blob": "a5ba7e62e47b6c130e390c6c1fc9f9848e628dab"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_83944fe1/ACCEPTANCE.md",
+      "bytes": 8609,
+      "sha256": "ed9de67740d37b6363526c4004a4ebc11624eab23ecc66447b327611236ab2ef",
+      "git_blob": "299f5e8608cbd7f7fd9452b88c2f037b10222f1d"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_83944fe1/ACCEPTANCE_DESIGN.md",
+      "bytes": 4513,
+      "sha256": "47f6278a64882ab08a42be68091145b59831f431673f1d83681fe27fc4a672ad",
+      "git_blob": "9f4fa445705e8844d220cc8cf9da3d4dc523e373"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_83944fe1/ACCEPTANCE_RESULTS.json",
+      "bytes": 136158,
+      "sha256": "8db32ace7d81d126a0009fe07e74bd688a3e0b6730d777b76b728fed9ecb3c5d",
+      "git_blob": "8e1a98b2ab5f0846f1b995e820b2424fe6b1c2ed"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_83944fe1/INPUT_FREEZE.json",
+      "bytes": 1816,
+      "sha256": "b0d2bcaa667ccc255582f44c188a2baac0a0310a632f4db3d9d0effb054ca066",
+      "git_blob": "afd7a3f8394fc8994d58c6bffdd0192f144708be"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_83944fe1/MANIFEST.json",
+      "bytes": 2718,
+      "sha256": "5099588bb3a866eb2a311e9d34f29d1c459fb08df6d6d8578680998606c8bc51",
+      "git_blob": "709e9fa608a3c546919d86bd3d72d5caf786a288"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_83944fe1/accept_repaired_contract.py",
+      "bytes": 27194,
+      "sha256": "5728da4c95850fd650d79181aff007141f671154af108670ae95a83b947e64cb",
+      "git_blob": "aaea356b03a0356af6ae1acd4973cfcc735b0065"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_83944fe1/reviewed_source/DESIGN.md",
+      "bytes": 6738,
+      "sha256": "db0f29ab816fa933f18272b8aae2869361a41730c6d315cf0b03189178c72c58",
+      "git_blob": "f261ff107d8e8e39e3c97a78172297c52af59d73"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_83944fe1/reviewed_source/analyst_duplicates.json",
+      "bytes": 399233,
+      "sha256": "6f03613836e17e0ec1016d5f244e998b29cc63bd6834dee7bc1f4c1648137c4b",
+      "git_blob": "f7def21694df5a8cd688b1b7ef90624102fb2b84"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_83944fe1/reviewed_source/contract_lab.py",
+      "bytes": 22912,
+      "sha256": "83944fe1d2090012203701cbd6f79acfa77555b3d7457cae351080eaddc38fb2",
+      "git_blob": "4b489a32686fd04c54601d0fbe59e6a0977c9747"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_83944fe1/reviewed_source/results.json",
+      "bytes": 35284,
+      "sha256": "8b68899dd005ab869fba204d5eb1949bf2739de30e3bb75f8ed5d5188f1e1ebf",
+      "git_blob": "63b986570c5814cfd632441f654dd5dc9e169cf0"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_83944fe1/reviewed_source/source_input.json",
+      "bytes": 40757,
+      "sha256": "a031323d82e99833ffdd5b35140ee6f686e65ca077a038cfaca57e280de00334",
+      "git_blob": "13863a91a4a6dbe7cf2b330700169232c602fdd8"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_f2f5aeeb/ACCEPTANCE.md",
+      "bytes": 8573,
+      "sha256": "54ee1d1751e72726aa73bcbb94c1746e03ed0a4077632d8ada1a9ef72c87796c",
+      "git_blob": "191ebc798df726d1914f472abe1808cfb70f267c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_f2f5aeeb/ACCEPTANCE_DESIGN.md",
+      "bytes": 1985,
+      "sha256": "9e645feda456c0d133d88192514150bf8abd940761cff89b7a0fd10b6cc5bc5b",
+      "git_blob": "fe4b2200285ecc64a09dd1249750329300efac19"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_f2f5aeeb/ACCEPTANCE_RESULTS.json",
+      "bytes": 136871,
+      "sha256": "abdebdbbd2374f5e18daaf2eacca66c4c56366962278197a71aca7679885d62a",
+      "git_blob": "aff9fad52a60e0f85eb97deb17a404081d78d40e"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_f2f5aeeb/INPUT_FREEZE.json",
+      "bytes": 3046,
+      "sha256": "65f05b7b4d93da366ff352e3ab63f0f2e7086f5219ed1808d92fa3e7524a4a7d",
+      "git_blob": "deb8db8242d5180301963e33e070c200baed7b36"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_f2f5aeeb/MANIFEST.json",
+      "bytes": 2892,
+      "sha256": "922d370c6dfa6fc98b79bfdca11c55f72dc7da90c47c570aab66631b5a346a36",
+      "git_blob": "7dbecae57fc2fb1a82be731046a9a216b643b1ae"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_f2f5aeeb/VALIDATION.json",
+      "bytes": 974,
+      "sha256": "5e791ae2eafac9971cc2c261d8d3e957c16c4a389fad8a68bead5f490c64c0b6",
+      "git_blob": "ff55cdf4fd5d65d8f3f851741fb9b7c94b6f108e"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_f2f5aeeb/accept_repaired_contract.py",
+      "bytes": 28177,
+      "sha256": "7574919a1a7832c70b6d49eeb98be95485fafc5e508a37c30aebaa1ed11a6a98",
+      "git_blob": "805559347c9292ff04ec650b056bcfdbba7df587"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_f2f5aeeb/reviewed_source/DESIGN.md",
+      "bytes": 6738,
+      "sha256": "db0f29ab816fa933f18272b8aae2869361a41730c6d315cf0b03189178c72c58",
+      "git_blob": "f261ff107d8e8e39e3c97a78172297c52af59d73"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_f2f5aeeb/reviewed_source/analyst_duplicates.json",
+      "bytes": 399233,
+      "sha256": "6f03613836e17e0ec1016d5f244e998b29cc63bd6834dee7bc1f4c1648137c4b",
+      "git_blob": "f7def21694df5a8cd688b1b7ef90624102fb2b84"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_f2f5aeeb/reviewed_source/contract_lab.py",
+      "bytes": 23128,
+      "sha256": "f2f5aeeb27b87809123148a642b9d6b848290a82033b7118614288432c8af014",
+      "git_blob": "08a4d4e1e83d2599e33eaa118b36ceb3a656f404"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_f2f5aeeb/reviewed_source/results.json",
+      "bytes": 35284,
+      "sha256": "97f51b947a3be417e132b08ebaa98b3f0546c1a629a459cc98fb32e6b0d6fb97",
+      "git_blob": "b1305b6977e6587524e15a5a399c5deecc8b0009"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_f2f5aeeb/reviewed_source/source_input.json",
+      "bytes": 40757,
+      "sha256": "a031323d82e99833ffdd5b35140ee6f686e65ca077a038cfaca57e280de00334",
+      "git_blob": "13863a91a4a6dbe7cf2b330700169232c602fdd8"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/challenge_intelligence_contract.py",
+      "bytes": 17390,
+      "sha256": "41e7073b9586c59a72dc25bb9c6d59350e5ae71ffec27add2ba03f9c5188474b",
+      "git_blob": "94dcdffb8ef0e628c2b7df1f5f8a3ccba33bdd1e"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/reviewed_source/DESIGN.md",
+      "bytes": 4790,
+      "sha256": "6432eb2f25be89f6fc77b6410dc398e34abf5263d031f9e4aa460b0639a0cde4",
+      "git_blob": "d5607a18d8bc36a2ea0176b90002dad29cfceb04"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/reviewed_source/analyst_duplicates.json",
+      "bytes": 399233,
+      "sha256": "6f03613836e17e0ec1016d5f244e998b29cc63bd6834dee7bc1f4c1648137c4b",
+      "git_blob": "f7def21694df5a8cd688b1b7ef90624102fb2b84"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/reviewed_source/contract_lab.py",
+      "bytes": 19558,
+      "sha256": "377dde6af13c890d5b694769408ceaea2515e2a0b4018998128eeb86e150d559",
+      "git_blob": "d98837f8f18d7f5afc27c9ebffd023487dd053d4"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/reviewed_source/results.json",
+      "bytes": 34880,
+      "sha256": "8389a41b28453dae511f46607d783b8aa41986e97380adb4e056bee5fcf9c2cb",
+      "git_blob": "e52812df75f116a7e161a219ab42132551910754"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/reviewed_source/source_input.json",
+      "bytes": 40757,
+      "sha256": "a031323d82e99833ffdd5b35140ee6f686e65ca077a038cfaca57e280de00334",
+      "git_blob": "13863a91a4a6dbe7cf2b330700169232c602fdd8"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/CROSSCHECK_INPUTS.json",
+      "bytes": 1959,
+      "sha256": "9d04dab0fddb2e5404476e2456bda817562d5c87e8e70c39c2758db3ecfd152e",
+      "git_blob": "512d8c509f78e4e6328e99bcd4aac5ec93f0a71e"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/HARNESS_NOTE.md",
+      "bytes": 1541,
+      "sha256": "0f8c7eac23d0edb0e1499782b273f633b1021a6ceea2deae7e7544e959f807ba",
+      "git_blob": "243f419ae50e4901c5b990eae933e2588eb39c18"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/INPUT_FREEZE.json",
+      "bytes": 1022,
+      "sha256": "11068f4c1f4d37f00d14d18a8d4e292b224427af78175278b91d43b688bbe42c",
+      "git_blob": "398ca1173c3b7458ced0453036340dac549a2332"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/MANIFEST.json",
+      "bytes": 4978,
+      "sha256": "649aa9045bcbf29e043acf39a815fead80fdb3cee2c3afda865f458ebfd7dccf",
+      "git_blob": "8ffba07b9c0b610f9f59cb7662270e3f664402d8"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/REVIEW.md",
+      "bytes": 8389,
+      "sha256": "cd6ef610fee232c492c1ca09087480e5b3d1dea42aa4c5dfe5260bcbbdc2e66d",
+      "git_blob": "e42b337cf90fdc9f835429ae0931d01f0cce0d5e"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/REVIEW_DESIGN.md",
+      "bytes": 2909,
+      "sha256": "82a1e0222bb6c3a802a981b04493b30821f9193ad9d1f018e4bcd29765a5618f",
+      "git_blob": "6e41fe8dfb0b80667badc5f3bd4c7bd8d1b4f44b"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/REVIEW_RESULTS.json",
+      "bytes": 28933,
+      "sha256": "cd57b3a0ca05d5b7b88c47207eedeeabd85cba43259651240d1257b6a4a25e8b",
+      "git_blob": "662b3b14b93ec9ed247394afe00a872308c90eb7"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/VALIDATION.json",
+      "bytes": 2771,
+      "sha256": "dc3abb04872dd1ee57eca68b22ab4df18d691cb289e26587906934566b9354a5",
+      "git_blob": "db4a6d704a4aabafb37a7ecd89fc7157a9011b46"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/pinned_china_extras.py",
+      "bytes": 22092,
+      "sha256": "136ad143dc88aec330085f00f61e1900b5e0f643870a549a22801861163057f1",
+      "git_blob": "11219d650fc06f685b5effbd14f809b97cdcad74"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/review_margin_horizon.py",
+      "bytes": 21264,
+      "sha256": "113e7ba89c7b3bfb855f77f64c949215582dfe84d0e7b206f9ee465010a2c9cb",
+      "git_blob": "587a8e99dc7bd0efd61e33425ce14946f0aad364"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/reviewed_addendum/MARGIN_EXECUTION_RECEIPT.json",
+      "bytes": 469,
+      "sha256": "936149532bc1ad92cdf2e58386e2528b443fce3e8e0b6f1babae698808704a02",
+      "git_blob": "3e0fa871ed3541a5b0e784c1bad8d7348e7b0b94"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/reviewed_addendum/MARGIN_HORIZON_MANIFEST.json",
+      "bytes": 1622,
+      "sha256": "d21ce925119d58094c3248a399374ddd43a4292332588eb92e06046ccb7e8ada",
+      "git_blob": "7cc9ac43b5a0fd7358d4b1cf3d0e079fedf8ae4c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/reviewed_addendum/MARGIN_HORIZON_TRACE.md",
+      "bytes": 6248,
+      "sha256": "9b82fc4f8afd604658c63a1ba5e128a297ccd96f5209ca28dcea9bfe8ac7562e",
+      "git_blob": "927ee33230596f09379f64aaf672bcc3acc38f7c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/reviewed_addendum/margin_horizon_development/MARGIN_EXECUTION_RECEIPT.json",
+      "bytes": 596,
+      "sha256": "78b3bb8ced8d25b629dd871094e1a0a6e34d7a5b83acea514ea6c851e5488e13",
+      "git_blob": "68b3fa6c44c98db5a9531d91d48e190cb8487915"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/reviewed_addendum/margin_horizon_development/margin_horizon_probe.py",
+      "bytes": 6752,
+      "sha256": "bd3875d2cf30fb997b0b04ebbcc72d021d74366977c386526ca77bfc9835c665",
+      "git_blob": "0592add235d596cd5c0fcdabd962c8201bc95423"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/reviewed_addendum/margin_horizon_development/margin_horizon_results.json",
+      "bytes": 15844,
+      "sha256": "75e4780df5326f729657c868c3aebc970d408211a38b421a4da43273e3a0f90d",
+      "git_blob": "d4175489edd3ca6c9474dea1e76200434b28b180"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/reviewed_addendum/margin_horizon_probe.py",
+      "bytes": 8000,
+      "sha256": "1ad0ed0e5bd71011fff7b0f7fe5c54a75d9276528798c2b3ee8df0b4cbeb9fc4",
+      "git_blob": "b4b59799b2c55a015485ee70c461085a67efb344"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/reviewed_addendum/margin_horizon_results.json",
+      "bytes": 17656,
+      "sha256": "b64f137631c288b9bf85fa4adbf7f3cd4c013fccd2ab316aa83affa8c3bd923d",
+      "git_blob": "7d6c22832df2d9dae93910f7e270a3b30603c271"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/reviewed_addendum/pinned_margin_collector.py",
+      "bytes": 12249,
+      "sha256": "55fb01d20519069aec85f23328a5507c95d86cec2d2fd6dbb3e14eb059b0cdd6",
+      "git_blob": "0d5fc5fbe92a61a4327a59359f3b40fc6a9df801"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/verify_manifest.py",
+      "bytes": 3586,
+      "sha256": "4bc736504af45971c7aca6e23407088ac3ec2cb788fb83aef73dd489d70aa02d",
+      "git_blob": "b272d11bf783f3c2eb9df66edec7099477a9d100"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/matched_controls_review/MANIFEST.json",
+      "bytes": 2733,
+      "sha256": "17536023379200b2965964693da5ea2d9f863a4218ec82888a69ff6ecd2052a1",
+      "git_blob": "1d5f0c0a489e0d583af592831b4b34f6e76deb8c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/matched_controls_review/REVIEW.md",
+      "bytes": 11625,
+      "sha256": "44c9137a52b295e0beae98463e0c2a99e7aa49221d0b49ea3c67bde95d3bad0f",
+      "git_blob": "1d5863897ce6e98cd19e391fae19286d3ef86a43"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/matched_controls_review/REVIEW_EVIDENCE.json",
+      "bytes": 157990,
+      "sha256": "6d8fa5aa3126b4b91acd229db83cc18b3266bb2a7d36817fc12f45ca155327d9",
+      "git_blob": "3d840d86b29078bf7792dfec7adcc319fe49e7c1"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/matched_controls_review/independent_checks.py",
+      "bytes": 29172,
+      "sha256": "3865c12dc0cc48b4bcb2193d302591416ce12905ccd5ec324d6114acb3279969",
+      "git_blob": "a7788b7aa198d57a448a91bd0fa02307572e014e"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/ACCEPTANCE.md",
+      "bytes": 10882,
+      "sha256": "aa41300d26642ae1f045bc05de0da74d0ca697ccc87b1fb0fd9d90757ea85eed",
+      "git_blob": "c2e5f2c0700b1f44d6a2a1df2caad0af387f7bc4"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/ACCEPTANCE_DESIGN.md",
+      "bytes": 4214,
+      "sha256": "dba5b858f027bc330da01d572b7f11e9b03838bbd261fc7c39dc2a111ca8185d",
+      "git_blob": "79e4736d801fccc8fc78602fd6ec711ca8238243"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/ACCEPTANCE_RESULTS.json",
+      "bytes": 30201,
+      "sha256": "bd586f56cde862a215bbc27b206835320a3fbff39e33dee3002901d93edc8f62",
+      "git_blob": "5a1587369b549cd991ee9ef8e5c87bce65445136"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/INPUT_FREEZE.json",
+      "bytes": 2047,
+      "sha256": "d5023a8a2f9758b537a6561da00f29e12fc469bc3c75188031f579e907a8b81f",
+      "git_blob": "4278c2c8f6bb48b242b8dd0c867766eb5f2dc675"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/MANIFEST.json",
+      "bytes": 8177,
+      "sha256": "8fa6b5fdcc7cea12842d8513e07c05088df15f0f0c2c0b1bf014e98e9381256e",
+      "git_blob": "560aaa62d174c1e2f0cdff624ec168f3c4def431"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/VALIDATION.json",
+      "bytes": 1511,
+      "sha256": "cefaeaa69d90dd880acf3476e8d164fe43a88d2233a7066a8e8f0a79bb29d940",
+      "git_blob": "1003f84a462898671a35aba650f56205285ffc71"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/accept_vintage.py",
+      "bytes": 32172,
+      "sha256": "78b558dd988c55d79349a136647aa59257b74f7872c79ae7c061a6761e00eefe",
+      "git_blob": "84c58923d582e631f48dbaf286dede05a1c0278d"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/independent_fixtures.json",
+      "bytes": 11646,
+      "sha256": "3dd283d56a15cf7d035e3644d17e7cdc58582dc1d58fef3d241ca4d706bcbbc5",
+      "git_blob": "31ff6ec7e4912fd17b89dde0caeac8a557cc232c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/prior_findings/vintage_repair_interface_review/EVIDENCE.json",
+      "bytes": 4801,
+      "sha256": "4c32c60a2b19f4fd3773ab683b68b49d6c72d45bba38656c52b49a7fbd8d8004",
+      "git_blob": "4de7c61757aba9803e15271612630d7ca51a45a2"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/prior_findings/vintage_repair_interface_review/MANIFEST.json",
+      "bytes": 810,
+      "sha256": "9a98ec2d3be3137892913a4f722a369b6b7c931625b8acc8d52ca6b3d2973797",
+      "git_blob": "842e677adc46dc8e2440b68f46d3c138ee93b1eb"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/prior_findings/vintage_repair_interface_review/REVIEW.md",
+      "bytes": 2412,
+      "sha256": "a3be8b7f6a13d1eaac637daaffd6e21ce65f7df49bedc8c45caa338ed23dd392",
+      "git_blob": "3fb44227be75ccc57b2fb383388680bb9b328a55"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/prior_findings/vintage_review/VINTAGE_INDEPENDENT_REVIEW.md",
+      "bytes": 12489,
+      "sha256": "e7ad8ac0a3aeec15183c542ce8d7f7ba691b19404730e552e28df99f7bc8160b",
+      "git_blob": "b2c23ad80b72496d628f2488954e20f20517a837"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/prior_findings/vintage_review/VINTAGE_REVIEW_MANIFEST.json",
+      "bytes": 2236,
+      "sha256": "be408edcd861d6cbe3d82adc7108638eedd3a80bc83720291cb34860d6cb946c",
+      "git_blob": "8e5b754aa55661c79364978858930e8ab594c51a"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/prior_findings/vintage_review/vintage_review_results.json",
+      "bytes": 19970,
+      "sha256": "a9d9a47f2e7524237e1a1b6a42717ea7705c57f6597c44cd11f3d11a2efa5c01",
+      "git_blob": "36a58897dc276bd261d8e791f8b3312a8780cd56"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/producer_replay/contract.py",
+      "bytes": 17419,
+      "sha256": "ea8c3d3da6b3d064563f64e3f78b6e4590530fc51bbe92535cf2cce7e1c2bdef",
+      "git_blob": "9bfddf6481d1b56a6b2d7fce43343e9a07c0edae"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/producer_replay/execution.log",
+      "bytes": 238,
+      "sha256": "a05bd7a8d4cc27036848819104e3ee2a569d0fe1839fe0837e2b5b6aae148673",
+      "git_blob": "c12ce65227f7d6b2201d387bb111abfafdf0e8d6"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/producer_replay/fixtures.json",
+      "bytes": 14417,
+      "sha256": "1c53a249606c1c8b8854474c5e670c2ae0e5b457e00229b0822fa5ae59e6fea3",
+      "git_blob": "185cdf9f05c6b1add76af5013ea8559a8169c6be"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/producer_replay/results.json",
+      "bytes": 24976,
+      "sha256": "9cc6b3c39a93487314f49b8117003f9d06c185322fb8685c8d365d16e4a405ce",
+      "git_blob": "b9fc413808e92d991ba2d289e055f0ae6cb3cfe5"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/producer_replay/retention.py",
+      "bytes": 1352,
+      "sha256": "8da1540ce2d37806dfada0f5cd4ceddc65bd4bc9ebfb926cffc1e727ee95877b",
+      "git_blob": "b21a6931903771fa9167ab8f2f75bd3284e924ff"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/producer_replay/shape.py",
+      "bytes": 1221,
+      "sha256": "bb40201be2308dc891e343ccc5a513db445bd9d3a340356475c549b2b81705c7",
+      "git_blob": "064cd1cd9c6ed795328c43cd0e19d3f784625224"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/producer_replay/verify.py",
+      "bytes": 24563,
+      "sha256": "99c4f37a099a138d4887c403dea20cb20111810e135ed9f309bd540793258a72",
+      "git_blob": "1f4a4969a035bcaf2ea996f36356369d36b5e7ac"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/reviewed_candidate/DECISIONS.md",
+      "bytes": 6487,
+      "sha256": "acbf9537ca282188495be3204b367ac83cc173a658ea344078ad2d002b056196",
+      "git_blob": "eeaf9c0b64d86551c44e73fd28385abaa0640dd0"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/reviewed_candidate/DESIGN.md",
+      "bytes": 4129,
+      "sha256": "e9ca4221c2daea2217f3448ea21e35222e95eb79b73040bb26912a608d798fd4",
+      "git_blob": "88f24adb91c2e922f8e39a3586857e7cc5c39af4"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/reviewed_candidate/DEVELOPMENT_NOTES.md",
+      "bytes": 1669,
+      "sha256": "e7b903194a73a65365d0dc9cd40c96352ccbac0faf1b1b0eb7bcf3e7bbbefd80",
+      "git_blob": "b08e1e57541f923fd726bf33e51c676b22c0a35a"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/reviewed_candidate/EXECUTION_RECEIPT.json",
+      "bytes": 654,
+      "sha256": "b16205fa927ec8f575abd2c85e45d28933787c01a5acc3f4d760b365cf4b102d",
+      "git_blob": "e2ea6a73163736f89f21318680f2c9e6e991e054"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/reviewed_candidate/MANIFEST.json",
+      "bytes": 2317,
+      "sha256": "2ec4ad61150efa1ad01b10137ed3d1a0070ba6412770edc2f4e79a098945eec5",
+      "git_blob": "e789b5946bf311814a974c136a837fd24cc11116"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/reviewed_candidate/contract.py",
+      "bytes": 17419,
+      "sha256": "ea8c3d3da6b3d064563f64e3f78b6e4590530fc51bbe92535cf2cce7e1c2bdef",
+      "git_blob": "9bfddf6481d1b56a6b2d7fce43343e9a07c0edae"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/reviewed_candidate/execution.log",
+      "bytes": 238,
+      "sha256": "e7c280f38c08ba04e2b9ad9ead912de8cbb39e63d4fdaf807f8d2c83a2e65671",
+      "git_blob": "8f769bf595e36ed1868b8311b7bf8df45f9fbe44"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/reviewed_candidate/fixtures.json",
+      "bytes": 14417,
+      "sha256": "1c53a249606c1c8b8854474c5e670c2ae0e5b457e00229b0822fa5ae59e6fea3",
+      "git_blob": "185cdf9f05c6b1add76af5013ea8559a8169c6be"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/reviewed_candidate/results.json",
+      "bytes": 24976,
+      "sha256": "9cc6b3c39a93487314f49b8117003f9d06c185322fb8685c8d365d16e4a405ce",
+      "git_blob": "b9fc413808e92d991ba2d289e055f0ae6cb3cfe5"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/reviewed_candidate/retention.py",
+      "bytes": 1352,
+      "sha256": "8da1540ce2d37806dfada0f5cd4ceddc65bd4bc9ebfb926cffc1e727ee95877b",
+      "git_blob": "b21a6931903771fa9167ab8f2f75bd3284e924ff"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/reviewed_candidate/shape.py",
+      "bytes": 1221,
+      "sha256": "bb40201be2308dc891e343ccc5a513db445bd9d3a340356475c549b2b81705c7",
+      "git_blob": "064cd1cd9c6ed795328c43cd0e19d3f784625224"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/reviewed_candidate/verify.py",
+      "bytes": 24563,
+      "sha256": "99c4f37a099a138d4887c403dea20cb20111810e135ed9f309bd540793258a72",
+      "git_blob": "1f4a4969a035bcaf2ea996f36356369d36b5e7ac"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/verify_manifest.py",
+      "bytes": 1359,
+      "sha256": "2a31a4ba23f1a0cd3f6823a41c400f7003af24c97245b23f9268395b1d59234c",
+      "git_blob": "da413583f600965cc806837eb5db382c2d1e96b9"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_interface_review/EVIDENCE.json",
+      "bytes": 4801,
+      "sha256": "4c32c60a2b19f4fd3773ab683b68b49d6c72d45bba38656c52b49a7fbd8d8004",
+      "git_blob": "4de7c61757aba9803e15271612630d7ca51a45a2"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_interface_review/MANIFEST.json",
+      "bytes": 810,
+      "sha256": "9a98ec2d3be3137892913a4f722a369b6b7c931625b8acc8d52ca6b3d2973797",
+      "git_blob": "842e677adc46dc8e2440b68f46d3c138ee93b1eb"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_interface_review/REVIEW.md",
+      "bytes": 2412,
+      "sha256": "a3be8b7f6a13d1eaac637daaffd6e21ce65f7df49bedc8c45caa338ed23dd392",
+      "git_blob": "3fb44227be75ccc57b2fb383388680bb9b328a55"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_interface_review/challenged_contract.py",
+      "bytes": 17329,
+      "sha256": "ad90cf372a95ae7ca05691681d95ea9a18e784a1379066e19e15fa05b0ef6b7d",
+      "git_blob": "d4c02b4a05dca96fa8fc23bdc34e4ec707de6c7e"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_interface_review/probe.py",
+      "bytes": 4988,
+      "sha256": "7190b80f2f11d8ed28fbc576749338aa9799500e998b75c60f042c0f41f5242f",
+      "git_blob": "bfa9800c9a2a8e381349173bb6ee5e271aeea7ad"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_review/VINTAGE_INDEPENDENT_REVIEW.md",
+      "bytes": 12489,
+      "sha256": "e7ad8ac0a3aeec15183c542ce8d7f7ba691b19404730e552e28df99f7bc8160b",
+      "git_blob": "b2c23ad80b72496d628f2488954e20f20517a837"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_review/VINTAGE_REVIEW_MANIFEST.json",
+      "bytes": 2236,
+      "sha256": "be408edcd861d6cbe3d82adc7108638eedd3a80bc83720291cb34860d6cb946c",
+      "git_blob": "8e5b754aa55661c79364978858930e8ab594c51a"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_review/pinned_china_prices.py",
+      "bytes": 6386,
+      "sha256": "fddb468e6cb2c6a1bf86235c337d6ad3b52cb34b0702510f3352c91b3e9a3b5a",
+      "git_blob": "4324c7299af32abd22380488e86d97abdc552f72"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_review/producer_benchmark_replay.json",
+      "bytes": 3877,
+      "sha256": "d8520a68e6fded2c3d1c87a10cecd782cb08bf078a4147867a6eade9946dc7d4",
+      "git_blob": "46536cf7e7b98cfbfe44dfe8e3d9ef2b5bb1d11a"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_review/producer_contract_replay.json",
+      "bytes": 5629,
+      "sha256": "6d1c2e671527006b4bb243525f40676d8de0d99196ea2f7867f405475d1d67f0",
+      "git_blob": "b99d9c946933316b67f2e5ebd5ac44111e6a8957"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_review/review_execution.log",
+      "bytes": 339,
+      "sha256": "03f0be068165ca1c4f1f6e999b7af5064d364f54884ff0f6b53f9924751c31f7",
+      "git_blob": "1bb6f5cd9f359eb8d174175fdbd7c083b6d73781"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_review/review_execution_receipt.json",
+      "bytes": 706,
+      "sha256": "34f8b750d6fad5b52082a802e6474a087021d970afced1f0a13ebf7c85d35178",
+      "git_blob": "739272dcc7d2b36d435cda965b847ff2d15e851e"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_review/review_vintage.py",
+      "bytes": 27314,
+      "sha256": "2b7031b6d0b454eadf304c0173e8b72aa54219d9962b9524f92d668cd58834f2",
+      "git_blob": "6b9aa84e481efffa3d09b983619d1abb7d49cf3c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_review/reviewed_input_identities.json",
+      "bytes": 3916,
+      "sha256": "094791f7e82086b8fe8319cf81ef680e052d6a982223cb4d0912098865f7ca63",
+      "git_blob": "c4741d54e0e23750ba08661d81fce74bf452f75c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_review/vintage_review_results.json",
+      "bytes": 19970,
+      "sha256": "a9d9a47f2e7524237e1a1b6a42717ea7705c57f6597c44cd11f3d11a2efa5c01",
+      "git_blob": "36a58897dc276bd261d8e791f8b3312a8780cd56"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/DECISION_MEMO.md",
+      "bytes": 13234,
+      "sha256": "64c0b5ec1fa6dd4122a4dc2ed2c6fadfcc3fbb691320eca375a7a239c0e4774f",
+      "git_blob": "d74a2dd1b68367b4da4cde933d0e6057bcb51c42"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/DESIGN.md",
+      "bytes": 3255,
+      "sha256": "a5515c891dd802a0e0a914ad02d254077496cd223e5a4818e5932832e186d213",
+      "git_blob": "5b168e032b0768afde15b200102a1f9b485cdf75"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/HARNESS_AMENDMENT.md",
+      "bytes": 1215,
+      "sha256": "923409e38e6072bc1beb1a4b5943f0536b4f6cff5c2a55bef04b4fbe79a0f467",
+      "git_blob": "32d8484b13578876085604a858284c96cff30823"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/MANIFEST.json",
+      "bytes": 5202,
+      "sha256": "2cb1b5f7cfae2332ada90e1ea1abe1c05c3f055853b751002b3ac7ddaa70dff5",
+      "git_blob": "a1cd2dbebe914f6ebd671c69939b3c03a438f0eb"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/TRADABILITY_INPUT.json",
+      "bytes": 1801752,
+      "sha256": "8106d35c0caccfdc000f50652cf5a673605cd2d6e11882ccb28741e85490f7a3",
+      "git_blob": "999198e45b68ea3a7f05b82a67735bf6773c2c0b"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/VALIDATION.json",
+      "bytes": 1426,
+      "sha256": "9a82d50bee39f99556ef3c6ac0761a0419bc8265b1618f9c7dba63cb846100be",
+      "git_blob": "e9e771086361cd685f07056ba12e1c73cf63c35d"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/WEIGHT_INPUT_FREEZE.json",
+      "bytes": 641,
+      "sha256": "6bddcc157b3b06c51a0f2a3a20723d42a55f6025a26e65d8cfb38b2776413ee2",
+      "git_blob": "8a18a3250f09f16292594ff856ce2cd5821da824"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/extract_tradability_inputs.py",
+      "bytes": 19298,
+      "sha256": "9a186dc2905a0bf3a883dba2f2fb23193b251c9e98f9a3307a68549536f0e144",
+      "git_blob": "8a8a58bc134e5fc6699b2c4e7e539b5cb18fc5c4"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/extraction_receipt.json",
+      "bytes": 1610,
+      "sha256": "669c588667799348b412b61efe9faad6155ad8f53f9c62444c68e604e37084b2",
+      "git_blob": "5ccd0681f0a56f436556ee7aec7ae1bbed5db737"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/harness_attempt_missing_numbers/TRADABILITY_INPUT.json",
+      "bytes": 1363431,
+      "sha256": "6f361fcf8dd63731a7f65da6d64751b0d158f90372712b4999a7d1dbee61c560",
+      "git_blob": "83b803129652b006346d02ffc36f7b41b630ae64"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/harness_attempt_missing_numbers/extract_tradability_inputs.py",
+      "bytes": 17755,
+      "sha256": "699389b668d2cd6e82df9459b482dc712874edcab03bc174fefba0928ba7b96f",
+      "git_blob": "ebace336e93fda2333c2dc637d201fc604917fef"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/harness_attempt_missing_numbers/extraction_receipt.json",
+      "bytes": 723,
+      "sha256": "3acef7b60494d29cdd89f8fc17cd74494af7df92a48e503a60f81d072296479f",
+      "git_blob": "cb9560c882038071e3070f665c57d4483f4cc17e"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/results.json",
+      "bytes": 31128,
+      "sha256": "44da98edcea79e6531df34719f934d42270e961a09ebe1925d677c1420978053",
+      "git_blob": "ce54a6c294655ecad096b05c99ecba2f5600ccd3"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/run_tradability_lab.py",
+      "bytes": 32037,
+      "sha256": "30099f3140e8bdaa9f727b75a61fa3ff46fb0c35983389472f60ea928417eca7",
+      "git_blob": "7a66b61a410b325940bd47839613f10f0ade093b"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/verify_manifest.py",
+      "bytes": 1289,
+      "sha256": "6d5911e14d5f3aa9ba6adfe4dd0d1d3e01e1d272ac3e8324464275d7a254c2be",
+      "git_blob": "d13eb64b68db10c37462bd348fc40368b05cd87b"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/weight_replay/weight_contract_audit.py",
+      "bytes": 8090,
+      "sha256": "9741f0e9e449271fb60bb67f2db3b21d7cb6e2766a247247e942b8910c22fba8",
+      "git_blob": "e2f9acf816c2ef59fa77728ed1d6a6e6e128fb13"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/weight_replay/weight_input.json",
+      "bytes": 63669,
+      "sha256": "30cb9996bf6a39ae1323f20e705ad6e0d685a5a074ea1571dd7304ae57bd85dd",
+      "git_blob": "ce06df72535227b45ef29c8ad6481b011594ec22"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/weight_replay/weight_results.json",
+      "bytes": 8432,
+      "sha256": "82d56837591e19e3af9c1958084aec769ea319dd6c1ee8ded2b7ada1018bb884",
+      "git_blob": "ff2ca6b758323ca79d5761bd1a6cd7f301787243"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/weight_reviewed_source/WEIGHT_DESIGN.md",
+      "bytes": 1494,
+      "sha256": "f9c168b5baa3aacf262c0cf49ef69d5ce11a052f991627b79cacf82ab69d360c",
+      "git_blob": "243eea69279eccd5bb0a306ece10f5abb99443a6"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/weight_reviewed_source/weight_contract_audit.py",
+      "bytes": 8090,
+      "sha256": "9741f0e9e449271fb60bb67f2db3b21d7cb6e2766a247247e942b8910c22fba8",
+      "git_blob": "e2f9acf816c2ef59fa77728ed1d6a6e6e128fb13"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/weight_reviewed_source/weight_input.json",
+      "bytes": 63669,
+      "sha256": "30cb9996bf6a39ae1323f20e705ad6e0d685a5a074ea1571dd7304ae57bd85dd",
+      "git_blob": "ce06df72535227b45ef29c8ad6481b011594ec22"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/weight_reviewed_source/weight_results.json",
+      "bytes": 8432,
+      "sha256": "82d56837591e19e3af9c1958084aec769ea319dd6c1ee8ded2b7ada1018bb884",
+      "git_blob": "ff2ca6b758323ca79d5761bd1a6cd7f301787243"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/verify_delivery.py",
+      "bytes": 3945,
+      "sha256": "3820232b8224d37d0ffb43d9f4e0b4a7c9c5b6424189b7e49b7d96b09d54a943",
+      "git_blob": "ed41ce03c6d57603d6bdda572df890675899eba2"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/vintage_lab/VINTAGE_FINDINGS.md",
+      "bytes": 19521,
+      "sha256": "5b0fd84b01371502ddfdd758a93083d6ce95d8e37e7d76d4281cc68477766f15",
+      "git_blob": "6216c8a3bc3f8e4ee675ab244dfe96b72434961e"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/vintage_lab/VINTAGE_MANIFEST.json",
+      "bytes": 4182,
+      "sha256": "7ffe548de43b85e2d1f4fc3ab8b06710ffd09c902bbe251ac6a5f517869ba9b3",
+      "git_blob": "e47c9546c555ad062b6bdfdbf1b6e0eb7620c4cd"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/vintage_lab/action_title_leads.json",
+      "bytes": 17936,
+      "sha256": "0c09899c63768695767386adf813049171814092722c2a117237b9bb82413f8b",
+      "git_blob": "48d0848384622544cb2ed0c9d33d2567550280a2"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/vintage_lab/benchmark_retention_checks.json",
+      "bytes": 3877,
+      "sha256": "d8520a68e6fded2c3d1c87a10cecd782cb08bf078a4147867a6eade9946dc7d4",
+      "git_blob": "46536cf7e7b98cfbfe44dfe8e3d9ef2b5bb1d11a"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/vintage_lab/benchmark_retention_probe.py",
+      "bytes": 6581,
+      "sha256": "0aefc7ab01204b08af88d6807993647f80dcf2d906e5e8e34d7904be1c9e845c",
+      "git_blob": "c635cf536b77a13b89b9a2601d7e1aaee46acc1d"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/vintage_lab/benchmark_versions.json",
+      "bytes": 7520,
+      "sha256": "c25ca986f0b509893b7950d0c337801c0775121b0bb3f3e8c9ac5d7c408e43c6",
+      "git_blob": "1c782b020096f69ebab4ce63b888b30fd589b43f"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/vintage_lab/collect_vintage_evidence.py",
+      "bytes": 18131,
+      "sha256": "6e1a1d138f2a8101b5500ac815046b254c593954bf82344b6698b60c84bd237d",
+      "git_blob": "617c6002005593108ec071977a57f79dc8d1a1a5"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/vintage_lab/entry_comparison_rows.json",
+      "bytes": 1431429,
+      "sha256": "25160d291bec91cb7ba6fe77ac1e69ed5043f89f507dd369d4b32d0314c2e30c",
+      "git_blob": "f84b50fba004235823dff6ae73fde4ae343267b8"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/vintage_lab/fill_vintage_contract.py",
+      "bytes": 6882,
+      "sha256": "522d81a9d9d647d9a5b1658c5864dc00aea315e871eb91a51060a77869986fbc",
+      "git_blob": "94b46c08dcfcaf37977598afac9d8f12ec53ee61"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/vintage_lab/historical_shape_cases.json",
+      "bytes": 93957,
+      "sha256": "7f90be3d0289490ab494c5cf45bf582f9cf916af81f2e300d82dad9c9dd61e32",
+      "git_blob": "ae48b8237b14fd632f66496c2964a5ef129fb60c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/vintage_lab/historical_witness_rows.json",
+      "bytes": 1398096,
+      "sha256": "aaf1d164616d2cd459774360cc8893d9ae181a56caeaa77b2f2aa05a827805fd",
+      "git_blob": "9afb1ae98c15aa29a9c5fff432b201ebe4821465"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/vintage_lab/output_manifest.json",
+      "bytes": 833,
+      "sha256": "a94df796ef4abb655a802276feff0586810a532bf09a8fe1bce3fc66e2501bb3",
+      "git_blob": "2ea188304b038db0d42d4d966e57a92ae3c541d8"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/vintage_lab/probe_supporting_sources.py",
+      "bytes": 6816,
+      "sha256": "fc91e93f70b9126ef406b3985ba6e7c5ff13cceacdbdd2f9edcb71074d8051d9",
+      "git_blob": "ca8425e4fe7caeba0803c52559430072edb7d5df"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/vintage_lab/supporting_sources.json",
+      "bytes": 16710,
+      "sha256": "2026d9ef086ecdea845211d4a220187a1ac810ad99beb7cdad028e1171b87efb",
+      "git_blob": "6d7ec4c60d579f0123f358c33d87d5490940def8"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/vintage_lab/verify_vintage_contract.py",
+      "bytes": 8451,
+      "sha256": "2b07fa2faf58531b653f56a0a086bc35258eff0f90456239a946e136b2cb4450",
+      "git_blob": "9b3cb8662523d39f213be0cdd3940a9f22d73e2c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/vintage_lab/vintage_contract_checks.json",
+      "bytes": 5629,
+      "sha256": "6d1c2e671527006b4bb243525f40676d8de0d99196ea2f7867f405475d1d67f0",
+      "git_blob": "b99d9c946933316b67f2e5ebd5ac44111e6a8957"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/vintage_lab/vintage_inputs.json",
+      "bytes": 770285,
+      "sha256": "e064dcbc17e0081aab26cb079e41f940c2f387fca8c47bf6ff9302043954eac5",
+      "git_blob": "68f4e73aba2097178c73a82d2cb68d9e75435c86"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/deepening_20261009/vintage_lab/vintage_results.json",
+      "bytes": 24924,
+      "sha256": "0c702ad83845c50c2418ee8c22a522a3701147e1c4d1d62c52cda6b5747c79d3",
+      "git_blob": "fc83fa4f5d4dbdf515537e373c334981f349e1af"
+    }
+  ],
+  "limits": [
+    "Content identity and bounded research acceptance only; no production, natural source authenticity, original fill or ranking improvement proof.",
+    "The remote payload receipt is written after the payload commit and then sealed in a separate evidence-only commit on the same carrier."
+  ]
+}

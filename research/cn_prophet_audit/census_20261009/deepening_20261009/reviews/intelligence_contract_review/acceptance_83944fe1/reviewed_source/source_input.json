@@ -1,0 +1,1523 @@
+{
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "as_of": "2026-10-09",
+  "input_hashes": {
+    "site/factordata/china_standouts.json": {
+      "bytes": 5870788,
+      "sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+      "git_blob": "d67a21a962a34c7ad10a601a5c565320e21890e1"
+    },
+    "data/china_prophet_rank/candidates.parquet": {
+      "bytes": 5474933,
+      "sha256": "18e6f74f5fe07dceb6b1fe6862fb723c0b60867afa0e5efbd8aa52e3bf7951d0",
+      "git_blob": "976bd23f038ae31786234d2c5d343f9799b805f6"
+    },
+    "data/china_analyst/forecast.parquet": {
+      "bytes": 164051,
+      "sha256": "56cd7db30dec133459821b62dde4c68b71d8fdae011e6e8af58ca47a33f09562",
+      "git_blob": "5dc0dba87a6e2194eb6bf70deaee01848474f6b9"
+    },
+    "data/china_valuation/percentiles.parquet": {
+      "bytes": 94481,
+      "sha256": "b95d3b899583f0dd36e85554f512f329c98f4b049ee6bc6413657b080278f4b8",
+      "git_blob": "4f51bb7b73bdc1d4b7c4aee3a3f9586ed4c52a94"
+    },
+    "data/china_margin_detail/detail.parquet": {
+      "bytes": 3713664,
+      "sha256": "64b752ada586acd6af7ac19985a3ee4aa9b8e2bebf686de7ab66471cb29097e4",
+      "git_blob": "cc0ebb8e78c6280586f0997dd2dd8ba0697095f9"
+    },
+    "data/china_comment/detail.parquet": {
+      "bytes": 321055,
+      "sha256": "ef611f9d79510075ade0c001a992f48d4818e8a01efb28edbefda541fd590d93",
+      "git_blob": "d8602ed84c3a095640e44945856e901f52b9c17e"
+    },
+    "data/china_lhb/detail.parquet": {
+      "bytes": 289351,
+      "sha256": "548192fa07f68473c4bdd7eee1a19aad03f6e989299bbc63f7a73f76de93d253",
+      "git_blob": "65c14c6ec81090a62f88d84359e16fd747d27ee5"
+    },
+    "data/china_block_trades/detail.parquet": {
+      "bytes": 15284,
+      "sha256": "36672d88053509077321a0b1d846496f7d2fc65325c94e1c981028e4f088b856",
+      "git_blob": "6725a39a941f1e8589dd1ba9c81864ad047ab1ee"
+    },
+    "data/tushare/moneyflow.parquet": {
+      "bytes": 264259,
+      "sha256": "934aeb7dcdba19c1b59ea47fd8a6df067b773c3970405a26294261270b446c4a",
+      "git_blob": "0b4b85795c892803334f0ed070a822353adc59e7"
+    },
+    "data/china_comment/attention_hist.parquet": {
+      "bytes": 846334,
+      "sha256": "2ca9824b236530468b54440a657ae633fe233ae7b71cadc64f882ca1b2f90343",
+      "git_blob": "0bfd46e6b9f3027b219e325de708d91eb96a6041"
+    },
+    "engine/china_altdata.py": {
+      "bytes": 19189,
+      "sha256": "8fbff00279a62e19fffffdb3b6f6def795facc8d2548836ef19510d3990899c0",
+      "git_blob": "1665966a51112807f09b6c7336f49940eb752f32"
+    },
+    "engine/china_extras.py": {
+      "bytes": 22092,
+      "sha256": "136ad143dc88aec330085f00f61e1900b5e0f643870a549a22801861163057f1",
+      "git_blob": "11219d650fc06f685b5effbd14f809b97cdcad74"
+    },
+    "engine/china_board_rank.py": {
+      "bytes": 62966,
+      "sha256": "504478d0a54919f6b471eace9e395294afdb91b00d0987d34cdf5b6201621e39",
+      "git_blob": "5b51575f2cbc0834c19bc3208e45f853bb982cf7"
+    }
+  },
+  "population_coverage": {
+    "all_scored": {
+      "n": 1601,
+      "valid": 1597,
+      "missing": [
+        "600606.SS",
+        "000069.SZ",
+        "600038.SS",
+        "603899.SS"
+      ]
+    },
+    "raw_eligible": {
+      "n": 180,
+      "valid": 179,
+      "missing": [
+        "603899.SS"
+      ]
+    },
+    "signal_buyable": {
+      "n": 164,
+      "valid": 164,
+      "missing": []
+    },
+    "qualified_pre_cap": {
+      "n": 125,
+      "valid": 125
+    }
+  },
+  "published_featured": [
+    "002460.SZ",
+    "603799.SS",
+    "000973.SZ",
+    "605499.SS",
+    "688472.SS",
+    "002340.SZ",
+    "688223.SS",
+    "002001.SZ",
+    "301219.SZ",
+    "002405.SZ",
+    "000858.SZ",
+    "300014.SZ",
+    "600633.SS",
+    "002294.SZ",
+    "002847.SZ",
+    "688050.SS",
+    "603279.SS",
+    "600509.SS",
+    "002557.SZ",
+    "601880.SS",
+    "000719.SZ",
+    "600276.SS",
+    "601898.SS",
+    "300075.SZ"
+  ],
+  "qualified_rows": [
+    {
+      "ticker": "002460.SZ",
+      "sector": "Basic Materials",
+      "score": 90.0,
+      "score_rank": 1,
+      "intel": 22.43,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "603799.SS",
+      "sector": "Basic Materials",
+      "score": 88.0,
+      "score_rank": 2,
+      "intel": 26.59,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "000973.SZ",
+      "sector": "Basic Materials",
+      "score": 87.06,
+      "score_rank": 3,
+      "intel": 29.8,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "605499.SS",
+      "sector": "Consumer Defensive",
+      "score": 86.0,
+      "score_rank": 4,
+      "intel": 51.67,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "688472.SS",
+      "sector": "Technology",
+      "score": 84.0,
+      "score_rank": 5,
+      "intel": 14.42,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "002340.SZ",
+      "sector": "Industrials",
+      "score": 83.78,
+      "score_rank": 6,
+      "intel": 22.5,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "688223.SS",
+      "sector": "Technology",
+      "score": 82.0,
+      "score_rank": 7,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "002001.SZ",
+      "sector": "Healthcare",
+      "score": 80.24,
+      "score_rank": 8,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "301219.SZ",
+      "sector": "Basic Materials",
+      "score": 78.75,
+      "score_rank": 9,
+      "intel": 50.83,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "002405.SZ",
+      "sector": "Technology",
+      "score": 78.0,
+      "score_rank": 10,
+      "intel": 28.19,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "000858.SZ",
+      "sector": "Consumer Defensive",
+      "score": 77.86,
+      "score_rank": 11,
+      "intel": 17.66,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "300014.SZ",
+      "sector": "Industrials",
+      "score": 77.42,
+      "score_rank": 13,
+      "intel": 18.28,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "600633.SS",
+      "sector": "Communication Services",
+      "score": 75.17,
+      "score_rank": 17,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "002294.SZ",
+      "sector": "Healthcare",
+      "score": 74.75,
+      "score_rank": 18,
+      "intel": 17.33,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "002847.SZ",
+      "sector": "Consumer Defensive",
+      "score": 74.75,
+      "score_rank": 19,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "688050.SS",
+      "sector": "Healthcare",
+      "score": 72.95,
+      "score_rank": 21,
+      "intel": 14.48,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "603279.SS",
+      "sector": "Industrials",
+      "score": 72.75,
+      "score_rank": 23,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "600509.SS",
+      "sector": "Utilities",
+      "score": 72.3,
+      "score_rank": 24,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "002557.SZ",
+      "sector": "Consumer Defensive",
+      "score": 71.06,
+      "score_rank": 27,
+      "intel": 0.6,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "601880.SS",
+      "sector": "Industrials",
+      "score": 70.79,
+      "score_rank": 29,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "000719.SZ",
+      "sector": "Communication Services",
+      "score": 70.74,
+      "score_rank": 30,
+      "intel": 7.89,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "600276.SS",
+      "sector": "Healthcare",
+      "score": 70.7,
+      "score_rank": 32,
+      "intel": 2.27,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "601898.SS",
+      "sector": "Energy",
+      "score": 70.27,
+      "score_rank": 36,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "300075.SZ",
+      "sector": "Technology",
+      "score": 70.14,
+      "score_rank": 38,
+      "intel": 28.42,
+      "intel_basis": "measured",
+      "lane": "featured"
+    },
+    {
+      "ticker": "688353.SS",
+      "sector": "Basic Materials",
+      "score": 77.76,
+      "score_rank": 12,
+      "intel": 45.28,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600623.SS",
+      "sector": "Basic Materials",
+      "score": 77.35,
+      "score_rank": 14,
+      "intel": 1.94,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600273.SS",
+      "sector": "Basic Materials",
+      "score": 73.75,
+      "score_rank": 20,
+      "intel": 12.46,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600426.SS",
+      "sector": "Basic Materials",
+      "score": 72.75,
+      "score_rank": 22,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600299.SS",
+      "sector": "Basic Materials",
+      "score": 72.12,
+      "score_rank": 25,
+      "intel": 5.48,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "002004.SZ",
+      "sector": "Basic Materials",
+      "score": 71.1,
+      "score_rank": 26,
+      "intel": 16.6,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "601216.SS",
+      "sector": "Basic Materials",
+      "score": 70.15,
+      "score_rank": 37,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600282.SS",
+      "sector": "Basic Materials",
+      "score": 69.9,
+      "score_rank": 39,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600406.SS",
+      "sector": "Industrials",
+      "score": 69.23,
+      "score_rank": 40,
+      "intel": 5.45,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600585.SS",
+      "sector": "Basic Materials",
+      "score": 68.85,
+      "score_rank": 42,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "300036.SZ",
+      "sector": "Technology",
+      "score": 68.75,
+      "score_rank": 43,
+      "intel": 38.67,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "300768.SZ",
+      "sector": "Technology",
+      "score": 68.75,
+      "score_rank": 44,
+      "intel": 22.69,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "300772.SZ",
+      "sector": "Industrials",
+      "score": 68.25,
+      "score_rank": 46,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600268.SS",
+      "sector": "Technology",
+      "score": 68.19,
+      "score_rank": 47,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600741.SS",
+      "sector": "Consumer Cyclical",
+      "score": 67.99,
+      "score_rank": 48,
+      "intel": 38.71,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "601800.SS",
+      "sector": "Industrials",
+      "score": 67.87,
+      "score_rank": 49,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "601225.SS",
+      "sector": "Energy",
+      "score": 67.84,
+      "score_rank": 50,
+      "intel": 8.46,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600718.SS",
+      "sector": "Technology",
+      "score": 67.8,
+      "score_rank": 51,
+      "intel": 27.33,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600085.SS",
+      "sector": "Healthcare",
+      "score": 67.7,
+      "score_rank": 52,
+      "intel": 27.48,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "601390.SS",
+      "sector": "Industrials",
+      "score": 67.6,
+      "score_rank": 53,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "603927.SS",
+      "sector": "Technology",
+      "score": 67.17,
+      "score_rank": 54,
+      "intel": 19.55,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "601607.SS",
+      "sector": "Healthcare",
+      "score": 67.16,
+      "score_rank": 55,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "002043.SZ",
+      "sector": "Basic Materials",
+      "score": 67.03,
+      "score_rank": 56,
+      "intel": 29.08,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600050.SS",
+      "sector": "Communication Services",
+      "score": 66.99,
+      "score_rank": 57,
+      "intel": 1.62,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "300896.SZ",
+      "sector": "Healthcare",
+      "score": 66.34,
+      "score_rank": 60,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "000786.SZ",
+      "sector": "Industrials",
+      "score": 65.6,
+      "score_rank": 63,
+      "intel": 11.68,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "000035.SZ",
+      "sector": "Industrials",
+      "score": 65.49,
+      "score_rank": 64,
+      "intel": 41.05,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "000959.SZ",
+      "sector": "Basic Materials",
+      "score": 65.41,
+      "score_rank": 65,
+      "intel": 16.7,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600595.SS",
+      "sector": "Basic Materials",
+      "score": 65.05,
+      "score_rank": 66,
+      "intel": 29.99,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "601877.SS",
+      "sector": "Industrials",
+      "score": 65.04,
+      "score_rank": 67,
+      "intel": 26.56,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "002233.SZ",
+      "sector": "Basic Materials",
+      "score": 64.94,
+      "score_rank": 68,
+      "intel": 8.59,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600000.SS",
+      "sector": "Financial Services",
+      "score": 64.83,
+      "score_rank": 69,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "002572.SZ",
+      "sector": "Consumer Cyclical",
+      "score": 64.75,
+      "score_rank": 70,
+      "intel": 19.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600866.SS",
+      "sector": "Healthcare",
+      "score": 64.75,
+      "score_rank": 71,
+      "intel": 27.72,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600269.SS",
+      "sector": "Industrials",
+      "score": 64.74,
+      "score_rank": 72,
+      "intel": 10.99,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "001391.SZ",
+      "sector": "Industrials",
+      "score": 64.71,
+      "score_rank": 73,
+      "intel": 48.8,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "300182.SZ",
+      "sector": "Technology",
+      "score": 64.61,
+      "score_rank": 75,
+      "intel": 44.72,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "002032.SZ",
+      "sector": "Consumer Cyclical",
+      "score": 64.45,
+      "score_rank": 77,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "300284.SZ",
+      "sector": "Industrials",
+      "score": 64.39,
+      "score_rank": 78,
+      "intel": 21.43,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "300294.SZ",
+      "sector": "Healthcare",
+      "score": 64.37,
+      "score_rank": 79,
+      "intel": 3.98,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "002507.SZ",
+      "sector": "Consumer Defensive",
+      "score": 64.3,
+      "score_rank": 80,
+      "intel": 12.28,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "002270.SZ",
+      "sector": "Industrials",
+      "score": 63.75,
+      "score_rank": 84,
+      "intel": 52.21,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "000902.SZ",
+      "sector": "Basic Materials",
+      "score": 63.47,
+      "score_rank": 85,
+      "intel": 12.65,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "601818.SS",
+      "sector": "Financial Services",
+      "score": 63.2,
+      "score_rank": 86,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600521.SS",
+      "sector": "Healthcare",
+      "score": 62.97,
+      "score_rank": 90,
+      "intel": 12.67,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "002063.SZ",
+      "sector": "Technology",
+      "score": 62.91,
+      "score_rank": 92,
+      "intel": 16.08,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600517.SS",
+      "sector": "Industrials",
+      "score": 62.78,
+      "score_rank": 93,
+      "intel": 51.28,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "300122.SZ",
+      "sector": "Healthcare",
+      "score": 62.75,
+      "score_rank": 94,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "603919.SS",
+      "sector": "Consumer Defensive",
+      "score": 62.75,
+      "score_rank": 95,
+      "intel": 45.8,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "603883.SS",
+      "sector": "Healthcare",
+      "score": 62.57,
+      "score_rank": 97,
+      "intel": 15.46,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "603027.SS",
+      "sector": "Consumer Defensive",
+      "score": 62.52,
+      "score_rank": 98,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "002911.SZ",
+      "sector": "Utilities",
+      "score": 61.83,
+      "score_rank": 100,
+      "intel": 6.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600597.SS",
+      "sector": "Consumer Defensive",
+      "score": 61.73,
+      "score_rank": 101,
+      "intel": 26.5,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "601965.SS",
+      "sector": "Consumer Cyclical",
+      "score": 61.7,
+      "score_rank": 102,
+      "intel": 20.78,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "603100.SS",
+      "sector": "Industrials",
+      "score": 61.63,
+      "score_rank": 103,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "601857.SS",
+      "sector": "Energy",
+      "score": 61.55,
+      "score_rank": 105,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600329.SS",
+      "sector": "Healthcare",
+      "score": 61.35,
+      "score_rank": 107,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "002372.SZ",
+      "sector": "Industrials",
+      "score": 60.94,
+      "score_rank": 109,
+      "intel": 11.66,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600827.SS",
+      "sector": "Consumer Cyclical",
+      "score": 60.77,
+      "score_rank": 110,
+      "intel": 33.3,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "000860.SZ",
+      "sector": "Consumer Defensive",
+      "score": 60.58,
+      "score_rank": 111,
+      "intel": 12.78,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600315.SS",
+      "sector": "Consumer Defensive",
+      "score": 60.57,
+      "score_rank": 112,
+      "intel": 60.69,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "002091.SZ",
+      "sector": "Industrials",
+      "score": 60.55,
+      "score_rank": 113,
+      "intel": 16.8,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600871.SS",
+      "sector": "Energy",
+      "score": 60.42,
+      "score_rank": 114,
+      "intel": 23.9,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "002608.SZ",
+      "sector": "Utilities",
+      "score": 60.2,
+      "score_rank": 116,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600787.SS",
+      "sector": "Industrials",
+      "score": 60.16,
+      "score_rank": 117,
+      "intel": 20.99,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "001286.SZ",
+      "sector": "Utilities",
+      "score": 60.08,
+      "score_rank": 118,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "603866.SS",
+      "sector": "Consumer Defensive",
+      "score": 59.87,
+      "score_rank": 119,
+      "intel": 35.24,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "688213.SS",
+      "sector": "Technology",
+      "score": 59.65,
+      "score_rank": 121,
+      "intel": 22.15,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "601006.SS",
+      "sector": "Industrials",
+      "score": 59.16,
+      "score_rank": 122,
+      "intel": 4.53,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "002007.SZ",
+      "sector": "Healthcare",
+      "score": 59.1,
+      "score_rank": 123,
+      "intel": 0.51,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "688099.SS",
+      "sector": "Technology",
+      "score": 59.07,
+      "score_rank": 124,
+      "intel": 14.66,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600657.SS",
+      "sector": "Real Estate",
+      "score": 58.86,
+      "score_rank": 126,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "000932.SZ",
+      "sector": "Basic Materials",
+      "score": 58.75,
+      "score_rank": 128,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600803.SS",
+      "sector": "Utilities",
+      "score": 58.51,
+      "score_rank": 131,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "601228.SS",
+      "sector": "Industrials",
+      "score": 58.45,
+      "score_rank": 132,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "603127.SS",
+      "sector": "Healthcare",
+      "score": 58.36,
+      "score_rank": 134,
+      "intel": 1.34,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600757.SS",
+      "sector": "Communication Services",
+      "score": 58.29,
+      "score_rank": 135,
+      "intel": 1.94,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "002332.SZ",
+      "sector": "Healthcare",
+      "score": 58.25,
+      "score_rank": 136,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "002128.SZ",
+      "sector": "Energy",
+      "score": 57.85,
+      "score_rank": 138,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "300070.SZ",
+      "sector": "Industrials",
+      "score": 57.84,
+      "score_rank": 139,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "601018.SS",
+      "sector": "Industrials",
+      "score": 57.32,
+      "score_rank": 141,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600025.SS",
+      "sector": "Utilities",
+      "score": 57.28,
+      "score_rank": 142,
+      "intel": 11.03,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600037.SS",
+      "sector": "Communication Services",
+      "score": 57.05,
+      "score_rank": 143,
+      "intel": 34.16,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600064.SS",
+      "sector": "Real Estate",
+      "score": 57.04,
+      "score_rank": 144,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600717.SS",
+      "sector": "Industrials",
+      "score": 57.02,
+      "score_rank": 145,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "003816.SZ",
+      "sector": "Utilities",
+      "score": 56.89,
+      "score_rank": 147,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600219.SS",
+      "sector": "Basic Materials",
+      "score": 56.75,
+      "score_rank": 148,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "601598.SS",
+      "sector": "Industrials",
+      "score": 56.53,
+      "score_rank": 150,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "601858.SS",
+      "sector": "Communication Services",
+      "score": 56.26,
+      "score_rank": 151,
+      "intel": 43.31,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "601326.SS",
+      "sector": "Industrials",
+      "score": 55.47,
+      "score_rank": 156,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600546.SS",
+      "sector": "Energy",
+      "score": 54.98,
+      "score_rank": 159,
+      "intel": 16.56,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600028.SS",
+      "sector": "Energy",
+      "score": 53.34,
+      "score_rank": 164,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600196.SS",
+      "sector": "Healthcare",
+      "score": 52.86,
+      "score_rank": 168,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600938.SS",
+      "sector": "Energy",
+      "score": 52.41,
+      "score_rank": 172,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "002226.SZ",
+      "sector": "Basic Materials",
+      "score": 51.94,
+      "score_rank": 181,
+      "intel": 44.66,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "601766.SS",
+      "sector": "Industrials",
+      "score": 51.8,
+      "score_rank": 184,
+      "intel": 25.41,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "601808.SS",
+      "sector": "Energy",
+      "score": 50.75,
+      "score_rank": 200,
+      "intel": 10.96,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600057.SS",
+      "sector": "Industrials",
+      "score": 50.29,
+      "score_rank": 203,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "000927.SZ",
+      "sector": "Industrials",
+      "score": 48.38,
+      "score_rank": 231,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "601577.SS",
+      "sector": "Financial Services",
+      "score": 47.73,
+      "score_rank": 244,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    },
+    {
+      "ticker": "600017.SS",
+      "sector": "Industrials",
+      "score": 45.51,
+      "score_rank": 289,
+      "intel": 0.0,
+      "intel_basis": "measured",
+      "lane": "more_actionable"
+    }
+  ],
+  "source_clock_inventory": {
+    "data/china_analyst/forecast.parquet": {
+      "state": "read",
+      "rows": 2912,
+      "columns": [
+        "ticker",
+        "name",
+        "payload",
+        "asof"
+      ],
+      "clock_fields": {
+        "asof": {
+          "non_null": 2912,
+          "distinct": 1,
+          "min": "2026-10-09",
+          "max": "2026-10-09"
+        }
+      },
+      "payload_keys": {
+        "reports": 2912,
+        "buy": 2912,
+        "overweight": 2912,
+        "neutral": 2912,
+        "underweight": 2912,
+        "sell": 2912,
+        "eps": 2912
+      },
+      "payload_clock_keys": {},
+      "duplicated_ticker_rows": 950
+    },
+    "data/china_valuation/percentiles.parquet": {
+      "state": "read",
+      "rows": 1637,
+      "columns": [
+        "ticker",
+        "payload",
+        "asof"
+      ],
+      "clock_fields": {
+        "asof": {
+          "non_null": 1637,
+          "distinct": 47,
+          "min": "2026-06-19",
+          "max": "2026-10-09"
+        }
+      },
+      "payload_keys": {
+        "pe": 1606,
+        "pb": 1635
+      },
+      "payload_clock_keys": {},
+      "duplicated_ticker_rows": 0
+    },
+    "data/china_margin_detail/detail.parquet": {
+      "state": "read",
+      "rows": 155688,
+      "columns": [
+        "ticker",
+        "fin_balance",
+        "fin_balance_prior",
+        "date",
+        "prior_date",
+        "asof",
+        "short_balance",
+        "short_balance_yuan"
+      ],
+      "clock_fields": {
+        "date": {
+          "non_null": 155688,
+          "distinct": 62,
+          "min": "2026-06-30",
+          "max": "2026-10-08"
+        },
+        "prior_date": {
+          "non_null": 155688,
+          "distinct": 62,
+          "min": "2026-06-01",
+          "max": "2026-09-02"
+        },
+        "asof": {
+          "non_null": 155688,
+          "distinct": 62,
+          "min": "2026-07-01",
+          "max": "2026-10-09"
+        }
+      },
+      "payload_keys": {},
+      "payload_clock_keys": {},
+      "duplicated_ticker_rows": 155686
+    },
+    "data/china_comment/detail.parquet": {
+      "state": "read",
+      "rows": 5200,
+      "columns": [
+        "ticker",
+        "name",
+        "attention",
+        "inst_participation",
+        "main_cost",
+        "score",
+        "rank",
+        "rank_delta",
+        "price",
+        "asof"
+      ],
+      "clock_fields": {
+        "asof": {
+          "non_null": 5200,
+          "distinct": 1,
+          "min": "2026-10-09",
+          "max": "2026-10-09"
+        }
+      },
+      "payload_keys": {},
+      "payload_clock_keys": {},
+      "duplicated_ticker_rows": 0
+    },
+    "data/china_lhb/detail.parquet": {
+      "state": "read",
+      "rows": 21340,
+      "columns": [
+        "ticker",
+        "name",
+        "net_buy_yi",
+        "n_appearances",
+        "inst_net_buy_yi",
+        "n_inst_buy",
+        "n_inst_sell",
+        "reasons",
+        "last_date",
+        "asof"
+      ],
+      "clock_fields": {
+        "last_date": {
+          "non_null": 21340,
+          "distinct": 72,
+          "min": "2026-06-24",
+          "max": "2026-10-09"
+        },
+        "asof": {
+          "non_null": 21340,
+          "distinct": 93,
+          "min": "2026-07-01",
+          "max": "2026-10-09"
+        }
+      },
+      "payload_keys": {},
+      "payload_clock_keys": {},
+      "duplicated_ticker_rows": 21280
+    },
+    "data/china_block_trades/detail.parquet": {
+      "state": "read",
+      "rows": 285,
+      "columns": [
+        "ticker",
+        "name",
+        "avg_premium_pct",
+        "block_amt_yi",
+        "n_blocks",
+        "last_date",
+        "asof"
+      ],
+      "clock_fields": {
+        "last_date": {
+          "non_null": 285,
+          "distinct": 14,
+          "min": "2026-09-14",
+          "max": "2026-10-09"
+        },
+        "asof": {
+          "non_null": 285,
+          "distinct": 1,
+          "min": "2026-10-09",
+          "max": "2026-10-09"
+        }
+      },
+      "payload_keys": {},
+      "payload_clock_keys": {},
+      "duplicated_ticker_rows": 0
+    },
+    "data/tushare/moneyflow.parquet": {
+      "state": "read",
+      "rows": 6025,
+      "columns": [
+        "ticker",
+        "name",
+        "close",
+        "pct_change",
+        "net_amount",
+        "net_amount_rate",
+        "main_net",
+        "main_net_rate",
+        "trade_date",
+        "asof"
+      ],
+      "clock_fields": {
+        "trade_date": {
+          "non_null": 6025,
+          "distinct": 1,
+          "min": "20261009",
+          "max": "20261009"
+        },
+        "asof": {
+          "non_null": 6025,
+          "distinct": 1,
+          "min": "2026-10-09",
+          "max": "2026-10-09"
+        }
+      },
+      "payload_keys": {},
+      "payload_clock_keys": {},
+      "duplicated_ticker_rows": 0
+    },
+    "data/china_comment/attention_hist.parquet": {
+      "state": "read",
+      "rows": 337386,
+      "columns": [
+        "ticker",
+        "date",
+        "attention"
+      ],
+      "clock_fields": {
+        "date": {
+          "non_null": 337386,
+          "distinct": 65,
+          "min": "2026-06-18",
+          "max": "2026-10-09"
+        }
+      },
+      "payload_keys": {},
+      "payload_clock_keys": {},
+      "duplicated_ticker_rows": 337386
+    }
+  },
+  "source_functions": {
+    "_rank_pct": {
+      "path": "engine/china_altdata.py",
+      "line": 117,
+      "source": "def _rank_pct(vals: dict) -> dict:\n    \"\"\"Cross-sectional MID-RANK percentile (0..1) of each ticker's raw value among those that\n    HAVE the feed. Centered later to [-1,1]. Tied values share one percentile — without this,\n    the ~97%-unanimous-buy analyst feed would get spread across the whole band by sort order\n    and flip stocks' accumulate/distribute side arbitrarily.\"\"\"\n    items = [(t, v) for t, v in vals.items() if v is not None]\n    n = len(items)\n    if n == 0:\n        return {}\n    if n == 1:\n        return {items[0][0]: 0.5}\n    order = sorted(items, key=lambda kv: kv[1])\n    out: dict = {}\n    i = 0\n    while i < n:\n        j = i\n        while j + 1 < n and order[j + 1][1] == order[i][1]:\n            j += 1\n        pct = ((i + j) / 2.0) / (n - 1)      # mean of the tied run's positional ranks\n        for k in range(i, j + 1):\n            out[order[k][0]] = pct\n        i = j + 1\n    return out"
+    },
+    "_read_payload": {
+      "path": "engine/china_extras.py",
+      "line": 35,
+      "source": "def _read_payload(path) -> dict[str, dict]:\n    \"\"\"{ticker: parsed-payload} for the {ticker, payload(json)} cache shape. Empty on miss.\"\"\"\n    if not path.exists():\n        return {}\n    try:\n        df = pd.read_parquet(path)\n    except Exception as e:  # noqa: BLE001\n        log.warning(\"china_extras: %s unreadable (%s)\", path.name, e)\n        return {}\n    out: dict[str, dict] = {}\n    for _, r in df.iterrows():\n        try:\n            out[str(r[\"ticker\"])] = json.loads(r[\"payload\"])\n        except Exception:  # noqa: BLE001\n            continue\n    return out"
+    },
+    "analyst_consensus": {
+      "path": "engine/china_extras.py",
+      "line": 69,
+      "source": "def analyst_consensus(price_by: dict[str, float] | None = None) -> dict[str, dict]:\n    \"\"\"Per-name sell-side picture: coverage count, buy/hold/sell mix (买入+增持 / 中性 /\n    减持+卖出), a consensus rating, the current+next forward EPS, and — with the live\n    price — a forward P/E. Forward P/E is the actionable cell; ratings are opinion.\"\"\"\n    price_by = price_by or {}\n    raw = _read_payload(config.data_dir() / \"china_analyst\" / \"forecast.parquet\")\n    cur_year = pd.Timestamp.now().year\n    out: dict[str, dict] = {}\n    for t, p in raw.items():\n        buy = int(p.get(\"buy\", 0)) + int(p.get(\"overweight\", 0))\n        hold = int(p.get(\"neutral\", 0))\n        sell = int(p.get(\"underweight\", 0)) + int(p.get(\"sell\", 0))\n        reports = int(p.get(\"reports\", 0))\n        rat = _rating(buy, hold, sell)\n        # forward EPS: first forecast year >= current year as FY1, the next as FY2\n        eps = {int(y): _num(v) for y, v in (p.get(\"eps\") or {}).items() if _num(v) is not None}\n        years = sorted(y for y in eps if y >= cur_year) or sorted(eps)\n        fy1 = years[0] if years else None\n        fy2 = next((y for y in years if y > fy1), None) if fy1 else None\n        price = _num(price_by.get(t))\n        block: dict = {\"reports\": reports, \"buy\": buy, \"hold\": hold, \"sell\": sell}\n        if rat:\n            block.update(rating=rat[0], rating_zh=rat[1], net=rat[2])\n        if fy1 and eps.get(fy1) is not None:\n            block[\"eps_fy1\"], block[\"fy1\"] = round(eps[fy1], 2), fy1\n            if price and eps[fy1] > 0:\n                block[\"fwd_pe_fy1\"] = round(price / eps[fy1], 1)\n        if fy2 and eps.get(fy2) is not None:\n            block[\"eps_fy2\"], block[\"fy2\"] = round(eps[fy2], 2), fy2\n            if price and eps[fy2] > 0:\n                block[\"fwd_pe_fy2\"] = round(price / eps[fy2], 1)\n        # only surface a name with at least coverage OR a forward estimate\n        if reports > 0 or \"eps_fy1\" in block:\n            out[t] = block\n    return out"
+    },
+    "_read_table": {
+      "path": "engine/china_extras.py",
+      "line": 183,
+      "source": "def _read_table(group: str, name: str) -> \"pd.DataFrame | None\":\n    p = config.data_dir() / group / f\"{name}.parquet\"\n    if not p.exists():\n        return None\n    try:\n        df = pd.read_parquet(p)\n    except Exception as e:  # noqa: BLE001\n        log.warning(\"china_extras: %s/%s unreadable (%s)\", group, name, e)\n        return None\n    dc = _DRIP_DATE_COL.get(group)\n    if dc and dc in (df.columns if df is not None else []):\n        from collectors._drip import latest_snapshot\n        return latest_snapshot(df, dc)                     # single-day snapshot from PIT history\n    return df"
+    },
+    "_finite_float": {
+      "path": "engine/china_board_rank.py",
+      "line": 236,
+      "source": "def _finite_float(value: Any) -> float | None:\n    try:\n        number = float(value)\n    except (TypeError, ValueError):\n        return None\n    return number if math.isfinite(number) else None"
+    },
+    "intel_interest_is_measured": {
+      "path": "engine/china_board_rank.py",
+      "line": 528,
+      "source": "def intel_interest_is_measured(row: Mapping[str, Any]) -> bool:\n    \"\"\"True when the row carries valid measured Intelligence interest.\n\n    A score of ``0.0`` is measured evidence.  Missing, unavailable, or malformed\n    records are not — those stamp :data:`INTEL_BASIS_FALLBACK`.\n    \"\"\"\n    if row.get(\"intel_interest_basis\") != INTEL_BASIS_MEASURED:\n        return False\n    return _finite_float(row.get(\"intel_interest_score\")) is not None"
+    }
+  },
+  "limits": [
+    "Qualified population inferred from published admission/cap reasons, not recomputed from discarded private join metadata.",
+    "Candidate and public artifact vintages remain distinct; source-time clocks are inventoried, not certified from column names.",
+    "No labels, ranking promotion, production write or past publication proof."
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "failed_n": 7,
+  "files": [
+    {
+      "bytes": 8609,
+      "git_blob_sha1": "299f5e8608cbd7f7fd9452b88c2f037b10222f1d",
+      "path": "ACCEPTANCE.md",
+      "sha256": "ed9de67740d37b6363526c4004a4ebc11624eab23ecc66447b327611236ab2ef"
+    },
+    {
+      "bytes": 4513,
+      "git_blob_sha1": "9f4fa445705e8844d220cc8cf9da3d4dc523e373",
+      "path": "ACCEPTANCE_DESIGN.md",
+      "sha256": "47f6278a64882ab08a42be68091145b59831f431673f1d83681fe27fc4a672ad"
+    },
+    {
+      "bytes": 136158,
+      "git_blob_sha1": "8e1a98b2ab5f0846f1b995e820b2424fe6b1c2ed",
+      "path": "ACCEPTANCE_RESULTS.json",
+      "sha256": "8db32ace7d81d126a0009fe07e74bd688a3e0b6730d777b76b728fed9ecb3c5d"
+    },
+    {
+      "bytes": 1816,
+      "git_blob_sha1": "afd7a3f8394fc8994d58c6bffdd0192f144708be",
+      "path": "INPUT_FREEZE.json",
+      "sha256": "b0d2bcaa667ccc255582f44c188a2baac0a0310a632f4db3d9d0effb054ca066"
+    },
+    {
+      "bytes": 27194,
+      "git_blob_sha1": "aaea356b03a0356af6ae1acd4973cfcc735b0065",
+      "path": "accept_repaired_contract.py",
+      "sha256": "5728da4c95850fd650d79181aff007141f671154af108670ae95a83b947e64cb"
+    },
+    {
+      "bytes": 6738,
+      "git_blob_sha1": "f261ff107d8e8e39e3c97a78172297c52af59d73",
+      "path": "reviewed_source/DESIGN.md",
+      "sha256": "db0f29ab816fa933f18272b8aae2869361a41730c6d315cf0b03189178c72c58"
+    },
+    {
+      "bytes": 399233,
+      "git_blob_sha1": "f7def21694df5a8cd688b1b7ef90624102fb2b84",
+      "path": "reviewed_source/analyst_duplicates.json",
+      "sha256": "6f03613836e17e0ec1016d5f244e998b29cc63bd6834dee7bc1f4c1648137c4b"
+    },
+    {
+      "bytes": 22912,
+      "git_blob_sha1": "4b489a32686fd04c54601d0fbe59e6a0977c9747",
+      "path": "reviewed_source/contract_lab.py",
+      "sha256": "83944fe1d2090012203701cbd6f79acfa77555b3d7457cae351080eaddc38fb2"
+    },
+    {
+      "bytes": 35284,
+      "git_blob_sha1": "63b986570c5814cfd632441f654dd5dc9e169cf0",
+      "path": "reviewed_source/results.json",
+      "sha256": "8b68899dd005ab869fba204d5eb1949bf2739de30e3bb75f8ed5d5188f1e1ebf"
+    },
+    {
+      "bytes": 40757,
+      "git_blob_sha1": "13863a91a4a6dbe7cf2b330700169232c602fdd8",
+      "path": "reviewed_source/source_input.json",
+      "sha256": "a031323d82e99833ffdd5b35140ee6f686e65ca077a038cfaca57e280de00334"
+    }
+  ],
+  "initial_review_files_unchanged": true,
+  "passed_n": 71,
+  "repaired_script_sha256": "83944fe1d2090012203701cbd6f79acfa77555b3d7457cae351080eaddc38fb2",
+  "schema": "intelligence_repaired_acceptance_manifest_v1",
+  "self_excluded": true,
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "status": "REMAINING_BOUNDED_CONTRACT_GAPS",
+  "test_n": 78,
+  "total_payload_bytes": 683214
+}

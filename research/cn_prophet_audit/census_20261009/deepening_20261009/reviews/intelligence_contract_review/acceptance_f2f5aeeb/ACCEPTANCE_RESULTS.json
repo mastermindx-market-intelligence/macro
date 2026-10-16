@@ -1,0 +1,3857 @@
+{
+  "acceptance_design_sha256": "9e645feda456c0d133d88192514150bf8abd940761cff89b7a0fd10b6cc5bc5b",
+  "acceptance_script_sha256": "7574919a1a7832c70b6d49eeb98be95485fafc5e508a37c30aebaa1ed11a6a98",
+  "actual_duplicate_control": {
+    "duplicate_groups": 475,
+    "evidence_limit": "Payload equality is independently checked. Full remote reader reversal is the existing hash-bound receipt, not a new remote replay.",
+    "independent_payload_equality": true,
+    "source_receipt_changed_consensus": 0,
+    "source_receipt_changed_percentiles": 0,
+    "source_receipt_changed_raw_scores": 0,
+    "source_receipt_conflicting_groups": 0
+  },
+  "custody": {
+    "initial_review_file_n": 10,
+    "initial_review_files_unchanged": true,
+    "matched_control_mutations": 0,
+    "principal_lab_mutations": 0,
+    "prior_repaired_acceptance_file_n": 11,
+    "prior_repaired_acceptance_unchanged": true,
+    "production_effects": 0,
+    "remote_replays": 0,
+    "repaired_snapshot_unchanged": true,
+    "vendor_calls": 0
+  },
+  "failed_case_names": [],
+  "failed_n": 0,
+  "initial_review_manifest_sha256": "0105976d7a771f47cb824e311a2f9dc221ca14f9c0725cac4bc322ec35832939",
+  "input_freeze_sha256": "65f05b7b4d93da366ff352e3ab63f0f2e7086f5219ed1808d92fa3e7524a4a7d",
+  "limits": [
+    "Synthetic repair acceptance is not evidence of current-data corruption, investment improvement or production time-qualified coverage.",
+    "No source store, ranking activation, production identity, generation protocol or authoritative revision history is installed by this laboratory.",
+    "Selected-input digest is an input-fingerprint example; the existing generation owner must bind full upstream contracts."
+  ],
+  "original_failure_variants": {
+    "closed_n": 13,
+    "n": 13,
+    "replayed_n": 13
+  },
+  "passed_n": 79,
+  "principal_suite": {
+    "check_n": 56,
+    "result_byte_identical": true,
+    "result_sha256": "97f51b947a3be417e132b08ebaa98b3f0546c1a629a459cc98fb32e6b0d6fb97",
+    "stdout": "{\"checks\": 56, \"all_passed\": true, \"current_intel_overlap\": 4, \"result\": \"results.json\"}"
+  },
+  "repaired_files_sha256": {
+    "DESIGN.md": "db0f29ab816fa933f18272b8aae2869361a41730c6d315cf0b03189178c72c58",
+    "analyst_duplicates.json": "6f03613836e17e0ec1016d5f244e998b29cc63bd6834dee7bc1f4c1648137c4b",
+    "contract_lab.py": "f2f5aeeb27b87809123148a642b9d6b848290a82033b7118614288432c8af014",
+    "results.json": "97f51b947a3be417e132b08ebaa98b3f0546c1a629a459cc98fb32e6b0d6fb97",
+    "source_input.json": "a031323d82e99833ffdd5b35140ee6f686e65ca077a038cfaca57e280de00334"
+  },
+  "schema": "intelligence_repaired_independent_acceptance_v1",
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "status": "ACCEPTED_BOUNDED_RESEARCH_CONTRACT",
+  "test_n": 79,
+  "tests": [
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "All original check identities remain passing and the repaired result reproduces byte-for-byte",
+      "family": "positive_control",
+      "name": "principal_56_controls_reproduce",
+      "observed": {
+        "byte_identical_replay": true,
+        "check_n": 56,
+        "result_sha256": "97f51b947a3be417e132b08ebaa98b3f0546c1a629a459cc98fb32e6b0d6fb97",
+        "same_56_check_names": true
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "The current 125-name population has coherent score/rank order; all-zero measured intelligence reproduces the actual V3 selection",
+      "family": "positive_control",
+      "name": "current_population_and_coherent_score_rank",
+      "observed": {
+        "featured_overlap": 4,
+        "qualified_n": 125,
+        "score_rank_coherent": true,
+        "v3_exact_featured": true,
+        "zero_mode": "intelligence_atomic",
+        "zero_order_equals_v3": true
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Equivalent finite int/float representations coalesce deterministically without losing integer identity",
+      "family": "duplicate_identity",
+      "name": "equivalent_numeric_duplicate_1",
+      "observed": [
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": 1
+              }
+            ],
+            "selected_input_digest": "7997445ffa5f34b87a982e51b8479e1dc89d3254da7e4174ff7d1c0e61167e10",
+            "suppressed": []
+          }
+        },
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": 1
+              }
+            ],
+            "selected_input_digest": "7997445ffa5f34b87a982e51b8479e1dc89d3254da7e4174ff7d1c0e61167e10",
+            "suppressed": []
+          }
+        }
+      ],
+      "original_case": "equal_numeric_representation_changes_digest_by_order",
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Equivalent finite int/float representations coalesce deterministically without losing integer identity",
+      "family": "duplicate_identity",
+      "name": "equivalent_numeric_duplicate_0",
+      "observed": [
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": 0
+              }
+            ],
+            "selected_input_digest": "7e953dc988c5da76decae82c4366c80e9f831dd62028581cf5c6b52c70ef5cf9",
+            "suppressed": []
+          }
+        },
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": 0
+              }
+            ],
+            "selected_input_digest": "7e953dc988c5da76decae82c4366c80e9f831dd62028581cf5c6b52c70ef5cf9",
+            "suppressed": []
+          }
+        }
+      ],
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Equivalent finite int/float representations coalesce deterministically without losing integer identity",
+      "family": "duplicate_identity",
+      "name": "equivalent_numeric_duplicate_-1",
+      "observed": [
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": -1
+              }
+            ],
+            "selected_input_digest": "910a98ecae9519846c4b5f0c2be44bd693a2a9c5c413650e18b31c7d3385f506",
+            "suppressed": []
+          }
+        },
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": -1
+              }
+            ],
+            "selected_input_digest": "910a98ecae9519846c4b5f0c2be44bd693a2a9c5c413650e18b31c7d3385f506",
+            "suppressed": []
+          }
+        }
+      ],
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Equivalent finite int/float representations coalesce deterministically without losing integer identity",
+      "family": "duplicate_identity",
+      "name": "equivalent_numeric_duplicate_9007199254740992",
+      "observed": [
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": 9007199254740992
+              }
+            ],
+            "selected_input_digest": "4c13905c93e9465e7832c812e497053e5090caaab54284250b6e071a41567a43",
+            "suppressed": []
+          }
+        },
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": 9007199254740992
+              }
+            ],
+            "selected_input_digest": "4c13905c93e9465e7832c812e497053e5090caaab54284250b6e071a41567a43",
+            "suppressed": []
+          }
+        }
+      ],
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Boolean and numeric values claiming the same version conflict identically in either order",
+      "family": "duplicate_identity",
+      "name": "boolean_numeric_collision_1",
+      "observed": [
+        {
+          "exception": "ContractError",
+          "message": "conflicting_source_version"
+        },
+        {
+          "exception": "ContractError",
+          "message": "conflicting_source_version"
+        }
+      ],
+      "original_case": "boolean_numeric_duplicate_order_dependence",
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Boolean and numeric values claiming the same version conflict identically in either order",
+      "family": "duplicate_identity",
+      "name": "boolean_numeric_collision_0",
+      "observed": [
+        {
+          "exception": "ContractError",
+          "message": "conflicting_source_version"
+        },
+        {
+          "exception": "ContractError",
+          "message": "conflicting_source_version"
+        }
+      ],
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "2**53 and 2**53+1 remain distinct values and both duplicate orders fail closed",
+      "family": "duplicate_identity",
+      "name": "adjacent_large_integer_duplicate_collision",
+      "observed": [
+        {
+          "exception": "ContractError",
+          "message": "conflicting_source_version"
+        },
+        {
+          "exception": "ContractError",
+          "message": "conflicting_source_version"
+        }
+      ],
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Distinct representable JSON integers retain strict order through normalization",
+      "family": "duplicate_identity",
+      "name": "adjacent_large_integer_distinct_issuer_order",
+      "observed": {
+        "ranks": {
+          "000001.SZ": 1.0,
+          "600000.SS": 0.0
+        },
+        "selected": [
+          {
+            "cadence": "session",
+            "effective_from": "2026-10-09T07:00:00Z",
+            "family": "valuation",
+            "feature_contract_id": "valuation/synthetic-value/v1",
+            "first_seen_at": "2026-10-09T07:01:00Z",
+            "observation_key": "2026-10-09",
+            "observation_session": "2026-10-09",
+            "published_at": "2026-10-09T07:00:00Z",
+            "revision": 0,
+            "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "source_record_id": "000001.SZ/valuation/2026-10-09",
+            "status": "active",
+            "ticker": "000001.SZ",
+            "unit": "synthetic_score",
+            "value": 9007199254740993
+          },
+          {
+            "cadence": "session",
+            "effective_from": "2026-10-09T07:00:00Z",
+            "family": "valuation",
+            "feature_contract_id": "valuation/synthetic-value/v1",
+            "first_seen_at": "2026-10-09T07:01:00Z",
+            "observation_key": "2026-10-09",
+            "observation_session": "2026-10-09",
+            "published_at": "2026-10-09T07:00:00Z",
+            "revision": 0,
+            "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "source_record_id": "600000.SS/valuation/2026-10-09",
+            "status": "active",
+            "ticker": "600000.SS",
+            "unit": "synthetic_score",
+            "value": 9007199254740992
+          }
+        ]
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Exact repeated records preserve the complete result",
+      "family": "duplicate_identity",
+      "name": "exact_duplicate_coalescing",
+      "observed": {
+        "cutoff": "2026-10-09T08:00:00+00:00",
+        "expected_sessions": {
+          "margin": "2026-10-08",
+          "valuation": "2026-10-09"
+        },
+        "mode": "system_observed_replay",
+        "periodic_families": [],
+        "rejected": [],
+        "selected": [
+          {
+            "cadence": "session",
+            "effective_from": "2026-10-09T07:00:00Z",
+            "family": "valuation",
+            "feature_contract_id": "valuation/synthetic-value/v1",
+            "first_seen_at": "2026-10-09T07:01:00Z",
+            "observation_key": "2026-10-09",
+            "observation_session": "2026-10-09",
+            "published_at": "2026-10-09T07:00:00Z",
+            "revision": 0,
+            "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "source_record_id": "000001.SZ/valuation/2026-10-09",
+            "status": "active",
+            "ticker": "000001.SZ",
+            "unit": "synthetic_score",
+            "value": 3
+          },
+          {
+            "cadence": "session",
+            "effective_from": "2026-10-09T07:00:00Z",
+            "family": "valuation",
+            "feature_contract_id": "valuation/synthetic-value/v1",
+            "first_seen_at": "2026-10-09T07:01:00Z",
+            "observation_key": "2026-10-09",
+            "observation_session": "2026-10-09",
+            "published_at": "2026-10-09T07:00:00Z",
+            "revision": 0,
+            "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "source_record_id": "600000.SS/valuation/2026-10-09",
+            "status": "active",
+            "ticker": "600000.SS",
+            "unit": "synthetic_score",
+            "value": 1
+          }
+        ],
+        "selected_input_digest": "27a237e80145b780000e72a94ce21bb1defd599f5c5068f7d793c064bd59f628",
+        "suppressed": []
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "The explicit new record-object guard gives a defined refusal before reading malformed row fields",
+      "family": "source_identity",
+      "name": "source_non_object_refused",
+      "observed": [
+        {
+          "exception": "ContractError",
+          "message": "source_record_not_object"
+        },
+        {
+          "exception": "ContractError",
+          "message": "source_record_not_object"
+        },
+        {
+          "exception": "ContractError",
+          "message": "source_record_not_object"
+        },
+        {
+          "exception": "ContractError",
+          "message": "source_record_not_object"
+        }
+      ],
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Provably future availability excludes a row before unrelated identity, payload or feature metadata can affect past selection or normalization",
+      "family": "cutoff_noninterference",
+      "name": "future_malformed_revision_type",
+      "observed": [
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [
+              {
+                "identity": [
+                  "600111.SS",
+                  "valuation",
+                  "2026-10-09",
+                  "600111.SS/valuation/2026-10-09",
+                  "bad"
+                ],
+                "reason": "not_known_at_cutoff"
+              }
+            ],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "000001.SZ/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "000001.SZ",
+                "unit": "synthetic_score",
+                "value": 3
+              },
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": 1
+              }
+            ],
+            "selected_input_digest": "27a237e80145b780000e72a94ce21bb1defd599f5c5068f7d793c064bd59f628",
+            "suppressed": []
+          }
+        },
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [
+              {
+                "identity": [
+                  "600111.SS",
+                  "valuation",
+                  "2026-10-09",
+                  "600111.SS/valuation/2026-10-09",
+                  "bad"
+                ],
+                "reason": "not_known_at_cutoff"
+              }
+            ],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "000001.SZ/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "000001.SZ",
+                "unit": "synthetic_score",
+                "value": 3
+              },
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": 1
+              }
+            ],
+            "selected_input_digest": "27a237e80145b780000e72a94ce21bb1defd599f5c5068f7d793c064bd59f628",
+            "suppressed": []
+          }
+        }
+      ],
+      "original_case": "future_malformed_revision_type",
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Provably future availability excludes a row before unrelated identity, payload or feature metadata can affect past selection or normalization",
+      "family": "cutoff_noninterference",
+      "name": "future_malformed_missing_ticker",
+      "observed": [
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [
+              {
+                "identity": [
+                  null,
+                  "valuation",
+                  "2026-10-09",
+                  "600111.SS/valuation/2026-10-09",
+                  0
+                ],
+                "reason": "not_known_at_cutoff"
+              }
+            ],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "000001.SZ/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "000001.SZ",
+                "unit": "synthetic_score",
+                "value": 3
+              },
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": 1
+              }
+            ],
+            "selected_input_digest": "27a237e80145b780000e72a94ce21bb1defd599f5c5068f7d793c064bd59f628",
+            "suppressed": []
+          }
+        },
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [
+              {
+                "identity": [
+                  null,
+                  "valuation",
+                  "2026-10-09",
+                  "600111.SS/valuation/2026-10-09",
+                  0
+                ],
+                "reason": "not_known_at_cutoff"
+              }
+            ],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "000001.SZ/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "000001.SZ",
+                "unit": "synthetic_score",
+                "value": 3
+              },
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": 1
+              }
+            ],
+            "selected_input_digest": "27a237e80145b780000e72a94ce21bb1defd599f5c5068f7d793c064bd59f628",
+            "suppressed": []
+          }
+        }
+      ],
+      "original_case": "future_malformed_missing_ticker",
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Provably future availability excludes a row before unrelated identity, payload or feature metadata can affect past selection or normalization",
+      "family": "cutoff_noninterference",
+      "name": "future_malformed_empty_source_id",
+      "observed": [
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [
+              {
+                "identity": [
+                  "600111.SS",
+                  "valuation",
+                  "2026-10-09",
+                  "",
+                  0
+                ],
+                "reason": "not_known_at_cutoff"
+              }
+            ],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "000001.SZ/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "000001.SZ",
+                "unit": "synthetic_score",
+                "value": 3
+              },
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": 1
+              }
+            ],
+            "selected_input_digest": "27a237e80145b780000e72a94ce21bb1defd599f5c5068f7d793c064bd59f628",
+            "suppressed": []
+          }
+        },
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [
+              {
+                "identity": [
+                  "600111.SS",
+                  "valuation",
+                  "2026-10-09",
+                  "",
+                  0
+                ],
+                "reason": "not_known_at_cutoff"
+              }
+            ],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "000001.SZ/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "000001.SZ",
+                "unit": "synthetic_score",
+                "value": 3
+              },
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": 1
+              }
+            ],
+            "selected_input_digest": "27a237e80145b780000e72a94ce21bb1defd599f5c5068f7d793c064bd59f628",
+            "suppressed": []
+          }
+        }
+      ],
+      "original_case": "future_malformed_empty_source_id",
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Provably future availability excludes a row before unrelated identity, payload or feature metadata can affect past selection or normalization",
+      "family": "cutoff_noninterference",
+      "name": "future_malformed_boolean_revision",
+      "observed": [
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [
+              {
+                "identity": [
+                  "600111.SS",
+                  "valuation",
+                  "2026-10-09",
+                  "600111.SS/valuation/2026-10-09",
+                  true
+                ],
+                "reason": "not_known_at_cutoff"
+              }
+            ],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "000001.SZ/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "000001.SZ",
+                "unit": "synthetic_score",
+                "value": 3
+              },
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": 1
+              }
+            ],
+            "selected_input_digest": "27a237e80145b780000e72a94ce21bb1defd599f5c5068f7d793c064bd59f628",
+            "suppressed": []
+          }
+        },
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [
+              {
+                "identity": [
+                  "600111.SS",
+                  "valuation",
+                  "2026-10-09",
+                  "600111.SS/valuation/2026-10-09",
+                  true
+                ],
+                "reason": "not_known_at_cutoff"
+              }
+            ],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "000001.SZ/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "000001.SZ",
+                "unit": "synthetic_score",
+                "value": 3
+              },
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": 1
+              }
+            ],
+            "selected_input_digest": "27a237e80145b780000e72a94ce21bb1defd599f5c5068f7d793c064bd59f628",
+            "suppressed": []
+          }
+        }
+      ],
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Provably future availability excludes a row before unrelated identity, payload or feature metadata can affect past selection or normalization",
+      "family": "cutoff_noninterference",
+      "name": "future_malformed_missing_family",
+      "observed": [
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [
+              {
+                "identity": [
+                  "600111.SS",
+                  null,
+                  "2026-10-09",
+                  "600111.SS/valuation/2026-10-09",
+                  0
+                ],
+                "reason": "not_known_at_cutoff"
+              }
+            ],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "000001.SZ/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "000001.SZ",
+                "unit": "synthetic_score",
+                "value": 3
+              },
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": 1
+              }
+            ],
+            "selected_input_digest": "27a237e80145b780000e72a94ce21bb1defd599f5c5068f7d793c064bd59f628",
+            "suppressed": []
+          }
+        },
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [
+              {
+                "identity": [
+                  "600111.SS",
+                  null,
+                  "2026-10-09",
+                  "600111.SS/valuation/2026-10-09",
+                  0
+                ],
+                "reason": "not_known_at_cutoff"
+              }
+            ],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "000001.SZ/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "000001.SZ",
+                "unit": "synthetic_score",
+                "value": 3
+              },
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": 1
+              }
+            ],
+            "selected_input_digest": "27a237e80145b780000e72a94ce21bb1defd599f5c5068f7d793c064bd59f628",
+            "suppressed": []
+          }
+        }
+      ],
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Provably future availability excludes a row before unrelated identity, payload or feature metadata can affect past selection or normalization",
+      "family": "cutoff_noninterference",
+      "name": "future_malformed_whitespace_ticker",
+      "observed": [
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [
+              {
+                "identity": [
+                  "600111.SS ",
+                  "valuation",
+                  "2026-10-09",
+                  "600111.SS/valuation/2026-10-09",
+                  0
+                ],
+                "reason": "not_known_at_cutoff"
+              }
+            ],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "000001.SZ/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "000001.SZ",
+                "unit": "synthetic_score",
+                "value": 3
+              },
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": 1
+              }
+            ],
+            "selected_input_digest": "27a237e80145b780000e72a94ce21bb1defd599f5c5068f7d793c064bd59f628",
+            "suppressed": []
+          }
+        },
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [
+              {
+                "identity": [
+                  "600111.SS ",
+                  "valuation",
+                  "2026-10-09",
+                  "600111.SS/valuation/2026-10-09",
+                  0
+                ],
+                "reason": "not_known_at_cutoff"
+              }
+            ],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "000001.SZ/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "000001.SZ",
+                "unit": "synthetic_score",
+                "value": 3
+              },
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": 1
+              }
+            ],
+            "selected_input_digest": "27a237e80145b780000e72a94ce21bb1defd599f5c5068f7d793c064bd59f628",
+            "suppressed": []
+          }
+        }
+      ],
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Provably future availability excludes a row before unrelated identity, payload or feature metadata can affect past selection or normalization",
+      "family": "cutoff_noninterference",
+      "name": "future_malformed_metadata_objects",
+      "observed": [
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [
+              {
+                "identity": [
+                  "600111.SS",
+                  "valuation",
+                  "2026-10-09",
+                  "600111.SS/valuation/2026-10-09",
+                  0
+                ],
+                "reason": "not_known_at_cutoff"
+              }
+            ],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "000001.SZ/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "000001.SZ",
+                "unit": "synthetic_score",
+                "value": 3
+              },
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": 1
+              }
+            ],
+            "selected_input_digest": "27a237e80145b780000e72a94ce21bb1defd599f5c5068f7d793c064bd59f628",
+            "suppressed": []
+          }
+        },
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [
+              {
+                "identity": [
+                  "600111.SS",
+                  "valuation",
+                  "2026-10-09",
+                  "600111.SS/valuation/2026-10-09",
+                  0
+                ],
+                "reason": "not_known_at_cutoff"
+              }
+            ],
+            "selected": [
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "000001.SZ/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "000001.SZ",
+                "unit": "synthetic_score",
+                "value": 3
+              },
+              {
+                "cadence": "session",
+                "effective_from": "2026-10-09T07:00:00Z",
+                "family": "valuation",
+                "feature_contract_id": "valuation/synthetic-value/v1",
+                "first_seen_at": "2026-10-09T07:01:00Z",
+                "observation_key": "2026-10-09",
+                "observation_session": "2026-10-09",
+                "published_at": "2026-10-09T07:00:00Z",
+                "revision": 0,
+                "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_record_id": "600000.SS/valuation/2026-10-09",
+                "status": "active",
+                "ticker": "600000.SS",
+                "unit": "synthetic_score",
+                "value": 1
+              }
+            ],
+            "selected_input_digest": "27a237e80145b780000e72a94ce21bb1defd599f5c5068f7d793c064bd59f628",
+            "suppressed": []
+          }
+        }
+      ],
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Either valid future availability clock suffices to prove nonavailability at the cutoff",
+      "family": "cutoff_noninterference",
+      "name": "future_publication_missing_first_seen",
+      "observed": {
+        "returned": {
+          "cutoff": "2026-10-09T08:00:00+00:00",
+          "expected_sessions": {
+            "margin": "2026-10-08",
+            "valuation": "2026-10-09"
+          },
+          "mode": "system_observed_replay",
+          "periodic_families": [],
+          "rejected": [
+            {
+              "identity": [
+                "600000.SS",
+                "valuation",
+                "2026-10-09",
+                "600000.SS/valuation/2026-10-09",
+                "bad"
+              ],
+              "reason": "not_known_at_cutoff"
+            }
+          ],
+          "selected": [
+            {
+              "cadence": "session",
+              "effective_from": "2026-10-09T07:00:00Z",
+              "family": "valuation",
+              "feature_contract_id": "valuation/synthetic-value/v1",
+              "first_seen_at": "2026-10-09T07:01:00Z",
+              "observation_key": "2026-10-09",
+              "observation_session": "2026-10-09",
+              "published_at": "2026-10-09T07:00:00Z",
+              "revision": 0,
+              "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "source_record_id": "000001.SZ/valuation/2026-10-09",
+              "status": "active",
+              "ticker": "000001.SZ",
+              "unit": "synthetic_score",
+              "value": 3
+            },
+            {
+              "cadence": "session",
+              "effective_from": "2026-10-09T07:00:00Z",
+              "family": "valuation",
+              "feature_contract_id": "valuation/synthetic-value/v1",
+              "first_seen_at": "2026-10-09T07:01:00Z",
+              "observation_key": "2026-10-09",
+              "observation_session": "2026-10-09",
+              "published_at": "2026-10-09T07:00:00Z",
+              "revision": 0,
+              "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "source_record_id": "600000.SS/valuation/2026-10-09",
+              "status": "active",
+              "ticker": "600000.SS",
+              "unit": "synthetic_score",
+              "value": 1
+            }
+          ],
+          "selected_input_digest": "27a237e80145b780000e72a94ce21bb1defd599f5c5068f7d793c064bd59f628",
+          "suppressed": []
+        }
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Either valid future availability clock suffices to prove nonavailability at the cutoff",
+      "family": "cutoff_noninterference",
+      "name": "future_first_seen_invalid_publication",
+      "observed": {
+        "returned": {
+          "cutoff": "2026-10-09T08:00:00+00:00",
+          "expected_sessions": {
+            "margin": "2026-10-08",
+            "valuation": "2026-10-09"
+          },
+          "mode": "system_observed_replay",
+          "periodic_families": [],
+          "rejected": [
+            {
+              "identity": [
+                "600000.SS",
+                "valuation",
+                "2026-10-09",
+                "600000.SS/valuation/2026-10-09",
+                "bad"
+              ],
+              "reason": "not_known_at_cutoff"
+            }
+          ],
+          "selected": [
+            {
+              "cadence": "session",
+              "effective_from": "2026-10-09T07:00:00Z",
+              "family": "valuation",
+              "feature_contract_id": "valuation/synthetic-value/v1",
+              "first_seen_at": "2026-10-09T07:01:00Z",
+              "observation_key": "2026-10-09",
+              "observation_session": "2026-10-09",
+              "published_at": "2026-10-09T07:00:00Z",
+              "revision": 0,
+              "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "source_record_id": "000001.SZ/valuation/2026-10-09",
+              "status": "active",
+              "ticker": "000001.SZ",
+              "unit": "synthetic_score",
+              "value": 3
+            },
+            {
+              "cadence": "session",
+              "effective_from": "2026-10-09T07:00:00Z",
+              "family": "valuation",
+              "feature_contract_id": "valuation/synthetic-value/v1",
+              "first_seen_at": "2026-10-09T07:01:00Z",
+              "observation_key": "2026-10-09",
+              "observation_session": "2026-10-09",
+              "published_at": "2026-10-09T07:00:00Z",
+              "revision": 0,
+              "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "source_record_id": "600000.SS/valuation/2026-10-09",
+              "status": "active",
+              "ticker": "600000.SS",
+              "unit": "synthetic_score",
+              "value": 1
+            }
+          ],
+          "selected_input_digest": "27a237e80145b780000e72a94ce21bb1defd599f5c5068f7d793c064bd59f628",
+          "suppressed": []
+        }
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "A known higher retraction with malformed applicability suppresses the observation in every arrival order",
+      "family": "revision_suppression",
+      "name": "known_retraction_missing_applicability",
+      "observed": [
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [
+              {
+                "identity": [
+                  "600000.SS",
+                  "valuation",
+                  "2026-10-09",
+                  "600000.SS/valuation/2026-10-09",
+                  1
+                ],
+                "reason": "timestamp_missing"
+              }
+            ],
+            "selected": [],
+            "selected_input_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "suppressed": [
+              {
+                "identity": [
+                  "600000.SS",
+                  "valuation",
+                  "2026-10-09",
+                  "600000.SS/valuation/2026-10-09",
+                  1
+                ],
+                "reason": "timestamp_missing"
+              }
+            ]
+          }
+        },
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [
+              {
+                "identity": [
+                  "600000.SS",
+                  "valuation",
+                  "2026-10-09",
+                  "600000.SS/valuation/2026-10-09",
+                  1
+                ],
+                "reason": "timestamp_missing"
+              }
+            ],
+            "selected": [],
+            "selected_input_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "suppressed": [
+              {
+                "identity": [
+                  "600000.SS",
+                  "valuation",
+                  "2026-10-09",
+                  "600000.SS/valuation/2026-10-09",
+                  1
+                ],
+                "reason": "timestamp_missing"
+              }
+            ]
+          }
+        }
+      ],
+      "original_case": "known_retraction_missing_applicability_resurrects",
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "A known higher retraction with malformed applicability suppresses the observation in every arrival order",
+      "family": "revision_suppression",
+      "name": "known_retraction_invalid_applicability",
+      "observed": [
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [
+              {
+                "identity": [
+                  "600000.SS",
+                  "valuation",
+                  "2026-10-09",
+                  "600000.SS/valuation/2026-10-09",
+                  1
+                ],
+                "reason": "timestamp_invalid"
+              }
+            ],
+            "selected": [],
+            "selected_input_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "suppressed": [
+              {
+                "identity": [
+                  "600000.SS",
+                  "valuation",
+                  "2026-10-09",
+                  "600000.SS/valuation/2026-10-09",
+                  1
+                ],
+                "reason": "timestamp_invalid"
+              }
+            ]
+          }
+        },
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [
+              {
+                "identity": [
+                  "600000.SS",
+                  "valuation",
+                  "2026-10-09",
+                  "600000.SS/valuation/2026-10-09",
+                  1
+                ],
+                "reason": "timestamp_invalid"
+              }
+            ],
+            "selected": [],
+            "selected_input_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "suppressed": [
+              {
+                "identity": [
+                  "600000.SS",
+                  "valuation",
+                  "2026-10-09",
+                  "600000.SS/valuation/2026-10-09",
+                  1
+                ],
+                "reason": "timestamp_invalid"
+              }
+            ]
+          }
+        }
+      ],
+      "original_case": "known_retraction_invalid_applicability_resurrects",
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "A known higher retraction with malformed applicability suppresses the observation in every arrival order",
+      "family": "revision_suppression",
+      "name": "known_retraction_naive_applicability",
+      "observed": [
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [
+              {
+                "identity": [
+                  "600000.SS",
+                  "valuation",
+                  "2026-10-09",
+                  "600000.SS/valuation/2026-10-09",
+                  1
+                ],
+                "reason": "timestamp_requires_timezone"
+              }
+            ],
+            "selected": [],
+            "selected_input_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "suppressed": [
+              {
+                "identity": [
+                  "600000.SS",
+                  "valuation",
+                  "2026-10-09",
+                  "600000.SS/valuation/2026-10-09",
+                  1
+                ],
+                "reason": "timestamp_requires_timezone"
+              }
+            ]
+          }
+        },
+        {
+          "returned": {
+            "cutoff": "2026-10-09T08:00:00+00:00",
+            "expected_sessions": {
+              "margin": "2026-10-08",
+              "valuation": "2026-10-09"
+            },
+            "mode": "system_observed_replay",
+            "periodic_families": [],
+            "rejected": [
+              {
+                "identity": [
+                  "600000.SS",
+                  "valuation",
+                  "2026-10-09",
+                  "600000.SS/valuation/2026-10-09",
+                  1
+                ],
+                "reason": "timestamp_requires_timezone"
+              }
+            ],
+            "selected": [],
+            "selected_input_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "suppressed": [
+              {
+                "identity": [
+                  "600000.SS",
+                  "valuation",
+                  "2026-10-09",
+                  "600000.SS/valuation/2026-10-09",
+                  1
+                ],
+                "reason": "timestamp_requires_timezone"
+              }
+            ]
+          }
+        }
+      ],
+      "original_case": "known_retraction_naive_applicability_resurrects",
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "A known revision whose valid applicability is after the decision does not suppress the effective prior value",
+      "family": "revision_suppression",
+      "name": "valid_future_applicability_keeps_old_effective_value",
+      "observed": [
+        {
+          "cutoff": "2026-10-09T08:00:00+00:00",
+          "expected_sessions": {
+            "margin": "2026-10-08",
+            "valuation": "2026-10-09"
+          },
+          "mode": "system_observed_replay",
+          "periodic_families": [],
+          "rejected": [
+            {
+              "identity": [
+                "600000.SS",
+                "valuation",
+                "2026-10-09",
+                "600000.SS/valuation/2026-10-09",
+                1
+              ],
+              "reason": "not_known_at_cutoff"
+            }
+          ],
+          "selected": [
+            {
+              "cadence": "session",
+              "effective_from": "2026-10-09T07:00:00Z",
+              "family": "valuation",
+              "feature_contract_id": "valuation/synthetic-value/v1",
+              "first_seen_at": "2026-10-09T07:01:00Z",
+              "observation_key": "2026-10-09",
+              "observation_session": "2026-10-09",
+              "published_at": "2026-10-09T07:00:00Z",
+              "revision": 0,
+              "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "source_record_id": "600000.SS/valuation/2026-10-09",
+              "status": "active",
+              "ticker": "600000.SS",
+              "unit": "synthetic_score",
+              "value": 1
+            }
+          ],
+          "selected_input_digest": "7997445ffa5f34b87a982e51b8479e1dc89d3254da7e4174ff7d1c0e61167e10",
+          "suppressed": []
+        },
+        {
+          "cutoff": "2026-10-09T08:00:00+00:00",
+          "expected_sessions": {
+            "margin": "2026-10-08",
+            "valuation": "2026-10-09"
+          },
+          "mode": "system_observed_replay",
+          "periodic_families": [],
+          "rejected": [
+            {
+              "identity": [
+                "600000.SS",
+                "valuation",
+                "2026-10-09",
+                "600000.SS/valuation/2026-10-09",
+                1
+              ],
+              "reason": "not_known_at_cutoff"
+            }
+          ],
+          "selected": [
+            {
+              "cadence": "session",
+              "effective_from": "2026-10-09T07:00:00Z",
+              "family": "valuation",
+              "feature_contract_id": "valuation/synthetic-value/v1",
+              "first_seen_at": "2026-10-09T07:01:00Z",
+              "observation_key": "2026-10-09",
+              "observation_session": "2026-10-09",
+              "published_at": "2026-10-09T07:00:00Z",
+              "revision": 0,
+              "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "source_record_id": "600000.SS/valuation/2026-10-09",
+              "status": "active",
+              "ticker": "600000.SS",
+              "unit": "synthetic_score",
+              "value": 1
+            }
+          ],
+          "selected_input_digest": "7997445ffa5f34b87a982e51b8479e1dc89d3254da7e4174ff7d1c0e61167e10",
+          "suppressed": []
+        }
+      ],
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Highest known revision and retraction suppression are independent of input order",
+      "family": "revision_suppression",
+      "name": "known_revision_retraction_all_six_permutations",
+      "observed": [
+        {
+          "cutoff": "2026-10-09T08:00:00+00:00",
+          "expected_sessions": {
+            "margin": "2026-10-08",
+            "valuation": "2026-10-09"
+          },
+          "mode": "system_observed_replay",
+          "periodic_families": [],
+          "rejected": [
+            {
+              "identity": [
+                "600000.SS",
+                "valuation",
+                "2026-10-09",
+                "600000.SS/valuation/2026-10-09",
+                2
+              ],
+              "reason": "source_retracted"
+            }
+          ],
+          "selected": [],
+          "selected_input_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "suppressed": [
+            {
+              "identity": [
+                "600000.SS",
+                "valuation",
+                "2026-10-09",
+                "600000.SS/valuation/2026-10-09",
+                2
+              ],
+              "reason": "source_retracted"
+            }
+          ]
+        },
+        {
+          "cutoff": "2026-10-09T08:00:00+00:00",
+          "expected_sessions": {
+            "margin": "2026-10-08",
+            "valuation": "2026-10-09"
+          },
+          "mode": "system_observed_replay",
+          "periodic_families": [],
+          "rejected": [
+            {
+              "identity": [
+                "600000.SS",
+                "valuation",
+                "2026-10-09",
+                "600000.SS/valuation/2026-10-09",
+                2
+              ],
+              "reason": "source_retracted"
+            }
+          ],
+          "selected": [],
+          "selected_input_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "suppressed": [
+            {
+              "identity": [
+                "600000.SS",
+                "valuation",
+                "2026-10-09",
+                "600000.SS/valuation/2026-10-09",
+                2
+              ],
+              "reason": "source_retracted"
+            }
+          ]
+        },
+        {
+          "cutoff": "2026-10-09T08:00:00+00:00",
+          "expected_sessions": {
+            "margin": "2026-10-08",
+            "valuation": "2026-10-09"
+          },
+          "mode": "system_observed_replay",
+          "periodic_families": [],
+          "rejected": [
+            {
+              "identity": [
+                "600000.SS",
+                "valuation",
+                "2026-10-09",
+                "600000.SS/valuation/2026-10-09",
+                2
+              ],
+              "reason": "source_retracted"
+            }
+          ],
+          "selected": [],
+          "selected_input_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "suppressed": [
+            {
+              "identity": [
+                "600000.SS",
+                "valuation",
+                "2026-10-09",
+                "600000.SS/valuation/2026-10-09",
+                2
+              ],
+              "reason": "source_retracted"
+            }
+          ]
+        },
+        {
+          "cutoff": "2026-10-09T08:00:00+00:00",
+          "expected_sessions": {
+            "margin": "2026-10-08",
+            "valuation": "2026-10-09"
+          },
+          "mode": "system_observed_replay",
+          "periodic_families": [],
+          "rejected": [
+            {
+              "identity": [
+                "600000.SS",
+                "valuation",
+                "2026-10-09",
+                "600000.SS/valuation/2026-10-09",
+                2
+              ],
+              "reason": "source_retracted"
+            }
+          ],
+          "selected": [],
+          "selected_input_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "suppressed": [
+            {
+              "identity": [
+                "600000.SS",
+                "valuation",
+                "2026-10-09",
+                "600000.SS/valuation/2026-10-09",
+                2
+              ],
+              "reason": "source_retracted"
+            }
+          ]
+        },
+        {
+          "cutoff": "2026-10-09T08:00:00+00:00",
+          "expected_sessions": {
+            "margin": "2026-10-08",
+            "valuation": "2026-10-09"
+          },
+          "mode": "system_observed_replay",
+          "periodic_families": [],
+          "rejected": [
+            {
+              "identity": [
+                "600000.SS",
+                "valuation",
+                "2026-10-09",
+                "600000.SS/valuation/2026-10-09",
+                2
+              ],
+              "reason": "source_retracted"
+            }
+          ],
+          "selected": [],
+          "selected_input_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "suppressed": [
+            {
+              "identity": [
+                "600000.SS",
+                "valuation",
+                "2026-10-09",
+                "600000.SS/valuation/2026-10-09",
+                2
+              ],
+              "reason": "source_retracted"
+            }
+          ]
+        },
+        {
+          "cutoff": "2026-10-09T08:00:00+00:00",
+          "expected_sessions": {
+            "margin": "2026-10-08",
+            "valuation": "2026-10-09"
+          },
+          "mode": "system_observed_replay",
+          "periodic_families": [],
+          "rejected": [
+            {
+              "identity": [
+                "600000.SS",
+                "valuation",
+                "2026-10-09",
+                "600000.SS/valuation/2026-10-09",
+                2
+              ],
+              "reason": "source_retracted"
+            }
+          ],
+          "selected": [],
+          "selected_input_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "suppressed": [
+            {
+              "identity": [
+                "600000.SS",
+                "valuation",
+                "2026-10-09",
+                "600000.SS/valuation/2026-10-09",
+                2
+              ],
+              "reason": "source_retracted"
+            }
+          ]
+        }
+      ],
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "An invalid calendar-date identity cannot qualify merely by matching itself",
+      "family": "session_identity",
+      "name": "invalid_expected_session_missing",
+      "observed": {
+        "exception": "ContractError",
+        "message": "session_identity_invalid"
+      },
+      "original_case": "invalid_expected_and_observed_session_missing",
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "An invalid calendar-date identity cannot qualify merely by matching itself",
+      "family": "session_identity",
+      "name": "invalid_expected_session_malformed",
+      "observed": {
+        "exception": "ContractError",
+        "message": "session_identity_invalid"
+      },
+      "original_case": "invalid_expected_and_observed_session_malformed",
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "An invalid calendar-date identity cannot qualify merely by matching itself",
+      "family": "session_identity",
+      "name": "invalid_expected_session_impossible_date",
+      "observed": {
+        "exception": "ContractError",
+        "message": "session_identity_invalid"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "An invalid calendar-date identity cannot qualify merely by matching itself",
+      "family": "session_identity",
+      "name": "invalid_expected_session_not_leap_year",
+      "observed": {
+        "exception": "ContractError",
+        "message": "session_identity_invalid"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "An invalid calendar-date identity cannot qualify merely by matching itself",
+      "family": "session_identity",
+      "name": "invalid_expected_session_un-padded",
+      "observed": {
+        "exception": "ContractError",
+        "message": "session_identity_invalid"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "An invalid calendar-date identity cannot qualify merely by matching itself",
+      "family": "session_identity",
+      "name": "invalid_expected_session_datetime",
+      "observed": {
+        "exception": "ContractError",
+        "message": "session_identity_invalid"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Invalid row session syntax suppresses the chosen version",
+      "family": "session_identity",
+      "name": "invalid_observed_session_suppression",
+      "observed": {
+        "cutoff": "2026-10-09T08:00:00+00:00",
+        "expected_sessions": {
+          "margin": "2026-10-08",
+          "valuation": "2026-10-09"
+        },
+        "mode": "system_observed_replay",
+        "periodic_families": [],
+        "rejected": [
+          {
+            "identity": [
+              "600000.SS",
+              "valuation",
+              "2026-10-09",
+              "600000.SS/valuation/2026-10-09",
+              0
+            ],
+            "reason": "session_identity_invalid"
+          }
+        ],
+        "selected": [],
+        "selected_input_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "suppressed": [
+          {
+            "identity": [
+              "600000.SS",
+              "valuation",
+              "2026-10-09",
+              "600000.SS/valuation/2026-10-09",
+              0
+            ],
+            "reason": "session_identity_invalid"
+          }
+        ]
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Valid leap-day syntax is accepted when supplied by the caller; calendar correctness remains a source-owner premise",
+      "family": "session_identity",
+      "name": "valid_calendar_date_syntax_only",
+      "observed": {
+        "cutoff": "2026-10-09T08:00:00+00:00",
+        "expected_sessions": {
+          "valuation": "2024-02-29"
+        },
+        "mode": "system_observed_replay",
+        "periodic_families": [],
+        "rejected": [],
+        "selected": [
+          {
+            "cadence": "session",
+            "effective_from": "2026-10-09T07:00:00Z",
+            "family": "valuation",
+            "feature_contract_id": "valuation/synthetic-value/v1",
+            "first_seen_at": "2026-10-09T07:01:00Z",
+            "observation_key": "2026-10-09",
+            "observation_session": "2024-02-29",
+            "published_at": "2026-10-09T07:00:00Z",
+            "revision": 0,
+            "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "source_record_id": "600000.SS/valuation/2026-10-09",
+            "status": "active",
+            "ticker": "600000.SS",
+            "unit": "synthetic_score",
+            "value": 1
+          }
+        ],
+        "selected_input_digest": "a238e2411dfecfeeaf1fb57188f86ffe93331827dd7414512d2ff07f3740d907",
+        "suppressed": []
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "A syntactically valid but mismatched observation session is refused",
+      "family": "session_identity",
+      "name": "wrong_source_session_suppressed",
+      "observed": {
+        "cutoff": "2026-10-09T08:00:00+00:00",
+        "expected_sessions": {
+          "margin": "2026-10-08",
+          "valuation": "2026-10-09"
+        },
+        "mode": "system_observed_replay",
+        "periodic_families": [],
+        "rejected": [
+          {
+            "identity": [
+              "600000.SS",
+              "valuation",
+              "2026-10-09",
+              "600000.SS/valuation/2026-10-09",
+              0
+            ],
+            "reason": "wrong_observation_session"
+          }
+        ],
+        "selected": [],
+        "selected_input_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "suppressed": [
+          {
+            "identity": [
+              "600000.SS",
+              "valuation",
+              "2026-10-09",
+              "600000.SS/valuation/2026-10-09",
+              0
+            ],
+            "reason": "wrong_observation_session"
+          }
+        ]
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "The row cannot override the family owner's session contract",
+      "family": "owner_cadence",
+      "name": "session_family_cannot_self_declare_periodic",
+      "observed": {
+        "cutoff": "2026-10-09T08:00:00+00:00",
+        "expected_sessions": {
+          "margin": "2026-10-08",
+          "valuation": "2026-10-09"
+        },
+        "mode": "system_observed_replay",
+        "periodic_families": [],
+        "rejected": [
+          {
+            "identity": [
+              "600000.SS",
+              "valuation",
+              "2026-10-09",
+              "600000.SS/valuation/2026-10-09",
+              0
+            ],
+            "reason": "cadence_unqualified"
+          }
+        ],
+        "selected": [],
+        "selected_input_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "suppressed": [
+          {
+            "identity": [
+              "600000.SS",
+              "valuation",
+              "2026-10-09",
+              "600000.SS/valuation/2026-10-09",
+              0
+            ],
+            "reason": "cadence_unqualified"
+          }
+        ]
+      },
+      "original_case": "row_cadence_can_bypass_family_session_contract",
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "An owner-declared periodic observation remains valid until explicit expiry/supersession",
+      "family": "owner_cadence",
+      "name": "explicit_long_lived_periodic_family",
+      "observed": {
+        "cutoff": "2026-10-09T08:00:00+00:00",
+        "expected_sessions": {
+          "margin": "2026-10-08",
+          "valuation": "2026-10-09"
+        },
+        "mode": "system_observed_replay",
+        "periodic_families": [
+          "filing"
+        ],
+        "rejected": [],
+        "selected": [
+          {
+            "cadence": "periodic",
+            "effective_from": "2026-08-01T07:00:00Z",
+            "family": "filing",
+            "feature_contract_id": "filing/synthetic-value/v1",
+            "first_seen_at": "2026-08-01T07:01:00Z",
+            "observation_key": "2026-10-09",
+            "observation_session": "2026-06-30",
+            "published_at": "2026-08-01T07:00:00Z",
+            "revision": 0,
+            "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "source_record_id": "600000.SS/valuation/2026-10-09",
+            "status": "active",
+            "ticker": "600000.SS",
+            "unit": "synthetic_score",
+            "value": 1
+          }
+        ],
+        "selected_input_digest": "cc8eda0fa3b3d44b95e8e81575f0273fb4f01b4747352883132d6e34e4b0783c",
+        "suppressed": []
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "A source family cannot declare its own permission through a row",
+      "family": "owner_cadence",
+      "name": "undeclared_periodic_family_refused",
+      "observed": {
+        "cutoff": "2026-10-09T08:00:00+00:00",
+        "expected_sessions": {
+          "margin": "2026-10-08",
+          "valuation": "2026-10-09"
+        },
+        "mode": "system_observed_replay",
+        "periodic_families": [],
+        "rejected": [
+          {
+            "identity": [
+              "600000.SS",
+              "filing",
+              "2026-10-09",
+              "600000.SS/valuation/2026-10-09",
+              0
+            ],
+            "reason": "source_family_unqualified"
+          }
+        ],
+        "selected": [],
+        "selected_input_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "suppressed": [
+          {
+            "identity": [
+              "600000.SS",
+              "filing",
+              "2026-10-09",
+              "600000.SS/valuation/2026-10-09",
+              0
+            ],
+            "reason": "source_family_unqualified"
+          }
+        ]
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed or conflicting caller-owned cadence configuration is refused with the defined contract exception",
+      "family": "owner_cadence",
+      "name": "invalid_owner_periodic_contract_conflicting",
+      "observed": {
+        "exception": "ContractError",
+        "message": "periodic_family_contract_invalid"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed or conflicting caller-owned cadence configuration is refused with the defined contract exception",
+      "family": "owner_cadence",
+      "name": "invalid_owner_periodic_contract_string",
+      "observed": {
+        "exception": "ContractError",
+        "message": "periodic_family_contract_invalid"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed or conflicting caller-owned cadence configuration is refused with the defined contract exception",
+      "family": "owner_cadence",
+      "name": "invalid_owner_periodic_contract_null",
+      "observed": {
+        "exception": "ContractError",
+        "message": "periodic_family_contract_invalid"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed or conflicting caller-owned cadence configuration is refused with the defined contract exception",
+      "family": "owner_cadence",
+      "name": "invalid_owner_periodic_contract_scalar",
+      "observed": {
+        "exception": "ContractError",
+        "message": "periodic_family_contract_invalid"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed or conflicting caller-owned cadence configuration is refused with the defined contract exception",
+      "family": "owner_cadence",
+      "name": "invalid_owner_periodic_contract_nested_list",
+      "observed": {
+        "exception": "ContractError",
+        "message": "periodic_family_contract_invalid"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed issuer aliases cannot enter the selected normalization population",
+      "family": "issuer_identity",
+      "name": "canonical_source_ticker_trailing_space",
+      "observed": {
+        "exception": "ContractError",
+        "message": "source_identity_missing"
+      },
+      "original_case": "whitespace_issuer_alias_changes_normalization",
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed issuer aliases cannot enter the selected normalization population",
+      "family": "issuer_identity",
+      "name": "canonical_source_ticker_leading_space",
+      "observed": {
+        "exception": "ContractError",
+        "message": "source_identity_missing"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed issuer aliases cannot enter the selected normalization population",
+      "family": "issuer_identity",
+      "name": "canonical_source_ticker_lowercase_suffix",
+      "observed": {
+        "exception": "ContractError",
+        "message": "invalid_ticker"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed issuer aliases cannot enter the selected normalization population",
+      "family": "issuer_identity",
+      "name": "canonical_source_ticker_missing_exchange",
+      "observed": {
+        "exception": "ContractError",
+        "message": "invalid_ticker"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed issuer aliases cannot enter the selected normalization population",
+      "family": "issuer_identity",
+      "name": "canonical_source_ticker_invalid_exchange",
+      "observed": {
+        "exception": "ContractError",
+        "message": "invalid_ticker"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed issuer aliases cannot enter the selected normalization population",
+      "family": "issuer_identity",
+      "name": "canonical_source_ticker_too_short",
+      "observed": {
+        "exception": "ContractError",
+        "message": "invalid_ticker"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Each supported canonical exchange syntax remains admitted",
+      "family": "issuer_identity",
+      "name": "canonical_ticker_positive_600000.SS",
+      "observed": {
+        "cutoff": "2026-10-09T08:00:00+00:00",
+        "expected_sessions": {
+          "margin": "2026-10-08",
+          "valuation": "2026-10-09"
+        },
+        "mode": "system_observed_replay",
+        "periodic_families": [],
+        "rejected": [],
+        "selected": [
+          {
+            "cadence": "session",
+            "effective_from": "2026-10-09T07:00:00Z",
+            "family": "valuation",
+            "feature_contract_id": "valuation/synthetic-value/v1",
+            "first_seen_at": "2026-10-09T07:01:00Z",
+            "observation_key": "2026-10-09",
+            "observation_session": "2026-10-09",
+            "published_at": "2026-10-09T07:00:00Z",
+            "revision": 0,
+            "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "source_record_id": "600000.SS/valuation/2026-10-09",
+            "status": "active",
+            "ticker": "600000.SS",
+            "unit": "synthetic_score",
+            "value": 1
+          }
+        ],
+        "selected_input_digest": "7997445ffa5f34b87a982e51b8479e1dc89d3254da7e4174ff7d1c0e61167e10",
+        "suppressed": []
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Each supported canonical exchange syntax remains admitted",
+      "family": "issuer_identity",
+      "name": "canonical_ticker_positive_000001.SZ",
+      "observed": {
+        "cutoff": "2026-10-09T08:00:00+00:00",
+        "expected_sessions": {
+          "margin": "2026-10-08",
+          "valuation": "2026-10-09"
+        },
+        "mode": "system_observed_replay",
+        "periodic_families": [],
+        "rejected": [],
+        "selected": [
+          {
+            "cadence": "session",
+            "effective_from": "2026-10-09T07:00:00Z",
+            "family": "valuation",
+            "feature_contract_id": "valuation/synthetic-value/v1",
+            "first_seen_at": "2026-10-09T07:01:00Z",
+            "observation_key": "2026-10-09",
+            "observation_session": "2026-10-09",
+            "published_at": "2026-10-09T07:00:00Z",
+            "revision": 0,
+            "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "source_record_id": "000001.SZ/valuation/2026-10-09",
+            "status": "active",
+            "ticker": "000001.SZ",
+            "unit": "synthetic_score",
+            "value": 1
+          }
+        ],
+        "selected_input_digest": "a77841385f0164e15dc7d9787aa444f5da3e23e4598162e77a58183dd855fbb6",
+        "suppressed": []
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Each supported canonical exchange syntax remains admitted",
+      "family": "issuer_identity",
+      "name": "canonical_ticker_positive_430001.BJ",
+      "observed": {
+        "cutoff": "2026-10-09T08:00:00+00:00",
+        "expected_sessions": {
+          "margin": "2026-10-08",
+          "valuation": "2026-10-09"
+        },
+        "mode": "system_observed_replay",
+        "periodic_families": [],
+        "rejected": [],
+        "selected": [
+          {
+            "cadence": "session",
+            "effective_from": "2026-10-09T07:00:00Z",
+            "family": "valuation",
+            "feature_contract_id": "valuation/synthetic-value/v1",
+            "first_seen_at": "2026-10-09T07:01:00Z",
+            "observation_key": "2026-10-09",
+            "observation_session": "2026-10-09",
+            "published_at": "2026-10-09T07:00:00Z",
+            "revision": 0,
+            "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "source_record_id": "430001.BJ/valuation/2026-10-09",
+            "status": "active",
+            "ticker": "430001.BJ",
+            "unit": "synthetic_score",
+            "value": 1
+          }
+        ],
+        "selected_input_digest": "1cbe2558a61d1acdef7f4c4d90420522e7741fd15b5694849f488ee706b1bce0",
+        "suppressed": []
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Unrepresentable intelligence triggers the complete V3 fallback",
+      "family": "numeric_validity",
+      "name": "huge_intelligence_atomic_fallback",
+      "observed": {
+        "returned": {
+          "coverage_scope": "qualified_pre_cap",
+          "excluded_by_caps": [
+            {
+              "reason": "sector_cap",
+              "ticker": "688353.SS"
+            },
+            {
+              "reason": "sector_cap",
+              "ticker": "600623.SS"
+            },
+            {
+              "reason": "sector_cap",
+              "ticker": "600273.SS"
+            },
+            {
+              "reason": "sector_cap",
+              "ticker": "600426.SS"
+            },
+            {
+              "reason": "sector_cap",
+              "ticker": "600299.SS"
+            },
+            {
+              "reason": "sector_cap",
+              "ticker": "002004.SZ"
+            },
+            {
+              "reason": "sector_cap",
+              "ticker": "601216.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600282.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600406.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600585.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "300036.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "300768.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "300772.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600268.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600741.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "601800.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "601225.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600718.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600085.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "601390.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "603927.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "601607.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "002043.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600050.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "300896.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "000786.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "000035.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "000959.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600595.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "601877.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "002233.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600000.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "002572.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600866.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600269.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "001391.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "300182.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "002032.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "300284.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "300294.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "002507.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "002270.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "000902.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "601818.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600521.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "002063.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600517.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "300122.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "603919.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "603883.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "603027.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "002911.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600597.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "601965.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "603100.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "601857.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600329.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "002372.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600827.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "000860.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600315.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "002091.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600871.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "002608.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600787.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "001286.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "603866.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "688213.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "601006.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "002007.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "688099.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600657.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "000932.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600803.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "601228.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "603127.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600757.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "002332.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "002128.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "300070.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "601018.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600025.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600037.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600064.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600717.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "003816.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600219.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "601598.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "601858.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "601326.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600546.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600028.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600196.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600938.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "002226.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "601766.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "601808.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600057.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "000927.SZ"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "601577.SS"
+            },
+            {
+              "reason": "featured_cap",
+              "ticker": "600017.SS"
+            }
+          ],
+          "invalid": [
+            {
+              "reason": "not_finite_json_number",
+              "ticker": "002460.SZ"
+            }
+          ],
+          "mode": "v3_atomic_fallback",
+          "ordered": [
+            "002460.SZ",
+            "603799.SS",
+            "000973.SZ",
+            "605499.SS",
+            "688472.SS",
+            "002340.SZ",
+            "688223.SS",
+            "002001.SZ",
+            "301219.SZ",
+            "002405.SZ",
+            "000858.SZ",
+            "688353.SS",
+            "300014.SZ",
+            "600623.SS",
+            "600633.SS",
+            "002294.SZ",
+            "002847.SZ",
+            "600273.SS",
+            "688050.SS",
+            "600426.SS",
+            "603279.SS",
+            "600509.SS",
+            "600299.SS",
+            "002004.SZ",
+            "002557.SZ",
+            "601880.SS",
+            "000719.SZ",
+            "600276.SS",
+            "601898.SS",
+            "601216.SS",
+            "300075.SZ",
+            "600282.SS",
+            "600406.SS",
+            "600585.SS",
+            "300036.SZ",
+            "300768.SZ",
+            "300772.SZ",
+            "600268.SS",
+            "600741.SS",
+            "601800.SS",
+            "601225.SS",
+            "600718.SS",
+            "600085.SS",
+            "601390.SS",
+            "603927.SS",
+            "601607.SS",
+            "002043.SZ",
+            "600050.SS",
+            "300896.SZ",
+            "000786.SZ",
+            "000035.SZ",
+            "000959.SZ",
+            "600595.SS",
+            "601877.SS",
+            "002233.SZ",
+            "600000.SS",
+            "002572.SZ",
+            "600866.SS",
+            "600269.SS",
+            "001391.SZ",
+            "300182.SZ",
+            "002032.SZ",
+            "300284.SZ",
+            "300294.SZ",
+            "002507.SZ",
+            "002270.SZ",
+            "000902.SZ",
+            "601818.SS",
+            "600521.SS",
+            "002063.SZ",
+            "600517.SS",
+            "300122.SZ",
+            "603919.SS",
+            "603883.SS",
+            "603027.SS",
+            "002911.SZ",
+            "600597.SS",
+            "601965.SS",
+            "603100.SS",
+            "601857.SS",
+            "600329.SS",
+            "002372.SZ",
+            "600827.SS",
+            "000860.SZ",
+            "600315.SS",
+            "002091.SZ",
+            "600871.SS",
+            "002608.SZ",
+            "600787.SS",
+            "001286.SZ",
+            "603866.SS",
+            "688213.SS",
+            "601006.SS",
+            "002007.SZ",
+            "688099.SS",
+            "600657.SS",
+            "000932.SZ",
+            "600803.SS",
+            "601228.SS",
+            "603127.SS",
+            "600757.SS",
+            "002332.SZ",
+            "002128.SZ",
+            "300070.SZ",
+            "601018.SS",
+            "600025.SS",
+            "600037.SS",
+            "600064.SS",
+            "600717.SS",
+            "003816.SZ",
+            "600219.SS",
+            "601598.SS",
+            "601858.SS",
+            "601326.SS",
+            "600546.SS",
+            "600028.SS",
+            "600196.SS",
+            "600938.SS",
+            "002226.SZ",
+            "601766.SS",
+            "601808.SS",
+            "600057.SS",
+            "000927.SZ",
+            "601577.SS",
+            "600017.SS"
+          ],
+          "policy": "research_qualified_atomic_v1",
+          "qualified_n": 125,
+          "sector_counts": {
+            "Basic Materials": 4,
+            "Communication Services": 2,
+            "Consumer Defensive": 4,
+            "Energy": 1,
+            "Healthcare": 4,
+            "Industrials": 4,
+            "Technology": 4,
+            "Utilities": 1
+          },
+          "selected": [
+            "002460.SZ",
+            "603799.SS",
+            "000973.SZ",
+            "605499.SS",
+            "688472.SS",
+            "002340.SZ",
+            "688223.SS",
+            "002001.SZ",
+            "301219.SZ",
+            "002405.SZ",
+            "000858.SZ",
+            "300014.SZ",
+            "600633.SS",
+            "002294.SZ",
+            "002847.SZ",
+            "688050.SS",
+            "603279.SS",
+            "600509.SS",
+            "002557.SZ",
+            "601880.SS",
+            "000719.SZ",
+            "600276.SS",
+            "601898.SS",
+            "300075.SZ"
+          ]
+        }
+      },
+      "original_case": "large_json_integer_breaks_atomic_fallback",
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "An unrepresentable latest source value suppresses the older observation within the contract error model",
+      "family": "numeric_validity",
+      "name": "huge_known_revision_suppression",
+      "observed": {
+        "returned": {
+          "cutoff": "2026-10-09T08:00:00+00:00",
+          "expected_sessions": {
+            "margin": "2026-10-08",
+            "valuation": "2026-10-09"
+          },
+          "mode": "system_observed_replay",
+          "periodic_families": [],
+          "rejected": [
+            {
+              "identity": [
+                "600000.SS",
+                "valuation",
+                "2026-10-09",
+                "600000.SS/valuation/2026-10-09",
+                1
+              ],
+              "reason": "not_finite_json_number"
+            }
+          ],
+          "selected": [],
+          "selected_input_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "suppressed": [
+            {
+              "identity": [
+                "600000.SS",
+                "valuation",
+                "2026-10-09",
+                "600000.SS/valuation/2026-10-09",
+                1
+              ],
+              "reason": "not_finite_json_number"
+            }
+          ]
+        }
+      },
+      "original_case": "large_json_integer_breaks_known_revision_suppression",
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Finite numeric source payload remains valid under its caller-owned feature contract",
+      "family": "numeric_validity",
+      "name": "finite_source_numeric_zero",
+      "observed": {
+        "cutoff": "2026-10-09T08:00:00+00:00",
+        "expected_sessions": {
+          "margin": "2026-10-08",
+          "valuation": "2026-10-09"
+        },
+        "mode": "system_observed_replay",
+        "periodic_families": [],
+        "rejected": [],
+        "selected": [
+          {
+            "cadence": "session",
+            "effective_from": "2026-10-09T07:00:00Z",
+            "family": "valuation",
+            "feature_contract_id": "valuation/synthetic-value/v1",
+            "first_seen_at": "2026-10-09T07:01:00Z",
+            "observation_key": "2026-10-09",
+            "observation_session": "2026-10-09",
+            "published_at": "2026-10-09T07:00:00Z",
+            "revision": 0,
+            "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "source_record_id": "600000.SS/valuation/2026-10-09",
+            "status": "active",
+            "ticker": "600000.SS",
+            "unit": "synthetic_score",
+            "value": 0
+          }
+        ],
+        "selected_input_digest": "7e953dc988c5da76decae82c4366c80e9f831dd62028581cf5c6b52c70ef5cf9",
+        "suppressed": []
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Finite numeric source payload remains valid under its caller-owned feature contract",
+      "family": "numeric_validity",
+      "name": "finite_source_numeric_negative",
+      "observed": {
+        "cutoff": "2026-10-09T08:00:00+00:00",
+        "expected_sessions": {
+          "margin": "2026-10-08",
+          "valuation": "2026-10-09"
+        },
+        "mode": "system_observed_replay",
+        "periodic_families": [],
+        "rejected": [],
+        "selected": [
+          {
+            "cadence": "session",
+            "effective_from": "2026-10-09T07:00:00Z",
+            "family": "valuation",
+            "feature_contract_id": "valuation/synthetic-value/v1",
+            "first_seen_at": "2026-10-09T07:01:00Z",
+            "observation_key": "2026-10-09",
+            "observation_session": "2026-10-09",
+            "published_at": "2026-10-09T07:00:00Z",
+            "revision": 0,
+            "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "source_record_id": "600000.SS/valuation/2026-10-09",
+            "status": "active",
+            "ticker": "600000.SS",
+            "unit": "synthetic_score",
+            "value": -0.25
+          }
+        ],
+        "selected_input_digest": "83248c03456f7e555d1b780aaca45caf8a5b68de3ead070e814318e71955455a",
+        "suppressed": []
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Finite numeric source payload remains valid under its caller-owned feature contract",
+      "family": "numeric_validity",
+      "name": "finite_source_numeric_finite_fraction",
+      "observed": {
+        "cutoff": "2026-10-09T08:00:00+00:00",
+        "expected_sessions": {
+          "margin": "2026-10-08",
+          "valuation": "2026-10-09"
+        },
+        "mode": "system_observed_replay",
+        "periodic_families": [],
+        "rejected": [],
+        "selected": [
+          {
+            "cadence": "session",
+            "effective_from": "2026-10-09T07:00:00Z",
+            "family": "valuation",
+            "feature_contract_id": "valuation/synthetic-value/v1",
+            "first_seen_at": "2026-10-09T07:01:00Z",
+            "observation_key": "2026-10-09",
+            "observation_session": "2026-10-09",
+            "published_at": "2026-10-09T07:00:00Z",
+            "revision": 0,
+            "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "source_record_id": "600000.SS/valuation/2026-10-09",
+            "status": "active",
+            "ticker": "600000.SS",
+            "unit": "synthetic_score",
+            "value": 1.25
+          }
+        ],
+        "selected_input_digest": "c143950a8c753b75d97b3bb020855a827ddacfdad5825f575710df9f710e50ff",
+        "suppressed": []
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Finite numeric source payload remains valid under its caller-owned feature contract",
+      "family": "numeric_validity",
+      "name": "finite_source_numeric_large_finite_integer",
+      "observed": {
+        "cutoff": "2026-10-09T08:00:00+00:00",
+        "expected_sessions": {
+          "margin": "2026-10-08",
+          "valuation": "2026-10-09"
+        },
+        "mode": "system_observed_replay",
+        "periodic_families": [],
+        "rejected": [],
+        "selected": [
+          {
+            "cadence": "session",
+            "effective_from": "2026-10-09T07:00:00Z",
+            "family": "valuation",
+            "feature_contract_id": "valuation/synthetic-value/v1",
+            "first_seen_at": "2026-10-09T07:01:00Z",
+            "observation_key": "2026-10-09",
+            "observation_session": "2026-10-09",
+            "published_at": "2026-10-09T07:00:00Z",
+            "revision": 0,
+            "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "source_record_id": "600000.SS/valuation/2026-10-09",
+            "status": "active",
+            "ticker": "600000.SS",
+            "unit": "synthetic_score",
+            "value": 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+          }
+        ],
+        "selected_input_digest": "040d872085d63e60a4e7fabb5c81dbee69f12d1401e6bd5d7aaaf7be6576a7c7",
+        "suppressed": []
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "An invalid qualified name excluded by caps still forces the whole eligible population to V3",
+      "family": "qualified_pre_cap",
+      "name": "qualified_missing_below_cap_still_invalidates_coverage",
+      "observed": {
+        "invalid": [
+          {
+            "reason": "not_finite_json_number",
+            "ticker": "002460.SZ"
+          }
+        ],
+        "invalid_ticker": "002460.SZ",
+        "mode": "v3_atomic_fallback"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Valid aggregated homogeneous features produce the expected ranks",
+      "family": "normalization",
+      "name": "homogeneous_normalization_positive",
+      "observed": {
+        "000001.SZ": 1.0,
+        "600000.SS": 0.0
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Cross-sectional normalization refuses incompatible feature identities",
+      "family": "normalization",
+      "name": "normalization_mixed_family",
+      "observed": {
+        "exception": "ContractError",
+        "message": "normalization_requires_homogeneous_feature_contract"
+      },
+      "original_case": "normalization_accepts_incompatible_feed_families",
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Cross-sectional normalization refuses incompatible feature identities",
+      "family": "normalization",
+      "name": "normalization_mixed_unit",
+      "observed": {
+        "exception": "ContractError",
+        "message": "normalization_requires_homogeneous_feature_contract"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Cross-sectional normalization refuses incompatible feature identities",
+      "family": "normalization",
+      "name": "normalization_mixed_feature_contract",
+      "observed": {
+        "exception": "ContractError",
+        "message": "normalization_requires_homogeneous_feature_contract"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed homogeneous metadata is refused with the defined contract exception rather than bypassing or crashing validation",
+      "family": "normalization",
+      "name": "normalization_unit_missing",
+      "observed": {
+        "exception": "ContractError",
+        "message": "normalization_requires_homogeneous_feature_contract"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed homogeneous metadata is refused with the defined contract exception rather than bypassing or crashing validation",
+      "family": "normalization",
+      "name": "normalization_unit_blank",
+      "observed": {
+        "exception": "ContractError",
+        "message": "normalization_requires_homogeneous_feature_contract"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed homogeneous metadata is refused with the defined contract exception rather than bypassing or crashing validation",
+      "family": "normalization",
+      "name": "normalization_unit_whitespace",
+      "observed": {
+        "exception": "ContractError",
+        "message": "normalization_requires_homogeneous_feature_contract"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed homogeneous metadata is refused with the defined contract exception rather than bypassing or crashing validation",
+      "family": "normalization",
+      "name": "normalization_unit_boolean",
+      "observed": {
+        "exception": "ContractError",
+        "message": "normalization_requires_homogeneous_feature_contract"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed homogeneous metadata is refused with the defined contract exception rather than bypassing or crashing validation",
+      "family": "normalization",
+      "name": "normalization_unit_list",
+      "observed": {
+        "exception": "ContractError",
+        "message": "normalization_requires_homogeneous_feature_contract"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed homogeneous metadata is refused with the defined contract exception rather than bypassing or crashing validation",
+      "family": "normalization",
+      "name": "normalization_unit_object",
+      "observed": {
+        "exception": "ContractError",
+        "message": "normalization_requires_homogeneous_feature_contract"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Changing feature semantics changes the selected-input identity even when values/ranks are identical",
+      "family": "fingerprint",
+      "name": "fingerprint_captures_unit",
+      "observed": {
+        "base_digest": "27a237e80145b780000e72a94ce21bb1defd599f5c5068f7d793c064bd59f628",
+        "changed_digest": "656fb31b1b1f054796abdb86faf0a00dc2bc6e3b2ffb0e0a3643566409c8db5e",
+        "same_ranks": true
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed homogeneous metadata is refused with the defined contract exception rather than bypassing or crashing validation",
+      "family": "normalization",
+      "name": "normalization_feature_contract_id_missing",
+      "observed": {
+        "exception": "ContractError",
+        "message": "normalization_requires_homogeneous_feature_contract"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed homogeneous metadata is refused with the defined contract exception rather than bypassing or crashing validation",
+      "family": "normalization",
+      "name": "normalization_feature_contract_id_blank",
+      "observed": {
+        "exception": "ContractError",
+        "message": "normalization_requires_homogeneous_feature_contract"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed homogeneous metadata is refused with the defined contract exception rather than bypassing or crashing validation",
+      "family": "normalization",
+      "name": "normalization_feature_contract_id_whitespace",
+      "observed": {
+        "exception": "ContractError",
+        "message": "normalization_requires_homogeneous_feature_contract"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed homogeneous metadata is refused with the defined contract exception rather than bypassing or crashing validation",
+      "family": "normalization",
+      "name": "normalization_feature_contract_id_boolean",
+      "observed": {
+        "exception": "ContractError",
+        "message": "normalization_requires_homogeneous_feature_contract"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed homogeneous metadata is refused with the defined contract exception rather than bypassing or crashing validation",
+      "family": "normalization",
+      "name": "normalization_feature_contract_id_list",
+      "observed": {
+        "exception": "ContractError",
+        "message": "normalization_requires_homogeneous_feature_contract"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Malformed homogeneous metadata is refused with the defined contract exception rather than bypassing or crashing validation",
+      "family": "normalization",
+      "name": "normalization_feature_contract_id_object",
+      "observed": {
+        "exception": "ContractError",
+        "message": "normalization_requires_homogeneous_feature_contract"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Changing feature semantics changes the selected-input identity even when values/ranks are identical",
+      "family": "fingerprint",
+      "name": "fingerprint_captures_feature_contract_id",
+      "observed": {
+        "base_digest": "27a237e80145b780000e72a94ce21bb1defd599f5c5068f7d793c064bd59f628",
+        "changed_digest": "00e9cf53ec942f55d701a990f5d618a7af0d98cabe54461f04faf764d45e07e7",
+        "same_ranks": true
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "Multiple observations for one issuer require the existing aggregation owner before normalization",
+      "family": "normalization",
+      "name": "normalization_requires_qualified_aggregation",
+      "observed": {
+        "exception": "ContractError",
+        "message": "normalization_requires_aggregated_unique_ticker_features"
+      },
+      "original_case": null,
+      "passed": true
+    },
+    {
+      "disposition": "acceptance_gate",
+      "expected_invariant": "No corruption is inferred from the actual identical duplicate groups",
+      "family": "positive_control",
+      "name": "actual_analyst_duplicates_remain_identical",
+      "observed": {
+        "duplicate_groups": 475,
+        "evidence_limit": "Payload equality is independently checked. Full remote reader reversal is the existing hash-bound receipt, not a new remote replay.",
+        "independent_payload_equality": true,
+        "source_receipt_changed_consensus": 0,
+        "source_receipt_changed_percentiles": 0,
+        "source_receipt_changed_raw_scores": 0,
+        "source_receipt_conflicting_groups": 0
+      },
+      "original_case": null,
+      "passed": true
+    }
+  ],
+  "upstream_premises": {
+    "generation_compatibility": {
+      "mixed_labels_still_numeric_complete": true,
+      "numeric_helper_does_not_validate_labels": true,
+      "required_owner": "Existing generation owner binds compatible qualification, score/rank, source inputs, normalization population and calibration receipt."
+    },
+    "score_rank_coherence": {
+      "contradictory_fallback_order": [
+        "600000.SS",
+        "000001.SZ"
+      ],
+      "contradictory_zero_order": [
+        "000001.SZ",
+        "600000.SS"
+      ],
+      "current_dataset_verified": true,
+      "required_owner": "Existing score/generation owner binds coherent incumbent score/rank before ordering."
+    },
+    "source_calendar": "Calendar-date syntax does not certify the trading session; expected sessions remain caller/source-owner premises.",
+    "source_history": "Missing publication/first-seen provenance still cannot establish complete historical availability or authoritative revision history."
+  }
+}

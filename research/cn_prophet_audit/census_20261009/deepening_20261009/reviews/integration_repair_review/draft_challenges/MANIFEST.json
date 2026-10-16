@@ -1,0 +1,37 @@
+{
+  "challenged_contract_sha256": "a0c26607448a7f57f296393508f3b0a92c8a1eea9ee44bf4a053464dcb76a335",
+  "dependencies": {
+    "../../../repairs/integration_contract/pinned_quote_adapter.py": "bd8bfd85bf4ff1279d564220b7f3f8b8b4e5f7263323252ae6489ed5163d1074",
+    "../../integration_review/native_source_bundle.json": "2c139c0fef2c83296374069aed3338ccc28802bbf535d75054176384ec9ec829",
+    "../review_support.py": "43737a5bb58f9977603eeabb6a14658ad2fb21831b9b4a5a679b6f49eb241283"
+  },
+  "files": [
+    {
+      "bytes": 25750,
+      "path": "CLOCK_EVIDENCE.json",
+      "sha256": "bce7e9781a77ce135e2b9bb62149116714eed6479971fe59912bd3644b791025"
+    },
+    {
+      "bytes": 2422,
+      "path": "REVIEW.md",
+      "sha256": "0b64513ba331f377a4481f6581ed24c780872771422f8a701250b89998dce203"
+    },
+    {
+      "bytes": 41634,
+      "path": "challenged_contract.py",
+      "sha256": "a0c26607448a7f57f296393508f3b0a92c8a1eea9ee44bf4a053464dcb76a335"
+    },
+    {
+      "bytes": 5506,
+      "path": "probe_source_clock.py",
+      "sha256": "c200eaed61c23f541d79c200580936ab92abe54461bf97536e9c6041b91993ef"
+    },
+    {
+      "bytes": 17220,
+      "path": "source_clock_input.json",
+      "sha256": "98b5da1cbd6afa2d898e78cf3bb7da178d19cd0f797af9ed5012571552fecac3"
+    }
+  ],
+  "schema": "integration_preseal_time_challenge_v1",
+  "status": "TWO_EVENT_TIME_AUTHORITY_GAPS_CONFIRMED"
+}

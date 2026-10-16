@@ -1,0 +1,62 @@
+{
+  "files": {
+    "DECISIONS.md": {
+      "bytes": 6487,
+      "git_blob": "eeaf9c0b64d86551c44e73fd28385abaa0640dd0",
+      "sha256": "acbf9537ca282188495be3204b367ac83cc173a658ea344078ad2d002b056196"
+    },
+    "DESIGN.md": {
+      "bytes": 4129,
+      "git_blob": "88f24adb91c2e922f8e39a3586857e7cc5c39af4",
+      "sha256": "e9ca4221c2daea2217f3448ea21e35222e95eb79b73040bb26912a608d798fd4"
+    },
+    "DEVELOPMENT_NOTES.md": {
+      "bytes": 1669,
+      "git_blob": "b08e1e57541f923fd726bf33e51c676b22c0a35a",
+      "sha256": "e7b903194a73a65365d0dc9cd40c96352ccbac0faf1b1b0eb7bcf3e7bbbefd80"
+    },
+    "EXECUTION_RECEIPT.json": {
+      "bytes": 654,
+      "git_blob": "e2ea6a73163736f89f21318680f2c9e6e991e054",
+      "sha256": "b16205fa927ec8f575abd2c85e45d28933787c01a5acc3f4d760b365cf4b102d"
+    },
+    "contract.py": {
+      "bytes": 17419,
+      "git_blob": "9bfddf6481d1b56a6b2d7fce43343e9a07c0edae",
+      "sha256": "ea8c3d3da6b3d064563f64e3f78b6e4590530fc51bbe92535cf2cce7e1c2bdef"
+    },
+    "execution.log": {
+      "bytes": 238,
+      "git_blob": "8f769bf595e36ed1868b8311b7bf8df45f9fbe44",
+      "sha256": "e7c280f38c08ba04e2b9ad9ead912de8cbb39e63d4fdaf807f8d2c83a2e65671"
+    },
+    "fixtures.json": {
+      "bytes": 14417,
+      "git_blob": "185cdf9f05c6b1add76af5013ea8559a8169c6be",
+      "sha256": "1c53a249606c1c8b8854474c5e670c2ae0e5b457e00229b0822fa5ae59e6fea3"
+    },
+    "results.json": {
+      "bytes": 24976,
+      "git_blob": "b9fc413808e92d991ba2d289e055f0ae6cb3cfe5",
+      "sha256": "9cc6b3c39a93487314f49b8117003f9d06c185322fb8685c8d365d16e4a405ce"
+    },
+    "retention.py": {
+      "bytes": 1352,
+      "git_blob": "b21a6931903771fa9167ab8f2f75bd3284e924ff",
+      "sha256": "8da1540ce2d37806dfada0f5cd4ceddc65bd4bc9ebfb926cffc1e727ee95877b"
+    },
+    "shape.py": {
+      "bytes": 1221,
+      "git_blob": "064cd1cd9c6ed795328c43cd0e19d3f784625224",
+      "sha256": "bb40201be2308dc891e343ccc5a513db445bd9d3a340356475c549b2b81705c7"
+    },
+    "verify.py": {
+      "bytes": 24563,
+      "git_blob": "1f4a4969a035bcaf2ea996f36356369d36b5e7ac",
+      "sha256": "99c4f37a099a138d4887c403dea20cb20111810e135ed9f309bd540793258a72"
+    }
+  },
+  "status": "PRODUCER_PASS_AWAITING_INDEPENDENT_ACCEPTANCE",
+  "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "test_count": 104
+}

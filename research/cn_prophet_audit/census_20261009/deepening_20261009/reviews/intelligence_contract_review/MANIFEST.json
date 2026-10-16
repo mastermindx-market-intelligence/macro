@@ -1,0 +1,70 @@
+{
+  "files": [
+    {
+      "bytes": 25994,
+      "git_blob_sha1": "3b4296402b5d61a9857d008333e9f36be2561792",
+      "path": "CHALLENGE_RESULTS.json",
+      "sha256": "b70ff1a97c0c576160dbab099b8d26f08b0da02aaeed533b483771ba28fc8ed4"
+    },
+    {
+      "bytes": 12209,
+      "git_blob_sha1": "67f71723f8bbc1d2ae5745a86f63694d033ab55c",
+      "path": "REVIEW.md",
+      "sha256": "369f32e88ce6afdc9e89a010af64ad1bdcd459cd77ddaf5acc4c460bacc90287"
+    },
+    {
+      "bytes": 3199,
+      "git_blob_sha1": "a5ba7e62e47b6c130e390c6c1fc9f9848e628dab",
+      "path": "REVIEW_DESIGN.md",
+      "sha256": "dc3a860cb83497f298714ee9932b24afc79e33cb6326a34b2946cb3990fa5457"
+    },
+    {
+      "bytes": 17390,
+      "git_blob_sha1": "94dcdffb8ef0e628c2b7df1f5f8a3ccba33bdd1e",
+      "path": "challenge_intelligence_contract.py",
+      "sha256": "41e7073b9586c59a72dc25bb9c6d59350e5ae71ffec27add2ba03f9c5188474b"
+    },
+    {
+      "bytes": 4790,
+      "git_blob_sha1": "d5607a18d8bc36a2ea0176b90002dad29cfceb04",
+      "path": "reviewed_source/DESIGN.md",
+      "sha256": "6432eb2f25be89f6fc77b6410dc398e34abf5263d031f9e4aa460b0639a0cde4"
+    },
+    {
+      "bytes": 399233,
+      "git_blob_sha1": "f7def21694df5a8cd688b1b7ef90624102fb2b84",
+      "path": "reviewed_source/analyst_duplicates.json",
+      "sha256": "6f03613836e17e0ec1016d5f244e998b29cc63bd6834dee7bc1f4c1648137c4b"
+    },
+    {
+      "bytes": 19558,
+      "git_blob_sha1": "d98837f8f18d7f5afc27c9ebffd023487dd053d4",
+      "path": "reviewed_source/contract_lab.py",
+      "sha256": "377dde6af13c890d5b694769408ceaea2515e2a0b4018998128eeb86e150d559"
+    },
+    {
+      "bytes": 34880,
+      "git_blob_sha1": "e52812df75f116a7e161a219ab42132551910754",
+      "path": "reviewed_source/results.json",
+      "sha256": "8389a41b28453dae511f46607d783b8aa41986e97380adb4e056bee5fcf9c2cb"
+    },
+    {
+      "bytes": 40757,
+      "git_blob_sha1": "13863a91a4a6dbe7cf2b330700169232c602fdd8",
+      "path": "reviewed_source/source_input.json",
+      "sha256": "a031323d82e99833ffdd5b35140ee6f686e65ca077a038cfaca57e280de00334"
+    }
+  ],
+  "review_disposition": "AMEND_BEFORE_IMPLEMENTATION_HANDOFF",
+  "reviewed_files_sha256": {
+    "DESIGN.md": "6432eb2f25be89f6fc77b6410dc398e34abf5263d031f9e4aa460b0639a0cde4",
+    "analyst_duplicates.json": "6f03613836e17e0ec1016d5f244e998b29cc63bd6834dee7bc1f4c1648137c4b",
+    "contract_lab.py": "377dde6af13c890d5b694769408ceaea2515e2a0b4018998128eeb86e150d559",
+    "results.json": "8389a41b28453dae511f46607d783b8aa41986e97380adb4e056bee5fcf9c2cb",
+    "source_input.json": "a031323d82e99833ffdd5b35140ee6f686e65ca077a038cfaca57e280de00334"
+  },
+  "schema": "cn_prophet_intelligence_contract_review_manifest_v1",
+  "self_excluded": true,
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "total_payload_bytes": 558010
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "cn-display-independent-review-execution/v1",
+  "status": "COMPLETED_WITH_ONE_BLOCKER",
+  "review_command": "node reviews/display_review/review_display.mjs",
+  "review_exit_code": 0,
+  "review_checks": {
+    "pass": 27,
+    "fail": 2,
+    "total": 29
+  },
+  "failure_families": 1,
+  "producer_replay": {
+    "chunk_id": "8a805c",
+    "wall_time_seconds": 0.008425482,
+    "exit_code": 0,
+    "original_token_count": 36,
+    "output": "{\"status\":\"PASS\",\"tests\":28,\"native_failure_cases\":12,\"candidate_sha256\":\"595b83e907eabfb9e0df4ba3df4a2c3aad0f606c993ac345e4fccfd47d2176bc\"}\n"
+  },
+  "producer_replay_exact_results": true,
+  "subject_files_unchanged": 11,
+  "initial_harness_setup_correction": "An obsolete body-error promise was rejected before being consumed. The final harness starts JSON consumption before superseding, and exits 0; no subject file was edited.",
+  "network_calls": 0,
+  "production_writes": 0
+}
