@@ -175,6 +175,35 @@ attempts are refused. This is **not** an observation of the previously denied
 real original-source axes, a production installation, or hosted CI acceptance
 for the new change.
 
+## Complete candidate batch digest index — October 15 continuation
+
+The pure `build_candidate_industry_index(candidate)` helper exhausts the bounded
+138-industry stream, verifies every exact industry code is unique, every view
+carries the same candidate generation, and the total row count equals the
+source-verified manifest's `expected_l1_rows`. Only then does it return
+canonical index bytes and their SHA-256. Its 138 ordered entries contain each
+view's exact source industry identifier, JSONL byte count, per-view digest,
+complete row count and **informational proposed** L1 relative path. The index
+also binds original source-lineage/producer digests, edition DAY precision,
+selected accounting years, source-response population, total row count, and
+explicit `BYTE_VERIFIED_NOT_INSTALLED` / `may_publish=false` / null native
+ingestion and revision fields. Metadata is capped at 256 KiB. A partial,
+duplicate, mixed-generation or oversized batch cannot produce an index.
+
+This is a **candidate checksum manifest, not another rights, registry, native
+source custody, correction or publication authority**. An owner who writes
+staged artifacts must independently hash/verify their actual bytes against this
+index, bind the L0 source and accepted native UTC ingestion/revision receipts,
+and publish atomically through the existing Data OS controls only after the
+original-source access/axis and review gates clear. Passing in-memory tests
+does not make the existing `PROPOSED` L0/L1 contracts `PRODUCED`.
+
+One-year hermetic coverage exercises all 138 entries, 19,182 rows, digest
+repeatability, no-write/no-network behavior and incomplete/duplicate/oversized
+index refusals. The underlying eight-year batch generator is independently
+covered for 153,456 rows. No real original BEA file read or prohibited source
+inspection occurred in this phase.
+
 ## Original-source verification attempt — not a pass
 
 The new candidate-transform exercise read 72 retained original response files

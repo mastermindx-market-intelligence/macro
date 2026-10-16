@@ -570,5 +570,62 @@ class TestBatchCandidateIndustryViews(unittest.TestCase):
             self.assertEqual(first.row_count, 139)
 
 
+class TestCandidateBatchIndex(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.candidate = bind(fixture())
+
+    def test_complete_index_is_immutable_and_not_native_admitted(self):
+        index = bea.build_candidate_industry_index(self.candidate)
+        self.assertEqual(index.sha256, digest(index.manifest_bytes))
+        self.assertLessEqual(len(index.manifest_bytes), bea.MAX_METADATA_BYTES)
+        manifest = json.loads(index.manifest_bytes)
+        self.assertEqual(manifest["schema"], "mastermind.bea_gvc_l1_candidate_index/v1")
+        self.assertEqual(manifest["source_generation_id"], self.candidate.generation_id)
+        self.assertEqual(manifest["industry_count"], 138)
+        self.assertEqual(manifest["row_count"], 19182)
+        self.assertEqual(manifest["source_response_count"], 9)
+        self.assertEqual({v["row_count"] for v in manifest["views"]}, {139})
+        self.assertEqual(len({v["industry_code_exact"] for v in manifest["views"]}), 138)
+        first = manifest["views"][0]
+        self.assertEqual(first["industry_code_exact"], "5241X")
+        self.assertEqual(first["jsonl_sha256"],
+                         bea.candidate_industry_jsonl(self.candidate, "5241X").sha256)
+        self.assertIsNone(manifest["native_ingested_at"])
+        self.assertIsNone(manifest["native_revision_seq"])
+        self.assertIs(manifest["may_publish"], False)
+        self.assertIs(manifest["dataos_native_admitted"], False)
+        self.assertEqual(index, bea.build_candidate_industry_index(self.candidate))
+
+    def test_partial_duplicate_mixed_or_oversized_index_refuses(self):
+        first = bea.candidate_industry_jsonl(self.candidate, "5241X")
+        with patch.object(bea, "iter_candidate_industry_views", return_value=iter([])):
+            with self.assertRaisesRegex(bea.BEAGVCRefused, "incomplete"):
+                bea.build_candidate_industry_index(self.candidate)
+        with patch.object(bea, "iter_candidate_industry_views",
+                          return_value=iter([first, first])):
+            with self.assertRaisesRegex(bea.BEAGVCRefused, "duplicate"):
+                bea.build_candidate_industry_index(self.candidate)
+        original_encode = bea._encoded
+
+        def oversized_index_only(value):
+            payload = original_encode(value)
+            if type(value) is dict and value.get("schema") == (
+                    "mastermind.bea_gvc_l1_candidate_index/v1"):
+                return payload + b" " * bea.MAX_METADATA_BYTES
+            return payload
+
+        with patch.object(bea, "_encoded", side_effect=oversized_index_only):
+            with self.assertRaisesRegex(bea.BEAGVCRefused, "metadata exceeds"):
+                bea.build_candidate_industry_index(self.candidate)
+
+    def test_index_builder_has_no_source_store_or_network_effect(self):
+        with patch("pathlib.Path.write_bytes", side_effect=AssertionError("write")), \
+             patch("pathlib.Path.write_text", side_effect=AssertionError("write")), \
+             patch("urllib.request.urlopen", side_effect=AssertionError("network")):
+            result = bea.build_candidate_industry_index(self.candidate)
+            self.assertEqual(json.loads(result.manifest_bytes)["industry_count"], 138)
+
+
 if __name__ == "__main__":
     unittest.main()

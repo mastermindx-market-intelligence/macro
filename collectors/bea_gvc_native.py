@@ -629,3 +629,64 @@ def iter_candidate_industry_views(
         view_count += 1
     if view_count != 138:
         raise BEAGVCRefused("incomplete candidate industry population")
+
+
+@dataclass(frozen=True)
+class BEAGVCCandidateIndustryIndex:
+    """Complete batch byte-digest manifest; not native installation evidence."""
+
+    manifest_bytes: bytes
+    sha256: str
+
+
+def build_candidate_industry_index(
+    candidate: BEAGVCCandidate,
+) -> BEAGVCCandidateIndustryIndex:
+    """Bind all 138 candidate views into one offline checksum/index receipt.
+
+    The manifest does not copy all row bytes or create any storage/authority.
+    The incumbent Data OS owner must separately verify actual staged view bytes,
+    complete L0 custody and native source clocks before any atomic installation.
+    """
+    entries: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    total_rows = 0
+    for view in iter_candidate_industry_views(candidate):
+        if view.industry_code_exact in seen:
+            raise BEAGVCRefused("duplicate candidate industry in batch index")
+        if view.source_generation_id != candidate.generation_id:
+            raise BEAGVCRefused("mixed candidate generations in batch index")
+        seen.add(view.industry_code_exact)
+        total_rows += view.row_count
+        entries.append({
+            "industry_code_exact": view.industry_code_exact,
+            "relative_storage_path_proposed_only": view.proposed_relative_storage_path,
+            "jsonl_sha256": view.sha256,
+            "jsonl_bytes": len(view.jsonl_bytes),
+            "row_count": view.row_count,
+        })
+    source = candidate.manifest
+    if len(entries) != 138 or total_rows != source["expected_l1_rows"]:
+        raise BEAGVCRefused("incomplete 138-industry candidate batch")
+    payload = _encoded({
+        "schema": "mastermind.bea_gvc_l1_candidate_index/v1",
+        "dataset_id": L1_DATASET,
+        "source_generation_id": candidate.generation_id,
+        "source_lineage_sha256": source["source_lineage_sha256"],
+        "producer_code_sha256": source["producer_code_sha256"],
+        "publisher_edition_date": EDITION_DATE,
+        "publication_precision": "DAY",
+        "accounting_years": source["accounting_years"],
+        "source_response_count": source["source_response_count"],
+        "candidate_state": "BYTE_VERIFIED_NOT_INSTALLED",
+        "industry_count": len(entries),
+        "row_count": total_rows,
+        "native_ingested_at": None,
+        "native_revision_seq": None,
+        "dataos_native_admitted": False,
+        "may_publish": False,
+        "views": entries,
+    })
+    if len(payload) > MAX_METADATA_BYTES:
+        raise BEAGVCRefused("candidate batch index metadata exceeds bound")
+    return BEAGVCCandidateIndustryIndex(payload, _sha(payload))
