@@ -1,0 +1,9 @@
+# Current FMS persistence composition
+
+Source `e7a554f427bcb41232140c8fa115fa8bfca3987e` composes the already independently reviewed acquisition-persistence repair from d84a4b0834bb over navigation source bf821833. All seven critical helper/workflow/preflight/test/baseline files are byte-identical to that reviewed integration. CI scope and current Agent OS history are preserved through the merge. The original accepted review and its scoped parent adjudication remain `defense-fms-persist-bounded-review-01a13300-a`; this is evidence reuse, not a new independent verdict.
+
+The existing acquisition keeps its schedule, selected branch, collector, concurrency, publisher and publication verifier. Only persistence gains bounded same-origin contention recovery, exact four-file retention and immutable run/attempt journaling. Unknown push outcomes remain on the same operation with no replay authorization. No acquisition, push to a data owner, or scheduler dispatch was performed by this source integration.
+
+Current composition passes 73 affected cases and the full CI import closure (40.54s). The prior candidate witness correctly refused the changed workflow source dependency. Fresh native proof passes 104 passed, 1 skipped, 43 warnings in 530.10s (0:08:50); committed-source verification accepts the exact generation and dependency inventory. The generated page, data, 655 ledger rows and zero issuance are unchanged. Browser source and inputs are unchanged from `navigation_export_20261016`, so its qualified 32 local captures and CUA behavior checks are reused; this is not new installed browser acceptance.
+
+Release follows PR9498 after its exact-head checks and review are consumed, then this branch's binding CI and normal merge. Held PR9490 history qualification, held NASA admission and unknown original review/effect paths remain separate. This repair does not clear those gates or replace the existing FMS schedule.
