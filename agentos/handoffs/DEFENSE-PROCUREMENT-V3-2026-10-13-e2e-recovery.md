@@ -9,6 +9,12 @@ changed:
   - path: research/defense_intelligence/DEFENSE_E2E_CONTINUATION_2026-10-12.md
     what: Records original failure, source custody, accepted integrations and remaining release/product/scientific gates.
 verified:
+  - claim: Primary PR9066 merged normally and its API/page/economics bytes are installed.
+    command: Normal gh squash merge and read-only installed source hash comparison.
+    result: Merge087ac9; four qualified byte identities match; no entitled journey claim.
+  - claim: Current-main Space and PAC-3 generation has local frozen proof and browser qualification.
+    command: govrev_candidate_proof.py prove and verify --committed; original source-ASGI browser harness.
+    result: 104 passed and one skipped across105 cases; 24 route plus eight targeted cases pass; proof and browser artifacts linked below.
   - claim: Quartet financial-owner, refresh and composer integration checks passed.
     command: pytest owner-adapter, existing refresh, cohort and economics suites in the sole integration checkout.
     result: 96 passed; separate builder wiring 25 passed.
@@ -22,8 +28,8 @@ verified:
     command: pytest recognition-owner guard and defense economics suites.
     result: 39 passed and 22 hostile subtests passed.
 unverified:
-  - claim: The new source has concluded exact-head CI and protected release.
-    what_would_verify: Updated carrier head, complete required checks and admitted merge/release.
+  - claim: The Space and PAC-3 follow-up has concluded exact-head CI and protected release.
+    what_would_verify: Follow-up carrier head, complete binding checks and normal merge/release; PR9066 already merged.
   - claim: The whole investor workflow is independently accepted in production.
     what_would_verify: Real publisher generation, installed API/static identity, authenticated browser journeys and independent review.
   - claim: Research is activated and has predictive value.
@@ -36,15 +42,16 @@ danger_areas:
   - Preserve original PR7175 and Terminal PR778 custody and unresolved original Fabric effects.
   - Source checks and local fixtures do not prove installed entitlement or scientific efficacy.
 next_actions:
-  - Publish the integrated current-source revision on PR9066 and build the frozen canonical investor generation.
-  - Bind all published twins and assets before the final serialized proof; save and push the coherent source revision.
-  - Complete protected release and actual entitled investor acceptance, then continue remaining included contracts.
+  - Release committed Space and PAC-3 source432d851 with its sealed generation and completed browser checks.
+  - Keep draft PR9490 held for the original review return; directory_owner_or_mode refusal is not retry permission.
+  - After product source release, fresh-check and publish the bounded Space financial successor through the existing reviewed CAS path.
+  - Complete natural publisher, installed entitlement and independent acceptance; advance supported theme evidence in parallel.
 do_not_redo:
   - D6-C0 and the existing FMS daily schedule.
   - Historical PR7186 row-cap repair.
   - Accepted evidence unless its actual source, input or contract changes.
   - Uncertain Fabric operations through a new identity, account or carrier.
-prs: [7175, 9066]
+prs: [7175, 9066, 9490]
 decisions: []
 ---
 
@@ -964,3 +971,11 @@ committed-proof verification accepts the existing 105-case proof unchanged.
 The same foreground observer (4372) remains responsible for the running
 pack results; this repair is not a green hosted check or release.
 Evidence: current_release_proof_20261015/ci-scope-repair/ below this program.
+
+### October16 00:49 UTC current product release preparation
+
+Primary PR9066 is merged at087ac9aba1ac7ee1c172042ad447f7998b06d540 and read-only installed checks match the qualified API, page and both economics payloads. Canonical financial generation449f7f3c5b6a8c9faa181a28 was published once using the previously reviewed CAS/journal/readback control path:12 acknowledged writes and complete10-event exact readback; no unknown effect and no replay authorized. Its receipt is in current_main_product_20261015.
+
+Current branch `codex/defense-space-capacity-release` source432d851f694df09245d72a470740ed7b3db5cc98 composes seven NOC Space facts and reviewed PAC-3 public capacity over main21fe5ad.347 affected tests, curated CI closure, full105-case proof and32 browser cases pass. Artifacts: `research/defense_intelligence/e2e_20261011/current_main_product_20261015/` and `mockups/evidence/defense-space-capacity-current-main-20261015/`.655 ledger rows remain byte-identical; all six research verdicts remain evidence insufficient. Local financial5a5bc26d8f2c10a2931c0350 is prepared but not published.
+
+PR9490 remains draft: CI38828866998 succeeded; original history review has unknown completion and its permitted collector refused directory_owner_or_mode with retry_authorized=false. Chris has been asked once to restore that same return path through its existing owner; no replacement or permission change. Original NASA, Q3, P2 and other unknown carriers remain unchanged. NASA source preparation is saved on its original branchfc24fdda7635 with no committed-release proof or canonical admission. Theme-owner gap census defense-theme-owner-gap-census-01a13300-a actually launched on the existing Fabric; its original result remains to consume. Installed entitled acceptance, second-principal privacy and scientific admission/maturity obligations remain open.
