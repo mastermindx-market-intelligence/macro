@@ -1,15 +1,15 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-10-16T18:24:51.470354+00:00",
+  "produced_at": "2026-10-16T18:41:32.561032+00:00",
   "as_of": "2026-10-15",
   "status": "degraded",
-  "phase": "engine",
+  "phase": "final",
   "did_the_brain_run": {
     "cortex_status": "fresh",
     "tool_call_batches": 4,
-    "individual_tool_calls": 10,
+    "individual_tool_calls": 11,
     "context_stale": false,
-    "summary": "cortex ran (10 tool calls); memo as_of 2026-10-15T09:27:25+00:00"
+    "summary": "cortex ran (11 tool calls); memo as_of 2026-10-16T18:40:15+00:00"
   },
   "what_changed": [
     {
@@ -1015,7 +1015,7 @@
     {
       "priority": 3,
       "area": "evidence_clock",
-      "summary": "140 evidence-clock items overdue — see admin Observatory",
+      "summary": "142 evidence-clock items overdue — see admin Observatory",
       "action_type": "follow_up"
     }
   ],
@@ -1024,24 +1024,24 @@
   },
   "evidence_clock": {
     "available": true,
-    "as_of": "2026-10-15",
+    "as_of": "2026-10-16",
     "counts": {
-      "overdue": 140,
-      "due": 28,
+      "overdue": 142,
+      "due": 27,
       "human_review": 0,
       "missing": 1,
       "stale": 1,
       "blocked": 2,
       "not_ready": 0,
       "promotion_eligible": 0,
-      "accruing": 153,
+      "accruing": 152,
       "n_acknowledged": 0
     },
     "top_due": {
       "clock_id": "qledger:placebo",
       "due_at": "2026-06-22"
     },
-    "morning_line": "140 overdue, 28 due, 1 missing, 1 stale, 2 blocked, 153 accruing. Top due: qledger:placebo."
+    "morning_line": "142 overdue, 27 due, 1 missing, 1 stale, 2 blocked, 152 accruing. Top due: qledger:placebo."
   },
   "china_market_state": {
     "available": true,
