@@ -202,6 +202,7 @@
       </div>
       <p id="r_summary" class="muted" style="margin:2px 0 6px; font-size:13.5px"></p>
       <!-- ===== Decision-first layout (shared stockview.js renders rec.view) ===== -->
+      <div id="r_notice" class="cyclebox" role="status" aria-live="polite" hidden><span id="r_status_message"></span> <button id="r_retry" type="button" hidden></button></div>
       <div id="sv-decision"></div>
       <div id="sv-fingerprint"></div>
       <div id="sv-honesty"></div>
@@ -281,6 +282,9 @@
   function lang() { return document.documentElement.getAttribute('data-lang') || 'en'; }
   var T = {
     en: { asof: 'data through', notlib: 'NOT IN LIBRARY',
+          loading: 'LOADING', loadingmsg: 'Loading this ticker’s saved analysis…', retry: 'Retry',
+          unavailable: 'DETAIL UNAVAILABLE', unavailablemsg: 'The saved analysis could not be loaded. Please retry.',
+          invalid: 'INVALID SYMBOL', invalidmsg: 'Choose a ticker from search or check the symbol in the link.',
           notlibmsg: 'Not in the nightly library (curated HK large-caps + indices + ETF proxies). Add it in one line: config.yml → hk.sectors.',
           season: 'Seasonality', failed: '⚠ Failed cycle — price is below the low that started this cycle; the larger trend is usually rolling over.',
           next: 'Next:', cu: ' just crossed up', cd: ' just crossed down',
@@ -297,6 +301,9 @@
           ah_a_cheaper: 'the A-share is the cheaper line', ah_inline: 'dearer than its H twin',
           chartcap: 'Adjusted close · 50/200-day moving averages · last ~2y of our stored EOD data', nochart: 'No price history for this symbol.' },
     zh: { asof: '数据截至', notlib: '不在库中',
+          loading: '加载中', loadingmsg: '正在加载该标的的已保存分析…', retry: '重试',
+          unavailable: '详情暂不可用', unavailablemsg: '无法加载已保存的分析，请重试。',
+          invalid: '无效代码', invalidmsg: '请从搜索结果选择标的，或检查链接中的代码。',
           notlibmsg: '不在每晚更新的标的库中（精选港股大盘股 ＋ 指数 ＋ ETF 代理）。一行即可添加：config.yml → hk.sectors。',
           season: '季节性', failed: '⚠ 失败周期 — 价格已跌破启动本周期的低点；此时更大的趋势通常正在转向下行。',
           next: '下一步：', cu: ' 刚上穿', cd: ' 刚下穿',
@@ -354,8 +361,9 @@
     .then(d => { cal = d; }).catch(() => {});
 
   function fromHash() {
-    var t = decodeURIComponent((location.hash || '').slice(1));
-    if (t) load(t);
+    var t = (location.hash || '').slice(1);
+    try { t = decodeURIComponent(t); } catch (e) { /* invalid symbols are handled by load */ }
+    load(t);
   }
   window.addEventListener('hashchange', fromHash);
 
@@ -403,23 +411,83 @@
     if (items[i]._tgt && items[i]._tgt !== 'hk_lookup.html') {
       location.href = items[i]._tgt + '#' + encodeURIComponent(items[i].t); return;
     }
-    location.hash = encodeURIComponent(items[i].t);
+    if (location.hash === '#' + encodeURIComponent(items[i].t)) load(items[i].t);
+    else location.hash = encodeURIComponent(items[i].t);
+  }
+
+  var loadEpoch = 0;
+  function clearResult() {
+    var chart = window.StockChart, box = document.getElementById('tvbox');
+    if (chart && chart._cur && chart._cur.host === box) {
+      chart._cur.destroy();
+      chart._cur = null;
+    }
+    ['r_name', 'r_state', 'r_asof', 'r_summary', 'r_tag', 'r_entrytext',
+     'r_points', 'r_cyclebox', 'r_flags', 'r_why', 'r_cal', 'r_mtf',
+     'r_conviction', 'r_eq', 'r_age', 'r_early', 'r_gbeta', 'r_fund', 'r_ah',
+     'sv-decision', 'sv-fingerprint', 'sv-honesty', 'sv-evidence', 'sv-country', 'tvbox']
+      .forEach(function (id) { var el = document.getElementById(id); if (el) el.textContent = ''; });
+    ['r_conviction', 'r_eq', 'r_age', 'r_early', 'r_entry',
+     'r_gbeta_panel', 'r_fund_panel', 'r_ah_panel', 'panel_deep', 'panel_mtf', 'panel_cal']
+      .forEach(function (id) { var el = document.getElementById(id); if (el) el.style.display = 'none'; });
+    document.getElementById('r_notice').hidden = true;
+    document.getElementById('r_state').className = 'state';
+    document.getElementById('result').setAttribute('aria-busy', 'false');
+    hideEmptyGroups();
   }
 
   function load(t) {
+    var epoch = ++loadEpoch, requestHash = location.hash;
+    function current() { return epoch === loadEpoch && requestHash === location.hash; }
+    clearResult();
+    var result = document.getElementById('result');
+    result.style.display = t ? 'block' : 'none';
+    if (!t) return;
+    document.getElementById('r_name').textContent = t;
+    document.getElementById('r_state').className = 'state';
+    function notice(state, message, retry) {
+      document.getElementById('r_state').textContent = L(state);
+      document.getElementById('r_status_message').textContent = L(message);
+      document.getElementById('r_notice').hidden = false;
+      var button = document.getElementById('r_retry');
+      button.textContent = L('retry');
+      button.hidden = !retry;
+      button.onclick = function () { load(t); };
+      result.setAttribute('aria-busy', state === 'loading' ? 'true' : 'false');
+    }
+    if (!/^[A-Za-z0-9.^=_-]{1,64}$/.test(t)) {
+      notice('invalid', 'invalidmsg', false);
+      return;
+    }
+    notice('loading', 'loadingmsg', false);
     var safe = t.replace('=', '_').replace('^', '_');
     fetch('hkstockdata/' + safe + '.json').then(function (r) {
-      if (!r.ok) throw new Error('not in library');
+      if (!r.ok) { var error = new Error('detail unavailable'); error.status = r.status; throw error; }
       return r.json();
-    }).then(render).catch(function () {
-      document.getElementById('result').style.display = 'block';
+    }).then(function (d) {
+      if (!current()) return;
+      // Match the producer's exact filename aliases (e.g. ^HSI -> _HSI).
+      if (!d || typeof d.ticker !== 'string' ||
+          d.ticker.replace('=', '_').replace('^', '_') !== safe) throw new Error('issuer mismatch');
+      // Both producer branches require identity and a source date. LIMITED also
+      // carries its listing/history facts; optional analytical legs stay optional.
+      if (typeof d.name !== 'string' || !d.name.trim() || typeof d.asof !== 'string' || !d.asof ||
+          (d.limited && (typeof d.listed !== 'string' || !d.listed ||
+            !Number.isInteger(d.history_days) || d.history_days < 1))) throw new Error('incomplete detail');
+      document.getElementById('r_notice').hidden = true;
+      result.setAttribute('aria-busy', 'false');
+      render(d);
+    }).catch(function (error) {
+      if (!current()) return;
+      clearResult();
+      result.style.display = 'block';
       document.getElementById('r_name').textContent = t;
-      document.getElementById('r_state').textContent = L('notlib');
-      document.getElementById('r_state').className = 'state';
-      document.getElementById('r_conviction').style.display = 'none';   // never show a prior ticker's profile
-      document.getElementById('r_entry').style.display = 'none';
-      document.getElementById('r_points').innerHTML = '';
-      document.getElementById('r_cyclebox').innerHTML = L('notlibmsg');
+      var known = idx.some(function (x) {
+        return x && typeof x.t === 'string' && x._tgt === STOCK_HOME &&
+          x.t.replace('=', '_').replace('^', '_') === safe;
+      });
+      var missing = error && error.status === 404 && !known;
+      notice(missing ? 'notlib' : 'unavailable', missing ? 'notlibmsg' : 'unavailablemsg', true);
     });
   }
 
@@ -734,13 +802,11 @@
     catch (e) { /* chart is garnish — analysis above stands alone */ }
   }
   document.addEventListener('themechange', function () {
-    var h = (location.hash || '').slice(1);
-    if (h) load(decodeURIComponent(h));
+    fromHash();
   });
   document.addEventListener('langchange', function () {
     q.placeholder = L('ph');
-    var h = (location.hash || '').slice(1);
-    if (h) load(decodeURIComponent(h));
+    fromHash();
   });
 })();
 </script>
