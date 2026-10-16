@@ -52,6 +52,7 @@ def fake_rows(*, industry="5241X"):
                 may_rank=False, may_trade=False, named_company_relationship=False,
                 canonical_security_id=None,
                 industry_code_exact=industry,
+                industry_name="Insurance carriers, except direct life",
                 commodity_code_exact=f"C{i:03d}",
                 accounting_year=year,
                 total_use_million_USD=100,
@@ -320,6 +321,34 @@ def test_annual_sums_and_changes_refuse_json_precision_loss():
     first_2018 = next(r for r in rows if r["accounting_year"] == 2018)
     first_2018["total_use_million_USD"] = -ceiling + 13800
     assert check(rows=rows)["reason"] == "ANNUAL_CHANGE_EXCEEDS_JSON_SAFE_INTEGER"
+
+
+def test_source_industry_names_are_preserved_without_silent_aliases():
+    packet = check()
+    label = "Insurance carriers, except direct life"
+    assert packet["industry_display_name"] == label
+    assert packet["industry_display_name_state"] == "EXACT_SOURCE_LABEL_STABLE"
+    assert packet["industry_names_by_accounting_year"] == {
+        str(year): label for year in gmi.YEARS}
+
+    rows = fake_rows()
+    for row in rows:
+        if row["accounting_year"] == 2018:
+            row["industry_name"] = "Different published 2018 name"
+    packet = check(rows=rows)
+    assert packet["status"] == "CANDIDATE_NOT_PUBLISHED"
+    assert packet["industry_display_name"] is None
+    assert packet["industry_display_name_state"] == "SOURCE_LABELS_VARY_ACROSS_YEARS"
+    assert packet["industry_names_by_accounting_year"]["2018"] == (
+        "Different published 2018 name")
+
+    rows = fake_rows()
+    rows[1]["industry_name"] = "Different within one year"
+    assert check(rows=rows)["reason"] == "SOURCE_INDUSTRY_NAME_DRIFT_WITHIN_YEAR"
+
+    rows = fake_rows()
+    rows[0]["industry_name"] = ""
+    assert check(rows=rows)["reason"] == "SOURCE_INDUSTRY_NAME_INVALID"
 
 
 def test_invalid_source_digest_and_source_framing_refuse():

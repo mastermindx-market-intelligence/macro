@@ -181,6 +181,7 @@ def current_industry_candidate(
     producer_code_sha256: str | None = None
     seen_commodity_order: tuple[str, ...] | None = None
     by_year: dict[int, list[str]] = {year: [] for year in YEARS}
+    industry_names_by_year: dict[int, str] = {}
     for raw in owner_bound_jsonl.splitlines():
         if len(raw) > 32_768 or not raw:
             return _unavailable("VIEW_ROW_FRAMING_INVALID", industry_code_exact)
@@ -198,6 +199,18 @@ def current_industry_candidate(
                 row.get("industry_code_exact") != industry_code_exact or
                 (year, commodity) in visited):
             return _unavailable("SOURCE_GRAIN_OR_IDENTITY_INVALID", industry_code_exact)
+        source_industry_name = row.get("industry_name")
+        if (type(source_industry_name) is not str
+                or not source_industry_name.strip()
+                or len(source_industry_name) > 256
+                or any(ord(char) < 32 for char in source_industry_name)):
+            return _unavailable("SOURCE_INDUSTRY_NAME_INVALID", industry_code_exact)
+        existing_industry_name = industry_names_by_year.get(year)
+        if existing_industry_name is None:
+            industry_names_by_year[year] = source_industry_name
+        elif existing_industry_name != source_industry_name:
+            return _unavailable("SOURCE_INDUSTRY_NAME_DRIFT_WITHIN_YEAR",
+                                industry_code_exact)
         visited.add((year, commodity))
         by_year[year].append(commodity)
         try:
@@ -310,6 +323,8 @@ def current_industry_candidate(
             "year_over_year_change_million_USD": change,
         })
         previous_year = year
+    source_names = {str(year): industry_names_by_year[year] for year in YEARS}
+    source_label_is_stable = len(set(source_names.values())) == 1
     return {
         "schema": SCHEMA,
         "status": "CANDIDATE_NOT_PUBLISHED",
@@ -317,6 +332,12 @@ def current_industry_candidate(
         "authority_ceiling": AUTHORITY,
         "may_publish": False, "may_rank": False, "may_trade": False,
         "industry_code_exact": industry_code_exact,
+        "industry_names_by_accounting_year": source_names,
+        "industry_display_name": (
+            industry_names_by_year[YEARS[0]] if source_label_is_stable else None),
+        "industry_display_name_state": (
+            "EXACT_SOURCE_LABEL_STABLE" if source_label_is_stable
+            else "SOURCE_LABELS_VARY_ACROSS_YEARS"),
         "publisher_edition_date": EDITION_DATE,
         "publication_precision": "DAY",
         "source_generation_id": generation,

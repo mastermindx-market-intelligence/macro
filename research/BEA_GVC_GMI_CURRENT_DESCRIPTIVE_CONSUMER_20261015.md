@@ -85,6 +85,24 @@ edit was retried or substituted, and no real source files, website or entitlemen
 systems were touched. Fresh hosted CI and independent review of the revised
 consumer head remain separate from local tests.
 
+## Publisher industry labels without silent crosswalk — October 16
+
+The current-descriptive leaf now verifies nonempty, bounded, no-control-character
+publisher `industry_name` strings within each accounting year. It retains exact
+`industry_names_by_accounting_year` across 2017–2024; when all eight years
+share the same label, `industry_display_name` is that original publisher label
+with state `EXACT_SOURCE_LABEL_STABLE`. If names vary between years, the
+single display label is **null**, state
+`SOURCE_LABELS_VARY_ACROSS_YEARS`, and the original year-specific names
+remain visible for an eventual authorized human view. Divergent names **within
+one accounting year** fail closed instead of silently choosing a synonym.
+
+The exact code namespace is unchanged, and no implicit `5241X`/`5241XX`
+concordance or company relationship was minted. A new hermetic test failed
+before the source change and passed afterward; the amended local suite
+completed **15 tests**. Product/admission status remains
+`CANDIDATE_NOT_PUBLISHED` under the same source gate and rights decision.
+
 ## Production remains HELD
 
 Real acceptance still requires lawful original 72-response L0 validation, source industry axis resolution, accepted 5241X/5241XX mapping or explicit unresolved handling, installed L0/L1 UTC ingest/revision/correction chain and registry PRODUCED promotion by the current Data OS owner. Existing app authentication and entitlement then must be proven alongside same-generation browser/API descriptive results. This candidate is not a release, approval, producer or new control plane.
