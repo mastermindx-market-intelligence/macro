@@ -23,6 +23,7 @@ L1_ID = "bea.gvc.may2026.industry_import_inputs"
 EDITION_DATE = "2026-05-21"
 RIGHTS_SCOPE = "bea_public_domain_current_descriptive_scope_20261014"
 MAX_BYTES = 16 * 1024 * 1024
+MAX_JSON_SAFE_INTEGER = (1 << 53) - 1
 YEARS = tuple(range(2017, 2025))
 REGIONS = (
     "canada", "china", "europe", "japan", "mexico",
@@ -165,7 +166,13 @@ def current_industry_candidate(
         raise BEADescriptiveRefused("NATIVE_REVISION_NOT_BOUND")
     if not owner_bound_jsonl.endswith(b"\n") or b"\r" in owner_bound_jsonl:
         return _unavailable("VIEW_FRAMING_INVALID", industry_code_exact)
-    annual = {y: {field: 0 for field in _AMOUNT_FIELDS} for y in YEARS}
+    annual = {y: {field: 0 for field in _AMOUNT_FIELDS +
+                         ("region_rounding_difference_million_USD",)} for y in YEARS}
+    quality = {y: {
+        "nonpositive_world_commodities": 0,
+        "negative_region_adjustment_commodities": 0,
+        "rounding_residual_commodities": 0,
+    } for y in YEARS}
     visited: set[tuple[int, str]] = set()
     # The full 9-table source/receipt population is constant within each
     # accounting year. A digest is integrity, never authentication by itself.
@@ -243,6 +250,9 @@ def current_industry_candidate(
             value = row.get(field)
             if type(value) is not int:
                 return _unavailable("SOURCE_AMOUNTS_INVALID", industry_code_exact)
+            if abs(value) > MAX_JSON_SAFE_INTEGER:
+                return _unavailable("SOURCE_AMOUNT_EXCEEDS_JSON_SAFE_INTEGER",
+                                    industry_code_exact)
             amounts[field] = value
         rounding = amounts["world_import_million_USD"] - sum(
             amounts[region + "_import_million_USD"] for region in REGIONS
@@ -251,8 +261,28 @@ def current_industry_candidate(
                 or rounding != row["region_rounding_difference_million_USD"]
                 or abs(rounding) > 3):
             return _unavailable("SOURCE_SIGNED_ACCOUNTING_INVALID", industry_code_exact)
-        for field, value in amounts.items():
-            annual[year][field] += value
+        expected_flags: list[str] = []
+        if amounts["world_import_million_USD"] <= 0:
+            expected_flags.append("WORLD_IMPORT_NONPOSITIVE")
+        if any(amounts[region + "_import_million_USD"] < 0 for region in REGIONS):
+            expected_flags.append("SOURCE_NEGATIVE_REGION_ADJUSTMENT")
+        if rounding != 0:
+            expected_flags.append("PUBLISHER_ROUNDING_RESIDUAL")
+        if row.get("quality_flags") != expected_flags:
+            return _unavailable("SOURCE_QUALITY_FLAG_DRIFT", industry_code_exact)
+        for field, value in (*amounts.items(),
+                             ("region_rounding_difference_million_USD", rounding)):
+            updated = annual[year][field] + value
+            if abs(updated) > MAX_JSON_SAFE_INTEGER:
+                return _unavailable("ANNUAL_AMOUNT_EXCEEDS_JSON_SAFE_INTEGER",
+                                    industry_code_exact)
+            annual[year][field] = updated
+        if amounts["world_import_million_USD"] <= 0:
+            quality[year]["nonpositive_world_commodities"] += 1
+        if any(amounts[region + "_import_million_USD"] < 0 for region in REGIONS):
+            quality[year]["negative_region_adjustment_commodities"] += 1
+        if rounding != 0:
+            quality[year]["rounding_residual_commodities"] += 1
     if len(visited) != len(YEARS) * 139:
         return _unavailable("INCOMPLETE_COMMODITY_YEARS", industry_code_exact)
     for year in YEARS:
@@ -263,10 +293,23 @@ def current_industry_candidate(
             seen_commodity_order = codes
         elif codes != seen_commodity_order:
             return _unavailable("COMMODITY_IDENTITY_DRIFT", industry_code_exact)
-    annual_descriptive = [
-        {"accounting_year": year, **annual[year]}
-        for year in YEARS
-    ]
+    annual_descriptive: list[dict[str, Any]] = []
+    previous_year: int | None = None
+    for year in YEARS:
+        change = None if previous_year is None else {
+            field: annual[year][field] - annual[previous_year][field]
+            for field in annual[year]
+        }
+        if change is not None and any(abs(v) > MAX_JSON_SAFE_INTEGER
+                                      for v in change.values()):
+            return _unavailable("ANNUAL_CHANGE_EXCEEDS_JSON_SAFE_INTEGER",
+                                industry_code_exact)
+        annual_descriptive.append({
+            "accounting_year": year, **annual[year],
+            "quality": quality[year],
+            "year_over_year_change_million_USD": change,
+        })
+        previous_year = year
     return {
         "schema": SCHEMA,
         "status": "CANDIDATE_NOT_PUBLISHED",
@@ -282,6 +325,8 @@ def current_industry_candidate(
         "native_ingested_at": stamp,
         "rows_examined": len(visited),
         "annual_descriptive": annual_descriptive,
+        "annual_comparison_basis":
+            "RETROSPECTIVE_2026_VINTAGE_NOT_ORIGINAL_HISTORICAL_KNOWLEDGE",
         "attribution": "Source: U.S. Bureau of Economic Analysis",
         "measurement_class": "IMPUTED_INDUSTRY_IMPORT_ALLOCATION_NOT_COMPANY_SUPPLY_CHAINS",
         "historical_pit_eligible": False,

@@ -22,9 +22,51 @@ The existing CI manifest will run these tests as a scoped code-gate job rather t
 
 ## Verified local boundaries (October 15 continuation)
 
-- Nine hermetic consumer tests passed on current source, exercising all eight yearly aggregates, non-admitted packet serialization, invalid-status/rights/identity/provenance/clock/grain/rounding refusals, and original nine-table/capture receipt lineage consistency. This is all SYNTHETIC source data.
+- On initial published PR #9494 head `2d66ce52589b7d47d54a8b9a9126aa4f4d86597f`, nine hermetic consumer tests passed, exercising all eight yearly aggregates, non-admitted packet serialization, invalid-status/rights/identity/provenance/clock/grain/rounding refusals, and original nine-table/capture receipt lineage consistency. This is all SYNTHETIC source data.
 - The GMI consumer suite is discoverable by the incumbent CI inventory once staged in Git. The new additive code job was inferred as scoped to 23 source/test paths with eight conservative fallback paths; it was selected by all three relevant source/test/library probes and excluded from unrelated homepage, content-builder and Prophet probes (unchanged totals 136/134/129).
 - Four focused incumbent CI packing/curated-closure regressions passed, and manifest fragment validation passed with 320 logical jobs / 322 fragments. None of these checks supplies missing native source, formal independent review, public runtime or browser acceptance. This new branch still requires exact-head hosted CI.
+
+## Retrospective accounting and quality amendment — October 16
+
+The source-row aggregator now carries the publisher's **signed rounding residual**
+into annual totals, counts per-year commodities with nonpositive world imports,
+negative regional adjustments and nonzero residuals, and verifies that each
+row's exact `quality_flags` matches the signed amounts. It computes signed
+year-over-year differences from the **same retrospective May-2026 edition**,
+leaving 2017's unavailable comparison as null. The declared comparison basis is
+`RETROSPECTIVE_2026_VINTAGE_NOT_ORIGINAL_HISTORICAL_KNOWLEDGE`, not historical
+point-in-time eligibility or an entry/ranking signal. No ratios/shares are
+manufactured from nonpositive signed denominators.
+
+Raw amounts, annual sums and interyear differences must fit the exact integer
+range safe for JSON/JavaScript consumers (±2^53−1); out-of-range values yield
+typed unavailability, rather than silently rounding browser values. Initial
+new tests failed before implementation, then the amended hermetic suite passed
+13/13. The resulting private packet continues to carry `may_publish=false`,
+and retains all existing nine-table source/capture lineage and owner-receipt
+authentication caveats. Neither Data OS native installation nor real-browser
+delivery was attempted.
+
+## Cross-branch synthetic compatibility — October 16
+
+A read-only, no-file-write local probe loaded **only hermetic fixtures and code**
+from native candidate branch `22f86b841389b6c7b7fc336cdd43ce066b615421`.
+It generated the full synthetic 72-response, 2017–2024 candidate and its 1,112-row
+`5241X` native exporter JSONL. In memory only, a hypothetical PRODUCED
+registry plus current UTC ingest/revision and row admission flags were injected
+to test **schema interoperability** with this GMI candidate. The consumer
+confirmed eight accounting years, world imports +3 and Canada -2 (USD millions)
+in the first synthetic year, 138 nonpositive-world commodity rows, consistent
+digests/generation and zero region rounding. It still returned
+`CANDIDATE_NOT_PUBLISHED`, `may_publish=false` and
+`historical_pit_eligible=false`.
+
+This is **NOT** a real native promotion, original-source read, accepted registry
+snapshot, authenticated owner receipt, licensed production delivery, or historical
+known-at evidence. The synthetic admission fields and claimed byte digest are
+caller-created test inputs; they cannot authenticate the source. The consumer
+does not import the unmerged native code and remains independently scoped to
+existing Data OS interfaces.
 
 ## Production remains HELD
 

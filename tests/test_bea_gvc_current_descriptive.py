@@ -64,6 +64,7 @@ def fake_rows(*, industry="5241X"):
                 rest_of_asia_and_pacific_import_million_USD=0,
                 rest_of_world_import_million_USD=0,
                 region_rounding_difference_million_USD=0,
+                quality_flags=["SOURCE_NEGATIVE_REGION_ADJUSTMENT"],
                 source_kind="imputed_industry_commodity_accounting",
                 source_units="million USD",
                 code_namespace=gmi.SOURCE_NAMESPACE,
@@ -213,6 +214,8 @@ def test_signed_amounts_zeros_negative_regions_and_rounding():
     rows = fake_rows()
     rows[0]["world_import_million_USD"] = -1
     rows[0]["canada_import_million_USD"] = -6
+    rows[0]["quality_flags"] = [
+        "WORLD_IMPORT_NONPOSITIVE", "SOURCE_NEGATIVE_REGION_ADJUSTMENT"]
     assert check(rows=rows)["status"] == "CANDIDATE_NOT_PUBLISHED"
     rows = fake_rows()
     rows[0]["world_import_million_USD"] = 5
@@ -241,6 +244,66 @@ def test_original_nine_table_source_and_capture_lineage_guards():
     rows = fake_rows()
     rows[0]["source_kind"] = "observed_named_company_supplier_edge"
     assert check(rows=rows)["reason"] == "ORIGINAL_RESPONSE_LINEAGE_UNBOUND"
+
+
+def test_annual_quality_and_yoy_are_retrospective_not_historical_pit():
+    packet = check()
+    first, second = packet["annual_descriptive"][:2]
+    assert first["region_rounding_difference_million_USD"] == 0
+    assert first["quality"]["negative_region_adjustment_commodities"] == 139
+    assert first["quality"]["nonpositive_world_commodities"] == 0
+    assert first["quality"]["rounding_residual_commodities"] == 0
+    assert first["year_over_year_change_million_USD"] is None
+    assert second["year_over_year_change_million_USD"]["world_import_million_USD"] == 0
+    assert packet["annual_comparison_basis"] == (
+        "RETROSPECTIVE_2026_VINTAGE_NOT_ORIGINAL_HISTORICAL_KNOWLEDGE")
+
+    rows = fake_rows()
+    rows[0]["world_import_million_USD"] = 4
+    rows[0]["region_rounding_difference_million_USD"] = 1
+    rows[0]["quality_flags"] = [
+        "SOURCE_NEGATIVE_REGION_ADJUSTMENT", "PUBLISHER_ROUNDING_RESIDUAL"]
+    packet = check(rows=rows)
+    first, second = packet["annual_descriptive"][:2]
+    assert first["region_rounding_difference_million_USD"] == 1
+    assert first["quality"]["rounding_residual_commodities"] == 1
+    assert second["year_over_year_change_million_USD"]["world_import_million_USD"] == -1
+    assert second["year_over_year_change_million_USD"][
+        "region_rounding_difference_million_USD"] == -1
+    assert packet["historical_pit_eligible"] is False
+    assert packet["may_rank"] is False and packet["may_trade"] is False
+
+
+def test_source_quality_flags_cannot_misrepresent_signs():
+    rows = fake_rows()
+    rows[0]["quality_flags"] = []
+    assert check(rows=rows)["reason"] == "SOURCE_QUALITY_FLAG_DRIFT"
+    rows = fake_rows()
+    rows[0]["quality_flags"] = ["WORLD_IMPORT_NONPOSITIVE"]
+    assert check(rows=rows)["reason"] == "SOURCE_QUALITY_FLAG_DRIFT"
+
+
+def test_large_source_numbers_refuse_json_precision_loss():
+    rows = fake_rows()
+    rows[0]["total_use_million_USD"] = 2**53
+    assert check(rows=rows)["reason"] == "SOURCE_AMOUNT_EXCEEDS_JSON_SAFE_INTEGER"
+
+
+def test_annual_sums_and_changes_refuse_json_precision_loss():
+    ceiling = gmi.MAX_JSON_SAFE_INTEGER
+    rows = fake_rows()
+    rows[0]["total_use_million_USD"] = ceiling
+    assert check(rows=rows)["reason"] == "ANNUAL_AMOUNT_EXCEEDS_JSON_SAFE_INTEGER"
+
+    rows = fake_rows()
+    first_2017 = next(r for r in rows if r["accounting_year"] == 2017)
+    first_2017["total_use_million_USD"] = ceiling - 13800
+    for row in rows:
+        if row["accounting_year"] == 2018:
+            row["total_use_million_USD"] = -100
+    first_2018 = next(r for r in rows if r["accounting_year"] == 2018)
+    first_2018["total_use_million_USD"] = -ceiling + 13800
+    assert check(rows=rows)["reason"] == "ANNUAL_CHANGE_EXCEEDS_JSON_SAFE_INTEGER"
 
 
 def test_invalid_source_digest_and_source_framing_refuse():
