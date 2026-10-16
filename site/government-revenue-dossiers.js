@@ -32,6 +32,7 @@
   global.createGovernmentRevenueDossier=function(api){
     var obj=api.obj,arr=api.arr,esc=api.esc,text=api.text,n=api.n,money=api.money,date=api.date,tr=api.tr,safeUrl=api.safeUrl,factCell=api.factCell,hostFor=api.host,getSelected=api.selected;
     var epoch=0,session=null,searchTimer=null;
+    var pendingDossierRequests=new Map();
     var SUBAWARD_PAGE_SIZE=25;
 
     function field(x,keys){x=obj(x)?x:{};for(var i=0;i<keys.length;i++)if(x[keys[i]]!=null&&x[keys[i]]!=='')return x[keys[i]];return null}
@@ -39,10 +40,25 @@
       var prefix=rail==='subaward'?'grsd1-':rail==='idv'?'griv1-':'grd1-';
       if(typeof global.fetch!=='function')return Promise.reject(new Error('unavailable'));
       return withAuth({Accept:'application/json'}).then(function(headers){
-        return global.fetch('/api/government-revenue/'+route,{credentials:'same-origin',headers:headers});
-      }).then(function(r){if(!r.ok)throw new Error('http_'+r.status);return r.json()}).then(function(x){
-        if(!obj(x)||x.schema_version!=='1.0.0'||!new RegExp('^'+prefix+'[a-f0-9]{24}$').test(text(x.content_id,'')))throw new Error('contract');
-        return x;
+        // Coalesce identical in-flight reads; partition by route+rail+current
+        // auth so anonymous and differing tokens never share. Tokens stay in
+        // memory only — never logged or exported.
+        var authValue=headers&&typeof headers.Authorization==='string'?headers.Authorization:'';
+        var key=route+'|'+rail+'|'+authValue;
+        var existing=pendingDossierRequests.get(key);
+        if(existing)return existing;
+        var fetchPromise=global.fetch('/api/government-revenue/'+route,{credentials:'same-origin',headers:headers}).then(function(r){if(!r.ok)throw new Error('http_'+r.status);return r.json()}).then(function(x){
+          if(!obj(x)||x.schema_version!=='1.0.0'||!new RegExp('^'+prefix+'[a-f0-9]{24}$').test(text(x.content_id,'')))throw new Error('contract');
+          return x;
+        });
+        pendingDossierRequests.set(key,fetchPromise);
+        var settle=function(){
+          // Identity check guards against an older settle deleting a newer
+          // entry when an in-flight read resolves after invalidate/reselect.
+          if(pendingDossierRequests.get(key)===fetchPromise)pendingDossierRequests.delete(key);
+        };
+        fetchPromise.then(settle,settle);
+        return fetchPromise;
       });
     }
     function name(a){return text(field(a,['description'])||field(obj(a.program)?a.program:{},['name','description','title'])||field(a,['piid','award_key']),tr('Official award record','官方授标记录'))}
