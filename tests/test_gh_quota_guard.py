@@ -808,7 +808,8 @@ def test_codex_project_bash_hook_routes_to_the_existing_quota_guard(codex_poll_i
     hook = hooks[0]
     assert hook["type"] == "command"
     assert hook["timeout"] <= 30
-    assert hook["command"] == 'MACRO_CODEX_HOOK=1 python3 "$(git rev-parse --show-toplevel)/.claude/hooks/gh_quota_guard.py"'
+    assert hook["command"].startswith("sh -c 'root=$(git rev-parse --show-toplevel 2>/dev/null)")
+    assert 'MACRO_CODEX_HOOK=1 exec python3 "$root/.claude/hooks/gh_quota_guard.py"' in hook["command"]
 
 
 @pytest.mark.parametrize("command", [
@@ -896,3 +897,45 @@ def test_codex_documentation_heredoc_stays_allowed(codex_poll_isolation):
     command = "cat <<'NOTE'\ngh run watch 38688166361 --interval 150\nNOTE"
     decision = _codex_hook_verdict(command)
     assert not decision or decision.get("permissionDecision") != "deny"
+
+
+def _configured_codex_hook_execution(command: str, *, cwd: Path, tmp_path: Path):
+    """Execute the actual hook command, not a reimplemented Python invocation."""
+    config = json.loads((ROOT / ".codex" / "hooks.json").read_text())
+    hook_command = config["hooks"]["PreToolUse"][0]["hooks"][0]["command"]
+    env = dict(os.environ)
+    env["MACRO_GH_POLL_STATE_DIR"] = str(tmp_path)
+    env.pop("MACRO_CODEX_HOOK", None)
+    payload = {
+        "hook_event_name": "PreToolUse", "tool_name": "Bash",
+        "tool_input": {"command": command},
+        "cwd": str(cwd), "turn_id": "synthetic-native-turn",
+        "session_id": "synthetic-session",
+    }
+    return subprocess.run(
+        ["/bin/sh", "-c", hook_command], cwd=cwd, env=env,
+        input=json.dumps(payload).encode(), capture_output=True, timeout=30,
+    )
+
+
+def test_configured_codex_hook_fails_open_outside_a_project(tmp_path):
+    outside = tmp_path / "not-a-repository"
+    outside.mkdir()
+    process = _configured_codex_hook_execution(
+        "gh run watch 38688166361 --interval 150", cwd=outside, tmp_path=tmp_path
+    )
+    assert process.returncode == 0
+    assert not process.stdout
+    assert not process.stderr
+
+
+def test_configured_codex_hook_actually_invokes_shared_guard_from_root(tmp_path):
+    result = _configured_codex_hook_execution(
+        "gh run watch 38688166361 --interval 150", cwd=ROOT, tmp_path=tmp_path
+    )
+    assert result.returncode == 0
+    payload = json.loads(result.stdout)
+    decision = payload["hookSpecificOutput"]
+    assert decision["hookEventName"] == "PreToolUse"
+    assert decision["permissionDecision"] == "deny"
+    assert "FOREGROUND CI WATCH" in decision["permissionDecisionReason"]

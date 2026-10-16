@@ -20,7 +20,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "MACRO_CODEX_HOOK=1 python3 \"$(git rev-parse --show-toplevel)/.claude/hooks/gh_quota_guard.py\"",
+            "command": "sh -c 'root=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0; [ -f \"$root/.claude/hooks/gh_quota_guard.py\" ] || exit 0; MACRO_CODEX_HOOK=1 exec python3 \"$root/.claude/hooks/gh_quota_guard.py\"'",
             "timeout": 30,
             "statusMessage": "Preventing blocking Codex CI watches"
           }
