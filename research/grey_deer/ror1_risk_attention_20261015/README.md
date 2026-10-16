@@ -234,6 +234,30 @@ as a continuing exposure, **not** a unique Oct14 forecast.
 No independent exchange calendar, authentic served byte or real
 user-notification acknowledgment was established.
 
+## Oct13 exact-site source comparison (Git tree, NOT production browser)
+
+The prior Git-vintage receipt is complemented by
+`OCT13_GLANCE_SOURCE_CONTRAST_20261015.json` (exact source
+commit `c49e4410492e8d2a0a16d00eca5edb3b45d66bc7`):
+
+- `site/china.html` blob `9254db12acf4f9d3ed7571595669fda0f678400f`
+  has a red first-glance Market State hero with ARIA `Risk-off — 34`;
+- `site/hk.html` blob `73c3e20d63bf105692010d760196c2f61b4a4c97`
+  has a red first-glance hero with ARIA `Risk-off — score 33`;
+- `site/macro.html` blob `217a4a1a542c11e795285f6d0d9966c49f70874e`
+  retains a yellow Mixed/transition hero, ARIA `Mixed — score 50`;
+- `site/index.html` blob `3e7ce16ebeb5cbe3022868d681b264607e6d9116`
+  contains a choreographed `US demo` 50/Mixed reading adjacent to
+  `LIVE · MARKET READ` marketing language.
+
+Both China/HK local state and U.S. Mixed were simultaneously **present
+in the checked-in rendered site source**. These do not prove the
+origin server installed, CDN served, entitled browser displayed, or a
+user received a market-warning push. The product attention question
+is whether the original publisher and globally salient actual consumer
+promoted **qualified regional observed risks**, not whether local
+severe-state text existed somewhere on a country-specific page.
+
 ## Next acceptance
 
 Native source-vintage/issuance-bound episode replay, a predeclared negative
