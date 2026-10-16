@@ -1,0 +1,292 @@
+{
+ "schema": "tfg1.r2_development_respondent_falsifier_receipt.v1",
+ "operation_key": "tfg1-r2-deterministic-transcript-format-hardening-20260827-v1",
+ "measured_at": "2026-09-20T11:14:58.859410+00:00",
+ "verdict": "STOPPED_AT_DEVELOPMENT_GATE_ON_RESPONDENT_IDENTITY_FALSIFIER",
+ "holdout_bodies_inspected": 0,
+ "model_calls": 0,
+ "production_registry_mutated": false,
+ "accepted_revision_admission": "AAPL-only, unchanged",
+ "what_this_receipt_is": "A measured negative result. The TFG-1 R2 source-native separator/questioner law is implemented and exactly reproduces the ratified R2 development truth, but one of the nine calls the frozen gold labels source-clean cannot produce a full-call reconstruction under the already-frozen respondent-identity law. The implementation head was NOT frozen and the eight-slot holdout was NOT opened.",
+ "gates_green": {
+  "canonical_json_replay": "16/16",
+  "structural_separators": "113/113",
+  "direct_questioners": "97/97",
+  "explicit_proxies": "6/6",
+  "source_supported_questioners": "103/103",
+  "unresolved_questioners": "10/10",
+  "per_call_index_set_equality": "16/16 exact (not merely counts)",
+  "aapl_invariant": "7 exchanges / 26 answer turns / 68 replay spans, unchanged",
+  "aapl_extended_respondents": 0,
+  "refusal_reasons_match_frozen_partition": "6 speaker_unresolvable + ARRY management_identity_conflict"
+ },
+ "gate_red": {
+  "source_clean_calls_reconstructed": "8/9",
+  "failing_pair": "FANG/2026Q2",
+  "failure_code": "unexpected_non_housekeeping_speaker",
+  "failing_segment_index": 92,
+  "failing_speaker": "Chad McAllaster"
+ },
+ "falsifier": {
+  "claim": "FANG/2026Q2 is labelled source_clean_for_full_call_reconstruction in the ratified R2 gold, but it contains a management answer turn whose respondent role is not source-supported anywhere in that exact revision.",
+  "evidence": {
+   "roster_declaration_segment": 1,
+   "roster_declaration_text": "Representing Diamondback today are Kaes Van't Hof, CEO; Danny Wesson, COO; Jere Thompson, CFO; Al Barkmann, Chief Engineer.",
+   "declared_participants": [
+    "Kaes Van't Hof",
+    "Danny Wesson",
+    "Jere Thompson",
+    "Al Barkmann"
+   ],
+   "undeclared_answerer": "Chad McAllaster",
+   "undeclared_answerer_segment": 92,
+   "undeclared_answerer_segment_role": "",
+   "only_mentions_of_that_speaker": [
+    "seg91 (CEO Kaes Van't Hof): \"Yeah, I'll let Chad or Danny give the details.\"",
+    "seg91 (CEO Kaes Van't Hof): \"Chad, anything we're doing and seeing?\""
+   ],
+   "why_it_cannot_be_repaired": "Both mentions are first-name-only and carry no title. Binding them would require nickname/first-name inference or external identity, which the frozen law forbids. TFG0_QA_RESPONDENT_IDENTITY_EVIDENCE_AMENDMENT requires refusal (management_identity_insufficient) when role support is missing, and forbids a nullable role or an invented Management role."
+  },
+  "scope": "exactly one of sixteen development calls; the other eight source-clean calls have zero undeclared answerers"
+ },
+ "second_finding_role_conflict_undercount": {
+  "claim": "The frozen gold flags management_role_conflict on 2 calls (ARRY, CTRE), but explicit segment-role metadata contradicts same-revision declared titles on 6 calls.",
+  "additional_conflicts": [
+   {
+    "pair": "MBLY/2026Q2",
+    "speaker": "Nimrod Nehushtan",
+    "segment_role": "CFO",
+    "declared": "Executive Vice President of Business Development and Strategy"
+   },
+   {
+    "pair": "LTH/2026Q2",
+    "speaker": "Erik Weaver",
+    "segment_role": "CEO",
+    "declared": "Executive Vice President and CFO"
+   },
+   {
+    "pair": "BANR/2026Q2",
+    "speaker": "Jill Rice",
+    "segment_role": "CFO",
+    "declared": "Chief Credit Officer"
+   },
+   {
+    "pair": "HTGC/2026Q2",
+    "speaker": "Seth Meyer",
+    "segment_role": "CEO",
+    "declared": "President"
+   }
+  ],
+  "partition_impact": "none — all four are already non-clean for unresolved-questioner reasons",
+  "handling": "Questioner resolution is evaluated before role evidence so each call still refuses for its own frozen reason. The over-count is reported, not tuned away."
+ },
+ "googl_known_falsifier_regression": {
+  "note": "Diagnostic only. GOOGL remains SPENT as OOS evidence per DEC:E3C-GOOGL-OOS-REFUSAL-SPENDS-EVENT.",
+  "document_id": "tx:GOOGL/2026Q2",
+  "canonical_sha256": "a44db883463181ba73a536cb3643b81ea59a3e10c0f191859f7717538452d2a9",
+  "separators_before_r2": 1,
+  "separators_after_r2": 9,
+  "questioner_states_after_r2": {
+   "direct": 9,
+   "proxy": 0,
+   "unresolved": 0
+  },
+  "roster_declarations": 0,
+  "status": "still refuses — on respondent identity only, the same root cause as the FANG falsifier",
+  "interpretation": "R2 removes the boundary/dialect failure that produced the original GOOGL refusal. What remains is a structural source gap: this revision declares no management title anywhere, so no respondent role can be source-supported."
+ },
+ "bounded_architecture_question_for_sol": "FANG exchange 8 and GOOGL share one root cause: transcripts exist in which a management speaker has neither a segment role nor any same-revision title declaration. qa_exchange.v1 has no honest state for that respondent. Either (a) such events are permanently unpublishable, or (b) the contract needs an explicit unresolved-respondent state. That is a contract/architecture change for Sol to adjudicate, not an inference the compiler may make.",
+ "changed_files": {
+  "engine/company_intelligence/qa_source_identity.py": "671d3269189594d39b7e3e53682975fee4f3fc1a9980c1f4926de1cc21eee55e",
+  "engine/company_intelligence/qa_reconstruction.py": "0f570ff5197a7bf74dc3810464df7669152ad919486cccea5f859146e8a48bfb"
+ },
+ "known_red_test": {
+  "test": "tests/test_company_intelligence_qa_reconstruction.py::test_proof_receipt_matches_live_reconstruction",
+  "reason": "The E3-A2 proof receipt pins reconstruction_module_sha256 of the pre-R2 module. Every AAPL structural assertion in that test passes. The historical receipt is deliberately left unchanged; it should be re-issued only if Sol accepts an R2 head."
+ },
+ "per_call_matrix": [
+  {
+   "pair": "OCSL/2026Q3",
+   "expected": "publish",
+   "got": "publish",
+   "exchanges": 3,
+   "answer_turns": 8,
+   "replay_spans": 23,
+   "failure_code": "",
+   "separators": 3
+  },
+  {
+   "pair": "MBLY/2026Q2",
+   "expected": "refuse",
+   "got": "refuse",
+   "exchanges": 0,
+   "answer_turns": 0,
+   "replay_spans": 0,
+   "failure_code": "speaker_unresolvable",
+   "separators": 9
+  },
+  {
+   "pair": "GEF/2026Q3",
+   "expected": "publish",
+   "got": "publish",
+   "exchanges": 2,
+   "answer_turns": 7,
+   "replay_spans": 19,
+   "failure_code": "",
+   "separators": 2
+  },
+  {
+   "pair": "ARQQ/2026Q2",
+   "expected": "publish",
+   "got": "publish",
+   "exchanges": 1,
+   "answer_turns": 11,
+   "replay_spans": 23,
+   "failure_code": "",
+   "separators": 1
+  },
+  {
+   "pair": "TRVI/2026Q2",
+   "expected": "refuse",
+   "got": "refuse",
+   "exchanges": 0,
+   "answer_turns": 0,
+   "replay_spans": 0,
+   "failure_code": "speaker_unresolvable",
+   "separators": 9
+  },
+  {
+   "pair": "CTRE/2026Q2",
+   "expected": "refuse",
+   "got": "refuse",
+   "exchanges": 0,
+   "answer_turns": 0,
+   "replay_spans": 0,
+   "failure_code": "speaker_unresolvable",
+   "separators": 11
+  },
+  {
+   "pair": "LTH/2026Q2",
+   "expected": "refuse",
+   "got": "refuse",
+   "exchanges": 0,
+   "answer_turns": 0,
+   "replay_spans": 0,
+   "failure_code": "speaker_unresolvable",
+   "separators": 11
+  },
+  {
+   "pair": "UPBD/2026Q2",
+   "expected": "publish",
+   "got": "publish",
+   "exchanges": 7,
+   "answer_turns": 24,
+   "replay_spans": 62,
+   "failure_code": "",
+   "separators": 7
+  },
+  {
+   "pair": "SCCO/2026Q2",
+   "expected": "publish",
+   "got": "publish",
+   "exchanges": 5,
+   "answer_turns": 23,
+   "replay_spans": 76,
+   "failure_code": "",
+   "separators": 5
+  },
+  {
+   "pair": "AGM/2026Q2",
+   "expected": "publish",
+   "got": "publish",
+   "exchanges": 4,
+   "answer_turns": 16,
+   "replay_spans": 44,
+   "failure_code": "",
+   "separators": 4
+  },
+  {
+   "pair": "BANR/2026Q2",
+   "expected": "refuse",
+   "got": "refuse",
+   "exchanges": 0,
+   "answer_turns": 0,
+   "replay_spans": 0,
+   "failure_code": "speaker_unresolvable",
+   "separators": 6
+  },
+  {
+   "pair": "FANG/2026Q2",
+   "expected": "publish",
+   "got": "refuse",
+   "exchanges": 0,
+   "answer_turns": 0,
+   "replay_spans": 0,
+   "failure_code": "management_identity_insufficient",
+   "separators": 14
+  },
+  {
+   "pair": "HTGC/2026Q2",
+   "expected": "refuse",
+   "got": "refuse",
+   "exchanges": 0,
+   "answer_turns": 0,
+   "replay_spans": 0,
+   "failure_code": "speaker_unresolvable",
+   "separators": 8
+  },
+  {
+   "pair": "COF/2026Q2",
+   "expected": "publish",
+   "got": "publish",
+   "exchanges": 11,
+   "answer_turns": 34,
+   "replay_spans": 112,
+   "failure_code": "",
+   "separators": 11
+  },
+  {
+   "pair": "ARRY/2026Q2",
+   "expected": "refuse",
+   "got": "refuse",
+   "exchanges": 0,
+   "answer_turns": 0,
+   "replay_spans": 0,
+   "failure_code": "management_identity_conflict",
+   "separators": 7
+  },
+  {
+   "pair": "KREF/2026Q2",
+   "expected": "publish",
+   "got": "publish",
+   "exchanges": 5,
+   "answer_turns": 16,
+   "replay_spans": 51,
+   "failure_code": "",
+   "separators": 5
+  }
+ ],
+ "totals": {
+  "separators": 113,
+  "direct": 97,
+  "proxy": 6,
+  "supported": 103,
+  "unresolved": 10
+ },
+ "next_action_for_sol": "Rule on (1) whether FANG/2026Q2 leaves the source-clean set, making the R2 development bar 8/8 rather than 9/9, exactly as MBLY left it in the v1 amendment; (2) the role-conflict under-count; (3) the unresolved-respondent contract question. The holdout remains sealed and single-use until a corrected development bar is green against a frozen head.",
+ "carrier": {
+  "pr": 7530,
+  "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7530",
+  "branch": "claude/ssd-tfg1-r2-earnings-fmt-7397df423722788e",
+  "head_sha": "a1c5a0afe2a0a476564a2da01d9f5b7c5b94a4e0",
+  "state": "DRAFT / HOLD-FOR-SOL",
+  "note": "Carrier only. This head is NOT the frozen implementation head; no freeze was performed."
+ },
+ "holdout_integrity_proof": {
+  "bodies_fetched": 18,
+  "allowlist": "16 development pairs + AAPL/2026Q3 + GOOGL/2026Q2",
+  "outside_allowlist": 0,
+  "holdout_bodies_fetched": 0,
+  "holdout_selection_file": "unmodified; bodies_inspected remains 0"
+ }
+}
