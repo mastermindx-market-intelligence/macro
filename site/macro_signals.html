@@ -403,17 +403,17 @@
               <stop offset="100%" stop-color="var(--down)"/>
             </linearGradient>
           </defs>
-          <g id="gneedle-inflation" style="transform:rotate(-7.200000000000003deg);transform-origin:60px 68px;transition:transform .8s cubic-bezier(.22,.9,.3,1);">
+          <g id="gneedle-inflation" style="transform:rotate(7.200000000000003deg);transform-origin:60px 68px;transition:transform .8s cubic-bezier(.22,.9,.3,1);">
             <line x1="60" y1="68" x2="60" y2="26"
-              stroke="var(--up)"
+              stroke="var(--warn)"
               stroke-width="2.5" stroke-linecap="round"
-              style="filter:drop-shadow(0 0 4px var(--up))"/>
-            <circle cx="60" cy="68" r="4" fill="var(--up)"/>
+              style="filter:drop-shadow(0 0 4px var(--warn))"/>
+            <circle cx="60" cy="68" r="4" fill="var(--warn)"/>
           </g>
         </svg>
-        <div class="gauge-value good">
+        <div class="gauge-value warn">
           
-            <span class="l-en">FALLING</span><span class="l-zh">下行</span>
+            <span class="l-en">RISING</span><span class="l-zh">上行</span>
           
           <span class="help">?<span class="tip"><span class="l-en">Inflation dial. Score −1..+1 maps to 0..100. High inflation (right) is an economic headwind for equities.</span><span class="l-zh">通胀刻度盘。分数−1..+1映射至0..100。高通胀（右侧）对股票为逆风。</span></span></span>
         </div>
@@ -766,9 +766,9 @@
   </div>
   
   <div class="leg">
-    <span style="flex:0 0 130px;font-size:12.5px"><span class="l-en">Safe haven demand (SPY − TLT 20d)</span><span class="l-zh">避险需求（SPY−TLT 20日）</span></span>
-    <div class="leg-bar"><i style="width:20.133333333333333%;background:var(--up)"></i></div>
-    <span class="muted sm" style="flex:0 0 60px;text-align:right">+0.6</span>
+    <span style="flex:0 0 130px;font-size:12.5px"><span class="l-en">NAAIM exposure</span><span class="l-zh">NAAIM 仓位敞口</span></span>
+    <div class="leg-bar"><i style="width:17.3%;background:var(--up)"></i></div>
+    <span class="muted sm" style="flex:0 0 60px;text-align:right">+0.5</span>
   </div>
   
   
@@ -789,9 +789,9 @@
         
         <tr>
           <td class="l"><b><span class="l-en">SPX momentum (vs 125d MA)</span><span class="l-zh">标普动量（对比125日均线）</span></b></td>
-          <td>2.79 <span class="muted sm">% above/below MA</span></td>
-          <td class=" sm">+0.02</td>
-          <td class="sm muted">8485</td>
+          <td>3.01 <span class="muted sm">% above/below MA</span></td>
+          <td class=" sm">+0.06</td>
+          <td class="sm muted">8486</td>
         </tr>
         
         <tr>
@@ -817,30 +817,30 @@
         
         <tr>
           <td class="l"><b><span class="l-en">Safe haven demand (SPY − TLT 20d)</span><span class="l-zh">避险需求（SPY−TLT 20日）</span></b></td>
-          <td>4.38 <span class="muted sm">20d ret diff %</span></td>
-          <td class="pos sm">+0.60</td>
-          <td class="sm muted">6072</td>
+          <td>3.28 <span class="muted sm">20d ret diff %</span></td>
+          <td class=" sm">+0.43</td>
+          <td class="sm muted">6073</td>
         </tr>
         
         <tr>
           <td class="l"><b><span class="l-en">VIX level</span><span class="l-zh">VIX 水平</span></b></td>
-          <td>16.90 <span class="muted sm">VIX points</span></td>
-          <td class=" sm">+0.33</td>
-          <td class="sm muted">9267</td>
+          <td>16.50 <span class="muted sm">VIX points</span></td>
+          <td class=" sm">+0.38</td>
+          <td class="sm muted">9268</td>
         </tr>
         
         <tr>
           <td class="l"><b><span class="l-en">VIX trend (20d change)</span><span class="l-zh">VIX 趋势（20日变动）</span></b></td>
-          <td>-0.84 <span class="muted sm">VIX 20d delta</span></td>
-          <td class=" sm">+0.16</td>
-          <td class="sm muted">9247</td>
+          <td>1.02 <span class="muted sm">VIX 20d delta</span></td>
+          <td class=" sm">-0.20</td>
+          <td class="sm muted">9248</td>
         </tr>
         
         <tr>
           <td class="l"><b><span class="l-en">VIX term structure (VIX/VIX3M)</span><span class="l-zh">VIX 期限结构（VIX/VIX3M）</span></b></td>
-          <td>0.90 <span class="muted sm">ratio (&gt;=1=backwardation)</span></td>
-          <td class=" sm">+0.12</td>
-          <td class="sm muted">5094</td>
+          <td>0.89 <span class="muted sm">ratio (&gt;=1=backwardation)</span></td>
+          <td class=" sm">+0.21</td>
+          <td class="sm muted">5095</td>
         </tr>
         
         <tr>
@@ -887,7 +887,7 @@
       <span class="help">?<span class="tip"><span class="l-en">Two composites exist deliberately. Fear/Greed is the wide aggregate. Fear↔Euphoria is the RORO-side read (risk-on/risk-off positioning). They often agree; when they diverge, the divergence itself is the signal.</span><span class="l-zh">两个合成指标并存有意为之。恐惧/贪婪是宽幅综合。恐惧↔欣喜是RORO侧读（风险开/关持仓）。通常一致；背离时背离本身即是信号。</span></span></span>
     </div>
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-      <span style="font-size:18px;font-weight:700;font-family:var(--num)">21</span>
+      <span style="font-size:18px;font-weight:700;font-family:var(--num)">20</span>
       <span class="badge"><span class="l-en">Fear</span><span class="l-zh">恐惧</span></span>
       
       <span class="chip chip-neg">
@@ -1047,30 +1047,30 @@
       <td class="l"><b><span class="l-en">Gold</span><span class="l-zh">黄金</span></b></td>
       <td class="sm">
         <span class="l-en">below trend</span><span class="l-zh">趋势下方</span>
-        <span class="help">?<span class="tip"><span class="l-en">Momentum: 44/100 · 50-day: below</span><span class="l-zh">动量：44/100 · 50 日线：下方</span></span></span>
+        <span class="help">?<span class="tip"><span class="l-en">Momentum: 42/100 · 50-day: below</span><span class="l-zh">动量：42/100 · 50 日线：下方</span></span></span>
       </td>
-      <td class="pos">+0.8%</td>
-      <td class="neg">-21.3%</td>
+      <td class="pos">+0.4%</td>
+      <td class="neg">-21.6%</td>
     </tr>
     
     <tr>
       <td class="l"><b><span class="l-en">Crude Oil</span><span class="l-zh">原油</span></b></td>
       <td class="sm">
         <span class="l-en">above trend</span><span class="l-zh">趋势上方</span>
-        <span class="help">?<span class="tip"><span class="l-en">Momentum: 59/100 · 50-day: above</span><span class="l-zh">动量：59/100 · 50 日线：上方</span></span></span>
+        <span class="help">?<span class="tip"><span class="l-en">Momentum: 62/100 · 50-day: above</span><span class="l-zh">动量：62/100 · 50 日线：上方</span></span></span>
       </td>
-      <td class="pos">+26.9%</td>
-      <td class="neg">-14.9%</td>
+      <td class="pos">+29.3%</td>
+      <td class="neg">-13.3%</td>
     </tr>
     
     <tr>
       <td class="l"><b><span class="l-en">Copper</span><span class="l-zh">铜</span></b></td>
       <td class="sm">
         <span class="l-en">above trend</span><span class="l-zh">趋势上方</span>
-        <span class="help">?<span class="tip"><span class="l-en">Momentum: 48/100 · 50-day: below</span><span class="l-zh">动量：48/100 · 50 日线：下方</span></span></span>
+        <span class="help">?<span class="tip"><span class="l-en">Momentum: 45/100 · 50-day: below</span><span class="l-zh">动量：45/100 · 50 日线：下方</span></span></span>
       </td>
-      <td class="neg">-0.9%</td>
-      <td class="">-3.5%</td>
+      <td class="neg">-1.6%</td>
+      <td class="">-4.3%</td>
     </tr>
     
     <tr>
@@ -1539,7 +1539,7 @@
     setNeedle('gneedle-growth', 0.0);
     
     
-    setNeedle('gneedle-inflation', -7.2);
+    setNeedle('gneedle-inflation', 7.2);
     
     
     setNeedle('gneedle-fg', -1.8);

@@ -182,6 +182,10 @@ def _is_private_official_stage(item: object) -> bool:
     for holder in holders:
         for key in ("sources", "seed_refs"):
             refs.update(str(r) for r in (holder.get(key) or []) if isinstance(r, str))
+        for key in ("facts", "raw_documents"):
+            for fact in holder.get(key) or []:
+                if isinstance(fact, dict) and isinstance(fact.get("ref"), str):
+                    refs.add(fact["ref"])
         revisions = holder.get("source_revisions")
         if isinstance(revisions, dict):
             refs.update(str(r) for r in revisions)

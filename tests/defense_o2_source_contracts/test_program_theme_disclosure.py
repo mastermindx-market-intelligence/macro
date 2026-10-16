@@ -74,3 +74,70 @@ def test_current_alias_advance_demotes_old_quarter_even_if_cached_file_same(tmp_
  assert current['quartet_economics']['sha256']==c['quartet_economics']['sha256'] and current['quartet_economics']['owner_alias_state']=='advanced'
  display=d.disclose_program_themes(p,owners=o,current_owner_receipts=current)
  assert display['themes'][1]['rail_states']['economics']=='stale'
+
+
+def space_comparison_rows():
+ # Synthetic domain discriminators; the retained real-source replay is separate.
+ facts=[]
+ for metric,values,unit in [('sales',(2753,2646),'USD_million'),('operating_profit',(236,280),'USD_million'),('margin',(8.6,10.6),'percent')]:
+  for prior,value in enumerate(values):
+   facts.append({'fact_id':'evt_cik0001133421_2026q2_results:issuer_space_segment_'+metric+('_prior' if prior else ''),'value':value,'unit':unit,'period':'2025Q2' if prior else '2026Q2','accounting_basis':'issuer_reported_segment:Space Systems:reported'})
+ return facts
+
+
+def test_space_sales_growth_does_not_imply_profit_growth_or_cash():
+ facts=space_comparison_rows();resolved=[('economics','defense_economics',f,None) for f in facts]
+ story=d._theme_economic_story('space',resolved)
+ assert 'sales rose while operating profit and margin fell' in story[0]
+ assert '现金生成' in story[1] and '营业利润与利润率下降' in story[1]
+ assert '91' not in story[0] and 'guidance' not in story[0]
+ assert len(d._FACT_LABELS.keys() & {f['fact_id'].rsplit(':',1)[-1] for f in facts})==6
+
+
+@pytest.mark.parametrize('defect',['missing_prior','half_year','wrong_unit','wrong_segment','foreign_issuer','profit_grew','margin_grew','duplicate','boolean','infinite','nan'])
+def test_space_direction_requires_comparable_complete_operands(defect):
+ facts=space_comparison_rows()
+ if defect=='missing_prior':facts.pop()
+ elif defect=='half_year':facts[1]['period']='2025H1'
+ elif defect=='wrong_unit':facts[0]['unit']='USD_billion'
+ elif defect=='wrong_segment':facts[0]['accounting_basis']='issuer_reported_segment:Defense Systems:reported'
+ elif defect=='foreign_issuer':facts[0]['fact_id']=facts[0]['fact_id'].replace('0001133421','0000936468')
+ elif defect=='profit_grew':facts[2]['value']=500
+ elif defect=='margin_grew':facts[4]['value']=12
+ elif defect=='duplicate':facts.append(deepcopy(facts[0]))
+ elif defect=='infinite':facts[0]['value']=float('inf')
+ elif defect=='nan':facts[0]['value']=float('nan')
+ else:facts[0]['value']=True
+ resolved=[('economics','defense_economics',f,None) for f in facts]
+ assert d._space_reported_comparison(resolved) is None
+ assert 'sales rose' not in d._theme_economic_story('space',resolved)[0]
+
+
+def space_adverse_row():
+ return {'fact_id':'evt_cik0001133421_2026q2_results:issuer_space_gem63xl_unfavorable_eac','value':91,'unit':'USD_million','period':'2026Q2','fact_class':'reported_eac','accounting_basis':'issuer_reported_program_cost_estimate:GEM63XL:unfavorable_EAC'}
+
+
+def test_adverse_estimate_keeps_cash_and_halo_effect_unasserted():
+ facts=space_comparison_rows()+[space_adverse_row()]
+ story=d._theme_economic_story('space',[('economics','defense_economics',f,None) for f in facts])
+ assert 'GEM63XL adjustment concerns estimated completion costs' in story[0]
+ assert "does not establish cash paid or HALO's financial effect" in story[0]
+ assert '预计完工成本' in story[1] and '不能确认已支付现金或HALO的财务影响' in story[1]
+
+
+@pytest.mark.parametrize('defect',['missing','duplicate','wrong_year','half_year','wrong_unit','cash_basis','foreign_issuer','wrong_class','boolean','negative','infinite'])
+def test_adverse_interpretation_requires_its_own_current_qualified_fact(defect):
+ fact=space_adverse_row();extras=[fact]
+ if defect=='missing':extras=[]
+ elif defect=='duplicate':extras.append(deepcopy(fact))
+ elif defect=='wrong_year':fact['period']='2025Q2'
+ elif defect=='half_year':fact['period']='2026H1'
+ elif defect=='wrong_unit':fact['unit']='USD_billion'
+ elif defect=='cash_basis':fact['accounting_basis']='cash_paid'
+ elif defect=='foreign_issuer':fact['fact_id']=fact['fact_id'].replace('0001133421','0000936468')
+ elif defect=='wrong_class':fact['fact_class']='reported_cashflow'
+ elif defect=='boolean':fact['value']=True
+ elif defect=='negative':fact['value']=-91
+ else:fact['value']=float('inf')
+ story=d._theme_economic_story('space',[('economics','defense_economics',f,None) for f in space_comparison_rows()+extras])
+ assert 'sales rose' in story[0] and 'GEM63XL adjustment' not in story[0]

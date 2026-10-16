@@ -1,6 +1,6 @@
 {
   "blog/index.html": {
-    "sha256": "acfaafc944d42a378405a93737e733e666e3f8a6d6ffc261f4b3d0f4363128bd",
+    "sha256": "2832c61b9c1e66c15f2e1fdf2967c7f31006690c49a0f9ff7e33665c81aceb7b",
     "bytes": 29500,
     "title": "Blog \u2014 MastermindX",
     "canonical": "https://www.mastermind-x.com/blog/index.html",
@@ -8,7 +8,7 @@
     "morning_edition": 1
   },
   "learn/index.html": {
-    "sha256": "63c94b58d2b1b1ac0a62c0b15d63f841b337a598e3687fbb0881106b36825ae3",
+    "sha256": "f90d3ecaa13b0c6c282df5a3c0766f88ec5d2310285f84e7f5dac78fb2cc9a73",
     "bytes": 35308,
     "title": "Learning Center \u2014 MastermindX",
     "canonical": "https://www.mastermind-x.com/learn/index.html",
@@ -16,7 +16,7 @@
     "morning_edition": 1
   },
   "tools/calculators/position-size.html": {
-    "sha256": "de2ec9db310eaeb9b147747803b0a307914d24987acf2b4c5b7e2fd25e3408ee",
+    "sha256": "ed8626dde0f1df97f21a48de7cdd379e5988d88f288b225efb7d114353965d45",
     "bytes": 45748,
     "title": "Position Size Calculator \u2014 MastermindX",
     "canonical": "https://www.mastermind-x.com/tools/calculators/position-size.html",
