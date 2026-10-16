@@ -7611,6 +7611,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "scripts/check_china_heatmap_freshness.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
       - "lib/intl_chart_publication.py"
@@ -12605,6 +12606,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "scripts/check_china_heatmap_freshness.py"
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -15040,6 +15042,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "scripts/check_china_heatmap_freshness.py"
       - "engine/intl_performance_charts.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
@@ -22027,6 +22030,7 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "scripts/check_china_heatmap_freshness.py"
       - "engine/intl_performance_charts.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/path_risk_signals.py"
@@ -29126,6 +29130,7 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "scripts/check_china_heatmap_freshness.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/stock_identity/__init__.py"
       - "engine/stock_identity/authority.py"
