@@ -9,5 +9,8 @@
   "independent_review_verdict": null,
   "release": "HELD original review return unknown; no canonical HALO admission",
   "interrupted_local_proof": "50dots noXMLnoReceipt after Desktop restart; recovered run retained separately",
-  "not_product_acceptance": true
+  "not_product_acceptance": true,
+  "committed_witness": "REFUSED material source crossed1df->514353 boundary; recorded105case result does not authorize committed release",
+  "committed_witness_exit": 10,
+  "next_proof": "fresh committed-source proof when original independent review and canonical admission boundary are ready; no redundant10minute rerun now"
 }
