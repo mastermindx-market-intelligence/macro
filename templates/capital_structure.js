@@ -13,10 +13,13 @@
     query: '',
     selectedIssuerId: '',
     record: null,
+    dossierStatus: 'idle',
+    dossierErrorStatus: null,
     events: [],
     nextEventCursor: '',
     lastFocus: null,
-    loadToken: 0
+    loadToken: 0,
+    resolveToken: 0
   };
   var ui = {};
 
@@ -461,6 +464,7 @@
       setInert(ui.shell, true);
       setInert(ui.siteNav, true);
       window.requestAnimationFrame(function () {
+        if (ui.evidenceDrawer.hidden) return;
         ui.evidenceDrawer.classList.add('is-open');
         ui.closeEvidence.focus();
       });
@@ -516,13 +520,21 @@
   function selectIssuer(issuerId, options) {
     if (!issuerId) return Promise.resolve();
     options = options || {};
+    var drawerWasOpen = !ui.evidenceDrawer.hidden;
+    if (drawerWasOpen) setDrawer(false);
     var token = ++state.loadToken;
     state.selectedIssuerId = issuerId;
+    state.dossierStatus = 'loading';
+    state.dossierErrorStatus = null;
+    state.nextEventCursor = '';
+    ui.moreEvents.disabled = false;
+    ui.moreEvents.hidden = true;
+    ui.openEvidence.disabled = true;
+    ui.evidenceBody.innerHTML = '';
     if (options.updateUrl !== false) writeIssuerToLocation(issuerId, options.replaceUrl === true);
     renderOverview();
-    ui.dossierBody.hidden = true;
-    ui.emptyDossier.hidden = false;
-    ui.emptyDossier.innerHTML = ui.loadingTemplate.innerHTML;
+    renderDossierState();
+    if (drawerWasOpen) ui.dossier.focus();
     var encoded = encodeURIComponent(issuerId);
     return Promise.all([
       api('/issuers/' + encoded),
@@ -533,44 +545,79 @@
       var page = eventResultFrom(responses[1]);
       state.events = page.events.length ? page.events : asArray(record && record.timeline);
       state.nextEventCursor = page.cursor;
-      renderRecord(record);
+      state.record = record;
+      state.dossierStatus = 'ready';
+      renderDossierState();
       if (options.focus) ui.dossier.focus();
     }).catch(function (error) {
       if (token !== state.loadToken) return;
       state.events = [];
       state.nextEventCursor = '';
-      ui.emptyDossier.hidden = false;
-      ui.dossierBody.hidden = true;
-      ui.emptyDossier.innerHTML = '<span class="cs-empty-glyph" aria-hidden="true">!</span><h2>' + esc(copy('Record unavailable', '记录暂不可用')) + '</h2><p>' + esc(error.status === 401 || error.status === 403 ? copy('Sign in with an eligible account to read this filing record.', '请使用符合条件的账户登录后读取此披露记录。') : copy('This issuer record is temporarily unavailable. Try again shortly.', '该发行人记录暂时不可用，请稍后重试。')) + '</p>';
+      state.dossierStatus = 'error';
+      state.dossierErrorStatus = error.status;
+      renderDossierState();
     });
   }
 
+  function renderDossierState() {
+    // The cached record may belong to the previous selection. Localization
+    // must repaint the active request's state without reviving that record.
+    if (state.dossierStatus === 'ready') {
+      if (state.record && identityFor(state.record).issuerId === state.selectedIssuerId) renderRecord(state.record);
+      return;
+    }
+    if (state.dossierStatus !== 'loading' && state.dossierStatus !== 'error') return;
+    ui.dossierBody.hidden = true;
+    ui.emptyDossier.hidden = false;
+    if (state.dossierStatus === 'loading') {
+      ui.emptyDossier.innerHTML = ui.loadingTemplate.innerHTML;
+      return;
+    }
+    var denied = state.dossierErrorStatus === 401 || state.dossierErrorStatus === 403;
+    ui.emptyDossier.innerHTML = '<span class="cs-empty-glyph" aria-hidden="true">!</span><h2>' + esc(copy('Record unavailable', '记录暂不可用')) + '</h2><p>' + esc(denied ? copy('Sign in with an eligible account to read this filing record.', '请使用符合条件的账户登录后读取此披露记录。') : copy('This issuer record is temporarily unavailable. Try again shortly.', '该发行人记录暂时不可用，请稍后重试。')) + '</p>';
+  }
+
   function loadMoreEvents() {
-    if (!state.selectedIssuerId || !state.nextEventCursor) return;
-    var encoded = encodeURIComponent(state.selectedIssuerId);
+    if (state.dossierStatus !== 'ready' || !state.selectedIssuerId || !state.nextEventCursor || ui.moreEvents.disabled) return;
+    var issuerId = state.selectedIssuerId;
+    var token = state.loadToken;
+    function isCurrent() { return token === state.loadToken && issuerId === state.selectedIssuerId; }
+    var encoded = encodeURIComponent(issuerId);
     var cursor = encodeURIComponent(state.nextEventCursor);
     ui.moreEvents.disabled = true;
     api('/issuers/' + encoded + '/events?cursor=' + cursor + '&limit=' + PAGE_SIZE)
       .then(function (data) {
+        if (!isCurrent()) return;
         var page = eventResultFrom(data);
         state.events = state.events.concat(page.events);
         state.nextEventCursor = page.cursor;
         renderEvents();
         renderEvidence();
       })
-      .catch(function () { state.nextEventCursor = ''; renderEvents(); })
-      .finally(function () { ui.moreEvents.disabled = false; });
+      .catch(function () {
+        if (!isCurrent()) return;
+        // Keep the current rows and cursor so the same page can be retried.
+        renderEvents();
+      })
+      .finally(function () { if (isCurrent()) ui.moreEvents.disabled = false; });
   }
 
   function resolveTicker() {
     var ticker = state.query.trim();
     if (!ticker) return;
+    var token = ++state.resolveToken;
+    // Only later explicit lookup/navigation intent supersedes this request.
+    function isCurrent() { return token === state.resolveToken; }
     api('/issuers/resolve?ticker=' + encodeURIComponent(ticker)).then(function (data) {
+      if (!isCurrent()) return;
       var issuerId = resolveIssuerId(data);
       if (issuerId) return selectIssuer(issuerId, { focus: true });
       setNotice(copy('No observed issuer matched that ticker', '没有已观察发行人匹配该代码'), 'partial');
       return null;
-    }).catch(function () { setNotice(copy('Ticker lookup is temporarily unavailable', '代码查找暂时不可用'), 'degraded'); });
+    }).catch(function () {
+      if (!isCurrent()) return;
+      setNotice(copy('Ticker lookup is temporarily unavailable', '代码查找暂时不可用'), 'degraded');
+    });
   }
 
   function resolveIssuerId(data) {
@@ -650,7 +697,7 @@
   function relabelDynamicContent() {
     updateLocalizedAttributes();
     renderCoverage();
-    if (state.record) renderRecord(state.record);
+    renderDossierState();
   }
 
   function bind() {
@@ -669,7 +716,10 @@
     });
     ui.issuerList.addEventListener('click', function (event) {
       var row = event.target.closest('[data-issuer-id]');
-      if (row) selectIssuer(row.getAttribute('data-issuer-id'), { focus: true });
+      if (row) {
+        state.resolveToken++;
+        selectIssuer(row.getAttribute('data-issuer-id'), { focus: true });
+      }
     });
     ui.moreEvents.addEventListener('click', loadMoreEvents);
     ui.openEvidence.addEventListener('click', function () { setDrawer(true); });
@@ -680,7 +730,10 @@
       var issuerId = issuerFromLocation();
       if (!issuerId || issuerId === state.selectedIssuerId) return;
       var known = state.overview.some(function (item) { return identityFor(item).issuerId === issuerId; });
-      if (known) selectIssuer(issuerId, { updateUrl: false, focus: true });
+      if (known) {
+        state.resolveToken++;
+        selectIssuer(issuerId, { updateUrl: false, focus: true });
+      }
     });
     // theme.js owns the site-wide language control and dispatches `langchange`
     // on document after updating <html data-lang>. API-rendered labels must use
