@@ -1,15 +1,15 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-15T07:25:37.618907+00:00",
-  "posts_seen": 8,
-  "seen_total": 290,
+  "as_of": "2026-10-16T21:06:52.979910+00:00",
+  "posts_seen": 13,
+  "seen_total": 296,
   "evaluated": 1,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-10-15-presidential-message-on-the-birthday-of-president-dwight-d-eisenhower-c6b1",
-      "importance": 5,
+      "id": "wh-2026-10-16-trump-vance-administration-leads-nationwide-coalition-in-fighting-war-on-fraud",
+      "importance": 15,
       "activated": false,
       "degraded_reason": "served_by:deepseek"
     }
