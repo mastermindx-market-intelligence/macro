@@ -26,6 +26,8 @@
     return false;
   }
   function markAuthSettled(){global.__govrevAuthSettled=true;}
+  // Shared entitled read helper: resolves the current session for each caller.
+  global.governmentRevenueAuthHeaders=withAuth;
 
   global.createGovernmentRevenueDossier=function(api){
     var obj=api.obj,arr=api.arr,esc=api.esc,text=api.text,n=api.n,money=api.money,date=api.date,tr=api.tr,safeUrl=api.safeUrl,factCell=api.factCell,hostFor=api.host,getSelected=api.selected;
@@ -278,7 +280,7 @@
     }
     function evidenceCode(row){
       return evidenceList(row).map(function(item){
-        return tr('publisher: ','发布方：')+text(item.publisher)+'\n'+tr('record: ','记录：')+text(item.evidence_id)+'\nsha256: '+text(item.content_sha256);
+        return tr('publisher: ','发布方：')+text(item.publisher)+'\n'+tr('record: ','记录：')+text(item.evidence_id||item.record_id)+'\nsha256: '+text(item.content_sha256);
       }).join('\n\n');
     }
 
@@ -386,7 +388,7 @@
       var share=n(entity.economic_share);
       if(share==null)return'';
       if(entity.relationship==='wholly_owned'&&share===1)return'';
-      return isZh()?(Math.round(share*1000)/10+'% 经济权益'):(Math.round(share*1000)/10+'% economic share');
+      return isZh()?(Math.round(share*1000)/10+'% 所有权权益'):(Math.round(share*1000)/10+'% ownership interest');
     }
     function validityPhrase(entity){
       var from=entity.valid_from?date(entity.valid_from):'',to=entity.valid_to?date(entity.valid_to):'';
@@ -427,6 +429,45 @@
     /* Identifiers blocked for the SAME recorded reason are ONE card, not N copies of
      * one sentence (GE ships five). A constant belongs once, and the count is the
      * fact the reader needs; the individual identifiers stay one expand away. */
+    function contextClockRows(row){
+      return [tr('Disclosure period: ','披露基准日：')+text(row.source_as_of,tr('not reported','未报告')),
+        tr('First known at: ','首次获知：')+text(row.known_at),
+        row.effective_interval_state==='disclosed_snapshot_only'?tr('Disclosure snapshot only; later ownership continuity is unestablished.','仅为披露快照；其后所有权持续性尚未确立。'):tr('Effective interval unestablished.','有效区间尚未确立。'),
+        tr('Source reuse rights: ','来源复用权利：')+(row.rights_state==='unknown'||!row.rights_state?tr('unknown','未知'):tr('see the admitted source record','见已准入来源记录'))];
+    }
+    function contextReceipt(row,lines){
+      var representations=evidenceList(row).map(function(item){return tr('Retained representation: ','保留的证据形态：')+(item.retained_representation==='reviewed_web_extract'?tr('reviewed web extract','已复核网页摘录'):item.retained_representation==='source_response_bytes'?tr('source response bytes','来源响应原始字节'):item.retained_representation==='reviewed_browser_extract'?tr('reviewed browser extract','已复核浏览器摘录'):item.retained_representation==='existing_owner_observation_extract'?tr('existing owner observation extract','现有所有者观测摘录'):tr('unestablished','尚未确立'))});
+      return'<details class="atlas-receipt"><summary>'+esc(tr('Show qualification, clocks and sources','显示限定条件、时钟与来源'))+'</summary><div class="atlas-receipt-body"><div class="atlas-code">'+esc(lines.concat(contextClockRows(row),representations,[evidenceCode(row)]).join('\n'))+'</div>'+evidenceLinks(row,tr('Open source disclosure','打开来源披露'))+'</div></details>';
+    }
+    function ownershipCaseCard(row){
+      var interest=n(row.ownership_interest),basis=row.accounting_basis==='equity_method'?tr('Equity method','权益法'):row.accounting_basis==='consolidated'?tr('Consolidated basis disclosed','已披露合并口径'):tr('Accounting basis unestablished','会计口径尚未确立');
+      var meta=[relationshipWord(row.relationship),interest==null?tr('Ownership interest unestablished','所有权权益尚未确立'):(Math.round(interest*1000)/10+'% '+tr('ownership interest','所有权权益')),basis,tr('Disclosure period: ','披露基准日：')+text(row.source_as_of,tr('not reported','未报告'))].join(' · ');
+      var limits=tr('Ownership interest is not revenue, workshare or distributable cash.','所有权权益不等于收入、工作份额或可分配现金。');
+      var lines=[tr('Exact entity: ','精确实体：')+text(row.entity_id),tr('Recipient attribution: ','收款方归属：')+(row.recipient_attribution==='reviewed_identifier_present'?tr('reviewed identifier on this entity; no award attribution here','该实体具有已核验标识；此处不归属授标'):tr('unestablished','尚未确立')),
+        tr('Revenue / workshare / cash capture: unestablished.','收入 / 工作份额 / 现金获取：尚未确立。')];
+      arr(row.documentary_counterparties).filter(obj).forEach(function(item){var share=n(item.ownership_interest);lines.push(tr('Same-source counterparty disclosure: ','同一来源的交易对方披露：')+text(item.name_as_printed)+(share==null?'':' · '+Math.round(share*1000)/10+'%')+' · '+tr('identity path unestablished in this view','本视图的身份路径尚未确立'))});
+      return'<article class="atlas-entity derived" data-archetype-case="ownership"><div class="atlas-entity-top"><div><strong class="atlas-entity-name">'+esc(text(row.canonical_name))+'</strong><span class="atlas-entity-meta">'+esc(meta)+'</span></div><span class="truth derived">'+esc(tr('Partial economics','经济关系部分确立'))+'</span></div><span class="atlas-entity-meta">'+esc(limits)+'</span>'+contextReceipt(row,lines)+'</article>';
+    }
+    function listingCaseCard(row){
+      var native=obj(row.native_identity)?row.native_identity:{},adr=native.security_kind==='adr',ratio=n(row.ordinary_shares_per_adr);
+      var research=obj(row.research_identity)&&row.research_identity.state==='source_supported_current_research'&&row.research_identity.scope==='government_revenue_identity_context'?row.research_identity:null;
+      var kind=adr?tr('ADR / depositary receipt','ADR / 存托凭证'):tr('Ordinary share','普通股');
+      var meta=[kind,text(native.venue),text(native.symbol),row.quote_currency?tr('Quote currency: ','报价币种：')+text(row.quote_currency):tr('Quote currency unestablished','报价币种尚未确立')].join(' · ');
+      var ratioLine=adr&&ratio!=null?tr('1 ADR represents '+ratio+' ordinary shares.','1份ADR代表'+ratio+'股普通股。'):tr('Ordinary share and depositary receipt remain distinct securities.','普通股与存托凭证保持为不同证券。');
+      var lines=[tr('Issuer registry: ','发行人登记机关：')+text(native.issuer_registry),tr('Native issuer identifier: ','原生发行人标识：')+text(native.issuer_native_id),tr('Printed source symbol: ','来源原文代码：')+text(native.symbol),
+        tr('Data OS listing admission: unestablished.','Data OS上市身份准入：尚未确立。'),tr('Price comparability / recipient attribution / economic capture: unestablished.','价格可比性 / 收款方归属 / 经济获取：尚未确立。')];
+      if(research){lines.push(tr('SEC filer CIK: ','SEC披露主体CIK：')+text(research.issuer_cik),tr('ADR ISIN: ','ADR ISIN：')+text(research.security_isin),tr('Underlying ISIN: ','标的普通股ISIN：')+text(research.underlying_isin),tr('Depositary / underlying source symbol: ','存托行 / 标的来源代码：')+text(research.depositary_as_printed)+' · '+text(research.underlying_symbol_as_printed)+' · '+text(research.underlying_venue_as_printed),tr('Existing CIK observation: ','现有CIK观测：')+text(research.mapping_owner_path)+' · '+text(research.mapping_snapshot),tr('Owner observation SHA-256: ','所有者观测SHA-256：')+text(research.mapping_owner_sha256),tr('Research identity first known: ','研究身份首次获知：')+text(research.known_at),tr('Current research identity only; historical eligibility, price coverage and award attribution remain unestablished.','仅支持当前研究身份；历史准入、价格覆盖与授标归属尚未确立。'));}
+      return'<article class="atlas-entity observed" data-archetype-case="'+(adr?'adr':'ordinary_share')+'"><div class="atlas-entity-top"><div><strong class="atlas-entity-name">'+esc(text(native.issuer_name_as_printed))+'</strong><span class="atlas-entity-meta">'+esc(meta)+'</span></div><span class="truth derived">'+esc(research?tr('Source-supported research identity','来源支持的研究身份'):tr('Source observation','来源观测'))+'</span></div><span class="atlas-entity-meta">'+esc(ratioLine)+'</span><span class="atlas-entity-meta">'+esc(tr('Listing admission and issuer capture are unestablished.','上市身份准入与发行人获取尚未确立。'))+'</span>'+contextReceipt(row,lines)+'</article>';
+    }
+    function archetypeCards(record){
+      var context=obj(record.archetype_context)?record.archetype_context:{};
+      if(context.state!=='partial')return'';
+      var ownership=arr(context.ownership_cases).filter(function(row){return obj(row)&&row.rights_state!=='denied'}).slice(0,8);
+      var listings=arr(context.listing_cases).filter(function(row){return obj(row)&&row.state==='source_observed'&&row.rights_state!=='denied'}).slice(0,8);
+      if(!ownership.length&&!listings.length)return'';
+      return'<div class="atlas-sub">'+esc(tr('Ownership and listing qualifications','所有权与上市身份限定条件'))+'</div><div class="atlas-entities">'+ownership.map(ownershipCaseCard).join('')+listings.map(listingCaseCard).join('')+'</div>';
+    }
+
     function unresolvedGroups(record){
       var order=[],byKey={};
       unresolved(record).forEach(function(row){
@@ -486,7 +527,7 @@
       return question()+chips(record)+chain(record)+
         '<p class="atlas-read">'+esc(readLine(record))+'</p>'+
         '<div class="stance"><b>'+esc(verdict[0])+'</b><span>'+esc(verdict[1])+'</span></div>'+
-        entityCards(record)+unresolvedCards(record)+historyCards(record)+remainingGaps(record)+
+        entityCards(record)+archetypeCards(record)+unresolvedCards(record)+historyCards(record)+remainingGaps(record)+
         '<div class="atlas-asof">'+esc(isZh()?('身份记录截至 '+date((header||{}).generated_at)):('Identity record as of '+date((header||{}).generated_at)))+'</div>'+
         cutReceipt()+
         '<div class="limit-copy">'+esc(tr('Identity paths only — no award, event or amount is attributed here. It cannot rank a company, size a position or trigger a trade.','仅为身份路径 — 此处不归属任何授标、事件或金额。不得为公司排序、调整仓位或触发交易。'))+'</div>';
@@ -506,9 +547,25 @@
       tone(host,isHistoric(record)?'is-historic':record.issuer_attribution==='reviewed'?null:'is-unresolved');
       host.innerHTML=recordHtml(record);
     }
+    function publishSubjects(){
+      if(typeof api.onSubjects!=='function')return;
+      var subjects=[];
+      if(loadState==='ok'&&obj(header)&&header.graph_status==='ready'&&/^gria1-[a-f0-9]{24}$/.test(text(header.content_id,''))){
+        Object.keys(index||{}).slice(0,128).forEach(function(key){
+          var record=index[key],context=obj(record.archetype_context)?record.archetype_context:{};
+          var cases=arr(context.ownership_cases).concat(arr(context.listing_cases)).filter(function(row){return obj(row)&&row.rights_state!=='denied'});
+          if(context.state!=='partial'||!cases.length)return;
+          var clocks=cases.map(function(row){return text(row.known_at,'')}).filter(Boolean).sort();
+          subjects.push({ticker:record.ticker,name:text(record.company_name,record.ticker),
+            known_at:clocks.length?clocks[clocks.length-1]:null,
+            source_generation_id:header.content_id,generated_at:header.generated_at});
+        });
+      }
+      api.onSubjects(subjects,loadState);
+    }
     function ensure(){
       if(pending)return pending;
-      if(typeof global.fetch!=='function'){loadState='unavailable';return Promise.resolve(false)}
+      if(typeof global.fetch!=='function'){loadState='unavailable';return Promise.resolve().then(function(){publishSubjects();return false})}
       loadState='loading';
       pending=global.fetch(ATLAS_PATH,{credentials:'same-origin'}).then(function(response){
         if(response.status===401||response.status===403)throw failure('locked');
@@ -518,8 +575,8 @@
         if(!obj(value)||value.contract!=='government_revenue_identity_atlas.v1'||!/^1\./.test(text(value.schema_version,'')))throw failure('invalid');
         header=value;index={};
         arr(value.issuers).filter(obj).forEach(function(row){var key=text(row.ticker,'').toUpperCase();if(key&&!index[key])index[key]=row});
-        loadState='ok';return true;
-      }).catch(function(error){header=null;index=null;loadState=(error&&error.code)||'unavailable';return false});
+        loadState='ok';publishSubjects();return true;
+      }).catch(function(error){header=null;index=null;loadState=(error&&error.code)||'unavailable';publishSubjects();return false});
       return pending;
     }
     function loadCompany(value){
@@ -531,11 +588,12 @@
     /* A member who signs in after the page loaded gets the path without a reload:
      * only the locked arm is retried, so a healthy cache is never refetched. */
     function bindAuthReload(){
-      function onAuth(){markAuthSettled();if(loadState!=='locked')return;pending=null;loadState='idle';if(ticker){var ticket=++epoch;render();ensure().then(function(){if(ticket===epoch)render()})}}
+      function onAuth(){markAuthSettled();if(loadState!=='locked')return;pending=null;loadState='idle';if(ticker){var ticket=++epoch;render();ensure().then(function(){if(ticket===epoch)render()})}else if(typeof api.onSubjects==='function')ensure()}
       if(global.MDXAuth&&typeof global.MDXAuth.onChange==='function')global.MDXAuth.onChange(onAuth);
       else if(typeof global.addEventListener==='function')global.addEventListener('mdx-auth',onAuth);
     }
     bindAuthReload();
+    if(typeof api.onSubjects==='function')ensure();
     return{loadCompany:loadCompany,invalidate:function(){epoch++;ticker=''},state:function(){return loadState}};
   };
 
@@ -815,7 +873,7 @@
       });
     }
     function bindAuthReload(){
-      function onAuth(){markAuthSettled();load();}
+      function onAuth(){markAuthSettled();if(api.authReloadOwner){loadEpoch++;listing=null;contentId=null;loadState='loading';if(typeof api.onRows==='function')api.onRows([],{status:'loading',content_id:null,total:0});return;}load();}
       if(global.MDXAuth&&typeof global.MDXAuth.onChange==='function')global.MDXAuth.onChange(onAuth);
       else if(typeof global.addEventListener==='function')global.addEventListener('mdx-auth',onAuth);
     }
@@ -1187,7 +1245,7 @@
       });
     }
     function bindAuthReload(){
-      function onAuth(){markAuthSettled();load();}
+      function onAuth(){markAuthSettled();if(api.authReloadOwner){loadEpoch++;listing=null;contentId=null;loadState='loading';if(typeof api.onRows==='function')api.onRows([],{status:'loading',content_id:null,total:0});return;}load();}
       if(global.MDXAuth&&typeof global.MDXAuth.onChange==='function')global.MDXAuth.onChange(onAuth);
       else if(typeof global.addEventListener==='function')global.addEventListener('mdx-auth',onAuth);
     }

@@ -30,15 +30,16 @@ def test_overlay_asset_is_paired_and_published_by_the_builder():
 
 
 def test_theme_opens_terminal_without_replacing_the_dashboard_document():
+    from rjsmin import jsmin
     for path in ("templates/theme.js", "site/theme.js"):
-        code = _read(path)
+        code = jsmin(_read(path), keep_bang_comments=True)
         assert "terminalEmbedUrl" in code
         assert "'&embed=dashboard'" in code
         assert "terminalExistingUrl" in code
-        assert "u.searchParams.set('embed', 'dashboard')" in code
-        assert "openTerminal(target.ticker, a, target.url)" in code
+        assert jsmin("u.searchParams.set('embed', 'dashboard')") in code
+        assert jsmin("openTerminal(target.ticker, a, target.url)") in code
         assert "window.MDXTerminalOverlay.open" in code
-        assert "e.metaKey || e.ctrlKey || e.shiftKey || e.altKey" in code
+        assert jsmin("e.metaKey || e.ctrlKey || e.shiftKey || e.altKey") in code
 
 
 def test_programmatic_stock_rows_use_the_same_portal():

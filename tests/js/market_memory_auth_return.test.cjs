@@ -3,9 +3,10 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const root=path.resolve(__dirname,'../..');
 const script=n=>fs.readFileSync(path.join(root,'templates',n),'utf8');
 const tick=()=>new Promise(r=>setImmediate(r));
-function setup(query, capsule) {
+function setup(query, capsule, legacy) {
  const ids=['mm-macro-state','mm-macro-query','mm-macro-episodes','mm-macro-note','mm-symbol-form','mm-symbol-input','mm-symbol-summary','mm-grid-list'];
  const elements=Object.fromEntries(ids.map(id=>[id,{innerHTML:'',textContent:'',value:'',events:{},addEventListener(t,f){this.events[t]=f;}}]));
+ if(legacy)elements['mmr-legacy']=legacy;
  const events={},windowEvents={},pending=[],stored={market_memory_ticker:'AAPL'};
  let lang='en',authChanged,opened=0,capsuleWrites=0;
  const location=new URL('https://mastermind-x.com/market_memory.html'+query);
@@ -251,3 +252,117 @@ for(const owner of ['theme','account']) {
   apply('zh');assert.equal(x.lang,'zh');apply('en');assert.equal(x.lang,'en');
  });
 }
+
+// U5 legacy demand: the retained page keeps the legacy study panels inside a
+// closed <details id="mmr-legacy">. Hidden panels must not start data reads
+// until that section is first opened; standalone pages keep the eager boot.
+function legacyDetails() {
+ const listeners={};
+ const el={addEventListener(t,f){(listeners[t]||(listeners[t]=[])).push(f);},hasAttribute(name){return name==='open'&&!!el.open;}};
+ let open=false;
+ Object.defineProperty(el,'open',{get:()=>open,set:v=>{v=!!v;if(v===open)return;open=v;(listeners.toggle||[]).forEach(f=>f());}});
+ return el;
+}
+const openLegacy=x=>{x.elements['mmr-legacy'].open=true;};
+const closeLegacy=x=>{x.elements['mmr-legacy'].open=false;};
+test('closed legacy section boots with zero hidden reads',async()=>{
+ const x=setup('?ticker=SPY&mm_issuer_input=SPY&mm_lang=zh',null,legacyDetails());await tick();
+ assert.equal(x.pending.length,0);
+ assert.equal(x.elements['mm-symbol-input'].value,'SPY');
+ assert.equal(x.location.searchParams.get('mm_lang'),'zh');
+});
+test('first open starts exactly the two legacy reads for the latest valid intent',async()=>{
+ const x=setup('?ticker=SPY',null,legacyDetails());await tick();
+ assert.equal(x.pending.length,0);
+ openLegacy(x);await tick();
+ assert.equal(x.pending.length,2);
+ assert.equal(x.pending.filter(p=>p.url.includes('/macro?')).length,1);
+ assert.equal(x.pending.filter(p=>p.url.endsWith('/symbol/SPY')).length,1);
+ replyLegacy(x.pending[0],200,{as_of:'M1',query:{},episodes:[],context_note:'CTX'});replyLegacy(x.pending[1],200,{ticker:'SPY',as_of:'S1',grids:{}});
+ await tick();
+ assert.match(x.elements['mm-macro-state'].textContent,/State through M1/);
+ assert.match(x.elements['mm-symbol-summary'].innerHTML,/SPY/);
+});
+test('repeated toggle while pending never duplicates an in-flight load',async()=>{
+ const x=setup('?ticker=SPY',null,legacyDetails());await tick();
+ assert.equal(x.pending.length,0);
+ openLegacy(x);await tick();assert.equal(x.pending.length,2);
+ closeLegacy(x);openLegacy(x);closeLegacy(x);openLegacy(x);await tick();
+ assert.equal(x.pending.length,2);
+});
+test('reopen of already loaded panels does not refetch',async()=>{
+ const x=setup('?ticker=SPY',null,legacyDetails());await tick();
+ assert.equal(x.pending.length,0);
+ openLegacy(x);await tick();
+ for(const item of x.pending)replyLegacy(item,200,{as_of:'M1',query:{},episodes:[],ticker:'SPY',grids:{}});
+ await tick();closeLegacy(x);openLegacy(x);await tick();
+ assert.equal(x.pending.length,2);
+ assert.match(x.elements['mm-macro-state'].textContent,/State through M1/);
+});
+test('closed popstate adopts the latest issuer and stale responses cannot revive',async()=>{
+ const x=setup('?ticker=SPY',null,legacyDetails());await tick();
+ assert.equal(x.pending.length,0);
+ openLegacy(x);await tick();
+ const spy=x.pending.find(p=>p.url.endsWith('/symbol/SPY'));
+ closeLegacy(x);
+ x.navigate('?ticker=AAPL&mm_issuer_input=AAPL');await tick();
+ assert.equal(x.pending.length,2,'closing after first open must defer the new issuer read');
+ assert.equal(x.elements['mm-symbol-input'].value,'AAPL');
+ replyLegacy(spy,200,{ticker:'OLD_SPY',as_of:'OLD',grids:{}});
+ await tick();
+ assert.equal(JSON.stringify(x.elements).includes('OLD_SPY'),false);
+ openLegacy(x);await tick();
+ assert.equal(x.pending.filter(p=>p.url.endsWith('/symbol/AAPL')).length,1,'reopen fetches only the latest issuer');
+ assert.equal(x.pending.filter(p=>p.url.endsWith('/symbol/SPY')).length,1,'the superseded request is never repeated');
+});
+for(const raw of ['a/b',''])test('closed popstate to invalid issuer '+JSON.stringify(raw)+' adopts it without fallback reads',async()=>{
+ const x=setup('?ticker=SPY&mm_issuer_input=SPY',null,legacyDetails());await tick();
+ x.navigate('?ticker=AAPL&mm_issuer_input='+encodeURIComponent(raw));await tick();
+ assert.equal(x.pending.length,0);
+ assert.equal(x.elements['mm-symbol-input'].value,raw);
+ assert.match(x.elements['mm-symbol-summary'].innerHTML,/Check the ticker/);
+ openLegacy(x);await tick();
+ assert.equal(x.pending.filter(p=>p.url.includes('/symbol/')).length,0);
+});
+test('sign-out stays immediate while closed and sign-in fetches nothing until open',async()=>{
+ const x=setup('?ticker=SPY',null,legacyDetails());await tick();
+ assert.equal(x.pending.length,0);
+ x.auth(null);await tick();
+ assert.match(x.elements['mm-macro-state'].textContent,/Sign in required/);
+ assert.match(x.elements['mm-symbol-summary'].innerHTML,/cleared when you sign out/);
+ x.auth({id:'fixture'});await tick();
+ assert.equal(x.pending.length,0,'sign-in while closed must not fetch hidden panels');
+ openLegacy(x);await tick();
+ assert.equal(x.pending.length,2,'the next open performs the needed authenticated loads');
+});
+test('closed language redraw stays fetch-free and the restored language is retained',async()=>{
+ const x=setup('?ticker=SPY&mm_lang=zh',null,legacyDetails());await tick();
+ assert.equal(x.pending.length,0);
+ x.setLang('en');await tick();
+ assert.equal(x.pending.length,0);
+ assert.equal(x.lang,'en');
+ assert.equal(x.location.searchParams.get('mm_lang'),'en');
+ openLegacy(x);await tick();
+ assert.equal(x.pending.length,2);
+ for(const item of x.pending)replyLegacy(item,200,{as_of:'M1',query:{},episodes:[],ticker:'SPY',grids:{}});
+ await tick();closeLegacy(x);
+ x.setLang('zh');await tick();
+ assert.equal(x.pending.length,2,'language changes never refetch');
+ assert.match(x.elements['mm-symbol-summary'].innerHTML,/事件记忆/);
+});
+test('sign-in after a previously opened section closes defers refreshed legacy reads',async()=>{
+ const x=setup('?ticker=SPY',null,legacyDetails());await tick();
+ openLegacy(x);await tick();
+ for(const item of x.pending)replyLegacy(item,200,{as_of:'M1',query:{},episodes:[],ticker:'SPY',grids:{}});
+ await tick();closeLegacy(x);
+ x.auth(null);await tick();
+ assert.match(x.elements['mm-symbol-summary'].innerHTML,/cleared when you sign out/);
+ x.auth({id:'fixture'});await tick();
+ assert.equal(x.pending.length,2,'sign-in must not read a section that has closed again');
+ openLegacy(x);await tick();
+ assert.equal(x.pending.length,4,'opening performs exactly the two required refreshed reads');
+});
+test('pages without the legacy section keep the eager boot reads',async()=>{
+ const x=setup('?ticker=SPY');await tick();
+ assert.equal(x.pending.length,2);
+});

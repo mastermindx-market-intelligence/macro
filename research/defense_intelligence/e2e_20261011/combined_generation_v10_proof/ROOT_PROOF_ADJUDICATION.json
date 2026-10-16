@@ -1,0 +1,24 @@
+{
+  "scope": "Local immutable candidate-proof acceptance only; protected CI, publication, installation and independent customer acceptance remain distinct.",
+  "source_checkout": "f0a1d8db6992ca2db4d2072d794f424fc563dc2e",
+  "receipt_identity": "323c6eb5827baabdba1690ef8bd255977a03972512d999fb8c768a3e4e52820e",
+  "collected": 105,
+  "passed": 104,
+  "skipped": [
+    {
+      "test": "test_covered_row_that_issues_leaves_unaccounted_by_construction",
+      "reason": "no unaccounted rows to exercise"
+    }
+  ],
+  "source_dependencies": 7470,
+  "outputs": 109,
+  "generation": {
+    "ledger_line_count": 642,
+    "projection_generated_at": "2026-10-14T03:12:45.197758+00:00",
+    "queue_content_id": "grcq1-8f1cc489fdf1e14384e038c9",
+    "state_sha256": "2c889096175c738bb09c791f414b5acd08594735848ea0b822a7a7c01e58c9de"
+  },
+  "integrity": "Sealed collection, JUnit and execution log copied byte-exact after verifying producer hashes and sizes.",
+  "independent_startup_review": "defense-v10-subject-review-01a13300-a remains pending; no review acceptance claimed.",
+  "effect": "No CAS, production publication or installation performed."
+}
