@@ -131,8 +131,8 @@
     "comparability": "COMPARABLE",
     "deltas": [
       {
-        "current_value": 0.710668008577656,
-        "delta": -0.2266,
+        "current_value": 0.7086296090576383,
+        "delta": -0.2287,
         "metric_id": "leading_tier_momentum_6m",
         "note": "same method version; numeric comparison permitted when both values are present",
         "prior_value": 0.9372992907410378
@@ -166,27 +166,21 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [
-      "business_cycle:lagging_tier_diffusion:9efee38b6e3c5134",
-      "business_cycle:lagging_tier_index:dba76648ab70fd40",
-      "business_cycle:lagging_tier_momentum_6m:ca5f4ca73a1f2144",
-      "business_cycle:leading_tier_index:aba8d2a2703b9473",
-      "business_cycle:leading_tier_momentum_6m:0433fe0d4b94ef05"
-    ],
-    "correction_state": "superseded",
-    "note": "Same reference period as the predecessor print, but one or more owner-native tier fields changed value: this print supersedes the prior one as a revision.",
-    "predecessor_generation_id": "business_activity-US-8794e22a07402dff"
+    "changed_fingerprints": [],
+    "correction_state": "none",
+    "note": "Same reference period as the predecessor print; no tracked tier field changed value (no-change republication).",
+    "predecessor_generation_id": "business_activity-US-8c23894a0a9d1679"
   },
   "drivers": {
     "balance_sheet": [],
     "rate_side": []
   },
   "generation": {
-    "built_at": "2026-10-15T05:14:07Z",
+    "built_at": "2026-10-16T15:03:32Z",
     "calculation_as_of": "2026-10-31",
-    "code_version": "39d00535d992abc7b707b5b53695cbef0ae907ee",
-    "content_sha256": "16700a75dc3c9b47ef91f5357788dab419018a628e352c0ac20d984d85080570",
-    "generation_id": "business_activity-US-16700a75dc3c9b47",
+    "code_version": "8c2e7e5e0c471bbac7fe7e0dd7ad4595231b78d0",
+    "content_sha256": "147b3bfe7c7ab7075abe38abe73ede0fd342f0ca42f4d90210a61d1119dcb8ae",
+    "generation_id": "business_activity-US-147b3bfe7c7ab707",
     "producer": "engine.market_os.macro_workspaces.business_activity",
     "rendered_at": null
   },
@@ -282,8 +276,8 @@
         "horizon": "current",
         "implication_id": "leading_tier_read",
         "text": {
-          "en": "Leading tier: 6-month momentum 0.710668008577656, direction rising, breadth 75.0 (share of legs rising over the diffusion window, 0-100).",
-          "zh": "领先层：6个月动量 0.710668008577656，方向 rising，广度 75.0（扩散窗口内上升分项占比，0-100）。"
+          "en": "Leading tier: 6-month momentum 0.7086296090576383, direction rising, breadth 75.0 (share of legs rising over the diffusion window, 0-100).",
+          "zh": "领先层：6个月动量 0.7086296090576383，方向 rising，广度 75.0（扩散窗口内上升分项占比，0-100）。"
         },
         "trace_ref": "data/regime/latest.json#business_cycle.tiers.leading"
       },
@@ -453,7 +447,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 95.32111076764258,
+        "value": 95.31907236812256,
         "value_type": "index"
       },
       {
@@ -489,7 +483,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 0.710668008577656,
+        "value": 0.7086296090576383,
         "value_type": "number"
       },
       {
@@ -525,7 +519,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 0.8171915735969679,
+        "value": 0.8166091737341058,
         "value_type": "number"
       },
       {

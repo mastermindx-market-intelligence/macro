@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "produced_by": "sentinel",
-  "produced_at": "2026-10-15T10:04:59Z",
-  "as_of": "2026-10-15",
+  "produced_at": "2026-10-16T19:22:09Z",
+  "as_of": "2026-10-16",
   "plan_status": "pass",
   "publish_enabled": false,
   "auditor_strict": true,
   "counts": {
-    "items": 44,
-    "passed": 42,
+    "items": 39,
+    "passed": 37,
     "quarantined": 2,
     "quarantined_policy": 2,
     "quarantined_overflow": 0,
@@ -20,15 +20,15 @@
   },
   "quarantined": [
     {
-      "id": "post-meagan-013",
-      "account": "meagan",
-      "slot": "D1-S13",
+      "id": "post-kelly-012",
+      "account": "kelly",
+      "slot": "D1-S12",
       "type": "macro",
       "cashtag": "",
       "headline": "",
       "class": "policy",
       "reasons": [
-        "near_dup:post-founder-016"
+        "near_dup:post-sophia-012"
       ]
     },
     {
@@ -37,7 +37,7 @@
       "slot": "D1-S3",
       "type": "macro",
       "cashtag": "",
-      "headline": "",
+      "headline": "Before New York wakes, the slowdown case isn't in these prints.",
       "class": "policy",
       "reasons": [
         "near_dup:post-founder-016"
@@ -46,51 +46,27 @@
   ],
   "passed": [
     {
-      "id": "post-flagship-003",
-      "account": "flagship",
-      "slot": "D1-S3",
-      "type": "signal",
-      "cashtag": "$NI",
-      "headline": "$NI keeps finding buyers at the same level"
-    },
-    {
-      "id": "post-flagship-006",
-      "account": "flagship",
-      "slot": "D1-S6",
-      "type": "watchlist",
-      "cashtag": "$PTON",
-      "headline": ""
-    },
-    {
       "id": "post-flagship-010",
       "account": "flagship",
       "slot": "D1-S10",
       "type": "receipt",
-      "cashtag": "$HLNE",
+      "cashtag": "$ELF",
       "headline": ""
     },
     {
-      "id": "post-flagship-011",
+      "id": "post-flagship-014",
       "account": "flagship",
-      "slot": "D1-S11",
+      "slot": "D1-S14",
       "type": "chart",
-      "cashtag": "$EPAM",
+      "cashtag": "$SBRA",
       "headline": ""
     },
     {
-      "id": "post-flagship-016",
+      "id": "post-flagship-015",
       "account": "flagship",
-      "slot": "D1-S16",
-      "type": "chart",
-      "cashtag": "$AFG",
-      "headline": "$AFG is pressing the entry again."
-    },
-    {
-      "id": "post-flagship-019",
-      "account": "flagship",
-      "slot": "D1-S19",
-      "type": "chart",
-      "cashtag": "$ECG",
+      "slot": "D1-S15",
+      "type": "receipt",
+      "cashtag": "$FIBK",
       "headline": ""
     },
     {
@@ -98,48 +74,24 @@
       "account": "flagship",
       "slot": "D1-S22",
       "type": "chart",
-      "cashtag": "$WMG",
+      "cashtag": "$APG",
       "headline": ""
     },
     {
-      "id": "post-flagship-027",
+      "id": "post-flagship-024",
       "account": "flagship",
-      "slot": "D1-S27",
+      "slot": "D1-S24",
       "type": "chart",
-      "cashtag": "$EGBN",
+      "cashtag": "$WWD",
       "headline": ""
     },
     {
-      "id": "post-flagship-034",
+      "id": "post-conf-flagship-002",
       "account": "flagship",
-      "slot": "D1-S34",
-      "type": "receipt",
-      "cashtag": "$ICHR",
-      "headline": ""
-    },
-    {
-      "id": "post-flagship-049",
-      "account": "flagship",
-      "slot": "D1-S49",
-      "type": "chart",
-      "cashtag": "$LPG",
-      "headline": ""
-    },
-    {
-      "id": "post-flagship-055",
-      "account": "flagship",
-      "slot": "D1-S55",
-      "type": "chart",
-      "cashtag": "$DOCS",
-      "headline": ""
-    },
-    {
-      "id": "post-conf-flagship-001",
-      "account": "flagship",
-      "slot": "CONF-01",
+      "slot": "CONF-02",
       "type": "signal",
-      "cashtag": "$LLY",
-      "headline": "$LLY just lined up a pattern we track."
+      "cashtag": "$SW",
+      "headline": "$SW just lined up a pattern we track."
     },
     {
       "id": "post-theme-003",
@@ -147,15 +99,31 @@
       "slot": "D1-S2",
       "type": "theme_list",
       "cashtag": "$CORZ",
-      "headline": "Crypto & Blockchain selling off, -4.6% avg on Wednesday"
+      "headline": "Crypto & Blockchain selling off, -4.6% avg on Thursday"
     },
     {
       "id": "post-congress-001",
       "account": "flagship",
       "slot": "D1-S9",
       "type": "congress",
-      "cashtag": "$BHE",
+      "cashtag": "$CACI",
       "headline": ""
+    },
+    {
+      "id": "post-founder-001",
+      "account": "founder",
+      "slot": "D1-S1",
+      "type": "chart",
+      "cashtag": "$ESI",
+      "headline": ""
+    },
+    {
+      "id": "post-founder-007",
+      "account": "founder",
+      "slot": "D1-S7",
+      "type": "receipt",
+      "cashtag": "$FIBK",
+      "headline": "$FIBK keeps failing at the same ceiling."
     },
     {
       "id": "post-founder-016",
@@ -163,87 +131,87 @@
       "slot": "D1-S16",
       "type": "macro",
       "cashtag": "",
-      "headline": ""
+      "headline": "Growth is holding. Inflation is still warm."
     },
     {
       "id": "post-founder-032",
       "account": "founder",
       "slot": "D1-S32",
       "type": "receipt",
-      "cashtag": "$MD",
+      "cashtag": "$MTZ",
       "headline": ""
     },
     {
-      "id": "post-founder-048",
+      "id": "post-founder-046",
       "account": "founder",
-      "slot": "D1-S48",
-      "type": "watchlist",
-      "cashtag": "$LPG",
-      "headline": ""
-    },
-    {
-      "id": "post-founder-053",
-      "account": "founder",
-      "slot": "D1-S53",
-      "type": "signal",
-      "cashtag": "$NWSA",
-      "headline": ""
+      "slot": "D1-S46",
+      "type": "chart",
+      "cashtag": "$WWD",
+      "headline": "$WWD is back at the decision point."
     },
     {
       "id": "post-congress-002",
       "account": "founder",
       "slot": "D1-S19",
       "type": "congress",
-      "cashtag": "$CACI",
+      "cashtag": "$ON",
       "headline": ""
     },
     {
-      "id": "post-meagan-012",
+      "id": "post-meagan-013",
       "account": "meagan",
-      "slot": "D1-S12",
-      "type": "receipt",
-      "cashtag": "$NWS",
-      "headline": "$NWS rejected at 33 again"
+      "slot": "D1-S13",
+      "type": "macro",
+      "cashtag": "",
+      "headline": ""
     },
     {
-      "id": "post-meagan-015",
+      "id": "post-meagan-019",
       "account": "meagan",
-      "slot": "D1-S15",
+      "slot": "D1-S19",
+      "type": "signal",
+      "cashtag": "$NWSA",
+      "headline": ""
+    },
+    {
+      "id": "post-meagan-022",
+      "account": "meagan",
+      "slot": "D1-S22",
       "type": "chart",
-      "cashtag": "$OVV",
+      "cashtag": "$WH",
+      "headline": "$WH keeps finding buyers at 73"
+    },
+    {
+      "id": "post-meagan-029",
+      "account": "meagan",
+      "slot": "D1-S29",
+      "type": "chart",
+      "cashtag": "$LOPE",
       "headline": ""
     },
     {
-      "id": "post-meagan-028",
+      "id": "post-meagan-038",
       "account": "meagan",
-      "slot": "D1-S28",
+      "slot": "D1-S38",
       "type": "receipt",
-      "cashtag": "$AA",
+      "cashtag": "$JLL",
       "headline": ""
     },
     {
-      "id": "post-meagan-043",
+      "id": "post-meagan-045",
       "account": "meagan",
-      "slot": "D1-S43",
-      "type": "signal",
-      "cashtag": "$MZTI",
-      "headline": ""
+      "slot": "D1-S45",
+      "type": "receipt",
+      "cashtag": "$SFM",
+      "headline": "Sprouts Farmers Market $SFM long setup"
     },
     {
-      "id": "post-meagan-044",
+      "id": "post-meagan-051",
       "account": "meagan",
-      "slot": "D1-S44",
-      "type": "watchlist",
-      "cashtag": "$RKT",
-      "headline": "$RKT is back at its low for the year"
-    },
-    {
-      "id": "post-meagan-049",
-      "account": "meagan",
-      "slot": "D1-S49",
-      "type": "signal",
-      "cashtag": "$CSGP",
-      "headline": "$CSGP keeps getting turned away at the same price"
+      "slot": "D1-S51",
+      "type": "chart",
+      "cashtag": "$NWE",
+      "headline": "$NWE's highest weekly close in 5 years"
     },
     {
       "id": "post-theme-004",
@@ -251,119 +219,119 @@
       "slot": "D1-S5",
       "type": "theme_list",
       "cashtag": "$DOCN",
-      "headline": "Cloud Computing selling off, -3.6% avg on Wednesday"
+      "headline": "Cloud Computing selling off, -3.6% avg on Thursday"
     },
     {
       "id": "post-congress-003",
       "account": "meagan",
       "slot": "D1-S6",
       "type": "congress",
-      "cashtag": "$NXPI",
+      "cashtag": "$RIG",
       "headline": ""
     },
     {
-      "id": "post-sophia-006",
+      "id": "post-sophia-008",
       "account": "sophia",
-      "slot": "D1-S6",
+      "slot": "D1-S8",
+      "type": "receipt",
+      "cashtag": "$FG",
+      "headline": ""
+    },
+    {
+      "id": "post-sophia-012",
+      "account": "sophia",
+      "slot": "D1-S12",
+      "type": "macro",
+      "cashtag": "",
+      "headline": "The slowdown story still lacks labor-market confirmation"
+    },
+    {
+      "id": "post-sophia-043",
+      "account": "sophia",
+      "slot": "D1-S43",
       "type": "chart",
-      "cashtag": "$AMG",
+      "cashtag": "$WMG",
       "headline": ""
     },
     {
-      "id": "post-sophia-019",
+      "id": "post-sophia-054",
       "account": "sophia",
-      "slot": "D1-S19",
-      "type": "signal",
-      "cashtag": "$UNFI",
+      "slot": "D1-S54",
+      "type": "receipt",
+      "cashtag": "$JLL",
       "headline": ""
     },
     {
-      "id": "post-sophia-029",
+      "id": "post-mover-002",
       "account": "sophia",
-      "slot": "D1-S29",
-      "type": "chart",
-      "cashtag": "$MDU",
-      "headline": "The $MDU reclaim starts at 18.8"
-    },
-    {
-      "id": "post-sophia-039",
-      "account": "sophia",
-      "slot": "D1-S39",
-      "type": "chart",
-      "cashtag": "$EPAM",
-      "headline": ""
+      "slot": "D1-S16",
+      "type": "mover",
+      "cashtag": "$PSKY",
+      "headline": "$PSKY -23.8% on Thursday"
     },
     {
       "id": "post-congress-004",
       "account": "sophia",
-      "slot": "D1-S16",
+      "slot": "D1-S21",
       "type": "congress",
-      "cashtag": "$OLN",
+      "cashtag": "$DVN",
       "headline": ""
     },
     {
-      "id": "post-kelly-037",
+      "id": "post-kelly-026",
       "account": "kelly",
-      "slot": "D1-S37",
-      "type": "receipt",
-      "cashtag": "$VNO",
-      "headline": ""
-    },
-    {
-      "id": "post-kelly-048",
-      "account": "kelly",
-      "slot": "D1-S48",
-      "type": "watchlist",
-      "cashtag": "$NBIX",
-      "headline": "$NBIX still has work to do"
-    },
-    {
-      "id": "post-kelly-052",
-      "account": "kelly",
-      "slot": "D1-S52",
+      "slot": "D1-S26",
       "type": "chart",
-      "cashtag": "$AEE",
+      "cashtag": "$XPO",
       "headline": ""
     },
     {
-      "id": "post-theme-005",
+      "id": "post-kelly-031",
       "account": "kelly",
-      "slot": "D1-S3",
-      "type": "theme_list",
-      "cashtag": "$EOSE",
-      "headline": "Energy Renewable selling off, -3.6% avg on Wednesday"
+      "slot": "D1-S31",
+      "type": "receipt",
+      "cashtag": "$AA",
+      "headline": ""
+    },
+    {
+      "id": "post-kelly-035",
+      "account": "kelly",
+      "slot": "D1-S35",
+      "type": "chart",
+      "cashtag": "$PTON",
+      "headline": ""
     },
     {
       "id": "post-insider-005",
       "account": "kelly",
       "slot": "D1-S9",
       "type": "insider",
-      "cashtag": "$IIPR",
+      "cashtag": "$SAR",
       "headline": ""
     },
     {
-      "id": "post-cici-019",
+      "id": "post-cici-016",
       "account": "cici",
-      "slot": "D1-S19",
-      "type": "chart",
-      "cashtag": "$IDA",
-      "headline": "For $IDA, 守住才算 (only the hold counts)."
+      "slot": "D1-S16",
+      "type": "receipt",
+      "cashtag": "$AA",
+      "headline": "The $AA long never activated"
     },
     {
-      "id": "post-cici-034",
+      "id": "post-cici-041",
       "account": "cici",
-      "slot": "D1-S34",
-      "type": "watchlist",
-      "cashtag": "$ACHR",
+      "slot": "D1-S41",
+      "type": "chart",
+      "cashtag": "$DOCS",
+      "headline": "Doximity, $DOCS, at the 关键位 (key level)"
+    },
+    {
+      "id": "post-cici-055",
+      "account": "cici",
+      "slot": "D1-S55",
+      "type": "chart",
+      "cashtag": "$XOM",
       "headline": ""
-    },
-    {
-      "id": "post-cici-043",
-      "account": "cici",
-      "slot": "D1-S43",
-      "type": "chart",
-      "cashtag": "$COKE",
-      "headline": "Coca-Cola Consolidated, $COKE, has one line to clear"
     },
     {
       "id": "post-theme-006",
@@ -371,20 +339,12 @@
       "slot": "D1-S2",
       "type": "theme_list",
       "cashtag": "$WOLF",
-      "headline": "Semiconductors selling off, -4.9% avg on Wednesday"
-    },
-    {
-      "id": "post-insider-007",
-      "account": "mastermind_news",
-      "slot": "D1-S1",
-      "type": "insider",
-      "cashtag": "$HEI",
-      "headline": ""
+      "headline": "Semiconductors selling off, -4.9% avg on Thursday"
     }
   ],
   "checks": {
     "near_dup": {
-      "pairs_checked": 736,
+      "pairs_checked": 596,
       "hits": 2,
       "shared_media_hits": 0
     },
@@ -431,7 +391,7 @@
       "cherry_pick_detected": false
     },
     "stale_receipts": {
-      "age_days": 1,
+      "age_days": 2,
       "max": 7
     },
     "kill_switch": {
@@ -462,7 +422,7 @@
       "graduate_after_days": 21,
       "weeks_1_2_days": 5,
       "weeks_3_4_days": 10,
-      "as_of": "2026-10-15",
+      "as_of": "2026-10-16",
       "as_of_usable": true,
       "base": {
         "max_posts_per_account_per_day": null,
@@ -478,7 +438,7 @@
       "accounts": {
         "flagship": {
           "created": "2026-07-24",
-          "age_days": 83,
+          "age_days": 84,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -591,7 +551,7 @@
         },
         "founder": {
           "created": "2026-07-27",
-          "age_days": 80,
+          "age_days": 81,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -613,7 +573,7 @@
         },
         "meagan": {
           "created": "2026-07-28",
-          "age_days": 79,
+          "age_days": 80,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -635,7 +595,7 @@
         },
         "sophia": {
           "created": "2026-07-28",
-          "age_days": 79,
+          "age_days": 80,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -657,7 +617,7 @@
         },
         "kelly": {
           "created": "2026-07-28",
-          "age_days": 79,
+          "age_days": 80,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -679,7 +639,7 @@
         },
         "cici": {
           "created": "2026-07-28",
-          "age_days": 79,
+          "age_days": 80,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -701,7 +661,7 @@
         },
         "mastermind_news": {
           "created": "2026-08-02",
-          "age_days": 74,
+          "age_days": 75,
           "tier": "graduated",
           "enabled": true,
           "caps": {

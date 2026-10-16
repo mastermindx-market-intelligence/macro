@@ -7503,3 +7503,15 @@
 {"date": "2026-10-14", "ticker": "ACAD", "score": 0.0, "percentile": 0.06707317073170732, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-10-14", "ticker": "GRAB", "score": 10.0, "percentile": 0.4268292682926829, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-10-14", "ticker": "ABR", "score": 0.0, "percentile": 0.06707317073170732, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-14", "ticker": "EDU", "score": 45.0, "percentile": 0.7560240963855421, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-14", "ticker": "KVYO", "score": 70.0, "percentile": 0.9578313253012049, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-14", "ticker": "RHHBY", "score": 6.0, "percentile": 0.1716867469879518, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-14", "ticker": "CNX", "score": 9.0, "percentile": 0.34036144578313254, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-14", "ticker": "DUK", "score": 25.0, "percentile": 0.5481927710843374, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-14", "ticker": "PCOR", "score": 37.0, "percentile": 0.6355421686746988, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-14", "ticker": "FIVE", "score": 13.0, "percentile": 0.5120481927710844, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-14", "ticker": "BBY", "score": 10.0, "percentile": 0.40963855421686746, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-14", "ticker": "DEI", "score": 0.0, "percentile": 0.060240963855421686, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-14", "ticker": "CNS", "score": 0.0, "percentile": 0.060240963855421686, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-14", "ticker": "ORLY", "score": 55.0, "percentile": 0.8734939759036144, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-14", "ticker": "PTGX", "score": 33.0, "percentile": 0.5843373493975904, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}

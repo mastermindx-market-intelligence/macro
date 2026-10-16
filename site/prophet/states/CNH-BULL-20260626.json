@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CNH-BULL-20260626",
-  "asof": "2026-10-15",
+  "asof": "2026-10-16",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
   "management_confidence": 57.3,
@@ -14,13 +14,13 @@
     "progress": 48.0,
     "pace": 29.8,
     "retention": 50.2,
-    "overlay": 58.9
+    "overlay": 59.0
   },
   "geometry": {
     "dist_to_stop_r": 1.638,
     "dist_to_t1_r": 0.862,
     "dist_to_t2_r": 2.362,
-    "horizon_pct_used": 182.2,
+    "horizon_pct_used": 184.4,
     "p1": 0.425,
     "p2": 0.2125,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-21",
   "_first_t1_ts": "2026-09-03",
   "_first_t2_ts": null,
-  "days_elapsed": 82,
-  "tau": 1.8222
+  "days_elapsed": 83,
+  "tau": 1.8444
 }
