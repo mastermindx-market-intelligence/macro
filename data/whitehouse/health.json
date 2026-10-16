@@ -1,15 +1,15 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-15T22:16:44.549289+00:00",
-  "posts_seen": 10,
-  "seen_total": 293,
+  "as_of": "2026-10-16T01:20:00.275180+00:00",
+  "posts_seen": 11,
+  "seen_total": 294,
   "evaluated": 1,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-10-15-its-not-a-socialist-revolution-its-misery-starvation-and-death",
-      "importance": 5,
+      "id": "wh-2026-10-15-congressional-bills-s-240-s-283-and-s-2403-signed-into-law",
+      "importance": 15,
       "activated": false,
       "degraded_reason": "served_by:deepseek"
     }

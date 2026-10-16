@@ -12,7 +12,7 @@ import pytest
 import collectors.tiingo_archive as a
 from scripts.tiingo_materialize import materialize_one
 from scripts.tiingo_research_query import (
-    bounded_json, capture_ref, discover, main, query,
+    bounded_json, capture_ref, discover, main, query, compare_statements,
 )
 
 NOW = "2026-10-09T12:00:00Z"
@@ -428,3 +428,122 @@ def test_non_boats_cannot_set_source_silence_threshold(lake):
             observed_before=CUTOFF, acknowledge_hindsight=True,
             source_silence_threshold_ms=2000, check_mount=False,
         )
+
+
+def comparison_report(values, release="2024-02-01", *, permanent=None, quarter=4):
+    row = {"date": release, "year": 2023, "quarter": quarter,
+           "statementData": {"incomeStatement": [
+               {"dataCode": code, "value": value} for code, value in values.items()
+           ]}}
+    if permanent is not None:
+        row["permaTicker"] = permanent
+    return row
+
+
+def comparison_capture(lake, reports, as_reported, *, symbol="jpm"):
+    params = {"asReported": str(as_reported).lower(),
+              "startDate": "2023-01-01", "endDate": "2026-10-09"}
+    saved = lake.store_response(
+        "fund-statements", symbol, a.request_path("fund-statements", symbol, params),
+        json.dumps(reports).encode(), received_at="2026-10-12T12:00:00Z",
+    )
+    receipt = next(json.loads(p.read_text()) for p in (lake.root / "receipts").rglob("*.json")
+                   if json.loads(p.read_text())["receipt_id"] == saved["receipt_id"])
+    assert materialize_one(lake.root, receipt, free_floor=0)["status"] == "WRITTEN"
+    return "2026-10-12:" + saved["receipt_id"]
+
+
+def compare_captures(lake, left, right, **kw):
+    args = dict(vendor_symbol="jpm", as_reported_capture=left, restated_capture=right,
+                start="2023-01-01", end="2026-10-09",
+                observed_before="2026-10-13T00:00:00Z",
+                acknowledge_hindsight=True, check_mount=False)
+    args.update(kw)
+    return compare_statements(lake.root, **args)
+
+
+def test_comparison_preserves_values_missing_metrics_release_labels_and_lineage(lake):
+    left = comparison_capture(lake, [comparison_report({"income": 42, "zero": 0, "null": None, "leftOnly": 5})], True)
+    right = comparison_capture(lake, [comparison_report({"income": 43, "zero": 0, "null": 0, "rightOnly": 6},
+                                  release="2024-02-02")], False)
+    out = compare_captures(lake, left, right)
+    assert out["network"] is out["writes"] is out["key_read"] is False
+    result = out["statement_comparison"]
+    assert result["comparison_counts"] == {
+        "SAME_VENDOR_VALUE": 1, "DIFFERENT_VENDOR_VALUE": 2,
+        "ONLY_IN_AS_REPORTED_CAPTURE": 1, "ONLY_IN_RESTATED_CAPTURE": 1,
+        "AMBIGUOUS_RELEASES": 0, "VENDOR_IDENTITY_CONFLICT": 0,
+    }
+    row = next(r for r in result["comparison_rows"] if r["metric_code"] == "income")
+    assert row["as_reported_rows"][0]["statement_public_release_date_vendor"] == "2024-02-01"
+    assert row["restated_rows"][0]["statement_public_release_date_vendor"] == "2024-02-02"
+    assert row["as_reported_rows"][0]["source_receipt_id"] == left.split(":")[1]
+    assert row["restated_rows"][0]["source_receipt_id"] == right.split(":")[1]
+    for key in ("historical_known_at_proven", "historical_identity_admitted",
+                "pit_backtest_eligible", "revision_event_or_materiality_proven"):
+        assert result[key] is False
+
+
+def test_multiple_release_claims_are_reported_without_silent_latest_selection(lake):
+    left = comparison_capture(lake, [comparison_report({"income": 1}), comparison_report({"income": 2}, "2024-03-01")], True)
+    right = comparison_capture(lake, [comparison_report({"income": 3})], False)
+    row = compare_captures(lake, left, right)["statement_comparison"]["comparison_rows"][0]
+    assert row["comparison_status"] == "AMBIGUOUS_RELEASES"
+    assert len(row["as_reported_rows"]) == 2
+
+
+def test_conflicting_vendor_permanent_ids_are_not_compared_as_one_security(lake):
+    left = comparison_capture(lake, [comparison_report({"income": 1}, permanent="first")], True)
+    right = comparison_capture(lake, [comparison_report({"income": 2}, permanent="second")], False)
+    row = compare_captures(lake, left, right)["statement_comparison"]["comparison_rows"][0]
+    assert row["comparison_status"] == "VENDOR_IDENTITY_CONFLICT"
+
+
+@pytest.mark.parametrize("bad", ["dimension", "identity", "cutoff", "hindsight", "cap", "corrupt"])
+def test_invalid_comparisons_fail_without_partial_output(lake, bad):
+    left = comparison_capture(lake, [comparison_report({"income": 1})], True)
+    right = comparison_capture(lake, [comparison_report({"income": 2})], bad == "dimension",
+                    symbol="other" if bad == "identity" else "jpm")
+    kw = {}
+    if bad == "cutoff":
+        kw["observed_before"] = "2026-10-12T11:59:59Z"
+    if bad == "hindsight":
+        kw["acknowledge_hindsight"] = False
+    if bad == "cap":
+        kw["max_rows"] = 0
+    if bad == "corrupt":
+        raw = next((lake.root / "raw").rglob("*.gz"))
+        raw.write_bytes(b"corrupt")
+    with pytest.raises(ValueError):
+        compare_captures(lake, left, right, **kw)
+
+
+def test_cli_uses_existing_reader_without_network_credentials_or_archive_writes(lake, monkeypatch, capsys):
+    left = comparison_capture(lake, [comparison_report({"income": 1})], True)
+    right = comparison_capture(lake, [comparison_report({"income": 2})], False)
+    def forbidden(*args, **kwargs):
+        pytest.fail("comparison called a provider or credential")
+    monkeypatch.setattr(a, "read_key", forbidden)
+    monkeypatch.setattr(a, "collect_one", forbidden)
+    before = {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+              for p in lake.root.rglob("*") if p.is_file()}
+    args = ["compare-statements", "--symbol", "jpm", "--as-reported-capture", left,
+            "--restated-capture", right, "--start", "2023-01-01", "--end", "2026-10-09",
+            "--observed-before", "2026-10-13T00:00:00Z", "--acknowledge-hindsight"]
+    assert main(args, root=lake.root, check_mount=False) == 0
+    assert json.loads(capsys.readouterr().out)["status"] == "RETROSPECTIVE_STATEMENT_COMPARISON"
+    assert before == {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+                      for p in lake.root.rglob("*") if p.is_file()}
+    assert main(["--max-output-bytes", "256", *args], root=lake.root, check_mount=False) == 2
+    assert json.loads(capsys.readouterr().out)["status"] == "REFUSED"
+
+
+def test_comparison_keeps_annual_and_fourth_quarter_metrics_separate(lake):
+    left = comparison_capture(lake, [comparison_report({"income": 10}, quarter=0),
+                                     comparison_report({"income": 2}, quarter=4)], True)
+    right = comparison_capture(lake, [comparison_report({"income": 12}, quarter=0),
+                                      comparison_report({"income": 2}, quarter=4)], False)
+    rows = compare_captures(lake, left, right)["statement_comparison"]["comparison_rows"]
+    assert [(r["fiscal_quarter"], r["comparison_status"]) for r in rows] == [
+        (0, "DIFFERENT_VENDOR_VALUE"), (4, "SAME_VENDOR_VALUE"),
+    ]
