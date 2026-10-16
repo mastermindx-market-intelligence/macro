@@ -51,7 +51,7 @@ do_not_redo:
   - Historical PR7186 row-cap repair.
   - Accepted evidence unless its actual source, input or contract changes.
   - Uncertain Fabric operations through a new identity, account or carrier.
-prs: [7175, 9066, 9490, 9496]
+prs: [7175, 9066, 9490, 9496, 9498, 9499]
 decisions: []
 ---
 
@@ -987,3 +987,9 @@ Source1b99b50 incorporates main3cae8c8 and the native generated HTML. Its full f
 ### October16 evidence navigation and export qualification
 
 Source478258 repairs production-observed FMS deep links, Back/Forward and source-access defects and restores export amount provenance. The full native proof and browser evidence are retained in `research/defense_intelligence/e2e_20261011/navigation_export_20261016/`. Source-byte verification, binding CI, normal release and the same real signed-in journey/downloads remain required. PR9496 remains frozen on e39 with its existing observer; the original held review returns are not duplicated.
+
+### October16 current navigation repair and release frontier
+
+PR9496 is merged at1c430 and its installed Space/PAC-3 bytes and real signed-in journey were verified. Financial5a publication completed with12 acknowledged writes and exact complete10-event readback; do not replay. Evidence remains on PR9499 under `current_main_product_20261015/release/` and `fms_persistence_proof_20261016/`.
+
+PR9498 sourcee4de35bdf5d707ff075758de8e1e3980db88a685 repairs the four independently reproduced navigation/export findings and the sole original CI failure.112 affected cases, the native full proof and targeted CUA observations pass; exact sealed evidence is in `navigation_export_20261016/review_repair/`. Normal CI/merge and installed signed-in downloads remain next. PR9499 must incorporate this repaired source before its own proof and release. All original uncertain/refused review returns remain on their original carriers. The prepared155mm next-stage condition is not yet adopted.
