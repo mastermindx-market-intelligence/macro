@@ -6,7 +6,7 @@
   "detection_phase": "invalidated",
   "management_confidence": 9.9,
   "raw_confidence": 8.0,
-  "delta_vs_base": -50.0,
+  "delta_vs_base": -50.1,
   "recommended_action": "invalidated",
   "human_state": "Invalidated",
   "components": {
@@ -14,7 +14,7 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 52.9
+    "overlay": 53.0
   },
   "geometry": {
     "dist_to_stop_r": -0.002,
@@ -30,7 +30,7 @@
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Phase: overtime \u2192 invalidated",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",

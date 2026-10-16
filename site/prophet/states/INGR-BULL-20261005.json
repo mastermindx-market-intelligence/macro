@@ -14,7 +14,7 @@
     "progress": 24.5,
     "pace": 98.6,
     "retention": 50.0,
-    "overlay": 55.9
+    "overlay": 56.0
   },
   "geometry": {
     "dist_to_stop_r": 1.385,
@@ -30,7 +30,7 @@
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Phase: invalidated \u2192 triggered_pre_t1",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
