@@ -258,6 +258,49 @@ is whether the original publisher and globally salient actual consumer
 promoted **qualified regional observed risks**, not whether local
 severe-state text existed somewhere on a country-specific page.
 
+## Alert client static-mount and held Chromium gap (Oct 16)
+
+See `ALERT_MOUNT_AND_HELD_BROWSER_GAP_20261016.md` and the two
+readback-verified receipts:
+
+- `evidence/banner_mount_source_census_20261016.json`, SHA256
+  `a4514fd28992d3bfa4c7f3cf8bf56a0d0e4420980e1d50ccfbbe7a275105f67d`.
+  **12/12** synthetic HTML parser tests RED→GREEN, run against two
+  exact six-page Git-vintage source trees (Oct13 and Oct16).
+  Oct13 index/macro/china/hk were UNMOUNTED; Oct16 macro/china/hk
+  mounted but index remains UNMOUNTED. Markets/status controls mounted
+  in both tree versions. Source state alone is not deployed DOM proof.
+- `evidence/held_banner_consumer_gap_verified_20261016.json`, SHA256
+  `d4e8c2dadb197a5f585c1d2d2b082d8e3d4f6ace3a01efa8da48bc990634537f`.
+  **3/3** isolated Chromium tests against actual held #8132
+  `templates/wh_banner.js` Git blob
+  `9362255160a6a7358014632c53dd865dad163ebe` show
+  `warning_projection` is NOT consumed if legacy `alert=null`,
+  and a long-open tab does NOT poll a new severe alert; an initial
+  legacy severe alert DOES render. No production auth/network.
+
+Reproduce:
+
+```bash
+python -m unittest discover -s research/grey_deer/ror1_risk_attention_20261015 -p 'test_banner_mount_census.py' -v
+export ROR1_BANNER_SOURCE=/path/to/existing-held-8132-worktree/templates/wh_banner.js
+export ROR1_BROWSER_RECEIPT=/tmp/new-unique-ror1-browser-receipt.json
+python research/grey_deer/ror1_risk_attention_20261015/test_held_banner_client_gap.py
+```
+
+Source page copies for the HTML census were derived via `git show` from
+the original Git object database into isolated M2 research storage; they
+are **not** re-published in this PR. The Chromium test deliberately
+requires the exact **external** held PR head source, not a copied or
+invented substitute. Incumbent #8132 browser tests cover only the
+legacy `alert` value, not current multi-market projection.
+
+**Release effect:** remains NONE. Original source owners must qualify
+homepage mounting, per-market warning consumption and long-open polling
+through the existing alert transport/episode lifecycle with correct
+entitlement, market clocks and release conditions. The tests do not
+prove installed production site, browser delivery or notification ACK.
+
 ## Next acceptance
 
 Native source-vintage/issuance-bound episode replay, a predeclared negative
