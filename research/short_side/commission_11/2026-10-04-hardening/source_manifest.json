@@ -1,0 +1,293 @@
+{
+  "schema": "c11.research_sources.v1",
+  "cutoff": "2026-10-04",
+  "source_only": true,
+  "mastermind_pin": "521720b09be2921e996d9396b522b1c4ca62041c",
+  "macro_pin": "79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f",
+  "input_sha256": "91e00aeb7dc970b10e54b14c5a6322d923ff607c2ad065f6722a55e5b856615d",
+  "internal_witnesses": [
+    {
+      "id": "R1",
+      "title": "Macro FINRA current collector",
+      "repo": "macro",
+      "path": "collectors/finra.py",
+      "read_range": "1\u2013220",
+      "blob_sha": "fab5d3d913dc8fc4b023921ee35bf4f6188f51ef",
+      "supports": "Destructive latest-per-settlement history, current-universe filtering, limited normalized fields, paging and fallback semantics."
+    },
+    {
+      "id": "R2",
+      "title": "Macro FINRA short-volume collector",
+      "repo": "macro",
+      "path": "collectors/finra_short_volume.py",
+      "read_range": "1\u2013220",
+      "blob_sha": "d92a342a38dd0fdaa5885c71c36f56e71770c7c6",
+      "supports": "Recent re-fetch plus keep-last replacement; Market scope discarded; malformed exempt volume coerced to zero; 18:30 ET operational expectation."
+    },
+    {
+      "id": "R3",
+      "title": "Macro IBKR collector",
+      "repo": "macro",
+      "path": "collectors/ibkr_borrow.py",
+      "read_range": "1\u2013250",
+      "blob_sha": "26dc4407520e311c9ecc219090efc0895c9a333c",
+      "supports": "Same-day overwrite, indicative broker rates, predictor-dependent retained population, discarded raw identifiers, lower-bound token labeled unlimited."
+    },
+    {
+      "id": "R4",
+      "title": "Macro short-pressure axes",
+      "repo": "macro",
+      "path": "engine/short_pressure.py",
+      "read_range": "1\u2013170",
+      "blob_sha": "5471b59cc0334ab2b8ea74370283d8d8d3f6c46e",
+      "supports": "Display authority; eight-session lag; staleness relative to panel maximum; optional cutoff; missing-ADV-column guard inconsistency."
+    },
+    {
+      "id": "R5",
+      "title": "Macro ownership crowding",
+      "repo": "macro",
+      "path": "engine/ownership_crowding.py",
+      "read_range": "1\u2013160",
+      "blob_sha": "3cb610cac65a92fecd96444afb863b143f68a400",
+      "supports": "Existing owner and no-fusion boundary; FINRA ADV anchor uses settlement rather than publication."
+    },
+    {
+      "id": "R6",
+      "title": "Macro SI backfill",
+      "repo": "macro",
+      "path": "scripts/backfill_finra_short_interest.py",
+      "read_range": "1\u2013190",
+      "blob_sha": "d0b4e8f639a83f5a47bb9347d25391a4797b0046",
+      "supports": "Explicit as-restated status, inferred lag, manual/local historical panel and sampled revision observations."
+    },
+    {
+      "id": "R7",
+      "title": "SI coverage receipt",
+      "repo": "macro",
+      "path": "data/finra/short_interest_panel_coverage.json",
+      "read_range": "complete",
+      "blob_sha": "a0c5f8fff501ed488eb6854919bc311cd4f2414c",
+      "supports": "Stored receipt generated August 15; July 31 horizon; 3,888,611 rows, 206 settlements, 48,679 ticker strings."
+    },
+    {
+      "id": "R8",
+      "title": "SP1 frozen research and amendments",
+      "repo": "macro",
+      "path": "research/short_side/SP1_SHORT_PRESSURE_PREREG.md",
+      "read_range": "1\u2013260 requested; tool excerpt truncated",
+      "blob_sha": "",
+      "supports": "Historical source and governance evidence only; later amendments must be fully loaded before faithful reproduction. Earlier header text is not current experiment status."
+    },
+    {
+      "id": "R9",
+      "title": "SP1-B stored result",
+      "repo": "macro",
+      "path": "data/research/sp1_short_pressure.json",
+      "read_range": "complete",
+      "blob_sha": "e8592f58d775e74e2f31bfd7b995258bda88e414",
+      "supports": "NULL promotion verdict; branch tests uninterpretable after H0 failure; explicit current-universe bias; actual entry window ends May 12, 2026."
+    },
+    {
+      "id": "R10",
+      "title": "PSS-CD1 separate construction",
+      "repo": "macro",
+      "path": "engine/personality_crowding_hazard.py",
+      "read_range": "1\u201375",
+      "blob_sha": "b5a7f048f670c85e97a0b957b5da4f41fc73c71f",
+      "supports": "Prospective correlation/dispersion lane, frozen construction hashes and its own maturity thresholds; not C11 authority."
+    },
+    {
+      "id": "R11",
+      "title": "Historical-leaver sector coverage",
+      "repo": "macro",
+      "path": "data/breadth/_sp1500_pit_sectors_coverage.json",
+      "read_range": "complete",
+      "blob_sha": "4fc4b782974d9c315dd7f3803bc7383c2204172d",
+      "supports": "Generated October 4; 1,083 leavers, 281 labeled via CIK, 802 unlabeled; zero era-correct labels."
+    },
+    {
+      "id": "R12",
+      "title": "Portfolio V3 architecture",
+      "repo": "Mastermind",
+      "path": "docs/superpowers/specs/2026-09-15-mastermind-portfolio-v3-risk-first-autonomous-manager-design.md",
+      "read_range": "1\u2013140",
+      "blob_sha": "d700d50d62c9ee585aafb9737e3a35e7734e42e4",
+      "supports": "Inspected specification explicitly architecture-approved, SPEC_ONLY, records-only, production-inert; not proof of runtime capability."
+    },
+    {
+      "id": "R13",
+      "title": "Mastermind decision lenses",
+      "repo": "Mastermind",
+      "path": "portfolio/lenses.py",
+      "read_range": "1\u2013100",
+      "blob_sha": "2b8f593991d963de3d5d5d97c5970c36115cc411",
+      "supports": "Existing lens composition distinguishes context and authority-bearing inputs; source comments do not independently prove empirical claims."
+    },
+    {
+      "id": "R14",
+      "title": "Static Mastermind census",
+      "repo": "Mastermind",
+      "path": "data/census/CENSUS.md",
+      "read_range": "1\u201338",
+      "blob_sha": "dcf51d160ba9b470c91309b2dc19cf2d0048b458",
+      "supports": "Generated July 16, 2026; stale inventory, not October runtime certification."
+    }
+  ],
+  "public_sources": [
+    {
+      "id": "P1",
+      "title": "FINRA short-interest reporting schedule and semantics",
+      "url": "https://www.finra.org/filing-reporting/regulatory-filing-systems/short-interest",
+      "qualification": "Official schedule read; September 30 settlement is published October 9, not on the October 2 reporting deadline.",
+      "companion_url": "https://syndication.finra.org/content/short-interest-what-it-what-it-not"
+    },
+    {
+      "id": "P2",
+      "title": "FINRA Daily Short Sale Volume Files",
+      "url": "https://www.finra.org/finra-data/browse-catalog/short-sale-volume-data/daily-short-sale-volume-files",
+      "qualification": "Official source scope, evening release and subsequent corrections; consolidated NMS history begins August 1, 2018.",
+      "companion_url": ""
+    },
+    {
+      "id": "P3",
+      "title": "FINRA file-format specification",
+      "url": "https://www.finra.org/sites/default/files/2021-07/DailyShortSaleVolumeFileLayout.pdf",
+      "qualification": "Official two-page PDF; page 1 table visually checked. ShortVolume includes exempt trades; exempt is a subset. Footer/count and facility fields specified.",
+      "companion_url": ""
+    },
+    {
+      "id": "P4",
+      "title": "IBKR short-securities availability",
+      "url": "https://www.interactivebrokers.com/en/trading/short-securities-availability.php",
+      "qualification": "Official product description; indicative availability/rates and historical indicative rate tools. No authenticated historical download or entitlement was tested.",
+      "companion_url": ""
+    },
+    {
+      "id": "P5",
+      "title": "SEC Form 13F FAQ",
+      "url": "https://www.sec.gov/rules-regulations/staff-guidance/frequently-asked-questions-about-form-13f",
+      "qualification": "Official staff guidance updated March 6, 2026; holdings and short-position distinction, identifiers and 2023 dollar-unit change. Not a new legal opinion.",
+      "companion_url": ""
+    },
+    {
+      "id": "P6",
+      "title": "SEC exemptive order, December 2025",
+      "url": "https://www.govinfo.gov/content/pkg/FR-2025-12-08/pdf/2025-22158.pdf",
+      "qualification": "Official order; Form SHO January 2, 2028; loan reporting September 28, 2028 and dissemination March 29, 2029. Page 2 visually reviewed.",
+      "companion_url": ""
+    },
+    {
+      "id": "P7",
+      "title": "FINRA SLATE current implementation page",
+      "url": "https://www.finra.org/filing-reporting/slate",
+      "qualification": "Official current schedule corroboration; launch and future onboarding/testing information, not a current production loan dataset.",
+      "companion_url": ""
+    },
+    {
+      "id": "P8",
+      "title": "SEC September 30, 2026 notice",
+      "url": "https://www.govinfo.gov/content/pkg/FR-2026-09-30/pdf/2026-20056.pdf",
+      "qualification": "Recent official corroboration of deferred securities-loan reporting and public dissemination.",
+      "companion_url": ""
+    },
+    {
+      "id": "P9",
+      "title": "SEC final Rule 10c-1a, Release 34-98737",
+      "url": "https://www.sec.gov/files/rules/final/2023/34-98737.pdf",
+      "qualification": "Official final-rule text; printed pp. 124\u2013125 on removed available-to-lend requirement; pp. 148\u2013149 and final rule on differentiated dissemination delays. Original compliance dates are superseded by P6\u2013P8.",
+      "companion_url": ""
+    },
+    {
+      "id": "P10",
+      "title": "DataLend product description",
+      "url": "https://datalend.com/services/datalend/",
+      "qualification": "PROVIDER_CLAIM: raw lending quantities, rates and historical products. No delivered sample or contractual vintage history independently tested.",
+      "companion_url": ""
+    },
+    {
+      "id": "P11",
+      "title": "DataLend API description",
+      "url": "https://datalend.com/services/datalend-api/",
+      "qualification": "PROVIDER_CLAIM: REST/API/history and reflected amendments. This does not by itself prove original-vintage retrieval.",
+      "companion_url": ""
+    },
+    {
+      "id": "P12",
+      "title": "S&P Global Securities Finance",
+      "url": "https://www.spglobal.com/market-intelligence/en/solutions/products/securities-finance",
+      "qualification": "PROVIDER_CLAIM: supply/demand/fees, broad population and multi-decade PIT history. Descriptive history counts vary across page sections; exact field/version contract remains unverified.",
+      "companion_url": ""
+    },
+    {
+      "id": "P13",
+      "title": "FIS Securities Finance Market Data",
+      "url": "https://www.fisglobal.com/products/fis-securities-finance-market-data",
+      "qualification": "PROVIDER_CLAIM: global/intraday lending analytics. Exact original-vintage depth, API schema, corrections and terms not established.",
+      "companion_url": ""
+    },
+    {
+      "id": "P14",
+      "title": "S3 Partners product descriptions",
+      "url": "https://www.s3partners.com/",
+      "qualification": "PROVIDER_CLAIM: proprietary short estimates, crowding/lending analytics and delivery products. Estimated SI is not regulatory SI.",
+      "companion_url": ""
+    },
+    {
+      "id": "P15",
+      "title": "S3 market-structure/product methodology description",
+      "url": "https://www.s3partners.com/articles/market-structure-sentiment-portfolio-impact",
+      "qualification": "PROVIDER_CLAIM: history, intraday lending measures and derived analytics. Methodology/version and float-denominator comparability require diligence.",
+      "companion_url": ""
+    },
+    {
+      "id": "P16",
+      "title": "Cohen, Diether and Malloy, Supply and Demand Shifts in the Shorting Market (2007)",
+      "url": "https://onlinelibrary.wiley.com/doi/10.1111/j.1540-6261.2007.01269.x",
+      "qualification": "Original research, abstract-level evidence reviewed; supports joint supply/demand reasoning, not Mastermind effect-size replication.",
+      "companion_url": ""
+    },
+    {
+      "id": "P17",
+      "title": "Saffi and Sigurdsson, Price Efficiency and Short Selling (2011)",
+      "url": "https://academic.oup.com/rfs/article-abstract/24/3/821/1590469",
+      "qualification": "Original research abstract reviewed; historical international constraints/efficiency evidence. DOI 10.1093/rfs/hhq124.",
+      "companion_url": ""
+    },
+    {
+      "id": "P18",
+      "title": "Hong, Li, Ni, Scheinkman and Yan, Days to Cover and Stock Returns (2015 working paper)",
+      "url": "https://www.nber.org/papers/w21166",
+      "qualification": "Original working-paper abstract reviewed; DTC mechanism and historical result, not evidence of current product alpha.",
+      "companion_url": ""
+    },
+    {
+      "id": "P19",
+      "title": "Muravyev, Pearson and Pollet, borrowing costs and anomaly returns (2025)",
+      "url": "https://onlinelibrary.wiley.com/doi/abs/10.1111/jofi.13501",
+      "qualification": "Original research abstract reviewed; financing-cost warning for tested anomalies. Do not universalize the sample result.",
+      "companion_url": ""
+    },
+    {
+      "id": "P20",
+      "title": "Muravyev, Pearson and Pollet, Why does options market information predict stock returns? (2025)",
+      "url": "https://doi.org/10.1016/j.jfineco.2025.104153",
+      "qualification": "Original research text/abstract evidence reviewed; borrow-cost overlap for specific option signals, not all options/GEX measures.",
+      "companion_url": ""
+    },
+    {
+      "id": "P21",
+      "title": "SEC fails-to-deliver data",
+      "url": "https://www.sec.gov/data-research/sec-markets-data/fails-deliver-data",
+      "qualification": "Official download/caveat page; aggregate outstanding settlement failures, delayed release, not proof of naked shorts. No C11 incremental-value test conducted.",
+      "companion_url": ""
+    },
+    {
+      "id": "P22",
+      "title": "SEC Investor.gov, Updated Investor Bulletin: ETFs",
+      "url": "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-24",
+      "qualification": "Official explanation of creation/redemption baskets and cash equivalents; supports distinction between ETF redemption and an observed stock sale.",
+      "companion_url": ""
+    }
+  ],
+  "note": "R15\u2013R17 are bundled procedure/repository/PR evidence detailed in SOURCES_AND_AUDIT.md. No new empirical experiment was run."
+}
