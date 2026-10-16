@@ -1,0 +1,162 @@
+{
+  "schema": "research.cross_session_source_day_coverage_worksheet.v0",
+  "created_at_utc": "2026-10-12T05:23:59.417404Z",
+  "research_only": true,
+  "repository": "mastermindx-market-intelligence/macro",
+  "pr": 8012,
+  "expected_head": "b4ef0fef620e2a41993dc2eeb27ffb1e85955482",
+  "source_day_utc": "2026-10-06",
+  "epoch2_activation_at_utc": "2026-10-06T04:31:47Z",
+  "observed_candidate_file": "/Volumes/Mastermind/evidence/pattern-analysis-epoch2-oct6-20261012/source-only-manual-candidates.json",
+  "observed_candidate_sha256": "0bee9c8b0001897b20c1dbf498144a9b163dea3efbdb1110dbb838fe80f71287",
+  "observed_candidate_count": 24,
+  "candidate_dispositions": {
+    "exclude_or_late": 11,
+    "unresolved_or_conditional": 12,
+    "admitted": 0
+  },
+  "completeness_state": "SOURCE_CENSUS_INCOMPLETE",
+  "reason": "Neither mandatory Reuters/wire nor UKMTO publication/incident clock source universe has a complete documented 24h channel sweep. Candidate first-public and distinct-event identity unresolved. Original Telegram, Bulgarian Radio and local reporting revealed omissions relative to Reuters-only sweep. A research worker is running but not returned.",
+  "minimum_required_channels": {
+    "reuters_wire_official": "PARTIAL_SEARCH_NOT_COMPLETE",
+    "ukmto_warnings_advisories": "PARTIAL_ARCHIVE_ISSUE_CLOCK_UNRESOLVED"
+  },
+  "region_matrix": {
+    "Russia/Ukraine/BlackSea": {
+      "reviewed_origins": [
+        "Interfax official Moscow 05:23 MSK",
+        "Odesa OVA official Telegram 08:14:16Z",
+        "Zelenskiy official Telegram 10:45:07Z",
+        "Bulgarian National Radio 09:04 EEST",
+        "Sirius/Transport Ministry via Interfax and Kommersant",
+        "Reuters syndicated and primary Ukraine press"
+      ],
+      "gap": "Earliest Sochi public social/Max messages, Bulgaria distress release, complete 24h Reuters + Black Sea port authority candidates, de-duplicate Pivdennyi tanker descriptions"
+    },
+    "Iran/Hormuz": {
+      "reviewed_origins": [
+        "UKMTO recent incidents Oct6 #159 time-late",
+        "Reuters Vance interview Oct6 22:37Z first mirror"
+      ],
+      "gap": "UKMTO original alert 159 issue timestamp, Reuters versioning and full-day source matrix for Gulf/IRGC operations"
+    },
+    "Israel/Gaza": {
+      "reviewed_origins": [
+        "Reuters Oct6 06:12 EDT routine strikes report"
+      ],
+      "gap": "Full Israel/Gaza wire+official family census and proof no separately material post-activation ceasefire or operational change"
+    },
+    "Yemen/RedSea": {
+      "reviewed_origins": [
+        "Reuters Yemen Oct6 01:56Z syndication for Oct5 recapture",
+        "Saudi Pakistan Turkey Monday Oct5 pact announcement"
+      ],
+      "gap": "Full post-activation Yemen/Red Sea activity and official first-public clocks; distinct Oct6 new events rather than Oct5 repeats"
+    },
+    "Taiwan/China": {
+      "reviewed_origins": [
+        "Taiwan MND Oct6 routine activity report 8 PLAN and 8 official ships, no aircraft",
+        "Reuters preactivation unchanged arms plan"
+      ],
+      "gap": "Full direct/relevant China/Taiwan source census 04:31Z-24:00Z and exact distinct policy announcement checks"
+    }
+  },
+  "outstanding_worker": {
+    "run_id": "pattern-epoch2-oct6-census-001",
+    "status": "TERMINAL_RC0",
+    "result_available": true,
+    "accepted_in_fabric_ledger": false,
+    "ledger_acceptance_issue": "OUTCOME_WRITE_UNCONFIRMED: terminal operation/root identity missing or malformed; status remains LEDGER_UNVERIFIED",
+    "do_not_retry_accept_without_root_reconciliation": true
+  },
+  "blocked_actions": {
+    "certify_source_day": "REFUSE: all-day original Reuters/wire and UKMTO archive unverified",
+    "us_market_data_reads": "REFUSE_UNTIL_VALID_COMPLETE_SOURCE_DAY_CENSUS",
+    "hsi_target_read": "REFUSE",
+    "epoch1_backfill": "FORBIDDEN"
+  },
+  "next_steps": [
+    "Consume exactly one Fabric run return and reconcile against original-source local worksheet",
+    "Validate complete 24-hour coverage for all required channels and full candidacy/exclusion/clock records",
+    "If any gap remains preserve SOURCE_CENSUS_INCOMPLETE and source-only checkpoint; do not certify",
+    "Only once valid completed-day receipt is possible may sealed Epoch2 admissions be considered by pre-registered test gates"
+  ],
+  "original_protocol_path": "research/CROSS_SESSION_TRANSFER_SOURCE_ADMISSION_SAFEGUARD_V1_2_2026-10-06.md",
+  "last_source_correction_at_utc": "2026-10-12T05:29:45.242031Z",
+  "additional_proof_note": "UKMTO #159-26 Oct6 17:09Z incident first disclosed by delayed UKMTO warning dated Oct8 in Anadolu and Cedar; do not confuse with UKMTO #157 Oct5 incident separately published Oct6. Daily Taiwan MND unchanged routine excluded. Bulgarian BNR 09:04 local Oct6 and Varna24 same minute still only first verified upper-bound, not exhaustive first public.",
+  "worker_reconciliation": {
+    "run_id": "pattern-epoch2-oct6-census-001",
+    "status": "TERMINAL_RC0",
+    "result_bytes": 11114,
+    "worker_content_reviewed": true,
+    "content_accepted_as_source_discovery_only": true,
+    "source_day_certified": false,
+    "discrepant_candidate_classes": [
+      "Moscow drone preactivation",
+      "Saudi airports Oct5 prior Houthi public claim",
+      "Vance Oct6 22:37Z first publisher",
+      "Gaza routine continuation",
+      "UKMTO 159 issued Oct8"
+    ]
+  },
+  "last_source_reconciliation_at_utc": "2026-10-16T09:34:19.187285Z",
+  "remaining_source_gaps": [
+    "Full Oct6 Reuters/wire/official day census with a verifiable channel coverage receipt",
+    "UKMTO original Oct6 day issue archive, including negative coverage of other warning/advisory types",
+    "Original earliest publication before verified source upper bounds on Bulgarian shipping and Odesa sources",
+    "Saudi Oct5 Houthi claim vs Oct6 new official damage confirmation materiality and first-public distinction",
+    "Aframax Sochi original Sirius vs local first report time",
+    "Iran Vance original Reuters first edition (observed mirror 22:37Z) and provenance without Oct7 revisions",
+    "Region-by-region official negative/positive coverage for Taiwan, Gaza, Israel, Yemen, Hormuz, Black Sea",
+    "Saudi East-West oil pipeline announcement original minister Manama speech issue time and rate unit/bpd interpretation",
+    "Oct6 U.S. B-1 UK base withdrawal reconfirms Oct5 source; no new event credit",
+    "Oct5 UKMTO warning 157 vs Oct6 casualty disclosure on On Peace same incident; dedup and no reanchor",
+    "Original India MEA/Omani and UKMTO public post UTC times for MT On Peace, 156, 157; independently verify ship identity/incident date disagreement before any materiality or admission",
+    "UKMTO all-warning and advisory issue-history negative completeness not proven by sequence alone"
+  ],
+  "source_discovery_sweep": {
+    "method": "Existing Macro RSS architecture using read-only Google News index historical queries, no new ingestion control plane",
+    "queries": 5,
+    "results": 275,
+    "all_five_queries_hit_100_item_cap": true,
+    "artifact_path": "/Volumes/Mastermind/evidence/pattern-analysis-epoch2-oct6-20261012/oct6-google-news-rss-discovery.json",
+    "artifact_sha256": "9ae54a3e1f7be7199c62ba1721d9241943c2253aa6701a56d86c1e1afd59252c",
+    "timestamp_quality": "GOOGLE_RSS_INDEX_UNTRUSTED",
+    "contradiction": "Reuters Oct5 Romania ship report reindexed Oct6 at 07:00Z; many different articles share placeholder 07:00Z and some index results outside requested window",
+    "effect": "CAN_DISCOVER_MISSED_NEWS; CANNOT_PROVE_FIRST_PUBLIC_CLOCK_OR_FULL_24H_CHANNEL_COVERAGE"
+  },
+  "source_clock_originality_reconciliation": {
+    "saudi_east_west_pipeline": "Al Hadath original Oct6 13:00 GST = 09:00Z publication upper bound; Newsquawk 09:06Z and Saudi Gazette 09:39Z later; initial Oct1 5.5m bpd and Oct2 ~6m bpd reports mean Oct6 is not automatically materially novel",
+    "monday_airport_claim": "Oct5 21:05:20Z public Houthi campaign claim versus Oct6 04:53Z Saudi specific damage confirmation; clock+materiality distinction unresolved",
+    "m2_source_bag": "Source timestamps and no market outcome reads recorded; this is a partial worksheet, NOT a source-day certificate."
+  },
+  "last_updated_utc": "2026-10-15T23:58:43.679342Z",
+  "ukmto_warning159_original_confirmation": {
+    "original_pdf_url": "https://www.ukmto.org/-/media/ukmto/products/20261008-ukmto_warning_159_26.pdf?rev=526ce69ddc60480c944d0671033bf52e",
+    "product_post_day": "2026-10-08",
+    "incident_day": "2026-10-06",
+    "incident_time_utc": "17:09",
+    "source_quality": "OFFICIAL_PDF_AND_OFFICIAL_X_DATE",
+    "issue_time_exact": "UNKNOWN",
+    "no_oct6_source_day_admission": true
+  },
+  "saudi_pipeline_novelty_confirmation": {
+    "first_official_throughput_figure_on_oct6": true,
+    "preexisting_5point5_to_6m_bpd_private_reports_oct1_to_oct2": true,
+    "event_material_novelty_still_unresolved": true
+  },
+  "ukmto_original_publication_day_chain": {
+    "manifest_path": "/Volumes/Mastermind/evidence/pattern-analysis-epoch2-oct6-20261012/ukmto-warning-sequence-156-159.json",
+    "manifest_sha256": "af82e5f92ea9e0e7ec159acced51adbbb1958222829a82ccb067a41d1e07f64f",
+    "number_157_public_issue_day": "2026-10-06",
+    "number_157_incident_day": "2026-10-05",
+    "number_159_public_issue_day": "2026-10-08",
+    "number_159_incident_day": "2026-10-06",
+    "completeness_proven": false,
+    "original_post_time_bounds": {
+      "157-26": "2026-10-06T12:13:22.230Z",
+      "159-26": "2026-10-08T14:54:26.784Z"
+    },
+    "X_post_timestamps_not_first_issue_times": true
+  }
+}
