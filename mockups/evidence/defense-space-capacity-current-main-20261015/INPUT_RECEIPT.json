@@ -2,7 +2,7 @@
   "scope": "exact canonical generated local stage; not installed/entitled production proof",
   "source_root": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main",
   "built_site": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site",
-  "source_head": "432d851f694df09245d72a470740ed7b3db5cc98",
+  "source_head": "1b99b50a1354b5257c3180af18bcf15ddfb1da22",
   "material_source_hashes": {
     "templates/_site_nav.html.j2": "2056ac2e8b301a47ce41dc4d76758de8bd3167151abd611340ae06be4dda8455",
     "templates/_navlinks.html.j2": "4b909789102ad5b44f6f2da2851d6ebe8aa5f1b2967211e84c0e48c0a774060b",
@@ -30,30 +30,30 @@
     "templates/government-revenue-parity.css": "cc4f592ddf55d9d4a5e93515402c07af520b4560a912f3baaca1521c30ac106b"
   },
   "generation": {
-    "build_receipt": "/Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/resume-20261015/current-main-requalification/product-followup/generation/BUILD_RECEIPT.json",
-    "sha256": "3288b9f5ed7de8733d68c76b0e936eaa47eac63465b19e35eb55ded26a3fc387",
-    "generated_at": "2026-10-16T00:26:27.497760+00:00",
-    "financial_sha256": "754a57a5dd808dfefc3daad7ff6bf20c1f66a43f87e774d03791cc986814f53c",
-    "theme_sha256": "f137f585d0d1d8a7016ad4a534dab6a4c37ebb0a071a4fa4b6fb5fb20e8af849"
+    "build_receipt": "/Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/resume-20261015/current-main-requalification/product-followup/rebased-generation/BUILD_RECEIPT.json",
+    "sha256": "f721bffa3c7e51f5585f28d962d879b809f65b7b78bf0b796ecaaf2ed2671dfb",
+    "generated_at": "2026-10-16T00:51:37.663102+00:00",
+    "financial_sha256": "7004d843ac28cdc29fc0fa1117823a8e1e2c2bd05ed22dffb9fa49909474a072",
+    "theme_sha256": "002f85359bec7952615be972d555a2c0088ee855f9ab306980d3636b8eeaabcf"
   },
   "latest": null,
   "api_inputs": {},
   "static_inputs": {
     "government-revenue-data/budget-program.json": {
       "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/budget-program.json",
-      "sha256": "58a187f79301759d72b4bbb3cb87b5cbfd6ae56870b4669b7905602371fe3dde"
+      "sha256": "234ea00df1829df1485db350b4ecfdbb2ce3019de01eeeef2858e3fa0bae5b20"
     },
     "government-revenue-data/candidates.json": {
       "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/candidates.json",
-      "sha256": "fd4a56a73883c62af69264569142f724dd3619d2e11cf46a19b73bbece700a1b"
+      "sha256": "ff6a5846bc778a3f4151e1543b2d355e33ceadfa1df59d3a69e4a32f33124ff9"
     },
     "government-revenue-data/defense-economics.json": {
       "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/defense-economics.json",
-      "sha256": "754a57a5dd808dfefc3daad7ff6bf20c1f66a43f87e774d03791cc986814f53c"
+      "sha256": "7004d843ac28cdc29fc0fa1117823a8e1e2c2bd05ed22dffb9fa49909474a072"
     },
     "government-revenue-data/dossiers.json": {
       "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/dossiers.json",
-      "sha256": "a0d7a2927d90eca07004ba777966f460cfd8e4881a6c317e4aab69789b57f72f"
+      "sha256": "d426caa96607abe2a03266fd76fcefe311b2e2d7cdaa7909503f7d2f10c1a19f"
     },
     "government-revenue-data/fms-cases.json": {
       "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/fms-cases.json",
@@ -61,19 +61,19 @@
     },
     "government-revenue-data/identity-atlas.json": {
       "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/identity-atlas.json",
-      "sha256": "b9da9cf2526433b3e81ffd013a83d0511e0ff10df280d1436d93f3bf996cfd8f"
+      "sha256": "69c51b47c989cba9577d63fc92049957dbaa2457533627715348419e5ac97218"
     },
     "government-revenue-data/idv-dossiers.json": {
       "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/idv-dossiers.json",
-      "sha256": "5ce1ad1005cb89e719e8e847975ed846ef50e9492612b981c222804e9490f447"
+      "sha256": "c2a0a4511fbbb30a86af47c495fb52cff4c1615daec5cd757027ac9a484bb7e6"
     },
     "government-revenue-data/latest.json": {
       "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/latest.json",
-      "sha256": "df8259c18116ac5fbf41e8fc22b4d112f75eaa80c2a1090a2b20b2e7e921550e"
+      "sha256": "8bb1344b67539056e3744298ba514496fb8e6360ecab6f7d4231aecf0897c256"
     },
     "government-revenue-data/program-dossier.json": {
       "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/program-dossier.json",
-      "sha256": "92299305cc0808073d55b4c25c849add0254cd31e8ea7a593725e2f04e2c1d00"
+      "sha256": "4918536eee8b44791f924ec162a2e11e74dfe4cfbe1909d1c4ce85fe8c3ac988"
     },
     "government-revenue-data/program-ontology.json": {
       "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/program-ontology.json",
@@ -81,27 +81,27 @@
     },
     "government-revenue-data/program-theme-context.json": {
       "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/program-theme-context.json",
-      "sha256": "0a9a7f71be0aa8f9de55cae75f4e3dd129014318b34f60bdf778a96654b954e5"
+      "sha256": "e43f08480011ff7ae82d064f2af2bfd32b2885ecb776187273501e510ede5002"
     },
     "government-revenue-data/research-state.json": {
       "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/research-state.json",
-      "sha256": "ab6ef3ffedf57481cb85864ff0f167efe7ac7de96021efd9d9af56d81fdcf81f"
+      "sha256": "732653387f880b6b7ba5659179210bd7c128c84d65079f3eb8b7977e5be21424"
     },
     "government-revenue-data/sbir-progression.json": {
       "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/sbir-progression.json",
-      "sha256": "b4e651f206bffa8dcb91ad06c3ddb707b1a2ddef6419a32f8015ce88840ba67c"
+      "sha256": "14156f8c4ac218cc1e831fe9850cc5196d10925e33804e5cd3cc88aede0674f5"
     },
     "government-revenue-data/subaward-dossiers.json": {
       "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/subaward-dossiers.json",
-      "sha256": "ec99d30c5ab467f796fe38bf2da3d0e3ec298c64b9f0aa38fbdd518140c95330"
+      "sha256": "1eb07d1fe5feb41c4b6ad94a6414b46750d0bc3a4800b410853ad8d5ac908eda"
     },
     "government-revenue-data/theme-context.json": {
       "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/theme-context.json",
-      "sha256": "f137f585d0d1d8a7016ad4a534dab6a4c37ebb0a071a4fa4b6fb5fb20e8af849"
+      "sha256": "002f85359bec7952615be972d555a2c0088ee855f9ab306980d3636b8eeaabcf"
     },
     "government-revenue-data/workspace.json": {
       "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/workspace.json",
-      "sha256": "af3762ffbe2b568e9fb5d72ff59522fac820f45fdc0631f9f82c6e73f8425756"
+      "sha256": "56dd13d74778cad5af443435e1a2f0bb16fd92d21d8c79a9bf010470d8906e6f"
     }
   },
   "assets": {
@@ -273,10 +273,10 @@
   },
   "canonical_html": {
     "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government_revenue.html",
-    "sha256": "c5f00e75f3040d068b34de755b733286e59c38f741f5623e2fe21f7fb7bb95f0"
+    "sha256": "07d989175bd1a70cabdc041b48d5633b7b1b895fb99e9636c2dbef327598e552"
   },
   "canonical_html_bytes": 189114,
-  "html_sha256": "c5f00e75f3040d068b34de755b733286e59c38f741f5623e2fe21f7fb7bb95f0",
+  "html_sha256": "07d989175bd1a70cabdc041b48d5633b7b1b895fb99e9636c2dbef327598e552",
   "html_bytes": 189114,
   "head_only_csp": {
     "enabled": false,

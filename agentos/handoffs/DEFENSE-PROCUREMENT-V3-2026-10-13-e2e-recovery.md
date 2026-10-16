@@ -42,7 +42,7 @@ danger_areas:
   - Preserve original PR7175 and Terminal PR778 custody and unresolved original Fabric effects.
   - Source checks and local fixtures do not prove installed entitlement or scientific efficacy.
 next_actions:
-  - Release committed Space and PAC-3 source432d851 with its sealed generation and completed browser checks.
+  - Release committed Space and PAC-3 source1b99b50 with its current merged-generation proof and browser checks.
   - Keep draft PR9490 held for the original review return; directory_owner_or_mode refusal is not retry permission.
   - After product source release, fresh-check and publish the bounded Space financial successor through the existing reviewed CAS path.
   - Complete natural publisher, installed entitlement and independent acceptance; advance supported theme evidence in parallel.
@@ -979,3 +979,7 @@ Primary PR9066 is merged at087ac9aba1ac7ee1c172042ad447f7998b06d540 and read-onl
 Current branch `codex/defense-space-capacity-release` source432d851f694df09245d72a470740ed7b3db5cc98 composes seven NOC Space facts and reviewed PAC-3 public capacity over main21fe5ad.347 affected tests, curated CI closure, full105-case proof and32 browser cases pass. Artifacts: `research/defense_intelligence/e2e_20261011/current_main_product_20261015/` and `mockups/evidence/defense-space-capacity-current-main-20261015/`.655 ledger rows remain byte-identical; all six research verdicts remain evidence insufficient. Local financial5a5bc26d8f2c10a2931c0350 is prepared but not published.
 
 PR9490 remains draft: CI38828866998 succeeded; original history review has unknown completion and its permitted collector refused directory_owner_or_mode with retry_authorized=false. Chris has been asked once to restore that same return path through its existing owner; no replacement or permission change. Original NASA, Q3, P2 and other unknown carriers remain unchanged. NASA source preparation is saved on its original branchfc24fdda7635 with no committed-release proof or canonical admission. Theme-owner gap census defense-theme-owner-gap-census-01a13300-a actually launched on the existing Fabric; its original result remains to consume. Installed entitled acceptance, second-principal privacy and scientific admission/maturity obligations remain open.
+
+### October16 merged-source qualification
+
+Source1b99b50 incorporates main3cae8c8 and the native generated HTML. Its full frozen proof passes104 cases with one skip in523.98s; committed-source witness verification passes. All32 browser cases and the frozen CI import closure pass. Current evidence replaces the historical pre-merge capture at the existing linked location; the previous capture is retained in Git. Source release, bounded financial5a publication and installed/entitled acceptance remain required.

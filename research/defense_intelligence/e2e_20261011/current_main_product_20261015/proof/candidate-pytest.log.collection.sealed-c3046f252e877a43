@@ -104,4 +104,4 @@ tests/test_government_revenue_candidate_fixture.py::test_unpublished_candidate_g
 tests/test_government_revenue_candidate_fixture.py::test_inadmissible_graph_fails_by_name_instead_of_collapsing_to_zero
 tests/test_government_revenue_candidate_fixture.py::test_declared_issuer_with_no_ownership_edge_fails_by_name
 
-105 tests collected in 3.50s
+105 tests collected in 2.49s
