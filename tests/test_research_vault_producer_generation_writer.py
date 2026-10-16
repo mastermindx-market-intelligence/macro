@@ -732,3 +732,20 @@ def test_fenced_store_retains_qualified_receipt_reader_window(monkeypatch):
     injected = r2_store.R2Store("fixture", client=object())
     session.store = injected
     assert ingest._receipt_read_workers(writer.FencedProducerStore(injected, session), 4) == 1
+
+
+def test_existing_oversize_catalog_runs_a_real_generation(seeded):
+    """BEGIN/checkpoint/COMPLETE over an existing >16 KiB committed catalog."""
+    store, doc = seeded
+    doc["synthetic_padding"] = "x" * (24 * 1024)
+    assert store.put_bytes(catalog.CATALOG_KEY, json.dumps(doc).encode())
+    store.events.clear()
+    session = writer.ProducerGenerationSession.begin(store, doc, IDENTITY, now=NOW)
+    wrapped = writer.FencedProducerStore(store, session)
+    wrapped.put_bytes(contract.CORPUS_KEY, b"synthetic corpus")
+    assert catalog.publish(wrapped, doc, now=NOW).published
+    record = json.loads(session.complete(doc, now=NOW))["producer_generation"]
+    assert record["state"] == "COMPLETE"
+    stored = json.loads(store.get_bytes(catalog.CATALOG_KEY))["producer_generation"]
+    assert stored["state"] == "COMPLETE"
+    assert len(store.get_bytes(catalog.CATALOG_KEY)) > 16 * 1024
