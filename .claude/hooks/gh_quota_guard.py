@@ -256,10 +256,73 @@ WATCH_RE = re.compile(CMD_POS + r"gh\s+run\s+(?:watch\b|view\b[^|;&\n]*--watch\b
 # Codex native PreToolUse uses this SAME shared quota guard, not a second owner.
 # Long foreground watches still consume the orchestrator even at a safe REST cadence.
 # The trusted turn identity is transport metadata, never a model/authority claim.
-CODEX_FOREGROUND_WATCH_RE = re.compile(
-    CMD_POS + r"gh\s+(?:run\s+(?:watch\b|view\b[^|;&\n]*--watch\b)"
-    r"|pr\s+checks\b[^|;&\n]*--watch\b)"
-)
+def codex_foreground_watch_command(raw: str, *, depth: int = 0) -> bool:
+    """Identify a syntactically invoked watch, not a quoted example of one.
+
+    This is a bounded orchestration nudge, NOT a shell parser/security boundary.
+    Reuse the existing deny/quota owner; never infer watcher liveness from it.
+    A child shell with `-c` is parsed as a real command, while a `git -m` string
+    or grep search pattern cannot accidentally become an executable `gh` token.
+    """
+    import shlex
+
+    if depth > 2 or len(raw) > 16384:
+        return False
+    # A shell launched with a script heredoc executes its contents, unlike a
+    # documentation heredoc (`cat <<NOTE`). Narrowly recognize a shell in the
+    # first command position; do not treat arbitrary quoted heredoc text as code.
+    executable_heredoc = re.match(
+        r"^\s*(?:bash|sh|zsh|/bin/bash|/bin/sh|/bin/zsh)"
+        r"(?:[ \t]+-[A-Za-z]+)*[ \t]+<<-?['\"]?"
+        r"(?P<tag>[A-Za-z_][A-Za-z0-9_]*)['\"]?[ \t]*\n",
+        raw,
+    )
+    if executable_heredoc:
+        tag = executable_heredoc.group("tag")
+        trailing = raw[executable_heredoc.end():]
+        closing = re.search(r"(?m)^[ \t]*" + re.escape(tag) + r"[ \t]*$", trailing)
+        if closing is not None:
+            if codex_foreground_watch_command(trailing[:closing.start()], depth=depth + 1):
+                return True
+    try:
+        lexer = shlex.shlex(strip_heredocs(raw), posix=True, punctuation_chars=";&|()\n")
+        lexer.whitespace_split = True
+        lexer.whitespace = " \t\r"
+        lexer.commenters = "#"
+        tokens = list(lexer)
+    except ValueError:
+        return False  # unknown shell syntax is not evidence of a foreground watch
+
+    boundaries = {";", "&&", "||", "|", "&", "(", ")", "\n"}
+    keywords = {"if", "while", "until", "then", "do", "else", "!", "command", "exec"}
+    shells = {"bash", "sh", "zsh", "/bin/bash", "/bin/sh", "/bin/zsh"}
+    beginning = True
+    for index, token in enumerate(tokens):
+        if token in boundaries:
+            beginning = True
+            continue
+        if not beginning:
+            continue
+        if token in keywords:
+            continue
+        if token in shells and index + 2 < len(tokens):
+            flag = tokens[index + 1]
+            if flag.startswith("-") and "c" in flag[1:]:
+                if codex_foreground_watch_command(tokens[index + 2], depth=depth + 1):
+                    return True
+        if token == "gh" and index + 2 < len(tokens):
+            args = []
+            for arg in tokens[index + 1:]:
+                if arg in boundaries:
+                    break
+                args.append(arg)
+            if len(args) >= 2 and args[:2] == ["run", "watch"]:
+                return True
+            if len(args) >= 2 and args[:2] in (["run", "view"], ["pr", "checks"]):
+                if "--watch" in args[2:]:
+                    return True
+        beginning = False
+    return False
 
 
 #: Shape 6. `gh run cancel <id>` plus both REST spellings the fleet has actually
@@ -570,14 +633,15 @@ def main():
     cmd = str(ti.get("command") or "")
     if "gh " not in cmd:
         allow()
-    # Existing Codex Bash-hook adapter forwards a turn ID but not Claude's
-    # transcript_path. Do not assume a native foreground shell is an async
-    # watcher merely because its provider can later return a process handle.
-    # A real background transport can opt in explicitly. One-off status reads,
-    # the existing quota floor and five-minute *advisory* cooldown are unchanged.
-    codex_native = bool(payload.get("turn_id")) and payload.get("transcript_path") is None
+    # This is a narrow *source-origin* selector, not an authority credential.
+    # Project Codex hook config sets it on its child process. A missing, renamed
+    # or extra payload field (turn_id/transcript_path) must not silently disable
+    # the policy or impose Codex-only restrictions on ordinary Claude hooks.
+    # Hook installation/trust still needs a separate real native-session proof.
+    # One-off reads and the incumbent five-minute *advisory* cooldown are unchanged.
+    codex_native = os.environ.get("MACRO_CODEX_HOOK") == "1"
     if codex_native and ti.get("run_in_background") is not True:
-        if CODEX_FOREGROUND_WATCH_RE.search(strip_heredocs(cmd)):
+        if codex_foreground_watch_command(cmd):
             deny(
                 "FOREGROUND CI WATCH WOULD BLOCK CODEX: do not pin the principal "
                 "to gh run watch, gh run view --watch or gh pr checks --watch. "

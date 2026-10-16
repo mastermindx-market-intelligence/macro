@@ -20,7 +20,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$(git rev-parse --show-toplevel)/.claude/hooks/gh_quota_guard.py\"",
+            "command": "MACRO_CODEX_HOOK=1 python3 \"$(git rev-parse --show-toplevel)/.claude/hooks/gh_quota_guard.py\"",
             "timeout": 30,
             "statusMessage": "Preventing blocking Codex CI watches"
           }

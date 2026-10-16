@@ -760,22 +760,45 @@ def test_retired_gate_pin_still_rejects_the_actual_denial(tmp_path, monkeypatch,
 
 # Codex's separate project hook must use the incumbent Claude/CI quota owner.
 # A long foreground watch may be quota-polite and still strand the reasoning turn.
-def _codex_hook_verdict(command: str, *, background: bool = False, native: bool = True) -> dict | None:
-    payload: dict = {"tool_name": "Bash", "tool_input": {"command": command}}
+@pytest.fixture
+def codex_poll_isolation(tmp_path, monkeypatch):
+    """New Codex simulations never mutate the caller's real poll cooldown state."""
+    state = tmp_path / "codex-poll-state"
+    state.mkdir()
+    monkeypatch.setenv("MACRO_GH_POLL_STATE_DIR", str(state))
+    return state
+
+
+def _codex_hook_verdict(
+    command: str, *, background: bool = False, native: bool = True,
+    marker: bool = True,
+) -> dict | None:
+    payload: dict = {
+        "tool_name": "Bash", "hook_event_name": "PreToolUse",
+        "session_id": "synthetic-session", "cwd": str(ROOT),
+        "tool_input": {"command": command},
+    }
     if background:
         payload["tool_input"]["run_in_background"] = True
     if native:
         payload["turn_id"] = "synthetic-native-turn"
+    else:
+        payload["transcript_path"] = "/tmp/synthetic-transcript"
+    environment = dict(os.environ)
+    if native and marker:
+        environment["MACRO_CODEX_HOOK"] = "1"
+    else:
+        environment.pop("MACRO_CODEX_HOOK", None)
     completed = subprocess.run(
         [sys.executable, str(HOOK)], input=json.dumps(payload).encode(),
-        capture_output=True, timeout=30,
+        capture_output=True, timeout=30, env=environment,
     )
     assert completed.returncode == 0
     output = completed.stdout.decode("utf-8", errors="replace").strip()
     return json.loads(output)["hookSpecificOutput"] if output else None
 
 
-def test_codex_project_bash_hook_routes_to_the_existing_quota_guard():
+def test_codex_project_bash_hook_routes_to_the_existing_quota_guard(codex_poll_isolation):
     config = json.loads((ROOT / ".codex" / "hooks.json").read_text())
     entries = config["hooks"]["PreToolUse"]
     assert len(entries) == 1
@@ -785,7 +808,7 @@ def test_codex_project_bash_hook_routes_to_the_existing_quota_guard():
     hook = hooks[0]
     assert hook["type"] == "command"
     assert hook["timeout"] <= 30
-    assert hook["command"] == 'python3 "$(git rev-parse --show-toplevel)/.claude/hooks/gh_quota_guard.py"'
+    assert hook["command"] == 'MACRO_CODEX_HOOK=1 python3 "$(git rev-parse --show-toplevel)/.claude/hooks/gh_quota_guard.py"'
 
 
 @pytest.mark.parametrize("command", [
@@ -794,26 +817,82 @@ def test_codex_project_bash_hook_routes_to_the_existing_quota_guard():
     "gh pr checks 8413 --watch",
     "gh run watch 38688166361 --interval 150 && gh pr merge 8413",
 ])
-def test_native_codex_foreground_ci_watches_do_not_occupy_the_principal(command):
+def test_native_codex_foreground_ci_watches_do_not_occupy_the_principal(command, codex_poll_isolation):
     output = _codex_hook_verdict(command)
     assert output and output["permissionDecision"] == "deny"
     assert "foreground" in output["permissionDecisionReason"].lower()
 
 
-def test_native_codex_nonwatch_status_and_background_watch_stay_permitted():
+def test_native_codex_nonwatch_status_and_background_watch_stay_permitted(codex_poll_isolation):
     assert not (_codex_hook_verdict("gh pr checks 8413") or {}).get("permissionDecision") == "deny"
     assert not (_codex_hook_verdict("gh run watch 38688166361 --interval 150", background=True) or {}).get("permissionDecision") == "deny"
     # Existing Claude pretool policy remains the current accepted slow-watch rule.
     assert not (_codex_hook_verdict("gh run watch 38688166361 --interval 150", native=False) or {}).get("permissionDecision") == "deny"
 
 
-def test_native_codex_default_watch_remains_denied_by_the_existing_quota_floor():
+def test_native_codex_default_watch_remains_denied_by_the_existing_quota_floor(codex_poll_isolation):
     output = _codex_hook_verdict("gh run watch 38688166361")
     assert output and output["permissionDecision"] == "deny"
+    assert "FOREGROUND CI WATCH" in output["permissionDecisionReason"]
+    # Independently exercise the existing default-interval quota floor, rather
+    # than counting the new foreground rule as proof the old guard still works.
+    legacy = _codex_hook_verdict("gh run watch 38688166361", native=False)
+    assert legacy and legacy["permissionDecision"] == "deny"
+    assert "SHARED GITHUB QUOTA" in legacy["permissionDecisionReason"]
 
 
-def test_codex_binding_does_not_invent_a_second_guard_or_session_stop_hook():
+def test_codex_binding_does_not_invent_a_second_guard_or_session_stop_hook(codex_poll_isolation):
     config = json.loads((ROOT / ".codex" / "hooks.json").read_text())
     assert set(config["hooks"]) == {"SessionStart", "PreToolUse"}
     assert len(config["hooks"]["SessionStart"]) == 1
     assert "Stop" not in config["hooks"]
+
+
+def test_codex_watch_policy_requires_positive_project_hook_origin(codex_poll_isolation):
+    """A Claude callback gaining a turn_id must not inherit the Codex-only rule."""
+    command = "gh run watch 38688166361 --interval 150"
+    assert _codex_hook_verdict(command, native=True, marker=False) is None
+    assert _codex_hook_verdict(command, native=True, marker=True)["permissionDecision"] == "deny"
+
+
+def test_codex_origin_is_not_trusted_for_ordinary_background_or_one_off_reads(codex_poll_isolation):
+    assert _codex_hook_verdict("gh pr checks 8413", native=True, marker=True) is None
+    output = _codex_hook_verdict("gh run watch 38688166361 --interval 150", background=True)
+    assert not output or output.get("permissionDecision") != "deny"
+
+
+@pytest.mark.parametrize("command", [
+    'git commit -m "docs: then gh run watch 38688166361 --interval 150"',
+    "grep -n '; gh pr checks 8413 --watch' tests/test_gh_quota_guard.py",
+    'printf "%s\\n" "do gh run view 38688166361 --watch --interval 150"',
+])
+def test_codex_native_guard_does_not_deny_quoted_mentions(command, codex_poll_isolation):
+    """A policy explaining a command is not the command itself."""
+    output = _codex_hook_verdict(command)
+    assert not output or output.get("permissionDecision") != "deny"
+
+
+@pytest.mark.parametrize("command", [
+    "gh run watch 38688166361 --interval 150; echo done",
+    "if gh pr checks 8413 --watch; then echo ok; fi",
+    "gh run view 38688166361 --watch --interval 150 | cat",
+])
+def test_codex_native_guard_still_catches_real_shell_commands(command, codex_poll_isolation):
+    output = _codex_hook_verdict(command)
+    assert output and output.get("permissionDecision") == "deny"
+
+
+@pytest.mark.parametrize("command", [
+    "bash -c 'gh run watch 38688166361 --interval 150'",
+    "sh -lc 'gh pr checks 8413 --watch'",
+    "bash <<'EOF'\ngh run watch 38688166361 --interval 150\nEOF",
+])
+def test_codex_native_shell_child_watch_is_not_hidden(command, codex_poll_isolation):
+    decision = _codex_hook_verdict(command)
+    assert decision and decision.get("permissionDecision") == "deny"
+
+
+def test_codex_documentation_heredoc_stays_allowed(codex_poll_isolation):
+    command = "cat <<'NOTE'\ngh run watch 38688166361 --interval 150\nNOTE"
+    decision = _codex_hook_verdict(command)
+    assert not decision or decision.get("permissionDecision") != "deny"
