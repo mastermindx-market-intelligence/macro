@@ -4121,8 +4121,8 @@ body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}
   body.page-macro.mx4-grid #sx-v5-fed,
   body.page-macro.mx4-grid #sx-v5-sentiment,
   body.page-macro.mx4-grid #sx-v5-sector{grid-column:span 6;}
-  body.page-macro.mx4-grid #sx-news-v2{grid-column:span 6;}
-  body.page-macro.mx4-grid #sx-aibrief-v2{grid-column:span 6;}
+  /* AI Brief and Alerts inherit .sx's tablet span. ID-specific spans here
+     would outrank the full-width .sx rule at <=700px. */
 }
 /* ≤700px — full width stack */
 @media(max-width:700px){
@@ -4130,6 +4130,18 @@ body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}
   body.page-macro.mx4-grid #sx-v5-fed,
   body.page-macro.mx4-grid #sx-v5-sentiment,
   body.page-macro.mx4-grid #sx-v5-sector{grid-column:span 12;}
+}
+
+/* Mobile Alerts Centre: reserve the top-right card action slot.
+   The status pill must wrap rather than sit beneath the sparkle at 320px. */
+@media(max-width:700px){
+  body.page-macro.mx4-grid #sx-news-v2 .mx5-card-title-row{
+    padding-right:64px;flex-wrap:wrap;row-gap:8px;
+  }
+  body.page-macro.mx4-grid #sx-news-v2 .mx5-card-title{margin-bottom:0;}
+  body.page-macro.mx4-grid #sx-news-v2 .mx5-card-badge{
+    max-width:100%;white-space:normal;
+  }
 }
 
 /* Expanded card spans full width */
@@ -15052,6 +15064,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>
       </div>
       <div class="mx5-dlg-body">
+        {# Native template: the baked metrics remain inert until an authorized open. #}
+        <template data-sentiment-fold>
         {% set _dlg_fg = fear_greed if (fear_greed is defined and fear_greed) else {} %}
         {% set _dlg_fg_dial = (_dlg_fg.get('dial') or 50) | float %}
         {% set _dlg_fg_label_en = _dlg_fg.get('label_en') or 'Neutral' %}
@@ -15184,6 +15198,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           {% endif %}
         </div>
         {% endif %}
+        </template>
       </div>
     </div>
   </div>
@@ -15359,6 +15374,17 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       if(_dlgActive){ _dlgTeardown(_dlgActive, false); _dlgActive = null; }
       var dlg = document.getElementById(id);
       if(!dlg) return;
+      /* One-time hydration happens ONLY after the existing registration gate.
+         This keeps the sentiment panel out of the cold DOM; it preserves
+         server-rendered metrics and delegated [data-rpop] handlers. */
+      if(id === 'dlg-sentiment'){
+        var sentimentBody = dlg.querySelector('.mx5-dlg-body');
+        var sentimentFold = sentimentBody && sentimentBody.querySelector(':scope > template[data-sentiment-fold]');
+        if(sentimentFold){
+          sentimentBody.appendChild(sentimentFold.content);
+          sentimentFold.remove();
+        }
+      }
       /* Heatmap adoption: on first open of dlg-markets, move #heatmap-scorecard into the
          dialog placeholder so it renders at 920px dialog scale (idempotent). */
       if(id === 'dlg-markets'){

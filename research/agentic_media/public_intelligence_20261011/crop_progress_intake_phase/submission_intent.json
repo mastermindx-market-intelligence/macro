@@ -1,0 +1,14 @@
+{
+  "state": "INTENT_RECORDED_NOT_YET_EXECUTED",
+  "id": "usda-nass-2026-10-13-crop-progress",
+  "pdf_sha256": "ecdbbb595fb63ce179dbf0aad57541c28aec53e988489a376b2a1d002304968c",
+  "sidecar_sha256": "0ab7784c57118c7f6b7c1f92c9de9f2736c271a1d60c0e27583a46cadd4a5e6d",
+  "script_sha256": "f0036e32f335e8027f03008fb865fcbca18965e81eafbf3c1de224352a856d4c",
+  "prerequisite": "Original review ACCEPTED; final sidecar parent-verified; 31 intake checks and 10 consumer controls pass.",
+  "planned_effect": "Two conditional creates in the existing private Research inbox; no catalog/producer/provider/staging/Press write.",
+  "at": "2026-10-14T16:57:02.820089+00:00",
+  "source_frontier": "2acc3051cb11ed5b5c4be6b5820d319013e5b6cf",
+  "review_run": "mmx-press-crop-progress-facts-20261014-001",
+  "review_acceptance": "ACCEPTED",
+  "rule": "Execute this exact script once; uncertain writes remain on same carrier without replay."
+}

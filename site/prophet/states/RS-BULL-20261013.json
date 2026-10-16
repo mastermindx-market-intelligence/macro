@@ -5,7 +5,7 @@
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
   "management_confidence": 67.7,
-  "raw_confidence": 67.7,
+  "raw_confidence": 67.8,
   "delta_vs_base": 7.7,
   "recommended_action": "wait",
   "human_state": "Awaiting Trigger",
@@ -14,7 +14,7 @@
     "progress": 0.0,
     "pace": 100.0,
     "retention": 50.0,
-    "overlay": 52.9
+    "overlay": 53.0
   },
   "geometry": {
     "dist_to_stop_r": 0.999,

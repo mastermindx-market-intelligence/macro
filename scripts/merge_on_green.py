@@ -243,6 +243,7 @@ import base64
 import datetime as dt
 import io
 import json
+import math
 import os
 import re
 import secrets
@@ -3794,10 +3795,16 @@ def sweep_order(
     The rotation is what makes the cap fair. This script keeps NO state between
     runs — it is a level-triggered reconciler, and that property is load-bearing
     for the overlapping-sweep safety argument — so it cannot remember where the
-    last sweep stopped. The wall clock is the cursor instead: the window start
-    advances by `cap` every `bucket_seconds`, which walks the whole ring and
-    therefore reaches every pull request within ceil(N / cap) buckets no matter
-    how long it has sat. Sorting by `updated_at` was the obvious alternative and
+    last sweep stopped. The wall clock is the cursor instead. Within a cycle,
+    the evaluation window advances by `cap` every `bucket_seconds`. That covers
+    evaluation, but can leave the smaller refresh-attempt prefix permanently
+    fixed: with 100 pulls and cap=100, only the same first eight get attempts.
+    After each distinct-offset cycle, advance its phase by a value coprime to
+    gcd(cap, N). The cycles then visit every residue class, so each ordinary pull
+    gets the first ordinary position within an aligned N-bucket epoch (assuming
+    a stable backlog and priority membership). Higher-priority tiers and actual
+    admission still decide whether it receives a refresh. No state or extra
+    requests are introduced. Sorting by `updated_at` was the obvious alternative and
     it starves: a pull request nothing acts on never has its timestamp bumped, so
     it would hold its place — or lose it — forever.
 
@@ -3812,7 +3819,19 @@ def sweep_order(
     stable = sorted(pulls, key=lambda pull: int(pull.get("number") or 0))
     span = len(stable)
     when = int(dt.datetime.now(dt.timezone.utc).timestamp() if now is None else now)
-    offset = ((when // max(1, bucket_seconds)) * max(1, cap)) % span
+    step = max(1, cap)
+    divisor = math.gcd(step, span)
+    cycle_length = span // divisor
+    # Keep the existing cap-sized evaluation windows, but move their phase when
+    # they repeat. A coprime phase visits all residue classes. Start near the
+    # bounded attempt width so scarce refresh prefixes cover the backlog sooner;
+    # this changes ordering only, never either workload or API-attempt admission.
+    phase_step = min(MAX_REFRESHES_PER_SWEEP, divisor)
+    while math.gcd(phase_step, divisor) != 1:
+        phase_step -= 1
+    bucket = when // max(1, bucket_seconds)
+    phase = (bucket // cycle_length) * phase_step
+    offset = (bucket * step + phase) % span
     wanted = str(trigger_head_sha or "").strip().lower()
     lease_number = str(refresh_lease_number or "")
 
