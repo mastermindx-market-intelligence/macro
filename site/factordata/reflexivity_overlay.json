@@ -2,14 +2,14 @@
   "schema": "reflexivity_overlay.v1",
   "is_context_only": true,
   "as_of": "2026-10-14",
-  "generated_utc": "2026-10-15T17:20:25Z",
+  "generated_utc": "2026-10-15T23:30:30Z",
   "note": "Risk-clustering read: 'is this the same hidden trade?'. NOT an alpha claim. Board-level, held-agnostic (US only, v1). Display-only per R-F / Signal Commons R7.",
   "factor_caveat": "Per-name secondary betas (oil/usd/btc/gold/china) are OOS-unstable and excluded. Similarity uses high-tier factors only (mkt/growth/size/rates, scope=single). Trust the MEMBERSHIP leg more than the factor leg for individual names.",
   "board_concentration": {
-    "n": 14,
-    "n_eff": 5.02,
+    "n": 15,
+    "n_eff": 5.61,
     "basis": "membership-jaccard+high-tier-factor-cosine",
-    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 14 candidates \u2248 5.02 independent bets."
+    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 15 candidates \u2248 5.61 independent bets."
   },
   "same_thesis_groups": [
     {
@@ -69,6 +69,7 @@
           "BIIB",
           "CNC",
           "CVX",
+          "EDU",
           "EXPO",
           "XOM"
         ],
@@ -129,6 +130,7 @@
           "BIIB",
           "CNC",
           "CVX",
+          "EDU",
           "EL",
           "EXPO"
         ],
@@ -188,6 +190,7 @@
           "ABBV",
           "BIIB",
           "CNC",
+          "EDU",
           "EL",
           "EXPO",
           "XOM"
@@ -443,6 +446,7 @@
           "ABBV",
           "BIIB",
           "CVX",
+          "EDU",
           "EL",
           "EXPO",
           "XOM"
@@ -452,6 +456,56 @@
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
       "why_en": "Partial overlap with ABBV \u2014 us_sector_health, Health Care (similarity 50%).",
       "why_zh": "\u4e0e ABBV \u90e8\u5206\u91cd\u53e0 \u2014 us_sector_health\u3001Health Care\uff08\u76f8\u4f3c\u5ea6 50%\uff09\u3002"
+    },
+    "EDU": {
+      "verdict": "new",
+      "max_similarity": 0.0,
+      "basis": "membership-only:no-beta",
+      "nearest": [
+        {
+          "ticker": "EL",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:insufficient-factors",
+          "shared_groups": [],
+          "same_earnings_week": true
+        },
+        {
+          "ticker": "XOM",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:insufficient-factors",
+          "shared_groups": [],
+          "same_earnings_week": true
+        },
+        {
+          "ticker": "CVX",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:insufficient-factors",
+          "shared_groups": [],
+          "same_earnings_week": true
+        }
+      ],
+      "earnings_leg": {
+        "next_date": "2026-10-27",
+        "same_week_peers": [
+          "ABBV",
+          "BIIB",
+          "CNC",
+          "CVX",
+          "EL",
+          "EXPO",
+          "XOM"
+        ],
+        "has_data": true
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Distinct bet \u2014 nearest peer EL at 0% similarity.",
+      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 EL\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
     },
     "EXPO": {
       "verdict": "new",
@@ -495,6 +549,7 @@
           "BIIB",
           "CNC",
           "CVX",
+          "EDU",
           "EL",
           "XOM"
         ],
@@ -553,6 +608,7 @@
           "BIIB",
           "CNC",
           "CVX",
+          "EDU",
           "EL",
           "EXPO",
           "XOM"
@@ -612,6 +668,7 @@
           "ABBV",
           "CNC",
           "CVX",
+          "EDU",
           "EL",
           "EXPO",
           "XOM"
@@ -824,6 +881,13 @@
       "factor_basis": "beta-read-thin:r2=0.08<0.2",
       "shared_groups": []
     },
+    "EL__EDU": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:insufficient-factors",
+      "shared_groups": []
+    },
     "EL__EXPO": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -921,6 +985,13 @@
       "factor_basis": "beta-read-thin:r2=0.08<0.2",
       "shared_groups": []
     },
+    "XOM__EDU": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:insufficient-factors",
+      "shared_groups": []
+    },
     "XOM__EXPO": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -1007,6 +1078,13 @@
       "factor_basis": "beta-read-thin:r2=0.08<0.2",
       "shared_groups": []
     },
+    "CVX__EDU": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:insufficient-factors",
+      "shared_groups": []
+    },
     "CVX__EXPO": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -1079,6 +1157,13 @@
       "factor_basis": "beta-read-thin:r2=0.19<0.2",
       "shared_groups": []
     },
+    "FAST__EDU": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.19<0.2",
+      "shared_groups": []
+    },
     "FAST__EXPO": {
       "membership_jaccard": 0.25,
       "factor_cosine": null,
@@ -1144,6 +1229,13 @@
       "factor_basis": "beta-read-thin:r2=0.08<0.2",
       "shared_groups": []
     },
+    "DIS__EDU": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:insufficient-factors",
+      "shared_groups": []
+    },
     "DIS__EXPO": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -1203,6 +1295,13 @@
       "factor_basis": "beta-read-thin:r2=0.08<0.2",
       "shared_groups": []
     },
+    "APA__EDU": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:insufficient-factors",
+      "shared_groups": []
+    },
     "APA__EXPO": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -1254,6 +1353,13 @@
       "factor_basis": "beta-read-thin:r2=0.08<0.2",
       "shared_groups": []
     },
+    "DVN__EDU": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:insufficient-factors",
+      "shared_groups": []
+    },
     "DVN__EXPO": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -1296,6 +1402,13 @@
       "factor_cosine": null,
       "combined": 0.0,
       "factor_basis": "beta-read-thin:r2=0.12<0.2",
+      "shared_groups": []
+    },
+    "CNC__EDU": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.08<0.2",
       "shared_groups": []
     },
     "CNC__EXPO": {
@@ -1348,6 +1461,48 @@
         "basket:us_sector_health",
         "sector:Health Care"
       ]
+    },
+    "EDU__EXPO": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.20<0.2",
+      "shared_groups": []
+    },
+    "EDU__ABBV": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.13<0.2",
+      "shared_groups": []
+    },
+    "EDU__BIIB": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.07<0.2",
+      "shared_groups": []
+    },
+    "EDU__COKE": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.06<0.2",
+      "shared_groups": []
+    },
+    "EDU__TALO": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:insufficient-factors",
+      "shared_groups": []
+    },
+    "EDU__WST": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.12<0.2",
+      "shared_groups": []
     },
     "EXPO__ABBV": {
       "membership_jaccard": 0.0,
@@ -1473,7 +1628,7 @@
     "new_note": "similarity < 0.35 \u2192 distinct bet"
   },
   "n_eff_by_lane": {
-    "entry_open": 5.0,
+    "entry_open": 5.7,
     "setting_up": 2.0
   },
   "source_passport": {

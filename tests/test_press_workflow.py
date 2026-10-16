@@ -399,7 +399,7 @@ def test_press_lane_job_exists_and_obeys_the_pack_manifest_rules():
 
 
 def test_press_lane_covers_estate_and_analytical_dependencies():
-    """The fixed baseline adds the incumbent pandas/numpy engine and REST seam.
+    """The lane adds the analytical engine, REST seam and HTML receipt parser.
 
     Preserve the estate dependencies and the single-install pack contract;
     analytical tests must import in the lane's isolated environment.
