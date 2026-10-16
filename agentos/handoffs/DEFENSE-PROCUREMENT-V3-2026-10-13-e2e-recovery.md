@@ -51,7 +51,7 @@ do_not_redo:
   - Historical PR7186 row-cap repair.
   - Accepted evidence unless its actual source, input or contract changes.
   - Uncertain Fabric operations through a new identity, account or carrier.
-prs: [7175, 9066, 9490]
+prs: [7175, 9066, 9490, 9496]
 decisions: []
 ---
 
@@ -983,3 +983,7 @@ PR9490 remains draft: CI38828866998 succeeded; original history review has unkno
 ### October16 merged-source qualification
 
 Source1b99b50 incorporates main3cae8c8 and the native generated HTML. Its full frozen proof passes104 cases with one skip in523.98s; committed-source witness verification passes. All32 browser cases and the frozen CI import closure pass. Current evidence replaces the historical pre-merge capture at the existing linked location; the previous capture is retained in Git. Source release, bounded financial5a publication and installed/entitled acceptance remain required.
+
+### October16 evidence navigation and export qualification
+
+Source478258 repairs production-observed FMS deep links, Back/Forward and source-access defects and restores export amount provenance. The full native proof and browser evidence are retained in `research/defense_intelligence/e2e_20261011/navigation_export_20261016/`. Source-byte verification, binding CI, normal release and the same real signed-in journey/downloads remain required. PR9496 remains frozen on e39 with its existing observer; the original held review returns are not duplicated.
