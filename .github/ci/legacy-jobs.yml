@@ -20319,6 +20319,9 @@ jobs:
             tests/test_control_room_caddy.py \
             tests/test_publish_control_room_active_builds.py -q
 
+      - name: fresh Options principal and product entitlement (synthetic authority)
+        run: python -m pytest tests/test_options_auth.py -q
+
   quant-q15-noise-robust-rv:
     if: ${{ false }}
     gate: code
