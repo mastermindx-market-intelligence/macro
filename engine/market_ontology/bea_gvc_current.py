@@ -22,6 +22,7 @@ L0_ID = "bea.gvc.may2026.original_responses"
 L1_ID = "bea.gvc.may2026.industry_import_inputs"
 EDITION_DATE = "2026-05-21"
 RIGHTS_SCOPE = "bea_public_domain_current_descriptive_scope_20261014"
+RIGHTS_DECISION = "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
 MAX_BYTES = 16 * 1024 * 1024
 MAX_JSON_SAFE_INTEGER = (1 << 53) - 1
 YEARS = tuple(range(2017, 2025))
@@ -123,11 +124,10 @@ def _source_gate(registry: Registry) -> str | None:
         return "SOURCE_SCOPE_UNQUALIFIED"
     for contract in (l0, l1):
         rights = contract.rights
-        for key in ("internal_computation", "redistribution"):
+        for key in ("purchase_access", "internal_computation", "redistribution"):
             if (rights.get(key) != "granted"
                     or not isinstance(rights.get("evidence"), dict)
-                    or not isinstance(rights["evidence"].get(key), str)
-                    or not rights["evidence"][key].startswith("DEC:")):
+                    or rights["evidence"].get(key) != RIGHTS_DECISION):
                 return "SOURCE_RIGHTS_NOT_GRANTED"
     return None
 

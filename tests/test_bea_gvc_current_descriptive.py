@@ -19,9 +19,9 @@ NATIVE_UTC = "2026-10-10T13:47:00+00:00"
 GEN = "a" * 64
 RIGHTS = {"purchase_access": "granted", "internal_computation": "granted",
           "redistribution": "granted",
-          "evidence": {"purchase_access": "DEC:TEST",
-                       "internal_computation": "DEC:TEST",
-                       "redistribution": "DEC:TEST"}}
+          "evidence": {"purchase_access": gmi.RIGHTS_DECISION,
+                       "internal_computation": gmi.RIGHTS_DECISION,
+                       "redistribution": gmi.RIGHTS_DECISION}}
 
 
 def fake_registry(*, status=DatasetStatus.PROPOSED, rights=None, l1_inputs=(gmi.L0_ID,)):
@@ -138,6 +138,22 @@ def test_existing_registry_contract_and_rights_are_required():
     assert gmi.current_industry_candidate(
         Registry((l0, l1, l1)), industry_code_exact="5241X",
     )["reason"] == "DUPLICATE_SOURCE_REGISTRY_ID"
+
+
+def test_rights_are_bound_to_the_exact_bea_decision_and_all_three_uses():
+    evidence = dict(RIGHTS["evidence"])
+    evidence["redistribution"] = "DEC:UNRELATED-SOURCE-PURPOSE"
+    forged = {**RIGHTS, "evidence": evidence}
+    assert gmi.current_industry_candidate(
+        fake_registry(status=DatasetStatus.PRODUCED, rights=forged),
+        industry_code_exact="5241X",
+    )["reason"] == "SOURCE_RIGHTS_NOT_GRANTED"
+
+    purchase_denied = {**RIGHTS, "purchase_access": "not_granted"}
+    assert gmi.current_industry_candidate(
+        fake_registry(status=DatasetStatus.PRODUCED, rights=purchase_denied),
+        industry_code_exact="5241X",
+    )["reason"] == "SOURCE_RIGHTS_NOT_GRANTED"
 
 
 def test_signed_current_descriptive_packet_and_same_machine_bytes():

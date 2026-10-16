@@ -68,6 +68,23 @@ caller-created test inputs; they cannot authenticate the source. The consumer
 does not import the unmerged native code and remains independently scoped to
 existing Data OS interfaces.
 
+## Exact source-purpose rights admission hardening — October 16
+
+Independent hypothetical `PRODUCED` test contracts now qualify the BEA family
+only when all **three independent rights** (purchase/access, internal computation,
+redistribution) are granted under the exact decision
+`DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014` on both L0 and L1. Merely
+presenting an unrelated `DEC:`-prefixed evidence key or a missing/denied
+purchase-access right is a typed refusal **before source bytes are read**.
+This does not override owner source custody or elevate a proposed dataset.
+
+A dedicated adversarial rights test initially failed against the former loose
+reference check and then passed after the exact-decision fix; the **14-test**
+consumer suite passed. No previously refused `PLANNED_NOT_INSTALLED` producer
+edit was retried or substituted, and no real source files, website or entitlement
+systems were touched. Fresh hosted CI and independent review of the revised
+consumer head remain separate from local tests.
+
 ## Production remains HELD
 
 Real acceptance still requires lawful original 72-response L0 validation, source industry axis resolution, accepted 5241X/5241XX mapping or explicit unresolved handling, installed L0/L1 UTC ingest/revision/correction chain and registry PRODUCED promotion by the current Data OS owner. Existing app authentication and entitlement then must be proven alongside same-generation browser/API descriptive results. This candidate is not a release, approval, producer or new control plane.
