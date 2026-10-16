@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 SITE = Path(__file__).resolve().parents[1] / "site"
-PAGES = ("intl.html", "intl_stock.html", "baskets_intl.html", "research_screener.html")
+PAGES = ("intl.html", "intl_stock.html", "intl_stocks.html", "baskets_intl.html", "research_screener.html")
 STAMP = re.compile(r"theme[.]js[?]v=([0-9a-f]{8})")
 
 

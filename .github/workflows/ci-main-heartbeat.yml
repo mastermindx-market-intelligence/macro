@@ -147,7 +147,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps (theme.js bake reads config.yml)
-        run: pip install pyyaml pytest
+        run: pip install pyyaml pytest rjsmin==1.2.5
       - name: template-site-sync selftest (gate fires on synthetic divergence)
         run: python3 scripts/check_template_site_sync.py --selftest
       - name: site copies of template assets must byte-match templates/

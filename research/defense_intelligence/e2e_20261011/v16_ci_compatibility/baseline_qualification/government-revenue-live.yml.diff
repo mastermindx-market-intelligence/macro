@@ -1,0 +1,45 @@
+diff --git a/.github/workflows/government-revenue-live.yml b/.github/workflows/government-revenue-live.yml
+index f7c4fe24c51e..05e57fb78cc5 100644
+--- a/.github/workflows/government-revenue-live.yml
++++ b/.github/workflows/government-revenue-live.yml
+@@ -837,6 +837,7 @@ jobs:
+           PYTHONDONTWRITEBYTECODE: "1"
+         run: |
+           set -euo pipefail
++          # dag: scripts.ci.govrev_candidate_proof
+           python scripts/ci/govrev_candidate_proof.py prove \
+             --root . \
+             --install-missing \
+@@ -858,7 +859,7 @@ jobs:
+           set -euo pipefail
+           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+           . "$RUNNER_TEMP/govrev-reviewed-source-guards.sh"
+-          # Guard reviewed inputs before staging.
++          # Guard inputs.
+           PUSH_LABEL="government-revenue evidence"
+           if ! push_on_main_ok; then exit 0; fi
+           git config user.name "dashboard-bot"
+@@ -1065,7 +1066,7 @@ jobs:
+             echo "no material Government Revenue artifacts to publish"
+             exit 0
+           fi
+-          # Seal every output before publication.
++          # Seal outputs.
+           python scripts/ci/govrev_candidate_proof.py verify \
+             --root . --receipt "$RUNNER_TEMP/govrev-candidate-proof.receipt.json"
+           push_staged_clean \
+@@ -1139,11 +1140,11 @@ jobs:
+             comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
+                      <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
+               | while IFS= read -r f; do rm -f -- "$f" || true; done
+-            # Recheck append-only freshness before amending.
+-            # Fail only on a proven withhold failure.
++            # Recheck freshness.
++            # Refuse proven withholding.
+             if ! push_append_only_fence origin/main --amend; then push_backoff; continue; fi
+             if git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
+-              # Rebuild after every rebase.
++              # Rebuild after rebase.
+               assert_award_event_bundle
+               assert_award_event_source_clean
+               assert_subaward_bundle
