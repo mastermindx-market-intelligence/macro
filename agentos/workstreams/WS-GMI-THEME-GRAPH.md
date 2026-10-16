@@ -6,7 +6,10 @@ objective: >
   curated ontology/probation, measurement eligibility, one ThemeState authority and
   read-only U.S./China selection-cohort context. Development done = D2C/D2D/D2E/W3B/W3C
   are production-proven and downstream F04 can consume the canonical readers without a
-  duplicate theme/state/graph truth plane.
+  duplicate theme/state/graph truth plane. The 2026-10-16 Meta-CEO commission also
+  requires a maintained, source-backed map of business activity, qualified exposure,
+  economic relationships and actual Terminal explanations across an explicit universe.
+  Original development acceptance alone does not complete that expanded mission.
 status: active
 program: gmi-theme-graph
 repos: [macro]
@@ -19,10 +22,12 @@ owns_paths:
   - data/theme_graph/
   - config/theme_sources.yml
 decisions:
+  - DEC:GMI-INVESTABLE-ECONOMY-RECOVERY-ACCEPTANCE
   - DEC:GMI-THEME-GRAPH-END-TO-END-COMPLETION-OWNERSHIP-SEQUENCING
   - DEC:GMI-F04-BOUNDED-CHILD-ROUTING-2026-08-28
   - DEC:GMI-THEME-FABRIC-C0-CONVERGENCE
 artifacts:
+  - research/theme_graph/GMI_PROGRAM_RECOVERY_2026-10-16.md
   - research/theme_graph/THEME_GRAPH_END_TO_END_COMPLETION_FREEZE_2026-08-27.md
   - research/theme_graph/CEO_W3_CONTINUATION_DIRECTIVE_2026-08-14.md
   - research/prophet_v4/V4_D2_ONTOLOGY_AND_PROBATION_HANDOFF.md
@@ -83,48 +88,51 @@ waves:
     pr: 8540
     depends_on: [D2C, D2D]
     next_action: >
-      D2E #8540 remains the sole acceptance carrier at published rule head 03462ef689a5bbb4c4254c48db34713efd731876.
-      The prospective window and adoption.status are ADOPTED_PROSPECTIVE_RULE_ONLY, awaiting
-      production evidence; composition.d2e is HOLD_AWAITING_SELECTED_GENERATION_PROOF. Formal comment 6071188794
-      (GitHub created_at 2026-10-08T23:38:32Z). Use exactly workflow_run.run_started_at >
-      designated_formal_adoption_comment.created_at; engine/witness start is no substitute.
-      Historical P1 remains accepted; GEN3 N4/N5 remain UNPROVEN. Q4 established only five known
-      GEN3 tuples and did not recover the original unnamed a–e. All new N/Q replacement statuses
-      remain NOT_RUN with null observations; P2 is NOT_ASSESSED and P3 null (both unassessed). No replacement generation
-      is selected. Observe ordered original
-      schedule attempts with immutable workflow/upload and effective-checkout proof. Apply the
-      no-producer exception only with complete successful-gate/literal run=false/terminal skipped/
-      no-engine-execution proof. Unknown evidence cannot justify skipping; upload success is not
-      eligibility. A selected missing/failed archive is HOLD, with no rollover. Collect same-run
-      evidence and independent P3 acceptance before D2E completion or W3B release. Continue from
-      agentos/handoffs/GMI-THEME-GRAPH-2026-10-08.md; preserve historical receipts.
+      Original #8540 selected-generation P2 and independent P3 are accepted and merged.
+      Principal receipt 6103645886 accepts P2 for original workflow 37874656026/attempt 1
+      and graph publication 48cf3140; incorporation 6120586132 is committed at e77e8430
+      and #8540 merged October 12. The old P2 NOT_ASSESSED / P3 null next_action is stale:
+      DO_NOT_REDO original selected-generation acceptance or refused publisher-log retrieval.
+      Retain P1 and the specific historical GEN3 N4/N5 limitations. Scope does not confer
+      blanket eligibility on later graph subjects or current-use purposes. Current-generation
+      native identity, membership, rights and eligibility remain W3B dependencies; keep this
+      broad rights/coverage wave open until those original production obligations are met.
+      See the 2026-10-16 recovery record for evidence links and the separate acceptance boundaries.
   - id: W3B
     title: "Sole local + canonical ThemeState — gmi-theme-state-w3b-20260827-sol-001"
     status: in_progress
     depends_on: [D2E]
     next_action: >
-      Existing #8455 and #8539 source remains accepted; the sole graph shadow path remains
-      GRAPH_SHADOW_STATE through the incumbent owner bundle, atomic generation write and lock.
-      W3B is DRAFT_NOT_RELEASED. Merged witness retention and adopted #8540 window rules do not
-      release it: require accepted same-run natural shadow/publication evidence and independent
-      D2E P3. Historical GEN3 N4/N5 remain UNPROVEN. Preserve LEGACY engine default, lag-one/PIT
-      qualifications and the October 6 handoff; no third producer or state store.
+      Retain accepted #8455/#8539 state-owner source and merged #8783 selection-clock repair.
+      Original D2E selected-generation P2/P3 is already accepted; no replacement P3 is owed.
+      Natural shadow writes are observed through October 16, but they do not prove qualified
+      production state or W3B release. At census 9629927bfc7a4dad13b89590e86cd1b9be33573a,
+      shadow blob 4b35213b43547906a34a0477d354eed081e722ae has 663 UNAVAILABLE subjects,
+      all NOT_QUALIFIED/D2E_UNSEALED with missing identity, membership and current-use rights.
+      The builder supplies no owner_readers; eligibility and qualified rights remain explicitly
+      unsealed in incumbent production contracts. Bind authentic current-generation owner
+      receipts and same-run effective-checkout/publication proof through those owners, then
+      obtain the existing W3B acceptance. Preserve LEGACY default and GRAPH_SHADOW_STATE
+      atomic generation/lock path, lag-one/PIT qualifications and historical receipts.
+      No third producer, truth store or blanket flag promotion.
   - id: W3C
     title: "Selection Cohort Intelligence — gmi-theme-cohort-w3c-20260827-sol-001"
     status: in_progress
     depends_on: [W3B]
     next_action: >
-      Use the incumbent Option A typed fail-closed projection as the lawful acceptance outcome
-      until a separate capture-rights ruling. Source US/CN at 36dc212939fc9926af5f529e12f8fd3eae04a05a
-      both have blob 533ad2e21f2154d49efda7196504dc64e88511b8:
-      SOURCE_UNAVAILABLE:CAPTURE_RIGHTS_UNAVAILABLE, null generation and six false authority flags.
-      At 2026-10-08T21:47:06Z anonymous Macro US/CN URLs returned 401 authentication_required,
-      no-store/Vary: Cookie; Terminal /api/nw?f=market_plane returned 401 sign_in_required,
-      private,no-store/Vary: Cookie. This proves only the auth boundary, not served JSON parity
-      or signed-in human proof. Preserve auth; obtain authorized same-generation source,
-      publication, gateway and human/machine evidence with refusal reasons intact.
-      No zero-measurement claim, available CN card, capture enrollment or board mutation is inferred.
-      D2E/W3B remain held; use agentos/handoffs/GMI-THEME-GRAPH-2026-10-08.md.
+      The incumbent Option A typed fail-closed projection remains the lawful unavailable
+      outcome until an applicable capture-rights ruling and qualified producer proof.
+      Historical US/CN source 36dc212939fc9926af5f529e12f8fd3eae04a05a has common blob
+      533ad2e21f2154d49efda7196504dc64e88511b8: SOURCE_UNAVAILABLE:CAPTURE_RIGHTS_UNAVAILABLE,
+      null generation and six false authority flags. October 8 anonymous Macro/Terminal 401
+      observations prove authentication boundaries only, not served parity or signed-in proof.
+      Terminal #868 has accepted exact-head source review/required CI at e199c9e5357427a2da4722e5ef3e2da326a6d0bd,
+      but later OpenAI integration rejection 6075735969 is reaffirmed by 6103693287:
+      EFFECT_NONE, hold retained, no retry through another tool/account/worker/branch/direct merge.
+      Preserve the fix and obtain legitimate clearance of that specific effect before integration.
+      After native qualification, prove authorized same-generation source, publication, API and
+      actual EN/ZH human/machine parity for both U.S. and China with refusal reasons intact.
+      No available CN card, capture enrollment, zero-measurement claim or board mutation is inferred.
   - id: W-A
     title: "ThemeState owner adapter + CTE-v3 lineage on the state carrier (#8455)"
     status: done
@@ -251,9 +259,10 @@ waves:
       Research #8646, breadth #8650, C8 #8631, M1 #8651 and C4 #8629 are merged with accepted
       source receipts. Witness #8653 accepted head ebd4382fdafdfecf55029305baddfa95b60f863a merged as
       c44aae5f131a59571ad0afcd7197e3d8696bc2b9 after binding CI and post-merge source conservation proof.
-      The #8540 rule window at 03462ef689a5bbb4c4254c48db34713efd731876 is
-      ADOPTED_PROSPECTIVE_RULE_ONLY, awaiting production evidence; composition.d2e is
-      HOLD_AWAITING_SELECTED_GENERATION_PROOF. N/Q NOT_RUN/null; P2 NOT_ASSESSED; P3 null (both unassessed).
+      The original #8540 selected-generation P2/P3 acceptance is merged; the former
+      prospective-only/P2 NOT_ASSESSED/P3 null projection is superseded by receipts
+      6103645886 and 6120586132. Preserve the historical rule, evidence and narrower
+      limitations; do not infer current-generation rights/eligibility or W3B acceptance.
       This records set uses #8635's ordinary review/validation/CI/merge/source gate. Apply
       DEC:GMI-THEME-FABRIC-C0-CONVERGENCE; preserve
       census originals, optional #8643 scope, R-J.10/R9, E1/A1, R-H.W2w gaps and all existing
@@ -264,7 +273,9 @@ landmines:
     The old next_action waiting for the 2026-08-15 scrape is superseded permanently.
     Natural graph data has accrued through belief_time 2026-08-27.
   - >-
-    D2C/D2D/D2E were not completed as distinct waves. W3B must not leapfrog them.
+    D2C/D2D source and original D2E selected-generation P2/P3 are accepted. W3B still
+    owes current-generation qualified owner binding and natural producer/reader proof;
+    do not replay accepted original D2E evidence or promote later subjects by inheritance.
   - >-
     Existing data/neuralweb/theme_state.json is useful predecessor context, not a second
     future authority. W3B must reconcile it; no third ThemeState producer/store.
@@ -306,20 +317,37 @@ landmines:
     plus the job-level if: always() && needs.et_gate.outputs.run != 'false' idiom
     (DSC:DAILY-ENGINE-RESULT-IS-FAILURE-AFTER-ITS-COMMIT).
 next_action: >
-  Continue operation theme-fabric-e2e-20261008-sol-001 from
-  agentos/handoffs/GMI-THEME-GRAPH-2026-10-08.md under incumbent coo-fable/seat 6f14c2da.
-  C4 and witness sources are merged and verified; #8540 prospective rules are
-  ADOPTED_PROSPECTIVE_RULE_ONLY, awaiting production evidence, at 03462ef689a5bbb4c4254c48db34713efd731876.
-  composition.d2e remains HOLD_AWAITING_SELECTED_GENERATION_PROOF.
-  Next critical path: observe the first eligible original natural daily run using the exact
-  designated formal-adoption created_at boundary, freeze and assess same-run evidence, then
-  independent P3 and any lawful W3B release. N/Q remain NOT_RUN/null; P2 NOT_ASSESSED; P3 null (both unassessed).
-  Continue W3C authorized payload/human proof and retained F04, qualified-micro, owner and E1
-  gates. This records set follows #8635's ordinary PR gate; close #8633 as folded only after
-  actual records merge/source proof. CHECKPOINTED_CONTINUATION; mission completion is false.
+  Continue the current Meta-CEO commission under native session
+  01a1468f-b66c-707c-80cc-b66b7553b0cd and incumbent owner contracts. Original accepted
+  D2E P2/P3 is not an unfinished task. The 2026-10-16 recovery record and supplemental
+  acceptance decision govern the expanded capability/coverage map without replacing
+  original D2/W3 or F04 ownership. First finish the existing #9423 economic-context
+  source repair at cedae32cf414f98c01406367d07e1aef511059f0: 435 local checks pass;
+  exact-head hosted CI and current-main integration review remain required before normal
+  source release. In parallel, extend incumbent activity admission/current-state contracts
+  with authentic native evidence, and retain F04/E20 installation and actual API/Terminal
+  proof as separate gates. Preserve the explicit #8793 and Terminal #868 denied effects,
+  API524 EFFECT_UNKNOWN on its original carrier, immutable C01 generation 040b and all
+  current-use rights. An old session label alone does not establish a live writer.
+  All original U.S./China and wider descriptive coverage obligations remain visible;
+  one issuer journey is the first proof, not mission completion. MISSION_COMPLETE=false.
+
 ---
 
 ## Current production substrate
+
+Current census at Macro 9629927bfc7a4dad13b89590e86cd1b9be33573a: graph computed
+2026-10-16T17:12Z contains 3,975 nodes, 25,643 edges and 13,349 latest-belief edges.
+Taxonomy V2 contains 10 categories, 18 themes, 12 subthemes and 68 microthemes.
+All 103 original micro candidates and 46 addendum activities are still unadmitted;
+none establishes a qualified canonical micro membership or economic magnitude.
+The current shadow generation bd084373e896ac0bd192b4eb3766c81f contains 663
+UNAVAILABLE / NOT_QUALIFIED subjects. These are measured source facts, not qualified
+coverage or completed U.S./China consumer proof. Full count denominators, owner gaps,
+primary research, acceptance thresholds and next implementation sequence are in
+research/theme_graph/GMI_PROGRAM_RECOVERY_2026-10-16.md.
+
+Historical predecessor receipt (retained evidence):
 
 Natural GMI receipt at current reconciliation (D2E pre-acceptance census, 2026-10-05, read from
 origin/main 20eb503a09): data/theme_graph/_meta.json computed_at 2026-10-05T07:55:06Z, lane
