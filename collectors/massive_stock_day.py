@@ -124,12 +124,16 @@ scripts/publish_r2.py for the R2 upload path.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
+import re
+import stat
 import sys
+import tempfile
 import time
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterator
 
@@ -140,6 +144,7 @@ from collectors.massive_flatfiles import (
 )
 from lib import config
 from lib.massive_ticker import artifact_relative_path, iter_artifact_paths
+from lib.nyse_calendar import expected_last_session, is_session
 
 log = logging.getLogger(__name__)
 
@@ -675,6 +680,169 @@ def backfill(
     }
     log.info("massive_stock_day backfill complete: %s", result)
     return result
+
+
+
+
+def repair_processed_day_missing_members(day: date, tickers: tuple[str, ...]) -> dict:
+    """Explicit owner-only repair of MISSING member bars on an ALREADY processed day.
+
+    The nightly collector uses a global processed-day set: a partially delivered
+    day can contain SPY but omit GOOGL, MSFT or TSLA forever. This narrow
+    operator path requests that original S3 day again without clearing the
+    global resume state or overwriting any previously present member bar.
+
+    This is NOT an automatic nightly retry, a replacement source, or a license/
+    adjusted-return/PIT receipt. The incumbent R2 store writer must serialize
+    the operator invocation against its ordinary restore -> collect -> publish
+    cycle. Per-symbol files are individually replaced atomically; a mid-batch
+    failure reports PARTIAL (not a fictitious all-or-nothing transaction).
+    """
+    if (type(day) is not date or not is_session(day) or day < EARLIEST_ENTITLED
+            or day > expected_last_session(datetime.now(timezone.utc))):
+        raise ValueError("repair requires a completed historical NYSE source day")
+    if (type(tickers) is not tuple or not 1 <= len(tickers) <= 16
+            or len(set(tickers)) != len(tickers)
+            or any(type(ticker) is not str
+                   or re.fullmatch(r"[A-Z][A-Z0-9.]{0,15}", ticker) is None
+                   for ticker in tickers)):
+        raise ValueError("repair requires 1..16 distinct canonical uppercase tickers")
+    absent = _store_absent()
+    if absent:
+        return {"status": "REFUSED", "reason": "ORIGINAL_STORE_NOT_RESTORED"}
+    source_state = _backfill_state_path()
+    source_manifest = _manifest_path()
+    try:
+        original_state_bytes = source_state.read_bytes()
+        state = json.loads(original_state_bytes)
+        original_manifest_bytes = source_manifest.read_bytes()
+    except (OSError, ValueError, TypeError):
+        return {"status": "REFUSED", "reason": "ORIGINAL_DAY_STATE_UNVERIFIED"}
+    if (not isinstance(state, dict) or state.get("version") != STATE_VERSION
+            or "processed_days" not in state):
+        return {"status": "REFUSED", "reason": "ORIGINAL_DAY_STATE_UNVERIFIED"}
+    processed = _processed_days(state)
+    if day not in processed:
+        return {"status": "REFUSED", "reason": "ORIGINAL_DAY_NOT_PROCESSED"}
+
+    def sidecar_change() -> str | None:
+        # In addition to each ticker's exact-byte CAS, observe the incumbent
+        # collector's resume/manifest generations. A concurrent nightly must
+        # not be silently replaced by a repair based on an older global state.
+        try:
+            if source_state.read_bytes() != original_state_bytes:
+                return "ORIGINAL_STATE_CHANGED"
+            if source_manifest.read_bytes() != original_manifest_bytes:
+                return "ORIGINAL_MANIFEST_CHANGED"
+        except OSError:
+            return "ORIGINAL_STATE_CHANGED"
+        return None
+
+    # Preflight every original ticker before network access. A corrupt/missing
+    # file cannot be replaced with one day, even when the global store is large.
+    original: dict[str, tuple[Path, pd.DataFrame, str]] = {}
+    missing: list[str] = []
+    for ticker in tickers:
+        path = _ticker_path(ticker)
+        try:
+            info = os.lstat(path)
+            if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+                raise ValueError("not an original sole-linked regular Parquet")
+            encoded = path.read_bytes()
+            frame = pd.read_parquet(path)
+            if (not isinstance(frame.index, pd.DatetimeIndex)
+                    or frame.index.tz is not None
+                    or frame.index.has_duplicates or frame.empty
+                    or "close" not in frame.columns):
+                raise ValueError("invalid existing original price series")
+        except (OSError, ValueError, TypeError, KeyError):
+            return {"status": "REFUSED", "reason": "SOURCE_MEMBER_UNREADABLE"}
+        original[ticker] = (path, frame, hashlib.sha256(encoded).hexdigest())
+        if pd.Timestamp(day) not in frame.index:
+            missing.append(ticker)
+    if not missing:
+        return {"status": "ALREADY_PRESENT", "repaired": []}
+    if not enabled():
+        return {"status": "REFUSED", "reason": "ORIGINAL_SOURCE_CREDENTIALS_UNAVAILABLE"}
+
+    # One fresh provider DAY fetch, not a substitution from adjusted Yahoo or
+    # a cached prior miss. Require every missing member BEFORE any local write.
+    try:
+        raw = fetch_aggs(day, product="stock_day", underlyings=None, use_cache=False)
+        if not isinstance(raw, pd.DataFrame) or raw.empty:
+            return {"status": "REFUSED", "reason": "SOURCE_MEMBER_MISSING"}
+        parsed = _parse_day(raw, day)
+        selected: dict[str, pd.DataFrame] = {}
+        for ticker in missing:
+            found = parsed[parsed["ticker"] == ticker].drop(columns=["ticker"])
+            if len(found) != 1:
+                return {"status": "REFUSED", "reason": "SOURCE_MEMBER_MISSING"}
+            bar = found.iloc[0]
+            price = [bar[column] for column in ("open", "high", "low", "close")]
+            if (any(pd.isna(x) or not isinstance(x, (int, float)) for x in price)
+                    or any(not 0 < float(x) < float("inf") for x in price)
+                    or not float(bar["low"]) <= float(bar["close"]) <= float(bar["high"])
+                    or not float(bar["low"]) <= float(bar["open"]) <= float(bar["high"])
+                    or bar["volume"] < 0 or bar["transactions"] < 0):
+                return {"status": "REFUSED", "reason": "SOURCE_PRICE_INVALID"}
+            selected[ticker] = found
+    except (OSError, ValueError, TypeError, KeyError, OverflowError):
+        return {"status": "REFUSED", "reason": "SOURCE_DAY_UNVERIFIED"}
+
+    # A source generation may have changed during the original vendor request.
+    conflict = sidecar_change()
+    if conflict:
+        return {"status": "REFUSED", "reason": conflict}
+
+    # The existing store/publisher own persistence. Stage all affected objects
+    # inside their own directories and refuse ANY pre-commit mutation/drift.
+    staged: dict[str, Path] = {}
+    applied: list[str] = []
+    try:
+        for ticker in missing:
+            path, frame, _ = original[ticker]
+            merged = pd.concat([frame, selected[ticker]]).sort_index()
+            if merged.index.has_duplicates:
+                return {"status": "REFUSED", "reason": "SOURCE_MEMBER_DUPLICATE"}
+            fd, temporary = tempfile.mkstemp(
+                dir=path.parent, prefix="." + path.name + ".repair-", suffix=".tmp")
+            os.close(fd)
+            staged[ticker] = Path(temporary)
+            merged.to_parquet(temporary)
+            os.chmod(temporary, stat.S_IMODE(os.lstat(path).st_mode))
+            check = pd.read_parquet(temporary)
+            if len(check) != len(frame) + 1 or pd.Timestamp(day) not in check.index:
+                return {"status": "REFUSED", "reason": "SOURCE_REPAIR_STAGING_UNVERIFIED"}
+        for ticker in missing:
+            path, _, digest = original[ticker]
+            if hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+                return {"status": "REFUSED", "reason": "ORIGINAL_SOURCE_CHANGED"}
+        conflict = sidecar_change()
+        if conflict:
+            return {"status": "REFUSED", "reason": conflict}
+        for ticker in missing:
+            path, _, _ = original[ticker]
+            os.replace(staged[ticker], path)  # atomic for each original file
+            del staged[ticker]
+            applied.append(ticker)
+        conflict = sidecar_change()
+        if conflict:
+            # Some local price objects may now be durably present, so this is
+            # PARTIAL until the original source owner reconciles the same day.
+            return {"status": "PARTIAL", "reason": conflict, "repaired": applied}
+        n = sum(1 for _ in iter_artifact_paths(_store_dir()))
+        _write_manifest(n, max(processed), processed)  # incumbent clock/anchor
+    except (OSError, ValueError, TypeError):
+        return {"status": "PARTIAL" if applied else "REFUSED",
+                "reason": "REPAIR_LOCAL_EFFECT_UNSETTLED", "repaired": applied}
+    finally:
+        for path in staged.values():
+            try:
+                path.unlink(missing_ok=True)
+            except OSError:
+                pass
+    return {"status": "REPAIRED", "repaired": missing,
+            "original_day": day.isoformat(), "state_unchanged": True}
 
 
 def _refresh_manifest_if_stale(processed: set[date]) -> bool:
