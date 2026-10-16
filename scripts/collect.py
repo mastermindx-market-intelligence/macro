@@ -639,7 +639,7 @@ def _run_shared_qledger_postcollect(root, *, only: str) -> None:
     standalone grading keep their incumbent contracts. This does not fence
     other explicit producers or qualify native storage activation.
     """
-    if only.strip():
+    if only:
         log.info("[qledger] skip shared registrar and grader on partial "
                  "--only=%s; full/region collection owns this work", only)
         return

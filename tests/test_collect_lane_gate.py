@@ -103,6 +103,7 @@ def _lane_gate_pol(expected_calls: int, mock_fn: MagicMock) -> None:
     "intl_etf",
     "cot,sentiment_naaim,sentiment_aaii,fundamentals,stock_fundamentals",
     "china_visits",
+    "  ",  # a whitespace-only requested selection cannot silently issue claims
 ])
 def test_partial_only_never_invokes_shared_qledger_writers(tmp_path, only):
     from types import ModuleType
