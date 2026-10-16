@@ -886,3 +886,40 @@ def test_real_no_sizes_cli_reports_unmeasured_not_zero(repo, tmp_path, monkeypat
     assert "size measurement: **disabled**" in md
     assert "Reclaimable now (SAFE_MERGED + SAFE_REMOTE): not measured across 1" in md
     assert "## Kept worktree sample (sizes not measured)" not in md
+
+
+def test_only_worktree_refuses_ignored_artifact_created_during_lsof(
+    repo, tmp_path, monkeypatch,
+):
+    # Real Git (including no --force) removes ignored data. A worker may
+    # finish writing while the original GC performs its 45s handle probe.
+    target = _add_worktree(repo, "late-ignored", branch="lane/late-ignored")
+    _age(repo, target)
+    excludes = tmp_path / "global-ignore"
+    excludes.write_text("*.buildcache\n")
+    _git(repo["primary"], "config", "core.excludesfile", str(excludes))
+    cfg = _write_config(tmp_path, armed=True, min_age_days=0)
+    artifact = target / "accepted-worker-output.buildcache"
+    scan_witness = []
+
+    def lsof_finished_without_open_handles(path):
+        assert path.resolve() == target.resolve()
+        assert not artifact.exists()
+        # Inject while lsof is finishing, BEFORE the final ignored-file
+        # check. No process holds an open descriptor at the end.
+        artifact.write_text("material accepted worker artifact")
+        assert _git(target, "status", "--porcelain") == ""
+        scan_witness.append(True)
+        return False
+
+    monkeypatch.setattr(
+        wgc, "exact_target_open_handles", lsof_finished_without_open_handles)
+    rc, row = _run_main(
+        repo, tmp_path, monkeypatch, cfg=cfg, apply=True,
+        extra=["--only-worktree", str(target), "--no-fetch"])
+    assert scan_witness == [True]
+    assert rc != 0, "GC must refuse rather than delete a raced ignored artifact"
+    assert target.is_dir()
+    assert artifact.read_text() == "material accepted worker artifact"
+    assert row["apply"]["deleted"] == []
+    assert any("ignored" in error for error in row["apply"]["errors"])

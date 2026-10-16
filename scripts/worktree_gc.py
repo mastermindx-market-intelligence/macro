@@ -783,17 +783,6 @@ def apply_deletions(
                 ok, err = False, str(exc)
         else:
             if exact_single:
-                # Git worktree remove ALSO deletes ignored artifacts without
-                # --force on some Git versions. Preserve these explicitly.
-                # --directory bounds output for large build trees; unreadable
-                # or unknown means HOLD, never optimistic deletion.
-                rc_ignored, ignored, _ = _git(
-                    wt.path, "ls-files", "--others", "--ignored",
-                    "--exclude-standard", "--directory", "-z", timeout=90)
-                if rc_ignored != 0 or ignored:
-                    summary["errors"].append(
-                        f"{wt.path}: refused - ignored local content or unreadable ignore probe")
-                    continue
                 # The earlier broad cwd scan is insufficient for a detached
                 # process with an open file under this tree. Refuse both busy
                 # and unknown observations; never trust a partial lsof result.
@@ -820,6 +809,19 @@ def apply_deletions(
                         or status_clean(wt) is not True):
                     summary["errors"].append(
                         f"{wt.path}: refused - worktree changed since classification")
+                    continue
+                # Git worktree remove (even without --force) destroys ignored
+                # artifacts. Do this check LAST, after the potentially 45s
+                # lsof probe and Git registration/cleanliness recheck. The
+                # earlier status_clean() cannot see ignored worker outputs.
+                # Refuse unknown/unreadable findings and never infer exclusive
+                # original-worker custody from this filesystem snapshot.
+                rc_ignored, ignored, _ = _git(
+                    wt.path, "ls-files", "--others", "--ignored",
+                    "--exclude-standard", "--directory", "-z", timeout=90)
+                if rc_ignored != 0 or ignored:
+                    summary["errors"].append(
+                        f"{wt.path}: refused - ignored content or final ignore probe unavailable")
                     continue
             argv = (("worktree", "remove", str(wt.path)) if exact_single else
                     ("worktree", "remove", "--force", str(wt.path)))
