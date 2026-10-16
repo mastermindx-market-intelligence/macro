@@ -7673,6 +7673,10 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      # Connected Research Factory import closure (PR9463).
+      - research/signal_engine/confluence.py
+      - scripts/oracle_reversion_screen.py
+      - scripts/oracle_screen.py
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
       - "lib/intl_chart_publication.py"
@@ -9147,8 +9151,21 @@ jobs:
           tests/test_research_factory_market_memory_evidence.py
           tests/test_research_factory_contextual_only.py
           tests/test_research_codegen_accounting_contract.py
+          tests/test_research_codegen_staging_accounting.py
+          tests/test_trial_ledger.py
           tests/test_research_codegen_evaluation.py
           tests/test_research_codegen_transport.py
+          tests/test_research_codegen_contracts.py
+          tests/test_research_codegen_input_contract.py
+          tests/test_research_codegen_bridge.py
+          tests/test_research_codegen_prefix_driver.py
+          tests/test_research_codegen_connected_p01.py
+          tests/test_research_codegen_review_evidence.py
+          tests/test_research_codegen_review_projection.py
+          tests/test_research_codegen_admin_projection.py
+          tests/test_research_codegen_admin_tokens.py
+          tests/test_holdout_vault.py
+          tests/test_promotion_gate.py
           -q
 
   cycle-pattern-authority:
@@ -12700,6 +12717,20 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # Connected Research Factory import closure (PR9463).
+      - engine/oracle/compounds.py
+      - engine/oracle/graph.py
+      - engine/research_codegen/__init__.py
+      - engine/research_codegen/accounting_contract.py
+      - engine/research_codegen/admission.py
+      - engine/research_codegen/bridge.py
+      - engine/research_codegen/contracts.py
+      - engine/research_codegen/evaluation.py
+      - engine/research_codegen/input_contract.py
+      - engine/research_codegen/output_contract.py
+      - research/signal_engine/confluence.py
+      - scripts/oracle_reversion_screen.py
+      - scripts/oracle_screen.py
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -15156,6 +15187,18 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # Connected Research Factory import closure (PR9463).
+      - engine/research_codegen/__init__.py
+      - engine/research_codegen/accounting_contract.py
+      - engine/research_codegen/admission.py
+      - engine/research_codegen/bridge.py
+      - engine/research_codegen/contracts.py
+      - engine/research_codegen/evaluation.py
+      - engine/research_codegen/input_contract.py
+      - engine/research_codegen/output_contract.py
+      - research/signal_engine/confluence.py
+      - scripts/oracle_reversion_screen.py
+      - scripts/oracle_screen.py
       - "engine/intl_performance_charts.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
@@ -21289,6 +21332,15 @@ jobs:
       - "tests/test_prophet_memory_handoff.py"
       - "tests/test_prophet_setup_list_navigation.py"
       - "tests/test_prophet_setup_sections.py"
+      # Connected Research Factory import closure (PR9463).
+      - engine/research_codegen/__init__.py
+      - engine/research_codegen/accounting_contract.py
+      - engine/research_codegen/admission.py
+      - engine/research_codegen/bridge.py
+      - engine/research_codegen/contracts.py
+      - engine/research_codegen/evaluation.py
+      - engine/research_codegen/input_contract.py
+      - engine/research_codegen/output_contract.py
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -22558,6 +22610,18 @@ jobs:
     paths:
       - "engine/prophet_opportunity_presentation.py"
       - "tests/test_prophet_opportunity_integration.py"
+      # Connected Research Factory import closure (PR9463).
+      - engine/research_codegen/__init__.py
+      - engine/research_codegen/accounting_contract.py
+      - engine/research_codegen/admission.py
+      - engine/research_codegen/bridge.py
+      - engine/research_codegen/contracts.py
+      - engine/research_codegen/evaluation.py
+      - engine/research_codegen/input_contract.py
+      - engine/research_codegen/output_contract.py
+      - research/signal_engine/confluence.py
+      - scripts/oracle_reversion_screen.py
+      - scripts/oracle_screen.py
       - "engine/intl_performance_charts.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/path_risk_signals.py"
@@ -29845,6 +29909,18 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - engine/research_codegen/__init__.py
+      - engine/research_codegen/accounting_contract.py
+      - engine/research_codegen/admission.py
+      - engine/research_codegen/bridge.py
+      - engine/research_codegen/contracts.py
+      - engine/research_codegen/evaluation.py
+      - engine/research_codegen/input_contract.py
+      - engine/research_codegen/output_contract.py
+      # Connected Research Factory import closure (PR9463).
+      - research/signal_engine/confluence.py
+      - scripts/oracle_reversion_screen.py
+      - scripts/oracle_screen.py
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/stock_identity/__init__.py"
       - "engine/stock_identity/authority.py"
