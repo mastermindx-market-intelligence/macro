@@ -182,6 +182,58 @@ Source owner #8132 was informed via issue comments 6198645125 and
 entitlement, all existing HOLDs and score/trading authority remain
 unmodified. Nothing in this research PR ships a new warning.
 
+## Retrospective issue-time and original Git-vintage confirmation
+
+- `audit_radar_issue_timeline.py` and `test_radar_issue_timeline.py`: **16/16**
+  focused synthetic TDD tests (first RED, then GREEN). Strict original
+  source/market/clock/JSON validation, issue-time cutoff, observed-run
+  diagnostics and post-hoc weekday frequency controls. No user
+  notification, live engine, Chronicle append or trade authority.
+- `evidence/issue_timeline_sources_20261015.json`: four original
+  source blob IDs against Macro main `9b255a5377385a6b0dab23850e6a6ff67714a5f1`.
+  **The Git source blobs are already held in the original Macro
+  `data/risk_radar*/` paths; do not copy them into this PR.**
+- `evidence/issue_time_compact_receipt_20261015.json`: five fixed UTC
+  cutoff snapshots plus one exploratory Sept1–Oct13 weekday 17:00Z
+  exposure grid. Full local raw output SHA256
+  `8ac614b7b4e1dc190b9b7b5577fec53118f4141ed9c910a774088a4ff663ae4a`.
+  The source-date/issue-cutoff proxy is not a verified historical
+  Git-vintage replay or a forecast backtest by itself.
+- `OCT13_PRE_SELLOFF_GIT_VINTAGE_RECEIPT_20261015.json` provides the
+  missing **actual original Git-vintage proof**: Main commit
+  `c49e4410492e8d2a0a16d00eca5edb3b45d66bc7` on Oct13
+  **16:32:31Z**, parent `a6f7b49003d1ffd7e68e07d98e068d864f6f4867`,
+  already contained CN native `risk-off/98`, HK `elevated/90`,
+  CN measured `34/RISK_OFF` and HK measured `33/RISK_OFF`, while the
+  US native latest was Oct12 `caution/70.3`. CN/HK/US source rows
+  are field-identical to the later pinned archived copies.
+  The original committed site/china.html and site/hk.html were changed
+  by the same commit; **origin/CDN/entitled rendering are unproven**.
+
+Recreate the source-only cutoff experiment on a separate, clean
+**read-only research workspace**, after retrieving the already
+registered four Git source files at the exact pinned revision and naming
+them according to `issue_timeline_sources_20261015.json`:
+
+```bash
+python3 research/grey_deer/ror1_risk_attention_20261015/audit_radar_issue_timeline.py \
+  --source-dir /trusted/research/source_snapshot \
+  --expected-source-blobs research/grey_deer/ror1_risk_attention_20261015/evidence/issue_timeline_sources_20261015.json \
+  --output /trusted/research/new-unique-report.json \
+  --cutoff 2026-10-13T17:00:00Z \
+  --weekday-grid-start 2026-09-01 --weekday-grid-end 2026-10-13 \
+  --weekday-grid-hour-utc 17 --weekday-grid-joint cn,hk
+python3 -m unittest discover -s research/grey_deer/ror1_risk_attention_20261015 -p 'test_radar_issue_timeline.py' -q
+```
+
+At Oct13 17Z, the latest *recorded* CN and HK alerts were true,
+but the U.S. latest was still its Oct12 Caution; do not replace it
+with a future U.S. daily close. Dual country model alerts were true
+at **14/31** exploratory 17Z sampled weekdays Sept1–Oct13, mostly
+as a continuing exposure, **not** a unique Oct14 forecast.
+No independent exchange calendar, authentic served byte or real
+user-notification acknowledgment was established.
+
 ## Next acceptance
 
 Native source-vintage/issuance-bound episode replay, a predeclared negative
