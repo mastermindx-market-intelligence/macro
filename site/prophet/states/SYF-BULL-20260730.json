@@ -4,9 +4,9 @@
   "asof": "2026-10-15",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 59.3,
+  "management_confidence": 56.2,
   "raw_confidence": 52.4,
-  "delta_vs_base": -0.7,
+  "delta_vs_base": -3.8,
   "recommended_action": "hold",
   "human_state": "Needs Follow-Through",
   "components": {
@@ -14,7 +14,7 @@
     "progress": 0.0,
     "pace": 58.8,
     "retention": 50.0,
-    "overlay": 52.9
+    "overlay": 53.0
   },
   "geometry": {
     "dist_to_stop_r": 0.994,
@@ -30,7 +30,7 @@
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",

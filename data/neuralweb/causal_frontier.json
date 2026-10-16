@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.causal_frontier.v1",
-  "asof": "2026-10-15T08:59:07Z",
+  "asof": "2026-10-16T07:20:14Z",
   "cells": [
     {
       "cause_family": "breadth",

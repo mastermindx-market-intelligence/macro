@@ -1,28 +1,28 @@
 {
   "schema": "subsector_rotation.track_record.v1",
   "as_of": "2026-10-14",
-  "generated_at": "2026-10-15T05:20:44.004231+00:00",
+  "generated_at": "2026-10-16T04:26:20.797439+00:00",
   "is_context_only": true,
   "n_snapshots": 14248,
   "n_days": 53,
   "horizons": {
     "5": {
       "n_matured": 13979,
-      "score_ic": -0.0213,
-      "score_ic_t_hac": -0.385,
-      "score_ic_t_gate": -0.385,
-      "score_ic_t_iid": -0.473,
+      "score_ic": -0.0218,
+      "score_ic_t_hac": -0.395,
+      "score_ic_t_gate": -0.395,
+      "score_ic_t_iid": -0.486,
       "hac_anticonservative": false,
       "ic_span_days": 105,
       "indep_windows": 15.0,
       "indep_windows_required": 6.0,
       "score_ic_detail": {
-        "mean_ic": -0.0213,
-        "ic_vol": 0.3244,
-        "ic_ir": -0.066,
-        "ic_ir_ann": -0.207,
-        "t_hac": -0.385,
-        "p_hac": 0.6999,
+        "mean_ic": -0.0218,
+        "ic_vol": 0.3237,
+        "ic_ir": -0.067,
+        "ic_ir_ann": -0.213,
+        "t_hac": -0.395,
+        "p_hac": 0.6926,
         "hit": 0.462,
         "n": 52,
         "hac_lags": 5,
@@ -35,38 +35,38 @@
       "by_stage": {
         "emerging": {
           "n": 624,
-          "mean_fwd_rel": -0.0079,
-          "hit_rate": 0.415
+          "mean_fwd_rel": -0.008,
+          "hit_rate": 0.413
         },
         "neutral": {
           "n": 12731,
-          "mean_fwd_rel": -0.0009,
+          "mean_fwd_rel": -0.0011,
           "hit_rate": null
         },
         "fading": {
           "n": 624,
-          "mean_fwd_rel": 0.0039,
-          "hit_rate": 0.514
+          "mean_fwd_rel": 0.0037,
+          "hit_rate": 0.516
         }
       },
       "v2": {
         "n_matured": 8608,
-        "score_ic": -0.0005,
-        "score_ic_t_hac": -0.009,
+        "score_ic": -0.0015,
+        "score_ic_t_hac": -0.028,
         "by_stage": {
           "emerging": {
             "n": 825,
-            "mean_fwd_rel": -0.0047,
-            "hit_rate": 0.421
+            "mean_fwd_rel": -0.0049,
+            "hit_rate": 0.417
           },
           "neutral": {
             "n": 6854,
-            "mean_fwd_rel": -0.0019,
+            "mean_fwd_rel": -0.0022,
             "hit_rate": null
           },
           "fading": {
             "n": 929,
-            "mean_fwd_rel": -0.0033,
+            "mean_fwd_rel": -0.0036,
             "hit_rate": 0.605
           }
         }
@@ -140,21 +140,21 @@
     },
     "21": {
       "n_matured": 11558,
-      "score_ic": -0.0285,
-      "score_ic_t_hac": -0.36,
-      "score_ic_t_gate": -0.36,
-      "score_ic_t_iid": -0.629,
+      "score_ic": -0.0291,
+      "score_ic_t_hac": -0.366,
+      "score_ic_t_gate": -0.366,
+      "score_ic_t_iid": -0.64,
       "hac_anticonservative": false,
       "ic_span_days": 89,
       "indep_windows": 3.03,
       "indep_windows_required": 6.0,
       "score_ic_detail": {
-        "mean_ic": -0.0285,
-        "ic_vol": 0.2971,
-        "ic_ir": -0.096,
-        "ic_ir_ann": -0.623,
-        "t_hac": -0.36,
-        "p_hac": 0.7186,
+        "mean_ic": -0.0291,
+        "ic_vol": 0.298,
+        "ic_ir": -0.098,
+        "ic_ir_ann": -0.632,
+        "t_hac": -0.366,
+        "p_hac": 0.7141,
         "hit": 0.442,
         "n": 43,
         "hac_lags": 21,
@@ -167,38 +167,38 @@
       "by_stage": {
         "emerging": {
           "n": 516,
-          "mean_fwd_rel": -0.0118,
+          "mean_fwd_rel": -0.0121,
           "hit_rate": 0.434
         },
         "neutral": {
           "n": 10526,
-          "mean_fwd_rel": -0.0004,
+          "mean_fwd_rel": -0.0006,
           "hit_rate": null
         },
         "fading": {
           "n": 516,
-          "mean_fwd_rel": 0.0122,
-          "hit_rate": 0.413
+          "mean_fwd_rel": 0.0121,
+          "hit_rate": 0.417
         }
       },
       "v2": {
         "n_matured": 6187,
-        "score_ic": -0.0373,
-        "score_ic_t_hac": -1.261,
+        "score_ic": -0.0393,
+        "score_ic_t_hac": -1.335,
         "by_stage": {
           "emerging": {
             "n": 614,
-            "mean_fwd_rel": -0.0199,
+            "mean_fwd_rel": -0.0205,
             "hit_rate": 0.318
           },
           "neutral": {
             "n": 4892,
-            "mean_fwd_rel": -0.009,
+            "mean_fwd_rel": -0.0094,
             "hit_rate": null
           },
           "fading": {
             "n": 681,
-            "mean_fwd_rel": 0.0072,
+            "mean_fwd_rel": 0.007,
             "hit_rate": 0.483
           }
         }
@@ -290,16 +290,7 @@
       "name": "Mining",
       "theme": "Crypto & Blockchain",
       "stage": "emerging",
-      "fwd_rel": -0.2522,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-09-23",
-      "key": "semismemory",
-      "name": "Memory",
-      "theme": "Semiconductors",
-      "stage": "emerging",
-      "fwd_rel": -0.1822,
+      "fwd_rel": -0.3277,
       "horizon_d": 21
     },
     {
@@ -308,7 +299,16 @@
       "name": "Blockchain",
       "theme": "FinTech",
       "stage": "emerging",
-      "fwd_rel": -0.1637,
+      "fwd_rel": -0.1997,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-23",
+      "key": "semismemory",
+      "name": "Memory",
+      "theme": "Semiconductors",
+      "stage": "emerging",
+      "fwd_rel": -0.1909,
       "horizon_d": 21
     },
     {
@@ -317,7 +317,7 @@
       "name": "Next-Gen",
       "theme": "Semiconductors",
       "stage": "emerging",
-      "fwd_rel": -0.1012,
+      "fwd_rel": -0.1072,
       "horizon_d": 21
     },
     {
@@ -326,7 +326,7 @@
       "name": "Compute",
       "theme": "Semiconductors",
       "stage": "emerging",
-      "fwd_rel": -0.0983,
+      "fwd_rel": -0.1048,
       "horizon_d": 21
     },
     {
@@ -349,11 +349,11 @@
     },
     {
       "date": "2026-09-23",
-      "key": "softwarevsaas",
-      "name": "V-SaaS",
-      "theme": "Software",
-      "stage": "fading",
-      "fwd_rel": 0.0797,
+      "key": "aiedge",
+      "name": "Edge",
+      "theme": "Artificial Intelligence",
+      "stage": "emerging",
+      "fwd_rel": -0.0772,
       "horizon_d": 21
     }
   ],
@@ -362,11 +362,11 @@
       "5": {
         "n": 13979,
         "n_v2": 8608,
-        "ic": -0.0213,
-        "ic_v2": -0.0005,
-        "gap": 0.0208,
-        "t_hac": -0.385,
-        "t_hac_v2": -0.009
+        "ic": -0.0218,
+        "ic_v2": -0.0015,
+        "gap": 0.0203,
+        "t_hac": -0.395,
+        "t_hac_v2": -0.028
       },
       "10": {
         "n": 12903,
@@ -380,11 +380,11 @@
       "21": {
         "n": 11558,
         "n_v2": 6187,
-        "ic": -0.0285,
-        "ic_v2": -0.0373,
-        "gap": -0.0088,
-        "t_hac": -0.36,
-        "t_hac_v2": -1.261
+        "ic": -0.0291,
+        "ic_v2": -0.0393,
+        "gap": -0.0102,
+        "t_hac": -0.366,
+        "t_hac_v2": -1.335
       },
       "63": {
         "n": 5909,

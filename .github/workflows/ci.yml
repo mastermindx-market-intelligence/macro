@@ -3380,6 +3380,7 @@ on:
       - "tests/test_sector_nav_links.py"
       - "tests/test_site_semantics_refs.py"
       - "tests/test_sp500_heatmap_caps.py"
+      - "tests/test_sp500_heatmap_intraday_clock.py"
       - "tests/test_stage_analysis_page.py"
       - "tests/test_stocktable_data.py"
       - "tests/test_template_items_footgun.py"

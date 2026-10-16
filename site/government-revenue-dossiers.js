@@ -951,12 +951,131 @@
         if(!response.ok)throw failure('unavailable');
         return response.json();
       }).then(function(value){
-        if(!obj(value)||value.contract!=='government_program_dossier.v1'||!/^1\./.test(text(value.schema_version,'')))throw failure('invalid');
-        bundle=value;
-        loadState=value.ontology_graph_id==null?'ontology_unavailable':(arr(value.dossiers).filter(obj).length?'ok':'empty');
-        return true;
+        if(!obj(value)||value.contract!=='government_program_dossier.v1'||['1.0.0','1.1.0','1.2.0'].indexOf(value.schema_version)<0)throw failure('invalid');
+        if(!validCapacityBundle(value))throw failure('invalid');
+        return validOversightBundle(value).then(function(valid){
+          if(!valid)throw failure('invalid');
+          bundle=value;
+          loadState=value.ontology_graph_id==null?'ontology_unavailable':(arr(value.dossiers).filter(obj).length?'ok':'empty');
+          return true;
+        });
       }).catch(function(error){bundle=null;loadState=(error&&error.code)||'unavailable';return false});
       return pending;
+    }
+
+    var capacityKinds=['announced_target','installed_capacity','demonstrated_throughput'];
+    function closed(value,keys){return obj(value)&&Object.keys(value).length===keys.length&&keys.every(function(key){return Object.prototype.hasOwnProperty.call(value,key)})}
+    function sourceClock(value){
+      if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+00:00$/.test(value))return NaN;
+      var date=value.slice(0,10),parts=date.split('-').map(Number),day=new Date(Date.UTC(parts[0],parts[1]-1,parts[2]));
+      if(day.toISOString().slice(0,10)!==date||Number(value.slice(11,13))>23||Number(value.slice(14,16))>59||Number(value.slice(17,19))>59)return NaN;
+      return Date.parse(value);
+    }
+    function capacityValid(d,cutoff){
+      var rail=d.public_capacity,seen=Object.create(null),count=0;
+      if(!closed(rail,['state','reviewed_at'].concat(capacityKinds))||['reviewed','reviewed_none','not_reviewed','conflicted'].indexOf(rail.state)<0)return false;
+      if(rail.reviewed_at!==null&&(rail.state!=='reviewed_none'||!Number.isFinite(sourceClock(rail.reviewed_at))||sourceClock(rail.reviewed_at)>cutoff))return false;
+      if(rail.state==='reviewed'&&(!obj(d.program_identity)||d.program_identity.state!=='reviewed'))return false;
+      var fields=['id','revision','program_id','product_scope','product_label','entity_id','kind','quantity','comparator','unit','period_label','known_at','valid_from','valid_to','verification_state','evidence_refs','predecessor_id','succession_reason'];
+      var valid=capacityKinds.every(function(kind){
+        return Array.isArray(rail[kind])&&rail[kind].every(function(row){
+          if(!closed(row,fields)||rail.state!=='reviewed'||row.kind!==kind||row.program_id!==d.program_id||row.verification_state!=='reviewed')return false;
+          if(typeof row.id!=='string'||!/^prog-capacity:[0-9a-f]{24}$/.test(row.id)||seen[row.id]||!Number.isInteger(row.revision)||row.revision<1)return false;
+          if(typeof row.quantity!=='number'||!Number.isFinite(row.quantity)||row.quantity<=0||['exact','approximately','greater_than'].indexOf(row.comparator)<0)return false;
+          if(['whole_program','component'].indexOf(row.product_scope)<0||['units','units_per_year','relative_multiplier'].indexOf(row.unit)<0||(kind==='installed_capacity'&&row.unit!=='units_per_year')||(kind==='demonstrated_throughput'&&row.unit==='relative_multiplier'))return false;
+          if(![row.product_label,row.period_label].every(function(value){return typeof value==='string'&&value.trim().length>0&&value.length<=256})||(row.entity_id!==null&&(typeof row.entity_id!=='string'||!row.entity_id.trim())))return false;
+          if(!Array.isArray(row.evidence_refs)||!row.evidence_refs.length||!row.evidence_refs.every(function(value){return typeof value==='string'&&/^ev:[0-9a-f]{12}$/.test(value)})||new Set(row.evidence_refs).size!==row.evidence_refs.length)return false;
+          if(row.predecessor_id===null?row.succession_reason!==null:typeof row.predecessor_id!=='string'||!/^prog-capacity:[0-9a-f]{24}$/.test(row.predecessor_id)||['attribute_revision','superseded_evidence'].indexOf(row.succession_reason)<0)return false;
+          var known=sourceClock(row.known_at),from=sourceClock(row.valid_from),to=row.valid_to===null?null:sourceClock(row.valid_to);
+          if(!Number.isFinite(known)||!Number.isFinite(from)||known>cutoff||from>cutoff||(to!==null&&(!Number.isFinite(to)||to<=from||cutoff>=to)))return false;
+          seen[row.id]=true;count++;return true;
+        });
+      });
+      return valid&&(rail.state!=='reviewed'||count>0);
+    }
+    function validCapacityBundle(value){
+      if(!Array.isArray(value.dossiers))return false;
+      if(value.schema_version==='1.0.0')return value.dossiers.every(function(d){return obj(d)&&!Object.prototype.hasOwnProperty.call(d,'public_capacity')});
+      var cutoff=sourceClock(text(value.as_of)+'T23:59:59+00:00')+999;
+      return Number.isFinite(cutoff)&&value.dossiers.every(function(d){return obj(d)&&capacityValid(d,cutoff)});
+    }
+    function sectionCapacity(d,row){
+      if(['1.1.0','1.2.0'].indexOf(row.dossierVersion)<0)return '';
+      var rail=d.public_capacity,out='<p class="inspect-label">'+esc(tr('Public production disclosures','公开生产披露'))+'</p>';
+      var stateCopy={not_reviewed:tr('Public production disclosures not yet reviewed','公开生产披露尚未复核'),reviewed_none:tr('Reviewed — no admissible public production disclosures','已复核——无可采信公开生产披露'),conflicted:tr('Conflicting public production disclosures — quantities withheld','公开生产披露冲突——暂不显示数量')};
+      if(rail.state!=='reviewed')return out+'<div class="budget-null">'+esc(stateCopy[rail.state])+'</div>';
+      var titles={announced_target:tr('Announced target','公布目标'),installed_capacity:tr('Installed capacity','已建产能'),demonstrated_throughput:tr('Demonstrated throughput','已实现产出')};
+      capacityKinds.forEach(function(kind){
+        out+='<p class="inspect-value"><strong>'+esc(titles[kind])+'</strong></p>';
+        if(!rail[kind].length)out+='<div class="budget-null">'+esc(tr('No reviewed observation in this category','本类别无已复核观测'))+'</div>';
+        rail[kind].forEach(function(observation){
+          var prefix=observation.comparator==='approximately'?tr('approximately ','约 '):observation.comparator==='greater_than'?tr('greater than ','大于 '):'';
+          var unit={units:tr('units','件'),units_per_year:tr('units per year','件/年'),relative_multiplier:tr('relative multiple','相对倍数')}[observation.unit];
+          out+='<div class="budget-rail"><span>'+esc(tr(observation.product_scope==='component'?'Component':'Whole product',observation.product_scope==='component'?'零部件':'整体产品')+' · '+observation.product_label)+'</span><b>'+esc(prefix+String(observation.quantity)+' '+unit)+'</b></div>';
+          out+='<p class="limit-copy">'+esc(observation.period_label)+(observation.entity_id?' · '+esc(observation.entity_id):'')+'<br>'+esc(tr('Known at: ','已知时间：')+observation.known_at)+'</p>';
+        });
+      });
+      return out+'<p class="limit-copy">'+esc(tr('Targets describe plans; installed capacity and demonstrated throughput are different observations. Components and whole products cannot be added together.','目标描述计划；已建产能与已实现产出是不同观测。零部件与整体产品不能相加。'))+'</p>';
+    }
+
+
+    var oversightKinds=['cost','schedule','production_constraint','contract_process','protest_status'];
+    var oversightFields=['id','revision','program_id','finding_kind','reported_by','report_series','report_document_id','report_edition','published_on','period_label','summary','excerpt','excerpt_sha256','page','printed_page_label','known_at','valid_from','valid_to','verification_state','evidence_refs','predecessor_id','succession_reason','source_url','sha256'];
+    function oversightUrl(value){
+      if(typeof value!=='string'||/[\u0000-\u0020\u007f]/.test(value)||typeof global.URL!=='function')return '';
+      try{var u=new global.URL(value);return u.protocol==='https:'&&!u.username&&!u.password?u.href:''}catch(ignore){return ''}
+    }
+    function oversightDigest(value){
+      if(!global.crypto||!global.crypto.subtle||typeof global.TextEncoder!=='function')return Promise.reject(failure('invalid'));
+      return global.crypto.subtle.digest('SHA-256',new global.TextEncoder().encode(value)).then(function(bytes){
+        return Array.from(new Uint8Array(bytes)).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
+      });
+    }
+    function oversightRowValid(row,program,cutoff,seen){
+      if(!closed(row,oversightFields)||row.program_id!==program||!/^acq-program:[a-z0-9-]+$/.test(program))return false;
+      if(typeof row.id!=='string'||!/^prog-oversight:[0-9a-f]{24}$/.test(row.id)||seen[row.id]||!Number.isInteger(row.revision)||row.revision<1||!Number.isInteger(row.page)||row.page<1)return false;
+      if(oversightKinds.indexOf(row.finding_kind)<0||['oversight_body','quoted_program_office'].indexOf(row.reported_by)<0||['reviewed','confirmed','analyst_approved'].indexOf(row.verification_state)<0)return false;
+      var limits={report_series:256,report_document_id:256,report_edition:256,period_label:256,summary:2000,excerpt:4000};
+      if(!Object.keys(limits).every(function(key){return typeof row[key]==='string'&&row[key].trim().length>0&&row[key].length<=limits[key]}))return false;
+      if(row.printed_page_label!==null&&(typeof row.printed_page_label!=='string'||!row.printed_page_label.trim()||row.printed_page_label.length>64))return false;
+      if(typeof row.published_on!=='string'||!Number.isFinite(sourceClock(row.published_on+'T00:00:00+00:00'))||!oversightUrl(row.source_url)||typeof row.sha256!=='string'||! /^[0-9a-f]{64}$/.test(row.sha256)||typeof row.excerpt_sha256!=='string'||! /^[0-9a-f]{64}$/.test(row.excerpt_sha256))return false;
+      if(!Array.isArray(row.evidence_refs)||!row.evidence_refs.length||!row.evidence_refs.every(function(ref){return typeof ref==='string'&&/^ev:[0-9a-f]{12}$/.test(ref)})||new Set(row.evidence_refs).size!==row.evidence_refs.length)return false;
+      if(row.predecessor_id===null?row.succession_reason!==null:typeof row.predecessor_id!=='string'||!/^prog-oversight:[0-9a-f]{24}$/.test(row.predecessor_id)||['attribute_revision','superseded_evidence'].indexOf(row.succession_reason)<0)return false;
+      var known=sourceClock(row.known_at),from=sourceClock(row.valid_from),to=row.valid_to===null?null:sourceClock(row.valid_to);
+      if(!Number.isFinite(known)||!Number.isFinite(from)||sourceClock(row.published_on+'T00:00:00+00:00')>known||known>cutoff||from>cutoff||(to!==null&&(!Number.isFinite(to)||to<=from||cutoff>=to)))return false;
+      seen[row.id]=true;return true;
+    }
+    function validOversightBundle(value){
+      if(value.schema_version!=='1.2.0')return Promise.resolve(value.dossiers.every(function(d){return !Object.prototype.hasOwnProperty.call(d,'public_oversight')}));
+      var cutoff=sourceClock(text(value.as_of)+'T23:59:59+00:00')+999,rows=[];
+      var valid=Number.isFinite(cutoff)&&value.dossiers.every(function(d){
+        var rail=d.public_oversight,seen=Object.create(null);
+        if(!closed(rail,['state','reviewed_at','rows','limitation'])||['reviewed','reviewed_none','not_reviewed','conflicted'].indexOf(rail.state)<0||typeof rail.limitation!=='string'||!Array.isArray(rail.rows))return false;
+        if(rail.reviewed_at!==null&&(rail.state!=='reviewed_none'||!Number.isFinite(sourceClock(rail.reviewed_at))||sourceClock(rail.reviewed_at)>cutoff))return false;
+        if(rail.state!=='reviewed')return rail.rows.length===0;
+        if(!obj(d.program_identity)||d.program_identity.state!=='reviewed'||!rail.rows.length)return false;
+        return rail.rows.every(function(row){if(!oversightRowValid(row,d.program_id,cutoff,seen))return false;rows.push(row);return true});
+      });
+      if(!valid)return Promise.resolve(false);
+      return Promise.all(rows.map(function(row){
+        var identity={};oversightFields.filter(function(key){return ['id','source_url','sha256'].indexOf(key)<0}).sort().forEach(function(key){identity[key]=key==='evidence_refs'?row[key].slice().sort():row[key]});
+        return Promise.all([oversightDigest(row.excerpt),oversightDigest(JSON.stringify(identity))]).then(function(hashes){return hashes[0]===row.excerpt_sha256&&'prog-oversight:'+hashes[1].slice(0,24)===row.id});
+      })).then(function(checks){return checks.every(Boolean)});
+    }
+    function sectionOversight(d,row){
+      if(row.dossierVersion!=='1.2.0')return '';
+      var rail=d.public_oversight,out='<p class="inspect-label">'+esc(tr('Public oversight','公开监督'))+'</p>';
+      var states={not_reviewed:tr('Public oversight findings not yet reviewed','公开监督发现尚未复核'),reviewed_none:tr('Reviewed — no admissible public oversight findings','已复核——无可采信公开监督发现'),conflicted:tr('Conflicting oversight findings — assertions withheld','监督发现存在冲突——暂不展示断言')};
+      if(rail.state!=='reviewed')return out+'<div class="budget-null">'+esc(states[rail.state])+'</div>';
+      var labels={cost:tr('Cost','成本'),schedule:tr('Schedule','进度'),production_constraint:tr('Production constraint','生产约束'),contract_process:tr('Contract process','合同流程'),protest_status:tr('Protest status','异议状态')};
+      rail.rows.forEach(function(finding){
+        var reporter=finding.reported_by==='quoted_program_office'?tr('Program office quoted by the report','报告所引项目办公室'):tr('Oversight body','监督机构');
+        out+='<p class="inspect-value"><strong>'+esc(labels[finding.finding_kind]+' · '+reporter)+'</strong></p><p class="limit-copy">'+esc(tr('Source-attributed finding (original source text)','来源所述发现（原文，未翻译）'))+'</p><p class="inspect-value">'+esc(finding.summary)+'</p>';
+        out+='<p class="limit-copy">'+esc(finding.report_series+' · '+finding.report_document_id+' · '+finding.report_edition)+'<br>'+esc(tr('Published: ','发布日期：')+finding.published_on)+'<br>'+esc(tr('Observed period: ','观测期间：')+finding.period_label)+'<br>'+esc(tr('Known at: ','已知时间：')+finding.known_at)+'</p>';
+        var url=new global.URL(oversightUrl(finding.source_url));url.hash='page='+finding.page;
+        out+='<details class="atlas-receipt"><summary>'+esc(tr('Original source text and report','来源原文与报告'))+'</summary><div class="atlas-receipt-body"><p class="inspect-value">'+esc(finding.excerpt)+'</p><p class="limit-copy">'+esc(tr('PDF page: ','PDF页码：')+finding.page+(finding.printed_page_label?' · '+tr('Printed page: ','印刷页码：')+finding.printed_page_label:''))+'</p><a class="source-link" href="'+esc(url.href)+'" target="_blank" rel="noopener noreferrer">'+esc(tr('Open report','打开报告'))+'</a><div class="receipt-code">'+esc(finding.report_document_id+'\n'+finding.sha256+'\n'+finding.excerpt_sha256)+'</div></div></details>';
+      });
+      return out+'<p class="limit-copy">'+esc(tr('Report editions and publication dates describe the source. Findings are not a legal verdict, readiness assessment, issuer revenue allocation or investment ranking.','报告版本和发布日期描述来源。发现并非法律裁决、战备评估、发行人收入分配或投资排名。'))+'</p>';
     }
 
     // --- frozen typed-state copy (rail-scoped; verbatim from the D5 copy table) ---
@@ -1027,7 +1146,7 @@
           date:text((value||{}).generated_at,''),
           title:reviewed?text(pi.name,text(d.program_id)):text(d.program_id),
           subtitle:reviewed?text(pi.phase,''):gapCopyFor(pi.state),
-          dossier:d,bundleLimitations:arr((value||{}).limitations)
+          dossier:d,dossierVersion:value.schema_version,bundleLimitations:arr((value||{}).limitations)
         };
       });
     }
@@ -1077,7 +1196,7 @@
       // added to the rail by a future engine packet.
       return out;
     }
-    function sectionWhy(d){
+    function sectionWhy(d,row){
       var cap=obj(d.capability)?d.capability:{},out='';
       if(cap.state!=='reviewed'){
         out+='<p class="inspect-value">'+esc(gapCopyFor(cap.state))+'</p>';
@@ -1088,7 +1207,7 @@
       // Freeze SS9: the quantity gap is named ALWAYS in v1, reviewed link or not.
       out+='<div class="budget-null"><span>'+esc(copyQuantityGap())+'</span></div>';
       out+='<div class="budget-null"><span>'+esc(copyEconomicsGap())+'</span></div>';
-      return out;
+      return out+sectionCapacity(d,row)+sectionOversight(d,row);
     }
     function sectionChanged(d){
       var aw=obj(d.awards)?d.awards:{},src=railState(aw,'source_state'),link=railState(aw,'link_state'),out='';
@@ -1138,7 +1257,8 @@
       out+='<div class="budget-rail"><span>'+esc(tr('Economic relationships','经济关系'))+'</span><b>'+esc(copyEconomicRelationships())+'</b></div>';
       var sharedRow=arr((obj(d.participants)?d.participants:{}).rows).filter(obj).some(function(row){return row.shared_scope});
       if(sharedRow)out+='<div class="budget-rail warn"><span>'+esc(tr('Supplier scope','供应范围'))+'</span><b>'+esc(copySharedScope())+'</b></div>';
-      out+='<div class="budget-rail warn"><span>'+esc(tr('Oversight','监督'))+'</span><b>'+esc(copyGaoGap())+'</b></div>';
+      if(!d.public_oversight)out+='<div class="budget-rail warn"><span>'+esc(tr('Oversight','监督'))+'</span><b>'+esc(copyGaoGap())+'</b></div>';
+      else out+='<p class="limit-copy">'+esc(tr('Oversight findings above are source-specific; unreviewed assessments remain unknown.','上方监督发现仅对应其来源；未经复核的评估仍为未知。'))+'</p>';
       return out;
     }
     function sectionNext(d){
@@ -1168,6 +1288,7 @@
       if(arr(aw.event_ids).length)lines.push('event_ids: '+arr(aw.event_ids).join(', '));
       arr(p.rows).filter(obj).forEach(function(row){lines.push('role_assertion_id ('+text(row.role)+'): '+text(row.role_assertion_id))});
       arr(m.rows).filter(obj).forEach(function(row){lines.push('milestone_id: '+text(row.milestone_id))});
+      if(obj(d.public_capacity)&&d.public_capacity.state==='reviewed')capacityKinds.forEach(function(kind){arr(d.public_capacity[kind]).forEach(function(row){lines.push('public_capacity_id ('+kind+'): '+row.id);lines.push('evidence_refs: '+row.evidence_refs.join(', '))})});
       return'<article class="receipt"><div class="receipt-kind">'+esc(tr('Technical identity','技术标识'))+'</div><div class="receipt-code">'+esc(lines.join('\n'))+'</div></article>';
     }
     function render(row){
@@ -1175,7 +1296,7 @@
       var d=obj(row.dossier)?row.dossier:{},pi=obj(d.program_identity)?d.program_identity:{},reviewed=pi.state==='reviewed';
       var title=reviewed?text(pi.name,text(d.program_id)):text(d.program_id);
       var questions=QUESTIONS();
-      var sections=[sectionWhatIsThis(d),sectionWhy(d),sectionChanged(d),sectionParticipants(d),sectionUnresolved(d),sectionNext(d)];
+      var sections=[sectionWhatIsThis(d),sectionWhy(d,row),sectionChanged(d),sectionParticipants(d),sectionUnresolved(d),sectionNext(d)];
       var stanceChips=chip(reviewed?'reviewed':'derived',reviewed?tr('Program identity reviewed','项目身份已核验'):gapCopyFor(pi.state))
         +chip('derived',tr('Display only','仅展示'))
         +chip('derived',tr("Watch — don't chase",'观察，不追逐'));

@@ -3028,6 +3028,7 @@ jobs:
       - "contracts/theme_graph/membership_collection.v2.schema.json"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
@@ -3635,6 +3636,7 @@ jobs:
       - "lib/pages.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
@@ -4162,6 +4164,8 @@ jobs:
       - "tests/test_options_structure.py"
       - "tests/test_options_pilot_study_adapter.py"
       - "scripts/options_pilot_study_adapter.py"
+      - "scripts/options_pilot_identity_offset.py"
+      - "tests/test_options_pilot_identity_offset.py"
       - "research/options_intelligence/2026-10-03/pilot-study-spec.v1.json"
       - "research/options_intelligence/2026-10-03/pilot-p3-reference.py"
       - "tests/test_build_options_prophet.py"
@@ -4304,7 +4308,7 @@ jobs:
       - name: F03 catalyst-linkage read-model (typed unbound/ambiguous/stale states, fail-loud contract key, zero authority)
         run: python -m pytest tests/test_options_catalyst_link.py -q
       - name: flow derivative source clocks (enrich + chain heat, fail-closed provenance)
-        run: python -m pytest tests/test_flow_enrich.py tests/test_build_chain_heat.py tests/test_options_structure.py tests/test_options_pilot_study_adapter.py -q
+        run: python -m pytest tests/test_flow_enrich.py tests/test_build_chain_heat.py tests/test_options_structure.py tests/test_options_pilot_study_adapter.py tests/test_options_pilot_identity_offset.py -q
       - name: ThetaData PIT store (narrow OI projection, exact-date filter, cache bypass)
         run: python -m pytest tests/test_thetadata_store.py -q
       - name: AD-1T1 ThetaData T1 daily incremental maintainer (legacy characterization, --daily hostile suite, launchd scheduler)
@@ -5972,6 +5976,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -6761,6 +6766,7 @@ jobs:
       - "site/vol/regime.json"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "site/government-revenue-data/research-state.json"
       - "collectors/dod_budget_live.py"
       - "config/government_revenue/program_theme_assignments.v1.json"
@@ -7356,7 +7362,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow requests pyyaml
       - name: whole-board breadth collector + heatmap payload contract
-        run: python -m pytest tests/test_china_board_breadth.py tests/test_market_heatmap.py -q
+        run: python -m pytest tests/test_china_board_breadth.py tests/test_market_heatmap.py tests/test_sp500_heatmap_intraday_clock.py -q
 
   china-search-universe:
     if: ${{ false }}
@@ -7725,6 +7731,10 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      # Connected Research Factory import closure (PR9463).
+      - research/signal_engine/confluence.py
+      - scripts/oracle_reversion_screen.py
+      - scripts/oracle_screen.py
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
       - "lib/intl_chart_publication.py"
@@ -9199,8 +9209,21 @@ jobs:
           tests/test_research_factory_market_memory_evidence.py
           tests/test_research_factory_contextual_only.py
           tests/test_research_codegen_accounting_contract.py
+          tests/test_research_codegen_staging_accounting.py
+          tests/test_trial_ledger.py
           tests/test_research_codegen_evaluation.py
           tests/test_research_codegen_transport.py
+          tests/test_research_codegen_contracts.py
+          tests/test_research_codegen_input_contract.py
+          tests/test_research_codegen_bridge.py
+          tests/test_research_codegen_prefix_driver.py
+          tests/test_research_codegen_connected_p01.py
+          tests/test_research_codegen_review_evidence.py
+          tests/test_research_codegen_review_projection.py
+          tests/test_research_codegen_admin_projection.py
+          tests/test_research_codegen_admin_tokens.py
+          tests/test_holdout_vault.py
+          tests/test_promotion_gate.py
           -q
 
   cycle-pattern-authority:
@@ -12183,6 +12206,9 @@ jobs:
       - name: Holiday client quote and session receipt behavior
         run: node --test tests/live_holiday.test.mjs
 
+      - name: Basket Pulse source clocks and contributor coverage
+        run: python -m pytest tests/test_build_basket_pulse.py -q
+
   hk-integration-seams:
     if: ${{ false }}
     gate: code
@@ -12752,6 +12778,20 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # Connected Research Factory import closure (PR9463).
+      - engine/oracle/compounds.py
+      - engine/oracle/graph.py
+      - engine/research_codegen/__init__.py
+      - engine/research_codegen/accounting_contract.py
+      - engine/research_codegen/admission.py
+      - engine/research_codegen/bridge.py
+      - engine/research_codegen/contracts.py
+      - engine/research_codegen/evaluation.py
+      - engine/research_codegen/input_contract.py
+      - engine/research_codegen/output_contract.py
+      - research/signal_engine/confluence.py
+      - scripts/oracle_reversion_screen.py
+      - scripts/oracle_screen.py
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -13772,6 +13812,7 @@ jobs:
       - "lib/live_flow_event_stage.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
@@ -14887,6 +14928,7 @@ jobs:
       - "engine/neuralweb/world_state.py"
       - "engine/neuralweb/mastermind_context.py"
       - "engine/neuralweb/market_packet.py"
+      - "engine/session_digest.py"
       - "tests/test_regime_outlook_reader_world_state.py"
       - "tests/test_regime_outlook_reader_context.py"
       - "tests/test_regime_outlook_reader_digest.py"
@@ -15208,6 +15250,18 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # Connected Research Factory import closure (PR9463).
+      - engine/research_codegen/__init__.py
+      - engine/research_codegen/accounting_contract.py
+      - engine/research_codegen/admission.py
+      - engine/research_codegen/bridge.py
+      - engine/research_codegen/contracts.py
+      - engine/research_codegen/evaluation.py
+      - engine/research_codegen/input_contract.py
+      - engine/research_codegen/output_contract.py
+      - research/signal_engine/confluence.py
+      - scripts/oracle_reversion_screen.py
+      - scripts/oracle_screen.py
       - "engine/intl_performance_charts.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
@@ -17798,9 +17852,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml jinja2 numpy pandas requests
+        run: pip install pytest pyyaml jinja2 numpy pandas requests beautifulsoup4
       - name: press validator, planner, writer, orchestrator, admin and property suites
-        run: python -m pytest tests/test_press_validators.py tests/test_press_planner.py tests/test_press_external_candidate.py tests/test_press_official_feed_candidate.py tests/test_press_markup_safety.py tests/test_press_official_staging.py tests/test_press_adjusted_baseline.py tests/test_press_writer.py tests/test_press_run.py tests/test_press_staging_inspection.py tests/test_earnings_canonical_story.py tests/test_press_admin.py tests/test_press_workflow.py tests/test_press_properties.py -q
+        run: python -m pytest tests/test_press_validators.py tests/test_press_planner.py tests/test_press_external_candidate.py tests/test_press_official_feed_candidate.py tests/test_press_fda_document.py tests/test_press_fda_candidate.py tests/test_press_markup_safety.py tests/test_press_official_staging.py tests/test_press_adjusted_baseline.py tests/test_press_writer.py tests/test_press_run.py tests/test_press_staging_inspection.py tests/test_earnings_canonical_story.py tests/test_press_admin.py tests/test_press_workflow.py tests/test_press_properties.py -q
       # W1.5 property trees + the cutover sync guard. Same lane on purpose: the
       # guard asserts that config/press.yml `cutover` and the commented Caddy
       # block move together, and that pairing is only real if it runs on every
@@ -17924,6 +17978,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -18664,6 +18719,7 @@ jobs:
       - "collectors/sbir_awards.py"
       - "config/government_revenue/program_theme_assignments.v1.json"
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
@@ -19478,6 +19534,13 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "tests/fixtures/government_program_ontology/builders.py"
+      - "tests/test_government_program_public_capacity.py"
+      - "tests/test_government_program_capacity_ui.py"
+      - "tests/test_government_program_oversight.py"
+      - "tests/test_government_program_oversight_ui.py"
+      - "tests/test_government_program_army_source_boundary.py"
+      - "tests/test_government_program_curator_clock_advance.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
@@ -19492,6 +19555,8 @@ jobs:
       - "scripts/compile_capital_structure_events.py"
       - "tests/test_dod_budget_live.py"
       - "tests/test_fms_notifications.py"
+      - ".github/workflows/fms-acquire.yml"
+      - ".github/workflows/government-revenue-live.yml"
       - "tests/test_fms_ui.py"
       - "tests/fixtures/fms/**"
       - "tests/fixtures/dod_budget/**"
@@ -19755,7 +19820,9 @@ jobs:
       - "tests/test_government_revenue_defense_owner_adapter.py"
       - "tests/test_defense_refresh_cohort.py"
       - "tests/test_defense_reported_financial_profiles.py"
+      - "tests/test_defense_space_profiles.py"
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "tests/fixtures/company_intelligence/defense/**"
       - "tests/test_government_revenue_publisher_consumers.py"
       - "tests/test_defense_recognition_market_clocks.py"
@@ -19871,7 +19938,7 @@ jobs:
       - name: Tenant isolation and immutable reader selection
         run: python -m pytest tests/test_government_revenue_briefcase_ui.py tests/test_government_revenue_reader_identity.py tests/test_government_revenue_api.py tests/test_government_revenue_api_auth.py -q
       - name: Qualified issuer segment facts and owner refresh
-        run: python -m pytest tests/test_government_revenue_defense_owner_adapter.py tests/test_defense_refresh_cohort.py tests/test_defense_reported_financial_profiles.py -q
+        run: python -m pytest tests/test_government_revenue_defense_owner_adapter.py tests/test_defense_refresh_cohort.py tests/test_defense_reported_financial_profiles.py tests/test_defense_space_profiles.py -q
       - name: Adverse evidence, ownership terms and complete source retention
         run: python -m pytest tests/test_noc_adverse.py tests/test_gd_profile.py tests/test_issuer_supplements.py tests/test_industrial_refresh.py tests/test_complete_owner_refresh.py tests/test_f2_composition.py tests/test_lhx_reported_income.py -q
       - name: Defense economics source binding and entitled read boundary
@@ -19886,7 +19953,7 @@ jobs:
       - name: Canonical market owner and point-in-time joint producer
         run: python -m pytest tests/test_defense_market_context.py tests/test_defense_market_producer_integration.py -q
       - name: Six-theme official source and reviewed disclosure contracts
-        run: python -m pytest tests/defense_o2_source_contracts/test_budget_allocation_context.py tests/defense_o2_source_contracts/test_nato_policy_extension.py tests/defense_o2_source_contracts/test_program_theme_context.py tests/defense_o2_source_contracts/test_program_theme_disclosure.py tests/defense_o2_source_contracts/test_program_theme_reviewed_builder.py tests/defense_o2_source_contracts/test_program_theme_owner_bridge.py tests/defense_o2_source_contracts/test_t0_reviewed_loader.py tests/defense_o2_source_contracts/test_program_theme_runtime_wiring.py tests/test_theme_economic_interpretation.py tests/defense_o2_source_contracts/test_theme_same_generation.py -q
+        run: python -m pytest tests/defense_o2_source_contracts/test_budget_allocation_context.py tests/defense_o2_source_contracts/test_nato_policy_extension.py tests/defense_o2_source_contracts/test_program_theme_context.py tests/defense_o2_source_contracts/test_program_theme_disclosure.py tests/defense_o2_source_contracts/test_program_theme_reviewed_builder.py tests/defense_o2_source_contracts/test_program_theme_owner_bridge.py tests/defense_o2_source_contracts/test_t0_reviewed_loader.py tests/defense_o2_source_contracts/test_program_theme_runtime_wiring.py tests/test_theme_economic_interpretation.py tests/defense_o2_source_contracts/test_theme_same_generation.py tests/defense_o2_source_contracts/test_program_dossier_owner_validation.py tests/test_government_program_public_capacity.py tests/test_government_program_capacity_ui.py tests/test_government_program_oversight.py tests/test_government_program_oversight_ui.py tests/test_government_program_army_source_boundary.py tests/test_government_program_curator_clock_advance.py -q
       - name: Ownership and foreign listing source-context journeys
         run: python -m pytest tests/test_government_revenue_archetype_context.py tests/test_government_revenue_archetype_ui.py tests/test_government_revenue_identity_subject_journey.py tests/test_government_revenue_identity_context_clock.py -q
       - name: Government Revenue HTML packaging preserves content and runtime
@@ -20121,6 +20188,7 @@ jobs:
       - "lib/ticker_aliases.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/dod_budget.py"
@@ -21289,7 +21357,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: vector allocation surfaces + the calibration ledger and basket pulse they read
-        run: python -m pytest tests/test_basket_turn_watch.py tests/test_btc_overrides.py tests/test_build_basket_pulse.py tests/test_regime_dynamics_null_gaps.py tests/test_signal_surface_bugfixes.py tests/test_spvector_page.py tests/test_trial_log_refresh.py tests/test_validation_effective_t.py tests/test_vector_conviction.py -q
+        run: python -m pytest tests/test_basket_turn_watch.py tests/test_btc_overrides.py tests/test_regime_dynamics_null_gaps.py tests/test_signal_surface_bugfixes.py tests/test_spvector_page.py tests/test_trial_log_refresh.py tests/test_validation_effective_t.py tests/test_vector_conviction.py -q
       - name: basket-turn grading pack + session-stamp heal (forward-ledger audit 2026-08-05)
         run: python -m pytest tests/test_basket_turn_grading.py tests/test_heal_basket_turn_ledger.py -q
       - name: W4 staged re-entry spine + P5 deferred-context BTC chips (dat/netliq/cascade)
@@ -21328,6 +21396,15 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # Connected Research Factory import closure (PR9463).
+      - engine/research_codegen/__init__.py
+      - engine/research_codegen/accounting_contract.py
+      - engine/research_codegen/admission.py
+      - engine/research_codegen/bridge.py
+      - engine/research_codegen/contracts.py
+      - engine/research_codegen/evaluation.py
+      - engine/research_codegen/input_contract.py
+      - engine/research_codegen/output_contract.py
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -22208,6 +22285,7 @@ jobs:
       - "tests/test_washout_turn.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
@@ -22595,6 +22673,18 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # Connected Research Factory import closure (PR9463).
+      - engine/research_codegen/__init__.py
+      - engine/research_codegen/accounting_contract.py
+      - engine/research_codegen/admission.py
+      - engine/research_codegen/bridge.py
+      - engine/research_codegen/contracts.py
+      - engine/research_codegen/evaluation.py
+      - engine/research_codegen/input_contract.py
+      - engine/research_codegen/output_contract.py
+      - research/signal_engine/confluence.py
+      - scripts/oracle_reversion_screen.py
+      - scripts/oracle_screen.py
       - "engine/intl_performance_charts.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/path_risk_signals.py"
@@ -23585,6 +23675,7 @@ jobs:
       - "engine/theme_graph/theme_state_use_reader.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
@@ -23896,6 +23987,7 @@ jobs:
       - "tests/earnings_economic_fixtures.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/industrial_sources.py"
@@ -23996,6 +24088,7 @@ jobs:
       - "tests/test_earnings_economic_interpretation.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
@@ -25860,6 +25953,7 @@ jobs:
     paths:
       - engine/neuralweb/market_memory_history_filings.py
       - tests/test_market_memory_history_filings.py
+      - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
       - collectors/biocatalyst/__init__.py
@@ -26773,6 +26867,7 @@ jobs:
       - "collectors/sbir_awards.py"
       - "config/government_revenue/program_theme_assignments.v1.json"
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
@@ -27173,7 +27268,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest numpy pandas pyyaml
       - name: basket read band + board group-pulse column (GR1)
-        run: python -m pytest tests/test_group_read_surface.py tests/test_sector_central_measured_panel.py -q -rs
+        run: python -m pytest tests/test_group_read_surface.py tests/test_sector_central_measured_panel.py tests/test_sector_intraday_comparison.py -q -rs
 
   leadership-rotation-countercases:
     # LEADERSHIP-ROTATION T20 (O8 independent challenge): one integrated counter-case suite driving SYNTHETIC
@@ -28206,6 +28301,10 @@ jobs:
       - engine/neuralweb/market_memory_retained_context_cohort.py
       - engine/neuralweb/market_memory_trusted.py
       - lib/dataos/tiingo_reader.py
+      # Tiingo comparison action: preserve the complete reader import closure.
+      - lib/dataos/tiingo_boats_tape.py
+      - lib/dataos/tiingo_workspace.py
+      - scripts/tiingo_research_query.py
       - lib/dataos/tiingo_views.py
       - scripts/tiingo_materialize.py
     timeout-minutes: 8
@@ -28290,6 +28389,8 @@ jobs:
       # safe direction — this job is still pytest + pyyaml only).
       - research/data_os_completion/2026-10-13/D00_SEMANTIC_DECISIONS.md
       - scripts/data_workspace.py
+      # Tiingo comparison action: preserve the complete reader import closure.
+      - scripts/tiingo_research_query.py
       - site/factordata/factors.json
       - site/factordata/insider_signals.json
       # Round 2 (same check): scripts/data_workspace.py above names engine/lab.py
@@ -28457,6 +28558,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -29268,6 +29370,7 @@ jobs:
       - engine/company_intelligence/issuer_disclosure_preflight.py
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "site/government-revenue-data/research-state.json"
       - "collectors/dod_budget_live.py"
       - "config/government_revenue/program_theme_assignments.v1.json"
@@ -29882,6 +29985,18 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - engine/research_codegen/__init__.py
+      - engine/research_codegen/accounting_contract.py
+      - engine/research_codegen/admission.py
+      - engine/research_codegen/bridge.py
+      - engine/research_codegen/contracts.py
+      - engine/research_codegen/evaluation.py
+      - engine/research_codegen/input_contract.py
+      - engine/research_codegen/output_contract.py
+      # Connected Research Factory import closure (PR9463).
+      - research/signal_engine/confluence.py
+      - scripts/oracle_reversion_screen.py
+      - scripts/oracle_screen.py
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/stock_identity/__init__.py"
       - "engine/stock_identity/authority.py"
@@ -30328,6 +30443,7 @@ jobs:
       - "tests/test_options_skew_backfill.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
@@ -30447,6 +30563,7 @@ jobs:
       - "tests/test_mining_updates.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
@@ -30568,6 +30685,7 @@ jobs:
       - "tests/test_industrials_edition_record.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/industrial_sources.py"

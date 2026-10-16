@@ -1,8 +1,8 @@
 {
   "schema": "stage_context.v1",
-  "asof": "2026-10-15",
+  "asof": "2026-10-16",
   "data_session": "2026-10-14",
-  "built": "2026-10-15T07:35:30Z",
+  "built": "2026-10-16T06:15:37Z",
   "is_context_only": true,
   "display_only": true,
   "disclaimer": "Context only — stage classification display, never a signal or sizing input.",
@@ -76,152 +76,6 @@
     "spy_weeks": 24
   },
   "top_stage2": [
-    {
-      "ticker": "DSP",
-      "company": "Viant Technology Inc",
-      "sector": "Technology",
-      "stage_source_asof": "2026-10-14",
-      "stage_week_end": "2026-10-09",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 7,
-      "fresh": true,
-      "sga_score": 85,
-      "ma30_slope_pct5w": 2.933,
-      "pct_vs_ma30": 10.46,
-      "mansfield_rs": 5.36,
-      "vol_ratio": 2.24,
-      "event": "pullback_resume",
-      "gate_tier": "T2",
-      "blackout": false,
-      "arc_pos": 0.3375,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.92,
-        "performance": 8.5,
-        "tone_word": "confident",
-        "tags": [
-          "beat_and_raise",
-          "demand_acceleration",
-          "new_product",
-          "margin_contraction"
-        ],
-        "quarter": "Q2",
-        "summary": "Viant reported a strong Q2 FY2026 with revenue up 34% YoY and adjusted EBITDA of $14.2 million, both exceeding the high end of guidance. CTV spend surged nearly 50%, accounting for over half of total ad spend, driven by new customer acquisition via ViantAI and TVision integrat…"
-      },
-      "why": [
-        "Early in its climb — 7 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 7 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 1.7069,
-      "atr_ext": 0.728,
-      "atr_pct_price": 0.13,
-      "sata_score": 6,
-      "sata_change_1w": 1,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 59.6
-    },
-    {
-      "ticker": "HIPO",
-      "company": "Hippo Holdings Inc",
-      "sector": "Financial",
-      "stage_source_asof": "2026-10-14",
-      "stage_week_end": "2026-10-09",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 7,
-      "fresh": true,
-      "sga_score": 74,
-      "ma30_slope_pct5w": 2.714,
-      "pct_vs_ma30": 17.26,
-      "mansfield_rs": 3.58,
-      "vol_ratio": 1.27,
-      "event": "pullback_resume",
-      "gate_tier": "T2",
-      "blackout": false,
-      "arc_pos": 0.3375,
-      "earnings": {
-        "present": false,
-        "sentiment": null,
-        "performance": null,
-        "tone_word": null,
-        "tags": [],
-        "quarter": null,
-        "summary": null
-      },
-      "why": [
-        "Early in its climb — 7 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 7 周",
-        "已明显高于 30 周均线 — 可能需要回踩",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 2.3581,
-      "atr_ext": 2.121,
-      "atr_pct_price": 0.06942,
-      "sata_score": 8,
-      "sata_change_1w": 1,
-      "stage_detailed": "2D_extended_run",
-      "industry_percentile": null
-    },
-    {
-      "ticker": "ZIP",
-      "company": "ZipRecruiter Inc",
-      "sector": "Communication Services",
-      "stage_source_asof": "2026-10-14",
-      "stage_week_end": "2026-10-09",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 9,
-      "fresh": true,
-      "sga_score": 74,
-      "ma30_slope_pct5w": 7.425,
-      "pct_vs_ma30": 19.27,
-      "mansfield_rs": 7.6,
-      "vol_ratio": 0.77,
-      "event": "pullback_resume",
-      "gate_tier": "T2",
-      "blackout": false,
-      "arc_pos": 0.3625,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.5,
-        "performance": 7.8,
-        "tone_word": "confident",
-        "tags": [
-          "beat_and_raise",
-          "margin_expansion"
-        ],
-        "quarter": "Q2",
-        "summary": "ZipRecruiter reported Q2 FY2026 revenue of $118.1 million (up 5% YoY) and Adjusted EBITDA margin expansion to 12%, beating the midpoint of guidance by $6M on both metrics. Management raised full-year outlook from flat growth expectations to low single-digit growth, projecting …"
-      },
-      "why": [
-        "Early in its climb — 9 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 9 周",
-        "已明显高于 30 周均线 — 可能需要回踩",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 0.6526,
-      "atr_ext": 1.032,
-      "atr_pct_price": 0.15649,
-      "sata_score": 6,
-      "sata_change_1w": 2,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 94.7
-    },
     {
       "ticker": "SWKS",
       "company": "Skyworks Solutions",
@@ -390,52 +244,6 @@
       "industry_percentile": 54.5
     },
     {
-      "ticker": "PNRG",
-      "company": "PrimeEnergy Resources Corp",
-      "sector": "Energy",
-      "stage_source_asof": "2026-10-14",
-      "stage_week_end": "2026-10-09",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 9,
-      "fresh": true,
-      "sga_score": 66,
-      "ma30_slope_pct5w": 1.274,
-      "pct_vs_ma30": 4.03,
-      "mansfield_rs": 1.66,
-      "vol_ratio": 1.12,
-      "event": "trendline_recapture",
-      "gate_tier": "T2",
-      "blackout": false,
-      "arc_pos": 0.3625,
-      "earnings": {
-        "present": false,
-        "sentiment": null,
-        "performance": null,
-        "tone_word": null,
-        "tags": [],
-        "quarter": null,
-        "summary": null
-      },
-      "why": [
-        "Early in its climb — 9 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 9 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 16.0329,
-      "atr_ext": 0.519,
-      "atr_pct_price": 0.07462,
-      "sata_score": 5,
-      "sata_change_1w": 1,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": null
-    },
-    {
       "ticker": "MDB",
       "company": "MongoDB, Inc.",
       "sector": "Information Technology",
@@ -485,6 +293,55 @@
       "sata_change_1w": 1,
       "stage_detailed": "2X_fallback_bullish",
       "industry_percentile": 63.6
+    },
+    {
+      "ticker": "DSP",
+      "company": "Viant Technology Inc",
+      "sector": "Technology",
+      "stage_source_asof": "2026-10-14",
+      "stage_week_end": "2026-10-09",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 7,
+      "fresh": true,
+      "sga_score": 60,
+      "ma30_slope_pct5w": 2.933,
+      "pct_vs_ma30": 10.46,
+      "mansfield_rs": 5.36,
+      "vol_ratio": 2.24,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3375,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.92,
+        "performance": 8.5,
+        "tone_word": "confident",
+        "tags": [
+          "beat_and_raise",
+          "demand_acceleration",
+          "new_product",
+          "margin_contraction"
+        ],
+        "quarter": "Q2",
+        "summary": "Viant reported a strong Q2 FY2026 with revenue up 34% YoY and adjusted EBITDA of $14.2 million, both exceeding the high end of guidance. CTV spend surged nearly 50%, accounting for over half of total ad spend, driven by new customer acquisition via ViantAI and TVision integrat…"
+      },
+      "why": [
+        "Early in its climb — 7 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 7 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 1.7069,
+      "atr_ext": 0.728,
+      "atr_pct_price": 0.13,
+      "sata_score": 6,
+      "sata_change_1w": 1,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 59.6
     },
     {
       "ticker": "CHPT",
@@ -1370,68 +1227,6 @@
       "industry_percentile": null
     },
     {
-      "ticker": "HURN",
-      "company": "Huron Consulting Group Inc",
-      "sector": "Industrials",
-      "stage_source_asof": "2026-10-14",
-      "stage_week_end": "2026-10-09",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 3,
-      "fresh": true,
-      "sga_score": 53,
-      "ma30_slope_pct5w": 3.32,
-      "pct_vs_ma30": 28.65,
-      "mansfield_rs": 5.66,
-      "vol_ratio": 0.99,
-      "event": "pullback_resume",
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.2875,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.7222222222222222,
-        "performance": 8.75,
-        "tone_word": "confident",
-        "tags": [
-          "ai",
-          "managed_services",
-          "guidance_raise",
-          "margin_expansion",
-          "healthcare",
-          "digital_transformation",
-          "m&a",
-          "bookings_growth",
-          "professional_services",
-          "it_consulting",
-          "healthcare_consulting",
-          "education_services",
-          "ai_services",
-          "business_process_outsourcing",
-          "management_consulting"
-        ],
-        "quarter": "Q2",
-        "summary": "Significant portion of the health care provider market continues to be financially challenged, which in turn leads to continued growth tailwinds for our business."
-      },
-      "why": [
-        "Early in its climb — 3 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 3 周",
-        "已明显高于 30 周均线 — 可能需要回踩",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 15.3443,
-      "atr_ext": 2.425,
-      "atr_pct_price": 0.09185,
-      "sata_score": 8,
-      "sata_change_1w": 0,
-      "stage_detailed": "2D_extended_run",
-      "industry_percentile": 72.2
-    },
-    {
       "ticker": "MNTK",
       "company": "Montauk Renewables Inc",
       "sector": "Basic Materials",
@@ -2272,6 +2067,50 @@
       "industry_percentile": 85.1
     },
     {
+      "ticker": "HIPO",
+      "company": "Hippo Holdings Inc",
+      "sector": "Financial",
+      "stage_source_asof": "2026-10-14",
+      "stage_week_end": "2026-10-09",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 7,
+      "fresh": true,
+      "sga_score": 49,
+      "ma30_slope_pct5w": 2.714,
+      "pct_vs_ma30": 17.26,
+      "mansfield_rs": 3.58,
+      "vol_ratio": 1.27,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3375,
+      "earnings": {
+        "present": false,
+        "sentiment": null,
+        "performance": null,
+        "tone_word": null,
+        "tags": [],
+        "quarter": null,
+        "summary": null
+      },
+      "why": [
+        "Early in its climb — 7 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 7 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 2.3581,
+      "atr_ext": 2.121,
+      "atr_pct_price": 0.06942,
+      "sata_score": 8,
+      "sata_change_1w": 1,
+      "stage_detailed": "2D_extended_run",
+      "industry_percentile": null
+    },
+    {
       "ticker": "WAT",
       "company": "Waters Corporation",
       "sector": "Health Care",
@@ -2320,6 +2159,53 @@
       "sata_change_1w": 0,
       "stage_detailed": "2D_extended_run",
       "industry_percentile": 36.4
+    },
+    {
+      "ticker": "ZIP",
+      "company": "ZipRecruiter Inc",
+      "sector": "Communication Services",
+      "stage_source_asof": "2026-10-14",
+      "stage_week_end": "2026-10-09",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 9,
+      "fresh": true,
+      "sga_score": 49,
+      "ma30_slope_pct5w": 7.425,
+      "pct_vs_ma30": 19.27,
+      "mansfield_rs": 7.6,
+      "vol_ratio": 0.77,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3625,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.5,
+        "performance": 7.8,
+        "tone_word": "confident",
+        "tags": [
+          "beat_and_raise",
+          "margin_expansion"
+        ],
+        "quarter": "Q2",
+        "summary": "ZipRecruiter reported Q2 FY2026 revenue of $118.1 million (up 5% YoY) and Adjusted EBITDA margin expansion to 12%, beating the midpoint of guidance by $6M on both metrics. Management raised full-year outlook from flat growth expectations to low single-digit growth, projecting …"
+      },
+      "why": [
+        "Early in its climb — 9 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 9 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 0.6526,
+      "atr_ext": 1.032,
+      "atr_pct_price": 0.15649,
+      "sata_score": 6,
+      "sata_change_1w": 2,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 94.7
     },
     {
       "ticker": "CV",
@@ -3044,6 +2930,102 @@
       "sata_change_1w": 0,
       "stage_detailed": "2X_catch_price_above_ma",
       "industry_percentile": null
+    },
+    {
+      "ticker": "HTFL",
+      "company": "Heartflow Inc",
+      "sector": "Healthcare",
+      "stage_source_asof": "2026-10-14",
+      "stage_week_end": "2026-10-09",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 8,
+      "fresh": true,
+      "sga_score": 46,
+      "ma30_slope_pct5w": 15.155,
+      "pct_vs_ma30": 43.9,
+      "mansfield_rs": 40.64,
+      "vol_ratio": 1.21,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.35,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.85,
+        "performance": 9.2,
+        "tone_word": "confident",
+        "tags": [
+          "beat_and_raise",
+          "margin_expansion",
+          "demand_acceleration"
+        ],
+        "quarter": "Q2",
+        "summary": "HeartFlow reported Q2 FY26 revenue of $64.1 million, up 48% year-over-year and ahead of expectations, driven by accelerating plaque adoption and durable FF-CT utilization. Management raised full-year 2026 total revenue guidance to a range of $246-$250 million (representing 40%…"
+      },
+      "why": [
+        "Early in its climb — 8 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 8 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 5.3082,
+      "atr_ext": 2.859,
+      "atr_pct_price": 0.10672,
+      "sata_score": 8,
+      "sata_change_1w": 0,
+      "stage_detailed": "2A_strong_breakout",
+      "industry_percentile": null
+    },
+    {
+      "ticker": "PRTH",
+      "company": "Priority Technology Holdings Inc",
+      "sector": "Technology",
+      "stage_source_asof": "2026-10-14",
+      "stage_week_end": "2026-10-09",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 3,
+      "fresh": true,
+      "sga_score": 46,
+      "ma30_slope_pct5w": 4.687,
+      "pct_vs_ma30": 29.35,
+      "mansfield_rs": 20.16,
+      "vol_ratio": 3.77,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.2875,
+      "earnings": {
+        "present": true,
+        "sentiment": -0.5,
+        "performance": 7.2,
+        "tone_word": "cautious",
+        "tags": [
+          "guidance_raised",
+          "margin_contraction",
+          "demand_slowdown"
+        ],
+        "quarter": "Q2",
+        "summary": "Priority Commerce reported Q2 FY26 revenue of $262.3 million (up 9% YoY) and adjusted EPS of $0.29 (up 12% YoY). Management maintained full-year guidance for revenue ($1.01B-$1.04B), gross profit, and adjusted EBITDA but expects results to be at the lower end of their respecti…"
+      },
+      "why": [
+        "Early in its climb — 3 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 3 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 0.6964,
+      "atr_ext": 2.544,
+      "atr_pct_price": 0.08917,
+      "sata_score": 8,
+      "sata_change_1w": 0,
+      "stage_detailed": "2A_strong_breakout",
+      "industry_percentile": null
     }
   ],
   "warnings_stage3": [
@@ -3058,12 +3040,6 @@
       "company": "Southwest Gas Corp",
       "weeks_in_stage": 3,
       "sga_score": 40
-    },
-    {
-      "ticker": "GRNT",
-      "company": "Granite Ridge Resources Inc",
-      "weeks_in_stage": 3,
-      "sga_score": 36
     },
     {
       "ticker": "L",
@@ -3081,12 +3057,6 @@
       "ticker": "CAH",
       "company": "Cardinal Health",
       "weeks_in_stage": 2,
-      "sga_score": 35
-    },
-    {
-      "ticker": "FC",
-      "company": "Franklin Covey Co",
-      "weeks_in_stage": 6,
       "sga_score": 35
     },
     {
@@ -3120,12 +3090,6 @@
       "sga_score": 29
     },
     {
-      "ticker": "SMA",
-      "company": "Smartstop Self Storage REIT Inc",
-      "weeks_in_stage": 4,
-      "sga_score": 29
-    },
-    {
       "ticker": "STRA",
       "company": "Strategic Education, Inc.",
       "weeks_in_stage": 28,
@@ -3144,12 +3108,6 @@
       "sga_score": 26
     },
     {
-      "ticker": "NNI",
-      "company": "Nelnet Inc",
-      "weeks_in_stage": 21,
-      "sga_score": 26
-    },
-    {
       "ticker": "OSW",
       "company": "OneSpaWorld Holdings Limited",
       "weeks_in_stage": 2,
@@ -3162,9 +3120,33 @@
       "sga_score": 25
     },
     {
-      "ticker": "BH",
-      "company": "Biglari Holdings Inc",
-      "weeks_in_stage": 9,
+      "ticker": "ECL",
+      "company": "Ecolab",
+      "weeks_in_stage": 10,
+      "sga_score": 25
+    },
+    {
+      "ticker": "H",
+      "company": "Hyatt",
+      "weeks_in_stage": 4,
+      "sga_score": 25
+    },
+    {
+      "ticker": "HAL",
+      "company": "Halliburton",
+      "weeks_in_stage": 3,
+      "sga_score": 25
+    },
+    {
+      "ticker": "MDLZ",
+      "company": "Mondelez International",
+      "weeks_in_stage": 3,
+      "sga_score": 25
+    },
+    {
+      "ticker": "NOG",
+      "company": "Northern Oil and Gas, Inc.",
+      "weeks_in_stage": 3,
       "sga_score": 25
     }
   ],
