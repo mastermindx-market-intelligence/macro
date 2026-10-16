@@ -1,0 +1,506 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "contract": {
+      "const": "government_program_theme_context.v1"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "content_id": {
+      "type": "string",
+      "pattern": "^gptc1-[0-9a-f]{24}$"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "authority": {
+      "const": {
+        "tier": "display",
+        "context_only": true,
+        "can_rank": false,
+        "can_size": false,
+        "can_gate": false,
+        "can_originate_signal": false,
+        "can_add_candidates": false,
+        "can_escalate": false
+      }
+    },
+    "owner_bindings": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-zA-Z0-9_.:-]{1,128}$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "owner_kind": {
+            "enum": [
+              "program_ontology",
+              "program_dossier",
+              "identity_atlas",
+              "fms",
+              "budget",
+              "defense_economics",
+              "company_intelligence"
+            ]
+          },
+          "contract": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "content_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "available_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "admission_ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "rights_state": {
+            "const": "qualified_public_display"
+          },
+          "source_available_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "house_observed_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "owner_kind",
+          "contract",
+          "sha256",
+          "content_id",
+          "available_at",
+          "admission_ref",
+          "rights_state",
+          "source_available_at",
+          "house_observed_at"
+        ]
+      }
+    },
+    "themes": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "theme_id": {
+            "enum": [
+              "golden_dome",
+              "munitions_replenishment",
+              "space",
+              "nato_fms_demand",
+              "fleet_sustainment_upgrades",
+              "shipbuilding"
+            ]
+          },
+          "rails": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "funding_stage": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "enum": [
+                      "supported",
+                      "partial",
+                      "stale",
+                      "unreviewed",
+                      "not_asserted",
+                      "projection_missing",
+                      "source_unavailable",
+                      "blocked"
+                    ]
+                  },
+                  "reason_code": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9_]{1,128}$"
+                  },
+                  "references": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "owner_key": {
+                          "type": "string",
+                          "pattern": "^[a-zA-Z0-9_.:-]{1,128}$"
+                        },
+                        "pointer": {
+                          "type": "string",
+                          "pattern": "^/",
+                          "maxLength": 512
+                        },
+                        "row_id": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 512
+                        }
+                      },
+                      "required": [
+                        "owner_key",
+                        "pointer",
+                        "row_id"
+                      ]
+                    },
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason_code",
+                  "references"
+                ]
+              },
+              "exposure": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "enum": [
+                      "supported",
+                      "partial",
+                      "stale",
+                      "unreviewed",
+                      "not_asserted",
+                      "projection_missing",
+                      "source_unavailable",
+                      "blocked"
+                    ]
+                  },
+                  "reason_code": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9_]{1,128}$"
+                  },
+                  "references": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "owner_key": {
+                          "type": "string",
+                          "pattern": "^[a-zA-Z0-9_.:-]{1,128}$"
+                        },
+                        "pointer": {
+                          "type": "string",
+                          "pattern": "^/",
+                          "maxLength": 512
+                        },
+                        "row_id": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 512
+                        }
+                      },
+                      "required": [
+                        "owner_key",
+                        "pointer",
+                        "row_id"
+                      ]
+                    },
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason_code",
+                  "references"
+                ]
+              },
+              "economics": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "enum": [
+                      "supported",
+                      "partial",
+                      "stale",
+                      "unreviewed",
+                      "not_asserted",
+                      "projection_missing",
+                      "source_unavailable",
+                      "blocked"
+                    ]
+                  },
+                  "reason_code": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9_]{1,128}$"
+                  },
+                  "references": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "owner_key": {
+                          "type": "string",
+                          "pattern": "^[a-zA-Z0-9_.:-]{1,128}$"
+                        },
+                        "pointer": {
+                          "type": "string",
+                          "pattern": "^/",
+                          "maxLength": 512
+                        },
+                        "row_id": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 512
+                        }
+                      },
+                      "required": [
+                        "owner_key",
+                        "pointer",
+                        "row_id"
+                      ]
+                    },
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason_code",
+                  "references"
+                ]
+              },
+              "market_context": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "enum": [
+                      "supported",
+                      "partial",
+                      "stale",
+                      "unreviewed",
+                      "not_asserted",
+                      "projection_missing",
+                      "source_unavailable",
+                      "blocked"
+                    ]
+                  },
+                  "reason_code": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9_]{1,128}$"
+                  },
+                  "references": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "owner_key": {
+                          "type": "string",
+                          "pattern": "^[a-zA-Z0-9_.:-]{1,128}$"
+                        },
+                        "pointer": {
+                          "type": "string",
+                          "pattern": "^/",
+                          "maxLength": 512
+                        },
+                        "row_id": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 512
+                        }
+                      },
+                      "required": [
+                        "owner_key",
+                        "pointer",
+                        "row_id"
+                      ]
+                    },
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason_code",
+                  "references"
+                ]
+              },
+              "contrary_case": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "enum": [
+                      "supported",
+                      "partial",
+                      "stale",
+                      "unreviewed",
+                      "not_asserted",
+                      "projection_missing",
+                      "source_unavailable",
+                      "blocked"
+                    ]
+                  },
+                  "reason_code": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9_]{1,128}$"
+                  },
+                  "references": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "owner_key": {
+                          "type": "string",
+                          "pattern": "^[a-zA-Z0-9_.:-]{1,128}$"
+                        },
+                        "pointer": {
+                          "type": "string",
+                          "pattern": "^/",
+                          "maxLength": 512
+                        },
+                        "row_id": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 512
+                        }
+                      },
+                      "required": [
+                        "owner_key",
+                        "pointer",
+                        "row_id"
+                      ]
+                    },
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason_code",
+                  "references"
+                ]
+              },
+              "next_event": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "enum": [
+                      "supported",
+                      "partial",
+                      "stale",
+                      "unreviewed",
+                      "not_asserted",
+                      "projection_missing",
+                      "source_unavailable",
+                      "blocked"
+                    ]
+                  },
+                  "reason_code": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9_]{1,128}$"
+                  },
+                  "references": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "owner_key": {
+                          "type": "string",
+                          "pattern": "^[a-zA-Z0-9_.:-]{1,128}$"
+                        },
+                        "pointer": {
+                          "type": "string",
+                          "pattern": "^/",
+                          "maxLength": 512
+                        },
+                        "row_id": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 512
+                        }
+                      },
+                      "required": [
+                        "owner_key",
+                        "pointer",
+                        "row_id"
+                      ]
+                    },
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason_code",
+                  "references"
+                ]
+              }
+            },
+            "required": [
+              "funding_stage",
+              "exposure",
+              "economics",
+              "market_context",
+              "contrary_case",
+              "next_event"
+            ]
+          },
+          "research_state": {
+            "enum": [
+              "SOURCE_CONTEXT_COMPLETE",
+              "EVIDENCE_INSUFFICIENT"
+            ]
+          }
+        },
+        "required": [
+          "theme_id",
+          "rails",
+          "research_state"
+        ]
+      }
+    }
+  },
+  "required": [
+    "contract",
+    "schema_version",
+    "content_id",
+    "generated_at",
+    "as_of",
+    "authority",
+    "owner_bindings",
+    "themes"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "government_program_theme_context.v1.schema.json",
+  "description": "Derived sibling composed by the existing Program Dossier owner. References only: no copied financial facts or invented acquisition identity."
+}

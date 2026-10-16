@@ -1,0 +1,25 @@
+{
+  "contract": "government_program_ontology_review_worksheet.v1",
+  "schema_version": "1.0.0",
+  "reviewed_at": "2026-10-13T04:32:28+00:00",
+  "reviewer": "O2 bounded documentary curation under original root 01a13300; NATO policy-only architecture accepted by root",
+  "coverage": [],
+  "rows": [
+    {
+      "action": "admit",
+      "target_kind": "evidence",
+      "candidate_row": {
+        "evidence_id": "ev:3972074b2bba",
+        "evidence_class": "official_alliance_policy",
+        "sha256": "3972074b2bba9ded28ec0582a403365952e90a2291e109fe44861c955b4d65e4",
+        "source_url": "https://www.nato.int/en/about-us/official-texts-and-resources/official-texts/2025/06/25/the-hague-summit-declaration",
+        "retrieved_from_url": "https://www.nato.int/en/about-us/official-texts-and-resources/official-texts/2025/06/25/the-hague-summit-declaration",
+        "retrieved_at": "2026-10-13T03:16:05+00:00",
+        "known_at": "2026-10-13T03:16:05+00:00",
+        "claim_scopes": [
+          "policy_context"
+        ]
+      }
+    }
+  ]
+}
