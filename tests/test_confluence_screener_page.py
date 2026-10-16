@@ -607,3 +607,98 @@ def test_render_html_t9b_sign_conditional_and_edge_chip_sign():
     assert "近段未能跑赢随机入场" in html_zero
     assert "beat random entry recently" not in html_zero
     assert "+-" not in html_zero
+
+
+# TOI consumer qualification: synthetic missing-source transitions only.
+@pytest.mark.parametrize("source", [None, "{bad-json", "[]", '{"generated_utc":"2026-10-03T20:00:00Z","combos":{"long":[]}}'])
+def test_toi_empty_source_removes_only_its_previous_share_card(tmp_path, monkeypatch, source):
+    import types
+    from scripts import build_confluence_screener as builder
+    pages = types.ModuleType("lib.pages")
+    def write_page(path, text):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+    pages.write_page = write_page
+    monkeypatch.setitem(sys.modules, "lib.pages", pages)
+    monkeypatch.setattr(builder, "render_html", lambda root, ctx: json.dumps(ctx))
+    monkeypatch.setattr(builder, "_cta_url", lambda: "https://example.invalid/")
+    site = tmp_path / "site"
+    (site / "og").mkdir(parents=True)
+    (site / "factordata").mkdir()
+    (site / "premiumdata").mkdir()
+    stale_card = site / "og/confluence_screener.png"
+    stale_card.write_bytes(b"SYNTHETIC_OLD_CARD")
+    sibling_card = site / "og/unrelated.png"
+    sibling_card.write_bytes(b"DO_NOT_TOUCH")
+    payload = site / "premiumdata/confluence_screener.json"
+    payload.write_text('{"combos":[{"combo_id":"SYNTHETIC_OLD"}]}')
+    if source is not None:
+        (site / "factordata/tech_confluence.json").write_text(source)
+    builder.render(tmp_path)
+    assert json.loads((site / "confluence_screener.html").read_text())["combos"] == []
+    assert json.loads(payload.read_text())["combos"] == []
+    assert sibling_card.read_bytes() == b"DO_NOT_TOUCH"
+    assert not stale_card.exists(), "an empty public/premium state must not retain its old share card"
+
+
+def test_toi_empty_source_without_a_previous_card_succeeds(tmp_path, monkeypatch):
+    import types
+    from scripts import build_confluence_screener as builder
+    pages = types.ModuleType("lib.pages")
+    def write_page(path, text):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+    pages.write_page = write_page
+    monkeypatch.setitem(sys.modules, "lib.pages", pages)
+    monkeypatch.setattr(builder, "render_html", lambda root, ctx: json.dumps(ctx))
+    monkeypatch.setattr(builder, "_cta_url", lambda: "https://example.invalid/")
+    builder.render(tmp_path)
+    assert not (tmp_path / "site/og/confluence_screener.png").exists()
+    assert json.loads((tmp_path / "site/premiumdata/confluence_screener.json").read_text())["combos"] == []
+
+
+@pytest.mark.parametrize("has_combos", [False, True])
+def test_toi_empty_source_social_metadata_uses_the_matching_image(has_combos):
+    from jinja2 import Environment, FileSystemLoader
+    source = (_ROOT / "templates/confluence_screener.html.j2").read_text()
+    start = source.index("{% set seo_title =")
+    end_marker = '{% include "_seo_head.html.j2" %}'
+    end = source.index(end_marker, start) + len(end_marker)
+    env = Environment(loader=FileSystemLoader(str(_ROOT / "templates")), autoescape=True)
+    html = env.from_string(source[start:end]).render(combos=[{}] if has_combos else [])
+    if has_combos:
+        assert 'content="https://www.mastermind-x.com/og/confluence_screener.png"' in html
+        assert 'content="summary_large_image"' in html
+    else:
+        assert "og/confluence_screener.png" not in html
+        assert 'content="https://www.mastermind-x.com/apple-touch-icon.png"' in html
+        assert 'content="summary"' in html
+
+
+def test_toi_empty_source_repair_preserves_nonempty_card_rendering(tmp_path, monkeypatch):
+    import types
+    from scripts import build_confluence_screener as builder
+    pages = types.ModuleType("lib.pages")
+    def write_page(path, text):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+    pages.write_page = write_page
+    monkeypatch.setitem(sys.modules, "lib.pages", pages)
+    monkeypatch.setattr(builder, "render_html", lambda root, ctx: json.dumps(ctx))
+    monkeypatch.setattr(builder, "_cta_url", lambda: "https://example.invalid/")
+    cards = types.ModuleType("engine.marketing.share_cards")
+    cards.render_screener_card = lambda **kwargs: b"SYNTHETIC_NEW_CARD"
+    def save_card(image, path):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(image)
+    cards.save_card = save_card
+    monkeypatch.setitem(sys.modules, "engine.marketing.share_cards", cards)
+    site = tmp_path / "site"
+    (site / "factordata").mkdir(parents=True)
+    (site / "og").mkdir()
+    (site / "og/confluence_screener.png").write_bytes(b"SYNTHETIC_OLD_CARD")
+    (site / "factordata/tech_confluence.json").write_text(json.dumps(_make_raw()))
+    builder.render(tmp_path)
+    assert (site / "og/confluence_screener.png").read_bytes() == b"SYNTHETIC_NEW_CARD"
+    assert len(json.loads((site / "confluence_screener.html").read_text())["combos"]) == 3
+    assert len(json.loads((site / "premiumdata/confluence_screener.json").read_text())["combos"]) == 2
