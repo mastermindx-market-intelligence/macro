@@ -1586,3 +1586,22 @@ def test_inflation_read_block_carries_no_retired_vocabulary():
         assert word not in block, word
     for token in ("'above target'", "'at target'", "'below target'", "'anchored'", "'drifting up'", "'drifting down'"):
         assert token in block, token
+
+def test_macro_sentiment_dialog_hydrates_after_registration_gate() -> None:
+    vm = _base_vm()
+    vm["fear_greed"] = {"dial": 62, "label_en": "Greed", "label_zh": "贪婪"}
+    html = _env().get_template("dashboard.html.j2").render(**vm, mode="macro")
+    start = html.index('id="dlg-sentiment"')
+    end = html.index('id="dlg-sector"', start)
+    dialog = html[start:end]
+    assert dialog.count('template data-sentiment-fold') == 1
+    assert dialog.count('</template>') == 1
+    assert 'Composite of 11 market gauges' in dialog
+    assert dialog.index('template data-sentiment-fold') < dialog.index('Composite of 11 market gauges')
+    assert dialog.index('</template>') < dialog.rindex('</div>')
+    open_at = html.index('window.mx5OpenDlg = function(id)')
+    authorized = html.index('window.MMXAccessPreview.isAnon()', open_at)
+    hydration = html.index('sentimentBody.appendChild(sentimentFold.content)', open_at)
+    visible = html.index("dlg.classList.add('open')", open_at)
+    assert authorized < hydration < visible
+    assert 'sentimentFold.remove()' in html[hydration:visible]

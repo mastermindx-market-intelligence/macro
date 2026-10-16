@@ -16,7 +16,7 @@ def check_links(body, ticker):
         url = urlsplit(link['href'])
         assert not url.scheme and not url.netloc and not url.fragment
         assert url.path == '/market_memory.html'
-        assert parse_qs(url.query) == {'mm_issuer_input': [ticker], 'mm_lang': [lang]}
+        assert parse_qs(url.query) == {'mm_issuer_input': [ticker], 'view': ['memory'], 'mm_lang': [lang]}
         assert link['target'] == '_blank'
         assert 'noopener' in link['rel']
     assert 'recomputed history' in links[0].get_text().lower()

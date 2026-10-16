@@ -1,14 +1,14 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-15T07:25:37.618907+00:00",
-  "posts_seen": 8,
-  "seen_total": 290,
+  "as_of": "2026-10-15T22:16:44.549289+00:00",
+  "posts_seen": 10,
+  "seen_total": 293,
   "evaluated": 1,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-10-15-presidential-message-on-the-birthday-of-president-dwight-d-eisenhower-c6b1",
+      "id": "wh-2026-10-15-its-not-a-socialist-revolution-its-misery-starvation-and-death",
       "importance": 5,
       "activated": false,
       "degraded_reason": "served_by:deepseek"

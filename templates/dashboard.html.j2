@@ -15052,6 +15052,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>
       </div>
       <div class="mx5-dlg-body">
+        {# Native template: the baked metrics remain inert until an authorized open. #}
+        <template data-sentiment-fold>
         {% set _dlg_fg = fear_greed if (fear_greed is defined and fear_greed) else {} %}
         {% set _dlg_fg_dial = (_dlg_fg.get('dial') or 50) | float %}
         {% set _dlg_fg_label_en = _dlg_fg.get('label_en') or 'Neutral' %}
@@ -15184,6 +15186,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           {% endif %}
         </div>
         {% endif %}
+        </template>
       </div>
     </div>
   </div>
@@ -15359,6 +15362,17 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       if(_dlgActive){ _dlgTeardown(_dlgActive, false); _dlgActive = null; }
       var dlg = document.getElementById(id);
       if(!dlg) return;
+      /* One-time hydration happens ONLY after the existing registration gate.
+         This keeps the sentiment panel out of the cold DOM; it preserves
+         server-rendered metrics and delegated [data-rpop] handlers. */
+      if(id === 'dlg-sentiment'){
+        var sentimentBody = dlg.querySelector('.mx5-dlg-body');
+        var sentimentFold = sentimentBody && sentimentBody.querySelector(':scope > template[data-sentiment-fold]');
+        if(sentimentFold){
+          sentimentBody.appendChild(sentimentFold.content);
+          sentimentFold.remove();
+        }
+      }
       /* Heatmap adoption: on first open of dlg-markets, move #heatmap-scorecard into the
          dialog placeholder so it renders at 920px dialog scale (idempotent). */
       if(id === 'dlg-markets'){

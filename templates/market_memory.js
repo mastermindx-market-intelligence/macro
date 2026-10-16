@@ -12,7 +12,9 @@
     macroAuthBlocked: false,
     symbolAuthBlocked: false,
     macroNotice: null,
-    symbolNotice: null
+    symbolNotice: null,
+    legacyMacroPending: false,
+    legacySymbolPending: false
   };
   var ui = {};
 
@@ -195,6 +197,7 @@
   }
 
   function loadMacro() {
+    if (ui.legacy && !ui.legacy.hasAttribute('open')) { state.legacyMacroPending = true; return; }
     var requestId = ++state.macroRequest;
     state.macro = null;
     state.macroNotice = {kind: 'loading'};
@@ -408,6 +411,8 @@
       } catch (error) { /* standalone legacy client */ }
     }
 
+    // Hidden legacy panels defer only the read; validation and intent sync above still run.
+    if (ui.legacy && !ui.legacy.hasAttribute('open')) { state.legacySymbolPending = true; return; }
     request('/symbol/' + encodeURIComponent(ticker)).then(function (payload) {
       if (requestId !== state.symbolRequest) return;
       state.symbolAuthBlocked = false;
@@ -432,6 +437,17 @@
     ui.symbolInput = document.getElementById('mm-symbol-input');
     ui.symbolSummary = document.getElementById('mm-symbol-summary');
     ui.gridList = document.getElementById('mm-grid-list');
+
+    ui.legacy = document.getElementById('mmr-legacy');
+    // The retained page hides these panels inside <details id="mmr-legacy">.
+    // Its first open starts the deferred reads; standalone pages stay eager.
+    if (ui.legacy) {
+      ui.legacy.addEventListener('toggle', function () {
+        if (!ui.legacy.hasAttribute('open')) return;
+        if (state.legacyMacroPending) { state.legacyMacroPending = false; loadMacro(); }
+        if (state.legacySymbolPending) { state.legacySymbolPending = false; loadSymbol(state.latestRaw); }
+      });
+    }
 
     ui.symbolForm.addEventListener('submit', function (event) {
       event.preventDefault();
@@ -460,6 +476,9 @@
     }
     document.addEventListener('langchange', function () {
       var patch = {language: isZh() ? 'zh' : 'en'};
+      if (window.MarketMemoryIntent && typeof window.MarketMemoryIntent.selectLanguage === 'function') {
+        window.MarketMemoryIntent.selectLanguage(patch.language);
+      }
       if (state.symbolRequest) patch.issuerInput = state.latestRaw;
       syncIntent(patch);
       if (state.macro) renderMacro();
@@ -468,7 +487,7 @@
       else renderSymbolNotice();
     });
 
-    var initial = '', explicitInput = false;
+    var initial = '', explicitInput = false, explicitResearch = false;
     if (window.MarketMemoryIntent) {
       var resumed = window.MarketMemoryIntent.resumeStatus();
       if (!resumed.ok) {
@@ -484,15 +503,16 @@
       if (restored.intent.language && typeof window.setLang === 'function') window.setLang(restored.intent.language);
       explicitInput = Object.prototype.hasOwnProperty.call(restored.intent, 'issuerInput');
       if (explicitInput) initial = restored.intent.issuerInput;
+      explicitResearch = restored.intent.view === 'memory';
     }
     if (!explicitInput) {
       try { initial = new URL(location.href).searchParams.get('ticker') || localStorage.getItem('market_memory_ticker') || ''; } catch (error) { /* no-op */ }
       initial = normalizeTicker(initial) || 'AAPL';
     }
     ui.symbolInput.value = initial;
-    // An explicit issuer handoff opens its existing research surface. Ordinary
-    // saved-output browsing stays collapsed; neither path changes the read API.
-    if (explicitInput) {
+    // Only an explicit request for the existing research view opens this disclosure.
+    // An issuer in a saved-output URL alone must not start hidden legacy reads.
+    if (explicitInput && explicitResearch) {
       var symbolDisclosure = document.getElementById('mmr-legacy');
       if (symbolDisclosure && symbolDisclosure.tagName === 'DETAILS') symbolDisclosure.open = true;
     }

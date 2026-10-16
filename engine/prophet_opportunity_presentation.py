@@ -106,7 +106,7 @@ def _memory_href(ticker):
         return None
     # Explicit issuer intent prevents the receiver's cached/default AAPL fallback.
     # No candidate, generation, assessment, or private evidence is transferred.
-    return "/market_memory.html?" + urlencode({"mm_issuer_input": ticker})
+    return "/market_memory.html?" + urlencode({"mm_issuer_input": ticker, "view": "memory"})
 
 
 def _evidence_profile(prophet):
