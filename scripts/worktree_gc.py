@@ -878,14 +878,29 @@ def display_name(w: Worktree) -> str:
 def summarize(worktrees: list[Worktree]) -> dict:
     by: dict[str, dict] = {}
     for w in worktrees:
-        b = by.setdefault(w.verdict or "?", {"count": 0, "kb": 0})
+        # Keep numeric "kb" for existing JSON consumers, but explicitly
+        # report incomplete sizing. Unknown size is NEVER the same as 0 bytes.
+        b = by.setdefault(w.verdict or "?", {"count": 0, "kb": 0, "size_unknown": 0})
         b["count"] += 1
-        b["kb"] += w.size_kb or 0
+        if w.size_kb is None:
+            b["size_unknown"] += 1
+        else:
+            b["kb"] += w.size_kb
     return by
 
 
 def _gib(kb: int | None) -> str:
-    return f"{(kb or 0) / 1024 / 1024:.1f}"
+    return "not measured" if kb is None else f"{kb / 1024 / 1024:.1f}"
+
+
+def _size_phrase(kb: int | None) -> str:
+    return "not measured" if kb is None else f"{_gib(kb)} GiB"
+
+
+def _group_size(group: dict | None) -> int | None:
+    if not group:
+        return 0
+    return None if group["size_unknown"] else group["kb"]
 
 
 def reach_line(meta: dict) -> str | None:
@@ -997,21 +1012,30 @@ def render_markdown(worktrees: list[Worktree], cfg: dict, meta: dict) -> str:
     protection = protection_line(meta)
     if protection:
         lines += [protection, ""]
+    if meta.get("sizes_measured") is False:
+        lines += ["size measurement: **disabled** (`--no-sizes`); unmeasured space is not zero.", ""]
     lines += [
         "| verdict | count | GiB |",
         "|---|---:|---:|",
     ]
     for v in sorted(by, key=lambda k: -by[k]["kb"]):
-        lines.append(f"| {v} | {by[v]['count']} | {_gib(by[v]['kb'])} |")
+        lines.append(f"| {v} | {by[v]['count']} | {_gib(_group_size(by[v]))} |")
     safe_kb = sum(by.get(v, {}).get("kb", 0) for v in SAFE_VERDICTS)
-    orphan_kb = by.get("ORPHAN", {}).get("kb", 0)
+    safe_unknown = sum(by.get(v, {}).get("size_unknown", 0) for v in SAFE_VERDICTS)
+    orphan_size = _group_size(by.get("ORPHAN"))
+    kept_unsized = any(
+        w.size_kb is None and w.verdict in KEEP_VERDICTS
+        for w in worktrees
+    )
     lines += [
         "",
-        f"**Reclaimable now (SAFE_MERGED + SAFE_REMOTE): {_gib(safe_kb)} GiB "
+        f"**Reclaimable now (SAFE_MERGED + SAFE_REMOTE): "
+        f"{_size_phrase(None if safe_unknown else safe_kb)} "
         f"across {sum(by.get(v, {}).get('count', 0) for v in SAFE_VERDICTS)} worktrees.**",
-        f"ORPHAN (needs include_orphans ratification): {_gib(orphan_kb)} GiB.",
+        f"ORPHAN (needs include_orphans ratification): {_size_phrase(orphan_size)}.",
         "",
-        "## Largest kept worktrees",
+        ("## Kept worktree sample (sizes not measured)" if kept_unsized
+         else "## Largest kept worktrees"),
         "",
         "| worktree | verdict | GiB | age d | detail |",
         "|---|---|---:|---:|---|",
@@ -1025,7 +1049,7 @@ def render_markdown(worktrees: list[Worktree], cfg: dict, meta: dict) -> str:
         lines.append(f"| {display_name(w)} | {w.verdict} | {_gib(w.size_kb)} | {age} | {detail[:100]} |")
     lines += ["", "## Sample of safe deletions", ""]
     for w in [w for w in worktrees if w.verdict in SAFE_VERDICTS][:20]:
-        lines.append(f"- `{display_name(w)}` {_gib(w.size_kb)} GiB — {w.proof} (branch {w.branch or '—'})")
+        lines.append(f"- `{display_name(w)}` {_size_phrase(w.size_kb)} — {w.proof} (branch {w.branch or '—'})")
     return "\n".join(lines) + "\n"
 
 
@@ -1161,6 +1185,7 @@ def main(argv: list[str] | None = None) -> int:
         **({"only_worktree": str(only)} if only is not None else {}),
         "fetch_ok": fetch_ok,
         "proc_scan": procs is not None,
+        "sizes_measured": not args.no_sizes,
         "pr_states": "file" if args.pr_states_file else ("none" if pr_states is None else f"gh:{len(pr_states)}"),
         "primary": str(primary),
         "config_path": str(cfg_path),

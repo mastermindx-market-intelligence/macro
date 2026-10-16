@@ -819,3 +819,70 @@ def test_only_worktree_non_fabric_branch_is_never_released(
             repo, tmp_path, monkeypatch, cfg=cfg, apply=True,
             extra=["--only-worktree", str(other), "--no-fetch"])
     assert other.is_dir()
+
+
+
+# Size-precision contract: --no-sizes never means zero disk occupation.
+# Presentation/evidence only; no GC deletion eligibility changes.
+
+def test_unsized_report_does_not_claim_zero_space_or_largest_worktrees():
+    merged = wgc.Worktree(
+        path=Path("/fixture/merged"), verdict="SAFE_MERGED",
+        age_days=10, proof="published", size_kb=None)
+    kept = wgc.Worktree(
+        path=Path("/fixture/unpublished"), verdict="UNPUSHED",
+        age_days=6, reasons=["not published"], size_kb=None)
+    rows = [merged, kept]
+    summary = wgc.summarize(rows)
+    assert summary["SAFE_MERGED"] == {
+        "count": 1, "kb": 0, "size_unknown": 1}
+    assert summary["UNPUSHED"]["size_unknown"] == 1
+    metadata = dict(host="fixture", ts="time", mode="report",
+                    fetch_ok=False, proc_scan=True, pr_states="none",
+                    sizes_measured=False)
+    md = wgc.render_markdown(
+        rows, {"armed": False, "min_age_days": 7}, metadata)
+    assert "size measurement: **disabled**" in md
+    assert "| SAFE_MERGED | 1 | not measured |" in md
+    assert "| UNPUSHED | 1 | not measured |" in md
+    assert "Reclaimable now (SAFE_MERGED + SAFE_REMOTE): not measured across 1" in md
+    assert "## Kept worktree sample (sizes not measured)" in md
+    assert "0.0 GiB across 1" not in md
+    assert "- " + chr(96) + "merged" + chr(96) + " not measured" in md
+
+
+def test_known_zero_size_is_distinct_from_unknown_in_summaries():
+    known = wgc.Worktree(
+        path=Path("/fixture/empty"), verdict="SAFE_MERGED",
+        size_kb=0, proof="published")
+    unknown = wgc.Worktree(
+        path=Path("/fixture/unmeasured"), verdict="SAFE_MERGED",
+        size_kb=None, proof="published")
+    meta = dict(host="fixture", ts="time", mode="report",
+                fetch_ok=True, proc_scan=True, pr_states="none",
+                sizes_measured=True)
+    config = {"armed": False, "min_age_days": 7}
+    known_md = wgc.render_markdown([known], config, meta)
+    assert "Reclaimable now (SAFE_MERGED + SAFE_REMOTE): 0.0 GiB across 1" in known_md
+    assert wgc.summarize([known])["SAFE_MERGED"]["size_unknown"] == 0
+    mixed = wgc.summarize([known, unknown])["SAFE_MERGED"]
+    assert mixed == {"count": 2, "kb": 0, "size_unknown": 1}
+    mixed_md = wgc.render_markdown([known, unknown], config, meta)
+    assert "| SAFE_MERGED | 2 | not measured |" in mixed_md
+    assert "0.0 GiB across 2" not in mixed_md
+
+
+def test_real_no_sizes_cli_reports_unmeasured_not_zero(repo, tmp_path, monkeypatch, capsys):
+    target = _add_worktree(repo, "sized_unknown", branch="lane/sized_unknown")
+    _age(repo, target)
+    rc, payload = _run_main(repo, tmp_path, monkeypatch)
+    assert rc == 0
+    assert payload["meta"]["sizes_measured"] is False
+    item = _verdict(payload, "sized_unknown")
+    assert item["verdict"] == "SAFE_MERGED"
+    assert item["size_kb"] is None
+    assert payload["summary"]["SAFE_MERGED"]["size_unknown"] == 1
+    md = capsys.readouterr().out
+    assert "size measurement: **disabled**" in md
+    assert "Reclaimable now (SAFE_MERGED + SAFE_REMOTE): not measured across 1" in md
+    assert "## Kept worktree sample (sizes not measured)" not in md
