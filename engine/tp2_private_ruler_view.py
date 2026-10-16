@@ -384,6 +384,18 @@ def build_private_tp2_view(*, observation, calibration=None, view_asof_ns,
     }
     if calibration is None:
         return finish(output)
+    if type(calibration) is not dict:
+        raise TP2PrivateViewRefusal("calibration: invalid source shape")
+    # PIT privacy is evaluated FIRST. A future calibration must be withheld
+    # before comparing its later snapshot/basis/identity/authority with the
+    # original observation, or those comparisons leak future revision facts.
+    evaluation = _clock(calibration.get("evaluation_ns"),
+                        "calibration.evaluation_ns")
+    if evaluation < asof:
+        raise TP2PrivateViewRefusal("calibration: evaluated before source existed")
+    if evaluation > now:
+        output["state"] = "CALIBRATION_NOT_YET_KNOWABLE"
+        return finish(output)
     cticker, csession = _identity(
         calibration, schema=CAL_SCHEMA, role="calibration")
     if cticker != ticker or csession != session:
@@ -404,12 +416,6 @@ def build_private_tp2_view(*, observation, calibration=None, view_asof_ns,
         output["state"] = "CALIBRATION_STALE_SOURCE_GENERATION"
         output["historical_ruler"] = None
         output["intraday_minute_baseline"] = None
-        return finish(output)
-    evaluation = _clock(calibration.get("evaluation_ns"), "calibration.evaluation_ns")
-    if evaluation < asof:
-        raise TP2PrivateViewRefusal("calibration: evaluated before source existed")
-    if evaluation > now:
-        output["state"] = "CALIBRATION_NOT_YET_KNOWABLE"
         return finish(output)
     ranks = calibration.get("daily_object_ranks")
     if not isinstance(ranks, dict) or set(ranks) != set(_KINDS):

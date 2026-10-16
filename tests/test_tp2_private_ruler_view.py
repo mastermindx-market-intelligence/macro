@@ -804,3 +804,41 @@ def test_tp2_handoff_validation_parity_preserves_valid_boundary(case, reader):
         assert result == view
         assert result["public_delivery_allowed"] is False
         assert result["signal"] is None
+
+
+@pytest.mark.parametrize(("field","substitute"), [
+    ("target_snapshot_sha256","0"*64),
+    ("basis_id","post-hoc-unattested-basis"),
+    ("ticker","QQQ"),
+    ("authority","UNAUTHORIZED_FUTURE_CALIBRATION"),
+])
+def test_tp2_future_calibration_provenance_is_invisible_before_evaluation(
+        field,substitute):
+    observation,golden=originals()
+    assert observation["asof_ns"] < golden["evaluation_ns"]
+    future=copy.deepcopy(golden)
+    future[field]=substitute
+    at=golden["evaluation_ns"]-1
+    result=build_private_tp2_view(
+        observation=observation,calibration=future,view_asof_ns=at)
+    # Supplied future calibration may exist in memory; an as-seen TP2 private
+    # consumer must never learn its later source generation, basis or identity
+    # before the originally asserted calibration evaluation time.
+    assert result["state"]=="CALIBRATION_NOT_YET_KNOWABLE"
+    assert result["historical_ruler"] is None
+    assert result["intraday_minute_baseline"] is None
+    assert substitute not in json.dumps(result,sort_keys=True)
+
+
+def test_tp2_stale_calibration_is_disclosed_only_after_original_evaluation():
+    observation,golden=originals()
+    changed=copy.deepcopy(golden)
+    changed["target_snapshot_sha256"]="0"*64
+    before=build_private_tp2_view(
+        observation=observation,calibration=changed,
+        view_asof_ns=golden["evaluation_ns"]-1)
+    assert before["state"]=="CALIBRATION_NOT_YET_KNOWABLE"
+    after=build_private_tp2_view(
+        observation=observation,calibration=changed,
+        view_asof_ns=golden["evaluation_ns"]+1)
+    assert after["state"]=="CALIBRATION_STALE_SOURCE_GENERATION"

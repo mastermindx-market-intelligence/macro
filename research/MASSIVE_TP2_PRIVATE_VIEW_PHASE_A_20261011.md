@@ -58,3 +58,19 @@ The existing new TP-2 suite checks byte-pinned source/golden, private-only autho
 4. Only successful original data and browser acceptance justifies release; no Prophet ranking, automated signals, sizing, alerts or trading authorization follows from this private research view.
 
 **NOT merged, deployed, installed, authenticated or production proven. Do not use Vercel.**
+
+\n### Future-calibration availability guard (2026-10-16 source-only review)
+
+A future TP-B calibration **must be withheld before** the private view compares
+its target snapshot, split basis, ticker/session or authority with a currently
+knowable observation. Earlier Phase A performed those comparisons first and
+allowed a supplied future record to leak later stale-generation and basis
+information as an error or `CALIBRATION_STALE_SOURCE_GENERATION` before the
+calibration's own `evaluation_ns`. The fixed implementation validates the
+typed evaluation time and source chronology, returns only
+`CALIBRATION_NOT_YET_KNOWABLE` for future cal data, and defers its detailed
+identity/authority/staleness analysis until `evaluation_ns <= view_asof_ns`.
+A once-available truly stale or unauthorized calibration still fails or
+reports its existing typed disposition. This remains a source-free private
+research HOLD; caller-supplied clocks and digests are not authenticated
+real-market receipts, and no browser/public/trading path was added.
