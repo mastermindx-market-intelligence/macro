@@ -7310,7 +7310,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow requests pyyaml
       - name: whole-board breadth collector + heatmap payload contract
-        run: python -m pytest tests/test_china_board_breadth.py tests/test_market_heatmap.py -q
+        run: python -m pytest tests/test_china_board_breadth.py tests/test_market_heatmap.py tests/test_sp500_heatmap_intraday_clock.py -q
 
   china-search-universe:
     if: ${{ false }}
@@ -12154,6 +12154,9 @@ jobs:
       - name: Holiday client quote and session receipt behavior
         run: node --test tests/live_holiday.test.mjs
 
+      - name: Basket Pulse source clocks and contributor coverage
+        run: python -m pytest tests/test_build_basket_pulse.py -q
+
   hk-integration-seams:
     if: ${{ false }}
     gate: code
@@ -14873,6 +14876,7 @@ jobs:
       - "engine/neuralweb/world_state.py"
       - "engine/neuralweb/mastermind_context.py"
       - "engine/neuralweb/market_packet.py"
+      - "engine/session_digest.py"
       - "tests/test_regime_outlook_reader_world_state.py"
       - "tests/test_regime_outlook_reader_context.py"
       - "tests/test_regime_outlook_reader_digest.py"
@@ -21301,7 +21305,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: vector allocation surfaces + the calibration ledger and basket pulse they read
-        run: python -m pytest tests/test_basket_turn_watch.py tests/test_btc_overrides.py tests/test_build_basket_pulse.py tests/test_regime_dynamics_null_gaps.py tests/test_signal_surface_bugfixes.py tests/test_spvector_page.py tests/test_trial_log_refresh.py tests/test_validation_effective_t.py tests/test_vector_conviction.py -q
+        run: python -m pytest tests/test_basket_turn_watch.py tests/test_btc_overrides.py tests/test_regime_dynamics_null_gaps.py tests/test_signal_surface_bugfixes.py tests/test_spvector_page.py tests/test_trial_log_refresh.py tests/test_validation_effective_t.py tests/test_vector_conviction.py -q
       - name: basket-turn grading pack + session-stamp heal (forward-ledger audit 2026-08-05)
         run: python -m pytest tests/test_basket_turn_grading.py tests/test_heal_basket_turn_ledger.py -q
       - name: W4 staged re-entry spine + P5 deferred-context BTC chips (dat/netliq/cascade)
@@ -27212,7 +27216,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest numpy pandas pyyaml
       - name: basket read band + board group-pulse column (GR1)
-        run: python -m pytest tests/test_group_read_surface.py tests/test_sector_central_measured_panel.py -q -rs
+        run: python -m pytest tests/test_group_read_surface.py tests/test_sector_central_measured_panel.py tests/test_sector_intraday_comparison.py -q -rs
 
   leadership-rotation-countercases:
     # LEADERSHIP-ROTATION T20 (O8 independent challenge): one integrated counter-case suite driving SYNTHETIC

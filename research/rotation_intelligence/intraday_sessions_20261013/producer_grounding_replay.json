@@ -1,0 +1,71 @@
+{
+  "code_sha256": {
+    "engine/neuralweb/market_packet.py": "7b7e5d010071f99fd8633284786647f55caf7bba17dc32a8206e17d6a467b57a",
+    "scripts/build_basket_pulse.py": "853144143dc81334eedaa66ad8143a3b63cca6d921177f99d21c2f8c44b1985b"
+  },
+  "financial_edge_tested": false,
+  "grounding_digest": "[CURRENT DASHBOARD STATE \u2014 nightly desk state, no live tape; stamps per section. Ground your answer in this, but NEVER name files or fields \u2014 give the plain read. Numbers here are the desk's own reads.]\nLEADERS (10-13 15:29Z): since prior observation vs SPY (not fund flows) - AI semiconductors \u22121.96% price, \u22121.96% vs SPY (10-13 14:59Z to 10-13 15:29Z; 1/1 matched) \u00b7 health care sector +1.01% price, +1.01% vs SPY (10-13 14:59Z to 10-13 15:29Z; 1/1 matched)",
+  "measured_rows": [
+    {
+      "daily_change_pct": 0.0,
+      "id": "ai_semiconductors",
+      "intraday_comparison": {
+        "absolute_change_pct": -1.960784,
+        "benchmark": "SPY",
+        "benchmark_change_pct": 0.0,
+        "coverage_pct": 100.0,
+        "elapsed_minutes": 30.0,
+        "excluded": {},
+        "matched_members": 1,
+        "max_clock_skew_seconds": 60.0,
+        "method": "matched_member_equal_weight",
+        "positive_relative_breadth_pct": 0.0,
+        "reference_asof": "2026-10-13T14:59:00+00:00",
+        "relative_change_pct": -1.960784,
+        "schema": "basket_intraday_comparison.v1",
+        "session_date": "2026-10-13",
+        "source_asof": "2026-10-13T15:29:00+00:00",
+        "status": "observed",
+        "total_members": 1
+      }
+    },
+    {
+      "daily_change_pct": 0.0,
+      "id": "us_sector_health",
+      "intraday_comparison": {
+        "absolute_change_pct": 1.010101,
+        "benchmark": "SPY",
+        "benchmark_change_pct": 0.0,
+        "coverage_pct": 100.0,
+        "elapsed_minutes": 30.0,
+        "excluded": {},
+        "matched_members": 1,
+        "max_clock_skew_seconds": 60.0,
+        "method": "matched_member_equal_weight",
+        "positive_relative_breadth_pct": 100.0,
+        "reference_asof": "2026-10-13T14:59:00+00:00",
+        "relative_change_pct": 1.010101,
+        "schema": "basket_intraday_comparison.v1",
+        "session_date": "2026-10-13",
+        "source_asof": "2026-10-13T15:29:00+00:00",
+        "status": "observed",
+        "total_members": 1
+      }
+    }
+  ],
+  "production_verified": false,
+  "proof_kind": "synthetic_actual_code_path_not_production_or_market_backtest",
+  "seed_statuses": [
+    "baseline_missing",
+    "baseline_missing"
+  ],
+  "unchanged_snapshot_later": {
+    "age_minutes": 31.0,
+    "mode": "delayed",
+    "source_asof": "2026-10-13T15:29:00+00:00",
+    "statuses": [
+      "benchmark_nonadvancing",
+      "benchmark_nonadvancing"
+    ]
+  }
+}
