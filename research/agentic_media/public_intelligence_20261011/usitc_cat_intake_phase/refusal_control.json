@@ -1,0 +1,9 @@
+{
+  "check": "wrong_source_hash_refuses_before_fixture_creation",
+  "passed": true,
+  "exit": 1,
+  "fixture_created": false,
+  "stderr": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-validator-followon-20261014-c1dc27962b7d07c4/research/agentic_media/public_intelligence_20261011/usitc_cat_intake_phase/verify_local_intake.py\", line 107, in <module>\n    main()\n    ~~~~^^\n  File \"/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-validator-followon-20261014-c1dc27962b7d07c4/research/agentic_media/public_intelligence_20261011/usitc_cat_intake_phase/verify_local_intake.py\", line 26, in main\n    assert digest(raw) == PDF_SHA, 'source hash mismatch'\n           ^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: source hash mismatch\n",
+  "production_writes": 0,
+  "provider_calls": 0
+}
