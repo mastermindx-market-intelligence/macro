@@ -756,3 +756,64 @@ def test_retired_gate_pin_still_rejects_the_actual_denial(tmp_path, monkeypatch,
     monkeypatch.setitem(globals(), "HOOK", sample)
     with pytest.raises(AssertionError):
         test_no_gh_command_is_denied_merely_because_a_pull_request_is_armed()
+
+
+# Codex's separate project hook must use the incumbent Claude/CI quota owner.
+# A long foreground watch may be quota-polite and still strand the reasoning turn.
+def _codex_hook_verdict(command: str, *, background: bool = False, native: bool = True) -> dict | None:
+    payload: dict = {"tool_name": "Bash", "tool_input": {"command": command}}
+    if background:
+        payload["tool_input"]["run_in_background"] = True
+    if native:
+        payload["turn_id"] = "synthetic-native-turn"
+    completed = subprocess.run(
+        [sys.executable, str(HOOK)], input=json.dumps(payload).encode(),
+        capture_output=True, timeout=30,
+    )
+    assert completed.returncode == 0
+    output = completed.stdout.decode("utf-8", errors="replace").strip()
+    return json.loads(output)["hookSpecificOutput"] if output else None
+
+
+def test_codex_project_bash_hook_routes_to_the_existing_quota_guard():
+    config = json.loads((ROOT / ".codex" / "hooks.json").read_text())
+    entries = config["hooks"]["PreToolUse"]
+    assert len(entries) == 1
+    assert entries[0]["matcher"] == "^Bash$"
+    hooks = entries[0]["hooks"]
+    assert len(hooks) == 1
+    hook = hooks[0]
+    assert hook["type"] == "command"
+    assert hook["timeout"] <= 30
+    assert hook["command"] == 'python3 "$(git rev-parse --show-toplevel)/.claude/hooks/gh_quota_guard.py"'
+
+
+@pytest.mark.parametrize("command", [
+    "gh run watch 38688166361 --interval 150",
+    "gh run view 38688166361 --watch --interval 150",
+    "gh pr checks 8413 --watch",
+    "gh run watch 38688166361 --interval 150 && gh pr merge 8413",
+])
+def test_native_codex_foreground_ci_watches_do_not_occupy_the_principal(command):
+    output = _codex_hook_verdict(command)
+    assert output and output["permissionDecision"] == "deny"
+    assert "foreground" in output["permissionDecisionReason"].lower()
+
+
+def test_native_codex_nonwatch_status_and_background_watch_stay_permitted():
+    assert not (_codex_hook_verdict("gh pr checks 8413") or {}).get("permissionDecision") == "deny"
+    assert not (_codex_hook_verdict("gh run watch 38688166361 --interval 150", background=True) or {}).get("permissionDecision") == "deny"
+    # Existing Claude pretool policy remains the current accepted slow-watch rule.
+    assert not (_codex_hook_verdict("gh run watch 38688166361 --interval 150", native=False) or {}).get("permissionDecision") == "deny"
+
+
+def test_native_codex_default_watch_remains_denied_by_the_existing_quota_floor():
+    output = _codex_hook_verdict("gh run watch 38688166361")
+    assert output and output["permissionDecision"] == "deny"
+
+
+def test_codex_binding_does_not_invent_a_second_guard_or_session_stop_hook():
+    config = json.loads((ROOT / ".codex" / "hooks.json").read_text())
+    assert set(config["hooks"]) == {"SessionStart", "PreToolUse"}
+    assert len(config["hooks"]["SessionStart"]) == 1
+    assert "Stop" not in config["hooks"]

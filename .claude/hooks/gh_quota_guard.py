@@ -253,6 +253,14 @@ def strip_heredocs(cmd: str) -> str:
 CMD_POS = r"(?:^|[;&|\n(]|\b(?:do|then|else)\s)\s*"
 # `gh run watch` / `gh run view --watch`
 WATCH_RE = re.compile(CMD_POS + r"gh\s+run\s+(?:watch\b|view\b[^|;&\n]*--watch\b)")
+# Codex native PreToolUse uses this SAME shared quota guard, not a second owner.
+# Long foreground watches still consume the orchestrator even at a safe REST cadence.
+# The trusted turn identity is transport metadata, never a model/authority claim.
+CODEX_FOREGROUND_WATCH_RE = re.compile(
+    CMD_POS + r"gh\s+(?:run\s+(?:watch\b|view\b[^|;&\n]*--watch\b)"
+    r"|pr\s+checks\b[^|;&\n]*--watch\b)"
+)
+
 
 #: Shape 6. `gh run cancel <id>` plus both REST spellings the fleet has actually
 #: used — the force-cancel receipt from 2026-08-12 is the second form.
@@ -562,6 +570,22 @@ def main():
     cmd = str(ti.get("command") or "")
     if "gh " not in cmd:
         allow()
+    # Existing Codex Bash-hook adapter forwards a turn ID but not Claude's
+    # transcript_path. Do not assume a native foreground shell is an async
+    # watcher merely because its provider can later return a process handle.
+    # A real background transport can opt in explicitly. One-off status reads,
+    # the existing quota floor and five-minute *advisory* cooldown are unchanged.
+    codex_native = bool(payload.get("turn_id")) and payload.get("transcript_path") is None
+    if codex_native and ti.get("run_in_background") is not True:
+        if CODEX_FOREGROUND_WATCH_RE.search(strip_heredocs(cmd)):
+            deny(
+                "FOREGROUND CI WATCH WOULD BLOCK CODEX: do not pin the principal "
+                "to gh run watch, gh run view --watch or gh pr checks --watch. "
+                "Make one bounded status read, then use the existing durable merge "
+                "controller or one admitted observer with an actual retained return "
+                "handle; continue independent work. A hook warning is not a watcher "
+                "start or a release verdict."
+            )
     # The harness names the invoking checkout. `check` does not consult it today,
     # but passing it through keeps this seam stable for a checkout-scoped rule.
     cwd = payload.get("cwd")
