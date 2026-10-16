@@ -1,29 +1,29 @@
 {
   "prob_cal": {
     "h5": {
-      "calm": 0.192,
-      "watch": 0.192,
-      "caution": 0.192,
-      "elevated": 0.192,
-      "risk-off": 0.192
+      "calm": 0.242,
+      "watch": 0.242,
+      "caution": 0.242,
+      "elevated": 0.242,
+      "risk-off": 0.242
     },
     "h10": {
-      "calm": 0.279,
-      "watch": 0.279,
-      "caution": 0.279,
-      "elevated": 0.279,
-      "risk-off": 0.279
+      "calm": 0.329,
+      "watch": 0.329,
+      "caution": 0.329,
+      "elevated": 0.329,
+      "risk-off": 0.329
     },
     "h21": {
-      "calm": 0.346,
-      "watch": 0.346,
-      "caution": 0.346,
-      "elevated": 0.346,
-      "risk-off": 0.346
+      "calm": 0.381,
+      "watch": 0.381,
+      "caution": 0.381,
+      "elevated": 0.381,
+      "risk-off": 0.381
     }
   },
-  "n_graded": 25,
-  "brier_before": 0.2592,
-  "brier_after": 0.2552,
-  "updated": "2026-10-14T19:06:11+00:00"
+  "n_graded": 27,
+  "brier_before": 0.268,
+  "brier_after": 0.2598,
+  "updated": "2026-10-16T17:39:52+00:00"
 }

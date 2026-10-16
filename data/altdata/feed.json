@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-16T14:55:41.200348+00:00",
+  "generated_utc": "2026-10-16T18:04:40.586572+00:00",
   "as_of": "2026-10-16",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -7364,6 +7364,14 @@
         "activist": false,
         "filer": null,
         "detail": "Delistings"
+      },
+      {
+        "ticker": "VVOS",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
       },
       {
         "ticker": "CRMT",
@@ -17766,6 +17774,14 @@
         "detail": "Going-Private"
       },
       {
+        "ticker": "VRNS",
+        "category": "Going-Private",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Going-Private"
+      },
+      {
         "ticker": "ZYME",
         "category": "Acquisitions",
         "confidence": "high",
@@ -17876,6 +17892,14 @@
         "activist": false,
         "filer": null,
         "detail": "Delistings"
+      },
+      {
+        "ticker": "PAG",
+        "category": "Going-Private",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Going-Private"
       },
       {
         "ticker": "DBGI",
@@ -18022,12 +18046,28 @@
         "detail": "Acquisitions"
       },
       {
+        "ticker": "DAC",
+        "category": "Spin-Offs",
+        "confidence": "medium",
+        "activist": false,
+        "filer": null,
+        "detail": "Spin-Offs"
+      },
+      {
         "ticker": "PRCH",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
+      },
+      {
+        "ticker": "ZONE",
+        "category": "Divestitures",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Divestitures"
       },
       {
         "ticker": "CTHH",
@@ -19310,14 +19350,6 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "BSBR",
-        "category": "Tender Offers",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Tender Offers"
-      },
-      {
         "ticker": "BRAG",
         "category": "Acquisitions",
         "confidence": "high",
@@ -19700,6 +19732,14 @@
         "activist": false,
         "filer": null,
         "detail": "Divestitures"
+      },
+      {
+        "ticker": "NRIM",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
       },
       {
         "ticker": "ALP",
@@ -20958,6 +20998,14 @@
         "detail": "Delistings"
       },
       {
+        "ticker": "VBIO",
+        "category": "Delistings",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Delistings"
+      },
+      {
         "ticker": "RMBI",
         "category": "Acquisitions",
         "confidence": "high",
@@ -21095,6 +21143,14 @@
       },
       {
         "ticker": "GLNDW",
+        "category": "Delistings",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Delistings"
+      },
+      {
+        "ticker": "IBACR",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -21480,7 +21536,7 @@
       {
         "ticker": "SOWG",
         "category": "Acquisitions",
-        "confidence": "high",
+        "confidence": "medium",
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
@@ -21516,14 +21572,6 @@
         "activist": false,
         "filer": null,
         "detail": "Delistings"
-      },
-      {
-        "ticker": "CTRM",
-        "category": "Divestitures",
-        "confidence": "medium",
-        "activist": false,
-        "filer": null,
-        "detail": "Divestitures"
       },
       {
         "ticker": "DTSS",
@@ -21708,6 +21756,14 @@
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
+      },
+      {
+        "ticker": "ONMDW",
+        "category": "Delistings",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Delistings"
       },
       {
         "ticker": "AFJKU",
@@ -24086,14 +24142,6 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "ALEC",
-        "category": "Deal Terminations",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Deal Terminations"
-      },
-      {
         "ticker": "BWMG",
         "category": "Acquisitions",
         "confidence": "high",
@@ -24384,7 +24432,7 @@
       {
         "ticker": "SKYAW",
         "category": "Issuer Tenders",
-        "confidence": "high",
+        "confidence": "medium",
         "activist": false,
         "filer": null,
         "detail": "Issuer Tenders"
@@ -24884,14 +24932,6 @@
         "activist": false,
         "filer": null,
         "detail": "Divestitures"
-      },
-      {
-        "ticker": "BIAFW",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
       },
       {
         "ticker": "TEAD",
@@ -25870,6 +25910,14 @@
         "detail": "Divestitures"
       },
       {
+        "ticker": "SKYX",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
         "ticker": "SUN",
         "category": "Delistings",
         "confidence": "high",
@@ -26718,6 +26766,14 @@
         "detail": "Acquisitions"
       },
       {
+        "ticker": "OPK",
+        "category": "Divestitures",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Divestitures"
+      },
+      {
         "ticker": "OMTK",
         "category": "Divestitures",
         "confidence": "high",
@@ -26916,6 +26972,14 @@
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
+      },
+      {
+        "ticker": "RARE",
+        "category": "Divestitures",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Divestitures"
       },
       {
         "ticker": "DJCO",
@@ -27230,17 +27294,6 @@
         "hot": true
       },
       {
-        "ticker": "PAYC",
-        "net_up_30d": 20,
-        "breadth": 1.0,
-        "est_chg_30d": 0.11,
-        "n_analysts": 20,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 20,
-        "hot": true
-      },
-      {
         "ticker": "BBY",
         "net_up_30d": 20,
         "breadth": 1.0,
@@ -27285,10 +27338,10 @@
         "hot": true
       },
       {
-        "ticker": "P",
+        "ticker": "NTAP",
         "net_up_30d": 18,
         "breadth": 1.0,
-        "est_chg_30d": 19.13,
+        "est_chg_30d": 1.0,
         "n_analysts": 18,
         "bull_ratio": 1.0,
         "rising": true,
@@ -27296,10 +27349,10 @@
         "hot": true
       },
       {
-        "ticker": "NTAP",
+        "ticker": "P",
         "net_up_30d": 18,
         "breadth": 1.0,
-        "est_chg_30d": 1.0,
+        "est_chg_30d": 18.71,
         "n_analysts": 18,
         "bull_ratio": 1.0,
         "rising": true,
@@ -27370,6 +27423,17 @@
         "bull_ratio": 0.94,
         "rising": true,
         "revision_delta": 16,
+        "hot": true
+      },
+      {
+        "ticker": "STX",
+        "net_up_30d": 15,
+        "breadth": 1.0,
+        "est_chg_30d": 0.0,
+        "n_analysts": 15,
+        "bull_ratio": 1.0,
+        "rising": true,
+        "revision_delta": 15,
         "hot": true
       }
     ],
@@ -31852,6 +31916,13 @@
         "last_surprise_pct": 9.1
       },
       {
+        "ticker": "STX",
+        "next_date": "2026-10-27",
+        "days_to": 11,
+        "eps_forecast": 7.11,
+        "last_surprise_pct": 12.1
+      },
+      {
         "ticker": "SWKS",
         "next_date": "2026-10-27",
         "days_to": 11,
@@ -33026,13 +33097,6 @@
         "days_to": 19,
         "eps_forecast": 0.42,
         "last_surprise_pct": 2.5
-      },
-      {
-        "ticker": "PAYC",
-        "next_date": "2026-11-04",
-        "days_to": 19,
-        "eps_forecast": 2.31,
-        "last_surprise_pct": 25.1
       },
       {
         "ticker": "PR",
