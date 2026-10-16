@@ -688,3 +688,26 @@ def test_t07r2_nonpositive_rows_not_counted():
         assert counts["positive_2s_by_absolute"] == zero
         assert sum(counts["positive_2s_by_absolute"].values()) == counts["positive_2s"]
     assert out["coverage"]["positive_2s_by_absolute"] == zero
+
+
+def test_preregistered_etf_rotation_legs_are_in_active_yahoo_collection():
+    """Price-date parity requires both sides to be MAINTAINED, not just archived.
+
+    2026-10-15 original Rotation Command source rejected DIA/QQQ because DIA's
+    last stored close was Oct 14 while QQQ advanced to Oct 15. The independent
+    prereg study had DIA/QQQ all along; the Yahoo daily fetch universe did not.
+    Do not replace DIA with ^DJI or manufacture an aligned ratio.
+    """
+    from collectors.yahoo import YahooAdapter
+    from scripts.leadership_rotation_study import PAIRS as PREREG_PAIRS
+
+    assert PREREG_PAIRS["dia_vs_qqq"] == ("broadening_proxy", "DIA", "QQQ")
+    required = {ticker for _, receiver, donor in PREREG_PAIRS.values()
+                for ticker in (receiver, donor)}
+    fetched = YahooAdapter().all_tickers()  # config read only, NO fetch
+    missing = sorted(required - set(fetched))
+    assert missing == [], (
+        "preregistered rotation pair legs cannot retain matched close dates if "
+        f"the existing daily Yahoo owner never fetches them: {missing}"
+    )
+    assert fetched.count("DIA") == 1
