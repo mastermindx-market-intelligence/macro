@@ -59,6 +59,7 @@ from engine.theme_graph.membership_evidence import (
     build_overlap_evidence, render_markdown,
     build_microtheme_research_evidence, render_microtheme_research_markdown,
     build_microtheme_identity_preflight, render_microtheme_identity_preflight_markdown,
+    build_microtheme_addendum_review, render_microtheme_addendum_markdown,
 )
 from scripts.explain_theme_changes import _load
 
@@ -71,6 +72,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--format", choices=("json", "markdown"), default="json")
     parser.add_argument("--issuer-reference", help="current Data OS issuer_master.parquet for non-admitting identity hint triage")
     parser.add_argument("--security-reference", help="current Data OS security_master.parquet; no PIT issuer claim")
+    parser.add_argument("--microtheme-addendum", help="separate, unadmitted source-pointer research extension JSON")
     parser.add_argument("--out", help="new output file only; existing paths are never overwritten")
     args = parser.parse_args(argv)
     try:
@@ -82,12 +84,21 @@ def main(argv: list[str] | None = None) -> int:
         if output and (output.resolve() == source.resolve() or output.exists()):
             raise ValueError("output must be a new path, not the input or an existing file")
         identity_mode = args.issuer_reference is not None or args.security_reference is not None
+        addendum_mode = args.microtheme_addendum is not None
         if identity_mode and (args.microtheme_research is None
                               or not args.issuer_reference or not args.security_reference):
             raise ValueError("identity reference triage requires both Data OS files and --microtheme-research")
+        if addendum_mode:
+            if args.microtheme_research is None or identity_mode or not args.microtheme_addendum:
+                raise ValueError("addendum review requires --microtheme-research without Data OS identity flags")
+            if output is not None and output.resolve() == Path(args.microtheme_addendum).resolve():
+                raise ValueError("output cannot overwrite the research addendum")
         document = _load(source)
         if args.microtheme_research is not None:
-            if identity_mode:
+            if addendum_mode:
+                report = build_microtheme_addendum_review(
+                    document, _load(Path(args.microtheme_addendum)))
+            elif identity_mode:
                 try:
                     import pyarrow  # noqa: F401 - explicit optional runtime requirement
                 except ImportError as exc:
@@ -106,7 +117,9 @@ def main(argv: list[str] | None = None) -> int:
                 report = build_microtheme_research_evidence(document)
         else:
             report = build_overlap_evidence(document)
-        text = (render_microtheme_identity_preflight_markdown(report)
+        text = (render_microtheme_addendum_markdown(report)
+                if addendum_mode and args.format == "markdown"
+                else render_microtheme_identity_preflight_markdown(report)
                 if identity_mode and args.format == "markdown"
                 else render_microtheme_research_markdown(report)
                 if args.microtheme_research is not None and args.format == "markdown"
@@ -121,7 +134,8 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps({"schema": ("gmi.microtheme_membership_review_refusal/v1"
                                        if args.microtheme_research is not None
                                        else "gmi.theme_overlap_refusal/v1"), "ok": False,
-                          "code": ("MICROTHEME_RESEARCH_UNAVAILABLE"
+                          "code": ("MICROTHEME_ADDENDUM_UNAVAILABLE" if args.microtheme_addendum is not None
+                                   else "MICROTHEME_RESEARCH_UNAVAILABLE"
                                    if args.microtheme_research is not None
                                    else "OVERLAP_EVIDENCE_UNAVAILABLE"), "message": str(exc)},
                          sort_keys=True), file=sys.stderr)

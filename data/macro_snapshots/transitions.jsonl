@@ -397,3 +397,12 @@
 {"asof": "2026-10-14", "domain": "china", "field": "china_fe_band", "from_value": "Neutral", "to_value": "Fear", "macro_context_id": "56c676d4e74b52a5"}
 {"asof": "2026-10-14", "domain": "hk", "field": "hk_quad", "from_value": "Q4", "to_value": "Q2", "macro_context_id": "56c676d4e74b52a5"}
 {"asof": "2026-10-14", "domain": "hk", "field": "hk_risk_state", "from_value": "Neutral", "to_value": "Risk-on", "macro_context_id": "56c676d4e74b52a5"}
+{"asof": "2026-10-16", "domain": "us", "field": "us_liquidity_quality", "from_value": "contracting", "to_value": "neutral-hollow", "macro_context_id": "43dad99ef388a04a"}
+{"asof": "2026-10-16", "domain": "us", "field": "us_liquidity_overlay", "from_value": "contracting", "to_value": "neutral", "macro_context_id": "43dad99ef388a04a"}
+{"asof": "2026-10-16", "domain": "us", "field": "us_vrp_state", "from_value": "normal", "to_value": "collapsing (de-risk)", "macro_context_id": "43dad99ef388a04a"}
+{"asof": "2026-10-16", "domain": "us", "field": "cross_asset_verdict", "from_value": "diverge", "to_value": "mixed", "macro_context_id": "43dad99ef388a04a"}
+{"asof": "2026-10-16", "domain": "fx", "field": "fx_eurusd_action", "from_value": "FLAT", "to_value": "SHORT", "macro_context_id": "43dad99ef388a04a"}
+{"asof": "2026-10-16", "domain": "commodity", "field": "copper_action", "from_value": "HOLD", "to_value": "SELL", "macro_context_id": "43dad99ef388a04a"}
+{"asof": "2026-10-16", "domain": "china", "field": "china_fe_band", "from_value": "Fear", "to_value": "Panic", "macro_context_id": "43dad99ef388a04a"}
+{"asof": "2026-10-16", "domain": "hk", "field": "hk_risk_state", "from_value": "Risk-on", "to_value": "Neutral", "macro_context_id": "43dad99ef388a04a"}
+{"asof": "2026-10-16", "domain": "canada", "field": "canada_quad", "from_value": "Q2", "to_value": "Q3", "macro_context_id": "43dad99ef388a04a"}

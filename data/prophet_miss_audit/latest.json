@@ -212,14 +212,13 @@
     "emerging_score": 2.358,
     "n_members": 39,
     "present_counts": {
-     "buy": 4,
+     "buy": 3,
      "ran": 0,
      "leaders": 1
     },
     "present": {
      "buy": [
       "EL",
-      "ETSY",
       "TPR",
       "UNFI"
      ],
@@ -228,7 +227,7 @@
       "ANF"
      ]
     },
-    "represented_n": 5,
+    "represented_n": 4,
     "days_since_top5_entry": null
    },
    {
@@ -237,7 +236,7 @@
     "emerging_score": 2.18,
     "n_members": 44,
     "present_counts": {
-     "buy": 4,
+     "buy": 3,
      "ran": 0,
      "leaders": 0
     },
@@ -245,13 +244,12 @@
      "buy": [
       "ACI",
       "EL",
-      "ETSY",
       "PINS"
      ],
      "ran": [],
      "leaders": []
     },
-    "represented_n": 4,
+    "represented_n": 3,
     "days_since_top5_entry": null
    },
    {
@@ -325,8 +323,8 @@
      "VLO"
     ],
     "present_counts": {
-     "buy": 5,
-     "watch": 3,
+     "buy": 6,
+     "watch": 2,
      "leaders": 2,
      "ran": 0
     },
@@ -358,8 +356,8 @@
      "VLO"
     ],
     "present_counts": {
-     "buy": 5,
-     "watch": 3,
+     "buy": 6,
+     "watch": 2,
      "leaders": 2,
      "ran": 0
     },
@@ -483,18 +481,19 @@
     "n_members": 21,
     "n_members_live": 21,
     "n_members_read": 21,
-    "n_members_on_board": 7,
+    "n_members_on_board": 8,
     "members_on_board": [
      "ASO",
      "BBY",
      "BJ",
      "DG",
      "FIVE",
+     "ORLY",
      "ROST",
      "ULTA"
     ],
     "present_counts": {
-     "buy": 1,
+     "buy": 2,
      "watch": 4,
      "leaders": 0,
      "ran": 2
@@ -649,11 +648,12 @@
     "n_members": 47,
     "n_members_live": 47,
     "n_members_read": 47,
-    "n_members_on_board": 8,
+    "n_members_on_board": 9,
     "members_on_board": [
      "ABNB",
      "BBY",
      "HAS",
+     "ORLY",
      "RL",
      "ROST",
      "TPR",
@@ -661,7 +661,7 @@
      "YUM"
     ],
     "present_counts": {
-     "buy": 3,
+     "buy": 4,
      "watch": 5,
      "leaders": 0,
      "ran": 0
@@ -1719,19 +1719,19 @@
  },
  "scan_tier": {
   "available": true,
-  "asof": "2026-10-14",
+  "asof": "2026-10-15",
   "null_reason": null,
   "floor_rule": "still trading (last bar = store's last bar) AND >= 159 bars AND close >= $3 AND median(close x volume) over the last 20 bars >= $5M",
-  "store_n": 21185,
-  "scan_n": 1657,
+  "store_n": 21193,
+  "scan_n": 1663,
   "runners_n": 150,
-  "runners_eligible_today_n": 16,
-  "runners_never_eligible_n": 38,
+  "runners_eligible_today_n": 13,
+  "runners_never_eligible_n": 41,
   "excluder_family_hist": {
-   "not_topped_veto": 125,
-   "ELIGIBLE": 16,
-   "rsi_cap_on_fresh_cross": 5,
+   "not_topped_veto": 131,
+   "ELIGIBLE": 13,
    "freshness_expired": 3,
+   "rsi_cap_on_fresh_cross": 2,
    "no_cross": 1
   }
  },

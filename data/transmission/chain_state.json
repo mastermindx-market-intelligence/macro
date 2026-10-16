@@ -1,7 +1,7 @@
 {
   "schema": "transmission_chains.v1",
   "asof": "2026-10-15",
-  "built": "2026-10-16 06:16 UTC",
+  "built": "2026-10-16 17:00 UTC",
   "chains": [
     {
       "chain": "credit_spreads_refinancing",
@@ -145,15 +145,15 @@
         "en": "Dollar spike → EM & multinational-EPS headwind",
         "zh": "美元飙升 → 新兴市场与跨国企业盈利承压"
       },
-      "state": "expressed",
+      "state": "arming",
       "state_label": {
-        "en": "Expressed",
-        "zh": "已兑现"
+        "en": "Arming",
+        "zh": "触发中"
       },
-      "hop": 2,
+      "hop": 0,
       "n_hops": 2,
       "armable": true,
-      "episode_id": "dollar_spike_em_multinational@r3:2026-10-06",
+      "episode_id": "dollar_spike_em_multinational@r3:2026-10-15",
       "hops": [
         {
           "id": "dollar_spike->usd_transmission_on",
@@ -163,8 +163,8 @@
             0,
             20
           ],
-          "confirmed": true,
-          "asof": "2026-10-14",
+          "confirmed": false,
+          "asof": null,
           "value_receipt": [
             {
               "path": "transmission.usd_dir",
@@ -203,8 +203,8 @@
             0,
             90
           ],
-          "confirmed": true,
-          "asof": "2026-10-15",
+          "confirmed": false,
+          "asof": null,
           "value_receipt": [
             {
               "series": "FXI",

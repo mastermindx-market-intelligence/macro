@@ -1,6 +1,6 @@
 {
   "schema": "ledger_heartbeat_state.v1",
-  "updated_utc": "2026-10-16T07:12:05Z",
+  "updated_utc": "2026-10-16T18:31:02Z",
   "last_check_date": "2026-10-16",
   "ledgers": {
     "data/opex_windows/forward_log.jsonl": {
@@ -35,7 +35,7 @@
       "expected_session": "2026-10-15"
     },
     "data/deterioration_cascade/forward_log.jsonl": {
-      "asof": "2026-10-15",
+      "asof": "2026-10-16",
       "last_check_date": "2026-10-16",
       "stalled_since": null
     },
@@ -50,7 +50,7 @@
       "stalled_since": "2026-10-09"
     },
     "data/china_basket_turn/ledger.jsonl": {
-      "asof": "2026-10-15",
+      "asof": "2026-10-16",
       "last_check_date": "2026-10-16",
       "stalled_since": null
     },
