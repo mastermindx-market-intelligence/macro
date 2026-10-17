@@ -59,18 +59,22 @@ verified:
   - claim: The cutoff is the latest spine ingestion clock at the measured revision.
     command: "pandas max of ingested_at on origin/main data/reference/vendor_aliases.parquet and security_master.parquet"
     result: "vendor_aliases 2026-10-15 13:32:43; security_master 2026-10-15 12:31:14"
+  - claim: EVAL-1 partition clock at fresh origin/main 2026-10-17 reads F_DEV CLOSED and PURGE_1 OPEN.
+    command: "eval1_partition_clock.py --rev e38026e9f4e964d3d2efb77d6f5baa136e247b26 --out <scratch>; eval1_partition_clock_check.py --check EVAL1_PARTITION_CLOCK_2026-10-17.json --md EVAL1_PARTITION_CLOCK_2026-10-17.md"
+    result: "verdict PURGE_1; admitted (main_freshness_proven true, source_main_commit e38026e9); F_DEV start 2026-10-07 close 2026-10-15 FLOOR_MET primary 102/100 ISSUER_OVERLAP_CLUSTER (secondary 423); PURGE_1 2026-10-16..2027-01-15 (63 sessions); F_VAL start 2027-01-19 NOT_STARTED; clusters_total 308, starts_eligible 697 of 1248 variant-S; cross_check engine.k3e_eval1_forward.assign_partitions AGREES; checker OK rc=0; receipt sha256 996734e664e37e90fa186ac0c4a103b025b545d96f4e971d97a9dfcf79730f15 (scratch, research artifact only, no outcome field read)"
 unverified:
   - claim: The refreshed receipt is live on main and the agentos state regenerates cleanly.
     what_would_verify: "After squash-merge: git fetch origin main; git ls-tree origin/main -- research/alpha_intelligence/expectation_market_dynamics/R1_OWNER_RECEIPTS_2026-10-17.json; nightly regenerates docs/AGENT_OS_STATE.md with DEC:ITP-R1-DEGRADED-RECEIPT-REFRESH-2026-10-17"
-  - claim: EVAL-1 F_DEV partition count at 2026-10-17.
-    what_would_verify: "research/alpha_intelligence/expectation_market_dynamics/eval1_partition_clock.py at a fresh origin/main (research artifact only, never under data/)"
+  - claim: Independent review of this PR.
+    what_would_verify: "GLM fabric review lane itp-r1-review-9538 (ubuntu3, 2026-10-17T11:39Z) died on the provider's 429 weekly limit (reset 2026-10-19T05:16Z) before reading the diff; no replacement lane was launched. Under the 2026-10-15 standing execution policy a research/ + agentos/-only PR needs no independent review; seat self-check = the four verified claims above plus pytest 47 passed."
 unresolved:
   - "7 universe names stay without an issuer id (5 missing store alias rows, 2 EVIDENCE_CONFLICT); only a dated identity source or an identity-plane conflict resolution moves them, neither a seat act."
   - "G2 cannot close under the ALIAS ruling (store rows undated by design); CLOSED needs a vendor PIT identity feed (Chairman money gate)."
   - "R4 forward floor (100 overall / 25 subgroup at horizons 5/21/63 after boundary 2026-10-07T13:30Z) is not reachable with ~7 post-boundary NYSE sessions; recorded as not yet."
+  - "EVAL-1 F_DEV labels are incomplete until PURGE_1 ends (2027-01-15): episodes anchored late in F_DEV have no horizon-63 outcome yet, so the F_DEV read is clock-bound, not a seat act today."
 next_actions:
   - "Merge this PR on concluded checks with --match-head-commit, fetch origin main alone, verify both new JSON files and the DEC by path on origin/main."
-  - "EVAL-1: keep reading eval1_partition_clock.py at fresh origin/main; fit B0/B6/challenger on F_DEV only after it closes at 100 clusters; F_HOLD locked; no tuning loop."
+  - "EVAL-1: F_DEV CLOSED 2026-10-15 at 102/100 clusters (reading above). The single F_DEV label read (B0/B6 baselines + the one committed challenger trial) happens ONCE, after PURGE_1 ends 2027-01-15 so every F_DEV horizon-63 label is observable; no partial early read, no tuning loop; F_VAL opens 2027-01-19; F_HOLD locked. Re-read the clock at a fresh origin/main before that read."
   - "R1 re-refresh (optional, later): re-run the probe with --cutoff <later spine clock> --owner-receipts <new receipt> --expected-universe-sha256 <that universe digest>; a CLOSED receipt is lawful only if issuer_id_resolved == universe_names and undated_alias_rows == 0."
   - "R4: re-run predictive admission only when the forward N floor is met on post-boundary data."
 do_not_redo:
