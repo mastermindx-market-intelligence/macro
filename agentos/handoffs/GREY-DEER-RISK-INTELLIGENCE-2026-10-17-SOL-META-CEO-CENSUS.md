@@ -21,6 +21,9 @@ changed:
 - path: research/grey_deer/all_date_census/
   what: Frozen protocol and one real run, hashes, recorded-version replay/addenda, calendar and rolling-peak
     qualifications, figure and parent review.
+- path: research/grey_deer/consumer_comparison_20261017/
+  what: Exact pinned source-function reproduction, captured-input receipt and method/vocabulary addendum;
+    eight planned cases plus a reproduced future-date defect. No live first-party entry points or cutover.
 - path: research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md
   what: Revise the existing masterplan at section 0A; preserve prior capabilities, failed studies, lifecycle
     owners and actual writer/refusal constraints.
@@ -85,6 +88,12 @@ verified:
     205 STLFSI4 rows; STLFSI4 lacks a prior release for 348/1,321 reference origins. Initial-release collector
     and batch-selection ambiguity documented. Exact Massive/T12 sample and FRED source-purpose remain unadmitted;
     zero fits/trials.
+- claim: The planned consumer comparison completed at isolated source-function scope with an additional clock defect.
+  command: consumer_comparison_20261017/consumer_repro.py and original receipt.json; METHOD_AND_VOCABULARY_ADDENDUM.json
+  result: 'Source/input hashes and checkout status unchanged. Future inner asof 2099-01-01 returns age 0,
+    stale:false and future_dated:false; native elevated with alert:true maps to Market View risk_off but held-risk
+    ok under legacy risk-on. Session mismatch is rejected; advisory context adds no duplicate vote in the fixture.
+    Full runtime/book/prompt/ledger parity NOT_TESTED; no policy or production mutation.'
 unverified:
 - claim: 'Final hosted CI and merge for the complete current #9515 head.'
   what_would_verify: 'Read #9515''s exact current head, active main authority, contract-delta, all scheduled
@@ -118,9 +127,10 @@ next_actions:
 - 'First read PR #9515, its exact current head/check/merge state and this cumulative receipt. Finish any remaining
   ordinary source gates on the same carrier; do not create a replacement PR or infer a merge from an earlier
   pushed head.'
-- After source acceptance, perform the unchanged-policy source/consumer comparison specified in risk_radar_source_consumer_audit_20261017.md,
-  using immutable artifacts and existing owners. Never call brain/macro_risk.risk_state() as a read because
-  its default dwell path writes.
+- Use the completed consumer_comparison_20261017 source-function receipt to repair the smallest qualified
+  source-clock path with actual writer clearance, then capture real consumer and unchanged-policy artifacts.
+  Full runtime/book/prompt/ledger parity was NOT_TESTED. Never call brain/macro_risk.risk_state() as a read
+  because its default dwell path writes.
 - Use the qualified T13 admission result to bind the existing Massive RAW SPY source and T12 sample only after
   actual input identity and source-purpose admission. No Yahoo substitution, trial registration or feature-outcome
   join is authorized by metadata presence alone.
@@ -130,6 +140,9 @@ next_actions:
 - Resume on the connected Mastermind tools and the exact owned M2 worktree. No autonomous wake is claimed;
   a fresh chat preserves this commission but does not confer new writer or release permission.
 do_not_redo:
+- Do not repeat the completed pinned consumer source-function comparison or metadata intake merely to recover
+  findings. Preserve original hashes and separate vocabulary addendum; execute new repair regressions only for
+  a real changed source path. No full runtime or cutover acceptance follows from the isolated receipt.
 - Do not rerun frozen stage-1 or stage-1b on real data; preserve 0/12, all rejected challengers, GD1B no-promotion,
   GD1C blocked and GD-3 accepted natural four-clock production proof.
 - Do not rewrite the one frozen census run or original replay to hide corrections; use dated addenda. Preserve

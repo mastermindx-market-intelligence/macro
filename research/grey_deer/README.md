@@ -62,6 +62,8 @@ with this carrier; full programme acceptance remains outstanding.
 Current source carrier: [PR #9515](https://github.com/mastermindx-market-intelligence/macro/pull/9515).
 [T13 admission](all_date_census/T13_METADATA_ADMISSION_2026-10-17.md) is complete at metadata scope only: H2 lacks a prior release for 348/1,321 reference dates; source-purpose and actual Massive/T12 sample remain unadmitted. No fits or trial writes.
 
+[Pinned consumer comparison](consumer_comparison_20261017/README.md) is complete at source-function scope: eight planned cases plus a reproduced future-date freshness defect. The paired native elevated case preserves Market View's alert branch while held-risk still returns ok under legacy risk-on. Full runtime/book/prompt/ledger parity and cutover remain unproved.
+
 Supporting records: [source audit](risk_radar_source_consumer_audit_20261017.md),
 [contract annex](risk_radar_architecture_contract_20261017.md),
 [methods](risk_radar_turning_point_methods_20261017.md),
