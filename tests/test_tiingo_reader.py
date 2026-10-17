@@ -232,3 +232,9 @@ def test_reader_cannot_consume_external_symlinked_manifest(view):
     manifest.symlink_to(external)
     with pytest.raises(TiingoViewRefusal, match="path"):
         read_research_view(source, day, digest, root=root, check_mount=False)
+
+# Run the additive sector-allocation source contract inside the incumbent
+# Data OS prospective-reference test pack. This is the existing job's test
+# collection path, not a new CI job, runtime reader, or permission grant.
+from tests import test_sector_allocation_tiingo as rotation_source_test_module
+TestSectorAllocationProjection = rotation_source_test_module.Projection
