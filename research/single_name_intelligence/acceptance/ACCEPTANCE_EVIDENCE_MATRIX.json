@@ -1,6 +1,6 @@
 {
   "schema_version": "sni_acceptance_matrix.v2",
-  "as_of_utc": "2026-10-13T13:44:19Z",
+  "as_of_utc": "2026-10-14T07:59:12Z",
   "sources": {
     "census_ref": "7906ef1cd646282cb762651df0e33e9f70397ed5",
     "census_path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
@@ -58,6 +58,31 @@
           "ref": "main",
           "path": "tests/test_sni_dual_counter_property.py",
           "note": "test_dcp_01_counter_census and test_dcp_05_cross_listing_does_not_merge pin distinct class, venue, and currency for the ADS versus ordinary counters."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_ads_ratio_guard.py",
+          "note": "INT4 DRAFT guard: an ADS:ordinary ratio or ADS interval without an owner-supplied, as-of-available ratio record is refused; never defaulted."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_ads_ratio_guard.py",
+          "note": "Pins ADS-ratio interval refusals on synthetic records; no owner ratio contract on main yet."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mut7_d.py",
+          "note": "INT6 mutation sweep M7D: killing tests for ads-ratio guard mutants (synthetic; DRAFT guard; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/X8C_GUARD_REDTEAM_2026-10-14.md",
+          "note": "INT6 red-team X8C: ads-ratio date-parse and blank-text findings recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8crepc_repair.py",
+          "note": "INT7 red-team repair X8CREPC: ADS-ratio guard refuses whitespace-edged and non-str ids and malformed ratio intervals under the family text rule (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "C1/C4 ratio contract untested; no source-proven ADS interval test; August behavioral pilot is not current data."
@@ -103,6 +128,36 @@
           "ref": "main",
           "path": "tests/test_sni_dual_counter_property.py",
           "note": "test_dcp_03_relation_permutation_invariant and test_dcp_04_relations_carry_no_minted_ids pin permutation-safe dual-counter relations without minted ids."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_counter_relation_guard.py",
+          "note": "INT5 DRAFT guard: a dual-counter pair binds only through an owner-supplied, sourced, as-of-available listing relation for one issuer; ambiguous, unsourced, issuer-mismatched or undeclared-currency relations are refused. It never creates a relation or listing id."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_counter_relation_guard.py",
+          "note": "Pins RELATION_SET_MISSING, RELATION_NOT_AVAILABLE_AS_OF, AMBIGUOUS_RELATION, ISSUER_MISMATCH and CURRENCY_UNDECLARED on synthetic owner-shaped records."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mut7_a.py",
+          "note": "INT6 mutation sweep M7A: killing tests for counter-relation guard mutants (synthetic; DRAFT guard; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/X8A_GUARD_REDTEAM_2026-10-14.md",
+          "note": "INT6 red-team X8A: counter-relation findings recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8arep_repair.py",
+          "note": "INT7 red-team repair X8AREP round 1: counter-relation guard closes the closeable X8A findings without minting ids (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8arep2_repair.py",
+          "note": "INT7 red-team repair X8AREP round 2: counter-relation guard treats whitespace-only and padded ids as absent under the family text rule (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "C1 relationship contract not on main."
@@ -163,6 +218,21 @@
           "ref": "main",
           "path": "tests/test_sni_program_invariants.py",
           "note": "test_inv_02_identity_ids_owner_supplied walks SNI JSON/YAML/Python identity keys and refuses minted values."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_identity_binding_guard.py",
+          "note": "INT4 DRAFT guard: bind_identity refuses a null issuer, missing owner records or refs, and ids that look derived from a ticker, name or CIK."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_identity_binding_guard.py",
+          "note": "Pins NULL_ISSUER_REFUSED and ID_LOOKS_DERIVED on synthetic owner-shaped records."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_a04_identity_property.py",
+          "note": "INT6 seeded property tests: null HK issuer never minted from ticker/name across random aliases (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "C1/C4 owner test that ID-dependent operations refuse on null issuer is still missing."
@@ -208,6 +278,36 @@
           "ref": "main",
           "path": "tests/test_sni_identity_refusals_hardening.py",
           "note": "test_idrh_02 and test_idrh_03 refuse leading-zero aliases and a TME ticker with a Tencent display_name on the draft loader."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_identity_binding_guard.py",
+          "note": "INT4 DRAFT guard: listing/security/issuer mismatch and currency mismatch refuse binding."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_identity_binding_guard.py",
+          "note": "Pins LISTING_SECURITY_MISMATCH, SECURITY_ISSUER_MISMATCH and CURRENCY_MISMATCH refusals."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_a04_identity_property.py",
+          "note": "INT6 seeded property tests: alias and venue mismatches never cross-bind (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mut7_d.py",
+          "note": "INT6 mutation sweep M7D: killing tests for identity-binding guard mutants (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/X8C_GUARD_REDTEAM_2026-10-14.md",
+          "note": "INT6 red-team X8C: identity-binding findings recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8crepb_repair.py",
+          "note": "INT7 red-team repair X8CREPB: identity-binding guard refuses blank, whitespace-edged and non-str ids under the family text rule (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "C1/C4 test that padding, alias, or currency mismatch cannot bind is still missing."
@@ -308,6 +408,41 @@
           "ref": "main",
           "path": "tests/test_sni_mutation_decomp_infoleak.py",
           "note": "test_mut1c_s1_infoleak_detect_1 and test_mut1c_s1_infoleak_vintage_series_1 pin s1_infoleak mutants that would drop a vintage step."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_then_known_guard.py",
+          "note": "INT5 DRAFT then-known view compiler: a fact enters a view at a cutoff only if published and owner-known by then; owner-known-before-published, retrieved-before-published and supersedes cycles are refused."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_then_known_guard.py",
+          "note": "Pins PUBLISHED_AFTER_CUTOFF, OWNER_KNOWN_BEFORE_PUBLISHED, RETRIEVED_AFTER_CUTOFF_UNVINTAGED and SUPERSEDED_BY_THEN_KNOWN on synthetic four-clock records."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mut7_b.py",
+          "note": "INT6 mutation sweep M7B: killing tests for then-known guard mutants (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/X8B_GUARD_REDTEAM_2026-10-14.md",
+          "note": "INT6 red-team X8B: then-known findings recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8brep_repair.py",
+          "note": "INT7 red-team repair X8BREP: then-known guard refuses whitespace-edged and non-str ids (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_a07_then_known_property.py",
+          "note": "INT7 seeded property tests: post-cutoff facts never enter a then-known view across random records; seeds are deterministic (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8brep2_repair.py",
+          "note": "INT7 red-team repair X8BREP round 2: then-known guard applies the family text rule v2 to every text field (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "No then-known compiler test excluding post-cutoff filings or retrieval."
@@ -348,6 +483,21 @@
           "ref": "main",
           "path": "tests/test_sni_three_clock_census.py",
           "note": "test_tck_01_every_time_field_is_classified, test_tck_02_no_field_has_two_clocks, and test_tck_03_ordering_law census field names; they do not build the three-clock view."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_three_clock_guard.py",
+          "note": "INT6 DRAFT three-clock guard: economic, owner-known and publication times kept distinct; fail-closed; no live owner wiring (row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_three_clock_guard.py",
+          "note": "INT6 three-clock guard tests (synthetic fixtures; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_famvcc_repair.py",
+          "note": "INT7b red-team repair FAMVCC: three-clock guard treats padded and non-text field-map keys and kind labels as absent under FAMILY TEXT RULE v2 (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "SNI three-clock view (economic / owner-known / publication) unbuilt; V1/C2 wait on R1."
@@ -383,6 +533,21 @@
           "ref": "main",
           "path": "tests/test_sni_join_guard.py",
           "note": "test_a09_e1p3_e2p3_segment_scheme_mismatch, test_a09_e1p5_e2p5_scale_mismatch, and test_a09_e1p4_e2p4_period_end_missing refuse mismatched joins with named reasons."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_guard_family_invariants.py",
+          "note": "INT6 family invariants: join and denominator guards share refusal, authority-false and determinism properties (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_famj_repair.py",
+          "note": "INT7 family repair FAMJ: join guard applies the family text rule to metric, period, issuer, currency and version fields (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_famj2_repair.py",
+          "note": "INT7 family repair FAMJ round 2: join guard treats whitespace-only and padded text as absent and fails closed on unknown schemes (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "The join guard is a DRAFT module not wired into any owner join."
@@ -418,6 +583,31 @@
           "ref": "main",
           "path": "tests/test_sni_missing_not_zero.py",
           "note": "test_mnz_01_simple_returns_never_zero_fill, test_mnz_02_no_forward_fill, and test_mnz_03_summary_n_excludes_missing pin missing numerics as non-zero and not forward-filled."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_kpi_missingness_guard.py",
+          "note": "INT4 DRAFT guard: a missing KPI stays missing; zero-fill and silent carry-forward are refused."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_kpi_missingness_guard.py",
+          "note": "Pins missing-not-zero and no-carry-forward refusals on synthetic KPI frames."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mut7_e.py",
+          "note": "INT6 mutation sweep M7E: killing tests for KPI-missingness guard mutants (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/X8C_GUARD_REDTEAM_2026-10-14.md",
+          "note": "INT6 red-team X8C: KPI-missingness period-order findings recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8crepc_repair.py",
+          "note": "INT7 red-team repair X8CREPC: KPI-missingness guard refuses whitespace-edged and non-str ids so a missing KPI cannot pass as present (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "C3 compiler not on main."
@@ -443,6 +633,21 @@
           "ref": "main",
           "path": "research/single_name_intelligence/evidence/Tencent/E2_ADVERSARIAL_CASES_2026-10-11.md",
           "note": "Probe 1 pack REFUSED per A11."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mut7_f.py",
+          "note": "INT6 mutation sweep M7F: killing tests for denominator guard mutants (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_guard_family_invariants.py",
+          "note": "INT6 family invariants covering the denominator guard (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_famdc_repair.py",
+          "note": "INT7b red-team repair FAMDC: denominator guard treats whitespace-only, padded and non-str ids as absent under FAMILY TEXT RULE v2 (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "No C4 test binding share count to a canonical capital version."
@@ -488,6 +693,46 @@
           "ref": "main",
           "path": "tests/test_sni_clocklaw_half_days.py",
           "note": "test_clkhd_01 and test_clkhd_02 pin owner-published half-day early closes through session_part."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s2_seal_adjacent.py",
+          "note": "INT4 seal-adjacent pins for the S2 HK half-day session_part and non-finite-close abstain branches the sealed inputs never reach."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_session_state_guard.py",
+          "note": "INT5 DRAFT guard: session state at an instant is read only from an owner-supplied market-calendar day record; missing calendar, owner ref, exact IANA timezone, or inconsistent sessions/halts refuse. It never derives a holiday or session schedule."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_session_state_guard.py",
+          "note": "Pins CALENDAR_MISSING, TIMEZONE_INVALID (exact-case, platform-independent), SESSIONS_INCONSISTENT, HALT_INVALID and AT_OUTSIDE_TRADING_DATE on synthetic HK/US day records."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_a12_session_state_property.py",
+          "note": "INT6 seeded property and perturbation tests for the session-state guard; perturbations assert detection (synthetic calendars; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mut7_b.py",
+          "note": "INT6 mutation sweep M7B: killing tests for session-state guard mutants (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/X8B_GUARD_REDTEAM_2026-10-14.md",
+          "note": "INT6 red-team X8B: session-state findings recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8brep_repair.py",
+          "note": "INT7 red-team repair X8BREP: session-state guard refuses whitespace-edged and non-str ids (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8brep2_repair.py",
+          "note": "INT7 red-team repair X8BREP round 2: session-state guard applies the family text rule v2 (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "M0 owner session-state test unbuilt; halt and live venue state unmodelled."
@@ -523,6 +768,21 @@
           "ref": "main",
           "path": "tests/test_sni_s0_amendment_a01_draft.py",
           "note": "test_tcehy_ids_null_unresolved_not_admitted; TCEHY is not admitted."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mut7_g.py",
+          "note": "INT6 mutation sweep M7G: 10 killing tests for comparison guard mutants (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_guard_chain_composition.py",
+          "note": "INT6 guard-chain composition: identity, then-known, session, denominator and comparison guards compose fail-closed (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_famdc_repair.py",
+          "note": "INT7b red-team repair FAMDC: comparison guard treats whitespace-only, padded and non-str ids as absent under FAMILY TEXT RULE v2 (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "C4 comparison guard unbuilt; no stale-FX or proxy-stays-proxy test; TCEHY is not admitted (KWEB proxy)."
@@ -568,9 +828,29 @@
           "ref": "main",
           "path": "tests/test_sni_mutation_branch_copy.py",
           "note": "test_mut3b_sni_copy_guard_check_text_1 pins copy-guard mutants that would drop an A14 collocation."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/acceptance/sni_copy_guard_literals.py",
+          "note": "INT5 DRAFT extension of the A14/A30 markdown copy guard to JSON string values and Python string constants under the SNI tree; reuses the existing rule callables, no forked rule table."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_copy_guard_literals.py",
+          "note": "Pins literal-copy findings in JSON and Python strings on synthetic text; product UI and the rendered site stay out of scope."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/X8B_GUARD_REDTEAM_2026-10-14.md",
+          "note": "INT6 red-team X8B: copy-guard literal scanner findings recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_cglrep_repair.py",
+          "note": "INT7 red-team repair CGLREP: copy-guard literal scanner skips symlinks, survives cycles and non-str keys (synthetic; row stays PARTIAL)"
         }
       ],
-      "gap": "Product UI and rendered site remain unguarded; JSON and Python string literals remain unguarded."
+      "gap": "Product UI and rendered site remain unguarded (gated on R1)."
     },
     {
       "id": "A15",
@@ -648,6 +928,31 @@
           "ref": "main",
           "path": "tests/test_sni_mutation_draft_loaders.py",
           "note": "test_mut4d_p04_v2_draft_loader_validate_draft_1 pins p04_v2_draft_loader mutants on the unregistered draft loader."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_correction_lineage_guard.py",
+          "note": "INT5 DRAFT guard: a correction/version history must be append-only; truncation, rewrite, fork, version gaps, non-increasing versions and non-monotone recorded_at are refused."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_correction_lineage_guard.py",
+          "note": "Pins HISTORY_TRUNCATED, HISTORY_REWRITTEN, FORK, VERSION_GAP and RECORDED_AT_NOT_MONOTONE on synthetic version records."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mut7_c.py",
+          "note": "INT6 mutation sweep M7C: killing tests for correction-lineage guard mutants (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/X8A_GUARD_REDTEAM_2026-10-14.md",
+          "note": "INT6 red-team X8A: correction-lineage findings recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_famvcc_repair.py",
+          "note": "INT7b red-team repair FAMVCC: correction-lineage guard refuses padded, whitespace-only, non-str and unhashable record/version ids as RECORD_FIELD_INVALID (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "SNI generation/manifest not implemented; P04 v2 is an unregistered draft; V1 waits on R1."
@@ -698,6 +1003,36 @@
           "ref": "main",
           "path": "tests/test_sni_public_exposure.py",
           "note": "test_real_tree_has_no_public_sni_references pins public templates and publish scripts free of SNI paths; it does not test pre-access denial."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_entitlement_guard.py",
+          "note": "INT5 DRAFT guard: full-text access needs an owner entitlement record valid for the account, document and as-of instant; public full text, missing, expired, revoked or not-yet-valid entitlements are refused before access."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_entitlement_guard.py",
+          "note": "Pins PUBLIC_FULL_TEXT_FORBIDDEN, ENTITLEMENT_MISSING, ACCOUNT_MISMATCH, ENTITLEMENT_EXPIRED and ENTITLEMENT_REVOKED on synthetic records; no live Research Vault wiring."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mut7_a.py",
+          "note": "INT6 mutation sweep M7A: killing tests for entitlement guard mutants (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/X8A_GUARD_REDTEAM_2026-10-14.md",
+          "note": "INT6 red-team X8A: entitlement findings recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8arep_repair.py",
+          "note": "INT7 red-team repair X8AREP round 1: entitlement guard closes the closeable X8A findings; denial still precedes private access (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8arep2_repair.py",
+          "note": "INT7 red-team repair X8AREP round 2: entitlement guard treats whitespace-only and padded ids as absent under the family text rule (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "P0 entitlement gate unbuilt; no pre-access denial test."
@@ -757,7 +1092,7 @@
         {
           "ref": "main",
           "path": "research/single_name_intelligence/reviews/A20B_INJECTION_EXTENSION_2026-10-13.md",
-          "note": "Findings A20B-F1: p04_v2_draft_loader accepts a smuggled authority value outside its two official blocks."
+          "note": "Finding A20B-F1 (p04_v2_draft_loader accepted a smuggled authority value outside its two official blocks) is recorded FIXED by lane A20F."
         },
         {
           "ref": "main",
@@ -767,7 +1102,7 @@
         {
           "ref": "main",
           "path": "tests/test_sni_injection_safety_ext.py",
-          "note": "test_a20b_08_loader_authority_smuggle_refused_or_not_true records A20B-F1 as a strict xfail on the P04 v2 draft loader."
+          "note": "test_a20b_08_loader_authority_smuggle_refused_or_not_true passes with no xfail; test_a20f_01..05 pin the A20F refusal of top-level, nested, falsy-non-False and list-embedded authority smuggles and that the committed P04 draft still loads."
         },
         {
           "ref": "main",
@@ -788,9 +1123,14 @@
           "ref": "main",
           "path": "tests/test_sni_mutation_s2_state_loaders.py",
           "note": "test_mut4a_s2_state_compute_state_1 and test_mut4a_s2_loaders__git_1 pin s2_state and s2_loaders mutants on the selection/state path."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_a20c_structural_authority_scan.py",
+          "note": "INT7 structural authority scan: parses every SNI JSON/JSONL/YAML file and flags any non-False authority value however it is spelled (row stays PARTIAL)"
         }
       ],
-      "gap": "Finding A20B-F1 (the P04 v2 draft loader accepts a smuggled authority value outside its two official blocks) is open on BASE."
+      "gap": "A20B-F1 is fixed on BASE by lane A20F; injection safety is pinned on synthetic fixtures and committed SNI artifacts only, with no live retrieval or product surface exercised."
     },
     {
       "id": "A21",
@@ -1363,6 +1703,16 @@
           "ref": "main",
           "path": "tests/test_sni_mutation_stats_direction.py",
           "note": "test_mut1b_s1_direction_direction_always_long_1 pins always_long direction helpers used by sealed residual grading, not a proper score."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_a29_proper_score_repro.py",
+          "note": "INT6 proper-score reproduction over seeded synthetic ledgers; not forecast support; no frozen SNI baseline exists (row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/A29_PROPER_SCORE_REPRO_SYNTHETIC_2026-10-14.md",
+          "note": "INT6 A29 synthetic reproduction review; not forecast support (row stays PARTIAL)"
         }
       ],
       "gap": "A1 independent proper-score reproduction against frozen SNI forecast baselines is unstarted; return/hit grading is not probabilistic forecast support; ledger is an R1-gated draft."
@@ -1423,6 +1773,16 @@
           "ref": "main",
           "path": "tests/test_sni_mutation_branch_copy.py",
           "note": "test_mut3b_sni_copy_guard_check_text_1 pins copy-guard mutants that would drop an A30 collocation."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/acceptance/sni_copy_guard_literals.py",
+          "note": "INT5 DRAFT extension of the A14/A30 markdown copy guard to JSON string values and Python string constants under the SNI tree; reuses the existing rule callables, no forked rule table."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_copy_guard_literals.py",
+          "note": "Pins literal-copy findings in JSON and Python strings on synthetic text; product UI and the rendered site stay out of scope."
         }
       ],
       "gap": "No UI copy test; ledger NO-GO is an R1-gated draft; A1/P2 wait on R1."
@@ -1453,6 +1813,31 @@
           "ref": "main",
           "path": "tests/test_sni_public_exposure.py",
           "note": "test_real_tree_has_no_public_sni_references pins the absence of a public SNI surface; it does not test EN/ZH or viewport persistence."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_view_state_guard.py",
+          "note": "INT4 DRAFT guard: a view-state transition across locale or viewport must preserve issuer, counter, lens and as-of, else it is refused."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_view_state_guard.py",
+          "note": "Pins EN/ZH and viewport view-state preservation on synthetic state; no live surface."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mut7_f.py",
+          "note": "INT6 mutation sweep M7F: killing tests for view-state guard mutants (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/X8C_GUARD_REDTEAM_2026-10-14.md",
+          "note": "INT6 red-team X8C: view-state findings recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_famvcc_repair.py",
+          "note": "INT7b red-team repair FAMVCC: view-state guard refuses padded, whitespace-only and non-str issuer/counter/lens/as-of as FIELD_MISSING; 1 and True never compare equal (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "No EN/ZH or viewport persistence test; live single-name surfaces wait on R1; P1/A0 wait on R1."
@@ -1538,6 +1923,31 @@
           "ref": "main",
           "path": "tests/test_sni_mutation_a33_matrix.py",
           "note": "test_mut4e_a33_reference_evidence_check_real_cells_1 pins checker mutants that would count a synthetic or absent cell as real."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_release_evidence_guard.py",
+          "note": "INT4 DRAFT guard: an all-absence or synthetic-fixture evidence set is refused for release."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_release_evidence_guard.py",
+          "note": "Pins the all-absence and synthetic-fixture release refusals."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mut7_e.py",
+          "note": "INT6 mutation sweep M7E: killing tests for release-evidence guard mutants (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/X8C_GUARD_REDTEAM_2026-10-14.md",
+          "note": "INT6 red-team X8C: release-evidence id-less slot finding recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8crepb_repair.py",
+          "note": "INT7 red-team repair X8CREPB: release-evidence guard refuses id-less and whitespace-edged slots (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "No A0 test that an all-absence or synthetic-fixture page fails release; Tencent identity_listing is REFUSED and corporate_actions_adjustment is ABSENT."
@@ -1648,6 +2058,21 @@
           "ref": "main",
           "path": "tests/test_sni_mutation_event_stress.py",
           "note": "test_mut2_stress_set__earliest_close_date_30 pins stress_set mutants on the ticker-free science harness."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_class_duplicate_guard.py",
+          "note": "INT6 DRAFT share-class duplicate guard: one issuer, many classes, no ticker-specific branches; no live owner wiring (row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_class_duplicate_guard.py",
+          "note": "INT6 share-class duplicate guard tests (synthetic fixtures; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_famvcc_repair.py",
+          "note": "INT7b red-team repair FAMVCC: class-duplicate guard treats padded, whitespace-only, non-str and unhashable ids and owner refs as absent (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "U1-U4 US/Mag-7 product packs unbuilt; Alphabet class-duplicate evidence untested on a product pack; TCEHY is not admitted (KWEB proxy); they wait on L0/R1."
@@ -1723,6 +2148,11 @@
           "ref": "main",
           "path": "tests/test_sni_a39_receipts_ledger.py",
           "note": "test_a39_01_schema_and_row_count, test_a39_03_no_overclaim, and test_a39_05_integration_gaps_named pin a 61-row receipts ledger with named incomplete rungs and two missing INT1 cherry-pick receipts."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_a39_receipts_ledger_c2.py",
+          "note": "INT7b A39 capture 2: lane-receipts ledger keeps every ladder rung a distinct fact and claims no rung its receipts do not reach (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "Admission, start, and result receipts are incomplete across delegated tasks."

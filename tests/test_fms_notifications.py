@@ -2084,3 +2084,40 @@ def test_fms_publisher_handoff_does_not_publish_after_failed_push(tmp_path):
     result = _run_cadence_step("persist", checkout, tmp_path, GITHUB_REF="refs/heads/main", FMS_DEFAULT_BRANCH="main")
     assert result.returncode != 0
     assert _fms_step_outputs(tmp_path).get("publish_default") != "true"
+
+
+# Frozen existing DSCA bytes, not a fresh source acquisition. Source observation
+# fmsobs:4b439e7c..., retained known/observed2026-08-26T09:37:21.528793+00:00.
+def test_retained_spain_f100_multiple_locations_are_not_extra_contractors():
+    body = _read_bytes("dsca/dsca-4393093.html")
+    assert hashlib.sha256(body).hexdigest() == "6be5c6c6407aaf54457d4d660d25218caeba031d9a33b0abddde786eae3d24f2"
+    parsed = fms.parse_dsca_article(body.decode(), source_url="https://www.dsca.mil/Press-Media/Major-Arms-Sales/Article-Display/Article/4393093/spain-f-100-frigate-mid-life-upgrade")
+    assert parsed["transmittal_number"] == "25-104"
+    assert [(r["name_as_printed"], r["location_as_printed"]) for r in parsed["contractors"]] == [
+        ("Lockheed Martin", "Moorestown, NJ, and Manassas, VA"),
+        ("RTX Corporation", "Arlington, VA"),
+        ("Ultra Maritime Naval Systems and Sensors", "Braintree, MA"),
+        ("General Dynamics", "Williston, VT"),
+    ]
+    assert all(r["identity_state"] == "not_reviewed" and r["issuer_ref"] is None for r in parsed["contractors"])
+
+
+@pytest.mark.parametrize("sentence,expected", [
+    ("The principal contractors will be Alpha, located in Austin, TX, and Beta, located in Boston, MA.", [("Alpha", "Austin, TX"), ("Beta", "Boston, MA")]),
+    ("The principal contractors will be Alpha, located in Austin, TX, and Dallas, TX, and Beta, located in Boston, MA.", [("Alpha", "Austin, TX, and Dallas, TX"), ("Beta", "Boston, MA")]),
+    ("The principal contractors will be Alpha, located in Austin, TX; and Beta, Inc., located in Boston, MA.", [("Alpha", "Austin, TX"), ("Beta, Inc.", "Boston, MA")]),
+    ("The principal contractors will be Alpha, located in Austin, TX, and Beta, Inc., located in Boston, MA.", [("Alpha", "Austin, TX"), ("Beta, Inc.", "Boston, MA")]),
+    ("The principal contractors will be Alpha, and Beta.", [("Alpha", None), ("Beta", None)]),
+    ("The principal contractor will be Anduril Industries, located in Costa Mesa, CA.", [("Anduril Industries", "Costa Mesa, CA")]),
+    ("The principal contractor will be Ultra Maritime Naval Systems and Sensors, located in Braintree, MA.", [("Ultra Maritime Naval Systems and Sensors", "Braintree, MA")]),
+])
+def test_contractor_separator_requires_company_clause_not_second_location(sentence, expected):
+    rows, note = fms._extract_contractors(sentence)
+    assert [(r["name_as_printed"], r["location_as_printed"]) for r in rows] == expected
+    assert note is None
+    assert all(r["identity_state"] == "not_reviewed" and r["issuer_ref"] is None for r in rows)
+
+
+def test_no_principal_contractor_note_is_preserved():
+    sentence = "There is no principal contractor associated with this potential sale."
+    assert fms._extract_contractors(sentence) == ([], sentence)

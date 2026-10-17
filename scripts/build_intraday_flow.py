@@ -524,7 +524,11 @@ def _today_bars(ticker: str, data_root: Path) -> list[dict]:
     day_df = df[df[ts_col].dt.tz_convert("America/New_York").dt.date == today_et]
     rows = []
     for _, row in day_df.iterrows():
+        bar_ts = row[ts_col]
+        if isinstance(bar_ts, pd.Timestamp):
+            bar_ts = bar_ts.to_pydatetime()
         rows.append({
+            "ts": bar_ts.isoformat(),
             "open": _safe_float(row, ["open", "o"]),
             "high": _safe_float(row, ["high", "h"]),
             "low": _safe_float(row, ["low", "l"]),
@@ -1246,6 +1250,7 @@ def _run_fastpath(cfg: dict, data_root: Path, site_root: Path, as_of_arg: str | 
 
     Writes site/live/flow_pulse.json + site/live/flow_pulse_lastgood.json.
     Zero data/ writes (HOUSE-U5).
+    source_asof is the latest hourly bar START (Polygon, 15 minutes delayed), never build time.
     """
     from engine.intraday_flow import (
         higher_lows,
@@ -1274,6 +1279,7 @@ def _run_fastpath(cfg: dict, data_root: Path, site_root: Path, as_of_arg: str | 
     else:
         now_utc = datetime.now(timezone.utc)
     tickers_out: list[dict] = []
+    source_clocks: list[datetime] = []
 
     for ticker in universe:
         try:
@@ -1323,6 +1329,16 @@ def _run_fastpath(cfg: dict, data_root: Path, site_root: Path, as_of_arg: str | 
                     if b.get("close") is not None and b["close"] >= vwap
                 )
 
+            last_ts = bars[-1].get("ts") if isinstance(bars[-1], dict) else None
+            if isinstance(last_ts, str) and last_ts.strip():
+                try:
+                    parsed_ts = datetime.fromisoformat(last_ts.replace("Z", "+00:00"))
+                except ValueError:
+                    parsed_ts = None
+                else:
+                    if parsed_ts.tzinfo is None:
+                        parsed_ts = parsed_ts.replace(tzinfo=timezone.utc)
+                    source_clocks.append(parsed_ts.astimezone(timezone.utc))
             tickers_out.append({
                 "ticker": ticker,
                 "bars_today": len(bars),
@@ -1340,11 +1356,16 @@ def _run_fastpath(cfg: dict, data_root: Path, site_root: Path, as_of_arg: str | 
                 "bars_above_vwap":   _bars_above_vwap,
             })
         except Exception as e:  # noqa: BLE001
-            log.debug("build_intraday_flow fastpath: %s failed: %s", ticker, e)
+            log.warning("build_intraday_flow fastpath: %s failed: %s", ticker, e)
+            tickers_out.append({
+                "ticker": ticker,
+                "bars_today": None,
+                "error": type(e).__name__,
+            })
 
     # Determine mode (mirrors basket_pulse mode hierarchy).
     mode = "fastpath"
-    has_data = any(t.get("bars_today", 0) > 0 for t in tickers_out)
+    has_data = any((t.get("bars_today") or 0) > 0 for t in tickers_out)
     if not has_data:
         mode = "no_data"
 
@@ -1355,6 +1376,8 @@ def _run_fastpath(cfg: dict, data_root: Path, site_root: Path, as_of_arg: str | 
         "mode": mode,
         "stale": False,
         "n_tickers": len(tickers_out),
+        "n_universe": len(universe),
+        "source_asof": max(source_clocks).isoformat() if source_clocks else None,
         "direction_note": (
             "Volume durability is deterministic. VWAP is an hourly-bar "
             "approximation, labeled. Options flow velocity computed client-side "
