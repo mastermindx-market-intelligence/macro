@@ -4360,6 +4360,11 @@ CURATED_EXCLUSIVE = {
     # is gate-code pure (synthetic casebook + validator + typed route_unbound harness), so its
     # curated scope is exactly the Mining files it names.
     "mining-economic-dossier",
+    # 2026-10-12 Communications A1. The two suites left ontology-explorer
+    # (weight 16 -> 11) for this gate:code home. Curated for COVERAGE: paths
+    # are the measured 15-file import closure, so exclusivity drops only the
+    # transmission_chains data/site json/yaml fallback and loses no owner.
+    "communications-a1-measures",
     "quant-q08-cov-shrinkage",  # Q08 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # 2026-09-24 Healthcare D1 T02: gate:code home for the qualified FDA
     # observation and frozen supply probes; T01 probes remain intentionally red.

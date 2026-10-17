@@ -9112,7 +9112,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx playwright
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx jsonschema playwright
       - name: install ontology browser
         run: python -m playwright install --with-deps chromium
       - name: ontology explorer — composer contract, owner episode, receipts
@@ -30549,6 +30549,43 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_mining_shared_contract.py tests/test_mining_shared_contract_probes.py -q
       - name: mining economic dossier — per-sector composition suite (T04a)
         run: TZ=UTC python -m pytest tests/test_mining_composition.py tests/test_mining_composition_probes.py tests/test_mining_composition_probes_r2.py tests/test_mining_composition_probes_r3.py tests/test_mining_composition_truth_table.py tests/test_mining_witness_profiles.py tests/test_mining_economic_inputs.py tests/test_mining_updates.py tests/test_mining_witness_expectations.py -q
+
+  communications-a1-measures:
+    # Communications A1 left ontology-explorer so that job's weight returns
+    # to 11. Exclusive paths are the measured import closure of the three
+    # suites. Exclusivity drops the data/site json/yaml fallback minted by
+    # engine/transmission_chains.py; that fallback is not this job's subject.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "contracts/market_ontology/communications_business_research.v1.schema.json"
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_ontology/communications_measures.py"
+      - "engine/market_ontology/communications_research.py"
+      - "engine/market_ontology/communications_research_registration.py"
+      - "engine/market_ontology/exposure_map.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/store.py"
+      - "engine/transmission_chains.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "tests/test_communications_measures.py"
+      - "tests/test_communications_research.py"
+      - "tests/test_communications_research_registration.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        run: pip install pytest pandas pyyaml jsonschema
+      - name: Communications A1 — bound deterministic comparisons (synthetic inputs only)
+        run: TZ=UTC python -m pytest tests/test_communications_measures.py tests/test_communications_research.py tests/test_communications_research_registration.py -q
 
   industrials-result-cash:
     # GMI INDUSTRIALS first vertical, T01 (R-IND-02, PR #7924): synthetic result-to-cash
