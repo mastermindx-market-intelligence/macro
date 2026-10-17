@@ -34,13 +34,19 @@ A passing 253-session projection is still hindsight-only: one 2026 capture of ea
 
 Committed Git blob equality was checked against executed local bytes:
 - Implementation git blob 54f8f71ccd32e774e072b35c051eeda6d269af57, SHA-256 6234e7daf91af96a8a37e0d4d1122a26161efb2668adc0d0c8ec6e5d300e4c0b.
-- Test git blob 3310731d8bd9b7f01c5be2d491763a65da4ad06e, SHA-256 23e780828622686a8366cdf713c8a2fe94313f3db0fa39af67874364359b2f95.
+- Test git blob 1c9159b10874b399e41d4334282efc3f24eaecb6, SHA-256 d5aa41ffb1e5a4c1410142726bc2a986bba09aeb7f0f8fedad233a58a4a77ec9.
 
 ## Existing CI ownership and test discovery
 
 The current `.github/ci/legacy-jobs.yml` declares `dataos-prospective-reference` as an existing required code pack, with `lib/dataos/**` source scope, `tests/test_tiingo_reader.py` in its explicit test runner, and pandas/pyarrow in its environment. The new code lives under that source scope. A minimal additive alias in the **existing** `tests/test_tiingo_reader.py` imports the `Projection` unittest.TestCase subclass from `tests/test_sector_allocation_tiingo.py` as `TestSectorAllocationProjection`. An isolated pytest collection test verified that this alias executes **21 tests with 17 additional subtest checks**. No new CI scheduler or security check was installed; the 1.7MB shared CI manifest was not overwritten from this older PR base.
 
 That local collection test does not certify hosted CI. The source-modified exact-head hosted jobs must still run, and the main baseline's CI/config changes must be reconciled before release. A later test-only edit to the new file would not independently trigger the old explicit path selector unless enrolled in its native current-base manifest; that future coverage gap is preserved rather than silently labelled complete.
+
+## New native source-to-consumer integration case (CI pending)
+
+After the 21 local contract cases, a twenty-second test was added **inside the same real Data OS test suite**. On invented observations only, it calls the actual incumbent `Archive.store_response` for all thirteen funds, the actual `materialize_one` producer, the exact `read_research_history` evidence-bound native reader, and finally `project_histories`. The test uses only a temporary local archive and explicitly acknowledges hindsight; it asserts the output remains unqualified for historical PIT and investment decisions. It makes **no** real provider call or private archive read.
+
+The local isolated environment lacks the installed native Data OS/pyarrow producer stack. Its pytest alias-collected suite showed **22 collected**, **21 passing**, one **deliberately deselected native integration case**, and **17 passing subtests**. Source/test syntax compiled locally. **Do not claim 22/22 until the exact-head hosted Data OS CI pack runs this new test successfully.** This case is the first end-to-end native integration rather than another structural fixture.
 
 ## Honest delivery boundary
 
