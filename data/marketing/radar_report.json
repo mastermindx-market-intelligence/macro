@@ -2,7 +2,7 @@
   "schema": "marketing.radar_report/v1",
   "schema_version": 1,
   "produced_by": "engine/marketing/radar_internal.py",
-  "produced_at": "2026-10-17T07:49:20Z",
+  "produced_at": "2026-10-17T20:49:56Z",
   "tier": "display",
   "as_of": "2026-10-17",
   "feeds": [
@@ -16,7 +16,7 @@
       "name": "confluence",
       "ok": true,
       "n_assets": 16,
-      "as_of": "2026-10-16"
+      "as_of": "2026-10-17"
     },
     {
       "name": "earnings",
@@ -38,7 +38,7 @@
     }
   ],
   "posted_recent": {
-    "n_tickers": 2046,
+    "n_tickers": 2042,
     "window_plans": 7
   },
   "surplus": [
@@ -118,17 +118,17 @@
       "ticker": "MU",
       "feed": "confluence",
       "why": "confluence combo Weekly short-term uptrend + RSI-14 washed out + POC retest holds firing, test WR 64%",
-      "as_of": "2026-10-16",
-      "staleness_days": 1,
-      "opportunity_id": "radar-confluence-MU-2026-10-16"
+      "as_of": "2026-10-17",
+      "staleness_days": 0,
+      "opportunity_id": "radar-confluence-MU-2026-10-17"
     },
     {
       "ticker": "TKO",
       "feed": "confluence",
       "why": "confluence combo Weekly reclaims 100-day line + weekly RSI stack curls up + RSI-21 washed out firing, test WR 65%",
-      "as_of": "2026-10-16",
-      "staleness_days": 1,
-      "opportunity_id": "radar-confluence-TKO-2026-10-16"
+      "as_of": "2026-10-17",
+      "staleness_days": 0,
+      "opportunity_id": "radar-confluence-TKO-2026-10-17"
     },
     {
       "ticker": "APPN",
@@ -153,6 +153,14 @@
       "as_of": "2026-10-14",
       "staleness_days": 3,
       "opportunity_id": "radar-prophet-CASY-2026-10-14"
+    },
+    {
+      "ticker": "CMI",
+      "feed": "prophet",
+      "why": "active Prophet plan CMI-BULL-20261013, phase pre_trigger, conviction 11",
+      "as_of": "2026-10-14",
+      "staleness_days": 3,
+      "opportunity_id": "radar-prophet-CMI-2026-10-14"
     },
     {
       "ticker": "COHX",
@@ -283,14 +291,6 @@
       "opportunity_id": "radar-prophet-UHS-2026-10-14"
     },
     {
-      "ticker": "UNH",
-      "feed": "prophet",
-      "why": "active Prophet plan UNH-BULL-20261013, phase triggered_pre_t1, conviction 8",
-      "as_of": "2026-10-14",
-      "staleness_days": 3,
-      "opportunity_id": "radar-prophet-UNH-2026-10-14"
-    },
-    {
       "ticker": "ACN",
       "feed": "earnings",
       "why": "earnings 2026-10-01 pre-market",
@@ -364,17 +364,17 @@
     }
   ],
   "queue": {
-    "added": 10,
-    "expired": 14,
-    "total": 492,
-    "open": 285,
+    "added": 2,
+    "expired": 0,
+    "total": 494,
+    "open": 287,
     "doa_skipped": 19
   },
   "tiers_summary": {
     "as_of": "2026-10-14",
     "t1": 28,
-    "t2": 778,
-    "t3": 1947
+    "t2": 780,
+    "t3": 1945
   },
   "cadence": {
     "available": true,

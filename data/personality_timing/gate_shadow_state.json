@@ -4,7 +4,7 @@
  "display_only": true,
  "authority_tier": "display",
  "as_of": "2026-10-17",
- "generated_utc": "2026-10-17T03:48:40.685627+00:00",
+ "generated_utc": "2026-10-17T15:27:09.674924+00:00",
  "spec": "research/PERSONALITY_SIGNAL_SUITE_MASTERPLAN_BY_FABLE.md §W3",
  "gate_open": true,
  "uniform_rung": "2W",
@@ -29,7 +29,7 @@
  },
  "ledger": {
   "fire_rows": 7169,
-  "appended_today": 194,
+  "appended_today": 0,
   "graded": 116,
   "grades_advanced_today": 0
  },

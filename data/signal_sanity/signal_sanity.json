@@ -18,21 +18,21 @@
         "as_of": "2026-10-14",
         "n_records": 101,
         "coverage": 101,
-        "fingerprint": "66283bc728b71912",
+        "fingerprint": "5d86ed27d320e56b",
         "scores": {
           "conviction.composite_z": {
             "n_sub": 101,
             "pop": 101,
-            "uniq": 96,
-            "mean": -0.007732673267326734,
-            "std": 0.5088600323240312
+            "uniq": 95,
+            "mean": 0.004079207920792079,
+            "std": 0.5163908007242576
           },
           "alpha": {
             "n_sub": 101,
             "pop": 101,
-            "uniq": 87,
-            "mean": -0.19237623762376238,
-            "std": 0.9967354123375103
+            "uniq": 88,
+            "mean": -0.18386138613861386,
+            "std": 1.0023417830725845
           }
         }
       }
@@ -86,14 +86,14 @@
         "as_of": "2026-10-17",
         "n_records": 215,
         "coverage": 215,
-        "fingerprint": "ec3541f69bd26e44",
+        "fingerprint": "fc447a6e344a99b1",
         "scores": {
           "edge_score": {
             "n_sub": 204,
             "pop": 204,
             "uniq": 28,
-            "mean": 5.916666666666667,
-            "std": 11.109434105470488
+            "mean": 5.931372549019608,
+            "std": 11.106666258198773
           }
         }
       }
@@ -139,29 +139,29 @@
       "fails": [],
       "warns": [],
       "as_of": "2026-10-17",
-      "n": 1234,
-      "coverage": 1139,
+      "n": 1193,
+      "coverage": 1067,
       "row": {
         "run_date": "2026-10-17",
         "surface": "news",
         "as_of": "2026-10-17",
-        "n_records": 1234,
-        "coverage": 1139,
-        "fingerprint": "363ea294cd3b44d3",
+        "n_records": 1193,
+        "coverage": 1067,
+        "fingerprint": "6209fb3fd3d4af9f",
         "scores": {
           "n_recent": {
-            "n_sub": 1139,
-            "pop": 1139,
+            "n_sub": 1067,
+            "pop": 1067,
             "uniq": 6,
-            "mean": 1.5750658472344161,
-            "std": 1.034239071295792
+            "mean": 1.6110590440487347,
+            "std": 1.059428814330516
           },
           "sentiment_score": {
-            "n_sub": 1139,
-            "pop": 1139,
+            "n_sub": 1067,
+            "pop": 1067,
             "uniq": 6,
-            "mean": 0.36092186128182613,
-            "std": 0.7515423602615324
+            "mean": 0.34497656982193065,
+            "std": 0.7559289390135115
           }
         }
       }
@@ -172,37 +172,37 @@
       "ok": true,
       "fails": [],
       "warns": [],
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "n": 30,
       "coverage": 30,
       "row": {
         "run_date": "2026-10-17",
         "surface": "intel_hub",
-        "as_of": "2026-10-16",
+        "as_of": "2026-10-17",
         "n_records": 30,
         "coverage": 30,
-        "fingerprint": "5e0b70c914a2d004",
+        "fingerprint": "02962dd9865ca8f4",
         "scores": {
           "composite_conviction": {
             "n_sub": 30,
             "pop": 30,
-            "uniq": 27,
-            "mean": 37.516666666666666,
-            "std": 12.827186839764291
+            "uniq": 29,
+            "mean": 36.059999999999995,
+            "std": 14.4568230719385
           },
           "opportunity_score": {
             "n_sub": 30,
             "pop": 30,
-            "uniq": 21,
-            "mean": 21.996666666666666,
-            "std": 6.02525149313749
+            "uniq": 19,
+            "mean": 22.006666666666664,
+            "std": 4.818224661520972
           },
           "edge_remaining": {
             "n_sub": 30,
             "pop": 30,
-            "uniq": 20,
-            "mean": 0.5768666666666667,
-            "std": 0.16078323572091988
+            "uniq": 21,
+            "mean": 0.5982,
+            "std": 0.1387134696655904
           }
         }
       }
@@ -217,5 +217,5 @@
     "intel_hub"
   ],
   "missing": [],
-  "evaluated_at": "2026-10-17T07:13:56.413508+00:00"
+  "evaluated_at": "2026-10-17T18:53:45.072549+00:00"
 }
