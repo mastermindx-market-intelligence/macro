@@ -2,7 +2,11 @@
 
 Existing programme: `sector-rotation-intelligence`; workstream: `LEADERSHIP-ROTATION-INTELLIGENCE`. Accountable principal: Sol under the current Chairman research-first commission. Same carrier: Macro PR #9507, branch `sol/rotation-intelligence-architecture-20261016-c1`. Production integration, native outcome reads and investment authority remain unqualified.
 
-## Latest result: R5 information speed versus trading speed
+## R6 — source-readiness adapter, implemented and tested
+
+The Chairman has assigned the current Sol receiver to execute source-readiness work rather than wait for a named historical source owner. [R6 native source-consumer record](R6_NATIVE_SOURCE_CONSUMER.md) documents the new [pure Tiingo EOD projection](tiingo_allocation_adapter_r6.py) and [21 negative/positive tests](test_tiingo_allocation_adapter_r6.py). The code consumes thirteen **already-returned native Data OS history objects**, verifies exact sessions, clock/basis/revision and BIL coverage, and withholds all PIT/rank/gate/size/trade authority. Tests ran red then green on invented data; three targeted guard mutations were caught. It does not acquire private source data or retry the blocked archive read. The actual licensed source-consumer read and real native-host integration are still unqualified; this is executable code and contract proof, not a live empirical result.
+
+## Earlier result: R5 information speed versus trading speed
 
 Read [DECISION_SPEED_RESULTS_R5.md](DECISION_SPEED_RESULTS_R5.md) and its [frozen design](DECISION_SPEED_DESIGN_R5.md). This independent synthetic diagnostic separates signal memory, source lag, review cadence, confirmation and next-close execution. Routine rebalancing is held constant, so daily review does not force daily weight maintenance when the accepted target is unchanged.
 
