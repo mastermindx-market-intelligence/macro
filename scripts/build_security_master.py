@@ -5056,8 +5056,31 @@ def _identity_rail_unreadable(directory: Path) -> bool:
     return False
 
 
+def _legacy_rollback_cannot_replace_native(out_dir: Path) -> bool:
+    """Refuse a stale rollback if current receipt became native or unreadable.
+
+    A newer native publisher may have committed its receipt while this older
+    nightly builder was still processing. Restoring an older legacy receipt
+    would erase genuine owner history. This is fail-closed observed-state
+    protection, NOT a shared interprocess lock or atomic transaction.
+    """
+    try:
+        _assert_no_unpreserved_native_generation(out_dir)
+    except IdentityError as exc:
+        print(
+            "::error title=security-master-native-history-race::"
+            f"{exc} — refusing stale legacy rollback; preserving current "
+            "reference files for canonical source-owner reconciliation",
+            flush=True,
+        )
+        return True
+    return False
+
+
 def _restore_artifacts(out_dir: Path, before: dict[str, bytes | None],
-                       before_receipt: bytes | None) -> None:
+                       before_receipt: bytes | None) -> bool:
+    if _legacy_rollback_cannot_replace_native(out_dir):
+        return False
     for name, content in before.items():
         path = out_dir / name
         if content is None:
@@ -5071,6 +5094,7 @@ def _restore_artifacts(out_dir: Path, before: dict[str, bytes | None],
             receipt_path.unlink()
     else:
         receipt_path.write_bytes(before_receipt)
+    return True
 
 
 def run_nightly_refresh(out_dir: Path) -> int:
@@ -5161,7 +5185,8 @@ def run_nightly_refresh(out_dir: Path) -> int:
         # restore-and-continue shape as the generic handler, but its own named
         # ::warning so the nightly log says WHAT needs curating rather than a bare
         # "read/parse failure".
-        _restore_artifacts(out_dir, before, before_receipt)
+        if not _restore_artifacts(out_dir, before, before_receipt):
+            return 0
         print(
             f"::warning title=security-master-nightly-prune-conflict::{exc} — "
             "curation required (a new RENAME_EVENTS/SECURITY_SUPERSESSIONS entry, "
@@ -5246,7 +5271,8 @@ def run_nightly_refresh(out_dir: Path) -> int:
         # writes master -> aliases -> issuer_master -> issuer_migrations -> receipt in
         # sequence, and any of those can raise) — restore ALL artifacts to last-good
         # rather than leaving a torn mix of new-and-old bytes.
-        _restore_artifacts(out_dir, before, before_receipt)
+        if not _restore_artifacts(out_dir, before, before_receipt):
+            return 0
         print(
             f"::warning title=security-master-nightly::build failed reading identity "
             f"inputs ({exc}) — keeping last-good artifacts, generated_at not "
@@ -5255,7 +5281,8 @@ def run_nightly_refresh(out_dir: Path) -> int:
         return 0
 
     if receipt.get("notes"):
-        _restore_artifacts(out_dir, before, before_receipt)
+        if not _restore_artifacts(out_dir, before, before_receipt):
+            return 0
         print(
             f"::warning title=security-master-nightly::{'; '.join(receipt['notes'])} — "
             "unmodelled rename or listing-key collision; keeping last-good artifacts, "
@@ -5266,6 +5293,10 @@ def run_nightly_refresh(out_dir: Path) -> int:
     after = {name: _read_bytes_if_exists(out_dir / name) for name in _NIGHTLY_ARTIFACT_NAMES}
     if after == before:
         if before_receipt is not None:
+            # Even a byte-stable legacy build must not reset a newer native
+            # receipt that appeared while its unchanged inputs were checked.
+            if _legacy_rollback_cannot_replace_native(out_dir):
+                return 0
             (out_dir / RECEIPT_NAME).write_bytes(before_receipt)
         _clear_prune_conflict_streak(out_dir)
         print(
