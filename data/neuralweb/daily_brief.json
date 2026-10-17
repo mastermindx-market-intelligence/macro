@@ -1,15 +1,15 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-10-17T07:17:50.976695+00:00",
+  "produced_at": "2026-10-17T07:24:09.012619+00:00",
   "as_of": "2026-10-16",
   "status": "degraded",
-  "phase": "engine",
+  "phase": "final",
   "did_the_brain_run": {
     "cortex_status": "fresh",
     "tool_call_batches": 4,
-    "individual_tool_calls": 11,
+    "individual_tool_calls": 9,
     "context_stale": false,
-    "summary": "cortex ran (11 tool calls); memo as_of 2026-10-16T18:40:15+00:00"
+    "summary": "cortex ran (9 tool calls); memo as_of 2026-10-17T07:23:00+00:00"
   },
   "what_changed": [
     {
@@ -715,7 +715,7 @@
   },
   "evidence_clock": {
     "available": true,
-    "as_of": "2026-10-16",
+    "as_of": "2026-10-17",
     "counts": {
       "overdue": 142,
       "due": 27,
@@ -725,14 +725,14 @@
       "blocked": 2,
       "not_ready": 0,
       "promotion_eligible": 0,
-      "accruing": 152,
+      "accruing": 153,
       "n_acknowledged": 0
     },
     "top_due": {
       "clock_id": "qledger:placebo",
       "due_at": "2026-06-22"
     },
-    "morning_line": "142 overdue, 27 due, 1 missing, 1 stale, 2 blocked, 152 accruing. Top due: qledger:placebo."
+    "morning_line": "142 overdue, 27 due, 1 missing, 1 stale, 2 blocked, 153 accruing. Top due: qledger:placebo."
   },
   "china_market_state": {
     "available": true,
