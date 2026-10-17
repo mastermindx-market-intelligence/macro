@@ -2083,6 +2083,51 @@ jobs:
         run: python -m pytest tests/test_options_american_exercise.py -q
 
   session-anchor-era:
+    # 2026-10-03 Temporal Grain W1A qualification: the six mechanical suites
+    # add CLI/subprocess edges whose inferred fallback would smear this job onto
+    # unrelated code probes. Curate the measured concrete closure instead of
+    # raising fleet packing ceilings. The curated-closure test remains the guard:
+    # a future concrete import/read outside this declaration must red.
+    scope: exclusive
+    paths:
+      # incumbent absolute-session / §7 anchor closure
+      - "engine/__init__.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/confluence_tiers.py"
+      - "engine/hysteresis.py"
+      - "engine/indicators.py"
+      - "engine/session_anchor.py"
+      - "engine/signal_gate.py"
+      - "engine/signal_quality.py"
+      - "engine/technicals.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "lib/store.py"
+      - "site/factordata/basket_washout_state.json"
+      - "tests/test_session_anchor_invariance.py"
+      - "tests/test_sq_anchor_invariance.py"
+      - "tests/test_confluence_resample_runtime.py"
+      # Temporal Grain W1A closure
+      - "engine/trial_ledger.py"
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/contracts.py"
+      - "engine/entry_radar/indicator_core.py"
+      - "engine/stock_technicals.py"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/identity.py"
+      - "scripts/__init__.py"
+      - "scripts/research/__init__.py"
+      - "scripts/research/run_temporal_scale_artifact_attack.py"
+      - "scripts/research/temporal_scale/**"
+      - "research/signal_engine/temporal_scale/external_evidence/**"
+      - "tests/test_temporal_scale_contracts.py"
+      - "tests/test_temporal_scale_chart_export.py"
+      - "tests/test_temporal_scale_kernel_memory.py"
+      - "tests/test_temporal_scale_session_bars.py"
+      - "tests/test_temporal_scale_parity.py"
+      - "tests/test_temporal_scale_artifact_attack.py"
     # Absolute session-calendar anchor, both eras. The confluence 2D/3D + fortnight
     # buckets (era abs-session-2026-08-06, ruling research/SESSION_ANCHOR_ABSOLUTE_
     # CALENDAR_ADJUDICATION_BY_FABLE.md, #4732) and the §7 marker engine (era
@@ -2137,7 +2182,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: session + §7 anchor invariance (k=1..6 start drops, bucket/marker parity, era stamps)
-        run: python -m pytest tests/test_session_anchor_invariance.py tests/test_sq_anchor_invariance.py tests/test_confluence_resample_runtime.py -q
+        run: python -m pytest tests/test_session_anchor_invariance.py tests/test_sq_anchor_invariance.py tests/test_confluence_resample_runtime.py tests/test_temporal_scale_contracts.py tests/test_temporal_scale_chart_export.py tests/test_temporal_scale_kernel_memory.py tests/test_temporal_scale_session_bars.py tests/test_temporal_scale_parity.py tests/test_temporal_scale_artifact_attack.py -q
 
   trial-budgets:
     if: ${{ false }}
