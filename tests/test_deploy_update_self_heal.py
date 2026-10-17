@@ -918,6 +918,19 @@ def test_api_load_time_import_closure_is_covered_by_restart_regex():
     )
 
 
+def test_gmi_bea_imports_restart_api_without_restart_on_unrelated_ontology():
+    """Only the GMI API's actual import-cached modules need the API restart."""
+    for path in (
+        "engine/market_ontology/__init__.py",
+        "engine/market_ontology/exposure_map.py",
+        "engine/market_ontology/bea_gvc_current.py",
+    ):
+        assert _triggers_restart(path), path
+    # Other ontology research modules are not imported by macro-api on startup.
+    # Adding a blanket directory regex would restart on research-only changes.
+    assert not _triggers_restart("engine/market_ontology/mining_theme_research.py")
+
+
 def test_load_time_closure_probe_is_not_vacuous():
     """Guard the guard: an AST/glob regression must not silently pass the above."""
     closure = _api_load_time_closure()
