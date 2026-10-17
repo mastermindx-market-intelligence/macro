@@ -1,0 +1,263 @@
+{
+  "admits_object_type_occurrence": false,
+  "admits_owner_fif": false,
+  "cites": {
+    "admits_object_type_occurrence": "supabase/migrations/0028_investigations.sql:141",
+    "admits_owner_fif": "terminal/lib/investigations.ts:7",
+    "continuation.shape.next_observation": "api/investigation_contracts.py:165",
+    "continuation.shape.next_question": "api/investigation_contracts.py:165",
+    "evidence_refs.follow_head_forbids": "api/investigation_contracts.py:130",
+    "evidence_refs.max_items": "api/investigation_contracts.py:161",
+    "evidence_refs.modes": "api/investigation_contracts.py:124",
+    "evidence_refs.object_id.max_length": "api/investigation_contracts.py:122",
+    "evidence_refs.object_id.min_length": "api/investigation_contracts.py:41",
+    "evidence_refs.object_types": "terminal/lib/investigations.ts:12",
+    "evidence_refs.object_types_closed": "supabase/migrations/0028_investigations.sql:141",
+    "evidence_refs.owners": "terminal/lib/investigations.ts:12",
+    "evidence_refs.owners_closed": "terminal/lib/investigations.ts:7",
+    "evidence_refs.pinned_requires": "api/investigation_contracts.py:125",
+    "evidence_refs.unknown_key_policy": "api/investigation_contracts.py:119",
+    "evidence_refs.version_ref.max_length": "api/investigation_contracts.py:127",
+    "evidence_refs.version_ref.min_length": "api/investigation_contracts.py:41",
+    "extension_mechanism.exists": "terminal/lib/investigationContracts.ts:62",
+    "intent.fields.horizon.max_length": "api/investigation_contracts.py:151",
+    "intent.fields.question.max_length": "api/investigation_contracts.py:92",
+    "intent.fields.research_as_of.max_length": "api/investigation_contracts.py:154",
+    "intent.fields.subjects": "api/investigation_contracts.py:149",
+    "intent.fields.title.max_length": "api/investigation_contracts.py:147",
+    "intent.research_as_of_format": "api/investigation_contracts.py:154",
+    "intent.unknown_key_policy": "api/investigation_contracts.py:146",
+    "layout_refs.item_shape.digest": "api/investigation_contracts.py:107",
+    "layout_refs.item_shape.layout_id": "api/investigation_contracts.py:106",
+    "layout_refs.item_shape.layout_revision_id": "api/investigation_contracts.py:106",
+    "layout_refs.item_shape.role": "api/investigation_contracts.py:108",
+    "layout_refs.max_items": "api/investigation_contracts.py:159",
+    "schema.field": "api/investigation_contracts.py:89",
+    "schema.value": "api/investigation_contracts.py:90",
+    "subjects.kinds": "api/investigation_contracts.py:19",
+    "subjects.max_items": "api/investigation_contracts.py:149",
+    "subjects.object_id.max_length": "api/investigation_contracts.py:97",
+    "subjects.object_id.min_length": "api/investigation_contracts.py:41",
+    "subjects.owners": "terminal/lib/investigations.ts:8",
+    "subjects.owners_closed": "supabase/migrations/0028_investigations.sql:110",
+    "subjects.unknown_key_policy": "api/investigation_contracts.py:95",
+    "thesis_refs.item_shape.role": "api/investigation_contracts.py:115",
+    "thesis_refs.item_shape.thesis_id": "api/investigation_contracts.py:114",
+    "thesis_refs.item_shape.version_id": "api/investigation_contracts.py:114",
+    "thesis_refs.max_items": "api/investigation_contracts.py:160",
+    "top_level.fields.review_baseline_ref": "api/investigation_contracts.py:89",
+    "top_level.fields.schema": "terminal/lib/investigationContracts.ts:245",
+    "top_level.unknown_key_policy_python": "api/investigation_contracts.py:34",
+    "top_level.unknown_key_policy_typescript": "terminal/lib/investigationContracts.ts:139"
+  },
+  "continuation": {
+    "shape": {
+      "next_observation": {
+        "max_length": 4000,
+        "required": false,
+        "type": "string"
+      },
+      "next_question": {
+        "max_length": 4000,
+        "required": false,
+        "type": "string"
+      }
+    }
+  },
+  "evidence_refs": {
+    "follow_head_forbids": [
+      "version_ref",
+      "fingerprint"
+    ],
+    "max_items": 128,
+    "modes": [
+      "pinned",
+      "follow_head"
+    ],
+    "object_id": {
+      "max_length": 256,
+      "min_length": 1,
+      "pattern": null
+    },
+    "object_types": [
+      "event_workspace"
+    ],
+    "object_types_closed": true,
+    "owners": [
+      "earnings.workspace_generation"
+    ],
+    "owners_closed": true,
+    "pinned_requires": [
+      "version_ref"
+    ],
+    "unknown_key_policy": "reject",
+    "version_ref": {
+      "max_length": 256,
+      "min_length": 1,
+      "pattern": null
+    }
+  },
+  "extension_mechanism": {
+    "cite": "terminal/lib/investigationContracts.ts:62",
+    "exists": false
+  },
+  "intent": {
+    "fields": {
+      "horizon": {
+        "max_length": 64,
+        "required": false,
+        "type": "string"
+      },
+      "question": {
+        "max_length": 4000,
+        "required": true,
+        "type": "string"
+      },
+      "research_as_of": {
+        "max_length": 10,
+        "required": false,
+        "type": "string"
+      },
+      "subjects": {
+        "required": true,
+        "type": "array"
+      },
+      "title": {
+        "max_length": 160,
+        "required": true,
+        "type": "string"
+      }
+    },
+    "research_as_of_format": "YYYY-MM-DD",
+    "unknown_key_policy": "reject"
+  },
+  "layout_refs": {
+    "item_shape": {
+      "digest": {
+        "pattern": "^[0-9a-f]{64}$",
+        "required": true,
+        "type": "string"
+      },
+      "layout_id": {
+        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+        "required": true,
+        "type": "string"
+      },
+      "layout_revision_id": {
+        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+        "required": true,
+        "type": "string"
+      },
+      "role": {
+        "pattern": null,
+        "required": true,
+        "type": "string"
+      }
+    },
+    "max_items": 4
+  },
+  "schema": {
+    "field": "schema",
+    "value": "investigation_manifest.v2"
+  },
+  "source_files": [
+    "api/investigation_contracts.py",
+    "docs/INVESTIGATION_V2_CONTRACT.md",
+    "docs/INVESTIGATION_P1_CONTRACT_CANDIDATE.md",
+    "supabase/migrations/0028_investigations.sql",
+    "terminal/app/api/investigations/route.ts",
+    "terminal/app/api/investigations/baseline/route.ts",
+    "terminal/lib/investigationContracts.ts",
+    "terminal/lib/investigations.ts",
+    "terminal/lib/rateLimit.ts",
+    "terminal/lib/__tests__/investigationContracts.test.ts",
+    "terminal/lib/__tests__/investigationManifestParity.test.ts",
+    "terminal/lib/__tests__/fixtures/investigation_manifest_vectors.json",
+    "terminal/lib/__tests__/fixtures/investigation_text_vectors.json",
+    "terminal/components/workspaces/InvestigationWorkspace.tsx",
+    "terminal/components/RetainedInvestigationLayout.tsx"
+  ],
+  "subjects": {
+    "kinds": [
+      "security",
+      "issuer",
+      "industry",
+      "subtheme",
+      "theme",
+      "regime",
+      "economy",
+      "event",
+      "portfolio",
+      "option_underlying",
+      "option_contract",
+      "policy_question"
+    ],
+    "max_items": 16,
+    "object_id": {
+      "max_length": 256,
+      "min_length": 1,
+      "pattern": null
+    },
+    "owners": [
+      "terminal.analysis_symbol",
+      "data_os.security_master"
+    ],
+    "owners_closed": true,
+    "unknown_key_policy": "reject"
+  },
+  "terminal_commit": "c799ba7e64e2d0861228c9977cc12ed4a5d91982",
+  "thesis_refs": {
+    "item_shape": {
+      "role": {
+        "pattern": null,
+        "required": true,
+        "type": "string"
+      },
+      "thesis_id": {
+        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+        "required": true,
+        "type": "string"
+      },
+      "version_id": {
+        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+        "required": true,
+        "type": "string"
+      }
+    },
+    "max_items": 16
+  },
+  "top_level": {
+    "fields": {
+      "continuation": {
+        "required": true,
+        "type": "object"
+      },
+      "evidence_refs": {
+        "required": true,
+        "type": "array"
+      },
+      "intent": {
+        "required": true,
+        "type": "object"
+      },
+      "layout_refs": {
+        "required": true,
+        "type": "array"
+      },
+      "review_baseline_ref": {
+        "required": false,
+        "type": "object"
+      },
+      "schema": {
+        "required": true,
+        "type": "string"
+      },
+      "thesis_refs": {
+        "required": true,
+        "type": "array"
+      }
+    },
+    "unknown_key_policy_python": "reject",
+    "unknown_key_policy_typescript": "reject"
+  }
+}
