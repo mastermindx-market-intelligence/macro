@@ -429,6 +429,17 @@ def read_preferred_context(root: Path, *, now: datetime) -> dict:
     out = copy.deepcopy(settled)
     out["selection"] = {"plane": "settled" if out.get("usable") else "unavailable",
                         "live_reason": live["reason"]}
+    if out.get("usable"):
+        # A valid historical artifact is not proof it describes the most recent
+        # completed market session. Use the incumbent independent NYSE calendar;
+        # never let the artifact or its freshly rebuilt wrapper set this clock.
+        try:
+            expected = nyse_calendar.expected_last_session(now).isoformat()
+        except (ValueError, OverflowError):
+            expected = None
+        out["expected_completed_session"] = expected
+        out["source_current_at_turn"] = (expected is not None and
+                                         out.get("source_session") == expected)
     return out
 
 
@@ -450,7 +461,9 @@ def redact_new_context(payload: Any) -> Any:
             continue
         if key == "early_context" and isinstance(value, dict) and value.get("schema") == "rotation_early_context/v1":
             continue
-        if envelope and key in ("rotation_context", "confluence", "market_transition", "source_warnings"):
+        if envelope and key in ("rotation_context", "confluence", "market_transition",
+                               "source_warnings", "source_current_at_turn",
+                               "expected_completed_session"):
             continue
         out[key] = redact_new_context(value)
     return out
@@ -490,6 +503,18 @@ def render_context(context: dict, *, lang: str = "en", char_budget: int = 1800) 
               "These are complementary descriptions. Shared price/breadth inputs are not extra votes. Capital policy is separate."),
              ("相对跑赢不等于资金净流入、机构换手、成分股广度改善或未来抛售预测。" if zh else
               "Relative outperformance does not establish net inflows, institutional ownership transfers, constituent breadth, or a predicted selloff.")]
+    if not live and context.get("source_current_at_turn") is False:
+        # Truthful last-known context, not a freshly confirmed trading stance.
+        # Prepend this above the backdrop so even short model budgets preserve
+        # the missing-session caveat rather than suggesting current calm.
+        expected = context.get("expected_completed_session") or "unknown"
+        observed = context.get("source_session") or "unknown"
+        lines.insert(1, (
+            f"历史读数，非当前：来源 {observed}；最新已完成美股交易日 {expected}。"
+            "既往状态不代表风险解除；增加风险前先核实最新数据。" if zh else
+            f"Last-known, not current: source {observed}; expected completed US session {expected}. "
+            "A previous state is not an all-clear; verify fresh evidence before adding risk."
+        ))
     warnings = context.get("source_warnings")
     if isinstance(warnings, list) and warnings:
         # Quoted source data, never instructions or an extra evidence vote.

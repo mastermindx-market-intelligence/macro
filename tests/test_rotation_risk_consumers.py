@@ -822,3 +822,77 @@ def test_chat_native_warning_requires_explicit_owner_stage_and_array_contributor
     assert not context.get("source_warnings")
     assert "Credit stress" not in rc.render_context(context)
     assert native == before
+
+
+# R9 — stale settled chat cannot silently inherit today's timestamp. These
+# tests exercise the real incumbent NYSE completed-session calendar. No new
+# producer/reader/poller and no signal/forecast/sizing authority is created.
+def test_settled_chat_fallback_qualifies_source_against_completed_market_session(tmp_path):
+    from datetime import datetime, timezone
+
+    old = envelope()  # native Oct 6 settled risk context
+    write(tmp_path, "data/risk_envelope/latest.json", old)
+    write(tmp_path, "data/market_state/latest.json", {"asof": "2026-10-06"})
+    now = datetime(2026, 10, 8, 22, tzinfo=timezone.utc)  # Oct 8 after NYSE close
+    original = deepcopy(old)
+    context = rc.read_preferred_context(tmp_path, now=now)
+    assert context["usable"] is True  # dated, last-known evidence is retained
+    assert context["source_session"] == "2026-10-06"
+    assert context["source_current_at_turn"] is False
+    assert context["expected_completed_session"] == "2026-10-08"
+    en = rc.render_context(context)
+    zh = rc.render_context(context, lang="zh")
+    assert "Last-known, not current" in en
+    assert "2026-10-08" in en
+    assert "not an all-clear" in en
+    assert "非当前" in zh and "2026-10-08" in zh
+    assert "Mixed" in en  # source-backed older observation remains labelled
+    assert len(en) <= 1800 and len(zh) <= 1800
+    assert old == original
+
+
+def test_preclose_settled_anchor_is_current_completed_session_not_false_stale(tmp_path):
+    from datetime import datetime, timezone
+
+    old = envelope()  # Oct 6 = last completed session at Oct 7 10:01 ET
+    write(tmp_path, "data/risk_envelope/latest.json", old)
+    write(tmp_path, "data/market_state/latest.json", {"asof": "2026-10-06"})
+    now = datetime(2026, 10, 7, 14, 1, tzinfo=timezone.utc)
+    context = rc.read_preferred_context(tmp_path, now=now)
+    assert context["usable"] is True
+    assert context["source_current_at_turn"] is True
+    assert context["expected_completed_session"] == "2026-10-06"
+    assert "Last-known, not current" not in rc.render_context(context)
+
+
+def test_weekend_chat_does_not_launder_friday_gap_as_current(tmp_path):
+    from datetime import datetime, timezone
+
+    old = envelope()
+    # Saturday Oct 10 expects Friday Oct 9, regardless of when the JSON was built.
+    old["observed_at"] = "2026-10-09T20:00:00Z"
+    old["produced_at"] = "2026-10-09T20:00:00Z"
+    old["stale_after"] = None
+    write(tmp_path, "data/risk_envelope/latest.json", old)
+    write(tmp_path, "data/market_state/latest.json", {"asof": "2026-10-06"})
+    context = rc.read_preferred_context(tmp_path, now=datetime(2026, 10, 10, 15, tzinfo=timezone.utc))
+    assert context["source_current_at_turn"] is False
+    assert context["expected_completed_session"] == "2026-10-09"
+    assert "not an all-clear" in rc.render_context(context)
+
+
+def test_settled_turn_freshness_metadata_respects_existing_unentitled_projection(tmp_path):
+    from datetime import datetime, timezone
+
+    old = envelope()
+    write(tmp_path, "data/risk_envelope/latest.json", old)
+    write(tmp_path, "data/market_state/latest.json", {"asof": "2026-10-06"})
+    context = rc.read_preferred_context(
+        tmp_path, now=datetime(2026, 10, 8, 22, tzinfo=timezone.utc))
+    before = deepcopy(context)
+    assert context["source_current_at_turn"] is False
+    redacted = rc.redact_new_context(context)
+    assert "source_current_at_turn" not in redacted
+    assert "expected_completed_session" not in redacted
+    assert "source_warnings" not in redacted
+    assert context == before
