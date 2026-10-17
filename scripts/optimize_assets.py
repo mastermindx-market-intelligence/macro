@@ -49,7 +49,13 @@ from typing import Dict, Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from lib.pages import css_imports, optimize_assets_text, preload_css_text, write_page  # noqa: E402
+from lib.pages import (  # noqa: E402
+    css_imports,
+    optimize_assets_text,
+    preload_css_text,
+    prune_unused_live_js_text,
+    write_page,
+)
 
 log = logging.getLogger("optimize_assets")
 
@@ -134,7 +140,8 @@ def make_optimizer(site_root: Path):
 
         # ?v= stamping FIRST: preload hints must carry the same final URL as the
         # stylesheet they warm, or the two are separate cache keys and double-fetch.
-        return preload_css_text(optimize_assets_text(text, hash_for), imports_for)
+        pruned = prune_unused_live_js_text(text)
+        return preload_css_text(optimize_assets_text(pruned, hash_for), imports_for)
 
     return optimized
 

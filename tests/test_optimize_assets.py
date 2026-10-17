@@ -90,6 +90,42 @@ def test_idempotent():
     assert optimize_assets_text(once, _hash_for) == once
 
 
+def test_prunes_live_js_only_when_page_has_no_live_consumer():
+    from lib import pages as pages_lib
+
+    page = (
+        '<html><body>'
+        '<script src="../live_config.js?v=12345678" defer></script>'
+        '<script src="../live.js?v=abcdef12" defer></script>'
+        '<script src="../theme.js?v=aaaa1111" defer></script>'
+        '</body></html>'
+    )
+    out = pages_lib.prune_unused_live_js_text(page)
+    assert 'live_config.js?v=12345678' in out
+    assert 'theme.js?v=aaaa1111' in out
+    assert 'live.js' not in out
+    assert pages_lib.prune_unused_live_js_text(out) == out
+
+
+def test_keeps_live_js_for_every_supported_live_consumer_shape():
+    from lib import pages as pages_lib
+
+    live_tag = '<script src="live.js?v=abcdef12" defer></script>'
+    consumers = (
+        '<span class="nb-px" data-sym="SPY"></span>',
+        '<span class="nb-chg" data-sym="SPY"></span>',
+        '<span data-live-label></span>',
+        '<span id="sbx-stamp"></span>',
+        '<script>window.LiveQuotes && window.LiveQuotes.refresh()</script>',
+        '<script>window.LIVE_POLL_SEC = 60</script>',
+        '<script>var p = document.createElement("span"); p.className = "nb-px";</script>',
+        '<script src="heatmap.js"></script>',
+    )
+    for consumer in consumers:
+        page = f'<html><body>{consumer}{live_tag}</body></html>'
+        assert live_tag in pages_lib.prune_unused_live_js_text(page), consumer
+
+
 def test_optimize_sweep_end_to_end(tmp_path):
     site = tmp_path / "site"
     site.mkdir()
@@ -111,6 +147,33 @@ def test_optimize_sweep_end_to_end(tmp_path):
     assert "data-dbase" in out and "window.DATA_BASE" in out
     assert "data_base.js" not in out
     # second sweep is a no-op (idempotent)
+    assert optimize(site) == 0
+
+
+def test_optimize_sweep_prunes_live_js_from_nonconsumer_page_only(tmp_path):
+    site = tmp_path / "site"
+    site.mkdir()
+    (site / "live.js").write_bytes(b"window.LiveQuotes = {}")
+    (site / "live_config.js").write_bytes(b"window.LIVE_ENABLED = true")
+
+    scripts = (
+        '<script src="live_config.js"></script>'
+        '<script src="live.js"></script>'
+    )
+    (site / "quiet.html").write_text(f"<html><body>{scripts}<p>research</p></body></html>")
+    (site / "prices.html").write_text(
+        f'<html><body><span class="nb-px" data-sym="SPY"></span>{scripts}</body></html>'
+    )
+
+    assert optimize(site) == 2
+    quiet = (site / "quiet.html").read_text()
+    prices = (site / "prices.html").read_text()
+
+    assert "live_config.js?v=" in quiet
+    assert "live.js" not in quiet
+    assert "live_config.js?v=" in prices
+    assert "live.js?v=" in prices
+    assert 'class="nb-px"' in prices
     assert optimize(site) == 0
 
 
