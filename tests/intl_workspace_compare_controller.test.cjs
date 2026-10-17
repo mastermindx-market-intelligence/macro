@@ -156,7 +156,7 @@ function injectSourceBoundChartFixture(){
   document.querySelector('[data-im-compare-panel]').insertAdjacentHTML('beforeend',`
     <section class="intl-chart" data-im-chart-model="intl-chart-geometry.v1">
       <details open data-im-chart-cohort="c0">
-        <summary>Comparable source cohort</summary>
+        <summary>Comparable source cohort · <span data-im-chart-visible-count data-im-chart-total="3">3</span> markets</summary>
         <svg viewBox="0 0 640 220">
           <path d="M0,100 L640,80" data-im-chart-series="JP"></path><path d="M0,100 L640,101" data-im-chart-series="GB"></path>
           <circle cx="640" cy="80" r="3" data-im-chart-series="KR"></circle>
@@ -167,7 +167,7 @@ function injectSourceBoundChartFixture(){
         </tbody></table>
       </details>
       <details data-im-chart-cohort="c1">
-        <summary>Second group</summary><svg><path d="M0,100 L640,90" data-im-chart-series="AU"></path></svg>
+        <summary>Second group · <span data-im-chart-visible-count data-im-chart-total="1">1</span> market</summary><svg><path d="M0,100 L640,90" data-im-chart-series="AU"></path></svg>
         <table><tbody><tr data-im-chart-table-market="AU"><th>Australia</th></tr></tbody></table>
       </details>
       <p data-im-chart-selection-unavailable hidden>Qualified series not available for all selected markets</p>
@@ -213,4 +213,30 @@ test('chart visibility rolls back on failed history and follows native popstate'
   assert.equal(await panel.locator('[data-im-chart-model]').evaluate(n=>n.outerHTML),before);
   await p.goBack();
   assert.equal(await panel.locator('[data-im-chart-cohort="c0"]').isVisible(),false);
+},{mutate:injectSourceBoundChartFixture}));
+
+
+test('chart cohort counts report only currently selected markets and roll back',async()=>fixture(async p=>{
+  const group=p.locator(active+' [data-im-chart-cohort="c0"]');
+  const count=group.locator('[data-im-chart-visible-count]');
+  assert.equal(await count.textContent(),'3');
+  await pin(p,'JP');
+  assert.equal(await group.isVisible(),false);
+  await pin(p,'KR');
+  assert.equal(await group.isVisible(),true);
+  assert.equal(await count.textContent(),'2');
+  const before=await group.evaluate(n=>n.outerHTML);
+  const outcome=await p.evaluate(()=>{
+    const push=history.pushState;
+    history.pushState=()=>{throw Error('synthetic count transaction failure')};
+    try{return h.dispatch({type:'unpin',market_id:'KR'});}finally{history.pushState=push;}
+  });
+  assert.equal(outcome.ok,false);
+  assert.equal(await count.textContent(),'2');
+  assert.equal(await group.evaluate(n=>n.outerHTML),before);
+  await p.locator(active+' [data-im-compare-remove="1"]').click();
+  assert.equal(await group.isVisible(),false);
+  assert.equal(await count.textContent(),'3');
+  await pin(p,'KR');
+  assert.equal(await count.textContent(),'2');
 },{mutate:injectSourceBoundChartFixture}));
