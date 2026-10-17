@@ -36,6 +36,12 @@ Committed Git blob equality was checked against executed local bytes:
 - Implementation git blob 54f8f71ccd32e774e072b35c051eeda6d269af57, SHA-256 6234e7daf91af96a8a37e0d4d1122a26161efb2668adc0d0c8ec6e5d300e4c0b.
 - Test git blob 3310731d8bd9b7f01c5be2d491763a65da4ad06e, SHA-256 23e780828622686a8366cdf713c8a2fe94313f3db0fa39af67874364359b2f95.
 
+## Existing CI ownership and test discovery
+
+The current `.github/ci/legacy-jobs.yml` declares `dataos-prospective-reference` as an existing required code pack, with `lib/dataos/**` source scope, `tests/test_tiingo_reader.py` in its explicit test runner, and pandas/pyarrow in its environment. The new code lives under that source scope. A minimal additive alias in the **existing** `tests/test_tiingo_reader.py` imports the `Projection` unittest.TestCase subclass from `tests/test_sector_allocation_tiingo.py` as `TestSectorAllocationProjection`. An isolated pytest collection test verified that this alias executes **21 tests with 17 additional subtest checks**. No new CI scheduler or security check was installed; the 1.7MB shared CI manifest was not overwritten from this older PR base.
+
+That local collection test does not certify hosted CI. The source-modified exact-head hosted jobs must still run, and the main baseline's CI/config changes must be reconciled before release. A later test-only edit to the new file would not independently trigger the old explicit path selector unless enrolled in its native current-base manifest; that future coverage gap is preserved rather than silently labelled complete.
+
 ## Honest delivery boundary
 
 The Chairman has assigned the current receiver to drive source-readiness work directly; that does not manufacture machine-readable vendor rights or reverse a previous platform-denied private source-inspection action. The first authentic Data OS read, full private payload/revision/session check, exact BIL gap, historical PIT status, and registered empirical baseline remain **unqualified**. The original Fabric worker run remains EFFECT_UNKNOWN on its own carrier; no replay/duplicate is justified. No native P1/P2/P3, Trial/Vault, live provider fetch, trading model, production release, or alternate source authority was invoked.
