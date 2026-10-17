@@ -1,16 +1,16 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-16T17:23:40.178284+00:00",
-  "posts_seen": 12,
-  "seen_total": 295,
+  "as_of": "2026-10-17T04:24:51.780207+00:00",
+  "posts_seen": 14,
+  "seen_total": 297,
   "evaluated": 1,
-  "activated": 0,
+  "activated": 1,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-10-16-president-trump-returns-to-georgia-with-a-record-of-results",
-      "importance": 15,
-      "activated": false,
+      "id": "wh-2026-10-17-implementing-the-lindsey-o-graham-sanctioning-russia-and-iran-act-of-2026",
+      "importance": 78,
+      "activated": true,
       "degraded_reason": "served_by:deepseek"
     }
   ]
