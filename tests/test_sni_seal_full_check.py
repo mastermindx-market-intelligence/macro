@@ -545,3 +545,201 @@ def test_xrep05_fails_on_nonhex_produced(tmp_path: Path) -> None:
 def test_xrep05_registered_for_s1_manifest_only() -> None:
     assert s1_exceptions().get("LANE_MANIFEST.json") is XREP05_S1_MANIFEST_SEAL_COMMIT
     assert "LANE_MANIFEST.json" not in s2_exceptions()
+
+
+# --- XREP-05 repair: pinned seal blob -------------------------------------
+
+# A 40-char sha syntactically valid but not an object in this clone. The remote
+# returns "not our ref" for this sha (it is not a real commit anywhere). Used
+# as the "produced" sha in the refusal tests below.
+UNRESOLVABLE_SHA = "0123456789abcdef0123456789abcdef01234567"
+
+
+class _FakeCompleted:
+    """Stand-in for subprocess.CompletedProcess returned by the wrapper.
+
+    Mimics the fields the seal verifier reads from a real CompletedProcess.
+    """
+
+    def __init__(self, returncode: int = 0, stdout: str = "", stderr: str = "") -> None:
+        self.returncode = returncode
+        self.stdout = stdout
+        self.stderr = stderr
+
+
+def _assert_unresolvable_sha(sha: str) -> None:
+    """Best-effort: confirm sha is not an object in this clone.
+
+    CI clones at depth 1 without partial clone, so ``git cat-file -e``
+    fails immediately when the object is absent. This dev env is a
+    partial clone (``remote.origin.promisor=true``): git may try to
+    lazy-fetch missing blobs from the promisor and scan packs slowly.
+    The 10s timeout bounds that scan; on timeout we trust the chosen
+    deterministic sha (the seat's depth-1 CI will assert properly).
+    """
+    try:
+        r = subprocess.run(
+            ["git", "cat-file", "-e", sha],
+            cwd=ROOT, capture_output=True, text=True, timeout=10,
+        )
+    except subprocess.TimeoutExpired:
+        # Partial-clone env: cat-file hangs on pack scan for unknown sha.
+        return
+    assert r.returncode != 0, (
+        f"{sha} resolved unexpectedly in this clone; pick another")
+
+
+def _cat_file_off_wrapper(monkeypatch):
+    """Patch ``seal_full_check.subprocess.run`` so any argv containing
+    ``cat-file`` returns non-zero (simulates a depth-1 clone lacking the
+    pre-squash commit). Every other call is delegated to the real
+    ``subprocess.run``, with a 15s timeout so a partial-clone dev env's
+    lazy-fetch on an unknown sha does not hang the test (CI is depth-1
+    and returns instantly).
+    """
+    import seal_full_check  # late import: monkeypatch target
+    real_run = seal_full_check.subprocess.run
+
+    def _wrapper(argv, *args, **kwargs):
+        if any("cat-file" in str(a) for a in argv):
+            return _FakeCompleted(
+                returncode=1, stderr="cat-file monkeypatched off")
+        kwargs.setdefault("timeout", 15)
+        try:
+            return real_run(argv, *args, **kwargs)
+        except subprocess.TimeoutExpired as e:
+            return _FakeCompleted(returncode=124, stderr=str(e))
+
+    monkeypatch.setattr(seal_full_check.subprocess, "run", _wrapper)
+    return _wrapper
+
+
+def _timeout_subprocess_wrapper(monkeypatch):
+    """Patch ``seal_full_check.subprocess.run`` with a 15s timeout on every
+    call so a partial-clone dev env's lazy-fetch on an unknown sha does
+    not hang the test (CI is depth-1 and returns instantly). The wrapper
+    does not fake any return; it just bounds the call duration.
+    """
+    import seal_full_check
+    real_run = seal_full_check.subprocess.run
+
+    def _wrapper(argv, *args, **kwargs):
+        kwargs.setdefault("timeout", 15)
+        try:
+            return real_run(argv, *args, **kwargs)
+        except subprocess.TimeoutExpired as e:
+            return _FakeCompleted(returncode=124, stderr=str(e))
+
+    monkeypatch.setattr(seal_full_check.subprocess, "run", _wrapper)
+    return _wrapper
+
+
+def test_xrep05_seal_blob_constant_matches_head() -> None:
+    """The pinned S1_V1_1_SEAL_BLOB must equal HEAD's blob at the S1 v1.1
+    SEAL_AND_BUDGET.json path. If HEAD's blob drifts, the pin must be
+    re-cut (this is the constant-drift catcher)."""
+    from seal_full_check import S1_V1_1_SEAL_BLOB
+    r = subprocess.run(
+        ["git", "rev-parse", f"HEAD:{S1_V1_1_REL}/SEAL_AND_BUDGET.json"],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    assert r.returncode == 0, r.stderr
+    assert r.stdout.strip() == S1_V1_1_SEAL_BLOB, (
+        f"HEAD blob {r.stdout.strip()!r} drifted from pinned "
+        f"{S1_V1_1_SEAL_BLOB!r}; the pin must be re-cut")
+
+
+def test_xrep05_fails_on_unresolvable_produced_commit(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A produced sha that is syntactically valid 40-char hex but not an
+    object in this clone must produce a KIND_DIFFER Diff whose detail
+    contains ``unresolvable``. The pre-squash commit is NOT mocked here;
+    this is the produced-side gate. CI clones at depth 1, so no
+    git-history reads.
+    """
+    _assert_unresolvable_sha(UNRESOLVABLE_SHA)
+
+    # Bound git calls so a partial-clone dev env's lazy-fetch on the
+    # unresolvable sha does not hang the test. CI (depth-1) returns
+    # instantly. The wrapper does not fake any return; it just adds a
+    # 15s timeout that yields a non-zero exit on hang.
+    _timeout_subprocess_wrapper(monkeypatch)
+
+    c_obj = dict(_SYNTH_MANIFEST, seal_commit_sha=S1_V1_1_SEAL_COMMIT_PRE_SQUASH)
+    p_obj = dict(_SYNTH_MANIFEST, seal_commit_sha=UNRESOLVABLE_SHA)
+    c = tmp_path / "committed" / "LANE_MANIFEST.json"
+    p = tmp_path / "produced" / "LANE_MANIFEST.json"
+    _write_json(c, c_obj)
+    _write_json(p, p_obj)
+    diffs = XREP05_S1_MANIFEST_SEAL_COMMIT(c, p)
+    differ = [d for d in diffs if d.kind == KIND_DIFFER]
+    assert len(differ) == 1, (
+        f"expected exactly one KIND_DIFFER, got {diffs!r}")
+    assert "unresolvable" in differ[0].detail, differ[0].detail
+    assert UNRESOLVABLE_SHA in differ[0].detail, differ[0].detail
+
+
+def test_xrep05_checks_blob_when_presquash_absent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Fail-first test: when the pre-squash commit object is absent
+    (cat-file returns non-zero) AND the produced sha is unresolvable,
+    the function MUST raise a Diff. On the base bytes the function
+    returns ``[]`` (fail-open); this test FAILS on base and passes only
+    after the seal_blob pin is added.
+    """
+    _cat_file_off_wrapper(monkeypatch)
+
+    c_obj = dict(_SYNTH_MANIFEST, seal_commit_sha=S1_V1_1_SEAL_COMMIT_PRE_SQUASH)
+    p_obj = dict(_SYNTH_MANIFEST, seal_commit_sha=UNRESOLVABLE_SHA)
+    c = tmp_path / "committed" / "LANE_MANIFEST.json"
+    p = tmp_path / "produced" / "LANE_MANIFEST.json"
+    _write_json(c, c_obj)
+    _write_json(p, p_obj)
+    diffs = XREP05_S1_MANIFEST_SEAL_COMMIT(c, p)
+    assert any(d.kind == KIND_DIFFER for d in diffs), (
+        f"expected a Diff when produced sha is unresolvable and pre-squash "
+        f"is absent; got {diffs!r}")
+
+
+def test_xrep05_still_passes_head_when_presquash_absent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """When the pre-squash commit is absent but the produced sha
+    resolves to the pinned seal blob (HEAD on every clone, including
+    depth-1), the function passes. Same wrapper as the fail-first
+    test; produced sha = ``git rev-parse HEAD``. Passes on base by
+    accident (function returns ``[]``); the value of this test is the
+    contract it locks in after the repair.
+    """
+    import seal_full_check
+    pinned = getattr(seal_full_check, "S1_V1_1_SEAL_BLOB", None)
+
+    head_proc = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    assert head_proc.returncode == 0, head_proc.stderr
+    head_sha = head_proc.stdout.strip()
+
+    # Sanity (post-repair only): HEAD:SEAL_AND_BUDGET.json resolves to the
+    # pinned blob here. On base the sanity is skipped because the constant
+    # does not yet exist; the test still passes on base by accident.
+    if pinned is not None:
+        blob_proc = subprocess.run(
+            ["git", "rev-parse", f"{head_sha}:{S1_V1_1_REL}/SEAL_AND_BUDGET.json"],
+            cwd=ROOT, capture_output=True, text=True,
+        )
+        assert blob_proc.returncode == 0, blob_proc.stderr
+        assert blob_proc.stdout.strip() == pinned
+
+    _cat_file_off_wrapper(monkeypatch)
+
+    c_obj = dict(_SYNTH_MANIFEST, seal_commit_sha=S1_V1_1_SEAL_COMMIT_PRE_SQUASH)
+    p_obj = dict(_SYNTH_MANIFEST, seal_commit_sha=head_sha)
+    c = tmp_path / "committed" / "LANE_MANIFEST.json"
+    p = tmp_path / "produced" / "LANE_MANIFEST.json"
+    _write_json(c, c_obj)
+    _write_json(p, p_obj)
+    assert XREP05_S1_MANIFEST_SEAL_COMMIT(c, p) == []

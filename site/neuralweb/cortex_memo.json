@@ -1,14 +1,35 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-10-13T23:23:02+00:00",
-  "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
-  "what_fired": [],
-  "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
-  "decaying_families": [],
-  "deserves_operator": [],
+  "as_of": "2026-10-17T07:23:00+00:00",
+  "summary": "Context-only committee read: the measured US backdrop has shifted to RISK_OFF, but this is not a fresh forecast or trade instruction. The most coherent deterioration is in trend, volatility, breadth, leadership, credit quality, and systematic positioning. The important counterweight is that recession risk remains off/low, liquidity quantity is expanding, volatility risk premium is rich, and the risk radar's exact caution-state 21-day pullback rate is 16.0% versus a 17.8% base rate. Accordingly, the evidence supports heightened monitoring and thesis review, not origination or ranking.",
+  "what_fired": [
+    "Persisted market-state transition from MIXED (46) to RISK_OFF (40), with trend -14 points and volatility -28 points session over session.",
+    "Breadth remains weak: 34.9% above 50-day averages, 49.4% above 200-day averages, and the breadth component is marked bad with divergence present.",
+    "Liquidity quality is stress-expansion despite an expanding quantity overlay; HY OAS has widened and NFCI trend is tightening.",
+    "Leadership is CRACKING; AI infrastructure leadership is broken, and systematic vol-control/CTA positioning is aligned cutting.",
+    "Factor intelligence did not fire: Pair G is dormant because the panel has only nine dates, below the 60-date requirement; factor attention remains A0/A1 shadow with n=0."
+  ],
+  "contradictions_review": "The confluence graph reports a live briefing-divergence tension: 21 ticker-level demand-versus-supply oppositions, including NVDA, DHR, XOM, and GEHC. This is display-only and does not establish which side is correct. The options contradiction record is effectively null (n=0 and dated 2026-09-17), so it adds no current de-escalation evidence. The larger macro contradiction is quantity versus quality in liquidity: net liquidity is expanding, but its composition is labelled stress-expansion with confirming credit stress and an exhausted RRP buffer. The factor borrowed-strength ledger is absent by design until sufficient panel history accrues.",
+  "decaying_families": [
+    "Alt-data is unarmed across regimes and horizons; pooled out-of-sample performance is negative.",
+    "Policy-family claims are unarmed and show negative signed excess across the available 5/21/63-day samples.",
+    "Desk narrative, radar, stock-desk, thematic-desk, and AI-desk 63-day estimates are negative and unarmed; several tests are explicitly vacuous rather than validated.",
+    "Demand-chain evidence is still accruing (9/12 effective events) and changes sign by horizon, so it is not reliable support.",
+    "CA/HK/CN board rows use unsigned MFE proxies and are unarmed because tests are vacuous or fail the preregistered edge bar; positive-looking values must not be read as directional validation.",
+    "Factor composite is non-tradeable; investment, low-vol, low-beta, and composite IC legs are negative, while the live panel has insufficient history."
+  ],
+  "deserves_operator": [
+    "Review the RISK_OFF transition after the next completed-session update, focusing on whether trend/volatility deterioration persists while breadth remains weak.",
+    "Reconcile liquidity quantity with quality: expanding net liquidity is not presently equivalent to benign liquidity because stress confirmation and the exhausted RRP buffer remain active.",
+    "Score or retire every overdue Master Brain thesis; reconcile duplicate IDs and the simultaneously open opposing China-equity theses.",
+    "The China-equity overweight thesis conflicts with current China risk-off/panic context and contracting liquidity; evaluate its stated falsifier rather than carrying it open indefinitely.",
+    "The long-Treasury overweight theses conflict with restrictive/rising real yields and a bear-steepening backdrop; evaluate their explicit real-yield and curve falsifiers.",
+    "No current contradiction was found against the semiconductor-underweight theses; current broken AI leadership and semiconductor weakness are directionally consistent, but those theses are overdue and still require formal scoring.",
+    "Investigate the briefing-divergence set at its native ticker evidence layer before relying on the aggregate brief; the contradiction is a tension, not a replacement signal."
+  ],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-10-13",
+    "as_of": "2026-10-16",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -20,72 +41,74 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 122,
-      "total_rows": 130
+      "ungradeable": 136,
+      "total_rows": 144
     },
     "is_context_only": true
   },
-  "tool_call_census": {},
+  "tool_call_census": {
+    "read_world_state": 1,
+    "read_factor_state": 1,
+    "query_spine": 1,
+    "read_contradictions": 1,
+    "list_factor_contradictions": 1,
+    "read_kernel": 1,
+    "read_master_brain_theses": 1,
+    "flag_attention": 1,
+    "write_memo": 1
+  },
   "is_context_only": true,
   "run_status": {
-    "status": "degraded",
-    "degraded": true,
-    "degradation_reason": "model_unavailable",
-    "model_used": "claude-sonnet-4-6",
+    "status": "ok",
+    "degraded": false,
+    "degradation_reason": null,
+    "model_used": "claude-opus-4-8",
     "provider_attempts": [
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "auth",
-        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011Cg16anLdFsRgTPnnvZoVr'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cg16avSY7ACm8shVidYRu'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cg16cBKWP1USxjWTxBnAr'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cg16gk3816QTQbuoNC1sx'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cg16vA7axQEfjLSEZ1JfE'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-sonnet-4-6",
-        "attempted": true,
-        "ok": false,
-        "error_type": "auth",
-        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011Cg16vAxBqNx8a4BDufmKP'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       }
     ],
-    "tool_call_batches": 0,
-    "individual_tool_calls": 0,
+    "tool_call_batches": 4,
+    "individual_tool_calls": 9,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-10-13T08:31:25Z"
+    "context_as_of": "2026-10-17T07:14:06Z"
   }
 }

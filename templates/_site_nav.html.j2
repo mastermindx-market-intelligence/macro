@@ -7,6 +7,8 @@
    Optional page variables:
    - nav_prefix: "../" for pages rendered one directory below site root.
    - nav_search_placeholder_en/nav_search_placeholder_zh: optional placeholder copy.
+   - nav_defer_enhancements: preserve logo/live script order while allowing a
+     page's primary data bootstrap to execute before those enhancements.
 #}
 {% set NP = nav_prefix if (nav_prefix is defined and nav_prefix) else '' %}
 <nav class="site-nav">

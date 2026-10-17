@@ -1,0 +1,15 @@
+Auto-merging .github/ci/legacy-jobs.yml
+Auto-merging mockups/evidence/prophet-p0b-zero-fouc/manifest.json
+CONFLICT (content): Merge conflict in mockups/evidence/prophet-p0b-zero-fouc/manifest.json
+Auto-merging mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json
+CONFLICT (content): Merge conflict in mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json
+Auto-merging mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json
+CONFLICT (content): Merge conflict in mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json
+Auto-merging site/government_revenue.html
+CONFLICT (content): Merge conflict in site/government_revenue.html
+Auto-merging site/research_screener.html
+CONFLICT (content): Merge conflict in site/research_screener.html
+Auto-merging site/theme.js
+CONFLICT (content): Merge conflict in site/theme.js
+Auto-merging tests/test_ci_pack.py
+Automatic merge failed; fix conflicts and then commit the result.

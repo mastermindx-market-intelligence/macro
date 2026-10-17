@@ -1061,9 +1061,14 @@ def evaluate_minimum_agreement(summary: Mapping[str, Any]) -> dict:
     every kappa-eligible field with ``n_both_present >= 20`` (fields below 20
     both-present pairs are exempt from the kappa test — spec line ~98), and
     ``n_absent_vs_present <= 10%`` of ``n_compared`` on every quantity field.
-    A field row with ``n_compared == 0`` is reported not-evaluable, never a
-    failure (INFERRED: the spec prints null statistics, it does not fail an
-    unmeasured row).
+
+    The gate is fail-closed (DEC:NEWS-IMPACT-W1C-DESIGN-RULINGS, amendment
+    L6): a critical field with ``n_compared == 0`` is listed in
+    ``not_evaluable_fields`` AND is a ``not_evaluable`` failure, so an
+    unmeasured template is never usable; a kappa-eligible field with
+    ``n_both_present >= 20`` whose kappa is null (only one category observed)
+    is a ``kappa_undefined_single_category`` failure. Neither sets
+    ``pause_labeling`` — that stays tied to measured exact agreement.
     """
     results: dict[str, dict] = {}
     for template in sorted(summary.get("templates", {})):
@@ -1076,6 +1081,14 @@ def evaluate_minimum_agreement(summary: Mapping[str, Any]) -> dict:
             row = trow["fields"][name]
             if row["n_compared"] == 0:
                 not_evaluable.append(name)
+                failures.append({
+                    "field": name,
+                    "criterion": "not_evaluable",
+                    "value": None,
+                    "threshold": EXACT_AGREEMENT_FLOOR,
+                    "n": 0,
+                    "example_case_ids": [],
+                })
                 continue
             if row["exact_agreement"] is not None and row["exact_agreement"] < EXACT_AGREEMENT_FLOOR:
                 failures.append({
@@ -1092,7 +1105,7 @@ def evaluate_minimum_agreement(summary: Mapping[str, Any]) -> dict:
                 if row["kappa"] is None or row["kappa"] < KAPPA_FLOOR:
                     failures.append({
                         "field": name,
-                        "criterion": "kappa",
+                        "criterion": "kappa" if row["kappa"] is not None else "kappa_undefined_single_category",
                         "value": row["kappa"],
                         "threshold": KAPPA_FLOOR,
                         "n": row["n_both_present"],

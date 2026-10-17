@@ -1,0 +1,208 @@
+{
+  "observedAt": "2026-10-15T14:10:20.172480+00:00",
+  "head": "bffaa41479a9b3f87b1c31a39f870b27f3976402",
+  "source": {
+    ".github/workflows/earnings-story-packets.yml": {
+      "exists": true,
+      "bytes": 6452,
+      "sha256": "b7c8dbb670f777ddefcec98ce0f5afbeebc8f020bd67712ac88037b3a51b03bb"
+    },
+    ".github/workflows/press-source-qualification.yml": {
+      "exists": true,
+      "bytes": 1779,
+      "sha256": "9fbb03ece7326998995a0444b05246c6bfef43d5b3a00999ce399b22d8981e79"
+    },
+    "config/press.yml": {
+      "exists": true,
+      "bytes": 35981,
+      "sha256": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc"
+    },
+    "engine/close_pass/massive_close.py": {
+      "exists": true,
+      "bytes": 29868,
+      "sha256": "63b137a6c35a8346e0ed6adfbfd80c17ec3fc0e1e08fcf828c6dcfe1670d209b"
+    },
+    "engine/earnings_narrative/admission.py": {
+      "exists": true,
+      "bytes": 15599,
+      "sha256": "aee12aff2521d0810e31984cbda7c1f3f1fbcee7ed527069ebe20ca40bfbb5a5"
+    },
+    "engine/earnings_narrative/story_packets.py": {
+      "exists": true,
+      "bytes": 23257,
+      "sha256": "f60bd3daed8d2620c16963632e3644a3833a226c4539f84f36c734ca2ea05e1e"
+    },
+    "engine/earnings_narrative/story_store.py": {
+      "exists": true,
+      "bytes": 29297,
+      "sha256": "83037ae9ce5201f8bfca267bfa2f45e7ae7b47e6d3b7287d52bf7620c3c7762b"
+    },
+    "engine/marketing/breaking_feed.py": {
+      "exists": true,
+      "bytes": 23878,
+      "sha256": "da5c92c1b91a40e08d842807d97e656642543146fb2222e5918926b4ff930ec6"
+    },
+    "engine/press/adjusted_baseline.py": {
+      "exists": true,
+      "bytes": 6605,
+      "sha256": "76dbd36d2754f170e2fb2e1a09f9453f2d19866674a91c9250dd0ea6957f0f16"
+    },
+    "engine/press/desk_planner.py": {
+      "exists": true,
+      "bytes": 65153,
+      "sha256": "8282028e5b4caae7005ef22582adef9b86d400590290e2a5b132c5052d4ddb7b"
+    },
+    "engine/press/earnings_adapter.py": {
+      "exists": true,
+      "bytes": 10568,
+      "sha256": "7a4196561502252584056be7912d4899926cc7bd1d60e1a55adf6569e5e2b163"
+    },
+    "engine/press/external_candidate.py": {
+      "exists": true,
+      "bytes": 17316,
+      "sha256": "0bd43e347e1ccf12b362add33360491c4d56501fc40154bb6bd9c5fb7764d497"
+    },
+    "engine/press/official_feed_candidate.py": {
+      "exists": true,
+      "bytes": 9945,
+      "sha256": "f01f28bb20896c59b69ed95339875192d1e724a25078742119d2930e5f0d72f2"
+    },
+    "engine/press/validators.py": {
+      "exists": true,
+      "bytes": 73766,
+      "sha256": "fdbae60b9bec3635db2a7732e9a2519a4a600d4f0e9e83ee65e962d11786cc46"
+    },
+    "engine/press/writer.py": {
+      "exists": true,
+      "bytes": 36040,
+      "sha256": "0528fc0724c2727372df43e1ee064f84f159de6f54f7381371e6f13dbe13bb09"
+    },
+    "engine/whitehouse_feed.py": {
+      "exists": true,
+      "bytes": 14507,
+      "sha256": "1be31eb229a828aa11554fed50c29c51cdd572e5122469673fb866d9b7fd0c7e"
+    },
+    "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md": {
+      "exists": true,
+      "bytes": 3652,
+      "sha256": "82ad971b46d4159739117d3defe19a25a2a24ede45e5e8d28494c5849e757891"
+    },
+    "scripts/build_whitehouse.py": {
+      "exists": true,
+      "bytes": 29602,
+      "sha256": "56a4b5f535fafb7ffee0d0df873674e7f0677708d47d6ad968f0af99b31dc534"
+    },
+    "scripts/inspect_press_staging.py": {
+      "exists": true,
+      "bytes": 3647,
+      "sha256": "ad3415d99a7da810ed9f7f87bdcb729956f130a270820381c304709461112262"
+    },
+    "scripts/publish_earnings_story_packets_r2.py": {
+      "exists": true,
+      "bytes": 67792,
+      "sha256": "1dea622fd8e045c9831cca9643b84a2018c121c66c476be753e9d2328f037ddf"
+    },
+    "scripts/qualify_press_nvda_baseline.py": {
+      "exists": true,
+      "bytes": 5578,
+      "sha256": "b6199b4f5975096a4ccf9246fb37e2b1ba3948a0282700630339a24a5ac38a05"
+    },
+    "scripts/run_press.py": {
+      "exists": true,
+      "bytes": 60029,
+      "sha256": "9a7417be2bd39e2e8c244e791bb99824e89573e68ef8be5916b81865bd2a45e5"
+    },
+    "scripts/stage_earnings_story_press.py": {
+      "exists": true,
+      "bytes": 11056,
+      "sha256": "c6673e8a0bf8ad9dfc411cf159cfe21338c00cab57fc8cb086df5298efc1a60c"
+    },
+    "scripts/stage_official_feed_press.py": {
+      "exists": true,
+      "bytes": 20125,
+      "sha256": "523005e2e0f2c60b3229973a7a17cc4abb2f3d94dbbfd243ee5918b7e2583840"
+    }
+  },
+  "site": {
+    "blog/index.html": {
+      "exists": true,
+      "bytes": 29500,
+      "sha256": "2832c61b9c1e66c15f2e1fdf2967c7f31006690c49a0f9ff7e33665c81aceb7b"
+    },
+    "learn/index.html": {
+      "exists": true,
+      "bytes": 35308,
+      "sha256": "f90d3ecaa13b0c6c282df5a3c0766f88ec5d2310285f84e7f5dac78fb2cc9a73"
+    },
+    "tools/calculators/position-size.html": {
+      "exists": true,
+      "bytes": 45748,
+      "sha256": "ed8626dde0f1df97f21a48de7cdd379e5988d88f288b225efb7d114353965d45"
+    }
+  },
+  "served": {
+    "blog/index.html": {
+      "exists": true,
+      "bytes": 29500,
+      "sha256": "2832c61b9c1e66c15f2e1fdf2967c7f31006690c49a0f9ff7e33665c81aceb7b"
+    },
+    "learn/index.html": {
+      "exists": true,
+      "bytes": 35308,
+      "sha256": "f90d3ecaa13b0c6c282df5a3c0766f88ec5d2310285f84e7f5dac78fb2cc9a73"
+    },
+    "tools/calculators/position-size.html": {
+      "exists": true,
+      "bytes": 45748,
+      "sha256": "ed8626dde0f1df97f21a48de7cdd379e5988d88f288b225efb7d114353965d45"
+    }
+  },
+  "cutoverFalse": true,
+  "headAfter": "bffaa41479a9b3f87b1c31a39f870b27f3976402",
+  "stableHead": true,
+  "releaseCommit": "663dbf1ff7f5fb322213c2211fce8e9bf892ac1d",
+  "containsRelease": true,
+  "sourceMatch": {
+    ".github/workflows/earnings-story-packets.yml": true,
+    ".github/workflows/press-source-qualification.yml": true,
+    "config/press.yml": true,
+    "engine/close_pass/massive_close.py": true,
+    "engine/earnings_narrative/admission.py": true,
+    "engine/earnings_narrative/story_packets.py": true,
+    "engine/earnings_narrative/story_store.py": true,
+    "engine/marketing/breaking_feed.py": true,
+    "engine/press/adjusted_baseline.py": true,
+    "engine/press/desk_planner.py": true,
+    "engine/press/earnings_adapter.py": true,
+    "engine/press/external_candidate.py": true,
+    "engine/press/official_feed_candidate.py": true,
+    "engine/press/validators.py": true,
+    "engine/press/writer.py": true,
+    "engine/whitehouse_feed.py": true,
+    "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md": true,
+    "scripts/build_whitehouse.py": true,
+    "scripts/inspect_press_staging.py": true,
+    "scripts/publish_earnings_story_packets_r2.py": true,
+    "scripts/qualify_press_nvda_baseline.py": true,
+    "scripts/run_press.py": true,
+    "scripts/stage_earnings_story_press.py": true,
+    "scripts/stage_official_feed_press.py": true
+  },
+  "siteMatch": {
+    "blog/index.html": true,
+    "learn/index.html": true,
+    "tools/calculators/position-size.html": true
+  },
+  "servedMatch": {
+    "blog/index.html": true,
+    "learn/index.html": true,
+    "tools/calculators/position-size.html": true
+  },
+  "containsReleaseByVerifiedObjectChain": true,
+  "ancestryProof": {
+    "head": "bffaa41479a9b3f87b1c31a39f870b27f3976402",
+    "release": "663dbf1ff7f5fb322213c2211fce8e9bf892ac1d",
+    "verifiedCommitObjects": 3
+  },
+  "accepted": true
+}

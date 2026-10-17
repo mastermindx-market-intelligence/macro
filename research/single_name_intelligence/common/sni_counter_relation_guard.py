@@ -121,6 +121,19 @@ def relation_key(a: str, b: str) -> tuple[str, str]:
     return (a, b) if a <= b else (b, a)
 
 
+def _text_present(value: object) -> bool:
+    """True iff ``value`` is a non-empty ``str`` with no leading or trailing
+    Unicode whitespace character (``str.isspace()``); equivalent to the
+    standard leading / trailing whitespace predicate without hand-rolling
+    an ASCII whitespace set."""
+    return (
+        isinstance(value, str)
+        and value != ""
+        and not value[0].isspace()
+        and not value[-1].isspace()
+    )
+
+
 def _blank(value: object) -> bool:
     if value is None:
         return True
@@ -251,11 +264,15 @@ def check_counter_relation(
         reasons.append("RELATION_NOT_AVAILABLE_AS_OF")
 
     relation_id = relation.get("relation_id")
-    if _blank(relation_id):
+    if not _text_present(relation_id):
         reasons.append("RELATION_ID_MISSING")
-    if _blank(relation.get("source_ref")):
+    source_ref = relation.get("source_ref")
+    if not _text_present(source_ref):
         reasons.append("RELATION_UNSOURCED")
-    if relation.get("issuer_id") != request.get("issuer_id"):
+    # FAMILY TEXT RULE v2: equality only between two present values (X9-04).
+    rel_issuer, req_issuer = relation.get("issuer_id"), request.get("issuer_id")
+    if not (_text_present(rel_issuer) and _text_present(req_issuer)
+            and rel_issuer == req_issuer):
         reasons.append("ISSUER_MISMATCH")
 
     seen: list[object] = []
@@ -267,12 +284,13 @@ def check_counter_relation(
             seen.append(listing_id)
         if member.get("counter_kind") not in _COUNTER_KIND_SET:
             reasons.append("COUNTER_KIND_UNKNOWN")
-        if _blank(member.get("currency")):
+        currency = member.get("currency")
+        if not _text_present(currency):
             reasons.append("CURRENCY_UNDECLARED")
 
     frozen = _freeze_reasons(reasons)
     echo: str | None
-    if isinstance(relation_id, str) and not _blank(relation_id):
+    if _text_present(relation_id):
         echo = relation_id
     else:
         echo = None

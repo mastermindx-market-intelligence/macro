@@ -106,7 +106,8 @@ def table(aliases: pd.DataFrame) -> VendorAliasTable:
             "security_id": row["security_id"],
             "valid_from": BUILD._normalize_bound(row["valid_from"]),
             "valid_to": BUILD._normalize_bound(row["valid_to"]),
-            **{c: row.get(c) for c in BUILD.REFERENCE_ALIAS_COLUMNS},
+            **{c: row.get(c) for c in BUILD.OPTIONAL_ALIAS_COLUMNS},
+            **{c: row.get(c) for c in ("attempt_id", "alias_family_id", "alias_revision_id")},
         }
         for row in aliases.to_dict("records")
     ]
@@ -2124,11 +2125,16 @@ def test_every_alias_points_at_a_security_the_master_carries(
 def test_emitted_columns_are_exactly_the_registry_schema(dataset_id: str, path: Path) -> None:
     """The registry is the CONTRACT, not a description of whatever the builder emitted.
 
-    Equality in both directions on purpose: a missing column breaks a consumer, and an
-    extra undeclared one is a field nobody agreed to maintain.
+    Equality in both directions, with one explicit additive migration: existing
+    alias files may omit nullable alias_kind and are then entirely ordinary aliases.
+    New writes emit the full schema (test_dataos_options_root pins that contract).
+    No other missing or extra column is admitted here.
     """
     declared = list(load_registry().get(dataset_id).schema)
     emitted = list(pd.read_parquet(path).columns)
+    if dataset_id == "reference.vendor_aliases" and "alias_kind" not in emitted:
+        assert load_registry().get(dataset_id).schema["alias_kind"]["nullable"] is True
+        declared.remove("alias_kind")
     assert emitted == declared
 
 
