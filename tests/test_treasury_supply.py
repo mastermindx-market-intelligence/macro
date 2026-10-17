@@ -71,8 +71,10 @@ def _auction(d, tenor, klass="Note", btc=2.5, ind=0.70, dlr=0.10, total=100e9):
     return {"auction_date": pd.Timestamp(d), "cusip": f"C{d}{tenor}{klass}", "klass": klass,
             "security_type": "Note" if klass in ("Note", "FRN", "TIPS") else klass,
             "security_term": f"{tenor}-Year", "tenor_years": None if tenor is None else float(tenor),
-            "tenor": tenor, "reopening": False, "bid_to_cover": btc, "total_accepted": total,
+            "tenor": tenor, "reopening": False, "bid_to_cover": btc,
+            "competitive_accepted": total, "total_accepted": total,
             "indirect_accepted": ind * total, "primary_dealer_accepted": dlr * total,
+            "direct_accepted": max(0.0, (1.0 - ind - dlr) * total),
             "high_yield": 4.0, "interest_rate": 4.0}
 
 
@@ -82,6 +84,45 @@ def _baseline(tenor, n=8, start="2026-01-05"):
     dates = pd.bdate_range(start, periods=n, freq="7D")
     return [_auction(d.date(), tenor, btc=2.5 + 0.05 * x, ind=0.70 + 0.02 * x,
                      dlr=0.10 + 0.01 * x) for d, x in zip(dates, rng)]
+
+
+def test_bidder_shares_use_competitive_accepted_not_total_with_soma_and_noncompetitive():
+    row = _auction("2026-04-01", 10, total=120e9)
+    row.update({
+        "competitive_accepted": 90e9,
+        "primary_dealer_accepted": 30e9,
+        "direct_accepted": 15e9,
+        "indirect_accepted": 45e9,
+    })
+    prepped = ts._prep(pd.DataFrame([row])).iloc[0]
+    assert np.isclose(prepped["indirect_share"], 0.50)
+    assert np.isclose(prepped["dealer_share"], 1 / 3)
+
+
+def test_bidder_share_denominator_reconstructs_only_from_complete_bidder_classes():
+    row = _auction("2026-04-01", 10, total=120e9)
+    row.update({
+        "primary_dealer_accepted": 30e9,
+        "direct_accepted": 15e9,
+        "indirect_accepted": 45e9,
+    })
+    row.pop("competitive_accepted")
+    prepped = ts._prep(pd.DataFrame([row])).iloc[0]
+    assert np.isclose(prepped["indirect_share"], 0.50)
+    assert np.isclose(prepped["dealer_share"], 1 / 3)
+
+    incomplete = dict(row)
+    incomplete.pop("direct_accepted")
+    unknown = ts._prep(pd.DataFrame([incomplete])).iloc[0]
+    assert pd.isna(unknown["indirect_share"])
+    assert pd.isna(unknown["dealer_share"])
+
+
+def test_indirect_bidder_copy_does_not_claim_foreign_participation():
+    rows = _baseline(10) + [_auction("2026-04-01", 10)]
+    out = ts.compute(pd.DataFrame(rows), _CFG)
+    assert "do not identify foreign participation" in out["note_en"]
+    assert "投资者类别拍卖分配" in out["note_zh"]
 
 
 def test_compute_flags_soft_auction():
