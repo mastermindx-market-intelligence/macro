@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "errors": [],
+  "adversarial_mutations_rejected": {
+    "future_fact": true,
+    "invented_retrospective_probability": true,
+    "planned_size_promoted_to_execution": true,
+    "facility_proposal_promoted_to_execution": true
+  },
+  "counts": {
+    "episodes": 15,
+    "pit_input_snapshots": 15,
+    "locked_forecasts": 0,
+    "accuracy_comparison_eligible": 0,
+    "unique_boj_target_decisions": 10,
+    "sources": 89,
+    "descriptive_event_windows": 13
+  },
+  "sha256": {
+    "PB_B_CASEBOOK.json": "50b807efddc840918e61e7a6e3d7c3455bda212d78b1b2ff80793d701fd588c4",
+    "PB_B_EVENT_WINDOWS.json": "f64c7e0683fe5fb96e67c909509818b5457cab8e95c496b1625faa53cddbfb07"
+  },
+  "scope": "Time/source roles, target ordering, abstentions, operational amounts and unit guards only. Source truth and causality require the written review."
+}
