@@ -119,6 +119,14 @@ class Projection(unittest.TestCase):
         self.assertNotIn('forecast',public_summary(v))
     def test_invalid_calendar_date_refused(self):
         self.assertRaisesRegex(Refused,'ANCHOR_SESSION',lambda: project_histories(self.data,anchor_market_day='2026-09-27',capture_cutoff_utc=CUTOFF))
+    def test_unhashable_original_receipt_ref_is_typed_refusal(self):
+        x=self.data['BIL']
+        self.data['BIL']=replace(x,source_partitions=(["2026-10-12",OTHER],))
+        self.assertRaisesRegex(Refused,'RECEIPT_REFERENCES_INVALID',self.invoke)
+    def test_overflowing_numeric_input_refused(self):
+        x=self.data['BIL']
+        self.data['BIL']=replace(x,rows=x.rows[:-1]+(dict(x.rows[-1],close_tradj=10**400),))
+        self.assertRaisesRegex(Refused,'INVALID_ADJUSTED_CLOSE',self.invoke)
     def test_invalid_capture_clock_refused(self):
         self.assertRaisesRegex(Refused,'UTC_CUTOFF',lambda:project_histories(self.data,anchor_market_day=ANCHOR,capture_cutoff_utc='2026-10-17T13:00:00'))
 
