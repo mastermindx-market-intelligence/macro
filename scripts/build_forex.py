@@ -32,6 +32,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from lib import config, store  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 from lib.forex_kinematics_view import project_kinematics  # noqa: E402
+from lib.forex_carry_funding_view import collect_funding_context, project_carry_funding  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_forex")
@@ -1013,6 +1014,28 @@ def main() -> int:
         log.warning("forex_regime kinematics failed (%s)", e)
         kinematics = {}
 
+    # R19 — read-only carry/funding evidence. Canonical scenario activation remains
+    # owned by forex_regime; funding proxies do not create or override that state.
+    # Reuse published display-owner artifacts rather than recomputing contagion here.
+    _intl_risk_path = config.data_dir() / "intl_risk" / "latest.json"
+    _regime_path = config.data_dir() / "regime" / "latest.json"
+    try:
+        _intl_risk_payload = json.loads(_intl_risk_path.read_text(encoding="utf-8")) if _intl_risk_path.exists() else {}
+        if not isinstance(_intl_risk_payload, dict):
+            _intl_risk_payload = {}
+    except Exception as e:  # noqa: BLE001 — additive evidence must never break Forex
+        log.warning("intl_risk funding context unavailable (%s)", e)
+        _intl_risk_payload = {}
+    try:
+        _regime_payload = json.loads(_regime_path.read_text(encoding="utf-8")) if _regime_path.exists() else {}
+        if not isinstance(_regime_payload, dict):
+            _regime_payload = {}
+    except Exception as e:  # noqa: BLE001 — additive evidence must never break Forex
+        log.warning("regime funding context unavailable (%s)", e)
+        _regime_payload = {}
+    funding_context = collect_funding_context(store.read, _intl_risk_payload, _regime_payload)
+    carry_funding_view = project_carry_funding(pairs, regime, funding_context)
+
     real_rate_chart = chart_real_rate(drivers)
 
     # ---------------------------------------------------------------------------
@@ -1196,6 +1219,7 @@ def main() -> int:
         dollar=dollar, desk=desk, real_rate_chart=real_rate_chart,
         transmission=transmission, strength=strength, scorecards=scorecards,
         regime=regime, kinematics=kinematics, kinematics_view=kinematics_view,
+        carry_funding_view=carry_funding_view,
         pairs=pairs, sections=sections, carry_table=ctable, cot_ok=cot_ok,
         timeline=timeline, timeline_days=acfg["timeline_days"], n_alerts=len(recent_events),
         # B1.4 new view-model vars (populated in the new template; stub values for
@@ -1306,6 +1330,8 @@ def main() -> int:
         "strength": strength if strength else {},
         # R12: existing computed values, explicit units and unknown per-metric clocks.
         "kinematics": kinematics_view,
+        # R19: read-only carry/funding evidence; no new scenario or funding score.
+        "carry_funding": carry_funding_view,
         # MSX-1: regime_radar gains 'scenarios' compact receipts (additive)
         "regime_radar": ({"as_of": regime.get("as_of"), "dominant": regime.get("dominant"),
                           "active": [s["key"] for s in regime.get("scenarios", []) if s.get("active")],
