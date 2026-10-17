@@ -7872,6 +7872,8 @@ jobs:
       - "scripts/build_theme_tree_page.py"
       - "engine/theme_graph/hierarchy_breadth_display.py"
       - "engine/classification_axes/cell.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/classification_axes/__init__.py"
       - "scripts/build_stock_library.py"
       - "scripts/security_state_producer.py"
       # Import-closure entry: build_stock_library reuses
@@ -9657,6 +9659,8 @@ jobs:
       - "scripts/build_theme_tree_page.py"
       - "engine/theme_graph/hierarchy_breadth_display.py"
       - "engine/classification_axes/cell.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/classification_axes/__init__.py"
       - "site/basketdata/foresight_cascade.json"
     runs-on: ubuntu-latest
     steps:
@@ -13609,6 +13613,8 @@ jobs:
       - scripts/build_theme_tree_page.py
       - engine/theme_graph/hierarchy_breadth_display.py
       - engine/classification_axes/cell.py
+      - engine/theme_graph/__init__.py
+      - engine/classification_axes/__init__.py
       - scripts/build_stock_library.py
       - scripts/build_strategies.py
       - scripts/build_subsector_confluence.py
@@ -15757,6 +15763,8 @@ jobs:
       - "scripts/build_theme_tree_page.py"
       - "engine/theme_graph/hierarchy_breadth_display.py"
       - "engine/classification_axes/cell.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/classification_axes/__init__.py"
       - "scripts/build_stock_library.py"
       - "scripts/security_state_producer.py"
       # Import-closure entry: build_stock_library reuses
@@ -22150,6 +22158,8 @@ jobs:
       - "scripts/build_theme_tree_page.py"
       - "engine/theme_graph/hierarchy_breadth_display.py"
       - "engine/classification_axes/cell.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/classification_axes/__init__.py"
       - "scripts/build_stock_briefs.py"
       - "scripts/build_stock_library.py"
       - "scripts/build_subsector_confluence.py"
@@ -23447,6 +23457,8 @@ jobs:
       - "scripts/build_theme_tree_page.py"
       - "engine/theme_graph/hierarchy_breadth_display.py"
       - "engine/classification_axes/cell.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/classification_axes/__init__.py"
       - "scripts/build_stock_board_v2.py"
       - "scripts/build_stock_library.py"
       - "scripts/security_state_producer.py"
@@ -25348,6 +25360,8 @@ jobs:
       - "scripts/build_theme_tree_page.py"
       - "engine/theme_graph/hierarchy_breadth_display.py"
       - "engine/classification_axes/cell.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/classification_axes/__init__.py"
       - "scripts/build_subsector_rotation.py"
       - "scripts/check_template_site_sync.py"
       - "scripts/worktree_sparse.py"
@@ -30346,6 +30360,8 @@ jobs:
       - "scripts/build_theme_tree_page.py"
       - "engine/theme_graph/hierarchy_breadth_display.py"
       - "engine/classification_axes/cell.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/classification_axes/__init__.py"
       - "scripts/build_stock_library.py"
       - "scripts/build_subsector_confluence.py"
       - "scripts/build_subsector_rotation.py"
