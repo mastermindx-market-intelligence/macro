@@ -882,6 +882,10 @@ lanes:
           cl_gex:
             - scripts.build_gex_board
             - scripts.build_vol_regime
+            # Grey Deer pullback prospective lane: SPY issue + grade over the restored
+            # Massive store. NIGHTLY ONLY (forward-ledger advancer; not in the render
+            # lanes' cl_gex). Writer/grader refuse off COLLECT_LANE=nightly.
+            - scripts.grey_deer_pullback_nightly
             # MSP W1 (scripts.build_market_structure) MOVED OUT of this band to the serial
             # spine before build_site — OEU M-FIX. It used to sit here, i.e. AFTER build_site
             # had already rendered market_structure.html, so the page always described the
@@ -1413,6 +1417,24 @@ lanes:
                    data/treasury/tga.parquet,
                    data/treasury_auctions/auctions.parquet]
           outputs: [data/neuralweb/liquidity_plumbing.json]
+      - id: build_global_liquidity_transmission
+        module: scripts.build_global_liquidity_transmission
+        note: >
+          non-fatal; W-LIQ.1 global liquidity transmission producer
+          (global_liquidity_transmission.v1, frozen #6296) — pure local reads, no
+          network calls, display tier, validated=False. Wired 2026-10-13 (GLT T06):
+          before this no workflow invoked the producer (its only .github reference
+          was a CI test lane's paths filter), so the published state never
+          advanced. Runs AFTER the plumbing step so
+          data/regime/latest.json is present.
+          inputs: [data/fred/BUSLOANS.parquet,
+                   data/china_credit/tsf.parquet,
+                   data/regime/latest.json,
+                   config/global_liquidity_transmission_v1.yml]
+          outputs: [site/liquiditydata/global_liquidity_transmission.json,
+                    data/global_liquidity_transmission/state_history.parquet,
+                    data/global_liquidity_transmission/state_history_meta.json,
+                    data/global_liquidity_transmission/factor_comparison_btc_4w.json]
       - id: build_price_pressure
         module: scripts.build_price_pressure
         note: >
@@ -1759,6 +1781,18 @@ lanes:
           step via a shell loop ('for mod in scripts.build_canada_library ...; do python -m
           $mod; done') which the conformance parser cannot extract (variable expansion).
           They are intentionally omitted from declared steps.
+      - id: fif_saved_research_notifications
+        module: scripts.run_fif_saved_research_notifications
+        note: >
+          X2-n FIF saved-research notifications — enqueue-only producer over
+          the designated "Filing Forensics" watchlist (R2) and LOCAL trigger
+          inputs (FIF private state; the broad-sec receipt and production
+          pointer mirrors are R2-only today and read as no-event, R5).
+          Fail-soft (absent creds/tables/inputs -> typed unavailable,
+          0 rows, exit 0). Dormant unless BOTH FIF_SAVED_RESEARCH_ENABLE=1
+          and ALERT_DRAIN_ENABLE=1. Delivery is F08's drain, never this
+          step. Last step of the engine lane: after every render-critical
+          step (census C5).
 
   # ── daily.yml / factor_panel ───────────────────────────────────────────
   - workflow: .github/workflows/daily.yml
@@ -3430,6 +3464,25 @@ lanes:
           collect byproducts remain unstaged. Every complete source receipt is
           published to keep current-state health live; a normalized semantic
           fingerprint separates quiet heartbeat folds from alert-worthy evidence.
+      - id: restore_defense_market_owner
+        module: scripts.restore_defense_market_owner
+        args: [--root, .]
+        note: >
+          Restore the pinned existing market owner before projection; missing or
+          inconsistent owner bytes refuse the generation.
+      - id: restore_event_workspace_owner
+        module: scripts.restore_event_workspace_owner
+        args: [--root, .]
+        note: >
+          Restore the existing financial-owner generation and require the reviewed
+          defense issuer set. This reads the owner; it does not create a financial
+          publication or grant new acquisition authority.
+      - id: build_government_revenue_research_state
+        module: scripts.build_government_revenue_research_state
+        args: [--root, .]
+        note: >
+          Compose the existing registered research state with the projection clock;
+          no retrospective forecast issuance or outcome backfill is permitted.
       - id: build_government_revenue
         module: scripts.build_government_revenue
         args: [--live-materialization]
@@ -3451,21 +3504,20 @@ lanes:
           projection but cannot append, retime, or backfill its ledger. No trade-signal
           scoring, ranking, sizing, gating, or escalation is permitted.
 
+      - id: install_proof_dependencies
+        module: pip
+        args: [install, "fastapi>=0.115,<1.0", httpx]
+        note: Install the API dependencies required by the complete candidate proof.
       - id: prove_government_revenue_candidates
-        module: pytest
-        args:
-          - -p
-          - no:cacheprovider
-          - tests/test_government_revenue_candidates.py
-          - tests/test_government_revenue_candidate_projection.py
-          - tests/test_government_revenue_candidate_fixture.py
-          - -q
+        module: scripts.ci.govrev_candidate_proof
+        args: [prove, --root, .]
         note: >
-          Conditional, read-only proof over candidate artifacts changed by this run.
-          The workflow may add xdist flags when available, but falls back to the same
-          serial pytest suite when that optional runner dependency is absent. This
-          declaration records the executable module without granting the prover any
-          writer, ranking, sizing, gating, or escalation authority.
+          The mandatory sealed helper runs the three complete candidate suites,
+          records collection and JUnit evidence, and binds immutable pre/post
+          source, runtime and output bytes. Missing pytest refuses; missing xdist
+          uses serial proof. Rebuilds after rebase must match the accepted receipt
+          exactly or run a new proof. Publication verifies committed generation
+          identity; no direct pytest exit can substitute for this gate.
 
   # ── filing-forensics-sec.yml / acquire_project_sync ──────────────────────
   - workflow: .github/workflows/filing-forensics-sec.yml
@@ -4657,6 +4709,30 @@ modules:
       Step cost: reads options_surface parquets (small, ~single-digit MB committed);
       opex_risk.snapshot() is a cheap read-only join on committed data — no network,
       no heavy compute. Measured added cost on main: <2s (deterministic composer).
+
+  - module: scripts.grey_deer_pullback_nightly
+    reads:
+      - data/massive_stock_day/*.parquet
+      - data/grey_deer_pullback/forward_log.jsonl
+      - data/grey_deer_pullback/forward_log_graded.jsonl
+    writes:
+      - data/grey_deer_pullback/forward_log.jsonl
+      - data/grey_deer_pullback/forward_log_graded.jsonl
+      - data/grey_deer_pullback/forward_log_refusals.jsonl
+    impure: false
+    needs_secrets: false
+    event_driven: false
+    note: >
+      Grey Deer pullback prospective lane (WS:GREY-DEER-RISK-INTELLIGENCE O7/W5).
+      Issues tonight's SPY rows with the frozen writer
+      (engine/grey_deer_pullback_forward.py), then grades matured rows with the
+      frozen grader (engine/grey_deer_pullback_forward_grade.py). Both are
+      append-only and refuse unless COLLECT_LANE=nightly and their
+      GREY_DEER_PULLBACK_{WRITER,GRADER}_IDENTITY pins equal daily.yml:engine, so
+      the nightly is the sole advancer. Never fatal (every problem is a
+      line-start ::warning, rc 0). Display/research tier only; no trial_ledger
+      append, no rank/size/gate authority. Cost: one ticker read from the
+      already-restored store plus the frozen writer and grader.
 
   - module: scripts.build_gex_board
     reads:
