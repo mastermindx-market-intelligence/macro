@@ -32,8 +32,9 @@ The law this module enforces:
   supply, no cash number, no rank, size, entry, score, probability or
   recommendation anywhere in the bundle.  Authority is ``AUTHORITY`` verbatim.
 
-Deterministic, offline, exact-arithmetic only: no float, no
-``timedelta.total_seconds()``, no SEC request.  Every URL written into the
+Deterministic, offline, exact-arithmetic only: no float and no float-returning
+``timedelta`` accessor anywhere in this module -- an age is whole days times
+86400 plus whole seconds -- and no SEC request.  Every URL written into the
 evidence index is copied from source-ledger data and only when it is
 accession-specific.
 """

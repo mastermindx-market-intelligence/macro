@@ -58,7 +58,7 @@ from tests.test_capital_structure_registration_integration import (
     GENERATED_AT,
     _s1_filed_amended_effective_withdrawn,
 )
-from tests.test_capital_structure_registration_lifecycle import _event
+from tests.test_capital_structure_registration_lifecycle import _edge, _event
 
 
 ISSUER_ONE = "sec:cik:0000000001"
@@ -977,19 +977,7 @@ def test_u1_bundle_refuses_a_generation_or_an_edge_it_cannot_bind(pack):
 
     crossed = _generation(
         events,
-        [
-            *edges,
-            {
-                "schema": "capital_structure.event_edge.v1",
-                "edge_id": "edge:cs:" + "c" * 24,
-                "from_event_id": events[0]["event_id"],
-                "to_event_id": events[-1]["event_id"],
-                "relationship": "amendment_of",
-                "link_method": "explicit_event_id",
-                "observed_at": AS_OF,
-                "immutable_record": True,
-            },
-        ],
+        [*edges, _edge(events[0], events[-1], "amendment_of")],
     )
     with pytest.raises(ValueError, match="cross-issuer event edge is forbidden"):
         build_capital_inputs(
