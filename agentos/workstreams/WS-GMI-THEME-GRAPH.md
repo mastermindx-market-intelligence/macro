@@ -323,8 +323,12 @@ next_action: >
   acceptance decision govern the expanded capability/coverage map without replacing
   original D2/W3 or F04 ownership. First finish the existing #9423 economic-context
   source repair at cedae32cf414f98c01406367d07e1aef511059f0: 435 local checks pass;
-  exact-head hosted CI and current-main integration review remain required before normal
-  source release. In parallel, extend incumbent activity admission/current-state contracts
+  natural CI 38970664912 and all 12 packs/ci-gate passed, and independent integration
+  review is accepted. Source-review hold released in receipt 6232895176; Ready and
+  merge-on-green enrollment were read back with native auto-merge null. Consume the
+  existing controller's current-main freshness, baseline, capacity and expected-head
+  verdict, then verify source landing and production through the incumbent owners.
+  Enrollment is not pickup, merge or deployment. In parallel, extend incumbent activity admission/current-state contracts
   with authentic native evidence, and retain F04/E20 installation and actual API/Terminal
   proof as separate gates. Preserve the explicit #8793 and Terminal #868 denied effects,
   API524 EFFECT_UNKNOWN on its original carrier, immutable C01 generation 040b and all

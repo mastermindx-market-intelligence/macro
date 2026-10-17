@@ -45,6 +45,8 @@ evidence:
   - "Macro #8540 comments 6103645886 and 6120586132; merged original acceptance records."
   - "Current shadow blob 4b35213b43547906a34a0477d354eed081e722ae; 663 UNAVAILABLE / NOT_QUALIFIED."
   - "Macro #9423 source repair 481d55b3 and integration cedae32c; 411 then 435 passing existing checks."
+  - "Macro #9423 natural CI 38970664912 and independent integration review passed; source-review release receipt 6232895176. Ordinary source release and production proof remain separate."
+  - "Protected Mastermind a552a5e506ae808efa575c2e13cb56f478c72b87: unchanged core procedure blobs; compatible CLOSEOUT clarification rejects ghost-parent handoff stalls."
   - "Primary methodology and company-disclosure sources linked in research/theme_graph/GMI_PROGRAM_RECOVERY_2026-10-16.md."
 affects:
   - "WS:GMI-THEME-GRAPH"
