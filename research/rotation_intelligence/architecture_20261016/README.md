@@ -2,63 +2,62 @@
 
 Existing programme: `sector-rotation-intelligence`. Existing workstream: `LEADERSHIP-ROTATION-INTELLIGENCE`. Accountable principal for this supplement: Sol under the current Chairman commission. Carrier: Macro PR #9507, branch `sol/rotation-intelligence-architecture-20261016-c1`.
 
-## Current result: R2 research continuation
+## Current result: R3 source-reader and baseline rehearsal
 
-The original assessment and architecture are published. R2 has now **specified the first study's population, timing and baselines; inspected real source-cache metadata; reproduced broad-flow contract weaknesses; resolved self-financing policy accounting; and identified the exact existing reader adaptation needed**. These are research results, not a trained model, source repair, native protocol amendment, deployment or investment qualification.
+The proposed study now has a working **synthetic reference sequence from source availability through all five baseline choices to continuous post-cost wealth**. The existing reader's own targeted tests were also executed. No live reader, capture activation, trained predictor or investment permission is claimed.
 
-Start with the latest additions:
+Start with [SOURCE_READER_REHEARSAL_R3.md](SOURCE_READER_REHEARSAL_R3.md). It records the new findings, exact bounded source contract, limits and next action. The executable references are [allocation_rehearsal.py](allocation_rehearsal.py), [test_allocation_rehearsal.py](test_allocation_rehearsal.py) and [check_rehearsal_mutations.py](check_rehearsal_mutations.py). Exact evidence is in [rehearsal_verification_r3.json](rehearsal_verification_r3.json).
 
-1. [TARGET_SCOPE_AND_BASELINES_R1.md](TARGET_SCOPE_AND_BASELINES_R1.md): eleven-sector ETF population plus SPY/BIL; precise distinction from the failed member-stock group-persistence construction; as-known cutoff, next-session close proxy, twenty-session blocks, five baselines and declared cost scenarios.
-2. [SOURCE_READINESS_AUDIT_R2.md](SOURCE_READINESS_AUDIT_R2.md): timestamp/schema-only inspection of 25 local Parquet files; short sector-flow history; mismatched date tails; existing default-off nine-sector capture; source-owner extension/qualification requirements.
-3. [POLICY_ACCOUNTING_SPEC_R1.md](POLICY_ACCOUNTING_SPEC_R1.md): exact proportional-cost budget equation, uniqueness argument, independent algebraic comparison and settlement-cash versus security-turnover distinction.
-4. [EXISTING_READER_INTEGRATION_R1.md](EXISTING_READER_INTEGRATION_R1.md): the already-built synthetic input preparer, its nine-node/26-session/9 a.m./63-price contract, and the exact differences from this study. Normal one-month collection cannot supply the necessary captured prefix; activation alone is insufficient.
-5. [probe_broad_flow_contract.py](probe_broad_flow_contract.py) and [broad_flow_probe_results.json](broad_flow_probe_results.json): source-pinned extraction and fake-provider reproduction of market-price-in-NAV, retrieval-date indexing and weekend-date behavior.
-6. [policy_accounting_witness.py](policy_accounting_witness.py) and [policy_accounting_results.json](policy_accounting_results.json): seven closed-form cases, 512 algebraic comparisons, 128 cost-monotonicity checks and eight bad-input refusals.
+### Verified R3 outcomes
 
-The flow probe establishes behavior at **BroadFlowAdapter.fetch**, not the entire production ingestion pipeline. Its supplied `regularMarketTime` is a market-price clock, **not a qualified NAV timestamp**. A later repair must not copy that field into a NAV date and claim the problem solved. Downstream calendar filtering and actual live incidence were not established by this probe.
+- **35 reference tests pass**, locally and from published source on M2. They cover thirteen-input completeness, 253-price warmup, 64-price return windows, late and ambiguous snapshots, no silent rewind, strict cash hurdle, missing-data decisions, drifted holdings, self-financing costs and final liquidation.
+- **Eight deliberately broken variants are caught** by their intended assertions, not unrelated import failures. This is author verification, not independent review or complete mathematical proof.
+- **46 original reader tests pass** on the unchanged source closure. The initial isolated snapshot omitted the existing metric dependency; restoring that original file resolved its one failure without editing source or assertions.
+- **Twelve calendar/cutoff assertions pass** using the incumbent calendar and timezone conversion. Official NYSE holiday/early-close metadata was checked separately. The helper does not supply actual early-close timestamps, and the ordinal synthetic fixtures are not a production calendar.
+- **Forty invented policy paths** exercise two scenarios, five baselines and four declared costs. The adverse reversal case is retained: a backward-looking bill hurdle need not exit former leaders early. No market performance is inferred.
 
-The new scripts and recorded scientific outputs were retrieved from GitHub at `169413291d684e945bd57fb7f83d93e28ed16796` and reproduced on M2. All four script/result hashes matched the originally executed bytes; all eleven pre-existing file blobs were unchanged at that boundary. The subsequent reader-integration appendix is source inspection plus an invented-index arithmetic witness, not a run of the native reader test suite. Final document/diff/CI state after this README update is recorded in the PR receipt rather than predicted here.
+The three new source files matched their local hashes. Mutation results were byte-identical across the observed Python versions. Raw path JSON was not byte-identical; a separately defined twelve-decimal semantic comparison matched the schedules, choices and numeric results. Neither numerical tolerance nor a passing synthetic trace weakens real source identity requirements.
+
+## R2 specification and evidence — retained
+
+1. [TARGET_SCOPE_AND_BASELINES_R1.md](TARGET_SCOPE_AND_BASELINES_R1.md): eleven-sector ETF population plus SPY/BIL; distinct from native seven-pair and failed member-stock constructions; as-known cutoff, next-close proxy, twenty-session blocks and five frozen comparator definitions.
+2. [SOURCE_READINESS_AUDIT_R2.md](SOURCE_READINESS_AUDIT_R2.md): metadata-only inspection of 25 local Parquet files; short sector-flow history and differing tails; default-off nine-sector capture; rights, basis and actual availability limits.
+3. [POLICY_ACCOUNTING_SPEC_R1.md](POLICY_ACCOUNTING_SPEC_R1.md), [policy_accounting_witness.py](policy_accounting_witness.py) and [policy_accounting_results.json](policy_accounting_results.json): exact self-financing cost equation, seven closed-form cases, 512 algebraic comparisons, 128 cost-monotonicity checks and eight invalid-input refusals. The function is reused unchanged in R3.
+4. [probe_broad_flow_contract.py](probe_broad_flow_contract.py) and [broad_flow_probe_results.json](broad_flow_probe_results.json): fake-provider reproduction of market-price fallback into NAV, retrieval-date indexing and weekend retrieval dates. A market-price timestamp is not an independently qualified NAV date; downstream production incidence remains unmeasured.
+5. [EXISTING_READER_INTEGRATION_R1.md](EXISTING_READER_INTEGRATION_R1.md): the existing immutable/causal preparation interface and the exact cohort, cadence, cutoff and lookback differences. Normal one-month provider-return capture cannot supply the long required prefix; full-cache substitution would change provenance.
+
+R2's published scripts and results were reproduced from GitHub on M2. Their unaffected bytes and earlier mathematical evidence were not rerun simply to inflate test counts.
 
 ## Original foundation — retained, not rewritten
 
-- [ASSESSMENT.md](ASSESSMENT.md): original 44,909-byte report with 35-source register. SHA-256 `4ba6241675c3f3528706f7c859019dd8e6f2ce390bd31199e7a4254bf1e26c4c` remains unchanged.
-- [ARCHITECTURE.md](ARCHITECTURE.md): measurement, forecasting, portfolio policy and stock/instrument expression; incumbent system boundaries; horizon and model ladder.
-- [DATA_CONTRACTS.md](DATA_CONTRACTS.md): as-known identity, availability, revisions, corporate actions, group indices and allowed use.
-- [RESEARCH_DESIGN.md](RESEARCH_DESIGN.md): candidate economic estimands, selection/dependence/multiplicity, maturity and confirmatory conditions. It is not canonical V3.
-- [NATIVE_PROTOCOL_CROSSWALK.md](NATIVE_PROTOCOL_CROSSWALK.md): seven-pair native H1/H2/H3 versus the broader allocation question, preserving source/holdout/negative-evidence restrictions.
-- [LITERATURE.md](LITERATURE.md): 16 primary-source method entries with actual review depth and transfer limits.
-- [READINESS_AND_DELEGATION.md](READINESS_AND_DELEGATION.md): industry-mechanism research book, dependency sequence and six later bounded implementation packets.
-- [REVIEW_AND_VERIFICATION.md](REVIEW_AND_VERIFICATION.md): prior verification and review dispositions, supplemented by the new R2 documents/PR receipt.
-- [synthetic_design_checks.py](synthetic_design_checks.py) and [synthetic_design_results.json](synthetic_design_results.json): original twelve synthetic design witnesses and known-covariance demonstration. They are unchanged and were not rerun unnecessarily.
+- [ASSESSMENT.md](ASSESSMENT.md): original 44,909-byte report with 35-source register. SHA-256 `4ba6241675c3f3528706f7c859019dd8e6f2ce390bd31199e7a4254bf1e26c4c` is unchanged.
+- [ARCHITECTURE.md](ARCHITECTURE.md): measurement, forecasting, portfolio policy and stock/instrument expression; incumbent boundaries; horizon and model ladder.
+- [DATA_CONTRACTS.md](DATA_CONTRACTS.md): as-known identity, availability, revisions, group indices, return basis and allowed use.
+- [RESEARCH_DESIGN.md](RESEARCH_DESIGN.md): candidate economic targets, selection/dependence/multiplicity, maturity and confirmation. Not canonical V3.
+- [NATIVE_PROTOCOL_CROSSWALK.md](NATIVE_PROTOCOL_CROSSWALK.md): seven-pair native H1/H2/H3 versus the broader allocation question. This distinction governs any shorthand in earlier documents.
+- [LITERATURE.md](LITERATURE.md): 16 primary-method entries with actual review depth and transfer limitations.
+- [READINESS_AND_DELEGATION.md](READINESS_AND_DELEGATION.md): mechanism research book, dependency sequence and six future implementation packets; not worker dispatches.
+- [REVIEW_AND_VERIFICATION.md](REVIEW_AND_VERIFICATION.md): original review dispositions and verification, supplemented by R2/R3 records.
+- [synthetic_design_checks.py](synthetic_design_checks.py) and [synthetic_design_results.json](synthetic_design_results.json): original mathematical and known-covariance examples. Not native size/power or market validation.
 
-## Mission and design decisions
+## Research targets and authority remain separate
 
-The user wants reliable exposure selection across sectors, industries and themes as regimes and breadth change; group beta followed by residual stock alpha; and a bill alternative when equity risk is unattractive. The target is measurable economic precision with uncertainty and abstention, not a guaranteed winner at every instant.
+Track A is the original native Leadership Rotation scientific repair, with its existing hypotheses, cohort, negative evidence, source restrictions and LR-W6 registration/size/power/read gates. Track B is the broader sector/industry/theme/cash proposal and must declare its own population, inputs, outcomes, costs and error budget through the existing owners. Neither track is a new evaluator, registry or route around the other's held outcomes.
 
-Keep measurement, prediction and policy distinct. Separate total equity risk from opportunity granularity: narrower breadth may justify fewer candidate groups and less aggregate risk. Keep macro, industry supply, earnings and price cycles on their own evidence clocks. Use incumbent identity, data, regime, rotation, evaluation, portfolio, Prophet and Terminal owners—no replacement director, graph, data store, model registry, publisher or queue.
+The existing [programme workstream](../../../agentos/workstreams/WS-LEADERSHIP-ROTATION-INTELLIGENCE.md), Mastermind #1194, Macro #7646/#9035/#9134 and adjacent source writers remain intact. There is no new director, data warehouse, graph, regime owner, publisher, queue, watcher or memory plane. Existing no rotation×cycle-position confluence, RS-dispersion gating, connect-flow gating and LLM detection restrictions are not revoked.
 
-Track A is the existing native seven-pair study and its LR-W6 repair. Track B is the explicitly broader ETF allocation study, followed by separately qualified industry/theme and stock-expression work. Track B cannot reopen Track A's held outcomes or the killed C1 member-stock construction by changing names. Native P2 is falsification-only. Previously inspected history is not made untouched by a new split or new family identifier.
+## Exact next dependency
 
-## Source identities and evidence limits
+Implement and qualify the **bounded thirteen-series source capture and protocol-specific reader through their existing owners**, with enough complete warmup, actual rights/basis/clock evidence and a consumer that rejects missing or late data. The R3 reference supplies concrete expected cases; it is not that native implementation.
 
-Compatible protected procedure pin: Mastermind `50107c31531d3b4ab5a18b5acf5e77954a0549e3`, Skillpack 1.0.1 / bootstrap 1. The initial assessment retains its Macro `460e3015...` observations; the architecture began at `4ae7f2ac4c58e6e93945a6f09313bcaadba5709e`. R2 source-interface inspection is pinned to `3ab3382af89242c7b7fe8c65360bd883a7dd3504`. Unrelated master movement does not invalidate unchanged research.
+A present capture of history can support a later decision received before cutoff. It cannot establish earlier historical availability. The old nine-node, 26-session, 09:00 and 63-price experiment must stay unchanged. The new study's eleven assets/thirteen inputs, twenty-session schedule, 08:00 cutoff and correct 64-price window must be explicit rather than achieved by silently changing old constants.
 
-The local M2 metadata observation at 2026-10-17T04:58:33.581812Z is a research-cache observation, not production freshness, a locked dataset snapshot or original historical availability. Parquet schema/counts and timestamp statistics were read; price/return/volume columns were not decoded. The broad-flow and policy experiments use invented inputs. No native market-outcome study was run.
+The current phase remains research-first: no market-return dataset was opened; no provider acquisition, capture activation, product engine/reader edit, TrialLedger/Vault write, native outcome read, trade or deployment occurred. The source test suite imported isolated original research modules against invented fixtures; this is not a claim that no source code was executed.
 
-The existing [workstream](../../../agentos/workstreams/WS-LEADERSHIP-ROTATION-INTELLIGENCE.md), Mastermind #1194, Macro #7646 and precursor #9035/#9134 remain the continuity homes. Existing source writers and independent natural-consumption, issuance, operator/visual and scientific obligations remain intact.
+## Release and recovery
 
-## Next actionable dependency
+This remains a **published research candidate, DRAFT/HOLD for Sol**, not merged or independently approved. Final design review remains missing after the preserved provider403/no-verdict task. No review retry, identity change or provider switch was used to evade it. No new worker or watcher was started in R3; prior children remain terminal.
 
-The existing reader boundary is now identified in `engine/research_codegen/bridge.py::prepare_synthetic_inputs`. Reuse its narrow identities, causal envelopes and owner checks, but do not transplant its different experiment into this study. A 63-session return needs 64 prices; the 252-prior-session warmup needs its own complete source witness. The required cohort and cutoff must be explicit in an owner-qualified protocol adapter.
+Current-head repository checks must be observed at a release decision; old head checks are not copied forward. Do not ready, auto-merge, add merge-on-green or merge until Sol's existing hold condition—valid independent review and the actual required checks—is satisfied. No production deployment is needed for this research-only PR.
 
-Qualify the **existing thirteen-series source and reader path**. The dormant capture covers nine sectors, not XLC/XLRE/SPY/BIL, and leaves rights, original availability and other qualifications unresolved. Normal Yahoo collection requests one month, insufficient for the desired prefix. The bounded initial warmup should be supplied through that existing source owner, not by launching an all-ticker maximum-history collection or inventing lineage for older merged-cache rows. A present capture may support later prospective decisions; it does not make earlier decisions point-in-time.
-
-Carry the reproducible BroadFlowAdapter findings into its exact source-owner repair/acceptance scope. The accounting specification supplies a checked primitive for the incumbent evaluator. The remaining change is actual owner-qualified source/reader/evaluator adaptation and scientific admission—not another generic architecture or data system. Product integration and live source effects remain deferred under the current research-first phase.
-
-## Release and effect state
-
-Native GitHub remains the sole publication carrier for this branch. The earlier local managed-workspace acquisition was NOT_APPLIED; no shared checkout was changed. New local files are bounded research evidence, not another source workspace or data owner.
-
-The earlier head `5d68fe...` now has successful main ci-gate and all twelve CI packs. Its inactive pilot-base authority context remains distinct. Those checks are not copied onto later commits. The final independent package-review attempt from R1 failed with provider 403 and no substantive verdict; it was not retried or routed through another provider. No new child or watcher was started in R2, and the earlier children are terminal.
-
-The PR remains **Draft/HOLD** pending the real independent review and repository release conditions. No market-outcome read, source acquisition, live capture activation, collector repair, scoring/ranking/sizing promotion, trade, credential change or deployment is claimed. Research continuation is published and recoverable; the broader predictive allocation programme is incomplete.
+Governing procedure pin reused: Mastermind `50107c31531d3b4ab5a18b5acf5e77954a0549e3`. R3 source observation: Macro `ab5156a4b2c336181f3c5256e7c0766f04f99598`. GitHub remains the sole branch publication carrier. Detailed final-head readback belongs in the PR receipt after this commit, not a self-referential assertion in these source bytes. The broader predictive allocation programme remains incomplete.
