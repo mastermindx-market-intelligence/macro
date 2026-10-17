@@ -7868,6 +7868,10 @@ jobs:
       - "scripts/build_site.py"
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_state_of_themes.py"
+      # U1 Theme Map (GMI seat 6f14c2da) — closure widening 2026-10-17.
+      - "scripts/build_theme_tree_page.py"
+      - "engine/theme_graph/hierarchy_breadth_display.py"
+      - "engine/classification_axes/cell.py"
       - "scripts/build_stock_library.py"
       - "scripts/security_state_producer.py"
       # Import-closure entry: build_stock_library reuses
@@ -9649,6 +9653,10 @@ jobs:
       - "lib/config.py"
       - "lib/pages.py"
       - "scripts/build_state_of_themes.py"
+      # U1 Theme Map (GMI seat 6f14c2da) — closure widening 2026-10-17.
+      - "scripts/build_theme_tree_page.py"
+      - "engine/theme_graph/hierarchy_breadth_display.py"
+      - "engine/classification_axes/cell.py"
       - "site/basketdata/foresight_cascade.json"
     runs-on: ubuntu-latest
     steps:
@@ -13597,6 +13605,10 @@ jobs:
       - scripts/build_sp500_heatmap.py
       - scripts/build_spvector.py
       - scripts/build_state_of_themes.py
+      # U1 Theme Map (GMI seat 6f14c2da) — closure widening 2026-10-17.
+      - scripts/build_theme_tree_page.py
+      - engine/theme_graph/hierarchy_breadth_display.py
+      - engine/classification_axes/cell.py
       - scripts/build_stock_library.py
       - scripts/build_strategies.py
       - scripts/build_subsector_confluence.py
@@ -15741,6 +15753,10 @@ jobs:
       - "scripts/build_site.py"
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_state_of_themes.py"
+      # U1 Theme Map (GMI seat 6f14c2da) — closure widening 2026-10-17.
+      - "scripts/build_theme_tree_page.py"
+      - "engine/theme_graph/hierarchy_breadth_display.py"
+      - "engine/classification_axes/cell.py"
       - "scripts/build_stock_library.py"
       - "scripts/security_state_producer.py"
       # Import-closure entry: build_stock_library reuses
@@ -22130,6 +22146,10 @@ jobs:
       - "scripts/build_site.py"
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_state_of_themes.py"
+      # U1 Theme Map (GMI seat 6f14c2da) — closure widening 2026-10-17.
+      - "scripts/build_theme_tree_page.py"
+      - "engine/theme_graph/hierarchy_breadth_display.py"
+      - "engine/classification_axes/cell.py"
       - "scripts/build_stock_briefs.py"
       - "scripts/build_stock_library.py"
       - "scripts/build_subsector_confluence.py"
@@ -23423,6 +23443,10 @@ jobs:
       - "scripts/build_spvector.py"
       - "scripts/build_stage_analysis.py"
       - "scripts/build_state_of_themes.py"
+      # U1 Theme Map (GMI seat 6f14c2da) — closure widening 2026-10-17.
+      - "scripts/build_theme_tree_page.py"
+      - "engine/theme_graph/hierarchy_breadth_display.py"
+      - "engine/classification_axes/cell.py"
       - "scripts/build_stock_board_v2.py"
       - "scripts/build_stock_library.py"
       - "scripts/security_state_producer.py"
@@ -25320,6 +25344,10 @@ jobs:
       - "scripts/__init__.py"
       - "scripts/build_themes_heatmap.py"
       - "scripts/build_state_of_themes.py"
+      # U1 Theme Map (GMI seat 6f14c2da) — closure widening 2026-10-17.
+      - "scripts/build_theme_tree_page.py"
+      - "engine/theme_graph/hierarchy_breadth_display.py"
+      - "engine/classification_axes/cell.py"
       - "scripts/build_subsector_rotation.py"
       - "scripts/check_template_site_sync.py"
       - "scripts/worktree_sparse.py"
@@ -30305,6 +30333,10 @@ jobs:
       - "scripts/build_site.py"
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_state_of_themes.py"
+      # U1 Theme Map (GMI seat 6f14c2da) — closure widening 2026-10-17.
+      - "scripts/build_theme_tree_page.py"
+      - "engine/theme_graph/hierarchy_breadth_display.py"
+      - "engine/classification_axes/cell.py"
       - "scripts/build_stock_library.py"
       - "scripts/build_subsector_confluence.py"
       - "scripts/build_subsector_rotation.py"
