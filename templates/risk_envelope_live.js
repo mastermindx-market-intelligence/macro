@@ -260,6 +260,15 @@
                  (missing[1] ? " · " + missing[1] : "")],
         action: warningAction, date: session};
     }
+    // With every separate hazard input unavailable, retain ONLY the fresh
+    // measured backdrop's own Risk-off fact. The joint hazard stays unknown.
+    if (partialGrounds && qualifiedRiskOff && session && !rows[0].length)
+      return {state: "measured-risk-off",
+        title: fgc.measured_risk_off_title || warningTitle,
+        cause: fgc.measured_risk_off_partial_cause ||
+          ["Market State: Risk-off; combined hazard coverage incomplete.",
+           "市场状态：避险；综合风险证据不完整。"],
+        action: warningAction, date: session};
     return {state: "unavailable", title: fgc.unavailable_title || copy.unknown,
       cause: ["", ""], action: fgc.unavailable_action || copy.unknown, date: ""};
   }

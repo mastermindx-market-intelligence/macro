@@ -1292,3 +1292,56 @@ def test_partial_foreground_never_renders_malformed_required_source_clock_as_con
     assert 'Leadership cohort: freshness unverified' in settled
     assert 'Leadership cohort: freshness unverified' in live['cause']
     assert live['state'] == 'partial-warning'
+
+
+# R15: a source-qualified measured RISK_OFF cannot disappear just because all
+# hazard-evidence legs are stale. It is NOT joint/systemic hazard confirmation.
+def _risk_off_with_partial_unavailable_hazards():
+    e = _partial_live_warning()
+    e['measured_state'].update(usable=True, verdict='RISK_OFF', score=40,
+                               as_of=e['source_session'])
+    e['hazard_summary'].update(stage=None, stage_reason='required_coverage_unavailable',
+                               contributing_sources=[], unreadable_sources=['leadership-crack-latest'])
+    # The synthetic source fixture intentionally omits policy; explicitly
+    # assert that an existing false authority record stays unchanged.
+    e['authority'] = {'envelope_may_gate': False, 'envelope_may_size': False}
+    for source in e['provenance']['sources']:
+        if source['role'] == 'hazard_evidence':
+            source.update(coverage='STALE', as_of='2026-09-18')
+    return e
+
+
+def test_partial_missing_all_hazards_preserves_current_measured_risk_off_ssr_and_js():
+    e = _risk_off_with_partial_unavailable_hazards()
+    before = deepcopy(e)
+    summary = _foreground_fragment(_foreground_render(e))
+    assert 'data-state="measured-risk-off"' in summary
+    assert 'Market State: Risk-off; combined hazard coverage incomplete.' in summary
+    assert '市场状态：避险；综合风险证据不完整。' in summary
+    assert 'Reduce risk. Protect capital.' in summary
+    assert 'Credit stress: building' not in summary
+    out = _js_value(_WTD_DOM+'applyFeed(FEED);console.log(JSON.stringify({foreground:foregroundResult(),action:actionResult()}));',e)
+    assert out['foreground']['state'] == 'measured-risk-off'
+    assert out['foreground']['title'] == 'Risk-off market backdrop'
+    assert out['foreground']['cause'] == 'Market State: Risk-off; combined hazard coverage incomplete.'
+    assert out['foreground']['action'] == 'Reduce risk. Protect capital.'
+    assert out['action']['en'] == 'Reduce risk. Protect capital.'
+    assert e['hazard_summary']['stage'] is None
+    assert e['authority']['envelope_may_gate'] is False
+    assert e['authority']['envelope_may_size'] is False
+    assert e == before
+
+
+@pytest.mark.parametrize('mutation', ['not_risk_off', 'unusable', 'stale_measured', 'unrecognized_gap'])
+def test_partial_missing_all_hazards_does_not_invent_measured_risk_off(mutation):
+    e = _risk_off_with_partial_unavailable_hazards()
+    if mutation == 'not_risk_off': e['measured_state']['verdict'] = 'MIXED'
+    elif mutation == 'unusable': e['measured_state']['usable'] = False
+    elif mutation == 'stale_measured': e['measured_state']['as_of'] = '2026-09-18'
+    else: e['hazard_summary']['stage_reason'] = 'not_an_admitted_gap'
+    summary = _foreground_fragment(_foreground_render(e))
+    out = _js_value(_FOREGROUND_DOM+'applyFeed(FEED);console.log(JSON.stringify(foregroundResult()));',e)
+    assert 'data-state="unavailable"' in summary
+    assert out['state'] == 'unavailable'
+    assert 'Reduce risk. Protect capital.' not in summary
+    assert 'Reduce risk. Protect capital.' not in out['action']

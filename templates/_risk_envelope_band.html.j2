@@ -16,6 +16,7 @@
     'warning_action': ['Review exposure. Respect existing stops.', '检查风险敞口，遵守既定止损。'],
     'measured_risk_off_title': ['Risk-off market backdrop', '市场背景：避险'],
     'measured_risk_off_cause': ['Market State reports Risk-off; systemic hazard confirmation is separate.', '市场状态显示避险；系统性压力确认另有依据。'],
+    'measured_risk_off_partial_cause': ['Market State: Risk-off; combined hazard coverage incomplete.', '市场状态：避险；综合风险证据不完整。'],
     'measured_risk_off_action': ['Reduce risk. Protect capital.', '降低风险，保护本金。'],
     'unavailable_title': ['Risk read unavailable', '暂无风险读数'],
     'unavailable_action': ['Verify conditions before adding risk.', '加仓前核实条件。'],
@@ -133,6 +134,11 @@
 {%- set _v.state = 'partial-warning' %}{% set _v.title = _fg.warning_title %}{% set _v.action = _fg.measured_risk_off_action if _qualified_risk_off else _fg.warning_action %}
 {%- set _v.cause = [_fg.partial_prefix[0] ~ (_rows.en | join(' · ')) ~ (' · ' ~ _lag.en if _lag.en else ''), _fg.partial_prefix[1] ~ (_rows.zh | join(' · ')) ~ (' · ' ~ _lag.zh if _lag.zh else '')] %}
 {%- set _v.date = _session -%}
+{# An independently qualified measured RISK_OFF must remain visible when every
+   hazard source is unavailable. This reports only the existing measured verdict;
+   joint hazard is still unknown and cannot be promoted to a systemic alarm. #}
+{%- elif 'stage' in _hz and _stage is none and _hz.get('stage_reason') in ('required_coverage_unavailable', 'required_source_state_unmapped') and _qualified_risk_off and not _rows.en -%}
+{%- set _v.state = 'measured-risk-off' %}{% set _v.title = _fg.measured_risk_off_title %}{% set _v.cause = _fg.measured_risk_off_partial_cause %}{% set _v.action = _fg.measured_risk_off_action %}{% set _v.date = _session -%}
 {%- endif -%}
 {%- endif -%}
 {%- if action_only -%}
