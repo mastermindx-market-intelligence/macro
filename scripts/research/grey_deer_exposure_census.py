@@ -231,8 +231,8 @@ def summarise(rows: pd.DataFrame, episodes: list[dict]) -> dict:
         counts[str(h)] = {
             "status_counts": rows[f"out_status_{h}"].value_counts().to_dict(),
             "eligible": int(eligible.sum()),
-            "events": int((eligible & y).sum()),
-            "non_events": int((eligible & ~y).sum()),
+            "positive_outcome_origins": int((eligible & y).sum()),
+            "negative_outcome_origins": int((eligible & ~y).sum()),
             "recipient_episodes": sum(e["horizon"] == h for e in episodes),
             "verified_independent_episodes": None,
             "policies": policies,
@@ -252,6 +252,32 @@ def summarise(rows: pd.DataFrame, episodes: list[dict]) -> dict:
         "horizons": counts,
         "stabilization_candidate_path_counts": rows.loc[repair, "out_competing_path_21"].value_counts().to_dict(),
     }
+
+
+def verify_method_dependencies(repo: Path, source_commit: str) -> list[dict]:
+    """Bind the files actually imported, not just the frozen price objects."""
+    modules = {
+        "scripts/research/grey_deer_episode_samples.py": t12,
+        "scripts/research/grey_deer_pullback_stage1.py": t12.stage1,
+        "lib/observed_moves.py": t12.stage1.om,
+    }
+    receipts = []
+    for relative, module in modules.items():
+        loaded = Path(module.__file__).resolve()
+        if loaded != (ROOT / relative).resolve():
+            raise ValueError(f"METHOD_IMPORT_PATH_MISMATCH:{relative}")
+        expected = subprocess.check_output(
+            ["git", "-C", str(repo), "show", f"{source_commit}:{relative}"])
+        actual = loaded.read_bytes()
+        if sha256(actual) != sha256(expected):
+            raise ValueError(f"METHOD_SOURCE_MISMATCH:{relative}")
+        receipts.append({
+            "path": relative, "source_commit": source_commit,
+            "sha256": sha256(actual),
+            "git_blob_sha": hashlib.sha1(
+                b"blob " + str(len(actual)).encode() + b"\0" + actual).hexdigest(),
+        })
+    return receipts
 
 
 def load_inputs(repo: Path, protocol: dict) -> tuple[dict, list]:
@@ -362,6 +388,7 @@ def main():
         raise ValueError("UNSUPPORTED_PROTOCOL")
     if args.output.exists():
         raise ValueError("OUTPUT_ALREADY_EXISTS")
+    dependencies = verify_method_dependencies(args.source_repo, protocol["source"]["commit"])
     frames, sources = load_inputs(args.source_repo, protocol)
     rows, summary, episodes, rotation = build_census(frames, protocol)
     args.output.mkdir(parents=True)
@@ -381,6 +408,8 @@ def main():
         "schema": SCHEMA, "protocol_id": PROTOCOL_ID, "protocol_sha256": digest,
         "source_commit": protocol["source"]["commit"],
         "script_sha256": sha256(Path(__file__).read_bytes()),
+        "method_dependencies": dependencies,
+        "code_commit": subprocess.check_output(["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip(),
         "executed_at": datetime.now(timezone.utc).isoformat(),
         "source_receipts": sources,
         "artifact_sha256": {p.name: sha256(p.read_bytes()) for p in sorted(args.output.iterdir())},

@@ -144,3 +144,9 @@ def test_invalid_spy_history_cannot_make_a_known_broad_gate():
     rows, _, _, _ = c.build_census({"SPY": frame}, protocol)
     assert pd.isna(rows.iloc[200].obs_spy_gate_component)
     assert rows.iloc[220].obs_spy_gate_component == False  # noqa: E712
+
+
+def test_changed_reused_method_refuses_before_outcomes(tmp_path, monkeypatch):
+    monkeypatch.setattr(c.subprocess, "check_output", lambda *a, **kw: b"different method")
+    with pytest.raises(ValueError, match="METHOD_SOURCE_MISMATCH"):
+        c.verify_method_dependencies(tmp_path, "frozen")
