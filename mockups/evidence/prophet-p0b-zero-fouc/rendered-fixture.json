@@ -107,7 +107,7 @@
         {
           "path": "templates/_navlinks.html.j2",
           "role": "jinja_template",
-          "sha256": "5318e6f11db80e225707cd02b0776f590c3defcaf6aaca81085e9bd956981242"
+          "sha256": "4b909789102ad5b44f6f2da2851d6ebe8aa5f1b2967211e84c0e48c0a774060b"
         },
         {
           "path": "templates/_prophet_card.html.j2",
@@ -142,7 +142,7 @@
         {
           "path": "templates/_site_nav.html.j2",
           "role": "jinja_template",
-          "sha256": "164f3119fd04b8886d2d29703dc9c017e13bceeae1ecc49a36f9842353d9e482"
+          "sha256": "2056ac2e8b301a47ce41dc4d76758de8bd3167151abd611340ae06be4dda8455"
         },
         {
           "path": "templates/canada.html.j2",
@@ -456,7 +456,7 @@
         {
           "path": "templates/_navlinks.html.j2",
           "role": "jinja_template",
-          "sha256": "5318e6f11db80e225707cd02b0776f590c3defcaf6aaca81085e9bd956981242"
+          "sha256": "4b909789102ad5b44f6f2da2851d6ebe8aa5f1b2967211e84c0e48c0a774060b"
         },
         {
           "path": "templates/_prophet_card.html.j2",
@@ -491,7 +491,7 @@
         {
           "path": "templates/_site_nav.html.j2",
           "role": "jinja_template",
-          "sha256": "164f3119fd04b8886d2d29703dc9c017e13bceeae1ecc49a36f9842353d9e482"
+          "sha256": "2056ac2e8b301a47ce41dc4d76758de8bd3167151abd611340ae06be4dda8455"
         },
         {
           "path": "templates/hk.html.j2",

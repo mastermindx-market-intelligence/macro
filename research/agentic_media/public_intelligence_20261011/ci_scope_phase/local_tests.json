@@ -1,0 +1,72 @@
+{
+  "base_commit": "73669c7df21485fa3299df0a982ff10c5e25c87c",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "pytest": {
+    "passed": 70,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 200.38,
+    "warnings": 14,
+    "warning_scope": "pytest default temp cleanup encountered pre-existing nonempty garbage directories; no manual cleanup attempted",
+    "commands": [
+      "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+      "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+      "tests/test_rotation_evidence_modes.py",
+      "tests/test_leadership_rotation_contract.py"
+    ],
+    "invocation": "with scripts.check_contract_delta._tracked_tree_inventory(ROOT): pytest.main(targets + [-q,--tb=short,-p,no:cacheprovider])"
+  },
+  "manifest_validation": "scripts/run_ci_pack.py --workflow .github/ci/legacy-jobs.yml --validate-only exited0",
+  "selection_controls": "110 positive dependency paths,6 unrelated path refusals",
+  "hosted_ci": false,
+  "merged": false,
+  "installed": false,
+  "contract_delta": {
+    "base": "73669c7df21485fa3299df0a982ff10c5e25c87c",
+    "introduced": 0,
+    "inherited": 0,
+    "seconds": 283.8,
+    "probes": [
+      {
+        "path": "templates/index.html",
+        "jobs": 135,
+        "weight": 5674,
+        "packs": 10
+      },
+      {
+        "path": "scripts/build_free_content.py",
+        "jobs": 134,
+        "weight": 5475,
+        "packs": 10
+      },
+      {
+        "path": "engine/prophet/plan_book.py",
+        "jobs": 129,
+        "weight": 5437,
+        "packs": 10
+      }
+    ]
+  },
+  "manifest_job_count": 313,
+  "initial_manifest_sha256": "80055d08d7b168c0950ee5160897d546f9d8c7a614e6abaa1b34071767063bed",
+  "final_source": {
+    ".github/ci/legacy-jobs.yml": "74c05708c169fe1b358131ba12a343397a2e428d273f560f2859be897c107128",
+    "tests/test_ci_pack.py": "08af6033a10cc9b7aa4275b6b6c453b13efb57a44dfec0312e920c1e0d15a0ba"
+  },
+  "registry_repair_test": "1 passed in1.72s",
+  "per_suite_runtime_audits": "63 and5 tests passed;config/test-support reads declared;no repo runtime writes",
+  "final_full_job": {
+    "passed": 824,
+    "skipped": 2,
+    "failed": 0,
+    "seconds": 634.42,
+    "log": "final_full_job.log",
+    "skips": "existing sparse-checkout cases; no skip/assertion source altered"
+  },
+  "final_contract_delta": {
+    "introduced": 0,
+    "inherited": 0,
+    "seconds": 489.4,
+    "log": "final_contract_delta.log"
+  }
+}
