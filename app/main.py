@@ -1107,6 +1107,67 @@ def gmi_bea_industry_current(
     )
 
 
+def _gmi_bea_static_response(file_name: str, media_type: str) -> Response:
+    """Serve only a fixed, reviewed UI source file; not a data workspace file."""
+    try:
+        # Caller supplies only one of two hardcoded names below. No path/query
+        # from the browser reaches this file read.
+        content = Path(__file__).with_name(file_name).read_bytes()
+        if not content or len(content) > 131072:
+            raise ValueError("unexpected static view byte size")
+    except Exception as exc:
+        log.warning("gmi BEA UI unavailable (%s)", type(exc).__name__)
+        raise HTTPException(
+            503, detail={"error": "BEA_HUMAN_VIEW_UNAVAILABLE"}) from None
+    headers = {
+        "Cache-Control": "private, no-store",
+        "X-Content-Type-Options": "nosniff",
+    }
+    if media_type == "text/html":
+        headers["Content-Security-Policy"] = (
+            "default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; "
+            "connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; "
+            "form-action 'self'"
+        )
+        headers["Referrer-Policy"] = "no-referrer"
+    return Response(content=content, media_type=media_type, headers=headers)
+
+
+@app.get("/api/gmi/bea/industry/{industry_code}/view")
+def gmi_bea_industry_human_view(
+    industry_code: str,
+    request: Request,
+    user: dict = Depends(require_user),
+) -> Response:
+    """Paid human shell; source values come ONLY from the incumbent BEA API."""
+    from app.paywall import enforce_site_full
+    from engine.market_ontology.bea_gvc_current import is_exact_source_industry_code
+
+    enforce_site_full(user, always=True)
+    if not is_exact_source_industry_code(industry_code):
+        raise HTTPException(422, detail={"error": "UNSAFE_EXACT_INDUSTRY_CODE"})
+    if request.query_params:
+        raise HTTPException(
+            422, detail={"error": "BEA_CURRENT_ONLY_NO_QUERY_PARAMETERS"})
+    # The HTML is source-free. Browser calls the existing paid availability API,
+    # which is still typed UNAVAILABLE until native owner admission.
+    return _gmi_bea_static_response("gmi_bea_view.html", "text/html")
+
+
+@app.get("/api/gmi/bea/assets/view.js")
+def gmi_bea_industry_human_script(
+    request: Request,
+    user: dict = Depends(require_user),
+) -> Response:
+    """Fixed same-origin UI logic. Never serves provider/source files."""
+    from app.paywall import enforce_site_full
+
+    enforce_site_full(user, always=True)
+    if request.query_params:
+        raise HTTPException(422, detail={"error": "BEA_CURRENT_ONLY_NO_QUERY_PARAMETERS"})
+    return _gmi_bea_static_response("gmi_bea_view.js", "application/javascript")
+
+
 @app.get("/api/me")
 def me(user: dict = Depends(require_user)) -> dict:
     """Whoami + entitlement + chat budget.

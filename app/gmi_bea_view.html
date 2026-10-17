@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, noarchive">
+<title>Industry Import Inputs · MastermindX</title>
+<style>
+:root{color-scheme:light;--bg:#f3f6fa;--ink:#192b42;--sub:#64748a;--line:#dce4ee;--panel:#fff;--soft:#eaf0f8;--blue:#2d5dab;--blue2:#184581;--muted:#edf2f7;--warn:#a75b28;--good:#1b7964}
+@media(prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#151d2c;--ink:#ecf1f8;--sub:#adbacd;--line:#344157;--panel:#202c40;--soft:#293751;--blue:#82aafa;--blue2:#acc7ff;--muted:#2a3850;--warn:#ffbe81;--good:#67c5aa}}
+:root[data-theme="light"]{color-scheme:light;--bg:#f3f6fa;--ink:#192b42;--sub:#64748a;--line:#dce4ee;--panel:#fff;--soft:#eaf0f8;--blue:#2d5dab;--blue2:#184581;--muted:#edf2f7;--warn:#a75b28;--good:#1b7964}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#151d2c;--ink:#ecf1f8;--sub:#adbacd;--line:#344157;--panel:#202c40;--soft:#293751;--blue:#82aafa;--blue2:#acc7ff;--muted:#2a3850;--warn:#ffbe81;--good:#67c5aa}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-offset:2px}button:disabled{cursor:not-allowed;opacity:.5}.page{max-width:1160px;padding:28px 30px 56px;margin:auto}
+.head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:32px}.brand{font-weight:850;letter-spacing:.04em;font-size:14px;color:var(--ink)}.brand small{font-weight:500;font-size:12px;color:var(--sub);letter-spacing:0;margin-left:12px}.edition{font-size:11px;color:var(--blue2);font-weight:700;border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:var(--panel)}
+.kicker{font-size:11px;color:var(--blue2);font-weight:800;letter-spacing:.11em;text-transform:uppercase;margin-bottom:10px}h1{font-size:clamp(27px,4vw,42px);line-height:1.16;letter-spacing:-.035em;margin:0 0 10px;font-weight:760}h2{font-size:17px;letter-spacing:-.015em;margin:0 0 12px}.lead{color:var(--sub);max-width:620px;line-height:1.6;margin:0 0 23px}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-bottom:24px}.field{display:flex;flex-direction:column;gap:5px}.field label{font-size:11px;letter-spacing:.025em;font-weight:750;color:var(--sub)}.field input{height:41px;width:220px;max-width:70vw;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink)}.primary{height:41px;background:var(--blue);color:white;border:0;border-radius:10px;padding:0 17px;font-weight:700}.primary:hover{background:#326dbf}
+.surface{background:var(--panel);border:1px solid var(--line);border-radius:15px;box-shadow:0 7px 24px rgba(30,51,84,.045)}.state{display:flex;gap:14px;padding:21px 23px;margin:3px 0 22px;align-items:flex-start}.state-dot{height:9px;width:9px;flex-shrink:0;margin-top:7px;border-radius:50%;background:var(--warn)}.state-title{font-weight:750;font-size:15px;margin:0 0 3px}.state-desc{margin:0;color:var(--sub);font-size:13px}.state a{color:var(--blue2)}
+.source-name{font-size:15px;font-weight:730;letter-spacing:-.012em;margin-top:4px;color:var(--ink)}.year-select{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}.year-select button{background:var(--soft);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:7px 11px;font-size:12px;font-weight:650}.year-select button[aria-pressed="true"]{background:var(--blue);color:white;border-color:var(--blue)}
+.deck{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.metric{padding:17px 18px}.eyebrow{text-transform:uppercase;font-size:10px;letter-spacing:.08em;color:var(--sub);font-weight:750}.big{font-variant-numeric:tabular-nums;letter-spacing:-.035em;font-size:clamp(21px,3vw,30px);font-weight:750;margin:8px 0 3px}.measure-sub{font-size:11px;color:var(--sub)}
+.body-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:12px;margin-top:12px}.pane{padding:22px}.pane p{margin:0 0 14px;color:var(--sub);font-size:12px}.bars{display:flex;flex-direction:column;gap:14px}.bar-row{display:grid;grid-template-columns:105px 1fr 95px;gap:12px;align-items:center;font-size:12px}.bar-title{overflow-wrap:anywhere;color:var(--ink)}.track{height:9px;background:var(--muted);border-radius:999px;position:relative;overflow:hidden}.bar-fill{position:absolute;height:9px;left:0;border-radius:999px;background:var(--blue)}.bar-value{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+.trend{display:flex;align-items:end;gap:8px;min-height:150px;padding:12px 0 0;border-bottom:1px solid var(--line)}.trend-col{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:7px}.trend-fill{width:min(26px,100%);background:var(--blue);border-radius:4px 4px 0 0;min-height:2px}.trend-label{font-size:10px;color:var(--sub);margin-bottom:-22px}.section-footer{font-size:11px;color:var(--sub);margin-top:35px;padding-top:17px;border-top:1px solid var(--line)}details{border:1px solid var(--line);border-radius:12px;padding:13px 16px;margin-top:19px;background:var(--panel)}summary{font-weight:750;cursor:pointer}details p{color:var(--sub);font-size:12px;line-height:1.7;margin:10px 0 0}
+[hidden]{display:none!important}@media(max-width:740px){.page{padding:18px 16px 38px}.head{margin-bottom:25px}.brand small{display:none}.edition{font-size:10px}.deck{grid-template-columns:1fr}.body-grid{grid-template-columns:1fr}.pane{padding:17px}.bar-row{grid-template-columns:80px 1fr 78px;gap:7px}.state{padding:17px}}
+</style>
+<script defer src="/api/gmi/bea/assets/view.js"></script>
+</head>
+<body>
+<div class="page" id="bea-gvc-root">
+<header class="head"><div class="brand">MASTERMINDX <small>Global Market Intelligence</small></div><span class="edition">BEA · May 2026 vintage</span></header>
+<main>
+<div class="kicker">Industry accounting · Current release</div>
+<h1>How industries source imports</h1>
+<p class="lead">Explore the Bureau of Economic Analysis industry import accounts by source region and year. All values are estimated industry-level allocations in USD millions.</p>
+<form id="bea-industry-form" class="filters" autocomplete="off">
+<div class="field"><label for="bea-code">Exact BEA industry code</label><input id="bea-code" name="industry" type="text" maxlength="32" required pattern="[A-Za-z0-9][A-Za-z0-9_.-]{0,31}" spellcheck="false" aria-describedby="bea-code-note"></div>
+<button type="submit" class="primary">Inspect industry</button>
+</form>
+<div id="bea-code-note" class="measure-sub" style="margin-top:-18px;margin-bottom:17px">Publisher codes are exact and case-sensitive. No automatic industry crosswalk.</div>
+<section class="surface state" role="status" aria-live="polite" aria-atomic="true">
+<span class="state-dot" aria-hidden="true"></span><div><p class="state-title" id="bea-state-title">Not yet available</p><p class="state-desc" id="bea-state-detail">BEA May 2026 source inputs are awaiting authenticated native Data OS admission. No figures will be displayed before qualification.</p></div>
+</section>
+<section id="bea-data-deck" hidden aria-label="Admitted source accounting">
+<div class="surface pane" style="margin-bottom:12px"><span class="eyebrow">Exact publisher industry · Accounting year</span><div id="bea-year-name" class="source-name" aria-live="polite"></div><div class="year-select" role="group" aria-label="Accounting year" id="bea-years"></div></div>
+<div class="deck">
+<div class="surface metric"><span class="eyebrow">World imports</span><div class="big" id="bea-world">—</div><div class="measure-sub">USD millions · signed</div></div>
+<div class="surface metric"><span class="eyebrow">Canada imports</span><div class="big" id="bea-canada">—</div><div class="measure-sub">USD millions · source adjustment retained</div></div>
+<div class="surface metric"><span class="eyebrow">Year-over-year change</span><div class="big" id="bea-yoy">—</div><div class="measure-sub">Retrospective May 2026 vintage</div></div>
+</div>
+<div class="body-grid">
+<section class="surface pane"><h2>Regional accounting</h2><p>Signed import allocations by source region · USD millions</p><div id="bea-region-bars" class="bars"></div></section>
+<section class="surface pane"><h2>World import history</h2><p>2017–2024 accounting years · not as-known-then history</p><div id="bea-trend" class="trend" role="img" aria-label="World import input values by accounting year"></div></section>
+</div>
+</section>
+<details><summary>About this dataset</summary><p>BEA Global Value Chains accounting allocates industry imports to seven source regions. These are estimated industry allocations, not observed company-to-company supplier links. The 2017–2024 history belongs to the May 2026 publication and does not establish what was known in earlier years. This view does not provide an investment ranking, entry signal or trade recommendation.</p></details>
+</main>
+<footer class="section-footer">Source: U.S. Bureau of Economic Analysis · Publication precision: day · No historical point-in-time claim · <span id="bea-generation" hidden></span></footer>
+</div>
+</body>
+</html>

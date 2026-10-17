@@ -201,6 +201,66 @@ original-source axes denied by platform safety were **not** re-read.
 An exact-head hosted CI and current-head independent review remain distinct
 release gates.
 
+## Paid human inspection surface — October 17
+
+The existing Macro API now has a **source-free, light-first human view** for
+`GET /api/gmi/bea/industry/{industry_code}/view` and its fixed browser asset
+`GET /api/gmi/bea/assets/view.js`. Both reuse the same existing Supabase
+identity and `enforce_site_full(user, always=True)` entitlement as the
+underlying industry-data endpoint. They carry `private,no-store`;
+the HTML uses a same-origin-script/connect CSP, disabled framing, no
+external imagery/fonts and no user interpolated source string. There is
+no new auth or data service, no browser-local copy of provider bytes, and
+no generated public static mirror of the BEA source.
+
+The new view is built for **one exact source industry code** (strict syntax
+on both URL and form), has an eight-year accounting selector, world/Canada/YoY
+summary slots, seven signed regional bars, and a retrospective timeline
+that refuses to misrepresent negative world values as upward bars. All UI
+strings are inserted through `textContent`, never HTML fragments from source
+rows. Normal default state is **Not yet available** and no KPI, region or
+history is rendered while native L0/L1 is unproduced. The browser only
+consumes the same canonical API endpoint; it never reads retained BEA files.
+
+For a future owner-qualified data response, the browser contract requires
+an explicit server-minted `PUBLISHED_CURRENT_DESCRIPTIVE` status with
+`may_publish=true`, `dataos_native_admitted=true`, matching exact source
+code, source generation, 2026-05-21 edition, retrospective method, no trading
+authority and eight complete JSON-safe accounting years. **No such status
+exists or is returned by the current source-guarded endpoint.** This
+browser-side shape check is *not* authorization or an alternate publication
+control plane; native Data OS and GMI app owners must implement and accept
+server-side qualification separately before any real values can be served.
+
+**Verification:** five new TestClient tests cover paid HTML/JS delivery,
+CSP/no-store, 401 unauthenticated /403 free-tier, 422 invalid code or
+historical query, a source-free human shell even if the registry reader
+is hostile, and typed 503/no path leakage when the fixed asset is absent.
+The combined GMI/paywall/no-store suite passed **45 tests**. Source scripts
+passed `node --check` and a stdlib HTML parser verified 14 unique element
+IDs and one same-origin external JS asset. The source is tracked in Git and
+the two focused CI curated import-closure/packing regressions passed (2/2);
+the inherited manifest remains **320 logical jobs / 322 fragments**. The
+two focused macro-api deploy-restart self-heal tests also passed.
+
+Local **physical Chromium via Playwright**, with all HTTP requests
+intercepted by hermetic test fixtures, passed four cases across two smoke
+sessions: a 503 `SOURCE_NOT_PRODUCED` response left all figures hidden;
+a clearly **synthetic future-publication-shaped** packet rendered seven
+regional bars, eight retrospective history columns, publisher's exact
+year-specific label, year switching and the verified generation display.
+Saved Mastermind light preference overrode OS dark, and saved dark
+preference overrode OS light, with actual computed browser background
+colours checked. No real BEA original responses, site deployment,
+live Supabase session, production browser or live API data values
+were used.
+
+The preview is an **implementation candidate** only, not installed or linked
+from production navigation. It leaves existing parent adoption #9433,
+native source #9444, original-axis permission holds, 5241X/5241XX
+uncertainty, native timestamp/revision admission and final actual
+browser+machine parity acceptance untouched.
+
 ## Production remains HELD
 
 Real acceptance still requires lawful original 72-response L0 validation, source industry axis resolution, accepted 5241X/5241XX mapping or explicit unresolved handling, installed L0/L1 UTC ingest/revision/correction chain and registry PRODUCED promotion by the current Data OS owner. Existing app authentication and entitlement then must be proven alongside same-generation browser/API descriptive results. This candidate is not a release, approval, producer or new control plane.

@@ -152,6 +152,77 @@ def test_gmi_bea_internal_packet_refusal_is_not_misreported_as_client_422(monkey
     assert response.headers.get("cache-control") == "private, no-store"
 
 
+def test_gmi_bea_paid_human_view_uses_same_source_api_and_no_cache():
+    response = client.get("/api/gmi/bea/industry/5241X/view")
+    assert response.status_code == 200
+    assert response.headers.get("cache-control") == "private, no-store"
+    assert response.headers.get("content-type", "").startswith("text/html")
+    assert "default-src 'none'" in response.headers.get("content-security-policy", "")
+    assert '<script defer src="/api/gmi/bea/assets/view.js"></script>' in response.text
+    assert 'id="bea-gvc-root"' in response.text
+    assert 'id="bea-year-name"' in response.text
+    assert "Not yet available" in response.text
+    assert "2026" in response.text
+    assert "observed company" in response.text
+
+
+def test_gmi_bea_human_view_refuses_unauthorized_or_invalid_requests(monkeypatch):
+    app.dependency_overrides.pop(require_user, None)
+    assert client.get("/api/gmi/bea/industry/5241X/view").status_code == 401
+    app.dependency_overrides[require_user] = lambda: {"id": UID, "email": "u@example.test"}
+    monkeypatch.setattr(
+        paywall, "_store_entitlement",
+        lambda uid: ({"tier": "free", "status": "none", "features": []}, True),
+    )
+    paywall._ENT_CACHE.clear()
+    assert client.get("/api/gmi/bea/industry/5241X/view").status_code == 403
+    monkeypatch.setattr(
+        paywall, "_store_entitlement",
+        lambda uid: ({"tier": "essential", "status": "active",
+                      "features": ["site_full"]}, True),
+    )
+    paywall._ENT_CACHE.clear()
+    assert client.get("/api/gmi/bea/industry/5241X%3Cscript%3E/view").status_code == 422
+    assert client.get(
+        "/api/gmi/bea/industry/5241X/view?known_at=2019-01-01"
+    ).status_code == 422
+
+
+def test_gmi_bea_human_view_script_is_existing_auth_gated_and_private():
+    response = client.get("/api/gmi/bea/assets/view.js")
+    assert response.status_code == 200
+    assert response.headers.get("cache-control") == "private, no-store"
+    assert response.headers.get("content-type", "").startswith("application/javascript")
+    assert "encodeURIComponent" in response.text
+    assert "innerHTML" not in response.text
+    assert "PUBLISHED_CURRENT_DESCRIPTIVE" in response.text
+    app.dependency_overrides.pop(require_user, None)
+    assert client.get("/api/gmi/bea/assets/view.js").status_code == 401
+
+
+def test_gmi_bea_human_shell_never_reads_native_registry_or_original_files(monkeypatch):
+    def prohibited_registry():
+        raise AssertionError("human UI shell must not access native BEA source")
+    monkeypatch.setattr("lib.dataos.registry.load_registry", prohibited_registry)
+    response = client.get("/api/gmi/bea/industry/5241X/view")
+    assert response.status_code == 200
+    assert response.headers.get("cache-control") == "private, no-store"
+    assert "source_generation_id" not in response.text
+    assert "world_import_million_USD" not in response.text
+
+
+def test_gmi_bea_human_view_missing_asset_fails_closed_without_leaking_path(monkeypatch):
+    from pathlib import Path
+    def unavailable_static(_path):
+        raise OSError("secret-mount/originals/hidden.json")
+    monkeypatch.setattr(Path, "read_bytes", unavailable_static)
+    response = client.get("/api/gmi/bea/industry/5241X/view")
+    assert response.status_code == 503
+    assert response.json()["detail"] == {"error": "BEA_HUMAN_VIEW_UNAVAILABLE"}
+    assert "secret-mount" not in response.text
+    assert response.headers.get("cache-control") == "private, no-store"
+
+
 def test_ask_keeps_registered_behavior_while_paid_switch_off(monkeypatch):
     monkeypatch.setattr(
         "engine.neuralweb.ask_brain.ask",
