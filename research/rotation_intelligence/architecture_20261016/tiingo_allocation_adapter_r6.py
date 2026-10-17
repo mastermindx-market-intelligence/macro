@@ -74,7 +74,12 @@ def _utc(value: object, reason: str) -> datetime:
 
 
 def _finite_positive(value: object) -> bool:
-    return type(value) in (int,float) and math.isfinite(value) and value>0
+    if type(value) not in (int,float):
+        return False
+    try:
+        return math.isfinite(value) and value>0
+    except (OverflowError, ValueError):
+        return False
 
 
 def project_histories(histories: object, *, anchor_market_day: str,
@@ -120,14 +125,15 @@ def project_histories(histories: object, *, anchor_market_day: str,
                 or _day(history.end_market_date,f'{symbol}:EXACT_ORIGIN_END_REQUIRED')!=anchor):
             raise Refused(f'{symbol}:EXACT_ORIGIN_END_REQUIRED')
         partitions=history.source_partitions
-        if (type(partitions) is not tuple or not 1<=len(partitions)<=256
-                or len(partitions)!=len(set(partitions))):
+        if type(partitions) is not tuple or not 1<=len(partitions)<=256:
             raise Refused(f'{symbol}:RECEIPT_REFERENCES_INVALID')
         for item in partitions:
             if (type(item) is not tuple or len(item)!=2
                     or type(item[1]) is not str or not _SHA.fullmatch(item[1])
                     or _day(item[0],f'{symbol}:RECEIPT_DATE_INVALID')>cutoff.date()):
                 raise Refused(f'{symbol}:RECEIPT_REFERENCES_INVALID')
+        if len(partitions)!=len(set(partitions)):
+            raise Refused(f'{symbol}:RECEIPT_REFERENCES_INVALID')
         rows=history.rows
         if type(rows) is not tuple or len(rows)>20000:
             raise Refused(f'{symbol}:SOURCE_ROW_BUDGET')
