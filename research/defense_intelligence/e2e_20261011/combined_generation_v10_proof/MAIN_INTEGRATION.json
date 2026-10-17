@@ -1,0 +1,23 @@
+{
+  "base": "1816da2f46babe6e6a47c5fb7b6e7060bff86b34",
+  "incoming": "2fafe10e05968b1f193361926224250aa71387b0",
+  "conflicts": 4,
+  "resolution": "Additive path-list union; every path from each parent retained.",
+  "source_dependency_drift": [
+    "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/discover.py",
+    "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/trickle.py",
+    "collectors/marketdesk_extractor/extractor/tests/test_self_heal.py",
+    "config/market_memory_retained_use.v1.json",
+    "config/unrun_test_baseline.json",
+    "scripts/build_release_forecast.py",
+    "scripts/research_factory_run.py",
+    "site/basketdata/pulse.json",
+    "templates/dashboard.html.j2",
+    "tests/test_finance_intelligence_hydration.py",
+    "tests/test_release_forecast_producer.py",
+    "tests/test_release_radar_ui.py",
+    "tests/test_research_factory_market_memory.py"
+  ],
+  "old_receipt_preserved": "2a4d4fa0b17c168817083c62c9707e1e4949da44446b2d8c0df3fbc32f20bf2d",
+  "requires_new_full_proof": true
+}

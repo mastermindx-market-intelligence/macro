@@ -858,17 +858,19 @@ jobs:
           # sound input (#4600's restore-a-clean-ledger self-heal) but it is a
           # DIFFERENT ledger, so the receipt must describe whatever actually survived
           # rather than what the collectors wrote 20 minutes earlier.
-          if command -v shasum >/dev/null 2>&1; then
-            sha="$(shasum -a 256 "$ledger" | cut -d' ' -f1)"
-          else
-            sha="$(sha256sum "$ledger" | cut -d' ' -f1)"
-          fi
-          # JSONL, newline-terminated by contract (decode_source_ledger rejects a
-          # partial final line), so `wc -l` IS the row count.
-          rows="$(wc -l < "$ledger" | tr -d ' ')"
-          echo "sha256=$sha" >> "$GITHUB_OUTPUT"
-          echo "rows=$rows" >> "$GITHUB_OUTPUT"
-          echo "capital-structure handoff stamped: $rows rows, sha256 $sha"
+          #
+          # The ledger is SHARDED byte-exactly: $ledger is part 1 (never rewritten
+          # once sealed) and source_manifest.part-NNNN.jsonl continuation parts hold
+          # later rows, each under GitHub's 100 MiB blob limit -- the single file
+          # crossed it on 2026-09-27 and every nightly through 10-09 compiled a
+          # generation and lost it at push (GH001). The receipt therefore describes
+          # the LOGICAL ledger, the ordered concatenation of every part: `rows` is
+          # still its newline count and `sha256` still its digest (byte-for-byte the
+          # old shasum/wc receipt while no continuation part exists), and ONE script
+          # owns that arithmetic on both sides of the handoff. Appends to
+          # $GITHUB_OUTPUT itself; a part listing it cannot read stamps nothing, so
+          # the verify step refuses as "no ledger receipt".
+          python scripts/capital_structure_ledger_receipt.py stamp --root data/capital_structure
       - name: hand the capital-structure workspace to its own job
         continue-on-error: true
         # actions/upload-artifact v4.6.2 — the pin already used by the diagnostics
@@ -901,6 +903,7 @@ jobs:
             !data/capital_structure/source_objects
             !data/capital_structure/share_counts
             !data/capital_structure/*.tmp.parquet
+            !data/capital_structure/*.tmp.jsonl
           # An empty handoff is a real defect, not a quiet no-op: fail the upload so
           # the receipt is absent and the other job refuses to compile.
           if-no-files-found: error
@@ -1091,17 +1094,12 @@ jobs:
             echo "::error title=capital-structure-handoff::$ledger is absent after the artifact download."
             exit 1
           fi
-          if command -v shasum >/dev/null 2>&1; then
-            actual_sha="$(shasum -a 256 "$ledger" | cut -d' ' -f1)"
-          else
-            actual_sha="$(sha256sum "$ledger" | cut -d' ' -f1)"
-          fi
-          actual_rows="$(wc -l < "$ledger" | tr -d ' ')"
-          if [ "$actual_sha" != "$EXPECTED_SHA" ]; then
-            echo "::error title=capital-structure-handoff::ledger mismatch — collect stamped ${EXPECTED_ROWS} rows / ${EXPECTED_SHA}, this tree holds ${actual_rows} rows / ${actual_sha}. The likeliest cause is that the artifact did not land ON TOP of the checkout, leaving the last COMMITTED ledger in place; compiling that would reproduce yesterday byte-for-byte, commit nothing, and freeze the lane green."
-            exit 1
-          fi
-          echo "capital-structure handoff verified: $actual_rows rows, sha256 $actual_sha"
+          # The ledger is sharded byte-exactly across $ledger and its
+          # source_manifest.part-NNNN.jsonl continuation parts; the receipt covers
+          # their ordered concatenation, and the SAME script that stamped it in
+          # `collect` verifies it here, exiting 1 on a mismatch, a missing part, or a
+          # part listing it cannot read (DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY).
+          python scripts/capital_structure_ledger_receipt.py verify --root data/capital_structure --expect-sha256 "$EXPECTED_SHA" --expect-rows "$EXPECTED_ROWS"
       - name: timings band — capital-structure (W2)
         run: python3 scripts/nightly_timings.py mark --band capital-structure || echo "::warning::timings band mark failed (non-fatal)"
       - name: materialize authenticated capital-structure share counts (context-only)
@@ -1280,6 +1278,7 @@ jobs:
           name: capital-structure-ledger-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             data/capital_structure/source_manifest.jsonl
+            data/capital_structure/source_manifest.part-*.jsonl
             data/capital_structure/source_manifest.parquet
             data/capital_structure/telemetry.json
             data/capital_structure/ingestion_run.json
@@ -1416,6 +1415,7 @@ jobs:
     if: needs.collect.outputs.government_revenue_projection_needed == 'true'
     permissions:
       contents: write
+      actions: read
     uses: ./.github/workflows/government-revenue-live.yml
     with:
       projection_only: true
@@ -3246,6 +3246,9 @@ jobs:
           COLLECT_LANE: nightly  # lane sentinel: basket_turn_watch.stamp_ledger + other engine
                                  # nightly-only ledger writers check COLLECT_LANE==nightly before
                                  # writing; render/earlyclose/asia-close lanes leave it unset → no-op.
+          # Grey Deer pullback lane: writer + grader refuse unless these pin this job.
+          GREY_DEER_PULLBACK_WRITER_IDENTITY: daily.yml:engine
+          GREY_DEER_PULLBACK_GRADER_IDENTITY: daily.yml:engine
           # FTR W10: build_baskets.py calls notify_turn_events at the end of main().
           # Without these env vars the hook hits dark mode (no webhook → exit 0).
           DISCORD_WEBHOOK_WATCHLIST: ${{ secrets.DISCORD_WEBHOOK_WATCHLIST }}
@@ -4324,6 +4327,27 @@ jobs:
         # Fail-open: missing source → gaps[] + null block, always exits 0.
         # Output covered by 'git add data/' in 'commit engine outputs' below.
         run: python -m scripts.build_liquidity_plumbing || echo "::warning::build_liquidity_plumbing failed (non-fatal — last committed artifact stands)"
+      - name: Global liquidity transmission state (W-LIQ.1 producer, display-tier, non-fatal)
+        # The frozen v1 producer (#6296) had NO production caller: no workflow ran
+        # it, it was absent from config/dag.yml, and its only .github reference was
+        # the `paths:` filter of the pack-executed CI test lane
+        # `global-liquidity-transmission` (.github/ci/legacy-jobs.yml), which tests
+        # the producer and never publishes. The served state therefore sat at
+        # evidence_available_at 2026-08-28 after the 2026-09-04 manual regeneration
+        # (research/GLOBAL_LIQUIDITY_TRANSMISSION_LIVENESS_2026-10-13.md).
+        # Pure local reads, no network: data/fred/{BUSLOANS,WALCL,ECBASSETSW,
+        # JPNASSETS,DTWEXBGS,DFII10,BAMLH0A0HYM2} + yahoo EURUSD=X/USDJPY=X from
+        # the collect job; data/china_credit/tsf.parquet from the asia lane
+        # (asia-close.yml); data/regime/latest.json from this job (already
+        # consumed by the plumbing step above). Measured 2026-10-13 on the M2:
+        # 2.54 s wall, ~136 MiB peak RSS. Writes site/liquiditydata/
+        # global_liquidity_transmission.json + data/global_liquidity_transmission/
+        # {state_history.parquet,state_history_meta.json,factor_comparison_btc_4w.json};
+        # covered by 'git add data/ site/' in 'commit engine outputs' below.
+        # Display tier, validated=False; this step changes WHEN the producer runs,
+        # never its semantics. A failure leaves the last committed artifact, whose
+        # own evidence clock then ages it stale in every reader.
+        run: python -m scripts.build_global_liquidity_transmission || echo "::warning::build_global_liquidity_transmission failed (non-fatal — last committed artifact stands)"
       - name: Price Pressure lobe (DRL W1, display-tier, non-fatal)
         # Single-name residual shocks: the Dislocation & Recovery lobe's nightly
         # increment. Pure aggregation over committed stores, NO network calls.
