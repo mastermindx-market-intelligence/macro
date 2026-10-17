@@ -28178,6 +28178,7 @@ jobs:
       - config/dataset_registry.yml
       - config/delisted_symbols.yml
       - config/issuer_group_allowlist.yml
+      - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/__init__.py
       - lib/config.py
       - lib/dataos/__init__.py
@@ -28190,6 +28191,7 @@ jobs:
       - lib/dataos/registry.py
       - lib/dataos/temporal.py
       - lib/delisted_symbols.py
+      - lib/symbol_directory_receipts.py
       - lib/ticker_aliases.py
       - research/data_os_completion/2026-10-13/A02_UPDATE_CORRECTION.md
       - research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md
