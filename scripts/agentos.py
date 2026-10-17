@@ -208,8 +208,23 @@ GHOST_ORIGINAL_WRITER_ACTION_RE = re.compile(
     r"\b(?:only\s+(?:the\s+)?original\s+(?:writer|parent|publisher|session|chat)"
     r"|(?:the\s+)?original\s+(?:writer|parent|publisher|session|chat)\s+(?:must|needs\s+to|has\s+to)"
     r"|(?:requires?|depends\s+on)\s+(?:the\s+)?original\s+(?:writer|parent|publisher|session|chat)(?:['’]s)?"
-    r"|(?:return|hand)\s+(?:this\s+work|the\s+work|work|it|this)?\s*(?:back\s+)?to\s+"
-    r"(?:the\s+)?original\s+(?:writer|parent|publisher|session|chat))\b",
+    r"|(?:return|hand)\s+(?:(?:this\s+work|the\s+work|work|it|this)\s+)?(?:back\s+)?to\s+"
+    r"(?:the\s+)?original\s+(?:writer|parent|publisher|session|chat)"
+    r"|(?:wait|waiting)\s+(?:for|on)\s+(?:the\s+)?original\s+"
+    r"(?:writer|parent|publisher|session|chat))\b",
+    re.IGNORECASE,
+)
+# A diagnostic must not mark instructions that expressly PREVENT a ghost handoff.
+GHOST_PARENT_NEGATION_RE = re.compile(
+    r"^\s*(?:do\s+not|don't|never)\s+(?:return|hand|wait)\b",
+    re.IGNORECASE,
+)
+# One authored next_action may include both the incumbent's specific held effect
+# and this receiver's independent recovery step; preserve that useful handoff.
+GHOST_SUCCESSOR_ACTION_RE = re.compile(
+    r"\b(?:current|currently\s+assigned|next|next\s+lawfully\s+assigned|present|assigned\s+successor)"
+    r"\s+(?:receiver|session|owner|agent|operator)\b.{0,180}?"
+    r"\b(?:inspect|verify|reconcile|advance|continue|run|repair|test|review|audit|check)\b",
     re.IGNORECASE,
 )
 VERIFIED_FLOOR = "tests pass"
@@ -1286,10 +1301,13 @@ def check_handoff(rec: dict[str, Any], path: Path) -> list[Problem]:
     actions = rec.get("next_actions")
     if (isinstance(actions, list) and actions
             and all(isinstance(item, str) and item.strip() for item in actions)
-            and all(GHOST_ORIGINAL_WRITER_ACTION_RE.search(item) for item in actions)):
+            and all(GHOST_ORIGINAL_WRITER_ACTION_RE.search(item)
+                    and not GHOST_PARENT_NEGATION_RE.search(item)
+                    and not GHOST_SUCCESSOR_ACTION_RE.search(item)
+                    for item in actions)):
         out.append(Problem(
             path, "ghost-original-writer-only-action",
-            "next_actions names only an original writer/parent/publisher; the currently "
+            "next_actions may depend solely on an original writer/parent/publisher; the currently "
             "assigned or next lawfully assigned receiver needs an executable source/effect "
             "reconciliation step. Preserve real STARTed lease and EFFECT_UNKNOWN.",
             hard=False,

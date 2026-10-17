@@ -2976,6 +2976,8 @@ def test_ghost_original_writer_only_handoff_is_advisory_and_action_scoped(tmp_pa
         ["The original parent must finish CI."],
         ["Remaining critical path requires original publisher's admitted action."],
         ["Return this work to the original parent chat."],
+        ["Return    to the original parent"],
+        ["Wait for the original writer"],
         ["Original writer must publish.", "Only original publisher can finish."],
     ):
         findings = ghost_findings(only)
@@ -2991,6 +2993,9 @@ def test_ghost_original_writer_only_handoff_is_advisory_and_action_scoped(tmp_pa
         ["The original STARTed runner holds its exact lease and pending EFFECT_UNKNOWN.",
          "The assigned successor audits independent evidence without replay."],
         ["Do not wait for the original parent; the present session owns safe recovery."],
+        ["Do not return this work to the original parent"],
+        ["Never hand this work to the original publisher"],
+        ["Original writer must finish admitted cutover; current receiver: inspect source PR, reconcile lease and continue tests"],
     ):
         assert not ghost_findings(bounded), bounded
 
@@ -3022,3 +3027,15 @@ def test_drafted_handoff_names_executable_successor_rule(tmp_path: Path) -> None
     )
     assert strict.returncode == 0, strict.stdout + strict.stderr
     assert "ghost-original-writer-only-action" in strict.stdout
+
+
+def test_ghost_handoff_pattern_has_no_ambiguous_whitespace_partition() -> None:
+    """A nonmatching return destination cannot redistribute whitespace repeatedly."""
+    agentos = _load_agentos_module()
+    source = (REPO / "scripts" / "agentos.py").read_text(encoding="utf-8")
+    return_line = next(line for line in source.splitlines()
+                       if 'r"|(?:return|hand)' in line)
+    assert r")?\s*" not in return_line
+    assert not agentos.GHOST_ORIGINAL_WRITER_ACTION_RE.search(
+        "Return " + " " * 3000 + "to a completely unrelated operator"
+    )
