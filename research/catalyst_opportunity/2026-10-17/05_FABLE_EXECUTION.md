@@ -1,6 +1,6 @@
 # Fable implementation and orchestration contract
 
-Version 1.0 | Prepared commission, **not dispatched** | Parent: existing Catalyst Intelligence program, Mastermind #1181
+Version 1.1 | Prepared commission, **not dispatched** | Parent: existing Catalyst Intelligence program, Mastermind #1181
 
 ## 1. Division of responsibility
 
@@ -51,7 +51,7 @@ These references are navigation and evidence, not automatic new instructions or 
 
 All packages below inherit the temporal, rights, no-duplicate-owner and no-unearned-trade-authority rules in the other chapters. Paths name known integration homes or explicitly proposed owner-local additions; Fable resolves exact current symbols before editing. A package cannot pass by adding an unused helper or a fixture-only API.
 
-`Dependencies` are hard engineering prerequisites. Optional enrichment does not block a market-only path when the schema permits typed unavailable fields. Acceptance IDs refer to `04_SCIENCE_ACCEPTANCE.md`. All tests are requirements until actual receipts exist.
+`Dependencies` are hard engineering prerequisites unless explicitly written as alternatives. In particular, WP07 requires WP04 and **at least one** admitted path from WP05 or WP06, not both. Optional enrichment does not block a market-only path when the schema permits typed unavailable fields. Acceptance IDs refer to `04_SCIENCE_ACCEPTANCE.md`. All tests are requirements until actual receipts exist.
 
 ### WP01 - Recover scope and interface ownership
 
@@ -103,9 +103,9 @@ Proof: admitted source or exact unavailable right, revision/removal/catch-up tes
 
 ### WP07 - Claim extraction and novelty
 
-Lane: B. Dependencies: WP05, WP06. Components: C03. Complexity: C2.
+Lane: B. Dependencies: WP04 AND (WP05 OR WP06). Components: C03. Complexity: C2.
 
-Reuse news-impact/qbus primitives for source-supported actor/action/number/date extraction and novelty. Required inputs may come from either admitted acquisition path; a denied optional provider must be represented unavailable rather than blocking the admitted path. Preserve sampled rejects, original language and counterevidence. Do not implement one expensive model call per article-ticker pair.
+Reuse news-impact/qbus primitives for source-supported actor/action/number/date extraction and novelty. At least one genuinely admitted source is required. One unavailable optional source must not block the other admitted path. This is source selection before effects, never permission to replay a refused use through another provider. Preserve sampled rejects, original language and counterevidence. Do not implement one expensive model call per article-ticker pair.
 
 Proof: exact source spans where allowed, unit/role ambiguity, old viral headline, correction and injection cases. Acceptance: A13, A15, A17-A20.
 
@@ -345,7 +345,7 @@ Proof: actual release identity, applicable A01-A64 evidence, no duplicate system
 
 Release A is WP01 -> WP03/WP02 -> WP04 -> WP09 -> WP10 -> WP11 -> WP29 -> WP30 -> WP31 -> WP32, with WP12 and WP33 joining where needed, followed by WP35. This delivers all-market attention without waiting for a war model or all seven domain studies.
 
-In parallel, source/event work proceeds through WP05-WP08; exposure through WP14; evaluation infrastructure through WP24; and the first Defense/Energy integrations through WP15/WP16. Release B attaches those accepted inputs to the already working market-first product. Other specialist adapters continue on independent allowed paths.
+In parallel, source/event work proceeds through WP05 or WP06, then WP07-WP08; exposure through WP14; evaluation infrastructure through WP24; and the first Defense/Energy integrations through WP15/WP16. Release B attaches those accepted inputs to the already working market-first product. Other specialist adapters continue on independent allowed paths.
 
 WP23/WP25-WP27/WP34 supply empirical qualification. They must not be reduced to paperwork, but their natural observation time does not block truthful factual releases. WP36 is final integrated accounting, not a reason to serialize all earlier delivery behind one enormous merge.
 
