@@ -238,6 +238,16 @@ def annotate(headlines: list[dict], batch_size: int | None = None,
     """
     if not headlines:
         return headlines
+    # News-source display/retention rights do not authorize external-model transfer.
+    # Tiingo stays excluded from this model consumer until a separately accepted
+    # source-specific processing path exists. Do not even acquire providers for an
+    # all-excluded batch; preserve the caller's list and original articles.
+    work = [(n, h) for n, h in enumerate(headlines)
+            if h.get("provider") != "tiingo"
+            and h.get("model_processing_allowed") is not False
+            and (h.get("title") or "").strip()]
+    if not work:
+        return headlines
     cfg = _cfg()
     if not bool(cfg.get("enabled", True)):
         return headlines
@@ -256,7 +266,6 @@ def annotate(headlines: list[dict], batch_size: int | None = None,
     mb = int(max_batches or cfg.get("max_batches", 12))
 
     # Build the worklist: index every headline that wants enrichment.
-    work = [(n, h) for n, h in enumerate(headlines) if (h.get("title") or "").strip()]
     batches = [work[i:i + bs] for i in range(0, len(work), bs)][:mb]
     calls = 0
     provider_used_log: list[str] = []

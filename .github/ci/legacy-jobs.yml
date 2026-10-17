@@ -28517,6 +28517,20 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "tests/test_news_llm.py"
+      # Tiingo News regression suite: canonical tracked-tree closure, additive only.
+      - "engine/financial_news.py"
+      - "engine/macro_news.py"
+      - "engine/news_ai_feed.py"
+      - "engine/news_event_ledger.py"
+      - "engine/news_events.py"
+      - "engine/news_llm.py"
+      - "engine/news_rss.py"
+      - "engine/news_vector.py"
+      - "engine/tiingo_news.py"
+      - "lib/massive_ticker.py"
+      - "scripts/build_news.py"
+      - "tests/test_tiingo_news.py"
       - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
@@ -29014,7 +29028,6 @@ jobs:
       - "engine/neuralweb/theme_state_generation.py"
       - "engine/neuralweb/theme_state_generation_reader.py"
       - "engine/news_common.py"
-      - "engine/news_events.py"
       - "engine/news_translate.py"
       - "engine/ollama_provider.py"
       - "engine/ontology_explorer.py"
@@ -29318,11 +29331,6 @@ jobs:
       - "tests/test_verify_ticker_news.py"
       # Options-structure block screening (#8922) reaches the flow detector's
       # measured-block contract and its episode/stage imports.
-      - "collectors/flow_signals.py"
-      - "config/flow_detector.yml"
-      - "engine/options_signal_episode.py"
-      - "engine/options_signal_episode_contract.py"
-      - "lib/live_flow_event_stage.py"
       - engine/company_intelligence/issuer_disclosure_owner.py
       - engine/company_intelligence/issuer_disclosure_publication.py
       - scripts/publish_company_disclosure.py
@@ -29381,6 +29389,8 @@ jobs:
           tests/test_qbus_news_flow_store.py
           tests/test_qbus_news_migration.py
           tests/test_qbus_news_receipts.py
+          tests/test_tiingo_news.py
+          tests/test_news_llm.py
           tests/test_qbus_news_reducer.py
           tests/test_qbus_news_store.py
           tests/test_qbus_news_store_api_reads.py

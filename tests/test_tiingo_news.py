@@ -1,0 +1,659 @@
+"""Tiingo provider contract, source-rights and News Intelligence wiring regression tests.
+
+No external network, real credential, production receipts or live storage.
+"""
+from __future__ import annotations
+
+from datetime import date, datetime, timezone
+import json
+
+import pytest
+
+from engine import tiingo_news as tn
+from engine import qbus_news_receipts as rights
+
+UTC = timezone.utc
+NOW = datetime(2026, 10, 9, 8, 0, tzinfo=UTC)
+
+
+def article(**overrides):
+    row = {
+        "id": 81234,
+        "title": "Chipmaker reports strong new demand for next-generation memory",
+        "url": "https://www.reuters.com/technology/memory-81234",
+        "source": "reuters.com",
+        "publishedDate": "2026-10-09T07:00:00Z",
+        "crawlDate": "2026-10-09T07:10:00Z",
+        "description": "Quarterly demand increased after a new product launch.",
+        "tickers": ["MU", "MU", "AMD"],
+        "tags": ["Earnings", "Semiconductors"],
+    }
+    row.update(overrides)
+    return row
+
+
+def receipt(**overrides):
+    row = {
+        "schema": "qbus.news_rights_receipt.v1",
+        "status": "approved",
+        "receipt_id": "test-owner-tiingo-r1",
+        "owner_ref": "source-rights/verified-contract-id-test-only",
+        "source": "tiingo",
+        "product_id": "tiingo-business-news-explicit-contract-test",
+        "audiences": ["site_full"],
+        "effective_at": "2026-10-01T00:00:00+00:00",
+        "expires_at": "2026-11-01T00:00:00+00:00",
+        "capabilities": {
+            "internal_ingestion": True,
+            "historical_retention": True,
+            "headline_display": True,
+            "source_link_display": False,
+            "teaser_display": False,
+            "body_display": False,
+            "image_display": False,
+            "derivative_processing": True,
+        },
+    }
+    row.update(overrides)
+    return row
+
+
+def test_article_keeps_three_clock_domains_and_source_metadata():
+    obs = tn.normalize_article(article(), received_at=NOW)
+    assert obs["provider"] == "tiingo"
+    assert obs["provider_id"] == 81234
+    assert obs["published_at"] == "2026-10-09T07:00:00+00:00"
+    assert obs["provider_crawled_at"] == "2026-10-09T07:10:00+00:00"
+    assert obs["first_available_at"] == NOW.isoformat()
+    assert obs["is_historical_backfill"] is False
+    assert obs["publication_crawl_delay_seconds"] == 600
+    assert obs["tickers"] == ["MU", "AMD"]
+
+
+def test_backfill_and_future_crawl_never_backdate_local_availability():
+    old = tn.normalize_article(article(), received_at=datetime(2026, 10, 11, tzinfo=UTC))
+    assert old["is_historical_backfill"]
+    assert old["first_available_at"] == "2026-10-11T00:00:00+00:00"
+    with pytest.raises(tn.TiingoArticleError, match="clock_after_receipt"):
+        tn.normalize_article(article(crawlDate="2026-10-10T07:10:00Z"), received_at=NOW)
+
+
+@pytest.mark.parametrize("overrides", [
+    {"id": True},
+    {"id": ""},
+    {"title": "   "},
+    {"url": "file:///etc/passwd"},
+    {"url": "https://user:pass@reuters.com/a"},
+    {"url": "https://reuters.com/article?q=\u0022onclick"},
+    {"source": "reuters.com<svg>"},
+    {"source": "reuters.com/../../bad"},
+    {"source": "bloomberg.com"},  # source-host disagreement cannot borrow credibility
+    {"publishedDate": "2026-10-09T07:00:00"},
+    {"crawlDate": "not-a-date"},
+    {"publishedDate": "2026-10-10T07:00:00Z"},
+    {"tickers": "MU"},
+    {"tags": ["ok", 42]},
+    {"description": "a" * (tn.MAX_DESCRIPTION + 1)},
+])
+def test_article_validation_drops_malformed_records(overrides):
+    with pytest.raises(tn.TiingoArticleError):
+        tn.normalize_article(article(**overrides), received_at=NOW)
+
+
+def test_aware_received_at_required():
+    with pytest.raises(tn.TiingoArticleError, match="received_at_invalid"):
+        tn.normalize_article(article(), received_at=NOW.replace(tzinfo=None))
+
+
+def test_fetch_uses_header_auth_and_sorted_bounded_payload():
+    captured = {}
+    class Response:
+        status_code = 200
+        headers = {"Content-Type": "application/json; charset=utf-8"}
+        closed = False
+        def iter_content(self, chunk_size):
+            yield json.dumps([article()]).encode()
+        def close(self):
+            self.closed = True
+    def fake_get(url, **kwargs):
+        captured.update(url=url, **kwargs)
+        return Response()
+    rows, status = tn.fetch_articles("fake-token-test-only", limit=1, get=fake_get)
+    assert status == "ok" and rows == [article()]
+    assert captured["url"] == tn.ENDPOINT
+    assert "fake-token" not in captured["url"]
+    assert captured["headers"]["Authorization"] == "Token fake-token-test-only"
+    assert captured["params"] == {
+        "sortBy": "crawlDate", "limit": 1, "onlyWithTickers": "true"
+    }
+    assert captured["timeout"] == (5, 15)
+    assert captured["allow_redirects"] is False
+    assert captured["stream"] is True
+
+
+def test_explicit_unfiltered_quality_sample_preserves_one_bounded_request():
+    calls = []
+    class Response:
+        status_code = 200
+        headers = {"Content-Type": "application/json"}
+        closed = False
+        def iter_content(self, chunk_size):
+            yield b"[]"
+        def close(self):
+            self.closed = True
+
+    def fake_get(url, **kwargs):
+        calls.append((url, kwargs))
+        return Response()
+
+    rows, state = tn.fetch_articles(
+        "stub-test-only", limit=7, only_with_tickers=False, get=fake_get
+    )
+    assert rows == [] and state == "no_rows"
+    assert len(calls) == 1
+    assert calls[0][0] == tn.ENDPOINT
+    assert calls[0][1]["params"] == {"sortBy": "crawlDate", "limit": 7}
+    assert calls[0][1]["allow_redirects"] is False
+    assert calls[0][1]["stream"] is True
+
+
+def test_non_boolean_news_ticker_filter_is_refused_before_network():
+    def unexpected_request(*args, **kwargs):
+        pytest.fail("invalid flag must not contact vendor")
+    for invalid in ("true", 1, None, [], {}):
+        rows, state = tn.fetch_articles(
+            "stub-test-only", only_with_tickers=invalid, get=unexpected_request
+        )
+        assert rows == [] and state == "invalid_ticker_filter"
+
+
+def test_fetch_unavailable_and_bad_response_fail_closed():
+    assert tn.fetch_articles("")[1] == "no_key"
+    assert tn.fetch_articles("stub", limit=0)[1] == "invalid_limit"
+    class Response:
+        status_code = 403
+    assert tn.fetch_articles("stub", get=lambda *a, **kw: Response())[1] == "http_403"
+    class Malformed:
+        status_code = 200
+        headers = {"Content-Type": "application/json"}
+        def iter_content(self, chunk_size):
+            yield b'{"articles": []}'
+        def close(self):
+            pass
+    assert tn.fetch_articles("stub", get=lambda *a, **kw: Malformed())[1] == "invalid_response"
+    def failure(*args, **kwargs):
+        raise RuntimeError("sensitive upstream request details")
+    assert tn.fetch_articles("stub", get=failure)[1] == "request_failed"
+
+
+def test_audit_records_bad_rows_without_article_text():
+    bad = article(id=False)
+    report = tn.audit_sample([article(), bad, article(id=81235, source="bloomberg.com", url="https://bloomberg.com/story/81235")], received_at=NOW)
+    assert report["sample_rows"] == 3
+    assert report["valid_rows"] == 2
+    assert report["invalid_reasons"]["id_invalid"] == 1
+    assert report["unique_ids"] == 2
+    assert report["ticker_tag_rate"] == 1
+    assert report["description_rate"] == 1
+    assert report["source_count"] == 2
+    assert report["crawl_delay_minutes_p50"] == 10
+    assert "Chipmaker" not in json.dumps(report)
+
+
+def test_tiingo_rights_require_explicit_product_derivatives_and_audience():
+    assert rights.parse_rights_receipt(receipt(), now=NOW, source="tiingo").source == "tiingo"
+    assert rights.parse_rights_receipt(receipt(), now=NOW, source="tiingo").rights.allowed_sources == frozenset({"tiingo"})
+    # Existing Benzinga call sites continue to assume Benzinga by default.
+    with pytest.raises(rights.NewsReceiptError, match="rights_source"):
+        rights.parse_rights_receipt(receipt(), now=NOW)
+    caps = dict(receipt()["capabilities"], derivative_processing=False)
+    with pytest.raises(rights.NewsReceiptError, match="derivative_processing"):
+        rights.parse_rights_receipt(receipt(capabilities=caps), now=NOW, source="tiingo")
+    with pytest.raises(rights.NewsReceiptError, match="rights_audience_not_permitted"):
+        rights.parse_rights_receipt(receipt(audiences=["internal_only"]), now=NOW, source="tiingo")
+    with pytest.raises(rights.NewsReceiptError):
+        rights.parse_rights_receipt(receipt(), now=NOW, source="unlicensed_vendor")
+
+
+def test_tiingo_file_loader_fails_closed_and_preserves_vendor_scope(tmp_path):
+    path = tmp_path / "approved-test-only.json"
+    path.write_text(json.dumps(receipt()))
+    assert rights.load_rights_receipt(path, now=NOW) is None
+    assert rights.load_rights_receipt(path, now=NOW, source="tiingo") is not None
+    path.write_text(json.dumps(receipt(status="denied")))
+    assert rights.load_rights_receipt(path, now=NOW, source="tiingo") is None
+
+
+def test_financial_integration_disabled_by_default_and_no_side_effects(monkeypatch):
+    from engine import financial_news as fin
+    monkeypatch.setattr(fin.config, "secret", lambda name: None)
+    monkeypatch.setattr(fin._tiingo_news_api, "fetch_articles", lambda *a, **kw: pytest.fail("disabled feed fetched"))
+    monkeypatch.setattr(fin._qbus, "append_items", lambda *a, **kw: pytest.fail("disabled feed stored"))
+    assert fin._tiingo_articles(NOW) == ([], "disabled", {})
+
+
+def test_financial_integration_requires_rights_even_with_token(monkeypatch):
+    from engine import financial_news as fin
+    env = {"TIINGO_NEWS_ENABLED": "1", "TIINGO_NEWS_RIGHTS_FILE": "/no/approved/receipt",
+           "TIINGO_API_KEY": "test-token"}
+    monkeypatch.setattr(fin.config, "secret", lambda name: env.get(name))
+    monkeypatch.setattr(fin._tiingo_news_api, "fetch_articles", lambda *a, **kw: pytest.fail("rights denied"))
+    assert fin._tiingo_articles(NOW)[1] == "rights_denied"
+
+
+def test_financial_integration_filters_sources_and_uses_single_qbus_batch(monkeypatch, tmp_path):
+    from engine import financial_news as fin
+    path = tmp_path / "tiingo-rights.json"
+    path.write_text(json.dumps(receipt()))
+    env = {"TIINGO_NEWS_ENABLED": "1", "TIINGO_NEWS_RIGHTS_FILE": str(path),
+           "TIINGO_API_KEY": "test-token"}
+    monkeypatch.setattr(fin.config, "secret", lambda name: env.get(name))
+    raw = [
+        article(),
+        article(id=81235, source="random-unknown-domain.example", url="https://random-unknown-domain.example/article"),
+        article(id=81236, tickers=[]),
+        article(id=81237, source="fakebloomberg.com", url="https://fakebloomberg.com/a"),
+    ]
+    monkeypatch.setattr(fin._tiingo_news_api, "fetch_articles", lambda *a, **kw: (raw, "ok"))
+    stored = []
+    monkeypatch.setattr(fin._qbus, "append_items", lambda rows: stored.append(rows))
+    items, state, audit = fin._tiingo_articles(NOW, _received_at=NOW)
+    assert state == "ok" and len(items) == 1
+    assert items[0]["provider_id"] == 81234
+    assert items[0]["url"] == ""  # rights denied source-link display
+    assert items[0]["summary"] == ""  # rights denied description/teaser display
+    assert items[0]["first_available_at"] == NOW.isoformat()
+    assert len(stored) == 1 and len(stored[0]) == 1  # no per-article Parquet rewrite
+    assert stored[0][0]["_crawled_at"] == NOW.isoformat()
+    assert audit["filtered_source"] == 2
+    assert audit["filtered_untagged"] == 1
+    assert audit["eligible_articles"] == 1
+
+
+def test_rights_revoked_while_fetching_deny_commit(monkeypatch, tmp_path):
+    from engine import financial_news as fin
+    path = tmp_path / "test-rights.json"
+    path.write_text(json.dumps(receipt()), encoding="utf-8")
+    env = {"TIINGO_NEWS_ENABLED": "1", "TIINGO_NEWS_RIGHTS_FILE": str(path),
+           "TIINGO_API_KEY": "test-token"}
+    monkeypatch.setattr(fin.config, "secret", lambda name: env.get(name))
+
+    def revoked_during_fetch(*a, **kw):
+        path.write_text(json.dumps(receipt(status="denied")), encoding="utf-8")
+        return [article()], "ok"
+
+    monkeypatch.setattr(fin._tiingo_news_api, "fetch_articles", revoked_during_fetch)
+    monkeypatch.setattr(fin._qbus, "append_items", lambda *a, **kw: pytest.fail("revoked feed stored"))
+    assert fin._tiingo_articles(NOW, _received_at=NOW)[1] == "rights_changed"
+
+
+def test_tiingo_stories_flow_into_ticker_index_without_changing_other_provider_schema(
+    monkeypatch, tmp_path
+):
+    from engine import financial_news as fin
+    from engine import news_common as nc
+    monkeypatch.setattr(fin, "_cache_path", lambda day: tmp_path / "financial-news.json")
+    monkeypatch.setattr(fin, "_cfg", lambda: {"enabled": True})
+    monkeypatch.setattr(nc, "build_entity_map", lambda: {
+        "tickers": {"MU": {"name": "Micron", "is_mag7": False}},
+        "sectors": {},
+        "baskets": {},
+    })
+    h = {
+        "title": "Chipmaker reports strong new demand for next-generation memory",
+        "url": "", "source": "reuters.com", "domain": "reuters.com",
+        "seendate": NOW.isoformat(), "summary": "", "tickers": ["MU"],
+        "sentiment": None, "tier": 1, "quality": 80,
+        "_id": nc.event_id("Chipmaker reports strong new demand for next-generation memory", "reuters.com"),
+        "provider": "tiingo", "data_attribution": "Data sourced by Tiingo",
+    }
+    monkeypatch.setattr(fin, "_tiingo_articles", lambda now: ([h], "ok", {"eligible_articles": 1}))
+    monkeypatch.setattr(fin, "_polygon_news", lambda *a: ([], "no_key"))
+    monkeypatch.setattr(fin, "_finnhub_news", lambda *a: ([], [], "no_key"))
+    monkeypatch.setattr(fin, "_quiver_news", lambda *a: [])
+    monkeypatch.setattr(fin, "_rss_news", lambda *a: {"market": [], "company": [], "sectors": {}})
+    monkeypatch.setattr(fin, "_gdelt_thematic", lambda *a: {
+        "market": [], "sectors": {}, "detail": "no_rows",
+    })
+    monkeypatch.setattr(fin._qbus, "read_items", lambda: None)
+    result = fin.feed(today=NOW.date(), use_cache=False)
+    assert result["schema"] == "financial_news.v1"
+    assert "MU" in result["by_ticker"]
+    assert result["by_ticker"]["MU"][0]["provider"] == "tiingo"
+    assert result["providers_detail"]["tiingo"] == "ok"
+    assert "tiingo" not in result["providers"]  # prior boolean schema intentionally preserved
+    assert "Data sourced by Tiingo" in result["disclaimer"]
+
+
+@pytest.mark.parametrize("url", [
+    "https://[broken/story", "https://reuters.com:invalid/story",
+    "https://reuters.com:444/story", "https://reuters.com/a\\b",
+    "https://reuters.com/a\nmore", "https://reuters.com/a\x7fmore",
+])
+def test_malformed_url_has_stable_refusal_not_an_uncaught_parser_error(url):
+    with pytest.raises(tn.TiingoArticleError, match="url_invalid"):
+        tn.normalize_article(article(url=url), received_at=NOW)
+
+
+@pytest.mark.parametrize("received", [None, "2026-10-09", 0, False])
+def test_non_datetime_receipt_is_rejected(received):
+    with pytest.raises(tn.TiingoArticleError, match="received_at_invalid"):
+        tn.normalize_article(article(), received_at=received)
+
+
+@pytest.mark.parametrize("field", ["publishedDate", "crawlDate"])
+def test_future_provider_clock_is_quarantined(field):
+    with pytest.raises(tn.TiingoArticleError, match="clock_after_receipt"):
+        tn.normalize_article(article(**{field: "2026-10-09T08:00:01Z"}), received_at=NOW)
+
+
+def test_publication_fallback_and_delay_are_not_misrepresented_as_sla():
+    obs = tn.normalize_article(article(), received_at=NOW)
+    report = tn.audit_sample([article()], received_at=NOW)
+    assert obs["publication_time_basis"] == "publisher_or_tiingo_discovery_fallback"
+    assert obs["available_at"] == NOW.isoformat()
+    assert report["editorial_accuracy"] == "not_measured"
+    assert report["entity_precision"] == "not_measured"
+    assert report["historical_completeness"] == "not_measured"
+
+
+def test_provider_tags_resolve_only_unique_existing_universe_keys():
+    universe = {"AAPL": {}, "MU": {}, "BRK-B": {}, "TPC": {}, "TpC": {}}
+    resolution = tn.resolve_ticker_candidates(["aapl", "mu", "brk.b", "tpc", "unlisted"], universe)
+    assert resolution["tickers"] == ["AAPL", "BRK-B", "MU"]
+    assert resolution["ambiguous"] == ["tpc"]
+    assert resolution["unresolved"] == ["unlisted"]
+    assert "TPC" not in resolution["tickers"]
+    assert universe == {"AAPL": {}, "MU": {}, "BRK-B": {}, "TPC": {}, "TpC": {}}
+
+
+class _StreamResponse:
+    def __init__(self, payload=b"[]", status=200, media="application/json"):
+        self.payload = payload
+        self.status_code = status
+        self.headers = {"Content-Type": media}
+        self.closed = False
+    def iter_content(self, chunk_size):
+        yield self.payload
+    def close(self):
+        self.closed = True
+
+
+def test_historical_window_audit_refuses_valid_200_rows_outside_requested_dates():
+    good = article(id=91001)
+    old = article(
+        id=91002, publishedDate="2026-07-18T08:00:00Z",
+        crawlDate="2026-07-18T08:10:00Z",
+    )
+    result = tn.audit_requested_publication_window(
+        [good, old], start_date=date(2026, 10, 9),
+        end_date=date(2026, 10, 10), received_at=NOW,
+    )
+    assert result == {
+        "sample_rows": 2,
+        "within_window_rows": 1,
+        "before_window_rows": 1,
+        "after_window_rows": 0,
+        "invalid_rows": 0,
+        "window_status": "publication_dates_outside_requested_window",
+        "no_out_of_window_or_malformed_rows": False,
+        "historical_availability": "not_proven",
+        "publication_clock_basis": "publisher_or_tiingo_discovery_fallback",
+        "only_validates_requested_publication_date_bounds": True,
+    }
+    assert "Chipmaker" not in json.dumps(result)
+    assert "reuters" not in json.dumps(result)
+    assert "91002" not in json.dumps(result)
+
+
+def test_historical_window_audit_accepts_bounds_without_claiming_completeness():
+    result = tn.audit_requested_publication_window(
+        [article(id=91003)], start_date=date(2026, 10, 9),
+        end_date=date(2026, 10, 9), received_at=NOW,
+    )
+    assert result["within_window_rows"] == 1
+    assert result["window_status"] == "published_date_window_observed"
+    assert result["no_out_of_window_or_malformed_rows"] is True
+    assert result["historical_availability"] == "not_proven"
+
+
+def test_historical_window_audit_rejects_malformed_empty_and_future_windows():
+    kwargs = dict(start_date=date(2026, 10, 9),
+                  end_date=date(2026, 10, 9), received_at=NOW)
+    bad = tn.audit_requested_publication_window(
+        [article(id=False)], **kwargs
+    )
+    assert bad["window_status"] == "malformed_vendor_row"
+    assert bad["invalid_rows"] == 1
+    assert not bad["no_out_of_window_or_malformed_rows"]
+
+    empty = tn.audit_requested_publication_window([], **kwargs)
+    assert empty["window_status"] == "empty_response"
+    assert not empty["no_out_of_window_or_malformed_rows"]
+
+    future = tn.audit_requested_publication_window(
+        [article()], start_date=date(2026, 10, 8),
+        end_date=date(2026, 10, 8), received_at=NOW
+    )
+    assert future["after_window_rows"] == 1
+    assert future["window_status"] == "publication_dates_outside_requested_window"
+    assert not future["no_out_of_window_or_malformed_rows"]
+
+
+@pytest.mark.parametrize("invalid_start,invalid_end", [
+    ("2026-10-09", date(2026, 10, 10)),
+    (date(2026, 10, 9), datetime(2026, 10, 10, tzinfo=UTC)),
+    (date(2026, 10, 10), date(2026, 10, 9)),
+])
+def test_historical_window_audit_refuses_invalid_bounds(invalid_start, invalid_end):
+    with pytest.raises(ValueError, match="publication_window_invalid"):
+        tn.audit_requested_publication_window(
+            [], start_date=invalid_start, end_date=invalid_end, received_at=NOW
+        )
+    with pytest.raises(ValueError, match="publication_window_invalid"):
+        tn.audit_requested_publication_window(
+            (), start_date=date(2026, 10, 9),
+            end_date=date(2026, 10, 9), received_at=NOW,
+        )
+
+
+def test_aggregate_ticker_coverage_is_case_safe_and_no_raw_content_is_reported():
+    universe = {"MU": {}, "TPC": {}, "TpC": {}, "AAPL": {}}
+    rows = [
+        article(id=91101, tickers=["mu"]),
+        article(id=91102, tickers=["tpc"]),
+        article(id=91103, tickers=["AAPL"]),
+        article(id=91104, tickers=["UNKNOWN-CANDIDATE"]),
+        article(id=91105, tickers=[]),
+        article(id=91106, tickers=["mu", "tpc", "UNKNOWN-CANDIDATE"]),
+        article(id=91107, tickers=["AAPL", "mu"]),
+        article(id=False, tickers=["MU"]),
+    ]
+    audit = tn.audit_ticker_coverage(rows, universe, received_at=NOW)
+    assert audit == {
+        "sample_rows": 8,
+        "valid_rows": 7,
+        "ticker_tagged_rows": 6,
+        "unique_canonical_match_rows": 4,
+        "ambiguous_ticker_rows": 2,
+        "unresolved_ticker_rows": 2,
+        "matched_canonical_symbol_count": 2,
+        "case_stranded_matched_rows": 3,
+        "no_unique_match_rows": 2,
+        "diagnostic_basis": "caller_universe_display_candidate_not_identity_grant",
+    }
+    assert "UNKNOWN-CANDIDATE" not in json.dumps(audit)
+    assert "Chipmaker" not in json.dumps(audit)
+    assert "reuters" not in json.dumps(audit)
+
+
+def test_ticker_audit_builds_one_universe_index_per_sample(monkeypatch):
+    build = tn._ticker_lookup_index
+    calls = []
+
+    def indexed_once(universe):
+        calls.append(1)
+        return build(universe)
+
+    monkeypatch.setattr(tn, "_ticker_lookup_index", indexed_once)
+    rows = [article(id=92000 + i, tickers=["mu"]) for i in range(20)]
+    stats = tn.audit_ticker_coverage(rows, {"MU": {}}, received_at=NOW)
+    assert stats["unique_canonical_match_rows"] == 20
+    assert stats["case_stranded_matched_rows"] == 20
+    assert calls == [1]
+
+
+def test_empty_ticker_universe_does_not_invent_security_identities():
+    report = tn.audit_ticker_coverage(
+        [article(id=91201, tickers=["mu"])], {}, received_at=NOW
+    )
+    assert report["unique_canonical_match_rows"] == 0
+    assert report["unresolved_ticker_rows"] == 1
+    assert report["no_unique_match_rows"] == 1
+    with pytest.raises(ValueError, match="ticker_universe_invalid"):
+        tn.audit_ticker_coverage([], None, received_at=NOW)
+
+
+@pytest.mark.parametrize("status", [301, 302, 401, 403, 429, 500])
+def test_http_errors_and_redirects_make_one_request_and_close(status):
+    response = _StreamResponse(status=status)
+    calls = []
+    def get(url, **kwargs):
+        calls.append((url, kwargs))
+        return response
+    assert tn.fetch_articles("fixture-token", get=get) == ([], f"http_{status}")
+    assert len(calls) == 1
+    assert calls[0][1]["allow_redirects"] is False
+    assert response.closed
+
+
+def test_response_byte_budget_is_enforced_and_response_closed(monkeypatch):
+    monkeypatch.setattr(tn, "MAX_RESPONSE_BYTES", 10)
+    response = _StreamResponse(b" " * 11)
+    assert tn.fetch_articles("fixture-token", get=lambda *a, **kw: response) == ([], "response_too_large")
+    assert response.closed
+
+
+def test_response_deadline_is_enforced_and_response_closed(monkeypatch):
+    clock = iter([0, 21])
+    monkeypatch.setattr(tn, "monotonic", lambda: next(clock))
+    response = _StreamResponse()
+    assert tn.fetch_articles("fixture-token", get=lambda *a, **kw: response) == ([], "response_deadline")
+    assert response.closed
+
+
+@pytest.mark.parametrize("payload,media,expected", [
+    (b"<html>login</html>", "text/html", "invalid_content_type"),
+    (b"{}", "application/json", "invalid_response"),
+    (b"[{},{}]", "application/json", "invalid_response"),
+    (b"not-json", "application/json", "request_failed"),
+])
+def test_unusable_response_cannot_be_a_success(payload, media, expected):
+    response = _StreamResponse(payload, media=media)
+    assert tn.fetch_articles("fixture-token", limit=1, get=lambda *a, **kw: response) == ([], expected)
+    assert response.closed
+
+
+def test_tiingo_only_model_batch_never_acquires_a_provider(monkeypatch):
+    from engine import news_llm
+    row = {"provider": "tiingo", "title": "Example headline", "summary": ""}
+    payload = [row]
+    monkeypatch.setattr(news_llm, "_cfg", lambda: pytest.fail("model configuration accessed"))
+    assert news_llm.annotate(payload) is payload
+    assert row == {"provider": "tiingo", "title": "Example headline", "summary": ""}
+
+
+def test_model_enrichment_cannot_copy_a_duplicate_into_tiingo(monkeypatch):
+    from engine import news_llm
+    from scripts import build_news
+    tiingo = {"provider": "tiingo", "title": "Same headline", "domain": "reuters.com", "summary": ""}
+    legacy = {"provider": "polygon", "title": "Same headline", "domain": "reuters.com", "summary": ""}
+    calls = []
+    def annotate(rows):
+        calls.append(list(rows))
+        assert all(row.get("provider") != "tiingo" for row in rows)
+        for row in rows:
+            row.update(summary="Fixture model summary", llm_importance=40)
+        return rows
+    monkeypatch.setattr(news_llm, "annotate", annotate)
+    monkeypatch.setattr(news_llm, "provider_label", lambda: "fixture")
+    monkeypatch.setattr(build_news.nc, "rank_score", lambda row, now: 1)
+    build_news._enrich([[legacy, tiingo]])
+    assert len(calls) == 1 and calls[0] == [legacy]
+    assert legacy["summary"] == "Fixture model summary"
+    assert tiingo["summary"] == ""
+    assert "llm_importance" not in tiingo
+
+
+def test_tiingo_only_build_enrichment_never_selects_model_credentials(monkeypatch):
+    from engine import news_llm
+    from scripts import build_news
+    row = {"provider": "tiingo", "title": "Example headline", "summary": ""}
+    monkeypatch.setattr(news_llm, "provider_label", lambda: pytest.fail("provider selected"))
+    monkeypatch.setattr(build_news.nc, "rank_score", lambda row, now: 1)
+    assert build_news._enrich([[row]]) == ""
+    assert row["summary"] == ""
+
+
+def test_compact_ticker_output_preserves_tiingo_lineage_without_claiming_first_seen(monkeypatch):
+    from engine import financial_news as fin
+    monkeypatch.setattr(fin.nc, "build_entity_map", lambda: {"tickers": {"MU": {}}})
+    row = {
+        "provider": "tiingo", "provider_id": 81234,
+        "title": "Fixture headline", "url": "", "source": "reuters.com",
+        "seendate": "2026-10-09T07:00:00Z", "summary": "",
+        "provider_crawled_at": "2026-10-09T07:10:00+00:00",
+        "first_available_at": NOW.isoformat(),
+        "model_processing_allowed": True,
+        "private_account_detail": "must-not-be-projected",
+    }
+    result = fin.mastermind_by_ticker({"by_ticker": {"MU": [row]}})["MU"]["top"][0]
+    assert result["provider"] == "tiingo" and result["provider_id"] == 81234
+    assert result["observation_received_at"] == NOW.isoformat()
+    assert result["provider_crawled_at"] == row["provider_crawled_at"]
+    assert result["publication_time_basis"] == tn.PUBLICATION_TIME_BASIS
+    assert result["model_processing_allowed"] is False
+    assert result["data_attribution"] == "Data sourced by Tiingo"
+    assert "first_available_at" not in result
+    assert "private_account_detail" not in result
+
+
+def test_other_providers_keep_the_existing_compact_row_shape(monkeypatch):
+    from engine import financial_news as fin
+    monkeypatch.setattr(fin.nc, "build_entity_map", lambda: {"tickers": {"MU": {}}})
+    row = {"provider": "polygon", "title": "Fixture legacy headline", "url": "u",
+           "source": "Reuters", "seendate": "date", "summary": "summary"}
+    result = fin.mastermind_by_ticker({"by_ticker": {"MU": [row]}})["MU"]["top"][0]
+    assert set(result) == {"title", "url", "source", "published", "sentiment", "summary"}
+
+
+def test_quality_snapshot_separates_provider_age_from_publication_lag():
+    # One bounded observation only; repeat IDs/URLs are audit evidence, not
+    # proof that the underlying publisher published multiple distinct stories.
+    rows = [
+        article(id=81, url="https://reuters.com/a"),
+        article(id=81, url="https://reuters.com/a",
+                publishedDate="2026-10-09T05:50:00Z", crawlDate="2026-10-09T06:00:00Z"),
+        article(id=82, url="https://reuters.com/b",
+                publishedDate="2026-10-09T03:50:00Z", crawlDate="2026-10-09T04:00:00Z"),
+    ]
+    report = tn.audit_sample(rows, received_at=NOW)
+    assert report["valid_rows"] == 3
+    assert report["duplicate_provider_id_rows"] == 1
+    assert report["duplicate_url_rows"] == 1
+    assert report["provider_crawl_to_observation_minutes_p50"] == 120.0
+    assert report["observed_within_60m_of_provider_crawl_share"] == 0.3333
+    assert report["reported_publication_to_crawl_minutes_p50"] == 10.0
+    assert report["largest_source_share"] == 1.0
+    assert report["apparent_age_scope"] == "one_observation_slice_not_provider_sla"
+    assert "Chipmaker" not in json.dumps(report)
+    assert "/reuters.com/a" not in json.dumps(report)
+
+
+def test_quality_snapshot_empty_or_rejected_data_has_no_apparent_age_estimate():
+    report = tn.audit_sample([article(id=True)], received_at=NOW)
+    assert report["valid_rows"] == 0
+    assert report["provider_crawl_to_observation_minutes_p50"] is None
+    assert report["observed_within_60m_of_provider_crawl_share"] is None
+    assert report["duplicate_provider_id_rows"] == 0
+    assert report["largest_source_share"] is None
