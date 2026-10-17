@@ -446,9 +446,14 @@
   // This optional asset may be denied to an anonymous visitor (HTTP 401).
   // Leave the server's access policy unchanged and do not throw from a missing
   // global; authenticated pages still execute the same renderer exactly once.
-  if (typeof window.renderFormingNarratives === "function") {
-    window.renderFormingNarratives({ base: "hkbasketdata/" });
-  }
+  // optimize_assets stamps this external module with defer; a synchronous
+  // typeof check happens BEFORE a successful deferred asset has executed.
+  // DOMContentLoaded fires after deferred scripts, even when an asset is 401.
+  document.addEventListener("DOMContentLoaded", function () {
+    if (typeof window.renderFormingNarratives === "function") {
+      window.renderFormingNarratives({ base: "hkbasketdata/" });
+    }
+  }, { once: true });
 </script>
 
   <div id="content">
@@ -480,7 +485,7 @@
 
   <footer>
     <span class="l-en">Informational only, not investment advice. Baskets are equal-weighted and benchmarked to the Hang Seng Index. Membership is curated, so results are descriptive, not an out-of-sample backtest or buy list.</span><span class="l-zh">仅供参考，非投资建议。篮子等权重，并以恒生指数为基准。成分为人工整理，因此结果是描述性信息，不是样本外回测或买入清单。</span>
-    <span class="l-en">Generated</span><span class="l-zh">生成于</span> <span id="gen">2026-10-17 14:39 UTC</span>.
+    <span class="l-en">Generated</span><span class="l-zh">生成于</span> <span id="gen">2026-10-17 16:19 UTC</span>.
   </footer>
 
 <script src="lightweight-charts.js?v=46fc6953" defer></script>
