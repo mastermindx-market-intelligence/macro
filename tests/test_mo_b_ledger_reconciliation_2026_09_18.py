@@ -701,9 +701,9 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     # W9 stage 1 D73-D74 (O32 natural-run publication proof; Sol 5966828357 scheduler owner).
     am_edition = r["MO-PAID-011"]
     assert am_edition["capability_state_c2"] == "PARTIAL"
-    # W16 adds source/local repair evidence without replacing D73's narrower
+    # W17 records the later source merge without replacing D73's narrower
     # natural-run publication proof or promoting the incomplete AM Edition.
-    assert am_edition["state_delta"].startswith("UPDATED 2026-10-11 W16")
+    assert am_edition["state_delta"].startswith("UPDATED 2026-10-11 W17")
     assert "UPDATED 2026-10-03 D73" in am_edition["state_delta"]
     assert "#8771" in am_edition["state_delta"]
     assert "96db8a19f9f5" in am_edition["state_delta"]

@@ -155,6 +155,14 @@ fi
 # but no credential or service-writable profile may exist until macro-api has
 # restarted into its deny namespace.
 bash "$APP_DIR/app/deploy/market-memory-options-prereqs.sh" --identity-only
+# BEGIN COMPANY_INTELLIGENCE_PRIVATE_ROOTS
+# Empty directories only: GMI owns publication and current-generation admission.
+if ! "$VENV/bin/python" "$APP_DIR/app/deploy/company-intelligence-private-roots.py"; then
+  echo "api-setup.sh: private Company Intelligence provisioning failed; refusing API readiness" >&2
+  exit 1
+fi
+# END COMPANY_INTELLIGENCE_PRIVATE_ROOTS
+
 REVIEWED_UNIT_NAMES=(
   macro-api.service
   macro-market-memory-source.service macro-market-memory-source.timer

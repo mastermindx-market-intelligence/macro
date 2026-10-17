@@ -729,6 +729,8 @@ def test_updater_deferred_replay_is_ordered_and_owner_failure_suppresses_w2c(
 ) -> None:
     helpers = _marked_shell(UPDATE, "W2C_DEPLOY_HELPERS")
     replay = _marked_shell(UPDATE, "W2C_DEFERRED_REPLAY")
+    freeze = _marked_shell(UPDATE, "W2C_LANE_FREEZE")
+    exit_status = _marked_shell(UPDATE, "DEPLOY_EXIT_STATUS")
 
     def run(*, fail_unit: str, installation_required: int, publish: str):
         state = tmp_path / f"run-{fail_unit or 'ok'}-{installation_required}-{publish}"
@@ -743,6 +745,7 @@ API_DEPS_OK=1
 MARKET_MEMORY_EXPERIENCE_RUN_NEEDED=1
 MARKET_MEMORY_EXPERIENCE_INSTALLATION_REQUIRED={installation_required}
 MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE=3
+{freeze}
 {_SYSTEMCTL_HARNESS}
 {helpers}
 w2c_terminal_ledger_state() {{ return 3; }}
@@ -751,6 +754,7 @@ w2c_verify_installation() {{
     [ ! -L "$MARKET_MEMORY_EXPERIENCE_INSTALLATION" ]
 }}
 {replay}
+{exit_status}
 """
         result = _run_shell(
             source,
@@ -796,6 +800,8 @@ def test_updater_no_diff_attests_and_rearm_requires_synchronous_owner_replay(
 ) -> None:
     helpers = _marked_shell(UPDATE, "W2C_DEPLOY_HELPERS")
     attestation = _marked_shell(UPDATE, "W2C_RUNTIME_ATTESTATION")
+    freeze = _marked_shell(UPDATE, "W2C_LANE_FREEZE")
+    exit_status = _marked_shell(UPDATE, "DEPLOY_EXIT_STATUS")
 
     def run(
         name: str,
@@ -824,6 +830,7 @@ API_DEPS_OK=1
 CHANGED=''
 W2C_TIMER_ENABLED={enabled}
 W2C_TIMER_ACTIVE={active}
+{freeze}
 {_SYSTEMCTL_HARNESS}
 {helpers}
 w2c_terminal_ledger_state() {{
@@ -835,6 +842,7 @@ w2c_verify_installation() {{
   [ {installation_valid} -eq 1 ]
 }}
 {attestation}
+{exit_status}
 """
         result = _run_shell(
             source,
@@ -1069,8 +1077,11 @@ def _run_api_w2c_slice(
         UPDATE, "MACRO_API_RESTART_TRANSACTION"
     )
     attestation = attestation or _marked_shell(UPDATE, "W2C_RUNTIME_ATTESTATION")
+    freeze = _marked_shell(UPDATE, "W2C_LANE_FREEZE")
+    exit_status = _marked_shell(UPDATE, "DEPLOY_EXIT_STATUS")
     source = f"""
 {_API_W2C_SLICE_HARNESS}
+{freeze}
 MARKET_MEMORY_EXPERIENCE_ROOT={shlex.quote(str(state / "experience"))}
 MARKET_MEMORY_EXPERIENCE_INSTALLATION="$MARKET_MEMORY_EXPERIENCE_ROOT/registration_installation.json"
 MARKET_MEMORY_EXPERIENCE_TERMINAL="$MARKET_MEMORY_EXPERIENCE_ROOT/TERMINAL.json"
@@ -1083,6 +1094,7 @@ w2c_verify_installation() {{
 }}
 {transaction}
 {attestation}
+{exit_status}
 """
     result = _run_shell(
         source,
@@ -1242,12 +1254,181 @@ def test_mutation_api_restart_below_w2c_misses_biocatalyst_restart(
         fail_unit="macro-market-memory-context.service",
         helpers=helpers,
         transaction=attestation,
-        attestation=transaction,
+        # Below W2C = inside the W2C-dependent region that a frozen W2C lane
+        # skips (attestation end .. W1B5_TIMER_FINALIZATION end).
+        attestation=(
+            'if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then\n' + transaction + "\nfi\n"
+        ),
     )
     assert result.returncode == 1, result.stderr
     assert _restart_count(events) == 0
     assert "start macro-market-memory-experience.service" not in events
     assert not marker.exists()
+
+
+_TICKER_NEWS_HEAD = "# TICKER NEWS is a long-running, operator-armed source service."
+_BIOCATALYST_HEAD = "# BioCatalyst B1 is a separate source-canonical lane."
+
+
+def test_owner_replay_refusal_freezes_w2c_lane_and_still_restarts_ticker_news(
+    tmp_path: Path,
+) -> None:
+    """A W2C owner-replay refusal must not swallow lane-independent steps.
+
+    Live 2026-10-11: the technicals owner refused, update.sh exited at
+    "refusing W2C activation before owner replay completion", and the
+    ticker-news restart owed to a merged scripts/run_qbus_news.py change never
+    ran; CHANGED is per-run, so that restart was lost for good.  Run the real
+    attestation -> W2C-dependent region -> frozen-lane continue -> ticker news
+    -> final exit status path in source order; only systemd is simulated.
+    """
+    text = _text(UPDATE)
+    exit_guard = _marked_shell(UPDATE, "W1B5_TIMER_EXIT_GUARD")
+    freeze = _marked_shell(UPDATE, "W2C_LANE_FREEZE")
+    helpers = _marked_shell(UPDATE, "W2C_DEPLOY_HELPERS")
+    region_start = text.index("# BEGIN W2C_RUNTIME_ATTESTATION\n")
+    region_end = text.index("# Live-plane systemd definitions", region_start)
+    w2c_region = text[region_start:region_end]
+    ticker_start = text.index(_TICKER_NEWS_HEAD, region_end)
+    ticker = text[ticker_start : text.index(_BIOCATALYST_HEAD, ticker_start)]
+    exit_status = _marked_shell(UPDATE, "DEPLOY_EXIT_STATUS")
+
+    state = tmp_path / "state"
+    (state / "app" / "deploy").mkdir(parents=True)
+    unit_body = "[Service]\nExecStart=/bin/true\n"
+    (state / "app" / "deploy" / "macro-ticker-news.service").write_text(
+        unit_body, encoding="utf-8"
+    )
+    installed = tmp_path / "installed-macro-ticker-news.service"
+    installed.write_text(unit_body, encoding="utf-8")
+    ticker = ticker.replace(
+        "/etc/systemd/system/macro-ticker-news.service", shlex.quote(str(installed))
+    )
+    assert "/etc/systemd/system/macro-ticker-news.service" not in ticker
+    (state / "registration_installation.json").write_text("{}\n", encoding="utf-8")
+    event_log = tmp_path / "events"
+    source = f"""
+set -euo pipefail
+APP_DIR={shlex.quote(str(state))}
+CHANGED='scripts/run_qbus_news.py'
+RECONCILED=0
+OPTIONS_TIMER_DISARMED=0
+MARKET_MEMORY_EXPERIENCE_ROOT={shlex.quote(str(state))}
+MARKET_MEMORY_EXPERIENCE_INSTALLATION="$MARKET_MEMORY_EXPERIENCE_ROOT/registration_installation.json"
+MARKET_MEMORY_EXPERIENCE_TERMINAL="$MARKET_MEMORY_EXPERIENCE_ROOT/TERMINAL.json"
+MARKET_MEMORY_EXPERIENCE_RUNTIME_REGEX='^runtime-change$'
+MARKET_MEMORY_EXPERIENCE_UNIT_UPDATED=0
+RECIPROCAL_TIMERS_PAUSED=0
+API_DEPS_OK=1
+disarm_options_timer() {{
+  if [ "$OPTIONS_TIMER_DISARMED" -eq 1 ]; then
+    return 0
+  fi
+  printf '%s\n' disarm_options_timer >> "$EVENT_LOG"
+  OPTIONS_TIMER_DISARMED=1
+}}
+OPTIONS_RECONCILIATION_COMPLETE=0
+{exit_guard}
+{freeze}
+systemctl() {{
+  printf '%s\n' "$*" >> "$EVENT_LOG"
+  case "$1" in
+    start) [ "$2" != "${{FAIL_UNIT:-}}" ] || return 23 ;;
+    is-enabled) return 1 ;;
+    is-active) [ "${{3:-}}" = macro-ticker-news.service ]; return ;;
+  esac
+}}
+{helpers}
+w2c_terminal_ledger_state() {{ return 3; }}
+w2c_verify_installation() {{
+  [ -f "$MARKET_MEMORY_EXPERIENCE_INSTALLATION" ]
+}}
+{w2c_region}
+{ticker}
+{exit_status}
+"""
+    result = _run_shell(
+        source,
+        environment={
+            "EVENT_LOG": str(event_log),
+            "FAIL_UNIT": "macro-market-memory-context.service",
+        },
+    )
+    events = event_log.read_text(encoding="utf-8").splitlines()
+    stderr = result.stderr
+
+    assert result.returncode == 1, stderr
+    assert "macro-update: refusing W2C activation before owner replay completion" in stderr
+    assert "restart macro-ticker-news.service" in events
+    assert (
+        "macro-update: W2C lane frozen — refusing W2C activation before owner "
+        "replay completion; continuing lane-independent deploy steps"
+    ) in stderr
+    assert "macro-update: deploy finished with status 1 (frozen lanes: w2c)" in stderr
+    assert (
+        stderr.index("refusing W2C activation")
+        < stderr.index("W2C lane frozen")
+        < stderr.index("deploy finished with status 1")
+    )
+    # W2C semantics are unchanged: the owner chain stopped at the failed owner,
+    # the W2C writer never ran, and no timer was armed or disarmed.
+    assert "start macro-market-memory-context.service" in events
+    assert "start macro-market-memory-technicals.service" not in events
+    assert "start macro-market-memory-experience.service" not in events
+    assert not any(event.startswith(("enable ", "disable ")) for event in events)
+    # Nothing in the W2C-dependent region (option-OI, production records) ran.
+    assert not any(
+        "macro-market-memory-options" in event or "production-records" in event
+        for event in events
+    )
+    # The option-OI timer goes down once, before any lane-independent step,
+    # and the still-armed EXIT trap's second disarm is a latched no-op.
+    assert events.count("disarm_options_timer") == 1
+    assert events.index("disarm_options_timer") < events.index(
+        "restart macro-ticker-news.service"
+    )
+
+
+def test_w2c_lane_freeze_brackets_only_the_w2c_dependent_region(
+    tmp_path: Path,
+) -> None:
+    text = _text(UPDATE)
+    attestation_end = text.index("# END W2C_RUNTIME_ATTESTATION\n")
+    wrapper = text.index('\nif [ "$W2C_LANE_FROZEN" -eq 0 ]; then\n', attestation_end)
+    between = text[attestation_end:wrapper].splitlines()[1:]
+    assert all(line.startswith("#") for line in between), between
+    assert (
+        "# END W1B5_TIMER_FINALIZATION\nfi\n# BEGIN W2C_LANE_FROZEN_CONTINUE\n"
+        in text
+    )
+    continue_at = text.index("# BEGIN W2C_LANE_FROZEN_CONTINUE")
+    assert continue_at < text.index("# Live-plane systemd definitions", continue_at)
+    assert (
+        continue_at
+        < text.index(_TICKER_NEWS_HEAD, continue_at)
+        < text.index("# BEGIN DEPLOY_EXIT_STATUS")
+    )
+    assert text.endswith("# END DEPLOY_EXIT_STATUS\n")
+    for marker in (
+        "W2C_RUNTIME_ATTESTATION",
+        "W2C_DEFERRED_REPLAY",
+        "W1B5_TIMER_FINALIZATION",
+    ):
+        assert "exit 1" not in _marked_shell(UPDATE, marker), marker
+
+    freeze = _marked_shell(UPDATE, "W2C_LANE_FREEZE")
+    exit_status = _marked_shell(UPDATE, "DEPLOY_EXIT_STATUS")
+    for action, expected in (("", 0), ('freeze_w2c_lane "first"\nfreeze_w2c_lane "second"', 1)):
+        result = _run_shell(
+            f"set -euo pipefail\n{freeze}\n{action}\n"
+            'printf "%s\\n" "$W2C_LANE_FROZEN_REASON"\n'
+            f"{exit_status}",
+            environment={},
+        )
+        assert result.returncode == expected, result.stderr
+        finished = "macro-update: deploy finished with status 1 (frozen lanes: w2c)"
+        assert (finished in result.stderr) is bool(expected)
+        assert result.stdout.strip() == ("first" if expected else "")
 
 
 def test_terminal_installation_path_never_restarts_owners_or_w2c(

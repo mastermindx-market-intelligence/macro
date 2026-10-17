@@ -1,0 +1,819 @@
+{
+  "schema": "k3e.eval1_challenger_trial_identity/v1",
+  "registration_id": "K3E-EVAL-1-V1",
+  "registration_digest": "1ca158a213fca3f90c5c4fdc1359d40bf9146f2400cb10d8caa202b18f293bd4",
+  "registration_path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+  "boundary_commit": "01fcaf748c2794aa717b25d3e34ad1f53c539801",
+  "boundary_at": "2026-10-07T13:30:00Z",
+  "verified_on_main_commit": "d42fdc53f4a70783c7ba7523fe87f7411bb4133c",
+  "identity_definition": {
+    "elements": [
+      "model_family",
+      "target",
+      "horizon",
+      "feature_set",
+      "preprocessing",
+      "hyperparameters",
+      "seed_policy"
+    ],
+    "citations": [
+      {
+        "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+        "line": 47,
+        "quote": "\"trial_identity\": \"model_family+target+horizon+feature_set+preprocessing+hyperparameters+seed_policy\"",
+        "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+      },
+      {
+        "path": "research/alpha_intelligence/expectation_market_dynamics/EVALUATION_PREREG.md",
+        "line": 151,
+        "quote": "A trial identity includes model family, target, horizon, feature set,",
+        "blob": "062455f320e2b20f8e562b1184042a2b97755429"
+      },
+      {
+        "path": "research/alpha_intelligence/expectation_market_dynamics/EVALUATION_PREREG.md",
+        "line": 152,
+        "quote": "preprocessing, hyperparameters, and seed policy. Failed jobs, discarded feature",
+        "blob": "062455f320e2b20f8e562b1184042a2b97755429"
+      }
+    ]
+  },
+  "trial_accounting": {
+    "fdr_family": "k3e_expectation_market_dynamics_v1",
+    "trial_ordinal": 1,
+    "eval1_trials_allotted": 1,
+    "spend_event": "the merge that first puts this file on canonical main. The trial stays spent if it later fails, is UNESTIMABLE, or is never run.",
+    "failed_trials_count": true,
+    "second_configuration": "any change to any element after merge is a second trial and exceeds the EVAL-1 budget",
+    "ledger_row": "NONE_WRITTEN_BY_THIS_CHANGE: data/trial_ledger.jsonl is advanced only by the nightly. The spend is recorded by this file's presence on canonical main.",
+    "citations": [
+      {
+        "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+        "line": 130,
+        "quote": "\"eval1_trials_allotted\": 1,",
+        "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+      },
+      {
+        "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+        "line": 131,
+        "quote": "\"failed_trials_count\": true,",
+        "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+      },
+      {
+        "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+        "line": 134,
+        "quote": "\"fdr_family\": \"k3e_expectation_market_dynamics_v1\",",
+        "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+      },
+      {
+        "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+        "line": 48,
+        "quote": "Committing the identity spends the one trial even if the trial later fails.",
+        "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+      },
+      {
+        "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+        "line": 48,
+        "quote": "A second configuration of any kind is a second trial",
+        "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+      },
+      {
+        "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+        "line": 46,
+        "quote": "\"trial_count\": 1,",
+        "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+      }
+    ]
+  },
+  "owner_authored_reading": {
+    "answer": "Every element cites lines already on canonical main in the owner-authored EVAL-0 sources (EVALUATION_PREREG.md, eval0_preregistration.v1.json, EXPECTATION_MODEL_SPEC.md), the custodian-frozen EVAL-1 registration and its rationale, and the EXP-1 emitter that defines the bound universe. No element cites a line written by this change. The feature set is not chosen: it is the whole bound universe under a mechanical rule, so this file originates no feature hypothesis. Values the registration leaves to commit time (penalty weight, solver settings, imputation and winsor bounds) are fixed here and labelled SEAT_FIXED_AT_COMMIT_NOT_DATA_DERIVED.",
+    "boundary_commit_reading": "The boundary commit is 01fcaf748c2794aa717b25d3e34ad1f53c539801, the first canonical origin/main commit containing registration digest 1ca158a213fca3f90c5c4fdc1359d40bf9146f2400cb10d8caa202b18f293bd4. The boundary instant 2026-10-07T13:30:00Z is the first NYSE open strictly after it. Later commits (PR 8583, PR 8615) add no eligible component.",
+    "citations": [
+      {
+        "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+        "line": 48,
+        "quote": "Every element cites an owner-authored spec line.",
+        "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+      },
+      {
+        "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+        "line": 48,
+        "quote": "The full trial identity is committed to canonical main before any F_DEV label is read.",
+        "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+      },
+      {
+        "path": "research/alpha_intelligence/expectation_market_dynamics/EVAL1_PREREGISTRATION_RATIONALE_2026-10-07.md",
+        "line": 116,
+        "quote": "No owner-authored spec names a T1 feature set.",
+        "blob": "d7b811bf83ea5777dd99a5c11c73132375d691c8"
+      },
+      {
+        "path": "research/alpha_intelligence/expectation_market_dynamics/EVAL1_PREREGISTRATION_RATIONALE_2026-10-07.md",
+        "line": 116,
+        "quote": "Writing a feature list here would make this registration originate a hypothesis.",
+        "blob": "d7b811bf83ea5777dd99a5c11c73132375d691c8"
+      },
+      {
+        "path": "research/alpha_intelligence/expectation_market_dynamics/EVAL1_PREREGISTRATION_RATIONALE_2026-10-07.md",
+        "line": 119,
+        "quote": "every element must cite an owner line.",
+        "blob": "d7b811bf83ea5777dd99a5c11c73132375d691c8"
+      },
+      {
+        "path": "agentos/decisions/DEC-K3E-EVAL1-CUSTODY-UNDER-CHAIRMAN-DIRECTIVE-2026-10-07.md",
+        "line": 19,
+        "quote": "with every scientific value cited to an owner-authored",
+        "blob": "3d26c7867725c0a018665a519a66f6eead491d49"
+      },
+      {
+        "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+        "line": 120,
+        "quote": "Fitted artifacts are committed to canonical main before any label of a later partition is read.",
+        "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+      },
+      {
+        "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+        "line": 43,
+        "quote": "If no trial identity is committed before the first F_DEV label read, the challenger arm is UNESTIMABLE.",
+        "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+      },
+      {
+        "path": "engine/k3e_eval1_forward.py",
+        "line": 20,
+        "quote": "REGISTRATION_DIGEST = \"1ca158a213fca3f90c5c4fdc1359d40bf9146f2400cb10d8caa202b18f293bd4\"",
+        "blob": "d2daf28cf53730814d7ca815f07a78c2ec5e58b6"
+      }
+    ]
+  },
+  "elements": {
+    "model_family": {
+      "value": {
+        "registered_family": "REGULARIZED_LINEAR_OR_HAZARD",
+        "member": "L2_PENALIZED_MULTINOMIAL_LOGISTIC_REGRESSION",
+        "parameterization": "softmax over classes UP, DOWN, FLAT with FLAT as reference. One unpenalized intercept and one coefficient per feature for each of UP and DOWN, 8 parameters in all.",
+        "classes": [
+          "UP",
+          "DOWN",
+          "FLAT"
+        ],
+        "output": "one three-class probability per row",
+        "abstention": "NONE"
+      },
+      "citations": [
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+          "line": 44,
+          "quote": "\"family\": \"REGULARIZED_LINEAR_OR_HAZARD\",",
+          "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+          "line": 45,
+          "quote": "Regularized linear/logistic or discrete-time hazard: the lowest-capacity registered family.",
+          "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+          "line": 46,
+          "quote": "\"trial_count\": 1,",
+          "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/EVALUATION_PREREG.md",
+          "line": 144,
+          "quote": "| regularized linear/logistic or discrete-time hazard | 12 |",
+          "blob": "062455f320e2b20f8e562b1184042a2b97755429"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval0_preregistration.v1.json",
+          "line": 150,
+          "quote": "\"id\": \"REGULARIZED_LINEAR_OR_HAZARD\",",
+          "blob": "8e1ae2c84a22c44111c98959cbd94f53bf553a9c"
+        },
+        {
+          "path": "engine/k3e_eval1_forward.py",
+          "line": 21,
+          "quote": "CLASSES = (\"UP\", \"DOWN\", \"FLAT\")",
+          "blob": "d2daf28cf53730814d7ca815f07a78c2ec5e58b6"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+          "line": 123,
+          "quote": "Multiclass log loss on the three-class UP/DOWN/FLAT probability is primary.",
+          "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+        }
+      ]
+    },
+    "target": {
+      "value": {
+        "target_id": "T1_NEXT_REVISION_DIRECTION",
+        "experiment_id": "K3E-EVAL1-T1_NEXT_REVISION_DIRECTION-H21",
+        "label_function": "engine/k3e_eval1_forward.py:t1_label",
+        "label_clock": "system_observed_at",
+        "shared_with": [
+          "B0_NO_CHANGE",
+          "B6_HISTORICAL_BASE_RATE"
+        ]
+      },
+      "citations": [
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+          "line": 13,
+          "quote": "\"K3E-EVAL1-T1_NEXT_REVISION_DIRECTION-H21\"",
+          "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+          "line": 121,
+          "quote": "T1_NEXT_REVISION_DIRECTION at horizon 21 NYSE sessions.",
+          "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+          "line": 115,
+          "quote": "Labels use the system_observed_at clock.",
+          "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+        },
+        {
+          "path": "engine/k3e_eval1_forward.py",
+          "line": 122,
+          "quote": "def t1_label(",
+          "blob": "d2daf28cf53730814d7ca815f07a78c2ec5e58b6"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+          "line": 124,
+          "quote": "Eligible comparators are the registered T1 baselines that can emit a three-class probability without any fit outside F_DEV.",
+          "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+        }
+      ]
+    },
+    "horizon": {
+      "value": {
+        "sessions": 21,
+        "calendar": "NYSE",
+        "label_window": "cutoff exclusive to cutoff + 21 sessions inclusive"
+      },
+      "citations": [
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+          "line": 122,
+          "quote": "\"primary_horizon_sessions\": 21,",
+          "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+        },
+        {
+          "path": "engine/k3e_eval1_forward.py",
+          "line": 22,
+          "quote": "PRIMARY_HORIZON_SESSIONS = 21",
+          "blob": "d2daf28cf53730814d7ca815f07a78c2ec5e58b6"
+        },
+        {
+          "path": "engine/k3e_eval1_forward.py",
+          "line": 146,
+          "quote": "h = cutoff_session + PRIMARY_HORIZON_SESSIONS",
+          "blob": "d2daf28cf53730814d7ca815f07a78c2ec5e58b6"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+          "line": 115,
+          "quote": "has system_observed_at in (cutoff, cutoff+21 sessions]",
+          "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+        }
+      ]
+    },
+    "feature_set": {
+      "value": {
+        "selection": "ENTIRE_BOUND_UNIVERSE",
+        "universe_rule": "Every EMS:59 rights/missingness/correction sub-component that EXP-1 emits at the boundary commit, each expressed once against the EMS:61 total-source-records denominator, using only the EMS:62 named categories (dropped, unavailable, rights-blocked). Fresh and stale are not emitted. Nothing is selected from the universe, and the seat originates no feature.",
+        "emitter": {
+          "path": "engine/k3e_expectation_surface.py",
+          "function": "inspect_expectation_surface",
+          "blob": "3032ad4e8eb1681749cf50d353039015334343b3",
+          "verified_on_main_commit": "d42fdc53f4a70783c7ba7523fe87f7411bb4133c",
+          "boundary_commit": "01fcaf748c2794aa717b25d3e34ad1f53c539801",
+          "boundary_blob": "d83e25b50321147b3077d7cff79f93466ad471a5"
+        },
+        "extraction": "For each EVAL-1 row, call the pinned emitter for that row's metric-horizon node with cutoff equal to the row's decision cutoff, and read only the fields named below. The emitter drops every record whose capture clock is after the cutoff. Using an emitter blob whose output differs on these fields is a second configuration.",
+        "features": [
+          {
+            "name": "rights_blocked_state",
+            "source_field": "normalized_baseline.rights_state",
+            "transform": "1.0 if the emitted value equals RIGHTS_BLOCKED, else 0.0",
+            "denominator_field": "denominators.capture_clock_bounded_relevant_records",
+            "null_behaviour": "null only when the emitter returns no payload for the row. null is replaced by preprocessing step impute_null",
+            "ems_component": "EMS:59 rights state and EMS:62 rights-blocked records",
+            "boundary_presence": "engine/k3e_expectation_surface.py line 390 at boundary commit 01fcaf748c2794aa717b25d3e34ad1f53c539801",
+            "semantic_delta": "PR 8583 (4f31830b, after the boundary) also maps DISPLAY_ONLY source labels to RIGHTS_BLOCKED (main lines 581-582). At the boundary only BLOCKED_RIGHTS mapped (boundary line 366). The pinned emitter blob governs, which is the stricter rights reading.",
+            "citations": [
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 646,
+                "quote": "\"rights_state\": \"RIGHTS_BLOCKED\" if rights_blocked else \"UNKNOWN\",",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              },
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 581,
+                "quote": "rights_blocked = (any(right in BLOCKED_RIGHTS for right in raw_rights)",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              },
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 582,
+                "quote": "or any(right in DISPLAY_ONLY_RIGHTS for right in raw_rights))",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              },
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 651,
+                "quote": "\"capture_clock_bounded_relevant_records\": len(relevant),",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              },
+              {
+                "path": "research/alpha_intelligence/expectation_market_dynamics/EXPECTATION_MODEL_SPEC.md",
+                "line": 59,
+                "quote": "- rights / missingness / correction state.",
+                "blob": "1e58490823bf276afce4aeaabb27f628e1d7611a"
+              },
+              {
+                "path": "research/alpha_intelligence/expectation_market_dynamics/EXPECTATION_MODEL_SPEC.md",
+                "line": 62,
+                "quote": "stale records, dropped records, unavailable records, and rights-blocked records",
+                "blob": "1e58490823bf276afce4aeaabb27f628e1d7611a"
+              }
+            ]
+          },
+          {
+            "name": "true_missing_share",
+            "source_field": "denominators.true_missing_records",
+            "transform": "true_missing_records / capture_clock_bounded_relevant_records",
+            "denominator_field": "denominators.capture_clock_bounded_relevant_records",
+            "null_behaviour": "null when the denominator is 0 or the emitter returns no payload. null is replaced by preprocessing step impute_null",
+            "ems_component": "EMS:59 missingness state and EMS:62 unavailable records",
+            "boundary_presence": "engine/k3e_expectation_surface.py line 398 at boundary commit 01fcaf748c2794aa717b25d3e34ad1f53c539801",
+            "semantic_delta": "none in the field definition (main line 654 matches boundary line 398). The counted set is computed by the pinned blob.",
+            "citations": [
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 654,
+                "quote": "\"true_missing_records\": true_missing,",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              },
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 651,
+                "quote": "\"capture_clock_bounded_relevant_records\": len(relevant),",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              },
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 667,
+                "quote": "may overlap excluded records",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              },
+              {
+                "path": "research/alpha_intelligence/expectation_market_dynamics/EXPECTATION_MODEL_SPEC.md",
+                "line": 59,
+                "quote": "- rights / missingness / correction state.",
+                "blob": "1e58490823bf276afce4aeaabb27f628e1d7611a"
+              },
+              {
+                "path": "research/alpha_intelligence/expectation_market_dynamics/EXPECTATION_MODEL_SPEC.md",
+                "line": 62,
+                "quote": "stale records, dropped records, unavailable records, and rights-blocked records",
+                "blob": "1e58490823bf276afce4aeaabb27f628e1d7611a"
+              }
+            ]
+          },
+          {
+            "name": "invalid_or_inconsistent_excluded_share",
+            "source_field": "denominators.invalid_or_inconsistent_excluded_records",
+            "transform": "invalid_or_inconsistent_excluded_records / capture_clock_bounded_relevant_records",
+            "denominator_field": "denominators.capture_clock_bounded_relevant_records",
+            "null_behaviour": "null when the denominator is 0 or the emitter returns no payload. null is replaced by preprocessing step impute_null",
+            "ems_component": "EMS:59 missingness state and EMS:62 dropped records",
+            "boundary_presence": "engine/k3e_expectation_surface.py line 399 at boundary commit 01fcaf748c2794aa717b25d3e34ad1f53c539801",
+            "semantic_delta": "none in the field definition (main line 655 matches boundary line 399). The counted set is computed by the pinned blob.",
+            "citations": [
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 655,
+                "quote": "\"invalid_or_inconsistent_excluded_records\": excluded + inconsistent_records,",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              },
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 651,
+                "quote": "\"capture_clock_bounded_relevant_records\": len(relevant),",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              },
+              {
+                "path": "research/alpha_intelligence/expectation_market_dynamics/EXPECTATION_MODEL_SPEC.md",
+                "line": 59,
+                "quote": "- rights / missingness / correction state.",
+                "blob": "1e58490823bf276afce4aeaabb27f628e1d7611a"
+              },
+              {
+                "path": "research/alpha_intelligence/expectation_market_dynamics/EXPECTATION_MODEL_SPEC.md",
+                "line": 62,
+                "quote": "stale records, dropped records, unavailable records, and rights-blocked records",
+                "blob": "1e58490823bf276afce4aeaabb27f628e1d7611a"
+              }
+            ]
+          }
+        ],
+        "excluded": [
+          {
+            "component": "EMS:51 fresh mean / fresh median, EMS:52 age-weighted consensus",
+            "reason": "NOT_EMITTED_AT_BOUNDARY: EXP-1 emits no normalized value (normalized_baseline.value is always None) and no freshness policy",
+            "citations": [
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 644,
+                "quote": "\"value\": None,",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              },
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 643,
+                "quote": "\"UNAVAILABLE\", \"reason\": \"NO_ADMITTED_FRESHNESS_POLICY\"",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              }
+            ]
+          },
+          {
+            "component": "EMS:53 coverage total / fresh / stale share",
+            "reason": "NOT_EMITTED_AS_A_SURFACE_COMPONENT: fresh and stale need a freshness policy, which is UNAVAILABLE. The covering-analyst count appears only inside the snapshot block stamped RAW_CAPTURE_INSPECTION_ONLY.",
+            "citations": [
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 541,
+                "quote": "\"provider_reported_covering_analyst_count\":",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              },
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 549,
+                "quote": "\"evidence_use\": \"RAW_CAPTURE_INSPECTION_ONLY\"",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              },
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 643,
+                "quote": "\"UNAVAILABLE\", \"reason\": \"NO_ADMITTED_FRESHNESS_POLICY\"",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              }
+            ]
+          },
+          {
+            "component": "EMS:54 dispersion, EMS:55 revision breadth/magnitude/coherence/intensity, EMS:56 cross-horizon agreement, EMS:57 revision clusters, EMS:58 change-point state",
+            "reason": "NOT_EMITTED_AT_BOUNDARY: EXP-1 is a declared-capture inspection with no derived aggregate, and it refuses revision inference across native periods",
+            "citations": [
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 579,
+                "quote": "NATIVE_PERIOD_CHANGED_NO_REVISION_INFERENCE",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              },
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 549,
+                "quote": "\"evidence_use\": \"RAW_CAPTURE_INSPECTION_ONLY\"",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              }
+            ]
+          },
+          {
+            "component": "EMS:59 correction state",
+            "reason": "NOT_EMITTED: no correction field exists in the EXP-1 payload",
+            "citations": [
+              {
+                "path": "research/alpha_intelligence/expectation_market_dynamics/EXPECTATION_MODEL_SPEC.md",
+                "line": 59,
+                "quote": "- rights / missingness / correction state.",
+                "blob": "1e58490823bf276afce4aeaabb27f628e1d7611a"
+              }
+            ]
+          },
+          {
+            "component": "normalized_baseline.expectation_state and public.expectation_state (CURRENT/STALE/WITHDRAWN)",
+            "reason": "NOT_ON_MAIN_AT_BOUNDARY: added by PR 8583 (4f31830b) after boundary commit 01fcaf748c2794aa717b25d3e34ad1f53c539801",
+            "citations": [
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 645,
+                "quote": "\"expectation_state\": expectation_state,",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              }
+            ]
+          },
+          {
+            "component": "denominators.identity_resolved_records and identity_unresolved_records, identity_gate",
+            "reason": "NOT_ON_MAIN_AT_BOUNDARY: added by the ALIAS identity gate PR 8615 (4fc4589f) after the boundary commit",
+            "citations": [
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 662,
+                "quote": "\"identity_resolved_records\": identity_resolved_records,",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              }
+            ]
+          },
+          {
+            "component": "normalized_baseline.status",
+            "reason": "REDUNDANT_AT_BOUNDARY: at the boundary it is a function of rights_state and whether any relevant record exists. Its later STALE and WITHDRAWN values are post-boundary.",
+            "citations": [
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 602,
+                "quote": "baseline_status = (\"RIGHTS_BLOCKED\" if rights_blocked else",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              }
+            ]
+          },
+          {
+            "component": "denominators.valid_captured_records, structurally_supported_estimate_records, distinct snapshot counts, attempt counts, reason_counts",
+            "reason": "NOT_AN_EMS_61_63_NAMED_CATEGORY: EMS:61-63 names total, fresh, stale, dropped, unavailable and rights-blocked records. Mapping any other count to a component would originate a feature. valid_captured_records is also collinear with the dropped share.",
+            "citations": [
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 652,
+                "quote": "\"valid_captured_records\": len(relevant) - excluded - inconsistent_records,",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              },
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 653,
+                "quote": "\"structurally_supported_estimate_records\":",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              },
+              {
+                "path": "research/alpha_intelligence/expectation_market_dynamics/EXPECTATION_MODEL_SPEC.md",
+                "line": 61,
+                "quote": "Every aggregate must print its denominator: total source records, fresh records,",
+                "blob": "1e58490823bf276afce4aeaabb27f628e1d7611a"
+              },
+              {
+                "path": "research/alpha_intelligence/expectation_market_dynamics/EXPECTATION_MODEL_SPEC.md",
+                "line": 62,
+                "quote": "stale records, dropped records, unavailable records, and rights-blocked records",
+                "blob": "1e58490823bf276afce4aeaabb27f628e1d7611a"
+              }
+            ]
+          },
+          {
+            "component": "snapshot age_seconds, raw estimate fields, selected and covering observations, period_continuity, support_reasons, query dimensions (provider, ticker, metric, horizon label)",
+            "reason": "NOT_AN_EMS_51_59_COMPONENT: raw capture inspection fields, diagnostics or row keys, not derived surface components",
+            "citations": [
+              {
+                "path": "engine/k3e_expectation_surface.py",
+                "line": 549,
+                "quote": "\"evidence_use\": \"RAW_CAPTURE_INSPECTION_ONLY\"",
+                "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+              }
+            ]
+          }
+        ]
+      },
+      "citations": [
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+          "line": 48,
+          "quote": "Features are restricted to derived expectation-surface components that EXP-1 emits with printed denominators and that exist on canonical main at the boundary commit.",
+          "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/EXPECTATION_MODEL_SPEC.md",
+          "line": 47,
+          "quote": "## Derived expectation surface",
+          "blob": "1e58490823bf276afce4aeaabb27f628e1d7611a"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/EXPECTATION_MODEL_SPEC.md",
+          "line": 59,
+          "quote": "- rights / missingness / correction state.",
+          "blob": "1e58490823bf276afce4aeaabb27f628e1d7611a"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/EXPECTATION_MODEL_SPEC.md",
+          "line": 61,
+          "quote": "Every aggregate must print its denominator: total source records, fresh records,",
+          "blob": "1e58490823bf276afce4aeaabb27f628e1d7611a"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/EXPECTATION_MODEL_SPEC.md",
+          "line": 62,
+          "quote": "stale records, dropped records, unavailable records, and rights-blocked records",
+          "blob": "1e58490823bf276afce4aeaabb27f628e1d7611a"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/EVAL1_PREREGISTRATION_RATIONALE_2026-10-07.md",
+          "line": 116,
+          "quote": "No owner-authored spec names a T1 feature set.",
+          "blob": "d7b811bf83ea5777dd99a5c11c73132375d691c8"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/EVAL1_PREREGISTRATION_RATIONALE_2026-10-07.md",
+          "line": 118,
+          "quote": "EXP-1 components with printed denominators.",
+          "blob": "d7b811bf83ea5777dd99a5c11c73132375d691c8"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval0_preregistration.v1.json",
+          "line": 590,
+          "quote": "\"feature_eligibility\": \"max(owner_available_at,system_observed_at)<=decision_cutoff\",",
+          "blob": "8e1ae2c84a22c44111c98959cbd94f53bf553a9c"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval0_preregistration.v1.json",
+          "line": 588,
+          "quote": "\"decision_cutoff\": \"nyse_session_close_t_on_or_after_all_input_system_observed_at\",",
+          "blob": "8e1ae2c84a22c44111c98959cbd94f53bf553a9c"
+        },
+        {
+          "path": "engine/k3e_expectation_surface.py",
+          "line": 207,
+          "quote": "def inspect_expectation_surface(",
+          "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+        },
+        {
+          "path": "engine/k3e_expectation_surface.py",
+          "line": 352,
+          "quote": "if not present or any(clock > cutoff for clock in present):",
+          "blob": "3032ad4e8eb1681749cf50d353039015334343b3"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/EXPECTATION_MODEL_SPEC.md",
+          "line": 85,
+          "quote": "No challenger may use later market outcomes, later consensus restatements, or",
+          "blob": "1e58490823bf276afce4aeaabb27f628e1d7611a"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/EXPECTATION_MODEL_SPEC.md",
+          "line": 86,
+          "quote": "post-event labels to define the earlier expectation state",
+          "blob": "1e58490823bf276afce4aeaabb27f628e1d7611a"
+        }
+      ]
+    },
+    "preprocessing": {
+      "value": {
+        "steps": [
+          {
+            "name": "extract_at_cutoff",
+            "fit_scope": "F_DEV",
+            "fitted_statistics": [],
+            "rule": "compute the three features from the pinned emitter output at the row's decision cutoff. No label, price or later record is an input."
+          },
+          {
+            "name": "impute_null",
+            "fit_scope": "F_DEV",
+            "fitted_statistics": [
+              "mean"
+            ],
+            "rule": "replace a null feature value with the mean of that feature's non-null values over all eligible F_DEV rows (label-independent). If every F_DEV value is null, use 0.0."
+          },
+          {
+            "name": "standardize",
+            "fit_scope": "F_DEV",
+            "fitted_statistics": [
+              "mean",
+              "population_sd"
+            ],
+            "rule": "subtract the F_DEV mean and divide by the F_DEV population standard deviation, both taken over all eligible F_DEV rows after imputation. If the standard deviation is 0, the standardized value is 0.0 for every row in every partition."
+          },
+          {
+            "name": "winsorize",
+            "fit_scope": "F_DEV",
+            "fitted_statistics": [],
+            "rule": "clip each standardized value to the fixed interval from -5.0 to 5.0"
+          },
+          {
+            "name": "select_fit_rows",
+            "fit_scope": "F_DEV",
+            "fitted_statistics": [],
+            "rule": "fit only on F_DEV rows with a scored label (UP, DOWN or FLAT, not censored, not pending), ordered by issuer_ref, metric, fiscal_period, cutoff_session for deterministic summation"
+          },
+          {
+            "name": "apply_frozen",
+            "fit_scope": "F_DEV",
+            "fitted_statistics": [],
+            "rule": "F_VAL, F_HOLD and PROSPECTIVE_SHADOW rows use the F_DEV statistics and F_DEV parameters unchanged. Never refit, never retune."
+          }
+        ]
+      },
+      "citations": [
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+          "line": 48,
+          "quote": "Preprocessing is fit on F_DEV only.",
+          "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+          "line": 120,
+          "quote": "F_DEV is the only place B0, B6 and the single challenger trial are fit.",
+          "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+          "line": 120,
+          "quote": "with no refit and no retuning",
+          "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval0_preregistration.v1.json",
+          "line": 590,
+          "quote": "\"feature_eligibility\": \"max(owner_available_at,system_observed_at)<=decision_cutoff\",",
+          "blob": "8e1ae2c84a22c44111c98959cbd94f53bf553a9c"
+        }
+      ]
+    },
+    "hyperparameters": {
+      "value": {
+        "tuning": "NONE",
+        "l2_lambda": 1.0,
+        "objective": "sum over fit rows of multiclass negative log-likelihood plus l2_lambda/2 times the sum of squared non-intercept coefficients",
+        "intercept_penalized": false,
+        "solver": "NEWTON_RAPHSON_WITH_STEP_HALVING",
+        "initialization": "ALL_ZERO",
+        "max_iterations": 100,
+        "gradient_tolerance": 1e-06,
+        "max_step_halvings": 30,
+        "class_weights": "NONE",
+        "probability_clipping": "NONE",
+        "on_nonconvergence": "TRIAL_FAILED_COUNTED",
+        "on_class_absent_in_fit_rows": "UNESTIMABLE_TRIAL_SPENT",
+        "value_origin": "SEAT_FIXED_AT_COMMIT_NOT_DATA_DERIVED"
+      },
+      "citations": [
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+          "line": 48,
+          "quote": "Hyperparameters are fixed at commit, with no tuning loop.",
+          "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+          "line": 44,
+          "quote": "\"family\": \"REGULARIZED_LINEAR_OR_HAZARD\",",
+          "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+          "line": 131,
+          "quote": "\"failed_trials_count\": true,",
+          "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+        },
+        {
+          "path": "engine/k3e_eval1_forward.py",
+          "line": 279,
+          "quote": "if total == 0 or any(c == 0 for c in cts):",
+          "blob": "d2daf28cf53730814d7ca815f07a78c2ec5e58b6"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+          "line": 48,
+          "quote": "A second configuration of any kind is a second trial",
+          "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval0_preregistration.v1.json",
+          "line": 175,
+          "quote": "\"manual_feature_or_threshold_change_counts\": true,",
+          "blob": "8e1ae2c84a22c44111c98959cbd94f53bf553a9c"
+        }
+      ]
+    },
+    "seed_policy": {
+      "value": {
+        "rng_used": false,
+        "seed": 480336034,
+        "rule": "The fit draws no random number: zero initialization, Newton steps, fixed row order. The EVAL-1 seed is recorded so that any later random draw is detectable. Drawing one under any seed is a second configuration."
+      },
+      "citations": [
+        {
+          "path": "engine/k3e_eval1_forward.py",
+          "line": 34,
+          "quote": "BOOTSTRAP_SEED = 480_336_034",
+          "blob": "d2daf28cf53730814d7ca815f07a78c2ec5e58b6"
+        },
+        {
+          "path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+          "line": 48,
+          "quote": "A second configuration of any kind is a second trial",
+          "blob": "a419e3dc7d8caa747ed94392b9173daff8151d9a"
+        }
+      ]
+    }
+  },
+  "label_access": "NONE: authored without calling t1_label or any outcome loader, without reading any post-boundary row, and without fitting on any real row",
+  "custody": {
+    "acting_custodian": "Information-to-Price Meta-CEO seat (Claude session 2fc05761) acting as EVAL-1 custodian under the Chairman directive of 2026-10-06",
+    "decision_record": "DEC:K3E-EVAL1-CUSTODY-UNDER-CHAIRMAN-DIRECTIVE-2026-10-07",
+    "identity_decision_record": "DEC:K3E-EVAL1-CHALLENGER-TRIAL-IDENTITY-2026-10-07",
+    "is_sol_ruling": false,
+    "drafted_by": "orchestrator lane B (Opus 5.5) of seat 2fc05761",
+    "merge_authority": "seat-only. The merge commits the single EVAL-1 challenger trial."
+  },
+  "expected_result_disclosure": "Expected: a null. The three features describe data quality, not revision direction, and the fit is expected to sit close to intercept-only, which is the pooled F_DEV class frequency. B6 stratifies by metric, a row key this challenger may not use, so the challenger is expected to tie or lose to B6. Committing makes the challenger arm estimable rather than UNESTIMABLE. It is not a claim of signal."
+}

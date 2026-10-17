@@ -1,0 +1,24 @@
+{
+  "accepted": true,
+  "canonical_source_writes": 0,
+  "contract": "defense.retrospective_kernel_deterministic_acceptance.v1",
+  "independent_calendar_expectations_matched": true,
+  "integrated_kernel_sha256": "051ef76306cc6761fe8c7cbd24d7fc713b4b60e842f4c69f7349097f24bb5f72",
+  "not_issued_or_graded": true,
+  "not_predictive_registration_or_efficacy": true,
+  "oracle_sha256": "3397ed93de5ee43e169527247a0e2f4b321507e1dd3c5ef8786d2569d4a0c558",
+  "original_exported_kernel_sha256": "bd01d2d971d0c581405c51bb7a65aed4b5522d405ddb98d4177ffa33b8910da7",
+  "owner_events_and_exclusion_reasons_preserved": true,
+  "parent_repairs": [
+    "conservative prior cutoff is last session strictly BEFORE known UTC date",
+    "numeric elapsed-to-cutoff description added; never substitutes for fixed registered endpoints",
+    "source amount/exclusion schema translated reversibly with original owner event and exclusion reason retained",
+    "unique-event tallies do not assert independent sample size"
+  ],
+  "result_sha256": "17abc9126e4d3d5766a515f0e071bc57bd74c3bc746a1615f0695f447cd8f16b",
+  "rows": 23,
+  "scalar_censored_null_matches": 230,
+  "scalar_numeric_matches": 575,
+  "synthetic_tests_passed": 9,
+  "tolerance": 1e-12
+}
