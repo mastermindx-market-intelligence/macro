@@ -4,19 +4,20 @@ Existing programme: `sector-rotation-intelligence`. Existing workstream: `LEADER
 
 ## Current result: R2 research continuation
 
-The original assessment and architecture are published. R2 has now **specified the first study's population, timing and baselines; inspected real source-cache metadata; reproduced two broad-flow contract weaknesses; and resolved self-financing policy accounting with executable mathematical checks**. These are research results, not a trained model, source repair, native protocol amendment, deployment or investment qualification.
+The original assessment and architecture are published. R2 has now **specified the first study's population, timing and baselines; inspected real source-cache metadata; reproduced broad-flow contract weaknesses; resolved self-financing policy accounting; and identified the exact existing reader adaptation needed**. These are research results, not a trained model, source repair, native protocol amendment, deployment or investment qualification.
 
 Start with the latest additions:
 
 1. [TARGET_SCOPE_AND_BASELINES_R1.md](TARGET_SCOPE_AND_BASELINES_R1.md): eleven-sector ETF population plus SPY/BIL; precise distinction from the failed member-stock group-persistence construction; as-known cutoff, next-session close proxy, twenty-session blocks, five baselines and declared cost scenarios.
 2. [SOURCE_READINESS_AUDIT_R2.md](SOURCE_READINESS_AUDIT_R2.md): timestamp/schema-only inspection of 25 local Parquet files; short sector-flow history; mismatched date tails; existing default-off nine-sector capture; source-owner extension/qualification requirements.
 3. [POLICY_ACCOUNTING_SPEC_R1.md](POLICY_ACCOUNTING_SPEC_R1.md): exact proportional-cost budget equation, uniqueness argument, independent algebraic comparison and settlement-cash versus security-turnover distinction.
-4. [probe_broad_flow_contract.py](probe_broad_flow_contract.py) and [broad_flow_probe_results.json](broad_flow_probe_results.json): exact-source extraction and fake-provider reproduction of market-price-in-NAV, retrieval-date indexing and weekend-date behavior.
-5. [policy_accounting_witness.py](policy_accounting_witness.py) and [policy_accounting_results.json](policy_accounting_results.json): seven closed-form cases, 512 algebraic comparisons, 128 cost-monotonicity checks and eight bad-input refusals.
+4. [EXISTING_READER_INTEGRATION_R1.md](EXISTING_READER_INTEGRATION_R1.md): the already-built synthetic input preparer, its nine-node/26-session/9 a.m./63-price contract, and the exact differences from this study. Normal one-month collection cannot supply the necessary captured prefix; activation alone is insufficient.
+5. [probe_broad_flow_contract.py](probe_broad_flow_contract.py) and [broad_flow_probe_results.json](broad_flow_probe_results.json): source-pinned extraction and fake-provider reproduction of market-price-in-NAV, retrieval-date indexing and weekend-date behavior.
+6. [policy_accounting_witness.py](policy_accounting_witness.py) and [policy_accounting_results.json](policy_accounting_results.json): seven closed-form cases, 512 algebraic comparisons, 128 cost-monotonicity checks and eight bad-input refusals.
 
 The flow probe establishes behavior at **BroadFlowAdapter.fetch**, not the entire production ingestion pipeline. Its supplied `regularMarketTime` is a market-price clock, **not a qualified NAV timestamp**. A later repair must not copy that field into a NAV date and claim the problem solved. Downstream calendar filtering and actual live incidence were not established by this probe.
 
-The new scripts and recorded scientific outputs were retrieved from GitHub at `169413291d684e945bd57fb7f83d93e28ed16796` and reproduced on M2. All four script/result hashes matched the originally executed bytes; all eleven pre-existing file blobs were unchanged at that boundary. Final navigation/diff/CI state after this README update is recorded in the PR receipt rather than predicted here.
+The new scripts and recorded scientific outputs were retrieved from GitHub at `169413291d684e945bd57fb7f83d93e28ed16796` and reproduced on M2. All four script/result hashes matched the originally executed bytes; all eleven pre-existing file blobs were unchanged at that boundary. The subsequent reader-integration appendix is source inspection plus an invented-index arithmetic witness, not a run of the native reader test suite. Final document/diff/CI state after this README update is recorded in the PR receipt rather than predicted here.
 
 ## Original foundation — retained, not rewritten
 
@@ -28,7 +29,7 @@ The new scripts and recorded scientific outputs were retrieved from GitHub at `1
 - [LITERATURE.md](LITERATURE.md): 16 primary-source method entries with actual review depth and transfer limits.
 - [READINESS_AND_DELEGATION.md](READINESS_AND_DELEGATION.md): industry-mechanism research book, dependency sequence and six later bounded implementation packets.
 - [REVIEW_AND_VERIFICATION.md](REVIEW_AND_VERIFICATION.md): prior verification and review dispositions, supplemented by the new R2 documents/PR receipt.
-- [synthetic_design_checks.py](synthetic_design_checks.py) and [synthetic_design_results.json](synthetic_design_results.json): the original twelve synthetic design witnesses and known-covariance demonstration. They are unchanged and were not rerun unnecessarily.
+- [synthetic_design_checks.py](synthetic_design_checks.py) and [synthetic_design_results.json](synthetic_design_results.json): original twelve synthetic design witnesses and known-covariance demonstration. They are unchanged and were not rerun unnecessarily.
 
 ## Mission and design decisions
 
@@ -48,13 +49,15 @@ The existing [workstream](../../../agentos/workstreams/WS-LEADERSHIP-ROTATION-IN
 
 ## Next actionable dependency
 
-Qualify the **existing thirteen-series source and reader path** for the declared study. The dormant capture currently covers nine sectors, not XLC/XLRE/SPY/BIL, and its source acceptance expressly leaves rights, original availability and other qualification fields unresolved. The next source integration must extend that incumbent capability with verified clocks, cohort and rejecting consumer; it must not build another capture service or invent missing timestamps.
+The existing reader boundary is now identified in `engine/research_codegen/bridge.py::prepare_synthetic_inputs`. Reuse its narrow identities, causal envelopes and owner checks, but do not transplant its different experiment into this study. A 63-session return needs 64 prices; the 252-prior-session warmup needs its own complete source witness. The required cohort and cutoff must be explicit in an owner-qualified protocol adapter.
 
-Carry the reproducible BroadFlowAdapter findings into its exact source-owner repair/acceptance scope. The accounting specification supplies a checked primitive for the incumbent evaluator, but no production code has been wired. Only after the actual source/protocol/evaluation conditions are ready should the admitted historical development or prospective experiment run.
+Qualify the **existing thirteen-series source and reader path**. The dormant capture covers nine sectors, not XLC/XLRE/SPY/BIL, and leaves rights, original availability and other qualifications unresolved. Normal Yahoo collection requests one month, insufficient for the desired prefix. The bounded initial warmup should be supplied through that existing source owner, not by launching an all-ticker maximum-history collection or inventing lineage for older merged-cache rows. A present capture may support later prospective decisions; it does not make earlier decisions point-in-time.
+
+Carry the reproducible BroadFlowAdapter findings into its exact source-owner repair/acceptance scope. The accounting specification supplies a checked primitive for the incumbent evaluator. The remaining change is actual owner-qualified source/reader/evaluator adaptation and scientific admission—not another generic architecture or data system. Product integration and live source effects remain deferred under the current research-first phase.
 
 ## Release and effect state
 
-Native GitHub remains the sole publication carrier for this branch. The earlier local managed-workspace acquisition was NOT_APPLIED; no shared checkout was changed. The new local files are bounded research evidence, not another source workspace or data owner.
+Native GitHub remains the sole publication carrier for this branch. The earlier local managed-workspace acquisition was NOT_APPLIED; no shared checkout was changed. New local files are bounded research evidence, not another source workspace or data owner.
 
 The earlier head `5d68fe...` now has successful main ci-gate and all twelve CI packs. Its inactive pilot-base authority context remains distinct. Those checks are not copied onto later commits. The final independent package-review attempt from R1 failed with provider 403 and no substantive verdict; it was not retried or routed through another provider. No new child or watcher was started in R2, and the earlier children are terminal.
 
