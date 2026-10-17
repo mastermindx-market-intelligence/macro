@@ -21,8 +21,16 @@ Usage:
   # Limit to N days (for a partial run in this session):
   python -m scripts.backfill_massive_stock_day --max-days 30
 
-  # Force restart (ignore resume state):
+  # Force restart (ignore resume state, NOT for missing ticker bars):
   python -m scripts.backfill_massive_stock_day --force
+
+  # Explicit original-store owner repair for a processed day missing three
+  # constituent bars. ONLY on the restored source-host store, serialized against
+  # the nightly restore/collect/publish lane; no global resume-state reset:
+  python -m scripts.backfill_massive_stock_day --repair-day 2026-08-18 --repair-tickers GOOGL,MSFT,TSLA
+
+  # First verify each original restored ticker/day and the correction receipt.
+  # Any PARTIAL/REFUSED result needs same-owner reconciliation; do not publish.
 
 After completion, publish to R2:
   python -m scripts.publish_r2 --dirs massive_stock_day
@@ -56,14 +64,38 @@ def main() -> int:
                     help="override end date YYYY-MM-DD (default: latest_available())")
     ap.add_argument("--force", action="store_true",
                     help="ignore resume state and restart from --start")
+    ap.add_argument("--repair-day", default=None,
+                    help="operator-only processed NYSE day with missing member bars")
+    ap.add_argument("--repair-tickers", default=None,
+                    help="1..16 comma-delimited existing uppercase source tickers")
     ap.add_argument("--pace", type=float, default=0.05,
                     help="sleep seconds between day fetches (default 0.05)")
     args = ap.parse_args()
 
     from collectors.massive_stock_day import (
-        backfill, _store_dir, _backfill_state_path, _manifest_path, EARLIEST_ENTITLED,
+        backfill, repair_processed_day_missing_members,
+        _store_dir, _backfill_state_path, _manifest_path, EARLIEST_ENTITLED,
     )
     from collectors.massive_flatfiles import latest_available, enabled
+
+    if args.repair_day is not None or args.repair_tickers is not None:
+        # --force deletes the global state. NEVER combine it with an isolated
+        # member-hole repair. Ordinary backfill/smoke/pace options are a
+        # different source operation and cannot silently change this request.
+        if (not args.repair_day or not args.repair_tickers or args.force or args.smoke
+                or args.max_days is not None or args.start is not None
+                or args.end is not None or args.pace != 0.05):
+            ap.error("--repair-day and --repair-tickers require an isolated request")
+        try:
+            day = date.fromisoformat(args.repair_day)
+            if day.isoformat() != args.repair_day:
+                raise ValueError("noncanonical date")
+            tickers = tuple(args.repair_tickers.split(","))
+            result = repair_processed_day_missing_members(day, tickers)
+        except ValueError:
+            ap.error("invalid operator-only repair day or ticker set")
+        print(json.dumps(result, indent=2))
+        return 0 if result.get("status") in {"REPAIRED", "ALREADY_PRESENT"} else 1
 
     if not enabled():
         log.error(

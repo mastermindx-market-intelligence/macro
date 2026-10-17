@@ -53,6 +53,7 @@ import logging
 import os
 import sys
 import time
+from datetime import date, datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -538,6 +539,170 @@ def _manifest_doc(d: str, base: Path, names: list[str]) -> dict:
     return doc
 
 
+def _massive_publish_tip_ok(local: object, remote: object | None, *,
+                            now: datetime | None = None,
+                            max_missing_sessions: int | None = None,
+                            ) -> tuple[bool, str]:
+    """Refuse regressive/stale Massive day-store publication BEFORE any upload.
+
+    This is the existing publisher's safety fence, not an independent data
+    publisher or admission authority. The local collector manifest proves only
+    a source clock, never price basis, vendor rights or customer entitlement.
+    """
+    # Keep publish_r2's credential import order and non-Massive bootstrap
+    # independent of this specialized check. The original calendar and audit
+    # policy are loaded only for the Massive daily source.
+    from lib.nyse_calendar import expected_last_session, is_session, sessions_behind  # noqa: PLC0415
+    from scripts.audit_r2 import DEFAULT_MASSIVE_TIP_MAX_MISSING_SESSIONS  # noqa: PLC0415
+    now = now or datetime.now(timezone.utc)
+    if max_missing_sessions is None:
+        max_missing_sessions = DEFAULT_MASSIVE_TIP_MAX_MISSING_SESSIONS
+    if type(max_missing_sessions) is not int or max_missing_sessions < 0:
+        return False, "SOURCE_UNVERIFIED: invalid configured completed-session grace"
+
+    def _read_date(v: object) -> date | None:
+        if not isinstance(v, str) or len(v) != 10:
+            return None
+        try:
+            parsed = date.fromisoformat(v)
+        except ValueError:
+            return None
+        return parsed if parsed.isoformat() == v else None
+
+    if not isinstance(local, dict) or local.get("store") != "massive_stock_day":
+        return False, "SOURCE_UNVERIFIED: missing or incompatible local collector manifest"
+    latest = _read_date(local.get("latest_date"))
+    if latest is None:
+        return False, "SOURCE_UNVERIFIED: invalid local latest_date"
+    expected = expected_last_session(now)
+    if not is_session(latest):
+        return False, "SOURCE_NON_SESSION: local daily latest_date is not an NYSE session"
+    if latest > expected:
+        return False, "SOURCE_UNVERIFIED: local daily bar is later than the completed NYSE session"
+    original_anchor = local.get("anchor")
+    if not isinstance(original_anchor, dict):
+        return False, "SOURCE_ANCHOR_UNVERIFIED: missing original SPY price-data anchor"
+    if original_anchor.get("ticker") != "SPY":
+        return False, "SOURCE_ANCHOR_MISMATCH: original local price anchor is not SPY"
+    anchored = _read_date(original_anchor.get("last"))
+    if anchored is None or not is_session(anchored) or anchored > expected:
+        return False, "SOURCE_ANCHOR_UNVERIFIED: invalid original SPY price-data anchor"
+    if anchored != latest:
+        return False, (f"SOURCE_ANCHOR_MISMATCH: local source claims {latest} "
+                       f"but original SPY price rows end {anchored}")
+    # Source tip dates and the collector's revision clock do not prove historical
+    # coverage was retained. These are the *original* SPY Parquet index stats
+    # written by _anchor_summary, not claims from a fresh publisher file list.
+    local_rows = original_anchor.get("n_rows")
+    if local_rows is not None and (type(local_rows) is not int or local_rows <= 0):
+        return False, "SOURCE_ANCHOR_HISTORY_UNVERIFIED: invalid local SPY row count"
+    local_first = original_anchor.get("first")
+    local_first_day = _read_date(local_first) if local_first is not None else None
+    if local_first is not None and (local_first_day is None
+                                    or not is_session(local_first_day)
+                                    or local_first_day > latest):
+        return False, "SOURCE_ANCHOR_HISTORY_UNVERIFIED: invalid local SPY first date"
+    missing = sessions_behind(latest, now)
+    if missing > max_missing_sessions:
+        return False, (f"SOURCE_STALE: local latest {latest} is {missing} completed "
+                       f"NYSE sessions behind {expected} (limit {max_missing_sessions})")
+
+    def _collector_update(record: dict) -> datetime | None:
+        value = record.get("updated_at")
+        if not isinstance(value, str):
+            return None
+        try:
+            stamp = datetime.fromisoformat(value)
+        except ValueError:
+            return None
+        if stamp.tzinfo is None or stamp.utcoffset() is None:
+            return None
+        return stamp.astimezone(timezone.utc)
+
+    # A date-only source claim is not a provenance revision. If a collector
+    # timestamp is supplied, it must be a genuine timezone-aware observation,
+    # never an impossible future value that could dominate every real revision.
+    # Five minutes tolerates small host-clock skew; it cannot justify years
+    # or days ahead of the publishing clock.
+    latest_update = _collector_update(local)
+    if local.get("updated_at") is not None and latest_update is None:
+        return False, "SOURCE_REVISION_UNVERIFIED: invalid local collector UTC clock"
+    if latest_update is not None and latest_update > now + timedelta(minutes=5):
+        return False, "SOURCE_REVISION_FUTURE: local collector clock is after observation time"
+
+    if remote is not None:
+        if not isinstance(remote, dict) or remote.get("dir") != "massive_stock_day":
+            return False, "REMOTE_UNVERIFIED: no authentic remote publisher document"
+        recorded = remote.get("store")
+        if not isinstance(recorded, dict) or recorded.get("store") != "massive_stock_day":
+            return False, "REMOTE_UNVERIFIED: missing original remote collector metadata"
+        older = _read_date(recorded.get("latest_date"))
+        if older is None or not is_session(older) or older > expected:
+            return False, "REMOTE_UNVERIFIED: invalid remote completed NYSE session"
+        remote_anchor = recorded.get("anchor")
+        if not isinstance(remote_anchor, dict):
+            return False, "REMOTE_ANCHOR_MISMATCH: missing original remote SPY price anchor"
+        if remote_anchor.get("ticker") != "SPY":
+            return False, "REMOTE_ANCHOR_MISMATCH: original remote price anchor is not SPY"
+        remote_anchor_day = _read_date(remote_anchor.get("last"))
+        if remote_anchor_day != older or not is_session(remote_anchor_day):
+            return False, "REMOTE_ANCHOR_MISMATCH: remote source latest lacks its SPY price rows"
+        # Massive is not an append-only per-file store: the general size guard
+        # does not protect it from an updated local snapshot that truncated
+        # older sessions while retaining the latest tip and a newer clock.
+        # Compare retained ORIGINAL price-index coverage whenever R2 supplies
+        # these collector fields. Legacy remote docs without the fields retain
+        # their existing date/revision admission behavior.
+        remote_rows = remote_anchor.get("n_rows")
+        if remote_rows is not None:
+            if type(remote_rows) is not int or remote_rows <= 0:
+                return False, "REMOTE_ANCHOR_HISTORY_UNVERIFIED: invalid remote SPY row count"
+            if local_rows is None:
+                return False, "SOURCE_ANCHOR_HISTORY_UNVERIFIED: missing comparable local SPY rows"
+            if local_rows < remote_rows:
+                return False, (f"SOURCE_ANCHOR_HISTORY_REGRESSION: local SPY has {local_rows} "
+                               f"rows, remote original source has {remote_rows}")
+        remote_first = remote_anchor.get("first")
+        if remote_first is not None:
+            remote_first_day = _read_date(remote_first)
+            if (remote_first_day is None or not is_session(remote_first_day)
+                    or remote_first_day > older):
+                return False, "REMOTE_ANCHOR_HISTORY_UNVERIFIED: invalid remote SPY first date"
+            if local_first_day is None:
+                return False, "SOURCE_ANCHOR_HISTORY_UNVERIFIED: missing comparable SPY first date"
+            if local_first_day > remote_first_day:
+                return False, (f"SOURCE_ANCHOR_HISTORY_REGRESSION: local SPY first "
+                               f"{local_first_day} follows remote original {remote_first_day}")
+        remote_update = _collector_update(recorded)
+        if recorded.get("updated_at") is not None and remote_update is None:
+            return False, "REMOTE_REVISION_UNVERIFIED: invalid original remote collector clock"
+        if remote_update is not None and remote_update > now + timedelta(minutes=5):
+            return False, "REMOTE_REVISION_FUTURE: remote collector clock is after observation time"
+        if latest < older:
+            return False, (f"SOURCE_REGRESSION: local latest {latest} predates "
+                           f"remote source latest {older}")
+        if latest > older and remote_update is not None:
+            # A later session can still carry an OLDER source generation.
+            # A known remote collector revision needs a comparable local
+            # observation even when the session date itself advanced.
+            if latest_update is None:
+                return False, ("SOURCE_REVISION_UNVERIFIED: newer local session "
+                               "has no original collector UTC revision")
+            if latest_update < remote_update:
+                return False, ("SOURCE_REVISION_REGRESSION: newer session source "
+                               "has an older collector revision than remote")
+        if latest == older:
+            # Source session dates are not revision IDs. Any same-day
+            # correction must retain newer original collector evidence.
+            if latest_update is None or remote_update is None:
+                return False, ("SOURCE_REVISION_UNVERIFIED: same-session source "
+                               "revisions lack comparable UTC collector clocks")
+            if latest_update < remote_update:
+                return False, ("SOURCE_REVISION_REGRESSION: local collector "
+                               "revision predates the remote source revision")
+    return True, "source tip admitted"
+
+
 def _manifest_ok(new_count: int, remote: dict | None, floor: float = 0.5) -> tuple[bool, str]:
     """May a freshly-built manifest replace `remote`? Bulk consumers sync AND PRUNE
     against this list, so a partial-tree invocation must never clobber it: replacing
@@ -589,6 +754,19 @@ def publish(dirs, dry_run: bool = False, workers: int = 32,
     site = config.ROOT / config.load()["storage"]["site_dir"]
     up = skip = failed = 0
     data = config.ROOT / config.load()["storage"]["data_dir"]
+    # Use the existing audit owner's grace configuration, not a second R2 SLA.
+    massive_tip_limit: int | None = None
+    if "massive_stock_day" in dirs:
+        from scripts.audit_r2 import DEFAULT_MASSIVE_TIP_MAX_MISSING_SESSIONS  # noqa: PLC0415
+        massive_tip_limit = DEFAULT_MASSIVE_TIP_MAX_MISSING_SESSIONS
+        raw_limit = (config.load().get("r2_data_plane") or {}).get(
+            "massive_tip_max_missing_sessions", massive_tip_limit)
+        if type(raw_limit) is int:
+            massive_tip_limit = raw_limit
+        elif isinstance(raw_limit, str) and raw_limit.isdecimal():
+            massive_tip_limit = int(raw_limit)
+        else:
+            massive_tip_limit = -1  # fail closed inside _massive_publish_tip_ok
     # Per-dir store-path overrides: let the ops host publish stores that live
     # outside the repo checkout (e.g. the theta-ops worktree).
     # WP-RESOLVER: thetadata_eod routes through the canonical resolver
@@ -631,6 +809,28 @@ def publish(dirs, dry_run: bool = False, workers: int = 32,
                   "skipped", flush=True)
             continue
         remote = _remote_etags(s3, bucket, d + "/")
+        if d == "massive_stock_day":
+            # The publisher's source clock comes from the original collector
+            # manifest, NOT Last-Modified on a freshly re-PUT file-list doc.
+            # Do this BEFORE changed Parquets are uploaded: the old shrink guard
+            # ran only after uploads and could not prevent full stale snapshots
+            # from replacing newer remote objects.
+            try:
+                local_source = json.loads((base / "_manifest.json").read_text())
+            except (OSError, ValueError):
+                local_source = None
+            remote_source = _remote_manifest(s3, bucket, d)
+            if remote_source is None and remote:
+                admitted, why_tip = False, "REMOTE_UNVERIFIED: data objects exist but source manifest is unavailable"
+            else:
+                admitted, why_tip = _massive_publish_tip_ok(
+                    local_source, remote_source, max_missing_sessions=massive_tip_limit)
+            if not admitted:
+                failed += 1
+                log.error("%s: %s — refusing ALL source uploads", d, why_tip)
+                print(f"::error title=publish_r2 source-tip guard::{d}: {why_tip} — "
+                      "no Parquet or manifest uploaded", flush=True)
+                continue
         todo, guarded = [], 0
         for p in files:
             key = f"{d}/{p.relative_to(base).as_posix()}"
@@ -705,6 +905,27 @@ def publish(dirs, dry_run: bool = False, workers: int = 32,
             log.info("%s: manifest untouched (%d upload failure(s) — every file it "
                      "lists must be in place first)", d, len(failures))
             continue
+        if d == "massive_stock_day":
+            # The remote may advance while this process is uploading deltas.
+            # Never put our older file-list/source descriptor over a newer one.
+            # File uploads already attempted here cannot be made atomic, but the
+            # authoritative manifest must retain the newer published source.
+            latest_remote = _remote_manifest(s3, bucket, d)
+            try:
+                latest_local = json.loads((base / "_manifest.json").read_text())
+            except (OSError, ValueError):
+                latest_local = None
+            if latest_remote is None and remote:
+                still_ok, why_tip = False, "REMOTE_UNVERIFIED: remote manifest changed or disappeared"
+            else:
+                still_ok, why_tip = _massive_publish_tip_ok(
+                    latest_local, latest_remote, max_missing_sessions=massive_tip_limit)
+            if not still_ok:
+                failed += 1
+                log.error("%s: %s — manifest NOT replaced", d, why_tip)
+                print(f"::error title=publish_r2 source-tip guard::{d}: {why_tip} — "
+                      "manifest not replaced", flush=True)
+                continue
         names = sorted(p.relative_to(base).as_posix() for p in files)
         ok, why = (True, "forced") if force_manifest else \
             _manifest_ok(len(names), _remote_manifest(s3, bucket, d))

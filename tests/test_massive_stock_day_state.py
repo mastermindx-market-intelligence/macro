@@ -212,3 +212,421 @@ def test_manifest_reports_interior_missing_run(store):
     mf = json.loads(msd._manifest_path().read_text())
     assert mf["coverage"]["max_missing_run_weekdays"] == 6
     assert mf["coverage"]["missing_sample"][0] == DAYS[2].isoformat()
+
+
+
+# Operator-only processed-day member repair must NEVER clear the global resume
+# state or refetch 20k unaffected members through the normal nightly path.
+# These fixtures use a tiny disposable store and a fake Massive S3 response.
+def _remove_bar(symbol, day):
+    path = msd._ticker_path(symbol)
+    rows = pd.read_parquet(path)
+    rows.drop(pd.Timestamp(day)).to_parquet(path)
+
+
+def test_operator_only_missing_processed_member_day_repair(store):
+    msd.backfill(start=DAYS[0], end=DAYS[4])
+    _remove_bar("AAPL", DAYS[2])
+    store["calls"].clear()
+    assert DAYS[2] in msd._processed_days()
+    # The existing ordinary incremental advances other days but misses this
+    # already-processed member hole. Compare source bytes AFTER that ordinary
+    # work, so the recovery-only effect check is not contaminated by nightly.
+    msd.run_incremental(max_days=None, pace_s=0)
+    assert DAYS[2] not in set(msd.load_ticker("AAPL").index.date)
+    assert DAYS[2] not in store["calls"]
+    original_state = msd._backfill_state_path().read_bytes()
+    original_spy = msd._ticker_path("SPY").read_bytes()
+    store["calls"].clear()
+    output = msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert output["status"] == "REPAIRED"
+    assert output["repaired"] == ["AAPL"]
+    assert DAYS[2] in set(msd.load_ticker("AAPL").index.date)
+    assert store["calls"] == [DAYS[2]]
+    assert msd._ticker_path("SPY").read_bytes() == original_spy
+    assert msd._backfill_state_path().read_bytes() == original_state
+    assert msd._manifest_path().exists()
+
+
+def test_operator_member_repair_does_not_redownload_when_already_present(store):
+    msd.backfill(start=DAYS[0], end=DAYS[2])
+    store["calls"].clear()
+    state_before=msd._backfill_state_path().read_bytes()
+    manifest_before=msd._manifest_path().read_bytes()
+    output = msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert output["status"] == "ALREADY_PRESENT"
+    assert store["calls"] == []
+    assert msd._backfill_state_path().read_bytes() == state_before
+    assert msd._manifest_path().read_bytes() == manifest_before
+
+
+def test_operator_member_repair_withholds_if_original_vendor_lacks_name(store, monkeypatch):
+    msd.backfill(start=DAYS[0], end=DAYS[3])
+    _remove_bar("AAPL", DAYS[2])
+    before={str(p):p.read_bytes() for p in msd._store_dir().rglob("*") if p.is_file()}
+    monkeypatch.setattr(msd, "fetch_aggs",
+                        lambda *a, **k: _day_frame(DAYS[2]).query("ticker == 'SPY'"))
+    output = msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert output["status"] == "REFUSED"
+    assert output["reason"] == "SOURCE_MEMBER_MISSING"
+    assert before == {str(p):p.read_bytes() for p in msd._store_dir().rglob("*") if p.is_file()}
+
+
+def test_operator_member_repair_refuses_corrupt_existing_name_before_fetch(store):
+    msd.backfill(start=DAYS[0], end=DAYS[3])
+    path=msd._ticker_path("AAPL")
+    path.write_bytes(b"corrupt-recovered-parquet")
+    state=msd._backfill_state_path().read_bytes()
+    store["calls"].clear()
+    output=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert output["status"] == "REFUSED"
+    assert output["reason"] == "SOURCE_MEMBER_UNREADABLE"
+    assert path.read_bytes()==b"corrupt-recovered-parquet"
+    assert state==msd._backfill_state_path().read_bytes()
+    assert store["calls"]==[]
+
+
+@pytest.mark.parametrize("day,symbols", [
+    (DAYS[2], ("../AAPL",)),
+    (DAYS[2], ("AAPL", "AAPL")),
+    (date(2026, 6, 7), ("AAPL",)),
+    (DAYS[2], ()),
+])
+def test_operator_member_repair_rejects_invalid_request_without_io(store, day, symbols):
+    store["calls"].clear()
+    with pytest.raises(ValueError):
+        msd.repair_processed_day_missing_members(day, symbols)
+    assert store["calls"]==[]
+
+
+def test_operator_member_repair_refuses_unprocessed_day_without_mutation(store):
+    msd.backfill(start=DAYS[0], end=DAYS[1])
+    state=msd._backfill_state_path().read_bytes()
+    store["calls"].clear()
+    output=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert output["status"] == "REFUSED"
+    assert output["reason"] == "ORIGINAL_DAY_NOT_PROCESSED"
+    assert state==msd._backfill_state_path().read_bytes()
+    assert store["calls"]==[]
+
+
+
+def test_operator_repair_partial_atomic_effect_remains_recoverable(store, monkeypatch):
+    """Second file fails: no fake all-or-nothing claim or reset of processed days."""
+    import os
+    from pathlib import Path
+    msd.backfill(start=DAYS[0], end=DAYS[3])
+    _remove_bar("AAPL", DAYS[2]); _remove_bar("SPY", DAYS[2])
+    previous_state=msd._backfill_state_path().read_bytes()
+    previous_manifest=msd._manifest_path().read_bytes()
+    original_replace=os.replace
+    def fail_second(src, dst):
+        if Path(dst).name == "SPY.parquet":
+            raise OSError("synthetic second atomic replacement interrupted")
+        return original_replace(src, dst)
+    with monkeypatch.context() as m:
+        m.setattr(os, "replace", fail_second)
+        result=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL", "SPY"))
+    assert result["status"]=="PARTIAL"
+    assert result["reason"]=="REPAIR_LOCAL_EFFECT_UNSETTLED"
+    assert result["repaired"]==["AAPL"]
+    assert DAYS[2] in set(msd.load_ticker("AAPL").index.date)
+    assert DAYS[2] not in set(msd.load_ticker("SPY").index.date)
+    assert msd._backfill_state_path().read_bytes()==previous_state
+    assert msd._manifest_path().read_bytes()==previous_manifest
+    # Same exact original day/target recovery; already-durable AAPL is not replaced.
+    already=msd._ticker_path("AAPL").read_bytes()
+    recovered=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL", "SPY"))
+    assert recovered["status"]=="REPAIRED"
+    assert recovered["repaired"]==["SPY"]
+    assert msd._ticker_path("AAPL").read_bytes()==already
+    assert DAYS[2] in set(msd.load_ticker("SPY").index.date)
+    assert msd._backfill_state_path().read_bytes()==previous_state
+
+
+def test_operator_repair_all_missing_members_preflight_before_any_file_change(
+    store, monkeypatch,
+):
+    msd.backfill(start=DAYS[0], end=DAYS[3])
+    _remove_bar("AAPL", DAYS[2]); _remove_bar("SPY", DAYS[2])
+    before={str(p):p.read_bytes() for p in msd._store_dir().rglob("*") if p.is_file()}
+    monkeypatch.setattr(msd, "fetch_aggs",
+                        lambda *a, **k: _day_frame(DAYS[2]).query("ticker == 'AAPL'"))
+    outcome=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL", "SPY"))
+    assert outcome["status"]=="REFUSED"
+    assert outcome["reason"]=="SOURCE_MEMBER_MISSING"
+    assert before=={str(p):p.read_bytes() for p in msd._store_dir().rglob("*") if p.is_file()}
+
+
+@pytest.mark.parametrize("missing_field", ["volume", "transactions"])
+def test_operator_repair_rejects_missing_original_provider_counts_before_effect(
+    store, monkeypatch, missing_field,
+):
+    """Provider-null trade metadata must not become an invented observed zero."""
+    msd.backfill(start=DAYS[0], end=DAYS[3])
+    _remove_bar("AAPL", DAYS[2])
+    before={str(p):p.read_bytes() for p in msd._store_dir().rglob("*") if p.is_file()}
+    vendor_calls=[]
+    def missing_count(*args, **kwargs):
+        vendor_calls.append(args[0])
+        day=_day_frame(DAYS[2])
+        day.loc[day["ticker"]=="AAPL",missing_field]=float("nan")
+        return day
+    monkeypatch.setattr(msd, "fetch_aggs", missing_count)
+    result=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert result == {"status":"REFUSED","reason":"SOURCE_PRICE_INVALID"}
+    assert vendor_calls == [DAYS[2]]
+    assert before == {str(p):p.read_bytes() for p in msd._store_dir().rglob("*") if p.is_file()}
+
+
+@pytest.mark.parametrize("missing_field", ["volume", "transactions"])
+@pytest.mark.parametrize("invalid_value", [float("inf"), -1.0, 1.5])
+def test_operator_repair_refuses_invalid_original_provider_count_without_effect(
+    store, monkeypatch, missing_field, invalid_value,
+):
+    """No infinite, negative or fractional original trade-count evidence."""
+    msd.backfill(start=DAYS[0], end=DAYS[3])
+    _remove_bar("AAPL", DAYS[2])
+    before={str(p):p.read_bytes() for p in msd._store_dir().rglob("*") if p.is_file()}
+    def invalid_provider_count(*args, **kwargs):
+        day=_day_frame(DAYS[2])
+        # Give the synthetic provider a float-capable column before injecting
+        # inf/fractional input; Pandas integer assignment must not be the error.
+        day[missing_field]=day[missing_field].astype(float)
+        day.loc[day["ticker"]=="AAPL",missing_field]=invalid_value
+        return day
+    monkeypatch.setattr(msd, "fetch_aggs", invalid_provider_count)
+    result=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert result == {"status":"REFUSED","reason":"SOURCE_PRICE_INVALID"}
+    assert before == {str(p):p.read_bytes() for p in msd._store_dir().rglob("*") if p.is_file()}
+
+
+@pytest.mark.parametrize("field", ["volume", "transactions"])
+def test_operator_repair_accepts_an_explicit_original_zero_count(
+    store, monkeypatch, field,
+):
+    """Actual vendor zero is distinct from missing data replaced with zero."""
+    msd.backfill(start=DAYS[0], end=DAYS[3])
+    _remove_bar("AAPL", DAYS[2])
+    def explicit_zero(*args, **kwargs):
+        day=_day_frame(DAYS[2])
+        day.loc[day["ticker"]=="AAPL",field]=0
+        return day
+    monkeypatch.setattr(msd, "fetch_aggs", explicit_zero)
+    result=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert result["status"]=="REPAIRED"
+    assert msd.load_ticker("AAPL").loc[pd.Timestamp(DAYS[2]),field] == 0
+
+
+def test_operator_repair_invalid_provider_price_refuses_with_no_effect(store, monkeypatch):
+    msd.backfill(start=DAYS[0], end=DAYS[3])
+    _remove_bar("AAPL", DAYS[2])
+    before={str(p):p.read_bytes() for p in msd._store_dir().rglob("*") if p.is_file()}
+    def bogus(*args, **kwargs):
+        data=_day_frame(DAYS[2])
+        data.loc[data["ticker"]=="AAPL","close"]=-10.0
+        return data
+    monkeypatch.setattr(msd, "fetch_aggs", bogus)
+    outcome=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert outcome["status"]=="REFUSED"
+    assert outcome["reason"]=="SOURCE_PRICE_INVALID"
+    assert before=={str(p):p.read_bytes() for p in msd._store_dir().rglob("*") if p.is_file()}
+
+
+def test_operator_repair_refuses_without_restored_full_store_before_fetch(store, monkeypatch):
+    msd.backfill(start=DAYS[0], end=DAYS[3])
+    _remove_bar("AAPL", DAYS[2])
+    state=msd._backfill_state_path().read_bytes()
+    store["calls"].clear()
+    monkeypatch.setattr(msd,"_MIN_STORE_FILES",100)
+    outcome=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert outcome["status"]=="REFUSED"
+    assert outcome["reason"]=="ORIGINAL_STORE_NOT_RESTORED"
+    assert store["calls"]==[]
+    assert msd._backfill_state_path().read_bytes()==state
+
+
+def test_operator_repair_refuses_absent_provider_credentials_before_fetch(store, monkeypatch):
+    msd.backfill(start=DAYS[0], end=DAYS[3])
+    _remove_bar("AAPL", DAYS[2])
+    store["calls"].clear()
+    monkeypatch.setattr(msd, "enabled", lambda: False)
+    outcome=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert outcome["status"]=="REFUSED"
+    assert outcome["reason"]=="ORIGINAL_SOURCE_CREDENTIALS_UNAVAILABLE"
+    assert store["calls"]==[]
+
+
+
+def test_operator_repair_existing_cli_routes_to_original_repair_api(
+    store, monkeypatch, capsys,
+):
+    import sys
+    from scripts import backfill_massive_stock_day as cli
+    seen=[]
+    def original_repair(day, tickers):
+        seen.append((day,tickers))
+        return {"status":"REPAIRED","repaired":list(tickers)}
+    monkeypatch.setattr(msd,"repair_processed_day_missing_members",original_repair)
+    monkeypatch.setattr(sys,"argv",
+                        ["script","--repair-day","2026-06-03",
+                         "--repair-tickers","AAPL,MSFT"])
+    assert cli.main()==0
+    assert seen==[(DAYS[2],("AAPL","MSFT"))]
+    assert '"REPAIRED"' in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("bad_args", [
+    ["--repair-day","2026-06-03","--repair-tickers","AAPL","--force"],
+    ["--repair-day","2026-06-03"],
+    ["--repair-tickers","AAPL"],
+    ["--repair-day","2026-06-03","--repair-tickers","AAPL","--smoke"],
+])
+def test_operator_repair_cli_rejects_unsafe_mode_combinations(
+    store, monkeypatch, bad_args,
+):
+    import sys
+    from scripts import backfill_massive_stock_day as cli
+    seen=[]
+    monkeypatch.setattr(msd,"repair_processed_day_missing_members",
+                        lambda *a: seen.append(a))
+    monkeypatch.setattr(sys,"argv",["script"]+bad_args)
+    with pytest.raises(SystemExit):
+        cli.main()
+    assert seen==[]
+
+
+def test_operator_repair_cli_reports_refusal_as_failed_exit(store, monkeypatch):
+    import sys
+    from scripts import backfill_massive_stock_day as cli
+    monkeypatch.setattr(msd,"repair_processed_day_missing_members",
+                        lambda *a: {"status":"REFUSED","reason":"SOURCE_MEMBER_MISSING"})
+    monkeypatch.setattr(sys,"argv",["script","--repair-day","2026-06-03",
+                                   "--repair-tickers","AAPL"])
+    assert cli.main()==1
+
+
+
+def test_operator_repair_refuses_source_mutation_while_fetching(store, monkeypatch):
+    """A concurrent source writer invalidates the original CAS; no repair overwrite."""
+    msd.backfill(start=DAYS[0], end=DAYS[3])
+    _remove_bar("AAPL", DAYS[2])
+    original_state=msd._backfill_state_path().read_bytes()
+    original_manifest=msd._manifest_path().read_bytes()
+    path=msd._ticker_path("AAPL")
+    def concurrent(*args, **kwargs):
+        altered=pd.read_parquet(path)
+        altered.loc[pd.Timestamp(DAYS[0]),"close"]=199.5
+        altered.to_parquet(path)
+        return _day_frame(DAYS[2])
+    monkeypatch.setattr(msd, "fetch_aggs", concurrent)
+    output=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert output["status"]=="REFUSED"
+    assert output["reason"]=="ORIGINAL_SOURCE_CHANGED"
+    assert DAYS[2] not in set(msd.load_ticker("AAPL").index.date)
+    assert float(msd.load_ticker("AAPL").loc[pd.Timestamp(DAYS[0]),"close"])==199.5
+    assert msd._manifest_path().read_bytes()==original_manifest
+    assert msd._backfill_state_path().read_bytes()==original_state
+    assert list(path.parent.glob(".AAPL.parquet.repair-*.tmp"))==[]
+
+
+
+def test_operator_repair_refuses_changed_global_state_during_vendor_fetch(
+    store, monkeypatch,
+):
+    """A concurrent night's updated resume state cannot be reverted by repair."""
+    msd.backfill(start=DAYS[0], end=DAYS[3])
+    _remove_bar("AAPL", DAYS[2])
+    before=msd._ticker_path("AAPL").read_bytes()
+    manifest=msd._manifest_path().read_bytes()
+    state_path=msd._backfill_state_path()
+    def concurrent(*args, **kwargs):
+        body=json.loads(state_path.read_text())
+        body["processed_days"].append(DAYS[4].isoformat())
+        body["last_captured_date"]=DAYS[4].isoformat()
+        state_path.write_text(json.dumps(body))
+        return _day_frame(DAYS[2])
+    monkeypatch.setattr(msd, "fetch_aggs", concurrent)
+    outcome=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert outcome["status"]=="REFUSED"
+    assert outcome["reason"]=="ORIGINAL_STATE_CHANGED"
+    assert msd._ticker_path("AAPL").read_bytes()==before
+    assert msd._manifest_path().read_bytes()==manifest
+    assert DAYS[4] in msd._processed_days()
+
+
+def test_operator_repair_refuses_changed_original_manifest_during_vendor_fetch(
+    store, monkeypatch,
+):
+    """A changed collector manifest is not overwritten by the repair's clock."""
+    msd.backfill(start=DAYS[0], end=DAYS[3])
+    _remove_bar("AAPL", DAYS[2])
+    original=msd._ticker_path("AAPL").read_bytes()
+    original_state=msd._backfill_state_path().read_bytes()
+    manifest=msd._manifest_path()
+    def concurrent(*args, **kwargs):
+        body=json.loads(manifest.read_text())
+        body["updated_at"]="2026-10-16T15:00:00+00:00"
+        manifest.write_text(json.dumps(body))
+        return _day_frame(DAYS[2])
+    monkeypatch.setattr(msd, "fetch_aggs", concurrent)
+    outcome=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert outcome["status"]=="REFUSED"
+    assert outcome["reason"]=="ORIGINAL_MANIFEST_CHANGED"
+    assert msd._ticker_path("AAPL").read_bytes()==original
+    assert msd._backfill_state_path().read_bytes()==original_state
+    assert json.loads(manifest.read_text())["updated_at"]=="2026-10-16T15:00:00+00:00"
+
+
+
+@pytest.mark.parametrize("defect", ["missing_open", "intraday_index"])
+def test_operator_repair_refuses_malformed_original_price_series_before_source_fetch(
+    store, defect,
+):
+    """Do not introduce null OHLC or a second daily bar into legacy source."""
+    msd.backfill(start=DAYS[0], end=DAYS[3])
+    _remove_bar("AAPL", DAYS[2])
+    path=msd._ticker_path("AAPL")
+    rows=pd.read_parquet(path)
+    if defect=="missing_open":
+        rows=rows.drop(columns=["open"])
+    else:
+        rows.index=rows.index+pd.Timedelta(hours=13)
+    rows.to_parquet(path)
+    before=path.read_bytes()
+    state=msd._backfill_state_path().read_bytes()
+    manifest=msd._manifest_path().read_bytes()
+    store["calls"].clear()
+    output=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert output["status"]=="REFUSED"
+    assert output["reason"]=="SOURCE_MEMBER_UNREADABLE"
+    assert store["calls"]==[]
+    assert path.read_bytes()==before
+    assert msd._backfill_state_path().read_bytes()==state
+    assert msd._manifest_path().read_bytes()==manifest
+
+
+def test_operator_repair_rejects_same_bytes_changed_original_inode(store, monkeypatch):
+    """Same bytes do not imply the original source file remains the same object."""
+    import os
+    msd.backfill(start=DAYS[0], end=DAYS[3])
+    _remove_bar("AAPL", DAYS[2])
+    path=msd._ticker_path("AAPL")
+    before=path.read_bytes()
+    initial_inode=os.lstat(path).st_ino
+    state=msd._backfill_state_path().read_bytes()
+    manifest=msd._manifest_path().read_bytes()
+    def concurrent(*args, **kwargs):
+        replacement=path.with_name("AAPL.inode-rotation.tmp")
+        replacement.write_bytes(before)
+        os.replace(replacement,path)
+        assert os.lstat(path).st_ino!=initial_inode
+        return _day_frame(DAYS[2])
+    monkeypatch.setattr(msd,"fetch_aggs",concurrent)
+    output=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert output["status"]=="REFUSED"
+    assert output["reason"]=="ORIGINAL_SOURCE_CHANGED"
+    assert path.read_bytes()==before
+    assert DAYS[2] not in set(msd.load_ticker("AAPL").index.date)
+    assert msd._backfill_state_path().read_bytes()==state
+    assert msd._manifest_path().read_bytes()==manifest

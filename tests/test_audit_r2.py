@@ -498,3 +498,192 @@ def test_legacy_manifest_without_recent_key_keeps_full_history_behaviour():
     assert any("R2 COVERAGE HOLE" in f for f in r["fail_reasons"])
     rec = r["anchors"]["massive_stock_day/coverage"]
     assert "max_missing_run_weekdays_recent" not in rec
+
+# --- NYSE-session tip SLA for the existing Massive daily source -------------
+# The published file-list manifest can be freshly re-PUT while its seven
+# underlying per-ticker stores still end on Friday. The ordinary 6-calendar-
+# day age and interior-hole checks do not see a missing Monday+Tuesday tip.
+def _massive_tip_at(now: datetime, latest: str, *, store: str = "massive_stock_day",
+                    anchor_last: str | None = None, include_anchor: bool = True,
+                    anchor_ticker: str | None = "SPY") -> dict:
+    published = {
+        "dir": store, "count": 21712, "files": ["AAPL.parquet", "NVDA.parquet"],
+        "store": {
+            "store": store, "latest_date": latest,
+            "coverage": {"max_missing_run_weekdays": 0,
+                         "max_missing_run_weekdays_recent": 0,
+                         "recent_window_bdays": 90},
+            "anchor": {"ticker": "SPY", "last": latest if anchor_last is None else anchor_last},
+        },
+    }
+    if not include_anchor:
+        published["store"].pop("anchor")
+    elif anchor_ticker is None:
+        published["store"]["anchor"].pop("ticker")
+    else:
+        published["store"]["anchor"]["ticker"] = anchor_ticker
+    source = {
+        f"{store}/_manifest.json": (
+            200, {"Last-Modified": format_datetime(now - timedelta(hours=4), usegmt=True)},
+            json.dumps(published).encode(),
+        ),
+    }
+    return probe(now, base=BASE, anchors=[store], asof_key=None,
+                 fetch=_fetcher(source), retries=0)
+
+
+def test_massive_missing_two_completed_sessions_fails_even_when_manifest_is_fresh():
+    # Oct 12 2026 (Columbus Day) IS an NYSE session; Tue Oct 13 also closes.
+    now = datetime(2026, 10, 14, 14, 30, tzinfo=timezone.utc)
+    r = _massive_tip_at(now, "2026-10-09")
+    assert r["ok"] is False
+    assert not any("R2 CONTENT STALE" in s for s in r["fail_reasons"])
+    assert any("R2 SESSION TIP STALE: massive_stock_day" in s for s in r["fail_reasons"])
+    assert r["anchors"]["massive_stock_day/coverage"]["missing_completed_sessions"] == 2
+    assert r["anchors"]["massive_stock_day/coverage"]["expected_last_session"] == "2026-10-13"
+
+
+def test_massive_one_completed_session_grace_tolerates_nightly_delivery():
+    # Oct 13 at 10:30 ET: Oct 12 is completed, Oct 13 is not yet closed.
+    now = datetime(2026, 10, 13, 14, 30, tzinfo=timezone.utc)
+    r = _massive_tip_at(now, "2026-10-09")
+    assert r["ok"] is True
+    assert r["anchors"]["massive_stock_day/coverage"]["missing_completed_sessions"] == 1
+    assert r["anchors"]["massive_stock_day/coverage"]["expected_last_session"] == "2026-10-12"
+
+
+def test_massive_exchange_calendar_handles_thanksgiving_and_weekend():
+    # Thanksgiving Thu Nov 26 is closed; Fri Nov 27 was a shortened NYSE session.
+    # By Mon Nov 30 morning, a source on Wed Nov 25 is only one session behind.
+    now = datetime(2026, 11, 30, 14, 30, tzinfo=timezone.utc)
+    r = _massive_tip_at(now, "2026-11-25")
+    assert r["ok"] is True
+    assert r["anchors"]["massive_stock_day/coverage"]["missing_completed_sessions"] == 1
+    assert r["anchors"]["massive_stock_day/coverage"]["expected_last_session"] == "2026-11-27"
+
+
+def test_massive_tip_rule_is_not_applied_to_other_data_dir_calendars():
+    # HK and other markets retain their own freshness rules; the US NYSE rule
+    # must not become a second calendar owner for non-US stores.
+    now = datetime(2026, 10, 14, 14, 30, tzinfo=timezone.utc)
+    r = _massive_tip_at(now, "2026-10-09", store="hk_stocks_ext")
+    assert r["ok"] is True
+    assert "missing_completed_sessions" not in r["anchors"]["hk_stocks_ext/coverage"]
+
+def test_massive_tip_session_grace_can_be_tightened_by_source_owner():
+    now = datetime(2026, 10, 13, 14, 30, tzinfo=timezone.utc)
+    published = {
+        "dir": "massive_stock_day", "store": {
+            "store": "massive_stock_day", "latest_date": "2026-10-09",
+            "coverage": {"max_missing_run_weekdays_recent": 0},
+            "anchor": {"ticker": "SPY", "last": "2026-10-09"},
+        },
+    }
+    objects = {
+        "massive_stock_day/_manifest.json": (
+            200, {"Last-Modified": format_datetime(now - timedelta(hours=4), usegmt=True)},
+            json.dumps(published).encode(),
+        ),
+    }
+    r = probe(now, base=BASE, anchors=["massive_stock_day"], asof_key=None,
+              massive_tip_max_missing_sessions=0, fetch=_fetcher(objects), retries=0)
+    assert r["ok"] is False
+    assert r["anchors"]["massive_stock_day/coverage"]["max_missing_completed_sessions"] == 0
+    assert any("R2 SESSION TIP STALE" in f for f in r["fail_reasons"])
+
+
+def test_massive_daily_tip_check_remains_active_in_config():
+    # audit_r2.DEFAULT_ANCHORS is intentionally not the heartbeat source of
+    # truth. Config replaces that list, so pin the actual production anchor.
+    from lib import config
+    from scripts.audit_r2 import COVERAGE_ANCHORS
+    assert "massive_stock_day" in COVERAGE_ANCHORS
+    assert "massive_stock_day" in config.load()["r2_data_plane"]["anchors"]
+
+
+# --- R2 source-date and actual-price-anchor honesty --------------------------
+def test_massive_audit_refuses_future_completed_session_claim():
+    now = datetime(2026, 10, 15, 5, 20, tzinfo=timezone.utc)
+    r = _massive_tip_at(now, "2026-10-16")
+    assert r["ok"] is False
+    assert any("R2 SOURCE TIP INVALID" in x for x in r["fail_reasons"])
+    assert "massive_stock_day/coverage" in r["anchors"]
+
+
+def test_massive_audit_refuses_non_session_sunday_source_claim():
+    now = datetime(2026, 10, 20, 14, 0, tzinfo=timezone.utc)
+    r = _massive_tip_at(now, "2026-10-18")
+    assert r["ok"] is False
+    assert any("R2 SOURCE TIP INVALID" in x for x in r["fail_reasons"])
+
+
+def test_massive_audit_refuses_malformed_source_date_instead_of_only_warning():
+    now = datetime(2026, 10, 15, 5, 20, tzinfo=timezone.utc)
+    r = _massive_tip_at(now, "2026-02-30")
+    assert r["ok"] is False
+    assert any("R2 SOURCE TIP INVALID" in x for x in r["fail_reasons"])
+
+
+def test_massive_audit_requires_source_manifest_price_anchor_parity():
+    now = datetime(2026, 10, 15, 5, 20, tzinfo=timezone.utc)
+    r = _massive_tip_at(now, "2026-10-14", anchor_last="2026-10-09")
+    assert r["ok"] is False
+    assert any("R2 SOURCE ANCHOR MISMATCH" in x for x in r["fail_reasons"])
+
+
+def test_massive_audit_requires_price_anchor_when_source_is_claimed():
+    now = datetime(2026, 10, 15, 5, 20, tzinfo=timezone.utc)
+    r = _massive_tip_at(now, "2026-10-14", include_anchor=False)
+    assert r["ok"] is False
+    assert any("R2 SOURCE ANCHOR MISMATCH" in x for x in r["fail_reasons"])
+
+
+def test_massive_audit_admits_consistent_recent_completed_session():
+    now = datetime(2026, 10, 15, 5, 20, tzinfo=timezone.utc)
+    r = _massive_tip_at(now, "2026-10-14")
+    assert r["ok"] is True
+    assert r["anchors"]["massive_stock_day/coverage"]["anchor_last"] == "2026-10-14"
+
+
+def test_massive_audit_refuses_populated_manifest_without_coverage_or_anchor():
+    now = datetime(2026, 10, 15, 5, 20, tzinfo=timezone.utc)
+    payload = {"dir": "massive_stock_day", "count": 140,
+               "store": {"store": "massive_stock_day", "latest_date": "2026-10-14"}}
+    fake = {"massive_stock_day/_manifest.json": (
+        200, {"Last-Modified": format_datetime(now - timedelta(hours=2), usegmt=True)},
+        json.dumps(payload).encode(),
+    )}
+    r = probe(now, base=BASE, anchors=["massive_stock_day"], asof_key=None,
+              fetch=_fetcher(fake), retries=0)
+    assert r["ok"] is False
+    assert any("R2 SOURCE ANCHOR MISMATCH" in s for s in r["fail_reasons"])
+
+
+def test_massive_audit_refuses_raw_collector_document_at_publisher_key():
+    now = datetime(2026, 10, 15, 5, 20, tzinfo=timezone.utc)
+    payload = {"store": "massive_stock_day", "latest_date": "2026-10-14"}
+    fake = {"massive_stock_day/_manifest.json": (
+        200, {"Last-Modified": format_datetime(now - timedelta(hours=2), usegmt=True)},
+        json.dumps(payload).encode(),
+    )}
+    r = probe(now, base=BASE, anchors=["massive_stock_day"], asof_key=None,
+              fetch=_fetcher(fake), retries=0)
+    assert r["ok"] is False
+    assert any("R2 SOURCE TIP INVALID" in s for s in r["fail_reasons"])
+
+
+
+def test_massive_audit_refuses_wrong_anchor_ticker_despite_valid_session():
+    now = datetime(2026, 10, 15, 17, 0, tzinfo=timezone.utc)
+    good = _massive_tip_at(now, "2026-10-14", anchor_ticker="SPY")
+    bad = _massive_tip_at(now, "2026-10-14", anchor_ticker="AAPL")
+    assert good["ok"] is True
+    assert bad["ok"] is False
+    assert any("R2 SOURCE ANCHOR MISMATCH" in reason for reason in bad["fail_reasons"])
+
+
+def test_massive_audit_refuses_missing_anchor_ticker_despite_valid_session():
+    now = datetime(2026, 10, 15, 17, 0, tzinfo=timezone.utc)
+    bad = _massive_tip_at(now, "2026-10-14", anchor_ticker=None)
+    assert bad["ok"] is False
+    assert any("R2 SOURCE ANCHOR MISMATCH" in reason for reason in bad["fail_reasons"])
