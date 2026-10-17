@@ -1,0 +1,14 @@
+{
+  "repository": "mastermindx-market-intelligence/macro",
+  "ref": "8a35d8b62494a84b2448182aaa561edea83fe54f",
+  "path": "app/deploy/update.sh",
+  "git_blob_sha": "9a9e1543f14bb06b0bd203bd2b4e195426cf69ed",
+  "url": "https://github.com/mastermindx-market-intelligence/macro/blob/8a35d8b62494a84b2448182aaa561edea83fe54f/app/deploy/update.sh",
+  "ranges": [
+    {
+      "start_line": 285,
+      "end_line": 310,
+      "text": "\tif grep -qE \"$OPTIONS_RECIPROCAL_CLOSURE_REGEX\" <<<\"$CHANGED\"; then\n\t\tstop_reciprocal_market_memory_writers\n\tfi\n\t# END W1B5_PRE_RESET_GUARD\n\tgit -C \"$APP_DIR\" reset --hard -q FETCH_HEAD\n\tREPO_UPDATED=1\n\n\t# Publish the served tree ATOMICALLY. `git reset --hard` above rewrites\n\t# changed files IN PLACE, so Caddy serves a separate rsync target whose\n\t# per-file temp-write + rename keeps every visible file whole.\n\tmkdir -p \"$APP_DIR/site.served\"\n\trsync -a --delete --min-size=1 \"$APP_DIR/site/\" \"$APP_DIR/site.served/\"\n\n\t# Press properties (D14 W1.5) — same atomic-publish contract as site.served,\n\t# and for the same reason: `git reset --hard` above rewrites changed files IN\n\t# PLACE, so Caddy must serve a separate rsync target whose per-file temp-write\n\t# + rename keeps every visible file whole. --min-size=1 refuses to publish a\n\t# 0-byte file over a good one (the 2026-07-03 white-page incident).\n\t#\n\t# The [ -d ] guards are load-bearing, not defensive noise: these trees are\n\t# built by scripts/build_press_properties.py and may legitimately not exist\n\t# yet on a box that pulled main before they landed. Without the guard, rsync\n\t# of a missing source under `set -e` aborts the whole update run — and this\n\t# script is what keeps the MAIN site tracking main.\n\t#\n\t# The Caddy vhosts that serve these roots stay COMMENTED until the cutover"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "schema": "terminal_actual_macro_artifact_validation_v1",
+  "verified_at": "2026-10-09T00:06:08.206Z",
+  "evaluation_clock": "2026-10-09T00:06:08.093Z",
+  "artifact": "site/feeds/event_calendar.json",
+  "artifact_sha256": "45301353b7f8b5c900cc2c5fde15cb67625953429dc093abaac122fb06b35012",
+  "source_commit_checked": "9ea66297a31688123ae62845c655a74db03fa9c1",
+  "reader_sha256": "d949fbcdb50cc720d2e7c373177761c315c1e0fdcf0219f44066cfdd159aab9f",
+  "verifier_sha256": "6cac68554683083ae91a66a4987a2fbb696fc0b83158940c4df917e89a8b4392",
+  "status": "available",
+  "event_count": 74,
+  "source_observed_at": "2026-10-08T22:53:33.744010+00:00",
+  "decision_cutoff_utc": "2026-10-08T23:37:47.058832+00:00",
+  "initial_display_rows": [
+    "auction:912797UE5:2026-10-13",
+    "auction:912797VT1:2026-10-13",
+    "auction:912797SU2:2026-10-13",
+    "tentative:f6236574ca7871b749f52ff6",
+    "tentative:3c644e02ce228f48b9c11b50",
+    "tentative:6f73b3bf25c16024b389d501"
+  ],
+  "real_http_entitlement_exercised": false,
+  "production_deployed": false,
+  "scope": "Actual committed Macro artifact parsed by exact native Terminal pure validator and display selector; upstream route and browser verified separately."
+}
+(node:60014) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/Mastermind/agent-workspaces/terminal/web/sovereign-auction-context-20261008-sol-terminal-001/terminal/lib/sovereignAuctionContext.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Volumes/Mastermind/agent-workspaces/terminal/web/sovereign-auction-context-20261008-sol-terminal-001/terminal/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)

@@ -1,0 +1,28 @@
+{
+  "scope": "local scratch-only review of proposed single-file ignore exception; no remote mutation, source implementation, index staging, commit, publisher, network or deployment",
+  "base_macro_ref": "8a35d8b62494a84b2448182aaa561edea83fe54f",
+  "source_gitignore_sha256": "8002e865c795a8c5ac529f0a9c8812a6c5abd4d69e8dc5ea56c682c5054a0c53",
+  "proposed_rule_change": {
+    "from": "site/feeds/",
+    "to": [
+      "site/feeds/*",
+      "!site/feeds/event_calendar.json"
+    ]
+  },
+  "results": {
+    "site/feeds/event_calendar.json": {
+      "ignored": false
+    },
+    "site/feeds/risk_radar.json": {
+      "ignored": true
+    },
+    "site/feeds/feeds_meta.json": {
+      "ignored": true
+    },
+    "site/feeds/nested/sample.json": {
+      "ignored": true
+    }
+  },
+  "git_add_dry_run": "add 'site/feeds/event_calendar.json'",
+  "result": "PASS: exactly one artifact becomes eligible for the existing broad site stage"
+}

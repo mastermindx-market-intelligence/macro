@@ -1,0 +1,13 @@
+{
+  "verified_at": "2026-10-09T01:11:54.405232+00:00",
+  "command": [
+    "python3",
+    "scripts/agentos.py",
+    "validate",
+    "--quiet"
+  ],
+  "exit_code": 0,
+  "log": "research/sovereign_auction_pressure/verification/final_source_gates/agentos-final-polish.log",
+  "log_sha256": "035ff5947baea1b72fb6369ed0961a723524c2cfd78b4a571cea77d97eb3a2b9",
+  "handoff_sha256": "ce17ef5f654bae244b3b5396476f245339ad872e6c659a0cb8ceb67dd7e01d80"
+}

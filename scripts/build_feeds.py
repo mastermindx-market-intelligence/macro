@@ -1,4 +1,4 @@
-"""Assemble site/feeds/ — the machine-consumable contract plane (R2-only).
+"""Assemble site/feeds/ — the existing machine-consumable contract plane.
 
 The 2026-07-02 semis-breakdown incident (signals.md §4 item 5) showed the
 Mastermind bot acting blind on exactly the products the dashboard had already
@@ -7,7 +7,9 @@ pullback odds, but only latest.json's rosier top-levels were in the bot's
 vendored sparse set. This script publishes the handoff-H4 artifact list to a
 single flat directory that ships to R2 via scripts/publish_r2.py (dir
 `feeds`), where the per-dir `_manifest.json` is the authoritative name list
-bulk consumers sync against.
+bulk consumers sync against. The event_calendar.json artifact also travels
+through Git to the guarded Macro HTTP path and Mastermind sparse checkout;
+all other feeds retain their existing R2-only delivery.
 
 Contract hygiene (research/PERCEPTION_CONTRACTS.md): every JSON artifact
 carries `asof` = TRUE data timestamp (never build time; build time lives in
@@ -15,7 +17,8 @@ feeds_meta.json:generated_utc). Copies are byte-verbatim — the source engine
 owns the schema; this script never reshapes what it copies. Each artifact is
 independent: a missing source skips that feed (logged), never fails the build.
 
-Run AFTER the engine + site builders in the daily lane, BEFORE publish_r2.
+Run AFTER engine + site builders and BEFORE the existing output commit and R2
+publication. Building a calendar never freshens its nested source observations.
 Usage: python -m scripts.build_feeds
 """
 from __future__ import annotations
@@ -36,6 +39,7 @@ log = logging.getLogger("build_feeds")
 
 SCHEMA_VERSION = 1
 EVENT_HORIZON_D = 21
+SOVEREIGN_AUCTION_HORIZON_D = 30
 
 
 def _feeds_dir() -> Path:
@@ -145,8 +149,21 @@ def build() -> dict:
             "commodity": ec.commodity_events(today, EVENT_HORIZON_D),
             "is_context_only": True,
         }
+        # This display sibling cannot suppress the incumbent calendar if its
+        # reader fails. Null means unavailable to the strict consumers.
+        try:
+            from engine import treasury_auction_lifecycle
+            # Source receipts retain their own clocks. The legacy calendar asof
+            # above never grants freshness or forecast authority to this block.
+            cal["sovereign_auction_context"] = treasury_auction_lifecycle.snapshot(
+                data_dir=data, as_of=datetime.now(timezone.utc),
+                horizon_days=SOVEREIGN_AUCTION_HORIZON_D,
+            )
+        except Exception as e:  # noqa: BLE001
+            cal["sovereign_auction_context"] = None
+            log.warning("sovereign auction context failed: %s — calendar retained", e)
         _write_json(out, "event_calendar.json", cal)
-        note("event_calendar.json", cal["asof"], "engine/event_calendar.py")
+        note("event_calendar.json", cal["asof"], "engine/event_calendar.py + engine/treasury_auction_lifecycle.py")
     except Exception as e:  # noqa: BLE001
         log.warning("feed event_calendar.json failed: %s — skipped", e)
 

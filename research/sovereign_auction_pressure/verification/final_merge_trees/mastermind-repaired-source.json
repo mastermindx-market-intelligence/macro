@@ -1,0 +1,14 @@
+{
+  "repository": "mastermindx-market-intelligence/Mastermind",
+  "source_head": "ac9117b3305ba992ebb673a99242cdd54e2046ef",
+  "source_snapshot_commit": "24ae789308bf5b9c417b1f8bd5c7e74938b11a7e",
+  "remote_main_sample": "64e9016c90a561a2017d2f2fd2ff75368df7397a",
+  "verified_at": "2026-10-09T01:02:15.792290+00:00",
+  "exit_code": 0,
+  "merge_tree": "8070749d9b78f724108aca3f521d7cd06d6bcebc",
+  "actual_merge_performed": false,
+  "preserved": [
+    "All final auction reader/API/page/contract/harness source bytes",
+    "New upstream master changes without source conflict"
+  ]
+}

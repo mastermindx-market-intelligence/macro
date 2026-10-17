@@ -1,0 +1,13 @@
+test_identical_replay_no_overwrite_and_collision_preserves_bytes (__main__.CaptureChecks.test_identical_replay_no_overwrite_and_collision_preserves_bytes) ... ok
+test_non_utf8_receipt_preserves_bounded_failure_body (__main__.CaptureChecks.test_non_utf8_receipt_preserves_bounded_failure_body) ... ok
+test_receipt_after_full_body_http_dates_do_not_backdate (__main__.CaptureChecks.test_receipt_after_full_body_http_dates_do_not_backdate) ... ok
+test_every_security_class_isolation_and_result_current_rejection (__main__.IndependentMath.test_every_security_class_isolation_and_result_current_rejection) ... ok
+test_independent_percentile_and_permutation_invariance (__main__.IndependentMath.test_independent_percentile_and_permutation_invariance) ... ok
+test_randomized_fraction_oracle_and_context_independence (__main__.IndependentMath.test_randomized_fraction_oracle_and_context_independence) ... ok
+test_time_boundary_missing_cash_and_basis_isolation (__main__.IndependentMath.test_time_boundary_missing_cash_and_basis_isolation) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.038s
+
+OK
+PROBE_RESULTS={"builtin_fetch_rejects_redirect": "response/redirect URL is outside the fixed official HTTPS hosts", "malformed_json": {"payload": null, "retained_body": "{broken", "status": "unavailable", "validation_status": "unavailable"}, "malformed_json_cli_exit": 1, "redirect_provenance": {"final_url": "https://untrusted.example/auction-data", "rights_status": null, "source_url": "https://www.treasurydirect.gov/TA_WS/securities/announced?format=json", "status": "unavailable"}}

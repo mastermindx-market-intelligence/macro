@@ -1,0 +1,29 @@
+{
+  "schema": "mastermind_security_ci_adjudication_v1",
+  "head": "55198ba62ff47d2a371397567418cb43fd98892c",
+  "observed_at": "2026-10-09T00:12:08.636Z",
+  "check_id": 113603451332,
+  "codeql_conclusion": "neutral",
+  "codeql_annotations": 0,
+  "codeql_title": "1 configuration not found",
+  "codeql_summary": "**Warning**: Code scanning cannot determine the alerts introduced by this pull request, because 1 configuration present on `refs/heads/master` was not found:\n\n### Default setup\n\n* :question:&nbsp;&nbsp;`/language:rust`\n\n\n[View all branch alerts](/mastermindx-market-intelligence/Mastermind/security/code-scanning?query=pr%3A1284+tool%3ACodeQL+is%3Aopen).",
+  "source_endpoint": "https://api.github.com/repos/mastermindx-market-intelligence/Mastermind/commits/55198ba62ff47d2a371397567418cb43fd98892c/check-runs?per_page=100",
+  "raw_snapshot_sha256": "d4769f5b65e9dc78e2216e47fff0e886dcd8a1c65eec63ca27435186cb921b47",
+  "completed_analyzers": [
+    "Analyze (actions)",
+    "Analyze (javascript-typescript)",
+    "Analyze (python)"
+  ],
+  "pending": [
+    "test",
+    "Analyze (rust)"
+  ],
+  "interpretation": "Current JS and Python analyses completed successfully and this CodeQL check emits no annotations. The missing/pending Rust configuration prevents treating neutral as full CodeQL acceptance. Original six annotations and source fixes remain auditable; no scanner suppression or alert dismissal.",
+  "full_codeql_acceptance": false,
+  "source_remediation_evidence": "Mastermind55198ba6 research/sovereign_auction_context/verification/security_final/",
+  "local_acceptance": {
+    "native": 26,
+    "static_boundary": 3,
+    "browser": 48
+  }
+}

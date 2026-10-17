@@ -1,0 +1,734 @@
+For Immediate Release                                                                                       October 5, 2026
+
+                                                   Amended
+Upcoming Upgrade to Treasury Automated Auction Processing System (TAAPS®)
+In September 2025, the U.S. Department of the Treasury announced plans to upgrade TAAPS. To ensure a
+smooth transition, Treasury is providing advance information about the upcoming changes that may impact users
+who rely on Treasury auction files or Marketable Securities Application Programming Interface (API) data from
+TreasuryDirect.
+
+Changes to Auction Files and API Fields
+Auction files published on TreasuryDirect will feature a revised structure and will include additional fields. The
+Marketable Securities Application Programming Interface (API) will also be updated, incorporating new fields
+and renaming many of the existing fields. The updated auction XML specifications are linked below and available
+for review to help users understand these changes. Additionally, the tables on pages 2 - 9 contains a crosswalk
+of fields between the current TAAPS XML files and API fields and the new XML & API specifications.
+
+Most fields present in the TAAPS XML files and TreasuryDirect API can be mapped directly to new fields or
+derived from multiple new XML and API fields. However, it is important to note that, following
+the implementation of these changes, the “Series” element will no longer be produced.
+
+Preparation and Next Steps
+Although the exact implementation date has not been finalized, consumers of auction files or API data are
+encouraged to review the updated specifications by the end of August 2026 and begin planning for necessary
+changes to their internal systems. This preparation will help ensure the capability of processing auction files or
+API data after implementation. Further details regarding the timeline will be provided at a later date.
+
+Updated XML Specification Files
+   •     Offering Announcements
+   •     Noncompetitive Results
+   •     Competitive Results
+
+   •     Consumer Price Indexes
+
+   •     FRN Daily Indexes
+   •     Treasury Early CUSIP Release
+                                                                                  Table 1 - Announcement XML
+                                                                                       A_YYYYMMDD_X.xml
+
+TAAPS Announcement XML Field         New Announcement XML Field                                     Required   Comments
+
+AccruedInterest                      AccruedInterest
+                                                                                                               New field. The dollar amount that the AccruedInterest and AdjustedAccruedInterest is
+                                     AccruedInterestPerAmount
+                                                                                                               calculated per.
+AdjustedAccruedInterest              AdjustedAccruedInterest
+AdjustedAmountCurrentlyOutstanding   AdjustedCurrentlyOutstanding
+AllocationPercentageDecimals         AllottedAtHighPercentageDecimals                                     Y
+AnnouncementDate                     AnnouncementDate                                                     Y
+Callable                             Callable
+                                     CashManagementBill                                                        New field.
+AuctionDate                          CompetitiveAuctionCloseDate                                          Y
+CompetitiveClosingTime               CompetitiveAuctionCloseTime                                          Y
+CompetitiveBidDecimals               CompetitiveBidDecimals                                               Y
+                                                                                                               New field. Possible values "Discount Margin" for FRNs, "Rate" for Bills, or "Yield" for
+                                     CompetitiveBidExpression                                             Y
+                                                                                                               Nominal Notes, Bonds, & TIPS.
+                                     CompetitiveDiscountMarginBidIncrements
+                                                                                                               CompetitiveBidIncrement will be broken out based on Discount Margin (FRNs), Rate
+CompetitiveBidIncrement              CompetitiveRateBidIncrements
+                                                                                                               (Bills), or Yield (Nominal Notes, Bonds, & TIPS).
+                                     CompetitiveYieldBidIncrements
+CorpusCUSIP                          CorpusCUSIP
+CPIBasePeriod                        CPIBaseReferencePeriod
+CurrentlyOutstanding                 CurrentlyOutstanding
+CUSIP                                CUSIP                                                                Y
+DatedDate                            DatedDate
+BackDated                            DatedDateDifferentFromIssueDate
+                                     DirectParticipantBidsAccepted                                             New field.
+                                     DirectParticipantsInsideOfOfferingAmount                                  New field.
+CallDate                             EligibleToCallDate
+                                     FIMACompetitiveBidsAccepted                                               New field.
+                                     FIMACompetitiveInsideOfOfferingAmount                                     New field.
+                                     FIMANoncompetitiveBidsAccepted                                            New field.
+FIMAIncluded                         FIMANoncompetitiveInsideOfOfferingAmount
+LongShortNormalCoupon                FirstInterestPaymentLength
+FloatingRate                         FloatingRate
+FrequencyInterestPayment             FrequencyOfInterestPayments
+                                     IndexRatioOnAnnouncementDate                                              New field.
+IndexRatioOnIssueDate                IndexRatioOnIssueDate
+                                     IndirectParticipantBidsAccepted                                           New field.
+                                     IndirectParticipantsInsideOfOfferingAmount                                New field.
+InflationIndexSecurity               InflationProtected
+                                                                                                               InterestPaymentDate will include all Interest Payment Dates in the new Announcement and
+FirstInterestPaymentDate             InterestPaymentDate
+                                                                                                               Results XMLs when the SecurityType = "Note" or "Bond".
+InterestRate                         InterestRate
+IssueDate                            IssueDate                                                            Y
+LongShortCouponFirstIntPmt           LongOrShortFirstInterestPayment
+                                     LongOrShortFirstInterestPaymentPerAmount                                  New field. The dollar amount that the LongOrShortFirstInterestPayment is calculated per.
+MaturingDate                         MaturingDate                                                         Y
+                                     MaturingSecuritiesType                                               Y    New field. Possible values "Bill" or "Coupon".
+MaturityDate                         MaturityDate                                                         Y
+MaxAward                             MaximumCompetitiveAward                                              Y
+MaximumNonCompAward                  MaximumNoncompetitiveAward
+                                     MaximumRecognizedBidAtASingleDiscountMargin
+                                                                                                               MaxSingleBid will be broken out based on Discount Margin (FRNs), Rate (Bills), or Yield
+MaxSingleBid                         MaximumRecognizedBidAtASingleRate
+                                                                                                               (Nominal Notes, Bonds, & TIPS).
+                                     MaximumRecognizedBidAtASingleYield
+MinStripAmount                       MinimumAmountRequiredForSTRIPS
+MinBidAmount                         MinimumToBidAmount                                                   Y
+MinToIssue                           MinimumToIssueAmount                                                 Y
+MultiplesToBid                       MultipleToBidAmount                                                  Y
+MultiplesToIssue                     MultipleToIssueAmount                                                Y
+NLPExclusionAmount                   NLPExclusionAmount                                                   Y
+NetLongPositionReport                NLPReportingThreshold                                                Y
+                                     NoncompetitiveAuctionCloseDate                                            New field.
+NonCompetitiveClosingTime            NoncompetitiveAuctionCloseTime
+OfferingAmount                       OfferingAmount                                                       Y
+OriginalDatedDate                    OriginalDatedDate
+OriginalIssueDate                    OriginalIssueDate                                                    Y
+                                     PricePerAmount                                                       Y    New field. The amount that the HighPrice in the Results XML is calculated per.
+TypeOfAuction                        PricingMethod                                                        Y
+                                     PrimaryDealerBidsAccepted                                                 New field.
+                                     PrimaryDealersInsideOfOfferingAmount                                      New field.
+MatureSecurityAmount                 PrivateHoldings                                                      Y
+                                     ReferenceCPIOnAnnouncementDate                                            New field.
+RefCPIIssueDate                      ReferenceCPIOnIssueDate
+RefCPIDatedDate                      ReferenceCPIOnOriginalDatedDate
+ReOpeningIndicator                   Reopening                                                            Y
+                                     SecurityDescription                                                  Y    New field.
+                                     SecurityTermDay                                                           SecurityTermDayMonth will be broken out into two separate
+SecurityTermDayMonth
+                                     SecurityTermMonth                                                         fields. Bills will normally use the SecurityTermDay field.
+                                     SecurityTermWeek
+SecurityTermWeekYear                                                                                           SecurityTermWeekYear will be broken out into two separate fields.
+                                     SecurityTermYear
+SecurityType                         SecurityType                                                         Y
+                                     SOMABidsAccepted                                                          New field.
+SOMAHoldings                         SOMAHoldings                                                         Y
+SOMAIncluded                         SOMAInsideOfOfferingAmount
+Spread                               Spread
+StandardInterestPayment              StandardInterestPayment
+                                     StandardInterestPaymentPerAmount                                          New field. The dollar amount that the StandardInterestPayment is calculated per.
+StrippableIndicator                  Strippable
+                                     Technique                                                            Y    New field. Possible value "Auction".
+TIINConversionFactor                 TIINConversionFactor
+                                     TIINConversionFactorPerAmount                                             New field. The dollar amount that the TIINConversionFactor is calculated per.
+TINTCUSIP1                           TINTCUSIP
+TINTCUSIP2                                                                                                     TINTCUSIP & TIINCUSIP will be broken out into separate fields. XMLs will now contain all
+                                     TIINCUSIP
+                                                                                                               of the TINT or TIIN CUSIPs and the associated TINTCUSIPDueDate or
+TINTCUSIP1DueDate                    TINTCUSIPDueDate
+                                                                                                               TIINCUSIPDueDate.
+TINTCUSIP2DueDate                    TIINCUSIPDueDate
+                                                                Table 1 - Announcement XML (Continued)
+                                                                                  A_YYYYMMDD_X.xml
+
+TAAPS Announcement XML Field   New Announcement XML Field                                      Required   Comments
+
+                               TotalMarketableAmountOutstanding                                      Y    New field.
+AnnouncementPDFName            TreasuryOfferingAnnouncementPressReleaseFileName                      Y
+                               TreasuryOfferingAnnouncementPressReleaseURL                           Y    New field.
+                               TreasuryOfferingAnnouncementXMLSchemaURL                              Y    New field.
+TreasuryRetailTenderAccepted   TreasuryRetailBidsAccepted
+                               TreasuryRetailInsideOfOfferingAmount                                       New field.
+UnadjustedAccruedInterest      UnadjustedAccruedInterest
+                               UnadjustedCurrentlyOutstanding                                             New field.
+AnnouncedCUSIP                                                                                            Maps to the AnnouncedAsCUSIP and will only be on the Results XML.
+BackDatedDate                                                                                             Removed. Use the OriginalDatedDate.
+                                                                                                          Removed. The new XMLs will break out whether noncompetitive bids are accepted based on
+CompetitiveTenderAccepted                                                                                 submitter type: DirectParticipantBidsAccepted, FIMACompetitiveBidsAccepted,
+                                                                                                          IndirectParticipantBidsAccepted, & PrimaryDealerBidsAccepted.
+                                                                                                          Removed. The new XMLs will break out whether noncompetitive bids are accepted based
+NonCompetitiveTenderAccepted                                                                              on submitter type: TreasuryRetailBidsAccepted, SOMABidsAccepted, &
+                                                                                                          FIMANoncompetitiveBidsAccepted.
+Series                                                                                                    Removed. The Series field will no longer be used.
+UnadjustedPrice                                                                                           UnadjustedPrice will only be on the Results XML.
+                                                                              Table 2 - Competitive Results XML
+                                                                                      R_YYYYMMDD_X.xml
+
+TAAPS Results XML Field              New Results XML Field                                          Required   Comments
+
+AccruedInterest                      AccruedInterest
+                                                                                                               New field. The dollar amount that the AccruedInterest and AdjustedAccruedInterest is
+                                     AccruedInterestPerAmount
+                                                                                                               calculated per.
+AdjustedAccruedInterest              AdjustedAccruedInterest
+AdjustedAmountCurrentlyOutstanding   AdjustedCurrentlyOutstanding
+AdjustedPrice                        AdjustedPrice
+AllocationPercentageDecimals         AllottedAtHighPercentageDecimals                                    Y
+                                     AllottedAtHighDiscountMarginPercentage
+                                                                                                               HighAllocationPercentage will be broken out based on Discount Margin (FRNs), Rate
+HighAllocationPercentage             AllottedAtHighRatePercentage
+                                                                                                               (Bills), or Yield (Nominal Notes, Bonds, & TIPS).
+                                     AllottedAtHighYieldPercentage
+                                     AnnouncedAsCorpusCUSIP                                                    New field. Applies to unscheduled reopenings only.
+AnnouncedCUSIP                       AnnouncedAsCUSIP                                                          Applies to unscheduled reopenings only.
+                                     AnnouncedAsOriginalDatedDate                                              New field. Applies to unscheduled reopenings only.
+                                     AnnouncedAsOriginalIssueDate                                              New field. Applies to unscheduled reopenings only.
+                                     AnnouncedAsReopening                                                      New field. Applies to unscheduled reopenings only.
+                                     AnnouncedAsSecurityDescription                                            New field. Applies to unscheduled reopenings only.
+                                     AnnouncedAsSecurityType                                                   New field. Applies to unscheduled reopenings only.
+AnnouncementDate                     AnnouncementDate                                                    Y
+                                     AveragePrice                                                              New field.
+BidToCoverRatio                      BidToCoverRatio                                                     Y
+Callable                             Callable
+                                     CashManagementBill                                                        New field.
+AuctionDate                          CompetitiveAuctionCloseDate                                         Y
+CompetitiveClosingTime               CompetitiveAuctionCloseTime                                         Y
+CompetitiveBidDecimals               CompetitiveBidDecimals                                              Y
+                                                                                                               New field. Possible values "Discount Margin" for FRNs, "Rate" for Bills, or "Yield" for
+                                     CompetitiveBidExpression                                            Y
+                                                                                                               Nominal Notes, Bonds, & TIPS.
+                                     CompetitiveDiscountMarginBidIncrements
+                                                                                                               CompetitiveBidIncrement will be broken out based on Discount Margin (FRNs), Rate
+CompetitiveBidIncrement              CompetitiveRateBidIncrements
+                                                                                                               (Bills), or Yield (Nominal Notes, Bonds, & TIPS).
+                                     CompetitiveYieldBidIncrements
+CorpusCUSIP                          CorpusCUSIP
+CPIBasePeriod                        CPIBaseReferencePeriod
+CurrentlyOutstanding                 CurrentlyOutstanding
+CUSIP                                CUSIP                                                               Y
+DatedDate                            DatedDate
+BackDated                            DatedDateDifferentFromIssueDate
+DirectBidderAccepted                 DirectBiddersCompetitiveParAwarded
+DirectBidderTendered                 DirectBiddersCompetitiveParRecognized
+                                     DirectBiddersNoncompetitiveParAwarded                                     New field.
+                                     DirectBiddersNoncompetitiveParRecognized                                  New field.
+                                     DirectParticipantBidsAccepted                                             New field.
+                                     DirectParticipantsInsideOfOfferingAmount                                  New field.
+CallDate                             EligibleToCallDate
+                                     FIMACompetitiveBidsAccepted                                               New field.
+                                     FIMACompetitiveInsideOfOfferingAmount                                     New field.
+FIMAIncluded                         FIMANoncompetitiveBidsAccepted
+                                     FIMANoncompetitiveInsideOfOfferingAmount                                  New field.
+FIMAAccepted                         FIMANoncompetitiveParAwarded
+FIMATendered                         FIMANoncompetitiveParRecognized
+LongShortNormalCoupon                FirstInterestPaymentLength
+FloatingRate                         FloatingRate
+FrequencyInterestPayment             FrequencyOfInterestPayments
+TotalAccepted                        GrandTotalParAwarded                                                Y
+TotalTendered                        GrandTotalParRecognized                                             Y
+HighDiscountMargin                   HighDiscountMargin
+HighPrice                            HighPrice
+HighDiscountRate                     HighRate
+HighYield                            HighYield
+FRNIndexDeterminationDate            IndexDeterminationDate
+FRNIndexDeterminationRate            IndexDeterminationRate
+                                     IndexRatioOnAnnouncementDate                                              New field.
+IndexRatioOnIssueDate
+                                     IndexRatioOnIssueDate                                                     Both IndexRatioOnIssueDate & IndexRatio map to the IndexRatioOnIssueDate field.
+IndexRatio
+IndirectBidderAccepted               IndirectBiddersCompetitiveParAwarded
+IndirectBidderTendered               IndirectBiddersCompetitiveParRecognized
+                                     IndirectBiddersNoncompetitiveParAwarded                                   New field.
+                                     IndirectBiddersNoncompetitiveParRecognized                                New field.
+                                     IndirectParticipantBidsAccepted                                           New field.
+                                     IndirectParticipantsInsideOfOfferingAmount                                New field.
+InflationIndexSecurity               InflationProtected
+                                                                                                               InterestPaymentDate will include all Interest Payment Dates in the new Announcement and
+FirstInterestPaymentDate             InterestPaymentDate
+                                                                                                               Results XMLs when the SecurityType = "Note" or "Bond".
+InterestRate                         InterestRate
+InvestmentRate                       InvestmentRate
+IssueDate                            IssueDate                                                           Y
+LongShortCouponFirstIntPmt           LongOrShortFirstInterestPayment
+                                     LongOrShortFirstInterestPaymentPerAmount                                  New field. The dollar amount that the LongOrShortFirstInterestPayment is calculated per.
+LowDiscountMargin                    LowDiscountMargin
+LowPrice                             LowPrice
+LowDiscountRate                      LowRate
+LowYield                             LowYield
+                                     LowDiscountMarginThreshold
+                                                                                                               AmountAcceptedBelowLowRate will be broken out based on Discount Margin (FRNs),
+AmountAcceptedBelowLowRate           LowRateThreshold
+                                                                                                               Rate (Bills), or Yield (Nominal Notes, Bonds, & TIPS).
+                                     LowYieldThreshold
+MaturingDate                         MaturingDate                                                        Y
+                                     MaturingSecuritiesType                                              Y     New field. Possible values "Bill" or "Coupon"
+MaturityDate                         MaturityDate                                                        Y
+MaxAward                             MaximumCompetitiveAward                                             Y
+MaximumNonCompAward                  MaximumNoncompetitiveAward
+                                     MaximumRecognizedBidAtASingleDiscountMargin
+                                                                                                               MaxSingleBid will be broken out based on Discount Margin (FRNs), Rate (Bills), or Yield
+MaxSingleBid                         MaximumRecognizedBidAtASingleRate
+                                                                                                               (Nominal Notes, Bonds, & TIPS).
+                                     MaximumRecognizedBidAtASingleYield
+MedianDiscountMargin                 MedianDiscountMargin
+                                     MedianDiscountMarginThreshold                                             New field.
+                                                             Table 2 - Competitive Results XML (Continued)
+                                                                                 R_YYYYMMDD_X.xml
+
+TAAPS Results XML Field        New Results XML Field                                          Required   Comments
+
+MedianDiscountRate             MedianRate
+                               MedianRateThreshold                                                       New field.
+MedianYield                    MedianYield
+                               MedianYieldThreshold                                                      New field.
+MinStripAmount                 MinimumAmountRequiredForSTRIPS
+MinBidAmount                   MinimumToBidAmount                                                   Y
+MinToIssue                     MinimumToIssueAmount                                                 Y
+MultiplesToBid                 MultipleToBidAmount                                                  Y
+MultiplesToIssue               MultipleToIssueAmount                                                Y
+NLPExclusionAmount             NLPExclusionAmount                                                   Y
+NetLongPositionReport          NLPReportingThreshold                                                Y
+                               NoncompetitiveAuctionCloseDate                                            New field.
+NonCompetitiveClosingTime      NoncompetitiveAuctionCloseTime
+OfferingAmount                 OfferingAmount                                                       Y
+OriginalDatedDate              OriginalDatedDate
+OriginalIssueDate              OriginalIssueDate                                                    Y
+                               PricePerAmount                                                       Y    New field. The dollar amount that the HighPrice is calculated per.
+TypeOfAuction                  PricingMethod                                                        Y
+                               PrimaryDealerBidsAccepted                                                 New field.
+PrimaryDealerAccepted          PrimaryDealersCompetitiveParAwarded
+PrimaryDealerTendered          PrimaryDealersCompetitiveParRecognized
+                               PrimaryDealersInsideOfOfferingAmount                                      New field.
+                               PrimaryDealersNoncompetitiveParAwarded                                    New field.
+                               PrimaryDealersNoncompetitiveParRecognized                                 New field.
+MatureSecurityAmount           PrivateHoldings                                                      Y
+                               ReferenceCPIOnAnnouncementDate                                            New field.
+RefCPIIssueDate                ReferenceCPIOnIssueDate
+RefCPIDatedDate                ReferenceCPIOnOriginalDatedDate
+ReOpeningIndicator             Reopening                                                            Y
+TreasuryRetailAccepted         RetailNoncompetitiveParAwarded
+                               RetailNoncompetitiveParRecognized                                         New field.
+                               SecurityDescription                                                  Y    New field.
+                               SecurityTermDay                                                           SecurityTermDayMonth will be broke out into two separate fields.
+SecurityTermDayMonth
+                               SecurityTermMonth                                                         Bills will normally use the SecurityTermDay field.
+                               SecurityTermWeek
+SecurityTermWeekYear                                                                                     SecurityTermWeekYear will be broken out into two separate fields.
+                               SecurityTermYear
+SecurityType                   SecurityType                                                         Y
+                               SOMABidsAccepted                                                          New field.
+SOMAHoldings                   SOMAHoldings                                                         Y
+SOMAIncluded                   SOMAInsideOfOfferingAmount
+SOMAAccepted                   SOMANoncompetitiveParAwarded
+SOMATendered                   SOMANoncompetitiveParRecognized
+Spread                         Spread
+StandardInterestPayment        StandardInterestPayment
+                               StandardInterestPaymentPerAmount                                          New field. The dollar amount that the StandardInterestPayment is calculated per.
+StrippableIndicator            Strippable
+CompetitiveAccepted            SubtotalCompetitiveParAwardedInsideOfOfferingAmount                  Y
+                               SubtotalCompetitiveParAwardedOutsideOfOfferingAmount                 Y    New field.
+CompetitiveTendered            SubtotalCompetitiveParRecognizedInsideOfOfferingAmount               Y
+                               SubtotalCompetitiveParRecognizedOutsideOfOfferingAmount              Y    New field.
+NonCompetitiveAccepted         SubtotalNoncompetitiveParAwardedInsideOfOfferingAmount
+                               SubtotalNoncompetitiveParAwardedOutsideOfOfferingAmount                   New field.
+                               SubtotalNoncompetitiveParRecognizedInsideOfOfferingAmount                 New field.
+                               SubtotalNoncompetitiveParRecognizedOutsideOfOfferingAmount                New field.
+                               Technique                                                            Y    New field. Possible value "Auction"
+TIINConversionFactor           TIINConversionFactor
+                               TIINConversionFactorPerAmount                                             New field. The dollar amount that the TIINConversionFactor is calculated per.
+TINTCUSIP1                     TINTCUSIP
+TINTCUSIP2                                                                                               TINTCUSIP & TIINCUSIP will be broken out into separate fields. XMLs will now contain all
+                               TIINCUSIP                                                                 of the TINT or TIIN CUSIPs and the associated TINTCUSIPDueDate or
+TINTCUSIP1DueDate              TINTCUSIPDueDate                                                          TIINCUSIPDueDate.
+TINTCUSIP2DueDate              TIINCUSIPDueDate
+                               TotalMarketableAmountOutstanding                                     Y    New field.
+                               TotalParAwardedInsideOfOfferingAmount                                Y    New field.
+                               TotalParAwardedOutsideOfOfferingAmount                               Y    New field.
+                               TotalParRecognizedInsideOfOfferingAmount                             Y    New field.
+                               TotalParRecognizedOutsideOfOfferingAmount                            Y    New field.
+ResultsPDFName                 TreasuryAuctionResultsPressReleaseFileName                           Y
+                               TreasuryAuctionResultsPressReleaseURL                                Y    New field.
+                               TreasuryAuctionResultsXMLSchemaURL                                   Y    New field.
+TreasuryRetailTenderAccepted   TreasuryRetailBidsAccepted
+                               TreasuryRetailInsideOfOfferingAmount                                      New field.
+UnadjustedAccruedInterest      UnadjustedAccruedInterest
+                               UnadjustedCurrentlyOutstanding                                            New field.
+UnadjustedPrice                UnadjustedPrice
+                                                                                                         Removed from the Results XML. Maps to the
+AnnouncementPDFName
+                                                                                                         TreasuryOfferingAnnouncementPressReleaseFileName on the Announcement XML.
+BackDatedDate                                                                                            Removed. Use the OriginalDatedDate field.
+                                                                                                         Removed. The new XMLs will break out whether noncompetitive bids are accepted based on
+CompetitiveTenderAccepted                                                                                submitter type: DirectParticipantBidsAccepted, FIMACompetitiveBidsAccepted,
+                                                                                                         IndirectParticipantBidsAccepted, & PrimaryDealerBidsAccepted.
+MedianPrice                                                                                              Removed.
+                                                                                                         Removed. The new XMLs will break out whether noncompetitive bids are accepted based
+NonCompetitiveTenderAccepted                                                                             on submitter type: TreasuryRetailBidsAccepted, SOMABidsAccepted, &
+                                                                                                         FIMANoncompetitiveBidsAccepted.
+OriginalCUSIP                                                                                            Removed. Use the AnnouncedAsCUSIP field.
+ReleaseTime                                                                                              Removed. The ReleaseTime field will no longer be used.
+Series                                                                                                   Removed. The Series field will no longer be used.
+                                                                            Table 3 - Treasury CUSIP Release XML
+                                                                     TreasuryCUSIPRelease.xml (previously PendingAuctions.xml)
+
+TAAPS PendingAuctions XML Field         New CUSIP Release XML Field                                     Required   Comments
+
+                                        SecurityDescription                                                 Y
+                                        SecurityTermDay                                                            SecurityTermDayMonth will be broken out into two separate
+SecurityTermDayMonth
+                                        SecurityTermMonth                                                          fields. Bills will normally use the SecurityTermDay field.
+                                        SecurityTermWeek
+SecurityTermWeekYear                                                                                               SecurityTermWeekYear will be broken out into two separate fields.
+                                        SecurityTermYear
+SecurityType                            SecurityType                                                        Y
+InflationIndexSecurity                  InflationProtected
+FloatingRate                            FloatingRate
+                                        CashManagementBill                                                         New field.
+ReOpeningIndicator                      Reopening                                                           Y
+CUSIP                                   CUSIP
+AnnouncementDate                        AnnouncementDate                                                    Y
+AuctionDate                             CompetitiveAuctionCloseDate                                         Y
+IssueDate                               IssueDate                                                           Y
+                                        OriginalIssueDate                                                   Y      New field.
+                                        TreasuryCUSIPReleasePressReleaseURL                                 Y      New field.
+                                        TreasuryCUSIPReleasePressReleaseFileName                            Y      New field.
+                                        TreasuryCUSIPReleaseXMLSchemaURL                                    Y      New field.
+MaturityDate                                                                                                       Removed.
+OfferingAmount                                                                                                     Removed.
+
+
+
+                                                                             Table 4 - Consumer Price Index XML
+                                                                                         CPI_YYYYMMDD.xml
+
+TAAPS CPI XML Field                     New CPI XML Field                                               Required   Comments
+
+Month                                   Month                                                               Y
+Year                                    Year                                                                Y
+CPI                                     CPI                                                                 Y
+BasePeriod                              BasePeriod                                                          Y
+                                        SecurityDescription                                                 Y      New field.
+                                        SecurityTermDay                                                            Optional field for future use.
+                                        SecurityTermWeek                                                           Optional field for future use.
+                                        SecurityTermMonth                                                          New field.
+                                        SecurityTermYear                                                           New field.
+                                        SecurityType                                                               New field.
+                                        InflationProtected                                                  Y      New field.
+CUSIP                                   CUSIP                                                               Y
+                                        DatedDate                                                           Y      New field.
+IssueDate                               IssueDate                                                           Y
+                                        OriginalIssueDate                                                   Y      New field.
+                                        MaturityDate                                                        Y      New field.
+                                        InterestRate                                                        Y      New field.
+Date                                    Date                                                                Y
+RefCPI                                  ReferenceCPI                                                        Y
+IndexRatio                              IndexRatio                                                          Y
+                                        TreasuryReferenceCPIPressReleaseURL                                 Y      New field.
+                                        TreasuryReferenceCPIPressReleaseFileName                            Y      New field.
+                                        TreasuryReferenceCPIXMLSchemaURL                                    Y      New field.
+
+
+
+                                                                                Table 5 - FRN Daily Indexes XML
+                                                                   CUSIP-YYYYMMDD_HHMMSS.xml (previously FRNDailyIndex.xml)
+                                        New FRN Daily Indexes XMLs Field
+TAAPS FRN Daily Indexes XML Field                                                                  Required Comments
+                                        Separate XML file for each unmatured FRN CUSIP
+Year                                      Year                                                              Y
+Month                                     Month                                                             Y
+Day                                       Day                                                               Y
+CUSIP                                     CUSIP                                                             Y
+SecurityType                              SecurityType                                                      Y
+                                          SecurityTermDay
+                                          SecurityTermWeek
+SecurityTerm                                                                                                       Only the numerical value. Normally the SecurityTermYear field will be used.
+                                          SecurityTermMonth
+                                          SecurityTermYear
+FloatingRate                              FloatingRate                                                      Y
+OriginalDatedDate                         OriginalDatedDate                                                 Y
+OriginalIssueDate                         OriginalIssueDate                                                 Y
+MaturityDate                              MaturityDate                                                      Y
+AccrualStart                              AccrualStart                                                      Y
+AccrualEnd                                AccrualEnd                                                        Y
+DailyIndex                                DailyIndex                                                        Y
+Spread                                    Spread                                                            Y
+DailyInterestAccrualRate                  DailyInterestAccrualRate                                          Y
+DailyAccruedInterestPer100                DailyAccruedInterest                                              Y
+InterestPaymentPeriodAccruedInterestPer10 InterestPaymentPeriodAccruedInterest                              Y
+                                          AccruedInterestPerAmount                                          Y      New field. The dollar amount that the AccruedInterest is calculated per.
+                                          TreasuryFloatingRateDailyIndexesXMLSchemaURL                      Y      New field.
+                                                                   Table 6 - U.S. Treasury Marketable Securities API
+                                                                          https://www.treasurydirect.gov/TA_WS/securities/
+                                 New API Field
+Current API Field                                                                                         Data Type                                               Comments
+                                 Red indicates the field is not in the XML files
+accruedInterestPer100
+                                 AccruedInterest                                                        decimal(16, 9)
+accruedInterestPer1000
+                                                                                                                         New field. The dollar amount that the AccruedInterest and AdjustedAccruedInterest is
+                                 AccruedInterestPerAmount                                               int
+                                                                                                                         calculated per.
+adjustedAccruedInterestPer1000   AdjustedAccruedInterest                                                decimal(12, 5)
+                                 AdjustedCurrentlyOutstanding                                           bigint           New field.
+adjustedPrice                    AdjustedPrice                                                          decimal(9, 6)
+allocationPercentageDecimals     AllottedAtHighPercentageDecimals                                       int
+                                 AllottedAtHighDiscountMarginPercentage                                 decimal(5, 2)    allocationPercentage will be broken out based on Discount Margin (FRNs), Rate (Bills), or
+allocationPercentage             AllottedAtHighRatePercentage                                           decimal(5, 2)
+                                                                                                                         Yield (Nominal Notes, Bonds, & TIPS).
+                                 AllottedAtHighYieldPercentage                                          decimal(5, 2)
+                                 AnnouncedAsCorpusCUSIP                                                 varchar(9)       New field. Only applicable to unscheduled reopenings.
+announcedCusip                   AnnouncedAsCUSIP                                                       varchar(9)       Announced CUSIP if the auction results in an unscheduled reopening.
+                                 AnnouncedAsOriginalDatedDate                                           date             New field. Only applicable to unscheduled reopenings.
+                                 AnnouncedAsOriginalIssueDate                                           date             New field. Only applicable to unscheduled reopenings.
+                                 AnnouncedAsReopening                                                   varchar(3)       New field. Only applicable to unscheduled reopenings.
+                                 AnnouncedAsSecurityDescription                                         varchar(250)     New field. Only applicable to unscheduled reopenings.
+                                 AnnouncedAsSecurityType                                                varchar(4)       New field. Only applicable to unscheduled reopenings.
+announcementDate                 AnnouncementDate                                                       date
+                                 ApproximateAmountRemainingForCompetitiveBids                           bigint           New field. Only applies to the noncompetitive results.
+averageMedianDiscountMargin      AverageDiscountMargin                                                  decimal(6, 3)    Applicable to "Multi-Price" or "Price-Based" Auction Formats.
+averageMedianInvestmentRate      AverageInvestmentRate                                                  decimal(6, 3)    Applicable to "Multi-Price" or "Price-Based" Auction Formats
+averageMedianPrice               AveragePrice                                                           decimal(9, 6)    Applicable to "Multi-Price" or "Price-Based" Auction Formats
+averageMedianRate                AverageRate                                                            decimal(6, 3)    Applicable to "Multi-Price" or "Price-Based" Auction Formats
+averageMedianYield               AverageYield                                                           decimal(6, 3)    Applicable to "Multi-Price" or "Price-Based" Auction Formats
+bidToCoverRatio                  BidToCoverRatio                                                        decimal(5, 2)
+callable                         Callable                                                               varchar(3)
+calledDate                       CalledDate                                                             date
+cashManagementBillCMB            CashManagementBill                                                     varchar(3)       New field.
+auctionDate                      CompetitiveAuctionCloseDate                                            date
+closingTimeCompetitive           CompetitiveAuctionCloseTime                                            varchar(11)
+auctionDateYear                  CompetitiveAuctionCloseDateYear                                        varchar(4)
+competitiveBidDecimals           CompetitiveBidDecimals                                                 int
+                                                                                                                         New field. Possible values "Discount Margin" for FRNs, "Rate" for Bills, or "Yield" for Nominal
+                                 CompetitiveBidExpression                                               varchar(15)
+                                                                                                                         Notes, Bonds, & TIPS.
+                                 CompetitiveDiscountMarginBidIncrements                                 decimal(6, 3)
+                                                                                                                         competitiveBidIncrement will be broken out based on Discount Margin (FRNs), Rate (Bills),
+competitiveBidIncrement          CompetitiveRateBidIncrements                                           decimal(6, 3)    or Yield (Nominal Notes, Bonds, & TIPS).
+                                 CompetitiveYieldBidIncrements                                          decimal(6, 3)
+corpusCusip                      CorpusCUSIP                                                            varchar(9)
+cpiBaseReferencePeriod           CPIBaseReferencePeriod                                                 varchar(15)
+currentlyOutstanding             CurrentlyOutstanding                                                   bigint
+cusip                            CUSIP                                                                  varchar(9)
+datedDate                        DatedDate                                                              date
+backDated                        DatedDateDifferentFromIssueDate                                        varchar(3)
+directBidderAccepted             DirectBiddersCompetitiveParAwarded                                     bigint
+directBidderTendered             DirectBiddersCompetitiveParRecognized                                  bigint
+                                 DirectBiddersNoncompetitiveParAwarded                                  bigint           New field.
+                                 DirectBiddersNoncompetitiveParRecognized                               bigint           New field.
+                                 DirectParticipantBidsAccepted                                          varchar(3)       New field.
+                                 DirectParticipantsInsideOfOfferingAmount                               varchar(3)       New field.
+callDate                         EligibleToCallDate                                                     date
+                                 FIMACompetitiveBidsAccepted                                            varchar(3)       New field.
+                                 FIMACompetitiveInsideOfOfferingAmount                                  varchar(3)       New field.
+                                 FIMANoncompetitiveBidsAccepted                                         varchar(3)       New field.
+fimaIncluded                     FIMANoncompetitiveInsideOfOfferingAmount                               varchar(3)
+fimaNoncompetitiveAccepted       FIMANoncompetitiveParAwarded                                           bigint
+fimaNoncompetitiveTendered       FIMANoncompetitiveParRecognized                                        bigint
+                                 FirstInterestPaymentLength                                             varchar(6)       New field.
+floatingRate                     FloatingRate                                                           varchar(3)
+interestPaymentFrequency         FrequencyOfInterestPayments                                            varchar(15)
+totalAccepted                    GrandTotalParAwarded                                                   bigint
+totalTendered                    GrandTotalParRecognized                                                bigint
+highDiscountMargin               HighDiscountMargin                                                     decimal(6, 3)
+pricePer100                      HighPrice                                                              decimal(9, 6)
+highDiscountRate                 HighRate                                                               decimal(6, 3)
+highYield                        HighYield                                                              decimal(6, 3)
+frnIndexDeterminationDate        IndexDeterminationDate                                                 date
+frnIndexDeterminationRate        IndexDeterminationRate                                                 decimal(6, 3)
+                                 IndexRatioOnAnnouncementDate                                           decimal(8, 5)    New field.
+indexRatioOnIssueDate            IndexRatioOnIssueDate                                                  decimal(8, 5)
+indirectBidderAccepted           IndirectBiddersCompetitiveParAwarded                                   bigint
+indirectBidderTendered           IndirectBiddersCompetitiveParRecognized                                bigint
+                                 IndirectBiddersNoncompetitiveParAwarded                                bigint           New field.
+                                 IndirectBiddersNoncompetitiveParRecognized                             bigint           New field.
+                                 IndirectParticipantBidsAccepted                                        varchar(3)       New field.
+                                 IndirectParticipantsInsideOfOfferingAmount                             varchar(3)       New field.
+tips                             InflationProtected                                                     varchar(3)
+                                                                                                                         The InterestPaymentDate field will include all Interest Payment Dates for each applicable
+firstInterestPaymentDate         InterestPaymentDate (/TA_WS/secinterestpayments endpoint)                               CUSIP and be available in the new /TA_WS/secinterestpayments/{cusip} API endpoint (see
+                                                                                                                         Table 7).
+interestRate                     InterestRate                                                           decimal(6, 3)
+highInvestmentRate               InvestmentRate                                                         decimal(6, 3)
+issueDate                        IssueDate                                                              date
+                                 LongOrShortFirstInterestPayment                                        decimal(12, 3) New API field.
+                                 LongOrShortFirstInterestPaymentPerAmount                               int              New field. The dollar amount that the LongOrShortFirstInterestPayment is calculated per.
+lowDiscountMargin                LowDiscountMargin                                                      decimal(6, 3)
+lowPrice                         LowPrice                                                               decimal(9, 6)
+lowDiscountRate                  LowRate                                                                decimal(6, 3)
+lowYield                         LowYield                                                               decimal(6, 3)
+                                 LowRateThreshold                                                       int              New API fields. Maps from the AmountAcceptedBelowLowRate on the TAAPS XML files
+                                 LowDiscountMarginThreshold                                             int              and broken out based on Discount Margin (FRNs), Rate (Bills), or Yield (Nominal Notes,
+                                 LowYieldThreshold                                                      int              Bonds, & TIPS).
+lowInvestmentRate                LowInvestmentRate                                                      decimal(6, 3)    Applicable to Multi-Priced and Priced-Based formats
+maturingDate                     MaturingDate                                                           date
+                                 MaturingSecuritiesType                                                 varchar(6)       New field. Possible values "Bill" or "Coupon"
+maturityDate                     MaturityDate                                                           date
+maximumCompetitiveAward          MaximumCompetitiveAward                                                bigint
+maximumNoncompetitiveAward       MaximumNoncompetitiveAward                                             bigint
+                                 MaximumRecognizedBidAtASingleDiscountMargin                            bigint           maximumSingleBid will be broken out based on Discount Margin (FRNs), Rate (Bills), or
+maximumSingleBid                 MaximumRecognizedBidAtASingleRate                                      bigint
+                                                                                                                         Yield (Nominal Notes, Bonds, & TIPS).
+                                 MaximumRecognizedBidAtASingleYield                                     bigint
+averageMedianDiscountMargin      MedianDiscountMargin                                                   decimal(6, 3)    Applicable to "Single-Price" Auction Format.
+                                 MedianDiscountMarginThreshold                                          int              New field.
+averageMedianDiscountRate        MedianRate                                                             decimal(6, 3)    Applicable to "Single-Price" Auction Format.
+                                 MedianRateThreshold                                                    int              New field.
+averageMedianYield               MedianYield                                                            decimal(6, 3)    Applicable to "Single-Price" Auction Format.
+                                 MedianYieldThreshold                                                   int              New field.
+                                                                 Table 6 - U.S. Treasury Marketable Securities API (Continued)
+                                                                                  https://www.treasurydirect.gov/TA_WS/securities/
+                                         New API Field
+Current API Field                                                                                                Data Type                                                Comments
+                                         Red indicates the field is not in the XML files
+minimumStripAmount                       MinimumAmountRequiredForSTRIPS                                         int
+minimumBidAmount                         MinimumToBidAmount                                                     int
+minimumToIssue                           MinimumToIssueAmount                                                   int
+multiplesToBid                           MultipleToBidAmount                                                    int
+multiplesToIssue                         MultipleToIssueAmount                                                  int
+nlpExclusionAmount                       NLPExclusionAmount                                                     bigint
+nlpReportingThreshold                    NLPReportingThreshold                                                  bigint
+                                         NoncompetitiveAuctionCloseDate                                         date             New field.
+closingTimeNoncompetitive                NoncompetitiveAuctionCloseTime                                         varchar(11)
+                                         NoncompetitiveAuctionCloseDateYear                                     varchar(4)
+                                                                                                                                 The new XMLs break out whether noncompetitive bids are accepted based on submitter type:
+                                                                                                                                 TreasuryRetailBidsAccepted, SOMABidsAccepted, &
+noncompetitiveTendersAccepted            NoncompetitiveBidsAccepted
+                                                                                                                                 FIMANoncompetitiveBidsAccepted. Only API records prior to implementation of the new
+                                                                                                                                 structure will contain data in the nonCompetitiveTenderAccepted field.
+offeringAmount                           OfferingAmount                                                         bigint
+originalDatedDate                        OriginalDatedDate                                                      date
+originalIssueDate                        OriginalIssueDate                                                      date
+originalSecurityTerm                     OriginalSecurityTerm                                                   varchar(50)
+                                         PricePerAmount                                                         int              New field. The dollar amount that the HighPrice is calculated per.
+auctionFormat                            PricingMethod                                                          varchar(25)
+                                         PrimaryDealerBidsAccepted                                              varchar(3)       New field.
+primaryDealerAccepted                    PrimaryDealersCompetitiveParAwarded                                    bigint
+primaryDealerTendered                    PrimaryDealersCompetitiveParRecognized                                 bigint
+                                         PrimaryDealersInsideOfOfferingAmount                                   varchar(3)       New field.
+                                         PrimaryDealersNoncompetitiveParAwarded                                 bigint           New field.
+                                         PrimaryDealersNoncompetitiveParRecognized                              bigint           New field.
+estimatedAmountOfPubliclyHeldMaturingSec
+                                         PrivateHoldings                                                        bigint
+uritiesByType
+                                         ReferenceCPIOnAnnouncementDate                                         decimal(8, 5)    New field.
+refCpiOnIssueDate                        ReferenceCPIOnIssueDate                                                decimal(8, 5)
+refCpiOnDatedDate                        ReferenceCPIOnOriginalDatedDate                                        decimal(8, 5)
+reopening                                Reopening                                                              varchar(3)
+treasuryRetailAccepted                   RetailNoncompetitiveParAwarded                                         bigint
+                                         RetailNoncompetitiveParRecognized                                      bigint           New field.
+                                         SecurityDescription                                                    varchar(250)     New field.
+                                                                                                                                 Security Term in Weeks for Bills, Years for Original Issue Notes & Bonds and Years and
+securityTerm                             SecurityTerm                                                           varchar(50)
+                                                                                                                                 Months for Additional Issue Notes & Bonds.
+                                         SecurityTermDay                                                        varchar(10)
+securityTermDayMonth                                                                                                             SecurityTermDayMonth will be broken out into two separate fields.
+                                         SecurityTermMonth                                                      varchar(10)
+                                         SecurityTermWeek                                                       varchar(10)
+securityTermWeekYear                                                                                                             SecurityTermWeekYear will be broken out into two separate fields.
+                                         SecurityTermYear                                                       varchar(10)
+securityType                             SecurityType                                                           varchar(4)
+                                                                                                                                 The new XMLs will not contain the Series field. The field will remain in the API and only
+series                                   Series
+                                                                                                                                 ecords prior to implementation of the new structure will contain data in the Series field.
+                                         SOMABidsAccepted                                                       varchar(3)       New field.
+somaHoldings                             SOMAHoldings                                                           bigint
+somaIncluded                             SOMAInsideOfOfferingAmount                                             varchar(3)
+somaAccepted                             SOMANoncompetitiveParAwarded                                           bigint
+somaTendered                             SOMANoncompetitiveParRecognized                                        bigint
+spread                                   Spread                                                                 decimal(6, 3)
+standardInterestPaymentPer1000           StandardInterestPayment                                                decimal(12, 3)
+                                         StandardInterestPaymentPerAmount                                       int              New field. The dollar amount that the StandardInterestPayment is calculated per.
+strippable                               Strippable                                                             varchar(3)
+competitiveAccepted                      SubtotalCompetitiveParAwardedInsideOfOfferingAmount                    bigint
+                                         SubtotalCompetitiveParAwardedOutsideOfOfferingAmount                   bigint           New field.
+competitiveTendered                      SubtotalCompetitiveParRecognizedInsideOfOfferingAmount                 bigint
+                                         SubtotalCompetitiveParRecognizedOutsideOfOfferingAmount                bigint           New field.
+noncompetitiveAccepted                   SubtotalNoncompetitiveParAwardedInsideOfOfferingAmount                 bigint
+                                         SubtotalNoncompetitiveParAwardedOutsideOfOfferingAmount                bigint           New field.
+                                         SubtotalNoncompetitiveParRecognizedInsideOfOfferingAmount              bigint           New field.
+                                         SubtotalNoncompetitiveParRecognizedOutsideOfOfferingAmount             bigint           New field.
+                                         Technique                                                              varchar(10)      New field. Possible value "Auction".
+                                         TentativeDirectBiddersNoncompetitiveParRecognized                      bigint           New field. Only applies to the noncompetitive results.
+                                         TentativeFIMANoncompetitiveParRecognized                               bigint           New field. Only applies to the noncompetitive results.
+                                         TentativeIndirectBiddersNoncompetitiveParRecognized                    bigint           New field. Only applies to the noncompetitive results.
+                                         TentativePrimaryDealersNoncompetitiveParRecognized                     bigint           New field. Only applies to the noncompetitive results.
+                                         TentativeRetailNoncompetitiveParRecognized                             bigint           New field. Only applies to the noncompetitive results.
+                                         TentativeSOMANoncompetitiveParRecognized                               bigint           New field. Only applies to the noncompetitive results.
+                                         TentativeSubtotalNoncompetitiveParRecognizedInsideOfOfferingAmount     bigint           New field. Only applies to the noncompetitive results.
+                                         TentativeSubtotalNoncompetitiveParRecognizedOutsideOfOfferingAmount    bigint           New field. Only applies to the noncompetitive results.
+tiinConversionFactorPer1000              TIINConversionFactor                                                   decimal(13, 9)
+                                         TIINConversionFactorPerAmount                                          int              New field. The dollar amount that the TIINConversionFactor is calculated per.
+tintCusip1                                                                                                                       All associated TINT or TIIN (STRIPS) CUSIPs will be available in the new
+                                         StripsCusip (/TA_WS/secinterestpayments endpoint)
+tintCusip2                                                                                                                       /TA_WS/secinterestpayments/{cusip} API endpoint (see Table 7).
+                                                                                                                                 The tintCusip1DueDate & tintCusip2DueDate fields will be available in the new
+tintCusip1DueDate
+                                         InterestPaymentDate (/TA_WS/secinterestpayments endpoint)                               /TA_WS/secinterestpayments/{cusip} API endpoint in the InterestPaymentDate field (see
+tintCusip2DueDate
+                                                                                                                                 Table 7).
+                                         TotalMarketableAmountOutstanding                                       bigint           New field.
+                                         TotalParAwardedInsideOfOfferingAmount                                  bigint           New field.
+                                         TotalParAwardedOutsideOfOfferingAmount                                 bigint           New field.
+                                         TotalParRecognizedInsideOfOfferingAmount                               bigint           New field.
+                                         TotalParRecognizedOutsideOfOfferingAmount                              bigint           New field.
+pdfFilenameCompetitiveResults            TreasuryAuctionResultsPressReleaseFileName                             varchar(50)
+pdfFilenameNoncompetitiveResults         TreasuryNoncompetitiveAuctionResultsPressReleaseFileName               varchar(50)
+pdfFilenameAnnouncement                  TreasuryOfferingAnnouncementPressReleaseFileName                       varchar(50)
+treasuryRetailTendersAccepted            TreasuryRetailBidsAccepted                                             varchar(3)
+                                         TreasuryRetailInsideOfOfferingAmount                                   varchar(3)       New field.
+PdfFilenameSpecialAnnouncement           TreasurySpecialAnnouncementPressReleaseFileName                        varchar(254)
+type                                     Type                                                                   varchar(4)       Possible values: "Bill", "CMB", "Note", "Bond", "TIPS", "FRN"
+unadjustedAccruedInterestPer1000         UnadjustedAccruedInterest                                              decimal(12, 5)
+                                         UnadjustedCurrentlyOutstanding                                         bigint           New field.
+unadjustedPrice                          UnadjustedPrice                                                        decimal(9, 6)
+updatedTimestamp                         UpdatedTimestamp                                                       datetime2(7)     Available when returned in json format
+                                                                                                                                 Removed. The averageMedianPrice data prior to implementation of the new structure will be
+averageMedianPrice
+                                                                                                                                 migrated to the AveragePrice field.
+backDatedDate                                                                                                                    Removed. Historical data and post implementation use the OriginalDatedDate field.
+
+                                                                                                                                 Removed. The new XMLs will break out whether noncompetitive bids are accepted based on
+competitiveTendersAccepted                                                                                                       submitter type: DirectParticipantBidsAccepted, FIMACompetitiveBidsAccepted,
+                                                                                                                                 IndirectParticipantBidsAccepted, & PrimaryDealerBidsAccepted.
+
+originalCusip                                                                                                                    Removed. Historical data and post implementation use the AnnouncedAsCUSIP field.
+
+term                                                                                                                             Removed. Use SecurityTerm for Bills and OriginalSecurityTerm for coupons.
+                                                                           Table 7 - U.S. Treasury Marketable Securities API
+                                                                       https://www.treasurydirect.gov/TA_WS/secinterestpayments/{cusip}
+Current API Field                           New API Field                                                      Data Type                                               Comments
+                                            Cusip                                                              varchar(9)
+
+                                            InterestPaymentDate                                                date
+There currently isn't an API endpoint for
+Interest Payment Dates and STRIPS.                                                                                             The Separate Trading of Registered Interest and Principal of Securities (STRIPS) CUSIP
+                                            StripsCusip                                                        varchar(9)
+                                                                                                                               associated to each Interest Payment.
+                                            StripsType                                                         varchar(4)      The type of STRIPS CUSIP. Possible values "TINT" or "TIIN".
+
+
+
+                                                                           Table 8 - U.S. Treasury Marketable Securities API
+                                                                                   https://www.treasurydirect.gov/TA_WS/secindex/
+Current API Field                           New API Field                                                      Data Type                                               Comments
+Cusip                                       Cusip                                                              varchar(9)
+IndexType                                   IndexType                                                          varchar(3)
+IndexDate                                   IndexDate                                                          date            Only applicable to Consumer Price Indexes.
+                                            IndexRatio                                                         decimal(9,6)    New field. Only applicable to Consumer Price Indexes.
+PdfFileName                                 PressReleaseFileName                                               varchar(5)      Only applicable to Consumer Price Indexes.
+RefCpi                                      ReferenceCPI                                                       decimal(8,5)    Only applicable to Consumer Price Indexes.
+                                            AccrualStart                                                       date            New field. Only applicable to FRN Daily Indexes.
+                                            AccrualEnd                                                         date            New field. Only applicable to FRN Daily Indexes.
+DailyIndex                                  DailyIndex                                                         decimal(12,9)   Only applicable to FRN Daily Indexes.
+InterestRate                                DailyInterestAccrualRate                                           decimal(12,9)   Only applicable to FRN Daily Indexes.
+DailyAccruedInterstPer100                   DailyAccruedInterst                                                decimal(12,9)   Only applicable to FRN Daily Indexes.
+AccruedInterestPer100                       InterestPaymentPeriodAccruedInterest                               decimal(12,9)   Only applicable to FRN Daily Indexes.
+                                            AccruedInterestPerAmount                                           int             New field. Only applicable to FRN Daily Indexes.
+XmlFileName                                 XMLFileName                                                        varchar(50)
+UpdateTimeStamp                             UpdatedTimestamp                                                   datetime2(7)
+

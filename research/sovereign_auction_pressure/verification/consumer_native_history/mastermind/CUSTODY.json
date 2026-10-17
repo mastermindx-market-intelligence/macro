@@ -1,0 +1,25 @@
+{
+  "historical_only": true,
+  "copies": [
+    {
+      "original_path": "/Volumes/Mastermind/agent-workspaces/web/sovereign-auction-context-20261008-sol-mm-001/sovereign-auction-verification/uvicorn-install.txt",
+      "retained_path": "/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/verification/consumer_native_history/mastermind/uvicorn-install.txt",
+      "sha256": "392d1cb81a6423ecf18f84ca76b3c1a391ea4e1a887530ef97ca6c7ad72c9cc7"
+    },
+    {
+      "original_path": "/Volumes/Mastermind/agent-workspaces/web/sovereign-auction-context-20261008-sol-mm-001/sovereign-auction-verification/native-receipt.json",
+      "retained_path": "/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/verification/consumer_native_history/mastermind/native-receipt.json",
+      "sha256": "70e54bbeac3fbe6ba6d94f1df707469ee4b8cf1206a11cb4a9575300a6ed5e17"
+    },
+    {
+      "original_path": "/Volumes/Mastermind/agent-workspaces/web/sovereign-auction-context-20261008-sol-mm-001/sovereign-auction-verification/native-1.txt",
+      "retained_path": "/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/verification/consumer_native_history/mastermind/native-1.txt",
+      "sha256": "77e06bcf774769e6d4732705f89b3b177a5b71f54324a21664cc0086ac67baba"
+    },
+    {
+      "original_path": "/Volumes/Mastermind/agent-workspaces/web/sovereign-auction-context-20261008-sol-mm-001/sovereign-auction-verification/native-2.txt",
+      "retained_path": "/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/verification/consumer_native_history/mastermind/native-2.txt",
+      "sha256": "9366e34a6057870fd86dc5a748808eaa02233da3c73c9c2c083d21d42c2fb1c3"
+    }
+  ]
+}

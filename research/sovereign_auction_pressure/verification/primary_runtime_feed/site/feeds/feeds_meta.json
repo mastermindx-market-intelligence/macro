@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "generated_utc": "2026-10-08T23:00:00+00:00",
+  "artifacts": {
+    "event_calendar.json": {
+      "asof": "2026-10-08",
+      "source": "engine/event_calendar.py + engine/treasury_auction_lifecycle.py",
+      "bytes": 1195851
+    }
+  },
+  "note": "asof = TRUE data timestamp per artifact, never build time; see research/PERCEPTION_CONTRACTS.md"
+}

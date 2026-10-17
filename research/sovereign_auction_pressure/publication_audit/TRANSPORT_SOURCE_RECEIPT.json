@@ -1,0 +1,37 @@
+{
+  "captured_in_task_at": "2026-10-08T23:23:42.762134+00:00",
+  "scope": "read-only git object and path inspection on Mac Studio; not VPS deployment inspection",
+  "Mastermind_ref": "c7e47c859eb2925c5626931fd511800773ba09ac",
+  "git_tree_entry": "120000 blob 67c7d1aa15e255af2e662d8b4b385faf9714f06a vendor/macro",
+  "symlink_target": "macro_src",
+  "locations": [
+    {
+      "path": "/Volumes/Mastermind/agent-workspaces/web/sovereign-auction-context-20261008-sol-mm-001/vendor/macro",
+      "is_symlink": true,
+      "resolved_exists": false,
+      "event_calendar_exists": false
+    },
+    {
+      "path": "/Users/chriswong/Documents/GitHub/Mastermind/vendor/macro",
+      "is_symlink": true,
+      "resolved_exists": false,
+      "event_calendar_exists": false
+    }
+  ],
+  "Macro_ref": "8a35d8b62494a84b2448182aaa561edea83fe54f",
+  "tracked_site_feeds_files": [],
+  "gitignore_rule": "site/feeds/",
+  "publisher_source_scope": [
+    "scripts/build_feeds.py",
+    ".github/workflows/daily.yml",
+    ".github/workflows/closing-bell.yml",
+    "scripts/publish_r2.py",
+    "app/deploy/update.sh"
+  ],
+  "observations": [
+    "daily assembles feeds after the engine output commit",
+    "feeds is in the R2 publisher directory set",
+    "update.sh copies site/ to site.served but contains no feed assembly or hydration",
+    "Mastermind sparse cone includes site; R2 sync directories contain stockdata only"
+  ]
+}

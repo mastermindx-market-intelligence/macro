@@ -1,0 +1,262 @@
+                                                  DAILY TREASURY STATEMENT
+                                      Cash and debt operations of the United States Treasury
+                                                     Tuesday, October 6, 2026
+                                        (Detail, rounded in millions, may not add to totals)
+
+                                              TABLE I - Operating Cash Balance
+                                                                                                                              This
+                                                                                                               This          fiscal
+                                            Cash Balance Details                              Today
+                                                                                                              month           year
+
+                           Treasury General Account (TGA) Opening Balance               $       883,335 $        984,046 $     984,046
+                           Total TGA Deposits (Table II)                                        299,916          723,099       723,099
+                           Total TGA Withdrawals (Table II) (-)                                 297,837          821,731       821,731
+                             Treasury General Account (TGA) Closing Balance             $       885,414 $        885,414 $     885,414
+
+
+
+                                  TABLE II - Deposits and Withdrawals of Operating Cash
+                                                             This            Fiscal                                                                     This           Fiscal
+                Deposits                      Today         month             year                          Withdrawals                   Today        month            year
+                                                            to date         to date                                                                    to date        to date
+
+
+Treasury General Account (TGA):                                                             Treasury General Account (TGA):
+ Dept of Agriculture (USDA) - misc        $           8 $        105 $            105        Dept of Agriculture (USDA) - misc        $       106 $         469 $           469
+ USDA - Commodity Credit Corporation                 20          144              144        USDA - Child Nutrition                            77           301             301
+ USDA - Federal Crop Insurance Corp Fund              0            0                0        USDA - Commodity Credit Corporation               22            80              80
+ USDA - Rural Services                               21          102              102        USDA - Federal Crop Insurance Corp Fund           72         3,101           3,101
+ Dept of Commerce (DOC)                              16          100              100        USDA - Other Farm Service                         14            70              70
+ Dept of Defense (DoD) - misc                        52          362              362        USDA - Rural Services                             81           159             159
+ DoD - Health                                         0           38               38        USDA - Supp Nutrition Assist Prog (SNAP)         324         1,339           1,339
+ Dept of Education (ED)                             418        1,202            1,202        USDA - Supp Nutrition Assist Prog (WIC)           38           151             151
+ Dept of Energy (DOE)                                 7          123              123        Dept of Commerce (DOC)                             6            63              63
+ Dept of Health & Human Serv (HHS) - misc            37          417              417        Dept of Defense (DoD) - misc                   1,829         4,450           4,450
+ HHS - Marketplace Receipts                           1            4                4        DoD - Health                                     113           763             763
+ HHS - Medicare Premiums                            111          562              562        DoD - Military Active Duty Pay                    14         5,151           5,151
+ Dept of Homeland Security (DHS) - misc              30          120              120        DoD - Military Retirement                          2         6,174           6,174
+ DHS - Customs Duties, Taxes, and Fees              309        1,255            1,255        Dept of Education (ED)                         1,171         3,249           3,249
+ DHS - Fed Emergency Mgmt Agency (FEMA)              18           66               66        Dept of Energy (DOE)                             270         1,064           1,064
+ DHS - Seized Assets                                  1            3                3        Dept of Health & Human Serv (HHS) - misc          52            86              86
+ DHS - Transportation Security Admn (TSA)             2            9                9        HHS - Centers for Disease Control (CDC)           32            75              75
+ Dept of Housing & Urban Dev (HUD) - misc             6           24               24        HHS - Federal Hospital Insr Trust Fund           799        21,291          21,291
+ HUD - Federal Housing Admin (FHA)                  339          518              518        HHS - Federal Supple Med Insr Trust Fund         978        32,651          32,651
+ Dept of Interior (DOI) - misc                        3            9                9        HHS - Grants to States for Medicaid            6,100        14,048          14,048
+ DOI - Fish and Wildlife and Parks                    1           10               10        HHS - Health Resources & Services Admin           59           142             142
+ DOI - Gas and Oil Lease Sales Proceeds               4           67               67        HHS - Indian Health Service                       40            41              41
+ DOI - Land and Minerals Management                   9           13               13        HHS - Marketplace Payments                         0             0               0
+ DOI - Water and Science                              2           13               13        HHS - Medicare Prescription Drugs                  0        10,480          10,480
+ Dept of Justice (DOJ)                               16          111              111        HHS - National Institutes of Health               86           199             199
+ Dept of Labor (DOL) - misc                           3           11               11        HHS - Other Public Health Services                10            75              75
+ DOL - Pension Benefit Guaranty Corp.                67          349              349        HHS - Othr Admin for Children & Families          82           334             334
+ Dept of State (DOS)                                 21        1,654            1,654        HHS - Othr Cent Medicare & Medicaid Serv         213           685             685
+ Dept of Transportation (DOT)                         1           69               69        HHS - Payments to Children and Families          343           549             549
+ Dept of Treasury (TREAS) - misc                      6           11               11        HHS - Temp Assistance for Needy Families         166           245             245
+ TREAS - Bureau of Engraving and Printing             0            1                1        Dept of Homeland Security (DHS) - misc            47           249             249
+ TREAS - Comptroller of the Currency                  0            0                0        DHS - Customs & Border Protection (CBP)          280         1,543           1,543
+ TREAS - Federal Financing Bank                       7           14               14        DHS - Fed Emergency Mgmt Agency (FEMA)            98           415             415
+ TREAS - GSE Proceeds                                 0            0                0        DHS - Transportation Security Admn (TSA)           1             1               1
+ TREAS - United States Mint                          22           98               98        Dept of Housing & Urban Dev (HUD) - misc          84         5,358           5,358
+ Taxes - Corporate Income                           182          582              582        HUD - Federal Housing Admin (FHA)                 73           436             436
+ Taxes - Estate and Gift                             52          476              476        Dept of Interior (DOI) - misc                     15           204             204
+ Taxes - Federal Unemployment (FUTA)                  3            9                9        DOI - Fish and Wildlife and Parks                  8            42              42
+ Taxes - IRS Collected Estate, Gift, misc            50          145              145        DOI - Land and Minerals Management                 1            32              32
+ Taxes - Miscellaneous Excise                        19          286              286        DOI - Water and Science                            3            39              39
+ Taxes - Non Withheld Ind/SECA Electronic         1,000        4,545            4,545        Dept of Justice (DOJ)                             13            61              61
+ Taxes - Non Withheld Ind/SECA Other                400        1,657            1,657        Dept of Labor (DOL) - misc                        28           385             385
+ Taxes - Railroad Retirement                          9          120              120        DOL - Pension Benefit Guaranty Corp.               0             0               0
+ Taxes - Withheld Individual/FICA                 3,431       64,261           64,261        DOL - Unemployment Benefits                      212           491             491
+ Dept of Veterans Affairs (VA)                       37          171              171        Dept of State (DOS)                                6           345             345
+ District of Columbia                                 0            0                0        Dept of Transportation (DOT) - misc                0             0               0
+ Environmental Protection Agency (EPA)                1           23               23        DOT - Federal Aviation Administration              0             1               1
+ Export-Import Bank                                   0            1                1        DOT - Federal Highway Administration               0            20              20
+ Federal Communications Commission (FCC)             34           39               39        DOT - Federal Railroad Administration              0            21              21
+ FCC - Universal Service Fund                       106          116              116        DOT - Federal Transit Administration               0             0               0
+ Federal Deposit Insurance Corp (FDIC)                0            1                1        Dept of Treasury (TREAS) - misc                   25           339             339
+ Federal Reserve Earnings                             0            0                0        TREAS - Bureau of Engraving and Printing           2             3               3
+ Federal Retirement Thrift Savings Plan             672        2,917            2,917        TREAS - Claims Judgments and Relief Acts           4            27              27
+ Federal Trade Commission (FTC)                       3           10               10        TREAS - Comptroller of the Currency                0             0               0
+ General Services Administration (GSA)                5           40               40        TREAS - Federal Financing Bank                   596           613             613
+ Independent Agencies - misc                         18          165              165        TREAS - IRS Refunds for Puerto Rico                0             0               0
+ International Monetary Fund (IMF)                    0          138              138        TREAS - Pmt to Resolution Funding Corp             0             0               0
+ Int'l Assistance Programs (IAP) - misc               0            0                0        TREAS - United States Mint                        21            41              41
+ IAP - Foreign Military Sales                         3           74               74        Taxes - Business Tax Refunds (EFT)               159           205             205
+ IAP - US Int'l Devlop Finance Corp (DFC)             0           21               21        Taxes - Individual Tax Refunds (EFT)             105           371             371
+ Judicial Branch - Courts                             3           32               32        ESF - Economic Recovery Programs                   0            38              38
+ Legislative Branch - misc                            0            2                2        Dept of Veterans Affairs (VA)                     57           449             449
+ Legislative Branch - Library of Congress             0            2                2        VA - Benefits                                    719        19,056          19,056
+                                                                                                                                            Table continued on the following page
+Tuesday, October 6, 2026
+
+                                 TABLE II - cont. Deposits and Withdrawals of Operating Cash
+                                                                     This            Fiscal                                                                            This           Fiscal
+                   Deposits                           Today         month             year                        Withdrawals                           Today         month            year
+                                                                    to date         to date                                                                           to date        to date
+ National Credit Union Admin (NCUA)                          2                 9             9    District of Columbia                                          0            39             39
+ National Science Foundation (NSF)                           0                 1             1    Environmental Protection Agency (EPA)                        33           201            201
+ Office of Personnel Mgmt (OPM) - misc                       0                 0             0    Export-Import Bank                                            0             1              1
+ OPM - Federal Employee Insurance Receipt                    3                32            32    Federal Communications Commission (FCC)                       2            15             15
+ RRB - Natl Railroad Retirement Inv Trust                    0                 0             0    FCC - Universal Service Fund                                 68            58             58
+ RRB - Unemployment Insurance                                0                 0             0    Federal Deposit Insurance Corp (FDIC)                         1            12             12
+ Securities and Exchange Commission (SEC)                    1                 3             3    Federal Retirement Thrift Savings Plan                       65         2,010          2,010
+ Small Business Administration (SBA)                        86               493           493    Federal Salaries (EFT)                                       30         1,598          1,598
+ Social Security Admin (SSA) - misc                          6                18            18    Federal Trade Commission (FTC)                                0             3              3
+ SSA - Supplemental Security Income                          0                 2             2    General Services Administration (GSA)                        72           923            923
+ State Unemployment Insurance Deposits                      14                49            49    Independent Agencies - misc                                  16            44             44
+ United States Postal Service (USPS)                       538             1,822         1,822    Interest on Treasury Securities                               5           208            208
+ US Army Corps of Engineers                                  4                 6             6    International Monetary Fund (IMF)                             0           100            100
+ Unclassified - Deposits                                     8                45            45    Int'l Assistance Programs (IAP) - misc                       14            41             41
+                                                                                                  IAP - Foreign Military Sales                                 47            92             92
+                                                                                                  IAP - Multilateral Assistance                                 0             0              0
+                                                                                                  IAP - US Int'l Devlop Finance Corp (DFC)                      6             8              8
+                                                                                                  Judicial Branch - Courts                                     13            57             57
+                                                                                                  Legislative Branch - misc                                     1            13             13
+                                                                                                  Legislative Branch - Library of Congress                      1             2              2
+                                                                                                  NASA                                                        162           195            195
+                                                                                                  National Credit Union Admin (NCUA)                            1             1              1
+                                                                                                  National Science Foundation (NSF)                            27            65             65
+                                                                                                  Office of Personnel Mgmt (OPM) - misc                         0             0              0
+                                                                                                  OPM - Civil Serv Retirement & Disability                      4         7,491          7,491
+                                                                                                  OPM - Federal Employee Insurance Payment                      0         1,258          1,258
+                                                                                                  Railroad Retirement Board (RRB) - misc                        0             0              0
+                                                                                                  RRB - Benefit Payments                                        1         1,322          1,322
+                                                                                                  Securities and Exchange Commission (SEC)                      0             0              0
+                                                                                                  Small Business Administration (SBA)                           9            84             84
+                                                                                                  Social Security Admin (SSA) - misc                           16            89             89
+                                                                                                  SSA - Benefits Payments                                      76        27,161         27,161
+                                                                                                  SSA - Supplemental Security Income                           12         5,351          5,351
+                                                                                                  United States Postal Service (USPS)                         146         1,001          1,001
+                                                                                                  US Army Corps of Engineers                                    1             1              1
+                                                                                                  Unclassified                                                677         2,017          2,017
+
+  Total Deposits                                         8,248        85,896           85,896     Total Withdrawals                                       17,167        189,730       189,730
+  Public Debt Cash Issues (Table IIIB)                 291,668       637,203          637,203     Public Debt Cash Redemp. (Table IIIB)                  280,670        632,001       632,001
+ Treasury General Account Total Deposits         $     299,916 $     723,099 $        723,099    Treasury General Account Total Withdrawals              297,837        821,731       821,731
+                                                                                                 Net Change in Operating Cash Balance             $        2,079 $      -98,632 $     -98,632
+
+
+
+                                                         TABLE IIIA - Public Debt Transactions
+                                                                  This              Fiscal                                                                           This            Fiscal
+                   Issues                        Today           month               year                      Redemptions                            Today         month             year
+                                                                 to date           to date                                                                          to date         to date
+ Marketable:                                                                                     Marketable:
+  Bills:                                                                                         Bills                                        $       272,735 $      606,870 $         606,870
+     Regular Series                          $       283,770 $     629,985 $          629,985    Notes                                                      0              0                 0
+     Cash Management Series                                0             0                  0    Bonds                                                      0          6,000             6,000
+  Notes                                                    0           -14                -14    Federal Financing Bank                                     0              0                 0
+  Bonds                                                    0             0                  0
+                                                                                                 Nonmarketable:
+  Inflation-Protected Securities Increment               223         1,102              1,102
+                                                                                                  United States Savings Securities                         82             245              245
+  Federal Financing Bank                                   0             0                  0
+                                                                                                  Government Account Series                           767,468       2,899,330        2,899,330
+ Nonmarketable:
+                                                                                                  Domestic Series                                           0               0                0
+  United States Savings Securities:
+                                                                                                  Foreign Series                                            0               0                0
+     Cash Issue Price                                      3            16                 16
+                                                                                                  State and Local Series                                2,620          10,562           10,562
+     Interest Increment                                    3           396                396
+                                                                                                  Other                                                 5,233           9,855            9,855
+  Government Account Series                          778,154     2,987,259          2,987,259
+  Domestic Series                                          0             0                  0
+  Foreign Series                                           0             0                  0
+  State and Local Series                               4,677         5,475              5,475
+  Other                                                5,228         9,842              9,842    Total Redemptions                            $ 1,048,138 $ 3,532,862 $              3,532,862
+
+ Total Issues                                $ 1,072,058 $ 3,634,061 $              3,634,061    Net Change in Public Debt Outstanding        $        23,920 $      101,199 $         101,199
+Tuesday, October 6, 2026
+
+                             TABLE IIIB - Adjustment of Public Debt Transactions to Cash Basis
+                                                                     This          Fiscal                                                                         This              Fiscal
+                    Issues                         Today            month           year                       Redemptions                         Today         month               year
+                                                                    to date       to date                                                                        to date           to date
+
+  Public Debt Issues (Table IIIA)               $ 1,072,058 $ 3,634,061 $          3,634,061    Public Debt Redemptions (Table IIIA)          $ 1,048,138 $ 3,532,862 $              3,532,862
+   Premium on New Issues                                  0           0                    0     Premium on Debt Buyback Operation                      0           0                        0
+   Discount on New Issues:                                                                       Discount on Debt Buyback Operation (-)                 0       1,531                    1,531
+      Bills (-)                                       2,010       8,101                8,101     Federal Financing Bank (-)                             0           0                        0
+      Bonds and Notes (-)                                 0           0                    0     Government Account Transactions (-)              767,468   2,899,330                2,899,330
+   Federal Financing Bank (-)                             0           0                    0
+   Government Account Transactions (-)              778,154   2,987,259            2,987,259
+   Interest Increment on United States
+      Savings Securities (-)                              3         396                  396
+   Inflation-Protected Securities Increment (-)         223       1,102                1,102
+
+   Total Public Debt Cash Issues                                                                 Total Public Debt Cash Redemptions
+     Deposited in TGA                          $    291,668 $        637,203 $       637,203       Withdrawn from TGA                         $     280,670 $       632,001 $            632,001
+
+
+
+
+                                                             TABLE IIIC - Debt Subject to Limit
+                                                                                                    Closing                                       Opening balance
+                                   Balance Transactions                                             balance
+                                                                                                                                                       This                     Fiscal
+                                                                                                     today                   Today
+                                                                                                                                                      month                      year
+  Debt Held by the Public                                                                   $          32,440,264 $            32,426,125 $                32,425,013 $            32,425,013
+  Intragovernmental Holdings                                                                            7,832,760               7,822,979                   7,746,813               7,746,813
+  Total Public Debt Outstanding                                                                        40,273,025              40,249,104                  40,171,825              40,171,825
+  Debt Not Subject to Limit:
+   Other Debt (-)                                                                                             474                     474                        474                      474
+   Unamortized Discount (-)                                                                               194,195                 192,950                    188,632                  188,632
+   Federal Financing Bank (-)                                                                               3,591                   3,591                      3,591                    3,591
+  Other Debt Subject to Limit:
+   Guaranteed Debt of Government Agencies                                                                        0                        0                         0                         0
+  Total Public Debt Subject to Limit                                                        $          40,074,764 $            40,052,089 $                39,979,128 $            39,979,128
+
+  Statutory Debt Limit                                                                      $          41,103,996 $            41,103,996 $                41,103,996 $            41,103,996
+
+
+
+                                                          TABLE IV - Inter-agency Tax Transfers
+                                                                                                                                                       This                      Fiscal
+                                                   Classification                                                            Today                    month                       year
+                                                                                                                                                      to date                   to date
+
+
+  Taxes - Corporate Income                                                                                             $                 0 $                        0 $                       0
+  Taxes - Miscellaneous Excise                                                                                                           0                          0                         0
+  Taxes - Railroad Retirement                                                                                                            0                          0                         0
+  Taxes - Withheld Individual/FICA                                                                                                      31                      5,367                     5,367
+     Total                                                                                                             $                31 $                    5,368 $                   5,368
+
+
+
+
+                                                          TABLE V - Income Tax Refunds Issued
+                                                                                                                                                       This                      Fiscal
+                                                   Classification                                                            Today                    month                       year
+                                                                                                                                                      to date                   to date
+
+  Taxes - Business Tax Refunds (Checks)                                                                                $               992 $                    1,230 $                   1,230
+  Taxes - Business Tax Refunds (EFT)                                                                                                   159                        205                       205
+  Taxes - Individual Tax Refunds (Checks)                                                                                               12                        587                       587
+  Taxes - Individual Tax Refunds (EFT)                                                                                                 105                        371                       371
+
+
+
+
+Daily Treasury Statement Footnotes:
+General Footnotes and Statements:
+This statement summarizes the United States Treasury's cash and debt operations for the Federal Government. Treasury's operating cash is maintained in an account at the
+Federal Reserve Bank of New York. Major information sources include: Federal Reserve Banks, Treasury Regional Financial Centers, Internal Revenue Service Centers, various
+electronic systems, and information on the Public Debt. Information is presented on a modified cash basis. Deposits are reflected as received and withdrawals are reflected as
+processed. Transactions occurring on weekends and Federal Holidays will be included on the next business day DTS. SOURCE: Bureau of the Fiscal Service, Department of the
+Treasury. Note: The Daily Treasury Statement (DTS) is available by 4:00 p.m. the following business day on the Fiscal Service website https://fiscal.treasury.gov/reports-statements/
+dts/ and Fiscal Data website https://fiscaldata.treasury.gov/datasets/daily-treasury-statement/operating-cash-balance. For more information, email the Cash Reporting Branch at
+cash.reporting@fiscal.treasury.gov.
+
+
+TABLE IIIA – Public Debt Transactions
+Stated at face value except for savings and retirement plan securities which are stated at current redemption value.
+
+
+TABLE IIIC – Debt Subject to Limit
+Tuesday, October 6, 2026
+
+Unamortized Discount represents the discount adj. on Treasury bills and zero-coupon bonds.
+

@@ -1,0 +1,1266 @@
+{
+  "schema": "sovereign-auction-program-final-delivery/v1",
+  "created_at": "2026-10-09T01:12:41.374081+00:00",
+  "status": "FIRST_EXECUTABLE_SOURCE_VERTICAL_VERIFIED_DRAFT_HOLD",
+  "owner": {
+    "workstream": "WS:RATES-INFLATION-COMMAND",
+    "parent_pr": 6819,
+    "authority": "Chairman's complete October 8 master packet",
+    "source_writer": "root acting in sol CEO role using GPT-6 Astra Pro"
+  },
+  "binding": {
+    "macro_product_source_snapshot": "1eb1d44a0a54aad95d97bfb3128246803852c7a7",
+    "macro_final_evidence_revision": "The enclosing Git commit binds this receipt and its evidence; it does not self-reference a future commit hash.",
+    "source_hash_requirement": "Final evidence-only commit must preserve every bound product file byte from the named source snapshot.",
+    "consumer_heads": {
+      "mastermind": "ac9117b3305ba992ebb673a99242cdd54e2046ef",
+      "terminal": "95dcde542a6af3fb70b421c3c5f508ef0455c6fb"
+    },
+    "remote_ci_boundary": "The retained pre-push Macro CI snapshot binds 9ea66297, before the local 1eb1d44a repairs. Exact-head post-push checks remain a separate GitHub/PR readback, never inferred from old-head success or local tests."
+  },
+  "repositories": [
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pr": 8657,
+      "branch": "sol/web-sovereign-auction-pressure-20261008-sol-001",
+      "head": "1eb1d44a0a54aad95d97bfb3128246803852c7a7",
+      "source_base": "d2eec4732abee359ebb578b245fa7359b3c01a7d",
+      "upstream": "e80339cb921ac6851ae972775f7e2d784bf62007",
+      "pr_url": "https://github.com/mastermindx-market-intelligence/macro/pull/8657",
+      "state": "OPEN_DRAFT_HOLD"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/Mastermind",
+      "pr": 1284,
+      "branch": "sol/web-sovereign-auction-context-20261008-sol-mm-001",
+      "head": "ac9117b3305ba992ebb673a99242cdd54e2046ef",
+      "runtime_source_snapshot": "24ae789308bf5b9c417b1f8bd5c7e74938b11a7e",
+      "source_base": "c7e47c859eb2925c5626931fd511800773ba09ac",
+      "upstream": "732cf7be88e7159b4995a8885fbd381cd1484e3e",
+      "pr_url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/1284",
+      "state": "OPEN_DRAFT_HOLD"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "pr": 857,
+      "branch": "sol/web-sovereign-auction-context-20261008-sol-terminal-001",
+      "head": "95dcde542a6af3fb70b421c3c5f508ef0455c6fb",
+      "source_base": "d660d98b1ebc0bdf0d1b16d66202b1760f6cc94a",
+      "upstream": "505edf7872541075b5eee24691703a46d1151074",
+      "pr_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/857",
+      "state": "OPEN_DRAFT_HOLD"
+    }
+  ],
+  "phase_acceptance": {
+    "A_current_source_and_ownership": "COMPLETE_FOR_CENSUSED_SCOPE; existing held owners and null results retained",
+    "B_official_source_lifecycle": "V1_IMPLEMENTED_AND_VERIFIED; notice/XML/migrated adapters and long-running archive policy remain bounded frontier",
+    "C_first_product_vertical": "MACRO_PRODUCER_AND_BOTH_CONSUMERS_SOURCE_VERIFIED; incumbent Macro Bonds/overview UI and production release remain open",
+    "D_deep_research": "PRIMARY_SOURCE_SYNTHESIS_AND_DESIGN_ADOPTED; H3 INSUFFICIENT_PIT; no statistical execution registration or new model fit",
+    "E_conditional_shadow": "NOT_ACTIVATED; independent predictive gate not met"
+  },
+  "source_bindings": [
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "engine/treasury_auction_lifecycle.py",
+      "bytes": 36805,
+      "sha256": "9f8aee017dfd1f545a6e3b1a9bc96bb2ab6a60300d6d2ac1043f890606c0e91a"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "engine/treasury_auction_primitives.py",
+      "bytes": 18043,
+      "sha256": "78bb827d6339c9e0fe75264d2f0ddc51fd388b5baa713833eb617fbb9a0f4ba9"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "scripts/capture_treasury_auction_observations.py",
+      "bytes": 8673,
+      "sha256": "db936f804eaa3349af8dc5cec05874c6fce3c9e002a72849729341894f64bc15"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "scripts/build_feeds.py",
+      "bytes": 11521,
+      "sha256": "2996906d10ab2e7da92f3cd3da0f168f9470f3517ecc71de0255232cfe1b1b7b"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": ".gitignore",
+      "bytes": 42576,
+      "sha256": "1afb1f30f937548b737cf5ad5ee54e7f75ee4c8f65b100ff2ce5dac54e27b0c1"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": ".github/workflows/daily.yml",
+      "bytes": 452322,
+      "sha256": "fbb772e56112fa87ebec71985d2849b4bde1c26fc29631ed26f1b392dd00b072"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "config/dag.yml",
+      "bytes": 288481,
+      "sha256": "6b17b12d536e62336f11557a7f28821b1aae8611f45dbf1df581f2843d350c05"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "site/feeds/event_calendar.json",
+      "bytes": 1201614,
+      "sha256": "45301353b7f8b5c900cc2c5fde15cb67625953429dc093abaac122fb06b35012"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/Mastermind",
+      "path": "brain/sovereign_auction_context.py",
+      "bytes": 22655,
+      "sha256": "1b2c11d38628b13f8ba5439f90f8ef9eefabf564cea5c3ed517398b1a4b5f276"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/Mastermind",
+      "path": "app/static/market_view.html",
+      "bytes": 35438,
+      "sha256": "dd002ea1b1afce03e00cf2bf566c841ed327f9f3e8cf4a68fb6eb7a9fd2e9f34"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/Mastermind",
+      "path": "tests/test_sovereign_auction_renderer.cjs",
+      "bytes": 8588,
+      "sha256": "55d35cae4cc1d8b1c46d375b4f71e0895b9225f6f3115bcbf4bdfdec59183d3d"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/Mastermind",
+      "path": "tests/fixtures/sovereign_auction_context/VERIFIED_SOURCE_MANIFEST.json",
+      "bytes": 3570,
+      "sha256": "6fb820e091aaebf2486b6cbeb60a364fa7aa52fafe78e8016c2e798ed5af3511"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "path": "terminal/lib/i18n.tsx",
+      "bytes": 202478,
+      "sha256": "858306597ebbfc2d912cefc997ad88e4805cafb08794b5cd4d3dfeacb109371f"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "path": "terminal/lib/sovereignAuctionCopy.ts",
+      "bytes": 5446,
+      "sha256": "68e796dca0f8406a1b4001ecd1f372a9244a4e8db2874700a9fec02c94d1540e"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "path": "terminal/components/SovereignAuctionContext.tsx",
+      "bytes": 11375,
+      "sha256": "5c4a4fe7a7953502b3bcbcad51354c25d8e02fb7bbdb19e5daac14d178a0e1f7"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "path": "terminal/components/TerminalShell.tsx",
+      "bytes": 385770,
+      "sha256": "7e96d08385d921fd1ca624c3481271ac94ae297034f7126284836cd6429a1e5b"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "path": "research/sovereign_auction_context/VERIFIED_SOURCE_MANIFEST.json",
+      "bytes": 3879,
+      "sha256": "603068550b6a22ec847c83545652a8edc91746aadce75a66261b9bbae4ddea48"
+    }
+  ],
+  "official_lifecycle_audit": {
+    "official_casebook_requests": 53,
+    "successful_requests": 52,
+    "edge_fixtures": 13,
+    "security_classes": [
+      "Bill",
+      "CMB",
+      "Note",
+      "Bond",
+      "TIPS",
+      "FRN"
+    ],
+    "clock_contract": "Retain immutable exact bodies; request, actual body receipt, parsed availability and declared release clocks are distinct. Eligibility uses point-in-time evidence, never issue/record dates as known_at.",
+    "known_traps": [
+      "announced endpoint includes results",
+      "future maturity filter is not complete history",
+      "pending schedule includes completed auctions",
+      "deadline exceptions and amended notices",
+      "unscheduled reopening aliases",
+      "XML billions versus API USD",
+      "unsettled migration schema/date"
+    ],
+    "archive_limits": {
+      "envelope_files": 128,
+      "body_bytes": 2097152,
+      "receipt_bytes": 8388608,
+      "total_bytes": 33554432,
+      "max_rows_per_payload": 2048,
+      "on_truncation": "Explicit degraded coverage; unknown total is null, never an empty complete universe"
+    },
+    "freshness": "UNASSESSED; source-age SLA and refresh/archive selection require existing data-owner adoption",
+    "failed_capture": "An earlier Mac quarterly capture retained a TLS EOF body/failure and returned nonzero; later independent primary-runtime capture succeeded without bypassing the failure."
+  },
+  "actual_market_data_vertical": {
+    "artifact": "site/feeds/event_calendar.json",
+    "bytes": 1201614,
+    "sha256": "45301353b7f8b5c900cc2c5fde15cb67625953429dc093abaac122fb06b35012",
+    "source_observed_at": "2026-10-08T22:53:33.744010+00:00",
+    "producer_cutoff": "2026-10-08T23:37:47.058832+00:00",
+    "official_capture_count": 4,
+    "observed_episodes": 74,
+    "class_counts": {
+      "Bill": 56,
+      "Note": 10,
+      "Bond": 4,
+      "TIPS": 2,
+      "FRN": 2
+    },
+    "lifecycle_counts": {
+      "announced": 3,
+      "tentative": 28,
+      "observed_result": 43
+    },
+    "legacy_counts": {
+      "us_macro": 10,
+      "high_impact": 5,
+      "commodity": 4
+    },
+    "auction_horizon_days": 30,
+    "legacy_horizon_days": 21,
+    "proof": "Actual unmocked build; committed, serving-simulation and consumer-input-simulation bytes match. Final Mastermind reader and exact Terminal validator/selector accept the same full artifact.",
+    "transport": "One existing feed receives a Git-ignore exception; its one existing daily build moves before the existing commit and R2 publisher. The existing DAG is synchronized. No new schedule, publisher, auth bypass or public fallback.",
+    "production": "UNVERIFIED_AND_NOT_DEPLOYED; anonymous HTTP401 proves only observed registration refusal, not entitled delivery or vendor refresh",
+    "importance": "NOT_SCORED",
+    "probability": null,
+    "reserve_pressure": null
+  },
+  "verification": {
+    "macro_native": {
+      "distinct_tests_passed": 150,
+      "subtests_passed": 67,
+      "partitions": {
+        "core_and_legacy_supply": 91,
+        "import_contract": 11,
+        "dag_contract": 48
+      },
+      "repeated_capture_tests_not_double_counted": 6,
+      "hard_dag_lanes_passed": 27,
+      "inherited_suspect_dag_drifts_retained": 2
+    },
+    "independent_arithmetic": {
+      "dv01_cases": 120,
+      "private_cash_cases": 120,
+      "decimal_contexts": 4,
+      "qualified_input_requirement": "Private-cash completeness includes economic non-overlap of funded buybacks and redemptions; distinct row IDs are insufficient."
+    },
+    "mastermind": {
+      "native_auction_tests": 26,
+      "static_boundary_tests": 3,
+      "actual_committed_identity_gate": 1,
+      "renderer": "PASS",
+      "browser_run": "run05",
+      "browser_passed": 48,
+      "browser_started_at": "2026-10-09T00:55:30.870Z",
+      "browser_completed_at": "2026-10-09T00:55:59.936Z",
+      "matrix": "three sizes, EN/ZH, light/dark, four states; actual HTTP route functions with declared fixtures and lifespan off",
+      "screenshots": "All five representatives match already-inspected run04 bytes",
+      "evidence_owner": "tests/fixtures/sovereign_auction_context/"
+    },
+    "terminal": {
+      "native_tests_passed": 129,
+      "partitions": {
+        "auction": 42,
+        "incumbent_evidence": 47,
+        "negative_fixture_controls": 40
+      },
+      "typescript": "PASS",
+      "changed_leaf_lint": "PASS",
+      "plain_language_blocking": 0,
+      "new_waivers": 0,
+      "plain_language_inherited_visible": 6,
+      "bilingual_pairs_preserved": 55,
+      "browser_run": "run04",
+      "browser_passed": 18,
+      "browser_skipped": 0,
+      "browser_unexpected": 0,
+      "browser_flaky": 0,
+      "browser_started_at": "2026-10-09T00:43:40.712Z",
+      "browser_duration_ms": 87192,
+      "screenshots_hashed": 192,
+      "representative_screenshots": 4,
+      "whole_shell_lint": "54 errors and 14 warnings exactly pre-existing; not a whole-file lint pass"
+    },
+    "agentos": {
+      "validated_at": "2026-10-09T01:11:54.405232+00:00",
+      "records": 1585,
+      "by_kind": {
+        "workstreams": 81,
+        "decisions": 422,
+        "discoveries": 473,
+        "handoffs": 609
+      },
+      "errors": 0,
+      "inherited_warnings": 138
+    },
+    "staged_evidence_integrity": {
+      "full_staged_diff_check_exit": 2,
+      "original_evidence_paths_with_retained_whitespace": 13,
+      "other_staged_paths_diff_check_exit": 0,
+      "disposition": "Original hash-bound raw logs, patch context and reviewer snapshots retain their bytes. All other authored/staged paths pass. No Git attribute, scanner, CI guard or waiver was changed."
+    },
+    "documentation_review": {
+      "status": "TWO_PRECISION_CORRECTIONS_APPLIED_BY_ROOT",
+      "corrections": [
+        "Qualify relocation-event bytes versus refreshed live browser/manifest records",
+        "Name the row limit max_rows_per_payload"
+      ],
+      "post_edit_root_readback": "Both corrected values verified; independent reviewer did not certify post-edit output bytes"
+    }
+  },
+  "ci_repairs_and_adjudication": [
+    {
+      "owner": "Macro",
+      "finding": "Conditional entrypoint import pin",
+      "repair": "Unconditionally insert the owned repository first",
+      "proof": "11 import-contract and six capture tests plus hostile ambient-import CLI probe pass; no baseline change"
+    },
+    {
+      "owner": "Macro",
+      "finding": "Workflow build order did not match DAG declaration",
+      "repair": "Move the unique existing DAG block only",
+      "proof": "48 tests and all 27 hard-check lanes pass; eight direct overlap patches affect other preserved blocks"
+    },
+    {
+      "owner": "Macro",
+      "finding": "Inactive pilot authority context",
+      "disposition": "Inactive for this main-targeting PR; active main authority check succeeded. No gate or admission receipt changed."
+    },
+    {
+      "owner": "Macro",
+      "finding": "Nightly-liveness origin mismatch in CI base replay",
+      "disposition": "Temporary local origin path versus repository slug in base replay; unchanged test/script, separately retained environment attribution"
+    },
+    {
+      "owner": "Mastermind",
+      "finding": "Renderer/static harness CodeQL findings and inherited live attribute sink",
+      "repair": "Escape both quotes, bind one exact source script, immutable approved static bytes with no request-derived filesystem access",
+      "proof": "Hostile regression fails before and passes after; native/browser review and corrected CodeQL pass; obsolete preimages remain in reachable Git history"
+    },
+    {
+      "owner": "Mastermind",
+      "finding": "58 protected-identity findings",
+      "repair": "Use standard-library HTTPS_PORT and move 45 genuine verification assets byte-for-byte into existing tests/fixtures ownership",
+      "proof": "All 2107800 relocated bytes matched at 24ae789. Run05 and the current manifest supersede selected live records, with their predecessors preserved under browser_history/run04-before-identity-scope and identity_scope/SOURCE_MANIFEST_55198.json. All 23 URL cases, the unchanged guard and actual final-head D8 test pass; no registry or scanner change"
+    },
+    {
+      "owner": "Terminal",
+      "finding": "Nine shared-i18n evidence-lock assertions in eight incumbent suites",
+      "repair": "Isolate auction copy and restore exact original shared i18n bytes",
+      "proof": "All eight incumbent suites pass; no other owner manifest restamped"
+    },
+    {
+      "owner": "Terminal",
+      "finding": "45 bilingual plain-language routing findings",
+      "repair": "Follow existing pure pick(lang,en,zh) convention with hook in the client leaf",
+      "proof": "55 bilingual pairs exact, real full-diff guard zero blocking/waivers, 129 native and 18 browser cases pass"
+    },
+    {
+      "owner": "Terminal",
+      "finding": "Two Vercel preview rate limits",
+      "disposition": "Provider policy refusal; no upgrade, retry or successful preview/deployment"
+    }
+  ],
+  "ci_snapshot": {
+    "path": "research/sovereign_auction_pressure/verification/pr_readbacks/macro-final-prepush/summary.json",
+    "sampled_checks": [
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "pr": 8657,
+        "head": "9ea66297a31688123ae62845c655a74db03fa9c1",
+        "started_at": "2026-10-09T01:08:52.219430+00:00",
+        "completed_at": "2026-10-09T01:08:54.680682+00:00",
+        "draft": true,
+        "state": "open",
+        "base_branch": "main",
+        "remote_base_sha": "e80339cb921ac6851ae972775f7e2d784bf62007",
+        "remote_base_object_available": true,
+        "mergeable_state": "unstable",
+        "checks": [
+          {
+            "id": 113609330029,
+            "name": "ci-gate",
+            "status": "completed",
+            "conclusion": "failure",
+            "annotations": 6,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113609330029"
+          },
+          {
+            "id": 113597265834,
+            "name": "trusted-ci",
+            "status": "completed",
+            "conclusion": "skipped",
+            "annotations": 0,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597265834"
+          },
+          {
+            "id": 113597264984,
+            "name": "ci-pack-9",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 15,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264984"
+          },
+          {
+            "id": 113597264962,
+            "name": "ci-pack-4",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 7,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264962"
+          },
+          {
+            "id": 113597264958,
+            "name": "ci-pack-1",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 3,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264958"
+          },
+          {
+            "id": 113597264949,
+            "name": "ci-pack-2",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 3,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264949"
+          },
+          {
+            "id": 113597264930,
+            "name": "ci-pack-11",
+            "status": "completed",
+            "conclusion": "failure",
+            "annotations": 16,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264930"
+          },
+          {
+            "id": 113597264923,
+            "name": "ci-pack-10",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 9,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264923"
+          },
+          {
+            "id": 113597264914,
+            "name": "ci-pack-8",
+            "status": "completed",
+            "conclusion": "failure",
+            "annotations": 7,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264914"
+          },
+          {
+            "id": 113597264884,
+            "name": "ci-pack-0",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 13,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264884"
+          },
+          {
+            "id": 113597264862,
+            "name": "ci-pack-6",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 7,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264862"
+          },
+          {
+            "id": 113597264854,
+            "name": "ci-pack-7",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 16,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264854"
+          },
+          {
+            "id": 113597264830,
+            "name": "ci-pack-5",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 6,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264830"
+          },
+          {
+            "id": 113597264818,
+            "name": "ci-pack-3",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 5,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264818"
+          },
+          {
+            "id": 113597073252,
+            "name": "grader-manifest",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 0,
+            "title": "grader-manifest: passed",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113597073252"
+          },
+          {
+            "id": 113597071101,
+            "name": "capability-broker",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 0,
+            "title": "capability-broker: passed",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113597071101"
+          },
+          {
+            "id": 113597068763,
+            "name": "self-mod-fence",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 0,
+            "title": "self-mod-fence: passed",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113597068763"
+          },
+          {
+            "id": 113596913428,
+            "name": "ci-plan",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 3,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113596913428"
+          },
+          {
+            "id": 113596913024,
+            "name": "contract-delta",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 2,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113596913024"
+          },
+          {
+            "id": 113596783883,
+            "name": "ci-authority/main",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 0,
+            "title": "CI authority context accepted",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113596783883"
+          },
+          {
+            "id": 113596781513,
+            "name": "ci-authority/codex/merge-queue-pilot",
+            "status": "completed",
+            "conclusion": "failure",
+            "annotations": 0,
+            "title": "CI authority context rejected",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113596781513"
+          },
+          {
+            "id": 113596740795,
+            "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+            "status": "completed",
+            "conclusion": "skipped",
+            "annotations": 0,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101310/job/113596740795"
+          },
+          {
+            "id": 113596740776,
+            "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+            "status": "completed",
+            "conclusion": "skipped",
+            "annotations": 0,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101310/job/113596740776"
+          },
+          {
+            "id": 113596740253,
+            "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+            "status": "completed",
+            "conclusion": "skipped",
+            "annotations": 0,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101310/job/113596740253"
+          },
+          {
+            "id": 113596739287,
+            "name": "fence-pack",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 13,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101310/job/113596739287"
+          },
+          {
+            "id": 113596726816,
+            "name": "ci-authority",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 2,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861097171/job/113596726816"
+          }
+        ],
+        "statuses": []
+      },
+      {
+        "repository": "mastermindx-market-intelligence/Mastermind",
+        "pr": 1284,
+        "head": "ac9117b3305ba992ebb673a99242cdd54e2046ef",
+        "started_at": "2026-10-09T01:08:54.681011+00:00",
+        "completed_at": "2026-10-09T01:08:56.887945+00:00",
+        "draft": true,
+        "state": "open",
+        "base_branch": "master",
+        "remote_base_sha": "732cf7be88e7159b4995a8885fbd381cd1484e3e",
+        "remote_base_object_available": true,
+        "mergeable_state": "behind",
+        "checks": [
+          {
+            "id": 113618120771,
+            "name": "CodeQL",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 0,
+            "title": "No new alerts in code changed by this pull request",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/runs/113618120771"
+          },
+          {
+            "id": 113617960083,
+            "name": "test",
+            "status": "in_progress",
+            "conclusion": null,
+            "annotations": 0,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/37867592576/job/113617960083"
+          },
+          {
+            "id": 113617949433,
+            "name": "Analyze (actions)",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 1,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/37867588161/job/113617949433"
+          },
+          {
+            "id": 113617949327,
+            "name": "Analyze (rust)",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 1,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/37867588161/job/113617949327"
+          },
+          {
+            "id": 113617949237,
+            "name": "Analyze (javascript-typescript)",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 1,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/37867588161/job/113617949237"
+          },
+          {
+            "id": 113617949044,
+            "name": "Analyze (python)",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 1,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/37867588161/job/113617949044"
+          }
+        ],
+        "statuses": []
+      },
+      {
+        "repository": "mastermindx-market-intelligence/mastermind-terminal",
+        "pr": 857,
+        "head": "95dcde542a6af3fb70b421c3c5f508ef0455c6fb",
+        "started_at": "2026-10-09T01:08:56.888142+00:00",
+        "completed_at": "2026-10-09T01:08:59.365268+00:00",
+        "draft": true,
+        "state": "open",
+        "base_branch": "master",
+        "remote_base_sha": "505edf7872541075b5eee24691703a46d1151074",
+        "remote_base_object_available": true,
+        "mergeable_state": "behind",
+        "checks": [
+          {
+            "id": 113615131109,
+            "name": "Ingest + signal-layer tests",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 2,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866664788/job/113615131109"
+          },
+          {
+            "id": 113615131086,
+            "name": "Terminal e2e serial (shard)",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 3,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866664788/job/113615131086"
+          },
+          {
+            "id": 113615131058,
+            "name": "Terminal e2e desktop-1 (shard)",
+            "status": "in_progress",
+            "conclusion": null,
+            "annotations": 0,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866664788/job/113615131058"
+          },
+          {
+            "id": 113615131048,
+            "name": "Terminal unit + typecheck (shard)",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 5,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866664788/job/113615131048"
+          },
+          {
+            "id": 113615131005,
+            "name": "Terminal e2e desktop-2 (shard)",
+            "status": "in_progress",
+            "conclusion": null,
+            "annotations": 0,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866664788/job/113615131005"
+          },
+          {
+            "id": 113615130994,
+            "name": "Terminal e2e mobile (shard)",
+            "status": "in_progress",
+            "conclusion": null,
+            "annotations": 0,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866664788/job/113615130994"
+          },
+          {
+            "id": 113615130980,
+            "name": "Terminal e2e tablet (shard)",
+            "status": "in_progress",
+            "conclusion": null,
+            "annotations": 0,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866664788/job/113615130980"
+          },
+          {
+            "id": 113615130872,
+            "name": "Quote Hub tests",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 2,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866664788/job/113615130872"
+          },
+          {
+            "id": 113615130696,
+            "name": "Investigation PostgreSQL invariants",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 2,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866664788/job/113615130696"
+          },
+          {
+            "id": 113615014738,
+            "name": "CodeQL",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 0,
+            "title": "No new alerts in code changed by this pull request",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/runs/113615014738"
+          },
+          {
+            "id": 113614883785,
+            "name": "Analyze (javascript-typescript)",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 1,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866661783/job/113614883785"
+          },
+          {
+            "id": 113614883684,
+            "name": "Analyze (actions)",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 1,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866661783/job/113614883684"
+          },
+          {
+            "id": 113614883540,
+            "name": "Analyze (python)",
+            "status": "completed",
+            "conclusion": "success",
+            "annotations": 1,
+            "title": null,
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866661783/job/113614883540"
+          }
+        ],
+        "statuses": [
+          {
+            "context": "Vercel – mastermind-terminal",
+            "state": "failure",
+            "description": "Deployment rate limited — retry in 24 hours.",
+            "target_url": "https://vercel.com/chriswong6031-creator?upgradeToPro=build-rate-limit"
+          },
+          {
+            "context": "Vercel – macro-eiz4",
+            "state": "failure",
+            "description": "Deployment rate limited — retry in 24 hours.",
+            "target_url": "https://vercel.com/chriswong6031-creator?upgradeToPro=build-rate-limit"
+          }
+        ]
+      }
+    ],
+    "claim": "Local acceptance is not fully green remote CI, independent review approval, merge or release authority."
+  },
+  "latest_sampled_integration": {
+    "macro": {
+      "source": "1eb1d44a0a54aad95d97bfb3128246803852c7a7",
+      "upstream": "e80339cb921ac6851ae972775f7e2d784bf62007",
+      "simulated_tree": "1ff9e693ced0e0eb65307a39a69d33cc6acd45ef",
+      "clean": true,
+      "owned_paths": 265,
+      "latest_drift_owned_paths_changed": 0,
+      "source_only_paths_preserved": 264,
+      "shared_path": ".github/workflows/daily.yml; existing Theme Graph ID and advisory witness upload preserved"
+    },
+    "mastermind": {
+      "source": "ac9117b3305ba992ebb673a99242cdd54e2046ef",
+      "upstream": "732cf7be88e7159b4995a8885fbd381cd1484e3e",
+      "simulated_tree": "8e8693fa8df40a9968e0e55cab053c8e20231e2d",
+      "clean": true,
+      "owned_paths": 101,
+      "latest_drift_owned_paths_changed": 0,
+      "source_only_paths_preserved": 101
+    },
+    "terminal": {
+      "source": "95dcde542a6af3fb70b421c3c5f508ef0455c6fb",
+      "upstream": "505edf7872541075b5eee24691703a46d1151074",
+      "simulated_tree": "ee87fa44cdf0edb255f93935830293ef7d50712d",
+      "clean": true,
+      "preservation": "Current-main script rename helper import/call, eventImpact parser/tests, shared i18n and exactly one auction mount"
+    },
+    "boundary": "Exact object simulations only; no merge or upstream hold clearance. Final Macro evidence commit may add documentation paths without changing bound product bytes."
+  },
+  "research_verdict": {
+    "primary_capsules": 10,
+    "design": "H1-H5 adopted; execution registration NOT_STARTED",
+    "highest_next_empirical_priority": "H3 settlement financing and funding spreads",
+    "h3_status": "INSUFFICIENT_PIT",
+    "funding_casebook_sha256": "f64acecce2414726448fcfc9214431ce782cbb8090283e4b96af4c09606b544d",
+    "source_hashes_verified": 12,
+    "eligible_at_s_minus_one": 0,
+    "october_6_usd_millions": {
+      "bill_par_net": 11035,
+      "marketable_accounting_net": 11258,
+      "tips_indexation": 223,
+      "bill_discount": 2010,
+      "restricted_inferred_marketable_cash_bridge": 9025,
+      "broader_public_debt_cash_net": 10998,
+      "tga_change": 2079,
+      "certified_net_private_auction_cash": null
+    },
+    "cash_qualification": "9025 is an inferred restricted cash-basis bridge, not certified private cash; TGA change is receipts less withdrawals, not auction funding alone.",
+    "missing": [
+      "complete private proceeds excluding SOMA",
+      "private redemptions",
+      "non-overlapping funded buybacks",
+      "eligible IORB and released liquidity/dealer/MMF baselines",
+      "qualified pricing/duration and same-basis historical vintages"
+    ],
+    "rights_and_time": "Published microstructure work uses licensed intraday inputs; confidential dealer capacity cannot become public utilization. Future-auction clock imputation and interpolated weekly explanatory variables are ineligible substitutes for forecasting PIT data.",
+    "planned_primary_correction": "Holm alpha 0.05 over five primary hypotheses",
+    "planned_secondary_correction": "BH q 0.10",
+    "planned_uncertainty": "Paired 20-session block bootstrap, 10000 draws, seed 20261008; design choice, not achieved validation",
+    "planned_minimum_increment": "1 percent MSE/Brier improvement plus registered uncertainty, regimes and placebos",
+    "prospective_ruler": "252 future eligible sessions starts only after actual source/model/specification freeze and eligible logging; this document does not start the clock",
+    "new_evaluation_outcome_access": false,
+    "new_model_fit_or_return_backtest": false,
+    "probability_calibration": false,
+    "binding_nulls": [
+      "SLF-006: 413 coupon auctions, NO-GO, no six-cell BH pass, unstable splits",
+      "D2 auction cycle: FAIL; month-end subset does not revive it",
+      "Terminal confirmation/exit modulation: KILL/display-only; matched random control not beaten"
+    ]
+  },
+  "ownership_and_no_redo": {
+    "macro_open_pr_pathsets": 588,
+    "exact_pathsets": 574,
+    "fallback_pathsets_not_separately_head_bracketed": 14,
+    "registered_workspaces": 745,
+    "scoped_clean": 716,
+    "legacy_scoped_dirty": 15,
+    "missing_paths": 14,
+    "held_macro_prs": [
+      7273,
+      7320,
+      8241,
+      7022,
+      7949,
+      7060
+    ],
+    "held_terminal_writers": [
+      849,
+      852,
+      833,
+      614,
+      620,
+      814
+    ],
+    "preserved_terminal_main_changes": [
+      854,
+      851
+    ],
+    "instruction": "Do not repeat the census wholesale or take over held branches. Recheck only relevant target/main drift and owner changes. Do not repeat killed studies through an unregistered split or alias the new context to legacy crash-leg keys."
+  },
+  "authority_preserved": {
+    "source_only": true,
+    "decision_inputs_unchanged": true,
+    "no_alias_to": [
+      "auction_stress",
+      "treasury_auctions"
+    ],
+    "not_activated": [
+      "merge",
+      "ready-for-review or hold clearance",
+      "production deployment",
+      "new background collector/scheduler/watcher",
+      "provider runtime jobs",
+      "paid-data purchase",
+      "prediction promotion",
+      "trading",
+      "sizing",
+      "exit policy",
+      "notifications to other people"
+    ]
+  },
+  "remaining_frontier": [
+    "Exact-head CI adjudication and independent source review of the three Draft/HOLD PRs",
+    "Data-owner adoption of attended refresh, immutable archive selection and source-age policy",
+    "Official notice-backed amendments/cancellations, original announcement/result XML and observed migrated schemas",
+    "Complete eligible H3 cash/baseline acquisition and exact execution registration before new evaluation outcomes",
+    "Incumbent held Macro Bonds/overview composition after shared source contract acceptance",
+    "Separately authorized release with final committed/served/vendor hashes and real entitlement/CSP/session verification"
+  ],
+  "immediate_next_action": "Read the final exact PR heads and complete independent source/CI adjudication on Macro #8657, Mastermind #1284 and Terminal #857 while retaining Draft/HOLD; bind every new finding to its exact source head before any edit.",
+  "evidence_entrypoints": [
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/README.md",
+      "bytes": 19007,
+      "sha256": "8eadab9f3721ced470a0c27566f311a4bb52a7a4e06bf66f3cec0494dd0aa905"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/01_ARCHITECTURE_AND_ACCEPTANCE.md",
+      "bytes": 16607,
+      "sha256": "6a5731a07d4898fcf9cd5fb5bd13a8157ad30c05d5c67b25f36edc9879b0ec68"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/04_RESEARCH_DESIGN_ADOPTION.md",
+      "bytes": 5013,
+      "sha256": "5bddcfc1e673a12698a6cc9aa08f0079895eb5a6b3b6768f24936c662c5c7d64"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/source_census/00_IMPLEMENTATION_NULL_CENSUS.md",
+      "bytes": 20679,
+      "sha256": "3d99355e4065a570a4cc3032d4b8fbce2334418326ffac9487b191e5f66eb607"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/source_audit/W1_SOURCE_FEASIBILITY_AND_CASEBOOK.md",
+      "bytes": 22888,
+      "sha256": "2fcd8941af46ab5fe3d576712ecf5ff18d8619c08f7739e2d41c2c3dbe2df633"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/source_audit/SOURCE_RECEIPTS.json",
+      "bytes": 43965,
+      "sha256": "169b6effa6c4d13e824095b92d49c17624f9936fca4f58afb104351d366040b3"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/source_audit/CASEBOOK_EXPECTATIONS.json",
+      "bytes": 10020,
+      "sha256": "b0b8b64d4f4c1e93356e558c04e3321af539360db3fb3457d838ca0e90edb61a"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/source_audit/forward_capture_primary_receipt.json",
+      "bytes": 2366,
+      "sha256": "f3fd4b64413280ef7b17fbb3d3e048d2fa494bfcc5705f48e878e841ee10de58"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/research/CAUSAL_RESEARCH_BRIEF.md",
+      "bytes": 21290,
+      "sha256": "becf24c6f3b7570180bfe5709613c493169183661e81521791b21b4120ea49bb"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/research/H1_H5_PREREGISTRATION_CANDIDATE.md",
+      "bytes": 26591,
+      "sha256": "a4ad2a8b4e501deb054fc2ec2f729ad0fb02645cda4a97dd709b9cc9ea66d8be"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/funding_audit/OUTCOME_BLIND_FUNDING_AUDIT.md",
+      "bytes": 25367,
+      "sha256": "a1753123020c73b3481f873e7b4d10bdffed94e15278c92f9c191c649e6c376f"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/funding_audit/OUTCOME_BLIND_FUNDING_CASEBOOK.json",
+      "bytes": 28135,
+      "sha256": "f64acecce2414726448fcfc9214431ce782cbb8090283e4b96af4c09606b544d"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/funding_audit/OUTCOME_BLIND_FUNDING_VERIFICATION.json",
+      "bytes": 4846,
+      "sha256": "dd57f481fa7fddf6cd93dccb74cf6a48f8cddd727690e36d43614d56cd7e9952"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/funding_audit/SOURCE_RECEIPTS.json",
+      "bytes": 8998,
+      "sha256": "b8dfd2a97e5399d070a1de97d18fdf6dc9631df0b2aa97afd867b715cd488a4f"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/publication_audit/PUBLICATION_AND_ENTITLEMENT_AUDIT.md",
+      "bytes": 15980,
+      "sha256": "c73f795210bc943309f93640b218aa73a4412d8216ab7c2e0487d9caf7c6d271"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/publication_audit/BRIDGE_CURRENT_WRITER_CENSUS.md",
+      "bytes": 21917,
+      "sha256": "d74a62fee322d3c52ee5965f40678373773138d51299cd7a0983e3d00b0c6d56"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/final_source_gates/receipt.json",
+      "bytes": 2086,
+      "sha256": "084ec2ff54bbac4b0422731385f43f75b523beaca0bee20b8db830470da62050"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/final_source_gates/closeout_receipt.json",
+      "bytes": 1137,
+      "sha256": "ed9d7f9ce7b379250c7f13159d574ceee480af920ec779d0663ee2aed8ab831f"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/final_source_gates/agentos-final.json",
+      "bytes": 347,
+      "sha256": "cb97bb6812715bd197d39ffe94d01c60717700d722927b2a7aa3fca56733a627"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/final_source_gates/agentos-final-polish.json",
+      "bytes": 442,
+      "sha256": "59c9d9b4fb54769208959e5059b7b28d7c8c442d9e16a2c2932347d6143ca2c6"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/publication/actual_full_build_receipt.json",
+      "bytes": 3055,
+      "sha256": "ec790396885c31879853cdd16653357682c016acdde058991a21a3e7de4c3dde"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/publication/bridge_receipt_final_sources.json",
+      "bytes": 3041,
+      "sha256": "667e8852b0b85d435f7a9c71b7da04949d739cbade2a89586e1e8ac4d1c25e3e"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/publication/terminal_actual_artifact_final_sources.json",
+      "bytes": 1214,
+      "sha256": "bf10f759083723771f1af605360822f2ab30cd8360dbef86b5caaa5233ff5294"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/publication/final_source_replays.json",
+      "bytes": 1814,
+      "sha256": "65d2e14dbc736c934daf32dfd91b036d58a4758929b518e835f29ff13868d4aa"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/macro_ci_final/capture-pin-repair.json",
+      "bytes": 508,
+      "sha256": "c10106bf63193ed79d1aa2219cd3219bfd6226b662fa03ed637d0d345cb79d75"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/macro_ci_final/import-pin-verification.json",
+      "bytes": 1036,
+      "sha256": "049e358a6bbc8c2b490d678c55f3b804e5fa406656b74d6b4fc37fb624768df7"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/macro_ci_final/dag-order-repair.json",
+      "bytes": 848,
+      "sha256": "e85898b32c8bb9d271669a7ed525a0232ccc13a19f4178d38887bca8e4c8f5f3"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/macro_ci_final/dag-order-verification.json",
+      "bytes": 798,
+      "sha256": "344b13b20a5065211f8e7ea0a3e2adbfcfc5c42b98747fd6f80640802da7cb4d"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/macro_ci_final/pack11_review/DAG_PREEDIT_AND_POSTDIFF_REVIEW.md",
+      "bytes": 8445,
+      "sha256": "37f1cf25fefff0184ff5261b28a205e265b9e44befba7660464198eed3324bdf"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/consumer_ci_final/mastermind-final-committed-d8.json",
+      "bytes": 522,
+      "sha256": "f522db3362d510d1bd5c30a8772de3afc0d32ee106c90ab0a92ffd5880834612"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/final_main_drift/FINAL_MAIN_DRIFT_REVIEW.md",
+      "bytes": 4979,
+      "sha256": "09eb79bd579dddf74439d85a49c8b6bc0cbfd5cd8e6404cc35733bc68a47b6e3"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/final_main_drift/macro_drift.json",
+      "bytes": 60310,
+      "sha256": "b0c429645e0adfbe81f0d1856fee697832bd631b43148f6760c154b14ac75ee2"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/final_main_drift/mastermind_drift.json",
+      "bytes": 26600,
+      "sha256": "25f99c70430dd1ccb279119f9001c8d9d185ac6889bee800f345b557c917d1ac"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/final_main_drift/macro_merge_review.json",
+      "bytes": 27715,
+      "sha256": "12407836399efb02d55ed0df1f4841d014219bdf136fdf614182378ae7a96b20"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/final_main_drift/mastermind_merge_review.json",
+      "bytes": 12439,
+      "sha256": "ec1aa9747fc6c9ac6e8bf7cd5c4ecf66fb9da89e19218dc639b37c1944871a41"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/final_merge_trees/terminal-repaired-source.json",
+      "bytes": 557,
+      "sha256": "2cb4dc0e1b4c7c1acc05e5fc44ac3f5d2a8f83917e19fbc8fcd1f57ca3baee10"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/pr_readbacks/macro-final-prepush/summary.json",
+      "bytes": 16701,
+      "sha256": "ceda0a88b870502687a0a3b68cbb65ff4fdab98a53304781402d89b079258ab4"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "agentos/decisions/DEC-SOVEREIGN-AUCTION-CONTEXT-SOURCE-BOUNDARY.md",
+      "bytes": 4483,
+      "sha256": "c1132b32266e606e76c26f35228f0154e8e9817258d87db5557e88f51ba39c7d"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "agentos/discoveries/DSC-SOVEREIGN-AUCTION-CALENDAR-TRANSPORT-GAP.md",
+      "bytes": 1796,
+      "sha256": "0f75a7a66aa2f388b4ccf61c735d495e38a68b5723ace65e4ce32a7d85741b0a"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "agentos/discoveries/DSC-SOVEREIGN-AUCTION-H3-CASH-PIT-GATE.md",
+      "bytes": 2076,
+      "sha256": "7525c7f51cc406545e5282365ee41002f9b26cf108869a7c91e0d85845dee8f0"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "agentos/handoffs/RATES-INFLATION-COMMAND-2026-10-08-SOVEREIGN-AUCTION-INITIATION.md",
+      "bytes": 20154,
+      "sha256": "ce17ef5f654bae244b3b5396476f245339ad872e6c659a0cb8ceb67dd7e01d80"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/Mastermind",
+      "path": "research/sovereign_auction_context/SOURCE_DELIVERY.md",
+      "bytes": 8527,
+      "sha256": "480b34bf45aed8ecaad20e8ce4bfa08bd19409c7c9e0e2281caab409a93bffe8"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/Mastermind",
+      "path": "tests/fixtures/sovereign_auction_context/verification/identity_scope/ACCEPTANCE.json",
+      "bytes": 700,
+      "sha256": "44f32b63ea2f871d8aa77fba87594a91cf8e3547ca5414c42dd957d608fc7806"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/Mastermind",
+      "path": "tests/fixtures/sovereign_auction_context/verification/identity_scope/RELOCATION_RECEIPT.json",
+      "bytes": 22084,
+      "sha256": "74e52abd1975ce3ce305fbdac81d67ce1e6b2dedffd4d6403bc7b82ec95786ab"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "path": "research/sovereign_auction_context/SOURCE_DELIVERY.md",
+      "bytes": 8219,
+      "sha256": "f18f87741ee622beb779513a1c68f4d517a56f56a19efcd95456b14a8114319c"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "path": "research/sovereign_auction_context/verification/copy_routing/ACCEPTANCE.json",
+      "bytes": 817,
+      "sha256": "2833d2ec4fdff698fee0ef60f3c2f6b39bbbb5d4d567bbfdd4ecc29c73112949"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/final_document_audit/DOCUMENTATION_GENERATOR_AUDIT.json",
+      "bytes": 3977,
+      "sha256": "8bb6d00690b53b7537d11bdd5603b66b56524705109a43d07a1d4ac5d8e1f361"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/final_source_gates/final_commit_preflight.json",
+      "bytes": 1823,
+      "sha256": "b46f7ae0ce0926ee2ea2e626842c9c9f83129c4431c6c268468a0f18b746a49c"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/sovereign_auction_pressure/verification/final_main_drift/RETENTION.md",
+      "bytes": 704,
+      "sha256": "6f5e6b7e8d5c671d0cec6d022684c186a5e0bd239dde76293d2219954e795bcf"
+    }
+  ]
+}

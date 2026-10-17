@@ -1,0 +1,12 @@
+{
+  "reason": "Body arrival is separate from conservative system knowledge; missing legacy body arrival remains null",
+  "raw_response_sha256": "6a07572b3d7a13c034018d42b1ffdf165e72dbd4232fb71450d5ff6b0104ea2f",
+  "original_receipt_unchanged": true,
+  "observed_at_unchanged": "2026-10-08T22:12:22.414829+00:00",
+  "old_wrapper_sha256": "b3e7eb3b5ca32e0ebe3d23011d9fa917841f38e9fb436c73c8ca62b53b01d0cb",
+  "wrapper_sha256": "c3019af2c6439d954886744a4261b8ec84b98f33ebb32ee8aecfa6dcfa98c268",
+  "context_sha256": "9213ee594577ce15fce5f075448ca228be488b6f8d31f7f671f4a2d450cfe9b9",
+  "old_full_capture_fixture_sha256": "80b6a9f2c061804709ed965e92da5b7a073aab5b53b987975f185c690fa69222",
+  "full_capture_fixture_sha256": "e363d46c7082b8c997d3385af3faf5ebab0eb9c07be9a89912c4d215a8cb32b3",
+  "lifecycle_sha256": "9f8aee017dfd1f545a6e3b1a9bc96bb2ab6a60300d6d2ac1043f890606c0e91a"
+}

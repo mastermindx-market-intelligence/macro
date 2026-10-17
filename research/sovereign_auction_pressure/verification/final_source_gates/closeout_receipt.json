@@ -1,0 +1,33 @@
+{
+  "verified_at": "2026-10-09T00:06:08.214101+00:00",
+  "runs": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_treasury_auction_primitives.py"
+      ],
+      "exit_code": 0,
+      "log": "research/sovereign_auction_pressure/verification/final_source_gates/closeout-1.log"
+    },
+    {
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "research/sovereign_auction_pressure/verification/verify_terminal_artifact.mjs",
+        "--macro-root",
+        "/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001",
+        "--terminal-root",
+        "/Volumes/Mastermind/agent-workspaces/terminal/web/sovereign-auction-context-20261008-sol-terminal-001",
+        "--source-commit",
+        "9ea66297a31688123ae62845c655a74db03fa9c1",
+        "--output",
+        "research/sovereign_auction_pressure/verification/publication/terminal_actual_artifact_portable_receipt.json"
+      ],
+      "exit_code": 0,
+      "log": "research/sovereign_auction_pressure/verification/final_source_gates/closeout-2.log"
+    }
+  ]
+}

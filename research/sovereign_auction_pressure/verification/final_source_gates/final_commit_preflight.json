@@ -1,0 +1,24 @@
+{
+  "head": "1eb1d44a0a54aad95d97bfb3128246803852c7a7",
+  "staged_files": 175,
+  "staged_file_bytes": 2871180,
+  "staged_scope": "program evidence/docs and one handoff only",
+  "full_staged_diff_check_exit": 2,
+  "retained_original_evidence_whitespace_paths": [
+    "research/sovereign_auction_pressure/publication_audit/final_remote_main_followup/CASH_DOCSTRING.diff",
+    "research/sovereign_auction_pressure/publication_audit/final_remote_main_followup/PRESERVATION_RULING.md",
+    "research/sovereign_auction_pressure/verification/ci_initial/FINAL_CI_TRIAGE.md",
+    "research/sovereign_auction_pressure/verification/consumer_ci_final/mastermind-test-failure-excerpt.txt",
+    "research/sovereign_auction_pressure/verification/final_document_audit/DEFECTS.md",
+    "research/sovereign_auction_pressure/verification/final_document_audit/DOCUMENTATION_GENERATOR_AUDIT.json",
+    "research/sovereign_auction_pressure/verification/final_document_audit/audit_receipt.json",
+    "research/sovereign_auction_pressure/verification/final_document_audit/evidence.raw.json",
+    "research/sovereign_auction_pressure/verification/final_main_drift/FINAL_MAIN_DRIFT_REVIEW.md",
+    "research/sovereign_auction_pressure/verification/final_main_drift/tool_receipts.raw.json",
+    "research/sovereign_auction_pressure/verification/macro_ci_final/capture-pin-repair.patch",
+    "research/sovereign_auction_pressure/verification/macro_ci_final/pack8-failure-excerpt.txt",
+    "research/sovereign_auction_pressure/verification/main_ref_identity_followup/TERMINAL_EVENT_IMPACT.diff"
+  ],
+  "remaining_staged_paths_diff_check_exit": 0,
+  "disposition": "Original hash-bound raw logs, patch context and reviewer snapshots retain their bytes. All other authored/staged paths pass. No Git attribute, scanner, CI guard or waiver was changed."
+}

@@ -1,0 +1,20 @@
+{
+  "source_head": "9ea66297a31688123ae62845c655a74db03fa9c1",
+  "main": "b86c4ada64533320232a98278cf199978a369a92",
+  "command": [
+    "git",
+    "merge-tree",
+    "--write-tree",
+    "b86c4ada64533320232a98278cf199978a369a92",
+    "9ea66297a31688123ae62845c655a74db03fa9c1"
+  ],
+  "exit_code": 0,
+  "output": "0422e6680cb6597d6ace8caca05b955444f4c538\n",
+  "stderr": "",
+  "actual_merge_performed": false,
+  "main_markers_preserved": {
+    "regional_desk_builders": true,
+    "Theme Graph": true
+  },
+  "calendar_tracked_in_merge_tree": true
+}

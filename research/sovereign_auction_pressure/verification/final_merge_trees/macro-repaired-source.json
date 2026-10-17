@@ -1,0 +1,15 @@
+{
+  "repository": "mastermindx-market-intelligence/macro",
+  "source_head": "1eb1d44a0a54aad95d97bfb3128246803852c7a7",
+  "remote_main_sample": "4cbc94c117c5b4eb84c666cc88336228f0ff00a6",
+  "verified_at": "2026-10-09T00:51:53.705401+00:00",
+  "exit_code": 0,
+  "merge_tree": "d9da0535ba2a1bc18dd2db5bf6218cf8064630a2",
+  "actual_merge_performed": false,
+  "preserved": [
+    "Theme Graph witness edits",
+    "regional desk witness markers",
+    "corrected DAG exact bytes",
+    "committed calendar exact bytes"
+  ]
+}

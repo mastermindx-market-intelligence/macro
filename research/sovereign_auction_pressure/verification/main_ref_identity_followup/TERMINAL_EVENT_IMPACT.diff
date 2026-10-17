@@ -1,0 +1,120 @@
+diff --git a/terminal/lib/__tests__/eventImpactCalendarStructure.test.ts b/terminal/lib/__tests__/eventImpactCalendarStructure.test.ts
+new file mode 100644
+index 00000000..1896a53e
+--- /dev/null
++++ b/terminal/lib/__tests__/eventImpactCalendarStructure.test.ts
+@@ -0,0 +1,84 @@
++import { describe, expect, it } from "vitest";
++import { joinEventImpact, type TouchedPosition } from "@/lib/eventImpact";
++
++const positions: readonly TouchedPosition[] = [
++  { id: "p1", ticker: "AAPL", shares: 10, status: "open" },
++];
++const ctx = (tickers: unknown) => ({
++  schema: "portfolio_ctx.v2",
++  asof: "2026-10-08",
++  tickers,
++});
++
++describe("event impact calendar structure", () => {
++  it.each([undefined, null, [], "", 42, false])(
++    "rejects malformed ticker dictionary %j",
++    (tickers) => {
++      expect(joinEventImpact({ positions, ctx: ctx(tickers) })).toEqual({
++        state: "calendar_unreadable",
++        detail: "bad ticker map",
++      });
++    }
++  );
++
++  it.each(["portfolio_ctx.v1", "portfolio_ctx.v2"])(
++    "preserves a genuinely empty %s dictionary",
++    (schema) => {
++      expect(
++        joinEventImpact({ positions, ctx: { schema, asof: "2026-10-08", tickers: {} } }).state
++      ).toBe("no_events");
++    }
++  );
++
++  it("preserves known empty holdings before inspecting calendar structure", () => {
++    expect(joinEventImpact({ positions: [], ctx: ctx(null) })).toEqual({ state: "no_holdings" });
++  });
++
++  it("preserves unreadable holdings before inspecting calendar structure", () => {
++    expect(joinEventImpact({ positions: null, ctx: ctx(null) })).toEqual({ state: "holdings_unreadable" });
++  });
++});
++
++const event = { earnings: { next: "2026-10-12", days_to: 4 } };
++
++describe("event impact held ticker structure", () => {
++  it.each([null, [], "", 42, false])("rejects present malformed held row %j", (row) => {
++    expect(joinEventImpact({ positions, ctx: ctx({ AAPL: row }) })).toEqual({
++      state: "calendar_unreadable",
++      detail: "bad ticker row",
++    });
++  });
++
++  it("keeps an absent held ticker as uncovered", () => {
++    expect(joinEventImpact({ positions, ctx: ctx({}) }).state).toBe("no_events");
++  });
++
++  it("keeps a valid empty held ticker object as uncovered", () => {
++    expect(joinEventImpact({ positions, ctx: ctx({ AAPL: {} }) }).state).toBe("no_events");
++  });
++
++  it("ignores a malformed ticker outside the open book", () => {
++    const result = joinEventImpact({ positions, ctx: ctx({ AAPL: event, MSFT: null }) });
++    expect(result.state).toBe("ok");
++    if (result.state === "ok") expect(result.events.map((e) => e.ticker)).toEqual(["AAPL"]);
++  });
++
++  it("keeps covered events when another held ticker is absent", () => {
++    const result = joinEventImpact({
++      positions: [...positions, { id: "p2", ticker: "MSFT", shares: 2, status: "open" }],
++      ctx: ctx({ AAPL: event }),
++    });
++    expect(result.state).toBe("ok");
++    if (result.state === "ok") expect(result.events.map((e) => e.ticker)).toEqual(["AAPL"]);
++  });
++
++  it.each([
++    { AAPL: event, MSFT: null },
++    { AAPL: null, MSFT: event },
++  ])("rejects a broken held row before or after a valid event", (tickers) => {
++    expect(joinEventImpact({
++      positions: [...positions, { id: "p2", ticker: "MSFT", shares: 2, status: "open" }],
++      ctx: ctx(tickers),
++    }).state).toBe("calendar_unreadable");
++  });
++});
+diff --git a/terminal/lib/eventImpact.ts b/terminal/lib/eventImpact.ts
+index a177b689..08aa7354 100644
+--- a/terminal/lib/eventImpact.ts
++++ b/terminal/lib/eventImpact.ts
+@@ -310,12 +310,23 @@ export function joinEventImpact(input: {
+   const ctxObj = ctx as Record<string, unknown>;
+ 
+   const asof = typeof ctxObj.asof === "string" ? ctxObj.asof : "";
+-  const tickersBlock = isPlainObject(ctxObj.tickers) ? ctxObj.tickers : {};
++  // The producer always emits a ticker dictionary, including {} when it has no
++  // coverage. A missing or malformed dictionary is unreadable, not evidence that
++  // no upcoming event touches the book. Individual ticker/block absence stays legal.
++  if (!isPlainObject(ctxObj.tickers)) {
++    return { state: "calendar_unreadable", detail: "bad ticker map" };
++  }
++  const tickersBlock = ctxObj.tickers;
+ 
+   const events: EventTouch[] = [];
+   for (const ticker of Array.from(heldTickerSet).sort()) {
++    // The producer omits uncovered tickers; a present row must be an object.
++    // Do not turn a broken held row into an affirmative no-events result.
++    if (!Object.prototype.hasOwnProperty.call(tickersBlock, ticker)) continue;
+     const tickerBlock = tickersBlock[ticker];
+-    if (!isPlainObject(tickerBlock)) continue;
++    if (!isPlainObject(tickerBlock)) {
++      return { state: "calendar_unreadable", detail: "bad ticker row" };
++    }
+     const earnings = tickerBlock.earnings;
+     if (!isPlainObject(earnings)) continue;
+ 

@@ -1,0 +1,11 @@
+{
+  "job": 113603641782,
+  "source_head": "55198ba62ff47d2a371397567418cb43fd98892c",
+  "retrieved_at": "2026-10-09T00:40:29.383559+00:00",
+  "exit_code": 0,
+  "stderr": "",
+  "full_log_sha256": "201ea8350e6a8f72f044b385fc67b17e646333c76799dfbe3123272574f9c5f6",
+  "full_log_lines": 2026,
+  "excerpt_lines": 61,
+  "excerpt_sha256": "2661e9fcd8098b6e04d629c5a48af9e805494a9b52ab1797bfc7cfac78ebf407"
+}

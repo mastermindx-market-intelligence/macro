@@ -1,0 +1,11 @@
+{
+  "changed_at": "2026-10-09T00:39:22.195260+00:00",
+  "source_head_before": "9ea66297a31688123ae62845c655a74db03fa9c1",
+  "path": "config/dag.yml",
+  "before_sha256": "eaaa4d77971da6fe42fe2f77e4ec5ee2402e4667d2b5b49233c6637bd541f77e",
+  "after_sha256": "6b17b12d536e62336f11557a7f28821b1aae8611f45dbf1df581f2843d350c05",
+  "finding": "Synchronize declared daily engine serial order with existing feed build before commit helper",
+  "action": "Move existing build_feeds declaration before check_template_site_sync_fix in daily engine lane only; preserve IDs, note, module metadata and checker",
+  "new_steps_or_schedules": false,
+  "preflight": "Initial global marker uniqueness assertion stopped before writes because five lanes contain this marker; corrected selector binds the unique build_feeds block and its exact preceding engine helper."
+}

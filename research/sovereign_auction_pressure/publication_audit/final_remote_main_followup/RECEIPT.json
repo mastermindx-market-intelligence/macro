@@ -1,0 +1,251 @@
+{
+  "schema": "sovereign_auction.final_remote_main_followup.v1",
+  "parent_remote_identity": {
+    "source": "root's freshly bracketed GitHub readback supplied to this child",
+    "observed_at": "2026-10-09T00:07:50Z",
+    "main": "11e907b04d46692eced0d382a74935b19708fa2e",
+    "independently_refetched_by_child": false
+  },
+  "identity": {
+    "kind": "identity",
+    "started_at": "2026-10-09T00:09:56.848581+00:00",
+    "repository": "/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001",
+    "old_requested": "b86c4ada64533320232a98278cf199978a369a92",
+    "new_requested": "11e907b04d46692eced0d382a74935b19708fa2e",
+    "old_resolved": "b86c4ada64533320232a98278cf199978a369a92",
+    "new_resolved": "11e907b04d46692eced0d382a74935b19708fa2e",
+    "scope": [
+      ".gitignore",
+      ".github/workflows/daily.yml",
+      "scripts/build_feeds.py",
+      "engine/treasury_auction_lifecycle.py",
+      "engine/treasury_auction_primitives.py",
+      "scripts/capture_treasury_auction_observations.py"
+    ],
+    "instruction_scope": [
+      "AGENTS.md",
+      "CLAUDE.md",
+      ".github/AGENTS.md",
+      ".github/CLAUDE.md",
+      ".github/workflows/AGENTS.md",
+      ".github/workflows/CLAUDE.md",
+      "scripts/AGENTS.md",
+      "scripts/CLAUDE.md",
+      "engine/AGENTS.md",
+      "engine/CLAUDE.md"
+    ],
+    "no_fetch": true,
+    "no_merge_tree": true
+  },
+  "completed_at": "2026-10-09T00:09:58.427680+00:00",
+  "path_delta": {
+    "kind": "path_delta",
+    "returncode": 0,
+    "changed": []
+  },
+  "exact_diff": {
+    "kind": "exact_diff",
+    "returncode": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "patch": ""
+  },
+  "source_hashes": [
+    {
+      "kind": "source_hashes",
+      "ref": "b86c4ada64533320232a98278cf199978a369a92",
+      "rows": [
+        {
+          "path": ".gitignore",
+          "blob": "b1272ff5216d8f08bfccbf2904c8ad65bafaf825",
+          "sha256": "8002e865c795a8c5ac529f0a9c8812a6c5abd4d69e8dc5ea56c682c5054a0c53",
+          "bytes": 42488,
+          "returncode": 0
+        },
+        {
+          "path": ".github/workflows/daily.yml",
+          "blob": "26731b7c6bf05a18f818e16e8139c51418d0f0ce",
+          "sha256": "c7cb98bbed9242fe8b43dbedc1ca5c258513f352903fe672579d2ee38f569653",
+          "bytes": 452715,
+          "returncode": 0
+        },
+        {
+          "path": "scripts/build_feeds.py",
+          "blob": "f5d086666914849fe76549f30c3e50145b316851",
+          "sha256": "ba462cfb841e896185b586494be4220ca3f8c8b8188cc682ea32f23cf15ccafd",
+          "bytes": 10401,
+          "returncode": 0
+        },
+        {
+          "path": "engine/treasury_auction_lifecycle.py",
+          "state": "absent"
+        },
+        {
+          "path": "engine/treasury_auction_primitives.py",
+          "state": "absent"
+        },
+        {
+          "path": "scripts/capture_treasury_auction_observations.py",
+          "state": "absent"
+        },
+        {
+          "path": "AGENTS.md",
+          "blob": "367c567422f3554828f3fa57805811aa81a41df6",
+          "sha256": "463ea7c70ea9a1ddbb5154b9f65b7c745d0093dc15485db216936fa9bddf057c",
+          "bytes": 78660,
+          "returncode": 0
+        },
+        {
+          "path": "CLAUDE.md",
+          "blob": "5d3c9b1936574af58581b03d149b4160119b1e79",
+          "sha256": "3c2016ddb9a67a6488f7938e665cb5f37b767b7d39c2122057cb9d110149d329",
+          "bytes": 85973,
+          "returncode": 0
+        },
+        {
+          "path": ".github/AGENTS.md",
+          "state": "absent"
+        },
+        {
+          "path": ".github/CLAUDE.md",
+          "state": "absent"
+        },
+        {
+          "path": ".github/workflows/AGENTS.md",
+          "state": "absent"
+        },
+        {
+          "path": ".github/workflows/CLAUDE.md",
+          "state": "absent"
+        },
+        {
+          "path": "scripts/AGENTS.md",
+          "state": "absent"
+        },
+        {
+          "path": "scripts/CLAUDE.md",
+          "state": "absent"
+        },
+        {
+          "path": "engine/AGENTS.md",
+          "state": "absent"
+        },
+        {
+          "path": "engine/CLAUDE.md",
+          "state": "absent"
+        }
+      ]
+    },
+    {
+      "kind": "source_hashes",
+      "ref": "11e907b04d46692eced0d382a74935b19708fa2e",
+      "rows": [
+        {
+          "path": ".gitignore",
+          "blob": "b1272ff5216d8f08bfccbf2904c8ad65bafaf825",
+          "sha256": "8002e865c795a8c5ac529f0a9c8812a6c5abd4d69e8dc5ea56c682c5054a0c53",
+          "bytes": 42488,
+          "returncode": 0
+        },
+        {
+          "path": ".github/workflows/daily.yml",
+          "blob": "26731b7c6bf05a18f818e16e8139c51418d0f0ce",
+          "sha256": "c7cb98bbed9242fe8b43dbedc1ca5c258513f352903fe672579d2ee38f569653",
+          "bytes": 452715,
+          "returncode": 0
+        },
+        {
+          "path": "scripts/build_feeds.py",
+          "blob": "f5d086666914849fe76549f30c3e50145b316851",
+          "sha256": "ba462cfb841e896185b586494be4220ca3f8c8b8188cc682ea32f23cf15ccafd",
+          "bytes": 10401,
+          "returncode": 0
+        },
+        {
+          "path": "engine/treasury_auction_lifecycle.py",
+          "state": "absent"
+        },
+        {
+          "path": "engine/treasury_auction_primitives.py",
+          "state": "absent"
+        },
+        {
+          "path": "scripts/capture_treasury_auction_observations.py",
+          "state": "absent"
+        },
+        {
+          "path": "AGENTS.md",
+          "blob": "367c567422f3554828f3fa57805811aa81a41df6",
+          "sha256": "463ea7c70ea9a1ddbb5154b9f65b7c745d0093dc15485db216936fa9bddf057c",
+          "bytes": 78660,
+          "returncode": 0
+        },
+        {
+          "path": "CLAUDE.md",
+          "blob": "5d3c9b1936574af58581b03d149b4160119b1e79",
+          "sha256": "3c2016ddb9a67a6488f7938e665cb5f37b767b7d39c2122057cb9d110149d329",
+          "bytes": 85973,
+          "returncode": 0
+        },
+        {
+          "path": ".github/AGENTS.md",
+          "state": "absent"
+        },
+        {
+          "path": ".github/CLAUDE.md",
+          "state": "absent"
+        },
+        {
+          "path": ".github/workflows/AGENTS.md",
+          "state": "absent"
+        },
+        {
+          "path": ".github/workflows/CLAUDE.md",
+          "state": "absent"
+        },
+        {
+          "path": "scripts/AGENTS.md",
+          "state": "absent"
+        },
+        {
+          "path": "scripts/CLAUDE.md",
+          "state": "absent"
+        },
+        {
+          "path": "engine/AGENTS.md",
+          "state": "absent"
+        },
+        {
+          "path": "engine/CLAUDE.md",
+          "state": "absent"
+        }
+      ]
+    }
+  ],
+  "ruling": "NO_NEW_SCOPED_SOURCE_OR_INSTRUCTION_DRIFT. Preserve existing c44 Theme Graph workflow changes during root's final merge-tree; no new add/add collision on the three new implementation paths.",
+  "instructions_scope": "Only root, .github, .github/workflows, scripts, engine ancestor AGENTS.md/CLAUDE.md files applicable to the six targets; root files unchanged, narrower scoped files absent in both supplied main trees.",
+  "cash_docstring_review": {
+    "kind": "cash_docstring_review",
+    "read_at": "2026-10-09T00:11:28.353825+00:00",
+    "base_commit": "9ea66297a31688123ae62845c655a74db03fa9c1",
+    "path": "engine/treasury_auction_primitives.py",
+    "before_sha256": "0a8e5a6c12af0127186d693f0a87164709f28e339e505a3b7ba4b4a32cfc0b43",
+    "after_sha256": "78bb827d6339c9e0fe75264d2f0ddc51fd388b5baa713833eb617fbb9a0f4ba9",
+    "matches_parent_supplied_sha256": true,
+    "non_docstring_ast_identical": true,
+    "diff_sha256": "e28fc88c287db5a2df21b177e0423ea9be54c72325c8d648635aa87e04f4c7ab",
+    "diff": "--- 9ea66297a31688123ae62845c655a74db03fa9c1:engine/treasury_auction_primitives.py\n+++ owned-current:engine/treasury_auction_primitives.py\n@@ -195,7 +195,9 @@\n     \"\"\"Private cash only. Missing/empty category needs a sourced explicit zero.\n \n     completeness_certified asserts the supplying owner has enumerated every\n-    necessary component for this scope/cohort; the math leaf cannot prove it.\n+    necessary component exactly once for this scope/cohort, including that funded\n+    buyback cash is not already included in private redemptions. Distinct IDs do\n+    not prove economic non-overlap; the math leaf cannot certify these inputs.\n     Optional gross face/SOMA are explanatory observations and never deducted.\n     \"\"\"\n     _text(cohort_id, \"cohort_id\")\n",
+    "execution_performed": false
+  },
+  "cash_docstring_ruling": "PASS: supplying owner completeness certification explicitly includes economic non-overlap; distinct IDs are not proof. Only docstring changes; non-docstring AST identical. No model or numerical execution performed.",
+  "identity_correction": "Parent clarified 78bb827d... is the SHA256 of uncommitted file bytes, not a Git ref. A preliminary short-ref lookup resolved an unrelated September object and failed both target-file reads; it is explicitly discarded and supplies no equivalence evidence. Accepted cash review uses exact base commit9ea66297... and full supplied file SHA256.",
+  "boundaries": {
+    "fetch": false,
+    "source_edits": false,
+    "branch_changes": false,
+    "merge_tree": false,
+    "ci_polling": false,
+    "remote_writes": false,
+    "changed_paths_outside_scope_not_reviewed": true
+  }
+}

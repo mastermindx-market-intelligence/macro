@@ -1,0 +1,10 @@
+{
+  "status": "fulfilled",
+  "value": {
+    "chunk_id": "0e35fc",
+    "wall_time_seconds": 0.000065125,
+    "exit_code": 0,
+    "original_token_count": 277,
+    "output": "GAP_FALLBACKS\n{\n  \"number\": 8458,\n  \"census_head\": \"a16b8f5681c4f0bacbc91bcde81a2abf617c24e5\",\n  \"files\": [\n    \".github/ci/legacy-jobs.yml\",\n    \"scripts/build_intraday_flow_quotes.py\",\n    \"scripts/build_live_quotes.py\",\n    \"scripts/vps_live_orchestrator.py\",\n    \"tests/test_build_live_quotes.py\",\n    \"tests/test_prophet_strategy_definition.py\",\n    \"tests/test_vps_live_orchestration.py\"\n  ],\n  \"exact_head_reverified\": false\n}\n{\n  \"number\": 7283,\n  \"census_head\": \"f23aaba0481ac63c566e4d5835a8584751153d5f\",\n  \"files\": [\n    \".github/ci/legacy-jobs.yml\",\n    \"site/sector_heatmap.html\",\n    \"templates/sector_heatmap.html.j2\",\n    \"tests/test_house_theme_atlas.py\"\n  ],\n  \"exact_head_reverified\": false\n}\nFALLBACK_SAMPLE {\"number\": 8660, \"census_head\": \"dbccefe1275a697c322806b81ba237123c862e94\", \"files\": [\"engine/flow_signing.py\", \"engine/tick_plane/__init__.py\", \"engine/tick_plane/asof_nbbo.py\", \"engine/tick_plane/stream_events.py\", \"tests/test_tick_plane_asof_nbbo.py\", \"tests/test_tick_plane_stream_events.py\", \"tests/test_tp1_qualified_print_classifier.py\"], \"exact_head_reverified\": false}\n"
+  }
+}

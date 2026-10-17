@@ -1,0 +1,57 @@
+                 For Immediate Release                                                                        CONTACT: Treasury Auctions
+                 September 23, 2026                                                                                    202-504-3550
+
+                                                        TREASURY AUCTION RESULTS
+                            Term and Type of Security                                                           1-Year 10-Month FRN
+                            CUSIP Number                                                                                 91282CRD5
+                            Series                                                                                          BF-2028
+
+                            Spread                                                                                               0.050%
+                            High Discount Margin 1                                                                               0.040%
+                            Allotted at High                                                                                     42.15%
+                            Price                                                                                            100.015499
+                            Accrued Interest per $100                                                                      $0.603670248
+
+                            Median Discount Margin 2                                                                               0.010%
+                            Low Discount Margin 3                                                                                 -0.035%
+
+                            Issue Date                                                                              September 25, 2026
+                            Maturity Date                                                                                July 31, 2028
+                            Original Issue Date                                                                          July 31, 2026
+                            Dated Date                                                                                   July 31, 2026
+
+                            Index Determination Date                                                                September 21, 2026
+                            Index Determination Rate                                                                           4.015%
+
+                                                                                         Tendered                                         Accepted
+                 Competitive                                                          $73,498,000,000                                  $27,989,762,500
+                 Noncompetitive                                                           $10,324,500                                      $10,324,500
+                 FIMA (Noncompetitive)                                                             $0                                               $0
+                 Subtotal 4                                                           $73,508,324,500                                 $28,000,087,0005
+
+                 SOMA                                                                                   $0                                         $0
+
+                 Total                                                                $73,508,324,500                                 $28,000,087,000
+
+                                                                                         Tendered                                        Accepted
+                 Primary Dealer 6                                                     $55,701,000,000                                 $11,451,850,000
+                 Direct Bidder 6                                                       $1,100,000,000                                              $0
+                 Indirect Bidder 6                                                    $16,697,000,000                                 $16,537,912,500
+                 Total Competitive                                                    $73,498,000,000                                 $27,989,762,500
+
+
+
+
+1
+  All tenders at lower discount margins were accepted in full.
+2
+  50% of the amount of accepted competitive tenders was tendered at or below that discount margin.
+3
+  5% of the amount of accepted competitive tenders was tendered at or below that discount margin.
+4
+  Bid-to-Cover Ratio: $73,508,324,500/$28,000,087,000 = 2.63
+5
+  Awards to Treasury Retail = $2,062,500.
+6
+  For descriptions of these terms, see the Auction FAQs available at https://www.treasurydirect.gov/help-center/faqs/auction-faqs/.
+

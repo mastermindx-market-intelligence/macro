@@ -1,0 +1,60 @@
+{
+  "schema": "sovereign_auction.documentation_generator_audit.v1",
+  "status": "REVIEW_COMPLETE_TWO_CORRECTIONS_ADOPTED",
+  "scope": {
+    "documents": [
+      "program_docs/README.md",
+      "program_docs/agentos/handoffs/RATES-INFLATION-COMMAND-2026-10-08-SOVEREIGN-AUCTION-INITIATION.md",
+      "program_docs/pr_macro.md",
+      "program_docs/pr_mastermind.md",
+      "program_docs/pr_terminal.md"
+    ],
+    "generator": "closeout/create_final_delivery_receipt.py",
+    "reviewed_generator_sha256": "f00b3e4b407accaef59e6be3dfc8eab1eeb972dffb4b1216d802b9d1ac70a68b",
+    "reviewed_generator_bytes": 26886,
+    "review_focus": "Factual contradictions, stale current paths or heads, unsupported CI/release/predictive claims, and broken references; no expanded research."
+  },
+  "exact_evidence_bindings": {
+    "macro_source": "1eb1d44a0a54aad95d97bfb3128246803852c7a7",
+    "mastermind_runtime_source": "24ae789308bf5b9c417b1f8bd5c7e74938b11a7e",
+    "mastermind_final_evidence": "ac9117b3305ba992ebb673a99242cdd54e2046ef",
+    "terminal_source": "95dcde542a6af3fb70b421c3c5f508ef0455c6fb"
+  },
+  "findings": [
+    {
+      "id": "D1",
+      "location": "program_docs/agentos/handoffs/RATES-INFLATION-COMMAND-2026-10-08-SOVEREIGN-AUCTION-INITIATION.md:154 (reviewed preimage)",
+      "finding": "An unqualified statement that all 45 moved evidence files retain their original bytes could be read as a current-path claim after the final evidence refresh.",
+      "evidence": "All 45 paths were byte-identical at the 24ae789 relocation. At ac9117, the current source manifest and four browser_final records intentionally differ; the exact predecessors remain in identity_scope/SOURCE_MANIFEST_55198.json and browser_history/run04-before-identity-scope/.",
+      "correction": "Describe the byte-preserving relocation event and separately preserved historical bytes, while identifying run05/current-manifest records as the live successors.",
+      "disposition": "ADOPTED_AND_REPORTED_APPLIED_BY_ROOT to the local handoff; root also adopted qualified relocation-event/history wording in the receipt generator.",
+      "historical_bytes_preserved": true
+    },
+    {
+      "id": "G1",
+      "location": "closeout/create_final_delivery_receipt.py:official_lifecycle_audit.archive_limits.parsed_rows",
+      "finding": "The generic parsed_rows label for 2048 could imply a total archive row cap. The exact lifecycle source applies MAX_ROWS per payload.",
+      "evidence": "Exact 1eb lifecycle source defines MAX_ROWS = 2048 and emits coverage.limits.max_rows_per_payload. The implementation retains up to 2048 rows per payload; this is not a global 2048-row cap.",
+      "correction": "Rename the receipt key to max_rows_per_payload, retaining value 2048.",
+      "disposition": "ADOPTED_BY_ROOT; root owns the exact-preimage edit to the already-created delivery receipt.",
+      "post_edit_readback": "Not performed; root instructed no further audit or sampling."
+    }
+  ],
+  "conclusion": "No additional factual contradiction or unsupported CI, release, or predictive claim was identified within the bounded reviewed scope. Exact pinned consumer delivery links resolve. The two identified wording/label corrections are adopted by the sole source writer.",
+  "reviewer_actions": {
+    "executed_generator": false,
+    "edited_generator": false,
+    "edited_program_documents": false,
+    "edited_generated_delivery_receipt": false,
+    "new_main_or_ci_sampling": false,
+    "new_research": false,
+    "wrote_only_scratch_audit_artifacts": true
+  },
+  "boundary": "This receipt records the review and root's adopted corrections. It does not independently certify post-edit output bytes, execute a gate, assert all CI is green, or grant release authority.",
+  "supporting_receipts": [
+    "final_ci_audit/final_document_audit/audit_receipt.json",
+    "final_ci_audit/final_document_audit/evidence.raw.json",
+    "final_ci_audit/final_main_drift/REVIEW_PACKAGE_FILES.json"
+  ]
+}
+

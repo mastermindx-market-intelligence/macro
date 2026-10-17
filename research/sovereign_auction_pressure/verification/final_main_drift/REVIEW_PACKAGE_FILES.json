@@ -1,0 +1,57 @@
+[
+  {
+    "path": "FINAL_MAIN_DRIFT_REVIEW.md",
+    "bytes": 4979,
+    "sha256": "09eb79bd579dddf74439d85a49c8b6bc0cbfd5cd8e6404cc35733bc68a47b6e3"
+  },
+  {
+    "path": "macro_drift.json",
+    "bytes": 60310,
+    "sha256": "b0c429645e0adfbe81f0d1856fee697832bd631b43148f6760c154b14ac75ee2"
+  },
+  {
+    "path": "macro_drift.json.gz.b64",
+    "bytes": 8161,
+    "sha256": "b3cd5c842ba04e36d75c4abfa67c9cbc3f13685070d961df3d5d849a80d42481"
+  },
+  {
+    "path": "macro_merge_review.json",
+    "bytes": 27715,
+    "sha256": "12407836399efb02d55ed0df1f4841d014219bdf136fdf614182378ae7a96b20"
+  },
+  {
+    "path": "macro_merge_review.json.gz.b64",
+    "bytes": 6653,
+    "sha256": "cca10e5b768c69e1d0c7a4be6d7bd0eac51da0887bd82b0efb8d0f4784beb438"
+  },
+  {
+    "path": "macro_preserved_theme_graph.diff",
+    "bytes": 1918,
+    "sha256": "699093c50934e276f5fa3b5f3a1163b55c72fc89097f1322d9c260398e76fcd8"
+  },
+  {
+    "path": "mastermind_drift.json",
+    "bytes": 26600,
+    "sha256": "25f99c70430dd1ccb279119f9001c8d9d185ac6889bee800f345b557c917d1ac"
+  },
+  {
+    "path": "mastermind_drift.json.gz.b64",
+    "bytes": 3789,
+    "sha256": "6e80e610d810e59e75a5b530994e98ca3e3aa595b42b5f54e1392fef4a637835"
+  },
+  {
+    "path": "mastermind_merge_review.json",
+    "bytes": 12439,
+    "sha256": "ec1aa9747fc6c9ac6e8bf7cd5c4ecf66fb9da89e19218dc639b37c1944871a41"
+  },
+  {
+    "path": "mastermind_merge_review.json.gz.b64",
+    "bytes": 2857,
+    "sha256": "827d17e7ebe7b9874bb6e7e078ddb7adf4507af736b0e985acb18fcd70139456"
+  },
+  {
+    "path": "tool_receipts.raw.json",
+    "bytes": 24844,
+    "sha256": "3dd4ed55d17cba97129e5f0745b38ab5e2550b0c25c7be89e20298ad57ee804f"
+  }
+]

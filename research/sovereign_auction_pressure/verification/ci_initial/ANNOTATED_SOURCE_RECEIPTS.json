@@ -1,0 +1,62 @@
+[
+  {
+    "retrieved_at": "2026-10-08T23:55:04.769856+00:00",
+    "ref": "42476573407fcb882c65a9388f98ed038801fc50",
+    "path": "tests/test_sovereign_auction_renderer.cjs",
+    "sha256": "864008961197abac4eb7b1d37e14b86db8f9bda52913052e63e8542374fc82cf",
+    "bytes": 5870,
+    "returncode": 0,
+    "excerpts": [
+      [
+        1,
+        25,
+        "1: // Renderer unit test against the actual page script; not browser/e2e acceptance.\n2: const assert = require('node:assert/strict');\n3: const fs = require('node:fs');\n4: const vm = require('node:vm');\n5: const path = require('node:path');\n6: const root = path.resolve(__dirname, '..');\n7: const page = fs.readFileSync(path.join(root, 'app/static/market_view.html'), 'utf8');\n8: const script = [...page.matchAll(/<script>([\\s\\S]*?)<\\/script>/g)].map(x => x[1]).find(x => x.includes('function renderAuctions'));\n9: assert.ok(script, 'actual auction renderer present');\n10: let lang = 'en';\n11: const sandbox = { URL, document: { getElementById: () => ({}), documentElement: { getAttribute: () => lang } } };\n12: vm.createContext(sandbox);\n13: const prefix = script.slice(0, script.indexOf('  fetch(\"/api/market_view\"'));\n14: vm.runInContext(prefix + '\\nglobalThis.renderAuctions = renderAuctions; globalThis.renderAuctionRow = renderAuctionRow; globalThis.auctionDollars = auctionDollars;\\n})();', sandbox);\n15: const wrapper = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures/sovereign_auction_context/event_calendar.json'), 'utf8'));\n16: const original = wrapper.sovereign_auction_context;\n17: const context = { ...structuredClone(original), available: true };\n18: const html = sandbox.renderAuctions({ sovereign_auction_context: context });\n19: assert.ok(html.includes('Sovereign auctions — observed context'));\n20: assert.ok(html.includes('Freshness unassessed'));\n21: assert.ok(html.includes('Importance: Not scored'));\n22: assert.ok(html.includes('Results not observed'));\n23: assert.ok(html.includes('Observed at: 2026-10-08T22:12:22.414829+00:00'));\n24: for (const row of context.events) {\n25:   assert.ok(html.includes(row.episode_id));"
+      ]
+    ]
+  },
+  {
+    "retrieved_at": "2026-10-08T23:55:04.780619+00:00",
+    "ref": "42476573407fcb882c65a9388f98ed038801fc50",
+    "path": "research/sovereign_auction_context/presentation_final/preimages/test_sovereign_auction_renderer.cjs",
+    "sha256": "d2ef60d56f7b5301db79c667f529e38fd7fcfd7bad69d2213b3b14099635b97d",
+    "bytes": 4589,
+    "returncode": 0,
+    "excerpts": [
+      [
+        1,
+        12,
+        "1: // Renderer unit test against the actual page script; not browser/e2e acceptance.\n2: const assert = require('node:assert/strict');\n3: const fs = require('node:fs');\n4: const vm = require('node:vm');\n5: const path = require('node:path');\n6: const root = path.resolve(__dirname, '..');\n7: const page = fs.readFileSync(path.join(root, 'app/static/market_view.html'), 'utf8');\n8: const script = [...page.matchAll(/<script>([\\s\\S]*?)<\\/script>/g)].map(x => x[1]).find(x => x.includes('function renderAuctions'));\n9: assert.ok(script, 'actual auction renderer present');\n10: let lang = 'en';\n11: const sandbox = { URL, document: { getElementById: () => ({}), documentElement: { getAttribute: () => lang } } };\n12: vm.createContext(sandbox);"
+      ]
+    ]
+  },
+  {
+    "retrieved_at": "2026-10-08T23:55:04.790343+00:00",
+    "ref": "42476573407fcb882c65a9388f98ed038801fc50",
+    "path": "research/sovereign_auction_context/presentation_final/preimages/market_view.html",
+    "sha256": "b8d84a7313bdd7c9f4bbcc3ddfeadaaeddd85b9976ca143a64acaf5146c8a043",
+    "bytes": 31238,
+    "returncode": 0,
+    "excerpts": [
+      [
+        343,
+        368,
+        "343:     var n = Number(v);\n344:     if (!isFinite(n)) return esc(v);\n345:     return n.toFixed(digits == null ? 3 : digits);\n346:   }\n347: \n348:   function dirPill(d) {\n349:     var cls = (d === \"risk_off\" || d === \"risk_on\" || d === \"neutral\") ? d : \"none\";\n350:     return '<span class=\"pill ' + cls + '\">' + esc(d || \"—\") + \"</span>\";\n351:   }\n352: \n353:   function statusPill(rec) {\n354:     var stale = rec.freshness && rec.freshness.stale;\n355:     var present = !(rec.raw && (\n356:       rec.raw.artifact_present === false ||\n357:       (rec.raw.artifact_present == null && rec.raw.present === false)\n358:     ));\n359:     if (!present) return '<span class=\"pill none\">absent</span>';\n360:     var s = rec.status || \"advisory\";\n361:     var html = '<span class=\"pill ' + esc(s) + '\">' + esc(s) + \"</span>\";\n362:     if (stale) html += ' <span class=\"pill stale\">stale</span>';\n363:     return html;\n364:   }\n365: \n366:   function freshCell(rec) {\n367:     var f = rec.freshness || {};\n368:     if (f.asof == null) return '<span class=\"mv-fresh\">—</span>';"
+      ]
+    ]
+  },
+  {
+    "retrieved_at": "2026-10-08T23:55:04.799944+00:00",
+    "ref": "42476573407fcb882c65a9388f98ed038801fc50",
+    "path": "research/sovereign_auction_context/verification/mastermind_loopback_harness.py",
+    "sha256": "ac06f0f9b62c0639a140164cf0e441ef2a086a92635e0d9891c50a2f853d1f89",
+    "bytes": 16406,
+    "returncode": 0,
+    "excerpts": [
+      [
+        220,
+        290,
+        "220:             web._PROJECT_ROOT = folder\n221:             response = web.api_market_view()\n222:             if response.status_code != 200:\n223:                 raise RuntimeError(f\"Actual API preflight failed for {name}: HTTP {response.status_code}\")\n224:             body = json.loads(response.body)\n225:             sibling = body.pop(\"sovereign_auction_context\", None)\n226:             if body != base or sibling != case[\"projected\"] or stored.read_bytes() != base_bytes:\n227:                 raise RuntimeError(f\"Actual API projection or stored-byte invariance failed for {name}\")\n228:             manifest[\"cases\"][name][\"actual_api_response_sha256\"] = hashlib.sha256(response.body).hexdigest()\n229:         web._PROJECT_ROOT = original_root\n230: \n231:         @application.middleware(\"http\")\n232:         async def fixture_binding(request, call_next):\n233:             if request.url.path != \"/api/market_view\":\n234:                 return await call_next(request)\n235:             case = request.headers.get(\"X-Sovereign-UI-Case\", \"observed\")\n236:             if case not in scenario_roots:\n237:                 return JSONResponse({\"error\": \"unknown_harness_case\"}, status_code=400)\n238:             async with gate:\n239:                 web._PROJECT_ROOT = scenario_roots[case]\n240:                 try:\n241:                     return await call_next(request)\n242:                 finally:\n243:                     web._PROJECT_ROOT = original_root\n244: \n245:         @application.get(\"/__harness__/manifest\")\n246:         def harness_manifest():\n247:             return manifest\n248: \n249:         @application.get(\"/{asset_path:path}\")\n250:         def contained_static_asset(asset_path: str):\n251:             if asset_path == \"favicon.ico\":\n252:                 return Response(status_code=204)\n253:             static_root = (root / \"app/static\").resolve()\n254:             path = (static_root / asset_path).resolve()\n255:             if not path.is_relative_to(static_root) or not path.is_file() or path.suffix.lower() not in {\".css\", \".js\", \".woff2\", \".woff\", \".ttf\", \".otf\", \".svg\", \".png\", \".ico\", \".webp\"}:\n256:                 raise HTTPException(status_code=404)\n257:             return FileResponse(path)\n258: \n259:         listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n260:         listener.bind((\"127.0.0.1\", 0))\n261:         listener.listen(128)\n262:         port = listener.getsockname()[1]\n263:         manifest.update({\"status\": \"ACTUAL_HANDLER_PREFLIGHT_PASSED\", \"origin\": f\"http://127.0.0.1:{port}\",\n264:                          \"served_routes\": sorted(wanted), \"app_lifespan\": \"off\", \"external_python_connections\": \"denied\"})\n265:         (out / \"harness_manifest.json\").write_text(json.dumps(manifest, indent=2) + \"\\n\")\n266:         print(\"HARNESS_READY \" + json.dumps({\"origin\": manifest[\"origin\"], \"manifest\": str(out / \"harness_manifest.json\")}), flush=True)\n267:         try:\n268:             config = uvicorn.Config(application, host=\"127.0.0.1\", port=port, lifespan=\"off\", access_log=False, log_level=\"warning\")\n269:             uvicorn.Server(config).run(sockets=[listener])\n270:         finally:\n271:             web._PROJECT_ROOT = original_root\n272:             reader.read_context = original_reader\n273:             listener.close()\n274: \n275: \n276: def main():\n277:     parser = argparse.ArgumentParser(description=__doc__)\n278:     parser.add_argument(\"--mastermind-root\", required=True)\n279:     parser.add_argument(\"--macro-root\", required=True)\n280:     parser.add_argument(\"--capture-data-root\", required=True)\n281:     parser.add_argument(\"--fixture-feed\")\n282:     parser.add_argument(\"--cutoff\", default=\"2026-10-08T23:00:00Z\")\n283:     parser.add_argument(\"--out-dir\", required=True)\n284:     parser.add_argument(\"--prepare-only\", action=\"store_true\", help=\"Validate only source fixtures; does not start HTTP or constitute browser proof\")\n285:     args = parser.parse_args()\n286:     out = Path(args.out_dir).resolve()\n287:     if any(out.is_relative_to(Path(source).resolve()) for source in (args.mastermind_root, args.macro_root)):\n288:         raise RuntimeError(\"Harness output must be outside source repositories\")\n289:     deny_nonloopback_network()\n290:     prepared = prepare(args)"
+      ]
+    ]
+  }
+]

@@ -1,0 +1,35 @@
+  [OK] .github/workflows/daily.yml / collect (10 declared steps)
+  [OK] .github/workflows/daily.yml / capital_structure (7 declared steps)
+  [OK] .github/workflows/daily.yml / collect_tail (20 declared steps)
+  [OK] .github/workflows/daily.yml / engine (230 declared steps)
+  [OK] .github/workflows/daily.yml / factor_panel (3 declared steps)
+  [OK] .github/workflows/daily.yml / factor_series (1 declared steps)
+  [OK] .github/workflows/daily.yml / us_prophet_ledgers (6 declared steps)
+  [OK] .github/workflows/daily.yml / stock_briefs (3 declared steps)
+  [OK] .github/workflows/daily.yml / tech_lab_offrender (2 declared steps)
+  [OK] .github/workflows/daily.yml / standout_audit_us (10 declared steps)
+  [OK] .github/workflows/daily.yml / us_scan_tier (3 declared steps)
+  [OK] .github/workflows/daily.yml / oracle_offrender (8 declared steps)
+  [OK] .github/workflows/daily.yml / cortex (10 declared steps)
+  [OK] .github/workflows/daily.yml / active_build_map (1 declared steps)
+  [OK] .github/workflows/asia-close.yml / asia (50 declared steps)
+  [OK] .github/workflows/engine-render.yml / engine-render (74 declared steps)
+  [OK] .github/workflows/render.yml / render (80 declared steps)
+  [OK] .github/workflows/intraday.yml / bars (1 declared steps)
+  [OK] .github/workflows/intraday-fastpath.yml / fastpath (9 declared steps)
+  [OK] .github/workflows/weekly.yml / weekly-report (41 declared steps)
+  [OK] .github/workflows/sentinel.yml / flash-crash (5 declared steps)
+  [OK] .github/workflows/commodity-sentinel.yml / shock (5 declared steps)
+  [OK] .github/workflows/whitehouse-sentinel.yml / monitor (4 declared steps)
+  [OK] .github/workflows/government-revenue-live.yml / refresh (3 declared steps)
+  [OK] .github/workflows/filing-forensics-sec.yml / acquire_project_sync (4 declared steps)
+  [OK] .github/workflows/filing-forensics-broad-sec.yml / poll_broad_sec (1 declared steps)
+  [OK] .github/workflows/close-pass.yml / publish (2 declared steps)
+
+SUSPECT drift (2) — undocumented, needs owner review:
+  [render, engine-render] cl_misc order differs from daily cl_misc: render has sectorcyc→countrycyc→cycle→ measurement→markets vs daily cycle→sect
+    note: UNDOCUMENTED drift inherited at W5a adoption — needs owner review (residual cosmetic order difference only; the build_markets half was resolved by #2728). Either document why the two lanes sequence cy
+  [engine-render] cl_misc omits build_sector_cycles, build_country_cycles, build_cycle, and build_markets vs both daily.yml and render.yml
+    note: UNDOCUMENTED drift inherited at W5a adoption — needs owner review. engine-render.yml cl_misc (lines 241-244) contains only: build_seasonality, build_reports, build_policy_watch, build_index_changes. T
+
+DAG conformance OK — 27 lane(s) checked, 2 suspect drift(s) visible above.

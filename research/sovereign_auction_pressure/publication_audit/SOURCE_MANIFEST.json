@@ -1,0 +1,217 @@
+[
+  {
+    "repository": "mastermindx-market-intelligence/macro",
+    "ref": "8a35d8b62494a84b2448182aaa561edea83fe54f",
+    "path": "app/deploy/Caddyfile",
+    "git_blob_sha": "aad04daf807a056a9ce8f2a0012fdcce8938f9bc",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/8a35d8b62494a84b2448182aaa561edea83fe54f/app/deploy/Caddyfile",
+    "local": "sources/macro/app/deploy/Caddyfile",
+    "sha256": "9b83deef37608b21326a83b5fe208b34b2b398429fab60034b7b220d1e9f1824",
+    "bytes": 73247
+  },
+  {
+    "repository": "mastermindx-market-intelligence/mastermind-terminal",
+    "ref": "54f97dda68a76a55ba0813afc9433ef54aaf401c",
+    "path": "terminal/lib/entitlement.ts",
+    "git_blob_sha": "98177b5da5c49d9678b6816242465d70fc9280f6",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/54f97dda68a76a55ba0813afc9433ef54aaf401c/terminal/lib/entitlement.ts",
+    "local": "sources/mastermind-terminal/terminal/lib/entitlement.ts",
+    "sha256": "dddfbaba2c2d76fff7b4b35ed22917ca034b4ad86f12222cf415d5494155b393",
+    "bytes": 8208
+  },
+  {
+    "repository": "mastermindx-market-intelligence/mastermind-terminal",
+    "ref": "54f97dda68a76a55ba0813afc9433ef54aaf401c",
+    "path": "terminal/lib/supabase/server.ts",
+    "git_blob_sha": "a97d3b0bf7afa6c6c1817eae931ffc0ec1ec0067",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/54f97dda68a76a55ba0813afc9433ef54aaf401c/terminal/lib/supabase/server.ts",
+    "local": "sources/mastermind-terminal/terminal/lib/supabase/server.ts",
+    "sha256": "ca953105c2e3d7b516bb827897c1325e45272b6679f8da1b78a241c511fd050c",
+    "bytes": 901
+  },
+  {
+    "repository": "mastermindx-market-intelligence/macro",
+    "ref": "8a35d8b62494a84b2448182aaa561edea83fe54f",
+    "path": "config/site_access.yml",
+    "git_blob_sha": "f7ea1da5d7ff0293db4157088ddcf7506e5ee3ca",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/8a35d8b62494a84b2448182aaa561edea83fe54f/config/site_access.yml",
+    "local": "sources/macro/config/site_access.yml",
+    "sha256": "e379ad9acf30a844fb69a6ada75490cf01bcf782d95a9a357bf60b3930808621",
+    "bytes": 42288
+  },
+  {
+    "repository": "mastermindx-market-intelligence/macro",
+    "ref": "8a35d8b62494a84b2448182aaa561edea83fe54f",
+    "path": "app/regwall.py",
+    "git_blob_sha": "f5d28050873019d1b4c20fa92ae85a796ef88a55",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/8a35d8b62494a84b2448182aaa561edea83fe54f/app/regwall.py",
+    "local": "sources/macro/app/regwall.py",
+    "sha256": "dd8ae937fc77e91e642458ff8cc198a1260666d082b73883660a26bdfb5f412d",
+    "bytes": 10864
+  },
+  {
+    "repository": "mastermindx-market-intelligence/macro",
+    "ref": "8a35d8b62494a84b2448182aaa561edea83fe54f",
+    "path": "app/paywall.py",
+    "git_blob_sha": "7e1c6861ebb7d27924865b2b8d157e6a9356405d",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/8a35d8b62494a84b2448182aaa561edea83fe54f/app/paywall.py",
+    "local": "sources/macro/app/paywall.py",
+    "sha256": "05ab6867f80888bfa4f854aefed352440d6d539913cf346e985b3d216a2c2944",
+    "bytes": 30025
+  },
+  {
+    "repository": "mastermindx-market-intelligence/mastermind-terminal",
+    "ref": "54f97dda68a76a55ba0813afc9433ef54aaf401c",
+    "path": "terminal/app/api/billing/gateway.ts",
+    "git_blob_sha": "f5a0dc6b957cc60ee95b1713e3a0a19a6ec6e249",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/54f97dda68a76a55ba0813afc9433ef54aaf401c/terminal/app/api/billing/gateway.ts",
+    "local": "sources/mastermind-terminal/terminal/app/api/billing/gateway.ts",
+    "sha256": "00ccbefec46b96bec0ea8994da44d4b38c2c3c7bc803f5d0a8adf31dea80c029",
+    "bytes": 4719
+  },
+  {
+    "repository": "mastermindx-market-intelligence/mastermind-terminal",
+    "ref": "54f97dda68a76a55ba0813afc9433ef54aaf401c",
+    "path": "terminal/lib/supabase/middleware.ts",
+    "git_blob_sha": "d8a196b4e8d106082d26a8e7c448a602fbb7c09f",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/54f97dda68a76a55ba0813afc9433ef54aaf401c/terminal/lib/supabase/middleware.ts",
+    "local": "sources/mastermind-terminal/terminal/lib/supabase/middleware.ts",
+    "sha256": "2d1b50c645bc1cb37408b7fd2ded917af7554ba94ac1a56125eebc1dcb7bf78a",
+    "bytes": 5390
+  },
+  {
+    "repository": "mastermindx-market-intelligence/mastermind-terminal",
+    "ref": "54f97dda68a76a55ba0813afc9433ef54aaf401c",
+    "path": "terminal/proxy.ts",
+    "git_blob_sha": "4bf3379efced3de361da3794411b29d36dc41a43",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/54f97dda68a76a55ba0813afc9433ef54aaf401c/terminal/proxy.ts",
+    "local": "sources/mastermind-terminal/terminal/proxy.ts",
+    "sha256": "41e6b5a4d1c6a744f90ea89a2efd65464b9562e297b9cd406abfefe6210f923a",
+    "bytes": 490
+  },
+  {
+    "repository": "mastermindx-market-intelligence/macro",
+    "ref": "8a35d8b62494a84b2448182aaa561edea83fe54f",
+    "path": "scripts/build_feeds.py",
+    "git_blob_sha": "f5d086666914849fe76549f30c3e50145b316851",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/8a35d8b62494a84b2448182aaa561edea83fe54f/scripts/build_feeds.py",
+    "local": "sources/macro/scripts/build_feeds.py",
+    "extent": "full file",
+    "saved_sha256": "ba462cfb841e896185b586494be4220ca3f8c8b8188cc682ea32f23cf15ccafd",
+    "saved_bytes": 10401,
+    "sha256": "ba462cfb841e896185b586494be4220ca3f8c8b8188cc682ea32f23cf15ccafd",
+    "bytes": 10401
+  },
+  {
+    "repository": "mastermindx-market-intelligence/macro",
+    "ref": "8a35d8b62494a84b2448182aaa561edea83fe54f",
+    "path": "app/main.py",
+    "git_blob_sha": "9615d25291128209726803f0e74a4052983736d9",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/8a35d8b62494a84b2448182aaa561edea83fe54f/app/main.py",
+    "local": "excerpts/macro/app/main.py.json",
+    "extent": "selected exact source ranges",
+    "saved_sha256": "47594e52541c8e31925b05270f78f2ec34422fa6d181c761c09c369b1c7d7401",
+    "saved_bytes": 5005
+  },
+  {
+    "repository": "mastermindx-market-intelligence/macro",
+    "ref": "8a35d8b62494a84b2448182aaa561edea83fe54f",
+    "path": "app/deploy/update.sh",
+    "git_blob_sha": "9a9e1543f14bb06b0bd203bd2b4e195426cf69ed",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/8a35d8b62494a84b2448182aaa561edea83fe54f/app/deploy/update.sh",
+    "local": "excerpts/macro/app/deploy/update.sh.json",
+    "extent": "selected exact source ranges",
+    "saved_sha256": "a0dabe41dd09ad600007524a4b1dbf1b00e823b03cd706874d7f5736de66bb69",
+    "saved_bytes": 1854
+  },
+  {
+    "repository": "mastermindx-market-intelligence/macro",
+    "ref": "8a35d8b62494a84b2448182aaa561edea83fe54f",
+    "path": "scripts/publish_r2.py",
+    "git_blob_sha": "240b762a661db6fe1cb087049469acf1cfa9a5f4",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/8a35d8b62494a84b2448182aaa561edea83fe54f/scripts/publish_r2.py",
+    "local": "excerpts/macro/scripts/publish_r2.py.json",
+    "extent": "selected exact source ranges",
+    "saved_sha256": "fe05fc19a30814c948c1a98a26aef0b86384d083e2abcba74b0c04fa39d5956a",
+    "saved_bytes": 6709
+  },
+  {
+    "repository": "mastermindx-market-intelligence/macro",
+    "ref": "8a35d8b62494a84b2448182aaa561edea83fe54f",
+    "path": ".github/workflows/daily.yml",
+    "git_blob_sha": "8f00a356faffc50f11722115646322ca6f466b17",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/8a35d8b62494a84b2448182aaa561edea83fe54f/.github/workflows/daily.yml",
+    "local": "excerpts/macro/.github/workflows/daily.yml.json",
+    "extent": "selected exact source ranges",
+    "saved_sha256": "a49be6a509e7330b4e846a6e0f674a96e999dd7bbe9600347345feb0105249fc",
+    "saved_bytes": 2860
+  },
+  {
+    "repository": "mastermindx-market-intelligence/macro",
+    "ref": "8a35d8b62494a84b2448182aaa561edea83fe54f",
+    "path": ".github/workflows/closing-bell.yml",
+    "git_blob_sha": "aeeb5d8c8b069462b52e187802063a4b57b9df02",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/8a35d8b62494a84b2448182aaa561edea83fe54f/.github/workflows/closing-bell.yml",
+    "local": "excerpts/macro/.github/workflows/closing-bell.yml.json",
+    "extent": "selected exact source ranges",
+    "saved_sha256": "1234420f48f7fe3389e79e07e759496ee4b091112532fba53e85fbb2aef22984",
+    "saved_bytes": 9103
+  },
+  {
+    "repository": "mastermindx-market-intelligence/macro",
+    "ref": "8a35d8b62494a84b2448182aaa561edea83fe54f",
+    "path": "scripts/ci/daily_engine_commit_outputs.sh",
+    "git_blob_sha": "52cef03e9eddbeb359d990b440259a1e711e7c31",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/8a35d8b62494a84b2448182aaa561edea83fe54f/scripts/ci/daily_engine_commit_outputs.sh",
+    "local": "excerpts/macro/scripts/ci/daily_engine_commit_outputs.sh.json",
+    "extent": "selected exact source ranges",
+    "saved_sha256": "e3691b26ed895c6fbbf8590d462d0bc5962b6f46d53d9a58e0664e5439a22295",
+    "saved_bytes": 6276
+  },
+  {
+    "repository": "mastermindx-market-intelligence/macro",
+    "ref": "8a35d8b62494a84b2448182aaa561edea83fe54f",
+    "path": ".gitignore",
+    "git_blob_sha": "b1272ff5216d8f08bfccbf2904c8ad65bafaf825",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/8a35d8b62494a84b2448182aaa561edea83fe54f/.gitignore",
+    "local": "excerpts/macro/.gitignore.json",
+    "extent": "selected exact source ranges",
+    "saved_sha256": "047217a00970a800542e31539de1eaa334a05445aef0660582ccbdb37b840ce4",
+    "saved_bytes": 1549
+  },
+  {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "ref": "c7e47c859eb2925c5626931fd511800773ba09ac",
+    "path": "data_layer/macro_refresh.py",
+    "git_blob_sha": "3e50fc3445ae97bc85dbe9499aa7ce73a648bc20",
+    "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/c7e47c859eb2925c5626931fd511800773ba09ac/data_layer/macro_refresh.py",
+    "local": "excerpts/Mastermind/data_layer/macro_refresh.py.json",
+    "extent": "selected exact source ranges",
+    "saved_sha256": "a00511d637770e98588d9ec1604cfbc23d5f352c6e64f69701e8974f7f6cc287",
+    "saved_bytes": 11415
+  },
+  {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "ref": "c7e47c859eb2925c5626931fd511800773ba09ac",
+    "path": ".gitmodules",
+    "git_blob_sha": "3ba5eadd76f83e06060cae8f9a68df6ce1a6f8c1",
+    "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/c7e47c859eb2925c5626931fd511800773ba09ac/.gitmodules",
+    "local": "sources/Mastermind/.gitmodules",
+    "extent": "full file",
+    "saved_sha256": "c13ff925a2548d5c1daaa68fb9900c60fd6d6746288268a1c9b36c65ead142f3",
+    "saved_bytes": 774,
+    "sha256": "c13ff925a2548d5c1daaa68fb9900c60fd6d6746288268a1c9b36c65ead142f3",
+    "bytes": 774
+  },
+  {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "ref": "c7e47c859eb2925c5626931fd511800773ba09ac",
+    "path": "config/contracts.yml",
+    "git_blob_sha": "1c03d4bbffdd0256cfbe060787934440c26344d4",
+    "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/c7e47c859eb2925c5626931fd511800773ba09ac/config/contracts.yml",
+    "local": "excerpts/Mastermind/config/contracts.yml.json",
+    "extent": "selected exact source ranges",
+    "saved_sha256": "f5a4c85d51875df8e4b4b872c16daa3ba77b40e2fecc6a1f4e1f91440cb3d9c1",
+    "saved_bytes": 976
+  }
+]

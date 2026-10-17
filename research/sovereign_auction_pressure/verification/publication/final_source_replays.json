@@ -1,0 +1,38 @@
+{
+  "verified_at": "2026-10-09T00:58:24.679869+00:00",
+  "runs": [
+    {
+      "command": [
+        "python3",
+        "research/sovereign_auction_pressure/verification/verify_publication_bridge.py",
+        "--mastermind-root",
+        "/Volumes/Mastermind/agent-workspaces/web/sovereign-auction-context-20261008-sol-mm-001",
+        "--source-commit",
+        "1eb1d44a0a54aad95d97bfb3128246803852c7a7",
+        "--output",
+        "/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/verification/publication/bridge_receipt_final_sources.json"
+      ],
+      "exit_code": 0,
+      "log": "research/sovereign_auction_pressure/verification/publication/final-source-replay-1.log",
+      "sha256": "667e8852b0b85d435f7a9c71b7da04949d739cbade2a89586e1e8ac4d1c25e3e"
+    },
+    {
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "research/sovereign_auction_pressure/verification/verify_terminal_artifact.mjs",
+        "--macro-root",
+        "/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001",
+        "--terminal-root",
+        "/Volumes/Mastermind/agent-workspaces/terminal/web/sovereign-auction-context-20261008-sol-terminal-001",
+        "--source-commit",
+        "1eb1d44a0a54aad95d97bfb3128246803852c7a7",
+        "--output",
+        "/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/verification/publication/terminal_actual_artifact_final_sources.json"
+      ],
+      "exit_code": 0,
+      "log": "research/sovereign_auction_pressure/verification/publication/final-source-replay-2.log",
+      "sha256": "c0994f673bcdce1285b6b2530dcbf4b7f325d7b110a6cee89813eda32698c1e8"
+    }
+  ]
+}

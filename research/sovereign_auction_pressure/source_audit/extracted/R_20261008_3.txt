@@ -1,0 +1,54 @@
+                 For Immediate Release                                                                        CONTACT: Treasury Auctions
+                 October 08, 2026                                                                                      202-504-3550
+
+                                                        TREASURY AUCTION RESULTS
+                            Term and Type of Security                                                         29-Year 10-Month Bond
+                            CUSIP Number                                                                                 912810UW6
+                            Series                                                                              Bonds of August 2056
+
+                            Interest Rate                                                                                          5-1/8%
+                            High Yield 1                                                                                           5.618%
+                            Allotted at High                                                                                       26.77%
+                            Price                                                                                               92.889131
+                            Accrued Interest per $1,000                                                                          $8.49524
+
+                            Median Yield 2                                                                                            5.567%
+                            Low Yield 3                                                                                               5.000%
+
+                            Issue Date                                                                                 October 15, 2026
+                            Maturity Date                                                                              August 15, 2056
+                            Original Issue Date                                                                        August 17, 2026
+                            Dated Date                                                                                 August 15, 2026
+
+                                                                                         Tendered                                         Accepted
+                 Competitive                                                          $55,852,944,000                                  $21,939,603,600
+                 Noncompetitive                                                           $60,409,100                                      $60,409,100
+                 FIMA (Noncompetitive)                                                             $0                                               $0
+                 Subtotal 4                                                           $55,913,353,100                                 $22,000,012,7005
+
+                 SOMA                                                                     $522,522,600                                   $522,522,600
+
+                 Total                                                                $56,435,875,700                                 $22,522,535,300
+
+                                                                                         Tendered                                        Accepted
+                 Primary Dealer 6                                                     $29,432,500,000                                  $1,490,500,000
+                 Direct Bidder 6                                                       $7,608,900,000                                  $4,583,044,100
+                 Indirect Bidder 6                                                    $18,811,544,000                                 $15,866,059,500
+                 Total Competitive                                                    $55,852,944,000                                 $21,939,603,600
+
+
+
+
+1
+  All tenders at lower yields were accepted in full.
+2
+  50% of the amount of accepted competitive tenders was tendered at or below that yield.
+3
+  5% of the amount of accepted competitive tenders was tendered at or below that yield.
+4
+  Bid-to-Cover Ratio: $55,913,353,100/$22,000,012,700 = 2.54
+5
+  Awards to Treasury Retail = $18,955,000.
+6
+  For descriptions of these terms, see the Auction FAQs available at https://www.treasurydirect.gov/help-center/faqs/auction-faqs/.
+

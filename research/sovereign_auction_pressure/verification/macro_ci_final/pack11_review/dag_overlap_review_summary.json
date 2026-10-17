@@ -1,0 +1,9 @@
+{
+  "inspected_count": 8,
+  "unresolved_patch_errors": [],
+  "build_feeds_patch_mentions": [],
+  "template_helper_patch_mentions": [
+    6842
+  ],
+  "review_file": "DAG_PREEDIT_AND_POSTDIFF_REVIEW.md"
+}

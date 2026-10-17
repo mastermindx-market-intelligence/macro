@@ -1,0 +1,9 @@
+{
+  "repository": "mastermindx-market-intelligence/macro",
+  "commit": "d2eec4732abee359ebb578b245fa7359b3c01a7d",
+  "path": "collectors/treasury.py",
+  "git_blob_sha": "a79b9d373baef7c94d9ce2e096b59a211825c7d3",
+  "url": "https://github.com/mastermindx-market-intelligence/macro/blob/d2eec4732abee359ebb578b245fa7359b3c01a7d/collectors/treasury.py",
+  "local_copy": "audited_macro_treasury_d2eec.py",
+  "inspection": "direct read via GitHub connector; not executed; collector unchanged"
+}

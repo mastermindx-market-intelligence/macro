@@ -1,0 +1,15 @@
+diff --git a/scripts/capture_treasury_auction_observations.py b/scripts/capture_treasury_auction_observations.py
+index 9b069ea4822b..a524323ea70b 100644
+--- a/scripts/capture_treasury_auction_observations.py
++++ b/scripts/capture_treasury_auction_observations.py
+@@ -18,8 +18,8 @@ from urllib.parse import urlsplit
+ from urllib.request import HTTPRedirectHandler, Request, build_opener
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+-if str(ROOT) not in sys.path:
+-    sys.path.insert(0, str(ROOT))
++# Promote this checkout even when its root already appears after ambient packages.
++sys.path.insert(0, str(ROOT))
+ 
+ from engine import treasury_auction_lifecycle as lifecycle
+ 

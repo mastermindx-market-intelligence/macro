@@ -1,0 +1,116 @@
+FOR IMMEDIATE RELEASE:                                                         CONTACT: Treasury Auctions
+October 6, 2026                                                                         202-504-3550
+
+
+
+    To support implementation of the Debt Financing System, TreasuryDirect auction pages are being
+reorganized, and many URLs will undergo minor changes. Application Programing Interface (API), xml,
+and pdf file URLs will remain unchanged. A high-level overview of the revised structure appears below,
+while Table 1 provides a detailed comparison of the current and new structures. These changes will
+tentatively take effect on Monday, October 19, 2026.
+
+
+   •   Auction Announcements
+        o Recent Auction Announcements
+        o Treasury CUSIP Release
+        o Tentative Auction Schedule
+        o New Cash Paydown
+        o Upcoming Auctions table - The Results tab on the Upcoming table was removed
+   •   Auction Results
+        o Today’s Competitive Results
+        o Auction Results by Security Type table
+   •   Previous Announcements, Results, & Historical Data
+        o Announcements and Results by Auction Year table
+        o Record Setting
+   •   Auction Query
+        o CUSIP Hyperlink - Interest Payment Dates & STRIPS (New Page)
+   •   TIPS/CPI
+   •   FRN Indexes
+   •   Buyback Announcements & Results
+                                                  Table 1
+
+Current Structure                                     Current URL
+Auction Query                                         treasurydirect.gov/auctions/auction-query/
+Upcoming Auctions                                     treasurydirect.gov/auctions/upcoming/
+Announcements, Data & Results                         treasurydirect.gov/auctions/announcements-data-results/
+                                                      treasurydirect.gov/auctions/announcements-data-
+      Announcement & Results Press Releases
+                                                      results/announcement-results-press-releases/
+                                                      treasurydirect.gov/auctions/announcements-data-
+      Treasury Marketable Securities Offering
+                                                      results/announcement-results-press-releases/treasury-
+      Announcement Press Releases
+                                                      marketable/
+                                                      treasurydirect.gov/auctions/announcements-data-
+      Today’s Auction Results
+                                                      results/announcement-results-press-releases/auction-results/
+                                                      treasurydirect.gov/auctions/announcements-data-
+      Calculated New Cash Pay Down Amounts            results/announcement-results-press-releases/cash-pay-
+                                                      down/
+                                                      treasurydirect.gov/auctions/announcements-data-
+      Previous Announcements and Results              results/announcement-results-press-releases/previous-
+                                                      announcements-and-results/
+                                                      treasurydirect.gov/auctions/announcements-data-
+      Treasury Notes & Bonds Historical               results/announcement-results-press-releases/previous-
+      Information                                     announcements-and-results/treasury-notes-bonds-historical-
+                                                      information/
+                                                      treasurydirect.gov/auctions/announcements-data-
+  Additional Statistics Historical
+                                                      results/additional-statistics-historical/
+                                                      treasurydirect.gov/auctions/announcements-data-
+  Useful Data for Research
+                                                      results/useful-data-for-research/
+                                                      treasurydirect.gov/auctions/announcements-data-
+  TIPS/CPI Data
+                                                      results/tips-cpi-data/
+                                                      treasurydirect.gov/auctions/announcements-data-
+      TIPS/CPI Query Results
+                                                      results/tips-cpi-data/tips-cpi-detail/?cusip=91282CPU9
+      Historical Reference CPI Numbers and Daily      treasurydirect.gov/auctions/announcements-data-
+      Index Ratios                                    results/tips-cpi-data/tips-cpi-history/
+                                                      treasurydirect.gov/auctions/announcements-data-results/frn-
+  FRN Daily Indexes
+                                                      daily/
+                                                      treasurydirect.gov/auctions/announcements-data-results/frn-
+      FRN Daily Indexes Query Results
+                                                      daily/frn-daily-detail/?cusip=91282CPX3
+                                                      treasurydirect.gov/auctions/announcements-data-
+Buyback Announcements & Results
+                                                      results/buy-backs/
+New Structure                                         New URL
+Auction Announcements                                 treasurydirect.gov/auctions/auction-announcements/
+                                                      treasurydirect.gov/auctions/auction-announcements/cash-
+    Calculated New Cash Pay Down Amounts
+                                                      pay-down/
+Auction Results                                       treasurydirect.gov/auctions/auction-results/
+Previous Announcements, Results, & Historical         treasurydirect.gov/auctions/auction-previous-
+Data                                                  announcements-results/
+                                                      treasurydirect.gov/auctions/auction-previous-
+    Press Releases with Additional Results Data
+                                                      announcements-results/additional-results-press-releases/
+                                                      treasurydirect.gov/auctions/auction-previous-
+    Treasury Notes & Bonds 1975 - 1979
+                                                      announcements-results/notes-bonds-historical/
+                                                      treasurydirect.gov/auctions/previous-announcements-
+                                                      results/record-setting-auction-data/
+    Record Setting Auction Data
+                                                      Redirects to: https://fiscaldata.treasury.gov/datasets/record-
+                                                      setting-auction-data/
+                                                      treasurydirect.gov/auctions/auction-previous-
+    Useful Data for Research
+                                                      announcements-results/useful-data-for-research/
+Auction Query                                    treasurydirect.gov/auctions/auction-query/
+                                                 treasurydirect.gov/auctions/auction-query/interest-payment-
+    Interest Payment Dates
+                                                 dates/?cusip=
+TIPS/CPI Data                                    treasurydirect.gov/auctions/tips-cpi-data/
+    TIPS/CPI Query Results                       treasurydirect.gov/auctions/tips-cpi-data/tips-cpi-detail/
+    Historical Reference CPI Numbers and Daily
+                                                 treasurydirect.gov/auctions/tips-cpi-data/tips-cpi-history/
+    Index Ratios
+FRN Daily Indexes                                treasurydirect.gov/auctions/frn-daily/
+
+    FRN Daily Indexes Query Results              treasurydirect.gov/auctions/frn-daily/frn-daily-detail/
+
+Buyback Announcements & Results                  treasurydirect.gov/auctions/buy-backs/
+
