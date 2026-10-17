@@ -1,0 +1,33 @@
+{
+  "absent_not_zero": 7,
+  "bar_close_times_volume_proxy": "100.03",
+  "candidate_close_price": "100.03",
+  "candidate_share_volume": "1",
+  "candidate_slots": 1,
+  "candidate_trade_gross_usd": "100.025",
+  "customer_publishable": false,
+  "expected_slots": 8,
+  "input_class": "SYNTHETIC_FIXTURE",
+  "market_pilot_admitted": false,
+  "matched_print_cells": 1,
+  "observed_candidate_cells": 1,
+  "only_withheld_cells": 0,
+  "owner_pit_identity_verified": false,
+  "printed_trade_gross_differs_from_bar_close_proxy": true,
+  "registered_symbols": [
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "SPY"
+  ],
+  "schema": "factor_atlas.session2.trade_print_minutes_synthetic.v1",
+  "selected_prints": 2,
+  "source_authenticated": false,
+  "source_restricted_to_fake_prints": true,
+  "withheld_only_case": {
+    "matched_print_cells": 0,
+    "observed_source_print_cells": 1,
+    "only_withheld_cells": 1,
+    "unknown_share_volume": true
+  }
+}

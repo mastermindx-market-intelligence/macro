@@ -1,0 +1,55 @@
+{
+  "killed": 5,
+  "mutations": [
+    {
+      "exit_code": 1,
+      "killed": true,
+      "log_sha256": "fbc20a97dc96a990ddb41cbfb4c2ab4b370645f04eec8d84bca6dd74cc22bc6e",
+      "mutation": "missing_cells_called_complete",
+      "new": "complete=True",
+      "old": "complete=observed==expected",
+      "test": "test_window_pressure.py::test_missing_minute_retains_partial_dollars_but_withholds_full_window_and_baseline"
+    },
+    {
+      "exit_code": 1,
+      "killed": true,
+      "log_sha256": "bdc01ef948151f3632f5a520f186e40c7f5945c79825df4151088220d2c16295",
+      "mutation": "partial_window_enters_baseline",
+      "new": "if eligible else None",
+      "old": "if complete and eligible else None",
+      "test": "test_window_pressure.py::test_missing_minute_retains_partial_dollars_but_withholds_full_window_and_baseline"
+    },
+    {
+      "exit_code": 1,
+      "killed": true,
+      "log_sha256": "8f2f6ce31b6c2c136d89b37d6608fe1fe5d9c0be6d07bb84a9d1d933f53d47d5",
+      "mutation": "overlap_hidden",
+      "new": "p.gross_usd*0",
+      "old": "p.gross_usd*(len(membership_of[sid])-1)",
+      "test": "test_window_pressure.py::test_overlap_union_counted_once_per_security_minute"
+    },
+    {
+      "exit_code": 1,
+      "killed": true,
+      "log_sha256": "65d0d8d29d14b652ed106ae0b9e38ae9bf008bb3752ed77705a5b8280ff89e3c",
+      "mutation": "roster_members_not_bound",
+      "new": "'members':()",
+      "old": "'members':ids",
+      "test": "test_window_pressure.py::test_actual_roster_not_just_version_string_enters_reference_identity"
+    },
+    {
+      "exit_code": 1,
+      "killed": true,
+      "log_sha256": "829c35a9d4b7a10ef2bc328df6850d3c036c51e1ad42db0a6aa6e639280fcd9b",
+      "mutation": "build_cutoff_replaces_source_clock",
+      "new": "known=cutoff_utc_s if eligible else None",
+      "old": "known=max(p.bar.available_at_utc_s for p in history) if eligible else None",
+      "test": "test_window_pipeline.py::test_later_rebuild_clock_does_not_replace_source_availability"
+    }
+  ],
+  "original_pressure_unchanged": true,
+  "production_effects": false,
+  "schema": "factor_atlas.window_mutations.v1",
+  "scope": "NEW_WINDOW_REDUCER_ONLY",
+  "source_sha256": "b9da3360090d5765fdc2802ec9f609144c73f096d9ccc16764b23f33aa0160b5"
+}
