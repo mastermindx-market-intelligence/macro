@@ -1,0 +1,75 @@
+{
+  "schema": "research.cross_session_epoch2_source_day_open.v1",
+  "generated_at": "2026-10-06T04:41:17Z",
+  "operation": "geopolitical-relief-event-study-20260924-sol-001",
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 8012,
+    "branch": "sol/geopolitical-relief-event-study-20260924",
+    "parent_head": "2adde3f5fd6755f0790108e280a2e3b48bafe8b9"
+  },
+  "epoch2_activation": {
+    "commit": "41c08c218efa8261d4750dd923c5b3d3c2ff3a79",
+    "commit_time_utc": "2026-10-06T04:31:47Z",
+    "safeguard_path": "research/CROSS_SESSION_TRANSFER_SOURCE_ADMISSION_SAFEGUARD_V1_2_2026-10-06.md"
+  },
+  "state": "OPEN_UNCERTIFIED",
+  "source_date": "2026-10-06",
+  "partial_swept_through": "2026-10-06T04:41:17Z",
+  "full_day_complete_through_required": "2026-10-07T00:00:00Z",
+  "source_channels": [
+    {
+      "channel": "reuters_wire",
+      "status": "PARTIAL_OPEN_DAY",
+      "covered_event_classes": [
+        "physical_energy_shipping_security",
+        "ceasefire_deescalation_or_escalation",
+        "official_policy_or_operational_change"
+      ],
+      "swept_through": "2026-10-06T04:41:17Z",
+      "receipt": {
+        "type": "bounded_query_matrix",
+        "domains": [
+          "reuters.com",
+          "marketscreener.com"
+        ],
+        "theatres": [
+          "Russia/Ukraine",
+          "Israel/Gaza",
+          "Iran/Hormuz",
+          "Saudi/Yemen/Houthi/Red Sea",
+          "Taiwan/China"
+        ],
+        "result": "no post-activation qualifying Oct-6 row identified at this partial checkpoint"
+      }
+    },
+    {
+      "channel": "ukmto",
+      "status": "PARTIAL_OPEN_DAY",
+      "covered_event_classes": [
+        "physical_energy_shipping_security"
+      ],
+      "swept_through": "2026-10-06T04:41:17Z",
+      "receipt": {
+        "type": "official_current_incident_page",
+        "source_ref": "https://www.ukmto.org/recent-incidents",
+        "latest_visible_incident": "UKMTO #156 dated 2026-10-05",
+        "result": "no Oct-6 incident visible at this partial checkpoint"
+      }
+    }
+  ],
+  "candidate_dispositions": [],
+  "integrity": {
+    "completeness_claim_allowed": false,
+    "certify_source_day_allowed": false,
+    "us_measurement_allowed": false,
+    "hsi_outcome_read_allowed": false,
+    "partial_log_is_not_source_day_certificate": true,
+    "note": "This receipt records only work already performed during an open UTC day. It must never be upgraded by changing its timestamp or state; final day certification is a new completed-day receipt after 2026-10-07T00:00:00Z."
+  },
+  "market_outcomes": {
+    "epoch2_us_measurements_opened": false,
+    "hsi_outcomes_read": false
+  },
+  "exact_next_action": "At or after 2026-10-07T00:00:00Z, sweep the remainder of Oct-6 Reuters/wire and UKMTO coverage, record every candidate/exclusion, then run certify_source_day. Only sealed admitted rows may proceed to U.S. measurement."
+}
