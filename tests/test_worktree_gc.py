@@ -923,3 +923,53 @@ def test_only_worktree_refuses_ignored_artifact_created_during_lsof(
     assert artifact.read_text() == "material accepted worker artifact"
     assert row["apply"]["deleted"] == []
     assert any("ignored" in error for error in row["apply"]["errors"])
+
+
+# Linux host compatibility regression: Ubuntu1/2 mount tracefs under
+# /sys/kernel/debug/tracing but lsof cannot stat it as the worker user.
+# The only lawful exception is this mounted, unrelated *filesystem*;
+# an unknown lsof warning, mount table, alias or target remains a HOLD.
+
+
+def test_tracefs_lsof_exemption_is_narrow_and_deterministic(tmp_path):
+    mounted = (
+        "113 44 0:14 / /sys/kernel/debug/tracing rw,nosuid,nodev,noexec "
+        "shared:303 - tracefs tracefs rw\n"
+    )
+    actual = tmp_path.resolve()
+    device = actual.stat().st_dev
+    assert wgc._tracefs_exemption_for_lsof(
+        actual, device, mounted
+    ) == ["-e", "/sys/kernel/debug/tracing"]
+    assert wgc._tracefs_exemption_for_lsof(
+        actual, device, "45 28 0:14 / /sys/kernel/tracing rw - tracefs tracefs rw\n"
+    ) == []
+    assert wgc._tracefs_exemption_for_lsof(
+        actual, device, ""
+    ) == []
+
+
+def test_tracefs_exemption_refuses_mount_alias_and_target_device(tmp_path):
+    mounted = (
+        "113 44 0:14 / /sys/kernel/debug/tracing rw,nosuid,nodev,noexec "
+        "shared:303 - tracefs tracefs rw\n"
+    )
+    f = wgc._tracefs_exemption_for_lsof
+    assert f(tmp_path, os.makedev(0, 14), mounted) is None
+    assert f(Path("/sys/kernel/debug/tracing"), tmp_path.stat().st_dev, mounted) is None
+    assert f(Path("/sys/kernel/debug/tracing/worktree"), tmp_path.stat().st_dev, mounted) is None
+    assert f(tmp_path, tmp_path.stat().st_dev, mounted * 2) is None
+
+
+def test_tracefs_exemption_fails_closed_on_invalid_mount_metadata(tmp_path):
+    mounted = "113 44 0:14 / /sys/kernel/debug/tracing rw - tracefs tracefs rw\n"
+    f = wgc._tracefs_exemption_for_lsof
+    assert f(tmp_path, tmp_path.stat().st_dev, mounted.replace("tracefs tracefs", "tmpfs tmpfs")) is None
+    assert f(tmp_path, tmp_path.stat().st_dev, "malformed") is None
+    assert f(tmp_path, tmp_path.stat().st_dev, "x" * 1_048_577) is None
+
+
+def test_tracefs_exemption_keeps_lsof_stderr_as_unknown(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        wgc, "_run", lambda *args, **kwargs: (1, "", "permission denied"))
+    assert wgc.exact_target_open_handles(tmp_path) is None

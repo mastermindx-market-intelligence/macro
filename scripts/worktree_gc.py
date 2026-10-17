@@ -157,17 +157,63 @@ def _git(repo: Path, *args: str, timeout: int = 30) -> tuple[int, str, str]:
     return _run(["git", "-C", str(repo), *args], timeout=timeout)
 
 
-def exact_target_open_handles(path: Path) -> bool | None:
-    """Bounded exact-directory file-descriptor scan before a destructive remove.
+def _tracefs_exemption_for_lsof(path: Path, target_dev: int, mountinfo: str) -> list[str] | None:
+    """Exclude only an unrelated, proven tracefs mount that lsof cannot stat.
 
-    A process may have cwd elsewhere while holding a file under this worktree.
-    On macOS and Linux lsof +D may return rc=1 even WITH matching output;
-    therefore output is ALWAYS busy. An empty, error-free rc=1 is clean.
-    Every timeout, permission warning, missing lsof, unexpected rc or
-    contradictory result is UNKNOWN, never permission to delete.
+    Linux lsof scans all mountpoints even for '+D <one ext4 directory>'.
+    Ubuntu1/2 fail its empty-directory probe on inaccessible tracefs, while
+    excluding that *exact unrelated mount* leaves target FD checks intact.
+    Invalid, ambiguous, aliased or target-contained exemptions must HOLD.
     """
-    rc, out, err = _run(
-        ["lsof", "-nP", "-Fpcn", "+D", str(path)], timeout=45)
+    mountpoint = Path("/sys/kernel/debug/tracing")
+    if len(mountinfo) > 1_048_576:
+        return None
+    observed = []
+    for line in mountinfo.splitlines():
+        blocks = line.split(" - ", 1)
+        if len(blocks) != 2:
+            return None
+        lhs, rhs = blocks[0].split(), blocks[1].split()
+        if len(lhs) < 5 or len(rhs) < 1:
+            return None
+        if lhs[4] == str(mountpoint):
+            if rhs[0] != "tracefs":
+                return None
+            observed.append(lhs[2])
+    if not observed:
+        return []
+    if len(observed) != 1:
+        return None
+    if path == mountpoint or mountpoint in path.parents:
+        return None
+    if observed[0] == f"{os.major(target_dev)}:{os.minor(target_dev)}":
+        return None
+    return ["-e", str(mountpoint)]
+
+
+def exact_target_open_handles(path: Path) -> bool | None:
+    """Bounded exact-directory open-FD scan, fail-closed on unknown visibility.
+
+    With a mounted but unstatable tracefs on Ubuntu1/2, lsof emits an
+    unrelated warning and would forever refuse GC. On Linux, consult the
+    kernel mount table; exempt only the proven tracefs mount, never the
+    target device or a target nested beneath that mount. All other stderr,
+    timeouts, missing tools, or inconsistent statuses remain UNKNOWN.
+    macOS and Linux hosts without that mount retain the original command.
+    """
+    args = ["lsof", "-nP", "-Fpcn"]
+    if sys.platform.startswith("linux"):
+        try:
+            resolved = path.resolve(strict=True)
+            info = resolved.stat()
+            mounted = Path("/proc/self/mountinfo").read_text(encoding="utf-8")
+        except (OSError, UnicodeError, RuntimeError):
+            return None
+        extra = _tracefs_exemption_for_lsof(resolved, info.st_dev, mounted)
+        if extra is None:
+            return None
+        args.extend(extra)
+    rc, out, err = _run(args + ["+D", str(path)], timeout=45)
     if out.strip():
         return True
     if rc == 1 and not err.strip():
