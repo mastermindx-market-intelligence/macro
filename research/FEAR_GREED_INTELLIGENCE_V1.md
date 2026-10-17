@@ -4,7 +4,7 @@ Chairman assignment: build the Macro Dashboard fear/greed, VIX dynamics and turn
 
 ## Product decision
 
-**Risk Radar -> Fear & Greed** is the primary home. It answers how risk appetite and volatility pressure are changing. Transmission remains the explanation of cross-asset causes and consequences, not a competing sentiment owner. Macro Signals retains the full method, component provenance and legacy comparison. The existing dialog/navigation controller is reused, with no extra fetch, polling, animation, collector, alert or runtime authority.
+**Risk Radar -> Fear & Greed** is the primary home. It answers how risk appetite and volatility pressure are changing. Transmission remains the explanation of cross-asset causes and consequences, not a competing sentiment owner. The full method, component provenance and observed history remain inside Risk Radar’s native disclosures. The old `macro_signals.html` is intentionally admin-only/404 on the customer origin and is not reopened or linked. The existing dialog/navigation controller and its existing stylesheet are reused, with no extra fetch, polling, animation, collector, alert or runtime authority. The existing render picker maps these Macro-only leaves to `macro`, preserving broad rendering for shared files. No new renderer or publisher is introduced.
 
 The improvement is not "more indicators must be better." It is separation of **level, direction, acceleration, independent confirmation and data quality**. A static extreme-fear value cannot distinguish a continuing liquidation from easing pressure. A static extreme-greed value cannot distinguish persistent healthy participation from deteriorating internals.
 

@@ -26,7 +26,7 @@
       "as_of": "2026-10-16"
     },
     "candidate_engine/fear_greed_intelligence": {
-      "sha256": "428642440b0a85726b5a23c520e6bf7b0065fbf0d750a339008a8e4b55590612",
+      "sha256": "d313b2ce086315ad797cd015d9c7aee1281abedb8a6831cb74dcfbf218ae2895",
       "as_of": "2026-10-14",
       "kind": "candidate_engine_fixture_not_published_snapshot"
     },
@@ -44,12 +44,11 @@
     }
   },
   "presentation_sha256": {
-    "templates/dashboard.html.j2": "3d2ed849d27c9709c4ca437ebc51efa78032030940ebbf3d5a8c73efd4f2f937",
+    "templates/dashboard.html.j2": "ca6d6d3b8751f0d829f6e1f47e5cfaa1a6f480836a17755cfd0d10fda131740d",
     "templates/_risk_radar_workspace.html.j2": "b141aa8b6a9f54c8c9b4d20db0671fd85c0988348e8b687c778d986d18e16151",
     "templates/risk_radar_workspace.js": "07cf3a7e108d13b5ca84be68debe108459e73b575ea1ee162bdbe1c14f27e2da",
-    "templates/risk_radar_workspace.css": "41721ac69a6600390f7861d290ece9986f3e7a3dcd88f9146ef0afac6b399d05",
-    "templates/_fear_greed_intelligence.html.j2": "9c42cc5433dacc67ab24e59d189bc0cd83a2f300528d9109cb6adcabf14ccac5",
-    "templates/fear_greed_intelligence.css": "3633857877ddfe6ecd15be853d35160f62b3d38fea4ab2d19462ecc469ec548f"
+    "templates/risk_radar_workspace.css": "cca7ab0507cc14824c946051d0a25870c208e163df75e99a3df653af2efffaf6",
+    "templates/_fear_greed_intelligence.html.j2": "59c74cb2ceb27a239d0b522fb19b1d69035d108e4ea3e29b5515983b1b6d044b"
   },
   "intelligence_input_sha256": {
     "data/yahoo/SPY.parquet": "4628a0de7c489988d30e7b52843d6f25d520b553f140d17ef5a42ccf39c70ff4",

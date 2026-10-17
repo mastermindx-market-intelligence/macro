@@ -267,22 +267,21 @@ def test_keep_first_ledger_retains_observed_features_not_reconstructed_arrays(in
 
 
 @pytest.mark.parametrize("modern", [True, False])
-def test_actual_dashboard_and_study_templates_render_new_payload(inputs, modern):
-    from tests.test_fear_greed import _make_min_fg, _render_fg_dashboard, _render_fg_macro_signals
+def test_actual_dashboard_template_renders_new_payload_without_retired_study_route(inputs, modern):
+    from tests.test_fear_greed import _make_min_fg, _render_fg_dashboard
     payload = _make_min_fg()
     if modern:
         payload["intelligence"] = snap(inputs)
     dashboard = _render_fg_dashboard(payload)
-    study = _render_fg_macro_signals(payload)
-    assert 'id="fear-greed-detail"' in study
     assert 'id="fear-greed-dynamics"' in dashboard
     if modern:
-        for page in (dashboard, study):
+        for page in (dashboard,):
             assert 'mastermind.fear_greed_intelligence.v1' in page
             assert 'VIX acceleration' in page
             assert 'VIX 加速度' in page
             assert 'reconstructed' in page.lower()
             assert 'nan' not in page.lower()
+            assert 'macro_signals.html#fear-greed-detail' not in page
     else:
         assert 'not available in this published snapshot' in dashboard
 

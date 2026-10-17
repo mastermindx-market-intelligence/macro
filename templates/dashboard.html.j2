@@ -312,7 +312,7 @@
    returns empty. DOMContentLoaded fires after the body parses. #}
 <script>try{document.addEventListener('DOMContentLoaded',function(){if(window.matchMedia&&window.matchMedia('(max-width:640px)').matches){document.querySelectorAll('body.page-macro .ud-watch-details[open]').forEach(function(d){d.removeAttribute('open');});}});}catch(e){}</script>
 <link rel="stylesheet" href="tier_preview.css">
-{% if mode != 'stocks' %}<link rel="stylesheet" href="risk_radar_workspace.css"><link rel="stylesheet" href="fear_greed_intelligence.css">{% endif %}
+{% if mode != 'stocks' %}<link rel="stylesheet" href="risk_radar_workspace.css">{% endif %}
 {% if mode != 'stocks' %}
 <link rel="preload" href="/fonts/InterDisplay-600.woff2" as="font" type="font/woff2" crossorigin>
 {% endif %}

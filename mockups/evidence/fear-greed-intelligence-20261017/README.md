@@ -6,7 +6,7 @@ The specimens render the actual candidate Macro template, dialog and controller
 against immutable committed input caches. They are not deployed public routes.
 
 `source-inputs.json` identifies the base source and candidate template, engine
-and data hashes. `ui-checks.json` records 131 actual-dashboard/controller
+and data hashes. `ui-checks.json` records 145 actual-dashboard/controller
 assertions, including dates, nulls, disclosures, navigation text fitting, three
 volatility paths, Escape, focus restoration and horizontal bounds.
 
@@ -25,3 +25,8 @@ production deployment or predictive-skill evidence.
 Final visual review covered all eight summary cells. The notice background uses
 the existing panel token after the design ratchet rejected color mixing; the
 canonical capture was refreshed after that correction.
+
+Production policy deliberately excludes the old Macro Signals research-tool
+route. The full study stays in Risk Radar native disclosures and shares the
+existing Risk Radar stylesheet; no access policy is changed. The deep specimen
+scrolls to the three actual volatility paths for visible chart review.

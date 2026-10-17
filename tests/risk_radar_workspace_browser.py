@@ -135,7 +135,7 @@ def render_fixture(output: Path, source_ref: str, *, intelligence_path: Path | N
             path: hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
             for path in ["templates/dashboard.html.j2", "templates/_risk_radar_workspace.html.j2",
                          "templates/risk_radar_workspace.js", "templates/risk_radar_workspace.css",
-                         "templates/_fear_greed_intelligence.html.j2", "templates/fear_greed_intelligence.css"]
+                         "templates/_fear_greed_intelligence.html.j2"]
         },
     }
     (output / "source-inputs.json").write_text(json.dumps(receipt, indent=2) + "\n")

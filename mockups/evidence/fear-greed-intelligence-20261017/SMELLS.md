@@ -2,12 +2,12 @@
 
 _Heuristics identify review targets; they do not determine that a page is bad._
 
-Generated 2026-10-17T12:32:36Z · schema `mastermind.ux_smell_report.v1`
+Generated 2026-10-17T12:48:29Z · schema `mastermind.ux_smell_report.v1`
 
 | route | page_id | words | h1 | panels | height px | h-overflow | slug hits | TODO hits | as-of | source | shots |
 | --- | --- | ---: | ---: | ---: | ---: | :---: | ---: | ---: | :---: | :---: | ---: |
-| /fear-greed-component.html | fear-greed-component.html | 250 | 0 | 0 | 900 | no | 0 | 0 | no | no | 1.0 |
-| /fear-greed-deep-component.html | fear-greed-deep-component.html | 671 | 0 | 0 | 900 | no | 0 | 0 | no | no | 1.0 |
+| /fear-greed-component.html | fear-greed-component.html | 254 | 0 | 0 | 900 | no | 0 | 0 | no | no | 1.0 |
+| /fear-greed-deep-component.html | fear-greed-deep-component.html | 675 | 0 | 0 | 900 | no | 0 | 0 | no | no | 1.0 |
 
 ## Metric notes
 

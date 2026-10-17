@@ -3,7 +3,7 @@ key: MACRO-FEAR-GREED-INTELLIGENCE
 title: "Macro Fear & Greed: sentiment, VIX dynamics and independent turning evidence"
 objective: >
   Deliver a source-transparent Fear & Greed instrument in Macro Risk Radar and its
-  Macro Signals study view, distinguishing sentiment level, VIX velocity and
+  native expanded study disclosures, distinguishing sentiment level, VIX velocity and
   acceleration, data clocks and independent turning evidence. Done requires
   deterministic and bilingual responsive browser proof, protected delivery and
   verification of the served production path, not a claim of predictive alpha.
@@ -17,7 +17,6 @@ ambiguity: scoped
 owns_paths:
   - engine/fear_greed_intelligence.py
   - templates/_fear_greed_intelligence.html.j2
-  - templates/fear_greed_intelligence.css
   - tests/test_fear_greed_intelligence.py
   - tests/fear_greed_intelligence_browser.py
   - scripts/research_fear_greed_intelligence.py
@@ -59,22 +58,25 @@ submitted. The Executive read was explicitly readonly, not an admission receipt.
 Linear projection: MAS-283 (In Progress). It is not admission authority.
 
 Risk Radar is the primary home; Transmission is the causal-context destination.
-Macro Signals contains the full method and preserves a separately disclosed
-legacy comparison. No new state, queue, collector, auth or publication plane.
+Risk Radar contains the full method and history in native disclosures. The
+customer origin intentionally 404s the admin-only Macro Signals route; this
+feature does not reopen or link it. Its existing stylesheet is reused, and the
+existing render picker now recognizes the Macro-only component leaves. No new state, queue, collector, auth or publication plane.
 
 ## Observed results before publication
 
-The feature regression run passed **197 tests**, followed by **3 additional
-cache-schema and observation-clock contracts**. The existing broader dashboard
+The final feature regression run passed **200 tests**, including cache-schema
+and observation-clock contracts. The render ownership/scope suite passed **39
+tests**, including execution of the actual six-case region picker contract. The existing broader dashboard
 release unit passed **326 tests with 1 skipped**. The actual candidate Macro
-dialog/controller passed **131 browser assertions** over desktop/mobile,
+dialog/controller passed **145 browser assertions** over desktop/mobile,
 English/Chinese and dark/light, with no JavaScript exceptions or horizontal
 bounds failures. The mobile navigation text-fit issue identified in visual
 review was fixed and now has its own browser assertion.
 
 The canonical capture tool produced **16/16 screenshots** for the summary and
 deep specimens. Design-system added-line checks pass with zero blockers; the
-visual-evidence guard passes; source/site asset sync passes for **128 pairs**.
+visual-evidence guard passes; source/site asset sync passes for **127 pairs**.
 Agent OS validation reports zero errors. These are candidate-source results,
 not merge, deployment or predictive acceptance.
 
@@ -110,3 +112,28 @@ effect. Do not retry that unchanged helper or alter its host configuration.
 Normal Macro Git/PR delivery remains within the existing attended host-command
 and repository assignment; no permission denial, replacement workspace, writer
 lease conflict or uncertain publication effect was observed.
+
+## Production-route correction before PR
+
+A real origin baseline returned Macro 200, Transmission 200, and Macro Signals
+404. The latter is deliberate `@never_site` policy in `app/deploy/Caddyfile`, not
+a render lag. The study was therefore kept inside Risk Radar and the retired
+page’s template restored unchanged. Both the existing Risk Radar stylesheet and
+a nonexistent new asset returned anonymous 401 under the current asset tier
+policy. The new feature now extends the existing stylesheet; no asset allowlist,
+authentication, entitlement or research-tool boundary was altered.
+
+The first source candidate was committed and pushed successfully to the same
+registered branch (`ec44cba8cb26f0b7d310719905ac4b8ab954a74a`), with matching remote
+readback. The scoped route correction and its 200-test/145-assertion proof are complete;
+commit and push it on this same branch, then open the PR.
+The shared remote-tracking fetch race was reconciled against GitHub main at
+`9bca84d4a12cd03514d6116709ba2549b20f34a1`; no blind fetch retry or replacement
+workspace was used.
+
+Browser capability: the Browser connector requires an originating extension
+context not present in this chat. Local Chrome metadata reads work. A read-only
+JavaScript request against an existing shared Macro tab returned Apple-event
+connection error -609; a subsequent exact-ID read found that tab absent. No
+authentication, session or settings change was attempted. Use a fresh dedicated
+owned tab after publication, not the vanished shared tab.

@@ -1,6 +1,6 @@
 {
   "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
-  "generated_at": "2026-10-17T12:32:36Z",
+  "generated_at": "2026-10-17T12:48:29Z",
   "metric_notes": {
     "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
     "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
@@ -50,16 +50,16 @@
           "viewport": "desktop"
         },
         "panel_count": 0,
-        "payload_bytes_total": 720936,
+        "payload_bytes_total": 52475,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
-        "request_count": 12,
+        "request_count": 11,
         "screenshot_completion": 1.0,
         "section_count": 0,
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 250
+        "visible_word_count": 254
       },
       "page_id": "fear-greed-component.html",
       "route": "/fear-greed-component.html"
@@ -100,16 +100,16 @@
           "viewport": "desktop"
         },
         "panel_count": 0,
-        "payload_bytes_total": 116459,
+        "payload_bytes_total": 52475,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
-        "request_count": 12,
+        "request_count": 11,
         "screenshot_completion": 1.0,
         "section_count": 0,
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 671
+        "visible_word_count": 675
       },
       "page_id": "fear-greed-deep-component.html",
       "route": "/fear-greed-deep-component.html"

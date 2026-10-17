@@ -77,7 +77,7 @@
     <p class="fgi-note">{{ t('The put/call input combines available SPY, QQQ and IWM delayed-chain volumes. It is not the official Cboe equity put/call series; missing chains may change its coverage.', '看跌看涨输入合并可用的 SPY、QQQ 与 IWM 延迟期权链成交量。它不是 Cboe 官方股票看跌看涨比率；缺失期权链可能改变覆盖。') }}</p>
     <p class="fgi-note">{{ t('SPY and TLT are proxies. Breadth covers our collected stock universe and uses advancing/declining stock counts, not CNN’s NYSE volume summation. Credit uses high-yield option-adjusted spreads, not a matched junk-versus-investment-grade yield spread.','SPY 与 TLT 为代理指标。广度覆盖我们收集的股票池，采用上涨和下跌家数，而非 CNN 的纽交所成交量累加。信用采用高收益期权调整利差，而非匹配的垃圾债与投资级收益率差。') }}</p>
   </details>
-  <footer class="fgi-links"><a href="macro_signals.html#fear-greed-detail">{{ t('Study sentiment','研究情绪') }}</a><a href="transmission.html">{{ t('Explore transmission','查看传导') }}</a></footer>
+  <footer class="fgi-links"><span>{{ t('History and method are available above.','历史与方法可在上方展开查看。') }}</span><a href="transmission.html">{{ t('Explore transmission','查看传导') }}</a></footer>
   {% else %}
   <p class="fgi-notice">{{ t('Risk dynamics are not available in this published snapshot yet. The legacy sentiment reading is shown separately.','本次发布快照暂不包含风险动态。传统情绪读数单独展示。') }}</p>
   {% endif %}

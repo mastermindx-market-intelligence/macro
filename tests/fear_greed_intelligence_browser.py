@@ -29,7 +29,6 @@ def prepare(output: Path, source_ref: str) -> dict:
     from engine.fear_greed_intelligence import compute_intelligence
     from lib.site_assets import copy_asset
     from tests.risk_radar_workspace_browser import render_fixture
-    from tests.test_fear_greed import _make_min_fg, _render_fg_macro_signals
 
     output = output.resolve()
     if output == ROOT or ROOT in output.parents:
@@ -77,13 +76,9 @@ def prepare(output: Path, source_ref: str) -> dict:
     (output / "fear-greed-component.html").write_text(component.replace("</body>", setup + "</body>"))
     deep_setup = setup.replace('});</script>',
                               'document.querySelectorAll(".fgi-details").forEach(function(d){d.open=true;});'
+                              'setTimeout(function(){var e=document.querySelector(".fgi-vol-trails");if(e)e.scrollIntoView({block:"start"});},400);'
                               '});</script>')
     (output / "fear-greed-deep-component.html").write_text(component.replace("</body>", deep_setup + "</body>"))
-    study = _render_fg_macro_signals({**_make_min_fg(), "intelligence": intelligence})
-    (output / "study-component.html").write_text(
-        '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" '
-        'content="width=device-width,initial-scale=1"><link rel="stylesheet" href="theme.css">'
-        '<link rel="stylesheet" href="fear_greed_intelligence.css"></head><body>' + study + '</body></html>')
     (output / "source-inputs.json").write_text(json.dumps(receipt, indent=2) + "\n")
     return receipt
 
@@ -154,6 +149,8 @@ def check(output: Path) -> dict:
                         record(cell + " three volatility paths", fgi.locator(".fgi-vol-trails svg").count() == 3)
                         record(cell + " seven measures explained", fgi.locator("tbody tr").count() == 7)
                         record(cell + " six independent family votes", fgi.locator(".fgi-families > div").count() == 6)
+                        record(cell + " study stays on the customer surface", not fgi.locator('a[href*="macro_signals"]').count())
+                        record(cell + " meter matches the engine", float(fgi.locator(".fgi-meter").get_attribute("value")) == expected["score"])
                         record(cell + " proxy provenance visible", ("not the official Cboe" if language == "en" else "不是 Cboe 官方") in fgi.inner_text())
                         boxes = page.locator("#dlg-risk .mx5-dlg-body").evaluate("""e=>({
                             scrollWidth:e.scrollWidth,clientWidth:e.clientWidth,
@@ -169,14 +166,6 @@ def check(output: Path) -> dict:
                         page.wait_for_selector("#dlg-risk.open", state="hidden")
                         record(cell + " dialog close restores focus", trigger.evaluate("e=>document.activeElement===e"))
                         context.close()
-            # The source-backed study specimen exercises the shared partial and real anchor.
-            context = browser.new_context(viewport={"width": 390, "height": 844})
-            page = context.new_page()
-            page.on("pageerror", lambda e: errors.append(str(e)))
-            page.goto(origin + "/study-component.html", wait_until="domcontentloaded")
-            record("study destination anchor exists", page.locator("#fear-greed-detail").count() == 1)
-            record("study meter matches engine", float(page.locator(".fgi-meter").get_attribute("value")) == expected["score"])
-            context.close()
             browser.close()
         record("no JavaScript exceptions", not errors)
     finally:

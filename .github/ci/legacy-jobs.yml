@@ -30041,8 +30041,6 @@ jobs:
       - "tests/fear_greed_intelligence_browser.py"
       - "scripts/research_fear_greed_intelligence.py"
       - "templates/_fear_greed_intelligence.html.j2"
-      - "templates/fear_greed_intelligence.css"
-      - "site/fear_greed_intelligence.css"
       # #7798: source-dated Hottest Desk leadership/recommendation contract.
       - "tests/test_macro_sector_desk.py"
       # #7859: volatility-placement tests used to live only in gate:data
