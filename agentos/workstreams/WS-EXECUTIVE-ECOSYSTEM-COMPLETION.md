@@ -80,9 +80,10 @@ waves:
     status: todo
     depends_on: [A0]
     next_action: >
-      Prepare the exact inputs from docs/runbooks/mastermind-os-public-launch.md
-      (os-commission-publication.json fields, os_executive_transport, os_executive_resource,
-      os_commission_port); read-only Opus audit; the production owner runs the stage/upgrade
+      Inputs listed 2026-10-17 in the census handoff body (section Lane A inputs). Host census:
+      publication file and audit dir ABSENT, gateway profile web_ceo_v3 without the os_executive_*
+      keys, tunnel config/auth + chisel PRESENT (relay_port 49152). Publication owner unnamed —
+      the Chairman names it before any stage. Then: read-only Opus audit; the production owner runs the stage/upgrade
       with --enable-repository-workspaces --os-commission-config-sha256. Proof: unauthenticated
       POST /os/executive/context answers 401, not 404, locally and through the edge.
   - id: A4
@@ -107,15 +108,15 @@ landmines:
   - All four autonomy predicates read false and ceo_submit has been disarmed since 2026-10-12 at 25c4b792; a Chairman request submitted today is admitted as a Job but never placed.
   - The installed Executive MCP config lacks os_executive_transport / os_executive_resource / os_commission_port and the sealed Studio opt-in file is absent, so /os/executive/* answers 404 and the app command path is dark. Never emulate it with a mock transport; install it through the runbook.
   - Mixed-release host — control, mcp, privileged and worker plists at 91c1cac5; relays at 326c8469; tunnel at a858ac24; autonomy-state names 1a8698cb. Release coherence is a next install, not a service restart.
-  - Sol's open sol/web-* PRs (#1570 #1569 #1568 #1566 #1553 #1542 #1536 #1515 #1477 #1473) and codex #1563 are live writers on the gateway, app and fabric surfaces; extend, never compete.
+  - Sol's open sol/web-* PRs (1570 1569 1568 1566 1553 1542 1536 1515 1477 1473) and codex 1563 are live writers on the gateway, app and fabric surfaces; extend, never compete.
   - Fable is never enrolled with mastermind.executive.intent.submit (rejected by design). Personal-Pro realm re-enrollment is a human/provider ceremony named once, not probed.
   - Fabric kit files pools.yaml, pick.py and RELAUNCH_QUEUE.txt belong to another lane; read-only.
   - Python tests at the pin need the repo root on sys.path and the macro checkout's tests/ package off it (python -P), or tests.test_executive_ceo_ingress resolves into macro.
-  - Agent OS records are not liveness: the P4 "PICKED_UP by chat 01a1230a" claim is historical; the S' acceptance path is driven by the current seat after the human rotation, unless a live START is observed first.
+  - Agent OS records are not liveness — the P4 "PICKED_UP by chat 01a1230a" claim is historical; the S' acceptance path is driven by the current seat after the human rotation, unless a live START is observed first.
 do_not_redo:
   - The 2026-10-17 Phase A census (ledger §1 and §5) — reuse until an installed SHA, installed config or runtime DB fact changes.
   - The install of 91c1cac5 and the acceptance receipt for 25c4b792.
-  - Mastermind #1283, #1560, #1543, #1534/#1537, #1544, #1527, #1509, #1558 and the R2 master plan §17 (accepted work enumerated in the ledger §4).
+  - Mastermind PRs 1283, 1560, 1543, 1534/1537, 1544, 1527, 1509, 1558 and the R2 master plan §17 (accepted work enumerated in the ledger §4).
   - The 213-test transport run at a552a5e5 (plan §6) until the transport source changes.
 next_action: >
   Mastermind ledger/plan PR #1571 is MERGED (master ee0f0d9b); correction PR #1581 carries the
@@ -157,4 +158,7 @@ PROVEN_LIVE (21 completed Jobs, 11 LOST attempts reconciled). CEO ingress socket
 projection; `ceo_submit` and COO arms: DARK. Installed-release acceptance: PARTIAL (prepared, no
 receipt). Gateway v3 and workspace reads: PROVEN_LIVE and auth-gated. OS executive transport,
 session transport and Studio commission owner: DARK / not installed. App served: PROVEN_LIVE;
-every app journey: BUILT_NOT_PROVEN. Python transport tests at the pin: 213 passed.
+every app journey: BUILT_NOT_PROVEN. Python transport tests at the pin: 213 passed. Node/Rust
+qualification of the same app tree on 2026-10-17 (ad125292 = a552a5e5 = ee0f0d9b for
+app/mastermind_os): tsc clean, vitest 1574 passed / 1 skipped, web and native builds, cargo 41
+passed — source validation only; no signed candidate .app exists on the host.
