@@ -1,0 +1,267 @@
+{
+  "schema": "pb_d.archive_metadata_audit.v1",
+  "status": "DISCOVERY_ONLY_ZERO_SIGNAL_AUTHORITY",
+  "sources": {
+    "nvda_compact": {
+      "id": "nvda_compact",
+      "filename": "nvda_compact.json",
+      "commit": "74e8f45060e815a2cb7c515ae09f258919ab9da2",
+      "path": "site/news/by_ticker.json",
+      "git_blob": "02e103c00ed04da1a7d91980147e9d07efc528e2",
+      "url": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/74e8f45060e815a2cb7c515ae09f258919ab9da2/site/news/by_ticker.json",
+      "bytes": 1051489,
+      "sha256": "b26601fa69a0b2b331f964373d9813c40d787b1b9de53daf0b5dfc5d9261da84"
+    },
+    "nvda_news": {
+      "id": "nvda_news",
+      "filename": "nvda_news.json",
+      "commit": "74e8f45060e815a2cb7c515ae09f258919ab9da2",
+      "path": "site/news/financial.json",
+      "git_blob": "224444b75cf08b24445d5ded3de881bae7836d23",
+      "url": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/74e8f45060e815a2cb7c515ae09f258919ab9da2/site/news/financial.json",
+      "bytes": 1619636,
+      "sha256": "e990fe347375181b32e3efa7a36386ad91a69977905a41ae18d29e753070809e"
+    },
+    "sep10_news": {
+      "id": "sep10_news",
+      "filename": "sep10_news.json",
+      "commit": "3119171478a7cd9cd851687cf24e8bf0c271cdc4",
+      "path": "site/news/financial.json",
+      "git_blob": "fc69e4c7d455d81cdca5d002ea554e492ca9e3cf",
+      "url": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/3119171478a7cd9cd851687cf24e8bf0c271cdc4/site/news/financial.json",
+      "bytes": 2255938,
+      "sha256": "d090c2f93248d279cbd7b12608997e700a10d642619f668f3c54f1295b54eb12"
+    },
+    "sep10_holdings": {
+      "id": "sep10_holdings",
+      "filename": "sep10_holdings.json",
+      "commit": "3119171478a7cd9cd851687cf24e8bf0c271cdc4",
+      "path": "site/factordata/smartmoney.json",
+      "git_blob": "d5e7e1441cbf91ffe026bd9cb2a629e73caaf80e",
+      "url": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/3119171478a7cd9cd851687cf24e8bf0c271cdc4/site/factordata/smartmoney.json",
+      "bytes": 1508956,
+      "sha256": "fd2f92afb2f7fc407d3dbdacffaa55ad055cd62f8c4b91ef8a3aee4166dfce9d"
+    },
+    "oct_holdings": {
+      "id": "oct_holdings",
+      "filename": "oct_holdings.json",
+      "commit": "2f2feec4851b45636f63a48ec61e6f0b02b8118a",
+      "path": "site/factordata/smartmoney.json",
+      "git_blob": "9408d4ff45cd135f802cf60d713dc239dbb94716",
+      "url": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/2f2feec4851b45636f63a48ec61e6f0b02b8118a/site/factordata/smartmoney.json",
+      "bytes": 1478632,
+      "sha256": "47dc832fda3d06cfed3b9ecc1611fa9c68633374d96016b47d4ecf76a13cb575"
+    }
+  },
+  "nvda": {
+    "compact_asof": "2026-09-26",
+    "full_asof": "2026-09-25",
+    "full_fetched_at": "2026-09-26T05:36:12.339572+00:00",
+    "n_recent": 6,
+    "n_pos": 0,
+    "n_neg": 0,
+    "sentiment_lean": "neutral",
+    "sentiment_strength": 0.0,
+    "underlying_n": 6,
+    "null_sentiment_n": 6,
+    "empty_summary_n": 6,
+    "null_event_n": 6,
+    "incidental_n": 6,
+    "source_counts": {
+      "Barron's": 2,
+      "Investor's Business Daily": 4
+    },
+    "locator": "$.tickers.NVDA and $.by_ticker.NVDA",
+    "interpretation": "Six retained items, zero classified positive/negative; all underlying sentiment fields are null. This is not six confidently neutral articles. Sep25 NVDA is outside the grade sample."
+  },
+  "sep10_attention_probes": {
+    "INTC": {
+      "asof": "2026-09-10",
+      "fetched_at": "2026-09-10T07:23:01.658581+00:00",
+      "refresh_skipped_reason": "existing feed healthier (providers={'polygon': True, 'finnhub': True, 'quiver': True, 'gdelt': False} tickers_covered=1027) vs candidate (providers={'polygon': False, 'finnhub': False, 'quiver': True, 'gdelt': False} tickers_covered=15)",
+      "n": 3,
+      "items": [
+        {
+          "locator": "$.by_ticker.INTC[0]",
+          "url": "https://www.globenewswire.com/news-release/2026/09/09/3359022/0/en/digital-provenance-platform-market-to-reach-18-24-billion-by-2035-as-ai-generated-content-drives-demand-for-digital-authentication-research-by-sns-insider.html",
+          "archive_seendate": "2026-09-09T18:30:00Z",
+          "source": "GlobeNewswire Inc.",
+          "sentiment": "pos",
+          "issuer_sentiment": "neutral",
+          "centrality": "incidental",
+          "suspect_backdated": false,
+          "topic_reading": "Market-size promotion with incidental Intel tag",
+          "topic_reading_status": "HUMAN_RESEARCH_METADATA_READING_NOT_VERIFIED_CORPORATE_FACT"
+        },
+        {
+          "locator": "$.by_ticker.INTC[1]",
+          "url": "https://www.zacks.com/stock/news/2986259/buy-super-micro-computer-for-handsome-returns-attractive-valuations?cid=CS-ZC-FT-analyst_blog|investment_ideas-2986259",
+          "archive_seendate": "2026-09-08T12:23:00Z",
+          "source": "Zacks Investment Research",
+          "sentiment": "pos",
+          "issuer_sentiment": "neutral",
+          "centrality": "incidental",
+          "suspect_backdated": false,
+          "topic_reading": "Recommendation centered on Super Micro",
+          "topic_reading_status": "HUMAN_RESEARCH_METADATA_READING_NOT_VERIFIED_CORPORATE_FACT"
+        },
+        {
+          "locator": "$.by_ticker.INTC[2]",
+          "url": "https://www.zacks.com/stock/news/2985672/nvidia-s-hugging-face-buyout-can-it-further-strengthen-ai-dominance?cid=CS-ZC-FT-analyst_blog|quick_take-2985672",
+          "archive_seendate": "2026-09-07T13:02:00Z",
+          "source": "Zacks Investment Research",
+          "sentiment": "pos",
+          "issuer_sentiment": "pos",
+          "centrality": "incidental",
+          "suspect_backdated": true,
+          "topic_reading": "Nvidia-focused commentary with backdating flag",
+          "topic_reading_status": "HUMAN_RESEARCH_METADATA_READING_NOT_VERIFIED_CORPORATE_FACT"
+        }
+      ],
+      "scope_limit": "One Sep10 archive probe; cannot label all earlier issuer rows or verify the article's underlying corporate claims."
+    },
+    "PRIM": {
+      "asof": "2026-09-10",
+      "fetched_at": "2026-09-10T07:23:01.658581+00:00",
+      "refresh_skipped_reason": "existing feed healthier (providers={'polygon': True, 'finnhub': True, 'quiver': True, 'gdelt': False} tickers_covered=1027) vs candidate (providers={'polygon': False, 'finnhub': False, 'quiver': True, 'gdelt': False} tickers_covered=15)",
+      "n": 5,
+      "items": [
+        {
+          "locator": "$.by_ticker.PRIM[0]",
+          "url": "https://www.globenewswire.com/news-release/2026/09/09/3358282/6713/en/primoris-services-corporation-notice-of-september-21-2026-application-deadline-for-class-action-lawsuit-contact-lewis-kahn-esq-at-kahn-swick-foti-llc-before-application-deadline.html",
+          "archive_seendate": "2026-09-09T02:45:00Z",
+          "source": "GlobeNewswire Inc.",
+          "sentiment": "neg",
+          "issuer_sentiment": "neg",
+          "centrality": "incidental",
+          "suspect_backdated": false,
+          "topic_reading": "Primoris lawsuit deadline notice",
+          "topic_reading_status": "HUMAN_RESEARCH_METADATA_READING_NOT_VERIFIED_CORPORATE_FACT"
+        },
+        {
+          "locator": "$.by_ticker.PRIM[1]",
+          "url": "https://www.globenewswire.com/news-release/2026/09/08/3358154/1087/en/investor-alert-pomerantz-law-firm-reminds-investors-with-losses-on-their-investment-in-bloom-energy-corporation-of-class-action-lawsuit-and-upcoming-deadlines-be.html",
+          "archive_seendate": "2026-09-08T20:51:00Z",
+          "source": "GlobeNewswire Inc.",
+          "sentiment": "neg",
+          "issuer_sentiment": "neg",
+          "centrality": "incidental",
+          "suspect_backdated": false,
+          "topic_reading": "Bloom Energy-focused multi-company lawsuit notice",
+          "topic_reading_status": "HUMAN_RESEARCH_METADATA_READING_NOT_VERIFIED_CORPORATE_FACT"
+        },
+        {
+          "locator": "$.by_ticker.PRIM[2]",
+          "url": "https://www.zacks.com/stock/news/2986548/argan-s-q2-beat-shows-power-strength-as-industrial-margins-stay-soft?cid=CS-ZC-FT-analyst_blog_plus|zer_report_insights-2986548",
+          "archive_seendate": "2026-09-08T15:39:00Z",
+          "source": "Zacks Investment Research",
+          "sentiment": "pos",
+          "issuer_sentiment": "neutral",
+          "centrality": "incidental",
+          "suspect_backdated": false,
+          "topic_reading": "Argan earnings discussion",
+          "topic_reading_status": "HUMAN_RESEARCH_METADATA_READING_NOT_VERIFIED_CORPORATE_FACT"
+        },
+        {
+          "locator": "$.by_ticker.PRIM[3]",
+          "url": "https://www.zacks.com/stock/news/2986545/is-argan-worth-buying-as-growth-surges-but-valuation-stays-elevated?cid=CS-ZC-FT-analyst_blog_plus|zer_report_insights-2986545",
+          "archive_seendate": "2026-09-08T15:34:00Z",
+          "source": "Zacks Investment Research",
+          "sentiment": null,
+          "issuer_sentiment": "neutral",
+          "centrality": "incidental",
+          "suspect_backdated": false,
+          "topic_reading": "Argan valuation discussion",
+          "topic_reading_status": "HUMAN_RESEARCH_METADATA_READING_NOT_VERIFIED_CORPORATE_FACT"
+        },
+        {
+          "locator": "$.by_ticker.PRIM[4]",
+          "url": "https://www.globenewswire.com/news-release/2026/09/07/3357269/34548/en/deadline-alert-primoris-services-corporation-prim-shareholders-who-lost-money-urged-to-contact-glancy-prongay-wolke-rotter-llp-about-securities-fraud-lawsuit.html",
+          "archive_seendate": "2026-09-07T21:20:00Z",
+          "source": "GlobeNewswire Inc.",
+          "sentiment": "neg",
+          "issuer_sentiment": "neg",
+          "centrality": "incidental",
+          "suspect_backdated": true,
+          "topic_reading": "Primoris lawsuit deadline notice with backdating flag",
+          "topic_reading_status": "HUMAN_RESEARCH_METADATA_READING_NOT_VERIFIED_CORPORATE_FACT"
+        }
+      ],
+      "scope_limit": "One Sep10 archive probe; cannot label all earlier issuer rows or verify the article's underlying corporate claims."
+    }
+  },
+  "holdings_revision_probe": {
+    "ticker": "TSLA",
+    "before_built": "2026-09-10T22:37:01.150960+00:00",
+    "after_built": "2026-10-05T15:32:39.104976+00:00",
+    "locator": "$.by_ticker.TSLA.holders[fund=D1CAPITAL|POLEN]",
+    "revisions": [
+      {
+        "before": {
+          "fund": "D1CAPITAL",
+          "action": "new",
+          "shares": 401900.0,
+          "value_usd": 169039140.0,
+          "period_end": "2026-06-30",
+          "filing_date": "2026-08-14",
+          "available_date": "2026-08-14",
+          "fund_grade": "A"
+        },
+        "after": {
+          "fund": "D1CAPITAL",
+          "action": "new",
+          "shares": 401900.0,
+          "value_usd": 169039140.0,
+          "period_end": "2026-06-30",
+          "filing_date": "2026-08-14",
+          "available_date": "2026-08-14",
+          "fund_grade": "B"
+        },
+        "same_position": true,
+        "quality_eligibility_before": true,
+        "quality_eligibility_after": true
+      },
+      {
+        "before": {
+          "fund": "POLEN",
+          "action": "add",
+          "shares": 8974.0,
+          "value_usd": 3774464.0,
+          "period_end": "2026-06-30",
+          "filing_date": "2026-08-04",
+          "available_date": "2026-08-04",
+          "fund_grade": "B"
+        },
+        "after": {
+          "fund": "POLEN",
+          "action": "add",
+          "shares": 8974.0,
+          "value_usd": 3774464.0,
+          "period_end": "2026-06-30",
+          "filing_date": "2026-08-04",
+          "available_date": "2026-08-04",
+          "fund_grade": "C"
+        },
+        "same_position": true,
+        "quality_eligibility_before": true,
+        "quality_eligibility_after": false
+      }
+    ],
+    "interpretation": "Same disclosed positions receive later grades. POLEN crosses A/B eligibility; D1 remains qualifying. This does not establish a flip of the overall TSLA smartmoney boolean and does not backdate Sep10 classifications to Aug21."
+  },
+  "historical_quality_labels": {
+    "verified_material_event": "UNKNOWN",
+    "independent_evidence_2plus": "UNKNOWN",
+    "reason": "Snapshot metadata and incomplete source lineage cannot certify issuer economic novelty or independent originating evidence at each decision cut."
+  },
+  "claim_checks": [
+    {
+      "id": "NVDA_6_0_0",
+      "equal": true
+    },
+    {
+      "id": "NVDA_six_null_sentiments",
+      "equal": true
+    }
+  ]
+}
