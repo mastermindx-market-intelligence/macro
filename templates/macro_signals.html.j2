@@ -17,6 +17,7 @@
 {% include "_seo_head.html.j2" %}
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="fear_greed_intelligence.css">
 <style>
   :root {
     --num: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
@@ -763,6 +764,12 @@
 {% set FG = fear_greed %}
 {% set _fgbandzh = {'Extreme Fear':'极度恐惧','Fear':'恐惧','Neutral':'中性','Greed':'贪婪','Extreme Greed':'极度贪婪'} %}
 <div class="panel span6 rail-mood anim-d4" id="mood">
+  <div id="fear-greed-detail"></div>
+  {% if FG.intelligence is defined and FG.intelligence %}
+  {% set fg_intelligence = FG.intelligence %}{% set fgi_scope = 'fear-greed-study' %}{% set fgi_show_gauge = true %}
+  {% include '_fear_greed_intelligence.html.j2' %}
+  <details class="deep"><summary>{{ t('Legacy sentiment comparison','传统情绪对照') }}</summary>
+  {% endif %}
   <h2>{{ t('Mood — Fear / Greed', '情绪 — 恐惧/贪婪') }}
     {{ help('Wide multi-indicator composite combining market momentum, volatility, breadth, safe-haven flows, junk demand and several sentiment surveys. 0=Extreme Fear, 100=Extreme Greed.', '宽幅多指标合成，结合市场动量、波动率、广度、避险流、垃圾需求与多项情绪调查。0=极度恐惧，100=极度贪婪。') }}
   </h2>
@@ -855,6 +862,7 @@
   {% endif %}
 
   {% if FG.disclaimer_en %}<p class="muted sm" style="margin:10px 0 0">{{ t(FG.disclaimer_en, FG.disclaimer_zh) }}</p>{% endif %}
+{% if FG.intelligence is defined and FG.intelligence %}</details>{% endif %}
 </div>
 {% endif %}{# /fear_greed #}
 

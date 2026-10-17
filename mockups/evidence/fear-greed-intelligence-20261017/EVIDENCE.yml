@@ -1,0 +1,13 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+- templates/_fear_greed_intelligence.html.j2
+- templates/fear_greed_intelligence.css
+- site/fear_greed_intelligence.css
+- templates/dashboard.html.j2
+- templates/macro_signals.html.j2
+- templates/_risk_radar_workspace.html.j2
+- templates/risk_radar_workspace.js
+- site/risk_radar_workspace.js
+- templates/risk_radar_workspace.css
+- site/risk_radar_workspace.css
+manifest: mockups/evidence/fear-greed-intelligence-20261017/manifest.json

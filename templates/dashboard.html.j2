@@ -312,7 +312,7 @@
    returns empty. DOMContentLoaded fires after the body parses. #}
 <script>try{document.addEventListener('DOMContentLoaded',function(){if(window.matchMedia&&window.matchMedia('(max-width:640px)').matches){document.querySelectorAll('body.page-macro .ud-watch-details[open]').forEach(function(d){d.removeAttribute('open');});}});}catch(e){}</script>
 <link rel="stylesheet" href="tier_preview.css">
-{% if mode != 'stocks' %}<link rel="stylesheet" href="risk_radar_workspace.css">{% endif %}
+{% if mode != 'stocks' %}<link rel="stylesheet" href="risk_radar_workspace.css"><link rel="stylesheet" href="fear_greed_intelligence.css">{% endif %}
 {% if mode != 'stocks' %}
 <link rel="preload" href="/fonts/InterDisplay-600.woff2" as="font" type="font/woff2" crossorigin>
 {% endif %}
@@ -13661,12 +13661,26 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         {% set fg = fear_greed if fear_greed is defined else none %}
         {% if ff is not none or fe is not none or fg is not none %}
         {% set _fe_sc = (fe.fe_score if (fe is not none and fe.fe_score is defined and fe.fe_score is not none) else none) %}
-        {% set _fg_val = (fg.dial if (fg is not none and fg.dial is defined and fg.dial is not none) else none) %}
+        {% set _fgi = fg.intelligence if (fg is not none and fg.intelligence is defined and fg.intelligence) else none %}
+        {% set _fg_val = _fgi.score if _fgi else (fg.dial if (fg is not none and fg.dial is defined and fg.dial is not none) else none) %}
         {% set _ff_score = ((ff.score if (ff.score is defined and ff.score is not none) else (ff.headline if (ff.headline is defined and ff.headline is not none) else none)) if ff is not none else none) %}
         {% set _fe_band = (fe.band if (fe is not none and fe.band is defined and fe.band) else '') %}
-        {% set _fg_label = (fg.label_en if (fg is not none and fg.label_en is defined) else '') %}
+        {% set _fg_label = _fgi.label_en if _fgi else (fg.label_en if (fg is not none and fg.label_en is defined) else '') %}
         {% set _bandzh = {'Panic':'恐慌','Fear':'恐惧','Neutral':'中性','Greed':'贪婪','Euphoria':'欣喜','Extreme Fear':'极度恐惧','Extreme Greed':'极度贪婪'} %}
         <div class="rsx-mood" id="sentiment-regime">
+          {% if _fgi %}
+          <div id="fear-greed">
+          {% set fg_intelligence = _fgi %}{% set fgi_scope = 'fear-greed-dynamics' %}
+          {% set fgi_show_gauge = true %}{% set fgi_show_heading = false %}
+          {% include '_fear_greed_intelligence.html.j2' %}
+          </div>
+          {% if _fe_sc is not none %}
+          <details class="riskdlg-fold"><summary>{{ t('Separate risk-appetite context','独立的风险偏好背景') }}</summary>
+            <p>{{ t('Risk appetite','风险偏好') }}: <strong>{{ _fe_sc }}/100</strong> · {{ t(_fe_band, _bandzh.get(_fe_band, _fe_band)) }}.</p>
+            <p>{{ t('Five-year percentile of the existing risk-on/risk-off composite. This remains separate context, not an additional Fear & Greed vote.','现有风险偏好/避险合成指标的五年百分位。这是独立背景，并非恐惧与贪婪的额外投票。') }}</p>
+          </details>
+          {% endif %}
+          {% else %}
           <div class="riskdlg-sec-h">{{ t('Sentiment','情绪') }}
             {{ help('Two sentiment lenses on one 0-100 scale: risk appetite (5-yr percentile of the risk-on/risk-off composite) and the broader sentiment mix. Internal name: Fear ↔ Euphoria: regime synthesis. Display-only.','同一0-100刻度上的两把情绪尺：风险偏好（风险偏好/避险合成的5年百分位）与广义情绪合成。内部名称：恐惧 ↔ 欣喜：周期综合。仅供展示。') }}
           </div>
@@ -13692,13 +13706,13 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
             {% endif %}
             {% if _fg_val is not none %}
             <div class="rkc-mood-lens" id="fear-greed"
-                 data-tip-en="Fear / Greed sentiment context — equal-weight composite of {{ fg.n_legs_qualifying if (fg.n_legs_qualifying is defined) else '' }} qualifying indicators.{% if fg.young_tiles is defined and fg.young_tiles %} Context tiles still collecting (too young to count): {{ fg.young_tiles | map(attribute='name_en') | join(', ') }}.{% endif %} Display-only — not a signal."
-                 data-tip-zh="恐惧/贪婪情绪参考——{{ fg.n_legs_qualifying if (fg.n_legs_qualifying is defined) else '' }}项合格指标的等权合成。{% if fg.young_tiles is defined and fg.young_tiles %}以下指标数据尚短、暂不计入：{{ fg.young_tiles | map(attribute='name_zh') | join('、') }}。{% endif %}仅供展示，非信号。">
+                 data-tip-en="Fear / Greed sentiment context — {% if _fgi %}Six equally weighted families; {{ _fgi.coverage.available }} currently available. Not a probability.{% else %}Legacy equal-weight composite of {{ fg.n_legs_qualifying if (fg.n_legs_qualifying is defined) else '' }} qualifying indicators.{% endif %}{% if fg.young_tiles is defined and fg.young_tiles %} Context tiles still collecting (too young to count): {{ fg.young_tiles | map(attribute='name_en') | join(', ') }}.{% endif %} Display-only — not a signal."
+                 data-tip-zh="恐惧/贪婪情绪参考——{% if _fgi %}六类等权指标；当前{{ _fgi.coverage.available }}类有效。并非概率。{% else %}{{ fg.n_legs_qualifying if (fg.n_legs_qualifying is defined) else '' }}项合格指标的传统等权合成。{% endif %}{% if fg.young_tiles is defined and fg.young_tiles %}以下指标数据尚短、暂不计入：{{ fg.young_tiles | map(attribute='name_zh') | join('、') }}。{% endif %}仅供展示，非信号。">
               <div class="rkc-mood-lens-top">
-                <span class="rkc-mood-lens-name"><span class="l-en">Sentiment mix</span><span class="l-zh">情绪合成</span></span>
+                <span class="rkc-mood-lens-name"><span class="l-en">Fear &amp; Greed</span><span class="l-zh">恐惧与贪婪</span></span>
                 <span class="rkc-mood-scoreline">
                   <strong class="rkc-mood-score">{{ _fg_val }}</strong><span class="rkc-mood-unit">/100</span>
-                  <span class="chip {{ 'c-down' if _fg_val < 30 else ('c-up' if _fg_val >= 65 else 'c-muted') }}">{{ t(_fg_label, _bandzh.get(_fg_label, _fg_label)) if _fg_label else t('—','—') }}</span>
+                  <span class="chip {{ 'c-down' if _fg_val < 30 else ('c-up' if _fg_val >= 65 else 'c-muted') }}">{{ t(_fg_label, _fgi.label_zh if _fgi else _bandzh.get(_fg_label, _fg_label)) if _fg_label else t('—','—') }}</span>
                 </span>
               </div>
               <div class="rkc-mood-mini-track" role="img" aria-label="Sentiment mix {{ _fg_val }} out of 100">
@@ -13715,7 +13729,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
             <span>{{ t('Greed','贪婪') }}</span>
             <span>{{ t('Euphoria','欣喜') }}</span>
           </div>
-          <div class="rkc-mood-note">{{ t('Use both lenses to size risk — neither is a trade signal.','用两把尺共同控制仓位——两者都不是交易信号。') }}</div>
+          <div class="rkc-mood-note">{{ t('Assess risk with both lenses; neither is a trade signal.','用两把尺共同评估风险；两者都不是交易信号。') }}</div>
           {# Disagreement line (only when both present and |A-B| >= 25) #}
           {% if _fe_sc is not none and _fg_val is not none and (_fe_sc - _fg_val)|abs >= 25 %}
           <div class="rsx-disagree">
@@ -13728,6 +13742,13 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
             {% endif %}
           </div>
           {% endif %}
+          {% endif %}
+
+          {% if fg is not none %}
+          {% set fg_intelligence = _fgi %}{% set fgi_scope = 'fear-greed-dynamics' %}{% set fgi_show_gauge = false %}
+          {% include '_fear_greed_intelligence.html.j2' %}
+          {% endif %}
+
           {% endif %}
 
           {# Froth & Fragility sub-block — top-risk gauge #}

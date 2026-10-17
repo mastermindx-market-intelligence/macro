@@ -127,7 +127,7 @@
 #dlg-risk.rkw-ready .rkw-inspector-heading h2 { font-size:var(--fs-h1); font-weight:600; line-height:1.15; letter-spacing:-.03em; margin:8px 0 10px; color:var(--text); }
 #dlg-risk.rkw-ready .rkw-inspector-summary { color:var(--muted); font-size:var(--fs-body); line-height:1.5; margin-bottom:20px; }
 #dlg-risk.rkw-ready .rkw-context-nav { display:flex; overflow-x:auto; scrollbar-width:thin; gap:5px; margin-bottom:20px; padding:3px 2px 8px; }
-#dlg-risk.rkw-ready .rkw-context-nav button { min-height:38px; white-space:nowrap; font-size:var(--fs-sm); padding:7px 10px; color:var(--muted); border:1px solid var(--rkw-border); border-radius:var(--r-ctl,8px); cursor:pointer; background:none; }
+#dlg-risk.rkw-ready .rkw-context-nav button { flex:0 0 auto; min-height:38px; white-space:nowrap; font-size:var(--fs-sm); padding:7px 10px; color:var(--muted); border:1px solid var(--rkw-border); border-radius:var(--r-ctl,8px); cursor:pointer; background:none; }
 #dlg-risk.rkw-ready .rkw-context-nav button[aria-pressed="true"] { background:var(--panel2); border-color:var(--line); color:var(--text); }
 #dlg-risk.rkw-ready .rkw-inspector-content { min-width:0; overflow-wrap:anywhere; }
 #dlg-risk.rkw-ready .rkw-inspector-content > * { animation:rkw-reveal 180ms ease both; }

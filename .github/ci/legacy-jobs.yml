@@ -30035,6 +30035,14 @@ jobs:
       # Dashboard suites and the helper suites they import.
       - "tests/test_dashboard_template_render.py"
       - "tests/test_risk_radar_workspace.py"
+      # Fear/Greed extends this producer-to-dashboard owner; no new runner.
+      - "tests/test_fear_greed_intelligence.py"
+      - "tests/test_fear_greed.py"
+      - "tests/fear_greed_intelligence_browser.py"
+      - "scripts/research_fear_greed_intelligence.py"
+      - "templates/_fear_greed_intelligence.html.j2"
+      - "templates/fear_greed_intelligence.css"
+      - "site/fear_greed_intelligence.css"
       # #7798: source-dated Hottest Desk leadership/recommendation contract.
       - "tests/test_macro_sector_desk.py"
       # #7859: volatility-placement tests used to live only in gate:data
@@ -30207,6 +30215,7 @@ jobs:
           tests/test_macro_risk_dialog.py
           tests/test_risk_envelope_radar_integration.py
           tests/test_risk_radar_workspace.py
+          tests/test_fear_greed_intelligence.py
           tests/test_us_stocks_s2_compression.py
           tests/test_unified_dashboard_b2w2.py
           tests/test_ud_b2_w1_vw_fold.py

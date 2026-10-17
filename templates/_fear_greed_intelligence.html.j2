@@ -1,0 +1,84 @@
+{# Shared server-rendered view. No client-side scoring, fetch loop or duplicated feed. #}
+{% set FGI = fg_intelligence if fg_intelligence is defined else none %}
+<section class="fgi" id="{{ fgi_scope|default('fear-greed-dynamics')|e }}" data-fgi-version="{{ FGI.schema|e if FGI else 'unavailable' }}">
+  {% if FGI %}
+  {% set VD = FGI.dynamics %}{% set PV = FGI.pivot %}
+  {% if fgi_show_gauge|default(false) %}
+  {% if fgi_show_heading|default(true) %}
+  <header class="fgi-heading"><h2>{{ t('Fear & Greed','恐惧与贪婪') }}</h2><span>{{ FGI.as_of|e if FGI.as_of else '—' }}</span></header>
+  {% endif %}
+  <div class="fgi-scoreline"><strong>{{ FGI.score|round|int if FGI.score is not none else '—' }}</strong><span>/100</span><b>{{ t(FGI.label_en, FGI.label_zh) }}</b></div>
+  {% if FGI.score is not none %}<meter class="fgi-meter" min="0" max="100" value="{{ FGI.score }}" aria-label="Fear and greed / 恐惧与贪婪">{{ FGI.score }}</meter>{% endif %}
+  <div class="fgi-axis"><span>{{ t('Fear','恐惧') }}</span><span>{{ t('Balanced','均衡') }}</span><span>{{ t('Greed','贪婪') }}</span></div>
+  {% endif %}
+  <div class="fgi-state" data-fgi-phase="{{ VD.phase|e }}">
+    <div><span class="fgi-kicker">{{ t('Risk direction','风险方向') }}</span><h3>{{ t(VD.label_en, VD.label_zh) }}</h3><p>{{ t(PV.label_en, PV.label_zh) }}</p></div>
+    <div class="fgi-change"><span>{{ t('Five-session change','五个交易日变化') }}</span><strong>{{ '%+.1f'|format(FGI.change_5d) if FGI.change_5d is not none else '—' }}</strong><small>{{ t('sentiment points','情绪点数') }}</small></div>
+  </div>
+  <div class="fgi-coverage"><span>{{ FGI.coverage.available }}/{{ FGI.coverage.total }} {{ t('families reporting','类指标有效') }}</span><span>{{ t('Sentiment','情绪') }}: {{ FGI.as_of|e if FGI.as_of else '—' }} · VIX: {{ VD.as_of|e if VD.as_of else '—' }}</span></div>
+  {% if FGI.status == 'delayed' %}<p class="fgi-notice">{{ t('Sentiment awaits supporting feeds. Its dated snapshot is older than the VIX reading.','情绪读数正在等待支持数据。其带日期快照早于 VIX 读数。') }}</p>{% endif %}
+  {% if FGI.score is none %}<p class="fgi-notice">{{ t('Not enough fresh evidence for a sentiment score. Missing data is not calm.','新鲜证据不足，无法计算情绪分数。数据缺失不代表平静。') }}</p>{% endif %}
+  <p class="fgi-stance">{{ t(PV.stance_en, PV.stance_zh) }}</p>
+  <details class="fgi-details">
+    <summary>{{ t('Volatility & turning evidence','波动率与拐点证据') }}</summary>
+    <dl class="fgi-metrics">
+      <div><dt>VIX</dt><dd>{{ VD.vix if VD.vix is not none else '—' }}</dd><small>{{ t('30-day implied volatility','30天隐含波动率') }}</small></div>
+      <div><dt>{{ t('VIX velocity','VIX 速度') }}</dt><dd>{{ '%+.3f'|format(VD.velocity) if VD.velocity is not none else '—' }}</dd><small>{{ t('log-% per session · smoothed','每交易日对数百分比 · 已平滑') }}</small></div>
+      <div><dt>{{ t('VIX acceleration','VIX 加速度') }}</dt><dd>{{ '%+.3f'|format(VD.acceleration) if VD.acceleration is not none else '—' }}</dd><small>{{ t('change in velocity per session','每交易日速度变化') }}</small></div>
+      <div><dt>VIX / VIX3M</dt><dd>{{ '%.3f'|format(VD.term_ratio) if VD.term_ratio is not none else '—' }}</dd><small>{{ t('≥1: near-term inversion','≥1：短端倒挂') }}</small></div>
+      <div><dt>VIX9D / VIX</dt><dd>{{ '%.3f'|format(VD.front_ratio) if VD.front_ratio is not none else '—' }}</dd><small>{{ t('9-day versus 30-day pricing','9天对比30天定价') }}</small></div>
+      <div><dt>VVIX</dt><dd>{{ VD.vvix if VD.vvix is not none else '—' }}</dd><small>{{ t('implied vol-of-vol, not acceleration','隐含波动率的波动率，非加速度') }}</small></div>
+    </dl>
+    <p class="fgi-note">{{ t('VIX change over five sessions','VIX 五个交易日变化') }}: {{ '%+.2f'|format(VD.change_5d_points) if VD.change_5d_points is not none else '—' }} {{ t('points','点') }} ({{ '%+.2f'|format(VD.change_5d_pct) if VD.change_5d_pct is not none else '—' }}%). {{ t('Twenty sessions','二十个交易日') }}: {{ '%+.2f'|format(VD.change_20d_pct) if VD.change_20d_pct is not none else '—' }}%.</p>
+    <p class="fgi-note">{{ t('Historical ranks—not probabilities','历史排名，并非概率') }}: {{ t('level','水平') }} {{ VD.level_percentile if VD.level_percentile is not none else '—' }}/100 · {{ t('velocity','速度') }} {{ VD.velocity_percentile if VD.velocity_percentile is not none else '—' }}/100 · {{ t('acceleration','加速度') }} {{ VD.acceleration_percentile if VD.acceleration_percentile is not none else '—' }}/100. VVIX {{ t('five-session change','五日变化') }}: {{ '%+.2f'|format(VD.vvix_change_5d_pct) if VD.vvix_change_5d_pct is not none else '—' }}%.</p>
+    <p class="fgi-note">{{ t('Negative velocity with positive acceleration means relief is slowing—not that VIX is already rising.','负速度配合正加速度表示风险缓解正在放慢，并不表示 VIX 已开始上升。') }}</p>
+    <div class="fgi-vol-trails">
+      {% for key, en, zh in [('vix','VIX level','VIX 水平'),('velocity','Signed VIX velocity','VIX 有符号速度'),('acceleration','VIX acceleration','VIX 加速度')] %}
+      {% set values = VD.history|map(attribute=key)|reject('none')|list %}
+      {% if values and VD.history|length > 1 %}
+      {% set low = values|min %}{% set high = values|max %}
+      {% if key != 'vix' %}{% set low = [low, 0]|min %}{% set high = [high, 0]|max %}{% endif %}
+      {% if high == low %}{% set low = low - 0.5 %}{% set high = high + 0.5 %}{% endif %}
+      <figure><figcaption>{{ t(en, zh) }} <small>{{ low|round(2) }} {{ t('to','至') }} {{ high|round(2) }}</small></figcaption>
+        <svg viewBox="0 0 600 76" role="img" aria-label="{{ en|e }} / {{ zh|e }}" preserveAspectRatio="none">
+          {% if low <= 0 and high >= 0 %}<line class="fgi-midline" x1="0" x2="600" y1="{{ 70 - (0-low)/(high-low)*64 }}" y2="{{ 70 - (0-low)/(high-low)*64 }}"/>{% endif %}
+          {% for row in VD.history %}{% if loop.index0 > 0 and row[key] is not none and VD.history[loop.index0-1][key] is not none %}
+          <line class="fgi-trail-line" x1="{{ (loop.index0-1)*600/(VD.history|length-1) }}" y1="{{ 70 - (VD.history[loop.index0-1][key]-low)/(high-low)*64 }}" x2="{{ loop.index0*600/(VD.history|length-1) }}" y2="{{ 70 - (row[key]-low)/(high-low)*64 }}"><title>{{ row.date|e }}: {{ row[key] }}</title></line>
+          {% endif %}{% endfor %}
+        </svg>
+      </figure>{% endif %}{% endfor %}
+      <p class="fgi-note">{{ t('Last 60 sessions; separate scales. Missing observations break the lines. These are observed paths, not projected pivots.','最近60个交易日；各图刻度独立。缺失观测会使线条中断。这些是已观察路径，并非预测拐点。') }}</p>
+    </div>
+    <div class="fgi-checks">
+      {% for check in PV.checks %}<div><span>{{ t(check.name_en, check.name_zh) }}</span><b>{{ t('Improving','改善') if check.improving is sameas true else (t('Deteriorating','恶化') if check.worsening is sameas true else (t('Unchanged','不变') if check.improving is sameas false else t('Unavailable','不可用'))) }}</b></div>{% endfor %}
+    </div>
+    <p class="fgi-note">{{ t('A broadening read requires at least two closes in the same VIX direction, plus agreement from stocks, participation and credit. It describes confirmation already observed; it does not locate a future top or bottom.','扩散判断需要 VIX 至少连续两次收盘同向变化，并获得股价、参与度和信用的共同确认。这描述已观察到的确认，不定位未来顶部或底部。') }}</p>
+    {% if 'near_term_volatility_inverted' in FGI.warnings %}<p class="fgi-notice">{{ t('Near-term volatility remains inverted. Relief is not an all-clear.','短端波动率仍然倒挂。风险缓解不等于警报解除。') }}</p>{% endif %}
+    {% if 'vol_of_vol_not_confirming_relief' in FGI.warnings %}<p class="fgi-notice">{{ t('VVIX is rising while VIX eases: uncertainty about volatility has not eased with it.','VIX 缓解时 VVIX 仍在上升：对波动率的不确定性未同步缓解。') }}</p>{% endif %}
+    <p class="fgi-note">{{ t('VIX observation','VIX 观测日期') }}: {{ VD.as_of|e if VD.as_of else '—' }} · VVIX: {{ VD.vvix_as_of|e if VD.vvix_as_of else '—' }}. {{ t('Curve comparisons require matching dates.','期限比较必须使用相同日期。') }}</p>
+  </details>
+  <details class="fgi-details">
+    <summary>{{ t('Components, history & method','构成、历史与方法') }}</summary>
+    <div class="fgi-families">
+      {% for family in FGI.families %}<div><span>{{ t(family.name_en, family.name_zh) }}</span><strong>{{ family.score|round|int if family.score is not none else '—' }}</strong>{% if family.score is not none %}<meter min="0" max="100" value="{{ family.score }}" aria-label="{{ family.name_en|e }} / {{ family.name_zh|e }}">{{ family.score }}</meter>{% endif %}</div>{% endfor %}
+    </div>
+    <p class="fgi-note">{{ t(FGI.method_en, FGI.method_zh) }}</p>
+    <figure class="fgi-history">
+      <figcaption>{{ t('Recent sentiment history','近期情绪历史') }} <small>{{ t('0 = fear · 100 = greed','0＝恐惧 · 100＝贪婪') }}</small></figcaption>
+      <svg viewBox="0 0 600 110" role="img" aria-label="Recent reconstructed fear and greed history / 近期重建的恐惧与贪婪历史" preserveAspectRatio="none">
+        <line x1="0" x2="600" y1="55" y2="55" class="fgi-midline"/>
+        {% for row in FGI.history %}{% if row.score is not none %}<rect x="{{ loop.index0 * 10 }}" y="{{ 105 - row.score }}" width="7" height="{{ row.score }}"><title>{{ row.date|e }}: {{ row.score }} ({{ row.families }}/6)</title></rect>{% endif %}{% endfor %}
+      </svg>
+      <p class="fgi-note">{{ t('Reconstructed from dated observations, not publication-time vintages or a trading backtest. Changes are hidden when component coverage changes.','由带日期的观测值重建，并非发布时间版本或交易回测。构成覆盖变化时，不显示变化点数。') }}</p>
+    </figure>
+    <div class="fgi-table-wrap"><table><caption>{{ t('Transparent measures—not a copy of CNN’s proprietary normalization','透明指标，并非复制 CNN 的专有标准化') }}</caption><thead><tr><th>{{ t('Measure','指标') }}</th><th>{{ t('Greed score','贪婪分数') }}</th><th>{{ t('Observation','观测') }}</th></tr></thead><tbody>
+      {% for c in FGI.components %}<tr><th scope="row">{{ t(c.name_en, c.name_zh) }}<small>{{ c.formula|e }}</small><small>{{ c.source|e }}</small></th><td>{{ c.score|round|int if c.score is not none else '—' }}</td><td>{{ c.as_of|e if c.as_of else '—' }}<small>{{ t('Fresh','新鲜') if c.status == 'fresh' else (t('Short history','历史过短') if c.status == 'young' else (t('Not current','非当前') if c.status == 'stale' else t('Missing','缺失'))) }}</small></td></tr>{% endfor %}
+    </tbody></table></div>
+    <p class="fgi-note">{{ t('The put/call input combines available SPY, QQQ and IWM delayed-chain volumes. It is not the official Cboe equity put/call series; missing chains may change its coverage.', '看跌看涨输入合并可用的 SPY、QQQ 与 IWM 延迟期权链成交量。它不是 Cboe 官方股票看跌看涨比率；缺失期权链可能改变覆盖。') }}</p>
+    <p class="fgi-note">{{ t('SPY and TLT are proxies. Breadth covers our collected stock universe and uses advancing/declining stock counts, not CNN’s NYSE volume summation. Credit uses high-yield option-adjusted spreads, not a matched junk-versus-investment-grade yield spread.','SPY 与 TLT 为代理指标。广度覆盖我们收集的股票池，采用上涨和下跌家数，而非 CNN 的纽交所成交量累加。信用采用高收益期权调整利差，而非匹配的垃圾债与投资级收益率差。') }}</p>
+  </details>
+  <footer class="fgi-links"><a href="macro_signals.html#fear-greed-detail">{{ t('Study sentiment','研究情绪') }}</a><a href="transmission.html">{{ t('Explore transmission','查看传导') }}</a></footer>
+  {% else %}
+  <p class="fgi-notice">{{ t('Risk dynamics are not available in this published snapshot yet. The legacy sentiment reading is shown separately.','本次发布快照暂不包含风险动态。传统情绪读数单独展示。') }}</p>
+  {% endif %}
+</section>

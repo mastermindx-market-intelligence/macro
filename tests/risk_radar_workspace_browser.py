@@ -27,7 +27,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 
-def render_fixture(output: Path, source_ref: str) -> dict:
+def render_fixture(output: Path, source_ref: str, *, intelligence_path: Path | None = None) -> dict:
     from tests.test_dashboard_template_render import _base_vm, _env
 
     output.mkdir(parents=True, exist_ok=True)
@@ -65,6 +65,16 @@ def render_fixture(output: Path, source_ref: str) -> dict:
             "shadow_escalated": shadow.get("escalated"),
         }
     vm["fear_greed"] = snapshot("site/basketdata/fear_greed.json")
+    if intelligence_path is not None:
+        # Explicit candidate-engine fixture, NOT a claim of published source data.
+        raw_intelligence = intelligence_path.read_bytes()
+        intelligence = json.loads(raw_intelligence)
+        vm["fear_greed"]["intelligence"] = intelligence
+        inputs["candidate_engine/fear_greed_intelligence"] = {
+            "sha256": hashlib.sha256(raw_intelligence).hexdigest(),
+            "as_of": intelligence.get("as_of"),
+            "kind": "candidate_engine_fixture_not_published_snapshot",
+        }
     vm["vol_weather"] = snapshot("site/basketdata/vol_weather.json")
     vm["leadership_crack"] = snapshot("data/leadership_crack/latest.json")
     pulse = snapshot("site/basketdata/sector_pulse.json")
@@ -124,7 +134,8 @@ def render_fixture(output: Path, source_ref: str) -> dict:
         "presentation_sha256": {
             path: hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
             for path in ["templates/dashboard.html.j2", "templates/_risk_radar_workspace.html.j2",
-                         "templates/risk_radar_workspace.js", "templates/risk_radar_workspace.css"]
+                         "templates/risk_radar_workspace.js", "templates/risk_radar_workspace.css",
+                         "templates/_fear_greed_intelligence.html.j2", "templates/fear_greed_intelligence.css"]
         },
     }
     (output / "source-inputs.json").write_text(json.dumps(receipt, indent=2) + "\n")
