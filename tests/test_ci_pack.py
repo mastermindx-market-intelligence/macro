@@ -4681,6 +4681,9 @@ CURATED_EXCLUSIVE = {
     # 2026-10-11 PR #8758: bounded Data OS readers and canonical Lab access.
     # Register the reviewed 42-path owner; closure audits and ceilings stay fixed.
     "dataos-web-workspace",
+    # 2026-10-13 Data OS completion verification suites (Q01/Q02/Q03/F01/A01) - closure
+    # measured against main's own inference; seat applies the legacy-jobs.yml half.
+    "dataos-verification",
     # 2026-10-12 PR #8873: news-impact Phase 0 contract freeze. Owner closure is
     # company_intelligence/** plus earnings_narrative/contracts.py; ceilings stay fixed.
     "news-impact-contracts",
