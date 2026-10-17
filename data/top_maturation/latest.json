@@ -49745,7 +49745,7 @@
     }
   ],
   "_vintage": {
-    "generated_utc": "2026-10-17T06:02:16Z",
+    "generated_utc": "2026-10-17T17:51:33Z",
     "source": "scripts/build_top_maturation.py",
     "store_vintage": {
       "store": "massive_stock_day",
@@ -49797,7 +49797,7 @@
     "n_segments": 8280,
     "n_sessions": 1327,
     "trailing_sessions": 760,
-    "scan_seconds": 41.19,
+    "scan_seconds": 38.19,
     "readable": true,
     "n_extended": 167,
     "per_state": {
@@ -49968,7 +49968,7 @@
     "library_rows": 33598,
     "thresholds_present": true,
     "ext_variant_stamp": null,
-    "tier_seconds": 13.97,
+    "tier_seconds": 12.24,
     "n_themes": 10,
     "n_us_stock_metadata": 2858,
     "n_screened_post_intersection": 2625,
@@ -50145,7 +50145,7 @@
         "library_rows": 33598,
         "thresholds_present": true,
         "ext_variant_stamp": null,
-        "tier_seconds": 13.97,
+        "tier_seconds": 12.24,
         "n_themes": 10
       },
       "r63": {
@@ -50287,7 +50287,7 @@
         "library_rows": 29801,
         "thresholds_present": true,
         "ext_variant_stamp": "r63",
-        "tier_seconds": 12.75
+        "tier_seconds": 10.96
       },
       "atrz": {
         "readable": true,
@@ -50860,9 +50860,9 @@
         "library_rows": 123988,
         "thresholds_present": true,
         "ext_variant_stamp": "atrz",
-        "tier_seconds": 24.6
+        "tier_seconds": 24.41
       }
     },
-    "total_seconds": 109.38
+    "total_seconds": 103.13
   }
 }
