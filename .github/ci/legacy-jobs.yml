@@ -28584,6 +28584,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # MI W14 (2026-10-17): scripts/build_qbus_news_universe.py reads via the native parquet helper.
+      - lib/native_parquet.py
       - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
