@@ -106,6 +106,13 @@ html[data-theme="light"] .mx5-aurora .a4{ background:radial-gradient(ellipse, rg
 .rv-status-loading,.rv-lead-loading{ display:none; }
 html.rv-awaiting-live .rv-status-snapshot,html.rv-awaiting-live .rv-lead-snapshot{ display:none; }
 html.rv-awaiting-live .rv-status-loading,html.rv-awaiting-live .rv-lead-loading{ display:inline; }
+/* During slow live requests, numeric/taxonomy values from the cached HTML are
+   just as stale as the saved lead. Mask all four until the selected source is
+   explicitly labelled live, saved, or unavailable by finishCatalogPaint().
+   With JS OFF there is no loading class: the saved snapshot remains readable. */
+.rv-fig-loading{ display:none; }
+html.rv-awaiting-live .rv-fig-snapshot{ display:none; }
+html.rv-awaiting-live .rv-fig-loading{ display:inline; }
 html[data-theme="light"] .rv-eyebrow{ color:var(--rv); }
 .rv-eyebrow .dot{ width:7px; height:7px; border-radius:50%; background:var(--rv); box-shadow:0 0 0 4px var(--rv-dim); }
 .rv-hero h1{ font-weight:800; font-size:clamp(27px,3.4vw,40px); line-height:1.08; letter-spacing:-.022em;
@@ -626,10 +633,10 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
       {% set sum = summary or {} %}
       {% set desks = sum.institutions if sum.institutions is defined else [] %}
       <div class="rv-figs">
-        <div class="rv-fig"><span class="n" id="fig-new">{{ sum.new_this_week if sum.new_this_week is defined else '—' }}</span><div class="k">{{ t('New this week', '本周新增') }}</div></div>
-        <div class="rv-fig"><span class="n hl" id="fig-desks">{{ sum.desks_this_week if sum.desks_this_week is defined else '—' }}</span><div class="k">{{ t('Desks publishing', '在发机构') }}</div></div>
-        <div class="rv-fig"><span class="n sm" id="fig-theme">{{ sum.most_covered_theme or '—' }}</span><div class="k">{{ t('Most-covered theme', '覆盖最多主题') }}</div></div>
-        <div class="rv-fig"><span class="n" id="fig-total">{{ sum.total if sum.total is defined else '—' }}</span><div class="k">{{ t('In the vault', '库内总量') }}</div></div>
+        <div class="rv-fig"><span class="n"><span class="rv-fig-snapshot" id="fig-new">{{ sum.new_this_week if sum.new_this_week is defined else '—' }}</span><span class="rv-fig-loading" aria-hidden="true">—</span></span><div class="k">{{ t('New this week', '本周新增') }}</div></div>
+        <div class="rv-fig"><span class="n hl"><span class="rv-fig-snapshot" id="fig-desks">{{ sum.desks_this_week if sum.desks_this_week is defined else '—' }}</span><span class="rv-fig-loading" aria-hidden="true">—</span></span><div class="k">{{ t('Desks publishing', '在发机构') }}</div></div>
+        <div class="rv-fig"><span class="n sm"><span class="rv-fig-snapshot" id="fig-theme">{{ sum.most_covered_theme or '—' }}</span><span class="rv-fig-loading" aria-hidden="true">—</span></span><div class="k">{{ t('Most-covered theme', '覆盖最多主题') }}</div></div>
+        <div class="rv-fig"><span class="n"><span class="rv-fig-snapshot" id="fig-total">{{ sum.total if sum.total is defined else '—' }}</span><span class="rv-fig-loading" aria-hidden="true">—</span></span><div class="k">{{ t('In the vault', '库内总量') }}</div></div>
       </div>
     </div>
 
