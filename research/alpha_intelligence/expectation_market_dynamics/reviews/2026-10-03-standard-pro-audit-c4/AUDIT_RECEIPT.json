@@ -1,0 +1,143 @@
+{
+  "document_type": "bounded_audit_execution_receipt",
+  "date": "2026-10-03",
+  "project": "K3E Expectation Market Dynamics",
+  "review_mode": "standard_pro_no_deep_research_run",
+  "verdict": "REQUEST_CHANGES_ON_ORIGINAL_EXECUTION_HANDOFF_RETAIN_CORE_THESIS",
+  "original_inputs": [
+    {
+      "filename": "deep-research-report (3).md",
+      "bytes": 63585,
+      "sha256": "7367c76f0a58e76765f996cff879dca447af72878f0d2f8a3e8d7ac88996136f"
+    },
+    {
+      "filename": "Pasted text(4).txt",
+      "bytes": 29168,
+      "sha256": "9bb97d4e8c583d1a6c9e0454d1100ec5a1c1dc25d6e2f154648df34f581e0e5e"
+    }
+  ],
+  "source_pins": {
+    "macro_data_and_primary_source": "9d3fb88f59af7896d1d6060854a9c8c51af89414",
+    "documentation_parent": "7ce8e6dfaaa8b8effed2430e069e1efe73e47fa6",
+    "incumbent_pr_8312_head": "63fe5e92d305e34ba8bdd6578ccb56e97076d740",
+    "incumbent_earlier_data": "ff420e6841a2468e4b718340cff240abbef114f1",
+    "mastermind_governing_source_observed": "20adcaf65c2dd1bb734ab06e215feb1a0eb65659",
+    "terminal_source_observed": "41b8af2da46614cedd2a485214e53003d4f030fc",
+    "collector_blob_observed": "8f1d3d822543fd11e18b5a78b957259d43e4c164"
+  },
+  "incumbent_state_at_inspection": {
+    "root_issue": 8309,
+    "operation": "information-to-price-20261003-sol-001",
+    "workstream": "WS:ALPHA-INTELLIGENCE-INTEGRATION",
+    "source_pr": 8312,
+    "source_pr_open": true,
+    "source_pr_draft": true,
+    "source_pr_merged": false,
+    "source_pr_hold": "HOLD-FOR-SOL",
+    "canonical_src_a1_main_state": "BUILT_NOT_PROVEN",
+    "incumbent_proposed_physical_source_verdict": "PASS_PROPOSED_PROVEN_LIVE",
+    "exp_1": "CONDITIONAL_IMPLEMENTATION_REPORTED_UNDER_REVIEW_EXACT_CHILD_REVISION_NOT_OBTAINED",
+    "collector_collision_pr": 8064,
+    "collector_collision_head": "2fcedafa46b30e5b0fb74b779f72f6116ad9a0ee"
+  },
+  "audit_execution": {
+    "classification": "INDEPENDENT_EXECUTION_OF_UNCHANGED_INCUMBENT_ALGORITHM",
+    "separately_implemented_auditor": false,
+    "audit_code_sha256": "ec89a53116081627881dcfc082d4bd9e06de0c2264c315d013ee1136c480bc8e",
+    "as_of": "2026-10-03T06:31:51Z",
+    "exit_code": 0,
+    "input_assembly": "two_actual_github_parquet_blobs_at_same_explicit_macro_commit",
+    "reader_mode": "local_parquet",
+    "reader_reported_source_revision": null,
+    "reader_itself_attests_shared_historical_origin": false,
+    "readiness": "DIAGNOSTIC_ONLY",
+    "scope": "structural_on_declared_clocks_only",
+    "historical_availability_verified": false,
+    "public_information_reconstruction": "UNKNOWN",
+    "predictive_validation": false,
+    "inputs": {
+      "observations": {
+        "path": "data/revisions/expectation_observations.parquet",
+        "git_blob": "164919cf4c33e53ca7fcb8dad6e83bd4771b2ad1",
+        "bytes": 37020102,
+        "sha256": "3db55f485c01bd307f1419ff04f392ae5f1994d2e7d8071b977abe9bbb562b93"
+      },
+      "attempts": {
+        "path": "data/revisions/expectation_attempts.parquet",
+        "git_blob": "461f5b6312a64a236fb29a504091583f8ee3b23f",
+        "bytes": 1170213,
+        "sha256": "0e0bacc450ca21e93316f80a157095994eec08fc224775614afc5e90c760d89f"
+      }
+    },
+    "measured_counts": {
+      "observation_rows": 473200,
+      "attempt_rows": 8587,
+      "finite_measurements": 400509,
+      "true_null_measurements": 72691,
+      "declared_capture_structurally_eligible_rows": 400482,
+      "central_average_median_rows_with_declared_capture_support": 66860,
+      "missing_period_anchor_rows": 24612,
+      "retained_same_declared_anchor_pairs": 307399,
+      "retained_changed_value_basis_pairs": 49807,
+      "declared_rollover_pairs": 2561
+    },
+    "nonexclusive_dimension_flags": {
+      "canonical_identity": 473200,
+      "economic_basis": 473200,
+      "public_information": 473200,
+      "rights": 473200,
+      "integrity": 27,
+      "source_consistency": 2016,
+      "must_not_sum": true
+    },
+    "declared_clocks": {
+      "first_system_observation": "2026-08-25T03:40:06.778559Z",
+      "last_system_observation": "2026-10-02T12:20:08.635917Z",
+      "last_attempt_completed": "2026-10-03T06:06:23.903015Z"
+    },
+    "comparison_to_incumbent_frozen_report": {
+      "same_observation_bytes": true,
+      "earlier_attempt_count": 8583,
+      "current_attempt_count": 8587,
+      "independent_attempt_row_diff_completed": false,
+      "count_difference_is_not_append_only_proof": true
+    },
+    "financial_authority_flags_all_false": true
+  },
+  "test_execution": {
+    "classification": "INDEPENDENT_EXECUTION",
+    "passed": 34,
+    "failed": 0,
+    "warnings": 4,
+    "reported_seconds": 1.02,
+    "exit_code": 0,
+    "audit_cases": 23,
+    "acceptance_companion_cases": 11,
+    "initial_environment_failure": "scratch_copy_missing_lib_dependencies_resolved_by_fetching_exact_source",
+    "warning_scope": "unrelated_pytest_temporary_directory_cleanup_permission_warnings",
+    "incumbent_separate_legacy_subset_independently_run": false,
+    "provider_requests": false,
+    "application_code_changed": false
+  },
+  "not_performed": [
+    "deep_research_run",
+    "full_historical_parent_introduction_diff_reexecution",
+    "independent_four_additional_attempt_row_diff",
+    "source_pr_merge_or_hold_release",
+    "exact_exp_1_child_source_acceptance",
+    "live_terminal_transport_proof",
+    "complete_adjacent_runtime_requalification",
+    "vendor_sample_or_contract_rights_review",
+    "academic_empirical_replication",
+    "held_out_financial_outcome_inspection",
+    "model_training",
+    "collector_or_raw_data_mutation",
+    "cadence_change_or_backfill",
+    "procurement",
+    "runtime_deployment",
+    "worker_dispatch"
+  ],
+  "receipt_limit": "bounded_summary_of_successful_execution_not_full_transient_auditor_stdout",
+  "handoff_consumed_by_astra": false,
+  "project_implementation_complete": false
+}
