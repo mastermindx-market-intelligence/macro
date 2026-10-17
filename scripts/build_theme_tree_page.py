@@ -682,6 +682,21 @@ def _classify_abstention(
     return "basket_unmapped"
 
 
+def _abstention_entry(code: str, meta: dict) -> dict:
+    """One typed abstention line: the reason code plus the PUBLIC basket name.
+
+    Only public house baskets reach this helper, so the name shown is always
+    one the site already publishes; internal-only families never get here.
+    """
+    nid = str(meta.get("node_id") or "")
+    en = meta.get("name_en") if isinstance(meta.get("name_en"), str) else ""
+    zh = meta.get("name_zh") if isinstance(meta.get("name_zh"), str) else ""
+    return {
+        "code": code,
+        "basket": {"name_en": en or nid, "name_zh": zh or en or nid},
+    }
+
+
 def _empty_company_record(
     *,
     no_public_basket: bool = False,
@@ -908,7 +923,10 @@ def _build_ticker_lookup(
                         rec, meta, site_dir, member_edge_id,
                     ))
             else:
-                abstentions.append(_classify_abstention(basket_id, unmapped))
+                abstentions.append(_abstention_entry(
+                    _classify_abstention(basket_id, unmapped),
+                    basket_meta.get(basket_id, {"node_id": basket_id}),
+                ))
 
         record: dict = {
             "paths": paths,
@@ -955,7 +973,49 @@ def _ticker_lookup_json(
         log.warning("theme_tree: ticker lookup unavailable: %s", exc)
         return ""
 
-    payload = {"version": 1, "as_of": as_of, "records": full}
+    # Path-bearing companies ship whole. Every other company ships in a
+    # compact ``abstainers`` index (key → state string, or a list of
+    # ``[code, basket_index]`` pairs into ``basket_names``) so an abstaining
+    # ticker still renders its typed reason instead of "not found".
+    records: dict[str, dict] = {}
+    abstainers: dict[str, object] = {}
+    basket_names: list[dict] = []
+    name_index: dict[tuple[str, str], int] = {}
+    for key, rec in full.items():
+        if rec.get("paths"):
+            # Ship only what the page reads; the join key stays builder-side.
+            records[key] = {
+                "paths": [
+                    {k: v for k, v in path.items() if not k.startswith("_")}
+                    for path in rec["paths"]
+                ],
+                "micro": rec.get("micro"),
+                "abstentions": rec.get("abstentions") or [],
+            }
+            continue
+        if rec.get("no_public_basket"):
+            abstainers[key] = "no_public_basket"
+            continue
+        if rec.get("not_in_graph") or not rec.get("abstentions"):
+            abstainers[key] = "not_in_graph"
+            continue
+        pairs: list[list] = []
+        for a in rec["abstentions"]:
+            b = a.get("basket") or {}
+            nk = (str(b.get("name_en") or ""), str(b.get("name_zh") or ""))
+            if nk not in name_index:
+                name_index[nk] = len(basket_names)
+                basket_names.append({"name_en": nk[0], "name_zh": nk[1]})
+            pairs.append([a.get("code"), name_index[nk]])
+        abstainers[key] = pairs
+
+    payload = {
+        "version": 2,
+        "as_of": as_of,
+        "records": records,
+        "abstainers": abstainers,
+        "basket_names": basket_names,
+    }
     if hb.validate_no_forbidden_keys(payload):
         log.warning("theme_tree: ticker lookup refused by forbidden-key walk")
         return ""
@@ -964,30 +1024,20 @@ def _ticker_lookup_json(
     if len(raw.encode("utf-8")) <= _TICKER_BLOB_BUDGET_BYTES:
         return raw.replace("</", "<\\/")
 
-    # Budget exceeded → emit path-bearing companies only, plus a typed
-    # summary block so the JS can still show "not found" reasons (rather
-    # than disappearing). The abstaining companies are tallied in
-    # ``_summary``, never in ``records``.
-    summary = {"with_paths": 0, "no_paths": 0}
-    pruned: dict[str, dict] = {}
-    for key, rec in full.items():
-        if rec.get("paths"):
-            pruned[key] = rec
-            summary["with_paths"] += 1
-        else:
-            summary["no_paths"] += 1
-    dropped = summary["no_paths"]
+    # Budget exceeded → drop the abstainer index, keep path-bearing companies
+    # plus a typed summary count. The drop is logged (no silent cap).
+    summary = {"with_paths": len(records), "no_paths": len(abstainers)}
     log.warning(
         "theme_tree: ticker lookup %d KB > %d KB budget; "
-        "dropping %d abstaining companies (only %d path-bearing kept)",
+        "dropping the abstainer index (%d companies; %d path-bearing kept)",
         len(raw.encode("utf-8")) // 1024,
         _TICKER_BLOB_BUDGET_BYTES // 1024,
-        dropped, summary["with_paths"],
+        summary["no_paths"], summary["with_paths"],
     )
     payload = {
-        "version": 1,
+        "version": 2,
         "as_of": as_of,
-        "records": pruned,
+        "records": records,
         "_summary": summary,
     }
     if hb.validate_no_forbidden_keys(payload):

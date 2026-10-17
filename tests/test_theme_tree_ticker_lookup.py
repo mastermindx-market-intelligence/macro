@@ -400,7 +400,7 @@ def test_basket_not_a_theme_abstention():
     records = _records(nodes, edges)
     # NVDA → gold_miners (US, slug in crosswalk unmapped_baskets) → basket_not_a_theme
     rec = records["us:NVDA"]
-    assert "basket_not_a_theme" in rec["abstentions"]
+    assert "basket_not_a_theme" in [a["code"] for a in rec["abstentions"]]
     # NVDA ALSO has ai_compute → at least one path
     assert rec["paths"] and any(
         p["basket"]["name_en"] == "AI compute basket" for p in rec["paths"]
@@ -418,7 +418,7 @@ def test_market_not_wired_abstention():
     assert rec["paths"] == []
     assert rec["not_in_graph"] is False
     assert rec["no_public_basket"] is False
-    assert "market_not_wired" in rec["abstentions"]
+    assert "market_not_wired" in [a["code"] for a in rec["abstentions"]]
 
 
 def test_basket_unmapped_abstention():
@@ -431,7 +431,33 @@ def test_basket_unmapped_abstention():
     assert rec["paths"] == []
     assert rec["not_in_graph"] is False
     assert rec["no_public_basket"] is False
-    assert "basket_unmapped" in rec["abstentions"]
+    assert "basket_unmapped" in [a["code"] for a in rec["abstentions"]]
+
+
+def test_abstention_lines_name_the_public_basket():
+    nodes, edges = _fixtures_full()
+    rec = _records(nodes, edges)["hk:0700"]
+    entry = next(a for a in rec["abstentions"] if a["code"] == "market_not_wired")
+    assert entry["basket"]["name_en"] and entry["basket"]["name_zh"]
+    assert "ths" not in entry["basket"]["name_en"].lower()
+
+
+def test_blob_abstainer_index_carries_typed_reasons():
+    """Abstaining tickers ship in the compact index, never as "not found"."""
+    nodes, edges = _fixtures_full()
+    parsed = json.loads(_ticker_lookup_json(
+        REPO, nodes, edges, as_of="2026-06-01", knowledge_cutoff="2026-06-01",
+    ))
+    idx = parsed["abstainers"]
+    names = parsed["basket_names"]
+    assert idx["cn:THS"] == "no_public_basket"
+    pairs = idx["hk:0700"]
+    assert any(code == "market_not_wired" for code, _ in pairs)
+    assert all(0 <= i < len(names) for _, i in pairs)
+    for key in parsed["records"]:
+        assert key not in idx
+    for rec in parsed["records"].values():
+        assert rec["paths"]
 
 
 def test_abstention_classifier_handles_all_three_codes():

@@ -162,8 +162,8 @@ html[data-theme="light"] .tt-strip-tick{background:var(--text);opacity:.6}
 }
 
 /* ── U3 — ticker lookup (search field + result panel) ── */
-.tt-lookup{display:flex;align-items:center;gap:10px;margin:14px 0 8px;padding:10px 14px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel);flex-wrap:wrap}
-html[data-theme="dark"] .tt-lookup{box-shadow:var(--card-shadow)}
+.tt-lookup{display:flex;align-items:center;gap:10px;margin:14px 0 8px;padding:10px 14px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2);box-shadow:inset 0 1px 0 var(--line);flex-wrap:wrap}
+html[data-theme="light"] .tt-lookup{background:var(--panel);box-shadow:var(--card-shadow)}
 .tt-lookup-label{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap}
 .tt-lookup-input{flex:1 1 180px;min-width:160px;background:transparent;border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:8px 12px;font-size:14px;color:var(--text);font-family:var(--font-ui);outline:none}
 .tt-lookup-input::placeholder{color:var(--muted)}
@@ -175,6 +175,8 @@ html[data-theme="dark"] .tt-lookup{box-shadow:var(--card-shadow)}
 .tt-ticker-not-found{color:var(--ink-warn,var(--warn));font-weight:700}
 .tt-ticker-empty-public{font-style:italic}
 .tt-ticker-abst li{margin:2px 0}
+.tt-ticker-match + .tt-ticker-match{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.tt-ticker-market{display:block;margin:0 0 6px;font-size:12px;font-weight:700;color:var(--muted)}
 .tt-detail-sec + .tt-detail-sec{margin-top:10px}
 </style>
 </head>
@@ -417,11 +419,8 @@ html[data-theme="dark"] .tt-lookup{box-shadow:var(--card-shadow)}
     <h2 class="tt-detail-name" id="tt-ticker-name"></h2>
     <button type="button" class="tt-detail-close" data-close aria-label="Close">×</button>
   </div>
-  <ul class="tt-detail-paths tt-ticker-paths"></ul>
-  <p class="tt-ticker-micro"></p>
-  <ul class="tt-ticker-abst"></ul>
-  <p class="tt-ticker-empty-public" hidden></p>
-  <p class="tt-ticker-not-found" hidden></p>
+  <div class="tt-ticker-body"></div>
+  <p class="tt-ticker-not-found" hidden><span class="l-en">No company with that ticker on this map.</span><span class="l-zh">图中没有该代码的公司。</span></p>
 </aside>
 <script type="application/json" id="tt-ticker-data">{{ tree.ticker_lookup_json|safe }}</script>
 {% endif %}
@@ -534,17 +533,35 @@ html[data-theme="dark"] .tt-lookup{box-shadow:var(--card-shadow)}
 (function(){
   // U3 — "Why is this company here?" ticker lookup. textContent only;
   // data is the JSON blob built at compose() time and refuses any forbidden
-  // value key, so we never need to sanitise names here.
+  // value key, so we never need to sanitise names here. Every line is
+  // emitted in both languages (l-en/l-zh) so a language toggle re-reads it.
   var blob=document.getElementById('tt-ticker-data');
   var input=document.getElementById('tt-lookup-input');
   var card=document.getElementById('tt-ticker-result');
   if(!blob||!input||!card)return;
   var data;try{data=JSON.parse(blob.textContent);}catch(e){return;}
   var records=(data&&data.records)||{};
-  var summary=(data&&data._summary)||null;
+  var abstainers=(data&&data.abstainers)||{};
+  var names=(data&&data.basket_names)||[];
+  var MARKET={us:['US','美股'],cn:['China A-shares','A股'],hk:['Hong Kong','港股'],intl:['International','国际'],ca:['Canada','加拿大']};
+  var bySymbol={};
+  // Exact symbol, plus for non-US listings the code without its exchange
+  // suffix and without leading zeros, so "0700", "700" and "0700.HK" all
+  // find Tencent. US symbols (BRK.B) stay exact.
+  function aliases(mk,sym){
+    var out=[sym];
+    if(mk!=='us'){var dot=sym.lastIndexOf('.');var bare=dot>0?sym.slice(0,dot):sym;out.push(bare);
+      if(/^[0-9]+$/.test(bare))out.push(bare.replace(/^0+(?=.)/,''));}
+    return out;
+  }
+  function index(k){
+    var i=k.indexOf(':');if(i<0)return;
+    var mk=k.slice(0,i),sym=k.slice(i+1).toUpperCase();
+    aliases(mk,sym).forEach(function(a){var l=(bySymbol[a]=bySymbol[a]||[]);if(l.indexOf(k)<0)l.push(k);});
+  }
+  Object.keys(records).forEach(index);Object.keys(abstainers).forEach(index);
 
   function el(tag,cls){var n=document.createElement(tag);if(cls)n.className=cls;return n;}
-  function txt(n,s){n.textContent=typeof s==='string'?s:'';return n;}
   function clear(n){while(n.firstChild)n.removeChild(n.firstChild);}
   function bi(parent,en,zh){
     var a=el('span','l-en');a.textContent=en;
@@ -552,116 +569,85 @@ html[data-theme="dark"] .tt-lookup{box-shadow:var(--card-shadow)}
     parent.appendChild(a);parent.appendChild(b);
     return parent;
   }
-  function chainName(chain,lang){
-    return chain.map(function(x){
-      return lang==='zh'?(x.name_zh||x.name_en):(x.name_en||x.node_id);
-    }).join(lang==='zh'?' › ':' › ');
+  function nm(x,lang){return lang==='zh'?(x.name_zh||x.name_en||''):(x.name_en||x.node_id||'');}
+  function chainText(rec,lang){
+    var chain=rec.chain||[];
+    var cat=chain.length?chain[0]:null;
+    var theme=chain.length?chain[chain.length-1]:null;
+    if(cat&&theme&&cat.node_id!==theme.node_id)return ' → '+nm(cat,lang)+' › '+nm(theme,lang);
+    return theme?' → '+nm(theme,lang):'';
   }
-  function basketLabel(basket,lang){
-    return lang==='zh'?(basket.name_zh||basket.name_en):(basket.name_en||'');
-  }
-  function basketLine(rec,lang){
+  function pathLine(li,rec){
     var basket=rec.basket||{};
-    var cat=rec.chain&&rec.chain.length?rec.chain[0]:null;
-    var theme=rec.chain&&rec.chain.length?rec.chain[rec.chain.length-1]:null;
-    var parts=[];
-    parts.push((lang==='zh'?'在':'In ')+basketLabel(basket,lang));
-    if(cat&&theme&&cat.node_id!==theme.node_id){
-      parts.push((lang==='zh'?' → ':' → ')+(lang==='zh'?(cat.name_zh||cat.name_en):(cat.name_en||cat.node_id)));
-      parts.push((lang==='zh'?' › ':' › ')+(lang==='zh'?(theme.name_zh||theme.name_en):(theme.name_en||theme.node_id)));
-    }else if(theme){
-      parts.push((lang==='zh'?' → '+ (theme.name_zh||theme.name_en):' → '+ (theme.name_en||theme.node_id)));
-    }
-    return parts.join('');
+    [['en','In '],['zh','在']].forEach(function(l){
+      var sp=el('span','l-'+l[0]);
+      sp.appendChild(document.createTextNode(l[1]));
+      var name=nm(basket,l[0]);
+      if(basket.href){var a=el('a');a.href=basket.href;a.textContent=name;sp.appendChild(a);}
+      else sp.appendChild(document.createTextNode(name));
+      sp.appendChild(document.createTextNode(chainText(rec,l[0])));
+      li.appendChild(sp);
+    });
+    return li;
   }
-  function abstentionText(code,basketName,lang){
-    if(code==='basket_not_a_theme'){
-      return lang==='zh'?(basketName+'是市场视角，不是主题'):(basketName+' is a market lens, not a theme');
-    }
-    if(code==='market_not_wired'){
-      return lang==='zh'?(basketName+'：该市场的主题关联尚未建立'):(basketName+': theme links for this market are not built yet');
-    }
-    if(code==='basket_unmapped'){
-      return lang==='zh'?(basketName+'：尚未关联主题'):(basketName+': not linked to a theme yet');
-    }
-    return basketName;
+  function abstentionText(code,basket,lang){
+    var n=nm(basket||{},lang);
+    if(code==='basket_not_a_theme')return lang==='zh'?(n+'是市场视角，不是主题'):(n+' is a market lens, not a theme');
+    if(code==='market_not_wired')return lang==='zh'?(n+'：该市场的主题关联尚未建立'):(n+': theme links for this market are not built yet');
+    return lang==='zh'?(n+'：尚未关联主题'):(n+': not linked to a theme yet');
   }
+  function line(cls,en,zh){var p=el('p',cls);bi(p,en,zh);return p;}
+  function abstList(entries){
+    var ul=el('ul','tt-ticker-abst');
+    entries.forEach(function(a){var li=el('li');bi(li,abstentionText(a.code,a.basket,'en'),abstentionText(a.code,a.basket,'zh'));ul.appendChild(li);});
+    return ul;
+  }
+  function match(key){
+    var sec=el('section','tt-ticker-match');
+    var mk=key.slice(0,key.indexOf(':'));var m=MARKET[mk]||[mk,mk];
+    bi(sec.appendChild(el('span','tt-ticker-market')),m[0],m[1]);
+    var rec=records[key];
+    if(rec){
+      var ul=el('ul','tt-detail-paths tt-ticker-paths');
+      (rec.paths||[]).forEach(function(p){ul.appendChild(pathLine(el('li'),p));});
+      sec.appendChild(ul);
+      if(rec.micro==='micro_not_wired')sec.appendChild(line('tt-ticker-micro','Micro-theme: not yet linked for this basket','细分主题：该篮子尚未关联'));
+      if(rec.abstentions&&rec.abstentions.length)sec.appendChild(abstList(rec.abstentions));
+      return sec;
+    }
+    var a=abstainers[key];
+    if(Array.isArray(a)&&a.length){
+      sec.appendChild(abstList(a.map(function(pr){return {code:pr[0],basket:names[pr[1]]||{}};})));
+    }else{
+      sec.appendChild(line('tt-ticker-empty-public','Not in any public basket yet.','暂未纳入任何公开篮子。'));
+    }
+    return sec;
+  }
+  function open(){card.hidden=false;document.body.classList.add('tt-detail-open');}
   function close(){
     if(card.hidden)return;
     card.hidden=true;document.body.classList.remove('tt-detail-open');
   }
-  function hide(p){p.hidden=true;p.textContent='';}
-  function show(p,s){p.hidden=false;p.textContent=s;}
-  function renderEmpty(lang){
-    var name=card.querySelector('.tt-detail-name');clear(name);bi(name,'','');
-    var paths=card.querySelector('.tt-ticker-paths');clear(paths);
-    var micro=card.querySelector('.tt-ticker-micro');hide(micro);
-    var abst=card.querySelector('.tt-ticker-abst');clear(abst);abst.hidden=true;
-    var empt=card.querySelector('.tt-ticker-empty-public');hide(empt);
-    var nf=card.querySelector('.tt-ticker-not-found');hide(nf);
-  }
-  function showResult(key){
-    var rec=records[key];
-    var nameEl=card.querySelector('.tt-detail-name');clear(nameEl);
-    var lang=(document.documentElement.getAttribute('data-lang')||'')==='zh'?'zh':'en';
-    var parts=key.split(':');
-    bi(nameEl,parts[0],parts[0]);
-    if(parts[1]){var sub=el('span');sub.style.fontWeight='600';sub.style.marginLeft='6px';sub.style.color='var(--muted)';sub.textContent='· '+parts[1];nameEl.appendChild(sub);}
-    var pathsEl=card.querySelector('.tt-ticker-paths');clear(pathsEl);
-    var microEl=card.querySelector('.tt-ticker-micro');
-    var abstEl=card.querySelector('.tt-ticker-abst');clear(abstEl);abstEl.hidden=true;
-    var emptyEl=card.querySelector('.tt-ticker-empty-public');hide(emptyEl);
-    var nfEl=card.querySelector('.tt-ticker-not-found');hide(nfEl);
-    if(!rec){
-      show(nfEl, lang==='zh'?'图中没有该代码的公司。':'No company with that ticker on this map.');
-      card.hidden=false;document.body.classList.add('tt-detail-open');
-      return;
-    }
-    (rec.paths||[]).forEach(function(p){
-      var li=el('li');bi(li,basketLine(p,'en'),basketLine(p,'zh'));pathsEl.appendChild(li);
-    });
-    if(rec.micro==='micro_not_wired'){
-      show(microEl, lang==='zh'?'细分主题：该篮子尚未关联':'Micro-theme: not yet linked for this basket');
-    }else{hide(microEl);}
-    if(rec.no_public_basket){
-      show(emptyEl, lang==='zh'?'暂未纳入任何公开篮子。':'Not in any public basket yet.');
-    }else if(rec.not_in_graph){
-      show(emptyEl, lang==='zh'?'暂未纳入任何公开篮子。':'Not in any public basket yet.');
-    }
-    if(rec.abstentions&&rec.abstentions.length){
-      abstEl.hidden=false;
-      rec.abstentions.forEach(function(code){
-        var li=el('li');txt(li,abstentionText(code,'',lang));abstEl.appendChild(li);
-      });
-    }
-    card.hidden=false;document.body.classList.add('tt-detail-open');
-  }
   function lookup(raw){
-    if(!raw){close();return;}
-    var s=raw.trim().toUpperCase();
+    var s=(raw||'').trim().toUpperCase();
     if(!s){close();return;}
-    var match=null;
-    Object.keys(records).forEach(function(k){
-      var parts=k.split(':');
-      if(parts[1]===s)match=k;
-    });
-    if(!match){
-      // try same ticker across markets — already covered by the loop above
-      // (records are flat). Show not-found in that case.
-      showResult(null);
-      return;
-    }
-    showResult(match);
+    var nameEl=card.querySelector('.tt-detail-name');clear(nameEl);nameEl.textContent=s;
+    var body=card.querySelector('.tt-ticker-body');clear(body);
+    var nf=card.querySelector('.tt-ticker-not-found');
+    var keys=(bySymbol[s]||bySymbol[s.replace(/^0+(?=.)/,'')]||[]).slice().sort();
+    nf.hidden=keys.length>0;
+    keys.forEach(function(k){body.appendChild(match(k));});
+    open();
   }
   input.addEventListener('keydown',function(e){
     if(e.key==='Enter'){e.preventDefault();lookup(input.value);}
-    else if(e.key==='Escape'){input.value='';close();input.focus();}
+    else if(e.key==='Escape'){e.stopPropagation();input.value='';close();input.focus();}
   });
   document.addEventListener('click',function(e){
-    if(e.target.closest('#tt-ticker-result [data-close]')){close();return;}
+    if(e.target.closest('#tt-ticker-result [data-close]')){close();input.focus();return;}
   });
   document.addEventListener('keydown',function(e){
-    if(e.key==='Escape'&&!card.hidden){close();}
+    if(e.key==='Escape'&&!card.hidden){close();input.focus();}
   });
 })();
 </script>
