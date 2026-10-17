@@ -645,7 +645,21 @@ def extract_max_literals(source: str) -> dict[str, int]:
     return dict(sorted(out.items()))
 
 
+def _ensure_commit(repo: Path, sha: str) -> None:
+    """A spec-pinned commit is a landed `origin/main` ancestor, but the CI pack checkout is
+    `fetch-depth: 1`, so it can be absent locally. Mirror ci.yml's own remedy for the
+    contract-delta merge base: one `git fetch --depth=1 origin <sha>`. A full clone
+    answers the probe and never reaches the fetch."""
+    probe = subprocess.run(["git", "-C", str(repo), "cat-file", "-e", f"{sha}^{{commit}}"],
+                           capture_output=True, text=True, timeout=30)
+    if probe.returncode == 0:
+        return
+    subprocess.run(["git", "-C", str(repo), "fetch", "--quiet", "--depth=1", "origin", sha],
+                   check=True, capture_output=True, text=True, timeout=300)
+
+
 def git_show(repo: Path, sha: str, path: str) -> str:
+    _ensure_commit(repo, sha)
     proc = subprocess.run(["git", "-C", str(repo), "show", f"{sha}:{path}"],
                           check=True, capture_output=True, text=True, timeout=30)
     return proc.stdout
