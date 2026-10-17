@@ -213,7 +213,10 @@ jobs:
           key: midcap-closes-${{ github.run_id }}
           restore-keys: midcap-closes-
       - name: restore Russell 2000 breadth close cache
-        uses: actions/cache@v4
+        # This is now restore-only: the qualified same-run cache is explicitly
+        # saved immediately after collection, so an unrelated late Git failure
+        # cannot suppress the cache post-step (Oct 16 GH001 reproduction).
+        uses: actions/cache/restore@v4
         with:
           path: data/russell_breadth/_closes_cache.parquet
           key: russell-closes-${{ github.run_id }}
@@ -381,7 +384,79 @@ jobs:
           # sam_gov_opportunities is excluded because government-revenue-live.yml
           # is its sole serialized ledger owner. Two workflows must never merge and
           # overwrite the same revision/document Parquets concurrently.
+          # Existing collector step exposes one run-local time fence; the source
+          # must have been evaluated in THIS execution, not merely earlier on
+          # the same completed market session.
+          echo "started_at=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
           python -m scripts.collect --exclude-group asia --exclude sam_gov_opportunities --skip-shadow-importance
+      - name: qualify Russell same-run cache handoff
+        # Do not treat a green collectors job, frozen partial cold cache, or a
+        # prior checked_at as proof of current source. Read the incumbent
+        # source status/NYSE owner, then publish a same-run cache ONLY if ready.
+        if: steps.collectors.outcome == 'success'
+        id: russell_cache_ready
+        continue-on-error: true  # this transport must not veto the market checkpoint
+        env:
+          RUSSELL_COLLECT_STARTED_AT: ${{ steps.collectors.outputs.started_at }}
+        run: |
+          python - <<'PY_RUSSELL_HANDOFF'
+          import json
+          import os
+          from datetime import datetime, time, timezone
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+          from lib.nyse_calendar import expected_last_session
+
+          expected = expected_last_session()
+          close_utc = datetime.combine(
+              expected, time(16), tzinfo=ZoneInfo("America/New_York")
+          ).astimezone(timezone.utc)
+          receipt = {}
+          try:
+              receipt = json.loads(Path("data/run_status.json").read_text())
+          except (OSError, ValueError, TypeError):
+              pass
+          source = ((receipt.get("sources") or {}).get("russell_breadth") or {})
+          def parse_utc(stamp):
+              if not isinstance(stamp, str):
+                  return None
+              try:
+                  instant = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+                  if instant.tzinfo is None:
+                      instant = instant.replace(tzinfo=timezone.utc)
+                  return instant.astimezone(timezone.utc)
+              except ValueError:
+                  return None
+
+          checked = parse_utc(source.get("checked_at"))
+          finished = parse_utc(receipt.get("last_run"))
+          started = parse_utc(os.environ.get("RUSSELL_COLLECT_STARTED_AT"))
+          now = datetime.now(timezone.utc)
+          cache = Path("data/russell_breadth/_closes_cache.parquet")
+          qualified = (
+              source.get("status") == "ok"
+              and source.get("last_date") == expected.isoformat()
+              and started is not None and finished is not None and checked is not None
+              and close_utc <= started <= finished <= checked <= now
+              and cache.is_file() and cache.stat().st_size > 0
+          )
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"qualified={'true' if qualified else 'false'}\n")
+          if qualified:
+              print("::notice title=Russell cache handoff::qualified completed-session source; ready for same-run save")
+          else:
+              print("::warning title=Russell cache handoff withheld::missing/unqualified current Russell source; engine remains exact-key-only")
+          PY_RUSSELL_HANDOFF
+      - name: save qualified Russell close cache before market git push
+        # The normal late Git push can fail independently (GH001/credentials).
+        # Keep the same-run producer→engine cache authoritative only when the
+        # original Russell collector actually qualified the current session.
+        if: steps.russell_cache_ready.outputs.qualified == 'true'
+        continue-on-error: true  # cache outage cannot hold collected market data
+        uses: actions/cache/save@v4
+        with:
+          path: data/russell_breadth/_closes_cache.parquet
+          key: russell-closes-${{ github.run_id }}
       - name: refresh Finviz themes snapshot (subsector-rotation feed; non-fatal)
         # The only network leg for the themes map + Subsector Rotation. Refreshes
         # data/themes_heatmap/perf_snapshot.json (stamped with asof) so the rotation
