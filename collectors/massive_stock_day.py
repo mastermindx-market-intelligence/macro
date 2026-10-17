@@ -741,6 +741,7 @@ def repair_processed_day_missing_members(day: date, tickers: tuple[str, ...]) ->
     # Preflight every original ticker before network access. A corrupt/missing
     # file cannot be replaced with one day, even when the global store is large.
     original: dict[str, tuple[Path, pd.DataFrame, str]] = {}
+    file_identity: dict[str, tuple[int, int, int, int]] = {}
     missing: list[str] = []
     for ticker in tickers:
         path = _ticker_path(ticker)
@@ -750,13 +751,18 @@ def repair_processed_day_missing_members(day: date, tickers: tuple[str, ...]) ->
                 raise ValueError("not an original sole-linked regular Parquet")
             encoded = path.read_bytes()
             frame = pd.read_parquet(path)
+            required = {"open", "high", "low", "close", "volume", "transactions"}
             if (not isinstance(frame.index, pd.DatetimeIndex)
                     or frame.index.tz is not None
                     or frame.index.has_duplicates or frame.empty
-                    or "close" not in frame.columns):
-                raise ValueError("invalid existing original price series")
+                    or not frame.index.equals(frame.index.normalize())
+                    or not frame.columns.is_unique
+                    or not required.issubset(frame.columns)):
+                raise ValueError("invalid existing original daily OHLCV price series")
         except (OSError, ValueError, TypeError, KeyError):
             return {"status": "REFUSED", "reason": "SOURCE_MEMBER_UNREADABLE"}
+        file_identity[ticker] = (info.st_dev, info.st_ino, info.st_nlink,
+                                 stat.S_IMODE(info.st_mode))
         original[ticker] = (path, frame, hashlib.sha256(encoded).hexdigest())
         if pd.Timestamp(day) not in frame.index:
             missing.append(ticker)
@@ -815,7 +821,15 @@ def repair_processed_day_missing_members(day: date, tickers: tuple[str, ...]) ->
                 return {"status": "REFUSED", "reason": "SOURCE_REPAIR_STAGING_UNVERIFIED"}
         for ticker in missing:
             path, _, digest = original[ticker]
-            if hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+            # A concurrent source writer can replace a file with IDENTICAL
+            # encoded bytes but a different inode. Byte equality alone is not
+            # original source-object identity.
+            current = os.lstat(path)
+            current_id = (current.st_dev, current.st_ino, current.st_nlink,
+                          stat.S_IMODE(current.st_mode))
+            if (not stat.S_ISREG(current.st_mode)
+                    or current_id != file_identity[ticker]
+                    or hashlib.sha256(path.read_bytes()).hexdigest() != digest):
                 return {"status": "REFUSED", "reason": "ORIGINAL_SOURCE_CHANGED"}
         conflict = sidecar_change()
         if conflict:

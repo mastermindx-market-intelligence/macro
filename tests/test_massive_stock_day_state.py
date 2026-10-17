@@ -516,3 +516,57 @@ def test_operator_repair_refuses_changed_original_manifest_during_vendor_fetch(
     assert msd._ticker_path("AAPL").read_bytes()==original
     assert msd._backfill_state_path().read_bytes()==original_state
     assert json.loads(manifest.read_text())["updated_at"]=="2026-10-16T15:00:00+00:00"
+
+
+
+@pytest.mark.parametrize("defect", ["missing_open", "intraday_index"])
+def test_operator_repair_refuses_malformed_original_price_series_before_source_fetch(
+    store, defect,
+):
+    """Do not introduce null OHLC or a second daily bar into legacy source."""
+    msd.backfill(start=DAYS[0], end=DAYS[3])
+    _remove_bar("AAPL", DAYS[2])
+    path=msd._ticker_path("AAPL")
+    rows=pd.read_parquet(path)
+    if defect=="missing_open":
+        rows=rows.drop(columns=["open"])
+    else:
+        rows.index=rows.index+pd.Timedelta(hours=13)
+    rows.to_parquet(path)
+    before=path.read_bytes()
+    state=msd._backfill_state_path().read_bytes()
+    manifest=msd._manifest_path().read_bytes()
+    store["calls"].clear()
+    output=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert output["status"]=="REFUSED"
+    assert output["reason"]=="SOURCE_MEMBER_UNREADABLE"
+    assert store["calls"]==[]
+    assert path.read_bytes()==before
+    assert msd._backfill_state_path().read_bytes()==state
+    assert msd._manifest_path().read_bytes()==manifest
+
+
+def test_operator_repair_rejects_same_bytes_changed_original_inode(store, monkeypatch):
+    """Same bytes do not imply the original source file remains the same object."""
+    import os
+    msd.backfill(start=DAYS[0], end=DAYS[3])
+    _remove_bar("AAPL", DAYS[2])
+    path=msd._ticker_path("AAPL")
+    before=path.read_bytes()
+    initial_inode=os.lstat(path).st_ino
+    state=msd._backfill_state_path().read_bytes()
+    manifest=msd._manifest_path().read_bytes()
+    def concurrent(*args, **kwargs):
+        replacement=path.with_name("AAPL.inode-rotation.tmp")
+        replacement.write_bytes(before)
+        os.replace(replacement,path)
+        assert os.lstat(path).st_ino!=initial_inode
+        return _day_frame(DAYS[2])
+    monkeypatch.setattr(msd,"fetch_aggs",concurrent)
+    output=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert output["status"]=="REFUSED"
+    assert output["reason"]=="ORIGINAL_SOURCE_CHANGED"
+    assert path.read_bytes()==before
+    assert DAYS[2] not in set(msd.load_ticker("AAPL").index.date)
+    assert msd._backfill_state_path().read_bytes()==state
+    assert msd._manifest_path().read_bytes()==manifest
