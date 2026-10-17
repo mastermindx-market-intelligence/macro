@@ -214,6 +214,10 @@ def dispatch(workspace: DataWorkspace, request: dict, *, config_path: Path) -> d
             {"root", "path", "offset", "limit", "expected_directory_version"}, {"root"}))
     if action == "describe":
         return workspace.describe(**_fields(args, {"ref"}, {"ref"}))
+    if action == "read" and "view" in args:
+        return workspace.read_view(**_fields(args,
+            {"ref", "columns", "time_column", "start", "end", "equals", "offset", "limit", "expected_version", "view"},
+            {"ref", "view"}))
     if action == "read":
         return workspace.read(**_fields(args,
             {"ref", "columns", "time_column", "start", "end", "equals", "offset", "limit", "expected_version"},
@@ -264,6 +268,9 @@ def dispatch(workspace: DataWorkspace, request: dict, *, config_path: Path) -> d
             unsupported_formats="metadata only; use the existing owner decoder",
             max_response_bytes=MAX_RESPONSE_BYTES, max_rows_per_read=200,
             max_scan_rows_per_read=100000, max_request_bytes=MAX_REQUEST_BYTES,
+            read_view={"modes": ["CURRENT"], "refused_modes": ["RECONSTRUCT", "REPLAY"],
+                       "refusal_prefix": "VIEW_REFUSED_", "generation_token": "statv1",
+                       "generation_basis": "statv1_file_version_not_a_producer_generation"},
             lab={"max_refs": 8, "max_rows_per_ref": 20000, "max_total_rows": 80000,
                  "wall_limit_seconds": MAX_LAB_WALL_SECONDS,
                  "bar_frequency": "daily", "canonical_annualization_periods": 252,
