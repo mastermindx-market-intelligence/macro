@@ -51,6 +51,7 @@ substrate at any grain.
 """
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from typing import Any, Protocol, Sequence
@@ -394,6 +395,94 @@ def c3_daily_leg(daily: DailyHistory, at_session: date) -> C3DailyLeg:
                       confirmed_bars=int(len(closes)))
 
 
+class _C3DailyLegTable:
+    """Every session's :func:`c3_daily_leg`, from ONE indicator pass over the history.
+
+    ``run_c3`` needs the daily leg at each of ~61 sessions, and
+    :func:`c3_daily_leg` derives StochRSI over the whole confirmed history each
+    time it is asked.  Measured on the production VPS (2026-10-06, #8546 stage
+    timings): 9,230 daily bars per name x 61 sessions x 25 names was most of a
+    190 s ``eval_c3`` stage, against a 570 s unit timeout - recomputing, every
+    five minutes, the same prefixes of the same frozen nightly frame.
+
+    THE REUSE IS EXACT, NOT APPROXIMATE.  ``canon.stoch_rsi_kd`` is CAUSAL end to
+    end - ``rma`` (a seeded forward recurrence), ``rolling`` min/max/mean and
+    ``diff`` - so %K at bar ``i`` is the same number whether the series ends at
+    ``i`` or runs on; and :meth:`DailyHistory.confirmed_through` is the rows
+    strictly before the session, a PREFIX of an ascending frame.  So the leg for a
+    session is the full-history %K read at the prefix's last row.  Each leg is
+    still checked for prefix identity against the frame; anything that is not a
+    prefix (an unsorted history) falls back to :func:`c3_daily_leg` itself, so
+    the fast path can only ever agree with the reference or defer to it.
+    ``tests/test_entry_radar_w3_c3_4h_pit.py`` pins the equality session by
+    session.
+    """
+
+    __slots__ = ("_daily", "_index", "_k")
+
+    def __init__(self, daily: DailyHistory) -> None:
+        self._daily = daily
+        self._index = pd.DatetimeIndex(daily.frame.index)
+        closes = daily.frame["close"].astype(float)
+        self._k = ic.stoch_rsi_kd(closes)[0] if len(closes) else None
+
+    def leg(self, at_session: date) -> C3DailyLeg:
+        confirmed = self._daily.confirmed_through(at_session)
+        n = int(len(confirmed))
+        if n == 0 or self._k is None or not confirmed.index.equals(self._index[:n]):
+            return c3_daily_leg(self._daily, at_session)
+        index = pd.DatetimeIndex(confirmed.index)
+        freshness = freshness_state(index[-1].date(), at_session)
+        if freshness != "confirmed":
+            return C3DailyLeg(availability=freshness, k=None, washed=None,
+                              source_bar_time=index[-1].date().isoformat(),
+                              source_bar_known_at=at_session.isoformat(),
+                              confirmed_bars=n)
+        k_value = ic.last_finite(self._k.iloc[:n])
+        source_bar = index[-1].date().isoformat()
+        if k_value is None:
+            return C3DailyLeg(availability="unavailable", k=None, washed=None,
+                              source_bar_time=source_bar,
+                              source_bar_known_at=at_session.isoformat(),
+                              confirmed_bars=n)
+        return C3DailyLeg(availability="confirmed", k=k_value,
+                          washed=bool(k_value < ic.OVERSOLD),
+                          source_bar_time=source_bar,
+                          source_bar_known_at=at_session.isoformat(),
+                          confirmed_bars=n)
+
+
+def _four_hour_turn_table(completed: Sequence[FourHourBucket]) -> list[bool | None]:
+    """:func:`four_hour_turn` at every prefix of ``completed``, from ONE histogram.
+
+    The loop in :func:`run_c3` appends a confirmed bucket and asks whether the
+    series THROUGH IT has just turned.  ``canon.rsi_macd`` is causal (``rma`` and
+    ``ewm(adjust=False)``), so the histogram over the whole completed series
+    agrees with the histogram over each prefix at every shared position, and the
+    turn at position ``p`` is :func:`four_hour_turn`'s own rule - the last
+    ``TURN_POINTS`` values all finite, ``now > prev`` and ``prev <= prev2`` -
+    read at ``p``.  ``completed`` must already be the confirmed, non-empty
+    buckets, in order, exactly as the loop accumulates them; the table is then
+    indexed by the bucket's position in that list.
+    """
+    series = confirmed_four_hour_series(completed)
+    if len(series) == 0:
+        return []
+    values = [float(v) for v in pd.Series(ic.rsi_macd_hist(series)).astype(float)]
+    out: list[bool | None] = []
+    for position in range(len(values)):
+        if position + 1 < TURN_POINTS:
+            out.append(None)
+            continue
+        tail = values[position - TURN_POINTS + 1:position + 1]
+        if not all(math.isfinite(v) for v in tail):
+            out.append(None)
+            continue
+        prev2, prev, now = tail
+        out.append(bool(now > prev and prev <= prev2))
+    return out
+
+
 @dataclass(frozen=True, slots=True)
 class C3Run:
     """Readings, the episode and any event from one C3 pass."""
@@ -451,8 +540,15 @@ def run_c3(*, ticker: str, daily: DailyHistory,
     lc = lifecycle()
 
     ordered = sorted(buckets_by_session, key=lambda row: row[0])
+    # One indicator pass per name for each leg (see the two helpers above): the
+    # per-session legs and per-bucket turns below are the reference functions'
+    # own values, read from a table instead of re-derived 61 and ~120 times.
+    legs = _C3DailyLegTable(daily)
+    turn_table = _four_hour_turn_table(
+        [bucket for _session, session_buckets in ordered for bucket in session_buckets
+         if bucket.confirmed and bucket.close is not None])
     for position, (session, buckets) in enumerate(ordered):
-        leg = c3_daily_leg(daily, session)
+        leg = legs.leg(session)
         session_open = utc_iso(session_window_et(session)[0])
         if (live is not None and armed_index is not None and expired_at is None
                 and live.candidate_at is None
@@ -494,8 +590,7 @@ def run_c3(*, ticker: str, daily: DailyHistory,
                                     "reason": "confirmed_empty"})
                 continue
             completed.append(bucket)
-            series = confirmed_four_hour_series(completed)
-            turned = four_hour_turn(series)
+            turned = turn_table[len(completed) - 1]
             observed_at = utc_iso(bucket.effective_end)
             # Eligibility compares SESSION to SESSION (W3-14): the arm's instant is
             # that session's 09:30 open, so a bucket completing at 13:30 the same
