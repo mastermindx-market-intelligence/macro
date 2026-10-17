@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T04:41:57.843607+00:00",
-  "count": 2934,
+  "generated_at": "2026-10-15T07:27:31.392687+00:00",
+  "count": 2942,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -114,6 +114,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-sraykmat2bm-fbe300",
+      "title": "Rio Tinto Ltd. (RIO)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-15T04:15:34Z",
+      "summary_points": [
+        "Copper Production & Guidance: In-line Q3 copper (205kt) driven by Oyu Tolgoi (+27% YoY), 2026 guidance maintained (800-870kt, $30-50/lb C1), critical for growth thesis and EBITDA +30% to 2030.",
+        "Iron Ore Stockpile Gap: 7.9Mt stockpiles with 75-90 day mine-to-sale cycle (vs 2.5Mt Simandou production), creating material supply-demand imbalance and port capacity risk for 2027-2028.",
+        "Lithium Production Miss: Q3 LCE production 24% below consensus (13k vs 17k), slower Sal de Vida ramp-up, directly threatening battery materials growth guidance (61-64kt full-year).",
+        "Strategic Capital Allocation: $2bn YTD capital release ($5bn target by 2026), $5-10bn non-core divestments to de-leverage, 50% higher copper exploration spend ($692mn YTD) for future flows.",
+        "Valuation Discount: NAV at A$196/sh (0.8x NAV vs peers), 12-month target A$176.30 (9.9% upside from A$160.48), supported by copper growth and EBITDA expansion."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-vbqdfjznzri-6b7442",
       "title": "VON32629798",
@@ -512,6 +533,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-rovjseanl6l-39c4b6",
+      "title": "Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T09:41:51Z",
+      "summary_points": [
+        "US CPI & Fed Policy Tension: Strong CPI print (headline +0.57%, YoY +2.4%) drives 24% market probability of Oct Fed rate hike (highest since Oct 2023), with Williams supporting 25bp move amid inflation data uncertainty.",
+        "Geopolitical Oil Pressure: Brent crude at $87.37/bbl (new high) fuels 9.6% monthly fuel price surge due to Iran conflict, amplifying inflation fears ahead of Fed meeting.",
+        "China Producer Inflation Surge: China’s producer inflation hit 5.0% YoY (vs 4.4% forecast), driven by AI input costs and Middle East supply disruptions, compounding global inflation risks.",
+        "Fed Policy & Inflation Dynamics: Persistent inflation underpins Fed’s tightening stance (Barkin), with 10yr yield falling to 5.21% (risk-off tone) as inflation expectations dominate yield moves."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-ftuozl3okjq-c3d98f",
       "title": "GS Xholi USD Swaps Trade Idea Receive 10y10y rate the term premium leg has run ahead of fundamentals 13 Oct 2026",
       "institution": "S&T",
@@ -528,6 +569,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xxjud4mu10p-f43e85",
+      "title": "GS Mello GS BRAZIL POSITIONING The Week After 13 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T02:42:55Z",
+      "summary_points": [
+        "Brazil Election Volatility & Foreign Flows: Record trading volume ($8.7bn/day) and foreign inflows ($2bn Monday) drove EWZ’s 12.5% single-day surge (5-sigma), with BZ 10YR-US 10YR spread at 7.2% (vs 6.5% pre-2020), signaling election-driven market compression.",
+        "EWZ Valuation Discount: Trading at 11-12x P/E (below pre-2020 14x) with EPS at ~$4.4/shr, offering significant valuation compression amid 150bps rate compression over two weeks.",
+        "Critical Political Checkpoint: Flavio must win Oct-25 runoff, appoint economic team, and enact fiscal plan with new congress to sustain market momentum; failure risks rate expansion.",
+        "Foreign Capital Divergence: Foreign inflows ($2.51bn 5-day) contrast sharply with net foreign outflow (-$0.126M USD) and institutional outflows (-$0.77bn), creating capital flow risk amid IBOV’s 13.98% surge.",
+        "ETF vs Index Disparity: IShares MSCI Brazil ETF (EWZ) outperformed Bovespa Index (IBOV) due to foreign capital inflows, highlighting ETF-specific dynamics critical for portfolio allocation timing."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
@@ -651,6 +713,46 @@
       "tickers": [],
       "top_pick": false,
       "pages": 25,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-0l6mwmsetec-3714f5",
+      "title": "EW summary Oct 2026 (002)",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T02:05:56Z",
+      "summary_points": [
+        "Divided Government Impact: Midterms likely to create divided government (50% Dem sweep, 40% split), delaying major legislation, prioritizing spending bills/debt-limit negotiations, and amplifying policy uncertainty.",
+        "Geopolitical Fiscal Risks: Regional vulnerabilities intensify (Asia-Pacific: tariffs/defense; Europe: US-China tensions; Canada: USMCA), with state-level elections driving Medicaid cuts and data center policies amid declining federal transfers to states.",
+        "State Fiscal Pressure: Federal transfers to state/local governments steady but expected to decline, heightening Medicaid and infrastructure funding risks at subnational levels.",
+        "Policy Uncertainty Amplification: Divided government and regional tensions converge to elevate near-term policy volatility, impacting sector allocations and risk positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wjr1ib9ugjy-308ce9",
+      "title": "Cosmos Pharmaceutical (3349)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T01:53:11Z",
+      "summary_points": [
+        "Earnings Beat & Personnel Cost Risk: Gross profit beat (+¥0.3 bn) on pricing (21.7% margin), but personnel costs rose 12.3% yoy, requiring Q2 cost control monitoring amid store expansion.",
+        "Valuation Downgrade & Target Cut: 12-month target reduced to ¥7,800 (from ¥8,000) due to Kanto/Kyushu margin risks, slower store openings, and competitive pressures; sales forecasts cut 2% each for FY5/27E-28E.",
+        "Technical Outperformance & Cash Flow: Price outperformed TOPIX 12m (26.5% vs 42.8% decline), with free cash flow rising from ¥11.7M to ¥17.6M, signaling operational strength.",
+        "Narrowing Undervaluation Gap: Target vs. closing price gap shrank from ¥7,090 to ¥1,546, indicating eroded upside confidence despite mid-single-digit profit growth prospects."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
@@ -789,6 +891,26 @@
         "Mag7 as SPX Weakness Catalyst: Mag7 (last SPX cohort without weakness) widely owned; trend reversal likely triggers sustained SPX weakness, per SOX 2000 analog (semis low within 24h, sell-off accelerates late October).",
         "SOX 2000 Analog & Timing: SOX 2000 pattern holds; expect 24h low, final rally before October sell-off (CPI catalyst).",
         "IGV/SMH Ratio Inflection: IGV/SMH ratio above 200 DMA (first in 16 months, crossing summer highs) confirms software outperformance over semis, signaling potential major inflation with software semis outperforming."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-8ujilw8hhsf-c407e7",
+      "title": "BP Plc (BP.L) Upgrading our estimates following the company's 3Q26 strong trading update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:45:55Z",
+      "summary_points": [
+        "Estimate Upgrade: Q3 2026 adjusted net income revised to $7.492bn (+18%), Gas & Low Carbon Energy operating profit up $400m to $2.6bn, OCF raised to $12.5bn, capex lowered to $3.0bn.",
+        "Key Risks: Downside risks include lower oil/gas prices, exploration success, and growth/capex surprises despite Buy rating.",
+        "Valuation Upside: 22.0-22.4% upside to $57.00 target (BP) and 720p (BP.L), driven by EBIT growth from $19.45bn to $28.20bn by 12/28E.",
+        "Rating Bias: 65% Buy rating from Investment Banking Relationships vs. 50% Global Buy, indicating potential coverage-driven optimism over fundamentals."
       ],
       "tags": [],
       "tickers": [],
@@ -992,6 +1114,47 @@
       "tickers": [],
       "top_pick": false,
       "pages": 36,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2jcu78jbc5x-fbe594",
+      "title": "Jefferies European Equity Daily",
+      "institution": "Jefferies",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T11:52:46Z",
+      "summary_points": [
+        "Unilever Q3 Fundamentals & Risks: Q3e LFL 4.3% (vs 4.6%), rising input costs, SE Asia consumer challenges, Food exit complexity; EPS revised down (44→40), HOLD rating, 4000p target.",
+        "Galp Energia Refining Margin Surge: Q3 refining margins hit $33.8/bbl (vs $23.3/bbl Q2), driving EBITDA upside; hedge impact offsetting midstream drag.",
+        "EU Steel Safeguards Policy Shift: Council debating \"systemic reaction\" trade instrument (15-16 Oct); historical 63% equity price rise for producers signals sector-wide policy risk/re-rating.",
+        "Nordex SE Order Beat & Momentum: Q3 orders 2.810GW (+29.5% YoY, 13% ahead of consensus), strong European/Germany demand; offsets share weakness, €2.529bn orders.",
+        "US-Russia Diesel Deal & China NEV Policy: US signs Russia diesel deal (fuel shock risk), China cuts NEV export VAT rebate early (HDTs marginally affected); immediate profitability impacts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 23,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-0s8awubyiu8-936aa2",
+      "title": "BofA European Fund Manager Survey",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T11:48:47Z",
+      "summary_points": [
+        "AI Dual Risk Factor: AI investment disappointment (34%) is top downside risk, while AI-driven productivity gains (13%) are top upside risk, highlighting AI’s critical dual role in growth expectations.",
+        "European Growth Optimism Disconnect: 94% expect Europe to avoid recession (up from 86%), but only 22% anticipate growth acceleration vs. 71% global expectation of lower growth, signaling weak confidence.",
+        "Sector Concentration & Risk: Tech leads at 28% overweight (largest consensus), Retail at 47% underweight; 50% expect earnings concentration in sectors, amplifying rotation risks.",
+        "ECB Rate & Geopolitical Pressures: 44% expect higher ECB deposit rates in 12 months; Middle East instability (35%) is top geopolitical risk, driving energy/inflation concerns."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
       "language": "en",
       "needs_metadata": false
     },

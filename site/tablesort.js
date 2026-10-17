@@ -295,8 +295,8 @@
     filterCtrls.forEach(function (c) { c.onLang(); });
   });
 
-  function initAll() {
-    Array.prototype.forEach.call(document.querySelectorAll('table'), function (t) {
+  function initAll(root) {
+    Array.prototype.forEach.call((root || document).querySelectorAll('table'), function (t) {
       if (t.closest('.tip')) return;           // skip tooltip tables
       if (t.classList && t.classList.contains('sb-table')) return; // self-managed screener (own sort/toggle)
       if (t.classList && t.classList.contains('st-table')) return; // StockTable (own sort/filter/cols)
@@ -306,7 +306,14 @@
       enhance(t);
     });
   }
+  // Late HTML disclosure (e.g. the folded Macro data-health table) requests
+  // one scoped enhancement. The existing data-tablesort guard prevents duplicate
+  // handlers and preserves all other tables' sort/filter state.
+  document.addEventListener('mmx-tables-ready', function (event) {
+    var scope = event.detail && event.detail.root;
+    if (scope && scope.querySelectorAll) initAll(scope);
+  });
   // run now if the DOM is already parsed (script added late / bfcache), else wait
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initAll);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { initAll(); });
   else initAll();
 })();
