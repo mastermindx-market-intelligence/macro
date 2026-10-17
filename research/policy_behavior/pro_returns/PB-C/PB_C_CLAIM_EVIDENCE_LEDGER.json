@@ -1,0 +1,137 @@
+{
+  "schema": "PB_C.claim_evidence.v1",
+  "disposition": "PROSPECTIVE_ONLY",
+  "claims": [
+    {
+      "id": "C1",
+      "status": "NOT_ESTIMABLE",
+      "claim": "Positive freely timed population arrival rises after stress",
+      "support": "No calibrated support; rate-alignment diagnostics ordinary",
+      "gaps": [
+        "complete source-frame risk set",
+        "admitted primary stress",
+        "timing-freedom classification"
+      ],
+      "evidence": [
+        "PB_C_ANALYSIS_RESULTS.json",
+        "PB_C_SOURCE_AND_COVERAGE_MANIFEST.json"
+      ]
+    },
+    {
+      "id": "C2",
+      "status": "NOT_ESTIMABLE",
+      "claim": "Stronger stress response with prior strategic/government linkage",
+      "gaps": [
+        "universe-wide pre-exposure graph",
+        "matched common support"
+      ],
+      "evidence": [
+        "PB_C_EVENT_PANEL.json",
+        "PB_C_PROSPECTIVE_ACCEPTANCE_CONTRACT.md"
+      ]
+    },
+    {
+      "id": "C3",
+      "status": "PRIMARY_PROXY_NOT_SUPPORTED_SUBGROUP_HINT_UNVALIDATED",
+      "claim": "Unusual related-firm sequence",
+      "primary_observed": 22,
+      "primary_null_mean": 21.5448,
+      "primary_p": 0.48285171482851713,
+      "limitations": [
+        "unordered dates",
+        "partial capture",
+        "no pre-event economic network",
+        "incomplete calendar model"
+      ],
+      "evidence": [
+        "PB_C_NULL_TESTS.md",
+        "PB_C_ANALYSIS_RESULTS.json"
+      ]
+    },
+    {
+      "id": "C4",
+      "status": "NOT_MEASURED",
+      "claim": "Economic-quality events have more persistent returns",
+      "gaps": [
+        "admitted adjusted issuer/benchmark/corporate-action panel",
+        "event-time fences"
+      ],
+      "evidence": [
+        "PB_C_PROSPECTIVE_ACCEPTANCE_CONTRACT.md"
+      ]
+    },
+    {
+      "id": "C5",
+      "status": "PLAUSIBLE_ALTERNATIVE_NOT_FULLY_FITTED",
+      "claim": "Ordinary calendars explain apparent patterns",
+      "calendar_prior_notice_roots": 31,
+      "observed_pairs": 95,
+      "null_mean": 57.1754,
+      "p": 0.0005999400059994001,
+      "evidence": [
+        "PB_C_ANALYSIS_RESULTS.json",
+        "PB_C_EVENT_PANEL.json"
+      ]
+    },
+    {
+      "id": "COUNT",
+      "status": "COMPUTED",
+      "claim": "91 research roots plus3 separate audit items;94 total",
+      "evidence": [
+        "PB_C_ROOT_RESOLUTION.json",
+        "PB_C_EVENT_PANEL.json"
+      ]
+    },
+    {
+      "id": "STRESS",
+      "status": "COMPUTED_PRIOR_DATE_CURRENT_VINTAGE",
+      "claim": "Two nominal onsets and one real onset, with April overlap; not three independent shocks",
+      "evidence": [
+        "treasury_stress_manifest.json",
+        "PB_C_STRESS_WINDOWS.json"
+      ]
+    },
+    {
+      "id": "NEGATIVE_AUDIT",
+      "status": "SOURCE_FRAME_ONLY",
+      "claim": "Four zero-item dates in Apple current Newsroom frame; Adobe unknown; no global zero-support day certified",
+      "evidence": [
+        "PB_C_NEGATIVE_WINDOW_AUDIT.json"
+      ]
+    },
+    {
+      "id": "CAPEX_HINT",
+      "status": "EXPLORATORY_UNVALIDATED",
+      "claim": "Capex-excluded hint depends on issuer/program/horizon definitions",
+      "relaxed3_p": 0.017798220177982202,
+      "disjoint3_p": 0.050294970502949704,
+      "disjoint5_p": 0.0453954604539546,
+      "direct_program_filtered_disjoint3_p": 0.41315868413158685,
+      "filtered5_computed": false,
+      "evidence": [
+        "PB_C_ANALYSIS_RESULTS.json",
+        "PB_C_NUMERICAL_INTERPRETATION_REVIEW.md"
+      ]
+    },
+    {
+      "id": "PUBLIC_INDUSTRIAL_SUPPORT",
+      "status": "SOURCE_DOCUMENTED_SEPARATE_FROM_TIMING_INTENT",
+      "claim": "MP package has floor/offtake/financing mechanisms",
+      "root_ids": [
+        "PBC-D-MP-20250710-DOD-PACKAGE"
+      ],
+      "evidence": [
+        "PB_C_EVENT_PANEL.json"
+      ]
+    },
+    {
+      "id": "NO_ORCHESTRATION_PROMOTION",
+      "status": "RESEARCH_JUDGMENT",
+      "claim": "Current evidence does not validate centrally timed market support; no coordination probability or production authority",
+      "evidence": [
+        "PB_C_RESULTS.md",
+        "PB_G_HANDOFF.md"
+      ]
+    }
+  ]
+}
