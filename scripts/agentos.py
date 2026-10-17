@@ -201,6 +201,17 @@ PROVENANCE_RE = re.compile(
     re.IGNORECASE,
 )
 BANNED_HANDOFF_PHRASES = ("see above", "as discussed", "see the discussion above")
+# Advisory only: text cannot establish whether an original publisher is a live
+# runner or an archived author. A sole ghost-parent next action is a handoff
+# quality finding, never an execution/lease-transfer decision (Agent OS I1).
+GHOST_ORIGINAL_WRITER_ACTION_RE = re.compile(
+    r"\b(?:only\s+(?:the\s+)?original\s+(?:writer|parent|publisher|session|chat)"
+    r"|(?:the\s+)?original\s+(?:writer|parent|publisher|session|chat)\s+(?:must|needs\s+to|has\s+to)"
+    r"|(?:requires?|depends\s+on)\s+(?:the\s+)?original\s+(?:writer|parent|publisher|session|chat)(?:['’]s)?"
+    r"|(?:return|hand)\s+(?:this\s+work|the\s+work|work|it|this)?\s*(?:back\s+)?to\s+"
+    r"(?:the\s+)?original\s+(?:writer|parent|publisher|session|chat))\b",
+    re.IGNORECASE,
+)
 VERIFIED_FLOOR = "tests pass"
 
 STALE_DISCOVERY_DAYS = 90
@@ -1272,6 +1283,17 @@ def check_handoff(rec: dict[str, Any], path: Path) -> list[Problem]:
                             f"body says {phrase!r} — the next session cannot see 'above'",
                             hard=True)
                 )
+    actions = rec.get("next_actions")
+    if (isinstance(actions, list) and actions
+            and all(isinstance(item, str) and item.strip() for item in actions)
+            and all(GHOST_ORIGINAL_WRITER_ACTION_RE.search(item) for item in actions)):
+        out.append(Problem(
+            path, "ghost-original-writer-only-action",
+            "next_actions names only an original writer/parent/publisher; the currently "
+            "assigned or next lawfully assigned receiver needs an executable source/effect "
+            "reconciliation step. Preserve real STARTed lease and EFFECT_UNKNOWN.",
+            hard=False,
+        ))
     return out
 
 
@@ -1578,6 +1600,7 @@ _ADVISORY_RULES = frozenset({
     "point-in-time-head",
     "narrative-head",
     "snapshot-absent",
+    "ghost-original-writer-only-action",
 })
 _RECORD_FOLDERS = frozenset({"workstreams", "decisions", "discoveries", "handoffs"})
 
@@ -1891,6 +1914,12 @@ def draft_handoff(payload: dict[str, Any]) -> str:
     body_lines = [
         "",
         "# Draft skeleton",
+        "",
+        "Continuation rule: the currently assigned or next lawfully assigned receiver "
+        "gets an executable recovery action, not a referral to the original writer "
+        "or an archived parent chat. Inspect exact source PR/workspace and actual "
+        "writer/lease/effect evidence; advance permitted independent work while "
+        "real STARTed carriers and EFFECT_UNKNOWN remain fenced.",
         "",
         f"Canonical path: `{canonical}`. Snapshot as_of `{as_of}`. "
         "The carriers list is the machine pin. Do not retype head SHAs, "

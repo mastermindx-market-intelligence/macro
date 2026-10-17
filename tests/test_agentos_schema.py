@@ -2956,3 +2956,69 @@ def test_d3_no_network_or_gh_in_agentos() -> None:
     for banned in ("import requests", "import urllib", "import http.client", "import socket"):
         assert banned not in source
 
+
+
+def test_ghost_original_writer_only_handoff_is_advisory_and_action_scoped(tmp_path: Path) -> None:
+    """Ghost-parent sole-action handoffs need a successor; real custody is not revoked."""
+    agentos = _load_agentos_module()
+    path = tmp_path / "synthetic-handoff.md"
+    path.write_text(HANDOFF, encoding="utf-8")
+    record, body = agentos.parse_record(path)
+    record["_body"] = body
+
+    def ghost_findings(actions: list[str]):
+        record["next_actions"] = actions
+        return [p for p in agentos.check_handoff(record, path)
+                if p.rule == "ghost-original-writer-only-action"]
+
+    for only in (
+        ["Only the original writer must act; the previous chat is archived."],
+        ["The original parent must finish CI."],
+        ["Remaining critical path requires original publisher's admitted action."],
+        ["Return this work to the original parent chat."],
+        ["Original writer must publish.", "Only original publisher can finish."],
+    ):
+        findings = ghost_findings(only)
+        assert len(findings) == 1, (only, findings)
+        assert not findings[0].hard, "Agent OS knowledge cannot gate execution"
+        assert "receiver" in findings[0].message
+        assert "ghost-original-writer-only-action" in agentos._ADVISORY_RULES
+
+    for bounded in (
+        ["Current assigned receiver: inspect the original PR/workspace and reconcile effects."],
+        ["Original publisher must finish admitted cutover.",
+         "Current receiver: verify active lease and advance independent test review."],
+        ["The original STARTed runner holds its exact lease and pending EFFECT_UNKNOWN.",
+         "The assigned successor audits independent evidence without replay."],
+        ["Do not wait for the original parent; the present session owns safe recovery."],
+    ):
+        assert not ghost_findings(bounded), bounded
+
+
+def test_drafted_handoff_names_executable_successor_rule(tmp_path: Path) -> None:
+    """Generated continuation should explain recovery without inventing lease transfer."""
+    src = _dump_json(tmp_path, "ghost-draft.json", _handoff_payload())
+    result = _agentos("draft-handoff", "--from", str(src))
+    assert result.returncode == 0, result.stderr
+    assert "currently assigned or next lawfully assigned receiver" in result.stdout
+    assert "STARTed" in result.stdout and "EFFECT_UNKNOWN" in result.stdout
+    assert "original writer" in result.stdout
+
+    # A historical ghost-only instruction is surfaced in the existing validator
+    # even in strict mode, but must never become an Agent OS execution gate.
+    ghost_src = _dump_json(
+        tmp_path, "ghost-only.json",
+        _handoff_payload(next_actions=["Only the original writer must act"]),
+    )
+    drafted = _agentos("draft-handoff", "--from", str(ghost_src))
+    assert drafted.returncode == 0, drafted.stderr
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": drafted.stdout,
+    })
+    strict = _agentos(
+        "validate", "--strict", "--snapshot", str(ghost_src), "--root", str(root),
+        "--paths", str(root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md"),
+    )
+    assert strict.returncode == 0, strict.stdout + strict.stderr
+    assert "ghost-original-writer-only-action" in strict.stdout
