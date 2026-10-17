@@ -28297,14 +28297,36 @@ jobs:
     paths:
       - .github/ci/legacy-jobs.yml
       - .github/workflows/ci.yml
+      - collectors/tiingo_archive.py
       - config/dataset_registry.yml
+      - config/market_memory_canary.v1.json
       - contracts/theme_graph/membership_collection.v2.schema.json
       - engine/__init__.py
       - engine/basket_membership_pit.py
       - engine/canon.py
       - engine/conditions.py
+      - engine/earnings_release/filing_key.py
       - engine/indicators.py
       - engine/lab.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/brain_analogues.py
+      - engine/neuralweb/market_memory.py
+      - engine/neuralweb/market_memory_episode_comparison.py
+      - engine/neuralweb/market_memory_episode_features.py
+      - engine/neuralweb/market_memory_episode_retrieval.py
+      - engine/neuralweb/market_memory_history.py
+      - engine/neuralweb/market_memory_history_archive.py
+      - engine/neuralweb/market_memory_history_dossier.py
+      - engine/neuralweb/market_memory_history_filings.py
+      - engine/neuralweb/market_memory_history_macro.py
+      - engine/neuralweb/market_memory_history_transcripts.py
+      - engine/neuralweb/market_memory_identity.py
+      - engine/neuralweb/market_memory_lineage.py
+      - engine/neuralweb/market_memory_operating_cortex_service.py
+      - engine/neuralweb/market_memory_pit.py
+      - engine/neuralweb/market_memory_projection.py
+      - engine/neuralweb/market_memory_retained_context_cohort.py
+      - engine/neuralweb/market_memory_trusted.py
       - engine/predictive_signals.py
       - engine/price_ladder.py
       - engine/stock_technicals.py
@@ -28325,7 +28347,12 @@ jobs:
       - lib/dataos/read_contract.py
       - lib/dataos/registry.py
       - lib/dataos/temporal.py
+      - lib/dataos/tiingo_boats_tape.py
+      - lib/dataos/tiingo_reader.py
+      - lib/dataos/tiingo_views.py
+      - lib/dataos/tiingo_workspace.py
       - lib/dataos/web_api.py
+      - lib/dataos/web_history.py
       - lib/dataos/web_lab.py
       - lib/dataos/web_lab_worker.py
       - lib/dataos/web_readers.py
@@ -28333,6 +28360,8 @@ jobs:
       - lib/store.py
       - research/data_os_completion/2026-10-13/F01_JOURNEY.md
       - scripts/data_workspace.py
+      - scripts/tiingo_materialize.py
+      - scripts/tiingo_research_query.py
       - site/factordata/factors.json
       - site/factordata/insider_signals.json
       - tests/verification/__init__.py
