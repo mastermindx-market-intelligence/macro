@@ -1,0 +1,75 @@
+{
+  "schema": "ror1.precrash_legacy_banner_source_forensics.v1",
+  "historical_source_commit": "c49e4410492e8d2a0a16d00eca5edb3b45d66bc7",
+  "historical_commit_at_utc": "2026-10-13T16:32:31Z",
+  "latest_source_pin": "86db1b0487ec98c955b2ea9265779263c63d6454",
+  "source_files": {
+    "scripts/build_rr_banner.py": {
+      "git_blob": "b561a8e1b0cea575d326218d4ff35f9e018cd09c",
+      "producer_gate": "RR_ALERT_FROM = \"risk-off\"",
+      "input_source": "data/regime/latest.json:risk_radar",
+      "only_us_state": true
+    },
+    "templates/wh_banner.js": {
+      "git_blob": "7e34f3acd8275db70dfbb4076d005c9f69c1fc20",
+      "site_blob_identical": true,
+      "fetch_invocations_per_boot": {
+        "wh_banner": 1,
+        "rr_banner": 1
+      },
+      "timer_role": "startAlternation rotates already-fetched channel DOM faces every 9000ms; no periodic getJSON()",
+      "rr_requirements": [
+        "data.alert",
+        "alert.headline_en"
+      ],
+      "warning_projection_is_consumed": false
+    },
+    "site/rr_banner.json@Oct13_commit": {
+      "git_blob": "da55f631df725ead76f1786885a3df6f8f0e677f",
+      "source_asof": "2026-10-12",
+      "generated_at_utc": "2026-10-13T15:14:31+00:00",
+      "legacy_alert": null,
+      "warning_projection_present": false
+    },
+    "data/regime/latest.json@Oct13_commit": {
+      "git_blob": "0a64151baafdc1532d17764c8e1b3d0abc51b16a",
+      "native_radar_session": "2026-10-12",
+      "native_radar_state": "caution",
+      "ungated_state": "risk-off",
+      "native_alert": false
+    },
+    "site/rr_banner.json@later_pin": {
+      "git_blob": "26f01012eb0b2853932e7d2cbd76d74e616b72e0",
+      "source_asof": "2026-10-14",
+      "generated_at_utc": "2026-10-15T21:42:11+00:00",
+      "legacy_alert": null
+    },
+    "data/regime/latest.json@later_pin": {
+      "git_blob": "c96b9912da627a2c980937e31c14c5c1c610707f",
+      "native_radar_session": "2026-10-14",
+      "native_radar_state": "caution",
+      "ungated_state": "risk-off",
+      "native_alert": false
+    }
+  },
+  "bounded_conclusions": [
+    "Original Oct13 Git banner existed but was inert; it was generated from Oct12 native US Radar Caution before new Oct13 CN/HK records were logged and before the Oct13 Asia source Git commit.",
+    "The original banner cannot display CN/HK native warning projection or caution-state US warnings, irrespective of valid backend source messages, because builder requires US gated risk-off and client reads only data.alert.",
+    "The only script setInterval is the alternate-faces animation. There is no recurrent fetch from the same long-open page; a newly generated accepted alert would require a separate page/bootstrap path not demonstrated here.",
+    "Current held #8132 adds a warning_projection producer, but its branch comment explicitly marks multi-market client activation and long-open refresh as separate work; legacy rrChannel still reads only data.alert.",
+    "Later Git banner still had alert:null for US October14 Caution, not an actual user/browser delivery receipt."
+  ],
+  "not_proven": [
+    "URL origin/edge served these exact Git blobs",
+    "user had this tab long-open",
+    "subscriber received or clicked warning",
+    "new publisher/held client deployed",
+    "absence of other independently implemented alert channels",
+    "future forecast skill"
+  ],
+  "release_law": [
+    "Preserve #8132 REQUEST_CHANGES and original source writer",
+    "Do not remove US predictive gate or promote ungated risk to trading",
+    "Any long-open refresh must use existing entitled/registered transport, monotonic actual source session, bounded retention, race/outage/clear semantics and episode dedup; no duplicate ticker or new control plane"
+  ]
+}

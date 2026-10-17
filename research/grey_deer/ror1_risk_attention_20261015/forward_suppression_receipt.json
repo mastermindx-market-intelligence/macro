@@ -1,0 +1,39 @@
+{
+  "first_dated_suppression_issuance": "2026-09-25T05:17:05+00:00",
+  "first_suppressed_source_session": "2026-09-24",
+  "last_dated_suppression_issuance": "2026-10-14T06:02:59+00:00",
+  "last_suppressed_source_session": "2026-10-13",
+  "limitation": "Recorded source rows are not all expected NYSE sessions. A clamped ungated state is not a validated drawdown forecast, and the ledger contains no authenticated delivery receipt.",
+  "n_graded": 48,
+  "n_issued": 13,
+  "n_issued_suppressed": 13,
+  "n_public_alert": 0,
+  "n_records": 66,
+  "n_suppressed": 13,
+  "n_suppressed_ungraded": 13,
+  "n_suppressed_with_known_outcome": 0,
+  "n_unknown_ungated": 23,
+  "scope": "source_ledger_behavior_not_forecast_skill",
+  "source": {
+    "bytes": 162312,
+    "first": "2026-06-23",
+    "git_blob_sha1": "4d8c65e711db560c24088bc6380eaecd07db2afd",
+    "last": "2026-10-13",
+    "path": "data/risk_radar/forward_log.jsonl",
+    "sha256": "240c202431cc160ca8ec53ec65125c2f9d858597bea60e416a91f01dea55017d"
+  },
+  "suppressed_by_ungated_state": {
+    "elevated": 3,
+    "risk-off": 10
+  },
+  "suppressed_precision": null,
+  "suppression_runs": [
+    {
+      "continuity": "recorded_rows_only",
+      "first": "2026-09-24",
+      "last": "2026-10-13",
+      "records": 13
+    }
+  ],
+  "research_status": "SOURCE_LEDGER_CHARACTERIZATION_NOT_FORECAST_BACKTEST"
+}
