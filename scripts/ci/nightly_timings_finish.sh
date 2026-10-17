@@ -29,6 +29,11 @@
 # always() tail gets — see the comment on the engine job's finish step in
 # .github/workflows/daily.yml.
 # ---------------------------------------------------------------------------
+# On macstudio, enter system Bash before sourcing the OIP heredoc helpers.
+if [ "$(uname -s)" = "Darwin" ] && [ "${BASH:-}" != "/bin/bash" ]; then
+  exec /bin/bash "$0" "$@"
+fi
+
 set -u
 
 CAP="${1:?usage: nightly_timings_finish.sh <cap-minutes>}"

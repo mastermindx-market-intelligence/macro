@@ -134,6 +134,8 @@ jobs:
             --publish --targets-file config/fundamental_forensics/wave2_targets.v1.json \
             --published-at "$(utc_now)"
       - name: restore self-check (byte-verified roundtrip of the published bundle)
+        # Avoid the macstudio Homebrew Bash large-heredoc deadlock.
+        shell: /bin/bash -e {0}
         # Proves the EXACT code path tonight's engine gate runs, against prod R2, in the
         # same run that published: restore into a scratch root and byte-compare every
         # ticker against the projection this lane just built. A green publish with an
