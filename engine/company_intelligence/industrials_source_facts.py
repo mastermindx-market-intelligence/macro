@@ -22,9 +22,10 @@ from engine.company_intelligence.documents import (
 )
 
 
-_DATE_ONLY_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+_DATE_ONLY_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$", flags=re.ASCII)
 _INSTANT_RE = re.compile(
-    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$"
+    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$",
+    flags=re.ASCII,
 )
 
 # Fixture ``mode`` → constructor pairs that already exist. A filing is not
@@ -80,7 +81,10 @@ def _aware_instant(value: object) -> datetime | None:
         return None
     if not _INSTANT_RE.fullmatch(text):
         return None
-    parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError:
+        return None
     if parsed.tzinfo is None or parsed.tzinfo.utcoffset(parsed) is None:
         return None
     return parsed.astimezone(timezone.utc)

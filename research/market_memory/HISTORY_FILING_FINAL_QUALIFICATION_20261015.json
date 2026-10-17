@@ -1,0 +1,56 @@
+{
+  "all_521_selected_cases_proven": true,
+  "browser_matrix_cases": 8,
+  "canonical_synthetic_only_browser_cells": 16,
+  "combined_test_run": {
+    "failed": 1,
+    "only_failure": "preexisting test asserts symlink-specific code but .test-tmp triggers unchanged hidden-component refusal first",
+    "passed": 520,
+    "seconds": 33.59
+  },
+  "corrupt_filing_block_refused": true,
+  "decode_negative_tests": {
+    "failed_before": 2,
+    "passed_after": 2
+  },
+  "exact_failed_test_in_nonhidden_temporary_root": {
+    "passed": 1,
+    "seconds": 1.19,
+    "source_guard_modified": false
+  },
+  "installed_candidate": false,
+  "owner_scopes": [
+    {
+      "job": "research-price-panel",
+      "missing": [],
+      "note": "derived scopes for 1/1 jobs"
+    },
+    {
+      "job": "dataos-web-workspace",
+      "missing": [],
+      "note": "derived scopes for 1/1 jobs"
+    },
+    {
+      "job": "dataos-foundation",
+      "missing": [],
+      "note": "derived scopes for 1/1 jobs"
+    }
+  ],
+  "persistent_scheduling_or_public_publication": false,
+  "real_data_case_count": 10,
+  "schema": "market_memory.filing_source_qualification.v1",
+  "source_acquisition_calls": 0,
+  "source_hashes": {
+    "engine/neuralweb/market_memory_history_dossier.py": "b0babcaa5115d0079ddaaf86718c4c5a43fdbeaf930b5ff578e9cb50e7072c83",
+    "engine/neuralweb/market_memory_history_filings.py": "145e96b80ab1f75f2b882759d9e0fbf324856b3b7e2ec63d04cc28fd2548cb89",
+    "engine/neuralweb/market_memory_history_view.py": "8a71d588b78bf89639bb365702b8548028e3e9b93632c4e46e2147d50fc467aa",
+    "lib/dataos/web_api.py": "dd41b54336489a9dd595710eace77f64501e84d95019f7fd9fb91723204ef618",
+    "lib/dataos/web_history.py": "1597858b2597ac62105778c9c22d5e4f573c7b96c0021434fca25320359c6790",
+    "scripts/market_memory_history.py": "dc4990f5026ab90a36573eaca19f39f7c5f8de480575e9d0a0cb8af23f56c02f",
+    "templates/market_memory_history.html.j2": "8db4acc6dbbe6e8e5cc7faf9183e11c336a281cf39be92f17f2ee37209b9bfc6",
+    "templates/market_memory_history.js": "76edf35bb4435d15849a598dc2dbc21763b68c4a96bef5deb053f4ac92d06e3f"
+  },
+  "source_head_before_final_commit": "aafbc562fc014b94b59e0d7f60fa0c236b06fbc0",
+  "visual_guard_exit": 0,
+  "working_tree_changes": true
+}

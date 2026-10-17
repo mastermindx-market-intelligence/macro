@@ -1,0 +1,8 @@
+{"at": "2026-10-14T13:37:00.100695+00:00", "event": "PREFLIGHT_PASS", "catalog_sha256": "9478822a71ab3cf4eabedeec96ae9a329b9841b1fa84a3b71fa45c87147a28fb", "catalog_count": 2897, "source_sha256": "6cc97c08be7e683b6114ae8e16d49fce2f21dce3ed3f9933b0acbd2d37e6840b", "sidecar_sha256": "1a215b20c74538f8532757ce2ee043b5784a3e6573e857a8d51eeca8ffd2c80e"}
+{"at": "2026-10-14T13:37:00.105727+00:00", "event": "CONDITIONAL_CREATE_INTENT", "key": "research_inbox/usda-2026-10-09-wasde-676.json", "sha256": "1a215b20c74538f8532757ce2ee043b5784a3e6573e857a8d51eeca8ffd2c80e", "bytes": 1456}
+{"at": "2026-10-14T13:37:00.515307+00:00", "event": "CONDITIONAL_CREATE_RETURNED", "key": "research_inbox/usda-2026-10-09-wasde-676.json", "created": true}
+{"at": "2026-10-14T13:37:00.832973+00:00", "event": "READBACK_PASS", "key": "research_inbox/usda-2026-10-09-wasde-676.json", "sha256": "1a215b20c74538f8532757ce2ee043b5784a3e6573e857a8d51eeca8ffd2c80e"}
+{"at": "2026-10-14T13:37:00.838657+00:00", "event": "CONDITIONAL_CREATE_INTENT", "key": "research_inbox/usda-2026-10-09-wasde-676.pdf", "sha256": "6cc97c08be7e683b6114ae8e16d49fce2f21dce3ed3f9933b0acbd2d37e6840b", "bytes": 939374}
+{"at": "2026-10-14T13:37:01.212398+00:00", "event": "CONDITIONAL_CREATE_RETURNED", "key": "research_inbox/usda-2026-10-09-wasde-676.pdf", "created": true}
+{"at": "2026-10-14T13:37:01.628229+00:00", "event": "READBACK_PASS", "key": "research_inbox/usda-2026-10-09-wasde-676.pdf", "sha256": "6cc97c08be7e683b6114ae8e16d49fce2f21dce3ed3f9933b0acbd2d37e6840b"}
+{"at": "2026-10-14T13:37:01.628337+00:00", "event": "INBOX_PACKAGE_ACCEPTED", "writes": 2, "provider_calls": 0, "workflow_dispatches": 0, "catalog_writes": 0, "press_staging_writes": 0, "public_article_accepted": false}

@@ -18,6 +18,7 @@ import pytest
 
 from engine.news_impact.observation import (
     CODES,
+    DELAYED_ENTRY_POLICIES,
     Bar,
     OBSERVATION_VERSION,
     TradingCalendar,
@@ -36,6 +37,7 @@ from engine.news_impact.observation import ObservationError
 
 SRC = Path(__file__).resolve().parents[1]
 DESIGN_CASES = Path(__file__).resolve().parents[1] / "research" / "prophet_v4" / "news_to_business_impact_20261006" / "phase1_designs" / "A4_transfer_obs" / "cases"
+AMENDMENTS_CASES = DESIGN_CASES.parents[1] / "AMENDMENTS_W1C.cases.json"
 
 T0 = "2026-09-28T13:32:14Z"  # App C base row: 09:32:14 America/New_York, EDT
 
@@ -98,7 +100,26 @@ def week_bars() -> list[dict]:
 def load_case(name: str) -> dict:
     path = DESIGN_CASES / f"{name}.json"
     assert path.is_file(), f"repo-owned design case fixture missing (fail closed, never skip): {path}"
-    return json.loads(path.read_text(encoding="utf-8"))
+    case = json.loads(path.read_text(encoding="utf-8"))
+    # X4 (DEC:NEWS-IMPACT-W1C-DESIGN-RULINGS): the case files stay byte-frozen; the
+    # session-counted matched-window values come from the machine-readable overlay,
+    # applied here fail-closed (the overlay must exist, and the frozen values it
+    # supersedes must still match the case file, so a drifted fixture is caught).
+    assert AMENDMENTS_CASES.is_file(), f"amendments overlay missing (fail closed, never skip): {AMENDMENTS_CASES}"
+    entry = json.loads(AMENDMENTS_CASES.read_text(encoding="utf-8")).get("cases", {}).get(
+        f"A4_transfer_obs/cases/{name}.json"
+    )
+    if entry is None:
+        return case
+    for field, frozen_value in entry["superseded"].items():
+        assert case[field] == frozen_value, (
+            f"frozen fixture {name}.{field} drifted from the overlay's superseded value: "
+            f"{case[field]!r} != {frozen_value!r}"
+        )
+    for field, value in entry.items():
+        if field not in ("superseded", "reason"):
+            case[field] = value
+    return case
 
 
 def geometry_stamp_dict(geometry: WindowGeometry) -> dict:
@@ -240,8 +261,10 @@ def test_case_5_7_exact_boundaries() -> None:
     assert build.record["outcome_end"] == "2026-09-29T20:00:00Z"
     # 5.7's residual fit ends exactly AT the cutoff: <= is legal (V_FIT_CUTOFF)
     assert build.record["residual_fit"]["fit_end"] == build.record["information_cutoff"]
-    # matched window is the fixture's Saturday shift (duration law, not session law)
-    assert build.record["matched_window_start"] == "2026-09-26T13:30:00Z"
+    # matched window: session law (X4), k=1 — the session before the anchor (the
+    # cutoff's own Monday session), i.e. Friday 2026-09-25, not the frozen Saturday
+    assert build.record["matched_window_start"] == "2026-09-25T13:30:00Z"
+    assert build.record["matched_window_end"] == "2026-09-25T20:00:00Z"
 
 
 # --- case 5.5: coincident events => ambiguous attribution (fixture rule) -----------
@@ -313,18 +336,16 @@ def test_dst_fall_back_week() -> None:
     assert to_utc_stamp(nxt.entry_timestamp) == "2026-11-02T14:30:00Z"  # Monday open, now EST (UTC-5)
     plus_one = compute_window_geometry(t0, "next_rth_open_plus_one_session", cal)
     assert to_utc_stamp(plus_one.entry_timestamp) == "2026-11-02T14:30:00Z"
-    # The 16:00 ET landmark: outcome window is Monday's EST session [14:30Z, 21:00Z];
-    # the fixture 3-day shift lands matched_end on Friday 21:00Z, AFTER the Friday
-    # 20:00Z cutoff (the outcome window gained an absolute hour crossing fall-back),
-    # so the default offset correctly raises and the caller injects 4 days instead.
-    with pytest.raises(ObservationError) as excinfo:
-        compute_window_geometry(t0, "same_session_close_1600_et", cal)
-    assert excinfo.value.code == "MATCHED_WINDOW_AFTER_CUTOFF"
-    landmark = compute_window_geometry(t0, "same_session_close_1600_et", cal, matched_window_offset=timedelta(days=4))
+    # The 16:00 ET landmark with defaults: the cutoff is Fri 10-30 20:00Z = the Friday
+    # close, so the anchor is Friday and the matched window is Thursday 10-29 (EDT):
+    # same ET wall times as the Monday outcome, so the UTC duration stays 6.5h across
+    # the fall-back (the session-counted law absorbs the DST change).
+    landmark = compute_window_geometry(t0, "same_session_close_1600_et", cal)
     assert to_utc_stamp(landmark.entry_timestamp) == "2026-10-30T20:00:00Z"  # 16:00 ET in EDT
     assert to_utc_stamp(landmark.outcome_start) == "2026-11-02T14:30:00Z"  # Monday open in EST
     assert to_utc_stamp(landmark.outcome_end) == "2026-11-02T21:00:00Z"  # Monday close in EST
-    assert to_utc_stamp(landmark.matched_window_end) == "2026-10-29T21:00:00Z"  # <= Friday 20:00Z cutoff
+    assert to_utc_stamp(landmark.matched_window_start) == "2026-10-29T13:30:00Z"  # Thursday open in EDT
+    assert to_utc_stamp(landmark.matched_window_end) == "2026-10-29T20:00:00Z"  # <= Friday 20:00Z cutoff
 
 
 # --- early close day ---------------------------------------------------------------
@@ -357,6 +378,105 @@ def test_early_close_landmark_policy_uses_1600et_stamp() -> None:
     # after the 13:00 ET close: no session contains T0; the next session-date 16:00 ET wins
     geometry2 = compute_window_geometry("2026-11-27T19:30:00Z", "same_session_close_1600_et", early_close_calendar())
     assert to_utc_stamp(geometry2.entry_timestamp) == "2026-11-27T21:00:00Z"
+
+
+# --- matched window: session-counted law (X4) ----------------------------------------
+
+
+def test_matched_window_skips_holiday() -> None:
+    # Friday 2026-09-25 dropped (holiday): the k=1 session before the Monday anchor is
+    # Thursday 09-24, and the matched window keeps the outcome's ET wall times.
+    cal = weekday_calendar(date(2026, 9, 21), date(2026, 10, 2), drop={"2026-09-25"})
+    geometry = compute_window_geometry(
+        T0, "plus_60s", cal,
+        bars=five_min_bars("2026-09-28", "13:00:00", "20:00:00"),
+        decision_timestamp="2026-09-28T13:35:00Z",
+    )
+    assert to_utc_stamp(geometry.matched_window_start) == "2026-09-24T13:35:00Z"
+    assert to_utc_stamp(geometry.matched_window_end) == "2026-09-24T20:00:00Z"
+
+
+def test_matched_window_skips_early_close() -> None:
+    # Thanksgiving week: 11-26 absent, 11-27 closes 13:00 ET.  The Monday 11-30 outcome
+    # is [14:35Z, 21:00Z] (EST); the Friday candidate's 16:00 ET end misses the 13:00
+    # close and 11-26 is absent, so the matched window is Wednesday 11-25 with the same
+    # ET wall times as the outcome (16:00 ET = 21:00Z in EST).
+    cal = weekday_calendar(
+        date(2026, 11, 23), date(2026, 12, 4), early={"2026-11-27": "13:00:00"}, drop={"2026-11-26"}
+    )
+    geometry = compute_window_geometry(
+        "2026-11-30T14:32:14Z", "plus_60s", cal,
+        bars=five_min_bars("2026-11-30", "14:00:00", "21:00:00"),
+        decision_timestamp="2026-11-30T14:35:00Z",
+    )
+    assert to_utc_stamp(geometry.matched_window_start) == "2026-11-25T14:35:00Z"
+    assert to_utc_stamp(geometry.matched_window_end) == "2026-11-25T21:00:00Z"
+
+
+def test_landmark_outcome_end_same_session_after_early_close() -> None:
+    # 16:00 ET landmark on the early-close Friday: the cutoff (21:00Z) is outside the
+    # 13:00 ET session, so with Monday bars the outcome starts at the first Monday bar
+    # end and ends at MONDAY's close, not the 12-01 close (X4 landmark outcome-end fix).
+    geometry = compute_window_geometry(
+        "2026-11-27T15:10:00Z", "same_session_close_1600_et", early_close_calendar(),
+        bars=five_min_bars("2026-11-30", "14:30:00", "21:00:00"),
+    )
+    assert to_utc_stamp(geometry.outcome_start) == "2026-11-30T14:35:00Z"
+    assert to_utc_stamp(geometry.outcome_end) == "2026-11-30T21:00:00Z"  # NOT the 12-01 close
+    assert to_utc_stamp(geometry.matched_window_start) == "2026-11-25T14:35:00Z"
+    assert to_utc_stamp(geometry.matched_window_end) == "2026-11-25T21:00:00Z"
+
+
+def test_matched_window_sessions_back_k2() -> None:
+    # k=2 moves the matched window exactly one more session back than k=1 (Friday
+    # 09-25 -> Thursday 09-24) on the 5.6 case.
+    case = load_case("W_obs_0935_at_origin")
+    geometry = compute_window_geometry(
+        case["first_admissible_feed_receipt"], case["delayed_entry_policy"], main_calendar(),
+        bars=week_bars(), decision_timestamp=case["decision_timestamp"], matched_window_sessions_back=2,
+    )
+    assert to_utc_stamp(geometry.matched_window_start) == "2026-09-24T13:35:00Z"
+    assert to_utc_stamp(geometry.matched_window_end) == "2026-09-24T20:00:00Z"
+
+
+@pytest.mark.parametrize("k", [0, 11, -1, True, False, 1.0, "1"])
+def test_bad_matched_window_sessions(k) -> None:
+    # bool is an int subclass but is rejected alongside out-of-range and non-int shapes
+    with pytest.raises(ObservationError) as excinfo:
+        compute_window_geometry(
+            T0, "plus_60s", main_calendar(), bars=week_bars(),
+            decision_timestamp="2026-09-28T13:35:00Z", matched_window_sessions_back=k,
+        )
+    assert excinfo.value.code == "BAD_MATCHED_WINDOW_SESSIONS"
+
+
+def test_matched_window_no_session_when_calendar_too_short() -> None:
+    # Monday 09-28 is the calendar's first session, so it is the anchor itself and no
+    # session exists before it: MATCHED_WINDOW_NO_SESSION, not a silent window.
+    cal = weekday_calendar(date(2026, 9, 28), date(2026, 10, 2))
+    with pytest.raises(ObservationError) as excinfo:
+        compute_window_geometry(
+            T0, "plus_60s", cal,
+            bars=five_min_bars("2026-09-28", "13:00:00", "20:00:00"),
+            decision_timestamp="2026-09-28T13:35:00Z",
+        )
+    assert excinfo.value.code == "MATCHED_WINDOW_NO_SESSION"
+
+
+@pytest.mark.parametrize("policy", DELAYED_ENTRY_POLICIES)
+def test_matched_window_invariants_every_policy(policy: str) -> None:
+    # decision defaults to the entry stamp, in-session for every at-origin arm; the
+    # landmark arms ignore it (their decision IS the landmark entry).
+    cal = TradingCalendar.from_mapping(main_calendar())
+    geometry = compute_window_geometry(T0, policy, main_calendar(), bars=week_bars())
+    assert geometry.matched_window_end <= geometry.information_cutoff
+    assert (geometry.matched_window_end - geometry.matched_window_start) == (
+        geometry.outcome_end - geometry.outcome_start
+    )
+    for stamp in (geometry.matched_window_start, geometry.matched_window_end):
+        session = cal.session_containing(stamp)
+        assert session is not None, f"{to_utc_stamp(stamp)} is not inside a calendar session"
+        assert session.open_utc <= stamp <= session.close_utc
 
 
 # --- a bar closing exactly at the cutoff counts (seat default Q7) ------------------
@@ -591,9 +711,30 @@ def _code_triggers():
             bars=[{"start": "2026-09-28T13:40:00Z", "end": "2026-09-28T13:45:00Z"}],
             decision_timestamp="2026-09-28T13:35:00Z",
         ),
-        "MATCHED_WINDOW_AFTER_CUTOFF": lambda: compute_window_geometry(
+        "MATCHED_WINDOW_AFTER_CUTOFF": lambda: WindowGeometry(
+            policy="plus_60s",
+            mode="at_origin",
+            test_purpose="source_delay",
+            stale_news_treatment=False,
+            t0=parse_utc("2026-09-28T13:32:14Z"),
+            entry_timestamp=parse_utc("2026-09-28T13:33:14Z"),
+            information_cutoff=parse_utc("2026-09-28T13:33:14Z"),
+            decision_timestamp=parse_utc("2026-09-28T13:35:00Z"),
+            outcome_start=parse_utc("2026-09-28T13:35:00Z"),
+            outcome_end=parse_utc("2026-09-28T20:00:00Z"),
+            matched_window_start=parse_utc("2026-09-28T13:35:00Z"),
+            matched_window_end=parse_utc("2026-09-28T20:00:00Z"),  # after the cutoff
+            next_rth_open_utc=parse_utc("2026-09-29T13:30:00Z"),
+            session_date="2026-09-28",
+        ),
+        "BAD_MATCHED_WINDOW_SESSIONS": lambda: compute_window_geometry(
             T0, "plus_60s", cal, bars=week_bars(), decision_timestamp="2026-09-28T13:35:00Z",
-            matched_window_offset=timedelta(0),
+            matched_window_sessions_back=0,
+        ),
+        "MATCHED_WINDOW_NO_SESSION": lambda: compute_window_geometry(
+            T0, "plus_60s", weekday_calendar(date(2026, 9, 28), date(2026, 10, 2)),
+            bars=five_min_bars("2026-09-28", "13:00:00", "20:00:00"),
+            decision_timestamp="2026-09-28T13:35:00Z",
         ),
         "CUTOFF_VIOLATION": lambda: compute_window_geometry(
             T0, "plus_60s", cal, bars=week_bars(), decision_timestamp="2026-09-28T20:00:00Z"  # decision == close

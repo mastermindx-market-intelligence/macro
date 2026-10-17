@@ -10,7 +10,7 @@ repair memory use, authorize a migration, or fence non-cooperating old writers.
 from __future__ import annotations
 
 from contextlib import contextmanager
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from functools import wraps
 from hashlib import sha1, sha256
 import math
@@ -634,6 +634,83 @@ def _git_tree(runner, oid, maximum, entry_limit):
             _fail("LIMIT", "Git tree entry limit exceeded")
         offset = zero + 1 + width
     return entries
+
+
+@dataclass(frozen=True)
+class GitLegacyClaimsBlob:
+    """Exact historical Git bytes, not a native plan or cutover admission."""
+
+    source_id: str
+    tree_oid: str
+    blob_oid: str
+    raw_bytes: bytes = field(repr=False)
+    byte_count: int
+    logical_digest: str
+    source_assurance: str = "EXACT_GIT_TREE_BYTES_ONLY"
+    eligible_for_cutover: bool = False
+
+
+@_typed
+def read_legacy_claims_blob(
+    repo: Path, *, tree_oid: str, expected_blob_oid: str, limits: ProtocolLimits,
+) -> GitLegacyClaimsBlob:
+    """Read a named legacy blob through verified immutable Git tree ancestry.
+
+    The caller must separately establish that this tree was accepted by its
+    publication owner. No mutable HEAD, working-tree fallback, JSON parsing or
+    storage-format activation occurs. Historical input is bounded by the
+    existing logical/snapshot budgets, not a new native base-member ceiling.
+    """
+    repo, limits = _absolute(repo), _limits(limits)
+    for oid in (tree_oid, expected_blob_oid):
+        if type(oid) is not str or not _OID.fullmatch(oid):
+            _fail("MALFORMED", "explicit full tree and expected blob IDs are required")
+    fd = _open_directory(repo)
+    os.close(fd)
+    runner = _GitRunner(repo, limits)
+    if runner.run(["cat-file", "-t", tree_oid], maximum=32) != b"tree\n":
+        _fail("MALFORMED", "legacy source identity is not an exact Git tree")
+    maximum = min(limits.snapshot_bytes, limits.snapshot_members * 256)
+    current = _git_tree(runner, tree_oid, maximum, limits.snapshot_members)
+    for component in (b"data", b"qledger"):
+        if component not in current:
+            _fail("MISSING", "legacy claims namespace absent from the supplied tree")
+        mode, oid = current[component]
+        if mode != b"40000":
+            _fail("MALFORMED", "legacy claims ancestor is not a Git directory")
+        current = _git_tree(runner, oid, maximum, limits.snapshot_members)
+    reserved = (
+        ROOT_PATH.rsplit("/", 1)[-1],
+        PART_PREFIX.rstrip("/").rsplit("/", 1)[-1],
+        PAGE_PREFIX.rstrip("/").rsplit("/", 1)[-1],
+    )
+    if any(name.encode("ascii") in current for name in reserved):
+        _fail("CONFLICT", "purported legacy source contains a native-format namespace")
+    name = BASE_PATH.rsplit("/", 1)[-1].encode("ascii")
+    if name not in current:
+        _fail("MISSING", "legacy claims member is absent from the supplied tree")
+    mode, blob_oid = current[name]
+    if mode not in (b"100644", b"100755"):
+        _fail("MALFORMED", "legacy claims member is not a regular Git file")
+    if blob_oid != expected_blob_oid:
+        _fail("CONFLICT", "expected legacy blob differs from the supplied tree member")
+    if runner.run(["cat-file", "-t", blob_oid], maximum=32) != b"blob\n":
+        _fail("MALFORMED", "legacy claims object is not a Git blob")
+    size_raw = runner.run(["cat-file", "-s", blob_oid], maximum=32)
+    if not re.fullmatch(rb"(?:0|[1-9][0-9]{0,19})\n", size_raw):
+        _fail("MALFORMED", "invalid legacy Git blob size")
+    size = int(size_raw)
+    if size > min(limits.logical_bytes, limits.snapshot_bytes):
+        _fail("LIMIT", "legacy source exceeds the existing logical input budget")
+    raw = runner.run(["cat-file", "blob", blob_oid], maximum=size)
+    _check_git_hash("blob", raw, blob_oid)
+    if len(raw) != size:
+        _fail("SOURCE_CHANGED", "legacy source differs from its pinned byte length")
+    runner.check()
+    identity = sha256(repr((str(repo), runner.identity, tree_oid, blob_oid)).encode()).hexdigest()
+    return GitLegacyClaimsBlob(
+        "git-legacy:" + identity, tree_oid, blob_oid, raw, len(raw), sha256(raw).hexdigest(),
+    )
 
 
 @dataclass(frozen=True, init=False)
