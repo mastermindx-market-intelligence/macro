@@ -262,13 +262,25 @@
     }
     // With every separate hazard input unavailable, retain ONLY the fresh
     // measured backdrop's own Risk-off fact. The joint hazard stays unknown.
-    if (partialGrounds && qualifiedRiskOff && session && !rows[0].length)
-      return {state: "measured-risk-off",
-        title: fgc.measured_risk_off_title || warningTitle,
-        cause: fgc.measured_risk_off_partial_cause ||
-          ["Market State: Risk-off; combined hazard coverage incomplete.",
-           "市场状态：避险；综合风险证据不完整。"],
-        action: warningAction, date: session};
+    if (partialGrounds && hz.stage_reason === "required_coverage_unavailable" &&
+        qualifiedRiskOff && session && !rows[0].length &&
+        Array.isArray(hz.contributing_sources) && !hz.contributing_sources.length &&
+        d.provenance && Array.isArray(d.provenance.sources) &&
+        d.provenance.sources.every(function (source) {
+          return source && typeof source === "object" && !Array.isArray(source) &&
+            (source.role !== "hazard_evidence" ||
+             source.coverage === "STALE" || source.coverage === "MISSING");
+        })) {
+      var requiredLag = fgRequiredLeadershipGap(d, copy);
+      if (requiredLag[0] && requiredLag[1]) {
+        var measuredCause = fgc.measured_risk_off_partial_cause || copy.unknown;
+        return {state: "measured-risk-off",
+          title: fgc.measured_risk_off_title || copy.unknown,
+          cause: [measuredCause[0] + " · " + requiredLag[0],
+                  measuredCause[1] + " · " + requiredLag[1]],
+          action: warningAction, date: session};
+      }
+    }
     return {state: "unavailable", title: fgc.unavailable_title || copy.unknown,
       cause: ["", ""], action: fgc.unavailable_action || copy.unknown, date: ""};
   }

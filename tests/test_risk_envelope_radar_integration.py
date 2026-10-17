@@ -1306,6 +1306,8 @@ def _risk_off_with_partial_unavailable_hazards():
     # assert that an existing false authority record stays unchanged.
     e['authority'] = {'envelope_may_gate': False, 'envelope_may_size': False}
     for source in e['provenance']['sources']:
+        if source['role'] == 'measured_state':
+            source.update(state='RISK_OFF', score=40, as_of=e['source_session'])
         if source['role'] == 'hazard_evidence':
             source.update(coverage='STALE', as_of='2026-09-18')
     return e
@@ -1323,7 +1325,8 @@ def test_partial_missing_all_hazards_preserves_current_measured_risk_off_ssr_and
     out = _js_value(_WTD_DOM+'applyFeed(FEED);console.log(JSON.stringify({foreground:foregroundResult(),action:actionResult()}));',e)
     assert out['foreground']['state'] == 'measured-risk-off'
     assert out['foreground']['title'] == 'Risk-off market backdrop'
-    assert out['foreground']['cause'] == 'Market State: Risk-off; combined hazard coverage incomplete.'
+    assert out['foreground']['cause'].startswith('Market State: Risk-off; combined hazard coverage incomplete.')
+    assert 'Leadership cohort: older read (2026-09-18)' in out['foreground']['cause']
     assert out['foreground']['action'] == 'Reduce risk. Protect capital.'
     assert out['action']['en'] == 'Reduce risk. Protect capital.'
     assert e['hazard_summary']['stage'] is None
@@ -1345,3 +1348,82 @@ def test_partial_missing_all_hazards_does_not_invent_measured_risk_off(mutation)
     assert out['state'] == 'unavailable'
     assert 'Reduce risk. Protect capital.' not in summary
     assert 'Reduce risk. Protect capital.' not in out['action']
+
+
+# R16: in an already-verified measured-RISK_OFF partial foreground with zero
+# current hazard votes, preserve the original dated required-source caveat too.
+def test_no_fresh_hazard_measured_risk_off_names_the_older_required_leadership():
+    e = _risk_off_with_partial_unavailable_hazards()
+    before = deepcopy(e)
+    settled = _foreground_fragment(_foreground_render(e))
+    live = _js_value(_FOREGROUND_DOM+'applyFeed(FEED);console.log(JSON.stringify(foregroundResult()));',e)
+    for cause in (settled, live['cause']):
+        assert 'Market State: Risk-off; combined hazard coverage incomplete.' in cause
+        assert 'Leadership cohort: older read (2026-09-18)' in cause
+        assert 'AI-hardware leaders: weakening' not in cause
+    assert '龙头股群体：较早读数（2026-09-18）' in settled
+    assert live['state'] == 'measured-risk-off'
+    assert live['action'] == 'Reduce risk. Protect capital.'
+    assert e == before
+
+
+@pytest.mark.parametrize('change', ['no_unreadable', 'not_required', 'duplicate', 'unverified_date', 'source_missing'])
+def test_no_fresh_hazard_measured_risk_off_does_not_invent_a_verified_old_clock(change):
+    e = _risk_off_with_partial_unavailable_hazards()
+    lead = next(s for s in e['provenance']['sources'] if s['source_id'] == 'leadership-crack-latest')
+    if change == 'no_unreadable': e['hazard_summary']['unreadable_sources'] = []
+    elif change == 'not_required': lead['required'] = False
+    elif change == 'duplicate': e['provenance']['sources'].append(deepcopy(lead))
+    elif change == 'unverified_date': lead['as_of'] = '2026-02-30'
+    else: lead.update(coverage='MISSING',as_of=None,state=None)
+    settled = _foreground_fragment(_foreground_render(e))
+    live = _js_value(_FOREGROUND_DOM+'applyFeed(FEED);console.log(JSON.stringify(foregroundResult()));',e)
+    # Missing/duplicate required-source identity no longer satisfies the
+    # source-qualified exception; an honest unavailable read is safer than
+    # inventing a verified complete outage. Date uncertainty is distinct.
+    if change in ('no_unreadable', 'not_required', 'duplicate'):
+        assert 'data-state="unavailable"' in settled
+        assert live['state'] == 'unavailable'
+        assert 'Reduce risk. Protect capital.' not in live['action']
+        return
+    assert 'data-state="measured-risk-off"' in settled
+    assert live['state'] == 'measured-risk-off'
+    assert 'Leadership cohort: older read (' not in settled
+    assert 'Leadership cohort: older read (' not in live['cause']
+    assert live['action'] == 'Reduce risk. Protect capital.'
+    if change == 'source_missing':
+        assert 'Leadership cohort: unavailable' in settled
+        assert 'Leadership cohort: unavailable' in live['cause']
+    elif change == 'unverified_date':
+        assert 'Leadership cohort: freshness unverified' in settled
+        assert 'Leadership cohort: freshness unverified' in live['cause']
+
+
+@pytest.mark.parametrize('invalid', ['fresh_unmapped', 'fresh_duplicate', 'fresh_no_vote',
+                                      'unmapped_required', 'duplicated_required'])
+def test_no_hazard_measured_risk_off_rejects_unqualified_hazard_lineage(invalid):
+    # An independent measured RISK_OFF is not permission to report 'all hazards
+    # unavailable' if there are fresh-but-unreadable or duplicated source votes.
+    e = _risk_off_with_partial_unavailable_hazards()
+    radar = next(s for s in e['provenance']['sources'] if s['source_id'] == 'risk-radar-us')
+    lead = next(s for s in e['provenance']['sources'] if s['source_id'] == 'leadership-crack-latest')
+    if invalid == 'fresh_unmapped':
+        radar.update(coverage='FRESH', as_of=e['source_session'],state='SPIKING',hazard_stage='BREAKDOWN')
+        e['hazard_summary']['contributing_sources'] = ['risk-radar-us']
+    elif invalid == 'fresh_duplicate':
+        radar.update(coverage='FRESH',as_of=e['source_session'],state='elevated',hazard_stage='BREAKDOWN')
+        e['hazard_summary']['contributing_sources'] = ['risk-radar-us']
+        e['provenance']['sources'].append(deepcopy(radar))
+    elif invalid == 'fresh_no_vote':
+        radar.update(coverage='FRESH',as_of=e['source_session'],state='calm',hazard_stage='NONE')
+    elif invalid == 'unmapped_required':
+        e['hazard_summary']['stage_reason']='required_source_state_unmapped'
+    else:
+        e['provenance']['sources'].append(deepcopy(lead))
+    settled = _foreground_fragment(_foreground_render(e))
+    live = _js_value(_FOREGROUND_DOM+'applyFeed(FEED);console.log(JSON.stringify(foregroundResult()));',e)
+    assert 'data-state="unavailable"' in settled
+    assert live['state']=='unavailable'
+    assert 'combined hazard coverage incomplete.' not in settled
+    assert 'combined hazard coverage incomplete.' not in live['cause']
+    assert e['hazard_summary']['stage'] is None

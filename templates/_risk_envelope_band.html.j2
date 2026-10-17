@@ -137,8 +137,8 @@
 {# An independently qualified measured RISK_OFF must remain visible when every
    hazard source is unavailable. This reports only the existing measured verdict;
    joint hazard is still unknown and cannot be promoted to a systemic alarm. #}
-{%- elif 'stage' in _hz and _stage is none and _hz.get('stage_reason') in ('required_coverage_unavailable', 'required_source_state_unmapped') and _qualified_risk_off and not _rows.en -%}
-{%- set _v.state = 'measured-risk-off' %}{% set _v.title = _fg.measured_risk_off_title %}{% set _v.cause = _fg.measured_risk_off_partial_cause %}{% set _v.action = _fg.measured_risk_off_action %}{% set _v.date = _session -%}
+{%- elif 'stage' in _hz and _stage is none and _hz.get('stage_reason') == 'required_coverage_unavailable' and _qualified_risk_off and not _rows.en and _lag.en and not _contrib and (_prov | selectattr('role', 'equalto', 'hazard_evidence') | rejectattr('coverage', 'in', ['STALE', 'MISSING']) | list | length) == 0 -%}
+{%- set _v.state = 'measured-risk-off' %}{% set _v.title = _fg.measured_risk_off_title %}{% set _v.cause = [_fg.measured_risk_off_partial_cause[0] ~ (' · ' ~ _lag.en if _lag.en else ''), _fg.measured_risk_off_partial_cause[1] ~ (' · ' ~ _lag.zh if _lag.zh else '')] %}{% set _v.action = _fg.measured_risk_off_action %}{% set _v.date = _session -%}
 {%- endif -%}
 {%- endif -%}
 {%- if action_only -%}
