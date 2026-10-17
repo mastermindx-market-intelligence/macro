@@ -144,3 +144,69 @@ def select_payems_date(
         'basis': 'ALFRED_RECORDED_VINTAGE_DATE_ONLY',
         'limits': {'max_periods': max_periods, 'source_rows': max_rows},
     }
+
+
+MAX_SOURCE_BYTES = 8 * 1024 * 1024
+MAX_DECODED_BYTES = 64 * 1024 * 1024
+MAX_ROW_GROUPS = 4096
+
+
+def read_payems_bytes(
+    raw: bytes,
+    calendar_date: str,
+    *,
+    source_ref: str,
+    source_version: str,
+    source_sha256: str,
+    max_periods: int = 12,
+) -> dict[str, Any]:
+    """Decode an exact retained PAYEMS Parquet snapshot, then select its date.
+
+    The caller must still own the original descriptor and verify its source
+    version/replacement before returning. The verified digest covers only the
+    supplied immutable byte snapshot, not a whole macro history or publication.
+    """
+    import hashlib
+
+    if (type(raw) is not bytes or not 0 < len(raw) <= MAX_SOURCE_BYTES
+            or type(source_sha256) is not str or not _HEX.fullmatch(source_sha256)
+            or hashlib.sha256(raw).hexdigest() != source_sha256):
+        raise HistoricalExperienceError('retained PAYEMS source bytes or exact digest invalid')
+    try:
+        import pyarrow as pa
+        import pyarrow.parquet as pq
+        reader = pq.ParquetFile(pa.BufferReader(raw), pre_buffer=False)
+        try:
+            footer = reader.metadata
+            if (not 0 < footer.num_rows <= MAX_ROWS
+                    or not 0 < footer.num_row_groups <= MAX_ROW_GROUPS
+                    or set(reader.schema_arrow.names) != _COLUMNS
+                    or len(reader.schema_arrow.names) != len(_COLUMNS)):
+                raise HistoricalExperienceError('invalid retained PAYEMS Parquet source schema or budget')
+            declared = sum(footer.row_group(i).total_byte_size
+                           for i in range(footer.num_row_groups))
+            if declared > MAX_DECODED_BYTES:
+                raise HistoricalExperienceError('declared PAYEMS decoded budget exceeded')
+            table = reader.read(columns=list(_COLUMNS), use_threads=False)
+        finally:
+            reader.close()
+        if table.num_rows != footer.num_rows or table.nbytes > MAX_DECODED_BYTES:
+            raise HistoricalExperienceError('actual PAYEMS decoded budget or row count invalid')
+        # ALFRED's open-ended 9999-12-31 exceeds datetime64[ns]; retain Python
+        # datetime objects until the incumbent selection's documented NaT
+        # normalization, rather than overflowing or deleting the latest vintage.
+        frame = table.to_pandas(timestamp_as_object=True)
+        result = select_payems_date(
+            frame, calendar_date,
+            source_ref=source_ref, source_version=source_version,
+            source_sha256=source_sha256, max_periods=max_periods,
+        )
+        result['source_sha256_verified_by_projection'] = True
+        result['source_encoded_bytes'] = len(raw)
+        result['source_declared_decoded_bytes'] = declared
+        result['source_actual_arrow_bytes'] = table.nbytes
+        return result
+    except HistoricalExperienceError:
+        raise
+    except (ValueError, TypeError, OverflowError, OSError, AttributeError) as exc:
+        raise HistoricalExperienceError('invalid retained PAYEMS Parquet payload') from exc
