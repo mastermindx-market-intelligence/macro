@@ -30,11 +30,11 @@ A passing 253-session projection is still hindsight-only: one 2026 capture of ea
 
 ## Actual test evidence
 
-[19 reference tests](test_tiingo_allocation_adapter_r6.py) passed in the local isolated Python 3.13.5 harness (final run 19/19, 0.668 s). The tests began red against a defined unimplemented interface and then passed on the implementation. py_compile passed. The fake data and minimal test-only mirrors of the exact native type/calendar are *not* a real source read or M2 native-test proof. Three adversarial mutations to vintage, PIT and session guards independently made their targeted tests fail. A fourth input-universe mutation generated unrelated fixture errors, so it is excluded from quality claims.
+[21 reference tests](test_tiingo_allocation_adapter_r6.py) passed in the local isolated Python 3.13.5 harness (final run 21/21, 0.690 s). The tests began red against a defined unimplemented interface and then passed on the implementation. py_compile passed. The fake data and minimal test-only mirrors of the exact native type/calendar are *not* a real source read or M2 native-test proof. Three clean adversarial mutations to vintage, PIT and session guards independently made their targeted tests fail. Two additional test-first cases reproduced unhandled TypeError from unhashable receipt references and OverflowError from an implausibly large numeric price; both are now deterministic typed refusals.
 
 Committed Git blob equality was checked against executed local bytes:
-- Implementation git blob b38d3ca9866b90f3fc4eb2b7e2332e6697ee9957, SHA-256 aabb2e76606d19ab339b0214ce475e713999427f57198636244f61bba6ad6644.
-- Test git blob 932f336fa5ae3e694dd6389bddcf9a5cd84ed766, SHA-256 767e282d58f71c78873dd64fc30adbbccacc3c3e921198d46b6f326188e42860.
+- Implementation git blob 54f8f71ccd32e774e072b35c051eeda6d269af57, SHA-256 6234e7daf91af96a8a37e0d4d1122a26161efb2668adc0d0c8ec6e5d300e4c0b.
+- Test git blob bd6ce7b262123e2c211b16724eee7724dde85cf1, SHA-256 c256aa66a0f7f59caf757171ebfcf47d44254b0963af7d439ae063e614b3e4c4.
 
 ## Honest delivery boundary
 
