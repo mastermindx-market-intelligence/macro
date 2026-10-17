@@ -14640,9 +14640,15 @@ jobs:
       - "config/global_liquidity_transmission_v1.yml"
       - "engine/global_liquidity_accounting.py"
       - "engine/global_liquidity_knowledge_time.py"
+      # GLT T08 (W2, 2026-10-17): the measurement-only component outlook
+      # accounting imports the accounting + knowledge-time modules above; its
+      # suite is wired here in the SAME commit per the W1 contract-delta lesson
+      # (a new test file without a path gate is an unwired suite).
+      - "engine/global_liquidity_outlook.py"
       - "engine/global_liquidity_transmission.py"
       - "tests/test_global_liquidity_accounting.py"
       - "tests/test_global_liquidity_knowledge_time.py"
+      - "tests/test_global_liquidity_outlook.py"
       - "tests/test_global_liquidity_sources_v2.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
@@ -14653,8 +14659,8 @@ jobs:
           python-version: "3.12"
       - name: install GLT contract test dependencies
         run: pip install pytest pandas numpy pyyaml
-      - name: global liquidity T03–T05 contracts — source manifest, knowledge time, monetary accounting
-        run: python -m pytest tests/test_global_liquidity_accounting.py tests/test_global_liquidity_knowledge_time.py tests/test_global_liquidity_sources_v2.py -q
+      - name: global liquidity T03–T05 + T08 contracts — source manifest, knowledge time, monetary accounting, component outlook
+        run: python -m pytest tests/test_global_liquidity_accounting.py tests/test_global_liquidity_knowledge_time.py tests/test_global_liquidity_sources_v2.py tests/test_global_liquidity_outlook.py -q
 
   ric-d0-fed-path-provenance:
     if: ${{ false }}
