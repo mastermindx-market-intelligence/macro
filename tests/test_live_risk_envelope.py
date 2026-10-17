@@ -1117,3 +1117,33 @@ def test_shared_freshness_preserves_actual_synthetic_builder_bytes(tmp_path, mon
     before = blre.build(tmp_path, now=now, produced_now=now)
     assert canonical_json(actual) == canonical_json(before)
     assert actual["stale_after"] is None
+
+
+@pytest.mark.parametrize("source_day,usable", [("2026-10-14", True), ("2026-10-08", False), (None, False), (True, False)])
+def test_live_reshaping_preserves_explicit_native_radar_clock(source_day, usable):
+    """Fresh quote/container clocks cannot erase a source's older/unknown date."""
+    from copy import deepcopy
+    doc = _risk_state("2026-10-14 15:00:00 UTC", radar_state="elevated", radar_score=85)
+    doc["live"]["radar"]["asof"] = source_day
+    before = deepcopy(doc)
+    sources = blre.build_live_sources(
+        risk_state_doc=doc, leadership_doc=None, settled_source_session="2026-10-13",
+        live_session="2026-10-14", market_usable=True,
+        now=datetime(2026, 10, 14, 15, 1, tzinfo=timezone.utc),
+    )
+    radar = next(s for s in sources if s.source_id == "risk-radar-us")
+    assert radar.as_of == (source_day if isinstance(source_day, str) else None)
+    assert radar.usable is usable
+    assert radar.state == "elevated" and radar.score == 85
+    assert doc == before
+
+
+def test_live_native_clock_does_not_clear_existing_container_refusal():
+    doc = _risk_state("2026-10-14 15:00:00 UTC", radar_state="elevated")
+    doc["live"]["radar"]["asof"] = "2026-10-14"
+    sources = blre.build_live_sources(
+        risk_state_doc=doc, leadership_doc=None, settled_source_session="2026-10-13",
+        live_session="2026-10-14", market_usable=False,
+        now=datetime(2026, 10, 14, 15, 1, tzinfo=timezone.utc),
+    )
+    assert not next(s for s in sources if s.source_id == "risk-radar-us").usable

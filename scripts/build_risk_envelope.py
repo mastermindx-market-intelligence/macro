@@ -350,6 +350,9 @@ _LEADERSHIP_STAGE = {
     "REPAIRING": "NONE",
     "STRAINED": "FRAGILE",
     "CRACKED": "FRAGILE",
+    # Native engine.leadership_crack state: weakening is already observed,
+    # even before the cohort reaches BROKEN. It does not prove market spread.
+    "CRACKING": "FRAGILE",
     "BROKEN": "FRAGILE",
 }
 
@@ -407,6 +410,11 @@ _RADAR_STAGE = {
     "calm": "NONE",
     "watch": "NONE",
     "caution": "FRAGILE",
+    # _radar_to_rd preserves these native US Radar states verbatim. Carry
+    # their warning without promoting this source beyond its FRAGILE competence;
+    # the original severity remains available in SourceRead.state and detail.
+    "elevated": "FRAGILE",
+    "risk-off": "FRAGILE",
     "warning": "FRAGILE",
     "alert": "TRANSMITTING",
     "loud": "TRANSMITTING",
@@ -423,8 +431,9 @@ def _risk_radar_read(radar: Mapping[str, Any] | None, session: str | None,
     Optional coverage: the radar corroborates but is not required for the stage to be
     knowable, so its absence degrades coverage rather than nulling the answer.
 
-    `stale_override` (GD-3): see `_market_state_read`.  `None` preserves the
-    settled lane's original expression exactly.
+    `stale_override` (GD-3) retains its original container-clock role, but cannot
+    override an explicitly declared Radar source date. Legacy payloads without
+    that additive source field keep their existing representation.
     """
     if not radar:
         return SourceRead(
@@ -435,12 +444,24 @@ def _risk_radar_read(radar: Mapping[str, Any] | None, session: str | None,
     stale = stale_override if stale_override is not None else (
         bool(session) and bool(ms_asof) and ms_asof != session
     )
+    # Current Market State transports the Radar's own session. An explicit null,
+    # malformed date or old observation cannot borrow a fresh container/live clock.
+    # A legacy payload with no field keeps its original compatibility contract;
+    # it is not evidence that an independent source timestamp was recovered.
+    as_of = ms_asof
+    if "asof" in radar:
+        native_asof = radar.get("asof")
+        as_of = native_asof if isinstance(native_asof, str) else None
+        # A current native source also must not inherit an older measured
+        # container's date. Retain an explicit source/live refusal, not that
+        # unrelated container-age comparison.
+        stale = bool(stale_override or _day(as_of) is None or _day(session) is None or as_of != session)
     return SourceRead(
         source_id=_RADAR_SOURCE,
         role="hazard_evidence",
         state=state,
         score=radar.get("top_score"),
-        as_of=ms_asof,
+        as_of=as_of,
         stale=stale,
         required=False,
         hazard_stage=_RADAR_STAGE.get(str(state).lower()) if state else None,

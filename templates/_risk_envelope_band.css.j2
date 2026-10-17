@@ -65,3 +65,34 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
 
 #dlg-risk .gde-live-source-rows {white-space:pre-line; font-size:var(--fs-label); line-height:1.6; overflow-wrap:anywhere;}
 #dlg-risk #gde-live-sources[hidden] {display:none;}
+
+/* Chairman 2026-10-15 bounded foreground strip: the ONE pre-gauge risk summary
+   (outside the dialog). Subdued warning material from current theme tokens; the
+   [hidden] rule must beat the display values below. No flashing, no new fonts, no
+   global styling; readable wrap down to 390px. */
+#risk-response-summary {
+  grid-column:1/-1; margin:0 0 12px; padding:10px 14px;
+  border:1px solid var(--line); border-left:3px solid var(--ink-warn);
+  border-radius:var(--r-card);
+  background:var(--panel2);
+  color:var(--ink-1);
+}
+html[data-theme="light"] #risk-response-summary {
+  background:var(--panel);
+}
+#risk-response-summary[hidden] {display:none !important;}
+#risk-response-summary .rr-head {display:flex; align-items:baseline; justify-content:space-between; gap:6px 10px; flex-wrap:wrap;}
+#risk-response-summary .rr-head h2 {margin:0; font-size:var(--fs-md); font-weight:650; color:var(--ink-1);}
+#risk-response-summary .rr-open {flex:none; font:inherit; font-size:var(--fs-label); padding:4px 10px; cursor:pointer; border:1px solid var(--line); border-radius:var(--r-ctl); background:transparent; color:var(--ink-1);}
+#risk-response-summary .rr-open:hover {border-color:var(--ink-3);}
+#risk-response-summary .rr-open:focus-visible {outline:2px solid var(--link); outline-offset:2px;}
+#risk-response-summary .rr-line {margin:6px 0 0; font-size:var(--fs-sm); line-height:1.5; color:var(--ink-1); overflow-wrap:anywhere;}
+#risk-response-summary #risk-response-action {color:var(--ink-2);}
+#risk-response-summary #risk-response-date {font-size:var(--fs-label); color:var(--ink-3); font-variant-numeric:tabular-nums;}
+#risk-response-summary[data-state="unavailable"] {border-left-color:var(--ink-3); background:var(--panel2); color:var(--ink-2);}
+html[data-theme="light"] #risk-response-summary[data-state="unavailable"] {background:var(--panel2);}
+#risk-response-summary[data-state="unavailable"] .rr-head h2 {color:var(--ink-2);}
+#risk-response-summary[data-state="unavailable"] #risk-response-cause {display:none;}
+@media(max-width:640px) {
+  #risk-response-summary {padding:10px 12px;}
+}

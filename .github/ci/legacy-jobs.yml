@@ -23454,6 +23454,14 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/market_drivers.py"
+      - "engine/shock_deescalation.py"
+      - "scripts/build_risk_state.py"
+      - "site/china_risk_state_live.js"
+      - "site/risk_state_live.js"
+      - "templates/china_risk_state_live.js"
+      - "templates/risk_state_live.js"
+      - "tests/test_risk_state_live_session_floor.py"
       # Connected Research Factory import closure (PR9463).
       - engine/research_codegen/__init__.py
       - engine/research_codegen/accounting_contract.py
@@ -30993,6 +31001,13 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "scripts/build_risk_state.py"
+      - "site/china_risk_state_live.js"
+      - "site/risk_envelope_live.js"
+      - "site/risk_state_live.js"
+      - "templates/china_risk_state_live.js"
+      - "templates/risk_state_live.js"
+      - "tests/test_risk_state_live_session_floor.py"
       - engine/research_codegen/__init__.py
       - engine/research_codegen/accounting_contract.py
       - engine/research_codegen/admission.py

@@ -8,7 +8,7 @@
 {% import "_prophet_card.html.j2" as pv %}
 {% import "_prophet_receipts.html.j2" as pvr %}
 {% import "_decision_card.html.j2" as dc %}
-{% from "_risk_envelope_band.html.j2" import risk_button_context %}
+{% from "_risk_envelope_band.html.j2" import risk_button_context, risk_foreground %}
 {% macro help(en, zh='') -%}
 <span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span></span></span>
 {%- endmacro %}
@@ -7969,6 +7969,11 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {% set _mx5_hist = ms_history if (ms_history is defined and ms_history and ms_history | length >= 2) else none %}
     {% set _mx5_hist_n = _mx5_hist | length if _mx5_hist else 0 %}
 
+    {# Prefer the existing calendar-qualified expectation. A source and its
+       enclosing snapshot being equally old cannot certify each other current. #}
+    {% set _risk_fg_fresh = market_state.get('freshness') if (market_state is mapping and market_state.get('freshness') is mapping) else {} %}
+    {% set _risk_fg_expected = _risk_fg_fresh.get('expected_asof') if _risk_fg_fresh else (market_state.get('asof') if market_state is mapping else none) %}
+    {{ risk_foreground(risk_envelope|default(none), _risk_fg_expected) }}
     <div class="mx5-sc-left">
 
       {# ── Gauge cluster ── #}
@@ -8866,10 +8871,16 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         {# 1. Current stance — deliberately short; the live poller patches this row. #}
         {% if market_state %}
         {% set _wtd_scope = market_state.get('participation_scope') if market_state else none %}
+        {% set _wtd_base_en = _wtd_scope.get('action_en') if (_wtd_scope and _wtd_scope.get('action_en')) else ({'green':'Stay selective. Add where setups confirm.','yellow':'Trade small. Stay selective.','red':'Reduce risk. Protect capital.'}.get(MS.color,'Stay selective.')) %}
+        {% set _wtd_base_zh = _wtd_scope.get('action_zh') if (_wtd_scope and _wtd_scope.get('action_zh')) else ({'green':'保持精选，仅在入场条件确认时加仓。','yellow':'缩小仓位，精选标的。','red':'降低风险，保护本金。'}.get(MS.color,'精选标的。')) %}
+        {% set _wtd_base_verdict = {'green':'RISK_ON','yellow':'MIXED','red':'RISK_OFF'}.get(MS.color, 'MIXED') %}
+        {# Reuse the foreground presentation, never cast another source vote.
+           The existing stronger Risk-off response always remains in force. #}
+        {% set _wtd_risk_action = risk_foreground(risk_envelope|default(none), _risk_fg_expected|default(none), action_only=true) if _wtd_base_verdict != 'RISK_OFF' else '' %}
         {% set _wtd_icon_col = 'mx5-ai-green' if market_state.color == 'green' else ('mx5-ai-yellow' if market_state.color == 'yellow' else 'mx5-ai-gray') %}
         {% set _wtd_stroke = '#22d97a' if market_state.color == 'green' else ('#f59e0b' if market_state.color == 'yellow' else 'rgba(255,255,255,.38)') %}
         <div class="mx5-action-item mx5-action-primary" data-wtd-primary>
-          <div class="mx5-action-icon {{ _wtd_icon_col }}">
+          <div class="mx5-action-icon {{ _wtd_icon_col }}"{% if _wtd_risk_action %} style="display:none"{% endif %}>
             <svg viewBox="0 0 24 24" fill="none" stroke="{{ _wtd_stroke }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               {% if market_state.color == 'green' %}
               <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
@@ -8885,9 +8896,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
             </svg>
           </div>
           <div class="mx5-action-text">
-            <div class="mx5-action-label">
-              <span class="l-en">{{ _wtd_scope.get('action_en') if (_wtd_scope and _wtd_scope.get('action_en')) else ({'green':'Stay selective. Add where setups confirm.','yellow':'Trade small. Stay selective.','red':'Reduce risk. Protect capital.'}.get(MS.color,'Stay selective.')) }}</span>
-              <span class="l-zh">{{ _wtd_scope.get('action_zh') if (_wtd_scope and _wtd_scope.get('action_zh')) else ({'green':'保持精选，仅在入场条件确认时加仓。','yellow':'缩小仓位，精选标的。','red':'降低风险，保护本金。'}.get(MS.color,'精选标的。')) }}</span>
+            <div class="mx5-action-label" data-wtd-base-en="{{ _wtd_base_en }}" data-wtd-base-zh="{{ _wtd_base_zh }}" data-wtd-base-verdict="{{ _wtd_base_verdict }}">
+              {% if _wtd_risk_action %}{{ _wtd_risk_action }}{% else %}<span class="l-en">{{ _wtd_base_en }}</span><span class="l-zh">{{ _wtd_base_zh }}</span>{% endif %}
             </div>
             <div class="mx5-action-sub">
               <span class="l-en">{{ MS.label_en }} &middot; {{ MS.score }}/100</span>

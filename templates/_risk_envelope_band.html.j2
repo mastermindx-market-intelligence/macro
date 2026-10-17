@@ -4,23 +4,180 @@
   'source_states': {'BROKEN': ['damaged', '受损'], 'CRACKING': ['weakening', '转弱'], 'WATCH': ['under watch', '需关注'], 'HEALTHY': ['holding up', '维持稳定'], 'calm': ['quiet', '平稳'], 'watch': ['under watch', '需关注'], 'caution': ['building', '积聚中'], 'elevated': ['elevated', '偏高'], 'risk-off': ['stressed', '承压']},
   'ai_leaders': ['AI-hardware leaders', 'AI硬件龙头'], 'source': ['Tracked source', '追踪来源'],
   'unknown': ['Incomplete read', '数据不全'], 'partial_hint': ['Partial read', '读数不全'],
+  'partial_warning': ['Warning · partial read', '警告 · 信息不全'],
   'checking': ['Checking stress', '压力待确认'], 'live': ['Live stress', '实时压力'],
   'live_pending': ['Live candidate', '实时待确认'],
   'older_trend': ['Trend includes older inputs.', '趋势读数含较早数据。'],
   'live_missing': ['Live update unavailable; settled read shown.', '实时更新不可用，显示收盘读数。'],
   'source_missing': ['read unavailable', '暂无读数'],
-  'coverage': {'FRESH': ['current session', '本交易日'], 'STALE': ['older read', '较早读数'], 'MISSING': ['not available', '暂无数据']}
+  'coverage': {'FRESH': ['current session', '本交易日'], 'STALE': ['older read', '较早读数'], 'MISSING': ['not available', '暂无数据']},
+  'foreground': {
+    'warning_title': ['Risk warning', '风险警告'],
+    'warning_action': ['Review exposure. Respect existing stops.', '检查风险敞口，遵守既定止损。'],
+    'measured_risk_off_title': ['Risk-off market backdrop', '市场背景：避险'],
+    'measured_risk_off_cause': ['Market State reports Risk-off; systemic hazard confirmation is separate.', '市场状态显示避险；系统性压力确认另有依据。'],
+    'measured_risk_off_partial_cause': ['Market State: Risk-off; combined hazard coverage incomplete.', '市场状态：避险；综合风险证据不完整。'],
+    'measured_risk_off_action': ['Reduce risk. Protect capital.', '降低风险，保护本金。'],
+    'unavailable_title': ['Risk read unavailable', '暂无风险读数'],
+    'unavailable_action': ['Verify conditions before adding risk.', '加仓前核实条件。'],
+    'checking_title': ['Checking · change not confirmed', '确认中 · 变化未确认'],
+    'checking_action': ['Keep current protection until confirmed.', '确认前保持既有保护。'],
+    'partial_prefix': ['Partial read · ', '读数不全 · '],
+    'leadership_old_prefix': ['Leadership cohort: older read (', '龙头股群体：较早读数（'],
+    'leadership_old_suffix': [')', '）'],
+    'leadership_missing': ['Leadership cohort: unavailable', '龙头股群体：读数不可用'],
+    'leadership_unverified': ['Leadership cohort: freshness unverified', '龙头股群体：新鲜度未验证'],
+    'settled_label': ['Settled: ', '收盘：'],
+    'source_label': ['Source session: ', '来源交易日：'],
+    'open_details': ['Risk details', '风险详情']
+  }
 } %}
+{# Same partial-read eligibility the live consumer applies: only when the settled
+   combined stage is null for a recognized coverage/mapping gap may a source-native
+   warning stand on its own — fresh this session, attributed, and carrying its own
+   known state copy. The aggregate stage is never promoted from it. #}
+{% macro _risk_partial_warning_sources(envelope, only_source_id=none) -%}
+{%- set _hz = (envelope.get('hazard_summary') or {}) if envelope else {} -%}
+{%- if 'stage' in _hz and _hz.get('stage') is none and _hz.get('stage_reason') in ('required_coverage_unavailable', 'required_source_state_unmapped') -%}
+{%- set _contributing = _hz.get('contributing_sources') or [] -%}
+{%- set _sources = (envelope.get('provenance') or {}).get('sources') or [] -%}
+{%- if _contributing is sequence and _contributing is not string and _contributing is not mapping and _sources is sequence and _sources is not string and _sources is not mapping -%}
+{%- for s in _sources if s is mapping and s.get('source_id') is string and (only_source_id is none or s.get('source_id') == only_source_id) and s.get('role') == 'hazard_evidence' and s.get('coverage') == 'FRESH' and s.get('source_id') in _contributing and s.get('hazard_stage') in ('FRAGILE', 'TRANSMITTING', 'BREAKDOWN') and s.get('state') in _GDE_COPY.source_states and s.get('as_of') is string and s.get('as_of') and s.get('as_of') == envelope.get('source_session') -%}
+{%- if (_sources | selectattr('source_id', 'defined') | selectattr('source_id', 'equalto', s.get('source_id')) | list | length) == 1 -%}1{%- endif -%}
+{%- endfor -%}
+{%- endif -%}
+{%- endif -%}
+{%- endmacro %}
 {% macro risk_button_context(envelope) -%}
   {%- if envelope and envelope.get('schema') == 'mastermind.risk_envelope/v1' -%}
   {%- set stage = (envelope.get('hazard_summary') or {}).get('stage') -%}
   {%- set hint = _GDE_COPY.hint.get(stage, _GDE_COPY.partial_hint) -%}
+  {%- if stage is none and _risk_partial_warning_sources(envelope) %}{% set hint = _GDE_COPY.partial_warning %}{% endif -%}
   <span class="gde-button-context" id="gde-button-context" data-gde-stage="{{ stage or 'UNKNOWN' }}"{% if stage == 'NONE' %} hidden{% endif %}><span class="l-en">{{ hint[0] }}</span><span class="l-zh">{{ hint[1] }}</span></span>
   {%- endif -%}
 {%- endmacro %}
+{# Chairman 2026-10-15 bounded foreground slice: ONE full-width summary above the
+   gauge, outside the dialog. Presentation states only (warning / partial-warning /
+   unavailable / quiet / checking) — no new engine stage, score, publisher or signal
+   authority, and the dialog evidence band is neither moved nor duplicated. A current
+   warning may be projected only from the engine's own owner stage plus causes that
+   are each attributed to a unique source, fresh this session, and carrying known
+   native state copy; anything unknown, malformed, off-session or missing evidence
+   renders as unavailable (never an all-clear). #}
+{# Fail closed on impossible historical dates rather than displaying them as
+   verified original-source age. Same strict ISO civil-date contract as live JS. #}
+{% macro _risk_valid_iso_day(value) -%}
+{%- if value is string and value|length == 10 and value[4] == '-' and value[7] == '-' and value.replace('-', '').isdigit() -%}
+  {%- set yr = value[:4]|int -%}{%- set mo = value[5:7]|int -%}{%- set dy = value[8:10]|int -%}
+  {%- set feb = 29 if (yr % 4 == 0 and (yr % 100 != 0 or yr % 400 == 0)) else 28 -%}
+  {%- set days = [31, feb, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31] -%}
+  {%- if yr >= 1 and 1 <= mo <= 12 and 1 <= dy <= days[mo - 1] -%}1{%- endif -%}
+{%- endif -%}
+{%- endmacro %}
+{% macro risk_foreground(envelope, expected_session, action_only=false) -%}
+{%- set _fg = _GDE_COPY.foreground -%}
+{%- set _re = envelope if (envelope is mapping and envelope.get('schema') == 'mastermind.risk_envelope/v1' and envelope.get('market', 'US') == 'US') else none -%}
+{%- set _expected = expected_session if (expected_session is string and expected_session|length == 10 and expected_session[4] == '-' and expected_session[7] == '-' and expected_session.replace('-', '').isdigit()) else none -%}
+{%- set _v = namespace(state='unavailable', hidden=false, title=_fg.unavailable_title, cause=['', ''], action=_fg.unavailable_action, date='') -%}
+{%- if _re -%}
+{%- set _hz = _re.get('hazard_summary') or {} -%}
+{%- set _stage = _hz.get('stage') -%}
+{%- set _session = _re.get('source_session') -%}
+{%- set _ms = _re.get('measured_state') or {} -%}
+{%- set _qualified_risk_off = _expected is string and _expected == _session and _ms.get('usable') is sameas true and _ms.get('as_of') == _session and _ms.get('verdict') == 'RISK_OFF' -%}
+{# _expected is the existing measured owner's session, not a build clock. #}
+{%- set _contrib = _hz.get('contributing_sources') or [] -%}
+{%- if _contrib is string or _contrib is mapping or _contrib is not sequence %}{% set _contrib = [] %}{% endif -%}
+{%- set _prov = (_re.get('provenance') or {}).get('sources') or [] -%}
+{%- if _prov is string or _prov is mapping or _prov is not sequence %}{% set _prov = [] %}{% endif -%}
+{%- set _rows = namespace(en=[], zh=[]) -%}
+{%- for s in _prov if s is mapping and s.get('source_id') is string and s.get('role') == 'hazard_evidence' and s.get('coverage') == 'FRESH' and s.get('source_id') in _contrib and s.get('hazard_stage') in ('FRAGILE', 'TRANSMITTING', 'BREAKDOWN') and s.get('state') in _GDE_COPY.source_states and s.get('as_of') is string and _session is string and s.get('as_of') == _session and (_prov | selectattr('source_id', 'defined') | selectattr('source_id', 'equalto', s.get('source_id')) | list | length) == 1 -%}
+{%- set _detail = s.get('detail') or {} -%}
+{%- if _detail.get('cohort_role') == 'tracked_ai_hardware_damage_monitor' %}{% set _name = _GDE_COPY.ai_leaders %}{% elif s.get('source_id') == 'risk-radar-us' %}{% set _name = [_detail.get('label_en') or s.get('label_en') or _GDE_COPY.source[0], _detail.get('label_zh') or s.get('label_zh') or s.get('label_en') or _GDE_COPY.source[1]] %}{% else %}{% set _name = [s.get('label_en') or _GDE_COPY.source[0], s.get('label_zh') or s.get('label_zh') or s.get('label_en') or _GDE_COPY.source[1]] %}{% endif -%}
+{%- set _word = _GDE_COPY.source_states[s.get('state')] -%}
+{%- if _rows.en.append(_name[0] ~ ': ' ~ _word[0]) %}{% endif -%}
+{%- if _rows.zh.append(_name[1] ~ '：' ~ _word[1]) %}{% endif -%}
+{%- endfor -%}
+{# A missing REQUIRED source may explain the partial result, but its stale native
+   state may never be added to the fresh hazard-evidence votes above. The owner
+   already identifies unreadable_sources; do not infer a new missing signal. #}
+{%- set _lag = namespace(en='', zh='') -%}
+{%- set _unreadable = _hz.get('unreadable_sources') or [] -%}
+{%- if _stage is none and _hz.get('stage_reason') in ('required_coverage_unavailable', 'required_source_state_unmapped') and _unreadable is sequence and _unreadable is not string and _unreadable is not mapping and 'leadership-crack-latest' in _unreadable -%}
+  {%- set _lead_rows = _prov | selectattr('source_id', 'defined') | selectattr('source_id', 'equalto', 'leadership-crack-latest') | list -%}
+  {%- if _lead_rows|length == 1 and _lead_rows[0] is mapping and _lead_rows[0].get('required') is sameas true -%}
+    {%- set _lead = _lead_rows[0] -%}
+    {%- if _lead.get('coverage') == 'MISSING' -%}
+      {%- set _lag.en = _fg.leadership_missing[0] -%}{%- set _lag.zh = _fg.leadership_missing[1] -%}
+    {%- elif _lead.get('coverage') == 'STALE' -%}
+      {%- set _last = _lead.get('as_of') -%}
+      {%- if _risk_valid_iso_day(_last) and _session is string and _last < _session -%}
+        {%- set _lag.en = _fg.leadership_old_prefix[0] ~ _last ~ _fg.leadership_old_suffix[0] -%}
+        {%- set _lag.zh = _fg.leadership_old_prefix[1] ~ _last ~ _fg.leadership_old_suffix[1] -%}
+      {%- else -%}
+        {%- set _lag.en = _fg.leadership_unverified[0] -%}{%- set _lag.zh = _fg.leadership_unverified[1] -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endif -%}
+{# Qualify the exceptional measured-only fallback against the source schema.
+   None/string contributors or malformed provenance must not pretend every
+   hazard leg is merely unavailable. No new stage, vote or data owner is added. #}
+{%- set _raw_contrib = _hz.get('contributing_sources') -%}
+{%- set _contrib_empty_array = _raw_contrib is sequence and _raw_contrib is not string and _raw_contrib is not mapping and _raw_contrib|length == 0 -%}
+{%- set _schema_problem = namespace(n=0) -%}
+{%- set _bad_hazard_clock = namespace(n=0) -%}
+{%- for s in _prov -%}
+  {%- if s is not mapping or s.get('source_id') is not string or not s.get('source_id') or s.get('role') not in ('measured_state', 'hazard_evidence', 'context') -%}
+    {%- set _schema_problem.n = _schema_problem.n + 1 -%}
+  {%- elif s.get('role') == 'hazard_evidence' and s.get('coverage') == 'STALE' and _risk_valid_iso_day(s.get('as_of')) and _session is string and s.get('as_of') >= _session -%}
+    {%- set _bad_hazard_clock.n = _bad_hazard_clock.n + 1 -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- set _ms_rows = _prov | selectattr('role', 'equalto', 'measured_state') | list -%}
+{%- set _ms_row_ok = _ms_rows|length == 1 and _ms_rows[0] is mapping and _ms_rows[0].get('as_of') == _session and _ms_rows[0].get('state') == _ms.get('verdict') and _ms_rows[0].get('coverage') == 'FRESH' and _ms_rows[0].get('score') == _ms.get('score') -%}
+{%- set _partial_copy = _fg.get('measured_risk_off_partial_cause') -%}
+{%- set _partial_copy_ok = _partial_copy is sequence and _partial_copy is not string and _partial_copy is not mapping and _partial_copy|length == 2 and _partial_copy[0] is string and _partial_copy[1] is string and _partial_copy[0] and _partial_copy[1] -%}
+{%- if _stage in ('FRAGILE', 'TRANSMITTING', 'BREAKDOWN') and _contrib and _expected is string and _expected == _session and _rows.en -%}
+{%- set _v.state = 'warning' %}{% set _v.title = _fg.warning_title %}{% set _v.action = _fg.measured_risk_off_action if _qualified_risk_off else _fg.warning_action %}
+{%- set _v.cause = [_rows.en | join(' · '), _rows.zh | join(' · ')] %}
+{%- set _v.date = _session -%}
+{%- elif _stage == 'NONE' and _expected is string and _expected == _session and (_re.get('measured_state') or {}).get('usable') is sameas true -%}
+{%- if _qualified_risk_off -%}
+{%- set _v.state = 'measured-risk-off' %}{% set _v.title = _fg.measured_risk_off_title %}{% set _v.cause = _fg.measured_risk_off_cause %}{% set _v.action = _fg.measured_risk_off_action %}{% set _v.date = _session -%}
+{%- else -%}
+{%- set _v.state = 'quiet' %}{% set _v.hidden = true -%}
+{%- endif -%}
+{%- elif 'stage' in _hz and _stage is none and _hz.get('stage_reason') in ('required_coverage_unavailable', 'required_source_state_unmapped') and _expected is string and _expected == _session and _rows.en -%}
+{%- set _v.state = 'partial-warning' %}{% set _v.title = _fg.warning_title %}{% set _v.action = _fg.measured_risk_off_action if _qualified_risk_off else _fg.warning_action %}
+{%- set _v.cause = [_fg.partial_prefix[0] ~ (_rows.en | join(' · ')) ~ (' · ' ~ _lag.en if _lag.en else ''), _fg.partial_prefix[1] ~ (_rows.zh | join(' · ')) ~ (' · ' ~ _lag.zh if _lag.zh else '')] %}
+{%- set _v.date = _session -%}
+{# An independently qualified measured RISK_OFF must remain visible when every
+   hazard source is unavailable. This reports only the existing measured verdict;
+   joint hazard is still unknown and cannot be promoted to a systemic alarm. #}
+{%- elif 'stage' in _hz and _stage is none and _hz.get('stage_reason') == 'required_coverage_unavailable' and _qualified_risk_off and not _rows.en and _lag.en and _lag.zh and _contrib_empty_array and _schema_problem.n == 0 and _bad_hazard_clock.n == 0 and _ms_row_ok and _partial_copy_ok and (_prov | selectattr('role', 'equalto', 'hazard_evidence') | rejectattr('coverage', 'in', ['STALE', 'MISSING']) | list | length) == 0 -%}
+{%- set _v.state = 'measured-risk-off' %}{% set _v.title = _fg.measured_risk_off_title %}{% set _v.cause = [_fg.measured_risk_off_partial_cause[0] ~ (' · ' ~ _lag.en if _lag.en else ''), _fg.measured_risk_off_partial_cause[1] ~ (' · ' ~ _lag.zh if _lag.zh else '')] %}{% set _v.action = _fg.measured_risk_off_action %}{% set _v.date = _session -%}
+{%- endif -%}
+{%- endif -%}
+{%- if action_only -%}
+{%- if not _v.hidden -%}<span class="l-en">{{ _v.action[0] }}</span><span class="l-zh">{{ _v.action[1] }}</span>{%- endif -%}
+{%- else -%}
+<section class="risk-foreground" id="risk-response-summary" data-state="{{ _v.state }}" data-expected-session="{{ _expected if _expected is string else '' }}"{% if _v.hidden %} hidden{% endif %} role="status" aria-live="polite" aria-atomic="true" aria-labelledby="risk-response-title">
+  <div class="rr-head">
+    <h2 id="risk-response-title"><span class="l-en">{{ _v.title[0] }}</span><span class="l-zh">{{ _v.title[1] }}</span></h2>
+    <button type="button" class="rr-open" aria-controls="dlg-risk" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-risk')"><span class="l-en">{{ _fg.open_details[0] }}</span><span class="l-zh">{{ _fg.open_details[1] }}</span></button>
+  </div>
+  <p class="rr-line" id="risk-response-cause"><span class="l-en">{{ _v.cause[0] }}</span><span class="l-zh">{{ _v.cause[1] }}</span></p>
+  <p class="rr-line" id="risk-response-action"><span class="l-en">{{ _v.action[0] }}</span><span class="l-zh">{{ _v.action[1] }}</span></p>
+  <p class="rr-line" id="risk-response-date"><span class="l-en">{% if _v.date %}{{ _fg.settled_label[0] }}{{ _v.date }}{% endif %}</span><span class="l-zh">{% if _v.date %}{{ _fg.settled_label[1] }}{{ _v.date }}{% endif %}</span></p>
+</section>
+{%- endif -%}
+{%- endmacro %}
 {% macro risk_context(risk_envelope) -%}
 {# Chairman 2026-09-19: Risk Envelope belongs inside the existing Risk Radar.
-   One derived engine contract; no new score, policy authority or first-level panel.
+   One derived engine contract; no new score or policy authority. Chairman
+   2026-10-15 supersedes the earlier no-first-level-summary line for the single
+   bounded risk_foreground strip only; the evidence band stays inside the dialog.
    Keep the legacy id and live hooks so the accepted live consumer keeps its identity.
    W9: capital-policy copy names the restriction fact, not the Grey Deer program. #}
 {% set _re = risk_envelope %}
@@ -95,7 +252,9 @@
   {% endif %}
   {# Source-native causes only: no forecast, action, score blending or inferred rank. #}
   {% set _causes = namespace(rows=[]) %}
-  {% for s in _prov if s.role == 'hazard_evidence' and s.coverage == 'FRESH' and s.source_id in (_hz.get('contributing_sources') or []) and s.hazard_stage in ('FRAGILE', 'TRANSMITTING', 'BREAKDOWN') %}
+  {% set _cause_contributors = _hz.get('contributing_sources') or [] %}
+  {% if _cause_contributors is not sequence or _cause_contributors is string or _cause_contributors is mapping %}{% set _cause_contributors = [] %}{% endif %}
+  {% for s in _prov if s.role == 'hazard_evidence' and s.coverage == 'FRESH' and s.source_id is string and s.source_id in _cause_contributors and s.hazard_stage in ('FRAGILE', 'TRANSMITTING', 'BREAKDOWN') and (_stage in _GDE_COPY.hazard or _risk_partial_warning_sources(_re, s.source_id)) %}
     {% set detail = s.detail or {} %}
     {% set name = _GDE_COPY.ai_leaders if detail.get('cohort_role') == 'tracked_ai_hardware_damage_monitor' else ([detail.get('label_en') or s.label_en or _GDE_COPY.source[0], detail.get('label_zh') or s.label_zh or _GDE_COPY.source[1]] if s.source_id == 'risk-radar-us' else [s.label_en or _GDE_COPY.source[0], s.label_zh or _GDE_COPY.source[1]]) %}
     {% set word = _GDE_COPY.source_states.get(s.state, _GDE_COPY.source_missing) %}
@@ -103,7 +262,11 @@
   {% endfor %}
   {% if _causes.rows %}<p class="gde-causes"><span class="l-en">{% for row in _causes.rows %}{{ row[0] }}{% if not loop.last %} · {% endif %}{% endfor %}</span><span class="l-zh">{% for row in _causes.rows %}{{ row[1] }}{% if not loop.last %} · {% endif %}{% endfor %}</span></p>{% endif %}
   {% if _ms_detail.get('any_input_stale') or (_ns.ms and _ns.ms.coverage != 'FRESH') %}<p class="gde-input-caveat"><span class="l-en">{{ _GDE_COPY.older_trend[0] }}</span><span class="l-zh">{{ _GDE_COPY.older_trend[1] }}</span></p>{% endif %}
-  <script type="application/json" id="gde-context-copy">{{ {'copy': _GDE_COPY, 'settled_stage': _stage}|tojson }}</script>
+  {# The settled hint the button actually ships is preserved so restoreContext can
+     return to this qualified warning (not the generic partial hint) after a live
+     failure; restoreContext falls back to the enum when the key is absent. #}
+  {% set _settled_hint = _GDE_COPY.partial_warning if (_stage is none and _risk_partial_warning_sources(_re)) else _GDE_COPY.hint.get(_stage, _GDE_COPY.partial_hint) %}
+  <script type="application/json" id="gde-context-copy">{{ {'copy': _GDE_COPY, 'settled_stage': _stage, 'settled_hint': _settled_hint}|tojson }}</script>
   <div class="gde-meta">
     <span class="gde-stamp"><span class="l-en">Settled</span><span class="l-zh">收盘</span> {{ _re.get('source_session') or '—' }}</span>
     {% if _rr_detail.get('issued_warning_persistent') and (_rr_detail.get('issued_warning_sessions') or 0) >= (_rr_detail.get('issued_warning_floor') or 5) %}

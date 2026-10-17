@@ -251,6 +251,18 @@
   }
 
   /* macro.html — the Market State board */
+  // The foreground is a qualified presentation from the existing risk reader,
+  // not another vote. A measured Risk-off instruction must never be softened.
+  function actionForRiskResponse(basePair, verdict) {
+    if (!basePair || verdict === "RISK_OFF") return basePair;
+    var summary = document.getElementById("risk-response-summary");
+    if (!summary || summary.hidden ||
+        ["warning", "partial-warning", "measured-risk-off", "checking", "unavailable"].indexOf(summary.getAttribute("data-state")) < 0) return basePair;
+    var action = document.getElementById("risk-response-action");
+    var en = action && action.querySelector(".l-en"), zh = action && action.querySelector(".l-zh");
+    return en && zh && en.textContent && zh.textContent ? [en.textContent, zh.textContent] : basePair;
+  }
+
   function patchMacro(d) {
     var word = document.getElementById("ms-word");
     if (!word) return;
@@ -368,14 +380,20 @@
       }
       /* What To Do primary row — concise action plus verdict/score context. */
       var wl = document.querySelector("[data-wtd-primary] .mx5-action-label");
-      if (wl && actionPair)
-        setBL(wl, actionPair[0], actionPair[1]);
+      var adjustedAction = actionForRiskResponse(actionPair, disp.verdict);
+      if (wl && actionPair) {
+        wl.setAttribute("data-wtd-base-en", actionPair[0]);
+        wl.setAttribute("data-wtd-base-zh", actionPair[1]);
+        wl.setAttribute("data-wtd-base-verdict", disp.verdict);
+        setBL(wl, adjustedAction[0], adjustedAction[1]);
+      }
       var ws = document.querySelector("[data-wtd-primary] .mx5-action-sub");
       if (ws && disp.score != null)
         setBL(ws, (disp.label_en || disp.verdict) + " · " + disp.score + "/100",
                   (disp.label_zh || disp.label_en || disp.verdict) + " · " + disp.score + "/100");
       var wicon = document.querySelector("[data-wtd-primary] .mx5-action-icon");
       if (wicon) {
+        wicon.style.display = adjustedAction !== actionPair ? "none" : "";
         wicon.classList.remove("mx5-ai-green", "mx5-ai-yellow", "mx5-ai-gray");
         wicon.classList.add(WTD_ICON[col]);
         var wsvg = wicon.querySelector("svg");

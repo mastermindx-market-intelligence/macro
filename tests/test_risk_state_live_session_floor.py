@@ -873,3 +873,33 @@ class TestSyntheticQuoteClockFlag:
             "regularMarketPrice": 412.6}}]}]}}   # no regularMarketTime
         q = lq.parse_yahoo_spark(payload)["0700.HK"]
         assert q["quote_ts_synthetic"] is True
+
+
+@needs_node
+@US_PAGES
+@pytest.mark.parametrize("live", [False, True], ids=["nightly", "live"])
+@pytest.mark.parametrize("stale_breadth", [False, True], ids=["weak", "unverified"])
+def test_mixed_warning_reaches_actual_js_headline_subline_and_action(js, live, stale_breadth):
+    """Oct 14 shape: server projection -> existing shipped JS -> visible DOM.
+
+    Synthetic DOM/inputs, not authenticated production or a predictive backtest.
+    A score of 50 stays 50, but weak/unknown participation no longer disappears.
+    """
+    source = {
+        "market": "us", "asof": BAKED_SESSION,
+        "components": [{"key": "breadth", "score": 0, "degraded": False}],
+        "input_vintages": {"pct_above_200": {"asof": BAKED_SESSION, "stale": stale_breadth}},
+    }
+    copy = brs._display_participation_copy("MIXED", source)
+    feed = _us_feed(BAKED_SESSION, 50, "MIXED", live=live)
+    feed["display"].update(copy)
+    feed["nightly"].update(copy)
+    out = _harness(js.read_text(encoding="utf-8"), feed, "us")
+    assert "error" not in out
+    assert out["score"] == out["big"] == "50"
+    assert out["word"] == "Mixed"
+    assert out["thesis"] == copy["headline_en"]
+    assert out["subline"] == copy["participation_scope"]["subline_en"]
+    assert out["action"] == copy["participation_scope"]["action_en"]
+    assert "GREEN" not in out["subline"]
+    assert "Trade small. Stay selective." != out["action"]

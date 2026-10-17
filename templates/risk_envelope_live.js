@@ -38,6 +38,10 @@
   }
 
   var lastLiveFeed = null, hadLive = false, requestPending = false;
+  // Per-page ordering fence in this existing reader, not a retained warning or
+  // a source freshness clock. Keep it through unpaint so delayed responses do
+  // not undo newer evidence. `built` only orders publications within a session.
+  var latestPaintedOrder = null;
 
   function contextCopy() {
     var el = document.getElementById("gde-context-copy");
@@ -53,9 +57,290 @@
     });
   }
 
+  /* ── Chairman 2026-10-15 bounded foreground slice ──
+     The page carries ONE pre-gauge summary (#risk-response-summary) beside the
+     settled band. It reuses this module's existing contextView qualification and
+     the single existing poller — no new fetch, timer, storage or event plane, and
+     no second envelope in the copy JSON. Before the first foreground paint the
+     server-rendered text/hidden/data-state are snapshotted ONCE into these
+     ephemeral variables; unpaint() restores exactly that DOM. Pages without the
+     nodes no-op. */
+  var FG_IDS = ["risk-response-title", "risk-response-cause", "risk-response-action", "risk-response-date"];
+  var fgSaved = null, fgUnresolvedRisk = false;
+
+  function fgSave() {
+    if (fgSaved) return;
+    var sec = document.getElementById("risk-response-summary");
+    if (!sec) return;
+    fgSaved = {hidden: sec.hidden, state: sec.getAttribute("data-state"),
+      expectedSession: sec.getAttribute("data-expected-session") || "", text: {}};
+    FG_IDS.forEach(function (id) {
+      var el = document.getElementById(id);
+      fgSaved.text[id] = el ? [".l-en", ".l-zh"].map(function (selector) {
+        var node = el.querySelector(selector);
+        return node ? node.textContent : null;
+      }) : null;
+    });
+  }
+
+  // Mirror the already-qualified foreground action into the existing action
+  // card. Base copy stays on that DOM node so either existing reader may update
+  // first. No added source, listener, timer, persistence or trading authority.
+  function syncPrimaryAction() {
+    if (typeof document.querySelector !== "function") return;
+    var label = document.querySelector("[data-wtd-primary] .mx5-action-label");
+    if (!label) return;
+    var base = [label.getAttribute("data-wtd-base-en"), label.getAttribute("data-wtd-base-zh")];
+    var verdict = label.getAttribute("data-wtd-base-verdict");
+    if (!base[0] || !base[1] || !verdict) return;
+    var selected = base, summary = document.getElementById("risk-response-summary");
+    if (verdict !== "RISK_OFF" && summary && !summary.hidden &&
+        ["warning", "partial-warning", "measured-risk-off", "checking", "unavailable"].indexOf(summary.getAttribute("data-state")) >= 0) {
+      var action = document.getElementById("risk-response-action");
+      var en = action && action.querySelector(".l-en"), zh = action && action.querySelector(".l-zh");
+      if (en && zh && en.textContent && zh.textContent) selected = [en.textContent, zh.textContent];
+    }
+    textPair(label, selected);
+    var icon = document.querySelector("[data-wtd-primary] .mx5-action-icon");
+    if (icon && icon.style) icon.style.display = selected === base ? "" : "none";
+  }
+
+  function restoreForeground() {
+    if (!fgSaved) return;
+    var sec = document.getElementById("risk-response-summary");
+    if (!sec) { fgSaved = null; return; }
+    sec.hidden = fgSaved.hidden;
+    if (fgSaved.state === null) sec.removeAttribute("data-state");
+    else sec.setAttribute("data-state", fgSaved.state);
+    FG_IDS.forEach(function (id) {
+      var el = document.getElementById(id), saved = fgSaved.text[id];
+      if (!el || !saved) return;
+      textPair(el, [saved[0] || "", saved[1] || ""]);
+    });
+    /* A failed/expired feed is not recovery. Never restore a prior quiet
+       snapshot as an all-clear after a qualified live warning. Retain only
+       the dated settled context; this is not a new alert-retention store. */
+    if (fgUnresolvedRisk && fgSaved.state === "quiet") {
+      var config = contextCopy(), copy = config && config.copy;
+      if (!copy) return;
+      var fg = copy.foreground || {};
+      sec.hidden = false; sec.setAttribute("data-state", "unavailable");
+      textPair(document.getElementById("risk-response-title"), fg.unavailable_title || copy.unknown);
+      textPair(document.getElementById("risk-response-cause"), ["", ""]);
+      textPair(document.getElementById("risk-response-action"), fg.unavailable_action || copy.unknown);
+      var savedDate = fgSaved.text["risk-response-date"];
+      if ((!savedDate || !savedDate[0]) && fgSaved.expectedSession) {
+        var label = fg.settled_label || ["Settled: ", "收盘："];
+        textPair(document.getElementById("risk-response-date"),
+          [label[0] + fgSaved.expectedSession, label[1] + fgSaved.expectedSession]);
+      }
+    }
+    syncPrimaryAction();
+  }
+
+  /* Same cause qualification the settled band applies, tightened for the glance
+     tier: the source must own its date (as_of equals the feed's own source_session),
+     so carried prior-session leadership is never projected as a fresh current
+     warning. */
+  function fgCauses(d, copy) {
+    var hz = d.hazard_summary || {};
+    var contributing = Array.isArray(hz.contributing_sources) ? hz.contributing_sources : [];
+    var sources = (d.provenance || {}).sources || [];
+    var rows = [[], []];
+    if (!Array.isArray(sources) || typeof d.source_session !== "string" || !d.source_session) return rows;
+    sources.forEach(function (source) {
+      if (!source || source.role !== "hazard_evidence" || source.coverage !== "FRESH" ||
+          contributing.indexOf(source.source_id) < 0 ||
+          ["FRAGILE", "TRANSMITTING", "BREAKDOWN"].indexOf(source.hazard_stage) < 0 ||
+          !Object.prototype.hasOwnProperty.call(copy.source_states, source.state) ||
+          typeof source.as_of !== "string" || !source.as_of || source.as_of !== d.source_session ||
+          sources.filter(function (other) { return other && other.source_id === source.source_id; }).length !== 1) return;
+      var detail = source.detail || {};
+      var name = [source.label_en || copy.source[0], source.label_zh || source.label_en || copy.source[1]];
+      if (detail.cohort_role === "tracked_ai_hardware_damage_monitor") name = copy.ai_leaders;
+      else if (source.source_id === "risk-radar-us") name = [detail.label_en || name[0], detail.label_zh || name[1]];
+      var word = copy.source_states[source.state];
+      rows[0].push(name[0] + ": " + word[0]); rows[1].push(name[1] + "：" + word[1]);
+    });
+    return rows;
+  }
+
+  // Presentation of the EXISTING owner's unreadable required Leadership source.
+  // Its stale state never votes as fresh evidence. The current-session cause
+  // and the old required-source date remain separate, source-qualified facts.
+  function fgRequiredLeadershipGap(d, copy) {
+    var hz = d.hazard_summary || {}, prov = d.provenance || {};
+    var unreadable = hz.unreadable_sources;
+    var rows = prov.sources;
+    if (!Array.isArray(unreadable) || unreadable.indexOf("leadership-crack-latest") < 0 ||
+        !Array.isArray(rows)) return ["", ""];
+    var leads = rows.filter(function (row) { return row && row.source_id === "leadership-crack-latest"; });
+    if (leads.length !== 1 || leads[0].required !== true) return ["", ""];
+    var lead = leads[0], fgc = copy.foreground || {};
+    if (lead.coverage === "MISSING")
+      return fgc.leadership_missing || ["Leadership cohort: unavailable", "龙头股群体：读数不可用"];
+    if (lead.coverage !== "STALE") return ["", ""];
+    var asof = lead.as_of, session = d.source_session;
+    var parsedDay = typeof asof === "string" && /^\d{4}-\d{2}-\d{2}$/.test(asof) &&
+      asof.slice(0, 4) !== "0000" ? Date.parse(asof + "T00:00:00Z") : NaN;
+    if (Number.isFinite(parsedDay) && new Date(parsedDay).toISOString().slice(0, 10) === asof &&
+        typeof session === "string" && asof < session) {
+      var prefix = fgc.leadership_old_prefix || ["Leadership cohort: older read (", "龙头股群体：较早读数（"];
+      var suffix = fgc.leadership_old_suffix || [")", "）"];
+      return [prefix[0] + asof + suffix[0], prefix[1] + asof + suffix[1]];
+    }
+    return fgc.leadership_unverified || ["Leadership cohort: freshness unverified", "龙头股群体：新鲜度未验证"];
+  }
+
+  /* Foreground presentation state from the already-qualified view plus the
+     source-owned source_session (never built/event time): checking while a
+     transition is unconfirmed; warning only on the engine's own stage WITH fully
+     qualified causes; quiet (hidden) only on a current NONE; partial-warning only
+     on the recognized coverage/mapping gap the band already accepts; anything
+     unknown, malformed or ungrounded renders unavailable — never an all-clear. */
+  function publicationUsDay(d) {
+    // Causality ceiling only: a US observation cannot belong to a calendar day
+    // after its own publication. This is not an exchange-session/freshness SLA.
+    if (!d || typeof d.built !== "string") return "";
+    var stamp = Date.parse(d.built.replace(" UTC", "Z").replace(" ", "T"));
+    if (!isFinite(stamp)) return "";
+    try {
+      var parts = new Intl.DateTimeFormat("en-US", {timeZone: "America/New_York",
+        year: "numeric", month: "2-digit", day: "2-digit"}).formatToParts(new Date(stamp));
+      var fields = {};
+      parts.forEach(function (part) { fields[part.type] = part.value; });
+      return fields.year + "-" + fields.month + "-" + fields.day;
+    } catch (e) { return ""; }
+  }
+
+  // Strictly qualify the rare measured-only fallback against the incumbent
+  // source schema. Missing, duplicate, aliased or contradictory provenance is
+  // not evidence that all independent hazard sources are unavailable.
+  function fgTotalHazardSourcesUnavailable(d, measured, session) {
+    var sources = d.provenance && d.provenance.sources;
+    if (!Array.isArray(sources) || !sources.length) return false;
+    var ids = Object.create(null), measuredCount = 0;
+    var valid = sources.every(function (source) {
+      if (!source || typeof source !== "object" || Array.isArray(source) ||
+          typeof source.source_id !== "string" || !source.source_id ||
+          Object.prototype.hasOwnProperty.call(ids, source.source_id) ||
+          ["measured_state", "hazard_evidence", "context"].indexOf(source.role) < 0)
+        return false;
+      ids[source.source_id] = true;
+      if (source.role === "measured_state") {
+        measuredCount++;
+        return source.coverage === "FRESH" && source.as_of === session &&
+          source.state === measured.verdict && source.score === measured.score;
+      }
+      if (source.role === "hazard_evidence") {
+        if (source.coverage !== "STALE" && source.coverage !== "MISSING") return false;
+        if (typeof source.as_of === "string" && /^\d{4}-\d{2}-\d{2}$/.test(source.as_of) &&
+            source.as_of >= session) return false;
+      }
+      return true;
+    });
+    return valid && measuredCount === 1;
+  }
+
+  function foregroundView(d, copy) {
+    var fgc = copy.foreground || {};
+    var hz = d.hazard_summary || {};
+    var view = contextView(d, copy);
+    var session = (typeof d.source_session === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d.source_session)) ? d.source_session : "";
+    var summary = document.getElementById("risk-response-summary");
+    var expected = summary && summary.getAttribute("data-expected-session");
+    var publicationDay = publicationUsDay(d);
+    // Reject an explicitly foreign owner or a source older than the independent
+    // calendar expectation. A newly generated wrapper cannot refresh either.
+    if ((Object.prototype.hasOwnProperty.call(d, "market") && d.market !== "US") ||
+        !publicationDay || !session || session > publicationDay ||
+        (expected && session < expected))
+      return {state: "unavailable", title: fgc.unavailable_title || copy.unknown,
+        cause: ["", ""], action: fgc.unavailable_action || copy.unknown, date: ""};
+    var partialGrounds = hz.stage === null && (hz.stage_reason === "required_coverage_unavailable" ||
+      hz.stage_reason === "required_source_state_unmapped");
+    var rows = fgCauses(d, copy);
+    var warningTitle = fgc.warning_title || copy.partial_warning;
+    var measured = d.measured_state || {};
+    var qualifiedRiskOff = measured.usable === true && measured.verdict === "RISK_OFF" &&
+      measured.as_of === session;
+    var warningAction = qualifiedRiskOff ?
+      (fgc.measured_risk_off_action || fgc.warning_action || copy.partial_warning) :
+      (fgc.warning_action || copy.partial_warning);
+    if (view.pending) return {state: "checking", title: fgc.checking_title || copy.checking,
+      cause: ["", ""], action: qualifiedRiskOff ? warningAction :
+        (fgc.checking_action || copy.checking), date: session};
+    if (["FRAGILE", "TRANSMITTING", "BREAKDOWN"].indexOf(view.stage) >= 0 && rows[0].length && session)
+      return {state: "warning", title: warningTitle, cause: [rows[0].join(" · "), rows[1].join(" · ")],
+        action: warningAction, date: session};
+    if (view.stage === "NONE" && session && measured.usable === true) {
+      if (qualifiedRiskOff) return {state: "measured-risk-off",
+        title: fgc.measured_risk_off_title || warningTitle,
+        cause: fgc.measured_risk_off_cause || ["Market State: Risk-off", "市场状态：避险"],
+        action: warningAction, date: session};
+      return {state: "quiet"};
+    }
+    if (partialGrounds && rows[0].length && session) {
+      var missing = fgRequiredLeadershipGap(d, copy);
+      return {state: "partial-warning", title: warningTitle,
+        cause: [(fgc.partial_prefix || copy.partial_hint)[0] + rows[0].join(" · ") +
+                 (missing[0] ? " · " + missing[0] : ""),
+                (fgc.partial_prefix || copy.partial_hint)[1] + rows[1].join(" · ") +
+                 (missing[1] ? " · " + missing[1] : "")],
+        action: warningAction, date: session};
+    }
+    // With every separate hazard input unavailable, retain ONLY the fresh
+    // measured backdrop's own Risk-off fact. The joint hazard stays unknown.
+    if (partialGrounds && hz.stage_reason === "required_coverage_unavailable" &&
+        qualifiedRiskOff && session && !rows[0].length &&
+        Array.isArray(hz.contributing_sources) && !hz.contributing_sources.length &&
+        fgTotalHazardSourcesUnavailable(d, measured, session)) {
+      var requiredLag = fgRequiredLeadershipGap(d, copy);
+      var measuredCause = fgc.measured_risk_off_partial_cause;
+      if (requiredLag[0] && requiredLag[1] &&
+          Array.isArray(measuredCause) && measuredCause.length === 2 &&
+          measuredCause.every(function (part) { return typeof part === "string" && !!part; }))
+        return {state: "measured-risk-off",
+          title: fgc.measured_risk_off_title || copy.unknown,
+          cause: [measuredCause[0] + " · " + requiredLag[0],
+                  measuredCause[1] + " · " + requiredLag[1]],
+          action: warningAction, date: session};
+    }
+    return {state: "unavailable", title: fgc.unavailable_title || copy.unknown,
+      cause: ["", ""], action: fgc.unavailable_action || copy.unknown, date: ""};
+  }
+
+  function paintForeground(d, preserveSettledDate) {
+    var sec = document.getElementById("risk-response-summary");
+    if (!sec) return;
+    fgSave();
+    var config = contextCopy();
+    if (!config || !config.copy) return;
+    var view = foregroundView(d, config.copy);
+    var fgc = config.copy.foreground || {};
+    if (view.state === "quiet") {
+      fgUnresolvedRisk = false;
+      sec.setAttribute("data-state", "quiet");
+      sec.hidden = true;
+      syncPrimaryAction();
+      return;
+    }
+    if (["warning", "partial-warning", "measured-risk-off", "checking"].indexOf(view.state) >= 0) fgUnresolvedRisk = true;
+    sec.hidden = false;
+    sec.setAttribute("data-state", view.state);
+    textPair(document.getElementById("risk-response-title"), view.title);
+    textPair(document.getElementById("risk-response-cause"), view.cause);
+    textPair(document.getElementById("risk-response-action"), view.action);
+    var label = fgc.source_label || ["Source session: ", "来源交易日："];
+    if (view.date || !preserveSettledDate)
+      textPair(document.getElementById("risk-response-date"), view.date ? [label[0] + view.date, label[1] + view.date] : ["", ""]);
+    syncPrimaryAction();
+  }
+
   // Present source-owned states; never compute a score, action or dwell threshold.
   function contextView(d, copy) {
     var hz = d.hazard_summary || {}, trans = d.live_transition || {};
+    var originalStage = hz.stage;
     var stage = Object.prototype.hasOwnProperty.call(copy.hazard, hz.stage) ? hz.stage : null;
     var pending = trans.pending != null, p = trans.pending || {};
     if (stage !== null && (trans.candidate_stage !== stage ||
@@ -78,6 +363,28 @@
       var word = copy.source_states[source.state] || copy.source_missing;
       causes[0].push(name[0] + ": " + word[0]); causes[1].push(name[1] + "：" + word[1]);
     });
+    /* Partial read: the engine already preserved contributing_sources when the combined
+       stage is null for a recognized coverage/mapping gap. A source-native cause may
+       stand in only when it is complete on its own — fresh this session (as_of equals
+       d.source_session), attributed, and carrying its own known state copy. A stage
+       nulled out of a NON-null summary by malformed live-transition metadata never
+       qualifies, and the aggregate is never promoted from these causes. */
+    if (originalStage === null && (hz.stage_reason === "required_coverage_unavailable" ||
+        hz.stage_reason === "required_source_state_unmapped") && Array.isArray(sources))
+      sources.forEach(function (source) {
+        if (!source || source.role !== "hazard_evidence" || source.coverage !== "FRESH" ||
+            contributing.indexOf(source.source_id) < 0 ||
+            ["FRAGILE", "TRANSMITTING", "BREAKDOWN"].indexOf(source.hazard_stage) < 0 ||
+            !Object.prototype.hasOwnProperty.call(copy.source_states, source.state) ||
+            typeof source.as_of !== "string" || !source.as_of || source.as_of !== d.source_session ||
+            sources.filter(function (other) { return other && other.source_id === source.source_id; }).length !== 1) return;
+        var detail = source.detail || {};
+        var name = [source.label_en || copy.source[0], source.label_zh || copy.source[1]];
+        if (detail.cohort_role === "tracked_ai_hardware_damage_monitor") name = copy.ai_leaders;
+        else if (source.source_id === "risk-radar-us") name = [detail.label_en || name[0], detail.label_zh || name[1]];
+        var word = copy.source_states[source.state];
+        causes[0].push(name[0] + ": " + word[0]); causes[1].push(name[1] + "：" + word[1]);
+      });
     if (Array.isArray(sources)) sources.forEach(function (source) {
       if (!source) return;
       var label = [source.label_en || copy.source[0], source.label_zh || copy.source[1]];
@@ -87,7 +394,8 @@
       sourceLines[1].push(label[1] + "：" + word[1] + " · " + (source.as_of || "—") + " · " + coverage[1]);
     });
     return {stage: stage, pending: pending, label: copy.hazard[stage] || copy.unknown,
-      hint: pending ? copy.checking : (copy.hint[stage] || copy.partial_hint),
+      hint: pending ? copy.checking : (copy.hint[stage] ||
+        (causes[0].length ? (copy.partial_warning || copy.partial_hint) : copy.partial_hint)),
       causes: [causes[0].join(" · "), causes[1].join(" · ")],
       sourceLines: [sourceLines[0].join("\n"), sourceLines[1].join("\n")]};
   }
@@ -124,7 +432,13 @@
     if (fallback) fallback.hidden = !(hadLive && showFallback);
     var config = contextCopy(), hint = document.getElementById("gde-button-context");
     if (config && config.copy && hint) {
-      textPair(hint, config.copy.hint[config.settled_stage] || config.copy.partial_hint);
+      /* The settled render bakes the hint the button actually shipped (possibly the
+         qualified partial warning); older pages without the key fall back to the
+         stage enum exactly as before. */
+      var settled = config.settled_hint;
+      if (!Array.isArray(settled) || settled.length !== 2 || typeof settled[0] !== "string" || typeof settled[1] !== "string")
+        settled = config.copy.hint[config.settled_stage] || config.copy.partial_hint;
+      textPair(hint, settled);
       hint.setAttribute("data-gde-stage", config.settled_stage || "UNKNOWN");
       hint.hidden = config.settled_stage === "NONE";
     }
@@ -133,6 +447,7 @@
 
   function unpaint(showFallback) {
     restoreContext(showFallback);
+    restoreForeground();
     var chip = document.getElementById("gde-live-chip");
     var pending = document.getElementById("gde-pending-chip");
     var receipt = document.getElementById("gde-live-receipt");
@@ -148,6 +463,7 @@
   function paint(d, band) {
     lastLiveFeed = d; hadLive = true;
     paintContext(d);
+    paintForeground(d);
     var chip = document.getElementById("gde-live-chip");
     var pending = document.getElementById("gde-pending-chip");
     var receipt = document.getElementById("gde-live-receipt");
@@ -196,6 +512,7 @@
   function paintDegraded(d) {
     lastLiveFeed = d; hadLive = true;
     paintContext(d);
+    paintForeground(d);
     var chip = document.getElementById("gde-live-chip");
     var pending = document.getElementById("gde-pending-chip");
     var receipt = document.getElementById("gde-live-receipt");
@@ -251,6 +568,27 @@
     try {
       if (!d) { unpaint(true); return; }
       if (active(d, band)) {
+        var foreground = document.getElementById("risk-response-summary");
+        var expected = foreground && foreground.getAttribute("data-expected-session");
+        var publicationDay = publicationUsDay(d);
+        if ((Object.prototype.hasOwnProperty.call(d, "market") && d.market !== "US") ||
+            !publicationDay || !d.source_session || d.source_session > publicationDay ||
+            (expected && d.source_session < expected)) {
+          // Neither the dialog nor the ordering fence may adopt a different
+          // market or an observation rejected by this page's session floor.
+          unpaint(true);
+          paintForeground(d, true);
+          return;
+        }
+        var order = {session: d.source_session,
+          published: Date.parse(d.built.replace(" UTC", "Z").replace(" ", "T")),
+          content: JSON.stringify(d)};
+        if (latestPaintedOrder && (order.session < latestPaintedOrder.session ||
+            (order.session === latestPaintedOrder.session &&
+              (order.published < latestPaintedOrder.published ||
+               (order.published === latestPaintedOrder.published && order.content !== latestPaintedOrder.content))))) return;
+        // An identical still-fresh response may repaint after a transient outage;
+        // changed content at the same publication identity is not a new recovery.
         /* Route on the ENVELOPE's own hazard stage alone (adjudication #8):
            a null stage means "not enough to say" regardless of what
            data_state happens to read (FRESH-but-null is exactly the shape a
@@ -265,6 +603,7 @@
         } else {
           paint(d, band);
         }
+        latestPaintedOrder = order;
       } else {
         unpaint(!(d.live_active === false || d.precedence === "settled"));
       }
@@ -273,6 +612,7 @@
 
   function tick() {
     relocateLegacyEnvelope();
+    syncPrimaryAction();
     if (!document.getElementById("risk-envelope-band")) return;   // no wasted fetch
     var band = document.getElementById("risk-envelope-band");
     if (lastLiveFeed && !active(lastLiveFeed, band)) unpaint(true);
