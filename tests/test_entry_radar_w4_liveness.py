@@ -1342,7 +1342,7 @@ def test_W4R_C2_the_SCRIPT_publishes_the_failed_receipt_and_exits_6(
     ERL, live = _script_env(monkeypatch, tmp_path)
     # A REAL pack, so the receipt is the one an operator would actually be
     # served: every probe name present and every one of them unavailable.
-    monkeypatch.setattr(ERL.LP, "load_pack", lambda state: pack)
+    monkeypatch.setattr(ERL.LP, "load_pack", lambda state, **_kw: pack)
     monkeypatch.setattr(ERL.LE, "run_pass",
                         lambda **kw: (_ for _ in ()).throw(
                             RuntimeError("injected: the pass frame raised")))
@@ -1472,3 +1472,43 @@ def test_LIV9_the_SCRIPT_prints_one_timings_line_naming_every_stage(
         assert token in lines[0], (token, lines[0])
     receipt_at = next(i for i, ln in enumerate(out) if ln.startswith("entry-radar-live pass="))
     assert out.index(lines[0]) > receipt_at, "timings must follow the receipt line"
+
+
+def test_LIV9b_the_SCRIPT_reports_the_pack_receipt_state_on_the_timings_line(
+        tmp_path, monkeypatch, capsys):
+    """Per-pass verification was 207–228 s of a 570 s budget on the VPS (#8546);
+    the receipt's outcome rides the unit log, never the payload (LIV-7)."""
+    ERL, live = _script_env(monkeypatch, tmp_path)
+    code = ERL.run(ROOT, now=session_instant(12), state_override=str(tmp_path / "st"),
+                   live_override=str(live))
+    assert code != 6
+    line = next(ln for ln in capsys.readouterr().out.splitlines()
+                if ln.startswith("entry-radar-live timings "))
+    assert "load_pack_receipt=" in line and "load_pack_digest_s=" in line, line
+    state = line.split("load_pack_receipt=", 1)[1].split()[0]
+    assert state in {"n/a", "hit", "miss", "written"} or state.startswith("write_failed:"), line
+
+
+def test_LIV9c_two_SCRIPT_runs_on_one_saved_pack_verify_once_then_hit(
+        tmp_path, monkeypatch, capsys):
+    from engine.entry_radar import live_pack as lp
+    from tests.test_entry_radar_w4_pack import build as build_pack
+
+    ERL, live = _script_env(monkeypatch, tmp_path)
+    from engine.entry_radar.pack_spool import ParquetSpoolSink
+
+    state = tmp_path / "st"
+    state.mkdir()
+    pack = build_pack(sink=ParquetSpoolSink(tmp_path / "substrate_spool.parquet"))
+    lp.save_pack(pack.with_proof(lp.build_inversion_proof(pack)), state)
+    seen: list[str] = []
+    for _ in range(2):
+        ERL.run(ROOT, now=session_instant(12), state_override=str(state),
+                live_override=str(live))
+        line = next(ln for ln in capsys.readouterr().out.splitlines()
+                    if ln.startswith("entry-radar-live timings "))
+        seen.append(line.split("load_pack_receipt=", 1)[1].split()[0])
+    assert seen == ["written", "hit"], seen
+    assert (lp.pack_root(state) / pack.as_of / "verified.json").is_file()
+    published = json.loads((live / ERL.PAYLOAD_NAME).read_text(encoding="utf-8"))
+    assert "load_pack_receipt" not in json.dumps(published), "LIV-7: never in the payload"

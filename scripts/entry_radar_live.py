@@ -331,7 +331,8 @@ def _print_timings(stages: dict[str, float], evaluator: dict[str, Any],
     :attr:`live_eval.PassResult.timings`, empty on a refusal.  Never part of the
     served payload.
     """
-    parts = [f"{key}={value:.1f}" for key, value in stages.items()]
+    parts = [f"{key}={value:.1f}" if isinstance(value, float) else f"{key}={value}"
+             for key, value in stages.items()]
     parts += [f"pass.{key}={value:.1f}" if isinstance(value, float)
               else f"pass.{key}={value}" for key, value in evaluator.items()]
     print(f"entry-radar-live timings total_s={total_s:.1f} " + " ".join(parts),
@@ -358,12 +359,18 @@ def run(root: Path, *, now: datetime | None = None, dry_run: bool = False,
 
     pack: Any = None
     quotes: Any = None
-    stages: dict[str, float] = {}
+    stages: dict[str, Any] = {}
     t_run = time.perf_counter()
     try:
         t_stage = time.perf_counter()
-        pack = LP.load_pack(state) if state is not None else None
+        pack_receipt: dict[str, Any] = {}
+        pack = (LP.load_pack(state, receipt=pack_receipt)
+                if state is not None else None)
         stages["load_pack_s"] = time.perf_counter() - t_stage
+        # The verified-once receipt's outcome rides the timings line (never the
+        # payload): ``hit`` is the skip, ``written``/``miss`` a full re-verify.
+        stages["load_pack_receipt"] = str(pack_receipt.get("state") or "n/a")
+        stages["load_pack_digest_s"] = float(pack_receipt.get("digest_s") or 0.0)
         t_stage = time.perf_counter()
         ledger = LL.LiveEpisodeLedger.load(state)
         stages["load_ledger_s"] = time.perf_counter() - t_stage

@@ -81,10 +81,12 @@ comparison exists here.  Every field is knowable at ``as_of``.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import shutil
 import tempfile
+import time
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -190,6 +192,10 @@ _SUBSTRATE_NAME = "substrate.parquet"
 #: partial restore is silent.  The pointer carries ``pack_hash`` too, so a reader
 #: can detect a pointer that outlived its directory.
 _POINTER_NAME = "current.json"
+#: Per-session verification receipt written by :func:`load_pack` (opt-in via its
+#: ``receipt`` argument) beside the manifest; pruned with the session directory.
+_RECEIPT_NAME = "verified.json"
+RECEIPT_SCHEMA = "entry_radar.pack_verified.v1"
 
 _SUBSTRATE_COLUMNS: tuple[str, ...] = ("high", "low", "close")
 
@@ -1889,8 +1895,87 @@ def prune_packs(state_dir: Path | str, *, retention: int = PACK_RETENTION) -> li
     return pruned
 
 
-def load_pack(state_dir: Path | str, *, as_of: str | None = None) -> LivePack | None:
-    """Read the current pack (or a named session), or None when there is none."""
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _receipt_key(*, as_of: str, manifest_path: Path, substrate_path: Path,
+                 sidecar_path: Path, generation: int) -> dict[str, Any]:
+    """What a verification receipt must match, byte for byte, to be honoured.
+
+    The three digests pin the EXACT bytes the per-name loop verified; the two
+    version fields pin the verifier that did it, so a fingerprint-algorithm bump
+    (``SUBSTRATE_FINGERPRINT_VERSION``) or a manifest declaring another
+    generation misses on its own and is re-verified in full.
+    """
+    return {
+        "schema": RECEIPT_SCHEMA,
+        "as_of": str(as_of),
+        "fingerprint_generation": int(generation),
+        "fingerprint_version": int(SUBSTRATE_FINGERPRINT_VERSION),
+        "manifest_sha256": _sha256_file(manifest_path),
+        "substrate_sha256": _sha256_file(substrate_path),
+        "sidecar_sha256": _sha256_file(sidecar_path),
+    }
+
+
+def _receipt_matches(path: Path, key: Mapping[str, Any]) -> bool:
+    """True only when every key field is present and equal.  Unreadable, foreign,
+    or partial receipts are a MISS — never a raise, never a pass."""
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    if not isinstance(raw, Mapping):
+        return False
+    return all(raw.get(field) == value for field, value in key.items())
+
+
+def _write_receipt(path: Path, key: Mapping[str, Any], *, n_names: int) -> str:
+    """Atomic write (tmp + ``os.replace``).  A failure is REPORTED, not raised:
+    the pack was just verified in full, and a receipt that cannot be written
+    only costs the next pass the same verification this one paid."""
+    body = dict(key)
+    body["n_names"] = int(n_names)  # no wall clock here (PACK8): the file's mtime dates it
+    tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    try:
+        tmp.write_text(json.dumps(body, sort_keys=True), encoding="utf-8")
+        os.replace(tmp, path)
+    except OSError as exc:
+        try:
+            tmp.unlink()
+        except OSError:
+            pass
+        return f"write_failed:{type(exc).__name__}"
+    return "written"
+
+
+def load_pack(state_dir: Path | str, *, as_of: str | None = None,
+              receipt: dict[str, Any] | None = None) -> LivePack | None:
+    """Read the current pack (or a named session), or None when there is none.
+
+    ``receipt`` opts into the VERIFIED-ONCE path.  Measured on the production
+    VPS (2 vCPU, 2026-10-06, stage timings of #8546): the spool branch below spent
+    207-228 s of every 5-minute pass re-reading 250 row groups and re-deriving
+    the Python per-cell substrate fingerprint of 9,230 daily bars x 3 columns per
+    name (6.9M cells) to compare against the manifest - on a pack that does not
+    change between passes.  With a dict passed here the loader first digests
+    ``manifest.json``, ``substrate.parquet`` and its sidecar (sha256, ~1 s) and
+    looks for ``pack/<as_of>/verified.json``; a receipt whose every field equals
+    :func:`_receipt_key` means THESE EXACT BYTES already passed the per-name
+    loop under THIS verifier, and the loop is skipped.  Anything else - no
+    receipt, a foreign or corrupt one, a changed byte anywhere, a fingerprint
+    version bump - runs the full loop exactly as before and, on success, writes
+    the receipt for the next pass.  The dict receives ``state`` (``hit`` |
+    ``written`` | ``miss`` | ``write_failed:<Error>``) and ``digest_s`` for the
+    unit log.  Nothing about the pack's contents, the pack hash recompute, or
+    the refusal paths changes; with ``receipt=None`` (every other caller) the
+    function is byte-for-byte the old one.
+    """
     root = pack_root(state_dir)
     session = as_of
     if session is None:
@@ -1921,11 +2006,27 @@ def load_pack(state_dir: Path | str, *, as_of: str | None = None) -> LivePack | 
     substrate: Mapping[str, pd.DataFrame]
     if sidecar_path.is_file() and substrate_path.is_file():
         substrate = SpoolSubstrate(substrate_path)
-        for row in names:
-            frame = substrate.get(row.ticker)
-            if frame is None or fingerprint(frame) != row.substrate_fingerprint:
-                raise LivePackError(
-                    f"{row.ticker}: saved substrate does not match the manifest row")
+        receipt_path = root / str(session) / _RECEIPT_NAME
+        receipt_key: dict[str, Any] | None = None
+        verified_by_receipt = False
+        if receipt is not None:
+            t_digest = time.perf_counter()
+            receipt_key = _receipt_key(
+                as_of=str(session), manifest_path=manifest_path,
+                substrate_path=substrate_path, sidecar_path=sidecar_path,
+                generation=_substrate_fingerprint_generation(manifest))
+            receipt["digest_s"] = round(time.perf_counter() - t_digest, 3)
+            verified_by_receipt = _receipt_matches(receipt_path, receipt_key)
+            receipt["state"] = "hit" if verified_by_receipt else "miss"
+        if not verified_by_receipt:
+            for row in names:
+                frame = substrate.get(row.ticker)
+                if frame is None or fingerprint(frame) != row.substrate_fingerprint:
+                    raise LivePackError(
+                        f"{row.ticker}: saved substrate does not match the manifest row")
+            if receipt is not None and receipt_key is not None:
+                receipt["state"] = _write_receipt(receipt_path, receipt_key,
+                                                  n_names=len(names))
         _refuse_substrate_key_mismatch(LivePack(
             schema=str(manifest.get("schema") or _SCHEMA_LIVE_PACK_V1),
             as_of=str(manifest["as_of"]), next_session=str(manifest["next_session"]),
