@@ -949,3 +949,37 @@ def test_short_context_budget_keeps_dated_warning_and_lag_caveat(tmp_path):
     assert "Attributed source warnings" in text
     assert "Credit stress" in text
     assert len(text) <= 900
+
+
+# R11: all settled Risk Envelope readers, not just the live-preferred chat
+# fallback, must distinguish dated last-known evidence from a current session.
+def test_direct_settled_reader_shows_last_known_session_gap(tmp_path):
+    from datetime import datetime, timezone
+    native = envelope()
+    write(tmp_path, "data/risk_envelope/latest.json", native)
+    write(tmp_path, "data/market_state/latest.json", {"asof": native["source_session"]})
+    now = datetime(2026, 10, 8, 22, tzinfo=timezone.utc)
+    direct = rc.read_context(tmp_path, now=now)
+    assert direct["usable"] is True
+    assert direct["source_current_at_turn"] is False
+    assert direct["expected_completed_session"] == "2026-10-08"
+    assert "Last-known, not current" in rc.render_context(direct)
+
+
+def test_compact_settled_context_is_not_a_second_false_calm_read():
+    native = envelope()
+    native_before = deepcopy(native)
+    out = rc.compact_context(native, now=NOW)
+    assert out["usable"] is True
+    assert out["source_current_at_turn"] is False
+    assert "not an all-clear" in rc.render_context(out)
+    assert native == native_before
+
+
+def test_compact_live_context_does_not_become_settled_by_calendar_annotation():
+    native = envelope()
+    native["revision"] = "live_provisional"
+    result = rc.compact_context(native, now=NOW)
+    assert result["usable"] is True
+    assert "source_current_at_turn" not in result
+    assert "expected_completed_session" not in result

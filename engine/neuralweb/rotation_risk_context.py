@@ -125,6 +125,22 @@ def _source_warnings(payload: dict) -> list[dict]:
     return warnings
 
 
+def _qualify_settled_session_at_turn(context: dict, now: datetime) -> dict:
+    """Annotate the existing settled read once, for every authorized consumer.
+
+    This is a consumer-time calendar qualification, not a new data timestamp or
+    evidence vote. Unknown calendar state stays unknown rather than false-stale.
+    """
+    try:
+        expected = nyse_calendar.expected_last_session(now).isoformat()
+    except (ValueError, OverflowError, TypeError, KeyError, AttributeError):
+        expected = None
+    context["expected_completed_session"] = expected
+    context["source_current_at_turn"] = (None if expected is None else
+                                         context.get("source_session") == expected)
+    return context
+
+
 def compact_context(payload: Any, *, now: datetime,
                     expected_session: str | None = None) -> dict:
     """Qualify source clocks and carry native fields without recomputing them.
@@ -182,6 +198,8 @@ def compact_context(payload: Any, *, now: datetime,
     out.update(usable=True, reason=None, display_only=True,
                derived_from="risk-envelope-settled",
                evidence_note="Repeated source context; no additional evidence vote or authority.")
+    if payload.get("revision") in ("settled", "corrected"):
+        return _qualify_settled_session_at_turn(out, now)
     return out
 
 
@@ -429,19 +447,8 @@ def read_preferred_context(root: Path, *, now: datetime) -> dict:
     out = copy.deepcopy(settled)
     out["selection"] = {"plane": "settled" if out.get("usable") else "unavailable",
                         "live_reason": live["reason"]}
-    if out.get("usable"):
-        # A valid historical artifact is not proof it describes the most recent
-        # completed market session. Use the incumbent independent NYSE calendar;
-        # never let the artifact or its freshly rebuilt wrapper set this clock.
-        try:
-            expected = nyse_calendar.expected_last_session(now).isoformat()
-        except (ValueError, OverflowError, TypeError, KeyError, AttributeError):
-            # A calendar failure is unknown, not proof the source is stale.
-            # Preserve the last-known evidence rather than blanking the digest.
-            expected = None
-        out["expected_completed_session"] = expected
-        out["source_current_at_turn"] = (None if expected is None else
-                                         out.get("source_session") == expected)
+    # The shared compacted settled reader has already qualified the independent
+    # completed-session clock, so direct and preferred consumers cannot diverge.
     return out
 
 
