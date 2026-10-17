@@ -28406,6 +28406,10 @@ jobs:
       - engine/neuralweb/market_memory_history_archive.py
       - engine/neuralweb/market_memory_history_dossier.py
       - engine/neuralweb/market_memory_history_macro.py
+      # PAYEMS vintage projection is imported by the existing historical dossier;
+      # include its implementation and incumbent selector in the foundation closure.
+      - engine/neuralweb/market_memory_history_payems_vintage.py
+      - engine/release_revision_model.py
       - engine/neuralweb/market_memory_identity.py
       - engine/neuralweb/market_memory_lineage.py
       - engine/neuralweb/market_memory_operating_cortex_service.py
