@@ -240,6 +240,18 @@ lanes:
           discovery→retained→compiled horizon; compiler age remains separate
           generation telemetry. Context-only; unknown terms and issuer-state
           capabilities remain explicitly unavailable.
+      - id: build_capital_structure_state
+        module: scripts.build_capital_structure_state
+        note: >
+          Offline fail-closed state bundle (SPEC_U1_API U1a). Verifies the same
+          telemetry-last generation receipt, the generation-bound health horizon and
+          the served projection.json, then atomically publishes ONE state_bundle.json
+          holding one CapitalState per covered issuer, all bound to those three input
+          generations, or leaves the last good bundle byte-identical. Runs after the
+          projection because it binds the served projection's bytes. Context-only;
+          the private state API refuses a bundle that does not bind the served
+          projection.
+          outputs: [data/capital_structure/state_bundle.json]
 
   # ── daily.yml / collect_tail ─────────────────────────────────────────────
   # 2026-07-14 collect split: the slow post-adapter accrual band (ThetaData
