@@ -2095,8 +2095,7 @@ def mint_master_rows(
     if type(direct_registrant_inputs) not in (tuple, list) or len(direct_registrant_inputs) > 3:
         raise IdentityError("direct registrant intake exceeds the bounded probe set")
     for source in direct_registrant_inputs:
-        if not isinstance(source, dict) or set(source) != {
-                "symbol", "response_body", "capture", "listing_body", "listing_receipt_body"}:
+        if not _direct_registrant_source_shape(source):
             raise IdentityError("invalid direct registrant input shape")
         # Existing writer now is UTC with the offset omitted by _iso_now().
         clock = datetime.fromisoformat(now.replace("Z", "+00:00"))
@@ -3277,9 +3276,116 @@ def _reference_clock_iso(ns: int) -> str:
             + timedelta(microseconds=(ns + 999) // 1000)).isoformat()
 
 
+_DIRECT_REGISTRANT_KEYS = frozenset({
+    "symbol", "response_body", "capture", "listing_body", "listing_receipt_body",
+})
+_FUND_REFERENCE_KEYS = frozenset({"fund_reference_body", "fund_reference_capture"})
+_FUND_REFERENCE_URL = "https://www.sec.gov/files/company_tickers_mf.json"
+
+
+def _direct_registrant_source_shape(source) -> bool:
+    return (isinstance(source, dict) and set(source) in
+            (_DIRECT_REGISTRANT_KEYS, _DIRECT_REGISTRANT_KEYS | _FUND_REFERENCE_KEYS))
+
+
+def _fund_reference_capture(capture: dict, *, on: date, latest: int) -> int:
+    """Validate one retained official HTTP observation, never invent its clock."""
+    keys = {"url", "final_url", "status", "bytes", "sha256",
+            "request_started_at", "read_completed_at"}
+    if (not isinstance(capture, dict) or set(capture) != keys
+            or capture["url"] != _FUND_REFERENCE_URL
+            or capture["final_url"] != _FUND_REFERENCE_URL
+            or type(capture["status"]) is not int or capture["status"] != 200
+            or type(capture["bytes"]) is not int
+            or not 0 < capture["bytes"] <= _REFERENCE_MAX_BYTES
+            or not isinstance(capture["sha256"], str)
+            or re.fullmatch(r"[0-9a-f]{64}", capture["sha256"]) is None):
+        raise IdentityError("invalid SEC fund-reference capture")
+    started = _reference_clock_ns(capture["request_started_at"])
+    completed = _reference_clock_ns(capture["read_completed_at"])
+    if (not 0 < started <= completed <= latest
+            or _reference_clock_iso(started)[:10] != on.isoformat()
+            or _reference_clock_iso(completed)[:10] != on.isoformat()):
+        raise IdentityError("SEC fund-reference observation clocks disagree")
+    return completed
+
+
+def _validate_fund_reference(link: dict, *, symbol: str, cik: str,
+                             on: date, latest: int) -> int:
+    """Check retained selection/provenance consistency, not HTTP authenticity."""
+    keys = {"schema", "symbol", "cik", "series_id", "class_id",
+            "selection_sha256", "capture"}
+    if (symbol not in {"QQQ", "SMH"} or not isinstance(link, dict)
+            or set(link) != keys or link["schema"] != "mastermind.sec_fund_reference.v1"
+            or link["symbol"] != symbol or link["cik"] != cik
+            or not isinstance(link["series_id"], str)
+            or re.fullmatch(r"S[0-9]{9}", link["series_id"]) is None
+            or not isinstance(link["class_id"], str)
+            or re.fullmatch(r"C[0-9]{9}", link["class_id"]) is None):
+        raise IdentityError("invalid retained SEC fund-reference selection")
+    selected = {k: link[k] for k in ("symbol", "cik", "series_id", "class_id")}
+    if link["selection_sha256"] != _reference_digest(selected):
+        raise IdentityError("SEC fund-reference selection changed")
+    return _fund_reference_capture(link["capture"], on=on, latest=latest)
+
+
+def _prepare_fund_reference(body: bytes, capture: dict, *, symbol: str,
+                            cik: str, on: date, decision: int) -> tuple[dict, int]:
+    """Bind an explicitly captured search-association row to SEC and listing evidence.
+
+    SEC does not guarantee this search file's accuracy/scope. This is one
+    corroborating input to the existing independence fence, not a canonical
+    security, issuer group, vendor alias, or historical identity observation.
+    """
+    if type(body) is not bytes or not 0 < len(body) <= _REFERENCE_MAX_BYTES:
+        raise IdentityError("SEC fund-reference byte bound")
+    completed = _fund_reference_capture(capture, on=on, latest=decision)
+    if capture["bytes"] != len(body) or capture["sha256"] != hashlib.sha256(body).hexdigest():
+        raise IdentityError("SEC fund-reference capture does not bind exact bytes")
+
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError("duplicate SEC fund-reference JSON key")
+            result[key] = value
+        return result
+
+    try:
+        value = json.loads(body.decode("utf-8"), object_pairs_hook=pairs,
+            parse_constant=lambda v: (_ for _ in ()).throw(ValueError(v)),
+            parse_float=lambda v: (_ for _ in ()).throw(ValueError(v)))
+        if (not isinstance(value, dict) or set(value) != {"fields", "data"}
+                or value["fields"] != ["cik", "seriesId", "classId", "symbol"]
+                or not isinstance(value["data"], list) or not 0 < len(value["data"]) <= 100000):
+            raise ValueError("unsupported SEC fund-reference table")
+        matches = []
+        for row in value["data"]:
+            if (not isinstance(row, list) or len(row) != 4
+                    or type(row[0]) is not int or not 0 < row[0] < 10**10
+                    or not isinstance(row[1], str) or re.fullmatch(r"S[0-9]{9}", row[1]) is None
+                    or not isinstance(row[2], str) or re.fullmatch(r"C[0-9]{9}", row[2]) is None
+                    or not isinstance(row[3], str) or len(row[3]) > 32):
+                raise ValueError("invalid SEC fund-reference row")
+            # SEC can retain an unassigned class with an empty ticker. It is
+            # not a match; conflicting or duplicate requested-symbol rows refuse.
+            if row[3] == symbol:
+                matches.append(row)
+        if len(matches) != 1 or f"{matches[0][0]:010d}" != cik:
+            raise ValueError("fund symbol/registrant missing, ambiguous or conflicting")
+    except (ValueError, TypeError, RecursionError, UnicodeError) as exc:
+        raise IdentityError("invalid SEC fund-reference evidence") from exc
+    selected = dict(symbol=symbol, cik=cik, series_id=matches[0][1], class_id=matches[0][2])
+    link = {"schema": "mastermind.sec_fund_reference.v1", **selected,
+            "selection_sha256": _reference_digest(selected), "capture": dict(capture)}
+    _validate_fund_reference(link, symbol=symbol, cik=cik, on=on, latest=decision)
+    return link, completed
+
+
 def prepare_direct_registrant(*, symbol: str, response_body: bytes, capture: dict,
                              listing_body: bytes, listing_receipt_body: bytes,
-                             decision_at: str) -> dict:
+                             decision_at: str, fund_reference_body: bytes | None = None,
+                             fund_reference_capture: dict | None = None) -> dict:
     """Prepare a *new* dated ETF observation for the existing mint fence.
 
     The SEC supplies registrant identity, not a precise venue or issuer grouping.
@@ -3340,10 +3446,16 @@ def prepare_direct_registrant(*, symbol: str, response_body: bytes, capture: dic
     title = sec.get("name")
     if (not isinstance(cik, str) or not re.fullmatch(r"[0-9]{10}", cik) or int(cik) == 0
             or not isinstance(title, str) or not title.strip() or len(title) > 512
-            or not isinstance(tickers, list) or not tickers
+            or not isinstance(tickers, list)
             or any(not isinstance(t, str) or not t for t in tickers)
-            or len(tickers) != len(set(tickers)) or symbol not in tickers):
+            or len(tickers) != len(set(tickers))):
         raise IdentityError("SEC response does not identify the requested registrant")
+    supplied_fund = fund_reference_body is not None or fund_reference_capture is not None
+    if symbol not in tickers:
+        if tickers or symbol not in {"QQQ", "SMH"} or not supplied_fund:
+            raise IdentityError("SEC response does not identify the requested registrant")
+    elif supplied_fund:
+        raise IdentityError("fund-reference extension is only for empty QQQ/SMH ticker arrays")
     url = f"https://data.sec.gov/submissions/CIK{cik}.json"
     digest = hashlib.sha256(response_body).hexdigest()
     if (capture.get("url") != url or capture.get("final_url") != url
@@ -3380,10 +3492,15 @@ def prepare_direct_registrant(*, symbol: str, response_body: bytes, capture: dic
             or resolutions[0].listing_key.mic != venue):
         raise IdentityError("canonical resolver did not establish the listing")
     resolution = resolutions[0]
+    fund, fund_completed = None, 0
+    if supplied_fund:
+        fund, fund_completed = _prepare_fund_reference(
+            fund_reference_body, fund_reference_capture, symbol=symbol,
+            cik=cik, on=on, decision=decision)
     return {"resolution": resolution, "registrant": {
         "symbol": symbol, "cik": cik, "title": title,
         "listing_key": resolution.listing_key.render(), "observed_on": on.isoformat(),
-        "known_at": _reference_clock_iso(max(completed, listing_completed)),
+        "known_at": _reference_clock_iso(max(completed, listing_completed, fund_completed)),
         "response_sha256": digest,
         "listing_snapshot_sha256": receipt["artifact"]["sha256"],
         "listing_receipt_sha256": hashlib.sha256(listing_receipt_body).hexdigest(),
@@ -3391,6 +3508,7 @@ def prepare_direct_registrant(*, symbol: str, response_body: bytes, capture: dic
             "url", "final_url", "status", "bytes", "sha256",
             "request_started_at", "read_completed_at")},
         "scope": "pending_transition_independence_only",
+        **({"fund_reference": fund} if fund is not None else {}),
     }}
 
 
@@ -3602,18 +3720,23 @@ def read_direct_registrant_inputs(path: Path) -> list[dict]:
         manifest = json.loads(body, object_pairs_hook=pairs,
                               parse_constant=lambda v: (_ for _ in ()).throw(ValueError(v)))
         if (not isinstance(manifest, dict) or set(manifest) != {"schema", "sources"}
-                or manifest["schema"] != "mastermind.direct_registrant_input.v1"
+                or manifest["schema"] not in {"mastermind.direct_registrant_input.v1",
+                                               "mastermind.direct_registrant_input.v2"}
                 or not isinstance(manifest["sources"], list) or not 1 <= len(manifest["sources"]) <= 3):
             raise ValueError("invalid direct registrant manifest")
         inputs = []
         for record in manifest["sources"]:
-            if not isinstance(record, dict) or set(record) != {
-                    "symbol", "capture", "response_body", "listing_body", "listing_receipt_body"}:
+            if (not _direct_registrant_source_shape(record)
+                    or (manifest["schema"] == "mastermind.direct_registrant_input.v1"
+                        and set(record) != _DIRECT_REGISTRANT_KEYS)):
                 raise ValueError("invalid direct registrant source")
             source = dict(record)
-            for key, limit in (("response_body", _REFERENCE_MAX_BYTES),
-                               ("listing_body", 8 * 1024 * 1024),
-                               ("listing_receipt_body", 512 * 1024)):
+            files = [("response_body", _REFERENCE_MAX_BYTES),
+                     ("listing_body", 8 * 1024 * 1024),
+                     ("listing_receipt_body", 512 * 1024)]
+            if "fund_reference_body" in source:
+                files.append(("fund_reference_body", _REFERENCE_MAX_BYTES))
+            for key, limit in files:
                 name = source[key]
                 if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}", name):
                     raise ValueError("source must be a sibling filename")
@@ -3691,6 +3814,9 @@ def _direct_registrant_state(out_dir: Path, inputs: tuple[dict, ...] | list[dict
                              and all(isinstance(cause, dict) and cause.get("symbol") == key
                                      and isinstance(cause.get("reason"), str) and cause["reason"]
                                      for cause in causes))
+                if "fund_reference" in row:
+                    _validate_fund_reference(row["fund_reference"], symbol=key,
+                                             cik=row["cik"], on=on, latest=known)
                 if not valid:
                     raise IdentityError("invalid retained direct registrant fields")
             except (KeyError, TypeError, ValueError, OverflowError) as exc:
@@ -3698,8 +3824,7 @@ def _direct_registrant_state(out_dir: Path, inputs: tuple[dict, ...] | list[dict
             state["observations"][key] = dict(row)
     prepared_resolutions = []
     for source in inputs:
-        if not isinstance(source, dict) or set(source) != {
-                "symbol", "response_body", "capture", "listing_body", "listing_receipt_body"}:
+        if not _direct_registrant_source_shape(source):
             raise IdentityError("invalid direct registrant input shape")
         if not isinstance(source["symbol"], str):
             raise IdentityError("invalid direct registrant symbol")
