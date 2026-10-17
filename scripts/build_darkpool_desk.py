@@ -89,8 +89,10 @@ def _load_panel() -> pd.DataFrame | None:
     """The desk's view = the collector's panel UNION the deep backfill.
 
     Two files, one logical panel — see PANEL_DEEP_PATH for why they stay separate.
-    The collector's panel wins on any overlapping (date, ticker) because it carries
-    FINRA's latest restatement of a session; the deep store is only ever older history.
+    The collector's panel wins on any overlapping (date, ticker) because it is the
+    most recent read of a session; the deep store is only ever older history.
+    Whether FINRA restates a posted daily file is UNKNOWN; a replaced collector row
+    is witnessed by data/finra_short_volume/superseded.parquet (C19 WP24 DQ1-1).
     A missing deep store is normal (fresh checkout) and simply yields a shorter panel.
     """
     frames: list[pd.DataFrame] = []
@@ -109,7 +111,7 @@ def _load_panel() -> pd.DataFrame | None:
 
     if not frames:
         return None
-    # keep="last" with the collector appended last ⇒ collector restatements win
+    # keep="last" with the collector appended last ⇒ the collector's newest read wins
     df = pd.concat(frames, ignore_index=True)
     df["date"] = pd.to_datetime(df["date"])
     df = df.drop_duplicates(subset=["date", "ticker"], keep="last")

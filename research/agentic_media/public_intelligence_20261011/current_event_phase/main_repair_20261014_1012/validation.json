@@ -1,0 +1,51 @@
+{
+  "source_commit": "c99ee6cfdde62f00ac1a94c5918f298a43277fd9",
+  "python_selected": {
+    "passed": 803,
+    "failed": 1,
+    "skipped": 1,
+    "seconds": 194.15,
+    "failure": "real-data assertion on a sparse checkout, rerun separately on exact committed artifact bytes"
+  },
+  "real_data_recheck": "PASS;15facts;unchanged exact input hashes",
+  "node_auth_return": {
+    "passed": 17,
+    "failed": 0
+  },
+  "render": {
+    "html_xml_files": 58,
+    "mismatches": 0
+  },
+  "contract_delta": {
+    "introduced": 0,
+    "inherited": 0,
+    "seconds": 820.5,
+    "base": "785295e9cda5a4a9b5ec2edcb303c5b55aaa266d",
+    "probes": [
+      {
+        "jobs": 135,
+        "weight": 5684,
+        "packs": 10
+      },
+      {
+        "jobs": 134,
+        "weight": 5485,
+        "packs": 10
+      },
+      {
+        "jobs": 129,
+        "weight": 5447,
+        "packs": 10
+      }
+    ],
+    "ceilings": "Exact inherited protected-main values; no local ceiling or assertion edit"
+  },
+  "source_hashes_preserved": 24,
+  "main_jobs_preserved": 313,
+  "postlanding_bundle_syntax": "PASS",
+  "shared_page_browser": "PASS;bound255ccbec;not9209install",
+  "provider_calls": 0,
+  "original_accounting_unchanged": true,
+  "publication": false,
+  "cutover": false
+}

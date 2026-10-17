@@ -25,6 +25,7 @@ on:
       # non-code artifacts and special cross-root contracts.
       - "app/**"
       - "admin/**"
+      - "agentos/**"
       - "collectors/**"
       - "config/**"
       - "content/**"
@@ -203,9 +204,11 @@ on:
       # SSR page builder + its render test + the page template.
       - "engine/research_vault/**"
       - "scripts/ingest_research.py"
+      - "tests/test_research_vault_generation_cli.py"
       - "scripts/build_research_vault.py"
       - "tests/test_research_vault.py"
       - "tests/test_research_vault_strict_store.py"
+      - "tests/test_research_vault_generation_evidence.py"
       # Research Vault (RV W2) serving API + download gate: quota ledger, view
       # rate-limit, watermark, the app/research.py router + its security tests.
       - "app/research.py"
@@ -3377,6 +3380,7 @@ on:
       - "tests/test_sector_nav_links.py"
       - "tests/test_site_semantics_refs.py"
       - "tests/test_sp500_heatmap_caps.py"
+      - "tests/test_sp500_heatmap_intraday_clock.py"
       - "tests/test_stage_analysis_page.py"
       - "tests/test_stocktable_data.py"
       - "tests/test_template_items_footgun.py"
@@ -3750,6 +3754,8 @@ on:
       - "tests/test_us_prophet_grades.py"
       - "tests/test_us_context_vector.py"
       - "tests/test_us_context_vector_payload_containment.py"
+      # Hermetic receipt compatibility also runs in the prophet-lab code gate.
+      - "tests/test_prophet_today_provenance.py"
       - "tests/test_prophet_miss_audit.py"
       - "scripts/grade_us_prophet_candidates.py"
       # Archetype coverage pipeline (2026-08): the candidates-stamp heal script and
@@ -3935,6 +3941,11 @@ on:
       - "tests/test_russell_breadth.py"
       # unrun-brain-gateway
       - "tests/test_brain_gateway.py"
+      - "tests/test_market_memory_brain_citations.py"
+      - "tests/test_market_memory_brain_citation_validation.py"
+      - "tests/js/market_memory_brain_citations.test.cjs"
+      - "tests/fixtures/market_memory_retained_owner_wire.json"
+      - "engine/neuralweb/market_memory_brain_citations.py"
       - "tests/test_brain_gateway_quota_safety.py"
       # unrun-macro-panels
       # engine/equity_factors.py was STRICTLY DARK (2026-08-06): named by no `run:` step
@@ -4422,6 +4433,8 @@ on:
       # a regenerated artifact that could not START ci.yml would be the darkness the
       # closure guard exists to end. data/** is NOT a catch-all in this filter.
       - "tests/test_dataos_security_master.py"
+      - "tests/test_dataos_options_root.py"
+      - "tests/test_dataos_options_underlying.py"
       - "scripts/build_security_master.py"
       - "data/reference/**"
       # Job: dislocation-p0-a1-blind-harvest (.github/ci/legacy-jobs.yml).

@@ -1,0 +1,187 @@
+{
+  "at": "2026-10-14T10:53:19.319Z",
+  "chartCanvases": [
+    {
+      "bottom": 654,
+      "height": 556,
+      "top": 98,
+      "width": 904,
+      "x": 112,
+      "y": 98
+    },
+    {
+      "bottom": 654,
+      "height": 556,
+      "top": 98,
+      "width": 904,
+      "x": 112,
+      "y": 98
+    },
+    {
+      "bottom": 654,
+      "height": 556,
+      "top": 98,
+      "width": 62,
+      "x": 1016,
+      "y": 98
+    },
+    {
+      "bottom": 654,
+      "height": 556,
+      "top": 98,
+      "width": 62,
+      "x": 1016,
+      "y": 98
+    },
+    {
+      "bottom": 818,
+      "height": 163,
+      "top": 655,
+      "width": 904,
+      "x": 112,
+      "y": 655
+    },
+    {
+      "bottom": 818,
+      "height": 163,
+      "top": 655,
+      "width": 904,
+      "x": 112,
+      "y": 655
+    },
+    {
+      "bottom": 818,
+      "height": 163,
+      "top": 655,
+      "width": 62,
+      "x": 1016,
+      "y": 655
+    },
+    {
+      "bottom": 818,
+      "height": 163,
+      "top": 655,
+      "width": 62,
+      "x": 1016,
+      "y": 655
+    },
+    {
+      "bottom": 846,
+      "height": 28,
+      "top": 818,
+      "width": 904,
+      "x": 112,
+      "y": 818
+    },
+    {
+      "bottom": 846,
+      "height": 28,
+      "top": 818,
+      "width": 904,
+      "x": 112,
+      "y": 818
+    },
+    {
+      "bottom": 846,
+      "height": 28,
+      "top": 818,
+      "width": 62,
+      "x": 1016,
+      "y": 818
+    }
+  ],
+  "detent": null,
+  "documentScrollTop": 0,
+  "evidenceBoundary": "DOM and rendered browser state only; no private chart state, ownership census or injected production hooks",
+  "gridScroll": {
+    "height": 318,
+    "left": 0,
+    "top": 1386,
+    "width": 316
+  },
+  "horizontalOverflow": false,
+  "panel": {
+    "attributes": [
+      [
+        "data-options-companion",
+        "true"
+      ],
+      [
+        "data-options-host",
+        "rail"
+      ],
+      [
+        "data-options-root",
+        "SPY"
+      ]
+    ],
+    "host": "rail",
+    "rect": {
+      "bottom": 872,
+      "height": 818,
+      "top": 54,
+      "width": 360,
+      "x": 1080,
+      "y": 54
+    },
+    "root": "SPY",
+    "session": null,
+    "visible": true
+  },
+  "returnChip": null,
+  "scope": "Scope & display⌄3 Expiries · ±6% · Global scale",
+  "scrolledPanelAncestors": [],
+  "selected": {
+    "buttons": [
+      {
+        "disabled": false,
+        "label": null,
+        "pressed": "true",
+        "text": "Remove chart pin",
+        "visible": true
+      },
+      {
+        "disabled": false,
+        "label": null,
+        "pressed": null,
+        "text": "Inspect node",
+        "visible": true
+      }
+    ],
+    "rect": {
+      "bottom": 723.140625,
+      "height": 72,
+      "top": 651.140625,
+      "width": 327,
+      "x": 1092,
+      "y": 651.140625
+    },
+    "text": "778 · 2026-10-12 · −2.86BRemove chart pinInspect node"
+  },
+  "selectedCells": [
+    {
+      "label": "778, 2026-10-12: −2.86B $ / +1% spot",
+      "rect": {
+        "bottom": 535.8125,
+        "height": 32,
+        "top": 503.8125,
+        "width": 82,
+        "x": 1161,
+        "y": 503.8125
+      },
+      "value": "-2858.088963"
+    }
+  ],
+  "selectedChartType": [
+    "Line✓"
+  ],
+  "servedDeployments": [
+    "f3f5d90df6d3b08227389dbeb512018697f2e634"
+  ],
+  "session": "EOD SNAPSHOT2026-10-12↻SourcesMap build2026-10-13T23:00:09.564118+00:00End-of-day prices2026-10-12Option greeks2026-10-12Open-interest publication2026-10-12Previous open-interest publication2026-10-09Latest open-interest publication2026-10-13Spot price clockunavailable",
+  "url": "https://app.mastermind-x.com/terminal?symbol=SPY",
+  "viewport": {
+    "height": 900,
+    "width": 1440
+  }
+}

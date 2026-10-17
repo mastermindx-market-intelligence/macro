@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ORA-BULL-20260810",
-  "asof": "2026-10-09",
+  "asof": "2026-10-16",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 9.9,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 32.9
   },
   "geometry": {
-    "dist_to_stop_r": -0.128,
+    "dist_to_stop_r": -0.148,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 117.8,
-    "p1": -0.7518,
-    "p2": -0.3759,
+    "horizon_pct_used": 133.3,
+    "p1": -0.7652,
+    "p2": -0.3826,
     "p3": null,
-    "move_r": -1.128,
+    "move_r": -1.148,
     "mfe_r": 0.0,
-    "mae_r": -1.128
+    "mae_r": -1.148
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.010003662109369316,
-  "_mae": -25.260000610351568,
+  "_mae": -25.709997558593756,
   "_max_p1": 0.0002977280389693249,
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 53,
-  "tau": 1.1778
+  "days_elapsed": 60,
+  "tau": 1.3333
 }
