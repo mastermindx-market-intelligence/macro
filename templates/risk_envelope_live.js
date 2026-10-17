@@ -181,7 +181,9 @@
       return fgc.leadership_missing || ["Leadership cohort: unavailable", "龙头股群体：读数不可用"];
     if (lead.coverage !== "STALE") return ["", ""];
     var asof = lead.as_of, session = d.source_session;
-    if (typeof asof === "string" && /^\d{4}-\d{2}-\d{2}$/.test(asof) &&
+    var parsedDay = typeof asof === "string" && /^\d{4}-\d{2}-\d{2}$/.test(asof) &&
+      asof.slice(0, 4) !== "0000" ? Date.parse(asof + "T00:00:00Z") : NaN;
+    if (Number.isFinite(parsedDay) && new Date(parsedDay).toISOString().slice(0, 10) === asof &&
         typeof session === "string" && asof < session) {
       var prefix = fgc.leadership_old_prefix || ["Leadership cohort: older read (", "龙头股群体：较早读数（"];
       var suffix = fgc.leadership_old_suffix || [")", "）"];

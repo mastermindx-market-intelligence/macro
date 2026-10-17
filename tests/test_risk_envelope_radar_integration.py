@@ -1277,3 +1277,18 @@ def test_missing_required_leadership_reports_unavailable_not_a_fake_date():
         assert 'Leadership cohort: unavailable' in text
         assert 'older read (' not in text
     assert 'Credit stress: building' in live['cause']
+
+
+@pytest.mark.parametrize('bad_clock', ['2026-00-00', '2026-02-30', '2026-04-31'])
+def test_partial_foreground_never_renders_malformed_required_source_clock_as_confirmed_date(bad_clock):
+    e = _partial_live_warning()
+    lead = next(s for s in e['provenance']['sources'] if s['source_id'] == 'leadership-crack-latest')
+    lead.update(coverage='STALE', as_of=bad_clock, required=True, state='CRACKING')
+    e['hazard_summary']['unreadable_sources'] = ['leadership-crack-latest']
+    settled = _foreground_fragment(_foreground_render(e))
+    live = _js_value(_FOREGROUND_DOM+'applyFeed(FEED);console.log(JSON.stringify(foregroundResult()));',e)
+    assert 'Leadership cohort: older read (' not in settled
+    assert 'Leadership cohort: older read (' not in live['cause']
+    assert 'Leadership cohort: freshness unverified' in settled
+    assert 'Leadership cohort: freshness unverified' in live['cause']
+    assert live['state'] == 'partial-warning'

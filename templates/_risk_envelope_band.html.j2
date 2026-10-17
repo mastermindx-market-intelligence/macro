@@ -63,6 +63,16 @@
    are each attributed to a unique source, fresh this session, and carrying known
    native state copy; anything unknown, malformed, off-session or missing evidence
    renders as unavailable (never an all-clear). #}
+{# Fail closed on impossible historical dates rather than displaying them as
+   verified original-source age. Same strict ISO civil-date contract as live JS. #}
+{% macro _risk_valid_iso_day(value) -%}
+{%- if value is string and value|length == 10 and value[4] == '-' and value[7] == '-' and value.replace('-', '').isdigit() -%}
+  {%- set yr = value[:4]|int -%}{%- set mo = value[5:7]|int -%}{%- set dy = value[8:10]|int -%}
+  {%- set feb = 29 if (yr % 4 == 0 and (yr % 100 != 0 or yr % 400 == 0)) else 28 -%}
+  {%- set days = [31, feb, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31] -%}
+  {%- if yr >= 1 and 1 <= mo <= 12 and 1 <= dy <= days[mo - 1] -%}1{%- endif -%}
+{%- endif -%}
+{%- endmacro %}
 {% macro risk_foreground(envelope, expected_session, action_only=false) -%}
 {%- set _fg = _GDE_COPY.foreground -%}
 {%- set _re = envelope if (envelope is mapping and envelope.get('schema') == 'mastermind.risk_envelope/v1' and envelope.get('market', 'US') == 'US') else none -%}
@@ -100,7 +110,7 @@
       {%- set _lag.en = _fg.leadership_missing[0] -%}{%- set _lag.zh = _fg.leadership_missing[1] -%}
     {%- elif _lead.get('coverage') == 'STALE' -%}
       {%- set _last = _lead.get('as_of') -%}
-      {%- if _last is string and _last|length == 10 and _last[4] == '-' and _last[7] == '-' and _last.replace('-', '').isdigit() and _session is string and _last < _session -%}
+      {%- if _risk_valid_iso_day(_last) and _session is string and _last < _session -%}
         {%- set _lag.en = _fg.leadership_old_prefix[0] ~ _last ~ _fg.leadership_old_suffix[0] -%}
         {%- set _lag.zh = _fg.leadership_old_prefix[1] ~ _last ~ _fg.leadership_old_suffix[1] -%}
       {%- else -%}
