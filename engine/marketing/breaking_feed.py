@@ -33,9 +33,12 @@ import os
 import re
 import sys
 import time
+from copy import deepcopy
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, TypedDict
+from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -99,7 +102,19 @@ def _make_id(source_key: str, guid_or_url: str) -> str:
     return hashlib.sha1(raw.encode("utf-8")).hexdigest()
 
 
-def _parse_pub_date(raw: str) -> str:
+class _OfficialSourceTimeRejected(ValueError):
+    """A first-party release lacks an attested unambiguous publication clock."""
+
+
+class _OfficialSourcePayloadRejected(ValueError):
+    """An official HTTP success carried no verifiable RSS/Atom document."""
+
+
+class _OfficialSourceRevisionPending(ValueError):
+    """An Atom source entry requires the existing News revision owner."""
+
+
+def _parse_pub_date(raw: str, *, require_attested: bool = False) -> str:
     """Parse RSS pubDate / Atom updated/published / dc:date → ISO8601 UTC str.
 
     RFC 2822 is tried first via email.utils — it handles NAMED zones
@@ -114,17 +129,33 @@ def _parse_pub_date(raw: str) -> str:
             from email.utils import parsedate_to_datetime  # noqa: PLC0415
             dt = parsedate_to_datetime(raw)
             if dt.tzinfo is None:
+                if require_attested:
+                    raise _OfficialSourceTimeRejected(
+                        "official publication timestamp missing timezone"
+                    )
                 dt = dt.replace(tzinfo=timezone.utc)
             return dt.astimezone(timezone.utc).isoformat()
+        except _OfficialSourceTimeRejected:
+            raise
         except (TypeError, ValueError):
             pass
         try:
             dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
             if dt.tzinfo is None:
+                if require_attested:
+                    raise _OfficialSourceTimeRejected(
+                        "official publication timestamp missing timezone"
+                    )
                 dt = dt.replace(tzinfo=timezone.utc)
             return dt.astimezone(timezone.utc).isoformat()
+        except _OfficialSourceTimeRejected:
+            raise
         except ValueError:
             pass
+    if require_attested:
+        raise _OfficialSourceTimeRejected(
+            "official publication timestamp absent or unparseable"
+        )
     return datetime.now(tz=timezone.utc).isoformat()
 
 
@@ -155,19 +186,38 @@ def parse_feed(xml_or_json_text: str, source_cfg: dict) -> list[FeedItem]:
     source_name = source_cfg.get("source_name", source_key)
     source_tier = source_cfg.get("tier", "aggregator")
     kind = source_cfg.get("kind", "rss")
+    strict_clock = source_cfg.get("_official_require_pit_pubdate") is True
 
     try:
         if kind == "json":
+            if strict_clock:
+                raise _OfficialSourceTimeRejected(
+                    "official publication timestamp requires RSS source"
+                )
             return _parse_json_feed(xml_or_json_text, source_key, source_name, source_tier)
         else:
-            return _parse_xml_feed(xml_or_json_text, source_key, source_name, source_tier)
+            return _parse_xml_feed(
+                xml_or_json_text, source_key, source_name, source_tier,
+                strict_date=strict_clock,
+            )
+    except (_OfficialSourceTimeRejected, _OfficialSourcePayloadRejected,
+            _OfficialSourceRevisionPending):
+        raise
     except Exception as exc:  # noqa: BLE001
+        if strict_clock:
+            # On the qualified BLS/BEA path a malformed HTTP 200 must NOT
+            # turn into a valid "quiet feed" with an acknowledged ETag. The
+            # normal legacy feeds retain their historic fail-soft [] result.
+            raise _OfficialSourcePayloadRejected(
+                "official feed payload malformed"
+            ) from exc
         print(f"[breaking_feed] parse_feed error ({source_key}): {exc}", file=sys.stderr)
         return []
 
 
 def _parse_xml_feed(
-    text: str, source_key: str, source_name: str, source_tier: str
+    text: str, source_key: str, source_name: str, source_tier: str,
+    *, strict_date: bool = False,
 ) -> list[FeedItem]:
     """Parse RSS 2.0 or Atom XML."""
     import xml.etree.ElementTree as ET  # noqa: PLC0415
@@ -175,18 +225,28 @@ def _parse_xml_feed(
     root = ET.fromstring(text)
 
     atom_ns = "{http://www.w3.org/2005/Atom}"
+    if strict_date and root.tag not in ("rss", f"{atom_ns}feed", "feed"):
+        raise _OfficialSourcePayloadRejected(
+            "official feed payload is not RSS or Atom"
+        )
     # If root tag contains Atom namespace, treat as Atom
     if "w3.org/2005/Atom" in (root.tag + " " + (root.get("xmlns", ""))):
-        return _parse_atom(root, source_key, source_name, source_tier, atom_ns)
+        return _parse_atom(root, source_key, source_name, source_tier, atom_ns,
+                           strict_date=strict_date)
 
     # Check for atom:feed child or <feed> element
     if root.tag == f"{atom_ns}feed" or root.tag == "feed":
-        return _parse_atom(root, source_key, source_name, source_tier, atom_ns)
+        return _parse_atom(root, source_key, source_name, source_tier, atom_ns,
+                           strict_date=strict_date)
 
     # RSS 2.0: look for <channel><item>
     channel = root.find("channel")
     if channel is None:
-        # Try root as channel
+        if strict_date:
+            raise _OfficialSourcePayloadRejected(
+                "official feed payload missing RSS channel"
+            )
+        # Legacy parser accepts channel-less fragments.
         channel = root
     items = channel.findall("item")
     results: list[FeedItem] = []
@@ -207,6 +267,10 @@ def _parse_xml_feed(
             desc_raw = desc_raw + " " + (content_el.text or "")
 
         if not title and not link:
+            if strict_date:
+                raise _OfficialSourcePayloadRejected(
+                    "official feed payload has incomplete RSS item"
+                )
             continue
 
         item_id = _make_id(source_key, guid or link)
@@ -216,7 +280,9 @@ def _parse_xml_feed(
             source_name=source_name,
             source_tier=source_tier,
             url=link or guid or "",
-            published_at=_parse_pub_date(pub_raw),
+            published_at=_parse_pub_date(
+                pub_raw, require_attested=strict_date
+            ),
             headline=_strip_html(title),
             body_snippet=_snippet(desc_raw),
         ))
@@ -224,9 +290,16 @@ def _parse_xml_feed(
 
 
 def _parse_atom(
-    root: Any, source_key: str, source_name: str, source_tier: str, ns: str
+    root: Any, source_key: str, source_name: str, source_tier: str, ns: str,
+    *, strict_date: bool = False,
 ) -> list[FeedItem]:
-    """Parse Atom feed (root already an ElementTree Element)."""
+    """Parse Atom entries; strict mode refuses unhandled publisher revisions.
+
+    BLS Atom 'published' values can precede the 8:30 ET embargo in its
+    corresponding official release. The parsed published_at is a SOURCE
+    METADATA clock, never proof of public availability or first observation.
+    Live/PIT admission needs a separate incumbent source-observation receipt.
+    """
     entries = root.findall(f"{ns}entry")
     results: list[FeedItem] = []
     for entry in entries:
@@ -244,12 +317,35 @@ def _parse_atom(
             if href and not link:
                 link = href
 
+        if strict_date and not title and not link:
+            raise _OfficialSourcePayloadRejected(
+                "official feed payload has incomplete Atom entry"
+            )
+
         id_el = entry.find(f"{ns}id")
         entry_id_raw = _elem_text(id_el) if id_el is not None else link
 
         updated_el = entry.find(f"{ns}updated")
         published_el = entry.find(f"{ns}published")
         pub_raw = _elem_text(updated_el if updated_el is not None else published_el)
+        if strict_date:
+            original = _elem_text(published_el)
+            revised = _elem_text(updated_el)
+            if not original:
+                raise _OfficialSourceRevisionPending(
+                    "official publication timestamp missing in Atom"
+                )
+            original_at = _parse_pub_date(original, require_attested=True)
+            if revised and _parse_pub_date(
+                revised, require_attested=True
+            ) != original_at:
+                # Same source ID plus later Atom <updated> needs a qualified
+                # correction/retraction reduction, not keep-FIRST dedupe.
+                # Refuse the whole preview before ETag/seen acceptance.
+                raise _OfficialSourceRevisionPending(
+                    "official source revision requires News owner"
+                )
+            pub_raw = original
 
         # Prefer <content>, fall back to <summary> — with EXPLICIT None checks:
         # ElementTree Elements with no children are falsy, so `content_el or
@@ -260,6 +356,10 @@ def _parse_atom(
         desc_raw = _elem_text(desc_el)
 
         if not title and not link:
+            if strict_date:
+                raise _OfficialSourcePayloadRejected(
+                    "official feed payload has incomplete Atom entry"
+                )
             continue
 
         item_id = _make_id(source_key, entry_id_raw or link)
@@ -269,7 +369,9 @@ def _parse_atom(
             source_name=source_name,
             source_tier=source_tier,
             url=link or entry_id_raw or "",
-            published_at=_parse_pub_date(pub_raw),
+            published_at=_parse_pub_date(
+                pub_raw, require_attested=strict_date
+            ),
             headline=_strip_html(title),
             body_snippet=_snippet(desc_raw),
         ))
@@ -371,13 +473,14 @@ def _save_state(root: Path | str, state: dict[str, Any]) -> None:
 
 
 def filter_new_items(
-    items: list[FeedItem], root: Path | str
+    items: list[FeedItem], root: Path | str, *,
+    seen_snapshot: dict[str, str] | None = None,
 ) -> tuple[list[FeedItem], dict[str, str]]:
     """Return (new_items, updated_seen_dict) without writing to disk.
 
     Callers write the ledger after processing all sources.
     """
-    seen = _load_seen(root)
+    seen = dict(seen_snapshot) if seen_snapshot is not None else _load_seen(root)
     now_ts = datetime.now(tz=timezone.utc).isoformat()
     new_items: list[FeedItem] = []
     for item in items:
@@ -388,8 +491,12 @@ def filter_new_items(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Network poller (never called in tests)
+# Network poller (fixture-mocked for transport verification)
 # ─────────────────────────────────────────────────────────────────────────────
+
+class _OfficialFeedRedirectRefused(ValueError):
+    """Fail closed when an exact-agency preview fetched a different origin."""
+
 
 def poll_source(
     source_cfg: dict,
@@ -450,6 +557,19 @@ def poll_source(
             req.add_header("If-Modified-Since", last_mod)
 
         with urlopen(req, timeout=_FEED_TIMEOUT) as resp:  # noqa: S310
+            # The official first-print preview already fixes the registered
+            # BLS/BEA feed URLs. urllib can follow redirects across hosts,
+            # so item URLs alone cannot prove which server supplied the feed.
+            # This optional constraint is dormant on incumbent poll_all().
+            required = source_cfg.get("_official_expected_effective_url")
+            if required is not None:
+                effective = str(resp.geturl()) if callable(
+                    getattr(resp, "geturl", None)
+                ) else ""
+                if effective != required:
+                    raise _OfficialFeedRedirectRefused(
+                        "official source redirect not admitted"
+                    )
             raw = resp.read(_MAX_FEED_BYTES + 1)
             if len(raw) > _MAX_FEED_BYTES:
                 print(
@@ -471,7 +591,20 @@ def poll_source(
 
         return parse_feed(text, source_cfg)
 
+    except (_OfficialFeedRedirectRefused, _OfficialSourceTimeRejected,
+            _OfficialSourcePayloadRejected, _OfficialSourceRevisionPending):
+        # Unqualified transport, publisher clock, revision or RSS/Atom body
+        # stops the ENTIRE preview before proposed ETag/seen is acknowledged.
+        raise
     except HTTPError as exc:
+        # urllib raises for every non-2xx, INCLUDING 304. A redirect to an
+        # unregistered server may ALSO raise here; it must not be misread as
+        # an official conditional-GET receipt or an ordinary source outage.
+        required = source_cfg.get("_official_expected_effective_url")
+        if required is not None and str(exc.geturl()) != required:
+            raise _OfficialFeedRedirectRefused(
+                "official source redirect not admitted"
+            ) from None
         # urllib raises for every non-2xx, INCLUDING 304 — a Not-Modified
         # response is the conditional GET working, not an error.
         if exc.code == 304:
@@ -529,6 +662,286 @@ def poll_all(root: Path | str, cfg: dict) -> list[FeedItem]:
     _save_seen(root, updated_seen)
 
     return new_items
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# WEB-P1 G1: bounded official-source observation before durable consumption.
+# Uses the incumbent RSS adapter and its SAME on-disk state/seen owners.
+# This is neither a parallel queue nor a second source/revision ledger.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# BLS distinguishes its /feed/bls_latest.rss Latest Numbers BOARD from
+# individual News Release Atom feeds at /feed/cpi.rss and /feed/empsit.rss.
+# The board has one repeating item with no release GUID; admitting it as a
+# first-print news item would suppress future changes under keep-FIRST.
+# These exact release endpoints are preview-only candidates; they are NOT
+# automatically added to the incumbent regular breaking.sources register.
+_OFFICIAL_PREVIEW_URLS = {
+    "bls_cpi_release": "https://www.bls.gov/feed/cpi.rss",
+    "bls_employment_release": "https://www.bls.gov/feed/empsit.rss",
+    "bea_news": "https://apps.bea.gov/rss/rss.xml",
+}
+
+_OFFICIAL_ITEM_DOMAINS = {
+    "bls_cpi_release": "bls.gov",
+    "bls_employment_release": "bls.gov",
+    "bea_news": "bea.gov",
+}
+
+
+def _qualified_official_item_url(url: object, source_key: str) -> bool:
+    """A same-feed item is not agency-authored merely because RSS listed it."""
+    if not isinstance(url, str) or not url:
+        return False
+    agency = _OFFICIAL_ITEM_DOMAINS.get(source_key)
+    if not agency:
+        return False
+    try:
+        parsed = urlsplit(url)
+        host = (parsed.hostname or "").lower()
+        return (
+            parsed.scheme == "https"
+            and (host == agency or host.endswith("." + agency))
+            and parsed.username is None and parsed.password is None
+            and parsed.port in (None, 443)
+            and not parsed.fragment
+            # A BLS latest-numbers board or other agency dashboard is NOT
+            # an individual first-print news release. Qualified BLS release
+            # Atom items point to the publisher's /news.release/ archive.
+            and (source_key not in ("bls_cpi_release", "bls_employment_release")
+                 or (host in ("bls.gov", "www.bls.gov")
+                     and parsed.path.startswith("/news.release/")))
+        )
+    except ValueError:
+        return False
+
+
+@dataclass(frozen=True, slots=True)
+class OfficialFeedPreview:
+    """In-memory source observation, not publication or license authority.
+
+    A caller must FIRST prove every offered event was durably accepted by the
+    incumbent News/Intelligence Desk before ack_official_preview is allowed.
+    BLS Atom <published> can be pre-embargo source metadata; this object does
+    not certify public release/first observed time or tradable as-of. Existing
+    keep-FIRST IDs make this a FIRST-PRINT-ONLY pilot; changed same-ID facts
+    and withdrawals require the canonical News revision owner.
+    """
+
+    root_key: str
+    items: tuple[FeedItem, ...]
+    baseline_seen_digest: str | None
+    baseline_state_digest: str | None
+    updated_seen: dict[str, str]
+    updated_state: dict[str, Any]
+    # Explicit, caller-selected first-print scope. Never imply the full
+    # provider history was read/accepted when old rows were excluded.
+    not_before: datetime | None = None
+    excluded_historical_count: int = 0
+
+
+def _official_checkpoint(
+    root: Path | str, name: str,
+) -> tuple[dict[str, Any], str | None]:
+    """Read the SAME ledger without creating it; corrupt files fail closed."""
+    relative = Path("data") / "marketing" / "breaking"
+    expected = Path(root).resolve() / relative
+    if (Path(root) / relative).resolve() != expected:
+        raise ValueError("source ledger directory escape not admitted")
+    path = Path(root) / relative / name
+    if path.is_symlink():
+        raise ValueError("source state symlink not admitted")
+    try:
+        raw = path.read_bytes()
+    except FileNotFoundError:
+        return {}, None
+    try:
+        parsed = json.loads(raw.decode("utf-8"))
+    except (ValueError, UnicodeError) as exc:
+        raise ValueError("unreadable official source state") from exc
+    if not isinstance(parsed, dict) or any(not isinstance(k, str) for k in parsed):
+        raise ValueError("invalid official source state")
+    return parsed, hashlib.sha256(raw).hexdigest()
+
+
+def preview_official_sources(
+    root: Path | str, cfg: dict, *, not_before: datetime | None = None,
+) -> OfficialFeedPreview:
+    """Observe existing BLS/BEA RSS without consuming state or seen cursors.
+
+    Optional aware-UTC not_before is a deliberate, caller-chosen initial
+    first-print scope, NOT automatic history reconciliation. Older source
+    entries are counted but NOT admitted as accepted events. An all-excluded
+    nonempty feed cannot be ACKed as a quiet feed/ETag.
+    Requires first-party source identity; this certifies neither copyright
+    nor any historical revision, real first-observation clock or public right.
+    Normal poll_all and its original source registry remain unchanged.
+    """
+    if not_before is not None:
+        if (type(not_before) is not datetime or not_before.tzinfo is None
+                or not_before.utcoffset() is None):
+            raise ValueError("official not_before needs timezone-aware datetime")
+        not_before = not_before.astimezone(timezone.utc)
+    before_seen, seen_digest = _official_checkpoint(root, "seen.json")
+    before_state, state_digest = _official_checkpoint(root, "state.json")
+    if any(not isinstance(v, str) for v in before_seen.values()):
+        raise ValueError("invalid official seen values")
+    if any(not isinstance(v, dict) for v in before_state.values()):
+        raise ValueError("invalid official provider state")
+    proposed_state = deepcopy(before_state)
+    breaking_cfg = cfg if "sources" in cfg else cfg.get("breaking", {})
+    if not isinstance(breaking_cfg, dict):
+        raise ValueError("invalid official feed config")
+    items: list[FeedItem] = []
+    batch_by_id: dict[str, FeedItem] = {}
+    excluded_historical = 0
+    for source in breaking_cfg.get("sources", []):
+        if not isinstance(source, dict):
+            continue
+        key = str(source.get("key") or "")
+        if key == "bls_news":
+            # Incumbent normal poll_all still owns this legacy config. The
+            # WEB-P1 release pilot refuses the aggregate latest-numbers board
+            # rather than treat its repeated single GUID/link as fresh news.
+            raise ValueError(
+                "BLS latest numbers is not an individual release feed"
+            )
+        expected_url = _OFFICIAL_PREVIEW_URLS.get(key)
+        if expected_url is None:
+            continue
+        # Official domain identity alone does not qualify every hosted path,
+        # redirect, userinfo or alternate port. Accept only verified agency
+        # endpoint candidates explicitly supplied to this dormant preview.
+        # Normal poll_all's registered config and runtime remain unchanged.
+        if (source.get("url") != expected_url
+                or source.get("kind", "rss") != "rss"
+                or source.get("tier") != "official"):
+            raise ValueError("unqualified official feed source")
+        merged = {
+            "poll_interval_s": int(breaking_cfg.get("poll_interval_s", _DEFAULT_INTERVAL)),
+            "user_agent": breaking_cfg.get("user_agent", _DEFAULT_UA),
+            **source,
+            # Verified by the incumbent poll_source transport; no separate
+            # opener, fetcher, source registry or retry owner.
+            "_official_expected_effective_url": expected_url,
+            # The legacy RSS fallback stamps invalid dates with ingest-now.
+            # Official WEB-P1 claims cannot treat this as a publication clock.
+            "_official_require_pit_pubdate": True,
+        }
+        fetched = poll_source(merged, root=root, session_state=proposed_state)
+        for item in fetched:
+            # The live BEA RSS archive includes a historical row whose link
+            # literally starts "www.bea.gov/news/" without https://. Allow
+            # only this exact first-party news-path grammar to gain HTTPS.
+            # The source GUID/ID is NOT reminted or reinterpreted; all other
+            # schemeless, foreign, query, dot-segment or HTTP links refuse.
+            if key == "bea_news" and isinstance(item, dict):
+                raw_link = item.get("url")
+                if (isinstance(raw_link, str)
+                        and re.fullmatch(
+                            r"www\.bea\.gov/news/[A-Za-z0-9_-]+"
+                            r"(?:/[A-Za-z0-9_-]+)*", raw_link
+                        )):
+                    item = {**item, "url": "https://" + raw_link}
+            if (not isinstance(item, dict) or not str(item.get("id") or "")
+                    or item.get("source") != key
+                    or item.get("source_tier") != "official"
+                    or not _qualified_official_item_url(item.get("url"), key)):
+                # An apparently official feed can relay third-party material.
+                # Do not process it, advance its cursor or infer public rights
+                # from the transport or from a source_tier label alone.
+                raise ValueError("unqualified official feed item")
+            if not_before is not None:
+                # The source-owned parser supplies aware ISO dates in strict
+                # preview mode. Never infer a missing clock as ingest-now.
+                try:
+                    stamp = datetime.fromisoformat(
+                        str(item.get("published_at") or "").replace("Z", "+00:00")
+                    )
+                except ValueError as exc:
+                    raise ValueError("unqualified official publication clock") from exc
+                if stamp.tzinfo is None or stamp.utcoffset() is None:
+                    raise ValueError("unqualified official publication clock")
+                if stamp.astimezone(timezone.utc) < not_before:
+                    excluded_historical += 1
+                    continue
+            iid = str(item["id"])
+            prior = batch_by_id.get(iid)
+            if prior is not None and prior != item:
+                # One official response already contains conflicting facts
+                # at a keep-FIRST GUID. The current ledger cannot express
+                # revisions. Refuse the batch rather than silently accepting
+                # one version and consuming the source cursor past the other.
+                raise ValueError("same GUID changed facts: revision owner required")
+            batch_by_id.setdefault(iid, item)
+            items.append(item)
+    new_items, updated_seen = filter_new_items(
+        items, root, seen_snapshot=before_seen,
+    )
+    return OfficialFeedPreview(
+        root_key=str(Path(root).resolve()),
+        items=tuple(new_items),
+        baseline_seen_digest=seen_digest,
+        baseline_state_digest=state_digest,
+        updated_seen=updated_seen,
+        updated_state=proposed_state,
+        not_before=not_before,
+        excluded_historical_count=excluded_historical,
+    )
+
+
+def ack_official_preview(
+    root: Path | str,
+    preview: OfficialFeedPreview,
+    *,
+    accepted_ids: set[str],
+) -> bool:
+    """Commit existing source state after qualified downstream acceptance.
+
+    A nonempty event batch needs exactly matching accepted IDs and writes the
+    incumbent seen ledger before ETag state. A truly empty batch writes ONLY
+    polling state (ETag/last-attempt/backoff), protecting agency politeness;
+    this is not a source-event acceptance. Any changed on-disk ledger, wrong
+    root or mismatched IDs refuses mutation. Caller-supplied accepted IDs are
+    not durable-store proof; the incumbent consumer must verify that first.
+    A fault after seen write can leave SEEN_APPLIED/STATE_PENDING: reconcile
+    the same source files, never blindly retry or create another queue.
+    """
+    if (not isinstance(preview, OfficialFeedPreview)
+            or preview.root_key != str(Path(root).resolve())
+            or not isinstance(accepted_ids, set)):
+        return False
+    offered = {str(row["id"]) for row in preview.items}
+    if accepted_ids != offered:
+        return False
+    if not offered.issubset(preview.updated_seen):
+        return False
+    if (_official_checkpoint(root, "seen.json")[1]
+            != preview.baseline_seen_digest
+            or _official_checkpoint(root, "state.json")[1]
+            != preview.baseline_state_digest):
+        return False
+
+    if not offered:
+        if preview.excluded_historical_count:
+            # An explicit lower bound excluded real provider items. This
+            # cannot be reported as a genuinely empty/quiet observed feed.
+            return False
+        # No events were offered for acceptance. Preserve only the existing
+        # poller's ETag/last-attempt/backoff state so official-feed politeness
+        # survives quiet or failing polls; never mint or rewrite a seen ledger
+        # for an empty batch. This is NOT event acceptance.
+        if not any(k in preview.updated_state for k in _OFFICIAL_PREVIEW_URLS):
+            return False
+        _save_state(root, preview.updated_state)
+        return True
+
+    # State/ETag MUST NOT commit ahead of the seen ledger. If the process fails
+    # after the first atomic write, a repeat GET may over-fetch but cannot
+    # silently 304 away a new accepted event. Same incumbent source files.
+    _save_seen(root, preview.updated_seen)
+    _save_state(root, preview.updated_state)
+    return True
 
 
 # ─────────────────────────────────────────────────────────────────────────────
