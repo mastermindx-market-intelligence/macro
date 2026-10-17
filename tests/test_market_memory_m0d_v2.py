@@ -2939,3 +2939,423 @@ def test_missing_or_nonfalse_adjustment_cannot_enter_seal(mm_envelope_modules, a
     assert owner._fetch_spy_daily_bar(_ENVELOPE_SESSION, lambda path, params: payload) == ("malformed", [])
     observations, cache = _collect_envelope_fixture(owner, payload)
     assert cache == {} and all(o.status == "malformed" for o in observations)
+
+
+# ===========================================================================
+# R1: create-once experience-v2 record publication durability.
+#
+# The publication primitive is reused from engine.neuralweb.market_memory_pit.
+# These tests inject failures at the os.write/os.fsync/os.link boundary and
+# prove, from the final bytes and HEAD effects, that:
+# - a short/zero write or failed file fsync leaves the final record absent
+#   and HEAD untouched, with no temporary litter;
+# - a record published but whose parent-directory fsync failed keeps its
+#   original identity, surfaces a typed error, and does not advance HEAD;
+# - a concurrent create race is resolved from persisted bytes: equal bytes
+#   are idempotent (HEAD advances once with the persisted record), unequal
+#   bytes are a typed collision that never overwrites the incumbent;
+# - empty, malformed, symlinked, or foreign-identity incumbents are typed
+#   ExperienceV2Error failures, never silent idempotence;
+# - a valid existing record stays idempotent with unchanged bytes and HEAD.
+# ===========================================================================
+
+_R1_SESSION = date(2026, 8, 21)
+
+
+def _r1_experience_root(tmp_path: Path) -> Path:
+    """Return a 0700 experience-v2 root whose install marker is already written."""
+    from scripts.accrue_market_memory_spy_experience_v2 import _write_install_marker
+
+    exp_root = tmp_path / "state" / "experience-v2"
+    exp_root.mkdir(mode=0o700, parents=True)
+    _write_install_marker(exp_root, "2026-08-20T10:00:00Z")
+    return exp_root
+
+
+def _r1_accrue_idempotency_probe(exp_root: Path, tmp_path: Path) -> dict[str, Any]:
+    """Run accrual far enough to exercise only the incumbent-record path.
+
+    The incumbent check runs before any source read, so absent source roots
+    prove the check never reaches them.
+    """
+    from scripts.accrue_market_memory_spy_experience_v2 import accrue_spy_experience_v2
+
+    return accrue_spy_experience_v2(
+        repository_root=ROOT,
+        experience_root=exp_root,
+        source_root=tmp_path / "state" / "sources-spy-rest-v1",
+        technicals_v2_root=tmp_path / "state" / "technicals-v2",
+        session=_R1_SESSION,
+        clock=lambda: _utc(2026, 8, 22, 4, 32),
+    )
+
+
+def _r1_record_path(exp_root: Path) -> Path:
+    return exp_root / "records" / f"{_R1_SESSION.isoformat()}.json"
+
+
+def _r1_head_path(exp_root: Path) -> Path:
+    return exp_root / "EXP_V2_HEAD.json"
+
+
+def _r1_assert_no_tmp_litter(exp_root: Path) -> None:
+    records_dir = exp_root / "records"
+    if records_dir.exists():
+        assert list(records_dir.glob(".*tmp*")) == [], "record temporary left behind"
+    assert list(exp_root.glob(".EXP_V2_HEAD.tmp*")) == [], "HEAD temporary left behind"
+
+
+def _r1_canonical(value: Any) -> bytes:
+    return json.dumps(
+        value, allow_nan=False, ensure_ascii=False,
+        separators=(",", ":"), sort_keys=True,
+    ).encode("utf-8")
+
+
+def _r1_accrue_with_injection(source, tech_root, session, monkeypatch, inject):
+    """Accrue over full binding fixtures with an os-boundary injection armed."""
+    from scripts import accrue_market_memory_spy_experience_v2 as exp
+
+    exp_root = source.parent / "experience-v2"
+    exp._write_install_marker(exp_root, "2026-08-20T10:00:00Z")
+    inject(monkeypatch)
+    return exp.accrue_spy_experience_v2(
+        source_root=source, technicals_v2_root=tech_root, experience_root=exp_root,
+        repository_root=ROOT, session=session, clock=lambda: _utc(2026, 8, 22, 4, 32),
+    )
+
+
+def _r1_inject_zero_write(monkeypatch) -> None:
+    import errno as _errno
+
+    def fake_write(fd, data):
+        return 0
+
+    monkeypatch.setattr(os, "write", fake_write)
+
+
+def _r1_inject_partial_write(monkeypatch) -> None:
+    import errno as _errno
+
+    calls = [0]
+    real_write = os.write
+
+    def fake_write(fd, data):
+        calls[0] += 1
+        if calls[0] == 1:
+            return real_write(fd, data[:len(data) // 2])
+        raise OSError(_errno.ENOSPC, "injected short write failure")
+
+    monkeypatch.setattr(os, "write", fake_write)
+
+
+def _r1_inject_file_fsync_failure(monkeypatch) -> None:
+    import errno as _errno
+    import stat as _stat
+
+    real_fsync = os.fsync
+
+    def fake_fsync(fd):
+        if not _stat.S_ISDIR(os.fstat(fd).st_mode):
+            raise OSError(_errno.EIO, "injected file fsync failure")
+        return real_fsync(fd)
+
+    monkeypatch.setattr(os, "fsync", fake_fsync)
+
+
+def _r1_inject_directory_fsync_failure_after_link(monkeypatch) -> None:
+    import errno as _errno
+    import stat as _stat
+
+    real_fsync = os.fsync
+    real_link = os.link
+    linked = [False]
+
+    def fake_link(src, dst, **kwargs):
+        result = real_link(src, dst, **kwargs)
+        linked[0] = True
+        return result
+
+    def fake_fsync(fd):
+        if linked[0] and _stat.S_ISDIR(os.fstat(fd).st_mode):
+            raise OSError(_errno.EIO, "injected parent-directory fsync failure")
+        return real_fsync(fd)
+
+    monkeypatch.setattr(os, "link", fake_link)
+    monkeypatch.setattr(os, "fsync", fake_fsync)
+
+
+def _r1_inject_link_race(monkeypatch, *, mutate_winner) -> None:
+    """Simulate a concurrent winner: the final path exists before our link."""
+    import errno as _errno
+
+    real_link = os.link
+    real_open = os.open
+    real_write = os.write
+    real_read = os.read
+    real_close = os.close
+    real_unlink = os.unlink
+
+    def fake_link(src, dst, **kwargs):
+        fd = real_open(src, os.O_RDONLY)
+        try:
+            staged = real_read(fd, 1 << 20)
+            while True:
+                chunk = real_read(fd, 1 << 20)
+                if not chunk:
+                    break
+                staged += chunk
+        finally:
+            real_close(fd)
+        winner = mutate_winner(staged)
+        ofd = real_open(dst, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        try:
+            view = memoryview(winner)
+            while view:
+                view = view[real_write(ofd, view):]
+        finally:
+            real_close(ofd)
+        real_unlink(src)
+        raise FileExistsError(_errno.EEXIST, os.strerror(_errno.EEXIST), str(dst))
+
+    monkeypatch.setattr(os, "link", fake_link)
+
+
+def test_r1_zero_write_leaves_record_absent_and_head_untouched(tmp_path, monkeypatch):
+    from scripts.accrue_market_memory_spy_experience_v2 import ExperienceV2StoreError, ExperienceV2Error
+
+    source, _stored, session = _binding_source(tmp_path)
+    root, _ = _binding_capture(source, session)
+    with pytest.raises(ExperienceV2StoreError) as excinfo:
+        _r1_accrue_with_injection(source, root, session, monkeypatch, _r1_inject_zero_write)
+    assert isinstance(excinfo.value, ExperienceV2Error)
+    exp_root = source.parent / "experience-v2"
+    assert not _r1_record_path(exp_root).exists()
+    assert not _r1_head_path(exp_root).exists()
+    _r1_assert_no_tmp_litter(exp_root)
+
+
+def test_r1_partial_write_failure_leaves_record_absent(tmp_path, monkeypatch):
+    from scripts.accrue_market_memory_spy_experience_v2 import ExperienceV2StoreError, ExperienceV2Error
+
+    source, _stored, session = _binding_source(tmp_path)
+    root, _ = _binding_capture(source, session)
+    with pytest.raises(ExperienceV2StoreError) as excinfo:
+        _r1_accrue_with_injection(source, root, session, monkeypatch, _r1_inject_partial_write)
+    assert isinstance(excinfo.value, ExperienceV2Error)
+    exp_root = source.parent / "experience-v2"
+    assert not _r1_record_path(exp_root).exists()
+    assert not _r1_head_path(exp_root).exists()
+    _r1_assert_no_tmp_litter(exp_root)
+
+
+def test_r1_file_fsync_failure_leaves_record_absent(tmp_path, monkeypatch):
+    from scripts.accrue_market_memory_spy_experience_v2 import ExperienceV2StoreError, ExperienceV2Error
+
+    source, _stored, session = _binding_source(tmp_path)
+    root, _ = _binding_capture(source, session)
+    with pytest.raises(ExperienceV2StoreError) as excinfo:
+        _r1_accrue_with_injection(source, root, session, monkeypatch, _r1_inject_file_fsync_failure)
+    assert isinstance(excinfo.value, ExperienceV2Error)
+    exp_root = source.parent / "experience-v2"
+    assert not _r1_record_path(exp_root).exists()
+    assert not _r1_head_path(exp_root).exists()
+    _r1_assert_no_tmp_litter(exp_root)
+
+
+def test_r1_published_record_with_failed_directory_fsync_keeps_identity(tmp_path, monkeypatch):
+    from scripts.accrue_market_memory_spy_experience_v2 import ExperienceV2StoreError, ExperienceV2Error
+
+    source, _stored, session = _binding_source(tmp_path)
+    root, _ = _binding_capture(source, session)
+    with pytest.raises(ExperienceV2StoreError) as excinfo:
+        _r1_accrue_with_injection(
+            source, root, session, monkeypatch,
+            _r1_inject_directory_fsync_failure_after_link,
+        )
+    assert isinstance(excinfo.value, ExperienceV2Error)
+    exp_root = source.parent / "experience-v2"
+    record_path = _r1_record_path(exp_root)
+    # The record was linked before the fsync failed: it stays on its original
+    # identity with complete bytes, and HEAD was never advanced.
+    assert record_path.exists()
+    persisted = json.loads(record_path.read_bytes())
+    assert persisted["session"] == session.isoformat()
+    assert persisted["disposition"] == "admitted"
+    assert not _r1_head_path(exp_root).exists()
+    _r1_assert_no_tmp_litter(exp_root)
+    # With durability re-established, the same bytes are plain idempotence:
+    # the retry neither rewrites nor replaces the record, and HEAD stays put.
+    before = record_path.read_bytes()
+    with pytest.raises(ExperienceV2StoreError):
+        _binding_experience(source, root, session)
+    monkeypatch.undo()
+    result = _binding_experience(source, root, session)
+    assert result["status"] == "already_present"
+    assert record_path.read_bytes() == before
+    assert not _r1_head_path(exp_root).exists()
+
+
+def test_r1_link_race_with_equal_bytes_advances_head_from_persisted_record(tmp_path, monkeypatch):
+    source, _stored, session = _binding_source(tmp_path)
+    root, _ = _binding_capture(source, session)
+
+    def keep_winner(staged: bytes) -> bytes:
+        return staged
+
+    _r1_inject_link_race(monkeypatch, mutate_winner=keep_winner)
+    result = _r1_accrue_with_injection(source, root, session, monkeypatch, lambda mp: None)
+    exp_root = source.parent / "experience-v2"
+    assert result["status"] == "admitted"
+    record_path = _r1_record_path(exp_root)
+    assert json.loads(record_path.read_bytes())["disposition"] == "admitted"
+    head = json.loads(_r1_head_path(exp_root).read_bytes())
+    assert head["schema"] == "market_memory.spy_experience_v2_head.v1"
+    assert head["latest_session"] == session.isoformat()
+    assert head["latest_disposition"] == "admitted"
+    _r1_assert_no_tmp_litter(exp_root)
+
+
+def test_r1_link_race_with_unequal_bytes_refuses_and_preserves_incumbent(tmp_path, monkeypatch):
+    from scripts.accrue_market_memory_spy_experience_v2 import ExperienceV2StoreError, ExperienceV2Error
+
+    source, _stored, session = _binding_source(tmp_path)
+    root, _ = _binding_capture(source, session)
+
+    winning_bytes = []
+
+    def abstaining_winner(staged: bytes) -> bytes:
+        candidate = json.loads(staged)
+        candidate["disposition"] = "abstained"
+        del candidate["feature"]
+        del candidate["source_generation_id"]
+        del candidate["technical_capture_id"]
+        body = _r1_canonical(candidate)
+        winning_bytes.append(body)
+        return body
+
+    _r1_inject_link_race(monkeypatch, mutate_winner=abstaining_winner)
+    with pytest.raises(ExperienceV2StoreError):
+        _r1_accrue_with_injection(source, root, session, monkeypatch, lambda mp: None)
+    exp_root = source.parent / "experience-v2"
+    record_path = _r1_record_path(exp_root)
+    # The incumbent's persisted bytes were never replaced by our candidate.
+    incumbent = json.loads(record_path.read_bytes())
+    assert incumbent["disposition"] == "abstained"
+    assert len(winning_bytes) == 1
+    assert record_path.read_bytes() == winning_bytes[0]
+    assert not _r1_head_path(exp_root).exists()
+    _r1_assert_no_tmp_litter(exp_root)
+
+
+@pytest.mark.parametrize("case", ["malformed", "zero_byte", "symlink", "dangling_symlink", "wrong_schema", "wrong_session", "wrong_registration"])
+def test_r1_unusable_incumbents_fail_closed_without_overwrite(tmp_path, case):
+    from scripts.accrue_market_memory_spy_experience_v2 import ExperienceV2StoreError, ExperienceV2Error
+
+    exp_root = _r1_experience_root(tmp_path)
+    records_dir = exp_root / "records"
+    records_dir.mkdir(mode=0o700)
+    record_path = _r1_record_path(exp_root)
+    valid = {
+        "schema": "market_memory.spy_experience_v2_record.v1",
+        "session": _R1_SESSION.isoformat(),
+        "registration_id": "unrelated-registration",
+        "disposition": "abstained",
+        "reason": "lookback_incomplete",
+        "recorded_at": "2026-08-22T04:32:00Z",
+    }
+    target = records_dir / "incumbent-target.json"
+    if case == "malformed":
+        record_path.write_bytes(b'{"schema": "market_memory.spy_experience_v2_r')
+    elif case == "zero_byte":
+        record_path.write_bytes(b"")
+    elif case == "symlink":
+        target.write_bytes(_r1_canonical(valid))
+        record_path.symlink_to(target)
+    elif case == "dangling_symlink":
+        record_path.symlink_to(records_dir / "missing-target.json")
+    elif case == "wrong_schema":
+        record_path.write_bytes(_r1_canonical({**valid, "schema": "generic.daily.v1"}))
+    elif case == "wrong_session":
+        record_path.write_bytes(_r1_canonical({**valid, "session": "2026-08-20"}))
+    elif case == "wrong_registration":
+        record_path.write_bytes(_r1_canonical(valid))
+    before = target.read_bytes() if target.exists() else None
+
+    with pytest.raises(ExperienceV2StoreError) as excinfo:
+        _r1_accrue_idempotency_probe(exp_root, tmp_path)
+    assert isinstance(excinfo.value, ExperienceV2Error)
+    # Nothing was followed into place, overwritten, or deleted.
+    if case == "symlink":
+        assert record_path.is_symlink()
+        assert target.read_bytes() == before
+    elif case == "dangling_symlink":
+        assert record_path.is_symlink()
+    else:
+        assert record_path.exists()
+    assert not _r1_head_path(exp_root).exists()
+
+
+def test_r1_valid_existing_record_is_idempotent_with_unchanged_bytes_and_head(tmp_path):
+    source, _stored, session = _binding_source(tmp_path)
+    root, _ = _binding_capture(source, session)
+    first = _binding_experience(source, root, session)
+    assert first["status"] == "admitted"
+    exp_root = source.parent / "experience-v2"
+    record_path = _r1_record_path(exp_root)
+    head_path = _r1_head_path(exp_root)
+    record_before = record_path.read_bytes()
+    head_before = head_path.read_bytes()
+
+    second = _binding_experience(source, root, session)
+    assert second["status"] == "already_present"
+    assert second["record"]["session"] == session.isoformat()
+    assert record_path.read_bytes() == record_before
+    assert head_path.read_bytes() == head_before
+    head = json.loads(head_before)
+    assert head["latest_session"] == session.isoformat()
+    assert head["latest_disposition"] == "admitted"
+    _r1_assert_no_tmp_litter(exp_root)
+
+
+def test_r1_abstained_publication_still_orders_record_before_head(tmp_path, monkeypatch):
+    """A failed directory fsync on an abstained record must also block HEAD."""
+    from scripts.accrue_market_memory_spy_experience_v2 import ExperienceV2StoreError
+
+    source, _stored, session = _binding_source(tmp_path, include_lookback=False)
+    root, _ = _binding_capture(source, session)
+    with pytest.raises(ExperienceV2StoreError):
+        _r1_accrue_with_injection(
+            source, root, session, monkeypatch,
+            _r1_inject_directory_fsync_failure_after_link,
+        )
+    exp_root = source.parent / "experience-v2"
+    record_path = _r1_record_path(exp_root)
+    assert record_path.exists()
+    assert json.loads(record_path.read_bytes())["reason"] == "lookback_incomplete"
+    assert not _r1_head_path(exp_root).exists()
+
+
+def test_r1_existing_record_must_reestablish_directory_durability(tmp_path, monkeypatch):
+    from scripts.accrue_market_memory_spy_experience_v2 import ExperienceV2StoreError
+    from engine.neuralweb import market_memory_pit as pit
+
+    source, _stored, session = _binding_source(tmp_path)
+    root, _ = _binding_capture(source, session)
+    _binding_experience(source, root, session)
+    exp_root = source.parent / "experience-v2"
+    record = _r1_record_path(exp_root)
+    before_record = record.read_bytes()
+    before_head = _r1_head_path(exp_root).read_bytes()
+    original = pit._directory_fsync
+
+    def fail_record_directory(path):
+        if path == record.parent:
+            raise OSError("injected existing-record fsync failure")
+        return original(path)
+
+    monkeypatch.setattr(pit, "_directory_fsync", fail_record_directory)
+    with pytest.raises(ExperienceV2StoreError):
+        _binding_experience(source, root, session)
+    assert record.read_bytes() == before_record
+    assert _r1_head_path(exp_root).read_bytes() == before_head
