@@ -358,6 +358,66 @@ def test_operator_repair_all_missing_members_preflight_before_any_file_change(
     assert before=={str(p):p.read_bytes() for p in msd._store_dir().rglob("*") if p.is_file()}
 
 
+@pytest.mark.parametrize("missing_field", ["volume", "transactions"])
+def test_operator_repair_rejects_missing_original_provider_counts_before_effect(
+    store, monkeypatch, missing_field,
+):
+    """Provider-null trade metadata must not become an invented observed zero."""
+    msd.backfill(start=DAYS[0], end=DAYS[3])
+    _remove_bar("AAPL", DAYS[2])
+    before={str(p):p.read_bytes() for p in msd._store_dir().rglob("*") if p.is_file()}
+    vendor_calls=[]
+    def missing_count(*args, **kwargs):
+        vendor_calls.append(args[0])
+        day=_day_frame(DAYS[2])
+        day.loc[day["ticker"]=="AAPL",missing_field]=float("nan")
+        return day
+    monkeypatch.setattr(msd, "fetch_aggs", missing_count)
+    result=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert result == {"status":"REFUSED","reason":"SOURCE_PRICE_INVALID"}
+    assert vendor_calls == [DAYS[2]]
+    assert before == {str(p):p.read_bytes() for p in msd._store_dir().rglob("*") if p.is_file()}
+
+
+@pytest.mark.parametrize("missing_field", ["volume", "transactions"])
+@pytest.mark.parametrize("invalid_value", [float("inf"), -1.0, 1.5])
+def test_operator_repair_refuses_invalid_original_provider_count_without_effect(
+    store, monkeypatch, missing_field, invalid_value,
+):
+    """No infinite, negative or fractional original trade-count evidence."""
+    msd.backfill(start=DAYS[0], end=DAYS[3])
+    _remove_bar("AAPL", DAYS[2])
+    before={str(p):p.read_bytes() for p in msd._store_dir().rglob("*") if p.is_file()}
+    def invalid_provider_count(*args, **kwargs):
+        day=_day_frame(DAYS[2])
+        # Give the synthetic provider a float-capable column before injecting
+        # inf/fractional input; Pandas integer assignment must not be the error.
+        day[missing_field]=day[missing_field].astype(float)
+        day.loc[day["ticker"]=="AAPL",missing_field]=invalid_value
+        return day
+    monkeypatch.setattr(msd, "fetch_aggs", invalid_provider_count)
+    result=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert result == {"status":"REFUSED","reason":"SOURCE_PRICE_INVALID"}
+    assert before == {str(p):p.read_bytes() for p in msd._store_dir().rglob("*") if p.is_file()}
+
+
+@pytest.mark.parametrize("field", ["volume", "transactions"])
+def test_operator_repair_accepts_an_explicit_original_zero_count(
+    store, monkeypatch, field,
+):
+    """Actual vendor zero is distinct from missing data replaced with zero."""
+    msd.backfill(start=DAYS[0], end=DAYS[3])
+    _remove_bar("AAPL", DAYS[2])
+    def explicit_zero(*args, **kwargs):
+        day=_day_frame(DAYS[2])
+        day.loc[day["ticker"]=="AAPL",field]=0
+        return day
+    monkeypatch.setattr(msd, "fetch_aggs", explicit_zero)
+    result=msd.repair_processed_day_missing_members(DAYS[2], ("AAPL",))
+    assert result["status"]=="REPAIRED"
+    assert msd.load_ticker("AAPL").loc[pd.Timestamp(DAYS[2]),field] == 0
+
+
 def test_operator_repair_invalid_provider_price_refuses_with_no_effect(store, monkeypatch):
     msd.backfill(start=DAYS[0], end=DAYS[3])
     _remove_bar("AAPL", DAYS[2])

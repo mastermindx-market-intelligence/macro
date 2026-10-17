@@ -127,6 +127,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import math
 import os
 import re
 import stat
@@ -134,6 +135,7 @@ import sys
 import tempfile
 import time
 from datetime import date, datetime, timedelta, timezone
+from numbers import Real
 from pathlib import Path
 from typing import Iterator
 
@@ -777,6 +779,21 @@ def repair_processed_day_missing_members(day: date, tickers: tuple[str, ...]) ->
         raw = fetch_aggs(day, product="stock_day", underlyings=None, use_cache=False)
         if not isinstance(raw, pd.DataFrame) or raw.empty:
             return {"status": "REFUSED", "reason": "SOURCE_MEMBER_MISSING"}
+        # _parse_day is the incumbent general daily collector parser and
+        # intentionally fills absent volume/transaction counts with zero.
+        # A historical REPAIR has a stricter evidence boundary: a null source
+        # count is UNKNOWN, not an observed zero. Verify the original vendor
+        # values before that shared transformation can destroy the distinction.
+        for ticker in missing:
+            source_rows = raw.loc[raw["ticker"] == ticker]
+            if len(source_rows) != 1:
+                return {"status": "REFUSED", "reason": "SOURCE_MEMBER_MISSING"}
+            for name in ("volume", "transactions"):
+                value = source_rows.iloc[0][name]
+                if (isinstance(value, bool) or not isinstance(value, Real)
+                        or not math.isfinite(float(value)) or float(value) < 0
+                        or not float(value).is_integer()):
+                    return {"status": "REFUSED", "reason": "SOURCE_PRICE_INVALID"}
         parsed = _parse_day(raw, day)
         selected: dict[str, pd.DataFrame] = {}
         for ticker in missing:
