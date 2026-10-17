@@ -450,8 +450,8 @@ test('PF r1 R2: pointer unavailable shows the 503 copy with Retry, never no-reco
   await settle();
   assert.equal(financialPosts(drive).length, 0);
   const html = drive.nodes['ff-revisions-table'].innerHTML;
-  assert.match(html, /Revisions temporarily unavailable/);
-  assert.match(html, /重述服务暂不可用/);
+  assert.match(html, /Data temporarily unavailable/);
+  assert.match(html, /数据暂不可用/);
   assert.match(html, /data-financial-retry="1"/);
   assert.doesNotMatch(html, /No filing records published yet/);
   assert.equal(drive.api.state.financial.healthRetry, true);
@@ -466,7 +466,7 @@ test('PF r1 R2: pointer admitted without a generation shows the 503 copy', async
   await settle();
   assert.equal(financialPosts(drive).length, 0);
   const html = drive.nodes['ff-revisions-table'].innerHTML;
-  assert.match(html, /Revisions temporarily unavailable/);
+  assert.match(html, /Data temporarily unavailable/);
   assert.doesNotMatch(html, /No filing records published yet/);
   assert.equal(drive.api.state.financial.healthRetry, true);
 });
@@ -485,7 +485,7 @@ test('PF r1 R2: a missing pointer header in production shows the 503 copy', asyn
   await settle();
   assert.equal(financialPosts(drive).length, 0);
   const html = drive.nodes['ff-revisions-table'].innerHTML;
-  assert.match(html, /Revisions temporarily unavailable/);
+  assert.match(html, /Data temporarily unavailable/);
   assert.doesNotMatch(html, /No filing records published yet/);
   assert.equal(drive.api.state.financial.healthRetry, true);
 });
@@ -510,7 +510,7 @@ test('PF r1 R2: a failed health fetch shows the 503 copy, resets datasetMode and
   assert.equal(drive.api.state.healthAnswer.ok, false);
   assert.equal(drive.api.state.healthAnswer.entity_id, MSFT_ENTITY);
   const html = drive.nodes['ff-revisions-table'].innerHTML;
-  assert.match(html, /Revisions temporarily unavailable/);
+  assert.match(html, /Data temporarily unavailable/);
   assert.match(html, /data-financial-retry="1"/);
   assert.doesNotMatch(html, /No filing records published yet/);
   assert.equal(postsForEntity(drive, MSFT_ENTITY).length, 0, 'no query after a failed health call');
@@ -580,7 +580,7 @@ test('PF r1 R2: golden mode keeps today’s query behaviour, and a failed fetch 
   drive.api.setCompany('MSFT', false);
   await settle();
   const html = drive.nodes['ff-revisions-table'].innerHTML;
-  assert.match(html, /Revisions temporarily unavailable/, 'a failed fetch shows the 503 copy in any mode');
+  assert.match(html, /Data temporarily unavailable/, 'a failed fetch shows the 503 copy in any mode');
   assert.equal(drive.api.state.datasetMode, '');
   assert.equal(drive.api.state.financial.healthRetry, true);
   assert.equal(postsForEntity(drive, MSFT_ENTITY).length, 0);

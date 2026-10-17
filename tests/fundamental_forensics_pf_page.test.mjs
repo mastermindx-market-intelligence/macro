@@ -222,13 +222,16 @@ function harness(options) {
         text: () => Promise.resolve(raw),
       });
     }
-    return Promise.resolve({
+    const answer = () => ({
       ok: true,
       headers: { get: (name) => (name === 'X-FIF-Response-SHA256' ? QUERY_ENVELOPE.sha256 : '') },
       arrayBuffer: () => Promise.resolve(QUERY_ENVELOPE.body.buffer.slice(
         QUERY_ENVELOPE.body.byteOffset, QUERY_ENVELOPE.body.byteOffset + QUERY_ENVELOPE.body.byteLength
       )),
     });
+    // PF r2: deterministically hold the previous compare chain while a new
+    // earlier-day selection rejects without POST, then release the old reply.
+    return options.finGate ? options.finGate.promise.then(answer) : Promise.resolve(answer());
   }
   const windowObject = {
     location,
@@ -615,7 +618,7 @@ test('PF-4: a picked day before the admitted day sends NO query and shows the ea
   await settle();
   assert.equal(financialPosts(drive).length, 0, 'no financial query is sent for a pre-admission day');
   const html = drive.nodes['ff-revisions-table'].innerHTML;
-  assert.match(html, /Earlier dates not available yet/);
+  assert.match(html, /Earlier dates not available/);
   assert.match(html, /This company&#39;s filing records were last published on 2026-10-13\./);
   assert.match(html, /该公司的申报记录最近一次发布于2026-10-13。/);
   assert.match(html, /或使用“最新”。/);
@@ -636,7 +639,7 @@ test('PF-4: the earlier-dates fact precedes the period check — a state without
   await settle();
   assert.equal(financialPosts(drive).length, 0, 'still no query');
   const html = drive.nodes['ff-revisions-table'].innerHTML;
-  assert.match(html, /Earlier dates not available yet/, 'the day fact wins over the period fact');
+  assert.match(html, /Earlier dates not available/, 'the day fact wins over the period fact');
   assert.doesNotMatch(html, /Period start unavailable/);
 });
 
@@ -722,4 +725,80 @@ test('PF-4: golden mode and a missing mode header keep today’s behaviour', asy
   missingMode.api.setTab('compare', false);
   await settle();
   assert.ok(financialPosts(missingMode).length >= 4, 'a missing mode header keeps today’s query behaviour');
+});
+
+
+// ── PF round-2 independent review regressions ─────────────────────────────
+
+test('PF r2 M1: stale in-flight Latest answers cannot overwrite a later earlier-day refusal', async () => {
+  let release;
+  const finGate = { promise: new Promise((resolve) => { release = resolve; }) };
+  const drive = harness({ finGate });
+  drive.api.state.datasetMode = 'production';
+  drive.api.state.health = {
+    clocks: { broad_source_at: '2026-10-13T02:05:00Z', composed_state_at: '2026-10-13T02:05:00Z' },
+    generation: { id: 'ffprods_gen2', admitted_at: '2026-10-13T02:00:00.000000Z', entity_id: AAPL_ENTITY },
+  };
+  drive.api.state.healthAnswer = seedAcceptedHealth('admitted');
+  drive.api.setTab('compare', false);
+  await settle();
+  const pending = financialPosts(drive).length;
+  assert.ok(pending >= 4, 'the prior Latest chain was actually dispatched and held');
+  assert.equal(drive.api.state.financial.phase, 'loading');
+  const oldToken = drive.api.state.financialToken;
+  drive.api.state.asOfDate = '2026-10-12';
+  drive.api.ensureFinancialData();
+  assert.ok(drive.api.state.financialToken > oldToken, 'the early-return path invalidates old replies');
+  assert.equal(financialPosts(drive).length, pending, 'earlier-day refuses without a new POST');
+  assert.equal(drive.api.state.financial.phase, 'earlier');
+  release();
+  await settle();
+  assert.equal(drive.api.state.financial.phase, 'earlier', 'old successful answers cannot overwrite the refusal');
+  assert.match(drive.nodes['ff-revisions-table'].innerHTML, /Earlier dates not available/);
+});
+
+test('PF r2 m2: missing generation or target issuer ID can never match through empty strings', () => {
+  const drive = harness();
+  drive.api.state.datasetMode = 'production';
+  drive.api.state.health = {
+    clocks: {}, generation: { id: 'ffprods_other', admitted_at: '2026-10-13T02:00:00Z' },
+  };
+  assert.equal(drive.api.selectedGeneration(), null, 'no generation issuer ID is not this company');
+  drive.api.state.payload.companies.AAPL.entity_id = '';
+  assert.equal(drive.api.selectedGeneration(), null, 'two empty issuer IDs do not match');
+  drive.api.state.health.generation.entity_id = AAPL_ENTITY;
+  assert.equal(drive.api.selectedGeneration(), null, 'generation ID without target ID does not match');
+});
+
+test('PF r2 m3: health outage is described as data unavailable, not revisions unavailable', () => {
+  const drive = harness();
+  drive.api.state.financial = { phase: 'error', healthRetry: true };
+  drive.api.renderRevisions();
+  const html = drive.nodes['ff-revisions-table'].innerHTML;
+  assert.match(html, /Data temporarily unavailable/);
+  assert.match(html, /数据暂不可用/);
+  assert.match(html, /data-financial-retry="1"/);
+  assert.doesNotMatch(html, /Revisions temporarily unavailable/);
+  drive.api.state.financial = { phase: 'error', healthRetry: false, errorStatus: 503 };
+  drive.api.renderRevisions();
+  assert.match(drive.nodes['ff-revisions-table'].innerHTML, /Revisions temporarily unavailable/,
+    'ordinary revisions outage retains the existing specific copy');
+});
+
+test('PF r2 n1: picker floor uses the UTC admission day, not raw offset date', () => {
+  const drive = harness();
+  drive.api.state.datasetMode = 'production';
+  drive.api.state.health = {
+    clocks: {}, generation: {
+      id: 'ffprods_gen2',
+      admitted_at: '2026-10-12T23:30:00-05:00',
+      entity_id: AAPL_ENTITY,
+    },
+  };
+  drive.api.setAsofControlsFromState();
+  assert.equal(drive.nodes['ff-asof-input'].getAttribute('min'), '2026-10-13',
+    'date-range floor agrees with UTC end-of-day admission checks');
+  drive.api.state.health.generation.admitted_at = 'invalid';
+  drive.api.setAsofControlsFromState();
+  assert.equal(drive.nodes['ff-asof-input'].getAttribute('min'), null);
 });

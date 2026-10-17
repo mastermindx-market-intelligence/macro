@@ -1871,7 +1871,10 @@
     var generation = objectValue(health.generation);
     var target = company();
     if (!generation || !generation.id) return null;
-    if (!target || String(generation.entity_id || '') !== String(target.entity_id || '')) return null;
+    // PF r2 (m2): an absent identifier on either side is no match — two
+    // empty strings never make another issuer's generation this desk's.
+    if (!target || !target.entity_id || !generation.entity_id) return null;
+    if (String(generation.entity_id) !== String(target.entity_id)) return null;
     return generation;
   }
 
@@ -2082,6 +2085,12 @@
     if (state.tab !== 'compare') return;
     var target = company();
     if (!target) return;
+    // PF r2 (M1): every re-evaluation supersedes any compare chain still in
+    // flight, so an early answer below (earlier day, no records, health
+    // failure, …) is never overwritten by the reply to a request the desk no
+    // longer stands behind.
+    var token = state.financialToken + 1;
+    state.financialToken = token;
     // X2-s: a restored PINNED view re-POSTs its stored request bytes verbatim
     // on every leg — the latest-known leg too is the STORED bytes with only
     // policy.selection switched to latest_known_as_of, so a pinned view saved
@@ -2162,8 +2171,6 @@
       renderRevisions();
       return;
     }
-    var token = state.financialToken + 1;
-    state.financialToken = token;
     // X2-s r1: the exported body is the pinned bytes while the pinned view is
     // active, otherwise the DESK's own selection (buildQueryBody() with no
     // argument) — never the forced latest_known_as_of leg above.
@@ -2299,7 +2306,7 @@
     if (financial.phase === 'earlier') {
       var publishedDay = formatDate(financial.admittedAt || '');
       host.innerHTML = emptyState(
-        'Earlier dates not available yet', '暂无更早日期',
+        'Earlier dates not available', '无更早日期',
         'This company\'s filing records were last published on ' + publishedDay + '. Pick that day or later, or use Latest.',
         '该公司的申报记录最近一次发布于' + publishedDay + '。请选择该日或之后的日期，或使用“最新”。', '—'
       );
@@ -2311,6 +2318,16 @@
         'The state does not carry a period start date for this issuer, so no cutoff query can be built.',
         '状态数据中没有该发行人的期间起始日，因此无法构建截止日查询。', '—'
       );
+      return;
+    }
+    // PF r2 (m3): a failed health check is not the revisions service, so its
+    // copy names no service; a failed compare chain keeps the revisions copy.
+    if (financial.phase === 'error' && financial.healthRetry) {
+      host.innerHTML = emptyState(
+        'Data temporarily unavailable', '数据暂不可用',
+        'The desk could not confirm which filing records are available right now. Try again in a moment.',
+        '本页暂时无法确认可用的申报记录，请稍后再试。', '↺'
+      ) + '<div class="ff-revisions-retry"><button type="button" data-financial-retry="1">' + pair('Retry', '重试') + '</button></div>';
       return;
     }
     if (financial.phase === 'error') {
@@ -2367,8 +2384,12 @@
     // picker's min is that day. It clears when the company changes or the
     // generation is unknown (or the mode is golden/absent).
     var generation = state.datasetMode === 'production' ? selectedGeneration() : null;
-    if (generation && generation.admitted_at) {
-      ui.asofInput.setAttribute('min', String(generation.admitted_at).slice(0, 10));
+    // PF r2 (n1): the minimum is the admission's UTC day, the same day the
+    // 'earlier' check measures against ({day}T23:59:59Z), whatever offset the
+    // header carried.
+    var admittedMs = generation && generation.admitted_at ? Date.parse(generation.admitted_at) : NaN;
+    if (Number.isFinite(admittedMs)) {
+      ui.asofInput.setAttribute('min', new Date(admittedMs).toISOString().slice(0, 10));
     } else {
       ui.asofInput.removeAttribute('min');
     }
