@@ -4,9 +4,9 @@
   "asof": "2026-10-16",
   "phase": "at_t1",
   "detection_phase": "at_t1",
-  "management_confidence": 48.5,
-  "raw_confidence": 48.4,
-  "delta_vs_base": -11.5,
+  "management_confidence": 47.9,
+  "raw_confidence": 47.2,
+  "delta_vs_base": -12.1,
   "recommended_action": null,
   "human_state": "T1 Hit \u2014 Holding",
   "components": {
@@ -14,7 +14,7 @@
     "progress": 60.0,
     "pace": 36.9,
     "retention": 24.1,
-    "overlay": 59.0
+    "overlay": 38.9
   },
   "geometry": {
     "dist_to_stop_r": 1.791,

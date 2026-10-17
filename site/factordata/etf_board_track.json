@@ -1,6 +1,6 @@
 {
  "schema": "etf_board_track.v1",
- "generated_at": "2026-10-16T17:53:06Z",
+ "generated_at": "2026-10-17T06:52:11Z",
  "as_of": "2026-10-15",
  "first_board": "2026-08-14",
  "benchmark": "SPY",
@@ -11,7 +11,7 @@
  ],
  "n_boards_logged": 33,
  "n_snapshot_rows": 663,
- "n_graded_total": 863,
+ "n_graded_total": 865,
  "collecting": false,
  "per_horizon": {
   "h5": {
@@ -33,17 +33,17 @@
   "h21": {
    "horizon": 21,
    "n_rows": 663,
-   "n_graded": 315,
-   "n_pending": 348,
-   "n_immature": 300,
+   "n_graded": 317,
+   "n_pending": 346,
+   "n_immature": 298,
    "n_unpriceable": 48,
-   "n_boards": 18,
+   "n_boards": 19,
    "n_names": 30,
-   "n_vs_bench": 315,
-   "n_ahead": 172,
-   "median_excess_bench": 0.015772,
-   "mean_excess_bench": 0.012025,
-   "median_ret": 0.026211,
+   "n_vs_bench": 317,
+   "n_ahead": 173,
+   "median_excess_bench": 0.013956,
+   "mean_excess_bench": 0.011815,
+   "median_ret": 0.025884,
    "state": "open"
   },
   "h63": {

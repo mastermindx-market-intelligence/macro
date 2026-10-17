@@ -1,29 +1,31 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-10-16T18:40:15+00:00",
-  "summary": "Context-only shadow memo: the US backdrop is MIXED (46), not a calibrated risk-off call. The central tension is deterioration beneath a still-resilient index: confirmed credit-spread acceleration, breadth near the bottom of its recent distribution, and CRACKING leadership coexist with calm volatility, low recession risk, loose headline financial conditions, and an index still above its 200-day average. The risk radar remains advisory and its exact caution cell has a measured 21-day pullback rate below the unconditional base rate, so it supplies attention context rather than an edge. Factor evidence is immature: only nine panel dates, no Pair G records, no factor-attention grading history, and no tradeable composite. The graded spine sample returned was dominated by context-only Canadian board observations using unsigned MFE proxies, so it does not justify a broad directional inference. No signal, ranking, sizing change, or escalation is originated here.",
+  "as_of": "2026-10-17T07:23:00+00:00",
+  "summary": "Context-only committee read: the measured US backdrop has shifted to RISK_OFF, but this is not a fresh forecast or trade instruction. The most coherent deterioration is in trend, volatility, breadth, leadership, credit quality, and systematic positioning. The important counterweight is that recession risk remains off/low, liquidity quantity is expanding, volatility risk premium is rich, and the risk radar's exact caution-state 21-day pullback rate is 16.0% versus a 17.8% base rate. Accordingly, the evidence supports heightened monitoring and thesis review, not origination or ranking.",
   "what_fired": [
-    "Credit stress is the dominant advisory scare: credit OAS acceleration is confirmed while the secondary HYG/TLT leg is unconfirmed.",
-    "Breadth is weak: roughly 49% of members are above their 200-day average and the breadth measure sits near the 14th percentile, with a price divergence present.",
-    "Leadership is CRACKING and the current deterioration-spreading path fits on leader damage plus credit stress, although headline financial conditions remain loose.",
-    "Long-end pressure is supported as context by rising restrictive real yields and rising term premium; several maturities are at extreme-high watch levels, but no rate/inflation leg passed the scored forward-drawdown robustness bar.",
-    "Factor weather is mixed with profitability the descriptive leader; size is weak, but the factor panel has not met its history floor."
+    "Persisted market-state transition from MIXED (46) to RISK_OFF (40), with trend -14 points and volatility -28 points session over session.",
+    "Breadth remains weak: 34.9% above 50-day averages, 49.4% above 200-day averages, and the breadth component is marked bad with divergence present.",
+    "Liquidity quality is stress-expansion despite an expanding quantity overlay; HY OAS has widened and NFCI trend is tightening.",
+    "Leadership is CRACKING; AI infrastructure leadership is broken, and systematic vol-control/CTA positioning is aligned cutting.",
+    "Factor intelligence did not fire: Pair G is dormant because the panel has only nine dates, below the 60-date requirement; factor attention remains A0/A1 shadow with n=0."
   ],
-  "contradictions_review": "Three displayed contradictions were reviewed. First, Q2/Reflation sits in label tension with a caution risk radar dominated by credit; this is a mixed-state warning, not permission to override the measured tape. Second, 21 ticker-level demand-versus-supply divergences conflict with the briefing aggregate and require name-level reconciliation before relying on the brief. Third, the options contradiction record contains zero affected buy-lane names and adds no current de-escalation. Pair G is dormant because the factor panel has fewer than 60 dates. Open-thesis review found a material conflict between the China-overweight thesis and current China Q3/stagflation, contracting liquidity, GRINDING_BEAR, dormant participation, Panic context, and dollar/EM strain. The open long-Treasury theses also meet their own adverse-review conditions: real 10-year yield is 2.88% and the curve is bear-steepening. Multiple semiconductor-underweight theses are directionally consistent with broken AI-infrastructure leadership and semiconductor weakness, so no contradiction flag was added solely from current evidence.",
+  "contradictions_review": "The confluence graph reports a live briefing-divergence tension: 21 ticker-level demand-versus-supply oppositions, including NVDA, DHR, XOM, and GEHC. This is display-only and does not establish which side is correct. The options contradiction record is effectively null (n=0 and dated 2026-09-17), so it adds no current de-escalation evidence. The larger macro contradiction is quantity versus quality in liquidity: net liquidity is expanding, but its composition is labelled stress-expansion with confirming credit stress and an exhausted RRP buffer. The factor borrowed-strength ledger is absent by design until sufficient panel history accrues.",
   "decaying_families": [
-    "Factor intelligence: nine dates, no scorecard survivors, composite non-tradeable, and Pair G dormant.",
-    "Risk-radar alert authority: 50 graded observations but zero alerts; caution-state drawdown incidence has not demonstrated above-base lift.",
-    "Options flow: only 82 put/call and 83 GEX rows versus 252 required, with unrecoverable missing live snapshots.",
-    "Recovery ruler: five graded observations and fewer than 30 per arm; descriptive only.",
-    "Desk families including stock, thematic, radar, narrative, policy, and AI remain unarmed; several show negative signed excess or vacuous held-out tests.",
-    "Open Master Brain theses are overdue for scoring: all displayed items remain open beyond their check-by dates despite 12 prior scored leans."
+    "Alt-data is unarmed across regimes and horizons; pooled out-of-sample performance is negative.",
+    "Policy-family claims are unarmed and show negative signed excess across the available 5/21/63-day samples.",
+    "Desk narrative, radar, stock-desk, thematic-desk, and AI-desk 63-day estimates are negative and unarmed; several tests are explicitly vacuous rather than validated.",
+    "Demand-chain evidence is still accruing (9/12 effective events) and changes sign by horizon, so it is not reliable support.",
+    "CA/HK/CN board rows use unsigned MFE proxies and are unarmed because tests are vacuous or fail the preregistered edge bar; positive-looking values must not be read as directional validation.",
+    "Factor composite is non-tradeable; investment, low-vol, low-beta, and composite IC legs are negative, while the live panel has insufficient history."
   ],
   "deserves_operator": [
-    "Credit-breadth-leadership tension \u2014 shadow attention claim ada2fbf7cb4bd38a. Close only if HY OAS 20-day change returns to <=0 bp, breadth exceeds 60% above the 200-day average, and leadership is no longer CRACKING for five consecutive sessions.",
-    "China-overweight thesis mb-2026-07-09-1 conflicts with current China and EM context \u2014 shadow attention claim 26cf065fd287fa62. Resolve if China exits GRINDING_BEAR, participation is no longer dormant, and either growth turns positive or the HK peg leaves weak-side/outflow for five sessions.",
-    "Long-Treasury theses mb-2026-07-01-1 and mb-2026-06-26-1 have reached their stated adverse evidence \u2014 shadow attention claim 6d1c0d76cc31716d. Clear review only if real 10-year yield falls below 2.5% and bear steepening ends for five sessions.",
-    "Reconcile the 21 demand-versus-supply ticker divergences against the aggregate briefing before treating the briefing as coherent.",
-    "Score or retire the overdue open Master Brain theses; duplicated thesis IDs and expired check-by dates weaken auditability."
+    "Review the RISK_OFF transition after the next completed-session update, focusing on whether trend/volatility deterioration persists while breadth remains weak.",
+    "Reconcile liquidity quantity with quality: expanding net liquidity is not presently equivalent to benign liquidity because stress confirmation and the exhausted RRP buffer remain active.",
+    "Score or retire every overdue Master Brain thesis; reconcile duplicate IDs and the simultaneously open opposing China-equity theses.",
+    "The China-equity overweight thesis conflicts with current China risk-off/panic context and contracting liquidity; evaluate its stated falsifier rather than carrying it open indefinitely.",
+    "The long-Treasury overweight theses conflict with restrictive/rising real yields and a bear-steepening backdrop; evaluate their explicit real-yield and curve falsifiers.",
+    "No current contradiction was found against the semiconductor-underweight theses; current broken AI leadership and semiconductor weakness are directionally consistent, but those theses are overdue and still require formal scoring.",
+    "Investigate the briefing-divergence set at its native ticker evidence layer before relying on the aggregate brief; the contradiction is a tension, not a replacement signal."
   ],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
@@ -53,7 +55,6 @@
     "read_kernel": 1,
     "read_master_brain_theses": 1,
     "flag_attention": 1,
-    "stake_hypothesis": 2,
     "write_memo": 1
   },
   "is_context_only": true,
@@ -105,9 +106,9 @@
       }
     ],
     "tool_call_batches": 4,
-    "individual_tool_calls": 11,
+    "individual_tool_calls": 9,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-10-16T18:21:15Z"
+    "context_as_of": "2026-10-17T07:14:06Z"
   }
 }
