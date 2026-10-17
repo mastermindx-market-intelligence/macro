@@ -441,10 +441,10 @@ waves:
     title: Meta-CEO source and all-date exposure census, recorded-version reconstruction and continuation revision
     status: awaiting_ci
     pr: 9515
-    # Prepared checkpoint: final exact-head CI/merge readback is authoritative; no source or production proof inferred.
+    # Prior Macro head 8bcd569: ci-pack-6/ci-gate failed on shared weekly-brief translations; native same-cause attribution unknown. Enclosing head needs its own gates.
     # T13 metadata read complete: H2 absent 348/1321 origins; source-purpose and actual Massive/T12 sample unadmitted; zero fits/trials.
     # Consumer source-function comparison complete; Mastermind PR1567 implements the future-date fix, reviewed head 1e6a8a23fac1, 184 native tests pass.
-    # Cross-repo source checks/native queue and actual runtime approval remain open; full runtime/book/prompt/ledger parity NOT_TESTED.
+    # Mastermind #1567 merged b08223680180 after successful native queue; fetched master and both owned blobs verified. Runtime remains Oct9; full archive qualification/production decision and live parity remain open.
     # Protocol ea26bc964314 frozen before outcomes; code 4a06cd4a6b32; 36 ETFs / 8486 reference sessions / 305496 rows.
     # Descriptive acceptance only, zero fits/promotions. W5 production proof remains absent; existing failed studies and writer/refusal fences preserved.
     depends_on: [GD-PB-W7, GD-PB-W8]
@@ -453,10 +453,14 @@ next_action: >
   and RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md. Complete the isolated
   GD-RR-CENSUS-20261017 carrier in PR 9515 through normal source gates; read
   agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md,
-  then finish Mastermind PR1567's independently reviewed future-date repair through
-  exact-head CI and its native merge queue. Canonical strategic state prohibits
-  autonomous production deployment; obtain exact runtime approval before the
-  changed-path runtime/parity proof. The completed implementation is not a new task.
+  then inspect the source/release preflight. Prior Macro head 8bcd569 is blocked by
+  shared weekly-brief CI; native attribution remains unknown. Mastermind PR1567
+  merged as b08223680180 with native queue and fetched-blob proof. Its source repair
+  is not installed: the healthy observed runtime remains at October 9 source.
+  Canonical strategic state prohibits autonomous production deployment. Qualify
+  the exact full archive, 1507-file repository delta and rollback/activation contract
+  before its required production decision and changed-path runtime/parity proof.
+  The completed implementation is not a new task; source merge is not live delivery.
   The 36-ETF census covers 8486 reference sessions and 305496 exposure/date rows;
   it is retrospective descriptive evidence, zero new fits and zero promotions.
   At source pin 3ab3382af892, W5 forward_log is absent and BACKFILL_ASOF/CLOCK
