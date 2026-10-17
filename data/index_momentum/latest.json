@@ -17,17 +17,17 @@
       "region": "US",
       "grids": {
         "1D": {
-          "macd": 0.59,
-          "signal": 0.9,
-          "hist": -0.31,
-          "hist_vel3": -1.108,
-          "k": 37.796,
-          "d": 58.293,
-          "depth_pctile": 51.23,
+          "macd": -0.583,
+          "signal": 0.406,
+          "hist": -0.988,
+          "hist_vel3": -1.695,
+          "k": 11.44,
+          "d": 35.115,
+          "depth_pctile": 42.857,
           "pctile_window_bars": 2520,
           "pctile_window_days": 3528,
           "fast_reclaim": false,
-          "as_of": "2026-10-15",
+          "as_of": "2026-10-16",
           "recent_events": [
             {
               "index": "SPY",
@@ -107,32 +107,44 @@
           ]
         },
         "3B": {
-          "macd": -0.227,
-          "signal": -0.177,
-          "hist": -0.051,
-          "hist_vel3": 0.56,
-          "k": 48.223,
-          "d": 32.798,
-          "depth_pctile": 45.595,
+          "macd": -1.087,
+          "signal": -0.48,
+          "hist": -0.607,
+          "hist_vel3": -0.239,
+          "k": 35.311,
+          "d": 35.975,
+          "depth_pctile": 39.524,
           "pctile_window_bars": 2520,
           "pctile_window_days": 3528,
           "fast_reclaim": false,
-          "as_of": "2026-10-13",
+          "as_of": "2026-10-16",
           "recent_events": []
         },
         "W-FRI": {
-          "macd": 1.392,
-          "signal": 1.334,
-          "hist": 0.058,
-          "hist_vel3": 0.354,
-          "k": 61.298,
-          "d": 47.536,
-          "depth_pctile": 57.829,
-          "pctile_window_bars": 1686,
-          "pctile_window_days": 2360,
+          "macd": 0.758,
+          "signal": 1.142,
+          "hist": -0.384,
+          "hist_vel3": -0.224,
+          "k": 41.942,
+          "d": 48.997,
+          "depth_pctile": 52.993,
+          "pctile_window_bars": 1687,
+          "pctile_window_days": 2362,
           "fast_reclaim": false,
-          "as_of": "2026-10-09",
+          "as_of": "2026-10-16",
           "recent_events": [
+            {
+              "index": "SPY",
+              "grid": "W-FRI",
+              "date": "2026-10-16",
+              "direction": "bear",
+              "depth_at_cross": 0.758,
+              "depth_pctile": 53.0,
+              "hist_vel3": -0.224,
+              "quality_tag": "ordinary",
+              "us_confirm": false,
+              "global_washout_turn": false
+            },
             {
               "index": "SPY",
               "grid": "W-FRI",
@@ -156,17 +168,17 @@
       "region": "US",
       "grids": {
         "1D": {
-          "macd": 0.864,
-          "signal": 3.043,
-          "hist": -2.179,
-          "hist_vel3": -1.654,
+          "macd": -1.322,
+          "signal": 1.588,
+          "hist": -2.91,
+          "hist_vel3": -1.998,
           "k": 0.0,
-          "d": 2.263,
-          "depth_pctile": 55.952,
+          "d": 0.0,
+          "depth_pctile": 41.468,
           "pctile_window_bars": 2520,
           "pctile_window_days": 3528,
           "fast_reclaim": false,
-          "as_of": "2026-10-15",
+          "as_of": "2026-10-16",
           "recent_events": [
             {
               "index": "QQQ",
@@ -234,18 +246,30 @@
           ]
         },
         "3B": {
-          "macd": 0.081,
-          "signal": -0.463,
-          "hist": 0.544,
-          "hist_vel3": -0.194,
-          "k": 75.19,
-          "d": 80.941,
-          "depth_pctile": 50.379,
-          "pctile_window_bars": 2241,
-          "pctile_window_days": 3137,
+          "macd": -1.173,
+          "signal": -0.7,
+          "hist": -0.473,
+          "hist_vel3": -1.46,
+          "k": 41.857,
+          "d": 65.773,
+          "depth_pctile": 42.194,
+          "pctile_window_bars": 2242,
+          "pctile_window_days": 3139,
           "fast_reclaim": false,
-          "as_of": "2026-10-13",
+          "as_of": "2026-10-16",
           "recent_events": [
+            {
+              "index": "QQQ",
+              "grid": "3B",
+              "date": "2026-10-16",
+              "direction": "bear",
+              "depth_at_cross": -1.173,
+              "depth_pctile": 42.2,
+              "hist_vel3": -1.46,
+              "quality_tag": "ordinary",
+              "us_confirm": false,
+              "global_washout_turn": false
+            },
             {
               "index": "QQQ",
               "grid": "3B",
@@ -261,18 +285,30 @@
           ]
         },
         "W-FRI": {
-          "macd": 0.616,
-          "signal": 0.117,
-          "hist": 0.499,
-          "hist_vel3": 0.908,
-          "k": 98.879,
-          "d": 75.055,
-          "depth_pctile": 52.085,
-          "pctile_window_bars": 1367,
-          "pctile_window_days": 1914,
+          "macd": -0.355,
+          "signal": -0.04,
+          "hist": -0.315,
+          "hist_vel3": -0.334,
+          "k": 66.667,
+          "d": 80.518,
+          "depth_pctile": 46.345,
+          "pctile_window_bars": 1368,
+          "pctile_window_days": 1915,
           "fast_reclaim": false,
-          "as_of": "2026-10-09",
+          "as_of": "2026-10-16",
           "recent_events": [
+            {
+              "index": "QQQ",
+              "grid": "W-FRI",
+              "date": "2026-10-16",
+              "direction": "bear",
+              "depth_at_cross": -0.355,
+              "depth_pctile": 46.3,
+              "hist_vel3": -0.334,
+              "quality_tag": "ordinary",
+              "us_confirm": false,
+              "global_washout_turn": false
+            },
             {
               "index": "QQQ",
               "grid": "W-FRI",
@@ -296,18 +332,30 @@
       "region": "US",
       "grids": {
         "1D": {
-          "macd": -6.912,
-          "signal": -7.046,
-          "hist": 0.134,
-          "hist_vel3": -0.394,
-          "k": 30.843,
-          "d": 35.817,
-          "depth_pctile": 10.873,
+          "macd": -7.099,
+          "signal": -7.063,
+          "hist": -0.036,
+          "hist_vel3": -0.392,
+          "k": 26.454,
+          "d": 28.507,
+          "depth_pctile": 10.397,
           "pctile_window_bars": 2520,
           "pctile_window_days": 3528,
           "fast_reclaim": false,
-          "as_of": "2026-10-15",
+          "as_of": "2026-10-16",
           "recent_events": [
+            {
+              "index": "IWM",
+              "grid": "1D",
+              "date": "2026-10-16",
+              "direction": "bear",
+              "depth_at_cross": -7.099,
+              "depth_pctile": 10.4,
+              "hist_vel3": -0.392,
+              "quality_tag": "ordinary",
+              "us_confirm": false,
+              "global_washout_turn": false
+            },
             {
               "index": "IWM",
               "grid": "1D",
@@ -399,17 +447,17 @@
           "recent_events": []
         },
         "W-FRI": {
-          "macd": -3.571,
-          "signal": -1.437,
-          "hist": -2.134,
-          "hist_vel3": -0.414,
+          "macd": -5.158,
+          "signal": -2.677,
+          "hist": -2.481,
+          "hist_vel3": -0.484,
           "k": 0.0,
           "d": 0.0,
-          "depth_pctile": 24.617,
-          "pctile_window_bars": 1304,
-          "pctile_window_days": 1826,
+          "depth_pctile": 17.548,
+          "pctile_window_bars": 1305,
+          "pctile_window_days": 1827,
           "fast_reclaim": false,
-          "as_of": "2026-10-09",
+          "as_of": "2026-10-16",
           "recent_events": []
         }
       }
@@ -421,17 +469,17 @@
       "region": "US",
       "grids": {
         "1D": {
-          "macd": -1.515,
-          "signal": 1.355,
-          "hist": -2.869,
-          "hist_vel3": -1.3,
+          "macd": -3.51,
+          "signal": -0.267,
+          "hist": -3.243,
+          "hist_vel3": -1.329,
           "k": 0.0,
           "d": 0.0,
-          "depth_pctile": 40.238,
+          "depth_pctile": 26.825,
           "pctile_window_bars": 2520,
           "pctile_window_days": 3528,
           "fast_reclaim": false,
-          "as_of": "2026-10-15",
+          "as_of": "2026-10-16",
           "recent_events": [
             {
               "index": "SOXX",
@@ -514,17 +562,17 @@
           ]
         },
         "W-FRI": {
-          "macd": -3.645,
-          "signal": -3.411,
-          "hist": -0.234,
-          "hist_vel3": 1.091,
-          "k": 51.51,
-          "d": 39.746,
-          "depth_pctile": 24.257,
-          "pctile_window_bars": 1245,
-          "pctile_window_days": 1743,
+          "macd": -4.877,
+          "signal": -3.9,
+          "hist": -0.977,
+          "hist_vel3": -0.29,
+          "k": 35.221,
+          "d": 43.744,
+          "depth_pctile": 19.904,
+          "pctile_window_bars": 1246,
+          "pctile_window_days": 1744,
           "fast_reclaim": false,
-          "as_of": "2026-10-09",
+          "as_of": "2026-10-16",
           "recent_events": []
         }
       }
@@ -1655,9 +1703,8 @@
     }
   },
   "turn_breadth": {
-    "hist_positive_count": 4,
+    "hist_positive_count": 3,
     "hist_positive_ids": [
-      "IWM",
       "^HSI",
       "^HSCE",
       "3033.HK"
@@ -1666,7 +1713,7 @@
       {
         "index": "IWM",
         "cross_date": "2026-10-15",
-        "sessions_ago": 0
+        "sessions_ago": 1
       },
       {
         "index": "MAG7",

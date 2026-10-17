@@ -1,6 +1,6 @@
 {
   "schema": "contagion_links.v1",
-  "built": "2026-10-16T17:39:59.804519+00:00",
+  "built": "2026-10-17T06:39:01.801373+00:00",
   "params": {
     "structural_version": "structural.v1",
     "dy_window": 150,
@@ -452,10 +452,10 @@
   },
   "severity": {
     "us": {
-      "sigma": 0.0958,
-      "dd21": 0.0096,
-      "ret10": 0.0101,
-      "as_of": "2026-10-15"
+      "sigma": 0.204,
+      "dd21": 0.0204,
+      "ret10": -0.0082,
+      "as_of": "2026-10-16"
     },
     "cn": {
       "sigma": 0.6323,
@@ -559,10 +559,10 @@
       ],
       "shadow_state": "caution",
       "incumbent_state": "caution",
-      "incumbent_as_of": "2026-10-15"
+      "incumbent_as_of": "2026-10-16"
     },
     "cn": {
-      "raw": 0.2656,
+      "raw": 0.2819,
       "pct": 0.6171,
       "level": "low",
       "line_en": "Pressure from abroad: low",
@@ -604,7 +604,7 @@
       "incumbent_as_of": "2026-10-16"
     },
     "hk": {
-      "raw": 0.3528,
+      "raw": 0.3646,
       "pct": 0.7262,
       "level": "low",
       "line_en": "Pressure from abroad: low",
@@ -646,7 +646,7 @@
       "incumbent_as_of": "2026-10-16"
     },
     "ca": {
-      "raw": 0.3519,
+      "raw": 0.3713,
       "pct": 0.7361,
       "level": "low",
       "line_en": "Pressure from abroad: low",
@@ -688,7 +688,7 @@
       "incumbent_as_of": "2026-10-14"
     },
     "kr": {
-      "raw": 0.396,
+      "raw": 0.4067,
       "pct": 0.6865,
       "level": "low",
       "line_en": "Pressure from abroad: low",
@@ -730,7 +730,7 @@
       "incumbent_as_of": "2026-10-15"
     },
     "jp": {
-      "raw": 0.3686,
+      "raw": 0.379,
       "pct": 0.746,
       "level": "low",
       "line_en": "Pressure from abroad: low",
@@ -772,7 +772,7 @@
       "incumbent_as_of": "2026-10-15"
     },
     "tw": {
-      "raw": 0.4996,
+      "raw": 0.5116,
       "pct": 0.8175,
       "level": "moderate",
       "line_en": "Pressure from abroad: building — South Korea's weakness is the main source",
@@ -814,7 +814,7 @@
       "incumbent_as_of": "2026-10-15"
     },
     "in": {
-      "raw": 0.3272,
+      "raw": 0.3424,
       "pct": 0.7103,
       "level": "low",
       "line_en": "Pressure from abroad: low",
@@ -856,7 +856,7 @@
       "incumbent_as_of": "2026-10-14"
     },
     "au": {
-      "raw": 0.4075,
+      "raw": 0.4186,
       "pct": 0.7619,
       "level": "moderate",
       "line_en": "Pressure from abroad: building — Japan's weakness is the main source",
@@ -898,7 +898,7 @@
       "incumbent_as_of": "2026-10-15"
     },
     "gb": {
-      "raw": 0.3436,
+      "raw": 0.3565,
       "pct": 0.7083,
       "level": "low",
       "line_en": "Pressure from abroad: low",
@@ -940,7 +940,7 @@
       "incumbent_as_of": "2026-10-14"
     },
     "ez": {
-      "raw": 0.3361,
+      "raw": 0.3502,
       "pct": 0.6905,
       "level": "low",
       "line_en": "Pressure from abroad: low",
@@ -983,7 +983,7 @@
     }
   },
   "data_sessions": {
-    "us": "2026-10-15",
+    "us": "2026-10-16",
     "cn": "2026-10-16",
     "hk": "2026-10-16",
     "ca": "2026-10-14",
@@ -996,5 +996,5 @@
     "ez": "2026-10-14"
   },
   "gaps": [],
-  "timing_sec": 0.34
+  "timing_sec": 0.36
 }

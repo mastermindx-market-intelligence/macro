@@ -1,19 +1,19 @@
 {
   "schema": "stage_context.v1",
-  "asof": "2026-10-16",
+  "asof": "2026-10-17",
   "data_session": "2026-10-14",
-  "built": "2026-10-16T16:59:36Z",
+  "built": "2026-10-17T06:01:26Z",
   "is_context_only": true,
   "display_only": true,
   "disclaimer": "Context only — stage classification display, never a signal or sizing input.",
   "target_stage_week": "2026-10-09",
-  "target_week_source": "spy_benchmark",
+  "target_week_source": "population_mode_benchmark_ahead",
   "stage_week_end": "2026-10-09",
   "population": {
-    "status": "ready",
+    "status": "warn",
     "target_stage_week": "2026-10-09",
-    "target_week_source": "spy_benchmark",
-    "spy_stage_week": "2026-10-09",
+    "target_week_source": "population_mode_benchmark_ahead",
+    "spy_stage_week": "2026-10-16",
     "population_modal_week": "2026-10-09",
     "current": 2681,
     "stale": 73,
@@ -56,7 +56,9 @@
         "n": 4
       }
     ],
-    "issues": []
+    "issues": [
+      "benchmark_week_divergence"
+    ]
   },
   "counts": {
     "total": 2681,
@@ -73,7 +75,7 @@
     "pct_stage4": 37.6,
     "weather": "mixed",
     "spy_stage": 2,
-    "spy_weeks": 24
+    "spy_weeks": 25
   },
   "top_stage2": [
     {
@@ -1513,6 +1515,60 @@
       "sata_change_1w": 0,
       "stage_detailed": "2X_fallback_bullish",
       "industry_percentile": 100.0
+    },
+    {
+      "ticker": "SONY",
+      "company": "SONY",
+      "sector": "Unknown",
+      "stage_source_asof": "2026-10-14",
+      "stage_week_end": "2026-10-09",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 5,
+      "fresh": true,
+      "sga_score": 52,
+      "ma30_slope_pct5w": 1.181,
+      "pct_vs_ma30": 9.7,
+      "mansfield_rs": -6.84,
+      "vol_ratio": 0.69,
+      "event": "pullback_resume",
+      "gate_tier": "T2",
+      "blackout": false,
+      "arc_pos": 0.3125,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.75,
+        "performance": 7.5,
+        "tone_word": "confident",
+        "tags": [
+          "guidance_raised",
+          "beat_and_raise",
+          "margin_expansion",
+          "demand_acceleration",
+          "supply_constraint",
+          "new_product",
+          "buyback_or_dividend"
+        ],
+        "quarter": "Q1",
+        "summary": "Sony reported record Q1 FY2026 results with consolidated sales up 8% YoY to JPY 2,837.8 billion and operating income up 40% to JPY 476.5 billion. The company raised its full-year sales forecast 2% to JPY 12,500 billion, operating income forecast 8% to JPY 1,720 billion, and ne…"
+      },
+      "why": [
+        "Early in its climb — 5 weeks up so far",
+        "Trading above its 30-week line — the trend is with it",
+        "Also shows a strong confirmation from our other checks"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 5 周",
+        "位于 30 周均线之上 — 趋势向好",
+        "其他多项验证同样给出强确认"
+      ],
+      "atr_14w": 1.2071,
+      "atr_ext": 1.766,
+      "atr_pct_price": 0.05005,
+      "sata_score": 7,
+      "sata_change_1w": 0,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": null
     },
     {
       "ticker": "BETA",
@@ -2974,54 +3030,6 @@
       "atr_14w": 5.3082,
       "atr_ext": 2.859,
       "atr_pct_price": 0.10672,
-      "sata_score": 8,
-      "sata_change_1w": 0,
-      "stage_detailed": "2A_strong_breakout",
-      "industry_percentile": null
-    },
-    {
-      "ticker": "PRTH",
-      "company": "Priority Technology Holdings Inc",
-      "sector": "Technology",
-      "stage_source_asof": "2026-10-14",
-      "stage_week_end": "2026-10-09",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 3,
-      "fresh": true,
-      "sga_score": 46,
-      "ma30_slope_pct5w": 4.687,
-      "pct_vs_ma30": 29.35,
-      "mansfield_rs": 20.16,
-      "vol_ratio": 3.77,
-      "event": "pullback_resume",
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.2875,
-      "earnings": {
-        "present": true,
-        "sentiment": -0.5,
-        "performance": 7.2,
-        "tone_word": "cautious",
-        "tags": [
-          "guidance_raised",
-          "margin_contraction",
-          "demand_slowdown"
-        ],
-        "quarter": "Q2",
-        "summary": "Priority Commerce reported Q2 FY26 revenue of $262.3 million (up 9% YoY) and adjusted EPS of $0.29 (up 12% YoY). Management maintained full-year guidance for revenue ($1.01B-$1.04B), gross profit, and adjusted EBITDA but expects results to be at the lower end of their respecti…"
-      },
-      "why": [
-        "Early in its climb — 3 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 3 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
-      ],
-      "atr_14w": 0.6964,
-      "atr_ext": 2.544,
-      "atr_pct_price": 0.08917,
       "sata_score": 8,
       "sata_change_1w": 0,
       "stage_detailed": "2A_strong_breakout",
