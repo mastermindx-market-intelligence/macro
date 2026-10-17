@@ -157,10 +157,24 @@ BRANCHES = ("pessimistic", "optimistic")
 #: The ``other_assumptions`` key that declares mutually exclusive route groups.
 ROUTE_EXCLUSIVITY_KEY = "route_exclusivity"
 
+#: SPEC_C2D §2.2: the ``other_assumptions`` key that binds an OUTSIDE registered
+#: route to a registration path of this envelope, as
+#: ``"<route_id>=<path_id>;<route_id>=<path_id>"`` -- ``;`` separates bindings,
+#: ``=`` separates the route from its path, ids verbatim, whitespace stripped.
+#: The same text grammar family as ``route_exclusivity``.  The binding is a
+#: SCENARIO ASSUMPTION (masterplan §4), never an observed fact, so it is carried
+#: as a condition and reported in ``inputs``, and it never becomes a route.
+ROUTE_REGISTRATION_PATHS_KEY = "route_registration_paths"
+
 #: The route kinds this adapter models.  A scenario action of either kind on a
 #: route the envelope does not carry is an input error, not another owner's
 #: business (SPEC_C2B §2.2).
 CAPACITY_OWNED_ROUTE_KINDS = ("shelf_takedown", "at_the_market")
+
+#: SPEC_C2D §1.2: the outside route kinds a declaration can bind to a path.
+#: ``pipe`` is deliberately absent -- a PIPE is unregistered, so it has no
+#: registration path and naming one is an input error (SPEC_C2D §0.7).
+OUTSIDE_REGISTERED_KINDS = ("registered_direct", "equity_line")
 
 #: SPEC_C2B §2.3: the owner that consumes pools this adapter cannot model.
 CAPACITY_UNMODELLED_OWNER = "capacity_unmodelled"
@@ -712,6 +726,47 @@ class _NonCapacityAction:
 
 
 @dataclass(frozen=True)
+class _OutsideView:
+    """SPEC_C2D §1.3: one modelled outside action and the pools it consumes.
+
+    An outside route gets NO :class:`_RoutePlan`, no kernel variable, no per-route
+    bound and no witness row: its own limit (a commitment amount, a purchase
+    agreement, a placement size) belongs to the funding owner.  What capacity
+    states here is only the consumption of shared pools it already models, so the
+    aggregate stays what the ENVELOPE routes can raise after every fixed use.
+
+    ``shares`` is the share count consumed per branch -- the quantity itself when
+    the unit is shares, ``usd[branch] * share_coefficient(branch)`` otherwise --
+    and is EMPTY where the uncovered price path cannot price a share pool
+    (SPEC_C2D §0.16): an unknown stays unknown, never ``0``.
+    """
+
+    route_id: str
+    action: str
+    path_id: str | None
+    usd: dict[str, Fraction]
+    shares: dict[str, Fraction]
+    pools: tuple[str, ...]
+    conditions_assumed_met: tuple[str, ...]
+
+    def as_record(self) -> dict[str, Any]:
+        """``inputs["outside_consumption"]`` (§5): exact text, never a number."""
+        return {
+            "route_id": self.route_id,
+            "action": self.action,
+            "path_id": self.path_id,
+            "pools": list(self.pools),
+            "usd": {branch: _money_text(self.usd[branch]) for branch in BRANCHES},
+            "shares": (
+                {branch: _fraction_text(self.shares[branch]) for branch in sorted(self.shares)}
+                if self.shares
+                else None
+            ),
+            "conditions_assumed_met": list(self.conditions_assumed_met),
+        }
+
+
+@dataclass(frozen=True)
 class _UsageEvidence:
     """SPEC_C2X §6: one ledger usage row exactly as capacity consumed or refused it.
 
@@ -900,6 +955,12 @@ class _Builder:
         self.action_views: dict[str, _ActionView] = {}
         self.non_capacity_actions: tuple[_NonCapacityAction, ...] = ()
         self.unmodelled_consumption: tuple[str, ...] = ()
+        #: SPEC_C2D §1.4: the outside routes this adapter models, by route id.
+        self.outside_views: dict[str, _OutsideView] = {}
+        #: SPEC_C2D §2.2: the parsed ``route_registration_paths`` declaration.
+        self.outside_declared: tuple[tuple[str, str], ...] = ()
+        #: SPEC_C2D §2.3: declared outside routes blocked on an ineligible path.
+        self.outside_blocked: tuple[str, ...] = ()
         self.residual_routes: dict[str, dict[str, Fraction | None]] = {
             branch: {} for branch in BRANCHES
         }
@@ -3186,6 +3247,259 @@ class _Builder:
             conditions_assumed_met=tuple(sorted(action.conditions_assumed_met)),
         )
 
+    # -- SPEC_C2D outside-route consumption (C2d) -------------------------
+
+    def _outside_window_priced(self, action_kind: str) -> bool:
+        """Whether an outside kind is priced at the at-the-market window (§3.1).
+
+        C&DI 116.21-116.26: an equity line's primary registration is an
+        at-the-market offering under Rule 415(a)(4), so it prices exactly like the
+        ``at_the_market`` routes this adapter already carries.  A PIPE and a
+        registered direct are sales already scheduled at the horizon start, so
+        they price at ``p_start``.
+        """
+        return action_kind == "equity_line" and self.scenario.price.kind == "path"
+
+    def _outside_price(self, action_kind: str, branch: str) -> Fraction | None:
+        """§3.1/§3.2: ``_action_price``'s branch table without a :class:`_RoutePlan`.
+
+        ``None`` when the price path covers no price on or before the horizon
+        start: an uncovered price is an unknown, never a guessed number, so a
+        ``usd`` quantity then deducts nothing from a share pool (§0.16).
+        """
+        assert self.price_view is not None
+        view = self.price_view
+        if self._outside_window_priced(action_kind):
+            return view.low if branch == "pessimistic" else view.high
+        return view.p_start
+
+    def _outside_price_name(self, action_kind: str, branch: str) -> str:
+        """The price label the §2.4 refusal names, worded as ``_action_price`` does."""
+        if self._outside_window_priced(action_kind):
+            return "the window low" if branch == "pessimistic" else "the window high"
+        return "the price in effect at the horizon start"
+
+    def _pipe_pools(self) -> tuple[str, ...]:
+        """§2.3: the pools a PIPE draws on -- never a registration pool.
+
+        A PIPE is unregistered, so it consumes only the Rule 5635(d)
+        exchange-approval pool and the authorized-unreserved charter pool, and only
+        those this envelope actually carries.
+        """
+        present = {pool.pool_id for pool in self.pools}
+        return tuple(
+            sorted(
+                pool_id
+                for pool_id in (
+                    f"nasdaq_20pct:{self.sale_iso}",
+                    f"authorized_unreserved:{self.sale_iso}",
+                )
+                if pool_id in present
+            )
+        )
+
+    def _outside_conditions(self, item: _NonCapacityAction) -> tuple[str, ...]:
+        """§4.2: the conditions a modelled outside route assumes, by kind.
+
+        The route-to-path binding is a SCENARIO ASSUMPTION (masterplan §4), so it
+        is named as a condition and never recorded as an observed fact.  An equity
+        line also carries the C&DI 116.23/116.25 note: a concurrent I.B.3 resale
+        registration that evades I.B.6 capacity is counted, and this adapter does
+        not look for one.  A PIPE adds no condition -- the Nasdaq pool already
+        carries ``nasdaq_aggregation_of_related_transactions_not_evaluated``.
+        """
+        route_id = item.route_id
+        if item.action == "registered_direct":
+            return _conditions((f"registered_direct_path_declared_by_scenario:{route_id}",))
+        return _conditions(
+            (
+                f"equity_line_path_declared_by_scenario:{route_id}",
+                f"equity_line_concurrent_resale_registration_not_evaluated:{route_id}",
+            )
+        )
+
+    def _registration_paths(
+        self, outside: Sequence[_NonCapacityAction]
+    ) -> tuple[tuple[str, str], ...]:
+        """§2.2: parse ``other_assumptions["route_registration_paths"]``.
+
+        ``"<route_id>=<path_id>;<route_id>=<path_id>"`` -- the ``route_exclusivity``
+        text grammar family.  Every refusal is a :class:`CapacityInputError` naming
+        the key, because a declaration that cannot be read exactly is not a
+        declaration: the route then stays the SPEC_C2B §2.3 named Unknown.
+        """
+        raw = self.assumptions.get(ROUTE_REGISTRATION_PATHS_KEY)
+        if raw is None:
+            return ()
+        text = raw if isinstance(raw, str) else str(raw)
+        kinds = {item.route_id: item.action for item in outside}
+        known_paths = {path.path_id for path in self.paths} | set(self.registered)
+        bindings: list[tuple[str, str]] = []
+        seen: set[str] = set()
+        for chunk in text.split(";"):
+            label = chunk.strip()
+            if not label:
+                continue
+            route_id, separator, path_id = label.partition("=")
+            route_id, path_id = route_id.strip(), path_id.strip()
+            if not separator:
+                raise CapacityInputError(
+                    f"{ROUTE_REGISTRATION_PATHS_KEY}: binding {label!r} carries no '=' between a "
+                    "route id and a registration path id"
+                )
+            if not route_id or not path_id:
+                raise CapacityInputError(
+                    f"{ROUTE_REGISTRATION_PATHS_KEY}: binding {label!r} names an empty route id "
+                    "or an empty registration path id"
+                )
+            if route_id in seen:
+                raise CapacityInputError(
+                    f"{ROUTE_REGISTRATION_PATHS_KEY}: {route_id!r} is declared more than once"
+                )
+            seen.add(route_id)
+            action = kinds.get(route_id)
+            if action is None:
+                raise CapacityInputError(
+                    f"{ROUTE_REGISTRATION_PATHS_KEY}: {route_id!r} is not an outside route action "
+                    "of this scenario; the envelope's own routes are declared by its route plans, "
+                    "never here"
+                )
+            if action == "pipe":
+                raise CapacityInputError(
+                    f"{ROUTE_REGISTRATION_PATHS_KEY}: {route_id!r} is a pipe action; a PIPE is "
+                    "unregistered, so it has no registration path to declare"
+                )
+            if action not in OUTSIDE_REGISTERED_KINDS:
+                raise CapacityInputError(
+                    f"{ROUTE_REGISTRATION_PATHS_KEY}: {route_id!r} is a {action!r} action; only "
+                    f"{' and '.join(OUTSIDE_REGISTERED_KINDS)} routes are declared here"
+                )
+            if path_id not in known_paths:
+                raise CapacityInputError(
+                    f"{ROUTE_REGISTRATION_PATHS_KEY}: {path_id!r} is not a registration path of "
+                    "this envelope"
+                )
+            bindings.append((route_id, path_id))
+        return tuple(sorted(bindings))
+
+    def _outside_quantities(
+        self, item: _NonCapacityAction, quantity: Quantity
+    ) -> tuple[dict[str, Fraction], dict[str, Fraction]]:
+        """§2.4: the exact dollars and shares one modelled outside action consumes.
+
+        A ``usd`` quantity is the dollars in both branches, and the shares are
+        ``amount / price(branch)`` -- OMITTED, never zero, where the price path
+        covers no price (§0.16).  A ``shares`` quantity is the shares in both
+        branches and needs a price to state its dollars, so an uncovered path is a
+        refusal worded as ``_action_price`` words it.
+        """
+        route_id = item.route_id
+        amount = exact(quantity.value, f"action[{route_id}].quantity")
+        if amount < 0:
+            raise CapacityInputError(
+                f"action on {route_id!r} carries a negative quantity"
+            )
+        usd: dict[str, Fraction] = {}
+        shares: dict[str, Fraction] = {}
+        if quantity.unit == "usd":
+            for branch in BRANCHES:
+                usd[branch] = amount
+                price = self._outside_price(item.action, branch)
+                if price is not None:
+                    shares[branch] = amount / price
+            return usd, shares
+        if quantity.unit == "shares":
+            for branch in BRANCHES:
+                price = self._outside_price(item.action, branch)
+                if price is None:
+                    raise CapacityInputError(
+                        f"a share quantity on {route_id} needs "
+                        f"{self._outside_price_name(item.action, branch)}, and the price path "
+                        f"carries no price in effect on or before the horizon start "
+                        f"{self.scenario.horizon_start}"
+                    )
+                shares[branch] = amount
+                usd[branch] = amount * price
+            return usd, shares
+        raise CapacityInputError(
+            f"action on {route_id!r} is quantified in {quantity.unit!r}; only usd and shares "
+            "convert into gross dollars"
+        )
+
+    def _outside_consumption(self, outside: Sequence[_NonCapacityAction]) -> None:
+        """SPEC_C2D §2: model the outside consumption the documents support.
+
+        A FIXED cash PIPE consumes the exchange-approval and authorized-unreserved
+        share pools it draws on.  A FIXED cash ``registered_direct`` or
+        ``equity_line`` is modelled once the scenario DECLARES its registration
+        path, and consumes every pool that path's takedown shares -- dollars at
+        face and shares at the §3 coefficient.  Everything else stays exactly the
+        SPEC_C2B §2.3 named Unknown: undeclared, effectiveness unknown, non-cash,
+        recorded-only, or another owner's action.  No outside route becomes a
+        route here: no plan, no kernel variable, no bound, no witness row (§8).
+        """
+        self.outside_declared = self._registration_paths(outside)
+        declared = dict(self.outside_declared)
+        selections = {item.route_id: item for item in self.scenario.actions}
+        paths = {path.path_id: path for path in self.paths}
+        views: dict[str, _OutsideView] = {}
+        blocked: list[str] = []
+        for item in outside:
+            if not (
+                item.fixed
+                and item.owner == CAPACITY_UNMODELLED_OWNER
+                and item.settlement == "cash"
+            ):
+                continue
+            route_id = item.route_id
+            path_id = declared.get(route_id)
+            if item.action == "pipe":
+                pools = self._pipe_pools()
+                conditions: tuple[str, ...] = ()
+                path_id = None
+            elif path_id is None:
+                # §0.6: which pools an undeclared takedown draws on is not known.
+                continue
+            else:
+                path = paths.get(path_id)
+                if path is None:
+                    continue
+                if path.classification == "ineligible":
+                    # §0.9: the existing blocker, and NO deduction: an ineligible
+                    # path has no pool for this action to consume.
+                    self.blockers.append(f"asserted_action_on_ineligible_route:{route_id}")
+                    blocked.append(route_id)
+                    continue
+                if path.classification == "unknown":
+                    # §0.10: effectiveness unknown means consumption unknown.
+                    continue
+                pools = tuple(
+                    sorted(
+                        pool.pool_id
+                        for pool in self.pools
+                        if path.takedown_id in pool.shared_by
+                    )
+                )
+                conditions = self._outside_conditions(item)
+                self.path_conditions[path_id].update(conditions)
+            quantity = selections[route_id].quantity
+            if quantity is None or quantity.status != "known" or quantity.value is None:
+                # SPEC_C2B §2.2 never inspects the quantity's status, so a fixed
+                # action may carry an unknown amount: that stays unknown (§0.6).
+                continue
+            usd, shares = self._outside_quantities(item, quantity)
+            views[route_id] = _OutsideView(
+                route_id=route_id,
+                action=item.action,
+                path_id=path_id,
+                usd=usd,
+                shares=shares,
+                pools=pools,
+                conditions_assumed_met=conditions,
+            )
+        self.outside_blocked = tuple(sorted(blocked))
+        self.outside_views = views
+
     def _apply_actions(self) -> None:
         """Asserted actions become a FIXED use, never a cap on the route."""
         plans = {plan.route_id: plan for plan in self.route_plans}
@@ -3201,11 +3515,17 @@ class _Builder:
             else:
                 outside.append(self._non_capacity_action(action))
         self.non_capacity_actions = tuple(outside)
+        # SPEC_C2D §1.5: a modelled outside route consumes named pools, so it is no
+        # longer an unknown; a blocked one (§2.3) is named by its blocker instead.
+        self._outside_consumption(outside)
         self.unmodelled_consumption = tuple(
             sorted(
                 item.route_id
                 for item in outside
-                if item.fixed and item.owner == CAPACITY_UNMODELLED_OWNER
+                if item.fixed
+                and item.owner == CAPACITY_UNMODELLED_OWNER
+                and item.route_id not in self.outside_views
+                and item.route_id not in self.outside_blocked
             )
         )
         for action in envelope_actions:
@@ -3356,6 +3676,21 @@ class _Builder:
                 if view is None or not view.fixed or not view.applied:
                     continue
                 deduction += pool.coefficient_for(route_id, branch) * view.usd[branch]
+            # SPEC_C2D §3.3: an outside route is charged what its view consumed, and
+            # never through ``pool.coefficient_for`` -- the pool carries no row for
+            # a route it does not share with, and its default coefficient is the
+            # TAKEDOWN's 1/p_start, which is wrong for an equity line in a priced
+            # path.  A share pool an uncovered price could not price is skipped:
+            # nothing known to deduct (§0.16).
+            for outside_view in self.outside_views.values():
+                if pool.pool_id not in outside_view.pools:
+                    continue
+                if pool.bound.unit == "usd":
+                    deduction += outside_view.usd[branch]
+                    continue
+                outside_shares = outside_view.shares.get(branch)
+                if outside_shares is not None:
+                    deduction += outside_shares
             if bound is not None and deduction:
                 bound = bound - deduction
             elif bound is None and pool.substitute is not None and deduction > pool.substitute:
@@ -3608,6 +3943,7 @@ class _Builder:
         """
         affects = tuple(sorted(pool.constraint_id for pool in pools))
         kinds = {item.route_id: item.action for item in self.non_capacity_actions}
+        settled = {item.route_id: item.settlement for item in self.non_capacity_actions}
         for route_id in self.unmodelled_consumption:
             action = kinds[route_id]
             unknown_id = f"action_route_not_modelled:{route_id}"
@@ -3616,14 +3952,27 @@ class _Builder:
                 # identifier limit; the description still names the full route.
                 digest = hashlib.sha256(route_id.encode("utf-8")).hexdigest()[:16]
                 unknown_id = f"action_route_not_modelled:{digest}"
+            resolving_fact = (
+                f"the registration path, pricing date and share or dollar consumption of "
+                f"{route_id} against each shared pool"
+            )
+            if action in OUTSIDE_REGISTERED_KINDS and settled.get(route_id) == "cash":
+                # SPEC_C2D §4.3: the ONE appended sentence, and only for the two
+                # kinds a declaration binds.  A PIPE and a non-cash action keep the
+                # SPEC_C2B text verbatim, and the identifier logic above is
+                # untouched.
+                resolving_fact += (
+                    "; a registered direct or equity line is modelled once "
+                    f"{ROUTE_REGISTRATION_PATHS_KEY} binds it to a registration path of this "
+                    "envelope"
+                )
             self.unknowns.append(
                 _unknown(
                     unknown_id,
                     f"{action} on {route_id} may draw on shared registration and "
                     "exchange-approval pools that capacity models only for shelf takedowns "
                     "and at-the-market programmes",
-                    f"the registration path, pricing date and share or dollar consumption of "
-                    f"{route_id} against each shared pool",
+                    resolving_fact,
                     affects,
                 )
             )
@@ -3783,6 +4132,21 @@ class _Builder:
             ),
             **(
                 {
+                    # SPEC_C2D §5: what each modelled outside action consumes, and
+                    # the declaration that bound it -- emitted only when at least
+                    # one outside action IS modelled (§0.1), so every fixture with
+                    # none digests exactly as it did before C2d.
+                    "outside_consumption": [
+                        self.outside_views[route_id].as_record()
+                        for route_id in sorted(self.outside_views)
+                    ],
+                    "outside_declared": [list(item) for item in self.outside_declared],
+                }
+                if self.outside_views
+                else {}
+            ),
+            **(
+                {
                     "transaction_ledger": {
                         "issuer_id": self.transactions.issuer_id,
                         "as_of": self.transactions.as_of,
@@ -3888,10 +4252,12 @@ __all__ = [
     "NASDAQ_OFFERING_ASSUMPTIONS",
     "NASDAQ_RULE_ID",
     "NON_CAPACITY_OWNERS",
+    "OUTSIDE_REGISTERED_KINDS",
     "PROGRAMME_USAGE_PREFIX",
     "REGISTRATION_PATH_SCHEMA",
     "REFERENCE_PACK_MANIFEST_ID",
     "ROUTE_EXCLUSIVITY_KEY",
+    "ROUTE_REGISTRATION_PATHS_KEY",
     "SHARE_BASIS_RESULT_SCHEMA",
     "SHARE_COUNT_SCHEMAS",
     "SHELF_FAMILIES",
