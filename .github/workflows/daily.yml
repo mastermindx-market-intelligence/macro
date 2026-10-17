@@ -614,6 +614,15 @@ jobs:
         run: |
           python3 scripts/build_security_master.py --nightly \
             || echo "::warning::build_security_master.py --nightly exited non-zero (unexpected — the function itself always returns 0; see the traceback above)"
+      # C04 (DATA-OS-COMPLETION, DEC-DATAOS-VIEW-CONTRACT-SIDECAR-IS-A-NIGHTLY-EMITTER): describe the
+      # US store for the Terminal's U01 reader. Reads data/reference/{vendor_aliases,security_master}
+      # once + one os.scandir of data/stocks; byte-stable (no timestamp), so an unchanged store is a
+      # no-op. The file rides the existing `git add data/` collect commit below. Non-fatal by design.
+      - name: view contract sidecar — data/stocks/_view_contract.json (C04)
+        continue-on-error: true
+        run: |
+          python3 -m scripts.emit_view_contract \
+            || echo "::warning::emit_view_contract exited non-zero (non-fatal — previous sidecar remains)"
       # Marked AFTER the coherence tripwire above so the tripwire's runtime is not
       # billed to the market-commit-push band it is measuring.
       - name: timings band — market-commit-push (W2)
