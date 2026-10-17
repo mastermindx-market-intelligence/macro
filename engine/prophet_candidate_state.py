@@ -16,6 +16,7 @@ import re
 
 from engine.prophet_candidate_state_sources import (
     CandidateStateSourceError,
+    SourceFactIndex,
     index_turn_watch_events,
 )
 from engine.us_candidate_episode import (
@@ -1089,56 +1090,18 @@ def _validate_native_chronology(
         _require_not_future(turn_known, now, "turn_watch known_at")
 
 
-def build_native_factual_assessment_result(
+def _validated_native_generation(
     snapshot: object,
-    *,
-    candidate_source_event_id: str,
-    candidate_source_receipt: str,
-) -> NativeFactualAssessmentResult:
-    """Assemble one native factual observation read result.
+) -> ValidatedCandidateEpisodeGeneration:
+    """Strict native request front half: owner types, disk bytes, four fields.
 
-    Strictly native read path: the snapshot must be a real
-    ``CandidateEpisodeStoreSnapshot`` whose exact content is re-validated
-    against its own on-disk generation (``validate_candidate_episode_generation``
-    with the snapshot generation id) before any fact is used, so a constructed
-    or mutated snapshot cannot bypass native disk validation. Read-only: no
-    store write, no ledger mutation.
-
-    Binding: the caller-supplied candidate source key and receipt must match
-    one unretracted native B1 candidate relation (OPENED/OBSERVED,
-    ``us_prophet_rank.candidates/v1``); missing, ambiguous, suppressed,
-    retracted, or wrong-receipt bindings fail closed, and matching never joins
-    by ticker. ``market_session`` comes only from the canonical
-    ``candidate:{YYYY-MM-DD}:...`` source key and is kept separate from the
-    episode ``opened_session`` and the generation ``recorded_at``.
-
-    Facts: emergence is derived only through the existing native owner
-    semantics (``index_turn_watch_events`` generation-local, retraction-aware
-    facts; latest by native ``known_at`` with the stable native tie breaker),
-    so a real generation-local TURN WATCH relation may produce TRIGGERED with
-    the genuine relation id; otherwise emergence is
-    UNESTIMABLE/SOURCE_NOT_SUPPLIED. Maturity stays UNESTIMABLE (no supplied
-    stage), B4 entry availability stays UNAVAILABLE_DATA, and lifecycle
-    preserves the literal B1 state (terminal never implies SUPERSEDED without
-    an actual superseded_by).
-
-    Envelope: an existing ``prophet.daily_brief_assessment_input/v1`` compositor
-    input whose state is always REVIEW_REQUIRED while native thesis/model/
-    review lineage is unreadable here; no review_ref is invented and CURRENT is
-    never produced. The owner-issued sha256 source_receipt authenticates the
-    complete presented envelope minus the receipt itself, so the displayed
-    summary, asof and provenance are exactly the receipted material; hash
-    integrity alone is not native authentication and the read stays guarded by
-    the typed snapshot and on-disk revalidation above. The assembly asof is
-    the actual owner UTC assembly instant and never renews source freshness.
-
-    Result: the B3 projection is derived exactly once per read through the
-    native TURN WATCH index and returned on the frozen
-    :class:`NativeFactualAssessmentResult` beside the assessment, with the
-    full one-read identity enforced at construction and re-enforced by
-    :meth:`NativeFactualAssessmentResult.verified_pair`; B4 later consumes
-    that verified detached pair of the same source-session projection —
-    never a reprojected decision session, second read, or stamped receipt.
+    The snapshot must be a real ``CandidateEpisodeStoreSnapshot`` whose exact
+    content is re-validated against its own on-disk generation
+    (``validate_candidate_episode_generation`` with the snapshot generation id)
+    before any fact is used, so a constructed or mutated snapshot cannot bypass
+    native disk validation. Every native owner request - one singular read or
+    one plural batch - performs this complete validation itself, again, per
+    request; nothing is prevalidated, cached or carried across requests.
     """
     if not isinstance(snapshot, CandidateEpisodeStoreSnapshot):
         raise CandidateStateContractError(
@@ -1181,17 +1144,18 @@ def build_native_factual_assessment_result(
             raise CandidateStateContractError(
                 "snapshot content disagrees with native B1 disk validation"
             )
+    return validated
 
-    relation, market_session = _match_candidate_relation(
-        validated.events,
-        validated.suppressions,
-        candidate_source_event_id=candidate_source_event_id,
-        candidate_source_receipt=candidate_source_receipt,
-    )
 
+def _native_episode_for_relation(
+    episodes: tuple[Mapping[str, object], ...],
+    relation: Mapping[str, object],
+) -> tuple[Mapping[str, object], str, str]:
+    """Resolve the one validated B1 episode a matched native relation binds.
+    """
     episode_rows = [
         row
-        for row in validated.episodes
+        for row in episodes
         if isinstance(row, Mapping) and row.get("episode_id") == relation["episode_id"]
     ]
     if len(episode_rows) != 1:
@@ -1202,14 +1166,45 @@ def build_native_factual_assessment_result(
     episode = episode_rows[0]
     episode_id = _text(episode.get("episode_id"), "episode_id")
     security_id = _text(episode.get("security_id"), "episode security_id")
+    return episode, episode_id, security_id
 
-    now = _assembly_clock()
+
+def _native_turn_watch_index(
+    snapshot: CandidateEpisodeStoreSnapshot,
+) -> SourceFactIndex:
+    """Index the genuine generation-local TURN WATCH facts exactly once.
+    """
     try:
-        turn_watch = index_turn_watch_events(snapshot)
+        return index_turn_watch_events(snapshot)
     except CandidateStateSourceError as exc:
         raise CandidateStateContractError(
             f"native TURN WATCH indexing failed closed: {exc}"
         ) from exc
+
+
+def _assemble_native_factual_assessment_result(
+    *,
+    snapshot: CandidateEpisodeStoreSnapshot,
+    generation_id: str,
+    episode: Mapping[str, object],
+    episode_id: str,
+    security_id: str,
+    relation: Mapping[str, object],
+    candidate_source_event_id: str,
+    candidate_source_receipt: str,
+    market_session: str,
+    now: datetime,
+    turn_watch: SourceFactIndex,
+) -> NativeFactualAssessmentResult:
+    """Assemble one receipt-bound native result from already-owned native facts.
+
+    Private native back half shared by the singular read and every batch
+    binding: the native TURN WATCH selection and chronology, the one complete
+    ``project_candidate_states`` derivation for this read, and the closed
+    assessment envelope with its owner receipt. No caller-supplied fact,
+    projection or prevalidation enters here; every displayed fact is derived
+    from the validated native read.
+    """
     generation_recorded_at = turn_watch.receipt["generation_recorded_at"]
     selected = _select_native_turn_watch_fact(turn_watch, episode_id)
     _validate_native_chronology(
@@ -1360,6 +1355,86 @@ def build_native_factual_assessment_result(
     )
 
 
+def build_native_factual_assessment_result(
+    snapshot: object,
+    *,
+    candidate_source_event_id: str,
+    candidate_source_receipt: str,
+) -> NativeFactualAssessmentResult:
+    """Assemble one native factual observation read result.
+
+    Strictly native read path: the snapshot must be a real
+    ``CandidateEpisodeStoreSnapshot`` whose exact content is re-validated
+    against its own on-disk generation (``validate_candidate_episode_generation``
+    with the snapshot generation id) before any fact is used, so a constructed
+    or mutated snapshot cannot bypass native disk validation. Read-only: no
+    store write, no ledger mutation.
+
+    Binding: the caller-supplied candidate source key and receipt must match
+    one unretracted native B1 candidate relation (OPENED/OBSERVED,
+    ``us_prophet_rank.candidates/v1``); missing, ambiguous, suppressed,
+    retracted, or wrong-receipt bindings fail closed, and matching never joins
+    by ticker. ``market_session`` comes only from the canonical
+    ``candidate:{YYYY-MM-DD}:...`` source key and is kept separate from the
+    episode ``opened_session`` and the generation ``recorded_at``.
+
+    Facts: emergence is derived only through the existing native owner
+    semantics (``index_turn_watch_events`` generation-local, retraction-aware
+    facts; latest by native ``known_at`` with the stable native tie breaker),
+    so a real generation-local TURN WATCH relation may produce TRIGGERED with
+    the genuine relation id; otherwise emergence is
+    UNESTIMABLE/SOURCE_NOT_SUPPLIED. Maturity stays UNESTIMABLE (no supplied
+    stage), B4 entry availability stays UNAVAILABLE_DATA, and lifecycle
+    preserves the literal B1 state (terminal never implies SUPERSEDED without
+    an actual superseded_by).
+
+    Envelope: an existing ``prophet.daily_brief_assessment_input/v1`` compositor
+    input whose state is always REVIEW_REQUIRED while native thesis/model/
+    review lineage is unreadable here; no review_ref is invented and CURRENT is
+    never produced. The owner-issued sha256 source_receipt authenticates the
+    complete presented envelope minus the receipt itself, so the displayed
+    summary, asof and provenance are exactly the receipted material; hash
+    integrity alone is not native authentication and the read stays guarded by
+    the typed snapshot and on-disk revalidation above. The assembly asof is
+    the actual owner UTC assembly instant and never renews source freshness.
+
+    Result: the B3 projection is derived exactly once per read through the
+    native TURN WATCH index and returned on the frozen
+    :class:`NativeFactualAssessmentResult` beside the assessment, with the
+    full one-read identity enforced at construction and re-enforced by
+    :meth:`NativeFactualAssessmentResult.verified_pair`; B4 later consumes
+    that verified detached pair of the same source-session projection —
+    never a reprojected decision session, second read, or stamped receipt.
+    """
+    validated = _validated_native_generation(snapshot)
+    relation, market_session = _match_candidate_relation(
+        validated.events,
+        validated.suppressions,
+        candidate_source_event_id=candidate_source_event_id,
+        candidate_source_receipt=candidate_source_receipt,
+    )
+    episode, episode_id, security_id = _native_episode_for_relation(
+        validated.episodes, relation
+    )
+
+    now = _assembly_clock()
+    turn_watch = _native_turn_watch_index(snapshot)
+
+    return _assemble_native_factual_assessment_result(
+        snapshot=snapshot,
+        generation_id=snapshot.generation_id,
+        episode=episode,
+        episode_id=episode_id,
+        security_id=security_id,
+        relation=relation,
+        candidate_source_event_id=candidate_source_event_id,
+        candidate_source_receipt=candidate_source_receipt,
+        market_session=market_session,
+        now=now,
+        turn_watch=turn_watch,
+    )
+
+
 def build_native_factual_assessment(
     snapshot: object,
     *,
@@ -1378,6 +1453,112 @@ def build_native_factual_assessment(
         candidate_source_event_id=candidate_source_event_id,
         candidate_source_receipt=candidate_source_receipt,
     ).assessment
+
+
+def build_native_factual_assessment_results(
+    snapshot: object,
+    *,
+    bindings: tuple[tuple[str, str], ...],
+) -> tuple[NativeFactualAssessmentResult | None, ...]:
+    """Assemble one bounded native batch: one genuine result or None per binding.
+
+    The plural native owner entry point behind the Today request batch. It
+    performs the actual strict native validation itself - the same
+    ``_validated_native_generation`` front half as the singular read - once at
+    the start and once again at the end, so no result escapes before the same
+    fixed generation has revalidated against native disk and the supplied
+    snapshot has compared unchanged. Shared derivation reads only detached
+    native bytes captured inside that validated front half and indexes the
+    genuine generation-local TURN WATCH facts exactly once; it never consults
+    a cache, token, ambient context, caller-supplied fact or caller-supplied
+    projection, and there is no trust toggle and no prevalidation argument.
+
+    ``bindings`` must be an immutable tuple of ``(source_event_id,
+    source_receipt)`` tuples; any other top-level shape is typed-refused. Each
+    binding then keeps the singular read's per-binding truth: its own genuine
+    assembly clock, its own source-match/retraction/suppression/episode and
+    chronology resolution, and its own complete ``project_candidate_states``
+    derivation - so total projection work deliberately stays
+    O(bindings x generation rows), no reusable-projection or sublinear claim
+    is made, and every envelope carries the same receipt identity the
+    singular read issues. A binding whose match, episode, chronology or
+    assembly fails closed becomes an ordered ``None`` (typed per-binding
+    unavailable) while the remaining bindings continue; a generation-wide
+    failure raises :class:`CandidateStateContractError` and returns nothing,
+    so no partial batch can escape. Results are frozen
+    :class:`NativeFactualAssessmentResult` objects in binding order, each
+    validated exactly as a singular result is, and every new request - batch
+    or singular - independently validates again.
+    """
+    validated = _validated_native_generation(snapshot)
+    if not isinstance(bindings, tuple) or any(
+        not isinstance(binding, tuple) or len(binding) != 2
+        for binding in bindings
+    ):
+        raise CandidateStateContractError(
+            "bindings must be a tuple of (source_event_id, source_receipt) "
+            "tuples"
+        )
+    # Detach the validated native bytes once: shared derivation and the final
+    # unchanged comparison read only this frozen copy, never live caller-held
+    # objects or a later producer write.
+    detached = {
+        field: deepcopy(getattr(validated, field))
+        for field in ("events", "suppressions", "episodes", "receipt")
+    }
+    generation_id = snapshot.generation_id
+    native_snapshot = CandidateEpisodeStoreSnapshot(
+        generation_id=generation_id,
+        generation=ValidatedCandidateEpisodeGeneration(
+            path=validated.path,
+            events=detached["events"],
+            suppressions=detached["suppressions"],
+            episodes=detached["episodes"],
+            receipt=detached["receipt"],
+        ),
+    )
+    turn_watch = _native_turn_watch_index(native_snapshot)
+    results: list[NativeFactualAssessmentResult | None] = []
+    for candidate_source_event_id, candidate_source_receipt in bindings:
+        # One genuine per-binding assembly clock. A broken owner clock stays a
+        # typed refusal instead of a silently unavailable binding.
+        now = _assembly_clock()
+        try:
+            relation, market_session = _match_candidate_relation(
+                detached["events"],
+                detached["suppressions"],
+                candidate_source_event_id=candidate_source_event_id,
+                candidate_source_receipt=candidate_source_receipt,
+            )
+            episode, episode_id, security_id = _native_episode_for_relation(
+                detached["episodes"], relation
+            )
+            results.append(
+                _assemble_native_factual_assessment_result(
+                    snapshot=native_snapshot,
+                    generation_id=generation_id,
+                    episode=episode,
+                    episode_id=episode_id,
+                    security_id=security_id,
+                    relation=relation,
+                    candidate_source_event_id=candidate_source_event_id,
+                    candidate_source_receipt=candidate_source_receipt,
+                    market_session=market_session,
+                    now=now,
+                    turn_watch=turn_watch,
+                )
+            )
+        except CandidateStateContractError:
+            results.append(None)
+    final = _validated_native_generation(snapshot)
+    for field, frozen in detached.items():
+        if _owner_canonical_json(getattr(final, field)) != (
+            _owner_canonical_json(frozen)
+        ):
+            raise CandidateStateContractError(
+                "native generation changed during the batch assembly"
+            )
+    return tuple(results)
 
 
 def validate_native_factual_assessment(payload: Mapping[str, object]) -> None:
