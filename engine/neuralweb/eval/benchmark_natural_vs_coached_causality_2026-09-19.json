@@ -1,0 +1,44 @@
+{
+  "benchmark_id": "natural-vs-coached-causal-reasoning-2026-09-19",
+  "frozen": true,
+  "source": "Synthetic method fixture derived from production Mastermind AI analytical-regression observations on 2026-09-19; no claim that these prices describe a historical NVDA session.",
+  "lane": "fast",
+  "lang": "en",
+  "packet_digest_fixture": "[FROZEN ANALYTICAL BENCHMARK — synthetic; no live tools]\nREGULAR SESSION: NVDA +3.0% · SOXX +1.8% · QQQ +1.0% · AVGO +2.0% · AMD +1.6%\nRISK-ON TAPE: BTC +5.0% · COIN +7.5% · ARKK +2.4% · DXY −0.4% · 10Y yield +2bp\nEVENTS BEFORE CLOSE: the supplied event feed contains no material NVDA-specific company catalyst.\nAFTER CLOSE: one NVDA-partner headline is stamped 16:20 ET and therefore cannot explain the regular-session move.\nMISSING: no timestamped intraday NVDA/SOXX/BTC path and no single-name flow/volume attribution.",
+  "cases": [
+    {
+      "case_id": "natural",
+      "question_en": "Why did NVDA move today?",
+      "stance_required": false,
+      "expected_properties": [
+        {"tag": "fact_boundary", "check": "starts from the supplied tape and the absence of a pre-close NVDA catalyst; does not invent a headline"},
+        {"tag": "competing_mechanisms", "check": "keeps semiconductor/AI leadership and broader risk-on participation as at least two live candidate mechanisms until evidence separates them"},
+        {"tag": "support_and_contradiction", "check": "names evidence supporting and weakening each candidate rather than listing two stories without testing them"},
+        {"tag": "causal_strength", "check": "uses co-movement/consistency language and does not claim either candidate caused the move from correlation alone"},
+        {"tag": "timing", "check": "rejects the 16:20 ET after-close item as a cause of the regular-session move"},
+        {"tag": "discriminator", "check": "names the missing timestamped intraday or sector-relative/flow observation that would separate the candidates"},
+        {"tag": "unresolved_is_valid", "check": "may conclude that the dominant cause is unresolved when the supplied evidence cannot distinguish it"},
+        {"tag": "no_forced_action", "check": "does not invent a buy/sell/hold call merely because the user asked why the stock moved"},
+        {"tag": "user_numbers", "check": "uses relevant supplied numbers rather than replacing the packet with generic market commentary"}
+      ],
+      "gold_standard_sentence": "NVDA moved with both a stronger semiconductor complex and a broader risk-on tape; this packet does not establish which mechanism dominated, so timestamped intraday and sector-relative flow is the missing discriminator."
+    },
+    {
+      "case_id": "coached",
+      "question_en": "Why did NVDA move today? Give me the two strongest competing explanations, the evidence for and against each, and the one missing observation that would separate them.",
+      "stance_required": false,
+      "expected_properties": [
+        {"tag": "fact_boundary", "check": "starts from the supplied tape and the absence of a pre-close NVDA catalyst; does not invent a headline"},
+        {"tag": "competing_mechanisms", "check": "keeps semiconductor/AI leadership and broader risk-on participation as two live candidate mechanisms"},
+        {"tag": "support_and_contradiction", "check": "names evidence supporting and weakening each candidate"},
+        {"tag": "causal_strength", "check": "does not upgrade correlation into a definitive causal claim"},
+        {"tag": "timing", "check": "rejects the 16:20 ET after-close item as a cause of the regular-session move"},
+        {"tag": "discriminator", "check": "names timestamped intraday or sector-relative/flow evidence as the next discriminator"},
+        {"tag": "unresolved_is_valid", "check": "does not force one winner when the packet cannot distinguish it"},
+        {"tag": "no_forced_action", "check": "does not invent a trade action for an explanatory question"},
+        {"tag": "user_numbers", "check": "uses relevant supplied numbers"}
+      ],
+      "gold_standard_sentence": "NVDA moved with both a stronger semiconductor complex and a broader risk-on tape; this packet does not establish which mechanism dominated, so timestamped intraday and sector-relative flow is the missing discriminator."
+    }
+  ]
+}
