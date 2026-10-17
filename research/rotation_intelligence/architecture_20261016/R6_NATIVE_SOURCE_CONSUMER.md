@@ -34,7 +34,7 @@ A passing 253-session projection is still hindsight-only: one 2026 capture of ea
 
 Committed Git blob equality was checked against executed local bytes:
 - Implementation git blob 54f8f71ccd32e774e072b35c051eeda6d269af57, SHA-256 6234e7daf91af96a8a37e0d4d1122a26161efb2668adc0d0c8ec6e5d300e4c0b.
-- Test git blob 8af3f50f87720b1437cf958c645b1fa652d196f8, SHA-256 0afa9305c78a36c84d5af87e6aec90c0ecae5e707073bcab47ee27d40f0387be.
+- Test git blob 3310731d8bd9b7f01c5be2d491763a65da4ad06e, SHA-256 23e780828622686a8366cdf713c8a2fe94313f3db0fa39af67874364359b2f95.
 
 ## Honest delivery boundary
 
