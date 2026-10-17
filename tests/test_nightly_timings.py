@@ -51,6 +51,17 @@ DAILY = ROOT / ".github" / "workflows" / "daily.yml"
 ASIA = ROOT / ".github" / "workflows" / "asia-close.yml"
 FINISH_SH = ROOT / "scripts" / "ci" / "nightly_timings_finish.sh"
 
+# AI Daily Brief reachability guard. Production run 34957877090 spent more than
+# three hours in this barrier and exhausted the engine job before the canonical
+# master_brain -> build_aibrief tail. Keep the failure domain narrow: bound this
+# one upstream band, make its timeout non-fatal, and retain the canonical tail.
+REGIONAL_BUILDER_STEP_NAME = (
+    "regional + desk builders (parallelised — independent clusters, barrier before the hub)"
+)
+MASTER_BRAIN_STEP_NAME = "master brain (multi-lens LLM synthesis; default-off, resilient)"
+AI_BRIEF_STEP_NAME = "AI Daily Brief page (build_aibrief)"
+MAX_REGIONAL_BUILDER_MINUTES = 50
+
 #: Every workflow whose self-hosted jobs carry the W2 wiring. The wiring tests are
 #: parametrised over this tuple rather than duplicated per file, so a new nightly
 #: lane opts in by adding its path here — and until it does, its jobs are simply
@@ -775,6 +786,49 @@ def _jobs(workflow: Path) -> dict:
 
 def _daily_jobs() -> dict:
     return _jobs(DAILY)
+
+
+def _engine_steps() -> list[dict]:
+    return _daily_jobs()["engine"]["steps"]
+
+
+def _named_step(steps: list[dict], name: str) -> dict:
+    matches = [step for step in steps if step.get("name") == name]
+    assert len(matches) == 1, f"expected exactly one {name!r} step, found {len(matches)}"
+    return matches[0]
+
+
+def test_ai_brief_regional_barrier_is_bounded_and_non_fatal() -> None:
+    """One wedged regional/desk builder must not starve the canonical Brief tail."""
+    step = _named_step(_engine_steps(), REGIONAL_BUILDER_STEP_NAME)
+    timeout = step.get("timeout-minutes")
+    assert isinstance(timeout, int), "regional builder barrier must declare timeout-minutes"
+    assert 1 <= timeout <= MAX_REGIONAL_BUILDER_MINUTES, (
+        f"regional barrier timeout={timeout}m can starve the AI Brief tail again; "
+        f"keep it <= {MAX_REGIONAL_BUILDER_MINUTES}m or re-budget from measured runs"
+    )
+    assert step.get("continue-on-error") is True, (
+        "regional barrier timeout must be non-fatal so master_brain/build_aibrief still run"
+    )
+
+
+def test_ai_brief_tail_remains_after_regional_barrier() -> None:
+    steps = _engine_steps()
+    names = [step.get("name", "") for step in steps]
+    regional = names.index(REGIONAL_BUILDER_STEP_NAME)
+    master = names.index(MASTER_BRAIN_STEP_NAME)
+    brief = names.index(AI_BRIEF_STEP_NAME)
+    assert regional < master < brief, (
+        "canonical order must remain regional inputs -> master_brain synthesis -> AI Brief render"
+    )
+
+
+def test_ai_brief_tail_keeps_canonical_commands() -> None:
+    steps = _engine_steps()
+    master = _named_step(steps, MASTER_BRAIN_STEP_NAME)
+    brief = _named_step(steps, AI_BRIEF_STEP_NAME)
+    assert "python -m engine.master_brain" in (master.get("run") or "")
+    assert "python -m scripts.build_aibrief" in (brief.get("run") or "")
 
 
 def _has_checkout(spec: dict) -> bool:
