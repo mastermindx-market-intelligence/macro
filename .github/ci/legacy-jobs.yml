@@ -12176,6 +12176,7 @@ jobs:
     paths:
       - agentos/**
       - research/MASTERMIND_AGENT_OS_STATE_SCHEMA.md
+      - research/MASTERMIND_AGENT_HANDOFF_PROTOCOL.md
       - config/compiled_kill_registry.yml
       - config/context_index.yml
       - config/mastermind_programs.yml
