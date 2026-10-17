@@ -103,6 +103,8 @@ SOURCES: tuple[SourceSpec, ...] = (
         event_scoped=True,
         actual_parser="cpi",
         feed_kind="bls_cpi",
+        follow_entry_link=True,
+        actual_parser_version=2,
     ),
     SourceSpec(
         "bls_ppi",
@@ -663,6 +665,87 @@ def parse_fomc_actual(body: bytes) -> dict[str, Any] | None:
     }
 
 
+def _cpi_detail_matches_release(
+    actual: dict[str, Any], event: dict[str, Any], document: dict[str, Any]
+) -> bool:
+    """Qualify new CPI detail facts before they enter the existing display row."""
+    try:
+        day = datetime.strptime(str(event.get("date") or ""), "%Y-%m-%d")
+        parsed = urlparse(str(document.get("source_url") or ""))
+    except (TypeError, ValueError):
+        return False
+    if (
+        document.get("binding_kind") != "detail_document"
+        or parsed.scheme != "https"
+        or parsed.hostname not in {"www.bls.gov", "bls.gov"}
+        or parsed.username is not None
+        or parsed.password is not None
+        or parsed.path != f"/news.release/archives/cpi_{day:%m%d%Y}.htm"
+    ):
+        return False
+    period = str(actual.get("reference_period") or "").strip()
+    expected = str(document.get("reference_period") or "").strip()
+    if not period or (expected and period.casefold() != expected.casefold()):
+        return False
+    metrics = actual.get("metrics")
+    required = {"cpi_headline_mom", "cpi_core_mom", "cpi_headline_yoy", "cpi_core_yoy"}
+    if not isinstance(metrics, list) or len(metrics) != len(required):
+        return False
+    if any(not isinstance(metric, dict) for metric in metrics):
+        return False
+    return (
+        {metric.get("metric_id") for metric in metrics} == required
+        and all(metric.get("unit") == "percent" and
+                str(metric.get("period") or "").strip().casefold() == period.casefold()
+                for metric in metrics)
+    )
+
+
+def _extraction_attempt(
+    previous: dict[str, Any], *, actual: dict[str, Any] | None,
+    now: datetime, error: str | None = None,
+    parser: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Display diagnostics on the existing publication, not a second job queue."""
+    succeeded = bool(actual)
+    return {
+        "status": "verified" if succeeded else ("source_unavailable" if error else "incomplete"),
+        "last_attempt_at": now.isoformat(),
+        "attempted_parser": dict(parser or {}),
+        "last_success_at": now.isoformat() if succeeded else previous.get("last_success_at"),
+        "error_code": None if succeeded else (error or "required_metrics_unavailable"),
+    }
+
+
+def _parser_upgrade_keys(
+    events: list[dict[str, Any]], publications: dict[str, Any]
+) -> set[str]:
+    """One ordinary-tick retry for unresolved rows after a parser deployment.
+
+    A failed fetch records the attempted version too, so this does not turn an
+    upgrade into an unbounded fast retry loop. Verified keep-first facts are not
+    revisited here; their existing governed repair path is unchanged.
+    """
+    keys: set[str] = set()
+    for event in events:
+        publication = _publication_for(publications, event)
+        if not publication or publication.get("data_ready") is True:
+            continue
+        extraction = publication.get("extraction") or {}
+        attempted = extraction.get("attempted_parser") if isinstance(extraction, dict) else None
+        previous = attempted or publication.get("parser") or {}
+        previous = previous if isinstance(previous, dict) else {}
+        for spec in SOURCES:
+            if not spec.actual_parser or event.get("type") not in spec.event_types:
+                continue
+            if (
+                previous.get("name") != spec.actual_parser
+                or previous.get("version") != spec.actual_parser_version
+            ):
+                keys.add(_event_key(event))
+    return keys
+
+
 def _parse_actual(spec: SourceSpec, body: bytes) -> dict[str, Any] | None:
     if spec.actual_parser == "fomc":
         return parse_fomc_actual(body)
@@ -1094,10 +1177,12 @@ def detect(
     periodic_retry = (
         int(now.timestamp() // 60) % UNRESOLVED_RETRY_INTERVAL_MIN == 0
     )
-    if periodic_retry or new_coverage_types:
+    parser_upgrade_keys = _parser_upgrade_keys(events, publications)
+    if periodic_retry or new_coverage_types or parser_upgrade_keys:
         due_keys = {_event_key(event) for event in due}
         for event in events:
-            if not periodic_retry and event.get("type") not in new_coverage_types:
+            if (not periodic_retry and event.get("type") not in new_coverage_types
+                    and _event_key(event) not in parser_upgrade_keys):
                 continue
             event_key = _event_key(event)
             publication = _publication_for(publications, event)
@@ -1281,6 +1366,14 @@ def detect(
                         and document.get("binding_kind") != "detail_document"
                         else parsed_actual
                     )
+                    if (
+                        actual and resolved.actual_parser == "cpi"
+                        and resolved.follow_entry_link
+                        and not _cpi_detail_matches_release(actual, event, document)
+                    ):
+                        actual = None
+                        detail_error = "CPIDocumentBindingMismatch"
+                        detail_errors.append(detail_error)
                     primary_sha = str(result.get("fingerprint") or "").lower()
                     current_document_sha = str(
                         document.get("fingerprint") or ""
@@ -1406,10 +1499,15 @@ def detect(
                                 "and forward-ledger scoring reconcile nightly."
                                 if has_verified_actual
                                 else "Official publication detected; verified values "
-                                "are still being extracted. Canonical scoring "
+                                "are unavailable; see extraction status. Canonical scoring "
                                 "reconciles nightly."
                             ),
                         }
+                    )
+                    publication["extraction"] = _extraction_attempt(
+                        dict(publication.get("extraction") or {}),
+                        actual=actual, now=now, error=detail_error,
+                        parser={"name": resolved.actual_parser, "version": resolved.actual_parser_version},
                     )
                     if resolved.actual_parser:
                         publication["parser"] = {
@@ -1459,6 +1557,15 @@ def detect(
                     }
                 )
             except Exception as exc:  # noqa: BLE001 - source failure is display health
+                for failed_event in scoped_matching:
+                    failed_publication = _publication_for(publications, failed_event)
+                    if failed_publication:
+                        failed_publication["extraction"] = _extraction_attempt(
+                            dict(failed_publication.get("extraction") or {}),
+                            actual=None, now=now, error=type(exc).__name__,
+                            parser={"name": resolved.actual_parser, "version": resolved.actual_parser_version},
+                        )
+                        publications[_event_key(failed_event)] = failed_publication
                 source_state[state_key] = _fail_source_attempt(
                     attempt,
                     now=now,

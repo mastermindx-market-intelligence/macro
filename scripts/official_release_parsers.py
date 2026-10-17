@@ -516,67 +516,156 @@ def _metric(
     }
 
 
+def _cpi_report_values(text: str) -> dict[str, Any] | None:
+    """Parse the dated CPI report, keeping target, month and adjustment separate.
+
+    This path is deliberately restricted to the official report heading. Legacy
+    Atom-entry shorthand remains with its existing parser below. Missing or
+    conflicting complete-document metrics never fall back to looser feed rules.
+    """
+    month_names = "|".join(_MONTHS)
+    headings = list(re.finditer(
+        rf"\bCONSUMER PRICE INDEX\s*-\s*({month_names})\s+((?:19|20)\d{{2}})\b",
+        text, re.IGNORECASE,
+    ))
+    if not headings:
+        return None
+    periods = {f"{m.group(1).title()} {m.group(2)}" for m in headings}
+    if len(periods) != 1:
+        return None
+    period = periods.pop()
+    embedded = _embedded_reference_period(text)
+    if embedded and embedded.lower() != period.lower():
+        return None
+    month = period.split()[0].lower()
+    # Do not use navigation snippets or another report preceding the heading.
+    report = text[headings[0].end():]
+    report = re.split(r"\bTechnical Note\b", report, maxsplit=1, flags=re.IGNORECASE)[0]
+    label = (
+        r"(?P<core>index for all items less food and energy|"
+        r"all items less food and energy index)|"
+        r"(?P<head>Consumer Price Index for All Urban Consumers(?:\s*\(CPI-U\))?|"
+        r"all items index|index for all items(?!\s+less))"
+    )
+    statement = re.compile(
+        rf"\b(?:{label})\s+(?:was\s+(?=up\b|down\b))?"
+        rf"(?P<verb>up|down|{_CHANGE_WORDS})\b"
+        r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?)\s+percent\b)?",
+        re.IGNORECASE,
+    )
+    annual = re.compile(
+        r"^\s*(?:over\s+(?:the\s+)?(?:year|last year|"
+        r"(?:last|past)\s+12\s+months)|"
+        r"for\s+(?:the\s+)?12\s+months\s+(?:ending|ended))\b",
+        re.IGNORECASE,
+    )
+    preceding_annual = re.compile(
+        r"\bover\s+the\s+(?:last|past)\s+12\s+months,?\s+(?:the\s+)?$",
+        re.IGNORECASE,
+    )
+    found: dict[str, set[float]] = {
+        key: set() for key in ("headline_mom", "core_mom", "headline_yoy", "core_yoy")
+    }
+    for match in statement.finditer(report):
+        value = _signed_change(match.group("verb"), match.group("value"))
+        if value is None:
+            continue
+        # A period followed by whitespace is a sentence break, unlike a decimal.
+        tail = re.split(r"\.(?:\s|$)", report[match.end():match.end() + 180], maxsplit=1)[0]
+        prefix = report[max(0, match.start() - 80):match.start()]
+        is_annual = bool(annual.match(tail) or preceding_annual.search(prefix))
+        target = "core" if match.group("core") else "headline"
+        if is_annual:
+            ending_month = re.search(rf"\b(?:ending|ended)(?:\s+in)?\s+({month_names})\b", tail, re.IGNORECASE)
+            if ending_month and ending_month.group(1).lower() != month:
+                continue
+            found[target + "_yoy"].add(value)
+            continue
+        # Stop before previous-month explanations; those are not current values.
+        context = re.split(r",|;|\bafter\b|\bfollowing\b", tail, maxsplit=1, flags=re.IGNORECASE)[0]
+        in_month = re.search(rf"\bin\s+({month_names})\b", context, re.IGNORECASE)
+        if not in_month or in_month.group(1).lower() != month:
+            continue
+        if re.search(r"\bnot seasonally adjusted\b|\b(?:before|prior to) seasonal adjustment\b|\(NSA\)", context, re.IGNORECASE):
+            continue
+        if target == "headline" and not re.search(r"\bseasonally adjusted\b|\(SA\)", context, re.IGNORECASE):
+            continue
+        found[target + "_mom"].add(value)
+    if any(len(values) != 1 for values in found.values()):
+        return None
+    return {**{key: next(iter(values)) for key, values in found.items()}, "reference_period": period}
+
+
 def parse_cpi_actual(body: bytes) -> dict[str, Any] | None:
     """Parse headline and core CPI monthly/yearly changes from a BLS release."""
     text = _html_text(body)
-    headline_mom = _change_after(
-        text, r"Consumer Price Index for All Urban Consumers"
-    )
-    headline_yoy_match = re.search(
-        rf"(?:Consumer Price Index for All Urban Consumers|the index for all items)"
-        rf".{{0,180}}?\b(?P<verb>{_CHANGE_WORDS})\b"
-        r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent"
-        r"\s+over the last 12 months",
-        text,
-        flags=re.IGNORECASE,
-    )
-    headline_yoy = (
-        _signed_change(
-            headline_yoy_match.group("verb"), headline_yoy_match.group("value")
+    is_report = bool(re.search(r"\bCONSUMER PRICE INDEX\s*-\s*(?:" + "|".join(_MONTHS) + r")\s+(?:19|20)\d{2}\b", text, re.IGNORECASE))
+    if is_report:
+        values = _cpi_report_values(text)
+        if values is None:
+            return None
+        headline_mom, core_mom = values["headline_mom"], values["core_mom"]
+        headline_yoy, core_yoy = values["headline_yoy"], values["core_yoy"]
+        period = values["reference_period"]
+    else:
+        headline_mom = _change_after(
+            text, r"Consumer Price Index for All Urban Consumers"
         )
-        if headline_yoy_match
-        else None
-    )
-    core_match = re.search(
-        r"(?:the )?index for all items less food and energy"
-        rf"\s+(?P<verb>{_CHANGE_WORDS})"
-        r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent?"
-        r".{0,100}?(?:\(SA\)|seasonally adjusted|;)",
-        text,
-        flags=re.IGNORECASE,
-    )
-    if not core_match:
-        core_match = re.search(
-            r"(?:the )?index for all items less food and energy"
-            rf"\s+(?P<verb>{_CHANGE_WORDS})"
-            r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*"
-            r"(?:percent)?\s+in\s+[A-Z][a-z]+",
+        headline_yoy_match = re.search(
+            rf"(?:Consumer Price Index for All Urban Consumers|the index for all items)"
+            rf".{{0,180}}?\b(?P<verb>{_CHANGE_WORDS})\b"
+            r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent"
+            r"\s+over the last 12 months",
             text,
             flags=re.IGNORECASE,
         )
-    core_mom = (
-        _signed_change(core_match.group("verb"), core_match.group("value"))
-        if core_match
-        else None
-    )
-    core_yoy_match = re.search(
-        r"(?:the )?index for all items less food and energy"
-        r".{0,180}?"
-        rf"\b(?P<verb>up|down|{_CHANGE_WORDS})\b"
-        r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent"
-        r"\s+over the year",
-        text,
-        flags=re.IGNORECASE,
-    )
-    core_yoy = (
-        _signed_change(core_yoy_match.group("verb"), core_yoy_match.group("value"))
-        if core_yoy_match
-        else None
-    )
-    required = (headline_mom, headline_yoy, core_mom, core_yoy)
-    if any(value is None for value in required):
-        return None
-    period = _embedded_reference_period(text) or _period_from_month_text(text, None)
+        headline_yoy = (
+            _signed_change(
+                headline_yoy_match.group("verb"), headline_yoy_match.group("value")
+            )
+            if headline_yoy_match
+            else None
+        )
+        core_match = re.search(
+            r"(?:the )?index for all items less food and energy"
+            rf"\s+(?P<verb>{_CHANGE_WORDS})"
+            r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent?"
+            r".{0,100}?(?:\(SA\)|seasonally adjusted|;)",
+            text,
+            flags=re.IGNORECASE,
+        )
+        if not core_match:
+            core_match = re.search(
+                r"(?:the )?index for all items less food and energy"
+                rf"\s+(?P<verb>{_CHANGE_WORDS})"
+                r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*"
+                r"(?:percent)?\s+in\s+[A-Z][a-z]+",
+                text,
+                flags=re.IGNORECASE,
+            )
+        core_mom = (
+            _signed_change(core_match.group("verb"), core_match.group("value"))
+            if core_match
+            else None
+        )
+        core_yoy_match = re.search(
+            r"(?:the )?index for all items less food and energy"
+            r".{0,180}?"
+            rf"\b(?P<verb>up|down|{_CHANGE_WORDS})\b"
+            r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent"
+            r"\s+over the year",
+            text,
+            flags=re.IGNORECASE,
+        )
+        core_yoy = (
+            _signed_change(core_yoy_match.group("verb"), core_yoy_match.group("value"))
+            if core_yoy_match
+            else None
+        )
+        required = (headline_mom, headline_yoy, core_mom, core_yoy)
+        if any(value is None for value in required):
+            return None
+        period = _embedded_reference_period(text) or _period_from_month_text(text, None)
     headline_en = (
         f"CPI {_format_percent(headline_mom)} m/m; "
         f"core {_format_percent(core_mom)}"
