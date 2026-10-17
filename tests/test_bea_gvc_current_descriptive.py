@@ -323,6 +323,65 @@ def test_annual_sums_and_changes_refuse_json_precision_loss():
     assert check(rows=rows)["reason"] == "ANNUAL_CHANGE_EXCEEDS_JSON_SAFE_INTEGER"
 
 
+def test_machine_packet_serializer_rejects_authority_and_status_forgery():
+    valid = check()
+    assert gmi.candidate_packet_bytes(valid)
+    for change in (
+        {"status": "DESCRIPTIVE"},
+        {"reason": "NATIVE_SOURCE_PRODUCED"},
+        {"authority_ceiling": "published_current_source"},
+        {"may_rank": True},
+        {"may_trade": True},
+        {"historical_pit_eligible": True},
+        {"owner_digest_is_not_authenticated_here": False},
+        {"annual_comparison_basis": "AS_KNOWN_AT_YEAR_END"},
+        {"named_company_relationship": True},
+        {"canonical_security_id": "SEC:US-MU"},
+        {"unknown_secret": "accidentally-forwarded"},
+    ):
+        with pytest.raises(gmi.BEADescriptiveRefused):
+            gmi.candidate_packet_bytes({**valid, **change})
+
+
+def test_machine_packet_serializer_revalidates_annual_math_and_labels():
+    from copy import deepcopy
+    source = check()
+    bad = deepcopy(source)
+    bad["annual_descriptive"][1]["year_over_year_change_million_USD"][
+        "world_import_million_USD"] = 9
+    with pytest.raises(gmi.BEADescriptiveRefused):
+        gmi.candidate_packet_bytes(bad)
+    bad = deepcopy(source)
+    bad["annual_descriptive"][0]["canada_import_million_USD"] = 3
+    with pytest.raises(gmi.BEADescriptiveRefused):
+        gmi.candidate_packet_bytes(bad)
+    bad = deepcopy(source)
+    bad["annual_descriptive"][0]["quality"]["rounding_residual_commodities"] = 140
+    with pytest.raises(gmi.BEADescriptiveRefused):
+        gmi.candidate_packet_bytes(bad)
+    bad = deepcopy(source)
+    bad["industry_display_name_state"] = "SOURCE_LABELS_VARY_ACROSS_YEARS"
+    with pytest.raises(gmi.BEADescriptiveRefused):
+        gmi.candidate_packet_bytes(bad)
+
+
+def test_machine_packet_serializer_never_exposes_unavailable_data():
+    unavailable = gmi.current_industry_candidate(
+        fake_registry(), industry_code_exact="5241X")
+    assert json.loads(gmi.candidate_packet_bytes(unavailable)) == unavailable
+    for change in (
+        {"status": "CANDIDATE_NOT_PUBLISHED"},
+        {"reason": "DATA_NOW_READY_TO_SERVE"},
+        {"source_generation_id": GEN},
+        {"rows_examined": 1},
+        {"annual_descriptive": [{"accounting_year": 2017, "trade": True}]},
+        {"native_ingested_at": NATIVE_UTC},
+        {"private_path": "/retained/originals.json"},
+    ):
+        with pytest.raises(gmi.BEADescriptiveRefused):
+            gmi.candidate_packet_bytes({**unavailable, **change})
+
+
 def test_source_industry_names_are_preserved_without_silent_aliases():
     packet = check()
     label = "Insurance carriers, except direct life"

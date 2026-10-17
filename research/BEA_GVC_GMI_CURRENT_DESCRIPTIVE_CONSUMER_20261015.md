@@ -103,6 +103,49 @@ before the source change and passed afterward; the amended local suite
 completed **15 tests**. Product/admission status remains
 `CANDIDATE_NOT_PUBLISHED` under the same source gate and rights decision.
 
+## Authenticated application availability boundary — October 17
+
+The incumbent Macro FastAPI application now includes an additive
+`GET /api/gmi/bea/industry/{industry_code}` endpoint. It reuses only the
+existing `require_site_full_user` dependency (which uses the existing
+Supabase `require_user` identity resolution and `enforce_site_full` site
+entitlement), plus `lib.dataos.registry.load_registry`; it does **not**
+create a second auth, rights, source-state or cache plane. The handler checks
+canonical registry contracts and rights but intentionally has no
+native original-byte reader binding. Its only data result is a **503 typed
+UNAVAILABLE packet**, with `private, no-store`. If the canonical registry
+cannot be loaded it responds 503 with a coarsened source error; unsafe source
+code is 422; unauthenticated requests 401; users refused by the existing
+paid gate 403. It refuses unsafe exact source codes **before the registry
+read**. It never returns annual rows, even with a synthetic test that bypasses
+the registry status gate: owner-bound original bytes are still absent.
+The route is source
+code on an unmerged draft branch; no deployed browser/session proof exists.
+
+The `candidate_packet_bytes` helper now validates two **closed** output
+shapes. A typed unavailability cannot carry source rows, a generation, native
+clock or hidden additional fields, and must use the closed source refusal
+vocabulary. A candidate must remain `CANDIDATE_NOT_PUBLISHED`, preserve
+non-trading/non-ranking and historic-known-at limits, exact-source labels,
+per-year signed aggregate accounting and year-over-year values, and all
+retained source hash/metadata fields. Forged `DESCRIPTIVE`, `may_rank`,
+`may_trade`, `historical_pit_eligible`, hidden secrets, private file paths,
+altered annual values and label/availability leakage fail closed.
+This is **structural integrity, NOT cryptographic source authentication**.
+It does not convert a source-candidate digest into a production entitlement.
+
+Test-first verification: the new machine serialization tests initially
+failed on the old helper; four initial API tests failed with 404 because the
+route did not exist, and a later unsafe-code test first returned 503 rather
+than the required 422. After correction the combined source/HTTP/paywall/cache
+contract suites passed **35 tests** locally, including tests for canonical
+payload bytes, paid-site rejection, simulated source-status promotion still
+returning no data, coarsened filesystem errors, and invalid codes rejected
+before any registry read. Shared application/CI packing and exact-head hosted
+CI remain separate gates. No original private BEA response was opened,
+previously denied access/producer-string edit replayed, source installed,
+PR merged or deployment attempted.
+
 ## Production remains HELD
 
 Real acceptance still requires lawful original 72-response L0 validation, source industry axis resolution, accepted 5241X/5241XX mapping or explicit unresolved handling, installed L0/L1 UTC ingest/revision/correction chain and registry PRODUCED promotion by the current Data OS owner. Existing app authentication and entitlement then must be proven alongside same-generation browser/API descriptive results. This candidate is not a release, approval, producer or new control plane.

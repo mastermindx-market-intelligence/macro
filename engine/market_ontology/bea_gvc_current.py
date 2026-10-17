@@ -43,6 +43,11 @@ SOURCE_NAMESPACE = "BEA_APP157_MAY2026_EXACT"
 AUTHORITY = "internal_descriptive_candidate_only"
 
 
+def is_exact_source_industry_code(value: object) -> bool:
+    """One exact publisher-code grammar for the GMI projection and host route."""
+    return type(value) is str and bool(_CODE.fullmatch(value))
+
+
 class BEADescriptiveRefused(ValueError):
     """Malformed trusted input; never leak data from a partial source."""
 
@@ -360,14 +365,144 @@ def current_industry_candidate(
     }
 
 
-def candidate_packet_bytes(packet: Mapping[str, Any]) -> bytes:
-    """One deterministic serialization for prospective human and machine clients.
+_UNAVAILABLE_FIELDS = frozenset(_unavailable("SOURCE_UNREGISTERED", "5241X"))
+_UNAVAILABLE_REASONS = frozenset({
+    "DUPLICATE_SOURCE_REGISTRY_ID", "SOURCE_UNREGISTERED",
+    "SOURCE_CONTRACT_NOT_BOUND", "SOURCE_NOT_PRODUCED",
+    "SOURCE_SCOPE_UNQUALIFIED", "SOURCE_RIGHTS_NOT_GRANTED",
+    "OWNER_VIEW_BYTES_MISSING_OR_OVERSIZED", "SOURCE_VIEW_DIGEST_MISMATCH",
+    "VIEW_FRAMING_INVALID", "VIEW_ROW_FRAMING_INVALID", "VIEW_ROW_MALFORMED",
+    "SOURCE_GRAIN_OR_IDENTITY_INVALID", "SOURCE_INDUSTRY_NAME_INVALID",
+    "SOURCE_INDUSTRY_NAME_DRIFT_WITHIN_YEAR",
+    "SOURCE_PROVENANCE_OR_AUTHORITY_INVALID",
+    "ORIGINAL_RESPONSE_LINEAGE_UNBOUND",
+    "SOURCE_PRODUCER_OR_LINEAGE_DRIFT", "SOURCE_ANNUAL_RESPONSE_DRIFT",
+    "SOURCE_AMOUNTS_INVALID", "SOURCE_AMOUNT_EXCEEDS_JSON_SAFE_INTEGER",
+    "SOURCE_SIGNED_ACCOUNTING_INVALID", "SOURCE_QUALITY_FLAG_DRIFT",
+    "ANNUAL_AMOUNT_EXCEEDS_JSON_SAFE_INTEGER",
+    "ANNUAL_CHANGE_EXCEEDS_JSON_SAFE_INTEGER",
+    "INCOMPLETE_COMMODITY_YEARS", "COMMODITY_IDENTITY_DRIFT",
+})
+_CANDIDATE_FIELDS = frozenset({
+    "schema", "status", "reason", "authority_ceiling",
+    "may_publish", "may_rank", "may_trade", "industry_code_exact",
+    "industry_names_by_accounting_year", "industry_display_name",
+    "industry_display_name_state", "publisher_edition_date",
+    "publication_precision", "source_generation_id", "source_lineage_sha256",
+    "producer_code_sha256", "native_ingested_at", "rows_examined",
+    "annual_descriptive", "annual_comparison_basis", "attribution",
+    "measurement_class", "historical_pit_eligible",
+    "historical_availability_null_reason", "canonical_security_id",
+    "legacy_mapping_state", "owner_expected_view_sha256_claim",
+    "owner_digest_is_not_authenticated_here",
+})
+_ANNUAL_AMOUNT_FIELDS = _AMOUNT_FIELDS + ("region_rounding_difference_million_USD",)
+_ANNUAL_FIELDS = frozenset({
+    "accounting_year", "quality", "year_over_year_change_million_USD",
+    *_ANNUAL_AMOUNT_FIELDS,
+})
+_QUALITY_FIELDS = frozenset({
+    "nonpositive_world_commodities",
+    "negative_region_adjustment_commodities",
+    "rounding_residual_commodities",
+})
 
-    This never changes packet authority. A caller must reject may_publish=False,
-    including a well-formed CANDIDATE_NOT_PUBLISHED result.
+
+def candidate_packet_bytes(packet: Mapping[str, Any]) -> bytes:
+    """Serialize ONLY the closed nonpublic GMI candidate or refusal shape.
+
+    Structural checks prevent a caller from laundering a forged published state,
+    hidden extra fields or availability into a prospective machine packet.
+    This does not authenticate the caller, owner digest or native data custody.
     """
     if type(packet) is not dict or packet.get("schema") != SCHEMA:
         raise BEADescriptiveRefused("WRONG_PROJECTION_SCHEMA")
     if packet.get("may_publish") is not False:
         raise BEADescriptiveRefused("UNSUPPORTED_PUBLICATION_ESCALATION")
+    if (packet.get("authority_ceiling") != AUTHORITY
+            or packet.get("may_rank") is not False
+            or packet.get("may_trade") is not False
+            or packet.get("publisher_edition_date") != EDITION_DATE
+            or packet.get("publication_precision") != "DAY"
+            or type(packet.get("industry_code_exact")) is not str
+            or not _CODE.fullmatch(packet["industry_code_exact"])):
+        raise BEADescriptiveRefused("UNSUPPORTED_PACKET_AUTHORITY")
+    status = packet.get("status")
+    if status == "UNAVAILABLE":
+        if (set(packet) != _UNAVAILABLE_FIELDS
+                or packet.get("reason") not in _UNAVAILABLE_REASONS
+                or packet.get("source_generation_id") is not None
+                or packet.get("native_ingested_at") is not None
+                or type(packet.get("rows_examined")) is not int
+                or packet["rows_examined"] != 0
+                or packet.get("annual_descriptive") != []):
+            raise BEADescriptiveRefused("UNAVAILABLE_PACKET_MUST_NOT_CARRY_DATA")
+        return _payload(packet)
+    if status != "CANDIDATE_NOT_PUBLISHED" or set(packet) != _CANDIDATE_FIELDS:
+        raise BEADescriptiveRefused("UNKNOWN_OR_INCOMPLETE_PACKET_STATUS")
+    if (packet.get("reason") != "OWNER_AUTHENTICATION_AND_RUNTIME_RELEASE_UNPROVEN"
+            or packet.get("historical_pit_eligible") is not False
+            or packet.get("historical_availability_null_reason")
+            != "HISTORICAL_AVAILABILITY_UNVERIFIED"
+            or packet.get("owner_digest_is_not_authenticated_here") is not True
+            or packet.get("canonical_security_id") is not None
+            or packet.get("measurement_class")
+            != "IMPUTED_INDUSTRY_IMPORT_ALLOCATION_NOT_COMPANY_SUPPLY_CHAINS"
+            or packet.get("annual_comparison_basis")
+            != "RETROSPECTIVE_2026_VINTAGE_NOT_ORIGINAL_HISTORICAL_KNOWLEDGE"
+            or packet.get("attribution") != "Source: U.S. Bureau of Economic Analysis"
+            or packet.get("legacy_mapping_state") != (
+                "UNRESOLVED_5241X_VS_5241XX"
+                if packet["industry_code_exact"] == "5241X" else "NOT_APPLIED")
+            or type(packet.get("rows_examined")) is not int
+            or packet["rows_examined"] != len(YEARS) * 139):
+        raise BEADescriptiveRefused("CANDIDATE_PACKET_AUTHORITY_INVALID")
+    for field in ("source_generation_id", "source_lineage_sha256",
+                  "producer_code_sha256", "owner_expected_view_sha256_claim"):
+        _hex(packet.get(field), "CANDIDATE_PACKET_PROVENANCE_UNBOUND")
+    _clock(packet.get("native_ingested_at"))
+    names = packet.get("industry_names_by_accounting_year")
+    if (type(names) is not dict
+            or set(names) != {str(year) for year in YEARS}
+            or any(type(value) is not str or not value.strip() or len(value) > 256
+                   or any(ord(char) < 32 for char in value)
+                   for value in names.values())):
+        raise BEADescriptiveRefused("CANDIDATE_PACKET_INDUSTRY_LABEL_INVALID")
+    stable = len(set(names.values())) == 1
+    if (packet.get("industry_display_name_state") != (
+                "EXACT_SOURCE_LABEL_STABLE" if stable
+                else "SOURCE_LABELS_VARY_ACROSS_YEARS")
+            or packet.get("industry_display_name") != (
+                names[str(YEARS[0])] if stable else None)):
+        raise BEADescriptiveRefused("CANDIDATE_PACKET_LABEL_CONFLICT")
+    annual = packet.get("annual_descriptive")
+    if type(annual) is not list or len(annual) != len(YEARS):
+        raise BEADescriptiveRefused("CANDIDATE_PACKET_ANNUAL_SHAPE_INVALID")
+    prior: dict[str, int] | None = None
+    for year, row in zip(YEARS, annual):
+        if (type(row) is not dict or set(row) != _ANNUAL_FIELDS
+                or type(row.get("accounting_year")) is not int
+                or row["accounting_year"] != year):
+            raise BEADescriptiveRefused("CANDIDATE_PACKET_ANNUAL_SHAPE_INVALID")
+        amounts = {field: row.get(field) for field in _ANNUAL_AMOUNT_FIELDS}
+        if any(type(value) is not int or abs(value) > MAX_JSON_SAFE_INTEGER
+               for value in amounts.values()):
+            raise BEADescriptiveRefused("CANDIDATE_PACKET_ANNUAL_AMOUNT_INVALID")
+        if (amounts["world_import_million_USD"] - sum(
+                amounts[region + "_import_million_USD"] for region in REGIONS)
+                != amounts["region_rounding_difference_million_USD"]):
+            raise BEADescriptiveRefused("CANDIDATE_PACKET_SIGNED_ACCOUNTING_INVALID")
+        quality = row.get("quality")
+        if (type(quality) is not dict or set(quality) != _QUALITY_FIELDS
+                or any(type(value) is not int or not 0 <= value <= 139
+                       for value in quality.values())):
+            raise BEADescriptiveRefused("CANDIDATE_PACKET_QUALITY_INVALID")
+        difference = row.get("year_over_year_change_million_USD")
+        expected = None if prior is None else {
+            field: amounts[field] - prior[field] for field in _ANNUAL_AMOUNT_FIELDS
+        }
+        if difference != expected or (expected is not None and any(
+                abs(value) > MAX_JSON_SAFE_INTEGER for value in expected.values())):
+            raise BEADescriptiveRefused("CANDIDATE_PACKET_YEARLY_CHANGE_INVALID")
+        prior = amounts
     return _payload(packet)

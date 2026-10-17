@@ -1046,6 +1046,53 @@ def _user_display_name(user: dict) -> str | None:
     return " ".join(parts) or None
 
 
+@app.get("/api/gmi/bea/industry/{industry_code}")
+def gmi_bea_industry_current(
+    industry_code: str,
+    user: dict = Depends(require_site_full_user),
+) -> Response:
+    """Authenticated BEA GVC read *availability*, never unadmitted industry data.
+
+    The current Data OS owner alone qualifies original L0/L1 native bytes and
+    correction clocks. That source is not installed, so this route deliberately
+    exposes only an uncacheable typed UNAVAILABLE packet. A subsequent owner's
+    accepted native-reader binding is needed before any data-serving expansion.
+    """
+    from engine.market_ontology.bea_gvc_current import (
+        BEADescriptiveRefused, candidate_packet_bytes, current_industry_candidate,
+        is_exact_source_industry_code,
+    )
+    from lib.dataos.registry import load_registry
+
+    try:
+        # Source-code grammar is checked before attempting a registry read.
+        if not is_exact_source_industry_code(industry_code):
+            raise BEADescriptiveRefused("UNSAFE_EXACT_INDUSTRY_CODE")
+        # The canonical Data OS registry path is owned by lib/dataos/registry.py.
+        registry = load_registry()
+        packet = current_industry_candidate(
+            registry, industry_code_exact=industry_code,
+        )
+        if packet["status"] != "UNAVAILABLE":
+            # This endpoint has no owner-bound original-byte read capability.
+            # Never return a caller-forged "positive" candidate in a live API.
+            raise HTTPException(
+                503, detail={"error": "BEA_NATIVE_OWNER_READ_NOT_ADMITTED"})
+        payload = candidate_packet_bytes(packet)
+    except BEADescriptiveRefused:
+        raise HTTPException(422, detail={"error": "UNSAFE_EXACT_INDUSTRY_CODE"}) from None
+    except HTTPException:
+        raise
+    except Exception:
+        # Never leak filesystem/config/auth/provider diagnostics to the caller.
+        raise HTTPException(
+            503, detail={"error": "BEA_SOURCE_REGISTRY_UNAVAILABLE"}) from None
+    return Response(
+        content=payload, media_type="application/json", status_code=503,
+        headers={"Cache-Control": "private, no-store"},
+    )
+
+
 @app.get("/api/me")
 def me(user: dict = Depends(require_user)) -> dict:
     """Whoami + entitlement + chat budget.
