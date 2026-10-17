@@ -1,69 +1,68 @@
 # Sector and theme allocation intelligence — architecture and research
 
-Existing programme: `sector-rotation-intelligence`. Existing workstream: `LEADERSHIP-ROTATION-INTELLIGENCE`. Accountable principal for this supplement: Sol under the current Chairman commission. Carrier: Macro PR #9507, branch `sol/rotation-intelligence-architecture-20261016-c1`.
+Existing programme: `sector-rotation-intelligence`. Existing workstream: `LEADERSHIP-ROTATION-INTELLIGENCE`. Accountable principal: Sol under the current Chairman commission. Same carrier: Macro PR #9507, branch `sol/rotation-intelligence-architecture-20261016-c1`.
 
-## Latest source finding: reuse existing archives before acquiring again
+## Current result: R4 regime-estimation and uncertainty research
 
-**Read [EXISTING_ARCHIVE_REUSE_R3.md](EXISTING_ARCHIVE_REUSE_R3.md) first.** A bounded investigation of the already-produced Tiingo/Data OS source found **37 original receipts and 37 materialized views covering all thirteen required instruments**. All original receipts passed native receipt-identity validation; manifest references and Parquet-footer row counts agree. Only metadata, schemas and date statistics were read. No raw payload or numeric price/return/volume column was decoded.
+The source/consumer qualification remains the critical real-data dependency. In R4 a combined source/metadata-inspection call was explicitly blocked before dispatch. No requested source read or write is claimed from that operation; it was not split, retried through another tool or delegated. The cause is not established. This is separate from the preserved R1 final-review provider403. No platform-wide outage, new credentials requirement or session corruption is inferred.
 
-The eleven sectors and SPY have captured slices extending through October 15, 2026; BIL's inspected history ends October 9. Deep histories are already present for every required instrument. This does not establish uninterrupted coverage, correct market values, full output-byte integrity or compatible adjustment vintages. It does establish that a new whole-history acquisition must not be the automatic next action.
+An independent mathematical research lane is now complete: **54 fixed synthetic worlds with 12,000 replications each, four estimators, 216 analytical-risk checks and 20 passing reference tests**. Six intentionally broken variants failed their intended assertions. The complete published result grid was reproduced byte-for-byte on M2. This proves the declared diagnostic's behavior, not investment performance, fitted-model calibration or native scientific qualification.
 
-Current `config/dataset_registry.yml`, blob `ce492d349d91e73cdf962de8dc110aec96a2bfd5`, records `vendor.tiingo.raw.equity_eod` and `vendor.tiingo.research.eod` as PRODUCED. The research views retain research-only/noncanonical status; current source rules do not permit them to displace canonical Yahoo/Massive or become PIT evidence by flipping a local flag. Existing source records affirm Chairman-reported special Tiingo commercial/public rights, but actual product/use enrollment and source identity still need their proper existing-owner mapping. Do not restart generic contract procurement merely because provisional metadata says unverified.
+Start with:
 
-**Refined next source action:** qualify the retained thirteen-series evidence through the existing `read_research_view` / `read_research_history` boundary, resolve actual EOD consumer use, revision/coverage and the BIL gap, then acquire only an identified missing dependency if necessary. Never relabel Tiingo rows as Yahoo receipts or treat capture time as original historical release. This supersedes only the earlier assumption that a new bounded Yahoo warmup must come first; the study's completeness, timing and scientific restrictions remain.
+1. [REGIME_ESTIMATION_RESULTS_R4.md](REGIME_ESTIMATION_RESULTS_R4.md): results, adverse cases, verification, reviewed/rejected subagent claims and current source boundary.
+2. [REGIME_ESTIMATION_DESIGN_R4.md](REGIME_ESTIMATION_DESIGN_R4.md): exact Gaussian model, fixed grid, oracle assumptions and decision metrics, published before simulation.
+3. [regime_conditioning_r4.py](regime_conditioning_r4.py), [reference tests](test_regime_conditioning_r4.py), and [all 54 result cells](regime_conditioning_grid_r4.csv).
+4. [UNCERTAINTY_METHOD_REVIEW_R4.md](UNCERTAINTY_METHOD_REVIEW_R4.md): conditional-mean versus realized-outcome versus rank probabilities; version-sensitive CAP/EXPRESS evidence; 2026 asymmetric-selection and delayed-feedback methods with their actual assumptions.
 
-## R3 executable source-reader and baseline rehearsal
+### Material conclusions for the design
 
-The proposed study has a working **synthetic reference sequence from source availability through all five baseline choices to continuous post-cost wealth**. The existing reader's own targeted tests were also executed. No live reader, capture activation, trained predictor or investment permission is claimed.
+Hard regime cells can amplify noise when their effect is weak relative to their information support. Shrinkage may help under its assumptions, but lower average forecast error does not guarantee better top-three selection or policy value. Uniform shrinkage toward a common center leaves rankings unchanged; the equicorrelated joint transformation also preserves ranking in that special case. Wrong priors and reversed economic relationships remain adverse cases even for sophisticated covariance-aware models.
 
-[SOURCE_READER_REHEARSAL_R3.md](SOURCE_READER_REHEARSAL_R3.md) records the tests, bounded source contract and limits. Executable references: [allocation_rehearsal.py](allocation_rehearsal.py), [test_allocation_rehearsal.py](test_allocation_rehearsal.py), [check_rehearsal_mutations.py](check_rehearsal_mutations.py). Exact evidence: [rehearsal_verification_r3.json](rehearsal_verification_r3.json).
+The synthetic uncertainty example sharply separates P(conditional mean > 0) from P(realized future outcome > 0). Those are different probability targets, not two confidence formats. A future consumer must keep target, horizon, selection and uncertainty meaning explicit. No current score/rank/size permission or existing DNR restriction changes.
 
-- **35 reference tests pass**, locally and from published source on M2: thirteen-input completeness, 253-price warmup, 64-price return windows, late/ambiguous snapshots, no silent rewind, strict cash hurdle, missing decisions, drifted holdings, self-financing costs and liquidation.
-- **Eight deliberately broken variants are caught** by intended assertions, not unrelated import failures. This is author verification, not independent review or complete formal proof.
-- **46 original reader tests pass** on the unchanged source closure. The first isolated snapshot omitted the existing metric dependency; restoring that file resolved the failure without source/assertion edits.
-- **Twelve calendar/cutoff assertions pass** using the incumbent calendar and timezone conversion. Official holiday/early-close metadata was checked separately. The helper does not certify actual early-close times, and the synthetic clock fixtures are not UTC.
-- **Forty invented policy paths** cover two scenarios, five baselines and four costs. An adverse reversal is retained: the backward-looking bill hurdle can keep former leaders. No empirical performance is inferred.
+One new paid Fabric algebra consultation completed under the original Web root, with no source/network/production access. Its correct observations were independently checked, and material mathematical mistakes were rejected; it is **not blanket-accepted or a final package review**. All children are terminal; no watcher is active.
 
-The three new source files matched their executed hashes. Mutation results were byte-identical across observed Python versions. Raw path JSON was not byte-identical; a defined twelve-decimal semantic comparison matched schedules, choices and results. Numerical tolerance cannot weaken actual-source identity requirements.
+## Retained source discovery: reuse before acquiring again
 
-## R2 specification and evidence — retained
+[EXISTING_ARCHIVE_REUSE_R3.md](EXISTING_ARCHIVE_REUSE_R3.md) records the last successful metadata investigation: **37 original Tiingo/Data OS receipts and 37 materialized views cover the thirteen study instruments**. The native receipt-identity validator and metadata joins passed. That inspection did not decode raw/numeric payloads, verify full payload hashes, establish uninterrupted sessions or certify revision-consistent values.
 
-1. [TARGET_SCOPE_AND_BASELINES_R1.md](TARGET_SCOPE_AND_BASELINES_R1.md): eleven sector ETFs plus SPY/BIL; distinct from native seven-pair and failed member-stock constructions; as-known cutoff, next-close proxy, twenty-session blocks and five comparator definitions.
-2. [SOURCE_READINESS_AUDIT_R2.md](SOURCE_READINESS_AUDIT_R2.md): metadata-only inspection of 25 local Yahoo/flow files; short flow history and differing tails; default-off nine-sector capture. Its local-source findings stand, while R3 adds the previously uninspected existing Tiingo option.
-3. [POLICY_ACCOUNTING_SPEC_R1.md](POLICY_ACCOUNTING_SPEC_R1.md), [policy_accounting_witness.py](policy_accounting_witness.py), [policy_accounting_results.json](policy_accounting_results.json): self-financing cost equation, seven closed-form cases, 512 algebraic comparisons, 128 cost-monotonicity checks and eight invalid-input refusals. Reused unchanged in R3.
-4. [probe_broad_flow_contract.py](probe_broad_flow_contract.py), [broad_flow_probe_results.json](broad_flow_probe_results.json): fake-provider reproduction of market-price-in-NAV and retrieval/weekend indexing. A market-price timestamp is not a NAV date; actual downstream incidence remains unmeasured.
-5. [EXISTING_READER_INTEGRATION_R1.md](EXISTING_READER_INTEGRATION_R1.md): exact immutable/causal preparation interface and cohort/cadence/cutoff/lookback differences. One-month provider-return capture cannot supply the long prefix; full-cache substitution changes provenance.
+The twelve equity/SPY inputs have inspected slices through October 15, 2026; BIL ends October 9. Deep views exist for all thirteen. The registry records the EOD research sources as PRODUCED, but canonical identity, historical point-in-time availability and public consumer admission remain separate. Existing Chairman-reported special Tiingo commercial rights must not be replaced by an assumption that a new purchase is required; exact source/use mapping must likewise not be invented from provisional flags.
 
-R2 published scripts/results were reproduced on M2. Their unaffected evidence was not rerun to inflate counts.
+The selected next source route remains **qualify the existing native views and reader, resolve actual coverage/revisions/BIL gaps, acquire only a demonstrated missing dependency**. Do not relabel Tiingo as Yahoo, silently use a merged cache as original provider history, or rerun the refused R4 source-inspection operation. A new bounded warmup is not the automatic first step.
 
-## Original foundation — retained, not rewritten
+## R3 executable research reference — preserved
 
-- [ASSESSMENT.md](ASSESSMENT.md): original 44,909-byte report, 35-source register, unchanged SHA-256 `4ba6241675c3f3528706f7c859019dd8e6f2ce390bd31199e7a4254bf1e26c4c`.
-- [ARCHITECTURE.md](ARCHITECTURE.md): measurement, forecast, policy and stock/instrument expression; existing system boundaries and model ladder.
-- [DATA_CONTRACTS.md](DATA_CONTRACTS.md): availability, revisions, identities, group indices, return basis and allowed use.
-- [RESEARCH_DESIGN.md](RESEARCH_DESIGN.md): candidate economic targets, selection/dependence/multiplicity and qualification. Not canonical V3.
-- [NATIVE_PROTOCOL_CROSSWALK.md](NATIVE_PROTOCOL_CROSSWALK.md): seven-pair native H1/H2/H3 versus the broader allocation question; governs shorthand in earlier documents.
-- [LITERATURE.md](LITERATURE.md): sixteen primary-method entries with actual review depth and transfer limits.
-- [READINESS_AND_DELEGATION.md](READINESS_AND_DELEGATION.md): mechanism research, dependency sequence and six future implementation packets, not dispatches.
-- [REVIEW_AND_VERIFICATION.md](REVIEW_AND_VERIFICATION.md): original review dispositions, supplemented by R2/R3 evidence.
-- [synthetic_design_checks.py](synthetic_design_checks.py), [synthetic_design_results.json](synthetic_design_results.json): original mathematical/known-covariance examples, not native statistical or market qualification.
+[SOURCE_READER_REHEARSAL_R3.md](SOURCE_READER_REHEARSAL_R3.md) and [rehearsal_verification_r3.json](rehearsal_verification_r3.json) record the completed thirteen-input synthetic baseline path: availability and whole-vintage selection, five fixed baseline choices, twenty-session geometry, drifted holdings, costs and liquidation.
 
-## Preserved scope and current boundary
+The unchanged [allocation_rehearsal.py](allocation_rehearsal.py), [tests](test_allocation_rehearsal.py) and [mutation checks](check_rehearsal_mutations.py) have the retained 35-test/eight-mutation verification. The original incumbent prefix-reader suite has a separately recorded 46-pass result on unchanged source. The forty constructed policy paths retain a reversal in which backward-looking momentum and its cash hurdle keep former leaders. These are not market returns or proof of early transition detection.
 
-Track A is the original native Leadership Rotation repair with existing hypotheses, cohort, negative evidence and LR-W6/read gates. Track B is broader sector/industry/theme/cash research and needs its explicit population, information set, accounting and error budget through existing owners. Neither is a new evaluator or a way around held outcomes.
+Do not sum these different verification counts into a fabricated investment-validation total. Unchanged earlier scientific artifacts were not rerun in R4 merely to increase activity.
 
-The existing [workstream](../../../agentos/workstreams/WS-LEADERSHIP-ROTATION-INTELLIGENCE.md), Mastermind #1194, Macro #7646/#9035/#9134 and source writers remain intact. There is no replacement graph, dataset store, regime owner, publisher, registry, queue, watcher or memory plane. Existing bans on rotation×cycle-position confluence, RS-dispersion gating, connect-flow gating and LLM detection are not revoked.
+## R2 target, source and accounting — preserved
 
-The native Tiingo reader permits qualified inspection/explicitly acknowledged retrospective research but refuses PIT_BACKTEST for its unadmitted hindsight views. That limitation remains; access to retained metadata is not an outcome-read or source-use permission. Do not open the native held partitions, silently extend current price authority, or backdate observations. Vendor-specific identity must remain explicit in the future adapter.
+- [TARGET_SCOPE_AND_BASELINES_R1.md](TARGET_SCOPE_AND_BASELINES_R1.md): eleven ETFs, SPY/BIL, exact cutoff/entry/horizon geometry, five fixed comparators and declared synthetic cost scenarios.
+- [SOURCE_READINESS_AUDIT_R2.md](SOURCE_READINESS_AUDIT_R2.md): local timestamp/schema-only cache inspection, short flow histories and source limitations.
+- [EXISTING_READER_INTEGRATION_R1.md](EXISTING_READER_INTEGRATION_R1.md): different incumbent nine-node/26-session/09:00/63-price experiment versus this study's eleven assets/thirteen inputs/20-session/08:00/64-price requirements. It is not a defect ruling against the old experiment.
+- [POLICY_ACCOUNTING_SPEC_R1.md](POLICY_ACCOUNTING_SPEC_R1.md), [witness](policy_accounting_witness.py) and [results](policy_accounting_results.json): self-financing cost accounting and settlement-cash/turnover distinction.
+- [BroadFlowAdapter probe](probe_broad_flow_contract.py) and [results](broad_flow_probe_results.json): fake-provider fetch-boundary witnesses; no source repair or measured production incidence. A market-price clock is not a NAV timestamp.
 
-The old nine-node, 26-session, 09:00 and 63-price experiment stays unchanged. The proposed study's eleven assets/thirteen inputs, twenty-session schedule, 08:00 cutoff and correct 64-price return window remain specified. Source rights, actual session clocks, coverage and input identity—not another generic architecture—are the remaining qualification work before the empirical study.
+## Original architecture and research foundation
 
-## Release and recovery
+[ASSESSMENT.md](ASSESSMENT.md) remains byte-identical: 44,909 bytes, SHA-256 `4ba6241675c3f3528706f7c859019dd8e6f2ce390bd31199e7a4254bf1e26c4c`.
 
-**Published research candidate, DRAFT/HOLD for Sol; not merged or independently approved.** The original final-review provider403/no-verdict result was not retried or routed through another provider. No new worker/watcher was launched in R3. Prior children are terminal.
+[ARCHITECTURE.md](ARCHITECTURE.md) separates measurement, forecasting, portfolio policy and stock expression. [DATA_CONTRACTS.md](DATA_CONTRACTS.md) defines source/identity/time/basis requirements. [RESEARCH_DESIGN.md](RESEARCH_DESIGN.md) and [NATIVE_PROTOCOL_CROSSWALK.md](NATIVE_PROTOCOL_CROSSWALK.md) distinguish broader allocation research from the original seven-pair hypotheses. [LITERATURE.md](LITERATURE.md) contains the earlier 16-entry synthesis, supplemented rather than overwritten by R4. [READINESS_AND_DELEGATION.md](READINESS_AND_DELEGATION.md) retains the industry mechanism book and bounded future implementation packets. [REVIEW_AND_VERIFICATION.md](REVIEW_AND_VERIFICATION.md) preserves earlier review/verification limits; later R2–R4 records supply the current frontier.
 
-No market-return dataset or numeric vendor column was opened in this continuation; no provider acquisition, archive activation, production collector/reader edit, Trial/Vault act, native outcome read, trade, credential change or deployment occurred. Original isolated source tests did execute against invented fixtures; metadata checks executed the existing receipt validator, not an acquisition function.
+The [original synthetic script](synthetic_design_checks.py) and [results](synthetic_design_results.json) remain intact. Historical negative results, original native look budgets and the distinction between an exploratory reconstruction and prospective proof remain unchanged.
 
-Current-head required CI and a valid independent review remain release gates. Do not ready, auto-merge or merge based on old checks or synthetic pass counts. Source-only publication requires no production deployment.
+## Authority, release and exact next action
 
-Compatible procedure: Mastermind `50107c31531d3b4ab5a18b5acf5e77954a0549e3`. R3 source: Macro `ab5156a4b2c336181f3c5256e7c0766f04f99598`. Same GitHub branch/carrier. Full R3 and archive-metadata receipts remain under `/Volumes/Mastermind/research/rotation-intelligence-census-20261016-sol-c1/`; published source is the recoverable evidence, not a new lifecycle store. The broader predictive allocation programme remains incomplete.
+Native Track A retains its seven-pair H1/H2/H3, prior failures, LR-W6/V3 repair and actual size/power/outcome gates. Track B's broader sector/industry/theme/cash study needs its own explicit source, population, target, accounting and error-budget qualification through the existing owners. No second evaluator, registry, graph, data store, publisher, retry or runtime plane is introduced.
+
+No R4 archive payload read, provider acquisition, live capture, Trial/Vault write, native outcome call, production collector/reader edit, score/rank/size promotion, trade, credential change or deployment occurred. Public-primary-literature reading and independent invented-data research are not substitutes for the blocked source qualification.
+
+Next real-data dependency: a permitted source/consumer qualification path with actual capability/authorization evidence resolving the refused operation; retain its original carrier and constraints. Final independent package review is still missing after the prior provider403. No mode change or credentials request is invented from those failures.
+
+**DRAFT/HOLD remains.** No ready, auto-merge, merge-on-green or merge until valid independent review and required exact-head repository checks. Research publication is not native protocol acceptance, product deployment or investment qualification. The broader mission remains incomplete. New-head CI and final document readback are recorded in the latest PR receipt, not presumed from older passes.
+
+Compatible protected procedure pin: Mastermind `50107c31531d3b4ab5a18b5acf5e77954a0549e3`. Original root: `rotation-intelligence-census-20261016-sol-c1`. Same GitHub publication carrier and programme continuity through Mastermind #1194, Macro #7646/#9035/#9134 and the existing workstream. The current assigned Sol owns recovery; an old role or undelivered request does not transfer responsibility.
