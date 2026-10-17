@@ -1,0 +1,1056 @@
+{
+  "schema_version": "1.1",
+  "lane": "auction_mechanics_and_data_sources",
+  "as_of_date": "2026-10-06",
+  "evidence_policy": "Primary sources; full, partial and indexed-only access are distinguished. No purchase, data license, subscription, vendor contact or live entitlement verification was performed. All prices are published components, not all-in quotations.",
+  "sources": [
+    {
+      "id": "A01",
+      "title": "NYSE Group auction overview",
+      "url": "https://www.nyse.com/trade/auctions",
+      "source_type": "exchange operational overview",
+      "publication_date": null,
+      "version_or_effectivity": "current page observed 2026-10-06",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "NYSE and Arca use different closing-auction publication and freeze schedules.",
+      "limits": "Overview is subordinate to venue rules and implementation notices; no feed entitlement established.",
+      "tool_refs": [
+        "turn7search0",
+        "turn14view0"
+      ]
+    },
+    {
+      "id": "A02",
+      "title": "NYSE opening and closing auctions fact sheet",
+      "url": "https://www.nyse.com/publicdocs/nyse/markets/nyse/NYSE_Opening_and_Closing_Auctions_Fact_Sheet.pdf",
+      "source_type": "exchange fact sheet",
+      "publication_date": "2024",
+      "version_or_effectivity": "copyright 2024; no publication day verified",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Order types and closing-auction processing.",
+      "limits": "Some descriptions predate 2026 filings; use deployed-rule version.",
+      "tool_refs": [
+        "turn73view3",
+        "turn76view3"
+      ]
+    },
+    {
+      "id": "A03",
+      "title": "NYSE D Orders",
+      "url": "https://www.nyse.com/trade/d-orders",
+      "source_type": "exchange product/rules explanation",
+      "publication_date": null,
+      "version_or_effectivity": "current web guidance",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Floor-broker D-order discretion and current entry/change cutoff.",
+      "limits": "2026-36 proposes a distinct earlier cancellation cutoff; implementation not established.",
+      "tool_refs": [
+        "turn73view4",
+        "turn76view4"
+      ]
+    },
+    {
+      "id": "A04",
+      "title": "NYSE closing-auction price discovery opportunities reach new highs",
+      "url": "https://www.nyse.com/data-insights/nyse-closing-auction-price-discovery-opportunities-reach-new-highs",
+      "source_type": "exchange implementation analysis",
+      "publication_date": "2024-08-29",
+      "version_or_effectivity": "change effective 2024-08-12",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "D-order inclusion in disseminated total imbalance moved from 15:55 to 15:50.",
+      "limits": "Exchange's retrospective internal pre-15:50 plot is not public historical availability.",
+      "tool_refs": [
+        "turn7search12",
+        "turn94search6"
+      ]
+    },
+    {
+      "id": "A05",
+      "title": "NYSE Significant Imbalance: enhanced trading opportunities",
+      "url": "https://www.nyse.com/data-insights/the-nyse-significant-imbalance-enhanced-trading-opportunities-at-the-nyse-closing-auction",
+      "source_type": "exchange implementation notice/analysis",
+      "publication_date": "2024-11-04",
+      "version_or_effectivity": "change effective 2024-10-28",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Significant Closing Imbalance thresholds became relative to trailing closing size and dollar amount.",
+      "limits": "A Significant Closing Imbalance differs from changing total-imbalance messages.",
+      "tool_refs": [
+        "turn76view2",
+        "turn78view1"
+      ]
+    },
+    {
+      "id": "A06",
+      "title": "NYSE RM-26-03 quarterly expiration reminder",
+      "url": "https://www.nyse.com/publicdocs/nyse/markets/nyse/rule-interpretations/2026/Q1_2026_Quarterly_Expiration_RM_3.20.2026.pdf",
+      "source_type": "exchange regulatory memorandum",
+      "publication_date": "2026-03-20",
+      "version_or_effectivity": "rules discussed apply each trading day",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Manual early imbalance, floor-broker information, post-freeze cancellation prohibition, narrow official relief, and early-close deadline offsets.",
+      "limits": "Later rule filings require separate implementation checks.",
+      "tool_refs": [
+        "turn98view0",
+        "turn105view0"
+      ]
+    },
+    {
+      "id": "A07",
+      "title": "SR-NYSE-2026-36 Federal Register notice",
+      "url": "https://www.govinfo.gov/content/pkg/FR-2026-08-18/pdf/2026-16783.pdf",
+      "source_type": "official self-regulatory rule filing",
+      "publication_date": "2026-08-18",
+      "version_or_effectivity": "filed 2026-07-31; notice 2026-08-13; implementation via future Trader Update anticipated by Q1 2027",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Expands Closing Imbalance composition and changes D-order cancellation/modification deadline.",
+      "limits": "Immediate effectiveness is not proof of technological rollout; no operative implementation notice verified.",
+      "tool_refs": [
+        "turn93view0",
+        "turn105view1"
+      ]
+    },
+    {
+      "id": "A08",
+      "title": "NYSE Pillar functional differences v31",
+      "url": "https://www.nyse.com/publicdocs/nyse/markets/nyse/Functional_Differences_NYSE_Pillar.pdf",
+      "source_type": "exchange functional specification",
+      "publication_date": "2026-08-03",
+      "version_or_effectivity": "version 31",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Venue-specific auction behavior, broker/public channel differences, and close-price publication lifecycle.",
+      "limits": "Versioned rules and upcoming changes must not be back-projected.",
+      "tool_refs": [
+        "turn85view4",
+        "turn89view2",
+        "turn89view3",
+        "turn89view4",
+        "turn88view3"
+      ]
+    },
+    {
+      "id": "A09",
+      "title": "NYSE market-data technical document catalog",
+      "url": "https://www.nyse.com/market-data/technical-documents",
+      "source_type": "exchange current/upcoming specification catalog",
+      "publication_date": null,
+      "version_or_effectivity": "observed 2026-10-06",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Separates currently listed specs from Q4 2026 upcoming specs.",
+      "limits": "Catalog/marketing inconsistencies are unresolved runtime capability, not implementation evidence.",
+      "tool_refs": [
+        "turn60view0",
+        "turn80search3"
+      ]
+    },
+    {
+      "id": "A10",
+      "title": "NYSE Pillar Order Imbalances v2.2n",
+      "url": "https://www.ice.com/publicdocs/nyse/data/NYSE_Pillar_Order_Imbalances_Client_Specification_v2.2n.pdf",
+      "source_type": "exchange wire specification",
+      "publication_date": "2025-10-23",
+      "version_or_effectivity": "v2.2n current catalog link",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Message 105 fields, clocks, venue applicability, and changed-only one-second dissemination.",
+      "limits": "Encoding precision does not establish delivery latency; some future algorithms require implementation gating.",
+      "tool_refs": [
+        "turn62view0",
+        "turn105view2"
+      ]
+    },
+    {
+      "id": "A11",
+      "title": "NYSE Pillar Depth specification v1.4",
+      "url": "https://www.nyse.com/publicdocs/nyse/data/NYSE_Pillar_Depth_Client_Specification_v1.4.pdf",
+      "source_type": "exchange technical specification",
+      "publication_date": null,
+      "version_or_effectivity": "version 1.4; used only for explicit early-close clock statement",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "13:00 closes shift NYSE closing imbalance start to 12:50 and Arca/American/Texas to 12:00.",
+      "limits": "Not asserted to be latest deployed depth-feed version.",
+      "tool_refs": [
+        "turn92search47",
+        "turn93view1"
+      ]
+    },
+    {
+      "id": "A12",
+      "title": "NYSE hours and calendars",
+      "url": "https://www.nyse.com/trade/hours-calendars",
+      "source_type": "exchange calendar",
+      "publication_date": null,
+      "version_or_effectivity": "2026 calendar observed 2026-10-06",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "2026 scheduled equity early closes include November 27 and December 24 at 13:00 ET.",
+      "limits": "Eligible options can close 13:15; security/session calendars must be separate.",
+      "tool_refs": [
+        "turn79view2"
+      ]
+    },
+    {
+      "id": "A13",
+      "title": "Nasdaq Equity 4 Rule 4754",
+      "url": "https://listingcenter.nasdaq.com/rulebook/nasdaq/rules/nasdaq-equity-4",
+      "source_type": "exchange rulebook",
+      "publication_date": null,
+      "version_or_effectivity": "current page observed 2026-10-06",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Closing Cross EOII/NOII, MOC/LOC/IO admission and cancellation rules.",
+      "limits": "Rulebook future-session provisions alone do not prove rollout; venue exceptions require state handling.",
+      "tool_refs": [
+        "turn7search19",
+        "turn11view0",
+        "turn12view2",
+        "turn12view3",
+        "turn22view4"
+      ]
+    },
+    {
+      "id": "A14",
+      "title": "Nasdaq Closing Cross FAQ",
+      "url": "https://www.nasdaqtrader.com/content/productsservices/Trading/ClosingCrossfaq.pdf",
+      "source_type": "exchange FAQ",
+      "publication_date": null,
+      "version_or_effectivity": "publication date unverified",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Closing-Cross explanatory terminology.",
+      "limits": "Older explanatory document; current Rule 4754 prevails on clocks and exceptions.",
+      "tool_refs": [
+        "turn7search4",
+        "turn11view2",
+        "turn12view1"
+      ]
+    },
+    {
+      "id": "A15",
+      "title": "Nasdaq ETA2019-66: enhanced closing-cross information",
+      "url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ETA2019-66",
+      "source_type": "exchange implementation notice",
+      "publication_date": "2019-08-22",
+      "version_or_effectivity": "effective 2019-11-04",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "EOII began at 15:50 with reduced fields and 10-second cadence; full NOII at 15:55 uses one-second cadence.",
+      "limits": "Pre-change replay must not receive post-change information.",
+      "tool_refs": [
+        "turn60view2",
+        "turn62view4"
+      ]
+    },
+    {
+      "id": "A16",
+      "title": "Nasdaq TotalView-ITCH 5.0 specification",
+      "url": "https://www.nasdaqtrader.com/content/technicalsupport/specifications/dataproducts/NQTVITCHspecification.pdf",
+      "source_type": "exchange wire specification",
+      "publication_date": null,
+      "version_or_effectivity": "ITCH 5.0 current retrieved PDF",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "NOII, crossing trades, broken trades, stock mappings and timestamp encodings.",
+      "limits": "Nasdaq-local book is not national NBBO; timestamp precision is not measured accuracy.",
+      "tool_refs": [
+        "turn14view2",
+        "turn22view5"
+      ]
+    },
+    {
+      "id": "A17",
+      "title": "Nasdaq historical TotalView-ITCH announcement",
+      "url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=dtn2009-059",
+      "source_type": "exchange historical product announcement",
+      "publication_date": "2009",
+      "version_or_effectivity": "historical announcement",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Historical ITCH with imbalance information has been offered.",
+      "limits": "Current archive completeness, channel history, rights and price remain unverified.",
+      "tool_refs": [
+        "turn20search10"
+      ]
+    },
+    {
+      "id": "A18",
+      "title": "NYSE market-data pricing guide",
+      "url": "https://www.nyse.com/publicdocs/nyse/data/NYSE_Market_Data_Pricing.pdf",
+      "source_type": "exchange fee schedule",
+      "publication_date": "2026-05-14",
+      "version_or_effectivity": "current retrieved guide",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "NYSE/Arca imbalance access and applicable non-display fee categories.",
+      "limits": "Not an all-in vendor quote; categories, connectivity and uses determine total.",
+      "tool_refs": [
+        "turn11view3",
+        "turn12view4",
+        "turn12view5"
+      ]
+    },
+    {
+      "id": "A19",
+      "title": "AmerX market-on-close portal",
+      "url": "https://www.amerx.com/market-on-close-portal",
+      "source_type": "broker product documentation",
+      "publication_date": null,
+      "version_or_effectivity": "current product page observed 2026-10-06",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "A legitimate broker channel advertises early MOC information from 14:00.",
+      "limits": "No licensed historical archive, API, timestamp SLA, current agreement or price verified.",
+      "tool_refs": [
+        "turn85view1",
+        "turn22view1"
+      ]
+    },
+    {
+      "id": "A20",
+      "title": "MrTopStep Market Imbalance Meter",
+      "url": "https://mrtopstep.com/catalog/market-imbalance-meter",
+      "source_type": "vendor current product catalog",
+      "publication_date": null,
+      "version_or_effectivity": "current listing observed 2026-10-06",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Current product advertises last-ten-minute NYSE imbalance aggregation and consumer prices.",
+      "limits": "Old 14:00 anecdotes do not establish current early access; machine/research rights unknown.",
+      "tool_refs": [
+        "turn85view0",
+        "turn80view0"
+      ]
+    },
+    {
+      "id": "A21",
+      "title": "FinancialJuice early-MOC headline example",
+      "url": "https://www.financialjuice.com/News/7218281/1-Early-MOC-imbalance-528-mln-sell-side.aspx?xy=rss",
+      "source_type": "vendor public historical headline",
+      "publication_date": "2023-02-13",
+      "version_or_effectivity": "individual published example",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "An early-MOC headline exists in a historical public page.",
+      "limits": "Not a point-in-time panel; exact clocks, provenance, selection, API and commercial rights unknown.",
+      "tool_refs": [
+        "turn17search19"
+      ]
+    },
+    {
+      "id": "A22",
+      "title": "ThetaData commercial-use catalog",
+      "url": "https://www.thetadata.net/commercial-use",
+      "source_type": "vendor commercial catalog",
+      "publication_date": null,
+      "version_or_effectivity": "prices observed 2026-10-06",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Options/stocks/indices tier prices, advertised history and source scope.",
+      "limits": "Public tier is not an account entitlement; promotions and exchange fees require contract verification.",
+      "tool_refs": [
+        "turn36view2",
+        "turn7search17"
+      ]
+    },
+    {
+      "id": "A23",
+      "title": "Theta option historical trade-quote endpoint",
+      "url": "https://www.thetadata.net/docs/operations/option_history_trade_quote.html",
+      "source_type": "vendor API specification",
+      "publication_date": null,
+      "version_or_effectivity": "current docs observed 2026-10-06",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Trades have attached last NBBO, trade/quote clocks, conditions and quote exclusivity control.",
+      "limits": "Trade-sampled BBO does not contain intervening quote events; docs are not successful account probes.",
+      "tool_refs": [
+        "turn23view1",
+        "turn25view3"
+      ]
+    },
+    {
+      "id": "A24",
+      "title": "Theta option historical open interest endpoint",
+      "url": "https://www.thetadata.net/docs/operations/option_history_open_interest.html",
+      "source_type": "vendor API specification",
+      "publication_date": null,
+      "version_or_effectivity": "current docs observed 2026-10-06",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "OI reported around 06:30 ET describes previous-session EOD positions.",
+      "limits": "Actual publication/receipt and correction versions must govern availability; not live positions.",
+      "tool_refs": [
+        "turn23view2",
+        "turn29view6"
+      ]
+    },
+    {
+      "id": "A25",
+      "title": "ThetaData subscriber agreement",
+      "url": "https://www.thetadata.net/subscriber-agreement",
+      "source_type": "vendor legal agreement",
+      "publication_date": null,
+      "version_or_effectivity": "current retrieved agreement",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Use, derived-data distribution and retention depend on permitted agreement terms.",
+      "limits": "No conclusion about the user's executed agreement or legal status.",
+      "tool_refs": [
+        "turn79view3",
+        "turn36view3"
+      ]
+    },
+    {
+      "id": "A26",
+      "title": "OPRA fee schedule",
+      "url": "https://cdn.opraplan.com/documents/OPRA_Fee_Schedule.pdf",
+      "source_type": "plan fee schedule",
+      "publication_date": null,
+      "version_or_effectivity": "current public retrieved PDF; exact effective-date header not separately established",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Non-display use has its own category fees and narrowly defined exemptions.",
+      "limits": "Professional/nonprofessional display prices do not authorize organizational analytics; avoid indiscriminate fee stacking.",
+      "tool_refs": [
+        "turn62view3",
+        "turn63view1",
+        "turn63view2"
+      ]
+    },
+    {
+      "id": "A27",
+      "title": "Theta option historical quote endpoint",
+      "url": "https://www.thetadata.net/docs/operations/option_history_quote.html",
+      "source_type": "vendor API specification",
+      "publication_date": null,
+      "version_or_effectivity": "current docs observed 2026-10-06",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Tick mode exposes quote events; interval mode samples the prevailing quote.",
+      "limits": "Entitlement, session coverage and event completeness require receipts.",
+      "tool_refs": [
+        "turn99view0"
+      ]
+    },
+    {
+      "id": "A28",
+      "title": "Theta option historical all-Greeks endpoint",
+      "url": "https://www.thetadata.net/docs/operations/option_history_greeks_all.html",
+      "source_type": "vendor API specification",
+      "publication_date": null,
+      "version_or_effectivity": "current docs observed 2026-10-06",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Version 1 uses fixed 0.15 days; latest uses true TTE with a one-hour minimum.",
+      "limits": "Methodological floor distorts final-hour derivatives; midpoint versus trade-price wording requires clarification.",
+      "tool_refs": [
+        "turn79view4",
+        "turn80view2"
+      ]
+    },
+    {
+      "id": "A29",
+      "title": "Cboe Open-Close Volume Summary catalog",
+      "url": "https://datashop.cboe.com/cboe-options-open-close-volume-summary",
+      "source_type": "exchange licensed product catalog",
+      "publication_date": null,
+      "version_or_effectivity": "current catalog; announced changes 2026-11-08",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Exchange-specific histories, interval delivery, segments, and forthcoming correction/schema changes.",
+      "limits": "No purchase performed; raw redistribution and derived permission differ; catalog history is not an obtained archive.",
+      "tool_refs": [
+        "turn23view0",
+        "turn25view1",
+        "turn34search1"
+      ]
+    },
+    {
+      "id": "A30",
+      "title": "Cboe Open-Close 10-minute specification v1.6",
+      "url": "https://datashop.cboe.com/documents/Open_Close_10m_Spec_v1.6.pdf",
+      "source_type": "exchange data specification",
+      "publication_date": "2026-02-17",
+      "version_or_effectivity": "version 1.6",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Cumulative origin/capacity volume; MM buy/sell fields; vol is contracts and qty is trade count.",
+      "limits": "Venue-limited participant class, not named firms, cross-product inventories or actual hedge executions.",
+      "tool_refs": [
+        "turn29view1",
+        "turn32view0",
+        "turn32view3",
+        "turn32view5",
+        "turn105view3"
+      ]
+    },
+    {
+      "id": "A31",
+      "title": "Cboe Open-Close one-minute specification v1.5",
+      "url": "https://datashop.cboe.com/documents/Open_Close_1m_Spec_v1.5.pdf",
+      "source_type": "exchange data specification",
+      "publication_date": "2026-03-27",
+      "version_or_effectivity": "version 1.5",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Current one-minute files are cumulative and do not apply later cancellation/bust corrections.",
+      "limits": "High-volume release delays and carry-forward snapshots require actual publication/receipt timestamps.",
+      "tool_refs": [
+        "turn29view2",
+        "turn32view1",
+        "turn32view6"
+      ]
+    },
+    {
+      "id": "A32",
+      "title": "Cboe Open-Close EOD specification v1.3",
+      "url": "https://datashop.cboe.com/documents/Open_Close_EOD_Spec_v1.3.pdf",
+      "source_type": "exchange data specification",
+      "publication_date": null,
+      "version_or_effectivity": "version 1.3",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "EOD participant/capacity aggregates and accompanying series data.",
+      "limits": "EOD cannot be made intraday-known; historical OI/volume conventions changed.",
+      "tool_refs": [
+        "turn29view3"
+      ]
+    },
+    {
+      "id": "A33",
+      "title": "Cboe C1 fee schedule",
+      "url": "https://cdn.cboe.com/resources/membership/Cboe_FeeSchedule.pdf",
+      "source_type": "exchange fee schedule",
+      "publication_date": "2026-10-01",
+      "version_or_effectivity": "pages 12\u201313; PDF retrieved and text checked",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "C1 EOD, ten-minute, one-minute, trade-by-trade and external-derived fees.",
+      "limits": "Costs are C1 product components, not total integration cost; academic/free-sample conditions not assumed.",
+      "tool_refs": [
+        "turn38search44",
+        "turn40view0",
+        "turn42view0"
+      ]
+    },
+    {
+      "id": "A34",
+      "title": "Cboe BZX Options fee schedule",
+      "url": "https://www.cboe.com/us/options/membership/fee_schedule/bzx/",
+      "source_type": "exchange fee schedule",
+      "publication_date": null,
+      "version_or_effectivity": "current page observed 2026-10-06",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "BZX Open-Close subscription and historical rates differ from C1.",
+      "limits": "BZX is one venue; other Cboe venues cannot be priced by extrapolation.",
+      "tool_refs": [
+        "turn40view1",
+        "turn42view1"
+      ]
+    },
+    {
+      "id": "A35",
+      "title": "Cboe enhanced options trade-by-trade execution detail",
+      "url": "https://datashop.cboe.com/enhanced-us-options-trade-by-trade-execution-detail",
+      "source_type": "exchange licensed product catalog",
+      "publication_date": null,
+      "version_or_effectivity": "C1 history from 2019-10-07",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "T+1 participant/capacity/side, execution context and complex-trade fields.",
+      "limits": "Label dataset, not a currently verified live feed; position-type field applicability must be checked.",
+      "tool_refs": [
+        "turn38search13",
+        "turn40view3",
+        "turn42view2"
+      ]
+    },
+    {
+      "id": "A36",
+      "title": "NYSE Options Open-Close current specification",
+      "url": "https://www.nyse.com/publicdocs/nyse/data/NYSE_Options_Exchange_Open-Close_Client_Specification_v1.0d.pdf",
+      "source_type": "exchange data specification",
+      "publication_date": "2025-12-05",
+      "version_or_effectivity": "filename v1.0d; some internal footer v1.0c",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Arca/American EOD and ten-minute histories, capacities and cumulative fields.",
+      "limits": "Current spec differs from one-minute marketing/future spec; example latency typo prevents SLA inference.",
+      "tool_refs": [
+        "turn62view1",
+        "turn63view3"
+      ]
+    },
+    {
+      "id": "A37",
+      "title": "NYSE Options Open-Close catalog",
+      "url": "https://www.nyse.com/data-products/catalog/open-close-volume-summary",
+      "source_type": "exchange product catalog",
+      "publication_date": null,
+      "version_or_effectivity": "observed 2026-10-06",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Marketing describes one-minute, ten-minute and EOD products.",
+      "limits": "One-minute current availability/history requires actual entitlement and documented rollout.",
+      "tool_refs": [
+        "turn34search13",
+        "turn36view0"
+      ]
+    },
+    {
+      "id": "A38",
+      "title": "CME June 2026 market-data fee list",
+      "url": "https://www.cmegroup.com/market-data/files/june-2026-market-data-fee-list.pdf",
+      "source_type": "exchange fee schedule",
+      "publication_date": "2026-06-01",
+      "version_or_effectivity": "effective June 1 2026",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "CME real-time datafeed and research/principal non-display fees.",
+      "limits": "Display prices are not machine-use prices; full applicability must be established.",
+      "tool_refs": [
+        "turn25view0",
+        "turn29view5"
+      ]
+    },
+    {
+      "id": "A39",
+      "title": "CME market-data policy education center",
+      "url": "https://www.cmegroup.com/market-data/license-data/market-data-policy-education-center.html",
+      "source_type": "exchange license/policy catalog",
+      "publication_date": null,
+      "version_or_effectivity": "June 2026 agreement; August 2026 schedule updates listed",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Licensing, non-display, historical and AI uses have distinct policies.",
+      "limits": "Future January 2027 fees cannot be used as current; no user contract reviewed.",
+      "tool_refs": [
+        "turn22view3",
+        "turn23view3"
+      ]
+    },
+    {
+      "id": "A40",
+      "title": "Databento GLBX.MDP3 specification",
+      "url": "https://databento.com/docs/venues-and-datasets/glbx-mdp3",
+      "source_type": "vendor source/schema specification",
+      "publication_date": null,
+      "version_or_effectivity": "current docs; history from June 2010",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "ES/NQ futures and options schemas, matching-engine/capture clocks, book-event and statistics conventions.",
+      "limits": "Legacy feed granularity, implied books and preliminary/final OI prevent naive joins.",
+      "tool_refs": [
+        "turn51view1"
+      ]
+    },
+    {
+      "id": "A41",
+      "title": "Databento pricing",
+      "url": "https://databento.com/pricing",
+      "source_type": "vendor price catalog",
+      "publication_date": null,
+      "version_or_effectivity": "current prices observed 2026-10-06",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "CME Standard, Plus and Unlimited prices and historical-depth differences.",
+      "limits": "Standard personal license is not commercial entitlement; exchange charges/annual contracts may be additional.",
+      "tool_refs": [
+        "turn85view2"
+      ]
+    },
+    {
+      "id": "A42",
+      "title": "DTCC ETF Portfolio Data Service",
+      "url": "https://www.dtcc.com/products-and-services/data-services/corporate-actions-reference-data/etf-portfolio-data-service",
+      "source_type": "infrastructure product catalog",
+      "publication_date": null,
+      "version_or_effectivity": "current page observed 2026-10-06",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "ETF basket/portfolio reference data includes daily and supplemental content.",
+      "limits": "Portfolio definitions do not observe executed AP creations, inventory or hedge timing; price unknown.",
+      "tool_refs": [
+        "turn68view4",
+        "turn67search6"
+      ]
+    },
+    {
+      "id": "A43",
+      "title": "DTCC ETF processing timeline",
+      "url": "https://dtcclearning.com/products-and-services/equities-clearing/etf-processing/etf-timeline.html",
+      "source_type": "infrastructure operations documentation",
+      "publication_date": null,
+      "version_or_effectivity": "current indexed official material",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Prior-evening portfolio files and later updates must be versioned.",
+      "limits": "Retrieved search material only; exact file service delivery/rights not established.",
+      "tool_refs": [
+        "turn67search23"
+      ]
+    },
+    {
+      "id": "A44",
+      "title": "State Street SPY issuer data",
+      "url": "https://www.ssga.com/us/en/institutional/etfs/state-street-spdr-sp-500-etf-trust-spy",
+      "source_type": "fund issuer reference data",
+      "publication_date": null,
+      "version_or_effectivity": "page as-of dates 2026-10-05/06",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "SPY primary listing is NYSE Arca; fund NAV, shares and holdings are dated daily observations.",
+      "limits": "Daily shares changes are net-flow proxies, not intraday AP orders or gross creations/redemptions.",
+      "tool_refs": [
+        "turn99view3",
+        "turn104view2"
+      ]
+    },
+    {
+      "id": "A45",
+      "title": "FTSE Russell 2026 reconstitution schedule",
+      "url": "https://www.lseg.com/en/media-centre/press-releases/ftse-russell/2026/russell-reconstitution-2026-schedule",
+      "source_type": "index-provider announcement",
+      "publication_date": "2026-03-02",
+      "version_or_effectivity": "2026 transition to semiannual process",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Rank, preliminary membership, revision and effective events have separate clocks.",
+      "limits": "Do not assume past annual calendar or third-Friday rule; complete licensed revision files not obtained.",
+      "tool_refs": [
+        "turn68view3",
+        "turn67search1"
+      ]
+    },
+    {
+      "id": "A46",
+      "title": "FINRA OTC transparency overview",
+      "url": "https://www.finra.org/filing-reporting/otc-transparency",
+      "source_type": "regulator reporting-data documentation",
+      "publication_date": null,
+      "version_or_effectivity": "current page observed 2026-10-06",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "ATS and non-ATS reported-volume aggregates are available by venue/member/security.",
+      "limits": "No participant inventory or buy/sell direction is identified.",
+      "tool_refs": [
+        "turn76view1",
+        "turn78view0"
+      ]
+    },
+    {
+      "id": "A47",
+      "title": "FINRA Rule 6110",
+      "url": "https://www.finra.org/rules-guidance/rulebooks/finra-rules/6110",
+      "source_type": "regulator rulebook",
+      "publication_date": null,
+      "version_or_effectivity": "current page observed 2026-10-06",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Tier-specific weekly publication lags and low-activity aggregation.",
+      "limits": "Receipt/revision tracking still required; current commercial API rights unverified.",
+      "tool_refs": [
+        "turn79view6",
+        "turn83view2"
+      ]
+    },
+    {
+      "id": "A48",
+      "title": "NYSE Arca EOD ETP Report specification",
+      "url": "https://www.nyse.com/publicdocs/nyse/data/NYSE_Arca_EOD_ETF_Report_Product_Spec.pdf",
+      "source_type": "exchange data specification",
+      "publication_date": "2025-04-10",
+      "version_or_effectivity": "version 1.4",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "EOD ETP prices, volumes and scheduled-close quote references.",
+      "limits": "Not ETF primary-market flows; literal EST delivery wording is not proof of DST behavior.",
+      "tool_refs": [
+        "turn62view2",
+        "turn63view0",
+        "turn63view4"
+      ]
+    },
+    {
+      "id": "A49",
+      "title": "Bogousslavsky and Muravyev: Who trades at the close?",
+      "url": "https://www.sciencedirect.com/science/article/pii/S1386418123000502",
+      "source_type": "primary academic publisher record",
+      "publication_date": "2023",
+      "version_or_effectivity": "Journal of Financial Markets 66, 100852",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Indexing/ETF activity and auction price discovery/liquidity; deviations often reverse.",
+      "limits": "Publisher indexed abstract/highlights accessed; full article blocked; no universal reversal rule.",
+      "tool_refs": [
+        "turn70search0",
+        "turn53search41"
+      ]
+    },
+    {
+      "id": "A50",
+      "title": "Bogousslavsky author closing-auction dataset",
+      "url": "https://bogousslavsky.github.io/data/",
+      "source_type": "primary author research data documentation",
+      "publication_date": null,
+      "version_or_effectivity": "documented sample 2010\u20132018",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "NYSE/Nasdaq common-stock closing-auction aggregates and sample filters.",
+      "limits": "Linked raw dataset not downloaded; no NOII stream or modern-regime validation; reuse terms unverified.",
+      "tool_refs": [
+        "turn73view0"
+      ]
+    },
+    {
+      "id": "A51",
+      "title": "Jegadeesh and Wu: Closing auctions: Nasdaq versus NYSE",
+      "url": "https://www.sciencedirect.com/science/article/pii/S0304405X21005092",
+      "source_type": "primary academic publisher record",
+      "publication_date": "2022",
+      "version_or_effectivity": "Journal of Financial Economics 143(3), 1120\u20131139",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Cross-exchange closing-auction price impact/resiliency and flow associations.",
+      "limits": "Indexed abstract accessed; full text blocked and exact estimation sample not verified.",
+      "tool_refs": [
+        "turn70search14",
+        "turn70search41",
+        "turn70search16"
+      ]
+    },
+    {
+      "id": "A52",
+      "title": "Brown, Davies and Ringgenberg: ETF arbitrage, non-fundamental demand, and return predictability",
+      "url": "https://revfin.org/etf-arbitrage-non-fundamental-demand-and-return-predictability/",
+      "source_type": "journal author research digest",
+      "publication_date": "2021-07-22",
+      "version_or_effectivity": "Review of Finance 25(4), 937\u2013972; DOI 10.1093/rof/rfaa027",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Arbitrage can transmit non-fundamental demand to underlying securities.",
+      "limits": "Publisher digest accessed; exact estimation sample/full-paper implementation not verified; not minute-level evidence.",
+      "tool_refs": [
+        "turn73view1"
+      ]
+    },
+    {
+      "id": "A53",
+      "title": "FCA Occasional Paper 68: ETF (Mis)pricing",
+      "url": "https://www.fca.org.uk/publications/occasional-papers-fca-research/occasional-paper-68-etf-mispricing",
+      "source_type": "primary regulator research publication",
+      "publication_date": "2025-05-30",
+      "version_or_effectivity": "paper sample: 128 ETFs, 2018\u20132022",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Primary/secondary regulatory data support an AP inventory and ETF-pricing analysis.",
+      "limits": "Landing summary accessed; underlying confidential regulatory panel is not a public replicable feed.",
+      "tool_refs": [
+        "turn68view2"
+      ]
+    },
+    {
+      "id": "A54",
+      "title": "Chang, Hong and Liskovich: Regression Discontinuity and the Price Effects of Stock Market Indexing",
+      "url": "https://www.nber.org/papers/w19290",
+      "source_type": "primary working-paper repository",
+      "publication_date": "2013-08",
+      "version_or_effectivity": "NBER w19290; published RFS 2015 28(1), 212\u2013246",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Russell-boundary design addresses membership price effects.",
+      "limits": "NBER abstract/digest and indexed paper text accessed; local 1996\u20132012 setting is not modern intraday alpha.",
+      "tool_refs": [
+        "turn53search5",
+        "turn73search40",
+        "turn73search8"
+      ]
+    },
+    {
+      "id": "A55",
+      "title": "Zhu: Do Dark Pools Harm Price Discovery?",
+      "url": "https://www.mit.edu/~zhuh/Zhu_darkpool_RFS.pdf",
+      "source_type": "primary author full paper",
+      "publication_date": "2014",
+      "version_or_effectivity": "Review of Financial Studies 27(3), 747\u2013789; online 2013-12-18",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Theory links venue selection, execution risk, liquidity and price discovery.",
+      "limits": "Full theory paper accessed; conditional equilibrium mechanism is not signed empirical dark-flow signal.",
+      "tool_refs": [
+        "turn72view2",
+        "turn70search46"
+      ]
+    },
+    {
+      "id": "A56",
+      "title": "Databento OPRA.PILLAR specification",
+      "url": "https://databento.com/docs/venues-and-datasets/opra-pillar",
+      "source_type": "vendor source/schema specification",
+      "publication_date": null,
+      "version_or_effectivity": "current docs; structural history break 2023-03-28",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "OPRA source clocks, unsigned trades, consolidated quote schema and pre-2023 subsampling.",
+      "limits": "Before break ts_recv is event time with F_BAD_TS_RECV; no event-BBO or true receive-clock reconstruction.",
+      "tool_refs": [
+        "turn99view1",
+        "turn104view0",
+        "turn104view1"
+      ]
+    },
+    {
+      "id": "A58",
+      "title": "CME historical futures/options catalog",
+      "url": "https://www.cmegroup.com/market-data/browse-data/catalog/futures-and-options-data.html",
+      "source_type": "exchange historical-data catalog",
+      "publication_date": null,
+      "version_or_effectivity": "current official catalog indexed",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "DataMine is an exchange historical source candidate for futures/options.",
+      "limits": "No product-specific price, sampled coverage or usable archive obtained.",
+      "tool_refs": [
+        "turn50search2",
+        "turn50search5",
+        "turn50search6"
+      ]
+    },
+    {
+      "id": "A59",
+      "title": "MSCI next eight index-review dates",
+      "url": "https://www.msci.com/eqb/pressreleases/archive/ir_dates.pdf",
+      "source_type": "index-provider primary methodology/schedule",
+      "publication_date": "2026-08-12",
+      "version_or_effectivity": "current retrieved at research cut; see claim scope",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Next November 2026 review: announcement November 11; effective December 1.",
+      "limits": "Schedule can change; original and replacement releases must be retained.",
+      "tool_refs": [
+        "turn112view2",
+        "turn114view3"
+      ]
+    },
+    {
+      "id": "A60",
+      "title": "S&P U.S. Indices Methodology",
+      "url": "https://www.spglobal.com/spdji/en/documents/methodologies/methodology-sp-us-indices.pdf",
+      "source_type": "index-provider primary methodology/schedule",
+      "publication_date": "2026-07",
+      "version_or_effectivity": "current retrieved at research cut; see claim scope",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Current S&P index-family composition, rebalance and announcement rules.",
+      "limits": "S&P 1500 composition is as-needed; other index families have distinct scheduled rebalancing.",
+      "tool_refs": [
+        "turn112view1",
+        "turn114view1",
+        "turn114view2",
+        "turn115view0"
+      ]
+    },
+    {
+      "id": "A61",
+      "title": "S&P Equity Indices Policies and Practices",
+      "url": "https://www.spglobal.com/spdji/en/documents/methodologies/methodology-sp-equity-indices-policies-practices.pdf",
+      "source_type": "index-provider primary methodology/schedule",
+      "publication_date": "2026-08",
+      "version_or_effectivity": "current retrieved at research cut; see claim scope",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Share/IWF reference dates, quarterly pro-forma releases, freeze and corporate-action exceptions.",
+      "limits": "Actual dated pro-forma files and licensed historical weights were not obtained.",
+      "tool_refs": [
+        "turn114view0",
+        "turn115view1",
+        "turn115view2"
+      ]
+    },
+    {
+      "id": "A62",
+      "title": "Nasdaq-100 Index methodology",
+      "url": "https://indexes.nasdaq.com/docs/Methodology_NDX.pdf",
+      "source_type": "index-provider primary methodology/schedule",
+      "publication_date": "2026",
+      "version_or_effectivity": "current retrieved at research cut; see claim scope",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Annual and quarterly index calendar, Fast Entry and special rebalance rules.",
+      "limits": "Reference, notice, implementation and subsequent index corrections are distinct clocks; data licenses unverified.",
+      "tool_refs": [
+        "turn110search4",
+        "turn111view2"
+      ]
+    },
+    {
+      "id": "A63",
+      "title": "Nasdaq concludes Nasdaq-100 methodology consultation",
+      "url": "https://ir.nasdaq.com/news-releases/news-release-details/nasdaq-concludes-public-consultation-nasdaq-100-indexr",
+      "source_type": "index-provider primary methodology/schedule",
+      "publication_date": "2026-03-30",
+      "version_or_effectivity": "current retrieved at research cut; see claim scope",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Approved methodology update effective May 1, 2026; previous method through April 30.",
+      "limits": "Official indexed announcement read; direct open errored. Do not apply current method to prior dates.",
+      "tool_refs": [
+        "turn110search2"
+      ]
+    },
+    {
+      "id": "A64",
+      "title": "Massive stock trades REST documentation",
+      "url": "https://massive.com/docs/rest/stocks/trades-quotes/trades",
+      "source_type": "vendor primary API documentation",
+      "publication_date": null,
+      "version_or_effectivity": "Current retrieved documentation; runtime not tested",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Tick-level prices, size, conditions, corrections, trade identity and separate participant/SIP/TRF timestamps; individual plan history/pricing.",
+      "limits": "No business license or runtime tested; optional timestamps and noncontiguous sequence numbers require care.",
+      "tool_refs": [
+        "turn124view0"
+      ]
+    },
+    {
+      "id": "A65",
+      "title": "Massive stock trades WebSocket documentation",
+      "url": "https://massive.com/docs/websocket/stocks/trades",
+      "source_type": "vendor primary API documentation",
+      "publication_date": null,
+      "version_or_effectivity": "Current retrieved documentation; runtime not tested",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Live/delayed stock trade channel with conditions, TRF ID and millisecond SIP/participant/TRF timestamps.",
+      "limits": "WebSocket timestamp units differ from REST; reporting facility is not ultimate venue/owner; correction recovery unverified.",
+      "tool_refs": [
+        "turn124view1",
+        "turn125view4",
+        "turn125view5"
+      ]
+    },
+    {
+      "id": "A66",
+      "title": "Massive stock condition-code reference",
+      "url": "https://massive.com/docs/rest/stocks/market-operations/condition-codes",
+      "source_type": "vendor primary API documentation",
+      "publication_date": null,
+      "version_or_effectivity": "Current retrieved documentation; runtime not tested",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Upstream condition mapping and distinct price/volume update rules.",
+      "limits": "Definitions can change; preserve dated registry rather than interpreting every print as price-forming.",
+      "tool_refs": [
+        "turn125view3",
+        "turn127view1"
+      ]
+    },
+    {
+      "id": "A67",
+      "title": "Theta options full-trade stream",
+      "url": "https://http-docs.thetadata.us/Streaming/US-Options/Full-Trade-Stream.html",
+      "source_type": "vendor primary API documentation",
+      "publication_date": null,
+      "version_or_effectivity": "Current retrieved documentation; runtime not tested",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Full OPRA trades plus preceding NBBO and next two post-trade quote updates; Pro requirement and stream-request IDs.",
+      "limits": "This is not an every-quote stream; future quote messages must not leak into contemporaneous signing; runtime unverified.",
+      "tool_refs": [
+        "turn125view0",
+        "turn126view0",
+        "turn126view1"
+      ]
+    },
+    {
+      "id": "A68",
+      "title": "Theta v3 subscriptions and symbol scope",
+      "url": "https://thetadata.net/docs/Articles/Getting-Started/Subscriptions.html",
+      "source_type": "vendor primary API documentation",
+      "publication_date": null,
+      "version_or_effectivity": "Current retrieved documentation; runtime not tested",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Documents option stream limits and symbol-specific index history; RUT/DJX through 2024-07-01, NDX underlying history from 2026-05-11.",
+      "limits": "Tier/document statements are not account entitlement; some stock-history statements differ from commercial marketing.",
+      "tool_refs": [
+        "turn125view2",
+        "turn126view3"
+      ]
+    },
+    {
+      "id": "A69",
+      "title": "Theta streaming setup and mechanics",
+      "url": "https://http-docs.thetadata.us/Streaming/Getting-Started.html",
+      "source_type": "vendor primary API documentation",
+      "publication_date": null,
+      "version_or_effectivity": "Current retrieved documentation; runtime not tested",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Terminal dependency, single WebSocket endpoint and status heartbeat; development server replays historical data.",
+      "limits": "Development output proves no live feed; current production Terminal version, permissions and recovery untested.",
+      "tool_refs": [
+        "turn125view1",
+        "turn127view0"
+      ]
+    },
+    {
+      "id": "A70",
+      "title": "Theta options dedicated quote stream",
+      "url": "https://http-docs.thetadata.us/Streaming/US-Options/Quote-Stream.html",
+      "source_type": "vendor primary API documentation",
+      "publication_date": null,
+      "version_or_effectivity": "Current retrieved documentation; runtime not tested",
+      "retrieved_date": "2026-10-06",
+      "claim_scope": "Every OPRA NBBO quote for subscribed contracts, with separate prices/sizes/venues/conditions and clock fields.",
+      "limits": "Contract subscription limits and runtime receipt apply; this differs from full-trade channel's sampled quotes.",
+      "tool_refs": [
+        "turn127view2",
+        "turn128view0"
+      ]
+    }
+  ]
+}

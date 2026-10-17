@@ -1,0 +1,34 @@
+{
+  "sources": [
+    {
+      "id": "M01",
+      "title": "MAS-260 Exposure Outlook current native owner record",
+      "url": "https://linear.app/mastermindx/issue/MAS-260/options-exposure-outlook-research-calibrated-forecasts-and-terminal",
+      "publication_or_version": "Native issue updated 2026-09-24; current-frontier section 2026-09-21",
+      "retrieved_at": "2026-10-06",
+      "evidence_class": "Current internal owner record; attributed local/unpushed results",
+      "claim_scope": "GEX promotion refusal, active price/volatility baseline, incumbent remote/local forecast/outcome/consumer custody; exact native project WS:MARKET-OS.",
+      "limitations": "Negative-study exact metrics, population and artifact not disclosed; local results not independently reproduced; no current live or publication qualification."
+    },
+    {
+      "id": "M02",
+      "title": "Canonical Market OS workstream",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/aafb9e25b0c12390ef99a9b9c4937fa1198b4bf0/agentos/workstreams/WS-MARKET-OS.md",
+      "publication_or_version": "Pinned Macro aafb9e25b0c12390ef99a9b9c4937fa1198b4bf0",
+      "retrieved_at": "2026-10-06",
+      "evidence_class": "Pinned canonical workstream",
+      "claim_scope": "Existing workstream identity; scoped user-facing owners and acceptance law.",
+      "limitations": "Source context does not create a dealer-pressure implementation wave or override user research-only scope."
+    },
+    {
+      "id": "IPR7328",
+      "title": "Macro #7328 Exposure Outlook source-readiness consumer",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7328",
+      "publication_or_version": "Open head 9515f2558a006c913a7c0eb30d966c47fa1a143b, observed 2026-10-06",
+      "retrieved_at": "2026-10-06",
+      "evidence_class": "Open incumbent source carrier and dated continuation records",
+      "claim_scope": "Existing audit/outcome CLI, feature adapter and later local continuation boundary; no replacement operation.",
+      "limitations": "Remote head is intentionally behind local/unpushed work; historical test/source receipts do not certify present deployed capability."
+    }
+  ]
+}
