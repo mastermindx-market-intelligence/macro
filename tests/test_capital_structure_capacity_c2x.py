@@ -4,8 +4,9 @@ Every fixture X1–X13 has its own named test here.  Each ledger is built with
 :func:`reconcile_transactions` from X0a's own fixture helpers and public
 dataclasses -- a ledger row, a usage row and an Unknown are never hand-written --
 and every number is compared exactly, as ``Decimal`` for money and ``Fraction``
-for kernel values.  There is no float literal and no ``float(`` call in this file
-or in the adapter it exercises.
+for kernel values.  There is no float literal and no float conversion call in this
+file or in the adapter it exercises, and ``test_c2x_exact_arithmetic_only`` proves
+both by walking the AST of each.
 
 Helpers come from ``tests.test_capital_structure_capacity`` (C1),
 ``tests.test_capital_structure_capacity_c2`` (C2a) and
@@ -98,16 +99,19 @@ def check(evaluation: Any) -> None:
 # ---------------------------------------------------------------------------
 
 
-def state_kwargs(sale: str = SALE, *, resolutions: Sequence[Any] = ()) -> dict[str, Any]:
-    """§7: one shelf path P, R = 20,000,000, ``continuing_offering`` resolved 0."""
+def state_kwargs(
+    sale: str = SALE, *, resolutions: Sequence[Any] = (), continuing: str | None = "0"
+) -> dict[str, Any]:
+    """§7: one shelf path P, R = 20,000,000, ``continuing_offering`` resolved 0 unless stated."""
     registration, shares = C1.standard_registration(
         sale, registered=REGISTERED, float_value="300000000"
     )
+    resolved = [] if continuing is None else [usd(CONTINUING_KEY, continuing)]
     return {
         "sale": sale,
         "registration": registration,
         "share_basis": shares,
-        "resolutions": [usd(CONTINUING_KEY, "0"), *resolutions],
+        "resolutions": [*resolved, *resolutions],
     }
 
 
@@ -116,11 +120,14 @@ def explain(
     transactions: Any = None,
     sale: str = SALE,
     resolutions: Sequence[Any] = (),
+    continuing: str | None = "0",
     state: Any = None,
 ) -> Any:
     """Build, explain with the additive keyword, and run the shared check."""
     if state is None:
-        state, scenario, rules = C1.build(**state_kwargs(sale, resolutions=resolutions))
+        state, scenario, rules = C1.build(
+            **state_kwargs(sale, resolutions=resolutions, continuing=continuing)
+        )
     else:
         scenario, rules = state[1], state[2]
         state = state[0]
@@ -523,10 +530,57 @@ def test_x8_a_programme_floor_replaces_zero_in_the_optimistic_branch() -> None:
         "pessimistic": RESERVATION,
         "optimistic": "1000000",
     }
+    # §0 item 4: the pessimistic branch is unchanged -- P = S exactly as before C2x.
+    without = explain(sale=PROGRAMME_SALE, resolutions=programme_resolutions())
+    assert residual(evaluation, "pessimistic", "routes", ATM_A) == residual(
+        without, "pessimistic", "routes", ATM_A
+    )
+    assert residual(evaluation, "pessimistic", "pools", REGISTERED_A) == residual(
+        without, "pessimistic", "pools", REGISTERED_A
+    )
+    # ...and the optimistic branch is strictly tighter than the pre-C2x P = 0.
+    assert Fraction(residual(evaluation, "optimistic", "routes", ATM_A)) < Fraction(
+        residual(without, "optimistic", "routes", ATM_A)
+    )
+    assert Fraction(residual(evaluation, "optimistic", "pools", REGISTERED_A)) < Fraction(
+        residual(without, "optimistic", "pools", REGISTERED_A)
+    )
     row = row_of(evaluation, PROGRAMME_KEY)
     assert row["disposition"] == c2x.DISPOSITION_UNRESOLVED_WITH_FLOOR
     assert row["usage"] is None and row["evidenced_floor"] == "1000000"
     assert evaluation.inputs["branches"] == [PROGRAMME_KEY]
+
+
+def test_x3_a_resolved_continuing_reservation_is_subtracted_from_the_substitute() -> None:
+    """§4 shelf: fee.gross - F - C = 20,000,000 - 7,000,000 - 1,000,000 = 12,000,000."""
+    evaluation = explain(
+        transactions=x3_ledger(), continuing="1000000", resolutions=[usd(SHELF_KEY, "0")]
+    )
+    # The supplied shelf usage of 0 is refused: it sits below the evidenced floor.
+    assert row_of(evaluation, SHELF_KEY)["disposition"] == (
+        c2x.DISPOSITION_REFUSED_BELOW_FLOOR
+    )
+    substitute = Fraction(REGISTERED) - Fraction("7000000") - Fraction("1000000")
+    assert evaluation.inputs["ceiling_call"]["value"] == fraction_text(substitute)
+    assert pools(evaluation)[REGISTERED_A].bound.status == "unknown"
+
+
+def test_x3_a_floor_above_the_registered_amount_contradicts_the_pool() -> None:
+    """§4 shelf, negative substitute: F 21,000,000 > R - C, so the bound contradicts."""
+    only = takedown("21000000", event_date="2025-06-01")
+    ledger = ledger_of(SALE, [only], [on_shelf(only, "tx:x3-over")])
+    assert ledger.usage[0]["status"] == "unknown"
+    assert Decimal(ledger.usage[0]["evidenced_floor"]["value"]) == Decimal("21000000")
+    evaluation = explain(transactions=ledger)
+    bound = pools(evaluation)[REGISTERED_A].bound
+    assert bound.status == "contradicted" and bound.value is None
+    assert f"registered_overrun:{PATH_A}" in evaluation.envelope.blockers
+    # The existing contradicted-bound rule: substitute None, so no ceiling is claimed.
+    assert evaluation.inputs["ceiling_call"]["value"] is None
+    assert evaluation.envelope.aggregate_bound.value is None
+    assert row_of(evaluation, SHELF_KEY)["disposition"] == (
+        c2x.DISPOSITION_UNRESOLVED_WITH_FLOOR
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -835,7 +889,7 @@ def test_c2x_exact_arithmetic_only_no_float_anywhere() -> None:
             if isinstance(node, ast.Call):
                 name = node.func
                 if isinstance(name, ast.Name) and name.id == "float":
-                    found.append(f"{path.name}:{node.lineno}: float() call")
+                    found.append(f"{path.name}:{node.lineno}: float conversion call")
         return found
 
     assert offenders(ADAPTER) == []
