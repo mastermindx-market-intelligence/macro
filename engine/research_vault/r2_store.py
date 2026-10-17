@@ -47,6 +47,15 @@ log = logging.getLogger("research_vault.r2_store")
 _MAX_STRICT_STREAM_READ_CALLS = 8_192
 HARD_MAX_STRICT_CONDITIONAL_OBJECT_BYTES = 16 * 1024
 
+# The one canonical catalog key is committed by the producer at up to the
+# producer's own catalog allocation (engine.research_vault.producer_generation
+# .CATALOG_MAX_BYTES = 16 MiB), so its local conditional predecessor read
+# may use that same bound. Every other key keeps the unconditional 16 KiB
+# ceiling above. The bound is fixed by this exact key test alone; no
+# caller-supplied override can widen either limit.
+_CONDITIONAL_CATALOG_OBJECT_KEY = "research_vault/catalog.json"
+_CONDITIONAL_CATALOG_MAX_BYTES = 16 * 1024 * 1024
+
 
 @runtime_checkable
 class Store(Protocol):
@@ -1013,7 +1022,22 @@ class LocalStore:
         return parts
 
     @staticmethod
-    def _version_at(parent_fd: int, name: str) -> str | None:
+    def _conditional_predecessor_limit(key: str) -> int:
+        """Byte ceiling for reading one conditional write's predecessor.
+
+        Every key keeps :data:`HARD_MAX_STRICT_CONDITIONAL_OBJECT_BYTES`.
+        Only the exact canonical catalog key may use the producer's catalog
+        allocation (``engine.research_vault.producer_generation.CATALOG_MAX_BYTES``,
+        16 MiB): the committed catalog is megabytes, so the old
+        unconditional 16 KiB cap aborted every real local conditional write
+        while computing the predecessor, before the CAS comparison.
+        """
+        if key == _CONDITIONAL_CATALOG_OBJECT_KEY:
+            return _CONDITIONAL_CATALOG_MAX_BYTES
+        return HARD_MAX_STRICT_CONDITIONAL_OBJECT_BYTES
+
+    @staticmethod
+    def _version_at(parent_fd: int, name: str, limit: int) -> str | None:
         try:
             descriptor = os.open(
                 name, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0), dir_fd=parent_fd,
@@ -1024,14 +1048,14 @@ class LocalStore:
             metadata = os.fstat(descriptor)
             if not stat.S_ISREG(metadata.st_mode):
                 raise BoundedReadProtocolError("local conditional object is not a regular file")
-            if metadata.st_size > HARD_MAX_STRICT_CONDITIONAL_OBJECT_BYTES:
+            if metadata.st_size > limit:
                 raise BoundedReadTooLarge(
                     "local conditional predecessor exceeds its byte safety limit"
                 )
             digest = sha256(b"research-vault-local-version-v1\0")
             observed = 0
-            while observed <= HARD_MAX_STRICT_CONDITIONAL_OBJECT_BYTES:
-                requested = HARD_MAX_STRICT_CONDITIONAL_OBJECT_BYTES + 1 - observed
+            while observed <= limit:
+                requested = limit + 1 - observed
                 chunk = os.read(descriptor, min(1024 * 1024, requested))
                 if not chunk:
                     break
@@ -1041,7 +1065,7 @@ class LocalStore:
                     )
                 observed += len(chunk)
                 digest.update(chunk)
-            if observed > HARD_MAX_STRICT_CONDITIONAL_OBJECT_BYTES:
+            if observed > limit:
                 raise BoundedReadTooLarge(
                     "local conditional predecessor exceeds its byte safety limit"
                 )
@@ -1130,7 +1154,11 @@ class LocalStore:
                     )
                 os.close(parent_fd)
                 parent_fd = opened
-            current_version = self._version_at(parent_fd, parts[-1])
+            # Predecessor read keeps a hard byte ceiling; only the canonical
+            # catalog key is granted the producer's larger catalog allocation.
+            current_version = self._version_at(
+                parent_fd, parts[-1], self._conditional_predecessor_limit(key),
+            )
             if current_version != expected_version:
                 return False
             temporary = f".{parts[-1]}.cas.{os.getpid()}.{time.time_ns()}"
