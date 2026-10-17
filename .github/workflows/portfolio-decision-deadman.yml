@@ -1,0 +1,166 @@
+name: Portfolio decision dead-man
+
+on:
+  schedule:
+    - cron: "30 0 * * 2-6"
+    - cron: "45 10 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: Decision books to check
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - us
+          - asia
+
+permissions:
+  contents: read
+
+concurrency:
+  group: portfolio-decision-deadman-${{ github.event.schedule || inputs.scope || 'all' }}
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the read-only monitor
+        uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          persist-credentials: false
+          sparse-checkout: scripts/portfolio_decision_deadman.py
+          sparse-checkout-cone-mode: false
+
+      - name: Select the due decision books
+        id: scope
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_SCHEDULE: ${{ github.event.schedule }}
+          INPUT_SCOPE: ${{ inputs.scope }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "schedule" ] && [ "$EVENT_SCHEDULE" = "30 0 * * 2-6" ]; then
+            scope=us
+          elif [ "$EVENT_NAME" = "schedule" ] && [ "$EVENT_SCHEDULE" = "45 10 * * 1-5" ]; then
+            scope=asia
+          else
+            scope="${INPUT_SCOPE:-all}"
+          fi
+          case "$scope" in us|asia|all) ;; *) echo "::error::invalid scope"; exit 20 ;; esac
+          echo "scope=$scope" >> "$GITHUB_OUTPUT"
+
+      - name: Collect a sanitized production snapshot through read-only SSH GETs
+        env:
+          SSH_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          snapshot="$RUNNER_TEMP/portfolio-decision-snapshot.json"
+          failure_snapshot() {
+            python3 - "$1" "$snapshot" <<'PY'
+          import json, sys
+          reason, path = sys.argv[1:]
+          value = {
+              "schema": "mastermind.portfolio_decision_snapshot.v1",
+              "collector_error_class": reason,
+              "release": {
+                  "fix_commit": "e61f2951136bdc03a7ec2f5f12f960af26656a4c",
+                  "release_contains_fix": False,
+              },
+              "jobs": {},
+              "decisions": {},
+          }
+          with open(path, "w", encoding="utf-8") as handle:
+              json.dump(value, handle, sort_keys=True, separators=(",", ":"))
+          PY
+          }
+          if [ -z "${SSH_KEY:-}" ]; then
+            failure_snapshot vps_deploy_key_unavailable
+            exit 0
+          fi
+          umask 077
+          keyfile="$RUNNER_TEMP/vps_key"
+          printf '%s\n' "$SSH_KEY" > "$keyfile"
+          chmod 600 "$keyfile"
+          trap 'rm -f "$keyfile"' EXIT
+          set +e
+          ssh -i "$keyfile" \
+            -o BatchMode=yes \
+            -o ConnectTimeout=20 \
+            -o StrictHostKeyChecking=accept-new \
+            root@146.190.142.17 \
+            '/opt/mastermind/.venv/bin/python - collect' \
+            < scripts/portfolio_decision_deadman.py > "$snapshot"
+          ssh_rc=$?
+          set -e
+          if [ "$ssh_rc" -ne 0 ] || ! python3 -m json.tool "$snapshot" >/dev/null 2>&1; then
+            failure_snapshot ssh_read_failed
+          fi
+
+      - name: Evaluate the due cycles and write the terminal receipt
+        env:
+          SCOPE: ${{ steps.scope.outputs.scope }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          python3 scripts/portfolio_decision_deadman.py evaluate \
+            --scope "$SCOPE" \
+            --input "$RUNNER_TEMP/portfolio-decision-snapshot.json" \
+            --output "$RUNNER_TEMP/portfolio-decision-deadman.json"
+          rc=$?
+          set -e
+          printf '%s\n' "$rc" > "$RUNNER_TEMP/deadman.rc"
+          cat "$RUNNER_TEMP/portfolio-decision-deadman.json"
+
+      - name: Publish the sanitized receipt summary
+        if: always()
+        shell: bash
+        run: |
+          python3 - "$RUNNER_TEMP/portfolio-decision-deadman.json" "$GITHUB_STEP_SUMMARY" <<'PY'
+          import json, pathlib, sys
+          receipt_path, summary_path = map(pathlib.Path, sys.argv[1:])
+          if not receipt_path.exists():
+              summary_path.write_text("## Portfolio decision dead-man\n\nNo receipt was produced.\n", encoding="utf-8")
+              raise SystemExit(0)
+          receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+          lines = [
+              "## Portfolio decision dead-man",
+              "",
+              f"**State:** `{receipt.get('state')}`  ",
+              f"**Scope:** `{receipt.get('scope')}`  ",
+              f"**Observed:** `{receipt.get('observed_at')}`",
+              "",
+              "| Book | State | Reason | Expected cycle |",
+              "|---|---|---|---|",
+          ]
+          for book, row in (receipt.get("books") or {}).items():
+              lines.append(
+                  f"| {book} | {row.get('state')} | {row.get('reason') or ''} | "
+                  f"{row.get('expected_cycle_date') or ''} |"
+              )
+          summary_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+          PY
+
+      - name: Upload the sanitized receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-decision-deadman-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/portfolio-decision-deadman.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Enforce the dead-man verdict
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$RUNNER_TEMP/deadman.rc" || exit 20
+          exit "$(cat "$RUNNER_TEMP/deadman.rc")"
