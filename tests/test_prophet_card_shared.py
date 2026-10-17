@@ -618,23 +618,24 @@ def test_setup_table_same_row_body_and_clock_match_card_presenter():
     assert table.select_one('[data-source-field="hold.invalidation"] dd').text == '$85.00'
 
 
-def test_board_entry_read_shows_owner_clock_separate_from_quote_clock():
+def test_board_signal_clock_cannot_be_relabelled_as_entry_assessment():
     from bs4 import BeautifulSoup
     row = {'ticker': 'LFUS', 'signal_asof': '2026-09-25',
+           'price_as_of': '2026-09-28',
            'entry_signal': {'status': 'buy_now', 'headline': 'Wait for the base'},
            'signal': {}, 'hold': {}}
     html = str(_r18_env().get_template('_prophet_setup_detail.html.j2').module.body(
         row, 'board', '2026-09-24'))
     soup = BeautifulSoup(html, 'html.parser')
     clock = soup.select_one('.pvs-assessment-clock')
-    assert clock['data-assessment-asof'] == '2026-09-25'
-    text = clock.get_text(' ', strip=True)
-    assert 'Entry read as of 2026-09-25' in text
-    assert '入场判读截至 2026-09-25' in text
-    assert 'quote time not supplied' in text
-    assert '报价时间 来源未提供' in text
-    assert "owner's assessment at that date" in soup.get_text(' ', strip=True)
-    assert '之后报价处于区间内并不会更新该判读。' in soup.get_text(' ', strip=True)
+    assert clock['data-assessment-asof'] == ''
+    assert 'Entry read date not supplied' in clock.get_text()
+    assert '2026-09-28' in clock.get_text()
+    signal = soup.select_one('.pvs-signal-clock')
+    assert signal['data-signal-asof'] == '2026-09-25'
+    assert 'Signal session' in signal.get_text()
+    assert 'signal session is not the date of the entry assessment' in soup.get_text()
+    assert '之后报价处于区间内并不会更新入场判读。' in soup.get_text()
 
 
 @pytest.mark.parametrize('signal_asof', [123, None, ''])
@@ -989,6 +990,7 @@ def test_setup_detail_recognizes_published_board_codes_without_rewriting_entry(
     entry = soup.select_one('.pvs-read')
     assert entry['data-entry-status'] == entry_status
     assert entry.select_one('.l-en').get_text() == headline
-    assert soup.select_one('.pvs-assessment-clock')['data-assessment-asof'] == '2026-10-08'
+    assert soup.select_one('.pvs-assessment-clock')['data-assessment-asof'] == ''
+    assert soup.select_one('.pvs-signal-clock')['data-signal-asof'] == '2026-10-08'
     assert 'Selection is not entry permission.' in soup.get_text()
     assert row == before

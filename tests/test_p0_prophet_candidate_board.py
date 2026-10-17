@@ -148,8 +148,13 @@ def test_a_r2_today_cta_opens_screener_without_promoting_entry_state():
     assert cta.get_text(" ", strip=True).startswith("Open Screener")
     assert "USProphetSource.set('candidates')" in cta.get("onclick", "")
     card = today.select_one(".pvcard")
-    assert card is not None and "pv-buy" not in (card.get("class") or [])
-    assert "Featured is not entry permission" in today.get_text(" ", strip=True)
+    assert card is not None and "po-wait" in card["class"]
+    assert "po-buy" not in card["class"], "Featured must not promote bounce_wait"
+    # Test the rendered entry state, independent of the introductory copy.
+    assert card.select_one(".po-chip .l-en").get_text(strip=True) == "Wait · countertrend"
+    assert card.select_one(".po-chip .l-zh").get_text(strip=True) == "等待 · 逆势反弹"
+    screener = soup.select_one('#us-cand-grid .pvcard[data-ticker="WAIT1"]')
+    assert "po-wait" in screener["class"]
 
 
 def test_a_today_uses_owner_featured_preview_without_entry_promotion():
@@ -196,8 +201,8 @@ def test_a_today_uses_owner_featured_preview_without_entry_promotion():
     assert today["data-today-visible"] == "3"
     cards = today.select("#us-today-grid .pvcard")
     assert [card["data-ticker"] for card in cards] == ["TOD0", "TOD1", "TOD2"]
-    assert "pv-buy" in cards[0]["class"]
-    assert "pv-wait" in cards[1]["class"], "Featured bounce_wait must remain Wait"
+    assert "po-buy" in cards[0]["class"]
+    assert "po-wait" in cards[1]["class"], "Featured bounce_wait must remain Wait"
     today_text = today.get_text(" ", strip=True)
     assert "2 more Featured names remain in Screener" in today_text
     assert "not a pick quota" in today_text
@@ -280,7 +285,8 @@ def test_a_today_zero_does_not_replace_candidates_default():
     })
     assert 'data-prophet-src="candidates"' in html
     assert 'id="us-today"' in html
-    assert "No owner-Featured names on this board." in html
+    assert "No Featured setups on this board." in html
+    assert "当前榜单暂无精选股票。" in html
 
 
 def test_a_toggle_stays_reachable_and_typed_unavailable_state_shows_when_su_missing():
@@ -491,20 +497,22 @@ def test_c4c_show_more_and_show_all_labels_use_record_units_not_child_units():
     assert "'Show all ' + recTotal" in src
 
 
-def test_c4_site_theme_js_matches_template_byte_for_byte():
-    a = (ROOT / "templates" / "theme.js").read_text()
+def test_c4_site_theme_js_matches_canonical_emission():
+    from lib.site_assets import emit_theme_js
+
+    source = ROOT / "templates" / "theme.js"
+    a = source.read_text()
     b = (ROOT / "site" / "theme.js").read_text()
-    # theme.js is a specially-handled paired asset (baked Supabase config +
-    # bundled Terminal overlay) — compare the SHARED prefix up to the point
-    # site/theme.js's own bake divergence begins, which is exactly what
-    # scripts/check_template_site_sync.py's token-split fallback does.
-    assert a.splitlines()[0] == b.splitlines()[0]
+    # The canonical emitter bakes configuration, bundles the overlay and
+    # minifies the result. Compare the whole emitted asset, not its pre-minify
+    # comment header: stale or hand-copied output must still fail.
+    assert b == emit_theme_js(source)
     # The isHd/recTotal contract this PR adds must appear verbatim on both
     # sides — that's the part a stale `site/theme.js` would be missing.
     for needle in ("function isHd(el)", "recTotal", "recShown"):
         assert needle in a and needle in b, (
             f"{needle!r} must appear in both templates/theme.js and "
-            f"site/theme.js — run scripts.check_template_site_sync --fix")
+            f"site/theme.js — regenerate through lib.site_assets.copy_asset")
 
 
 # ══════════════════════════ D — hydration wiring ════════════════════════════

@@ -1,236 +1,234 @@
-{# Paper opportunity workspace: presentation of the existing US source rows only.
-   Keep the shared macro, selection, live quote hooks, and detail owner unchanged.
-   Light uses white material and shadow; dark uses panel depth and a restrained
-   semantic rail. Missing reads retain the macro's neutral/dashed treatment. #}
+{# Rich opportunity cards use the existing selected/entitled rows and native
+   interactions. No changes to the compact regional or provisional cards. #}
+{% include '_prophet_opportunity.css.j2' %}
 #us-standouts :is(#us-today-grid, #us-cand-grid) {
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 296px), 1fr)) !important;
-  gap: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 12px;
+  align-items: start;
 }
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pvcard {
+/* Remove inherited full-card link overlays, semantic chart recolouring and
+   card stretching. Only the new component participates in these overrides. */
+#us-standouts .pvcard.po-card {
+  display: flex;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-ctl, 8px);
   background: var(--panel);
-  border-radius: var(--r-card, 12px);
+  color: var(--text);
+  box-shadow: none;
+  text-decoration: none;
+  overflow: visible;
+  transform: none;
+}
+html[data-theme="light"] #us-standouts .pvcard.po-card {
+  background: var(--panel);
   box-shadow: var(--card-shadow);
 }
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pvcard::before {
-  background: var(--pvh);
+#us-standouts .po-card::before {
+  height: 2px;
+  background: var(--po-accent);
   box-shadow: none;
 }
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pvcard.pv-featured {
-  background: var(--panel2);
-  border-color: var(--pv-buy);
-  box-shadow: var(--card-shadow);
+#us-standouts .po-card:hover { border-color: var(--gbtn-brd-hover); }
+#us-standouts .po-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 10px; align-items: start; }
+#us-standouts .po-head-main { gap: 5px; }
+#us-standouts .po-chip { white-space: normal; border-radius: calc(var(--r-ctl,8px) / 2); padding: 4px 8px; }
+#us-standouts .po-buy .po-chip { background: var(--po-ink); color: var(--panel); border-color: transparent; }
+#us-standouts .po-quote { display: grid; gap: 2px; justify-items: end; }
+#us-standouts .po-price.nb-px { margin: 0; font-size: 22px; font-weight: 650; letter-spacing: -.025em; }
+#us-standouts .po-chg.nb-chg { font-size: 12px; margin: 0; }
+#us-standouts .po-asof { font-size: 11px; max-width: 150px; }
+#us-standouts .po-live-slots.pv-ov { position: static; max-width: 100%; gap: 4px; }
+#us-standouts .po-trigger { font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: calc(var(--r-ctl,8px) / 2); padding: 1px 5px; }
+#us-standouts .po-trigger-soon { border-style: dashed; }
+#us-standouts .po-card [data-tip-en]:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+#us-standouts .po-card .pv-live[hidden] { display: none; }
+#us-standouts .po-card .pv-chart { padding: 0; border-radius: 0; background: transparent; }
+#us-standouts .po-card .pv-chart > svg { height: 66px; border-radius: 0; }
+#us-standouts .po-card .pv-chart svg * { stroke: currentColor !important; }
+#us-standouts .po-card .pv-chart svg .po-zone-fill { fill: currentColor !important; stroke: none !important; }
+.po-zone-edge, .po-zone-fill { color: var(--link); }
+.po-series { vector-effect: non-scaling-stroke; stroke-linejoin: round; stroke-linecap: round; }
+#us-standouts .po-chart-cap { font-size: 11px; margin-top: 4px; gap: 2px 8px; }
+#us-standouts .po-id { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 3px 8px; align-items: baseline; }
+#us-standouts .po-ticker.pv-setup-stock-link { position: static; inset: auto; z-index: auto; grid-column: 1; grid-row: 1; width: fit-content; color: var(--text); text-decoration: none; }
+#us-standouts .po-ticker.pv-setup-stock-link:hover { color: var(--link); text-decoration: underline; }
+#us-standouts .po-priority { grid-column: 2; grid-row: 1; justify-content: end; font-size: 11px; cursor: help; }
+#us-standouts .po-name, #us-standouts .po-class, #us-standouts .po-marks { grid-column: 1 / -1; }
+#us-standouts .po-name { font-size: 13px; }
+#us-standouts .po-class { font-size: 12px; }
+#us-standouts .po-marks { margin-top: 5px; }
+#us-standouts .po-mark { border-radius: calc(var(--r-ctl,8px) / 2); padding: 1px 5px; font-size: 11px; }
+#us-standouts .po-obs { font-size: 13px; line-height: 1.5; }
+#us-standouts :is(.po-cautions > summary, .po-caution-single, .po-caution-list) { font-size: 12px; line-height: 1.5; }
+#us-standouts .po-stages { flex-wrap: nowrap; gap: 4px; }
+#us-standouts .po-stage { display: flex; flex-direction: column; align-items: stretch; gap: 4px; flex: 1 1 0; text-align: center; }
+#us-standouts .po-stage-dot { width: 100%; height: 3px; border-radius: calc(var(--r-ctl,8px) / 4); }
+#us-standouts .po-stage-on .po-stage-dot { background: var(--link); }
+#us-standouts .po-stage-label { font-size: 11px; }
+#us-standouts .po-stage-on .po-stage-label { color: var(--link); }
+#us-standouts .po-signal-date { margin: 0; font-size: 11px; color: var(--muted); }
+#us-standouts .po-terms { display: grid; grid-template-columns: auto minmax(0, 1fr); padding: 10px; gap: 3px 8px; border-radius: calc(var(--r-ctl,8px) / 2); }
+#us-standouts .po-terms-label { font-size: 11px; color: var(--po-ink); }
+#us-standouts .po-terms-value { font-size: 12px; text-align: right; }
+#us-standouts .po-terms-asof { margin: 0; text-align: right; font-size: 11px; }
+#us-standouts .po-terms .pv-added { grid-column: 1 / -1; font-size: 11px; white-space: normal; margin: 0; }
+#us-standouts .po-footer { padding-top: 6px; gap: 6px; }
+#us-standouts .po-footer .pv-setup-inline { order: 1; margin: 0 0 0 auto; position: static; z-index: auto; }
+#us-standouts .po-footer .pv-setup-inline > summary { background: transparent; border: 0; padding: 8px 0 8px 8px; min-height: 36px; font-size: 12px; color: var(--link); }
+#us-standouts .po-footer .pv-setup-inline[open] { width: 100%; }
+#us-standouts .po-footer .pvs-study-pick { order: 0; margin: 0; min-height: 36px; background: transparent; border-color: transparent; padding: 8px 0; font-weight: 400; font-size: 12px; color: var(--muted); }
+#us-standouts .po-footer .pvs-study-pick::before { content: "□"; margin-right: 6px; }
+#us-standouts .po-footer .pvs-study-pick[aria-pressed="true"] { color: var(--link); background: transparent; }
+#us-standouts .po-footer .pvs-study-pick[aria-pressed="true"]::before { content: "☑"; }
+#us-standouts .pvs-study-bar[hidden] { display: none; }
+@media (max-width: 1199px) { #us-standouts :is(#us-today-grid, #us-cand-grid) { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; } }
+@media (max-width: 959px) { #us-standouts :is(#us-today-grid, #us-cand-grid) { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
+@media (max-width: 639px) {
+  #us-standouts :is(#us-today-grid, #us-cand-grid) { grid-template-columns: minmax(0, 1fr) !important; }
+  #us-standouts .po-footer :is(.pvs-study-pick, .pv-setup-inline > summary) { min-height: 44px; }
 }
-html[data-theme="light"] #us-standouts :is(#us-today-grid, #us-cand-grid) .pvcard.pv-featured {
-  background: var(--panel);
-  border-color: var(--pv-buy);
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pvcard:hover {
-  box-shadow: var(--card-shadow);
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-chart {
+
+/* Selected-card study retains each original card in publisher order. */
+#us-standouts .pvs-study-bar {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 10px 12px;
-  padding: 16px 16px 0;
-  background: transparent;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-chart > svg,
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-nochart {
-  order: 3;
-  flex: 1 0 100%;
-  height: 68px;
-  min-width: 0;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-ov {
-  position: static;
-  z-index: auto;
-  max-width: 100%;
-  gap: 6px;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-ovl {
-  position: relative;
-  z-index: 5;
-  pointer-events: none;
-  flex: 1 1 112px;
   align-items: center;
-  row-gap: 6px;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-ovr {
-  flex: 0 1 auto;
-  margin-left: auto;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-chip {
-  min-height: 30px;
-  display: inline-flex;
-  align-items: center;
-  box-sizing: border-box;
-  border-radius: var(--r-ctl, 8px);
-  padding: 4px 9px;
-  font-size: var(--fs-sm);
-  line-height: 1.3;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-quote {
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-  border: 0;
-  background: transparent;
-  padding: 0;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .nb-px.pv-px {
-  font-size: var(--fs-num-lg);
-  line-height: 1.25;
-  letter-spacing: -.025em;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .nb-chg.pv-chg {
-  font-size: var(--fs-sm);
-  line-height: 1.45;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-ovr > .nb-px.pv-px {
-  background: transparent;
-  border: 0;
-  padding: 0;
-}
-/* The shared full-card link is z4. Lift only real controls, not the chart. */
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-cau,
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-trg,
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-live:not([hidden]) {
-  position: relative;
-  z-index: 5;
-  font-size: var(--fs-sm);
-  pointer-events: auto;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-cau {
-  position: static;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-live[hidden] {
-  display: none;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-cau-btn {
-  min-width: 44px;
-  min-height: 44px;
-  font-size: var(--fs-sm);
-  border-radius: var(--r-ctl, 8px);
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-cau-pop {
-  width: min(260px, calc(100vw - 66px));
-  max-width: none;
-  box-sizing: border-box;
-  font-size: var(--fs-sm);
-  line-height: 1.5;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-bd {
-  padding: 14px 16px 16px;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-hd {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline;
-  gap: 8px;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-idw {
-  display: contents;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-tk {
-  grid-row: 1;
-  grid-column: 1;
-  font-size: var(--fs-num-lg);
-  line-height: 1.25;
-  overflow-wrap: anywhere;
-  white-space: normal;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-nm {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  width: 100%;
-  font-size: var(--fs-body);
-  line-height: 1.5;
-  font-weight: 500;
+  gap: 12px 16px;
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-card, 12px);
+  background: var(--panel2);
   color: var(--text);
-  white-space: normal;
-  overflow: visible;
-  overflow-wrap: anywhere;
 }
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-edge {
-  grid-row: 1;
-  grid-column: 2;
-  padding-top: 5px;
+html[data-theme="light"] #us-standouts .pvs-study-bar {
+  background: var(--panel);
+  box-shadow: var(--card-shadow);
 }
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-edl,
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-ind,
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-mk-i,
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-mark {
-  font-size: var(--fs-sm);
-  line-height: 1.5;
-  white-space: normal;
-  overflow: visible;
-  overflow-wrap: anywhere;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-edn {
-  font-size: var(--fs-body);
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-ind {
-  margin-top: 6px;
-  opacity: 1;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-mk {
-  margin-top: 10px;
-  min-height: 24px;
-  gap: 4px 6px;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-stp {
-  margin-top: 18px;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-stl {
-  margin-top: 7px;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-stl span {
-  font-size: var(--fs-sm);
-  line-height: 1.45;
-  opacity: 1;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-setup-inline {
-  margin-top: 16px;
-  margin-left: auto;
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-setup-inline > summary {
+#us-standouts .pvs-study-copy { flex: 1 1 220px; min-width: 0; }
+#us-standouts .pvs-study-copy strong { font-size: var(--fs-body); }
+#us-standouts .pvs-study-count,
+#us-standouts .pvs-study-note { font-size: var(--fs-sm); line-height: 1.5; color: var(--muted); }
+#us-standouts .pvs-study-count { margin: 4px 0 0; }
+#us-standouts .pvs-study-note { flex: 1 1 100%; border-top: 1px solid var(--line); padding-top: 12px; }
+#us-standouts .pvs-study-note p { margin: 4px 0 0; }
+#us-standouts .pvs-study-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+#us-standouts :is(.pvs-study-actions button, .pvs-study-pick) {
   min-height: 44px;
   min-width: 44px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
   font-size: var(--fs-sm);
   line-height: 1.4;
 }
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-zn {
-  padding: 12px 16px;
-  gap: 6px;
-  background: var(--bg);
-  font-size: var(--fs-body);
-  line-height: 1.5;
+#us-standouts .pvs-study-pick { position: relative; z-index: 5; margin-top: 12px; align-self: flex-start; }
+#us-standouts .pvs-study-pick[aria-pressed="true"] { border-color: var(--link); color: var(--link); background: var(--panel2); }
+html[data-theme="light"] #us-standouts .pvs-study-pick[aria-pressed="true"] { background: var(--bg); }
+#us-standouts :is(.pvs-study-actions button, .pvs-study-pick):focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
+#us-standouts .pvs-study-bar [hidden] { display: none !important; }
+#us-standouts :is(#us-today-grid, #us-cand-grid).pvs-study-active {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 296px), 1fr)) !important;
 }
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-znl,
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-dt,
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-added {
-  font-size: var(--fs-sm);
-}
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-znr,
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-znm,
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-dt,
-#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-added {
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
-  overflow-wrap: anywhere;
-}
+#us-standouts .pvs-study-active > .pvs-study-omit,
+#us-standouts .pvs-study-active + .sm-bar { display: none !important; }
+/* Show-more is pagination, not access: only an explicitly chosen original can stay
+   visible across a column resize. Hidden/tier access remains the native owner's. */
+#us-standouts .pvs-study-active > .pvcard.pvs-study-chosen.sm-hidden { display: flex !important; }
 @media (min-width: 1280px) {
-  #us-standouts :is(#us-today-grid, #us-cand-grid) {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  }
+  #us-standouts :is(#us-today-grid, #us-cand-grid).pvs-study-active { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
 }
 @media (max-width: 680px) {
-  #us-standouts :is(#us-today-grid, #us-cand-grid) {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
+  #us-standouts :is(#us-today-grid, #us-cand-grid).pvs-study-active { grid-template-columns: minmax(0, 1fr) !important; }
+  #us-standouts .pvs-study-actions { width: 100%; }
+  #us-standouts .pvs-study-actions button { flex: 1 1 120px; }
+}
+
+/* The same live detail nodes move into the existing dialog. Keep the full
+   source cautions and dated price visible when opening the rich card. */
+.pv-setup-body[data-opportunity-detail] .pvs-opportunity-identity { display: flex; align-items: start; justify-content: space-between; gap: 16px; padding: 18px 0 12px; }
+.pv-setup-body[data-opportunity-detail] .pvs-company { margin: 0; font-size: var(--fs-md); font-weight: 650; color: var(--text); }
+.pv-setup-body[data-opportunity-detail] .pvs-snapshot { display: grid; text-align: right; gap: 3px; font-size: var(--fs-label); color: var(--muted); }
+.pv-setup-body[data-opportunity-detail] .pvs-snapshot strong { font-size: var(--fs-num-lg,24px); color: var(--text); font-variant-numeric: tabular-nums; }
+.pv-setup-body[data-opportunity-detail] .pvs-chart-clock { margin-bottom: 0; color: var(--muted); font-size: var(--fs-sm); }
+.pv-setup-body[data-opportunity-detail] .pvs-opportunity-cautions { border-inline-start: 2px solid var(--ink-warn); padding: 14px; background: var(--surface-warn-subtle); }
+.pv-setup-body[data-opportunity-detail] .pvs-opportunity-cautions h3 { color: var(--ink-warn); }
+.pv-setup-body[data-opportunity-detail] .pvs-opportunity-cautions ul { margin: 0; padding-inline-start: 18px; display: grid; gap: 8px; font-size: var(--fs-sm); line-height: 1.55; }
+@media (max-width: 639px) { .pv-setup-body[data-opportunity-detail] .pvs-opportunity-identity { flex-wrap: wrap; } }
+
+/* Setup-list browsing: one dialog, the reader's current view, no second navigation. */
+.pv-setup-dialog .pvs-browse-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 12px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+}
+.pv-setup-dialog .pvs-browse-bar[hidden] { display: none; }
+.pv-setup-dialog .pvs-browse-position {
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.pv-setup-dialog .pvs-browse-btn { min-height: 44px; min-width: 44px; white-space: nowrap; }
+.pv-setup-dialog .pvs-browse-btn:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+@media (max-width: 639px) {
+  .pv-setup-dialog .pvs-browse-bar { padding: 8px 12px; gap: 6px 10px; }
+  .pv-setup-dialog .pvs-browse-btn { flex: 1 1 120px; }
+}
+
+/* Setup sections (Paper LKU-0 / 8OM-0): the template's own data-pvs-section groups over
+   the SAME supplied content. The tab row exists only after the native dialog opens; in
+   the no-JS inline fallback no bar is built and every group stays visible. */
+.pv-setup-body .pvs-group[data-pvs-section] { grid-column: 1 / -1; display: grid; gap: 14px; align-items: start; min-width: 0; }
+.pv-setup-body .pvs-group[data-pvs-section="structure"],
+.pv-setup-body .pvs-group[data-pvs-section="evidence"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.pv-setup-body .pvs-group[data-pvs-section][hidden] { display: none; }
+.pv-setup-body .pvs-section-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 2px 4px;
+  margin: 0 0 14px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-ctl, 8px);
+  background: var(--panel2);
+}
+html[data-theme="light"] .pv-setup-body .pvs-section-tabs {
+  background: var(--panel);
+  box-shadow: var(--card-shadow);
+}
+.pv-setup-body .pvs-section-tab {
+  min-height: 44px;
+  min-width: 44px;
+  flex: 0 1 auto;
+  margin: 0;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: calc(var(--r-ctl, 8px) / 2);
+  background: transparent;
+  color: var(--text);
+  font-size: var(--fs-sm);
+  line-height: 1.3;
+  padding: 8px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.pv-setup-body .pvs-section-tab:hover { color: var(--link); }
+.pv-setup-body .pvs-section-tab[aria-selected="true"] {
+  border-bottom-color: var(--link);
+  background: var(--panel);
+}
+html[data-theme="light"] .pv-setup-body .pvs-section-tab[aria-selected="true"] { background: var(--bg); }
+.pv-setup-body .pvs-section-tab:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+@media (max-width: 639px) {
+  .pv-setup-body .pvs-group[data-pvs-section="structure"],
+  .pv-setup-body .pvs-group[data-pvs-section="evidence"] { grid-template-columns: minmax(0, 1fr); }
+  .pv-setup-body .pvs-section-tabs { max-width: 100%; }
+  .pv-setup-body .pvs-section-tab { flex: 1 1 auto; padding: 8px 10px; }
 }

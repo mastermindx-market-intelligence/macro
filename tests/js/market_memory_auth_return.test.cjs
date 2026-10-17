@@ -258,7 +258,7 @@ for(const owner of ['theme','account']) {
 // until that section is first opened; standalone pages keep the eager boot.
 function legacyDetails() {
  const listeners={};
- const el={addEventListener(t,f){(listeners[t]||(listeners[t]=[])).push(f);},hasAttribute(name){return name==='open'&&!!el.open;}};
+ const el={tagName:'DETAILS',addEventListener(t,f){(listeners[t]||(listeners[t]=[])).push(f);},hasAttribute(name){return name==='open'&&!!el.open;}};
  let open=false;
  Object.defineProperty(el,'open',{get:()=>open,set:v=>{v=!!v;if(v===open)return;open=v;(listeners.toggle||[]).forEach(f=>f());}});
  return el;
@@ -365,4 +365,30 @@ test('sign-in after a previously opened section closes defers refreshed legacy r
 test('pages without the legacy section keep the eager boot reads',async()=>{
  const x=setup('?ticker=SPY');await tick();
  assert.equal(x.pending.length,2);
+});
+
+// Prophet opts into the already-owned memory view; an issuer alone stays lazy.
+test('explicit Prophet research handoff opens only the requested symbol view',async()=>{
+ const x=setup('?mm_issuer_input=BRK.B&mm_lang=zh&view=memory',null,legacyDetails());await tick();
+ assert.equal(x.elements['mmr-legacy'].open,true);
+ assert.equal(x.elements['mm-symbol-input'].value,'BRK.B');
+ assert.equal(x.pending.filter(p=>p.url.includes('/symbol/')).length,1);
+ assert.ok(x.pending.some(p=>p.url.endsWith('/symbol/BRK.B')));
+ const intent=x.window.MarketMemoryIntent.read().intent;
+ assert.equal(intent.issuerInput,'BRK.B');assert.equal(intent.language,'zh');assert.equal(intent.view,'memory');
+ assert.equal(Object.hasOwn(intent,'query'),false);assert.equal(Object.hasOwn(intent,'gen'),false);
+});
+test('ordinary saved-output navigation keeps recomputed history collapsed',async()=>{
+ const x=setup('?mm_mode=saved&mm_query=exact-original',null,legacyDetails());await tick();
+ assert.equal(x.elements['mmr-legacy'].open,false);
+ assert.equal(x.window.MarketMemoryIntent.read().intent.query,'exact-original');
+ assert.equal(x.pending.length,0);
+});
+test('explicit research view and issuer survive the original OAuth return',async()=>{
+ const prior=setup('?mm_issuer_input=BRK.B&mm_lang=zh&view=memory',null,legacyDetails());await tick();
+ const x=setup('?onboard=resume&code=synthetic',prior.saved,legacyDetails());await tick();
+ assert.equal(x.elements['mmr-legacy'].open,true);
+ assert.equal(x.elements['mm-symbol-input'].value,'BRK.B');
+ assert.equal(x.lang,'zh');
+ assert.equal(x.pending.filter(p=>p.url.endsWith('/symbol/BRK.B')).length,1);
 });

@@ -1,0 +1,127 @@
+{# Paper opportunity component — presentation stylesheet (spec:
+   research/PROPHET_PRODUCT_IMPLEMENTATION_20261015.md §"Visual direction").
+   Include ONCE per page inside a <style> block:
+     <style>{% include "_prophet_opportunity.css.j2" %}</style>
+
+   Contract:
+   · theme.css tokens only — no literal colors anywhere in this file, so dark,
+     light and the zh 红涨绿跌 direction swap all resolve at paint.
+   · Everything is scoped under .po-*; this file declares no :root tokens, no
+     element/global rules, no @import — it cannot leak onto any other surface.
+   · Two deliberate treatments, one anatomy: the dark card is separated panel
+     material with a fine boundary and a restrained semantic top rail; light is
+     the white card with the same boundary plus the existing --card-shadow.
+   · Color is confined to semantic accents: the stance rail/chip (--pv-*), the
+     direction inks (--ink-up/--ink-down, which theme.css flips for zh), warn/
+     info chips and the link color. Structure carries everything else.
+   · Chart ink follows the chart's OWN .po-dir-* class, never the card's stance
+     class — stance and direction are different facts (DA-002).
+   · Type: 12px secondary · 14px body · 18px ticker · 24px quote, tabular
+     figures on every figure. 16px card padding, 12px rhythm, 8px radius
+     (var(--r-ctl) when the page defines it).
+   · No fixed or minimum card height and no vertical flex spacer anywhere: card
+     height is its content, in every state. #}
+
+/* ── grid: 4 columns ≥1200 · 3 ≥960 · 2 ≥640 · 1 below 640 ───────────────── */
+.po-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;min-width:0}
+@media (min-width:640px){.po-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:960px){.po-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:1200px){.po-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* ── card material ────────────────────────────────────────────────────────── */
+.po-card,.po-card *{box-sizing:border-box}
+.po-card{position:relative;display:flex;flex-direction:column;gap:12px;min-width:0;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-ctl,8px);color:var(--text);font-size:14px;line-height:1.5}
+html[data-theme="light"] .po-card{box-shadow:var(--card-shadow)}
+/* Restrained semantic rail: a 3px accent bar only — no glow, no full border. */
+.po-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r-ctl,8px) var(--r-ctl,8px) 0 0;background:var(--po-accent,var(--muted));opacity:.85}
+
+/* One accent per stance; unknown is the neutral "no read" accent. */
+.po-buy{--po-accent:var(--pv-buy);--po-ink:var(--ink-pv-buy,var(--pv-buy))}
+.po-near{--po-accent:var(--pv-near);--po-ink:var(--ink-pv-near,var(--pv-near))}
+.po-wait{--po-accent:var(--pv-wait);--po-ink:var(--ink-pv-wait,var(--pv-wait))}
+.po-hold{--po-accent:var(--pv-hold);--po-ink:var(--pv-hold)}
+.po-avoid{--po-accent:var(--pv-avoid);--po-ink:var(--ink-pv-avoid,var(--pv-avoid))}
+.po-unknown{--po-accent:var(--muted);--po-ink:var(--muted)}
+
+/* Direction inks — the chart and the quote change borrow these; the stance
+   never does. theme.css rebinds the pair under html[data-lang="zh"]. */
+.po-dir-up{color:var(--ink-up,var(--up))}
+.po-dir-down{color:var(--ink-down,var(--down))}
+.po-dir-flat{color:var(--muted)}
+
+/* ── header: stance + strategy/horizon · quote ────────────────────────────── */
+.po-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 12px;min-width:0}
+.po-head-main{display:flex;flex-wrap:wrap;align-items:center;gap:8px;min-width:0;flex:1 1 auto}
+.po-chip{display:inline-flex;align-items:center;flex:none;font-size:12px;font-weight:700;line-height:1.3;padding:3px 9px;border-radius:var(--r-ctl,8px);white-space:nowrap;background:var(--panel2);color:var(--po-ink,var(--muted));border:1px solid var(--line)}
+.po-meta{font-size:12px;color:var(--muted);min-width:0;overflow-wrap:anywhere}
+.po-quote{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:flex-end;gap:2px 10px;margin-left:auto;min-width:0;text-align:right}
+.po-price{font-size:24px;font-weight:700;line-height:1.15;letter-spacing:-.01em;font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere}
+.po-currency{font-size:12px;font-weight:600;color:var(--muted)}
+.po-chg{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.po-asof{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere}
+.po-missing{font-size:12px;color:var(--muted)}
+
+/* ── chart: 72px, own label, own clock ────────────────────────────────────── */
+.po-chart{margin:0;min-width:0}
+.po-chart-plot{min-width:0;border-radius:var(--r-ctl,8px);background:var(--panel)}
+.po-chart-plot svg{display:block;width:100%;height:72px;min-width:0}
+.po-chart-plot polyline{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.po-chart-cap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;margin-top:8px;font-size:12px;color:var(--muted);min-width:0}
+.po-chart-label{min-width:0;overflow-wrap:anywhere}
+.po-chart-asof{font-variant-numeric:tabular-nums;min-width:0}
+.po-nochart{display:flex;align-items:center;justify-content:center;height:72px;border:1px dashed var(--line);border-radius:var(--r-ctl,8px);font-size:12px;color:var(--muted)}
+
+/* ── identity, priority, marks ────────────────────────────────────────────── */
+.po-id{display:flex;flex-direction:column;gap:4px;min-width:0}
+.po-ticker{font-size:18px;font-weight:800;line-height:1.2;letter-spacing:.01em;font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere}
+.po-name{font-size:14px;font-weight:500;color:var(--text);min-width:0;overflow-wrap:anywhere}
+.po-class{font-size:12px;color:var(--muted);min-width:0;overflow-wrap:anywhere}
+.po-sep{margin:0 6px;opacity:.7}
+.po-priority{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 6px;font-size:12px;color:var(--muted);min-width:0}
+.po-priority-value{font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
+.po-marks{display:flex;flex-wrap:wrap;gap:4px;margin:0;padding:0;list-style:none;min-width:0}
+.po-mark{font-size:12px;line-height:1.4;padding:2px 8px;border-radius:var(--r-ctl,8px);min-width:0;overflow-wrap:anywhere;color:var(--muted);border:1px solid var(--line);background:var(--gbtn-bg)}
+.po-mark-info{color:var(--ink-info,var(--info));border-color:var(--line);background:var(--ff-tint-info-10-panel)}
+.po-mark-warn{color:var(--ink-warn,var(--warn));border-color:var(--line);background:var(--surface-warn-subtle)}
+
+/* ── observation + cautions ───────────────────────────────────────────────── */
+.po-obs{margin:0;font-size:14px;line-height:1.55;min-width:0;overflow-wrap:anywhere}
+.po-cautions{min-width:0}
+.po-cautions>summary{cursor:pointer;font-size:14px;line-height:1.5;min-width:0;overflow-wrap:anywhere}
+.po-cautions[open]>summary{margin-bottom:8px}
+.po-caution-single{margin:0;font-size:14px;line-height:1.55;min-width:0;overflow-wrap:anywhere}
+.po-caution-key{margin-right:6px;font-size:12px;color:var(--ink-warn,var(--warn))}
+.po-caution-top{min-width:0}
+.po-caution-more{margin-left:6px;font-size:12px;color:var(--muted);white-space:nowrap}
+.po-caution-list{margin:8px 0 0;padding-inline-start:18px;font-size:14px;line-height:1.55;display:grid;gap:6px;min-width:0}
+
+/* ── strategy-native stages ───────────────────────────────────────────────── */
+.po-stages{display:flex;flex-wrap:wrap;gap:6px 12px;margin:0;padding:0;list-style:none;min-width:0}
+.po-stage{display:flex;align-items:center;gap:6px;min-width:0}
+.po-stage-dot{flex:none;width:8px;height:8px;border-radius:var(--r-pill,999px);background:var(--line)}
+.po-stage-on .po-stage-dot{background:var(--po-accent,var(--muted))}
+.po-stage-label{font-size:12px;color:var(--muted);min-width:0;overflow-wrap:anywhere}
+.po-stage-on .po-stage-label{color:var(--text);font-weight:650}
+
+/* ── context link ─────────────────────────────────────────────────────────── */
+.po-context{color:var(--link);font-size:14px;min-width:0;overflow-wrap:anywhere;text-decoration:underline;text-underline-offset:2px}
+
+/* ── dated terms band ─────────────────────────────────────────────────────── */
+.po-terms{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;padding:12px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2);font-size:12px;color:var(--muted);min-width:0}
+.po-terms-label{font-weight:700;color:var(--text);min-width:0;overflow-wrap:anywhere}
+.po-terms-value{font-size:14px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere}
+.po-terms-asof{margin-inline-start:auto;font-variant-numeric:tabular-nums;min-width:0}
+
+/* ── quiet action footer: compare left · View setup right ─────────────────── */
+.po-foot{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding-top:12px;border-top:1px solid var(--line);font-size:12px;min-width:0}
+.po-compare{display:inline-flex;align-items:center;gap:6px;min-width:0}
+.po-compare-box{width:16px;height:16px;margin:0;accent-color:var(--info)}
+.po-compare-label{font-size:12px;color:var(--text);cursor:pointer}
+.po-compare-box:disabled+ .po-compare-label{color:var(--muted);cursor:default}
+.po-setup{margin-left:auto;font-size:14px;font-weight:650;color:var(--link);min-width:0;overflow-wrap:anywhere;text-decoration:underline;text-underline-offset:2px}
+
+/* ── keyboard focus ───────────────────────────────────────────────────────── */
+.po-card a:focus-visible,
+.po-card summary:focus-visible,
+.po-card input:focus-visible,
+.po-card label:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:calc(var(--r-ctl,8px) / 4)}

@@ -2340,7 +2340,8 @@ class TestMarketOverlayInputs:
         assert bp._load_futures_chg("2026-07-02") is None
 
 
-def test_index_entries_carry_last_price_and_state(tmp_path):
+@pytest.mark.parametrize('last_print', ['2026-07-02', '2026-07-01', '2026-06-10'])
+def test_index_entries_carry_last_price_and_state(tmp_path, last_print):
     """R0.7: active index entries publish last_price + a nested state block
     (components / geometry / change_reason) so the Terminal's GAINERS sort,
     T1-progress/P&L bars, and ConfidencePanel component bars light up."""
@@ -2372,6 +2373,9 @@ def test_index_entries_carry_last_price_and_state(tmp_path):
             out_path=tmp_path / "showcase.json")
 
         ph = _make_price_history(150.0, 30)
+        # Keep future bars to prove the publisher uses the actual PIT row. The
+        # management evaluation date is independent of its last closing print.
+        ph = ph[(ph.index <= pd.Timestamp(last_print)) | (ph.index > pd.Timestamp('2026-07-02'))]
         # last_price must be the last PIT close — the same bar the management
         # engine saw — not the frame's final (post-asof) close.
         expected_last = round(
@@ -2387,6 +2391,16 @@ def test_index_entries_carry_last_price_and_state(tmp_path):
         assert idx["plans"], "expected at least one active plan"
         entry = idx["plans"][0]
         assert entry.get("last_price") == pytest.approx(expected_last)
+        assert entry.get('last_price_asof') == last_print
+        assert entry.get('management_asof') == '2026-07-02'
+        # The Plan review consumer reads those exact row clocks. Neither the
+        # index publication date nor another screen supplies a quote date.
+        from engine.prophet_plan_presentation import present_plan_record
+        observed = present_plan_record(entry)["observation"]
+        assert observed["close"] == pytest.approx(expected_last)
+        assert observed["close_date"] == last_print
+        assert observed["management_date"] == "2026-07-02"
+        assert observed["price_frame_state"] == ("stale" if last_print == "2026-06-10" else "unknown")
         state = entry.get("state")
         assert isinstance(state, dict), "nested state block missing"
         for key in ("components", "geometry", "change_reason"):
@@ -2408,6 +2422,17 @@ def test_index_entries_carry_last_price_and_state(tmp_path):
         bp.LEDGER_PATH = orig_ledger_path
         bp.LEDGER_DIR = orig_ledger_dir
         bp.write_showcase = orig_write_showcase
+
+
+def test_unavailable_management_cannot_borrow_the_publication_date_for_a_price():
+    import scripts.build_prophet as bp
+
+    row = bp._degraded_index_entry('ABC-BULL-20260701', {
+        'asset': 'ABC', 'entry': 100, 'asof': '2026-07-01', 'horizon_days': 45},
+        asof='2026-07-02', reason='price_history_unavailable', closed=False, outcome=None)
+    assert row['plan_asof'] == '2026-07-01'
+    assert row['management_asof'] is None
+    assert row['last_price'] is None and row['last_price_asof'] is None
 
 
 def test_direct_builder_publish_is_disabled_before_any_r2_call(monkeypatch):

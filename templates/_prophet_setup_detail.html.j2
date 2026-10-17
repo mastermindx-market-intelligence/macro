@@ -20,20 +20,30 @@
 {%- if v is string and v|trim -%}{{ t(names[v][0],names[v][1]) if v in names else t('Unmapped status','状态未映射') }}
 {%- else -%}{{ value(none) }}{%- endif -%}
 {%- endmacro %}
-{% macro body(row, kind, as_of=none, plan_rel={'state': 'none', 'plans': []}) -%}
+{% macro body(row, kind, as_of=none, plan_rel={'state': 'none', 'plans': []}, display=none) -%}
 {% set es = row.get('entry_signal') if kind == 'board' and row.get('entry_signal') is mapping else {} %}
 {% set sig = row.get('signal') if kind == 'board' and row.get('signal') is mapping else {} %}
 {% set hold = row.get('hold') if kind == 'board' and row.get('hold') is mapping else {} %}
 {% set zone = es.get('buy_zone') if es.get('buy_zone') is mapping else {} %}
-<div class="pv-setup-body" data-setup-kind="{{ kind|e }}" data-native-id="{{ row.ticker|e }}">
+<div class="pv-setup-body" data-setup-kind="{{ kind|e }}" data-native-id="{{ row.ticker|e }}"{% if display %} data-opportunity-detail{% endif %}>
+  {% if display %}
+  <header class="pvs-opportunity-identity">
+    <div><p class="pvs-company">{{ t(row.get('name') or row.ticker, row.get('name_zh') or row.get('name') or row.ticker) }}</p>
+    {% if row.get('industry') or row.get('sector') %}<p class="pvs-note">{{ t(row.get('industry') or row.get('sector'), row.get('industry_zh') or row.get('sector_zh') or row.get('industry') or row.get('sector')) }}</p>{% endif %}</div>
+    <div class="pvs-snapshot"><span>{{ t('Snapshot price','快照价格') }}</span><strong>{{ value(row.get('price'),true) }}</strong><span>{{ value(row.get('price_as_of')) }}</span></div>
+  </header>
+  {% endif %}
   <p class="pvs-note pvs-summary-clock">{{ t("Source as-of","来源日期") }} {{ value(as_of) }}{% if kind == "board" %} · {{ t("Quote time","报价时间") }} {{ value(row.get("price_as_of")) }}{% endif %}</p>
   <div class="pvs-grid">
-    <div>
+    <div class="pvs-group" data-pvs-section="structure">
       <section class="pvs-section">
         <h3>{{ t('Entry conditions','入场条件') if kind == 'board' else t('Research candidate','研究候选') }}</h3>
         {% if kind == 'board' %}
         <p class="pvs-read" data-entry-status="{{ (es.get('status') or '')|e }}"><span class="l-en">{{ es.get('headline')|e if es.get('headline') is string and es.get('headline')|trim else 'Entry read not supplied' }}</span><span class="l-zh">{% if es.get('headline_zh') is string and es.get('headline_zh')|trim %}{{ es.get('headline_zh')|e }}{% elif es.get('headline') is string and es.get('headline')|trim %}来源原文 · {{ es.get('headline')|e }}{% else %}未提供入场读数{% endif %}</span></p>
-        <p class="pvs-assessment-clock" data-assessment-asof="{{ row.get('signal_asof')|e if row.get('signal_asof') is string and row.get('signal_asof')|trim else '' }}"><span class="l-en">{% if row.get('signal_asof') is string and row.get('signal_asof')|trim %}Entry read as of {{ row.get('signal_asof') }}{% else %}Entry read date not supplied{% endif %} · quote time {% if row.get('price_as_of') is string and row.get('price_as_of')|trim %}{{ row.get('price_as_of') }}{% else %}not supplied{% endif %}</span><span class="l-zh">{% if row.get('signal_asof') is string and row.get('signal_asof')|trim %}入场判读截至 {{ row.get('signal_asof') }}{% else %}入场判读日期来源未提供{% endif %} · 报价时间 {% if row.get('price_as_of') is string and row.get('price_as_of')|trim %}{{ row.get('price_as_of') }}{% else %}来源未提供{% endif %}</span></p><p class="pvs-note">{{ t("The entry read is the owner's assessment at that date; a later quote inside the zone does not renew it.",'入场判读是所有者在该日期的评估；之后报价处于区间内并不会更新该判读。') }}</p>
+        <p class="pvs-assessment-clock" data-assessment-asof="">{{ t('Entry read date not supplied','入场判读日期来源未提供') }} · {{ t('Quote time','报价时间') }} {{ value(row.get('price_as_of')) }}</p>
+        {% if row.get('signal_asof') is string and row.get('signal_asof')|trim %}<p class="pvs-signal-clock" data-signal-asof="{{ row.get('signal_asof')|e }}">{{ t('Signal session','信号交易日') }} {{ row.get('signal_asof')|e }}</p>{% endif %}
+        <p class="pvs-note">{{ t('The signal session is not the date of the entry assessment. A later quote inside the zone does not renew the entry read.','信号交易日不是入场评估日期。之后报价处于区间内并不会更新入场判读。') }}</p>
+        {% if display %}<p class="pvs-chart-clock">{{ t('Daily closes','每日收盘') }} · {{ value((display.get('chart') or {}).get('asof')) }}</p>{% endif %}
         <div class="pvs-chart-slot" data-pvs-chart><p>{{ t('Chart available on the setup card.','可在形态卡片上查看图表。') }}</p></div>
         {% else %}
         <p class="pvs-read">{{ t('Research only · entry details unavailable','仅供研究 · 入场详情暂缺') }}</p>
@@ -51,10 +61,25 @@
       </dl><p class="pvs-note">{{ t('Entry stop and base invalidation are different. Chase boundary is not a target.','入场止损与筑底失效不同；追高边界不是目标价。') }}</p></section>
       {% endif %}
     </div>
-    <div>
-      <section class="pvs-section"><h3>{{ t('Why it is here','入选理由') }}</h3>
-        <p>{{ original(sig.get('reason') if kind == 'board' else row.get('headline_reason')) }}</p>
+    <div class="pvs-group" data-pvs-section="evidence">
+      {% if display and display.get('cautions') %}
+      <section class="pvs-section pvs-opportunity-cautions"><h3>{{ t('Risks to review','待审阅风险') }}</h3>
+        <ul>{% for caution in display.cautions %}<li>{{ t(caution.en, caution.zh) }}</li>{% endfor %}</ul>
       </section>
+      {% endif %}
+      <section class="pvs-section"><h3>{{ t('Why it is here','入选理由') }}</h3>
+        {% if display and display.get('assessment_detail') %}<p class="pvs-assessment-detail">{{ t(display.assessment_detail.en,display.assessment_detail.zh) }}</p>
+        {% else %}<p>{{ original(sig.get('reason') if kind == 'board' else row.get('headline_reason')) }}</p>{% endif %}
+      </section>
+      {% if display and display.get('evidence_profile') %}
+      <section class="pvs-section pvs-evidence-profile"><h3>{{ t('Evidence profile','证据概览') }}</h3>
+        <p class="pvs-note">{{ t('Published relative family scores · 0–100. Present families receive equal weight. These are not probabilities or entry permission.','已发布的类别相对评分 · 0–100。已有评分的类别等权计入；这些数值并非概率或入场许可。') }}</p>
+        <dl class="pvs-facts">{% for family in display.evidence_profile.scores %}
+          <div class="pvs-field" data-evidence-family="{{ family.key }}"><dt>{{ t(family.label.en,family.label.zh) }}</dt><dd>{{ '%.1f'|format(family.value) }}</dd></div>
+        {% endfor %}</dl>
+        {% if display.evidence_profile.abstaining %}<p class="pvs-note pvs-evidence-absent">{{ t('Not scored','未计分') }}: {% for label in display.evidence_profile.abstaining %}{{ t(label.en,label.zh) }}{% if not loop.last %} · {% endif %}{% endfor %}</p>{% endif %}
+      </section>
+      {% endif %}
       {% if kind == 'board' %}
       <section class="pvs-section"><h3>{{ t('Technical context','技术背景') }}</h3><dl class="pvs-facts">
         {{ field('Above 200-day trend','高于 200 日趋势',sig.get('above200'),'signal.above200',boolean=true) }}
@@ -62,6 +87,17 @@
         {{ field('Provisional observation','暂定观察',sig.get('provisional'),'signal.provisional',boolean=true) }}
       </dl></section>{% endif %}
       <p class="pvs-availability">{{ t('Target and holding period unavailable in this view. Reward/risk and win probability are not calculated.','此视图暂无目标价与持有周期，不计算收益风险比或成功概率。') }}</p>
+    </div>
+    {%- if display and (display.get('context') or display.get('memory_href')) %}
+    <div class="pvs-group" data-pvs-section="research">
+      <section class="pvs-section pvs-research-links"><h3>{{ t('Explore the context','探索背景') }}</h3>
+        {% if display.get('context') %}<p><a class="pvs-context-link" href="{{ display.context.href|e }}" target="_blank" rel="noopener">{{ t(display.context.label.en,display.context.label.zh) }} · {{ t('new tab','新标签页') }} ↗</a></p>{% endif %}
+        {% if display.get('memory_href') %}<p><a class="pvs-memory-link l-en" href="{{ display.memory_href|e }}&amp;mm_lang=en" target="_blank" rel="noopener">Market Memory · recomputed history · new tab ↗</a><a class="pvs-memory-link l-zh" href="{{ display.memory_href|e }}&amp;mm_lang=zh" target="_blank" rel="noopener">市场记忆 · 重算历史 · 新标签页 ↗</a></p>
+        <p class="pvs-note">{{ t('Explore this security using currently available history. This is separate research, not evidence matched to this setup. Your setup stays open here.','使用当前可得历史探索这只证券。这是独立研究，并非与本形态匹配的证据；此处保留当前形态。') }}</p>{% endif %}
+      </section>
+    </div>
+    {%- endif %}
+    <div class="pvs-group" data-pvs-section="sources">
       <details class="pvs-audit"><summary>{{ t('Evidence & source details','证据与来源详情') }}</summary>
         <section class="pvs-section"><h3>{{ t('Setup information','形态信息') }}</h3>
         <p class="pvs-status-read">{{ status_name(row.get('stage'), {'live': ('Active setups','活跃形态'), 'setting_up': ('Developing','形态形成中'), 'ran': ('Ran — don’t chase','已启动 — 勿追'), 'basing': ('Basing','筑底中'), 'blocked': ('Blocked','受阻')}) }} · {{ status_name(row.get('lane') if kind == 'board' else none, {'bottoming': ('Base formation','筑底'), 'continuation': ('Continuation','延续'), 'trend': ('Trend','趋势'), 'recovery': ('Recovery','复苏'), 'watch': ('Watch','观察')}) }}</p>
@@ -111,11 +147,21 @@
 
 {# Same one-row presenter, serialized only with an already-entitled table row.
    Chart text remains inert until the bounded display guard validates its geometry. #}
-{% macro table_action(row, as_of=none, plan_rel={'state': 'none', 'plans': []}) -%}
+{% macro table_action(row, as_of=none, plan_rel={'state': 'none', 'plans': []}, display=none) -%}
 <details class="pv-setup-inline pv-setup-table" data-setup-ticker="{{ row.ticker|e }}" data-setup-asof="{{ as_of|e if as_of else '' }}">
 <summary>{{ t('Setup detail','形态详情') }}</summary>
-<template class="pvs-body-source">{{ body(row, 'board', as_of, plan_rel) }}</template>
+<template class="pvs-body-source">{{ body(row, 'board', as_of, plan_rel, display=display) }}</template>
 <p class="pvs-fallback-note">{{ t('If detail is unavailable, use the stock link in this row.','若详情不可用，请使用本行的个股链接。') }}</p>
 <template class="pvs-chart-source">{{ row.get('spark_svg')|e if row.get('spark_svg') is string else '' }}</template>
 </details>
+{%- endmacro %}
+
+{# Production table uses the same row presenter and caution fold as its card.
+   The legacy action remains usable by read-only callers without a rich display. #}
+{% macro opportunity_table_action(row, as_of=none, plan_rel={'state': 'none', 'plans': []}) -%}
+{% import "_prophet_board_cautions.html.j2" as board_cautions %}
+{% set folded = namespace(rows=[]) %}
+{% set ignored = board_cautions.fold(row, folded) %}
+{% set display = present_us_candidate(row, occurrence_id='table-detail', board_asof=as_of, folded_cautions=folded.rows) %}
+{{ table_action(row, as_of, plan_rel, display=display) }}
 {%- endmacro %}
