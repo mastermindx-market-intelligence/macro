@@ -270,14 +270,14 @@ waves:
       natural/qualification/owner gates. No K phase-2 release or mission-completion claim.
   - id: TAXONOMY-V2
     title: "Taxonomy V2: sub_theme tier and display-tier classification axes"
-    status: in_progress
+    status: done
     pr: [8940, 8941, 8942, 8945, 8948, 8961, 8974, 8975, 8999, 8969, 9000, 8968, 8973, 8976, 8987]
     next_action: >
       Seat 6f14c2da (DEC:GMI-TAXONOMY-UPGRADE-V2, DEC:GMI-SUB-THEME-POPULATION-KEEP-ADD). All
-      fifteen PRs are merged. Production proof is owed by the first nightly whose UTC run date
-      is 2026-10-13 or later: it must materialize 12 sub_theme nodes and 132 PARENT_OF
-      hierarchy rows (93 + 39), because every sub-tier row is asserted_on 2026-10-13. Then the
-      L12 hierarchy-breadth and L13 micro RS-proxy display readers (no rank-like keys), F04
+      fifteen PRs are merged, and production is proven: the nightly-materialized
+      data/theme_graph on main (commit 8ce9f3e9908d, 2026-10-14) holds 12 sub_theme nodes and
+      132 PARENT_OF rows (93 + 39), as specified. Follow-ons, not part of this wave: the L12
+      hierarchy-breadth and L13 micro RS-proxy display readers (no rank-like keys), F04
       consumption coordinated with the MarketOntology owner (no wiring without a new DEC), a
       hierarchy browse page through the design lane, and a human ratifier for the 27
       RELATION_WITHDRAW events that would retire the direct theme->micro_theme rows.
