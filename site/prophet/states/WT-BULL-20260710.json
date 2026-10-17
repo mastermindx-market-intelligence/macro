@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "WT-BULL-20260710",
-  "asof": "2026-10-14",
+  "asof": "2026-10-16",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 41.3,
@@ -14,13 +14,13 @@
     "progress": 13.3,
     "pace": 0.0,
     "retention": 37.7,
-    "overlay": 53.0
+    "overlay": 32.9
   },
   "geometry": {
     "dist_to_stop_r": 1.17,
     "dist_to_t1_r": 1.33,
     "dist_to_t2_r": 2.83,
-    "horizon_pct_used": 151.1,
+    "horizon_pct_used": 155.6,
     "p1": 0.1131,
     "p2": 0.0565,
     "p3": null,
@@ -45,13 +45,13 @@
   "_first_trigger_ts": "2026-08-10",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 68,
-  "tau": 1.5111,
+  "days_elapsed": 70,
+  "tau": 1.5556,
   "price_frame": {
     "state": "stale",
     "last_close_date": "2026-10-08",
-    "run_asof": "2026-10-14",
-    "lag": 4,
+    "run_asof": "2026-10-16",
+    "lag": 6,
     "lag_basis": "business_days",
     "max_lag": 3
   }

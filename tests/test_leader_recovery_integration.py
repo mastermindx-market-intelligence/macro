@@ -127,6 +127,36 @@ def test_additive_layer_clock_follows_universe_when_spy_leads(tmp_path, capsys):
     assert before==after
 
 
+def test_nightly_capture_seals_at_the_additive_clock_when_spy_leads(tmp_path, capsys):
+    """Production 2026-10-16/17: SPY led the issuer stores, the descriptors were cut at the
+    additive clock but capture was keyed to the incumbent SPY date, so every lagged nightly
+    raised descriptor_cut_mismatch and captured nothing. Capture follows the descriptor's own
+    cut: it seals the existing native row of that session and leaves the SPY-dated row alone."""
+    import pandas as pd
+    from engine.leader_recovery_observations import COLUMNS
+    from tests.test_build_leader_radar import _make_ohlcv
+    root=_build_fixture_root(tmp_path,['AAPL','MSFT'])
+    cfg={'storage':{'data_dir':'data','site_dir':'site'},'leader_radar':{'enabled':True,'basket_keys':['mag7'],'dow30':[],'recovery_capture_enabled':False}}
+    p=root/'data/leader_radar/state_history.parquet'
+    with patch('lib.config.ROOT',root),patch('lib.config.data_dir',lambda:root/'data'),patch('lib.config.load',lambda:cfg),patch.dict(os.environ,{'COLLECT_LANE':'nightly'}):
+        aligned=build(data_root=root/'data',site_root=root/'site')  # native rows for the issuer session
+        issuer_last=aligned['as_of']
+        _make_ohlcv(401,seed=99)[['close']].to_parquet(root/'data/yahoo/SPY.parquet')
+        cfg['leader_radar']['recovery_capture_enabled']=True
+        capsys.readouterr()
+        lagged=build(data_root=root/'data',site_root=root/'site')
+    out=capsys.readouterr().out
+    spy_last=lagged['as_of']
+    assert spy_last>issuer_last
+    assert lagged['recovery_roster']['additive_clock']['as_of']==issuer_last
+    assert not any('recovery observation enrichment FAILED' in line for line in out.splitlines())
+    h=pd.read_parquet(p);h['day']=pd.to_datetime(h['date']).dt.date.astype(str)
+    sealed=h[h['day']==issuer_last]
+    assert sorted(sealed.ticker)==['AAPL','MSFT'] and sealed[COLUMNS[2]].notna().all()
+    assert all(json.loads(x)['as_of']==issuer_last for x in sealed[COLUMNS[1]])
+    assert h[h['day']==spy_last][COLUMNS[2]].isna().all()
+
+
 def test_additive_layer_clock_equals_incumbent_when_stores_align(tmp_path, capsys):
     """When every store ends on the same session the additive clock IS the incumbent clock, the lag is
     zero and no annotation is printed (the aligned fixture path stays byte-identical in behaviour)."""

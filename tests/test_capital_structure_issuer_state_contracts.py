@@ -436,6 +436,25 @@ _ENUM_PINS = (
     ("economic_term_name", c.ECONOMIC_TERM_NAMES),
     ("economic_term_status", c.ECONOMIC_TERM_STATUSES),
     ("term_fact_origin", c.TERM_FACT_ORIGINS),
+    ("rounding_mode", c.ROUNDING_MODES),
+    ("price_component_source", c.PRICE_COMPONENT_SOURCES),
+    ("price_measure", c.PRICE_MEASURES),
+    ("price_aggregation", c.PRICE_AGGREGATIONS),
+    ("price_window_end", c.PRICE_WINDOW_ENDS),
+    ("price_combine", c.PRICE_COMBINES),
+    ("floor_basis", c.FLOOR_BASES),
+    ("below_floor_rule", c.BELOW_FLOOR_RULES),
+    ("reset_rule", c.RESET_RULES),
+    ("share_adjustment", c.SHARE_ADJUSTMENTS),
+    ("price_term_name", c.PRICE_TERM_NAMES),
+    ("condition_comparison", c.CONDITION_COMPARISONS),
+    ("condition_threshold_kind", c.CONDITION_THRESHOLD_KINDS),
+    ("settlement_branch_name", c.SETTLEMENT_BRANCH_NAMES),
+    ("branch_elected_by", c.BRANCH_ELECTED_BY),
+    ("anti_dilution_method", c.ANTI_DILUTION_METHODS),
+    ("accrual_day_count", c.ACCRUAL_DAY_COUNTS),
+    ("accrual_compounding", c.ACCRUAL_COMPOUNDING),
+    ("structure_kind", c.STRUCTURE_KINDS),
 )
 
 
@@ -443,6 +462,49 @@ _ENUM_PINS = (
 def test_schema_enums_mirror_the_module_vocabularies(name, values):
     schema = c.load_state_schema()
     assert set(schema["$defs"][name]["enum"]) == set(values), name
+
+
+#: X0 (C0 2.2.0) record vocabularies live inline in their record ``$defs``,
+#: not as top-level enum ``$defs``; pin them to the module tuples the same way.
+_INLINE_ENUM_PINS = (
+    (("transaction_observation", "kind"), c.TRANSACTION_KINDS),
+    (("transaction_observation", "reporting_basis"), c.REPORTING_BASES),
+    (("transaction_observation", "origin"), c.TRANSACTION_ORIGINS),
+    (("transaction_binding", "target_kind"), c.BINDING_TARGET_KINDS),
+    (("transaction_binding", "usage_class"), c.USAGE_CLASSES),
+    (("transaction_binding", "origin"), c.BINDING_ORIGINS),
+)
+
+
+@pytest.mark.parametrize("path,values", _INLINE_ENUM_PINS,
+                         ids=[".".join(path) for path, _ in _INLINE_ENUM_PINS])
+def test_schema_record_inline_enums_mirror_the_module_vocabularies(path, values):
+    record, field = path
+    schema = c.load_state_schema()
+    assert set(schema["$defs"][record]["properties"][field]["enum"]) == set(values), path
+
+
+def test_schema_realized_cash_kind_is_the_realized_cash_vocabulary():
+    """``realized_cash_kind`` is nullable, so its enum sits in an ``anyOf`` branch."""
+    schema = c.load_state_schema()
+    branches = [item["enum"] for item in
+                schema["$defs"]["realized_cash"]["properties"]["realized_cash_kind"]["anyOf"]
+                if "enum" in item]
+    assert len(branches) == 1
+    assert set(branches[0]) == set(c.REALIZED_CASH_KINDS)
+
+
+def test_schema_warrant_exercise_settlement_is_the_settlement_vocabulary():
+    schema = c.load_state_schema()
+    branches = [item["then"]["properties"]["settlement"]
+                for item in schema["$defs"]["transaction_observation"].get("allOf", [])
+                if "settlement" in item.get("then", {}).get("properties", {})]
+    assert len(branches) == 1
+    # I2 (SPEC_I2 §1.2) admits ``physical`` only for a conversion action on an
+    # instrument carrying settlement_branches; a warrant exercise never settles
+    # "physical", so the warrant branch is the vocabulary minus that one value.
+    assert "physical" in c.SETTLEMENTS
+    assert set(branches[0]["enum"]) == set(c.SETTLEMENTS) - {"physical"}
 
 
 def test_schema_input_schema_enum_is_the_compatibility_table():

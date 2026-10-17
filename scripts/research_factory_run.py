@@ -113,6 +113,16 @@ def _route_candidate(
         "reason": "",
     }
 
+    # Inspect before the broad source/domain/type OR routes. Persisted records
+    # may predate ingest validation; neither --execute nor --count admits code.
+    from engine.research_factory.codegen_boundary import codegen_refusal
+
+    refusal = codegen_refusal(candidate)
+    if refusal:
+        result["action"] = "error"
+        result["reason"] = refusal
+        return result
+
     # --- Oracle domain ---
     if source == "oracle_brainstorm" or domain == "oracle" or ctype == "oracle_compound":
         from engine.research_factory.adapter_oracle import (

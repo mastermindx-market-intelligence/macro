@@ -1,30 +1,30 @@
 {
-  "date": "2026-10-14",
+  "date": "2026-10-17",
   "regime": "mixed / no clear trend",
-  "breadth": 0.23,
+  "breadth": 0.31,
   "favored": [
     "equity_us",
     "copper",
     "dollar",
-    "equity_intl",
-    "equity_em"
+    "crypto",
+    "equity_intl"
   ],
   "correlation": "converging",
-  "asof": "2026-10-14",
+  "asof": "2026-10-17",
   "flows": {
     "schema": "crossasset_flows.v2",
     "display_only": true,
     "regime": "mixed / no clear trend",
     "correlation": {
       "verdict": "converging",
-      "absorption_pctile": 0.48,
+      "absorption_pctile": 0.47,
       "n_markets": 6,
-      "absorption_ratio": 0.362,
-      "mean_abs_corr": 0.218,
+      "absorption_ratio": 0.361,
+      "mean_abs_corr": 0.228,
       "dominant_cluster": [
         "US",
-        "Commodities",
-        "Crypto"
+        "Crypto",
+        "Commodities"
       ],
       "spark_w": [
         0.344,
@@ -130,11 +130,11 @@
         0.337,
         0.351,
         0.366,
-        0.362
+        0.361
       ],
       "spark_asof": "2026-10-16"
     },
-    "breadth": 0.23,
+    "breadth": 0.31,
     "trend_top": [
       {
         "asset": "equity_us",
@@ -152,6 +152,11 @@
         "z": 1.0
       },
       {
+        "asset": "crypto",
+        "trend": "up",
+        "z": 1.0
+      },
+      {
         "asset": "equity_intl",
         "trend": "up",
         "z": 1.0
@@ -160,16 +165,11 @@
         "asset": "equity_em",
         "trend": "up",
         "z": 1.0
-      },
-      {
-        "asset": "equity_sm",
-        "trend": "mixed",
-        "z": 0.33
       }
     ],
     "trend_summary": {
       "n": 13,
-      "n_up": 5,
+      "n_up": 6,
       "n_down": 2
     },
     "intermarket": [
@@ -177,25 +177,25 @@
         "pair": "copper_gold",
         "ratio": 0.002,
         "trend": "elevated",
-        "pctile": 93.0
+        "pctile": 84.0
       },
       {
         "pair": "gold_silver",
-        "ratio": 70.423,
+        "ratio": 73.277,
         "trend": "mid",
-        "pctile": 43.0
+        "pctile": 46.0
       },
       {
         "pair": "oil_gold",
-        "ratio": 0.023,
-        "trend": "mid",
-        "pctile": 77.0
+        "ratio": 0.024,
+        "trend": "elevated",
+        "pctile": 84.0
       },
       {
         "pair": "stocks_gold",
-        "ratio": 0.186,
+        "ratio": 0.182,
         "trend": "mid",
-        "pctile": 76.0
+        "pctile": 66.0
       }
     ],
     "carry": {
@@ -204,7 +204,7 @@
           "key": "rates_term",
           "label_en": "Rates term-spread (10y-3m)",
           "label_zh": "\u5229\u7387\u671f\u9650\u5229\u5dee (10\u5e74-3\u6708)",
-          "value": 1.23,
+          "value": 1.12,
           "unit": "%",
           "state": "positive carry"
         },
@@ -234,8 +234,8 @@
           "leader": "Dollar",
           "follower": "HK",
           "lag": 1,
-          "r": 0.266,
-          "t": 4.283,
+          "r": 0.267,
+          "t": 4.3,
           "q": 0.0
         },
         {
@@ -243,40 +243,40 @@
           "follower": "HK",
           "lag": 1,
           "r": 0.307,
-          "t": 4.021,
-          "q": 0.005
+          "t": 4.057,
+          "q": 0.0
         },
         {
           "leader": "Crypto",
           "follower": "HK",
           "lag": 1,
-          "r": 0.263,
-          "t": 3.993,
+          "r": 0.267,
+          "t": 4.048,
           "q": 0.005
         },
         {
           "leader": "US",
           "follower": "China",
           "lag": 1,
-          "r": 0.257,
-          "t": 3.71,
+          "r": 0.258,
+          "t": 3.705,
           "q": 0.0075
         },
         {
           "leader": "Crypto",
           "follower": "China",
           "lag": 1,
-          "r": 0.189,
-          "t": 3.157,
-          "q": 0.048
+          "r": 0.194,
+          "t": 3.205,
+          "q": 0.042
         },
         {
           "leader": "China",
           "follower": "HK",
           "lag": 1,
-          "r": -0.231,
-          "t": -3.055,
-          "q": 0.0575
+          "r": -0.23,
+          "t": -2.998,
+          "q": 0.0675
         }
       ],
       "stable": false,
@@ -295,15 +295,15 @@
       "impulse_13w": null
     },
     "funding_stress": {
-      "asof": "2026-10-07",
+      "asof": "2026-10-13",
       "state": "calm",
-      "score": 34.0,
-      "spread_bp": 0.0
+      "score": 53.0,
+      "spread_bp": 1.0
     },
     "confirm": {
-      "verdict": "diverge",
-      "agree_pct": 0,
-      "n_blind_flags": 3,
+      "verdict": "mixed",
+      "agree_pct": 50,
+      "n_blind_flags": 0,
       "flags_top": [
         {
           "key": "credit",
@@ -312,7 +312,7 @@
           "severity": "medium",
           "owner": "bonds",
           "lead": "leading",
-          "equity_blind": true
+          "equity_blind": false
         },
         {
           "key": "sovereign",
@@ -321,7 +321,7 @@
           "severity": "medium",
           "owner": "bonds",
           "lead": "coincident",
-          "equity_blind": true
+          "equity_blind": false
         },
         {
           "key": "fx_risk_off",
@@ -330,38 +330,38 @@
           "severity": "medium",
           "owner": "fx",
           "lead": "coincident",
-          "equity_blind": true
+          "equity_blind": false
         }
       ],
-      "asof": "2026-10-13"
+      "asof": "2026-10-15"
     },
     "dollar": {
-      "usd_dir": "flat",
+      "usd_dir": "strengthening",
       "regime": "Risk-off haven bid",
       "risk": "risk-off",
       "corr_top": [
         {
           "key": "GC=F",
-          "corr": -0.52
+          "corr": -0.49
         },
         {
           "key": "EEM",
-          "corr": -0.47
+          "corr": -0.48
         },
         {
           "key": "SPY",
-          "corr": -0.45
+          "corr": -0.43
         }
       ],
       "unstable_n": 0,
       "fx_stress": {
-        "dominant": "em_crisis_capital_flight",
-        "top_key": "em_crisis_capital_flight",
-        "top_val": 63.5
+        "dominant": null,
+        "top_key": "dollar_wrecking_ball",
+        "top_val": 51.0
       }
     },
     "shadow": {
-      "pressure_pctile": 0.48,
+      "pressure_pctile": 0.47,
       "incumbent_state": "caution",
       "shadow_state": "caution",
       "escalated": false
