@@ -1,6 +1,6 @@
 {
   "schema": "winner_autopsy_panel.v1",
-  "generated_at": "2026-10-17T07:16:49Z",
+  "generated_at": "2026-10-17T18:56:19Z",
   "display_only": true,
   "horizon_role": "hold_thesis",
   "census": {
@@ -7251,14 +7251,14 @@
         }
       },
       {
-        "ticker": "IOBTQ",
+        "ticker": "AVNI",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 97.49,
-        "excess_42d_pp": -90.27,
+        "excess_42d_pp": 99.73,
         "new_high_63d": false,
-        "dollar_vol_z21": 0.06,
+        "dollar_vol_z21": -0.22,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [
@@ -7270,14 +7270,14 @@
         }
       },
       {
-        "ticker": "AVNI",
+        "ticker": "IOBTQ",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 97.49,
-        "excess_42d_pp": 99.73,
+        "excess_42d_pp": -90.27,
         "new_high_63d": false,
-        "dollar_vol_z21": -0.22,
+        "dollar_vol_z21": 0.06,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [
@@ -21513,7 +21513,7 @@
         }
       },
       {
-        "ticker": "PBR.A",
+        "ticker": "PBR-A",
         "sector": "",
         "benchmark": "SPY",
         "state": "breakaway",
@@ -21530,7 +21530,7 @@
         }
       },
       {
-        "ticker": "PBR-A",
+        "ticker": "PBR.A",
         "sector": "",
         "benchmark": "SPY",
         "state": "breakaway",
@@ -30846,31 +30846,14 @@
         }
       },
       {
-        "ticker": "BTBD",
+        "ticker": "HOWL",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": -1.86,
-        "excess_42d_pp": 36.06,
+        "excess_42d_pp": 142.6,
         "new_high_63d": false,
-        "dollar_vol_z21": -0.31,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
-        "ticker": "BICX",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": -1.86,
-        "excess_42d_pp": 65.1,
-        "new_high_63d": false,
-        "dollar_vol_z21": -0.53,
+        "dollar_vol_z21": 0.28,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -30914,14 +30897,31 @@
         }
       },
       {
-        "ticker": "HOWL",
+        "ticker": "BTBD",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": -1.86,
-        "excess_42d_pp": 142.6,
+        "excess_42d_pp": 36.06,
         "new_high_63d": false,
-        "dollar_vol_z21": 0.28,
+        "dollar_vol_z21": -0.31,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
+        "ticker": "BICX",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": -1.86,
+        "excess_42d_pp": 65.1,
+        "new_high_63d": false,
+        "dollar_vol_z21": -0.53,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -31424,23 +31424,6 @@
         }
       },
       {
-        "ticker": "KWGBF",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": -2.51,
-        "excess_42d_pp": 111.27,
-        "new_high_63d": true,
-        "dollar_vol_z21": -0.26,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
         "ticker": "SYANY",
         "sector": "",
         "benchmark": "SPY",
@@ -31466,6 +31449,23 @@
         "excess_42d_pp": 149.73,
         "new_high_63d": true,
         "dollar_vol_z21": -0.17,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
+        "ticker": "KWGBF",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": -2.51,
+        "excess_42d_pp": 111.27,
+        "new_high_63d": true,
+        "dollar_vol_z21": -0.26,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -36966,7 +36966,7 @@
         }
       },
       {
-        "ticker": "FOXO",
+        "ticker": "FOXOD",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
@@ -36983,7 +36983,7 @@
         }
       },
       {
-        "ticker": "FOXOD",
+        "ticker": "FOXO",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
