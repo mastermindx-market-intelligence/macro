@@ -6627,6 +6627,8 @@ jobs:
           tests/test_fif_gsrc_capture.py
           tests/test_fif_publication_workflow_shape.py
           tests/test_fif_se_receipts.py
+          tests/test_fif_pf_health_entity.py
+          tests/test_fif_pf_health_pointer.py
           tests/test_filing_forensics_broad_sec_lane.py
           tests/test_filing_forensics_sec_lane.py
           tests/test_forensics_api.py
