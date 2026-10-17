@@ -647,14 +647,18 @@ def extract_max_literals(source: str) -> dict[str, int]:
 
 def _ensure_commit(repo: Path, sha: str) -> None:
     """A spec-pinned commit is a landed `origin/main` ancestor, but the CI pack checkout is
-    `fetch-depth: 1`, so it can be absent locally. Mirror ci.yml's own remedy for the
-    contract-delta merge base: one `git fetch --depth=1 origin <sha>`. A full clone
-    answers the probe and never reaches the fetch."""
+    `fetch-depth: 1`, so it can be absent locally. Fetch it BLOBLESS: a depth-1 fetch by SHA
+    without an object filter ships the commit's whole tree (data/ + site/, gigabytes) and
+    overran the smoke fixture's 120 s budget on ubuntu (run 39031759012); with
+    `--filter=blob:none` only the commit and its trees travel, and the one `git show` blob
+    is fetched lazily by the promisor remote git registers for the filtered fetch. A full
+    clone answers the probe and never reaches the fetch."""
     probe = subprocess.run(["git", "-C", str(repo), "cat-file", "-e", f"{sha}^{{commit}}"],
                            capture_output=True, text=True, timeout=30)
     if probe.returncode == 0:
         return
-    subprocess.run(["git", "-C", str(repo), "fetch", "--quiet", "--depth=1", "origin", sha],
+    subprocess.run(["git", "-C", str(repo), "fetch", "--quiet", "--depth=1",
+                    "--filter=blob:none", "origin", sha],
                    check=True, capture_output=True, text=True, timeout=300)
 
 
