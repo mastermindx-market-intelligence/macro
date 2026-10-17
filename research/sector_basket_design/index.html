@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en" data-lang="en" data-theme="dark">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Sector workspace • Mastermind design reference</title><link rel="stylesheet" href="../../site/theme.css"><link rel="stylesheet" href="workspace.css"></head>
+<body class="sector-design">
+<div class="sd-reviewbar"><span>Interactive design reference <span class="sd-muted">/ supplied basket artifact · 14 Oct 2026</span></span><div><button id="sd-theme">Light</button><button id="sd-lang">中文</button><label class="sd-sr" for="sd-fixture">Evidence state</label><select id="sd-fixture"><option value="current">Current coverage</option><option value="mapped">Future mapping example</option><option value="loading">Loading example</option><option value="error">Error example</option></select></div></div>
+<div class="sd-shell">
+<aside class="sd-global-sidebar" aria-label="Shared Market shell reference"><div style="background-color:var(--bg);border-right-color:color-mix(in srgb, var(--line) 48%, transparent);border-right-style:solid;border-right-width:1px;box-sizing:border-box;display:flex;flex-direction:column;flex-shrink:0;font-synthesis:none;gap:6px;height:100%;-moz-osx-font-smoothing:grayscale;overflow-wrap:anywhere;padding-bottom:18px;padding-inline:14px;padding-top:22px;-webkit-font-smoothing:antialiased;width:216px">
+      <div style="align-items:center;box-sizing:border-box;display:flex;flex-shrink:0;gap:10px;height:40px;padding-inline:10px">
+        <svg width="28" height="28" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+          <rect x="2" y="2" width="36" height="36" rx="10" fill="var(--info)" />
+          <path d="M12 28V13l8 9 8-11v17" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div style="box-sizing:border-box;color:var(--text);font-family:var(--font-ui);font-size:13px;letter-spacing:0.07em;line-height:20px">
+          MASTERMINDX
+        </div>
+      </div>
+      <div style="box-sizing:border-box;flex-shrink:0;height:20px"></div>
+      <div style="align-items:center;border-radius:var(--r-btn);box-sizing:border-box;display:flex;flex-shrink:0;gap:12px;height:44px;padding-inline:14px">
+        <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+          <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z" fill="none" stroke="var(--muted)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div style="box-sizing:border-box;color:var(--muted);font-family:var(--font-ui);font-size:14px;line-height:20px">
+          Overview
+        </div>
+      </div>
+      <div style="align-items:center;border-radius:var(--r-btn);box-sizing:border-box;display:flex;flex-shrink:0;gap:12px;height:44px;padding-inline:14px">
+        <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+          <path d="M3 19V5M3 19h18M6 15l4-5 4 3 6-8" fill="none" stroke="var(--muted)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div style="box-sizing:border-box;color:var(--muted);font-family:var(--font-ui);font-size:14px;line-height:20px">
+          Markets
+        </div>
+      </div>
+      <div style="align-items:center;background-color:color-mix(in srgb, var(--info) 12%, transparent);border-radius:var(--r-btn);box-sizing:border-box;display:flex;flex-shrink:0;gap:12px;height:44px;padding-inline:14px">
+        <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+          <path d="M3 5h8v6H3zM15 5h6v6h-6zM3 15h6v6H3zM13 15h8v6h-8z" fill="none" stroke="var(--info)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div style="box-sizing:border-box;color:var(--text);font-family:var(--font-ui);font-size:14px;line-height:20px">
+          Sectors & themes
+        </div>
+      </div>
+      <div style="align-items:center;border-radius:var(--r-btn);box-sizing:border-box;display:flex;flex-shrink:0;gap:12px;height:44px;padding-inline:14px">
+        <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+          <path d="M5 3v18M2 8h6M12 3v18M9 15h6M19 3v18M16 7h6" fill="none" stroke="var(--muted)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div style="box-sizing:border-box;color:var(--muted);font-family:var(--font-ui);font-size:14px;line-height:20px">
+          Stocks & setups
+        </div>
+      </div>
+      <div style="align-items:center;border-radius:var(--r-btn);box-sizing:border-box;display:flex;flex-shrink:0;gap:12px;height:44px;padding-inline:14px">
+        <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+          <path d="M3 3v18h18M5 17h6l8-12" fill="none" stroke="var(--muted)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div style="box-sizing:border-box;color:var(--muted);font-family:var(--font-ui);font-size:14px;line-height:20px">
+          Options
+        </div>
+      </div>
+      <div style="align-items:center;border-radius:var(--r-btn);box-sizing:border-box;display:flex;flex-shrink:0;gap:12px;height:44px;padding-inline:14px">
+        <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+          <path d="M5 3h10l4 4v14H5zM9 11h6M9 15h6" fill="none" stroke="var(--muted)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div style="box-sizing:border-box;color:var(--muted);font-family:var(--font-ui);font-size:14px;line-height:20px">
+          Research
+        </div>
+      </div>
+      <div style="align-items:center;box-sizing:border-box;display:flex;flex-shrink:0;height:38px;padding-inline:14px;padding-top:12px">
+        <div style="box-sizing:border-box;color:var(--muted);display:flex;font-family:var(--font-ui);font-size:11px;letter-spacing:0.12em;line-height:16px">
+          MY WORKSPACE
+        </div>
+      </div>
+      <div style="align-items:center;box-sizing:border-box;display:flex;flex-shrink:0;gap:12px;height:44px;padding-inline:14px">
+        <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+          <path d="M6 3h12v18l-6-4-6 4z" fill="none" stroke="var(--muted)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div style="box-sizing:border-box;color:var(--muted);font-family:var(--font-ui);font-size:14px;line-height:20px">
+          Watchlists
+        </div>
+      </div>
+      <div style="align-items:center;box-sizing:border-box;display:flex;flex-shrink:0;gap:12px;height:44px;padding-inline:14px">
+        <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+          <path d="M12 3v9h9M9 4a9 9 0 1 0 11 11" fill="none" stroke="var(--muted)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div style="box-sizing:border-box;color:var(--muted);font-family:var(--font-ui);font-size:14px;line-height:20px">
+          Portfolio
+        </div>
+      </div>
+      <div style="align-items:center;box-sizing:border-box;display:flex;flex-shrink:0;gap:12px;height:44px;padding-inline:14px">
+        <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+          <path d="M6 9a6 6 0 0 1 12 0c0 5 3 8 3 8H3s3-3 3-8M10 21h4" fill="none" stroke="var(--muted)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div style="box-sizing:border-box;color:var(--muted);font-family:var(--font-ui);font-size:14px;line-height:20px">
+          My alerts
+        </div>
+      </div>
+      <div style="box-sizing:border-box;flex-grow:1"></div>
+      <div style="align-items:center;background-color:color-mix(in srgb, var(--info) 6%, transparent);border-color:color-mix(in srgb, var(--info) 35%, transparent);border-radius:var(--r-card);border-style:solid;border-width:1px;box-sizing:border-box;display:flex;gap:10px;padding-block:14px;padding-inline:12px">
+        <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+          <path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="none" stroke="var(--info)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div style="box-sizing:border-box;color:var(--text);font-family:var(--font-ui);font-size:13px;line-height:20px">
+          Ask Mastermind
+        </div>
+      </div>
+      <div style="align-items:center;box-sizing:border-box;display:flex;flex-shrink:0;gap:12px;height:42px;padding-inline:14px">
+        <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+          <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z" fill="none" stroke="var(--muted)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div style="box-sizing:border-box;color:var(--muted);font-family:var(--font-ui);font-size:13px;line-height:20px">
+          All tools
+        </div>
+      </div>
+      <div style="align-items:center;border-top-color:color-mix(in srgb, var(--line) 48%, transparent);border-top-style:solid;border-top-width:1px;box-sizing:border-box;display:flex;flex-shrink:0;gap:10px;height:52px;padding-inline:8px;padding-top:8px">
+        <div style="align-items:center;background-color:var(--panel2);border-radius:10px;box-sizing:border-box;display:flex;flex-shrink:0;height:30px;justify-content:center;width:30px">
+          <div style="box-sizing:border-box;color:var(--text);display:flex;font-family:var(--font-ui);font-size:11px;line-height:14px">
+            CW
+          </div>
+        </div>
+        <div style="box-sizing:border-box;display:flex;flex-direction:column;flex-grow:1;gap:2px">
+          <div style="box-sizing:border-box;color:var(--text);font-family:var(--font-ui);font-size:12px;line-height:16px">
+            Your workspace
+          </div>
+          <div style="box-sizing:border-box;color:var(--muted);font-family:var(--font-ui);font-size:11px;line-height:15px">
+            Personal
+          </div>
+        </div>
+        <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+          <path d="M9 3h6l1 4 4 2v6l-4 2-1 4H9l-1-4-4-2V9l4-2zM9 12a3 3 0 1 0 6 0 3 3 0 1 0-6 0" fill="none" stroke="var(--muted)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+    </div></aside>
+<div class="sd-workspace"><header class="sd-global-header"><div style="align-items:center;border-bottom-color:color-mix(in srgb, var(--line) 48%, transparent);border-bottom-style:solid;border-bottom-width:1px;box-sizing:border-box;display:flex;flex-shrink:0;font-synthesis:none;gap:18px;height:72px;-moz-osx-font-smoothing:grayscale;overflow-wrap:anywhere;padding-inline:32px;-webkit-font-smoothing:antialiased">
+      <div style="align-items:center;box-sizing:border-box;display:flex;flex-shrink:0;height:40px;justify-content:center;width:24px">
+        <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+          <path d="M4 4h16v16H4zM9 4v16M16 9l-3 3 3 3" fill="none" stroke="var(--muted)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div style="align-items:center;background-color:var(--panel);border-color:color-mix(in srgb, var(--line) 60%, transparent);border-radius:var(--r-ctl);border-style:solid;border-width:1px;box-sizing:border-box;display:flex;flex-shrink:0;gap:12px;height:40px;padding-inline:14px;width:422px">
+        <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+          <path d="M10 3a7 7 0 1 0 0 14 7 7 0 0 0 0-14M15 15l6 6" fill="none" stroke="var(--muted)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div style="box-sizing:border-box;color:var(--muted);flex-grow:1;font-family:var(--font-ui);font-size:13px;line-height:20px">
+          Search markets, companies, themes…
+        </div>
+        <div style="box-sizing:border-box;color:var(--muted);font-family:var(--font-ui);font-size:11px;line-height:14px">
+          ⌘ K
+        </div>
+      </div>
+      <div style="box-sizing:border-box;flex-grow:1"></div>
+      <div style="align-items:center;background-color:var(--panel2);border-color:var(--line);border-radius:var(--r-ctl);border-style:solid;border-width:1px;box-sizing:border-box;display:flex;gap:10px;height:40px;padding-inline:14px">
+        <div style="box-sizing:border-box;color:var(--info);font-family:var(--font-ui);font-size:11px;line-height:18px">
+          US
+        </div>
+        <div style="box-sizing:border-box;color:var(--text);font-family:var(--font-ui);font-size:13px;line-height:20px">
+          United States
+        </div>
+        <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+          <path d="M8 10l4 4 4-4" fill="none" stroke="var(--muted)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div style="align-items:center;border-color:color-mix(in srgb, var(--info) 55%, transparent);border-radius:var(--r-ctl);border-style:solid;border-width:1px;box-sizing:border-box;display:flex;gap:10px;height:40px;padding-inline:14px">
+        <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+          <path d="M5 3v18M2 8h6M12 3v18M9 15h6M19 3v18M16 7h6" fill="none" stroke="var(--info)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div style="box-sizing:border-box;color:var(--info);font-family:var(--font-ui);font-size:13px;line-height:20px">
+          Terminal
+        </div>
+      </div>
+    </div></header>
+<main id="sd-main">
+<section class="sd-identity" aria-labelledby="sd-title"><div><div class="sd-breadcrumb" data-i18n="crumb">Sectors & themes / AI & Technology</div><h1 id="sd-title" data-i18n="title">AI Software & Platforms</h1><div class="sd-subline"><span data-i18n="roster">17 members</span><span class="sd-dot-separator"></span><button class="sd-text-button" data-open="about" data-i18n="method">Equal-weight basket</button></div></div><div class="sd-identity-actions"><button class="sd-button" data-open="compare" aria-label="Compare themes"><svg viewBox="0 0 24 24"><path d="M7 4v16M17 4v16M4 8h6M14 16h6"/></svg><span data-i18n="compare">Compare</span></button><button class="sd-button sd-primary" data-open="watch" aria-label="Watch changes"><svg viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 5 3 8 3 8H3s3-3 3-8M10 21h4"/></svg><span data-i18n="watch">Watch changes</span></button></div></section>
+<section class="sd-decision" aria-label="Theme condition"><div class="sd-condition"><div class="sd-condition-label"><span class="sd-state-dot"></span><span data-i18n="deteriorating">Theme deteriorating</span><button class="sd-info" data-open="condition" aria-label="Explain the theme condition">i</button></div><div class="sd-verdict" data-i18n="standAside">Stand aside</div><p data-i18n="decisionCopy">No eligible buys. Early stock setups remain blocked by the theme.</p><button class="sd-freshness" data-open="freshness"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg><span data-i18n="freshness">14 Oct close · Reading behind</span></button></div>
+<div class="sd-header-metrics"><button data-open="relative" class="sd-metric"><span data-i18n="relTitle">Against S&P 500</span><strong class="sd-negative">−1.5 <small>pp</small></strong><span data-i18n="relMeaning">Lagging over 20 sessions</span></button><button data-open="breadth" class="sd-metric"><span data-i18n="breadthTitle">Member participation</span><strong>65<small>%</small></strong><span data-i18n="breadthMeaning">Above their 50-day average</span></button></div></section>
+<div class="sd-tabs" role="tablist" aria-label="Theme tasks"><button role="tab" id="tab-overview" aria-controls="panel-overview" aria-selected="true" tabindex="0" data-tab="overview" data-i18n="overview">Overview</button><button role="tab" id="tab-members" aria-controls="panel-members" aria-selected="false" tabindex="-1" data-tab="members" data-i18n="members">Members</button><button role="tab" id="tab-ecosystem" aria-controls="panel-ecosystem" aria-selected="false" tabindex="-1" data-tab="ecosystem" data-i18n="ecosystem">Ecosystem</button><button role="tab" id="tab-changes" aria-controls="panel-changes" aria-selected="false" tabindex="-1" data-tab="changes" data-i18n="changes">Changes</button><button class="sd-tab-evidence" data-open="sources" data-i18n="sources">Sources & methods</button></div>
+<section id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" class="sd-tab-panel">
+<div class="sd-overview-grid">
+<section class="sd-panel sd-chart-panel"><div class="sd-section-head"><div><h2 data-i18n="priceTitle">Price & cycle</h2><span class="sd-muted" data-i18n="priceBasis">Equal-weight price index</span></div><div class="sd-range" role="group" aria-label="Chart period"><button data-range="0.25">3M</button><button data-range="0.5">6M</button><button data-range="1" aria-pressed="true">1Y</button><button data-range="3.5">All</button></div></div><div class="sd-chart-stat"><strong>255.28</strong><span data-i18n="indexBasis">Rebased index</span><button class="sd-text-button" data-open="chart" data-i18n="chartDetails">Chart details</button></div><div id="sd-price-chart" class="sd-price-chart" role="img" aria-label="AI Software equal-weight cycle price series"></div><div class="sd-cycle-summary"><div><span class="sd-phase-icon"></span><strong data-i18n="topping">Topping</strong><span class="sd-muted" data-i18n="cycleMeaning">Late in the cycle</span></div><button class="sd-text-button" id="sd-cycle-toggle" aria-pressed="true" data-i18n="cycleOverlay">Cycle overlay</button></div><div class="sd-cycle-track" aria-label="Cycle position 85 out of 100"><div class="sd-phase-labels"><span data-i18n="trough">Bottoming</span><span data-i18n="recovery">Recovering</span><span data-i18n="expansion">Rising</span><strong data-i18n="peak">Topping</strong><span data-i18n="downturn">Falling</span></div><div class="sd-track"><i style="left:85.1%"></i></div></div><div class="sd-chart-footer"><span data-i18n="priceNote">Above the 200-day average</span><button class="sd-text-button" data-open="cycle" data-i18n="turnWindow">Next-turn window</button></div></section>
+<section class="sd-panel sd-signals"><div class="sd-section-head"><div><h2 data-i18n="signalsTitle">Signals agree?</h2><span id="sd-signal-date" class="sd-muted"></span></div><button class="sd-info" data-open="signals" aria-label="Explain signal agreement">i</button></div><div class="sd-agreement"><svg viewBox="0 0 40 40"><path d="M8 28l10-10 7 7 8-15M8 12l10 10 7-7 8 15"/></svg><div><strong data-i18n="mixed">Mixed</strong><span data-i18n="mixedMeaning">Daily weakness. Longer trends still rising.</span></div></div><div id="sd-signal-rows"></div><div class="sd-signal-conclusion"><span class="sd-state-dot"></span><span data-i18n="signalConclusion">Cycle timing is a reason for caution.</span></div><button class="sd-text-button sd-full-link" data-open="signals" data-i18n="inspectSignals">Inspect the disagreement</button></section>
+</div>
+<section class="sd-participation"><div class="sd-section-head"><div><h2 data-i18n="participationTitle">Leading &amp; lagging</h2><span class="sd-muted" data-i18n="participationBasis">20-session price return · selected members</span></div><button class="sd-text-button" data-go="members" data-i18n="allMembers">View members</button></div><div id="sd-member-bars" class="sd-member-bars"></div></section>
+<div class="sd-context-link"><span data-i18n="riskContext">See the wider risk picture</span><button class="sd-text-button" data-open="risk" data-i18n="riskRadar">Risk Radar context</button><span class="sd-muted" data-i18n="riskScope">Risk Radar unavailable in this snapshot</span></div>
+</section>
+<section id="panel-members" role="tabpanel" aria-labelledby="tab-members" class="sd-tab-panel" hidden><div class="sd-member-toolbar"><div class="sd-searchbox"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="M15 15l6 6"/></svg><label class="sd-sr" for="sd-search">Search members</label><input id="sd-search" placeholder="Find a company or ticker"></div><div class="sd-range" role="group" aria-label="Member filter"><button data-filter="all" aria-pressed="true" data-i18n="all">All</button><button data-filter="watch" data-i18n="earlySetups">Early setups</button><button data-filter="blocked" data-i18n="cycleBlocked">Cycle blocked</button></div><label class="sd-sort"><span data-i18n="sort">Sort</span><select id="sd-sort"><option value="return">20-session return</option><option value="name">Company name</option></select></label></div><div class="sd-member-callout"><span class="sd-state-dot"></span><span data-i18n="memberCallout">Theme gate closed. A stock's open entry window does not make it eligible here.</span><button data-open="condition" class="sd-text-button" data-i18n="why">Why?</button></div><div class="sd-table-region"><table class="sd-table"><caption id="sd-member-count"></caption><thead><tr><th data-i18n="company">Company</th><th data-i18n="role">Role in this theme</th><th data-i18n="researchVerdict">Stock assessment</th><th data-i18n="entry">Entry timing</th><th class="sd-number" data-i18n="return20">20 sessions</th><th><span class="sd-sr">Details</span></th></tr></thead><tbody id="sd-member-table"></tbody></table></div><p class="sd-compact-note" data-i18n="memberFootnote">Company quality, cycle timing and theme eligibility answer different questions.</p></section>
+<section id="panel-ecosystem" role="tabpanel" aria-labelledby="tab-ecosystem" class="sd-tab-panel" hidden><div id="sd-ecosystem-content"></div></section>
+<section id="panel-changes" role="tabpanel" aria-labelledby="tab-changes" class="sd-tab-panel" hidden><div class="sd-section-head"><h2 data-i18n="changesTitle">What changed?</h2><span class="sd-muted" data-i18n="changesScope">Theme readings and membership</span></div><div id="sd-change-list"></div></section>
+</main></div></div>
+<dialog id="sd-inspector" class="sd-inspector" aria-labelledby="sd-inspector-title"><div class="sd-inspector-top"><button id="sd-back" class="sd-text-button" hidden>Back</button><span id="sd-inspector-kicker">Evidence</span><button id="sd-close" class="sd-icon-button" aria-label="Close details"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div id="sd-inspector-body"></div></dialog>
+<div id="sd-toast" role="status"></div><script src="snapshot.js"></script><script src="workspace.js"></script></body></html>
