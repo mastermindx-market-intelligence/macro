@@ -1,0 +1,180 @@
+{
+  "artifact_kind": "research_handoff_descriptor_NOT_CANONICAL_SCHEMA",
+  "mission_complete": false,
+  "research_design_readiness": "PARTIAL",
+  "forecast_promotion": "NOT_QUALIFIED",
+  "production_acceptance": "NOT_ESTABLISHED",
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 8083,
+    "branch": "astra/resources-catalyst-research-20260926",
+    "entry_head": "04153770d987a3e92e7a7b2c8d1b696b781089fd",
+    "intermediate_checkpoint": "061556056f4d8d6af5195cab8d4707a759cbebc9"
+  },
+  "central_request": {
+    "pr": 8083,
+    "comment": 5854555544,
+    "central_contract_pr": 8061,
+    "central_contract_revision": "97f4a8ad20f09d7dbefff1887c71d8fca35d621c",
+    "central_contract_blob": "9ab4f54b97d2b8ed350057b9da0f5adf59894032",
+    "prior_published_R3_return_comment": 5854562986
+  },
+  "files": [
+    {
+      "repository_path": "research/mining/resources_catalyst_r4_cohort.py",
+      "sha256": "2f2d869b43a609baea0be18fda9790fcc3fc1ef46f3faa9dcd6f4a8cea54141c"
+    },
+    {
+      "repository_path": "research/mining/test_resources_catalyst_r4_cohort.py",
+      "sha256": "348fa5e5692509abeb913b76278a4078542d3bfd92ad2ef90fae880a0dfe0232"
+    },
+    {
+      "repository_path": "research/mining/test_resources_catalyst_r4_artifacts.py",
+      "sha256": "1bd98e651d75b889e09e6feb0654fddf10e705ea9304e003e2742a7442cd7927"
+    },
+    {
+      "repository_path": "research/mining/build_r4_audit.py",
+      "sha256": "c53ddb982a331ef5020c596e37a369e2aa450fbc7f407dd4d479b039c2beec9d"
+    },
+    {
+      "repository_path": "research/mining/R4_SOURCE_MANIFEST.json",
+      "sha256": "c6ee17cfcf257b8ed28abd9284ead534e7fddeaf6b40ce2eb4fc77434852e1bf"
+    },
+    {
+      "repository_path": "research/mining/R4_ENROLLMENT_AUDIT.json",
+      "sha256": "7f78138f7cca6b479af9ff797ac1b82521156478f4bbc5442d68de9f0b19ed12"
+    },
+    {
+      "repository_path": "research/mining/R4_TARGET_AND_CLAIM_LABELS.json",
+      "sha256": "c32c823de0c07b49add1b5a47cc8c9d357515cb9f1e9ef0d407f4624e4f448ee"
+    },
+    {
+      "repository_path": "research/mining/RESOURCES_CATALYST_R4_RESEARCH_AND_DECISIONS_2026-09-27.md",
+      "sha256": "a22be7378cb1f4703b961adc7f9a63c2c742a51e9e38db3157fccfd4c90a0434"
+    }
+  ],
+  "reproduce": [
+    "python build_r4_audit.py",
+    "python -m unittest test_resources_catalyst_r4_cohort test_resources_catalyst_r4_artifacts -v"
+  ],
+  "inputs_from_existing_R3": [
+    "resources_catalyst_r1_reference.py",
+    "resources_catalyst_r3_capital.py"
+  ],
+  "sampling": {
+    "observations": 15,
+    "projects": 12,
+    "issuers": 12,
+    "claims": 12,
+    "sources": 15,
+    "enrollment_sha256": "d1004fca1ff5168aa533c06bd9f70a79ce188cbadbe6b12a2ec105306760ece0",
+    "sampling_design": "RETROSPECTIVE_PURPOSEFUL_AUDIT",
+    "population_success_rate": null,
+    "empirically_qualified": false,
+    "can_rank": false
+  },
+  "input_binding": {
+    "keys_are": "human_research_labels_not_canonical_ids",
+    "security_ids": null,
+    "asset_ids": null,
+    "economic_right_ids": null,
+    "native_event_ids": null,
+    "corporate_action_ids": null,
+    "first_publication_timestamps": null,
+    "raw_source_hashes": null,
+    "actual_capture_day": "2026-09-27",
+    "complete_historical_frame": false
+  },
+  "owner_source_read_pin": "a899df97ae1f0314958af57f6ff47b93d958a69d",
+  "concrete_seams": [
+    {
+      "path": "engine/intelligence_workspace/entity.py",
+      "blob": "5303d211a830bc84650b7934dd906cb2d30005a0",
+      "callable": "DataOSIdentityNormalizer.normalize_many",
+      "scope": "US-only request edge; current_alias_only is not historical evidence",
+      "executed": false
+    },
+    {
+      "path": "lib/dataos/identity.py",
+      "blob": "d9d5018aac47910bf2c802b1a74114a99511f74f",
+      "callable": "VendorAliasTable.resolve(vendor, vendor_symbol, on)",
+      "scope": "XTSE/XTSX recognized; dated alias matching exists; actual admitted historical rows not obtained",
+      "executed": false
+    },
+    {
+      "path": "lib/dataos/identity.py",
+      "blob": "d9d5018aac47910bf2c802b1a74114a99511f74f",
+      "callable": "IssuerMaster",
+      "scope": "current issuer membership; explicitly no historical asof; not a historical legal-right join",
+      "executed": false
+    },
+    {
+      "path": "engine/market_ontology/mining_dependency_binding.py",
+      "blob": "a6c5f9da8a70f9375398d7fe1b9b36018557c937",
+      "callable": "MiningOwnerBundle",
+      "scope": "reuse separated native owners; gold/Canadian scope not admitted through closed copper/rare-earth slices",
+      "executed": false
+    },
+    {
+      "path": "engine/fundamental_forensics/revision_service.py",
+      "blob": "661a7a18e004bae79ff5e84a033bbd77328932f5",
+      "callable": "FinancialPacketProvider.resolve(entity_id)",
+      "scope": "production default unavailable; no real issuer dataset or equity scenario result obtained",
+      "executed": false
+    }
+  ],
+  "required_owner_returns": [
+    {
+      "owner": "Data OS identity + existing Canadian consumer",
+      "need": "accepted historical Canadian security/master/dated-alias rows and consumer path with coverage; no new allocator",
+      "safe_until_then": "research labels only; no canonical security or current tradable pick fabricated"
+    },
+    {
+      "owner": "existing economic-rights/GMI + Special Situations corporate-action owners",
+      "need": "dated original claim, completed settlement and successor-right/wealth binding",
+      "safe_until_then": "preserve source-reported consideration; actual realized wealth and return null"
+    },
+    {
+      "owner": "Financial Intelligence / Capital Structure / accepted scenario owner",
+      "need": "admitted issuer and project/claims/rights/tax/financing inputs plus exact scenario-to-equity consumer",
+      "safe_until_then": "source-local facts visible; conditional equity and expected return null"
+    },
+    {
+      "owner": "existing source + evaluation owners",
+      "need": "historical listing/disclosure frame, first-entry coverage, registered untouched evaluation and label/censoring adjudication",
+      "safe_until_then": "purposeful historical audit only; no population success rate or model qualification"
+    },
+    {
+      "owner": "existing Studio/Paper repair and shared-file window owners",
+      "need": "C3 accepted installed catalog and assigned Resources window",
+      "safe_until_then": "zero native edits; NOT_APPLIED_TO_PAPER"
+    }
+  ],
+  "scope_boundaries": [
+    "no new source collector",
+    "no new identity allocator",
+    "no new event/financial/outcome store",
+    "no new ranker",
+    "no shared schema mutation",
+    "no change to #7795/M1/#7796/#6712",
+    "no denied technical-extraction or 403 replay"
+  ],
+  "investment": {
+    "event_probability": null,
+    "conditional_equity_value": null,
+    "expected_return": null,
+    "reference_price": null,
+    "actual_total_return": null,
+    "can_rank": false,
+    "can_gate": false,
+    "can_size": false,
+    "can_originate": false,
+    "can_open_entry": false
+  },
+  "design": {
+    "R3_UI_preserved": true,
+    "R4_new_UI": false,
+    "Paper_applied": false,
+    "native_resource_page_id": null
+  }
+}
