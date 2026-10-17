@@ -2,13 +2,11 @@
 The isolated test shim is NOT the installed Data OS reader or exchange calendar.
 """
 from dataclasses import replace
-from datetime import datetime,date,timezone
-from collections import OrderedDict
-import hashlib
+from datetime import date
 import unittest
 from lib.dataos.tiingo_reader import TiingoResearchHistory
 from lib.nyse_calendar import session_n_back,sessions_between
-from lib.dataos.sector_allocation_tiingo import project_histories, Refused, public_summary, SECTORS, INPUTS
+from lib.dataos.sector_allocation_tiingo import project_histories, Refused, public_summary, INPUTS
 
 ANCHOR="2026-09-30"
 CUTOFF="2026-10-17T13:00:00+00:00"
@@ -33,9 +31,6 @@ def fixtures():
                   end_market_date=ANCHOR,observed_before_utc=CUTOFF,rows=tuple(rows),
                   source_partitions=(("2026-10-12",OTHER),),identical_overlap_dates=0)
     return out,days
-
-def corrupt(history,ticker=None,**changes):
-    d=dict(history.__dict__);d.update(changes);return TiingoResearchHistory(**d)
 
 class Projection(unittest.TestCase):
     def setUp(self):self.data,self.days=fixtures()
