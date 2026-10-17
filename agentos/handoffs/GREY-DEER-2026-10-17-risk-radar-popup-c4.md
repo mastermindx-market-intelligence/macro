@@ -22,6 +22,8 @@ changed:
     what: Add three Macro-only asset/partial hooks and fix the absent-scare conditional closing boundary.
   - path: tests/test_risk_radar_workspace.py; tests/risk_radar_workspace_browser.py
     what: Add template boundaries and a reproducible isolated full-page interaction and anonymous component evidence harness.
+  - path: .github/ci/legacy-jobs.yml
+    what: Register the new suite and partial in the existing dashboard-render-contract code gate, including its execution step.
   - path: mockups/evidence/risk-radar-workspace-20261017
     what: Preserve canonical theme/language/viewport and hover/focus captures, source hashes and browser results.
 verified:

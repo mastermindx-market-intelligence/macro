@@ -61,8 +61,9 @@ python -m pytest tests/test_risk_radar_workspace.py \
 ```
 
 Observed results: **133 pytest cases passed** and **49 browser checks passed**,
-with zero JavaScript exceptions. Full browser assertions are in
-[ui-checks.json](ui-checks.json). Capture command provenance is in the manifest.
+with zero JavaScript exceptions. The projection regression suite is registered
+in the existing `dashboard-render-contract` CI code gate. Full browser assertions
+are in [ui-checks.json](ui-checks.json). Capture command provenance is in the manifest.
 
 Supplemental settled full-page inspector views:
 [mobile dark English](detail-390-dark-en.png) ·
