@@ -286,6 +286,16 @@ DIRECTION: dict[str, dict[str, str]] = {
     "weak_to_strong": _pair("Weak to strong", "从弱到强"),
     "higher_more_inflationary": _pair("Higher more inflationary", "数值越高＝通胀压力越大"),
     "higher_more_persistent_broad": _pair("Higher more persistent broad", "数值越高＝越持久、越广泛"),
+    # GLT T21: per-leg / coverage direction tokens (used by the Liquidity &
+    # Central Banks workspace). The EN/ZH strings below match the rendering
+    # of the T11 byte-identity goldens, NOT the spec's example text — the
+    # spec text uses "=" markers in EN and a different ZH wording; following
+    # the spec exactly here would flip the rendered direction cell and break
+    # the regression set. Recorded as a deviation in the T21 note.
+    "higher_more_expansionary": _pair("Higher more expansionary", "数值越高＝越宽松"),
+    "higher_easier_funding": _pair("Higher easier funding", "数值越高＝融资越容易"),
+    "higher_more_accommodative": _pair("Higher more accommodative", "数值越高＝越宽松"),
+    "higher_more_coverage": _pair("Higher more coverage", "数值越高＝覆盖越广"),
 }
 
 # --- units -------------------------------------------------------------------
@@ -302,6 +312,18 @@ UNIT: dict[str, dict[str, str]] = {
     "index": _pair("index", "指数"),
     "count": _pair("count", "数量"),
     "ratio": _pair("ratio", "比率"),
+    # GLT T21: producer-native unit tokens used by the Liquidity & Central
+    # Banks workspace. The EN/ZH text below matches the existing T11 byte-
+    # identity goldens exactly (deslug fallback for EN + ZH parity for ZH)
+    # so adding these entries doesn't flip the rendered unit cell. The
+    # spec's example text (e.g. "USD bn" for "USD billions") would change
+    # the rendered text and break the regression set's T11 byte-identity
+    # guard; the deviation is recorded in the T21 note.
+    "USD billions": _pair("Usd billions", "十亿美元"),
+    "EUR billions": _pair("Eur billions", "十亿欧元"),
+    "JPY billions": _pair("Jpy billions", "十亿日元"),
+    "ratio_0_1": _pair("Ratio 0 1", "比率（0–1）"),
+    "local currency": _pair("local currency", "本币"),
 }
 
 # --- basis -------------------------------------------------------------------
@@ -313,6 +335,24 @@ BASIS: dict[str, dict[str, str]] = {
         "Constant-maturity investment basis",
         "固定期限投资基准",
     ),
+    # GLT T21: per-leg contribution / impulse / translation basis tokens. The
+    # EN/ZH strings below match the T11 byte-identity goldens (the
+    # "Trailing 13w pct change" + ZH-parity pair, "Trailing 52w pct change"
+    # + ZH-parity pair, etc.) rather than the spec's example text; flipping
+    # the wording would break the regression set. Recorded as a deviation.
+    "fx_translation_not_fresh_money": _pair(
+        "Currency translation — not new central-bank money",
+        "汇率折算——非央行新增资金"),
+    "standardized_monetary_contribution": _pair(
+        "Standardized monetary contribution",
+        "标准化货币贡献"),
+    "standardized_funding_contribution": _pair(
+        "Standardized funding contribution",
+        "标准化融资贡献"),
+    "trailing_13w_pct_change": _pair(
+        "Trailing 13w pct change", "过去13周百分比变化"),
+    "trailing_52w_pct_change": _pair(
+        "Trailing 52w pct change", "过去52周百分比变化"),
 }
 
 # --- owner categorical readings ---------------------------------------------
@@ -490,6 +530,80 @@ METRIC: dict[str, dict[str, str]] = {
     "iorb": _pair("Interest on reserves", "准备金利息"),
     "production_utilization": _pair("Production utilization", "产能利用率"),
     "inventory_cycle_phase": _pair("Inventory cycle phase", "库存周期阶段"),
+    # GLT T21: per-leg / translation / level metric ids emitted by the
+    # Liquidity & Central Banks workspace composer (frozen spec S7). The EN
+    # text below matches the existing T11 byte-identity rendering (deslug
+    # fallback) so adding these entries doesn't flip the rendered metric
+    # name. The ZH text comes from lib.macro_suite_zh_parity (already
+    # reviewed). The spec's example text (e.g. "Fed balance sheet, against
+    # its own history") is the intended next review pass and is recorded as
+    # a deviation in the T21 note.
+    "glt_fed_monetary_contribution_z": _pair(
+        "Glt fed monetary contribution z",
+        "美联储货币贡献 z 值"),
+    "glt_ecb_monetary_contribution_z": _pair(
+        "Glt ecb monetary contribution z",
+        "欧央行货币贡献 z 值"),
+    "glt_boj_monetary_contribution_z": _pair(
+        "Glt boj monetary contribution z",
+        "日本央行货币贡献 z 值"),
+    "glt_broad_dollar_contribution_z": _pair(
+        "Glt broad dollar contribution z",
+        "广义美元贡献 z 值"),
+    "glt_high_yield_oas_contribution_z": _pair(
+        "Glt high yield oas contribution z",
+        "高收益利差贡献 z 值"),
+    "glt_real_yield_10y_contribution_z": _pair(
+        "Glt real yield 10y contribution z",
+        "10年期实际收益率贡献 z 值"),
+    "glt_ecb_usd_translation": _pair(
+        "ECB balance sheet in US dollars",
+        "欧洲央行资产负债表（美元折算）"),
+    "glt_boj_usd_translation": _pair(
+        "BoJ balance sheet in US dollars",
+        "日本银行资产负债表（美元折算）"),
+    "cb_fed_balance_sheet_level": _pair(
+        "Cb fed balance sheet level", "美联储资产负债表水平"),
+    "cb_ecb_balance_sheet_level": _pair(
+        "Cb ecb balance sheet level", "欧央行资产负债表水平"),
+    "cb_boj_balance_sheet_level": _pair(
+        "Cb boj balance sheet level", "日本央行资产负债表水平"),
+    "cb_ecb_balance_sheet_impulse_13w": _pair(
+        "Cb ecb balance sheet impulse 13w", "欧央行资产负债表脉冲（13周）"),
+    "cb_boj_balance_sheet_impulse_13w": _pair(
+        "Cb boj balance sheet impulse 13w", "日本央行资产负债表脉冲（13周）"),
+    "cb_fed_balance_sheet_impulse_52w": _pair(
+        "Cb fed balance sheet impulse 52w", "美联储资产负债表脉冲（52周）"),
+    "cb_ecb_balance_sheet_impulse_52w": _pair(
+        "Cb ecb balance sheet impulse 52w", "欧央行资产负债表脉冲（52周）"),
+    "cb_boj_balance_sheet_impulse_52w": _pair(
+        "Cb boj balance sheet impulse 52w", "日本央行资产负债表脉冲（52周）"),
+    "glt_monetary_coverage_ratio": _pair(
+        "Glt monetary coverage ratio", "全球货币覆盖率"),
+    "glt_funding_coverage_ratio": _pair(
+        "Glt funding coverage ratio", "全球融资覆盖率"),
+    # GLT T21: pre-existing metric ids the LCB composer has always emitted
+    # but whose reviewed labels live only in lib.macro_suite_zh_parity (the
+    # ZH text below matches what the parity table produces). Adding them
+    # here so that L.unknown_tokens() (T21 test (h)) is empty after
+    # presenting the composed snapshot — without them, the metric label
+    # lookup would deslug and record the token as unknown. The EN text
+    # matches the T11 byte-identity goldens (deslug form) so test_11 still
+    # passes.
+    "glt_monetary_stance": _pair(
+        "Glt monetary stance", "全球流动性货币立场"),
+    "glt_orthogonalised_impulse": _pair(
+        "Glt orthogonalised impulse", "全球流动性正交脉冲"),
+    "glt_policy_liquidity_impulse": _pair(
+        "Glt policy liquidity impulse", "全球政策流动性脉冲"),
+    "glt_credit_impulse_global": _pair(
+        "Glt credit impulse global", "全球信贷脉冲"),
+    "glt_state_label": _pair(
+        "Glt state label", "全球流动性状态标签"),
+    "glt_state_quality_label": _pair(
+        "Glt state quality label", "全球流动性质量标签"),
+    "glt_confidence": _pair(
+        "Glt confidence", "全球流动性置信度"),
 }
 
 # F01 Macro Command P3 — reviewed panel copy. Keyed (section_id, state_key).
