@@ -1,0 +1,332 @@
+{
+  "examples": {
+    "expiration_removes_without_a_closing_trade": {
+      "bounds": {
+        "both_close": [
+          0,
+          0
+        ],
+        "both_open": [
+          0,
+          0
+        ],
+        "buyer_open": [
+          0,
+          0
+        ],
+        "closing_sides": [
+          0,
+          0
+        ],
+        "mixed": [
+          0,
+          0
+        ],
+        "opening_sides": [
+          0,
+          0
+        ],
+        "seller_open": [
+          0,
+          0
+        ]
+      },
+      "final_interest": 0,
+      "initial_interest": 100,
+      "joint_parameterization": {
+        "both_close": "both_open - trade_oi_change",
+        "both_open_range": [
+          0,
+          0
+        ],
+        "buyer_close_seller_open": "mixed - buyer_open_seller_close",
+        "buyer_open_seller_close_range": "0..mixed",
+        "mixed": "volume + trade_oi_change - 2*both_open"
+      },
+      "model": "single_series_unit_trades_unconstrained_removal_timing",
+      "nontrading_removals": 100,
+      "opening_probability": null,
+      "opening_side_fraction": null,
+      "predictive_authority": false,
+      "reported_oi_change": -100,
+      "schema": "options.oi.identification.reference.v1",
+      "source_certified": false,
+      "subset_basis": null,
+      "subset_buyer_open_bounds": null,
+      "trade_oi_change": 0,
+      "volume": 0
+    },
+    "first_trade_genuinely_zero_start": {
+      "buyer_open_bounds": [
+        1,
+        1
+      ],
+      "model": "known_unit_event_order_unconstrained_removal_timing",
+      "opening_probability": null,
+      "predictive_authority": false,
+      "schema": "options.oi.identification.reference.v1",
+      "selected_indices": [
+        0
+      ],
+      "source_certified": false,
+      "volume": 3
+    },
+    "flat_oi_all_ask_unidentified": {
+      "bounds": {
+        "both_close": [
+          0,
+          50
+        ],
+        "both_open": [
+          0,
+          50
+        ],
+        "buyer_open": [
+          0,
+          100
+        ],
+        "closing_sides": [
+          100,
+          100
+        ],
+        "mixed": [
+          0,
+          100
+        ],
+        "opening_sides": [
+          100,
+          100
+        ],
+        "seller_open": [
+          0,
+          100
+        ]
+      },
+      "final_interest": 10,
+      "initial_interest": 10,
+      "joint_parameterization": {
+        "both_close": "both_open - trade_oi_change",
+        "both_open_range": [
+          0,
+          50
+        ],
+        "buyer_close_seller_open": "mixed - buyer_open_seller_close",
+        "buyer_open_seller_close_range": "0..mixed",
+        "mixed": "volume + trade_oi_change - 2*both_open"
+      },
+      "model": "single_series_unit_trades_unconstrained_removal_timing",
+      "nontrading_removals": 0,
+      "opening_probability": null,
+      "opening_side_fraction": {
+        "denominator": 2,
+        "numerator": 1
+      },
+      "predictive_authority": false,
+      "reported_oi_change": 0,
+      "schema": "options.oi.identification.reference.v1",
+      "source_certified": false,
+      "subset_basis": "count_only_unpositioned",
+      "subset_buyer_open_bounds": [
+        0,
+        100
+      ],
+      "trade_oi_change": 0,
+      "volume": 100
+    },
+    "last_trade_genuinely_zero_start": {
+      "buyer_open_bounds": [
+        0,
+        0
+      ],
+      "model": "known_unit_event_order_unconstrained_removal_timing",
+      "opening_probability": null,
+      "predictive_authority": false,
+      "schema": "options.oi.identification.reference.v1",
+      "selected_indices": [
+        2
+      ],
+      "source_certified": false,
+      "volume": 3
+    },
+    "oi_gain_90_selected_30": {
+      "bounds": {
+        "both_close": [
+          0,
+          5
+        ],
+        "both_open": [
+          90,
+          95
+        ],
+        "buyer_open": [
+          90,
+          100
+        ],
+        "closing_sides": [
+          10,
+          10
+        ],
+        "mixed": [
+          0,
+          10
+        ],
+        "opening_sides": [
+          190,
+          190
+        ],
+        "seller_open": [
+          90,
+          100
+        ]
+      },
+      "final_interest": 100,
+      "initial_interest": 10,
+      "joint_parameterization": {
+        "both_close": "both_open - trade_oi_change",
+        "both_open_range": [
+          90,
+          95
+        ],
+        "buyer_close_seller_open": "mixed - buyer_open_seller_close",
+        "buyer_open_seller_close_range": "0..mixed",
+        "mixed": "volume + trade_oi_change - 2*both_open"
+      },
+      "model": "single_series_unit_trades_unconstrained_removal_timing",
+      "nontrading_removals": 0,
+      "opening_probability": null,
+      "opening_side_fraction": {
+        "denominator": 20,
+        "numerator": 19
+      },
+      "predictive_authority": false,
+      "reported_oi_change": 90,
+      "schema": "options.oi.identification.reference.v1",
+      "source_certified": false,
+      "subset_basis": "count_only_unpositioned",
+      "subset_buyer_open_bounds": [
+        20,
+        30
+      ],
+      "trade_oi_change": 90,
+      "volume": 100
+    },
+    "unobserved_removals_widen_bounds": {
+      "bounds": {
+        "both_close": [
+          0,
+          90
+        ],
+        "both_open": [
+          0,
+          50
+        ],
+        "buyer_open": [
+          0,
+          100
+        ],
+        "closing_sides": [
+          100,
+          180
+        ],
+        "mixed": [
+          0,
+          100
+        ],
+        "opening_sides": [
+          20,
+          100
+        ],
+        "seller_open": [
+          0,
+          100
+        ]
+      },
+      "declared_removals": [
+        0,
+        80
+      ],
+      "feasible_removals": [
+        0,
+        80
+      ],
+      "final_interest": 20,
+      "inconsistent_removal_endpoints_excluded": false,
+      "initial_interest": 100,
+      "joint_warning": "Marginal endpoints may require different removal counts and cannot be combined freely.",
+      "model": "union_over_integer_removals_unconstrained_timing",
+      "opening_probability": null,
+      "predictive_authority": false,
+      "schema": "options.oi.identification.reference.v1",
+      "source_certified": false,
+      "volume": 100
+    },
+    "volume_exceeds_initial_oi": {
+      "bounds": {
+        "both_close": [
+          0,
+          50
+        ],
+        "both_open": [
+          0,
+          50
+        ],
+        "buyer_open": [
+          0,
+          100
+        ],
+        "closing_sides": [
+          100,
+          100
+        ],
+        "mixed": [
+          0,
+          100
+        ],
+        "opening_sides": [
+          100,
+          100
+        ],
+        "seller_open": [
+          0,
+          100
+        ]
+      },
+      "final_interest": 10,
+      "initial_interest": 10,
+      "joint_parameterization": {
+        "both_close": "both_open - trade_oi_change",
+        "both_open_range": [
+          0,
+          50
+        ],
+        "buyer_close_seller_open": "mixed - buyer_open_seller_close",
+        "buyer_open_seller_close_range": "0..mixed",
+        "mixed": "volume + trade_oi_change - 2*both_open"
+      },
+      "model": "single_series_unit_trades_unconstrained_removal_timing",
+      "nontrading_removals": 0,
+      "opening_probability": null,
+      "opening_side_fraction": {
+        "denominator": 2,
+        "numerator": 1
+      },
+      "predictive_authority": false,
+      "reported_oi_change": 0,
+      "schema": "options.oi.identification.reference.v1",
+      "source_certified": false,
+      "subset_basis": null,
+      "subset_buyer_open_bounds": null,
+      "trade_oi_change": 0,
+      "volume": 100
+    }
+  },
+  "not_established": [
+    "customer or dealer identity",
+    "aggressor classification",
+    "opening probability",
+    "predictive value",
+    "source availability or rights"
+  ],
+  "schema": "options.oi.identification.reference.v1",
+  "synthetic_only": true
+}

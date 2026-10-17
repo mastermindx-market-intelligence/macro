@@ -1,0 +1,61 @@
+{
+  "errors": 0,
+  "exhaustive_geometries": {
+    "exact_count_bounds": 1650,
+    "fixed_order_subsets": 3456,
+    "removal_interval_unions": 1470
+  },
+  "failures": 0,
+  "kernel_sha256": "2f4351bc0f5edda444e2ed0f515c54d967bf94ff05c850e9351bc7c0706df91a",
+  "mutation_results": [
+    {
+      "killed": true,
+      "name": "permit_mixed_trade_without_existing_interest",
+      "test_result": "FAILED (failures=5)"
+    },
+    {
+      "killed": true,
+      "name": "ignore_nontrading_removals",
+      "test_result": "FAILED (failures=2, errors=4)"
+    },
+    {
+      "killed": true,
+      "name": "missing_removals_become_zero",
+      "test_result": "FAILED (failures=1)"
+    },
+    {
+      "killed": true,
+      "name": "participant_sides_use_matched_volume_denominator",
+      "test_result": "FAILED (failures=1)"
+    },
+    {
+      "killed": true,
+      "name": "unknown_removal_interval_becomes_low_point",
+      "test_result": "FAILED (failures=2)"
+    },
+    {
+      "killed": true,
+      "name": "erase_subset_lower_bound",
+      "test_result": "FAILED (failures=1)"
+    },
+    {
+      "killed": true,
+      "name": "ignore_observed_subset_positions",
+      "test_result": "FAILED (failures=2)"
+    },
+    {
+      "killed": true,
+      "name": "invent_opening_probability",
+      "test_result": "FAILED (failures=2)"
+    }
+  ],
+  "predictive_authority": false,
+  "python": "3.14.7",
+  "schema": "options.oi.identification.verification.v1",
+  "source_certified": false,
+  "synthetic_only": true,
+  "test_sha256": "26be7aaf39d9f4f17037f3b9db773f0bb795a895fa2c8fe4495e80e2de861ecd",
+  "tests_run": 24,
+  "total_exhaustive_geometries": 6576,
+  "verification_kind": "principal deterministic checks; separate Fabric derivation is adjudicated in its own retained receipt"
+}
