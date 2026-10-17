@@ -26937,6 +26937,7 @@ jobs:
 
   entry-radar-identity-snapshot:
     # Actual five-file/Parquet observation boundary for the existing pure identity owner.
+    # Includes R23's byte-to-semantic preparation tests: no publisher/read-clock admission.
     # A passing synthetic read is not publication, market admission, or live trading proof.
     if: ${{ false }}
     gate: code
@@ -26947,12 +26948,16 @@ jobs:
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/market_memory_identity_candidate.py
+      - research/MARKET_MEMORY_INITIAL_REFERENCE_CANDIDATE_2026-10-14.md
       - lib/__init__.py
       - lib/dataos/**
       - tests/__init__.py
       - tests/conftest.py
       - tests/test_dataos_identity.py
       - tests/test_entry_radar_identity_observation_snapshot.py
+      - tests/test_market_memory_identity_candidate.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26961,8 +26966,8 @@ jobs:
           python-version: "3.12"
       - name: install actual Parquet reader test dependencies
         run: pip install pytest pyyaml pyarrow
-      - name: actual-clock identity snapshot file boundary
-        run: python -m pytest tests/test_entry_radar_identity_observation_snapshot.py -q
+      - name: actual-clock identity snapshot and physically decoded initial-reference candidate
+        run: python -m pytest tests/test_entry_radar_identity_observation_snapshot.py tests/test_market_memory_identity_candidate.py -q
 
   entry-radar-rs-pullback-calendar:
     if: ${{ false }}
@@ -28749,6 +28754,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # MI W14 (2026-10-17): scripts/build_qbus_news_universe.py reads via the native parquet helper.
+      - lib/native_parquet.py
       - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
