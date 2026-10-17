@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "TDC-BULL-20260706",
-  "asof": "2026-10-15",
+  "asof": "2026-10-16",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 45.0,
@@ -12,15 +12,15 @@
   "components": {
     "validity": 100.0,
     "progress": 32.8,
-    "pace": 16.7,
+    "pace": 15.3,
     "retention": 84.6,
-    "overlay": 53.0
+    "overlay": 32.9
   },
   "geometry": {
     "dist_to_stop_r": 1.568,
     "dist_to_t1_r": 0.932,
     "dist_to_t2_r": 2.432,
-    "horizon_pct_used": 122.2,
+    "horizon_pct_used": 124.4,
     "p1": 0.379,
     "p2": 0.1895,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-21",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 55,
-  "tau": 1.2222
+  "days_elapsed": 56,
+  "tau": 1.2444
 }

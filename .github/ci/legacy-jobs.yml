@@ -6990,6 +6990,8 @@ jobs:
           tests/test_capital_structure_instrument_economics.py
           tests/test_capital_structure_supply_scenarios.py
           tests/test_capital_structure_transactions.py
+          tests/test_capital_structure_variable_terms.py
+          tests/test_capital_structure_supply_variable.py
           tests/test_nwqs_c_dilution.py
           tests/test_compile_capital_structure_registration_lifecycles.py
           tests/test_covenant_terms.py
@@ -13700,6 +13702,8 @@ jobs:
       - engine/theme_graph/membership_evidence.py
       # Unadmitted member-role research is an explicit document dependency.
       - research/theme_graph/microtheme_membership_candidates_2026-10-08.json
+      # Research-only addendum, including the original TSV evidence inputs.
+      - "research/theme_graph/micro_member_research_addendum_20261016/**"
       - engine/theme_graph/ontology_inventory.py
       - engine/theme_graph/proposal_worklist.py
       - engine/theme_graph/security_navigation.py
@@ -13717,6 +13721,7 @@ jobs:
       - tests/test_theme_graph_contracts.py
       - tests/test_theme_graph_local_plane.py
       - tests/test_theme_graph_micro_membership_research.py
+      - tests/test_theme_graph_micro_member_addendum.py
       - tests/test_theme_graph_materialize.py
       - tests/test_theme_graph_membership_lifecycle.py
       - collectors/equity_earnings.py
@@ -13780,7 +13785,7 @@ jobs:
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
@@ -14637,9 +14642,15 @@ jobs:
       - "config/global_liquidity_transmission_v1.yml"
       - "engine/global_liquidity_accounting.py"
       - "engine/global_liquidity_knowledge_time.py"
+      # GLT T08 (W2, 2026-10-17): the measurement-only component outlook
+      # accounting imports the accounting + knowledge-time modules above; its
+      # suite is wired here in the SAME commit per the W1 contract-delta lesson
+      # (a new test file without a path gate is an unwired suite).
+      - "engine/global_liquidity_outlook.py"
       - "engine/global_liquidity_transmission.py"
       - "tests/test_global_liquidity_accounting.py"
       - "tests/test_global_liquidity_knowledge_time.py"
+      - "tests/test_global_liquidity_outlook.py"
       - "tests/test_global_liquidity_sources_v2.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
@@ -14650,8 +14661,8 @@ jobs:
           python-version: "3.12"
       - name: install GLT contract test dependencies
         run: pip install pytest pandas numpy pyyaml
-      - name: global liquidity T03–T05 contracts — source manifest, knowledge time, monetary accounting
-        run: python -m pytest tests/test_global_liquidity_accounting.py tests/test_global_liquidity_knowledge_time.py tests/test_global_liquidity_sources_v2.py -q
+      - name: global liquidity T03–T05 + T08 contracts — source manifest, knowledge time, monetary accounting, component outlook
+        run: python -m pytest tests/test_global_liquidity_accounting.py tests/test_global_liquidity_knowledge_time.py tests/test_global_liquidity_sources_v2.py tests/test_global_liquidity_outlook.py -q
 
   ric-d0-fed-path-provenance:
     if: ${{ false }}
@@ -19346,12 +19357,16 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_theme_graph_hierarchy.py -q
       - name: theme graph — V4-D2A identity-resolution bridge (hostile fixtures, two-clock law, reproducibility)
         run: TZ=UTC python -m pytest tests/test_theme_graph_identity_resolution.py -q
+      - name: theme graph — L13 micro-theme RS proxy display reader (Gate #2 vendor-input exclusion)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_micro_rs_proxy_display.py -q
       - name: theme graph — W3A local-theme plane (hostile tests D-M, capability sidecar, rights gate)
         run: TZ=UTC python -m pytest tests/test_theme_graph_local_plane.py -q
       - name: theme graph — W-C per-use rights verdict (fresh registry snapshot, revocation, ancestry)
         run: TZ=UTC python -m pytest tests/test_theme_graph_rights_use.py -q
       - name: theme graph — hierarchy probation proposals + ontology tier filter
         run: TZ=UTC python -m pytest tests/test_theme_graph_probation_hierarchy.py -q
+      - name: theme graph — L12 hierarchy breadth display reader (Gate #2 vendor-input exclusion)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_hierarchy_breadth_display.py -q
       - name: theme graph — source-rights registry shape + F20 grandfather pin
         run: TZ=UTC python -m pytest tests/test_theme_sources_registry.py -q
       - name: market ontology — GMI exposure composer (shock->theme->company, rights + as-of + typed nulls)
@@ -25902,6 +25917,11 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - lib/dataos/web_history.py
+      - lib/dataos/web_readers.py
+      - lib/dataos/web_workspace.py
+      - engine/neuralweb/market_memory_history_transcripts.py
+      - tests/test_market_memory_history_transcripts.py
       - engine/neuralweb/market_memory_history_filings.py
       - tests/test_market_memory_history_filings.py
       - "engine/government_revenue/program_dossier.py"
@@ -26905,7 +26925,7 @@ jobs:
           tests/test_market_memory_experience_accrual.py
           tests/test_market_memory_retained_context_cohort.py
           tests/test_market_memory_synthetic_capacity.py
-          tests/test_market_memory_episode_retrieval.py tests/test_market_memory_operating_cortex_service.py tests/test_market_memory_retained_consumer.py tests/test_market_memory_retained_catalog.py tests/test_market_memory_retained_saved.py tests/test_market_memory_retained_saved_api.py tests/test_market_memory_read_observation.py tests/test_market_memory_retained_legacy_guard.py tests/test_market_memory_lineage.py tests/test_market_memory_history.py tests/test_market_memory_history_archive.py tests/test_market_memory_history_extend.py tests/test_market_memory_history_cli.py tests/test_market_memory_history_dossier.py tests/test_market_memory_history_macro.py tests/test_market_memory_history_view.py -q
+          tests/test_market_memory_episode_retrieval.py tests/test_market_memory_operating_cortex_service.py tests/test_market_memory_retained_consumer.py tests/test_market_memory_retained_catalog.py tests/test_market_memory_retained_saved.py tests/test_market_memory_retained_saved_api.py tests/test_market_memory_read_observation.py tests/test_market_memory_retained_legacy_guard.py tests/test_market_memory_lineage.py tests/test_market_memory_history.py tests/test_market_memory_history_archive.py tests/test_market_memory_history_transcripts.py tests/test_market_memory_history_extend.py tests/test_market_memory_history_cli.py tests/test_market_memory_history_dossier.py tests/test_market_memory_history_macro.py tests/test_market_memory_history_view.py -q
       # The command includes all original source/temporal owner tests plus
       # retained population, label-free projection, comparison and retrieval.
       # Original DATA registration remains; current rights use real tmp owners.
@@ -28158,6 +28178,61 @@ jobs:
           tests/test_tiingo_capture_admission.py -q
 
 
+  dataos-acceptance:
+    # Data OS completion acceptance (A02 correction/supersession, A03 interrupted
+    # publish + recovery, R01 prior-finding regression pins): SYNTHETIC hermetic
+    # fixtures driven through the real read and publish seams. Strict-xfail pins are
+    # open FINDINGS (A03-F1..F3), not tolerated failures; a fix that lands flips them
+    # to XPASS and fails this job until the pin is retired. Reads no data/ or site/ bytes.
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    paths:
+      - .github/ci/legacy-jobs.yml
+      - .github/workflows/ci.yml
+      - config/dataset_registry.yml
+      - config/delisted_symbols.yml
+      - config/issuer_group_allowlist.yml
+      - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+      - lib/__init__.py
+      - lib/config.py
+      - lib/dataos/__init__.py
+      - lib/dataos/identity.py
+      - lib/dataos/nulls.py
+      - lib/dataos/price.py
+      - lib/dataos/price_views.py
+      - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
+      - lib/dataos/registry.py
+      - lib/dataos/temporal.py
+      - lib/delisted_symbols.py
+      - lib/symbol_directory_receipts.py
+      - lib/ticker_aliases.py
+      - research/data_os_completion/2026-10-13/A02_UPDATE_CORRECTION.md
+      - research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md
+      - research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md
+      - scripts/__init__.py
+      - scripts/build_security_master.py
+      - tests/verification/__init__.py
+      - tests/verification/test_a02_corrections.py
+      - tests/verification/test_a03_recovery.py
+      - tests/verification/test_r01_prior_findings.py
+    timeout-minutes: 12
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install bounded data test dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: Data OS acceptance suites (A02 corrections, A03 recovery, R01 pins)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/verification/test_a02_corrections.py
+          tests/verification/test_a03_recovery.py
+          tests/verification/test_r01_prior_findings.py -q -rs
+
   dataos-web-workspace:
     # Stored-data readers and the bounded canonical Lab adapter are optional
     # consumers of the pure Data OS foundation. Keep its pytest/pyyaml-only
@@ -28166,6 +28241,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_history_transcripts.py
+      - tests/test_market_memory_history_transcripts.py
       - collectors/__init__.py
       - scripts/__init__.py
       - tests/__init__.py
@@ -28270,7 +28347,7 @@ jobs:
       - name: web data access, source clocks, reader limits and canonical Lab isolation
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
-          tests/test_dataos_web_api.py tests/test_dataos_web_history.py tests/test_market_memory_history_filings.py tests/test_market_memory_history_workflow.py tests/test_dataos_web_lab.py
+          tests/test_dataos_web_api.py tests/test_dataos_web_history.py tests/test_market_memory_history_transcripts.py tests/test_market_memory_history_filings.py tests/test_market_memory_history_workflow.py tests/test_dataos_web_lab.py
           tests/test_dataos_web_lab_worker.py tests/test_dataos_web_readers.py
           tests/test_dataos_rights_matrix.py
           tests/test_dataos_web_workspace.py tests/test_tiingo_produced_contracts.py -q -rs
@@ -28303,6 +28380,7 @@ jobs:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
     gate: code
     paths:
+      - engine/neuralweb/market_memory_history_transcripts.py
       - engine/neuralweb/market_memory_history_filings.py
       - engine/earnings_release/filing_key.py
       - engine/earnings_release/__init__.py
@@ -29957,8 +30035,9 @@ jobs:
       - scripts/build_international_macro.py
       - scripts/build_intl.py
       - scripts/build_intl_library.py
-      # The eight suites the step runs, plus helper suites they import.
+      # Dashboard suites and the helper suites they import.
       - "tests/test_dashboard_template_render.py"
+      - "tests/test_risk_radar_workspace.py"
       # #7798: source-dated Hottest Desk leadership/recommendation contract.
       - "tests/test_macro_sector_desk.py"
       # #7859: volatility-placement tests used to live only in gate:data
@@ -29977,6 +30056,7 @@ jobs:
       # Templates the renders load by name.
       - "templates/_macro_sector_desk.html.j2"
       - "templates/dashboard.html.j2"
+      - "templates/_risk_radar_workspace.html.j2"
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
@@ -30129,6 +30209,7 @@ jobs:
           tests/test_macro_sector_desk.py
           tests/test_macro_risk_dialog.py
           tests/test_risk_envelope_radar_integration.py
+          tests/test_risk_radar_workspace.py
           tests/test_us_stocks_s2_compression.py
           tests/test_unified_dashboard_b2w2.py
           tests/test_ud_b2_w1_vw_fold.py
@@ -32032,6 +32113,24 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: c19-wp29-hk-southbound-two-period
         run: python -m pytest tests/test_c19_wp29_hk_southbound_two_period.py -q -p no:cacheprovider
+  c19-wp15-operating-driver-pins:
+    if: ${{ false }}
+    gate: code
+    # C19 WP15 (MAS-265/MAS-274) N2/N4 pins: beta is not a driver coefficient; margin is not markup (offline, stdlib).
+    timeout-minutes: 10
+    paths:
+      - "tests/test_operating_driver_scenario.py"
+      - "engine/operating_driver_scenario.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: c19-wp15-operating-driver-pins
+        run: python -m pytest tests/test_operating_driver_scenario.py -q -p no:cacheprovider
 
   grey-deer-pboc-liquidity:
     # Grey Deer GD-4C: the typed PBOC liquidity state that reads an OMO window.

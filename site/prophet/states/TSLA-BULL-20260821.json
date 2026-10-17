@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "TSLA-BULL-20260821",
-  "asof": "2026-10-15",
+  "asof": "2026-10-16",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 41.8,
@@ -12,15 +12,15 @@
   "components": {
     "validity": 100.0,
     "progress": 14.4,
-    "pace": 24.7,
+    "pace": 23.3,
     "retention": 47.8,
-    "overlay": 53.0
+    "overlay": 32.9
   },
   "geometry": {
     "dist_to_stop_r": 1.189,
     "dist_to_t1_r": 1.311,
     "dist_to_t2_r": 2.811,
-    "horizon_pct_used": 108.9,
+    "horizon_pct_used": 111.1,
     "p1": 0.1259,
     "p2": 0.063,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 49,
-  "tau": 1.0889
+  "days_elapsed": 50,
+  "tau": 1.1111
 }
