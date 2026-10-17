@@ -3253,6 +3253,27 @@ def _reference_json(path: Path) -> tuple[dict, str]:
     return value, hashlib.sha256(raw).hexdigest()
 
 
+def _assert_no_unpreserved_native_generation(out_dir: Path) -> None:
+    """Fail closed before legacy builder rewrites any native identity history.
+
+    The ordinary security-master builder still emits legacy receipt structure;
+    it cannot append authenticated native publication/observation history.
+    Any existing native key, including a partial or malformed one, is a
+    potential generation boundary and MUST NOT be stripped by a successful
+    rebuild. The only lawful remedy is a separate source-owner writer that
+    retains and validates the complete native context. This is not that writer.
+    """
+    receipt_path = out_dir / RECEIPT_NAME
+    if not receipt_path.exists():
+        return
+    receipt, _ = _reference_json(receipt_path)
+    if "publication" in receipt or "identity_observations" in receipt:
+        raise IdentityError(
+            "native identity publication/history cannot be preserved by legacy "
+            "security-master builder; refusing regeneration before source writes"
+        )
+
+
 def _reference_ns(value: object, name: str) -> int:
     if type(value) is not int or value <= 0:
         raise IdentityError(f"invalid reference {name}")
@@ -4167,6 +4188,10 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
     admission that no CIK evidence exists yet — the correct state on a genuinely bare
     checkout before the first weekly map lands.
     """
+    # Protect native publication/history BEFORE any input reads or writes.
+    # An older builder cannot safely produce a new generation after native
+    # history appears, even when its ordinary data sources have advanced.
+    _assert_no_unpreserved_native_generation(out_dir)
     if spy_option_root_input is not None and (reference_evidence_path is not None or direct_registrant_inputs):
         raise IdentityError("option-root intake cannot combine with security admission")
     now = _iso_now()
@@ -4913,6 +4938,10 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
                 raise IdentityError("bounded reference intake would change issuer or migration rows")
 
     if not dry_run:
+        # Recheck immediately before the first write: a native source owner may
+        # have published history while this legacy builder computed its rows.
+        # This is a narrow additional refusal, NOT an atomic writer lock.
+        _assert_no_unpreserved_native_generation(out_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
         _write_parquet(master_rows, MASTER_COLUMNS, master_path, MASTER_DTYPES)
         _write_parquet(alias_rows, ALIAS_COLUMNS, aliases_path, ALIAS_DTYPES)
