@@ -29980,8 +29980,9 @@ jobs:
       - scripts/build_international_macro.py
       - scripts/build_intl.py
       - scripts/build_intl_library.py
-      # The eight suites the step runs, plus helper suites they import.
+      # Dashboard suites and the helper suites they import.
       - "tests/test_dashboard_template_render.py"
+      - "tests/test_risk_radar_workspace.py"
       # #7798: source-dated Hottest Desk leadership/recommendation contract.
       - "tests/test_macro_sector_desk.py"
       # #7859: volatility-placement tests used to live only in gate:data
@@ -30000,6 +30001,7 @@ jobs:
       # Templates the renders load by name.
       - "templates/_macro_sector_desk.html.j2"
       - "templates/dashboard.html.j2"
+      - "templates/_risk_radar_workspace.html.j2"
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
@@ -30152,6 +30154,7 @@ jobs:
           tests/test_macro_sector_desk.py
           tests/test_macro_risk_dialog.py
           tests/test_risk_envelope_radar_integration.py
+          tests/test_risk_radar_workspace.py
           tests/test_us_stocks_s2_compression.py
           tests/test_unified_dashboard_b2w2.py
           tests/test_ud_b2_w1_vw_fold.py
