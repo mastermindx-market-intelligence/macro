@@ -69,6 +69,7 @@ Usage:
     python3 scripts/worktree_sparse.py status --json # machine-readable, for fleet census
     python3 scripts/worktree_sparse.py status --json --no-heal  # census, read-only
     python3 scripts/worktree_sparse.py auto          # new linked worktree: apply profile
+    python3 scripts/worktree_sparse.py fabric-mint <run-id> <sha40>  # qualified new Fabric lane only
     python3 scripts/worktree_sparse.py full          # opt IN to a full checkout
     python3 scripts/worktree_sparse.py sparse        # re-apply the configured profile
     python3 scripts/worktree_sparse.py add site      # materialize ONE excluded dir
@@ -83,6 +84,7 @@ import errno
 import json
 import os
 import platform
+import re
 import subprocess
 import sys
 import time
@@ -813,6 +815,15 @@ def path_under_session_root(root: Path) -> bool:
         for index in range(len(parts) - length + 1):
             if parts[index:index + length] == marker:
                 return True
+    # Fabric uses a distinct, host-user-owned checkout root. Keep this opt-in
+    # until the original lane bootstrap can prove a newly minted workspace;
+    # never implicitly re-sparsify a resumed or operator-owned checkout.
+    if os.environ.get("MASTERMIND_FABRIC_SPARSE_NEW") == "1":
+        try:
+            return (Path(root).resolve().parent ==
+                    (Path.home() / "lanes" / "wt").resolve())
+        except OSError:
+            return False
     return False
 
 
@@ -1232,6 +1243,18 @@ def auto_profile(root: Path = ROOT, config_path: Path | None = None) -> int:
         return 0
 
     if sparse_enabled(root):
+        # core.sparseCheckout=true is only a config bit. A missing/invalid
+        # info/sparse-checkout file causes git sparse-checkout list to warn
+        # that this worktree is not sparse, while heavy tracked files remain.
+        # Fail closed rather than claiming success or rewriting an existing
+        # or resumed worker's index.
+        rules = _git(root, "sparse-checkout", "list")
+        if not rules:
+            print("worktree-sparse: inconsistent sparse state — "
+                  "core.sparseCheckout is true but Git has no readable "
+                  "sparse rules; refusing to change this checkout",
+                  file=sys.stderr)
+            return 1
         print("worktree-sparse: auto skipped — linked worktree is already sparse; "
               "preserving its current selection")
         return 0
@@ -1916,6 +1939,29 @@ def main(argv: list[str]) -> int:
         return apply_profile()
     if cmd == "clean":
         return clean_stray(force="--force" in argv)
+    if cmd == "fabric-mint":
+        # A caller explicitly admitted by the incumbent Fabric route may
+        # request a NEW sparse checkout. This is only a thin entry point into
+        # the original Macro mint owner: it grants no lease, worker identity,
+        # source freshness, or cleanup permission. It never reuses a checkout.
+        if len(argv) != 3 or os.environ.get("MASTERMIND_FABRIC_SPARSE_NEW") != "1":
+            print("worktree-sparse: fabric-mint requires explicit new-workspace opt-in",
+                  file=sys.stderr)
+            return 1
+        run_id, pinned_commit = argv[1:]
+        if (re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,95}", run_id) is None
+                or re.fullmatch(r"[0-9a-f]{40}", pinned_commit) is None):
+            print("worktree-sparse: fabric-mint run/commit binding invalid", file=sys.stderr)
+            return 1
+        if _git(ROOT, "cat-file", "-t", pinned_commit) != "commit":
+            print("worktree-sparse: fabric-mint pinned commit unavailable",
+                  file=sys.stderr)
+            return 1
+        return mint_session_worktree(
+            ROOT, Path.home() / "lanes" / "wt" / run_id,
+            branch="lane/" + run_id, base=pinned_commit,
+            fetch=False, reuse_existing=False, strict=True,
+        )
     if cmd == "add":
         names = [a for a in argv[1:] if not a.startswith("-")]
         if not names:
