@@ -16,6 +16,7 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import sys
 from datetime import datetime, timezone
@@ -35,15 +36,20 @@ sys.path.insert(0, str(_REPO_ROOT))
 # ---------------------------------------------------------------------------
 
 
-def _as_of_date(nodes_path: Path) -> str:
-    """Honor SPEC §2 — the nodes artifact mtime, else "Date unavailable"."""
-    if not nodes_path.exists():
-        return ""
+def _as_of_date(meta_path: Path) -> str:
+    """SPEC §2 — the store's ``belief_time`` (YYYY-MM-DD), else "" so the page
+    renders "Date unavailable". File mtimes are not used: in a CI checkout they
+    are the checkout time, not the data date."""
     try:
-        mtime = nodes_path.stat().st_mtime
-        return datetime.fromtimestamp(mtime, tz=timezone.utc).strftime("%Y-%m-%d")
-    except OSError:
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
         return ""
+    value = str(meta.get("belief_time") or "")[:10] if isinstance(meta, dict) else ""
+    try:
+        datetime.strptime(value, "%Y-%m-%d")
+    except ValueError:
+        return ""
+    return value
 
 
 def _load_frames(root: Path) -> tuple[pd.DataFrame | None, pd.DataFrame | None]:
@@ -320,7 +326,8 @@ def compose(
     ``nodes``/``edges`` are caller-injectable for tests. When ``None`` we
     read the store at call time — nothing cached across calls.
     """
-    if nodes is None or edges is None:
+    injected = nodes is not None and edges is not None
+    if not injected:
         loaded_nodes, loaded_edges = _load_frames(root)
         if loaded_nodes is None or loaded_edges is None:
             return {
@@ -343,12 +350,11 @@ def compose(
     name_index = _node_name_index(nodes)
     tree = _build_tree(envelopes, name_index)
 
-    nodes_path = Path(root) / "data" / "theme_graph" / "nodes.parquet"
-    as_of = _as_of_date(nodes_path) if not isinstance(nodes, pd.DataFrame) else ""
-    # When the caller injected frames we cannot read the artifact mtime —
-    # fall back to a present-day stamp so the hero never lies about as-of.
-    if not as_of:
-        as_of = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
+    meta_path = Path(root) / "data" / "theme_graph" / "_meta.json"
+    as_of = "" if injected else _as_of_date(meta_path)
+    # When the date is unknown (injected frames, missing artifact) leave it
+    # empty: the template renders "Date unavailable" rather than a guessed
+    # present-day stamp (SPEC §2).
     tree["as_of"] = as_of
     return tree
 

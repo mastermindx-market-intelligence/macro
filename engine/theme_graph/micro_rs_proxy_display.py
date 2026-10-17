@@ -32,7 +32,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from engine.theme_graph import store
+from engine.theme_graph import rights, store
 
 SCHEMA_VERSION = "gmi.micro_rs_proxy_display.v1"
 
@@ -131,6 +131,24 @@ def _parent_map(edges: pd.DataFrame) -> dict[str, set[str]]:
     return mapping
 
 
+def _instrument_emission_ok(src_id: str) -> bool:
+    """Gate #2 for proxy instruments, decided by the rights registry.
+
+    The id-token check above misses vendor-derived instruments whose id does
+    not spell the vendor (``basket:baskets_china_ths:*`` is ``ths_concepts``).
+    The source family comes from ``rights.family_for_node_id`` and must permit
+    a public emission; an unmapped family, or a registry that cannot answer,
+    refuses rather than defaulting open.
+    """
+    family = rights.family_for_node_id(src_id)
+    if family is None:
+        return False
+    try:
+        return rights.emission_allowed(family)
+    except Exception:  # unknown family / unreadable registry: fail closed
+        return False
+
+
 def _expresses_pairs(edges: pd.DataFrame, index: dict) -> list[tuple[str, str]]:
     """Sorted ``(theme_id, src_id)`` for every open EXPRESSES edge whose source
     is an active node. Gate #2 sources are dropped here and never re-enter."""
@@ -143,6 +161,8 @@ def _expresses_pairs(edges: pd.DataFrame, index: dict) -> list[tuple[str, str]]:
         src_id = _text(row.get("src"))
         theme_id = _text(row.get("dst"))
         if not src_id or not theme_id or _is_internal_only(src_id):
+            continue
+        if not _instrument_emission_ok(src_id):
             continue
         node = index.get(src_id)
         if node is None or _is_retired(node["status"]):
