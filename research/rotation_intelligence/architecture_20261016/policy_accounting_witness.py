@@ -16,6 +16,9 @@ def rebalance(holdings: list[float], weights: list[float], costs: list[float]) -
     for x in holdings + weights + costs:
         if isinstance(x, bool) or not isinstance(x, (int, float)) or not math.isfinite(x):
             raise ValueError('finite numeric inputs required')
+    # Coordinate zero is settlement cash, not the BIL ETF.
+    if costs[0] != 0:
+        raise ValueError('settlement cash has no security-trading cost')
     wealth = sum(holdings)
     if wealth <= 0 or min(holdings) < 0 or min(weights) < 0:
         raise ValueError('positive wealth and nonnegative holdings/weights required')
@@ -37,7 +40,8 @@ def rebalance(holdings: list[float], weights: list[float], costs: list[float]) -
     if abs(residual) > 1e-10*wealth:
         raise AssertionError('self-financing residual')
     return {'post_wealth':v, 'holdings':after, 'fees':charged,
-            'gross_traded_notional':sum(abs(a-h) for a,h in zip(after,holdings)),
+            'gross_position_changes_including_settlement_cash':sum(abs(a-h) for a,h in zip(after,holdings)),
+            'securities_traded_notional':sum(abs(a-h) for a,h in zip(after[1:],holdings[1:])),
             'budget_residual':residual}
 
 
@@ -70,6 +74,9 @@ def run() -> dict:
     first=rebalance([1.,0.,0.],[0.,1.,0.],[0.,c,c])
     case('flat_price_round_trip',first['holdings'],[1.,0.,0.],[0.,c,c],(1-c)/(1+c))
     case('zero_cost_switch',[0.,1.,0.],[0.,0.,1.],[0.,0.,0.],1.)
+    assert math.isclose(cases[0]['result']['securities_traded_notional'],cases[0]['result']['holdings'][1])
+    assert cases[4]['result']['securities_traded_notional']==1.0
+    assert cases[6]['result']['securities_traded_notional']==2.0
     rng=random.Random(20261017)
     errors=[]
     for _ in range(512):
@@ -84,7 +91,7 @@ def run() -> dict:
         values=[rebalance(h,w,[0.,rate,rate])['post_wealth'] for rate in [.0005,.001,.0025,.005]]
         assert all(a>=b-1e-12 for a,b in zip(values,values[1:]))
     invalid=[([-1.,2.],[0.,1.],[0.,c]),([1.,0.],[.4,.5],[0.,c]),([1.,0.],[0.,1.],[0.,-c]),
-             ([1.,0.],[0.,1.],[0.,1.]),([1.,0.],[False,1.],[0.,c]),([1.,0.],[math.nan,1.],[0.,c]),([0.,0.],[0.,1.],[0.,c])]
+             ([1.,0.],[0.,1.],[0.,1.]),([1.,0.],[False,1.],[0.,c]),([1.,0.],[math.nan,1.],[0.,c]),([0.,0.],[0.,1.],[0.,c]),([1.,0.],[0.,1.],[c,c])]
     for args in invalid:
         try: rebalance(*args)
         except ValueError: pass
