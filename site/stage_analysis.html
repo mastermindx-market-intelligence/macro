@@ -971,13 +971,15 @@
   /* ---- CSV export ---- */
   function exportCSV(){
     var head=isZH()
-      ?['代码','名称','行业','行业分位','趋势分','趋势分变化','阶段','阶段标签','周数','拉伸','波动','标签','财报语气','财报表现','综合评分']
-      :['Ticker','Name','Industry','Industry rank','Trend quality','Trend change','Stage','Stage label','Weeks','Stretch','Volatility','Tags','Call tone','Earnings result','Rating'];
+      ?['代码','名称','行业','行业分位','趋势分','趋势分变化','阶段','阶段标签','周数','拉伸','波动','标签','财报语气','财报表现','综合评分','阶段分类来源','观测状态','阶段周截止日','行情来源日期']
+      :['Ticker','Name','Industry','Industry rank','Trend quality','Trend change','Stage','Stage label','Weeks','Stretch','Volatility','Tags','Call tone','Earnings result','Rating','Classification source','Observation status','Stage week ending','Source price date'];
     var lines=[head.join(',')];
     VIEW.forEach(function(r){
       var tone=r.ec_sent==null?'':Math.round(r.ec_sent);
-      var cells=[r.ticker,r.name,r.sector,r.industry_percentile,r.sata_score,r.sata_change_1w,r.stage,r.stage_label,r.weeks_in_stage,r.atr_ext,r.atr_pct_price,(r.tags||[]).join('|'),tone,r.ec_perf,r.rating];
-      lines.push(cells.map(function(c){c=c==null?'':String(c);return /[,"\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c;}).join(','));
+      // Lifecycle age (fresh) and classifier source do not establish observation currentness.
+      var observation=r.stage_current===true?'current':r.stage_current===false?'stale':'unknown';
+      var cells=[r.ticker,r.name,r.sector,r.industry_percentile,r.sata_score,r.sata_change_1w,r.stage,r.stage_label,r.weeks_in_stage,r.atr_ext,r.atr_pct_price,(r.tags||[]).join('|'),tone,r.ec_perf,r.rating,r.source,observation,r.stage_week_end,r.stage_source_asof];
+      lines.push(cells.map(function(c){c=c==null?'':String(c);return /[,"\r\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c;}).join(','));
     });
     var blob=new Blob([lines.join('\n')],{type:'text/csv'});
     var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='stage_screener.csv';a.click();

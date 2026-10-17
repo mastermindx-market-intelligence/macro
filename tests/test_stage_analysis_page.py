@@ -1076,3 +1076,155 @@ process.stdout.write(JSON.stringify(out));
         assert row["word"] == "Upbeat", (v, row)
         assert row["band"] == "up", (v, row)
         assert "(72 = upbeat)" in row["tip"], (v, row)
+
+
+# CSV must carry the observation-truth contract beside lifecycle columns.
+# These are synthetic row-contract fixtures, not live-staleness measurements.
+_CSV_LEGACY_HEADERS = {
+    False: ['Ticker', 'Name', 'Industry', 'Industry rank', 'Trend quality',
+            'Trend change', 'Stage', 'Stage label', 'Weeks', 'Stretch',
+            'Volatility', 'Tags', 'Call tone', 'Earnings result', 'Rating'],
+    True: ['代码', '名称', '行业', '行业分位', '趋势分', '趋势分变化', '阶段',
+           '阶段标签', '周数', '拉伸', '波动', '标签', '财报语气', '财报表现', '综合评分'],
+}
+_CSV_PROVENANCE_HEADERS = {
+    False: ['Classification source', 'Observation status', 'Stage week ending', 'Source price date'],
+    True: ['阶段分类来源', '观测状态', '阶段周截止日', '行情来源日期'],
+}
+
+
+def _stage_csv_source(kind):
+    if kind == 'rendered':
+        return _render_with_fixture()
+    path = 'templates/stage_analysis.html.j2' if kind == 'template' else 'site/stage_analysis.html'
+    return (REPO / path).read_text(encoding='utf-8')
+
+
+def _stage_csv_capture(kind, rows, zh=False):
+    import csv
+    import io
+    html = _stage_csv_source(kind)
+    # Bound the entire real export handler at its following section, without
+    # reimplementing the CSV serializer or invoking unrelated page side effects.
+    start = html.index('  function exportCSV(){')
+    end = html.index('  /* ---- data load (lazy) ---- */', start)
+    code = html[start:end]
+    harness = '''
+const vm = require('node:vm');
+const input = JSON.parse(require('node:fs').readFileSync(0, 'utf8'));
+let captured = null, clicked = [], timers = [], revoked = [];
+const context = {
+  VIEW: input.rows,
+  isZH: () => input.zh,
+  Blob,
+  URL: {createObjectURL: blob => { captured = blob; return 'blob:stage-export-test'; },
+        revokeObjectURL: url => revoked.push(url)},
+  document: {createElement: tag => ({tag, click(){clicked.push({href:this.href, download:this.download});}})},
+  setTimeout: (fn, delay) => {timers.push({fn, delay});}
+};
+vm.runInNewContext(input.code + '\\nexportCSV();', context);
+(async () => {
+  const csv = captured ? await captured.text() : null;
+  const beforeCleanup = revoked.slice();
+  timers.forEach(timer => timer.fn());
+  process.stdout.write(JSON.stringify({csv, clicked, beforeCleanup, revoked,
+    delays:timers.map(timer => timer.delay), rows:context.VIEW}));
+})().catch(err => { console.error(err); process.exitCode=1; });
+'''
+    res = subprocess.run(['node', '-e', harness],
+        input=json.dumps(dict(code=code, rows=rows, zh=zh)),
+        capture_output=True, text=True, timeout=30)
+    assert res.returncode == 0, res.stderr
+    out = json.loads(res.stdout)
+    out['table'] = list(csv.reader(io.StringIO(out['csv'], newline=''), strict=True))
+    return out
+
+
+def _stage_csv_row(ticker='SILA', **changes):
+    row = dict(ticker=ticker, name='Sila Realty', sector='Real Estate',
+               industry_percentile=None, sata_score=6, sata_change_1w=0,
+               stage=2, stage_label='Fresh Stage 2', weeks_in_stage=3,
+               atr_ext=0, atr_pct_price=0, tags=['steady'], ec_sent=None,
+               ec_perf=None, rating=None, fresh=True, source='live',
+               stage_current=False, stage_week_end='2026-06-26',
+               stage_source_asof='2026-06-30')
+    row.update(changes)
+    return row
+
+
+@_needs_node
+@pytest.mark.parametrize('kind', ['template', 'generated', 'rendered'])
+@pytest.mark.parametrize('zh', [False, True])
+def test_stage_csv_appends_provenance_without_reordering_existing_columns(kind, zh):
+    table = _stage_csv_capture(kind, [_stage_csv_row()], zh)['table']
+    assert table[0][:15] == _CSV_LEGACY_HEADERS[zh]
+    assert table[0][15:] == _CSV_PROVENANCE_HEADERS[zh]
+    assert table[1][:15] == ['SILA', 'Sila Realty', 'Real Estate', '', '6', '0',
+        '2', 'Fresh Stage 2', '3', '0', '0', 'steady', '', '', '']
+    assert table[1][15:] == ['live', 'stale', '2026-06-26', '2026-06-30']
+
+
+@_needs_node
+@pytest.mark.parametrize('kind', ['template', 'generated', 'rendered'])
+@pytest.mark.parametrize('zh', [False, True])
+def test_stage_csv_distinguishes_current_stale_unknown_without_using_fresh(kind, zh):
+    # 'fresh' is lifecycle age, and 'live' is classifier identity. Neither is
+    # evidence of observation currentness. Null/missing never becomes current.
+    rows = [_stage_csv_row('CURRENT', stage_current=True),
+            _stage_csv_row('STALE', stage_current=False),
+            _stage_csv_row('UNKNOWN', stage_current=None, stage_week_end=None,
+                           stage_source_asof=None, source='seed'),
+            _stage_csv_row('LEGACY')]
+    for key in ['stage_current', 'stage_week_end', 'stage_source_asof', 'source']:
+        rows[-1].pop(key)
+    out = _stage_csv_capture(kind, rows, zh)
+    assert [r[15:] for r in out['table'][1:]] == [
+        ['live', 'current', '2026-06-26', '2026-06-30'],
+        ['live', 'stale', '2026-06-26', '2026-06-30'],
+        ['seed', 'unknown', '', ''], ['', 'unknown', '', '']]
+    assert out['rows'] == rows
+
+
+@_needs_node
+@pytest.mark.parametrize('kind', ['template', 'generated', 'rendered'])
+@pytest.mark.parametrize('zh', [False, True])
+def test_stage_csv_roundtrips_quotes_linebreaks_and_unicode(kind, zh):
+    names = ['Comma, name', 'Quote "name"', 'Line\nname', 'Return\rname',
+             'Both\r\nname', '中文公司']
+    rows = [_stage_csv_row(str(i), name=name, source='seed,"quoted"')
+            for i, name in enumerate(names)]
+    table = _stage_csv_capture(kind, rows, zh)['table']
+    assert len(table) == len(rows) + 1
+    assert all(len(row) == 19 for row in table)
+    assert [row[1] for row in table[1:]] == names
+    assert all(row[15] == 'seed,"quoted"' for row in table[1:])
+
+
+@_needs_node
+@pytest.mark.parametrize('kind', ['template', 'generated', 'rendered'])
+def test_stage_csv_exports_only_given_view_in_order_and_retains_download_lifetime(kind):
+    rows = [_stage_csv_row('SECOND'), _stage_csv_row('FIRST', stage_current=True, rating=0)]
+    out = _stage_csv_capture(kind, rows)
+    assert [r[0] for r in out['table'][1:]] == ['SECOND', 'FIRST']
+    assert out['table'][2][14] == '0'
+    assert out['clicked'] == [dict(href='blob:stage-export-test', download='stage_screener.csv')]
+    assert out['beforeCleanup'] == []
+    assert out['delays'] == [1500]
+    assert out['revoked'] == ['blob:stage-export-test']
+    assert out['rows'] == rows
+
+
+@_needs_node
+@pytest.mark.parametrize('kind', ['template', 'generated', 'rendered'])
+def test_stage_csv_empty_view_is_header_only(kind):
+    assert _stage_csv_capture(kind, [])['table'] == [
+        _CSV_LEGACY_HEADERS[False] + _CSV_PROVENANCE_HEADERS[False]]
+
+
+@_needs_node
+@pytest.mark.parametrize('kind', ['template', 'generated', 'rendered'])
+def test_stage_csv_non_boolean_currentness_is_unknown(kind):
+    rows = [_stage_csv_row(str(i), stage_current=value)
+            for i, value in enumerate(['true', 'false', 0, 1])]
+    out = _stage_csv_capture(kind, rows)
+    assert [r[16] for r in out['table'][1:]] == ['unknown'] * len(rows)
