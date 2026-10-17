@@ -29,11 +29,12 @@ retry/clock owner and no new identity/registry. No fresh market data or
 correction to historical results was invented.
 
 The existing CI-registered tests/test_rotation_early_context.py now
-checks every ETF constituent of the original preregistered
-scripts.leadership_rotation_study.PAIRS against the actual
-YahooAdapter.all_tickers() fetch roster, with no second hard-coded
-constituent list. It initially FAILED exactly on ['DIA']; after the
-one-ticker correction it PASSED, with exactly one DIA occurrence.
+checks ETF legs of the existing typed defensive-sector/broadening-proxy
+registry in data/oracle/ratio_pairs.json against the incumbent
+config.yml Yahoo collection groups. No network-enabled collector or
+research-script import and no second hard-coded ticker list are needed.
+The original test initially FAILED exactly on ['DIA']; after the one-
+ticker correction it PASSED, with exactly one DIA occurrence.
 
 ## Verification
 
@@ -68,3 +69,47 @@ WM is also absent from Yahoo's current fetch roster but is not added
 because a named hindsight winner does not automatically establish an
 eligible strategy or source membership. F3 theme discovery, Prophet B4,
 alert delivery and Risk Envelope producer ordering remain open.
+
+## October 17: required CI scope repair on the same PR branch
+
+The original head 463b927748974407e43f854b9704b45f53c24062
+ran CI pack-9 and contract-delta checks. Both correctly failed the new
+regression's overly broad imports:
+
+- ratio-lens CI pack-9's Python dependency set omits yfinance; the
+  new test's direct import of collectors.yahoo caused a
+  ModuleNotFoundError for yfinance (136 existing tests passed, 2
+  expected failures, 1 test failed solely from this dependency).
+- contract-delta correctly identified more than 30 transitive source
+  files brought into the ratio-lens job by the new Yahoo collector and
+  leadership_rotation_study imports. Adding these unrelated paths or
+  installing yfinance in a lightweight ratio-lens job would undermine
+  the existing dependency/cost contract.
+
+**Minimal consumer-safe repair:** replace ONLY the test's two heavy
+imports with source reads already owned by the existing ratio-lens
+module (`RL._load_registry`) and existing `lib.config.load` (both
+within the prior declared closure). The registry's `kind='etf'` and
+original `context_group in {defensive_sector,broadening_proxy}`
+select the published preregistered pair cohort; the test asserts that
+DIA/QQQ remains present in that registry and every required ETF leg
+is requested by the existing Yahoo YAML collection groups. No ticker
+universe is duplicated; this is a configuration contract, not a new
+Yahoo network test or trading signal. An additional ordinary local
+smoke verified that the real YahooAdapter.all_tickers() includes DIA
+once after the config change.
+
+**New exact local validation:** original affected suites
+`test_rotation_early_context`, `test_rotation_role_retention`,
+`test_yahoo_universe_backfill`, `test_yahoo_freshness`,
+`test_oracle_ratio_lens`, `test_rotation_flow_pit`:
+**208 passed, one skipped, two expected failures**. Original main
+repository's heavyweight CI closure contract
+`tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure`
+then **PASSED** on the revised source, requiring ~293 seconds of
+read-only local dependency traversal. No CI scope was broadened,
+no producer changed and no dependency or check was removed or
+weakened. Pre-existing pytest garbage-directory cleanup warnings
+remain environmental. Hosted exact-NEW-head PR checks, independent
+review, protected-main merge, normal DIA close and actual user-path
+acceptance remain NOT PROVEN.

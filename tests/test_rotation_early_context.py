@@ -691,23 +691,29 @@ def test_t07r2_nonpositive_rows_not_counted():
 
 
 def test_preregistered_etf_rotation_legs_are_in_active_yahoo_collection():
-    """Price-date parity requires both sides to be MAINTAINED, not just archived.
+    """The existing Yahoo config must request BOTH sides of every named ETF pair.
 
-    2026-10-15 original Rotation Command source rejected DIA/QQQ because DIA's
-    last stored close was Oct 14 while QQQ advanced to Oct 15. The independent
-    prereg study had DIA/QQQ all along; the Yahoo daily fetch universe did not.
-    Do not replace DIA with ^DJI or manufacture an aligned ratio.
+    Registered Ratio Lens EOD dates are source observations, not authorisation
+    to infer an uncollected Dow ETF from ^DJI. Avoid importing the network-
+    enabled Yahoo provider into the thin, CI-registered ratio-lens test pack:
+    this is a pure registry/config-roster contract.
     """
-    from collectors.yahoo import YahooAdapter
-    from scripts.leadership_rotation_study import PAIRS as PREREG_PAIRS
+    from lib import config
 
-    assert PREREG_PAIRS["dia_vs_qqq"] == ("broadening_proxy", "DIA", "QQQ")
-    required = {ticker for _, receiver, donor in PREREG_PAIRS.values()
-                for ticker in (receiver, donor)}
-    fetched = YahooAdapter().all_tickers()  # config read only, NO fetch
-    missing = sorted(required - set(fetched))
+    # Reuse the already-owned Ratio Lens registry and its typed context groups;
+    # neither a copied ticker list nor a second candidate universe is allowed.
+    registry = RL._load_registry(Path(__file__).resolve().parents[1] / "data")
+    pairs = [row for row in registry["pairs"]
+             if row.get("kind") == "etf" and row.get("context_group")
+             in ("defensive_sector", "broadening_proxy")]
+    assert any(row.get("id") == "dia_vs_qqq" and row.get("num") == "DIA"
+               and row.get("den") == "QQQ" for row in pairs)
+    required = {str(t) for row in pairs for t in (row["num"], row["den"])}
+    roster = [str(t) for members in config.load()["yahoo"]["tickers"].values()
+              for t in members]
+    missing = sorted(required - set(roster))
     assert missing == [], (
-        "preregistered rotation pair legs cannot retain matched close dates if "
-        f"the existing daily Yahoo owner never fetches them: {missing}"
+        "source-clocked, preregistered ETF pairs cannot be evaluated if "
+        f"the incumbent nightly Yahoo configuration omits their legs: {missing}"
     )
-    assert fetched.count("DIA") == 1
+    assert roster.count("DIA") == 1  # do not silently substitute ^DJI
