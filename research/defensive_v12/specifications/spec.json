@@ -1,0 +1,62 @@
+{
+  "mission": "Distinguish structural cycle failure from normal recovery noise at the exact V11 first-watch entries; no entry optimization",
+  "frozen_utc": "2026-10-13T02:23:07.729015+00:00",
+  "status": "Exploratory continuation after V11 inspection; not an untouched holdout",
+  "source_pin": "7d60119c4e1dab35a65f0d80cc3234140bac17ef",
+  "inputs": "Existing V11 daily/native caches and first-watch observations from original V1 snapshots; no network data or denied V3/V4/verify_cache actions",
+  "cutoff": "2026-10-08",
+  "start": "2018-01-01",
+  "core": [
+    "MCD",
+    "WMT",
+    "WM",
+    "COST",
+    "PG"
+  ],
+  "peers_separate": true,
+  "frames": [
+    "1D",
+    "2D"
+  ],
+  "context": "confirmed W+2W, primary phases,200native warmup; original first fresh cross only",
+  "primary_horizon": "fixed arm+126 session common endpoint; retained skipped and incomplete original watches; completed filled episodes for exit contrasts",
+  "structural_level": "min completed daily low from arm-20 through signal inclusive; minus0.5 daily ATR known at signal, fixed for life of trade",
+  "policies": [
+    "HOLD",
+    "ATR3",
+    "ATR6",
+    "STRUCTURE_ATR6",
+    "STRUCTURE_MOMENTUM_ATR6",
+    "STAGED_ATR6"
+  ],
+  "policy_logic": {
+    "HOLD": "common endpoint, no stop; reference not recommendation",
+    "ATR3": "entry-fixed3 daily ATR hard stop",
+    "ATR6": "entry-fixed6 daily ATR hard stop; matched wider-risk reference",
+    "STRUCTURE_ATR6": "same6ATR hard stop plus daily close below fixed structural level, next open",
+    "STRUCTURE_MOMENTUM_ATR6": "same6ATR hard stop plus close below structural level AND last completed lower histogram<0, next open",
+    "STAGED_ATR6": "STRUCTURE_MOMENTUM_ATR6 plus first weekly K/D bear cross after a NEW completed weekly K>=80 during position, next open"
+  },
+  "costs": "0.05% each side,10bp total multiplicative;30bp sensitivity without new triggers",
+  "execution": "opening gap stop before pending market exit; entry-day stop; no intraday highs on stop day counted unless order established; close-trigger exits next open; no reentry primary",
+  "analysis": [
+    "paired mean deltas versusHOLD andATR6",
+    "gain preservation and stop recovery opportunity cost",
+    "MAE and loss tail",
+    "same-stock single-position equity, cash0, no annual liquidation",
+    "2018-2022/2023-2026 chronology; no best-rule selection",
+    "leave-stock/year-out and shared-quarter resampling diagnostics"
+  ],
+  "accounting": "adjusted-price proxies; not audited cash-dividend or broker fills; one unit account, not position recommendation",
+  "not_proven": [
+    "user chart parity",
+    "out-of-sample predictive performance",
+    "causal issuer/rates filters",
+    "optimal allocation"
+  ],
+  "v11_hashes": {
+    "empirical.py": "816817ad5bcf71617227631e67b0493bf524fbe4a8f7a4c0d024bc31d8bc7faf",
+    "management.py": "987498b0cfaa57dda68b7ede270ae7a3e7b3fba34c569a7f3c6b3749a153558c",
+    "spec.json": "89044d5a6fbbb03e6882ea78ea5e0b059c35257acad752f364f5e228ca0afa8b"
+  }
+}
