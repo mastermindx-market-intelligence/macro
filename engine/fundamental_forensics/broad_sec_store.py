@@ -30,7 +30,7 @@ poll clock.  Callers inject every clock; this kernel does not sample wall time.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from functools import lru_cache
 from hashlib import sha256
 from zoneinfo import ZoneInfo
@@ -688,6 +688,15 @@ def issuer_source_identity(manifest: Mapping[str, Any]) -> str:
         ),
         "previous_manifest_id": manifest.get("previous_manifest_id"),
     }
+    corrections = manifest.get("filing_corrections") or []
+    if corrections:
+        # Conditional by design. Adding this key unconditionally -- even as an empty
+        # list -- would change the identity of every historical manifest and break
+        # their verification. A correction therefore yields a new issuer-source
+        # identity; its absence leaves historical identities byte-identical.
+        body["filing_corrections"] = [
+            entry.get("correction_id") for entry in corrections
+        ]
     return sha256(canonical_json(body).encode("utf-8")).hexdigest()
 
 
@@ -1941,7 +1950,368 @@ def _filing_fact_values_are_compatible(field: str, left: Any, right: Any) -> boo
         return False
 
 
-def _merge_filing_rows(*groups: list[dict[str, Any]]) -> list[dict[str, Any]]:
+CORRECTION_RULE_ID = "FF-1-SEC-ACCEPTANCE-SOURCE-CORRECTION-LINEAGE"
+CORRECTION_DECISION_ID = "DEC:FF-1-SEC-ACCEPTANCE-SOURCE-CORRECTION-LINEAGE"
+CORRECTION_CLASSIFICATION = "sec_acceptance_timezone_restatement"
+EDGAR_WALL_CLOCK_TZ = "America/New_York"
+_EDGAR_LEGAL_OFFSETS = {
+    timedelta(hours=-4): "EDT",
+    timedelta(hours=-5): "EST",
+}
+_CORRECTABLE_FIELDS = frozenset({"acceptance_datetime"})
+
+
+def _derive_edgar_wall_clock_correction(prior: str, current: str) -> tuple[int, str] | None:
+    """Map a prior EDGAR local wall time onto the current UTC instant, or refuse.
+
+    The prior text is read as a naive America/New_York wall time. It is admitted
+    only when the tz database's own offset for that date carries it onto the
+    current UTC instant exactly. The offset is never inferred from the observed
+    difference, so a three- or six-hour shift, or a four-hour shift on a date that
+    is legally EST, cannot be laundered into a correction.
+    """
+
+    try:
+        prior_base, prior_fraction = _iso_order_key(prior)
+        current_base, current_fraction = _iso_order_key(current)
+    except ValueError:
+        return None
+    # A fractional-spelling difference belongs to the same-instant rule, never here.
+    if prior_fraction != current_fraction:
+        return None
+    zone = ZoneInfo(EDGAR_WALL_CLOCK_TZ)
+    try:
+        naive = datetime.fromisoformat(prior_base)
+        current_instant = datetime.fromisoformat(current_base).replace(tzinfo=timezone.utc)
+    except ValueError:
+        return None
+    local = naive.replace(tzinfo=zone)
+    # A nonexistent spring-forward wall time does not survive the local->UTC->local
+    # round trip; an ambiguous fall-back wall time carries two different offsets.
+    if local.astimezone(timezone.utc).astimezone(zone).replace(tzinfo=None) != naive:
+        return None
+    if local.utcoffset() != naive.replace(tzinfo=zone, fold=1).utcoffset():
+        return None
+    offset = local.utcoffset()
+    kind = _EDGAR_LEGAL_OFFSETS.get(offset)
+    if kind is None:
+        return None
+    if local.astimezone(timezone.utc) != current_instant:
+        return None
+    return int(-offset.total_seconds()), kind
+
+
+def _non_time_filing_facts(row: Mapping[str, Any]) -> dict[str, Any]:
+    return {
+        field: row.get(field)
+        for field in _FILING_FACT_FIELDS
+        if field not in _CORRECTABLE_FIELDS
+    }
+
+
+def _correction_entry_identity(entry: Mapping[str, Any]) -> str:
+    body = {key: value for key, value in entry.items() if key != "correction_id"}
+    return sha256(canonical_json(body).encode("utf-8")).hexdigest()
+
+
+def _sole_producing_component(
+    components: list[Mapping[str, Any]], *, sha: str | None, source_kind: str | None = None
+) -> Mapping[str, Any] | None:
+    """Return the single component that produced a row, or None if it is not unique."""
+
+    matches = [
+        component
+        for component in components
+        if isinstance(component, Mapping)
+        and component.get("sha256") == sha
+        and (source_kind is None or component.get("source_kind") == source_kind)
+    ]
+    if len(matches) != 1:
+        return None
+    return matches[0]
+
+
+def _sole_row_for_accession(
+    rows: list[dict[str, Any]], accession: str
+) -> dict[str, Any] | None:
+    matches = [row for row in rows if row.get("accession_number") == accession]
+    if len(matches) != 1:
+        return None
+    return matches[0]
+
+
+def _sorted_filing_corrections(entries: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    """Canonical correction-ledger order; replay collapses onto the same identity."""
+
+    unique: dict[str, dict[str, Any]] = {}
+    for entry in entries:
+        unique[str(entry["correction_id"])] = dict(entry)
+    return sorted(
+        unique.values(),
+        key=lambda entry: (
+            str(entry.get("accession_number") or ""),
+            str(entry.get("field") or ""),
+            str(entry.get("correction_id") or ""),
+        ),
+    )
+
+
+def _rebound_source_rows(
+    stored: bytes,
+    *,
+    expected_sha: str,
+    cik: str,
+    ticker: str,
+    selection_cutoff_at: str,
+    recovery_from: str | None,
+) -> dict[str, dict[str, Any]] | None:
+    """Rehash a stored source object and re-parse it to its exact rows, or refuse.
+
+    Objects are admitted gzipped, so the identity is the digest of the plain SEC
+    bytes. Unpacking and rehashing here is what binds the correction to the exact
+    object the manifest names, rather than to a value someone asserted.
+    """
+
+    try:
+        body = _ungzip_bytes(stored)
+    except (OSError, EOFError):
+        return None
+    if sha256(body).hexdigest() != expected_sha:
+        return None
+    try:
+        payload = json.loads(body)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(payload, dict):
+        return None
+    try:
+        admitted, _withheld, _historical = parse_relevant_filings(
+            payload,
+            cik=cik,
+            ticker=ticker,
+            selection_cutoff_at=selection_cutoff_at,
+            recovery_from=recovery_from,
+        )
+    except BroadSecError:
+        return None
+    rows: dict[str, dict[str, Any]] = {}
+    for row in admitted:
+        accession = row.get("accession_number")
+        if not isinstance(accession, str):
+            continue
+        if accession in rows:
+            # Two rows for one accession in a single object: never a correction source.
+            rows[accession] = {}
+            continue
+        rows[accession] = row
+    return rows
+
+
+def _filing_facts_match(recorded: Mapping[str, Any], parsed: Mapping[str, Any] | None) -> bool:
+    if not parsed:
+        return False
+    return all(recorded.get(field) == parsed.get(field) for field in _FILING_FACT_FIELDS)
+
+
+def _derive_filing_corrections(
+    *,
+    store: BroadSecStore,
+    cik: str,
+    ticker: str,
+    prior_manifest: Mapping[str, Any] | None,
+    prior_rows: list[dict[str, Any]],
+    current_rows: list[dict[str, Any]],
+    other_rows: list[list[dict[str, Any]]] | None = None,
+    current_sha: str,
+    current_components: list[Mapping[str, Any]],
+    current_source_set_sha256: str,
+    current_retrieved_at: str | None,
+    selection_cutoff_at: str,
+    recovery_from: str | None,
+) -> tuple[list[dict[str, Any]], frozenset[tuple[str, str, str, str]]]:
+    """Adjudicate SEC acceptance-time source corrections with full provenance.
+
+    Every discriminator must hold. Any failure returns no correction, so the
+    caller's existing duplicate guard keeps raising ``historical_submissions_conflict``.
+    This is the only place a correction is derived; the merge path performs a pure
+    lookup and never reasons about time.
+    """
+
+    empty: tuple[list[dict[str, Any]], frozenset[tuple[str, str, str, str]]] = ([], frozenset())
+    if prior_manifest is None:
+        return empty
+
+    candidates: list[tuple[str, str, dict[str, Any], dict[str, Any]]] = []
+    for field in sorted(_CORRECTABLE_FIELDS):
+        for accession in sorted(
+            {
+                row.get("accession_number")
+                for row in prior_rows
+                if isinstance(row.get("accession_number"), str)
+            }
+            & {
+                row.get("accession_number")
+                for row in current_rows
+                if isinstance(row.get("accession_number"), str)
+            }
+        ):
+            if not _ACCESSION_RE.fullmatch(accession):
+                continue
+            # D4: exactly one row on each side.
+            prior_row = _sole_row_for_accession(prior_rows, accession)
+            current_row = _sole_row_for_accession(current_rows, accession)
+            if prior_row is None or current_row is None:
+                continue
+            # D11: the correction is derived from exactly two bound `recent` objects.
+            # The allowlist is keyed by value and is later consumed over groups this
+            # adjudicator never read -- historical shards and withheld rows. If any of
+            # them also asserts this accession, admitting would silently overwrite a
+            # bound source whose bytes were never rehashed and whose disagreement the
+            # correction entry does not record. Refuse instead.
+            if any(
+                row.get("accession_number") == accession
+                for group in (other_rows or [])
+                for row in group
+            ):
+                continue
+            left, right = prior_row.get(field), current_row.get(field)
+            if not isinstance(left, str) or not isinstance(right, str):
+                continue
+            # I1: the existing rules stay first and authoritative.
+            if _filing_fact_values_are_compatible(field, left, right):
+                continue
+            candidates.append((accession, field, prior_row, current_row))
+    if not candidates:
+        return empty
+
+    # D7/D10/D11: the prior source object must still be bound, component-typed and unique.
+    prior_sha = prior_manifest.get("submissions_sha256")
+    prior_components = prior_manifest.get("submissions_components")
+    prior_retrieved_at = prior_manifest.get("submissions_retrieved_at")
+    prior_manifest_id = prior_manifest.get("manifest_id")
+    if (
+        not isinstance(prior_sha, str)
+        or not isinstance(prior_components, list)
+        or not isinstance(prior_manifest_id, str)
+        or not isinstance(prior_retrieved_at, str)
+        or not isinstance(current_retrieved_at, str)
+    ):
+        return empty
+    # D9: the prior source must be strictly older than the admitting source.
+    try:
+        if not _iso_lt(prior_retrieved_at, current_retrieved_at):
+            return empty
+    except ValueError:
+        return empty
+    prior_component = _sole_producing_component(
+        prior_components, sha=prior_sha, source_kind="recent"
+    )
+    current_component = _sole_producing_component(
+        current_components, sha=current_sha, source_kind="recent"
+    )
+    if prior_component is None or current_component is None:
+        return empty
+    try:
+        _bind_sec_url(current_component.get("url"), cik=cik, endpoint="submissions")
+        _bind_sec_url(prior_component.get("url"), cik=cik, endpoint="submissions")
+    except BroadSecError:
+        return empty
+
+    prior_body = store.get_bytes_strict_bounded(object_key(prior_sha), MAX_SUBMISSIONS_BYTES)
+    current_body = store.get_bytes_strict_bounded(object_key(current_sha), MAX_SUBMISSIONS_BYTES)
+    if prior_body is None or current_body is None:
+        return empty
+    prior_parsed = _rebound_source_rows(
+        prior_body,
+        expected_sha=prior_sha,
+        cik=cik,
+        ticker=ticker,
+        selection_cutoff_at=selection_cutoff_at,
+        recovery_from=recovery_from,
+    )
+    current_parsed = _rebound_source_rows(
+        current_body,
+        expected_sha=current_sha,
+        cik=cik,
+        ticker=ticker,
+        selection_cutoff_at=selection_cutoff_at,
+        recovery_from=recovery_from,
+    )
+    if prior_parsed is None or current_parsed is None:
+        return empty
+
+    entries: list[dict[str, Any]] = []
+    admitted: set[tuple[str, str, str, str]] = set()
+    for accession, field, prior_row, current_row in candidates:
+        # D7/D8: each recorded row must be exactly what its own source object parses to.
+        if not _filing_facts_match(prior_row, prior_parsed.get(accession)):
+            return empty
+        if not _filing_facts_match(current_row, current_parsed.get(accession)):
+            return empty
+        # D5: every non-time filing fact must be exactly equal.
+        if _non_time_filing_facts(prior_row) != _non_time_filing_facts(current_row):
+            return empty
+        prior_value = str(prior_row[field])
+        current_value = str(current_row[field])
+        # D12: the tz database, not the observed difference, decides.
+        derived = _derive_edgar_wall_clock_correction(prior_value, current_value)
+        if derived is None:
+            return empty
+        offset_seconds, offset_kind = derived
+        entry: dict[str, Any] = {
+            "rule_id": CORRECTION_RULE_ID,
+            "decision_id": CORRECTION_DECISION_ID,
+            "accession_number": accession,
+            "field": field,
+            "prior_value": prior_value,
+            "current_value": current_value,
+            "prior_comparison_key": list(_iso_order_key(prior_value)),
+            "current_comparison_key": list(_iso_order_key(current_value)),
+            "classification": CORRECTION_CLASSIFICATION,
+            "source_timezone": EDGAR_WALL_CLOCK_TZ,
+            "applied_offset_seconds": offset_seconds,
+            "offset_kind": offset_kind,
+            "prior_manifest_id": prior_manifest_id,
+            "prior_component_sha256": str(prior_component.get("sha256")),
+            "current_component_sha256": str(current_component.get("sha256")),
+            "admitting_source_set_sha256": current_source_set_sha256,
+            "non_time_facts_sha256": _sha_json(_non_time_filing_facts(current_row)),
+        }
+        # The containing manifest id is absent by construction: no identity cycle.
+        entry["correction_id"] = _correction_entry_identity(entry)
+        entries.append(entry)
+        admitted.add((accession, field, prior_value, current_value))
+    return _sorted_filing_corrections(entries), frozenset(admitted)
+
+
+def _admitted_correction_value(
+    admitted_corrections: frozenset[tuple[str, str, str, str]],
+    *,
+    accession: str,
+    field: str,
+    left: Any,
+    right: Any,
+) -> tuple[bool, Any]:
+    """Pure lookup against an already-adjudicated correction allowlist.
+
+    Returns ``(matched, corrected_value)``. The allowlist stores prior and current
+    explicitly, so iteration order can never decide which value wins, and the
+    corrected (current) value is what the merged row retains.
+    """
+
+    if not admitted_corrections or not isinstance(left, str) or not isinstance(right, str):
+        return False, None
+    if (accession, field, left, right) in admitted_corrections:
+        return True, right
+    if (accession, field, right, left) in admitted_corrections:
+        return True, left
+    return False, None
+
+
+def _merge_filing_rows(
+    *groups: list[dict[str, Any]],
+    admitted_corrections: frozenset[tuple[str, str, str, str]] = frozenset(),
+) -> list[dict[str, Any]]:
     merged: dict[str, dict[str, Any]] = {}
     for rows in groups:
         for raw in rows:
@@ -1961,10 +2331,20 @@ def _merge_filing_rows(*groups: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 if left is not None and right is not None and not _filing_fact_values_are_compatible(
                     field, left, right
                 ):
-                    raise BroadSecError(
-                        "historical_submissions_conflict",
-                        f"accession {accession} conflicts on {field}",
+                    corrected, value = _admitted_correction_value(
+                        admitted_corrections,
+                        accession=accession,
+                        field=field,
+                        left=left,
+                        right=right,
                     )
+                    if not corrected:
+                        raise BroadSecError(
+                            "historical_submissions_conflict",
+                            f"accession {accession} conflicts on {field}",
+                        )
+                    existing[field] = value
+                    continue
                 if left is None and right is not None:
                     existing[field] = right
     return sorted(
@@ -1977,8 +2357,16 @@ def _merge_filing_rows(*groups: list[dict[str, Any]]) -> list[dict[str, Any]]:
     )
 
 
-def _assert_no_duplicate_filing_conflicts(*groups: list[dict[str, Any]]) -> None:
-    """Reject contradictory facts even when one duplicate row was withheld."""
+def _assert_no_duplicate_filing_conflicts(
+    *groups: list[dict[str, Any]],
+    admitted_corrections: frozenset[tuple[str, str, str, str]] = frozenset(),
+) -> None:
+    """Reject contradictory facts even when one duplicate row was withheld.
+
+    This guard runs before ``_merge_filing_rows`` at every call site, so it must
+    receive the identical allowlist; otherwise a lawfully corrected filing would
+    still fail closed here and never reach the merge.
+    """
 
     exact_rows = [
         row
@@ -1987,7 +2375,7 @@ def _assert_no_duplicate_filing_conflicts(*groups: list[dict[str, Any]]) -> None
         if isinstance(row.get("accession_number"), str)
         and _ACCESSION_RE.fullmatch(row["accession_number"])
     ]
-    _merge_filing_rows(exact_rows)
+    _merge_filing_rows(exact_rows, admitted_corrections=admitted_corrections)
 
 
 def _component_identity(components: list[dict[str, Any]]) -> str:
@@ -2160,6 +2548,36 @@ def _validate_issuer_manifest_payload(
             "issuer_manifest_invalid",
             "new issuer manifest must use component-set identity",
         )
+    corrections = payload.get("filing_corrections")
+    if corrections is not None:
+        if not has_components or not has_source_set:
+            raise BroadSecError(
+                "issuer_manifest_invalid",
+                "a legacy issuer manifest cannot carry a correction ledger",
+            )
+        if not isinstance(corrections, list) or not corrections:
+            raise BroadSecError(
+                "issuer_manifest_invalid",
+                "issuer manifest correction ledger is malformed",
+            )
+        # Canonical order and content-addressed identity together defeat a reordered,
+        # duplicated or edited ledger: any mutated field changes its own correction_id.
+        if corrections != _sorted_filing_corrections(corrections):
+            raise BroadSecError(
+                "issuer_manifest_invalid",
+                "issuer manifest correction ledger is not in canonical order",
+            )
+        for entry in corrections:
+            if not isinstance(entry, Mapping):
+                raise BroadSecError(
+                    "issuer_manifest_invalid",
+                    "issuer manifest correction entry is not an object",
+                )
+            if entry.get("correction_id") != _correction_entry_identity(entry):
+                raise BroadSecError(
+                    "issuer_manifest_invalid",
+                    "issuer manifest correction entry does not bind its own identity",
+                )
     submissions_sha = payload.get("submissions_sha256")
     companyfacts_sha = payload.get("companyfacts_sha256")
     if (
@@ -2615,6 +3033,7 @@ def _run_recovery_poll(
         "recovery_backlog": len(candidate_ciks) - cursor,
         "selected_recovery_ciks": len(selected_ciks),
         "submissions_fetched": 0,
+        "filing_corrections_admitted": 0,
         "historical_submissions_fetched": 0,
         "historical_submissions_bytes_fetched": 0,
     }
@@ -2861,14 +3280,37 @@ def _run_recovery_poll(
                     component.get("sha256") or "",
                 ),
             )
+            recovery_source_set_sha = _component_identity(components)
+            filing_corrections, admitted_corrections = _derive_filing_corrections(
+                store=store,
+                cik=cik,
+                ticker=issuer.ticker,
+                prior_manifest=prior_manifest,
+                prior_rows=prior_rows,
+                current_rows=current_rows,
+                other_rows=[current_withheld, historical_rows, historical_withheld],
+                current_sha=current_sha,
+                current_components=components,
+                current_source_set_sha256=recovery_source_set_sha,
+                current_retrieved_at=headers.get("retrieved_at"),
+                selection_cutoff_at=clocks.selection_cutoff_at,
+                recovery_from=clocks.recovery_from,
+            )
+            coverage["filing_corrections_admitted"] += len(filing_corrections)
             _assert_no_duplicate_filing_conflicts(
                 prior_rows,
                 current_rows,
                 current_withheld,
                 historical_rows,
                 historical_withheld,
+                admitted_corrections=admitted_corrections,
             )
-            merged_rows = _merge_filing_rows(prior_rows, current_rows, historical_rows)
+            merged_rows = _merge_filing_rows(
+                prior_rows,
+                current_rows,
+                historical_rows,
+                admitted_corrections=admitted_corrections,
+            )
             exact_withheld = [
                 row
                 for row in current_withheld + historical_withheld
@@ -2880,6 +3322,7 @@ def _run_recovery_poll(
                 current_rows,
                 historical_rows,
                 exact_withheld,
+                admitted_corrections=admitted_corrections,
             )
             by_accession = {row["accession_number"]: row for row in evidence_rows}
             causal_rows: list[dict[str, Any]] = []
@@ -2985,7 +3428,7 @@ def _run_recovery_poll(
                     "submissions_object_key": object_key(current_sha),
                     "submissions_retrieved_at": headers.get("retrieved_at"),
                     "submissions_components": components,
-                    "submissions_source_set_sha256": _component_identity(components),
+                    "submissions_source_set_sha256": recovery_source_set_sha,
                     "companyfacts_sha256": facts_sha,
                     "companyfacts_url": endpoint_url(cik, "companyfacts") if facts_sha else None,
                     "companyfacts_object_key": object_key(facts_sha) if facts_sha else None,
@@ -3004,6 +3447,19 @@ def _run_recovery_poll(
                         default=None,
                     ),
                 }
+                recovery_corrections = _sorted_filing_corrections(
+                    [
+                        entry
+                        for entry in (
+                            (prior_manifest.get("filing_corrections") if prior_manifest else [])
+                            or []
+                        )
+                        if isinstance(entry, dict)
+                    ]
+                    + filing_corrections
+                )
+                if recovery_corrections:
+                    manifest["filing_corrections"] = recovery_corrections
                 manifest_id, encoded_manifest = _encode_issuer_manifest(manifest)
                 manifest_ref = issuer_manifest_key(cik, manifest_id)
                 _put_issuer_manifest(store, manifest_ref, encoded_manifest)
@@ -3279,6 +3735,7 @@ def run_broad_sec_poll(
         "recovery_backlog": 0,
         "selected_recovery_ciks": 0,
         "submissions_fetched": 0,
+        "filing_corrections_admitted": 0,
         "historical_submissions_fetched": 0,
         "historical_submissions_bytes_fetched": 0,
     }
@@ -3516,6 +3973,11 @@ def run_broad_sec_poll(
             continue
         try:
             body, headers = fetch_submissions(issuer.cik)
+            # Counted once the fetch has returned and bound bytes, before any parse or
+            # recomposition can fail. A pre-byte transport failure raises inside
+            # fetch_submissions and never reaches this line. _run_recovery_poll keeps
+            # its own separate increment, so there is no double count.
+            coverage["submissions_fetched"] += 1
             headers = _stamp_after_fetch(headers, now=now)
             url = _bind_sec_url(headers.get("url"), cik=issuer.cik, endpoint="submissions")
             try:
@@ -3789,31 +4251,9 @@ def run_broad_sec_poll(
                 for row in (prior_manifest.get("relevant_filings") if prior_manifest else []) or []
                 if isinstance(row, dict)
             ]
-            _assert_no_duplicate_filing_conflicts(
-                prior_relevant,
-                item["admitted"],
-                item["withheld"],
-            )
-            merged_relevant = _merge_filing_rows(prior_relevant, item["admitted"])
-            cumulative: list[str] = []
-            seen: dict[str, None] = {}
-
-            def _remember(accession: str) -> None:
-                if accession not in seen:
-                    seen[accession] = None
-                    cumulative.append(accession)
-
-            for acc in item["prior_ledger"]:
-                _remember(acc)
-            for acc in item["admitted"]:
-                number = acc.get("accession_number")
-                if isinstance(number, str):
-                    _remember(number)
-            for removed in item["index_removed"]:
-                accession = removed.get("accession")
-                if isinstance(accession, str):
-                    _remember(accession)
-            previous_id = prior_manifest["manifest_id"] if prior_manifest else None
+            # The admitting source set is built before the duplicate guards so a
+            # correction can be adjudicated against real provenance rather than
+            # inferred from the values alone.
             historical_components = [
                 dict(component)
                 for component in (
@@ -3837,6 +4277,53 @@ def run_broad_sec_poll(
                 "filing_to": None,
             }
             components = [current_component] + historical_components
+            source_set_sha = _component_identity(components)
+            filing_corrections, admitted_corrections = _derive_filing_corrections(
+                store=store,
+                cik=issuer.cik,
+                ticker=issuer.ticker,
+                prior_manifest=prior_manifest,
+                prior_rows=prior_relevant,
+                current_rows=item["admitted"],
+                other_rows=[item["withheld"]],
+                current_sha=item["submissions_sha"],
+                current_components=components,
+                current_source_set_sha256=source_set_sha,
+                current_retrieved_at=item["submissions_headers"].get("retrieved_at"),
+                selection_cutoff_at=clocks.selection_cutoff_at,
+                recovery_from=clocks.recovery_from,
+            )
+            coverage["filing_corrections_admitted"] += len(filing_corrections)
+            _assert_no_duplicate_filing_conflicts(
+                prior_relevant,
+                item["admitted"],
+                item["withheld"],
+                admitted_corrections=admitted_corrections,
+            )
+            merged_relevant = _merge_filing_rows(
+                prior_relevant,
+                item["admitted"],
+                admitted_corrections=admitted_corrections,
+            )
+            cumulative: list[str] = []
+            seen: dict[str, None] = {}
+
+            def _remember(accession: str) -> None:
+                if accession not in seen:
+                    seen[accession] = None
+                    cumulative.append(accession)
+
+            for acc in item["prior_ledger"]:
+                _remember(acc)
+            for acc in item["admitted"]:
+                number = acc.get("accession_number")
+                if isinstance(number, str):
+                    _remember(number)
+            for removed in item["index_removed"]:
+                accession = removed.get("accession")
+                if isinstance(accession, str):
+                    _remember(accession)
+            previous_id = prior_manifest["manifest_id"] if prior_manifest else None
             withheld = list(
                 {
                     _sha_json(row): row
@@ -3847,6 +4334,18 @@ def run_broad_sec_poll(
                     if isinstance(row, dict)
                 }.values()
             )
+            # The correction ledger accumulates across manifests; replay collapses
+            # onto the same correction_id, so it never duplicates or reorders.
+            carried_corrections = _sorted_filing_corrections(
+                [
+                    entry
+                    for entry in (
+                        (prior_manifest.get("filing_corrections") if prior_manifest else []) or []
+                    )
+                    if isinstance(entry, dict)
+                ]
+                + filing_corrections
+            )
             manifest = {
                 "schema": MANIFEST_SCHEMA,
                 "cik": issuer.cik,
@@ -3856,7 +4355,7 @@ def run_broad_sec_poll(
                 "submissions_object_key": object_key(item["submissions_sha"]),
                 "submissions_retrieved_at": item["submissions_headers"].get("retrieved_at"),
                 "submissions_components": components,
-                "submissions_source_set_sha256": _component_identity(components),
+                "submissions_source_set_sha256": source_set_sha,
                 "companyfacts_sha256": facts_sha,
                 "companyfacts_url": endpoint_url(issuer.cik, "companyfacts") if facts_sha else None,
                 "companyfacts_object_key": object_key(facts_sha) if facts_sha else None,
@@ -3875,6 +4374,10 @@ def run_broad_sec_poll(
                     default=None,
                 ),
             }
+            if carried_corrections:
+                # Absent when there is nothing to record, so manifests written before
+                # this rule keep their exact shape and identity.
+                manifest["filing_corrections"] = carried_corrections
             item["manifest"] = manifest
             item["cumulative"] = cumulative
             item["snapshot_kind"] = snapshot_kind

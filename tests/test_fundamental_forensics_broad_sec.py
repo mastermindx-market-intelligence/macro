@@ -4,8 +4,12 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 import gzip
 import io
+import itertools
 import json
+import os
 import re
+import subprocess
+import sys
 import zipfile
 from hashlib import sha256
 from pathlib import Path
@@ -3896,3 +3900,720 @@ def test_manifest_writer_refuses_key_body_identity_disagreement(tmp_path: Path) 
 
     assert err.value.reason_code == "store_write_failure"
     assert store.get_bytes_strict(wrong_key) is None
+
+
+# ---------------------------------------------------------------------------
+# FF-1 SEC acceptance-time source correction lineage (ROST)
+# ---------------------------------------------------------------------------
+
+ROST_CIK = "0000745732"
+ROST_ACCESSION = "0000745732-26-000031"
+ROST_PRIOR_ACCEPTED = "2026-06-02T16:37:27.000Z"
+ROST_CURRENT_ACCEPTED = "2026-06-02T20:37:27.000Z"
+_ROST_SELECTION_CUTOFF = "2026-09-01T00:00:00Z"
+
+
+def _rost_source_bytes(accepted: str) -> bytes:
+    return _submissions_bytes(
+        ROST_CIK,
+        [_filing(ROST_ACCESSION, "10-Q", accepted=accepted, filed="2026-06-02", document="rost-q1.htm")],
+    )
+
+
+def _rost_component(sha: str, body: bytes, retrieved_at: str) -> dict[str, object]:
+    return {
+        "source_kind": "recent",
+        "source_name": None,
+        "url": broad_sec_store.endpoint_url(ROST_CIK, "submissions"),
+        "sha256": sha,
+        "bytes": len(body),
+        "object_key": object_key(sha),
+        "retrieved_at": retrieved_at,
+        "http_etag": None,
+        "http_last_modified": None,
+        "filing_from": None,
+        "filing_to": None,
+    }
+
+
+def _rost_rows(store: LocalStore, accepted: str) -> tuple[str, bytes, list[dict]]:
+    body = _rost_source_bytes(accepted)
+    sha, _created = broad_sec_store.admit_source_bytes(store, body)
+    rows, _withheld, _historical = broad_sec_store.parse_relevant_filings(
+        json.loads(body),
+        cik=ROST_CIK,
+        ticker="ROST",
+        selection_cutoff_at=_ROST_SELECTION_CUTOFF,
+        recovery_from=None,
+    )
+    return sha, body, rows
+
+
+def _rost_case(tmp_path: Path, *, prior_accepted: str, current_accepted: str):
+    """Build a hermetic prior/current ROST source pair bound to a LocalStore."""
+
+    store = LocalStore(tmp_path / "store")
+    prior_sha, prior_body, prior_rows = _rost_rows(store, prior_accepted)
+    current_sha, current_body, current_rows = _rost_rows(store, current_accepted)
+    prior_component = _rost_component(prior_sha, prior_body, "2026-06-03T02:00:00Z")
+    current_component = _rost_component(current_sha, current_body, "2026-06-04T02:00:00Z")
+    prior_manifest = {
+        "manifest_id": "a" * 64,
+        "cik": ROST_CIK,
+        "ticker": "ROST",
+        "submissions_sha256": prior_sha,
+        "submissions_retrieved_at": "2026-06-03T02:00:00Z",
+        "submissions_components": [prior_component],
+        "submissions_source_set_sha256": broad_sec_store._component_identity([prior_component]),
+        "relevant_filings": prior_rows,
+    }
+    return store, prior_manifest, prior_rows, current_rows, current_sha, [current_component]
+
+
+def _derive_rost(tmp_path: Path, *, prior_accepted: str, current_accepted: str, **overrides):
+    store, prior_manifest, prior_rows, current_rows, current_sha, components = _rost_case(
+        tmp_path, prior_accepted=prior_accepted, current_accepted=current_accepted
+    )
+    prior_manifest = {**prior_manifest, **overrides.pop("prior_manifest", {})}
+    kwargs = {
+        "store": store,
+        "cik": ROST_CIK,
+        "ticker": "ROST",
+        "prior_manifest": prior_manifest,
+        "prior_rows": overrides.pop("prior_rows", prior_rows),
+        "current_rows": overrides.pop("current_rows", current_rows),
+        "current_sha": current_sha,
+        "current_components": overrides.pop("current_components", components),
+        "current_source_set_sha256": broad_sec_store._component_identity(components),
+        "current_retrieved_at": overrides.pop("current_retrieved_at", "2026-06-04T02:00:00Z"),
+        "selection_cutoff_at": _ROST_SELECTION_CUTOFF,
+        "recovery_from": None,
+    }
+    kwargs.update(overrides)
+    return broad_sec_store._derive_filing_corrections(**kwargs)
+
+
+def test_rost_acceptance_timezone_source_correction_is_admitted(tmp_path: Path) -> None:
+    """The exact ROST defect passes only through the new typed correction path."""
+
+    entries, admitted = _derive_rost(
+        tmp_path, prior_accepted=ROST_PRIOR_ACCEPTED, current_accepted=ROST_CURRENT_ACCEPTED
+    )
+    assert len(entries) == 1
+    entry = entries[0]
+    assert entry["accession_number"] == ROST_ACCESSION
+    assert entry["field"] == "acceptance_datetime"
+    assert entry["prior_value"] == ROST_PRIOR_ACCEPTED
+    assert entry["current_value"] == ROST_CURRENT_ACCEPTED
+    assert entry["applied_offset_seconds"] == 14400
+    assert entry["offset_kind"] == "EDT"
+    assert entry["source_timezone"] == "America/New_York"
+    assert entry["classification"] == "sec_acceptance_timezone_restatement"
+    assert entry["rule_id"] == broad_sec_store.CORRECTION_RULE_ID
+    assert entry["decision_id"] == broad_sec_store.CORRECTION_DECISION_ID
+
+    # The two existing rules must both have refused it first.
+    assert not broad_sec_store._filing_fact_values_are_compatible(
+        "acceptance_datetime", ROST_PRIOR_ACCEPTED, ROST_CURRENT_ACCEPTED
+    )
+
+    # Without the allowlist the duplicate guard still fails closed.
+    _store, _pm, prior_rows, current_rows, _sha, _comp = _rost_case(
+        tmp_path / "again",
+        prior_accepted=ROST_PRIOR_ACCEPTED,
+        current_accepted=ROST_CURRENT_ACCEPTED,
+    )
+    with pytest.raises(BroadSecError) as err:
+        broad_sec_store._assert_no_duplicate_filing_conflicts(prior_rows, current_rows)
+    assert err.value.reason_code == "historical_submissions_conflict"
+
+    # With it, the merged row carries the corrected instant, never the stale one.
+    merged = broad_sec_store._merge_filing_rows(
+        prior_rows, current_rows, admitted_corrections=admitted
+    )
+    assert len(merged) == 1
+    assert merged[0]["acceptance_datetime"] == ROST_CURRENT_ACCEPTED
+    broad_sec_store._assert_no_duplicate_filing_conflicts(
+        prior_rows, current_rows, admitted_corrections=admitted
+    )
+    # Order of the groups must not decide which instant wins.
+    reversed_merge = broad_sec_store._merge_filing_rows(
+        current_rows, prior_rows, admitted_corrections=admitted
+    )
+    assert reversed_merge[0]["acceptance_datetime"] == ROST_CURRENT_ACCEPTED
+
+
+def test_rost_correction_entry_binds_evidence_without_an_identity_cycle(tmp_path: Path) -> None:
+    entries, _admitted = _derive_rost(
+        tmp_path, prior_accepted=ROST_PRIOR_ACCEPTED, current_accepted=ROST_CURRENT_ACCEPTED
+    )
+    entry = entries[0]
+    # No containing-manifest id anywhere in the entry: the ledger cannot cycle.
+    assert "manifest_id" not in entry
+    assert "containing_manifest_id" not in entry
+    assert entry["prior_manifest_id"] == "a" * 64
+    for field in (
+        "prior_component_sha256",
+        "current_component_sha256",
+        "admitting_source_set_sha256",
+        "non_time_facts_sha256",
+        "correction_id",
+    ):
+        assert re.fullmatch(r"[a-f0-9]{64}", str(entry[field])), field
+    # correction_id is content-addressed over everything else it binds.
+    assert entry["correction_id"] == broad_sec_store._correction_entry_identity(entry)
+
+
+def test_rost_correction_identity_is_deterministic_across_hash_seeds(tmp_path: Path) -> None:
+    """Correction and manifest identity must not depend on PYTHONHASHSEED."""
+
+    script = (
+        "import json,sys;"
+        "sys.path.insert(0,%r);"
+        "sys.argv=['x'];"
+        "import tests.test_fundamental_forensics_broad_sec as t;"
+        "from pathlib import Path;"
+        "import tempfile;"
+        "d=Path(tempfile.mkdtemp());"
+        "e,_=t._derive_rost(d,prior_accepted=t.ROST_PRIOR_ACCEPTED,"
+        "current_accepted=t.ROST_CURRENT_ACCEPTED);"
+        "print(e[0]['correction_id'])" % str(ROOT)
+    )
+    seeds = []
+    for seed in ("0", "1", "12345"):
+        env = {**os.environ, "PYTHONHASHSEED": seed}
+        out = subprocess.run(
+            [sys.executable, "-c", script], capture_output=True, text=True, env=env, cwd=str(ROOT)
+        )
+        assert out.returncode == 0, out.stderr[-2000:]
+        seeds.append(out.stdout.strip().splitlines()[-1])
+    assert len(set(seeds)) == 1, seeds
+
+
+def test_rost_correction_replay_is_idempotent(tmp_path: Path) -> None:
+    first, _ = _derive_rost(
+        tmp_path / "a", prior_accepted=ROST_PRIOR_ACCEPTED, current_accepted=ROST_CURRENT_ACCEPTED
+    )
+    second, _ = _derive_rost(
+        tmp_path / "b", prior_accepted=ROST_PRIOR_ACCEPTED, current_accepted=ROST_CURRENT_ACCEPTED
+    )
+    assert first == second
+    # Replaying a correction that is already in the ledger adds no second entry.
+    collapsed = broad_sec_store._sorted_filing_corrections(first + second)
+    assert len(collapsed) == 1
+
+
+# 2026 US DST: begins 2026-03-08 (02:00 local does not exist), ends 2026-11-01
+# (01:30 local occurs twice). Both edges must refuse rather than guess.
+_HOSTILE_TIME_CASES = [
+    ("three_hour_shift", "2026-06-02T17:37:27.000Z", "2026-06-02T20:37:27.000Z"),
+    ("six_hour_shift", "2026-06-02T14:37:27.000Z", "2026-06-02T20:37:27.000Z"),
+    ("wrong_seasonal_offset_edt_applied_in_january", "2026-01-15T10:00:00.000Z", "2026-01-15T14:00:00.000Z"),
+    ("wrong_seasonal_offset_est_applied_in_july", "2026-07-15T10:00:00.000Z", "2026-07-15T15:00:00.000Z"),
+    ("nonexistent_local_time_spring_forward", "2026-03-08T02:30:00.000Z", "2026-03-08T07:30:00.000Z"),
+    ("nonexistent_local_time_spring_forward_alt", "2026-03-08T02:30:00.000Z", "2026-03-08T06:30:00.000Z"),
+    ("ambiguous_local_time_fall_back_edt", "2026-11-01T01:30:00.000Z", "2026-11-01T05:30:00.000Z"),
+    ("ambiguous_local_time_fall_back_est", "2026-11-01T01:30:00.000Z", "2026-11-01T06:30:00.000Z"),
+    ("fractional_spelling_difference_is_the_other_rule", "2026-06-02T16:37:27.500Z", "2026-06-02T20:37:27.000Z"),
+    ("malformed_prior_timestamp", "not-an-instant", "2026-06-02T20:37:27.000Z"),
+    ("reversed_derivation_direction", "2026-06-02T20:37:27.000Z", "2026-06-02T16:37:27.000Z"),
+    ("offset_seven_hours_pacific_guess", "2026-06-02T13:37:27.000Z", "2026-06-02T20:37:27.000Z"),
+]
+
+
+@pytest.mark.parametrize("case_id,prior,current", _HOSTILE_TIME_CASES, ids=[c[0] for c in _HOSTILE_TIME_CASES])
+def test_acceptance_correction_time_matrix_fails_closed(
+    tmp_path: Path, case_id: str, prior: str, current: str
+) -> None:
+    """Only a tz-database-exact America/New_York restatement may be admitted."""
+
+    assert broad_sec_store._derive_edgar_wall_clock_correction(prior, current) is None
+    entries, admitted = _derive_rost(tmp_path, prior_accepted=prior, current_accepted=current)
+    assert entries == []
+    assert admitted == frozenset()
+
+
+@pytest.mark.parametrize(
+    "case_id,prior,current,offset,kind",
+    [
+        ("january_est_restatement", "2026-01-15T10:00:00.000Z", "2026-01-15T15:00:00.000Z", 18000, "EST"),
+        ("july_edt_restatement", "2026-07-15T10:00:00.000Z", "2026-07-15T14:00:00.000Z", 14400, "EDT"),
+    ],
+    ids=["january_est_restatement", "july_edt_restatement"],
+)
+def test_acceptance_correction_admits_the_offset_the_tz_database_names(
+    case_id: str, prior: str, current: str, offset: int, kind: str
+) -> None:
+    """The legal offset for the date is admitted; the other one never is."""
+
+    assert broad_sec_store._derive_edgar_wall_clock_correction(prior, current) == (offset, kind)
+
+
+def test_acceptance_correction_refuses_non_time_fact_mismatch(tmp_path: Path) -> None:
+    store, prior_manifest, prior_rows, current_rows, current_sha, components = _rost_case(
+        tmp_path, prior_accepted=ROST_PRIOR_ACCEPTED, current_accepted=ROST_CURRENT_ACCEPTED
+    )
+    tampered = [{**current_rows[0], "form": "10-K"}]
+    entries, admitted = broad_sec_store._derive_filing_corrections(
+        store=store,
+        cik=ROST_CIK,
+        ticker="ROST",
+        prior_manifest=prior_manifest,
+        prior_rows=prior_rows,
+        current_rows=tampered,
+        current_sha=current_sha,
+        current_components=components,
+        current_source_set_sha256=broad_sec_store._component_identity(components),
+        current_retrieved_at="2026-06-04T02:00:00Z",
+        selection_cutoff_at=_ROST_SELECTION_CUTOFF,
+        recovery_from=None,
+    )
+    assert entries == [] and admitted == frozenset()
+    with pytest.raises(BroadSecError) as err:
+        broad_sec_store._assert_no_duplicate_filing_conflicts(prior_rows, tampered)
+    assert err.value.reason_code == "historical_submissions_conflict"
+
+
+def test_acceptance_correction_refuses_reversed_source_chronology(tmp_path: Path) -> None:
+    """A prior object that is not strictly older cannot license a correction."""
+
+    entries, _ = _derive_rost(
+        tmp_path / "equal",
+        prior_accepted=ROST_PRIOR_ACCEPTED,
+        current_accepted=ROST_CURRENT_ACCEPTED,
+        current_retrieved_at="2026-06-03T02:00:00Z",
+    )
+    assert entries == []
+    entries, _ = _derive_rost(
+        tmp_path / "older",
+        prior_accepted=ROST_PRIOR_ACCEPTED,
+        current_accepted=ROST_CURRENT_ACCEPTED,
+        current_retrieved_at="2026-06-01T02:00:00Z",
+    )
+    assert entries == []
+
+
+def test_acceptance_correction_refuses_source_tamper(tmp_path: Path) -> None:
+    """A recorded row that its own source object does not produce is refused."""
+
+    store, prior_manifest, prior_rows, current_rows, current_sha, components = _rost_case(
+        tmp_path, prior_accepted=ROST_PRIOR_ACCEPTED, current_accepted=ROST_CURRENT_ACCEPTED
+    )
+    # The manifest asserts a row its bound object never contained.
+    laundered = [{**prior_rows[0], "primary_document": "not-in-the-source.htm"}]
+    entries, _ = broad_sec_store._derive_filing_corrections(
+        store=store,
+        cik=ROST_CIK,
+        ticker="ROST",
+        prior_manifest={**prior_manifest, "relevant_filings": laundered},
+        prior_rows=laundered,
+        current_rows=current_rows,
+        current_sha=current_sha,
+        current_components=components,
+        current_source_set_sha256=broad_sec_store._component_identity(components),
+        current_retrieved_at="2026-06-04T02:00:00Z",
+        selection_cutoff_at=_ROST_SELECTION_CUTOFF,
+        recovery_from=None,
+    )
+    assert entries == []
+
+
+def test_acceptance_correction_refuses_wrong_or_missing_source_key(tmp_path: Path) -> None:
+    store, prior_manifest, prior_rows, current_rows, current_sha, components = _rost_case(
+        tmp_path, prior_accepted=ROST_PRIOR_ACCEPTED, current_accepted=ROST_CURRENT_ACCEPTED
+    )
+    wrong_sha = "b" * 64
+    entries, _ = broad_sec_store._derive_filing_corrections(
+        store=store,
+        cik=ROST_CIK,
+        ticker="ROST",
+        prior_manifest={**prior_manifest, "submissions_sha256": wrong_sha},
+        prior_rows=prior_rows,
+        current_rows=current_rows,
+        current_sha=current_sha,
+        current_components=components,
+        current_source_set_sha256=broad_sec_store._component_identity(components),
+        current_retrieved_at="2026-06-04T02:00:00Z",
+        selection_cutoff_at=_ROST_SELECTION_CUTOFF,
+        recovery_from=None,
+    )
+    assert entries == []
+
+
+def test_acceptance_correction_refuses_multiple_rows_or_components(tmp_path: Path) -> None:
+    store, prior_manifest, prior_rows, current_rows, current_sha, components = _rost_case(
+        tmp_path, prior_accepted=ROST_PRIOR_ACCEPTED, current_accepted=ROST_CURRENT_ACCEPTED
+    )
+    base = dict(
+        store=store,
+        cik=ROST_CIK,
+        ticker="ROST",
+        prior_manifest=prior_manifest,
+        current_sha=current_sha,
+        current_source_set_sha256=broad_sec_store._component_identity(components),
+        current_retrieved_at="2026-06-04T02:00:00Z",
+        selection_cutoff_at=_ROST_SELECTION_CUTOFF,
+        recovery_from=None,
+    )
+    # Two prior rows for one accession.
+    entries, _ = broad_sec_store._derive_filing_corrections(
+        **base,
+        prior_rows=prior_rows + [dict(prior_rows[0])],
+        current_rows=current_rows,
+        current_components=components,
+    )
+    assert entries == []
+    # Two current rows for one accession.
+    entries, _ = broad_sec_store._derive_filing_corrections(
+        **base,
+        prior_rows=prior_rows,
+        current_rows=current_rows + [dict(current_rows[0])],
+        current_components=components,
+    )
+    assert entries == []
+    # Two components could have produced the current row.
+    entries, _ = broad_sec_store._derive_filing_corrections(
+        **base,
+        prior_rows=prior_rows,
+        current_rows=current_rows,
+        current_components=components + [dict(components[0])],
+    )
+    assert entries == []
+
+
+def test_acceptance_correction_refuses_unbound_component_url(tmp_path: Path) -> None:
+    store, prior_manifest, prior_rows, current_rows, current_sha, components = _rost_case(
+        tmp_path, prior_accepted=ROST_PRIOR_ACCEPTED, current_accepted=ROST_CURRENT_ACCEPTED
+    )
+    foreign = [{**components[0], "url": "https://example.invalid/submissions.json"}]
+    entries, _ = broad_sec_store._derive_filing_corrections(
+        store=store,
+        cik=ROST_CIK,
+        ticker="ROST",
+        prior_manifest=prior_manifest,
+        prior_rows=prior_rows,
+        current_rows=current_rows,
+        current_sha=current_sha,
+        current_components=foreign,
+        current_source_set_sha256=broad_sec_store._component_identity(foreign),
+        current_retrieved_at="2026-06-04T02:00:00Z",
+        selection_cutoff_at=_ROST_SELECTION_CUTOFF,
+        recovery_from=None,
+    )
+    assert entries == []
+
+
+def test_acceptance_correction_refuses_without_a_prior_manifest(tmp_path: Path) -> None:
+    store, _pm, prior_rows, current_rows, current_sha, components = _rost_case(
+        tmp_path, prior_accepted=ROST_PRIOR_ACCEPTED, current_accepted=ROST_CURRENT_ACCEPTED
+    )
+    entries, admitted = broad_sec_store._derive_filing_corrections(
+        store=store,
+        cik=ROST_CIK,
+        ticker="ROST",
+        prior_manifest=None,
+        prior_rows=prior_rows,
+        current_rows=current_rows,
+        current_sha=current_sha,
+        current_components=components,
+        current_source_set_sha256=broad_sec_store._component_identity(components),
+        current_retrieved_at="2026-06-04T02:00:00Z",
+        selection_cutoff_at=_ROST_SELECTION_CUTOFF,
+        recovery_from=None,
+    )
+    assert entries == [] and admitted == frozenset()
+
+
+def _rost_manifest_with_corrections(tmp_path: Path) -> tuple[dict, list[dict]]:
+    entries, _ = _derive_rost(
+        tmp_path, prior_accepted=ROST_PRIOR_ACCEPTED, current_accepted=ROST_CURRENT_ACCEPTED
+    )
+    store, prior_manifest, _pr, current_rows, current_sha, components = _rost_case(
+        tmp_path / "manifest",
+        prior_accepted=ROST_PRIOR_ACCEPTED,
+        current_accepted=ROST_CURRENT_ACCEPTED,
+    )
+    manifest = {
+        "schema": broad_sec_store.MANIFEST_SCHEMA,
+        "cik": ROST_CIK,
+        "ticker": "ROST",
+        "submissions_sha256": current_sha,
+        "submissions_url": broad_sec_store.endpoint_url(ROST_CIK, "submissions"),
+        "submissions_object_key": object_key(current_sha),
+        "submissions_retrieved_at": "2026-06-04T02:00:00Z",
+        "submissions_components": components,
+        "submissions_source_set_sha256": broad_sec_store._component_identity(components),
+        "companyfacts_sha256": None,
+        "companyfacts_url": None,
+        "companyfacts_object_key": None,
+        "companyfacts_retrieved_at": None,
+        "companyfacts_snapshot_kind": "not_fetched",
+        "relevant_filings": current_rows,
+        "withheld_filings": [],
+        "cumulative_relevant_accessions": [ROST_ACCESSION],
+        "previous_manifest_id": prior_manifest["manifest_id"],
+        "recorded_at": "2026-06-04T03:00:00Z",
+        "sec_accepted_at": ROST_CURRENT_ACCEPTED,
+        "filed_on": "2026-06-02",
+    }
+    return manifest, entries
+
+
+def test_filing_corrections_change_identity_but_preserve_historical_manifests(
+    tmp_path: Path,
+) -> None:
+    """Absent or empty corrections must leave every historical identity untouched."""
+
+    manifest, entries = _rost_manifest_with_corrections(tmp_path)
+    baseline = issuer_source_identity(manifest)
+    # A historical manifest has no such key at all.
+    assert issuer_source_identity({**manifest}) == baseline
+    # An empty ledger must not perturb identity either.
+    assert issuer_source_identity({**manifest, "filing_corrections": []}) == baseline
+    # A real correction must change it.
+    corrected = issuer_source_identity({**manifest, "filing_corrections": entries})
+    assert corrected != baseline
+    assert re.fullmatch(r"[a-f0-9]{64}", corrected)
+    # Identity binds the correction_id only, so the ledger cannot cycle through it.
+    assert entries[0]["correction_id"] in canonical_json(
+        {"filing_corrections": [e["correction_id"] for e in entries]}
+    )
+    jsonschema.validate({**manifest, "manifest_id": corrected, "filing_corrections": entries}, MANIFEST_SCHEMA)
+    # The manifest contract still accepts a manifest that carries no ledger.
+    jsonschema.validate({**manifest, "manifest_id": baseline}, MANIFEST_SCHEMA)
+
+
+def test_correction_ledger_rejects_reorder_duplication_and_edited_rule(tmp_path: Path) -> None:
+    manifest, entries = _rost_manifest_with_corrections(tmp_path)
+    second = dict(entries[0])
+    second["accession_number"] = "0000745732-26-000032"
+    second["correction_id"] = broad_sec_store._correction_entry_identity(second)
+    ledger = broad_sec_store._sorted_filing_corrections(entries + [second])
+    assert len(ledger) == 2
+
+    def _validate(candidate: list) -> None:
+        payload = {**manifest, "filing_corrections": candidate}
+        manifest_id = issuer_source_identity(payload)
+        broad_sec_store._validate_issuer_manifest_payload(
+            {**payload, "manifest_id": manifest_id},
+            expected_cik=ROST_CIK,
+            expected_ticker="ROST",
+            expected_manifest_id=manifest_id,
+            expected_key=issuer_manifest_key(ROST_CIK, manifest_id),
+            allow_legacy=False,
+        )
+
+    _validate(ledger)  # canonical order is accepted
+
+    for case, candidate in (
+        ("reordered", list(reversed(ledger))),
+        ("duplicated", ledger + [dict(ledger[0])]),
+        ("edited_rule_id", [{**ledger[0], "rule_id": "FF-1-SOMETHING-ELSE"}, ledger[1]]),
+        ("edited_prior_value", [{**ledger[0], "prior_value": "2026-06-02T15:37:27.000Z"}, ledger[1]]),
+        ("edited_offset", [{**ledger[0], "applied_offset_seconds": 18000}, ledger[1]]),
+        ("forged_correction_id", [{**ledger[0], "correction_id": "c" * 64}, ledger[1]]),
+    ):
+        with pytest.raises(BroadSecError) as err:
+            _validate(candidate)
+        assert err.value.reason_code == "issuer_manifest_invalid", case
+
+
+def test_correction_ledger_is_refused_on_a_legacy_manifest(tmp_path: Path) -> None:
+    manifest, entries = _rost_manifest_with_corrections(tmp_path)
+    legacy = {key: value for key, value in manifest.items() if key not in (
+        "submissions_components",
+        "submissions_source_set_sha256",
+    )}
+    legacy["filing_corrections"] = entries
+    manifest_id = issuer_source_identity(legacy)
+    with pytest.raises(BroadSecError) as err:
+        broad_sec_store._validate_issuer_manifest_payload(
+            {**legacy, "manifest_id": manifest_id},
+            expected_cik=ROST_CIK,
+            expected_ticker="ROST",
+            expected_manifest_id=manifest_id,
+            expected_key=issuer_manifest_key(ROST_CIK, manifest_id),
+            allow_legacy=True,
+        )
+    assert err.value.reason_code == "issuer_manifest_invalid"
+
+
+def test_submissions_fetched_aggregate_counts_every_incremental_fetch(tmp_path: Path) -> None:
+    """The receipt aggregate was a false zero in the incremental lane."""
+
+    repo, universe, store = _layout(tmp_path, [(AAPL[0], 320193), (MSFT[0], 789019)])
+    fake = FakeSec()
+    aapl_q = _filing("0000320193-26-000010", "10-Q", accepted=ACCEPT_Q, filed="2026-06-15")
+    msft_q = _filing("0000789019-26-000010", "10-Q", accepted=ACCEPT_Q, filed="2026-06-15")
+    fake.submissions[AAPL[1]] = _submissions_bytes(AAPL[1], [aapl_q])
+    fake.submissions[MSFT[1]] = _submissions_bytes(MSFT[1], [msft_q])
+    fake.facts[AAPL[1]] = _facts_bytes(AAPL[1], "v1")
+    fake.facts[MSFT[1]] = _facts_bytes(MSFT[1], "v1")
+    index_rows = [
+        _idx_row(AAPL[1], "10-Q", "2026-06-15", aapl_q["accession"]),
+        _idx_row(MSFT[1], "10-Q", "2026-06-15", msft_q["accession"]),
+    ]
+    fake.set_index(index_rows)
+    # The first poll is the discovery baseline and fetches no Submissions at all.
+    baseline = _poll(store, universe, fake, _clocks(POLL_1), repo_root=repo)
+    assert baseline.exit_code == 0
+    assert baseline.receipt["coverage"]["submissions_fetched"] == len(fake.submissions_fetches) == 0
+    _validate_run(baseline.receipt)
+
+    fake.submissions_fetches.clear()
+    aapl_new = _filing("0000320193-26-000044", "10-Q", accepted=ACCEPT_NEW, filed="2026-08-12")
+    msft_new = _filing("0000789019-26-000044", "10-Q", accepted=ACCEPT_NEW, filed="2026-08-12")
+    fake.submissions[AAPL[1]] = _submissions_bytes(AAPL[1], [aapl_q, aapl_new])
+    fake.submissions[MSFT[1]] = _submissions_bytes(MSFT[1], [msft_q, msft_new])
+    fake.facts[AAPL[1]] = _facts_bytes(AAPL[1], "v2")
+    fake.facts[MSFT[1]] = _facts_bytes(MSFT[1], "v2")
+    fake.set_index(
+        index_rows
+        + [
+            _idx_row(AAPL[1], "10-Q", "2026-08-12", aapl_new["accession"]),
+            _idx_row(MSFT[1], "10-Q", "2026-08-12", msft_new["accession"]),
+        ]
+    )
+    result = _poll(store, universe, fake, _clocks(POLL_2), repo_root=repo)
+    assert result.exit_code == 0
+    # Before the repair this aggregate was initialised to zero and never incremented.
+    assert result.receipt["coverage"]["submissions_fetched"] == len(fake.submissions_fetches) == 2
+    assert result.receipt["coverage"]["filing_corrections_admitted"] == 0
+    _validate_run(result.receipt)
+
+
+def test_submissions_fetched_is_not_incremented_on_pre_byte_transport_failure(
+    tmp_path: Path,
+) -> None:
+    repo, universe, store = _layout(tmp_path, [(AAPL[0], 320193), (MSFT[0], 789019)])
+    fake = FakeSec()
+    aapl_q = _filing("0000320193-26-000010", "10-Q", accepted=ACCEPT_Q, filed="2026-06-15")
+    msft_q = _filing("0000789019-26-000010", "10-Q", accepted=ACCEPT_Q, filed="2026-06-15")
+    fake.submissions[AAPL[1]] = _submissions_bytes(AAPL[1], [aapl_q])
+    fake.submissions[MSFT[1]] = _submissions_bytes(MSFT[1], [msft_q])
+    fake.facts[AAPL[1]] = _facts_bytes(AAPL[1], "v1")
+    fake.facts[MSFT[1]] = _facts_bytes(MSFT[1], "v1")
+    index_rows = [
+        _idx_row(AAPL[1], "10-Q", "2026-06-15", aapl_q["accession"]),
+        _idx_row(MSFT[1], "10-Q", "2026-06-15", msft_q["accession"]),
+    ]
+    fake.set_index(index_rows)
+    _poll(store, universe, fake, _clocks(POLL_1), repo_root=repo)
+
+    fake.submissions_fetches.clear()
+    aapl_new = _filing("0000320193-26-000044", "10-Q", accepted=ACCEPT_NEW, filed="2026-08-12")
+    msft_new = _filing("0000789019-26-000044", "10-Q", accepted=ACCEPT_NEW, filed="2026-08-12")
+    fake.submissions[AAPL[1]] = _submissions_bytes(AAPL[1], [aapl_q, aapl_new])
+    fake.submissions[MSFT[1]] = _submissions_bytes(MSFT[1], [msft_q, msft_new])
+    fake.facts[AAPL[1]] = _facts_bytes(AAPL[1], "v2")
+    # MSFT is refused before any byte is bound.
+    fake.fail_submissions[MSFT[1]] = "source_binding_failure"
+    fake.set_index(
+        index_rows
+        + [
+            _idx_row(AAPL[1], "10-Q", "2026-08-12", aapl_new["accession"]),
+            _idx_row(MSFT[1], "10-Q", "2026-08-12", msft_new["accession"]),
+        ]
+    )
+    result = _poll(store, universe, fake, _clocks(POLL_2), repo_root=repo)
+    assert result.receipt["coverage"]["submissions_fetched"] == 1
+    assert result.receipt["coverage"]["failed_issuers"] == 1
+    _validate_run(result.receipt)
+
+
+def test_acceptance_correction_refuses_when_a_third_source_asserts_the_accession(
+    tmp_path: Path,
+) -> None:
+    """A correction may not silently overwrite a source it never rehashed.
+
+    The allowlist is keyed by value and is consumed over groups the adjudicator
+    does not read -- historical shards and withheld rows. If one of them also
+    asserts this accession, admitting would contradict a bound component without
+    recording that it disagreed.
+    """
+
+    store, prior_manifest, prior_rows, current_rows, current_sha, components = _rost_case(
+        tmp_path, prior_accepted=ROST_PRIOR_ACCEPTED, current_accepted=ROST_CURRENT_ACCEPTED
+    )
+    base = dict(
+        store=store,
+        cik=ROST_CIK,
+        ticker="ROST",
+        prior_manifest=prior_manifest,
+        prior_rows=prior_rows,
+        current_rows=current_rows,
+        current_sha=current_sha,
+        current_components=components,
+        current_source_set_sha256=broad_sec_store._component_identity(components),
+        current_retrieved_at="2026-06-04T02:00:00Z",
+        selection_cutoff_at=_ROST_SELECTION_CUTOFF,
+        recovery_from=None,
+    )
+    # Control: with no third source the correction is admitted.
+    entries, _ = broad_sec_store._derive_filing_corrections(**base, other_rows=[])
+    assert len(entries) == 1
+
+    for label, third in (
+        ("historical_shard_repeats_the_stale_instant", [dict(prior_rows[0])]),
+        ("historical_shard_agrees_with_the_correction", [dict(current_rows[0])]),
+        ("withheld_row_for_the_same_accession", [{**prior_rows[0], "withheld_cause": "unevaluable_acceptance"}]),
+    ):
+        entries, admitted = broad_sec_store._derive_filing_corrections(**base, other_rows=[third])
+        assert entries == [] and admitted == frozenset(), label
+
+
+def test_correction_merge_is_order_independent_across_every_group_permutation(
+    tmp_path: Path,
+) -> None:
+    """Whichever order the groups arrive in, the corrected instant must win."""
+
+    entries, admitted = _derive_rost(
+        tmp_path, prior_accepted=ROST_PRIOR_ACCEPTED, current_accepted=ROST_CURRENT_ACCEPTED
+    )
+    assert len(entries) == 1
+    _store, _pm, prior_rows, current_rows, _sha, _comp = _rost_case(
+        tmp_path / "perm",
+        prior_accepted=ROST_PRIOR_ACCEPTED,
+        current_accepted=ROST_CURRENT_ACCEPTED,
+    )
+    for groups in itertools.permutations([prior_rows, current_rows]):
+        merged = broad_sec_store._merge_filing_rows(*groups, admitted_corrections=admitted)
+        assert len(merged) == 1
+        assert merged[0]["acceptance_datetime"] == ROST_CURRENT_ACCEPTED, groups
+        broad_sec_store._assert_no_duplicate_filing_conflicts(
+            *groups, admitted_corrections=admitted
+        )
+
+
+def test_rebound_source_rows_refuses_a_truncated_object(tmp_path: Path) -> None:
+    """A truncated gzip raises EOFError, which is not an OSError; refuse, never raise."""
+
+    body = _rost_source_bytes(ROST_CURRENT_ACCEPTED)
+    packed = gzip.compress(body)
+    assert (
+        broad_sec_store._rebound_source_rows(
+            packed,
+            expected_sha=sha256(body).hexdigest(),
+            cik=ROST_CIK,
+            ticker="ROST",
+            selection_cutoff_at=_ROST_SELECTION_CUTOFF,
+            recovery_from=None,
+        )
+        is not None
+    )
+    for label, corrupt in (
+        ("truncated", packed[: len(packed) // 2]),
+        ("not_gzip", b"{}"),
+        ("empty", b""),
+    ):
+        assert (
+            broad_sec_store._rebound_source_rows(
+                corrupt,
+                expected_sha=sha256(body).hexdigest(),
+                cik=ROST_CIK,
+                ticker="ROST",
+                selection_cutoff_at=_ROST_SELECTION_CUTOFF,
+                recovery_from=None,
+            )
+            is None
+        ), label
