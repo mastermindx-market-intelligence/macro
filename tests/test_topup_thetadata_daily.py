@@ -901,8 +901,7 @@ def test_f15_writer_lock_excluded_from_uploadable(tmp_path):
 
 
 def test_f15_writer_lock_gitignored():
-    text = open("/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/"
-               "worktrees/thetadata-canonical-options-source-da82b6/.gitignore").read()
+    text = (REPO_ROOT / ".gitignore").read_text()
     assert "data/thetadata_eod/_writer.lock" in text
 
 
