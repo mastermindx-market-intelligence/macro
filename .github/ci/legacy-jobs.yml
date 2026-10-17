@@ -2632,6 +2632,7 @@ jobs:
       - "engine/narrative_crossmarket.py"
       - "engine/narrative_emergence.py"
       - "engine/narrative_rotation.py"
+      - "engine/short_volume.py"
       - "engine/neuralweb/__init__.py"
       - "engine/neuralweb/brief_context.py"
       - "engine/neuralweb/capability_broker.py"
@@ -5032,6 +5033,7 @@ jobs:
       - "engine/name_score.py"
       - "engine/name_score_grader.py"
       - "engine/narrative_rotation.py"
+      - "engine/short_volume.py"
       - "engine/neuralweb/envelope.py"
       - "engine/neuralweb/synapse.py"
       - "engine/ohlc_reconstruct.py"
@@ -5366,6 +5368,7 @@ jobs:
       - "engine/rri_shadow.py"
       - "engine/session_anchor.py"
       - "engine/setups.py"
+      - "engine/short_volume.py"
       - "engine/signal_archive.py"
       - "engine/signal_gate.py"
       - "engine/signal_quality.py"
@@ -11970,6 +11973,7 @@ jobs:
       - "engine/market_state.py"
       - "engine/name_score_grader.py"
       - "engine/narrative_rotation.py"
+      - "engine/short_volume.py"
       - "engine/neuralweb/__init__.py"
       - "engine/neuralweb/envelope.py"
       - "engine/neuralweb/synapse.py"
@@ -12555,6 +12559,7 @@ jobs:
       - engine/name_score_grader.py
       - engine/narrative_crossmarket.py
       - engine/narrative_rotation.py
+      - engine/short_volume.py
       - engine/neuralweb/__init__.py
       - engine/neuralweb/brief_context.py
       - engine/neuralweb/capability_broker.py
@@ -18937,6 +18942,7 @@ jobs:
       - engine/narrative_crossmarket.py
       - engine/narrative_emergence.py
       - engine/narrative_rotation.py
+      - engine/short_volume.py
       - engine/neuralweb/__init__.py
       - engine/neuralweb/brief_context.py
       - engine/neuralweb/capability_broker.py
@@ -27360,6 +27366,7 @@ jobs:
       - "engine/name_score_grader.py"
       - "engine/narrative_crossmarket.py"
       - "engine/narrative_rotation.py"
+      - "engine/short_volume.py"
       - "engine/neuralweb/__init__.py"
       - "engine/neuralweb/brief_context.py"
       - "engine/neuralweb/capability_broker.py"
@@ -32126,6 +32133,27 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml requests
       - name: c19-wp24-consumer-states
         run: python -m pytest tests/test_c19_wp24_consumer_states.py -q -p no:cacheprovider
+  c19-wp24-dtc-map:
+    if: ${{ false }}
+    gate: code
+    # C19 WP24 DQ4 (MAS-263): narrative-rotation crowding keys FINRA days-to-cover by ticker (index or `ticker` column), never positionally, and drops the censored 999.99 sentinel (dtc_capped, else >= DTC_SENTINEL) before the context-only avg_days_to_cover. Hermetic: tmp_path only, no data/ reads, no network.
+    timeout-minutes: 10
+    paths:
+      - "collectors/finra.py"
+      - "engine/narrative_rotation.py"
+      - "engine/short_volume.py"
+      - "engine/theme_crowding.py"
+      - "tests/test_c19_wp24_dtc_map.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml requests
+      - name: c19-wp24-dtc-map
+        run: python -m pytest tests/test_c19_wp24_dtc_map.py -q -p no:cacheprovider
   c19-wp29-hk-southbound-two-period:
     if: ${{ false }}
     gate: code
