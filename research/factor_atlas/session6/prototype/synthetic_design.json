@@ -1,0 +1,19 @@
+{
+  "scope": "SYNTHETIC_METHOD_DIAGNOSTICS_ONLY_NOT_MARKET_PREREGISTRATION",
+  "seed": 2026100906,
+  "monte_carlo_replications": 1000,
+  "sessions": 252,
+  "factors": 40,
+  "same_date_common_component_share": 0.6,
+  "overlap_horizons": [1, 5, 21],
+  "paired_loss_scale": 0.03,
+  "true_mean_loss_difference": 0,
+  "confidence_level": 0.95,
+  "methods": ["pooled_iid_normal", "date_iid_student", "21_session_block_student", "oracle_known_covariance_normal"],
+  "transform_example": {"train_n": 2500, "test_n": 20000, "x_distribution": "uniform(-3,3)", "conditional_mean": "tanh(x)", "noise_sd": 0.2, "weak_basis": "1,x/3", "strong_basis": "polynomial_0_through_9_of_x/3", "additional_feature": "tanh(x)"},
+  "power_scenarios": {"paired_gain": 0.005, "independent_unit_sd": [0.02, 0.05, 0.10], "target_power": 0.8, "tests_for_BY_illustration": 10, "BY_q": 0.1},
+  "unobserved_real_parameters": ["real loss variance", "real feature effect", "real source coverage", "real dependence", "real human comprehension"],
+  "market_data_access": false,
+  "existing_holdouts_access": false,
+  "forecast_or_release_authority": false
+}

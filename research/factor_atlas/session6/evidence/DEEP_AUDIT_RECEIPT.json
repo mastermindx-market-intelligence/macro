@@ -1,0 +1,289 @@
+{
+  "schema": "factor_atlas.s6.deep_audit_receipt.v1",
+  "date": "2026-10-09",
+  "claim_class": "AUTHOR_SELF_AUDIT_SYNTHETIC_ONLY_NOT_INDEPENDENT_ACCEPTANCE",
+  "predecessor_commit": "fbaa3812510a67e879c17defa270e16f717d3ce3",
+  "protected_procedure": "7d82b9adb839d54e4ab25378ca333e498dd83fcc",
+  "source_manifest": {
+    "prototype/structural_guards.py": {
+      "bytes": 13089,
+      "sha256": "39c5895efed6c53e3ec2670dcde856d6471dbc5ceb33315528dd454fb43042f8",
+      "git_blob_sha": "c1ec5b0ccda451a4eb47fa1b645aef13ad6d88fb"
+    },
+    "prototype/test_structural_guards.py": {
+      "bytes": 9575,
+      "sha256": "5e81291b92c33ef8baeb479378f428df30a74dd61d20efedf61d7d7ed7e6c77b",
+      "git_blob_sha": "f7d6ab083289b3bca64ea0a1c89d5cc5375b5893"
+    },
+    "prototype/test_deep_guards.py": {
+      "bytes": 5638,
+      "sha256": "164c18a126893db238f32ab83e3ac6064485e31377061070b863fe7f7ce35528",
+      "git_blob_sha": "c2d928cc07515bbd8a937748996a6761dd91127a"
+    },
+    "prototype/audit_original.py": {
+      "bytes": 5996,
+      "sha256": "3d990a28d474dff934c8a0731aa04d07068b9d37d8d31fff22090cea74d1f4b9",
+      "git_blob_sha": "0643b11f3aec360ba31ae980c9dbe453893ba93e"
+    },
+    "prototype/synthetic_design.json": {
+      "bytes": 1120,
+      "sha256": "13bfe41542834d4818ba0ca3718175a5505a142b5397c6a5f91fff975e5aa000",
+      "git_blob_sha": "cf1828402877c1306c386afd0ac3308541894d00"
+    },
+    "prototype/synthetic_methods.py": {
+      "bytes": 5596,
+      "sha256": "a2fe5c04edcae66b6fd632be429ca80770659512115b3a85ab1a00f6876a949b",
+      "git_blob_sha": "2d481980891b8619cd33dc1bbfbd0ed40184e667"
+    },
+    "prototype/bootstrap_diagnostic_spec.json": {
+      "bytes": 981,
+      "sha256": "043fc3b2978ecde6976bc821da40272ae1a73c31f4853c3b43a1bd25aab26653",
+      "git_blob_sha": "9fc2af536835bcc1ecdc6fc1dd0028d5db27b4e6"
+    },
+    "prototype/bootstrap_diagnostic.py": {
+      "bytes": 2071,
+      "sha256": "af31a166d6d65e4cf4fa75e86f6b1fd744ce028a66c0538cffc4282b23d9d6e5",
+      "git_blob_sha": "a3853d24be0bb74f0aaedc7f9a98463408568157"
+    },
+    "prototype/mutation_check.py": {
+      "bytes": 3194,
+      "sha256": "e06fa9c654f7c2969082aaf28785844f2dea62f48cb044f8f7045c710fad8b3e",
+      "git_blob_sha": "0e50fb640031016c6a6bf7cc7c675ca2ee68b54f"
+    }
+  },
+  "original_probe_count": 29,
+  "original_unhandled_invariants": 29,
+  "repair_test_summary": {
+    "passed": 197,
+    "subtests_passed": 3,
+    "original_unchanged_tests": 36,
+    "selected_semantic_mutants": 8,
+    "detected": 8
+  },
+  "mutation_names": [
+    "clock_type_bypass",
+    "identity_truthiness",
+    "rounded_absolute",
+    "drop_action_and_sign_conflict",
+    "low_decimal_precision",
+    "future_baseline_disabled",
+    "equal_clock_quote_allowed",
+    "publication_authority_enabled"
+  ],
+  "simulation_protocol_sha256": "13bfe41542834d4818ba0ca3718175a5505a142b5397c6a5f91fff975e5aa000",
+  "bootstrap_protocol_sha256": "043fc3b2978ecde6976bc821da40272ae1a73c31f4853c3b43a1bd25aab26653",
+  "synthetic_null_rates": [
+    {
+      "horizon": 1,
+      "effective_dates": 252.0,
+      "rates": {
+        "pooled_iid_normal": 0.697,
+        "date_iid_student": 0.053,
+        "21_session_block_student": 0.046,
+        "oracle_known_covariance_normal": 0.054
+      }
+    },
+    {
+      "horizon": 5,
+      "effective_dates": 50.722044728434504,
+      "rates": {
+        "pooled_iid_normal": 0.868,
+        "date_iid_student": 0.398,
+        "21_session_block_student": 0.077,
+        "oracle_known_covariance_normal": 0.054
+      }
+    },
+    {
+      "horizon": 21,
+      "effective_dates": 12.342057527856959,
+      "rates": {
+        "pooled_iid_normal": 0.945,
+        "date_iid_student": 0.663,
+        "21_session_block_student": 0.114,
+        "oracle_known_covariance_normal": 0.051
+      }
+    }
+  ],
+  "bootstrap_followup": [
+    {
+      "horizon": 1,
+      "counts": {
+        "block_percentile": 90,
+        "oracle": 54,
+        "nonoverlap_Student": 57
+      },
+      "rates": {
+        "block_percentile": {
+          "rate": 0.09,
+          "monte_carlo_wilson_95": [
+            0.07379614931508309,
+            0.1093417926430721
+          ]
+        },
+        "oracle": {
+          "rate": 0.054,
+          "monte_carlo_wilson_95": [
+            0.04162131372306273,
+            0.06979215484605245
+          ]
+        },
+        "nonoverlap_Student": {
+          "rate": 0.057,
+          "monte_carlo_wilson_95": [
+            0.04425344035871594,
+            0.07313706765948591
+          ]
+        }
+      }
+    },
+    {
+      "horizon": 21,
+      "counts": {
+        "block_percentile": 152,
+        "oracle": 39,
+        "nonoverlap_Student": 33
+      },
+      "rates": {
+        "block_percentile": {
+          "rate": 0.152,
+          "monte_carlo_wilson_95": [
+            0.13108250256297901,
+            0.17558092134296735
+          ]
+        },
+        "oracle": {
+          "rate": 0.039,
+          "monte_carlo_wilson_95": [
+            0.028658960904180485,
+            0.052869310419501346
+          ]
+        },
+        "nonoverlap_Student": {
+          "rate": 0.033,
+          "monte_carlo_wilson_95": [
+            0.023592927958426907,
+            0.04598126446708159
+          ]
+        }
+      }
+    }
+  ],
+  "transform_example": {
+    "weak": {
+      "base_test_mse": 0.08574263526418471,
+      "augmented_test_mse": 0.04037011101926259,
+      "relative_gain": 0.5291710956296504
+    },
+    "strong": {
+      "base_test_mse": 0.04058010438458747,
+      "augmented_test_mse": 0.040573684341681744,
+      "relative_gain": 0.00015820666316881095
+    }
+  },
+  "power_scenarios": [
+    {
+      "assumed_independent_unit_sd": 0.02,
+      "gain_detected_against_zero": 0.005,
+      "n_two_sided_alpha_005": 126,
+      "n_one_sided_first_BY_discovery": 202
+    },
+    {
+      "assumed_independent_unit_sd": 0.05,
+      "gain_detected_against_zero": 0.005,
+      "n_two_sided_alpha_005": 785,
+      "n_one_sided_first_BY_discovery": 1258
+    },
+    {
+      "assumed_independent_unit_sd": 0.1,
+      "gain_detected_against_zero": 0.005,
+      "n_two_sided_alpha_005": 3140,
+      "n_one_sided_first_BY_discovery": 5032
+    }
+  ],
+  "analytic_toys": {
+    "xor": {
+      "individual_brier": 0.25,
+      "joint_brier": 0.0,
+      "joint_observation_adds_information": true
+    },
+    "duplicated_evidence": {
+      "true_probability": 0.7,
+      "independent_copy_assumption": 0.9857478005865103,
+      "number_identical_copies": 5,
+      "honest_expected_brier": 0.21000000000000002,
+      "duplicated_expected_brier": 0.2916518055400281
+    },
+    "pressure_80pct_coverage": {
+      "total_gross": 100000000,
+      "classified_gross": 80000000,
+      "classified_signed": 5000000,
+      "unknown_gross": 20000000,
+      "signed_lower": -15000000,
+      "signed_upper": 25000000,
+      "sign_identified": false
+    },
+    "zero_observed_user_errors": [
+      {
+        "independent_users": 30,
+        "one_sided_95_upper_error_rate": 0.09503385285530419
+      },
+      {
+        "independent_users": 60,
+        "one_sided_95_upper_error_rate": 0.04870291331009746
+      },
+      {
+        "independent_users": 100,
+        "one_sided_95_upper_error_rate": 0.029513049607039932
+      },
+      {
+        "independent_users": 300,
+        "one_sided_95_upper_error_rate": 0.00993608194445772
+      }
+    ],
+    "BY_first_threshold": {
+      "m": 10,
+      "q": 0.1,
+      "harmonic": 2.9289682539682538,
+      "threshold": 0.0034141715214740555
+    }
+  },
+  "environment": {
+    "python": "3.13.5",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "raw_output_sha256": {
+    "bootstrap_diagnostic_results.json": "f74d27d625cc28712e454b879c88cc06c18dc672cb2518470e05179658d1750c",
+    "clock_type_bypass.log": "87177aeffe188208f6a67eb819a57723d0002a079b7c5af42dfde1890d554f1f",
+    "drop_action_and_sign_conflict.log": "42f8ca9574ef6d2df62d42c0db16eb790273dab7ae9b175970a9471bd74d93cc",
+    "equal_clock_quote_allowed.log": "312bc1d91852fab9143a93aba67c37655ac16c96c572cbfab4159c05475aa2e0",
+    "future_baseline_disabled.log": "be30c1a0e6591e301a4663b043ceeb20a900a284830127e146de387c74e40f20",
+    "identity_truthiness.log": "555c7ee6b5583281fb1a430c16cd1f09014e12e80069ed2f42f7476973cab456",
+    "low_decimal_precision.log": "9a6de72887e6b48408eacabc4f3ffdc7203efff02b9128f42e235b63bc630360",
+    "mutation_results.json": "7adcfab7b44e78d578c9a209ca7d6d999b1d24774df3997a171a4ed0ff7cbab6",
+    "original_36_tests.log": "26770e9f4fb5717a92dcb70f8fe03b1160f4d0cd8fb64ea2e067434af3262cb7",
+    "original_adversarial_counterexamples.json": "3415c21f505d0ed6b49bf538b081f5a8eb1fd3a66cad69e97109672fc64ff681",
+    "publication_authority_enabled.log": "4da7a2d6f04ffc9f00a1440461026d8af2623100406e648d278f3a19ecb360a9",
+    "qlike_normalization_counterexample.json": "ce64507bf6a5e9e59f39e267a51d3234ed5ee0e6729a5701b72319b69015a670",
+    "repaired_all_tests.log": "e2e7ed109498e4682f942e9e8e9ea667d30f95e65d8340715e68b3cd4bbb13b8",
+    "repaired_guard_junit.xml": "397dd6d68f722888d5560eb7a24efa14627ebc1074c6459c8db8a7a701532fc2",
+    "repaired_original_36_tests.log": "61d06cc20594e7356aab6219c808b5932f26c635d0ea2c22457430578f479b1d",
+    "rounded_absolute.log": "8f15eaebe680943c2410d98458d20c2ff3cec29948c544ab24a689f7db2e95b2",
+    "source_manifest.json": "9eb4cd6a9718d64b5929a0982d0bf4c53cfa6c62056c2405ee00ce2a529d6a51",
+    "synthetic_methods_results.json": "e412ab601fd19c8abb5771c8bc9240ff8567c7e5a2ab1c71090f8e7eebafaee0"
+  },
+  "limitations": [
+    "No actual market feature or outcome was evaluated.",
+    "No protected historical holdout was rerun.",
+    "Synthetic rejection rates are not production error rates.",
+    "No source-admission, independent-review, release or financial authority is granted.",
+    "Original inactive market-preregistration JSON is not changed or activated."
+  ],
+  "execution_surface": {
+    "kind": "isolated_conversation_container",
+    "os": "Linux",
+    "machine": "x86_64",
+    "python": "3.13.5",
+    "not_m2_or_production": true
+  }
+}
