@@ -1,0 +1,11 @@
+{
+  "candidate": "3c381e96875ab76944a31deaeb0013962c5d90f0",
+  "base": "e4a154c6390de8ac6fb88b586e9fd399dba557c6",
+  "baseline_commit": "30ecc0bec644aa91e8d2873fc5a010dbc4a42a28",
+  "baseline_tree": "7a5bd83658308d304af7976fb36517fb1c182cb4",
+  "integrated_tree": "ad6b4cae105452d1f3487b6d8a16c1f2618250c7",
+  "archive_sha256": "071e61c2cd0db247cd22c829e22c1de36f624ded3a59650d53e6724d8cb620a9",
+  "source": "/Users/chriswong/.cache/mastermind-proof/prophet-independent-t2-clocks-20260917-sol-001/integrated-source",
+  "preimage_bridge_sha256": "7cef51f9303ce88d62248f141fbe9b0526a62954c0c5f00e73ccae81e152727b",
+  "production": false
+}

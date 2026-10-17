@@ -1,0 +1,38 @@
+{
+  "returncode": 0,
+  "summary": "288 passed in 6.92s",
+  "command": [
+    "/Users/chriswong/.cache/mm-venv-mac-builder-3/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--basetemp=/Users/chriswong/.cache/mastermind-proof/prophet-independent-t2-clocks-20260917-sol-001/final-source-tmp",
+    "tests/test_prophet_bridge.py",
+    "tests/test_prophet_integrity.py",
+    "tests/test_prophet_arena.py",
+    "tests/test_prophet_arena_clock_parity.py",
+    "tests/test_prophet_plan_chronology_audit.py"
+  ],
+  "mutations": [
+    {
+      "mutation": "raw_evidence_not_checked",
+      "returncode": 1,
+      "summary": "23 failed, 26 passed, 117 deselected in 4.48s"
+    },
+    {
+      "mutation": "marker_order_not_checked",
+      "returncode": 1,
+      "summary": "3 failed, 46 passed, 117 deselected in 2.36s"
+    },
+    {
+      "mutation": "ledger_drops_evidence",
+      "returncode": 1,
+      "summary": "1 failed, 48 passed, 117 deselected in 1.96s"
+    }
+  ],
+  "source_hashes": {
+    "engine/prophet_bridge.py": "3e3694008b902c9959fe5ab17b109cb1fd0432b41ff5f3a5998c5793048a3693",
+    "engine/prophet_integrity.py": "7fa1b237e0bb8d13641526ffd7c0b9dc3c427a29d0898803e4ce268d9de5378e",
+    "scripts/build_prophet.py": "832c091b4ac2bcdc80fb32930841eb51fbb3f4edce21fb5c96dd3b67b015f811"
+  }
+}
