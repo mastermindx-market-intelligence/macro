@@ -1058,6 +1058,20 @@ def test_desk_scan_ignores_a_module_that_does_not_import_qledger():
     assert scan_producer_source("register(desk='alpha')\n").imports_qledger is False
 
 
+def test_desk_scan_does_not_parse_source_without_qledger_import(monkeypatch):
+    """Non-qledger producers cannot contribute a desk scan, so AST work is pure waste."""
+    import engine.intelligence_registry as registry
+
+    def forbidden_parse(*_args, **_kwargs):
+        raise AssertionError("AST parse should not run for a non-qledger producer")
+
+    from types import SimpleNamespace
+
+    monkeypatch.setattr(registry, "ast", SimpleNamespace(parse=forbidden_parse))
+    scan = scan_producer_source("def unrelated():\n    return {'desk': 'alpha'}\n")
+    assert scan == DeskScan(imports_qledger=False, desks=(), unresolved=False)
+
+
 def test_desk_scan_survives_a_syntax_error():
     assert scan_producer_source("def broken(:\n").desks == ()
 

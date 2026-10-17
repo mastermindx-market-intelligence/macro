@@ -348,6 +348,11 @@ def scan_producer_source(source: str) -> DeskScan:
     ``unresolved`` rather than being silently dropped.
     """
     imports = bool(_QLEDGER_IMPORT_RE.search(source))
+    if not imports:
+        # The caller only consumes desk scans from producers that actually import
+        # qledger. Avoid parsing/walking unrelated producer modules: on the live
+        # estate this was the dominant cost of rebuilding the derived T1 view.
+        return DeskScan(imports_qledger=False, desks=(), unresolved=False)
     try:
         tree = ast.parse(source)
     except SyntaxError:
