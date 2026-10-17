@@ -94,7 +94,15 @@ verified:
     stale:false and future_dated:false; native elevated with alert:true maps to Market View risk_off but held-risk
     ok under legacy risk-on. Session mismatch is rejected; advisory context adds no duplicate vote in the fixture.
     Full runtime/book/prompt/ledger parity NOT_TESTED; no policy or production mutation.'
+- claim: The subsequent narrow future-source-date repair is implemented and independently reviewed in Mastermind PR 1567.
+  command: 'Owned Mastermind operation risk-radar-future-source-clock-20261017-01a14837; python3 -m pytest tests/test_market_view.py tests/test_regime_frame.py tests/test_rotation_risk_context.py -q -rA; source-repair receipt under consumer_comparison_20261017.'
+  result: 'Semantic head ab849c140d23a5548f3c55995078a0124236986c: two future-date cases first failed and ten controls passed; after repair 184 passed. Final head 1e6a8a23fac1153eaef6c5b2f97525f0d960980f only corrects an obsolete comment, whole-file AST unchanged. Independent source review accepted. No runtime rollout or live book/prompt/ledger parity.'
+- claim: Current independent source/document and methods reviews completed after the earlier transport failure.
+  command: 'Read-only cloud copies supplied to native source_consumer_trace and turning_point_methods; parent verified the native magnitude mapping and incorporated both reviews.'
+  result: 'Exposure/date denominators and event-probability wording corrected; propagation information requires a matched common-context/no-source comparator; all promised diagnostic constructions and fits must be frozen and counted before execution. Reviews accepted and closed; no new model execution or promotion.'
 unverified:
+- claim: 'Mastermind PR 1567 final-head CI, native queue merge and runtime delivery.'
+  what_would_verify: 'Read exact head 1e6a8a23fac1153eaef6c5b2f97525f0d960980f and binding checks; use the native merge queue without bypass, then fetch master and compare both owned blobs. Canonical strategic state prohibits autonomous production deployment: obtain exact runtime approval before deploy_from_git of the operation merge SHA and real changed-path consumer proof.'
 - claim: 'Final hosted CI and merge for the complete current #9515 head.'
   what_would_verify: 'Read #9515''s exact current head, active main authority, contract-delta, all scheduled
     packs and ci-gate through the incumbent merge predicates; after ordinary expected-head squash, fetch main
@@ -127,10 +135,11 @@ next_actions:
 - 'First read PR #9515, its exact current head/check/merge state and this cumulative receipt. Finish any remaining
   ordinary source gates on the same carrier; do not create a replacement PR or infer a merge from an earlier
   pushed head.'
-- Use the completed consumer_comparison_20261017 source-function receipt to repair the smallest qualified
-  source-clock path with actual writer clearance, then capture real consumer and unchanged-policy artifacts.
-  Full runtime/book/prompt/ledger parity was NOT_TESTED. Never call brain/macro_risk.risk_state() as a read
-  because its default dwell path writes.
+- Finish the independently reviewed Mastermind PR 1567 future-date source repair through final-head CI and
+  the native merge queue; the implementation is complete and must not be redone. After source acceptance,
+  obtain the exact runtime approval required by canonical strategic state, then capture changed-path consumer
+  and unchanged-policy artifacts. Full runtime/book/prompt/ledger parity was NOT_TESTED. Never call
+  brain/macro_risk.risk_state() as a read because its default dwell path writes.
 - Use the qualified T13 admission result to bind the existing Massive RAW SPY source and T12 sample only after
   actual input identity and source-purpose admission. No Yahoo substitution, trial registration or feature-outcome
   join is authorized by metadata presence alone.
@@ -176,3 +185,13 @@ Prepared after repeated context compaction. This is a truthful source-time check
 Actual model: GPT-6 Astra Pro acting as Sol. Organizational workstream owner remains coo-fable. Native delegates are stopped; the Fabric review is terminal and NOT_ACCEPTED. No autonomous executor or wake is claimed.
 
 Additional current-document independent review: INCOMPLETE / NOT_ACCEPTED. Its studio_direct reads returned no contents before interruption at approximately 586 seconds; no worker writes, processes or watcher. The parent reviewed the current report and complete contract and recorded the wording repairs in all_date_census/PARENT_REVIEW_2026-10-17.md. Prior scientific/source reviews remain bounded to their accepted evidence.
+
+## Subsequent completed reviews and owned source repair
+
+The preceding transport-failed current-document review remains a historical NOT_ACCEPTED receipt. Subsequent reviews used exact cloud copies and completed successfully: source_consumer_trace accepted the report/audit boundaries with denominator/probability wording repairs; turning_point_methods required the matched-common-context propagation comparison and fully bound/counted diagnostic controls. Both sets of repairs are integrated into the existing report/proposed protocol. consumer_repro_review independently accepted the narrow native clock implementation, subject to the obsolete comment correction now completed with identical whole-file AST. All three native review assignments are ACCEPTED / CLOSED / STOP.
+
+A second isolated workspace owns only the clock repair: `/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-future-source-clock-20261017-01a14837`, branch `sol/web-risk-radar-future-source-clock-20261017-01a14837`, operation `risk-radar-future-source-clock-20261017-01a14837`. It was acquired by the installed workspace owner from protected Mastermind master a552a5e506ae808efa575c2e13cb56f478c72b87. Fresh open-PR and worktree target-path checks found no active conflicting writer; an apparent older delta belonged to already merged PR #1285. Only brain/market_view.py and tests/test_market_view.py are changed. PR URL: https://github.com/mastermindx-market-intelligence/Mastermind/pull/1567. Final head: 1e6a8a23fac1153eaef6c5b2f97525f0d960980f. Source and test hashes, native red/green results and review scope are in consumer_comparison_20261017/SOURCE_CLOCK_REPAIR_20261017.json.
+
+At this update the source operations remain open. Mastermind exact-head CI run 39016492939 has one session-local watch (PID 98141, 90-second interval). Macro head 950aba25f09883a64a5d03dc4c3cdc73e476bee8 has a blocking recurring-briefs failure in run 39015478488: the same two tests fail on the exact base, but differing recorded signatures make native attribution unknown. That head is unarmed. Subsequent document changes will supersede its run and watcher; verify the current PR head instead of reusing this old receipt. These are session-local observers, not durable automation or autonomous wake. No CI gate was changed, no source carrier bypassed, no production deployment performed.
+
+The current canonical strategic-state loader explicitly reports autonomous_production_deploy: prohibited. Source work can complete under the standing commission; runtime deployment needs a concrete exact-release approval. This is the actual remaining deployment authority boundary, not an inferred absence of an archived author.

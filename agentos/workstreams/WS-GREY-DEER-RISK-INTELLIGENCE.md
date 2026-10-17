@@ -443,7 +443,8 @@ waves:
     pr: 9515
     # Prepared checkpoint: final exact-head CI/merge readback is authoritative; no source or production proof inferred.
     # T13 metadata read complete: H2 absent 348/1321 origins; source-purpose and actual Massive/T12 sample unadmitted; zero fits/trials.
-    # Consumer source-function comparison complete: eight planned cases plus future-date defect; full runtime/book/prompt/ledger parity NOT_TESTED.
+    # Consumer source-function comparison complete; Mastermind PR1567 implements the future-date fix, reviewed head 1e6a8a23fac1, 184 native tests pass.
+    # Cross-repo source checks/native queue and actual runtime approval remain open; full runtime/book/prompt/ledger parity NOT_TESTED.
     # Protocol ea26bc964314 frozen before outcomes; code 4a06cd4a6b32; 36 ETFs / 8486 reference sessions / 305496 rows.
     # Descriptive acceptance only, zero fits/promotions. W5 production proof remains absent; existing failed studies and writer/refusal fences preserved.
     depends_on: [GD-PB-W7, GD-PB-W8]
@@ -452,8 +453,10 @@ next_action: >
   and RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md. Complete the isolated
   GD-RR-CENSUS-20261017 carrier in PR 9515 through normal source gates; read
   agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md,
-  then use consumer_comparison_20261017's completed source-function findings for
-  qualified source-clock repair and real runtime-parity proof with actual writer clearance.
+  then finish Mastermind PR1567's independently reviewed future-date repair through
+  exact-head CI and its native merge queue. Canonical strategic state prohibits
+  autonomous production deployment; obtain exact runtime approval before the
+  changed-path runtime/parity proof. The completed implementation is not a new task.
   The 36-ETF census covers 8486 reference sessions and 305496 exposure/date rows;
   it is retrospective descriptive evidence, zero new fits and zero promotions.
   At source pin 3ab3382af892, W5 forward_log is absent and BACKFILL_ASOF/CLOCK
