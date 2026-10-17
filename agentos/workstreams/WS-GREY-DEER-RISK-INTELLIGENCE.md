@@ -440,13 +440,18 @@ waves:
   - id: GD-RR-CENSUS-20261017
     title: Meta-CEO source and all-date exposure census, recorded-version reconstruction and continuation revision
     status: awaiting_ci
+    pr: 9515
+    # Prepared checkpoint: final exact-head CI/merge readback is authoritative; no source or production proof inferred.
+    # T13 metadata read complete: H2 absent 348/1321 origins; source-purpose and actual Massive/T12 sample unadmitted; zero fits/trials.
     # Protocol ea26bc964314 frozen before outcomes; code 4a06cd4a6b32; 36 ETFs / 8486 reference sessions / 305496 rows.
     # Descriptive acceptance only, zero fits/promotions. W5 production proof remains absent; existing failed studies and writer/refusal fences preserved.
     depends_on: [GD-PB-W7, GD-PB-W8]
 next_action: >
   Read research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md section 0A
   and RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md. Complete the isolated
-  GD-RR-CENSUS-20261017 carrier through normal source gates; then advance qualified
+  GD-RR-CENSUS-20261017 carrier in PR 9515 through normal source gates; read
+  agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md,
+  then advance qualified
   source-clock and consumer-comparison work with actual writer clearance.
   The 36-ETF census covers 8486 reference sessions and 305496 exposure/date rows;
   it is retrospective descriptive evidence, zero new fits and zero promotions.

@@ -41,6 +41,13 @@ These targets are proposed delivery acceptance for the changed surfaces, not cla
 
 Broad-index confirmation is a comparator for systemic escalation. Exposure descriptions should not disappear merely because SPY is healthy. Any earlier exposure warning or action authority still requires its own source, empirical and policy qualification. The research plan compares these paths at matched attention burden rather than choosing the one with the most attractive retrospective example.
 
+
+### Completed next phase: T13 intake, not model execution
+
+The [T13 admission result](all_date_census/T13_METADATA_ADMISSION_2026-10-17.md) is complete. Pinned initial-release bytes contain 2,633 THREEFYTP10 and 205 STLFSI4 observations. On the 1,321 reference dates, STLFSI4 has no earlier cached release for 348 origins. Sol specifies maximum eligible release date then latest observation in that batch before any future fit, preserving the strict prior-date rule and current H1/H2 directions. No join, fit, sample regeneration, price hydration or ledger registration occurred. The actual Massive RAW/T12 sample, upstream FRED source-purpose determination and estimator/calibration packet remain unadmitted; T13/T14/T19 drafts and budgets stay unchanged. This is useful completed intake, not predictive acceptance.
+
+The source carrier is [PR #9515](https://github.com/mastermindx-market-intelligence/macro/pull/9515). At this record's preparation the final source checks are pending; GitHub exact-head CI and merge readback govern source acceptance. The [cumulative continuation](../../agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md) records the exact source, custody and remaining proof. Current main `ab5156a4b2c336181f3c5256e7c0766f04f99598` is merge-compatible with the frozen census source and changes generated data/site/reports only. Its newer Envelope and additional W5 BACKFILL_ASOF refusal are documented separately; neither changes the frozen case history nor supplies issuance proof.
+
 ### Immediate next action and custody
 
 Complete this isolated census/documentation carrier through its own source checks and normal PR gates. Then address the smallest qualified source-clock/consumer comparison vertical whose owner has actual writer clearance; retain the original warning, active observed-pullback and release carriers. At the first legitimate natural W5 issuance, inspect original rows, refusals and workflow annotations before recording production proof; grade only after each horizon matures.

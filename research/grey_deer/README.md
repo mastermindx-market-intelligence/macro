@@ -5,8 +5,8 @@
 passed 2026-08-27; pullback operation `risk-radar-pullback-20261009` under the Fable seat since
 2026-10-11, continued by the Opus seat on 2026-10-13 and 2026-10-14 (resumption file:
 `GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md`). Both frozen retrospective pullback runs are
-null (stage-1 SPY, stage-1b 14-ETF panel: 0 of 12 claims); the frozen SPY lane now runs
-prospectively in the nightly at research tier. This README is an index only — it duplicates
+null (stage-1 SPY, stage-1b 14-ETF panel: 0 of 12 claims); the frozen SPY research lane is wired into the nightly; legitimate forward issuance
+remains unproved at the October 17 inspection. This README is an index only — it duplicates
 no architecture.
 
 ## Canonical files (this directory)
@@ -58,6 +58,9 @@ The new all-date census is accepted descriptive evidence only: 36 exposures,
 protocol, outputs, recorded-version corrections, calendar and peak-aging evidence
 are in [all_date_census/](all_date_census/). Source/release verification is tracked
 with this carrier; full programme acceptance remains outstanding.
+
+Current source carrier: [PR #9515](https://github.com/mastermindx-market-intelligence/macro/pull/9515).
+[T13 admission](all_date_census/T13_METADATA_ADMISSION_2026-10-17.md) is complete at metadata scope only: H2 lacks a prior release for 348/1,321 reference dates; source-purpose and actual Massive/T12 sample remain unadmitted. No fits or trial writes.
 
 Supporting records: [source audit](risk_radar_source_consumer_audit_20261017.md),
 [contract annex](risk_radar_architecture_contract_20261017.md),

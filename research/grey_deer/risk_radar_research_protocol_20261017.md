@@ -88,3 +88,10 @@ Before execution, bind estimation units, ridge implementation, native features, 
 [4] Gneiting & Raftery, [Proper Scoring Rules](https://sites.stat.washington.edu/people/raftery/Research/PDF/Gneiting2007jasa.pdf), proper loss and skill-score qualifications.
 
 Propagation must retain the assumptions and counterexamples in [Forbes–Rigobon](https://mitsloan.mit.edu/shared/ods/documents?PublicationDocumentID=5001) and [Corsetti–Pericoli–Sbracia](https://cepr.org/publications/dp3310). Correlation changes alone do not settle contagion.
+
+
+## 7. Current-seat admission decision — 17 October 2026
+
+Sol is the current methodology owner. The [T13 metadata intake](all_date_census/T13_METADATA_ADMISSION_2026-10-17.md) is complete with immutable source/collector hashes and zero fits or trial-ledger writes. H1 is Kim–Wright THREEFYTP10 level and H2 is STLFSI4 level, with their existing positive directions. Date-only release stamps remain strictly earlier than the origin date; the next freeze selects maximum eligible release date, then maximum observation period within that batch. H3–H9 remain excluded.
+
+STLFSI4 has no admissible prior release for 348 of the 1,321 reference sessions. Retain those abstentions. These metadata counts precede T12 sample, warm-up, maturity, staleness and common-support restrictions, and do not verify Massive RAW price identity. The exact price bytes, canonical T12 sample digest and source-purpose determination remain required before a join or fit. The upstream FRED model-use UNKNOWN disposition is not overridden by the downstream internal-fitting label. This is a completed admission-only decision; the larger 30-template design above remains proposed and is not an executable forecast preregistration. No new attempts are charged to T13/T14/T19.

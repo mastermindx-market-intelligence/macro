@@ -27,6 +27,8 @@
 | PEAK_AGING_ADDENDUM_2026-10-17.json | Observed 63/252-session peaks and drawdowns for selected case dates. |
 | PEAK_AGING_CALENDAR_QUALIFICATION_2026-10-17.json | Reference-calendar verification and September 28 observation; original values agree and no off-reference source rows exist. |
 | CI_OWNED_CLOSURE_2026-10-17.json | The new suite is reachable through the existing Grey Deer CI job, with no direct trigger gaps. Not a substitute for PR CI. |
+| T13_METADATA_ADMISSION_2026-10-17.{md,json} | Completed metadata-only T13 intake; H2 missing 348/1,321 reference origins, batch-selection rule and actual remaining admission boundaries. Zero fits, sample regeneration or ledger writes. |
+| CURRENT_BASE_COMPATIBILITY_2026-10-17.json | Current-main trial merge and owned-path comparison; generated updates are not a census rerun or a substitute for hosted CI. |
 | risk_radar_september_october_2026.png | Descriptive figure; script plot_census_case.py uses the stored case CSV. |
 
 The calendar addendum's original unresolved label is retained as the initial machine comparison; the separately dated documentary memo supplies its resolution. Neither file certifies worldwide exchange calendars, intraday executions or historical membership.
