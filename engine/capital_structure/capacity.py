@@ -16,6 +16,17 @@ pessimistic / optimistic / ceiling branch solves (§2.5), asserted actions appli
 as a fixed use that is never a cap (§2.6) and one aggregate with one witness and
 its binding constraints (§2.7).
 
+C2b adds the scenario actions this adapter does not own (SPEC_C2B §2): an action
+on a route the envelope does not carry is partitioned off before any C2a
+validation, recorded in ``inputs["non_capacity_actions"]`` with its canonical
+owner (the supply trace, the funding schedule, or ``capacity_unmodelled``) and
+never read as a number.  Capacity still owns ``shelf_takedown`` and
+``at_the_market`` routes, so an action of either kind on a route the envelope
+does not carry is refused.  A FIXED equity line, registered direct or PIPE draws
+on shared pools this adapter models only for takedowns and ATM programmes, so
+the aggregate becomes a named unknown with no witness and no binding constraint
+rather than a number that silently ignores the consumption.
+
 Nothing here re-implements optimisation, rule text, the public-float test or the
 20% test; those are imported.  Arithmetic is exact (``Decimal``/``Fraction``)
 and floats are refused.  An unknown stays unknown -- never ``0``, never
@@ -31,6 +42,7 @@ aggregate note and in ``inputs`` and is never the aggregate.
 from __future__ import annotations
 
 import dataclasses
+import hashlib
 from collections import Counter
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
@@ -39,6 +51,10 @@ from fractions import Fraction
 from typing import Any, Mapping, Sequence
 
 from engine.capital_structure import capacity_joint, rule_applicability
+from engine.capital_structure.authorized_shares import (
+    AuthorizedSharesInputError,
+    headroom_from_records,
+)
 from engine.capital_structure.capacity_joint import (
     JointModelError,
     JointPool,
@@ -49,6 +65,7 @@ from engine.capital_structure.capacity_joint import (
     solve_joint,
 )
 from engine.capital_structure.issuer_state_contracts import (
+    ActionSelection,
     CapacityEnvelope,
     CapitalState,
     CalculationReceipt,
@@ -76,9 +93,9 @@ from engine.capital_structure.rule_applicability import (
     nasdaq_twenty_percent,
     rule_status_as_of,
 )
-from engine.capital_structure.share_basis import _available_instant
+from engine.capital_structure.share_basis import AUTHORIZED_CAPITAL_KINDS, _available_instant
 
-IMPLEMENTATION = "capital_structure.capacity.c2_adapter.v1+" + capacity_joint.IMPLEMENTATION
+IMPLEMENTATION = "capital_structure.capacity.c2_adapter.v2+" + capacity_joint.IMPLEMENTATION
 
 #: Record schemas this adapter reads.  The registration-path producer (L1a) is
 #: not imported: C1 dispatches on the schema string alone.
@@ -120,6 +137,30 @@ BRANCHES = ("pessimistic", "optimistic")
 
 #: The ``other_assumptions`` key that declares mutually exclusive route groups.
 ROUTE_EXCLUSIVITY_KEY = "route_exclusivity"
+
+#: The route kinds this adapter models.  A scenario action of either kind on a
+#: route the envelope does not carry is an input error, not another owner's
+#: business (SPEC_C2B §2.2).
+CAPACITY_OWNED_ROUTE_KINDS = ("shelf_takedown", "at_the_market")
+
+#: SPEC_C2B §2.3: the owner that consumes pools this adapter cannot model.
+CAPACITY_UNMODELLED_OWNER = "capacity_unmodelled"
+
+#: SPEC_C2B §2.2: the canonical owner of a scenario action on a route this
+#: envelope does not carry.  The two capacity-owned kinds are absent by design,
+#: so a lookup miss is the refusal; every other ``ROUTE_KINDS`` member is here.
+NON_CAPACITY_OWNERS: dict[str, str] = {
+    "warrant_exercise": "supply",
+    "conversion": "supply",
+    "exchange": "supply",
+    "redemption": "supply",
+    "repurchase": "supply",
+    "debt_draw": "funding_only",
+    "other": "funding_only",
+    "equity_line": CAPACITY_UNMODELLED_OWNER,
+    "registered_direct": CAPACITY_UNMODELLED_OWNER,
+    "pipe": CAPACITY_UNMODELLED_OWNER,
+}
 
 
 class CapacityInputError(ValueError):
@@ -258,6 +299,27 @@ def _decimal_or_none(value: Any) -> Decimal | None:
     except (InvalidOperation, ValueError):
         return None
     return parsed if parsed.is_finite() else None
+
+
+def _exact_decimal(value: Any) -> Decimal | None:
+    """An exact finite ``Decimal`` for a ``Decimal`` or for exact decimal text.
+
+    SPEC_C2C_A §2.4: the C2c-P selector publishes its numbers as canonical
+    decimal *text*, and a ``Decimal`` instance is passed through unchanged.
+    Everything else -- ``bool``, ``int``, ``float``, ``Fraction``, ``None`` -- is
+    not exact decimal text and yields ``None`` rather than a silently converted
+    number.  :func:`_decimal_or_none` is NOT usable here: it refuses a
+    ``Decimal`` instance.
+    """
+    if isinstance(value, Decimal):
+        return value if value.is_finite() else None
+    if isinstance(value, str) and value:
+        try:
+            parsed = Decimal(value)
+        except (InvalidOperation, ValueError):
+            return None
+        return parsed if parsed.is_finite() else None
+    return None
 
 
 def _decimal_text(value: Decimal) -> str:
@@ -546,6 +608,34 @@ class _ActionView:
 
 
 @dataclass(frozen=True)
+class _NonCapacityAction:
+    """SPEC_C2B §2.2: one scenario action on a route this envelope does not carry.
+
+    The quantity is never read, converted, priced or recorded: its canonical owner
+    is the supply trace (I1/I2) or the funding schedule (F1), and a second copy
+    here would drift.
+    """
+
+    route_id: str
+    action: str
+    settlement: str
+    owner: str
+    fixed: bool
+    conditions_assumed_met: tuple[str, ...]
+
+    def as_record(self) -> dict[str, Any]:
+        """``inputs["non_capacity_actions"]`` (§2.4): no amount, price or count."""
+        return {
+            "route_id": self.route_id,
+            "action": self.action,
+            "settlement": self.settlement,
+            "owner": self.owner,
+            "fixed": self.fixed,
+            "conditions_assumed_met": list(self.conditions_assumed_met),
+        }
+
+
+@dataclass(frozen=True)
 class _RoutePlan:
     route_id: str
     route_kind: str
@@ -635,6 +725,7 @@ class _Builder:
         self.route_plans: list[_RoutePlan] = []
         self.baby_shelf_inputs: dict[str, Any] | None = None
         self.nasdaq_inputs: dict[str, Any] | None = None
+        self.authorized_inputs: dict[str, Any] | None = None
         self.read: _StateRead | None = None
         self.price_view: _PriceView | None = None
         self.price_branch_routes: tuple[str, ...] = ()
@@ -645,10 +736,18 @@ class _Builder:
         self.exclusive_dropped: tuple[str, ...] = ()
         self.exclusive_not_passed: tuple[tuple[str, ...], ...] = ()
         self.action_views: dict[str, _ActionView] = {}
+        self.non_capacity_actions: tuple[_NonCapacityAction, ...] = ()
+        self.unmodelled_consumption: tuple[str, ...] = ()
         self.residual_routes: dict[str, dict[str, Fraction | None]] = {
             branch: {} for branch in BRANCHES
         }
         self.residual_pools: dict[str, dict[str, Fraction | None]] = {
+            branch: {} for branch in BRANCHES
+        }
+        # What the applied fixed actions take out of each pool, per branch.  A
+        # ceiling substitute stands in for an unknown bound, so it owes the same
+        # deduction a known bound gets; otherwise the action is counted twice.
+        self.pool_deductions: dict[str, dict[str, Fraction]] = {
             branch: {} for branch in BRANCHES
         }
         self.fixed_totals: dict[str, Fraction] = {branch: Fraction(0) for branch in BRANCHES}
@@ -688,6 +787,7 @@ class _Builder:
             self._registered_pools()
             self._baby_shelf_pool()
             self._nasdaq_pool()
+            self._authorized_pool()
             self._route_plans()
             if not any(plan.status in ACTIVE_ROUTE_STATUSES for plan in self.route_plans):
                 # Every path is ineligible or unresolved: the contract refuses a
@@ -705,6 +805,17 @@ class _Builder:
         routes = self._routes()
         aggregate = self._aggregate(pessimistic, optimistic, ceiling, active, routes, pools)
         witness = self._witness(pessimistic, active)
+        binding = tuple(sorted(pessimistic.binding)) if pessimistic.determined and active else ()
+        if self.unmodelled_consumption:
+            # SPEC_C2B §2.3: a fixed equity line, registered direct or PIPE may draw
+            # on pools this adapter models only for takedowns and ATM programmes, so
+            # the aggregate is a named unknown and no witness is offered.
+            aggregate = self._unmodelled_bound(aggregate, ceiling, pools)
+            witness = None
+            binding = ()
+            # The residual optimum is undetermined, so no pool may claim binding or
+            # slack: every pool keeps its bound and reports unknown (C2b audit).
+            pools = self._constraints(pessimistic, ())
         unknown_constraints = tuple(sorted(pool.constraint_id for pool in pools if pool.bound.status != "known"))
         inputs = self._inputs(pessimistic, optimistic, ceiling, routes, pools)
         receipt = CalculationReceipt.build(
@@ -722,7 +833,7 @@ class _Builder:
             aggregate_bound=aggregate,
             receipt=receipt,
             shared_pools=pools,
-            binding_constraints=tuple(sorted(pessimistic.binding)) if pessimistic.determined and active else (),
+            binding_constraints=binding,
             unknown_constraints=unknown_constraints,
             mutually_exclusive=self.exclusive_groups,
             feasible_witness=witness,
@@ -1759,21 +1870,26 @@ class _Builder:
         """§2.1/§2.5: whether the solve branches, on which routes, and why.
 
         Price branching needs path pricing, an ACTIVE at-the-market route that
-        consumes the Nasdaq share pool, and a window whose low differs from its
-        high.  Programme-usage branching (§2.3) is independent of price.
+        consumes the Nasdaq share pool or the authorized-unreserved share pool,
+        and a window whose low differs from its high.  Programme-usage branching
+        (§2.3) is independent of price.  With no authorized pool the route set is
+        unchanged (SPEC_C2C_A §3.3).
         """
         assert self.price_view is not None
         view = self.price_view
         reasons: list[str] = []
         price_routes: tuple[str, ...] = ()
         if view.kind == "path" and not view.uncovered and view.low != view.high:
-            pool_id = f"nasdaq_20pct:{self.sale_iso}"
+            pool_ids = {f"nasdaq_20pct:{self.sale_iso}"}
+            authorized_id = f"authorized_unreserved:{self.sale_iso}"
+            if any(pool.pool_id == authorized_id for pool in self.pools):
+                pool_ids.add(authorized_id)
             price_routes = tuple(sorted(
                 plan.route_id
                 for plan in self.route_plans
                 if plan.route_kind == "at_the_market"
                 and plan.status in ACTIVE_ROUTE_STATUSES
-                and pool_id in plan.consumes
+                and pool_ids.intersection(plan.consumes)
             ))
             if price_routes:
                 reasons.append("price_path")
@@ -2021,6 +2137,339 @@ class _Builder:
         if route_coefficients:
             self.nasdaq_inputs["route_coefficients"] = [list(row) for row in route_coefficients]
 
+    # -- §8b the authorized-unreserved share pool (C2c-A) ---
+
+    def _authorized_coefficient(
+        self, shared_by: tuple[str, ...]
+    ) -> tuple[Fraction, tuple[tuple[str, str, str], ...]]:
+        """SPEC_C2C_A §3: the shares-per-dollar coefficient of the charter pool.
+
+        Every share-issuing route draws authorized capital at exactly the price
+        the Rule 5635(d) pool charges it: ``1/p_start`` for a takedown already
+        scheduled at the horizon start, and ``1/low`` / ``1/high`` for an
+        at-the-market programme whose sale dates inside the window are not known.
+        Fixed pricing emits no route rows, so the kernel input is unchanged.  An
+        uncovered price path has no price in effect at all, so the coefficient is
+        the C1 placeholder and there are no route rows (§3.1).
+        """
+        assert self.price_view is not None
+        view = self.price_view
+        if view.uncovered:
+            return self._placeholder_coefficient(), ()
+        assert view.p_start is not None
+        coefficient = Fraction(1) / view.p_start
+        if self.scenario.price.kind != "path":
+            return coefficient, ()
+        assert view.low is not None and view.high is not None
+        atm_routes = tuple(
+            sorted(route_id for route_id in shared_by if route_id.startswith("at_the_market:"))
+        )
+        return coefficient, tuple(
+            (route_id, branch, _fraction_text(Fraction(1) / window_price))
+            for route_id in atm_routes
+            for branch, window_price in (("pessimistic", view.low), ("optimistic", view.high))
+        )
+
+    def _authorized_split_note(self, instant: str | None) -> str | None:
+        """SPEC_C2C_A §5 (A19): a split effective after the count instant.
+
+        Returns the bound NOTE ``split_since_instant_unscaled:share_basis`` and
+        never a factor.  A charter's authorized capital need not move in
+        proportion to the outstanding count, so no authorized, issued, reserved,
+        headroom or ceiling number is multiplied or divided here: the answer
+        becomes unknown instead.  The source is a ``selected`` share-basis result,
+        which is a different record family from the one the C2c-P selector reads.
+
+        Fail closed: an action that is recorded but cannot be placed in time --
+        any kind other than ``none`` (a missing kind included) with no readable
+        effective date -- returns the note
+        ``corporate_action_undated_unscaled:share_basis``, because it may have
+        taken effect after the instant; a dated action with no kind is placed
+        by its date like a split.  Only ``kind: none`` (what
+        ``CorporateActionBasis`` always serializes for "no action") or an absent
+        action is read as "no action".
+        """
+        count_day = _day(instant)
+        cutoff_day = _day(self.state.request.as_of[:10])
+        if count_day is None or cutoff_day is None:
+            return None
+        for observation in self.read.share_basis_results:  # type: ignore[union-attr]
+            body = observation.body
+            if _text(body.get("status")) != "selected":
+                continue
+            action = body.get("corporate_action")
+            if not isinstance(action, Mapping):
+                continue
+            kind = _text(action.get("kind"))
+            raw_effective = action.get("effective_date")
+            if kind == "none":
+                continue
+            effective = _day(raw_effective[:10]) if isinstance(raw_effective, str) else None
+            if effective is None:
+                return "corporate_action_undated_unscaled:share_basis"
+            if count_day < effective <= cutoff_day:
+                return "split_since_instant_unscaled:share_basis"
+        return None
+
+    def _authorized_pool(self) -> None:
+        """SPEC_C2C_A §2: authorized common shares neither issued nor reserved.
+
+        Charter capital is ONE more stock constraint that every share-issuing
+        route draws on (masterplan L84), so -- unlike the Rule 5635(d) pool --
+        there is no assumption gate: authorized capital limits a listed and an
+        unlisted issuance alike.  The numbers come from the C2c-P selector at ONE
+        then-known instant, are never combined across instants, and are never
+        decremented a second time for issuance the selector already reports as a
+        condition (L98).  A split factor is never applied (L102 / A19).  Absent
+        authorized-capital records produce NOTHING here -- no pool, no unknown, no
+        condition, no ``inputs`` key -- because the S0 lane owns the "authorized
+        headroom not evaluated" disclosure.
+        """
+        assert self.price_view is not None
+        view = self.price_view
+        active_paths = [path for path in self.paths if path.classification != "ineligible"]
+        if not active_paths:
+            return
+        shared_by = tuple(
+            sorted({route_id for path in active_paths for route_id in self._route_ids(path)})
+        )
+        pool_id = f"authorized_unreserved:{self.sale_iso}"
+        records = [
+            observation.body
+            for observation in self.read.share_counts  # type: ignore[union-attr]
+            if _text(_nested(observation.body, "metric", "kind")) in AUTHORIZED_CAPITAL_KINDS
+        ]
+        if not records:
+            return
+        coefficient, route_coefficients = self._authorized_coefficient(shared_by)
+        try:
+            # §2.3: ``actions=None`` is deliberate in this lane.  Capacity reads
+            # neither the corporate_actions nor the events family, so the selector
+            # answers with the honest condition
+            # ``corporate_actions_unobserved_since:<instant>`` instead of a clean
+            # "no split took effect" finding.  A selector condition is copied
+            # through as a condition and is never turned into a number.
+            headroom = headroom_from_records(
+                records,
+                None,
+                issuer_id=self.state.request.issuer_id,
+                as_of=self.state.request.as_of,
+            )
+        except (AuthorizedSharesInputError, ArithmeticError, TypeError, ValueError) as exc:
+            # A value the selector's exact decimal context cannot hold (an
+            # ``Inexact`` or ``InvalidOperation`` -- both ArithmeticError) or a
+            # malformed field it cannot read is the same finding as a refused
+            # record: the records could not be judged.  No exception escapes.
+            self.blockers.append("authorized_share_records_invalid")
+            self._undecided_pool(
+                pool_id,
+                "reserved_authorized_shares",
+                "stock",
+                "shares",
+                f"the authorized-capital share records could not be judged: {type(exc).__name__}",
+                shared_by,
+                coefficient=coefficient,
+                share_basis="authorized_unissued",
+            )
+            self.authorized_inputs = {
+                "pool": pool_id,
+                "reason": "authorized_share_records_invalid",
+                "shared_by": list(shared_by),
+            }
+            return
+        status = headroom.status
+        instant = headroom.instant
+        # §5 (A19): a filed split effective after the count instant and on or
+        # before the cutoff makes the answer unknown.  It is never rescaled.
+        split_note = self._authorized_split_note(instant)
+        if split_note is not None and status in ("known", "shortfall", "ceiling_only"):
+            status = "unknown"
+        # §2.4: the selector publishes canonical decimal text; anything it did not
+        # publish stays unpublished rather than becoming a guessed number.
+        signed = _exact_decimal(headroom.headroom) if status in ("known", "shortfall") else None
+        if status in ("known", "shortfall") and signed is None:
+            status = "unknown"
+        ceiling_value = _exact_decimal(headroom.ceiling)
+        if status == "ceiling_only" and ceiling_value is None:
+            status = "unknown"
+        applicability = (
+            None
+            if instant is None
+            else "authorized common shares neither issued nor reserved for future issuance "
+            f"at {instant}"
+        )
+        # §2.9: every selector condition verbatim, plus the class scope this lane
+        # does not verify -- a dual-class issuer may report authorized capital
+        # across classes, and nothing here proves the count is common-only.
+        conditions = _conditions(
+            headroom.conditions,
+            (
+                "authorized_share_class_scope_not_verified:"
+                f"{headroom.security_class_id or 'unscoped'}",
+            ),
+        )
+        for path in active_paths:
+            self.path_conditions[path.path_id].update(conditions)
+            if status == "shortfall" and instant is not None:
+                self.path_conditions[path.path_id].add(
+                    f"reservation_exceeds_unissued_authorized:{instant}"
+                )
+        # §2.8: evidence for the records the selector actually used.
+        used_ids = set(headroom.observation_ids)
+        used = [
+            body for body in records if str(body.get("observation_id") or "") in used_ids
+        ]
+        refs = _unique_refs([ref for body in used for ref in self._float_evidence(body)])
+        latest = max(
+            (moment for moment in (_available_instant(body) for body in used) if moment is not None),
+            default=None,
+        )
+        unknown_id = f"authorized_share_headroom:{self.sale_iso}"
+        resolving_fact = "authorized, issued and reserved common shares at one then-known instant"
+        if status == "contradicted":
+            self.blockers.append(
+                f"authorized_share_facts_contradicted:{instant or 'no_instant'}"
+            )
+        if status == "ceiling_only":
+            self.unknowns.append(
+                _unknown(
+                    unknown_id,
+                    "reserved common shares are not reported at the instant, so only the "
+                    "authorized-less-issued ceiling is known",
+                    resolving_fact,
+                    shared_by,
+                )
+            )
+        elif status == "unknown":
+            self.unknowns.append(
+                _unknown(
+                    unknown_id,
+                    "the authorized, issued or reserved common-share facts are missing, stale or "
+                    "unscaled by a split after the instant, so the authorized-unreserved headroom "
+                    "is not known",
+                    resolving_fact,
+                    shared_by,
+                )
+            )
+        bound: Quantity | None = None
+        note: str | None = None
+        substitute: Fraction | None = None
+        reason: str | None = None
+        if view.uncovered:
+            # §3.1: the headroom is a SHARE count, but with no price in effect at
+            # the horizon start it cannot be bound to a dollar amount on any
+            # route.  Unknown, never zero -- and never a dollar ceiling priced off
+            # a price that is not in effect, so no substitute is offered either.
+            reason = "price_path_uncovered"
+            note = (
+                "the price path carries no price in effect on or before the horizon start "
+                f"{self.scenario.horizon_start}, so the authorized-unreserved share headroom "
+                "cannot be bound to a dollar amount on any route"
+            )
+        elif status in ("known", "shortfall"):
+            if not refs:
+                # The Constraint contract requires evidence for a known bound.
+                self.blockers.append("authorized_share_evidence_missing")
+                note = "the authorized-unreserved share headroom retains no evidence reference"
+            else:
+                assert signed is not None
+                bound = Quantity.known(
+                    _decimal_text(Decimal(0) if status == "shortfall" else signed),
+                    "shares",
+                    share_basis="authorized_unissued",
+                    applicability=applicability,
+                    provenance=Provenance(
+                        "share_count_observations",
+                        available_at=None if latest is None else _iso(latest),
+                        evidence=refs,
+                    ),
+                )
+        elif status == "ceiling_only":
+            assert ceiling_value is not None
+            substitute = Fraction(ceiling_value)
+            note = (
+                f"reserved common shares are not reported at {instant}, so only the "
+                "authorized-less-issued ceiling is known"
+            )
+        elif status == "contradicted":
+            note = (
+                "the authorized-capital share facts contradict one another at "
+                f"{instant or 'no instant'}"
+            )
+        else:
+            note = split_note or (
+                "the authorized-unreserved common-share headroom is not then-known at "
+                f"{instant or 'any instant'}"
+            )
+        if status == "ceiling_only" and not view.uncovered:
+            # §2.5 / §8: ``_undecided_pool`` forces ``substitute=None``, so the
+            # ceiling would be silently lost.  Build the pool directly; the
+            # substitute feeds the ceiling solve only, never the pessimistic or
+            # the optimistic one.
+            assert note is not None
+            self.pools.append(
+                _Pool(
+                    pool_id=pool_id,
+                    kind="reserved_authorized_shares",
+                    stock_or_flow="stock",
+                    bound=_unknown_bound("shares", note, "authorized_unissued"),
+                    shared_by=shared_by,
+                    applicability=applicability,
+                    evidence=refs,
+                    window_start=None,
+                    window_end=None,
+                    coefficient=coefficient,
+                    substitute=substitute,
+                    route_coefficients=route_coefficients,
+                )
+            )
+        elif bound is not None:
+            self.pools.append(
+                _Pool(
+                    pool_id=pool_id,
+                    kind="reserved_authorized_shares",
+                    stock_or_flow="stock",
+                    bound=bound,
+                    shared_by=shared_by,
+                    applicability=applicability,
+                    evidence=refs,
+                    window_start=None,
+                    window_end=None,
+                    coefficient=coefficient,
+                    substitute=None,
+                    route_coefficients=route_coefficients,
+                )
+            )
+        else:
+            assert note is not None
+            self._undecided_pool(
+                pool_id,
+                "reserved_authorized_shares",
+                "stock",
+                "shares",
+                note,
+                shared_by,
+                applicability=applicability,
+                evidence=refs,
+                coefficient=coefficient,
+                share_basis="authorized_unissued",
+            )
+        self.authorized_inputs = {
+            "pool": pool_id,
+            "status": headroom.status,
+            "headroom": headroom.as_record(),
+            "coefficient": _fraction_text(coefficient),
+            "price": self._price_record(),
+            "ceiling": None if ceiling_value is None else _decimal_text(ceiling_value),
+            "shared_by": list(shared_by),
+        }
+        if route_coefficients:
+            self.authorized_inputs["route_coefficients"] = [
+                list(row) for row in route_coefficients
+            ]
+        if reason is not None:
+            self.authorized_inputs["reason"] = reason
+
     # -- §4 route conditions from consulted rule text ----------------------
 
     def _rule_text(self, rule_ids: Any) -> tuple[list[str], list[Unknown], list[str]]:
@@ -2197,16 +2646,55 @@ class _Builder:
             )
         return price
 
+    def _non_capacity_action(self, action: ActionSelection) -> _NonCapacityAction:
+        """SPEC_C2B §2.2: name the owner of an action on a route not of this envelope.
+
+        ``settlement`` is recorded verbatim -- the C2a cash-only rule governs
+        envelope routes alone -- and ``conditions_assumed_met`` is recorded sorted
+        but never checked against a route's conditions, because capacity holds none
+        for a route it does not carry.  ``fixed`` is ``quantity is not None``: the
+        status of the quantity is not inspected, and its value is never read.
+        """
+        if action.action in CAPACITY_OWNED_ROUTE_KINDS:
+            raise CapacityInputError(
+                f"scenario action on {action.route_id}: capacity owns {action.action} routes "
+                "and the envelope has no such route"
+            )
+        # ``ActionSelection`` admits exactly ROUTE_KINDS, which the two tables tile.
+        owner = NON_CAPACITY_OWNERS[action.action]
+        return _NonCapacityAction(
+            route_id=action.route_id,
+            action=action.action,
+            settlement=action.settlement,
+            owner=owner,
+            fixed=action.quantity is not None,
+            conditions_assumed_met=tuple(sorted(action.conditions_assumed_met)),
+        )
+
     def _apply_actions(self) -> None:
         """Asserted actions become a FIXED use, never a cap on the route."""
         plans = {plan.route_id: plan for plan in self.route_plans}
         views: dict[str, _ActionView] = {}
+        # SPEC_C2B §2.1: partition on the envelope's own route ids BEFORE any C2a
+        # validation.  Envelope-route actions keep the merged C2a path exactly; the
+        # others never reach a route, a pool, a solve, the witness or the aggregate.
+        envelope_actions: list[ActionSelection] = []
+        outside: list[_NonCapacityAction] = []
         for action in sorted(self.scenario.actions, key=lambda item: item.route_id):
-            plan = plans.get(action.route_id)
-            if plan is None:
-                raise CapacityInputError(
-                    f"action names {action.route_id!r}, which is not a route of this envelope"
-                )
+            if action.route_id in plans:
+                envelope_actions.append(action)
+            else:
+                outside.append(self._non_capacity_action(action))
+        self.non_capacity_actions = tuple(outside)
+        self.unmodelled_consumption = tuple(
+            sorted(
+                item.route_id
+                for item in outside
+                if item.fixed and item.owner == CAPACITY_UNMODELLED_OWNER
+            )
+        )
+        for action in envelope_actions:
+            plan = plans[action.route_id]
             if action.action != plan.route_kind:
                 raise CapacityInputError(
                     f"action on {action.route_id!r} declares {action.action!r}, but the route is "
@@ -2343,6 +2831,8 @@ class _Builder:
             if current is not None:
                 route_limits[route_id] = current - view.usd[branch]
         pool_bounds: dict[str, Fraction | None] = {}
+        deductions: dict[str, Fraction] = {}
+        over_ceiling: set[str] = set()
         for pool in sorted(self.pools, key=lambda item: item.pool_id):
             bound = self._branch_pool_bound(pool, branch)
             deduction = Fraction(0)
@@ -2353,9 +2843,15 @@ class _Builder:
                 deduction += pool.coefficient_for(route_id, branch) * view.usd[branch]
             if bound is not None and deduction:
                 bound = bound - deduction
+            elif bound is None and pool.substitute is not None and deduction > pool.substitute:
+                # The substitute is a ceiling on the unknown bound, so applied
+                # actions above it are provably infeasible, never clamped to zero.
+                over_ceiling.add(pool.pool_id)
             pool_bounds[pool.pool_id] = bound
+            deductions[pool.pool_id] = deduction
         self.residual_routes[branch] = route_limits
         self.residual_pools[branch] = pool_bounds
+        self.pool_deductions[branch] = deductions
         self.fixed_totals[branch] = sum(
             (
                 view.usd[branch]
@@ -2368,7 +2864,7 @@ class _Builder:
             identifier
             for identifier, value in (*route_limits.items(), *pool_bounds.items())
             if value is not None and value < 0
-        }
+        } | over_ceiling
 
     def _branch_route_limit(self, plan: _RoutePlan, branch: str) -> Fraction | None:
         """The route's own limit in ``branch``; ``None`` when it is not known."""
@@ -2419,7 +2915,12 @@ class _Builder:
                 continue
             bound = self.residual_pools[branch].get(pool.pool_id)
             if bound is None:
-                bound = pool.substitute if substitutes and pool.substitute is not None else None
+                if substitutes and pool.substitute is not None:
+                    # The fixed totals already carry the applied actions, so the
+                    # substitute is what is left after them, never the whole
+                    # ceiling a second time.
+                    deduction = self.pool_deductions[branch].get(pool.pool_id, Fraction(0))
+                    bound = max(pool.substitute - deduction, Fraction(0))
             else:
                 bound = max(bound, Fraction(0))
             out.append(JointPool(pool.pool_id, uses, bound))
@@ -2525,11 +3026,7 @@ class _Builder:
             return Quantity(unit="usd", status="contradicted", note=self.contradiction)
         fixed_pessimistic = self.fixed_totals["pessimistic"]
         fixed_optimistic = self.fixed_totals["optimistic"]
-        ceiling_raw = (
-            ceiling.value if ceiling.determined else ceiling.ceiling_when_unknowns_relaxed
-        )
-        ceiling_value = None if ceiling_raw is None else fixed_optimistic + ceiling_raw
-        ceiling_text = "unbounded" if ceiling_value is None else _floor_text(ceiling_value)
+        ceiling_text = self._ceiling_text(ceiling)
         # §2.6: an asserted action that fails in one branch leaves the answer
         # open, even when the two branch optima happen to coincide.
         agree = not self.branch_infeasible_on_one and (
@@ -2572,6 +3069,56 @@ class _Builder:
             self._note_price_schedule()
         return _unknown_bound(
             "usd", f"floor {floor_text} / ceiling {ceiling_text} under stated unknowns"
+        )
+
+    def _ceiling_text(self, ceiling: JointSolution) -> str:
+        """§2.7: the ceiling-call text an aggregate note quotes (``unbounded`` if none)."""
+        ceiling_raw = (
+            ceiling.value if ceiling.determined else ceiling.ceiling_when_unknowns_relaxed
+        )
+        ceiling_value = (
+            None if ceiling_raw is None else self.fixed_totals["optimistic"] + ceiling_raw
+        )
+        return "unbounded" if ceiling_value is None else _floor_text(ceiling_value)
+
+    def _unmodelled_bound(
+        self, aggregate: Quantity, ceiling: JointSolution, pools: tuple[Constraint, ...]
+    ) -> Quantity:
+        """SPEC_C2B §2.3: name what a fixed action on an unmodelled route may consume.
+
+        A contradicted C2a aggregate stays contradicted -- the modelled actions
+        already exceed a pool and more consumption cannot cure that -- while the
+        Unknown is still added.  Otherwise the aggregate is unknown, quoting the C2a
+        ceiling: never a number, and never a floor this adapter cannot stand behind.
+        """
+        affects = tuple(sorted(pool.constraint_id for pool in pools))
+        kinds = {item.route_id: item.action for item in self.non_capacity_actions}
+        for route_id in self.unmodelled_consumption:
+            action = kinds[route_id]
+            unknown_id = f"action_route_not_modelled:{route_id}"
+            if len(unknown_id) > 200:
+                # A lawful route id of 175-200 characters would overflow the
+                # identifier limit; the description still names the full route.
+                digest = hashlib.sha256(route_id.encode("utf-8")).hexdigest()[:16]
+                unknown_id = f"action_route_not_modelled:{digest}"
+            self.unknowns.append(
+                _unknown(
+                    unknown_id,
+                    f"{action} on {route_id} may draw on shared registration and "
+                    "exchange-approval pools that capacity models only for shelf takedowns "
+                    "and at-the-market programmes",
+                    f"the registration path, pricing date and share or dollar consumption of "
+                    f"{route_id} against each shared pool",
+                    affects,
+                )
+            )
+        if aggregate.status == "contradicted":
+            return aggregate
+        ceiling_text = self._ceiling_text(ceiling)
+        if aggregate.status == "known" and aggregate.value is not None:
+            ceiling_text = aggregate.value
+        return _unknown_bound(
+            "usd", f"floor not evaluated / ceiling {ceiling_text} under stated unknowns"
         )
 
     @staticmethod
@@ -2677,7 +3224,7 @@ class _Builder:
         if optimistic is not None:
             kernel_record["optimistic"] = sha256_of(optimistic.as_record())
         return {
-            "adapter": "capital_structure.capacity.c2_adapter.v1",
+            "adapter": "capital_structure.capacity.c2_adapter.v2",
             "implementation": IMPLEMENTATION,
             "state_id": self.state.state_id,
             "scenario_id": self.scenario.scenario_id,
@@ -2713,10 +3260,17 @@ class _Builder:
                 for path_id in sorted(self.programme_usage_inputs)
             },
             "actions_applied": self._actions_record(),
+            "non_capacity_actions": [item.as_record() for item in self.non_capacity_actions],
+            **(
+                {"unmodelled_consumption": list(self.unmodelled_consumption)}
+                if self.unmodelled_consumption
+                else {}
+            ),
             "remaining_capacity": self._remaining_record(),
             "registration_paths": path_records,
             "baby_shelf": self.baby_shelf_inputs,
             "nasdaq": self.nasdaq_inputs,
+            **({"authorized": self.authorized_inputs} if self.authorized_inputs is not None else {}),
             "routes": [route.as_record() for route in routes],
             "pools": [pool.as_record() for pool in pools],
             "ignored_schemas": list(self.read.ignored_schemas),
@@ -2794,6 +3348,8 @@ __all__ = [
     "AUTOMATIC_SHELF_FORMS",
     "BABY_SHELF_RULES",
     "BRANCHES",
+    "CAPACITY_OWNED_ROUTE_KINDS",
+    "CAPACITY_UNMODELLED_OWNER",
     "CapacityEvaluation",
     "CapacityInputError",
     "CapacityRuleTextUnavailable",
@@ -2802,6 +3358,7 @@ __all__ = [
     "IMPLEMENTATION",
     "NASDAQ_OFFERING_ASSUMPTIONS",
     "NASDAQ_RULE_ID",
+    "NON_CAPACITY_OWNERS",
     "REGISTRATION_PATH_SCHEMA",
     "REFERENCE_PACK_MANIFEST_ID",
     "ROUTE_EXCLUSIVITY_KEY",

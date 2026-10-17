@@ -199,7 +199,8 @@ def value_term(name: str, value: str | None, *, instrument_id: str = INST,
 
 
 def test_s1_1_state_contract_version_is_the_next_minor():
-    assert c.STATE_CONTRACT_VERSION == "capital-structure-state-contracts/2.2.0"
+    # X0 (transaction observations) landed first as 2.2.0, so I2 is 2.3.0.
+    assert c.STATE_CONTRACT_VERSION == "capital-structure-state-contracts/2.3.0"
 
 
 def test_s1_2_physical_settlement_is_appended_last():

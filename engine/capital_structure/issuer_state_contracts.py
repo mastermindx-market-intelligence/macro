@@ -49,7 +49,9 @@ from .projection import (
 # ---------------------------------------------------------------------------
 
 STATE_SCHEMA = "capital_structure.state.v2"
-STATE_CONTRACT_VERSION = "capital-structure-state-contracts/2.2.0"
+#: 2.1.0 = I1 economic terms, 2.2.0 = X0 transaction observations, 2.3.0 = I2
+#: variable/reset/contingent terms (SPEC_I2 §1); every minor is purely additive.
+STATE_CONTRACT_VERSION = "capital-structure-state-contracts/2.3.0"
 STATE_SCHEMA_FILE = "capital_structure_state.v2.schema.json"
 STATE_SCHEMA_PATH = Path(__file__).resolve().parents[2] / "contracts" / STATE_SCHEMA_FILE
 
@@ -94,6 +96,14 @@ COMPATIBLE_INPUT_SCHEMAS: dict[str, tuple[str, ...]] = {
     # families only; CapitalInputs does not carry them yet (S0 owns that).
     "instrument_economic_terms": ("capital_structure.instrument_economic_term.v1",),
     "instrument_term_bindings": ("capital_structure.instrument_term_binding.v1",),
+    # X0 (SPEC_X0 §1): what the issuer ALREADY did — priced/closed/exercised/
+    # converted/retired events, their bindings to a registration path or an
+    # instrument, and the filing-coverage attestations that make a usage history
+    # complete.  Admitted as input families only; CapitalInputs does not carry
+    # them (S0 owns that).
+    "transaction_observations": ("capital_structure.transaction_observation.v1",),
+    "transaction_bindings": ("capital_structure.transaction_binding.v1",),
+    "transaction_filing_coverage": ("capital_structure.transaction_filing_coverage.v1",),
     "share_count_observations": (
         "capital_structure.share_count_observation.v1",
         "capital_structure.share_count_observation.v2",
@@ -367,6 +377,42 @@ STRUCTURE_KINDS = (
     "anti_dilution",
     "accrual",
 )
+
+#: What one retained-filing transaction observation may say (C0 2.2.0, X0).
+#: ``outstanding_balance`` is a stock, every other kind is a flow; the split is
+#: what keeps an already-issued security from being counted again as future
+#: issuance (A27, review focus 2).
+TRANSACTION_KINDS = (
+    "registered_takedown",
+    "atm_sales",
+    "warrant_exercise",
+    "conversion",
+    "redemption",
+    "repurchase",
+    "cancellation",
+    "resale",
+    "outstanding_balance",
+    "instrument_issuance",
+)
+#: How a figure is reported.  ``point_in_time`` is reserved for a stock
+#: (``outstanding_balance``): a cumulative figure and the individual
+#: transactions explaining it must never both decrement (A15, L98).
+REPORTING_BASES = ("individual", "cumulative", "point_in_time")
+#: Only these origins may state a transaction: model prose never mints one
+#: (A09, L120).  ``canonical_extraction`` is the sealed X0b procedure,
+#: ``adjudicated_gold`` an owner decision over retained bytes.
+TRANSACTION_ORIGINS = ("canonical_extraction", "adjudicated_gold")
+#: A binding joins an observation to a target.  ``canonical_join`` is permitted
+#: only on an exact unique SEC file number for a registration path; an
+#: instrument binding is an owner adjudication and nothing else.
+BINDING_ORIGINS = ("canonical_join", "adjudicated_gold")
+BINDING_TARGET_KINDS = ("registration_path", "instrument")
+#: Which usage question a transaction answers.  ``resale`` is its own class
+#: because a resale by an existing holder normally does not itself fund the
+#: company (A23, L98) and never enters shelf or programme usage.
+USAGE_CLASSES = ("shelf_takedown", "programme_sale", "resale", "not_applicable")
+#: Historical cash facts, distinct from a scenario's C0 ``CashEffect``.
+REALIZED_CASH_KINDS = ("proceeds", "repayment", "no_cash")
 
 #: Property names no state record may carry (acceptance row A48 plus the
 #: projection's own public-safety list).  ``fully_diluted`` is a basis the
@@ -2745,6 +2791,8 @@ __all__ = [
     "AntiDilution",
     "ActionSelection",
     "Assumption",
+    "BINDING_ORIGINS",
+    "BINDING_TARGET_KINDS",
     "COMPATIBLE_INPUT_SCHEMAS",
     "CalculationReceipt",
     "CandidateBundle",
@@ -2798,7 +2846,9 @@ __all__ = [
     "PriceFormula",
     "Provenance",
     "Quantity",
+    "REALIZED_CASH_KINDS",
     "RECORD_SCHEMAS",
+    "REPORTING_BASES",
     "REQUIRED_FUNDING_ASSUMPTIONS",
     "RESET_RULES",
     "ROUNDING_MODES",
@@ -2826,6 +2876,9 @@ __all__ = [
     "StateRequest",
     "SupplyEnvelope",
     "TERM_FACT_ORIGINS",
+    "TRANSACTION_KINDS",
+    "TRANSACTION_ORIGINS",
+    "USAGE_CLASSES",
     "Unknown",
     "UnknownResolution",
     "WitnessAllocation",

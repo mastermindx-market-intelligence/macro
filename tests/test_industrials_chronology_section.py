@@ -15,6 +15,9 @@ from __future__ import annotations
 
 from copy import deepcopy
 
+import pytest
+
+import engine.company_intelligence.industrials_chronology_section as chronology_module
 from engine.company_intelligence import financial_dossier
 from engine.company_intelligence.industrials_chronology_section import (
     chronology_section,
@@ -25,6 +28,10 @@ from tests.test_industrials_edition_record import _XFAIL_BLOCKS
 
 def test_chronology_stays_held_with_the_six_blocks() -> None:
     held = chronology_section(case("preliminary_final"), tolerance_days=3)
+    assert set(held) == {
+        "status", "blocks", "presented_fiscal_label", "stated_ends", "hold",
+        "documents",
+    }
     assert held["status"] == "held"
     assert isinstance(held["blocks"], frozenset)
     assert held["blocks"] == _XFAIL_BLOCKS
@@ -54,9 +61,24 @@ def test_labeled_case_puts_fy2026_q2_on_payloads() -> None:
     assert len(stated_ends) == 1
 
 
+def test_chronology_refuses_negative_tolerance_days() -> None:
+    """``tolerance_days`` reaches ``enroll_stated_period`` verbatim: -1 raises.
+
+    ``check_tolerance_days`` runs first inside ``enroll_stated_period``
+    (engine/company_intelligence/industrials_period_enrollment.py:55;
+    ValueError text at engine/company_intelligence/industrials_fiscal.py:24),
+    so ``chronology_section`` must surface it before building any dict
+    (mutant mE2 hard-codes 0).
+    """
+    with pytest.raises(ValueError, match="tolerance_days must be >= 0"):
+        chronology_section(case("preliminary_final"), tolerance_days=-1)
+
+
 def test_chronology_does_not_define_select_editions() -> None:
     assert getattr(financial_dossier, "select_editions", None) is None
     assert getattr(financial_dossier, "assess_dossier_comparison", None) is None
+    assert getattr(chronology_module, "select_editions", None) is None
+    assert getattr(chronology_module, "assess_dossier_comparison", None) is None
 
 
 def _one_release(*, cells: list[dict]) -> dict:

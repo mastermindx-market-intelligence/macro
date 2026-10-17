@@ -187,7 +187,14 @@ def load_master_inputs(data_dir: Path | None = None) -> MasterInputs | None:
 
     records = []
     for r in aliases.to_dict("records"):
+        if r.get("alias_kind") == "occ_root":
+            records.append(r)  # preserve the exact forward relation and its clocks
+            continue
         records.append({
+            "alias_kind": r.get("alias_kind"),
+            "attempt_id": r.get("attempt_id"),
+            "alias_family_id": r.get("alias_family_id"),
+            "alias_revision_id": r.get("alias_revision_id"),
             "vendor": str(r["vendor"]),
             "vendor_symbol": str(r["vendor_symbol"]),
             "security_id": str(r["security_id"]),

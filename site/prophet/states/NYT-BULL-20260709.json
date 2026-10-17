@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "NYT-BULL-20260709",
-  "asof": "2026-10-14",
-  "phase": "at_t1",
-  "detection_phase": "at_t1",
-  "management_confidence": 36.9,
-  "raw_confidence": 40.0,
-  "delta_vs_base": -23.1,
-  "recommended_action": null,
-  "human_state": "T1 Hit \u2014 Holding",
+  "asof": "2026-10-16",
+  "phase": "between_t1_t2",
+  "detection_phase": "between_t1_t2",
+  "management_confidence": 54.9,
+  "raw_confidence": 54.7,
+  "delta_vs_base": -5.1,
+  "recommended_action": "hold",
+  "human_state": "Advancing to T2",
   "components": {
-    "validity": 35.9,
+    "validity": 100.0,
     "progress": 60.0,
-    "pace": 68.5,
-    "retention": 13.5,
-    "overlay": 59.0
+    "pace": 87.1,
+    "retention": 21.7,
+    "overlay": 38.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.468,
-    "dist_to_t1_r": 0.032,
-    "dist_to_t2_r": 1.532,
-    "horizon_pct_used": 120.0,
-    "p1": 0.9785,
-    "p2": 0.4892,
+    "dist_to_stop_r": 1.355,
+    "dist_to_t1_r": -0.855,
+    "dist_to_t2_r": 0.645,
+    "horizon_pct_used": 124.4,
+    "p1": 1.5699,
+    "p2": 0.7849,
     "p3": null,
-    "move_r": 1.468,
+    "move_r": 2.355,
     "mfe_r": 10.839,
     "mae_r": -4.823
   },
@@ -36,7 +36,7 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-08; a stale price frame carries no current action authority",
+    "recommended_action": "display \u2014 narrate, not authoritative order",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 6.720003662109377,
@@ -45,14 +45,6 @@
   "_first_trigger_ts": "2026-08-21",
   "_first_t1_ts": "2026-08-24",
   "_first_t2_ts": "2026-08-25",
-  "days_elapsed": 54,
-  "tau": 1.2,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-08",
-    "run_asof": "2026-10-14",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "days_elapsed": 56,
+  "tau": 1.2444
 }

@@ -1315,3 +1315,122 @@ def test_t04b_two_identity_bundle_withholds_only_the_early_subject() -> None:
     assert blocks[0]["period"] == "Quarter ended 2026-09-30"
     assert blocks[0]["value"] == 22
     _validate(result)
+
+
+# ---------------------------------------------------------------------------
+# W10-3 — the company card prints the two typed absences
+# ---------------------------------------------------------------------------
+
+# The pinned pair, in the pinned order. The card prints the identity row's
+# ``typed_absences`` verbatim as ``absences: [{field, reason}]``; the order pin
+# below fails if the two entries are swapped in the row.
+_TYPED_ABSENCES_COPPER = [
+    {"field": "fiscal_year_end_month", "reason": "missing_source"},
+    {"field": "listing_mic", "reason": "missing_source"},
+]
+
+
+def test_typed_absences_appear_on_the_company_card():
+    """W10-3: an identity row carrying ``typed_absences`` prints them on the
+    company card as ``absences`` (order preserved, reason ``missing_source``).
+    An identity row without the key keeps today's four-key company object
+    byte-for-byte — the card is opt-in on ``typed_absences`` and never mints a
+    limitation (the T07 copper ``limitations`` bytes must not move).
+    """
+    case = synthetic_case(
+        "copper_complete", issuer={"typed_absences": list(_TYPED_ABSENCES_COPPER)}
+    )
+    result = composition.compose_mining_research(case.query, case.bundle)
+    card = result["companies"][0]
+    # The identity bytes are unchanged: the card is widened, not rewritten.
+    assert card["name"] == "Ardent Copper Holdings"
+    assert card["cik"] == "0000000421"
+    assert card["absences"] == _TYPED_ABSENCES_COPPER
+    # Order pin: the printed order equals the identity row's order.
+    assert [absence["field"] for absence in card["absences"]] == [
+        "fiscal_year_end_month",
+        "listing_mic",
+    ]
+    _validate(result)
+
+    # The unchanged path: without the key, the company object is today's
+    # four-key object, byte-identical under ``json.dumps``.
+    plain = synthetic_case("copper_complete")
+    plain_result = composition.compose_mining_research(plain.query, plain.bundle)
+    assert "absences" not in plain_result["companies"][0]
+    assert json.dumps(plain_result["companies"]) == json.dumps(
+        [
+            {
+                "stable_subject_id": "0000000421",
+                "name": "Ardent Copper Holdings",
+                "cik": "0000000421",
+                "role": "issuer",
+            }
+        ]
+    )
+
+
+def test_typed_absences_do_not_mint_an_issuer_identity():
+    """W10-3 pin (restates W6-1, does not newly enroll): printing the two typed
+    absences on the company card mints no ``IssuerIdentity`` and enrolls no
+    ticker drawer. ``fcx_issuer`` / ``mp_issuer`` stay ``None`` (no admitted
+    fiscal-year-end or listing-MIC receipt) and ``profile_for_ticker`` stays
+    unbound for FCX/MP even after a compose whose identity row carries
+    ``typed_absences``.
+    """
+    from engine.company_intelligence.issuer_profiles import profile_for_ticker
+    from engine.company_intelligence.mining_issuer_profiles import fcx_issuer, mp_issuer
+
+    case = synthetic_case(
+        "copper_complete", issuer={"typed_absences": list(_TYPED_ABSENCES_COPPER)}
+    )
+    composition.compose_mining_research(case.query, case.bundle)
+    assert fcx_issuer() is None
+    assert mp_issuer() is None
+    assert profile_for_ticker("FCX") is None
+    assert profile_for_ticker("MP") is None
+
+
+# ---------------------------------------------------------------------------
+# W15-B — _iso_date_in returns only real calendar dates (date-window defect)
+# ---------------------------------------------------------------------------
+
+
+def test_iso_date_in_rejects_non_gregorian_windows() -> None:
+    """A YYYY-MM-DD-shaped window that is not a real date never counts.
+
+    The old isdigit-only scan accepted ``0000-00-00``, month 13, day 40 and
+    fullwidth digits, so the validity comparison could run on a non-date.
+    The first window that IS a real Gregorian date is returned instead.
+    """
+    assert composition._iso_date_in("0000-00-00") is None
+    assert composition._iso_date_in("2026-13-40") is None
+    assert composition._iso_date_in("2026-02-30") is None
+    assert composition._iso_date_in("\uff12\uff10\uff12\uff16-\uff10\uff13-\uff13\uff11") is None
+    assert composition._iso_date_in("2026-03-31") == "2026-03-31"
+    assert composition._iso_date_in("FY2026-03-31") == "2026-03-31"
+    assert composition._iso_date_in("0000-00-00 later 2027-03-31") == "2027-03-31"
+
+
+def test_placeholder_date_window_does_not_precede_validity() -> None:
+    """A placeholder window is skipped; the later real date governs the withhold.
+
+    The identity row is shaped exactly like the rows built by
+    ``test_t04b_two_identity_bundle_withholds_only_the_early_subject``
+    (name/cik/stable_subject_id/valid_from/fictional).
+    """
+    row = {
+        "name": "FCX Synthetic",
+        "cik": "0000000421",
+        "stable_subject_id": "subject:fcx",
+        "valid_from": "2026-01-01",
+        "fictional": True,
+    }
+    # Old bug: "0000-00-00" sorted before "2026-01-01" and withheld the packet.
+    assert composition._period_precedes_issuer_validity(
+        "0000-00-00 later 2027-03-31", "subject:fcx", [row]
+    ) is False
+    # Control: a genuine pre-validity date still fires the real withhold.
+    assert composition._period_precedes_issuer_validity(
+        "2025-06-30", "subject:fcx", [row]
+    ) is True
