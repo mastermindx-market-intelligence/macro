@@ -282,6 +282,23 @@ class TestBehaviouralMatrix:
         assert v.action == "hold", v
         assert v.check == "chart_law", v
 
+    def test_chart_law_does_not_promise_backfill_without_a_specification(self):
+        from engine.marketing.approval_desk import check_chart_law
+
+        src = dict(_CLEAN_SOURCE)
+        src.pop("media_url")
+        src["media_repair"] = {
+            "state": "no_specification",
+            "reason": "missing_chart_specification",
+            "repair_process": "content_studio",
+            "repairable": False,
+        }
+        c = check_chart_law(_item(source=src, media=[]), media_enabled=True)
+        assert c.status == "hold"
+        assert "no chart specification" in c.evidence
+        assert "Content Studio" in c.evidence
+        assert "media backfill lane" not in c.evidence
+
     def test_chart_law_is_inert_when_media_is_globally_off(self):
         """With publish.media_enabled off NOTHING can resolve a URL, so holding
         on one would wedge every ticker post instead of one."""
