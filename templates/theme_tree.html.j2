@@ -160,6 +160,22 @@ html[data-theme="light"] .tt-strip-tick{background:var(--text);opacity:.6}
 @media (prefers-reduced-motion: reduce){
   .tt-cat,.tt-cat summary .caret,.tt-theme summary .tcaret{transition:none}
 }
+
+/* ── U3 — ticker lookup (search field + result panel) ── */
+.tt-lookup{display:flex;align-items:center;gap:10px;margin:14px 0 8px;padding:10px 14px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel);flex-wrap:wrap}
+html[data-theme="dark"] .tt-lookup{box-shadow:var(--card-shadow)}
+.tt-lookup-label{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap}
+.tt-lookup-input{flex:1 1 180px;min-width:160px;background:transparent;border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:8px 12px;font-size:14px;color:var(--text);font-family:var(--font-ui);outline:none}
+.tt-lookup-input::placeholder{color:var(--muted)}
+.tt-lookup-input:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-color:var(--link)}
+.tt-lookup-hint{font-size:12px;color:var(--muted);flex-basis:100%}
+.tt-lookup-empty{font-size:13px;color:var(--muted);margin:6px 0 0}
+.tt-ticker-result .tt-detail-paths li{font-size:13px;color:var(--text)}
+.tt-ticker-micro,.tt-ticker-abst,.tt-ticker-empty-public,.tt-ticker-not-found{margin:10px 0 0;font-size:12.5px;color:var(--muted);line-height:1.5}
+.tt-ticker-not-found{color:var(--ink-warn,var(--warn));font-weight:700}
+.tt-ticker-empty-public{font-style:italic}
+.tt-ticker-abst li{margin:2px 0}
+.tt-detail-sec + .tt-detail-sec{margin-top:10px}
 </style>
 </head>
 <body>
@@ -206,6 +222,21 @@ html[data-theme="light"] .tt-strip-tick{background:var(--text);opacity:.6}
     <span class="l-zh"><b>{{ tree.summary.missing_count }} 项无法显示</b>——底层图谱正在更新。</span>
   </p>
   {% endif %}
+  {% endif %}
+  {% if tree.ticker_lookup_json %}
+  <div class="tt-lookup" role="search">
+    <label class="tt-lookup-label" for="tt-lookup-input">
+      <span class="l-en">Find a company</span>
+      <span class="l-zh">查找公司</span>
+    </label>
+    <input id="tt-lookup-input" class="tt-lookup-input" type="text"
+      autocomplete="off" autocapitalize="characters" spellcheck="false"
+      placeholder="AAPL / 600519 / 0700.HK">
+    <span class="tt-lookup-hint">
+      <span class="l-en">Type a ticker. Enter to look up, Esc to clear.</span>
+      <span class="l-zh">输入代码；回车查询，Esc 清除。</span>
+    </span>
+  </div>
   {% endif %}
 </header>
 
@@ -380,6 +411,21 @@ html[data-theme="light"] .tt-strip-tick{background:var(--text);opacity:.6}
 <script type="application/json" id="tt-detail-data">{{ tree.details_json|safe }}</script>
 {% endif %}
 
+{% if tree.ticker_lookup_json %}
+<aside id="tt-ticker-result" class="tt-detail tt-ticker-result" hidden role="region" aria-live="polite" aria-labelledby="tt-ticker-name">
+  <div class="tt-detail-top">
+    <h2 class="tt-detail-name" id="tt-ticker-name"></h2>
+    <button type="button" class="tt-detail-close" data-close aria-label="Close">×</button>
+  </div>
+  <ul class="tt-detail-paths tt-ticker-paths"></ul>
+  <p class="tt-ticker-micro"></p>
+  <ul class="tt-ticker-abst"></ul>
+  <p class="tt-ticker-empty-public" hidden></p>
+  <p class="tt-ticker-not-found" hidden></p>
+</aside>
+<script type="application/json" id="tt-ticker-data">{{ tree.ticker_lookup_json|safe }}</script>
+{% endif %}
+
 </div>
 
 <script>
@@ -482,6 +528,141 @@ html[data-theme="light"] .tt-strip-tick{background:var(--text);opacity:.6}
     new MutationObserver(function(){if(_tip)_tip.style.display='none';})
       .observe(document.documentElement,{attributes:true,attributeFilter:['data-lang']});
   }
+})();
+</script>
+<script>
+(function(){
+  // U3 — "Why is this company here?" ticker lookup. textContent only;
+  // data is the JSON blob built at compose() time and refuses any forbidden
+  // value key, so we never need to sanitise names here.
+  var blob=document.getElementById('tt-ticker-data');
+  var input=document.getElementById('tt-lookup-input');
+  var card=document.getElementById('tt-ticker-result');
+  if(!blob||!input||!card)return;
+  var data;try{data=JSON.parse(blob.textContent);}catch(e){return;}
+  var records=(data&&data.records)||{};
+  var summary=(data&&data._summary)||null;
+
+  function el(tag,cls){var n=document.createElement(tag);if(cls)n.className=cls;return n;}
+  function txt(n,s){n.textContent=typeof s==='string'?s:'';return n;}
+  function clear(n){while(n.firstChild)n.removeChild(n.firstChild);}
+  function bi(parent,en,zh){
+    var a=el('span','l-en');a.textContent=en;
+    var b=el('span','l-zh');b.textContent=zh||en;
+    parent.appendChild(a);parent.appendChild(b);
+    return parent;
+  }
+  function chainName(chain,lang){
+    return chain.map(function(x){
+      return lang==='zh'?(x.name_zh||x.name_en):(x.name_en||x.node_id);
+    }).join(lang==='zh'?' › ':' › ');
+  }
+  function basketLabel(basket,lang){
+    return lang==='zh'?(basket.name_zh||basket.name_en):(basket.name_en||'');
+  }
+  function basketLine(rec,lang){
+    var basket=rec.basket||{};
+    var cat=rec.chain&&rec.chain.length?rec.chain[0]:null;
+    var theme=rec.chain&&rec.chain.length?rec.chain[rec.chain.length-1]:null;
+    var parts=[];
+    parts.push((lang==='zh'?'在':'In ')+basketLabel(basket,lang));
+    if(cat&&theme&&cat.node_id!==theme.node_id){
+      parts.push((lang==='zh'?' → ':' → ')+(lang==='zh'?(cat.name_zh||cat.name_en):(cat.name_en||cat.node_id)));
+      parts.push((lang==='zh'?' › ':' › ')+(lang==='zh'?(theme.name_zh||theme.name_en):(theme.name_en||theme.node_id)));
+    }else if(theme){
+      parts.push((lang==='zh'?' → '+ (theme.name_zh||theme.name_en):' → '+ (theme.name_en||theme.node_id)));
+    }
+    return parts.join('');
+  }
+  function abstentionText(code,basketName,lang){
+    if(code==='basket_not_a_theme'){
+      return lang==='zh'?(basketName+'是市场视角，不是主题'):(basketName+' is a market lens, not a theme');
+    }
+    if(code==='market_not_wired'){
+      return lang==='zh'?(basketName+'：该市场的主题关联尚未建立'):(basketName+': theme links for this market are not built yet');
+    }
+    if(code==='basket_unmapped'){
+      return lang==='zh'?(basketName+'：尚未关联主题'):(basketName+': not linked to a theme yet');
+    }
+    return basketName;
+  }
+  function close(){
+    if(card.hidden)return;
+    card.hidden=true;document.body.classList.remove('tt-detail-open');
+  }
+  function hide(p){p.hidden=true;p.textContent='';}
+  function show(p,s){p.hidden=false;p.textContent=s;}
+  function renderEmpty(lang){
+    var name=card.querySelector('.tt-detail-name');clear(name);bi(name,'','');
+    var paths=card.querySelector('.tt-ticker-paths');clear(paths);
+    var micro=card.querySelector('.tt-ticker-micro');hide(micro);
+    var abst=card.querySelector('.tt-ticker-abst');clear(abst);abst.hidden=true;
+    var empt=card.querySelector('.tt-ticker-empty-public');hide(empt);
+    var nf=card.querySelector('.tt-ticker-not-found');hide(nf);
+  }
+  function showResult(key){
+    var rec=records[key];
+    var nameEl=card.querySelector('.tt-detail-name');clear(nameEl);
+    var lang=(document.documentElement.getAttribute('data-lang')||'')==='zh'?'zh':'en';
+    var parts=key.split(':');
+    bi(nameEl,parts[0],parts[0]);
+    if(parts[1]){var sub=el('span');sub.style.fontWeight='600';sub.style.marginLeft='6px';sub.style.color='var(--muted)';sub.textContent='· '+parts[1];nameEl.appendChild(sub);}
+    var pathsEl=card.querySelector('.tt-ticker-paths');clear(pathsEl);
+    var microEl=card.querySelector('.tt-ticker-micro');
+    var abstEl=card.querySelector('.tt-ticker-abst');clear(abstEl);abstEl.hidden=true;
+    var emptyEl=card.querySelector('.tt-ticker-empty-public');hide(emptyEl);
+    var nfEl=card.querySelector('.tt-ticker-not-found');hide(nfEl);
+    if(!rec){
+      show(nfEl, lang==='zh'?'图中没有该代码的公司。':'No company with that ticker on this map.');
+      card.hidden=false;document.body.classList.add('tt-detail-open');
+      return;
+    }
+    (rec.paths||[]).forEach(function(p){
+      var li=el('li');bi(li,basketLine(p,'en'),basketLine(p,'zh'));pathsEl.appendChild(li);
+    });
+    if(rec.micro==='micro_not_wired'){
+      show(microEl, lang==='zh'?'细分主题：该篮子尚未关联':'Micro-theme: not yet linked for this basket');
+    }else{hide(microEl);}
+    if(rec.no_public_basket){
+      show(emptyEl, lang==='zh'?'暂未纳入任何公开篮子。':'Not in any public basket yet.');
+    }else if(rec.not_in_graph){
+      show(emptyEl, lang==='zh'?'暂未纳入任何公开篮子。':'Not in any public basket yet.');
+    }
+    if(rec.abstentions&&rec.abstentions.length){
+      abstEl.hidden=false;
+      rec.abstentions.forEach(function(code){
+        var li=el('li');txt(li,abstentionText(code,'',lang));abstEl.appendChild(li);
+      });
+    }
+    card.hidden=false;document.body.classList.add('tt-detail-open');
+  }
+  function lookup(raw){
+    if(!raw){close();return;}
+    var s=raw.trim().toUpperCase();
+    if(!s){close();return;}
+    var match=null;
+    Object.keys(records).forEach(function(k){
+      var parts=k.split(':');
+      if(parts[1]===s)match=k;
+    });
+    if(!match){
+      // try same ticker across markets — already covered by the loop above
+      // (records are flat). Show not-found in that case.
+      showResult(null);
+      return;
+    }
+    showResult(match);
+  }
+  input.addEventListener('keydown',function(e){
+    if(e.key==='Enter'){e.preventDefault();lookup(input.value);}
+    else if(e.key==='Escape'){input.value='';close();input.focus();}
+  });
+  document.addEventListener('click',function(e){
+    if(e.target.closest('#tt-ticker-result [data-close]')){close();return;}
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&!card.hidden){close();}
+  });
 })();
 </script>
 <style>
