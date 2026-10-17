@@ -213,6 +213,35 @@
     } catch (e) { return ""; }
   }
 
+  // Strictly qualify the rare measured-only fallback against the incumbent
+  // source schema. Missing, duplicate, aliased or contradictory provenance is
+  // not evidence that all independent hazard sources are unavailable.
+  function fgTotalHazardSourcesUnavailable(d, measured, session) {
+    var sources = d.provenance && d.provenance.sources;
+    if (!Array.isArray(sources) || !sources.length) return false;
+    var ids = Object.create(null), measuredCount = 0;
+    var valid = sources.every(function (source) {
+      if (!source || typeof source !== "object" || Array.isArray(source) ||
+          typeof source.source_id !== "string" || !source.source_id ||
+          Object.prototype.hasOwnProperty.call(ids, source.source_id) ||
+          ["measured_state", "hazard_evidence", "context"].indexOf(source.role) < 0)
+        return false;
+      ids[source.source_id] = true;
+      if (source.role === "measured_state") {
+        measuredCount++;
+        return source.coverage === "FRESH" && source.as_of === session &&
+          source.state === measured.verdict && source.score === measured.score;
+      }
+      if (source.role === "hazard_evidence") {
+        if (source.coverage !== "STALE" && source.coverage !== "MISSING") return false;
+        if (typeof source.as_of === "string" && /^\d{4}-\d{2}-\d{2}$/.test(source.as_of) &&
+            source.as_of >= session) return false;
+      }
+      return true;
+    });
+    return valid && measuredCount === 1;
+  }
+
   function foregroundView(d, copy) {
     var fgc = copy.foreground || {};
     var hz = d.hazard_summary || {};
@@ -265,21 +294,17 @@
     if (partialGrounds && hz.stage_reason === "required_coverage_unavailable" &&
         qualifiedRiskOff && session && !rows[0].length &&
         Array.isArray(hz.contributing_sources) && !hz.contributing_sources.length &&
-        d.provenance && Array.isArray(d.provenance.sources) &&
-        d.provenance.sources.every(function (source) {
-          return source && typeof source === "object" && !Array.isArray(source) &&
-            (source.role !== "hazard_evidence" ||
-             source.coverage === "STALE" || source.coverage === "MISSING");
-        })) {
+        fgTotalHazardSourcesUnavailable(d, measured, session)) {
       var requiredLag = fgRequiredLeadershipGap(d, copy);
-      if (requiredLag[0] && requiredLag[1]) {
-        var measuredCause = fgc.measured_risk_off_partial_cause || copy.unknown;
+      var measuredCause = fgc.measured_risk_off_partial_cause;
+      if (requiredLag[0] && requiredLag[1] &&
+          Array.isArray(measuredCause) && measuredCause.length === 2 &&
+          measuredCause.every(function (part) { return typeof part === "string" && !!part; }))
         return {state: "measured-risk-off",
           title: fgc.measured_risk_off_title || copy.unknown,
           cause: [measuredCause[0] + " · " + requiredLag[0],
                   measuredCause[1] + " · " + requiredLag[1]],
           action: warningAction, date: session};
-      }
     }
     return {state: "unavailable", title: fgc.unavailable_title || copy.unknown,
       cause: ["", ""], action: fgc.unavailable_action || copy.unknown, date: ""};

@@ -1427,3 +1427,28 @@ def test_no_hazard_measured_risk_off_rejects_unqualified_hazard_lineage(invalid)
     assert 'combined hazard coverage incomplete.' not in settled
     assert 'combined hazard coverage incomplete.' not in live['cause']
     assert e['hazard_summary']['stage'] is None
+
+
+# R17: source-contract parity across settled Jinja and long-open JS. The
+# narrow RISK_OFF fallback can report a confirmed *measured* backdrop only
+# when the asserted 'all separate hazard inputs unavailable' is itself valid.
+@pytest.mark.parametrize('mutation', ['null_contributors','string_contributors','bad_provenance_row',
+                                      'unknown_fresh_role','stale_label_current_date','conflicting_measured'])
+def test_risk_off_total_hazard_outage_requires_well_formed_source_contract(mutation):
+    e = _risk_off_with_partial_unavailable_hazards()
+    radar = next(s for s in e['provenance']['sources'] if s['source_id']=='risk-radar-us')
+    measured = next(s for s in e['provenance']['sources'] if s['role']=='measured_state')
+    if mutation == 'null_contributors': e['hazard_summary']['contributing_sources']=None
+    elif mutation == 'string_contributors': e['hazard_summary']['contributing_sources']=''
+    elif mutation == 'bad_provenance_row': e['provenance']['sources'].append(None)
+    elif mutation == 'unknown_fresh_role':
+        radar.update(role='hazard', coverage='FRESH', as_of=e['source_session'], state='SPIKING')
+    elif mutation == 'stale_label_current_date': radar['as_of']=e['source_session']
+    else: measured['state']='RISK_ON'
+    settled = _foreground_fragment(_foreground_render(e))
+    live = _js_value(_FOREGROUND_DOM+'applyFeed(FEED);console.log(JSON.stringify(foregroundResult()));',e)
+    assert 'data-state="unavailable"' in settled
+    assert live['state']=='unavailable'
+    assert 'Market State: Risk-off; combined hazard coverage incomplete.' not in settled
+    assert 'Market State: Risk-off; combined hazard coverage incomplete.' not in live['cause']
+    assert e['hazard_summary']['stage'] is None

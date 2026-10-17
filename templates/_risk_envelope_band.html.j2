@@ -120,6 +120,24 @@
     {%- endif -%}
   {%- endif -%}
 {%- endif -%}
+{# Qualify the exceptional measured-only fallback against the source schema.
+   None/string contributors or malformed provenance must not pretend every
+   hazard leg is merely unavailable. No new stage, vote or data owner is added. #}
+{%- set _raw_contrib = _hz.get('contributing_sources') -%}
+{%- set _contrib_empty_array = _raw_contrib is sequence and _raw_contrib is not string and _raw_contrib is not mapping and _raw_contrib|length == 0 -%}
+{%- set _schema_problem = namespace(n=0) -%}
+{%- set _bad_hazard_clock = namespace(n=0) -%}
+{%- for s in _prov -%}
+  {%- if s is not mapping or s.get('source_id') is not string or not s.get('source_id') or s.get('role') not in ('measured_state', 'hazard_evidence', 'context') -%}
+    {%- set _schema_problem.n = _schema_problem.n + 1 -%}
+  {%- elif s.get('role') == 'hazard_evidence' and s.get('coverage') == 'STALE' and _risk_valid_iso_day(s.get('as_of')) and _session is string and s.get('as_of') >= _session -%}
+    {%- set _bad_hazard_clock.n = _bad_hazard_clock.n + 1 -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- set _ms_rows = _prov | selectattr('role', 'equalto', 'measured_state') | list -%}
+{%- set _ms_row_ok = _ms_rows|length == 1 and _ms_rows[0] is mapping and _ms_rows[0].get('as_of') == _session and _ms_rows[0].get('state') == _ms.get('verdict') and _ms_rows[0].get('coverage') == 'FRESH' and _ms_rows[0].get('score') == _ms.get('score') -%}
+{%- set _partial_copy = _fg.get('measured_risk_off_partial_cause') -%}
+{%- set _partial_copy_ok = _partial_copy is sequence and _partial_copy is not string and _partial_copy is not mapping and _partial_copy|length == 2 and _partial_copy[0] is string and _partial_copy[1] is string and _partial_copy[0] and _partial_copy[1] -%}
 {%- if _stage in ('FRAGILE', 'TRANSMITTING', 'BREAKDOWN') and _contrib and _expected is string and _expected == _session and _rows.en -%}
 {%- set _v.state = 'warning' %}{% set _v.title = _fg.warning_title %}{% set _v.action = _fg.measured_risk_off_action if _qualified_risk_off else _fg.warning_action %}
 {%- set _v.cause = [_rows.en | join(' · '), _rows.zh | join(' · ')] %}
@@ -137,7 +155,7 @@
 {# An independently qualified measured RISK_OFF must remain visible when every
    hazard source is unavailable. This reports only the existing measured verdict;
    joint hazard is still unknown and cannot be promoted to a systemic alarm. #}
-{%- elif 'stage' in _hz and _stage is none and _hz.get('stage_reason') == 'required_coverage_unavailable' and _qualified_risk_off and not _rows.en and _lag.en and not _contrib and (_prov | selectattr('role', 'equalto', 'hazard_evidence') | rejectattr('coverage', 'in', ['STALE', 'MISSING']) | list | length) == 0 -%}
+{%- elif 'stage' in _hz and _stage is none and _hz.get('stage_reason') == 'required_coverage_unavailable' and _qualified_risk_off and not _rows.en and _lag.en and _lag.zh and _contrib_empty_array and _schema_problem.n == 0 and _bad_hazard_clock.n == 0 and _ms_row_ok and _partial_copy_ok and (_prov | selectattr('role', 'equalto', 'hazard_evidence') | rejectattr('coverage', 'in', ['STALE', 'MISSING']) | list | length) == 0 -%}
 {%- set _v.state = 'measured-risk-off' %}{% set _v.title = _fg.measured_risk_off_title %}{% set _v.cause = [_fg.measured_risk_off_partial_cause[0] ~ (' · ' ~ _lag.en if _lag.en else ''), _fg.measured_risk_off_partial_cause[1] ~ (' · ' ~ _lag.zh if _lag.zh else '')] %}{% set _v.action = _fg.measured_risk_off_action %}{% set _v.date = _session -%}
 {%- endif -%}
 {%- endif -%}
