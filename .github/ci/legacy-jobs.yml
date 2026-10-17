@@ -21885,6 +21885,14 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/market_drivers.py"
+      - "engine/shock_deescalation.py"
+      - "scripts/build_risk_state.py"
+      - "site/china_risk_state_live.js"
+      - "site/risk_state_live.js"
+      - "templates/china_risk_state_live.js"
+      - "templates/risk_state_live.js"
+      - "tests/test_risk_state_live_session_floor.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/path_risk_signals.py"
       - "engine/prophet_candidate_state.py"
@@ -28813,6 +28821,13 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "scripts/build_risk_state.py"
+      - "site/china_risk_state_live.js"
+      - "site/risk_envelope_live.js"
+      - "site/risk_state_live.js"
+      - "templates/china_risk_state_live.js"
+      - "templates/risk_state_live.js"
+      - "tests/test_risk_state_live_session_floor.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/stock_identity/__init__.py"
       - "engine/stock_identity/authority.py"
