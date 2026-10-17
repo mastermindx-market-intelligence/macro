@@ -154,7 +154,18 @@ jobs:
     # to a cold runner, so the cap must clear the COLD pace, not the warm one: 240m is
     # ~1.4x the observed 172m. The job still exits as soon as its steps finish; a
     # larger cap costs nothing on a healthy night and buys the commit on a slow one.
-    timeout-minutes: 240
+    # 2026-10-14: the 240m ceiling has now failed its cold-source premise.
+    # Real scheduled run 38495183073/job 115629246223 began at 01:20:35Z,
+    # reached "push market data" only at 05:14:27Z (elapsed 233m52s), and
+    # GitHub cancelled it at 05:25:36Z with the committed 5,927-file/1 GB
+    # market snapshot still unpublished. The hard 240m job window left just
+    # 6m08s at push entry, less than one PUSH_ALARM=420s attempt and without
+    # time for a fetch/rebase/retry. The 300m cap gives that exact observed
+    # entry point 66m08s for the EXISTING fail-closed publisher, without
+    # weakening collision checks, changing data or scheduling another job.
+    # This headroom is not proof of a successfully published future nightly;
+    # producer/runtime efficiency still needs separate evidence.
+    timeout-minutes: 300
     outputs:
       government_revenue_projection_needed: ${{ steps.pushdata.outputs.published }}
       # ── CAPITAL-STRUCTURE HANDOFF CONTRACT (2026-08-06 job split) ──────────
@@ -614,6 +625,15 @@ jobs:
         run: |
           python3 scripts/build_security_master.py --nightly \
             || echo "::warning::build_security_master.py --nightly exited non-zero (unexpected — the function itself always returns 0; see the traceback above)"
+      # C04 (DATA-OS-COMPLETION, DEC-DATAOS-VIEW-CONTRACT-SIDECAR-IS-A-NIGHTLY-EMITTER): describe the
+      # US store for the Terminal's U01 reader. Reads data/reference/{vendor_aliases,security_master}
+      # once + one os.scandir of data/stocks; byte-stable (no timestamp), so an unchanged store is a
+      # no-op. The file rides the existing `git add data/` collect commit below. Non-fatal by design.
+      - name: view contract sidecar — data/stocks/_view_contract.json (C04)
+        continue-on-error: true
+        run: |
+          python3 -m scripts.emit_view_contract \
+            || echo "::warning::emit_view_contract exited non-zero (non-fatal — previous sidecar remains)"
       # Marked AFTER the coherence tripwire above so the tripwire's runtime is not
       # billed to the market-commit-push band it is measuring.
       - name: timings band — market-commit-push (W2)
@@ -1033,7 +1053,7 @@ jobs:
       # still records the night in the grace window (elapsed ≈ cap → the warning fires).
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
-        run: bash scripts/ci/nightly_timings_finish.sh 240
+        run: bash scripts/ci/nightly_timings_finish.sh 300
 
   # ── CAPITAL-STRUCTURE LANE (its own job since 2026-08-06) ─────────────────
   # WHY ITS OWN JOB. This is an all-or-nothing SEC publication protocol. Its

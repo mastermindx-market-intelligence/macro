@@ -1,7 +1,7 @@
 {
   "schema": "rates_command.v1",
   "asof": "2026-10-16",
-  "built": "2026-10-17T07:13:56.263947+00:00",
+  "built": "2026-10-17T18:53:44.931594+00:00",
   "display_only": true,
   "authority": false,
   "board": {
@@ -191,11 +191,11 @@
     "policy_row": {
       "state": "ELEVATED",
       "jawboning": {
-        "n_7d": 1,
-        "n_30d": 18,
-        "last_alert_ts": "2026-10-13T17:47:35+00:00",
-        "last_alert_summary": "Alaska energy unlock accelerates — ANWR, NPR-A, Ambler Road & $54B gas pipeline",
-        "last_alert_summary_zh": "阿拉斯加能源开发加速——ANWR、NPR-A、Ambler Road及540亿美元天然气管线"
+        "n_7d": 2,
+        "n_30d": 19,
+        "last_alert_ts": "2026-10-17T00:34:24+00:00",
+        "last_alert_summary": "Trump signs Russia sanctions law then waives virtually all of it — commodity risk fades, enforcement threat stays",
+        "last_alert_summary_zh": "特朗普签署对俄制裁法案后几乎全部豁免——大宗商品风险消退，执法威慑仍在"
       },
       "lever_asof": "2026-10-16",
       "chair": "Kevin Warsh",
@@ -1623,7 +1623,7 @@
     "components": {
       "d1": {
         "input_id": "data/bonds/bond_health.json#/fed_path/effr_meeting_path",
-        "content_ref": "4949024336810c4dc4de580d01cd17f0bedb0230b9b1583763a305e7ec700dc9",
+        "content_ref": "09e2b925c87b839d4af7d7c6bacc9b24af60b86f1886a431964773e1b8ea51b9",
         "cutoff": null,
         "state": "missing"
       },
@@ -1635,7 +1635,7 @@
       },
       "t0_rate_path": {
         "input_id": "data/bonds/bond_health.json#/fed_path/effr_meeting_path",
-        "content_ref": "4949024336810c4dc4de580d01cd17f0bedb0230b9b1583763a305e7ec700dc9",
+        "content_ref": "09e2b925c87b839d4af7d7c6bacc9b24af60b86f1886a431964773e1b8ea51b9",
         "cutoff": "2026-10-17",
         "state": "present"
       }
@@ -1699,37 +1699,36 @@
     "law": "Each lens is one source on its own basis. Lenses are shown side by side and are never blended, re-labelled or subtracted across bases; a pair is compared only through a registered basis rule, and a refusal is shown as a refusal.",
     "lenses": {
       "cleveland_nowcast_cpi_core_next_mom": {
-        "unit": "pct_mom",
         "value": 0.211437,
         "qualified": null,
+        "measure": "next_release",
+        "value_state": "present",
+        "lens_id": "cleveland_nowcast_cpi_core_next_mom",
+        "unit": "pct_mom",
         "limitations": [
           "rights_unknown"
         ],
-        "value_state": "present",
         "reference_period": {
           "end": "2026-10-31",
           "start": "2026-10-01"
-        },
-        "lens_id": "cleveland_nowcast_cpi_core_next_mom",
-        "measure": "next_release"
+        }
       },
       "cleveland_nowcast_cpi_headline_next_mom": {
-        "unit": "pct_mom",
         "value": 0.278494,
         "qualified": null,
+        "measure": "next_release",
+        "value_state": "present",
+        "lens_id": "cleveland_nowcast_cpi_headline_next_mom",
+        "unit": "pct_mom",
         "limitations": [
           "rights_unknown"
         ],
-        "value_state": "present",
         "reference_period": {
           "end": "2026-10-31",
           "start": "2026-10-01"
-        },
-        "lens_id": "cleveland_nowcast_cpi_headline_next_mom",
-        "measure": "next_release"
+        }
       },
       "house_radar_combined_cpi_core_next_mom": {
-        "unit": "pct_mom",
         "value": 0.277212,
         "qualified": {
           "target": "cpi_u_core_mom_sa_first_print",
@@ -1744,19 +1743,19 @@
           "content_ref": null,
           "cutoff": "2026-10-16"
         },
+        "measure": "next_release",
+        "value_state": "present",
+        "lens_id": "house_radar_combined_cpi_core_next_mom",
+        "unit": "pct_mom",
         "limitations": [
           "house_blend_includes_external_inputs"
         ],
-        "value_state": "present",
         "reference_period": {
           "end": "2026-10-31",
           "start": "2026-10-01"
-        },
-        "lens_id": "house_radar_combined_cpi_core_next_mom",
-        "measure": "next_release"
+        }
       },
       "house_radar_combined_cpi_headline_next_mom": {
-        "unit": "pct_mom",
         "value": 0.271619,
         "qualified": {
           "target": "cpi_u_all_items_mom_sa_first_print",
@@ -1771,19 +1770,19 @@
           "content_ref": null,
           "cutoff": "2026-10-16"
         },
+        "measure": "next_release",
+        "value_state": "present",
+        "lens_id": "house_radar_combined_cpi_headline_next_mom",
+        "unit": "pct_mom",
         "limitations": [
           "house_blend_includes_external_inputs"
         ],
-        "value_state": "present",
         "reference_period": {
           "end": "2026-10-31",
           "start": "2026-10-01"
-        },
-        "lens_id": "house_radar_combined_cpi_headline_next_mom",
-        "measure": "next_release"
+        }
       },
       "house_radar_cpi_core_next_mom": {
-        "unit": "pct_mom",
         "value": 0.318,
         "qualified": {
           "target": "cpi_u_core_mom_sa_first_print",
@@ -1798,17 +1797,17 @@
           "content_ref": null,
           "cutoff": "2026-10-16"
         },
-        "limitations": [],
+        "measure": "next_release",
         "value_state": "present",
+        "lens_id": "house_radar_cpi_core_next_mom",
+        "unit": "pct_mom",
+        "limitations": [],
         "reference_period": {
           "end": "2026-10-31",
           "start": "2026-10-01"
-        },
-        "lens_id": "house_radar_cpi_core_next_mom",
-        "measure": "next_release"
+        }
       },
       "house_radar_cpi_headline_next_mom": {
-        "unit": "pct_mom",
         "value": 0.2648,
         "qualified": {
           "target": "cpi_u_all_items_mom_sa_first_print",
@@ -1823,17 +1822,17 @@
           "content_ref": null,
           "cutoff": "2026-10-16"
         },
-        "limitations": [],
+        "measure": "next_release",
         "value_state": "present",
+        "lens_id": "house_radar_cpi_headline_next_mom",
+        "unit": "pct_mom",
+        "limitations": [],
         "reference_period": {
           "end": "2026-10-31",
           "start": "2026-10-01"
-        },
-        "lens_id": "house_radar_cpi_headline_next_mom",
-        "measure": "next_release"
+        }
       },
       "market_breakeven_10y": {
-        "unit": "pct_ann_rate",
         "value": 2.35,
         "qualified": {
           "target": "inflation_compensation",
@@ -1848,20 +1847,20 @@
           "content_ref": "T10YIE",
           "cutoff": "2026-10-16"
         },
+        "measure": "market_price",
+        "value_state": "present",
+        "lens_id": "market_breakeven_10y",
+        "unit": "pct_ann_rate",
         "limitations": [
           "compensation_includes_risk_and_liquidity_premia",
           "first_public_evidence_unknown"
         ],
-        "value_state": "present",
         "reference_period": {
           "end": "2036-10-14",
           "start": "2026-10-14"
-        },
-        "lens_id": "market_breakeven_10y",
-        "measure": "market_price"
+        }
       },
       "market_cpi_core_next_mom": {
-        "unit": "pct_mom",
         "value": null,
         "qualified": {
           "target": "cpi_u_core_mom_sa_first_print",
@@ -1876,17 +1875,17 @@
           "content_ref": null,
           "cutoff": "2026-10-16"
         },
-        "limitations": [],
+        "measure": "next_release",
         "value_state": "missing",
+        "lens_id": "market_cpi_core_next_mom",
+        "unit": "pct_mom",
+        "limitations": [],
         "reference_period": {
           "end": "2026-10-31",
           "start": "2026-10-01"
-        },
-        "lens_id": "market_cpi_core_next_mom",
-        "measure": "next_release"
+        }
       },
       "market_cpi_headline_next_mom": {
-        "unit": "pct_mom",
         "value": 0.18806,
         "qualified": {
           "target": "cpi_u_all_items_mom_sa_first_print",
@@ -1901,17 +1900,17 @@
           "content_ref": "KXCPI-26OCT",
           "cutoff": "2026-10-16"
         },
-        "limitations": [],
+        "measure": "next_release",
         "value_state": "present",
+        "lens_id": "market_cpi_headline_next_mom",
+        "unit": "pct_mom",
+        "limitations": [],
         "reference_period": {
           "end": "2026-10-31",
           "start": "2026-10-01"
-        },
-        "lens_id": "market_cpi_headline_next_mom",
-        "measure": "next_release"
+        }
       },
       "market_forward_5y5y": {
-        "unit": "pct_ann_rate",
         "value": 2.34,
         "qualified": {
           "target": "inflation_compensation_forward",
@@ -1926,20 +1925,20 @@
           "content_ref": "T5YIFR",
           "cutoff": "2026-10-16"
         },
+        "measure": "market_price",
+        "value_state": "present",
+        "lens_id": "market_forward_5y5y",
+        "unit": "pct_ann_rate",
         "limitations": [
           "compensation_includes_risk_and_liquidity_premia",
           "first_public_evidence_unknown"
         ],
-        "value_state": "present",
         "reference_period": {
           "end": "2036-10-14",
           "start": "2031-10-14"
-        },
-        "lens_id": "market_forward_5y5y",
-        "measure": "market_price"
+        }
       },
       "model_cleveland_expected_inflation_10y": {
-        "unit": "pct_ann_rate",
         "value": 2.725514,
         "qualified": {
           "target": "expected_inflation",
@@ -1954,19 +1953,19 @@
           "content_ref": "EXPINF10YR",
           "cutoff": "2026-10-16"
         },
+        "measure": "expected_inflation",
+        "value_state": "present",
+        "lens_id": "model_cleveland_expected_inflation_10y",
+        "unit": "pct_ann_rate",
         "limitations": [
           "evidence_time_unknown"
         ],
-        "value_state": "present",
         "reference_period": {
           "end": "2036-10-01",
           "start": "2026-10-01"
-        },
-        "lens_id": "model_cleveland_expected_inflation_10y",
-        "measure": "expected_inflation"
+        }
       },
       "model_cleveland_expected_inflation_1y": {
-        "unit": "pct_ann_rate",
         "value": 2.975441,
         "qualified": {
           "target": "expected_inflation",
@@ -1981,19 +1980,19 @@
           "content_ref": "EXPINF1YR",
           "cutoff": "2026-10-16"
         },
+        "measure": "expected_inflation",
+        "value_state": "present",
+        "lens_id": "model_cleveland_expected_inflation_1y",
+        "unit": "pct_ann_rate",
         "limitations": [
           "evidence_time_unknown"
         ],
-        "value_state": "present",
         "reference_period": {
           "end": "2027-10-01",
           "start": "2026-10-01"
-        },
-        "lens_id": "model_cleveland_expected_inflation_1y",
-        "measure": "expected_inflation"
+        }
       },
       "model_cleveland_expected_inflation_5y": {
-        "unit": "pct_ann_rate",
         "value": 2.770313,
         "qualified": {
           "target": "expected_inflation",
@@ -2008,19 +2007,19 @@
           "content_ref": "EXPINF5YR",
           "cutoff": "2026-10-16"
         },
+        "measure": "expected_inflation",
+        "value_state": "present",
+        "lens_id": "model_cleveland_expected_inflation_5y",
+        "unit": "pct_ann_rate",
         "limitations": [
           "evidence_time_unknown"
         ],
-        "value_state": "present",
         "reference_period": {
           "end": "2031-10-01",
           "start": "2026-10-01"
-        },
-        "lens_id": "model_cleveland_expected_inflation_5y",
-        "measure": "expected_inflation"
+        }
       },
       "official_cpi_core_mom": {
-        "unit": "pct_mom",
         "value": 0.334848,
         "qualified": {
           "target": "cpi_u_core_mom_sa_latest_revised",
@@ -2035,20 +2034,20 @@
           "content_ref": "CPILFESL",
           "cutoff": "2026-10-16"
         },
+        "measure": "index_level_change",
+        "value_state": "present",
+        "lens_id": "official_cpi_core_mom",
+        "unit": "pct_mom",
         "limitations": [
           "evidence_time_unknown",
           "latest_revised_not_first_print"
         ],
-        "value_state": "present",
         "reference_period": {
           "end": "2026-09-30",
           "start": "2026-09-01"
-        },
-        "lens_id": "official_cpi_core_mom",
-        "measure": "index_level_change"
+        }
       },
       "official_cpi_core_yoy": {
-        "unit": "pct_yoy",
         "value": 2.565841,
         "qualified": {
           "target": "cpi_u_core_yoy_sa_latest_revised",
@@ -2063,21 +2062,21 @@
           "content_ref": "CPILFESL",
           "cutoff": "2026-10-16"
         },
+        "measure": "index_level_change",
+        "value_state": "present",
+        "lens_id": "official_cpi_core_yoy",
+        "unit": "pct_yoy",
         "limitations": [
           "evidence_time_unknown",
           "latest_revised_not_first_print",
           "yoy_from_sa_index_not_published_nsa_yoy"
         ],
-        "value_state": "present",
         "reference_period": {
           "end": "2026-09-30",
           "start": "2025-10-01"
-        },
-        "lens_id": "official_cpi_core_yoy",
-        "measure": "index_level_change"
+        }
       },
       "official_cpi_headline_mom": {
-        "unit": "pct_mom",
         "value": 0.648548,
         "qualified": {
           "target": "cpi_u_all_items_mom_sa_latest_revised",
@@ -2092,20 +2091,20 @@
           "content_ref": "CPIAUCSL",
           "cutoff": "2026-10-16"
         },
+        "measure": "index_level_change",
+        "value_state": "present",
+        "lens_id": "official_cpi_headline_mom",
+        "unit": "pct_mom",
         "limitations": [
           "evidence_time_unknown",
           "latest_revised_not_first_print"
         ],
-        "value_state": "present",
         "reference_period": {
           "end": "2026-09-30",
           "start": "2026-09-01"
-        },
-        "lens_id": "official_cpi_headline_mom",
-        "measure": "index_level_change"
+        }
       },
       "official_cpi_headline_yoy": {
-        "unit": "pct_yoy",
         "value": 3.717251,
         "qualified": {
           "target": "cpi_u_all_items_yoy_sa_latest_revised",
@@ -2120,21 +2119,21 @@
           "content_ref": "CPIAUCSL",
           "cutoff": "2026-10-16"
         },
+        "measure": "index_level_change",
+        "value_state": "present",
+        "lens_id": "official_cpi_headline_yoy",
+        "unit": "pct_yoy",
         "limitations": [
           "evidence_time_unknown",
           "latest_revised_not_first_print",
           "yoy_from_sa_index_not_published_nsa_yoy"
         ],
-        "value_state": "present",
         "reference_period": {
           "end": "2026-09-30",
           "start": "2025-10-01"
-        },
-        "lens_id": "official_cpi_headline_yoy",
-        "measure": "index_level_change"
+        }
       },
       "official_pce_core_mom": {
-        "unit": "pct_mom",
         "value": 0.247439,
         "qualified": {
           "target": "pce_core_mom_sa_latest_revised",
@@ -2149,20 +2148,20 @@
           "content_ref": "PCEPILFE",
           "cutoff": "2026-10-16"
         },
+        "measure": "index_level_change",
+        "value_state": "present",
+        "lens_id": "official_pce_core_mom",
+        "unit": "pct_mom",
         "limitations": [
           "evidence_time_unknown",
           "latest_revised_not_first_print"
         ],
-        "value_state": "present",
         "reference_period": {
           "end": "2026-08-31",
           "start": "2026-08-01"
-        },
-        "lens_id": "official_pce_core_mom",
-        "measure": "index_level_change"
+        }
       },
       "official_pce_core_yoy": {
-        "unit": "pct_yoy",
         "value": 3.007596,
         "qualified": {
           "target": "pce_core_yoy_sa_latest_revised",
@@ -2177,21 +2176,21 @@
           "content_ref": "PCEPILFE",
           "cutoff": "2026-10-16"
         },
+        "measure": "index_level_change",
+        "value_state": "present",
+        "lens_id": "official_pce_core_yoy",
+        "unit": "pct_yoy",
         "limitations": [
           "evidence_time_unknown",
           "latest_revised_not_first_print",
           "yoy_from_sa_index_not_published_nsa_yoy"
         ],
-        "value_state": "present",
         "reference_period": {
           "end": "2026-08-31",
           "start": "2025-09-01"
-        },
-        "lens_id": "official_pce_core_yoy",
-        "measure": "index_level_change"
+        }
       },
       "official_pce_headline_mom": {
-        "unit": "pct_mom",
         "value": 0.31028,
         "qualified": {
           "target": "pce_all_items_mom_sa_latest_revised",
@@ -2206,20 +2205,20 @@
           "content_ref": "PCEPI",
           "cutoff": "2026-10-16"
         },
+        "measure": "index_level_change",
+        "value_state": "present",
+        "lens_id": "official_pce_headline_mom",
+        "unit": "pct_mom",
         "limitations": [
           "evidence_time_unknown",
           "latest_revised_not_first_print"
         ],
-        "value_state": "present",
         "reference_period": {
           "end": "2026-08-31",
           "start": "2026-08-01"
-        },
-        "lens_id": "official_pce_headline_mom",
-        "measure": "index_level_change"
+        }
       },
       "official_pce_headline_yoy": {
-        "unit": "pct_yoy",
         "value": 3.419032,
         "qualified": {
           "target": "pce_all_items_yoy_sa_latest_revised",
@@ -2234,51 +2233,51 @@
           "content_ref": "PCEPI",
           "cutoff": "2026-10-16"
         },
+        "measure": "index_level_change",
+        "value_state": "present",
+        "lens_id": "official_pce_headline_yoy",
+        "unit": "pct_yoy",
         "limitations": [
           "evidence_time_unknown",
           "latest_revised_not_first_print",
           "yoy_from_sa_index_not_published_nsa_yoy"
         ],
-        "value_state": "present",
         "reference_period": {
           "end": "2026-08-31",
           "start": "2025-09-01"
-        },
-        "lens_id": "official_pce_headline_yoy",
-        "measure": "index_level_change"
+        }
       },
       "radar_expectation_read_cpi_core_next_mom": {
-        "unit": "pct_mom",
         "value": 0.2114,
         "qualified": null,
+        "measure": "next_release",
+        "value_state": "present",
+        "lens_id": "radar_expectation_read_cpi_core_next_mom",
+        "unit": "pct_mom",
         "limitations": [
           "blend_of_external_benchmarks_not_street_economist_survey_median"
         ],
-        "value_state": "present",
         "reference_period": {
           "end": "2026-10-31",
           "start": "2026-10-01"
-        },
-        "lens_id": "radar_expectation_read_cpi_core_next_mom",
-        "measure": "next_release"
+        }
       },
       "radar_expectation_read_cpi_headline_next_mom": {
-        "unit": "pct_mom",
         "value": 0.2333,
         "qualified": null,
+        "measure": "next_release",
+        "value_state": "present",
+        "lens_id": "radar_expectation_read_cpi_headline_next_mom",
+        "unit": "pct_mom",
         "limitations": [
           "blend_of_external_benchmarks_not_street_economist_survey_median"
         ],
-        "value_state": "present",
         "reference_period": {
           "end": "2026-10-31",
           "start": "2026-10-01"
-        },
-        "lens_id": "radar_expectation_read_cpi_headline_next_mom",
-        "measure": "next_release"
+        }
       },
       "survey_umich_1y": {
-        "unit": "pct_ann_rate",
         "value": 4.0,
         "qualified": {
           "target": "expected_inflation",
@@ -2293,17 +2292,18 @@
           "content_ref": "MICH",
           "cutoff": "2026-10-16"
         },
+        "measure": "household_survey",
+        "value_state": "present",
+        "lens_id": "survey_umich_1y",
+        "unit": "pct_ann_rate",
         "limitations": [
           "evidence_time_unknown",
           "household_survey_not_cpi_specific"
         ],
-        "value_state": "present",
         "reference_period": {
           "end": "2027-08-01",
           "start": "2026-08-01"
-        },
-        "lens_id": "survey_umich_1y",
-        "measure": "household_survey"
+        }
       }
     },
     "reason": null,
@@ -2360,8 +2360,8 @@
   "regime_outlook": {
     "schema_version": "regime_outlook.v1",
     "scope": "US",
-    "analysis_cutoff": "2026-10-17T07:13:56.252482+00:00",
-    "built_at": "2026-10-17T07:13:56.255770+00:00",
+    "analysis_cutoff": "2026-10-17T18:53:44.922572+00:00",
+    "built_at": "2026-10-17T18:53:44.923515+00:00",
     "mapping_version": "VERDICT_MAPPING_V2",
     "mapping_sha256": "4da240fbff55caefbdb17290f37e8164cc672c9f520f97704534059f862ce9c0",
     "inputs": {
@@ -2372,17 +2372,17 @@
       },
       "R": {
         "path": "data/regime/latest.json",
-        "sha256": "e21a679081f6843f5582a4274e1cb4f8b8821f2e6d5c4a0cc05a36bb3b210c4f",
+        "sha256": "c158e8a71c1a8cde5cb2485a95555588242da8718f22650834d370449321c987",
         "read_status": "available"
       },
       "M": {
         "path": "data/market_state/latest.json",
-        "sha256": "07d767326cada9972db5f92143d3a0f57d59b1479f0c4d9e1eaee2a903f28530",
+        "sha256": "477ed1d1c9495f420d2a38d859dc05899cc5ba4b678e3690afce08a7f979579e",
         "read_status": "available"
       },
       "D": {
         "path": "data/dispersion/regime.json",
-        "sha256": "187ed2673a2b41389f5935d99acbdeeb9ffed08be2274a1568ce37c2d313a9eb",
+        "sha256": "51a9668761932c3cd541caa2e58e573329519379cf1b91db600457c4c0114d32",
         "read_status": "available"
       },
       "L": {
@@ -2392,7 +2392,7 @@
       },
       "B": {
         "path": "data/bonds/bond_health.json",
-        "sha256": "4949024336810c4dc4de580d01cd17f0bedb0230b9b1583763a305e7ec700dc9",
+        "sha256": "09e2b925c87b839d4af7d7c6bacc9b24af60b86f1886a431964773e1b8ea51b9",
         "read_status": "available"
       },
       "C": {
@@ -3015,7 +3015,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/labor_nowcast/read",
-          "sha256": "e21a679081f6843f5582a4274e1cb4f8b8821f2e6d5c4a0cc05a36bb3b210c4f",
+          "sha256": "c158e8a71c1a8cde5cb2485a95555588242da8718f22650834d370449321c987",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-16",
           "precision": "date",
@@ -3047,7 +3047,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/financial_conditions/state",
-          "sha256": "e21a679081f6843f5582a4274e1cb4f8b8821f2e6d5c4a0cc05a36bb3b210c4f",
+          "sha256": "c158e8a71c1a8cde5cb2485a95555588242da8718f22650834d370449321c987",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-02",
           "precision": "date",
@@ -3084,7 +3084,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/complacency/breadth_div",
-          "sha256": "e21a679081f6843f5582a4274e1cb4f8b8821f2e6d5c4a0cc05a36bb3b210c4f",
+          "sha256": "c158e8a71c1a8cde5cb2485a95555588242da8718f22650834d370449321c987",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-14",
           "precision": "date",
@@ -3121,7 +3121,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/label",
-          "sha256": "e21a679081f6843f5582a4274e1cb4f8b8821f2e6d5c4a0cc05a36bb3b210c4f",
+          "sha256": "c158e8a71c1a8cde5cb2485a95555588242da8718f22650834d370449321c987",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-16",
           "precision": "date",
@@ -3158,7 +3158,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/confirming_stress",
-          "sha256": "e21a679081f6843f5582a4274e1cb4f8b8821f2e6d5c4a0cc05a36bb3b210c4f",
+          "sha256": "c158e8a71c1a8cde5cb2485a95555588242da8718f22650834d370449321c987",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-16",
           "precision": "date",
@@ -3195,7 +3195,7 @@
         "source": {
           "artifact": "M",
           "pointer": "/components/[key=breadth]/tone",
-          "sha256": "07d767326cada9972db5f92143d3a0f57d59b1479f0c4d9e1eaee2a903f28530",
+          "sha256": "477ed1d1c9495f420d2a38d859dc05899cc5ba4b678e3690afce08a7f979579e",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-14",
           "precision": "date",
@@ -3269,7 +3269,7 @@
         "source": {
           "artifact": "B",
           "pointer": "/fed_path/implied_cuts_12m",
-          "sha256": "4949024336810c4dc4de580d01cd17f0bedb0230b9b1583763a305e7ec700dc9",
+          "sha256": "09e2b925c87b839d4af7d7c6bacc9b24af60b86f1886a431964773e1b8ea51b9",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-16",
           "precision": "date",
@@ -3338,7 +3338,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/hy_oas_pct",
-          "sha256": "e21a679081f6843f5582a4274e1cb4f8b8821f2e6d5c4a0cc05a36bb3b210c4f",
+          "sha256": "c158e8a71c1a8cde5cb2485a95555588242da8718f22650834d370449321c987",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-16",
           "precision": "date",
@@ -3486,16 +3486,16 @@
         "source": {
           "artifact": "D",
           "pointer": "/state",
-          "sha256": "187ed2673a2b41389f5935d99acbdeeb9ffed08be2274a1568ce37c2d313a9eb",
+          "sha256": "51a9668761932c3cd541caa2e58e573329519379cf1b91db600457c4c0114d32",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-10-16",
+          "as_of": "2026-10-17",
           "precision": "date",
-          "age_calendar_days": 1,
+          "age_calendar_days": 0,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
           "expected_us_session": "2026-10-16",
-          "session_relation": "same_completed_session",
+          "session_relation": "after_completed_session",
           "reference_period": null
         }
       },
@@ -3523,16 +3523,16 @@
         "source": {
           "artifact": "D",
           "pointer": "/avg_corr",
-          "sha256": "187ed2673a2b41389f5935d99acbdeeb9ffed08be2274a1568ce37c2d313a9eb",
+          "sha256": "51a9668761932c3cd541caa2e58e573329519379cf1b91db600457c4c0114d32",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-10-16",
+          "as_of": "2026-10-17",
           "precision": "date",
-          "age_calendar_days": 1,
+          "age_calendar_days": 0,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
           "expected_us_session": "2026-10-16",
-          "session_relation": "same_completed_session",
+          "session_relation": "after_completed_session",
           "reference_period": null
         }
       },
@@ -3558,7 +3558,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/financial_conditions/trend",
-          "sha256": "e21a679081f6843f5582a4274e1cb4f8b8821f2e6d5c4a0cc05a36bb3b210c4f",
+          "sha256": "c158e8a71c1a8cde5cb2485a95555588242da8718f22650834d370449321c987",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-02",
           "precision": "date",
@@ -3595,7 +3595,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/nfci_trend",
-          "sha256": "e21a679081f6843f5582a4274e1cb4f8b8821f2e6d5c4a0cc05a36bb3b210c4f",
+          "sha256": "c158e8a71c1a8cde5cb2485a95555588242da8718f22650834d370449321c987",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-16",
           "precision": "date",
@@ -5128,6 +5128,46 @@
           "owner_verdict": null,
           "status": "partial",
           "as_of": "2026-10-16"
+        }
+      },
+      {
+        "evidence_id": "D.state",
+        "change_kind": "clock_only",
+        "from": {
+          "values": {
+            "state": "lean_out"
+          },
+          "owner_verdict": null,
+          "status": "partial",
+          "as_of": "2026-10-16"
+        },
+        "to": {
+          "values": {
+            "state": "lean_out"
+          },
+          "owner_verdict": null,
+          "status": "partial",
+          "as_of": "2026-10-17"
+        }
+      },
+      {
+        "evidence_id": "D.avg_corr",
+        "change_kind": "clock_only",
+        "from": {
+          "values": {
+            "avg_corr": 0.07
+          },
+          "owner_verdict": null,
+          "status": "partial",
+          "as_of": "2026-10-16"
+        },
+        "to": {
+          "values": {
+            "avg_corr": 0.07
+          },
+          "owner_verdict": null,
+          "status": "partial",
+          "as_of": "2026-10-17"
         }
       },
       {
