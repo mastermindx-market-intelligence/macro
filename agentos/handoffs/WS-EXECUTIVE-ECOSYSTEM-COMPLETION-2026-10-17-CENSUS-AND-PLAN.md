@@ -42,19 +42,20 @@ verified:
     command: python3.12 -B scripts/agentos.py validate
     result: 1602 records, 0 errors, 90 warnings.
 unverified:
-  - claim: The host acceptance for 91c1cac5 can run against the prepared bundle without re-preparation.
-    what_would_verify: acceptance.sh as root with --expected-sha 91c1cac5… and the prepared descriptor digest producing a receipt under /var/db/mastermind-executive/control/acceptance/91c1cac5…; preconditions (exact clean checkout at 91c1cac5, operator user, codex-01 worker, one Codex allocation) not yet checked.
+  - claim: The S' supersede acceptance can run once the human credential rotation restores a passing codex-01 readiness receipt.
+    what_would_verify: ONE provision-worker-auth.sh --verify-ready passing (status 3, fresh canary), then acceptance.sh as root for S' with the supersede descriptor digest producing a receipt under /var/db/mastermind-executive/control/acceptance/<S'>. The prepared 91c1cac5 acceptance itself CANNOT run as prepared (corrected 2026-10-17 13:5xZ) because the live codex-01 receipt is FAILED (provider_turn_failed, 2026-10-12T07:08Z) and acceptance preflight needs a passing receipt with ≥30 min margin; master also moved to ee0f0d9b, so the exact-clean-checkout rule retargets the install to S' = current master head from a fresh clone.
   - claim: The Mastermind OS app sources build and pass their Node tests at a552a5e5.
     what_would_verify: npm ci --ignore-scripts, vitest and vite build in the Mastermind worktree (node_modules absent at record time).
 unresolved:
   - JOB-002 and JOB-013 remain QUEUED with no placement path while operator_harness_armed is false; their disposition belongs to R3 after R2.
+  - codex-01 (company realm) readiness is FAILED since 2026-10-12T07:08Z (provider_turn_failed; provider terms capacity/model; identity refusal none); device revalidation, refresh, terminal-adverse, drift and pin-recovery routes all refuse; the only lawful recovery is an explicit credential rotation (--enroll-service-account --replace-existing via the Keychain item, currently absent, or --reauthorize-device --replace-existing), which is human-only. The slot default credential kind is service-account; the Oct 3–12 passing chain ran on the device-auth fallback.
   - Personal-Pro realm readiness expired 2026-10-10; re-enrollment is a human/provider ceremony, not a seat action.
   - Boot-packet macro grounding on the host (macro-sources 88804ed7) lags macro main; refreshed only through install inputs by the production owner.
   - Mastermind #633 Auth0 dynamic client registration remains EFFECT_UNKNOWN on its original carrier.
 next_actions:
   - Merge the Mastermind ledger/plan PR (check `test`) and this macro record; then update the A0/C1 wave status.
-  - Read acceptance.py run() and install_source_policy requirements; prepare the exact clean 91c1cac5 source checkout the acceptance needs without touching the primary clone.
-  - Commission one read-only Opus audit (MODE READ_ONLY) covering the acceptance + ceo-submit-arm + arm sequence and its rollback; commission a second for the A1 install inputs.
+  - HUMAN-ONLY first, performed by the Chairman/production owner in an interactive terminal from the installed release's ops/executive_os — provision-worker-auth.sh --enroll-service-account --replace-existing fed from the Keychain item (absent today; workspace admin provisions it) or the fallback --reauthorize-device --replace-existing; codex-01 is the default slot; the seat never runs codex logout/login.
+  - Then the seat runs ONE --verify-ready (status 3, fresh canary), fresh clone at the current master head (S'), os_release_assets.py prepare, install-inputs (0700 dir, 0400 files), service-control.sh stop, acceptance_maintenance.py supersede prepare (--supersede-unstarted-sha 91c1cac5…, canonical descriptor digest 91695ef2…), install.sh S', acceptance.sh once; then the arming sequence after one read-only review; no host mutation before the gate clears.
   - Prepare the A1 install inputs from docs/runbooks/mastermind-os-public-launch.md for the production owner.
   - Run the Node-side app qualification at a552a5e5 and append the result to the plan §6.
 do_not_redo:
@@ -63,7 +64,7 @@ do_not_redo:
   - The 213-test transport run until the transport source changes.
 danger_areas:
   - Cancelling or duplicating JOB-003 breaks the prepared acceptance lineage.
-  - Arming without the audit, or editing installed config/*.json by hand.
+  - Arming without the review, editing installed config/*.json by hand, running the prepared 91c1cac5 acceptance against a failed readiness receipt, or any codex logout/login / --replace-existing performed by the seat.
   - Enrolling Fable with mastermind.executive.intent.submit; touching pools.yaml / pick.py / RELAUNCH_QUEUE.txt; competing with Sol's open sol/web-* lanes.
   - Running the Mastermind Python tests with the macro checkout on sys.path.
 ---
