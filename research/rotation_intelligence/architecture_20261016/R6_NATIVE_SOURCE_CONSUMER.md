@@ -4,7 +4,7 @@
 
 ## Implemented on the same research carrier
 
-- [tiingo_allocation_adapter_r6.py](tiingo_allocation_adapter_r6.py) is a pure function accepting exactly 13 **already returned** native TiingoResearchHistory objects: eleven sector ETFs, SPY and BIL. It does not access the archive, call a vendor, schedule collection, create a data store or open native outcomes.
+- [lib/dataos/sector_allocation_tiingo.py](../../../lib/dataos/sector_allocation_tiingo.py) is a pure function accepting exactly 13 **already returned** native TiingoResearchHistory objects: eleven sector ETFs, SPY and BIL. It does not access the archive, call a vendor, schedule collection, create a data store or open native outcomes.
 - It imports the genuine class from the incumbent lib.dataos.tiingo_reader and derives the 253-session/64-price lookback through the incumbent lib.nyse_calendar. Existing consumers, collectors and source authority are untouched.
 - It refuses missing/extra instruments, non-native objects, missing/duplicate sessions, different or future capture cutoffs, future outcome rows, malformed receipt identities, foreign source/symbol, wrong basis, non-finite values, within-series mixed vendor adjustment vintages, and forged historical/PIT/redistribution flags.
 - The output is an immutable in-memory retrospective projection with original receipt references and content digest. Its safe summary contains coverage and provenance only, not licensed price values.
@@ -30,11 +30,11 @@ A passing 253-session projection is still hindsight-only: one 2026 capture of ea
 
 ## Actual test evidence
 
-[21 reference tests](test_tiingo_allocation_adapter_r6.py) passed in the local isolated Python 3.13.5 harness (final run 21/21, 0.690 s). The tests began red against a defined unimplemented interface and then passed on the implementation. py_compile passed. The fake data and minimal test-only mirrors of the exact native type/calendar are *not* a real source read or M2 native-test proof. Three clean adversarial mutations to vintage, PIT and session guards independently made their targeted tests fail. Two additional test-first cases reproduced unhandled TypeError from unhashable receipt references and OverflowError from an implausibly large numeric price; both are now deterministic typed refusals.
+[21 reference tests](../../../tests/test_sector_allocation_tiingo.py) passed in the local isolated Python 3.13.5 harness (final run 21/21, 0.690 s). The tests began red against a defined unimplemented interface and then passed on the implementation. py_compile passed. The fake data and minimal test-only mirrors of the exact native type/calendar are *not* a real source read or M2 native-test proof. Three clean adversarial mutations to vintage, PIT and session guards independently made their targeted tests fail. Two additional test-first cases reproduced unhandled TypeError from unhashable receipt references and OverflowError from an implausibly large numeric price; both are now deterministic typed refusals.
 
 Committed Git blob equality was checked against executed local bytes:
 - Implementation git blob 54f8f71ccd32e774e072b35c051eeda6d269af57, SHA-256 6234e7daf91af96a8a37e0d4d1122a26161efb2668adc0d0c8ec6e5d300e4c0b.
-- Test git blob bd6ce7b262123e2c211b16724eee7724dde85cf1, SHA-256 c256aa66a0f7f59caf757171ebfcf47d44254b0963af7d439ae063e614b3e4c4.
+- Test git blob 8af3f50f87720b1437cf958c645b1fa652d196f8, SHA-256 0afa9305c78a36c84d5af87e6aec90c0ecae5e707073bcab47ee27d40f0387be.
 
 ## Honest delivery boundary
 
