@@ -1,0 +1,63 @@
+# TOI initiation assessment and bounded continuation decision
+
+**Date:** October 3, 2026. **Workstream:** `WS:TECHNICAL-OPPORTUNITY-INTELLIGENCE`. **Existing owner:** `ceo-sol`. **Parent:** `market-timing-intelligence`.
+
+## Decision
+
+**Proceed with recommissioning the existing program. Do not open W3 outcomes.** The supplied handoff is sufficient to initiate bounded recovery, source qualification and semantic/product preparation; it is not an accepted preregistration, repaired source head, data admission or production authorization. This assessment is an initiation recommendation under the user's explicit request, not final Sol/scientific-owner acceptance.
+
+The three supplied documents were published unchanged in [documentation intake PR #8332](https://github.com/mastermindx-market-intelligence/macro/pull/8332), initial commit `e668e7139377c1d122fe1a9bc79d755760e5dc94`. Their SHA-256 and Git blob identities were checked before publication and the three remote blob identities were read back. This documentation branch is not a replacement for #7107 or #7094. Original source files retain their own historical no-action statements; those statements describe preparation of the supplied report, not this later GitHub publication.
+
+## Evidence and authority
+
+The basis is the supplied [handoff](TOI_Next_Owner_Handoff_2026-10-03.md), [full report](TOI_Research_and_Recommissioning_Report_2026-10-03.md), live original-carrier metadata/comments and fresh protected procedure reads. `INITIATION_SOURCE_SNAPSHOT.json` records this initiation's bounded metadata observation, including comment update identities and body hashes. No new literature sweep, market outcome access, fitted model, native W1 suite, production data qualification, hosted release acceptance or private-license audit was performed.
+
+Protected Mastermind procedures were read at `20adcaf65c2dd1bb734ab06e215feb1a0eb65659`, newer than the report's procedure snapshot. The initial documentation commit was based on Macro main `3d9969c15bba0f57b64da7592c0731cc8a0f2eac`; this is not evidence that either original carrier integrates against that base. Refresh action-time source, base, custody and effects before future writes.
+
+## Current carrier assessment
+
+| Carrier | Fresh observation | Immediate disposition |
+|---|---|---|
+| [W1 #7107](https://github.com/mastermindx-market-intelligence/macro/pull/7107), `TOI-W1-EVIDENCE-CENSUS-V1` | Open/draft/unmerged at `15e4dfb0c9ddc788127d0954fd7d92414eefdcbf`; original branch retained. Pending source custody and grouped repair are not resolved by this publication. | Request positive custodian/recovery receipt first. Preserve prior accepted review scope. Repair only through the original operation after custody and effect gates clear. |
+| [W2-0 #7094](https://github.com/mastermindx-market-intelligence/macro/pull/7094), `TOI-W2-0-DATA-CLOCK-V1` | Open/draft/unmerged at `5bb1bc68c99146fab040aade04bbf1903c51e5b7`. Retained compatibility/release comments concern older heads and bases. | Consume the truthful archaeology HOLD; refresh current records/release proof and correct projection through this carrier. No panel ADMIT inferred. |
+| Temporal Grain #6803 | The supplied report records W1A `UNRESOLVED_DATA`; this initiation did not rerun its harness or refresh all sibling source bytes. | Preserve typed abstention and W1B hold; reconcile sibling records through its existing owner, not a new G/A/K/D study. |
+| Terminal and Prophet context | The report identifies actual-close filtering and the existing Early Leadership compiler. This initiation did not authenticate current production data or UI operation. | Requalify native owners/contracts. Do not implement the historical early-close repair again merely from an old failure receipt; do not invent another Prophet envelope. |
+
+The [September 28 W1 ruling](https://github.com/mastermindx-market-intelligence/macro/pull/7107#issuecomment-5865508898) preserves one grouped repair only after actual custody/recovery admission. Retained pending validator SHA-256 is `7a1804af0bd8a1c7fc19c5366883da92d210db6c12b2654396572241d47f60f2`; retained test preimage is `5a84cd21521e01ac8d4931e23722cd11a5aba95719848b2aef886e235418dcbd`. These were not freshly re-read from the dirty worktree here. A new read-capable connector or this independent documentation writer is not a positive source lease and must not bypass the recorded credential-mapping refusal.
+
+The accepted Connors/RVOL two-finding child remains terminal. Neither it nor the prior full passport review should be reopened unchanged. Retained synthetic/theoretical tests in Seat B's later work do not replace committed-head native W1 validation, fresh current-base integration or hosted proof.
+
+## Concrete hardening decisions before W3
+
+**1. Reconcile R0 with the actual Seat B continuation, not an obsolete summary.** The [cumulative Seat B checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/7107#issuecomment-5863266019), updated September 29, retains R2 as `DRAFT_SOURCE_BOUND_NOT_ADMITTED`, zero registrations and one proposed `.01` upside-confirmation claim. The supplied report proposes eight primary Daily contrasts across two directions. This is an explicit scientific/Evaluation-owner adoption or amendment decision, not permission to silently expand the family or reset prior exposure. Neither proposal is adopted by this assessment. The completed theoretical batch should be consumed, not repeated as another null-model rewrite.
+
+**2. Freeze terminal and policy meanings.** Seat B reports that the existing native grader uses fill-relative H while R2 uses an original-trigger-plus-21-session common terminal. The report also distinguishes full-horizon and structural-stop views. Record which endpoint belongs to each configuration, keep all policies on the declared original cohort, and label any additional ruler as a counted secondary analysis. Do not silently select whichever horizon or survivor subset looks favorable.
+
+**3. Enumerate the ceiling without pretending registration is complete.** `TOI_R0_CONFIGURATION_INVENTORY_DRAFT.json` enumerates all 147 proposed configuration slots: 32 core, 8 simple breakouts, 8 placebos, 16 sensor substitutions, 2 Combo incumbents, 1 native S16 comparator, 24 confirmation policies, 24 activation model specifications, 24 post-trigger model specifications and 8 remaining-path configurations. These are planning slots, not native scientific IDs, independent hypotheses, an executable manifest or a second trial ledger. All are unselected, unregistered and unadmitted in this initiation. Each generic clock has 36 slots, with three separately scoped native incumbents. Daily-first selection must still be owner-adopted; the ceiling is not a workload target.
+
+**4. Preserve identity and denominator gates.** S16's exact upside release construction, 12-trial history and arming-entry prohibition remain attached. The owner must decide whether activation forecasting from the full at-risk population is distinct, requires an explicit versioned amendment, or must stop. Missing identity is not a reason to read outcomes. Retain noncompressed controls, non-triggered formations, failed/no-entry confirmations, and listing/delisting/missingness outcomes.
+
+**5. Admit clocks and claims independently.** Daily plus a 13-completed-Weekly context scalar is not a standalone Weekly compression model requiring a 252-observation Weekly distribution. The latter remains held without adequate history/warm-up/training/evaluation support. RTH 240-minute and fixed 195-minute recipes require separate admission, including terminal stubs, duration-matched participation, fallback source strata and real knowledge time. Held intraday slots cannot become extra Daily searches. A current-vintage retrospective panel is not availability-faithful historical PIT evidence.
+
+**6. Make the product useful without predictive overclaim.** Work on the canonical original occurrence, frozen trigger/invalidation geometry, phase/maturity/validity separation, source freshness/refusal and compatible Macro/Terminal/Prophet DTOs can proceed within independent source/semantic ownership. Show `not yet calibrated`, never fabricated probabilities or a universal technical score. Preserve consumer authority flags as false until separately approved, and require existing design tokens and components rather than a disconnected UI.
+
+## Ordered continuation and parallel lanes
+
+| Lane and existing owner | Authorized preparation / next action | Required return and dependency |
+|---|---|---|
+| W1 source custodian and TOI owner, same #7107 | Establish current custodian, pending preimages and effect state; after positive recovery admission, adopt the grouped AST validator, hostile fixture, numeric BB binding, original-occurrence fakeout, coverage and handoff repair. | One immutable repaired head; coherent 24/3/5 only if actually applied; native validators/tests; independent changed-findings review; current integration and executed hosted proof; final Sol acceptance. |
+| W2-0 records/release owner, same #7094 | Consume retained `PARTIAL / HOLD`; refresh exact candidate and current integration/checks; correct stale main projection through the existing records carrier. | Accepted truthful records and precise qualification scope. Records acceptance is not data admission. |
+| Setup Species / S16 scientific owner | Reconcile native species definition, current compiled DNR, prior trials and the activation-forecast estimand. | Written identity/version/comparator disposition before registration. No outcome access for this decision. |
+| Data OS / Daily / Terminal / Radar source owners | Locate and pin actual stores; qualify identity/eligible denominator, basis, availability/revisions, rights and clock/finality; rerun retained parity on current native code and expand across actual strata. | Separate ADMIT/HOLD/REJECT receipts for Daily, Weekly context/standalone use, 4H-CLOCK and fixed 195M. A sampled 20-case parity result is not full-universe coverage. |
+| Temporal Grain owner | Consume unresolved W1A result and correct stale projection; expose qualified consumption/abstention contract. | No W1B or G/A/K/D restart, no per-name winning timeframe. |
+| Existing TOI + Evaluation/TrialLedger | Draft from the inventory; resolve R0/R2 claim budget and terminal semantics; bind native settings, seeds, endpoints, folds, support, history and holdout. | Exact owner-adopted active manifest, exposure/holdout and source receipts, then explicit W3 opening decision. Drafting is allowed before admission; registration/execution is not. |
+| Macro semantic/product + Terminal + Prophet context owners | Prepare narrow canonical episode/at-risk retention/DTO compatibility and truthful uncalibrated discovery/detail/failure-monitoring paths. | Native tests, real user-path proof and source compatibility; no competing data plane, ranking change or production promotion. |
+| Existing research and prospective evaluation owners, after gates | Execute only admitted Daily-first research; admit secondary clocks independently; retain null/inconclusive/failure results. | Reproducible scientific return, earned calibrated heads, immutable prospective receipts and matured outcomes; separate bounded consumer decision. |
+
+## Startup, delivery and completion law
+
+Start by reading `TOI_CEO_START_PROMPT_2026-10-03.md`. A continuation request posted on an existing PR is DELIVERY, not the receiver's `PICKUP_ACK`, `START`, source lease, completed repair or accepted return. The original source owner must be reconciled before any replacement is considered. Use the established lowest-cost capable worker and existing Subagent Fabric/capacity path; no `codex/work`, no default Fable worker and no duplicate operation merely to keep capacity occupied.
+
+The Executive endpoint reported `readonly` during this initiation; no executor submission, dispatch, claim or worker START was performed. This does not prevent documentation publication or same-carrier continuation requests. It must not be represented as an active running implementation. Current publication and comment-delivery receipts belong to PR #8332 and the respective original carriers; require receiver-owned ACK/START evidence separately.
+
+No default-branch merge, TOI market-outcome run, production deployment, Prophet rank/gate mutation, sizing, execution or trading-authority change is authorized by this assessment. Program completion still requires W1 acceptance, exact data admission, manifest adoption, admitted research, functional integration, prospective evidence and consumer-specific adjudication. Research-packet completion is not program completion.

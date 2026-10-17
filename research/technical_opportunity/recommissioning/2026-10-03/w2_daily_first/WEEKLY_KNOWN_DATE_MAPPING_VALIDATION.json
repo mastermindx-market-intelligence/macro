@@ -1,0 +1,36 @@
+{
+  "operation": "toi-w2-weekly-known-date-mapping-20261006-c2-001",
+  "observed_at": "2026-10-06T06:53:33.468332+00:00",
+  "source_precedent": [
+    "research/entry_timing/wave6.py::_resample_weekly pattern",
+    "research/entry_timing/wave8_warm.py known-date mapping",
+    "engine/cycles.py::_w_fri_completed completed-label gate"
+  ],
+  "fixtures": {
+    "normal": [
+      {
+        "label": "2026-10-02",
+        "known_date": "2026-10-02",
+        "value": 104.0
+      }
+    ],
+    "midweek": [
+      {
+        "label": "2026-10-02",
+        "known_date": "2026-09-30",
+        "value": 102.0
+      }
+    ],
+    "friday_absent": [
+      {
+        "label": "2026-11-27",
+        "known_date": "2026-11-26",
+        "value": 203.0
+      }
+    ]
+  },
+  "critical_finding": "Weekly label and known_date are different facts. A W-FRI label may be future-dated while the current partial bucket contains only data known today. known_date alone does not prove the calendar week is complete. Exact holiday-short-week availability requires the session/calendar owner; conservative label<=asof drops incomplete buckets but delays a holiday-short completed week until Friday.",
+  "safe_first_wave_contract": "Use the same Daily source to derive Weekly bars. Exclude an in-progress week. Carry both W-FRI label and actual source known_date. For normal weeks, label<=decision_asof is sufficient. For a Friday holiday/closure, use the canonical session calendar to prove the prior trading session is the final session of that W-FRI bucket before making the weekly value available. If calendar proof is unavailable, delay availability conservatively; never expose the partial bucket.",
+  "market_data_or_outcomes_used": false,
+  "source_or_production_mutation": false
+}

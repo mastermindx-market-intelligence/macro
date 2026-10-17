@@ -1,0 +1,296 @@
+{
+  "authority": "research_only_no_trial_registration_no_outcome_access_no_consumer_authority",
+  "calibration": {
+    "binary": "Unpenalized Platt recalibration on raw model log-odds: sigmoid(a*logit(p)+b). Require both classes, convergence and a>0; otherwise withhold calibrated probabilities.",
+    "consumer_probability_rule": "No user-facing numeric probability from model/domain whose chronological calibrator is unavailable or nonpositive-slope.",
+    "multinomial": "Unpenalized common-slope logistic recalibration: raw nonreference log-odds multiplied by one shared slope a plus K-1 intercept shifts; reference=continued_risk. Require all classes, convergence and a>0; otherwise withhold calibrated probabilities.",
+    "primary_model_loss": "Outer-test calibrated log-loss. If either arm calibrator is not estimable in a fold, that fold is unavailable for corresponding primary claim.",
+    "raw_log_loss": "Always report as secondary diagnostic when raw model fit exists; it cannot substitute for failed calibrated primary claim.",
+    "separate_from_training_and_outer_test": true,
+    "slice_sessions": 126
+  },
+  "contract_digest_sha256": "1d138c68167a5a92777abf4b0ebb270bfcdb0a742aca55436e02da781658b196",
+  "contrast_domain": {
+    "model_pairs": "Use intersection of lawful matured rows for both compared arms. Report parent-only, candidate-only, common and unavailable counts separately.",
+    "no_denominator_cleanup_after_outcomes": true,
+    "q1_original_cohort": "All original C1 directional triggers. No-entry/no-confirmation/failure/expiry/no-fill stay in cohort for timely-capture accounting."
+  },
+  "economic_cost_boundary": {
+    "effect": "Scientific comparisons may be specified; no economic/trading promotion until separately admitted cost/fill source or owner-approved proxy exists.",
+    "q1_confirmation_price_cost": "0.25-ATR gate is waiting/price displacement only, not net execution cost.",
+    "reason": "Repo evidence warns Corwin-Schultz can be volatility-dominated and must not be silently treated as realized trading cost. Daily OHLCV alone does not justify executable spread/impact claim.",
+    "spread_impact_proxy_status": "HOLD_NO_EXECUTION_GRADE_SOURCE"
+  },
+  "feature_math": {
+    "activation_features": {
+      "A0": [
+        "log1p_setup_age",
+        "signed_normalized_trigger_distance",
+        "normalized_invalidation_distance",
+        "log_prior_dollar_volume",
+        "trailing_volatility_20"
+      ],
+      "A1_add": [
+        "primary_compression_percentile"
+      ],
+      "A2": "held outside first 22-object wave"
+    },
+    "liquidity": {
+      "boundary": "t-1 must be immediately prior admitted session inside same ticker spell and not ineligible corporate-action boundary.",
+      "formula": "log1p(max(close_sadj[t-1] * split_consistent_share_volume[t-1], 0))",
+      "name": "log_prior_dollar_volume"
+    },
+    "load_bearing_missingness": "Any missing load-bearing feature means that row/model prediction is unavailable; no zero imputation.",
+    "post_trigger_features": {
+      "P0": [
+        "log1p_setup_age_at_trigger",
+        "normalized_invalidation_distance_at_trigger",
+        "observed_extension_atr",
+        "log_prior_dollar_volume",
+        "trailing_volatility_20",
+        "primary_compression_percentile"
+      ],
+      "P1_add": [
+        "participation_prior20"
+      ],
+      "P2_add": [
+        "qualified_completed_weekly_context_13w"
+      ]
+    },
+    "trailing_volatility": {
+      "formula": "population SD ddof=0 of 20 log close_sadj returns ending at landmark t, multiplied by sqrt(252)",
+      "name": "trailing_volatility_20",
+      "required_history": "21 admitted consecutive closes in same ticker spell; no shortened window."
+    },
+    "training_standardization": "Continuous features use train-fold mean and population SD ddof=0. Apply stored train values to calibration/test.",
+    "zero_variance": "If train SD <=1e-12, standardized value is fixed to zero in train/calibration/test and condition is recorded; no post-test deletion choice."
+  },
+  "folds": {
+    "fold_table": [
+      {
+        "cal_test_strict_gap_sessions": 22,
+        "calibration_end": "2023-11-28",
+        "calibration_start": "2023-05-31",
+        "test_origin_end": "2024-12-31",
+        "test_origin_sessions": 252,
+        "test_start": "2024-01-02",
+        "test_year": 2024,
+        "train_cal_strict_gap_sessions": 22,
+        "train_decision_cutoff": "2023-04-27"
+      },
+      {
+        "cal_test_strict_gap_sessions": 22,
+        "calibration_end": "2024-11-27",
+        "calibration_start": "2024-05-31",
+        "test_origin_end": "2025-12-31",
+        "test_origin_sessions": 250,
+        "test_start": "2025-01-02",
+        "test_year": 2025,
+        "train_cal_strict_gap_sessions": 22,
+        "train_decision_cutoff": "2024-04-29"
+      },
+      {
+        "cal_test_strict_gap_sessions": 22,
+        "calibration_end": "2025-11-28",
+        "calibration_start": "2025-06-02",
+        "source_end_for_label_maturity": "2026-10-02",
+        "test_origin_end": "2026-09-01",
+        "test_origin_sessions": 167,
+        "test_start": "2026-01-02",
+        "test_year": 2026,
+        "train_cal_strict_gap_sessions": 22,
+        "train_decision_cutoff": "2025-04-29"
+      }
+    ],
+    "label_maturity": "Training labels mature before calibration_start; calibration labels mature before test_start. Test origins emitted only when full primary forward span exists by source_end.",
+    "max_primary_forward_span_from_trigger_sessions": 22,
+    "no_refit": "Do not refit a fold using its outer-test outcomes.",
+    "outer": "expanding-origin calendar-year tests for 2024, 2025 and mature 2026 origins only",
+    "source_end": "2026-10-02",
+    "source_start": "2021-07-06",
+    "warmup": "Feature warm-up may precede decision cutoff but never supplies a label crossing cutoff.",
+    "why_22": "P0 is first lawful next-observation reference after completed-close trigger; common terminal is 21 RTH sessions from original P0 for all delayed policies. Q1 does not extend deadline."
+  },
+  "generated_at": "2026-10-07T01:54:36.329029+00:00",
+  "historical_exposure": {
+    "prospective_reservation": "After accepted preregistration and source/admission freeze, first full NYSE session strictly after registration-effective timestamp begins prospective shadow. Predictions immutable before outcomes mature.",
+    "prospective_results_exist": false,
+    "reason": "Existing S16/Technical/Prophet/TOI research touched overlapping history; no calendar year is claimed untouched merely because this harness has not read it.",
+    "ruling": "ALL_AVAILABLE_2021_07_06_TO_2026_10_02_HISTORY_IS_DEVELOPMENTAL_RETROSPECTIVE",
+    "untouched_historical_claim": false
+  },
+  "inference": {
+    "bootstrap": {
+      "cross_section": "All rows sharing a selected session date move together.",
+      "draws": 5000,
+      "episode_dependence": "22-session primary block covers longest primary label span; activation episodes are <=10-bar. 44/66 fixed sensitivities cannot replace primary.",
+      "p_value": "Recentred basic-bootstrap one-sided p-value with plus-one correction. Invalid/insufficient claim means p=1.",
+      "primary_block_sessions": 22,
+      "seed": 20261006,
+      "sensitivity_block_sessions": [
+        44,
+        66
+      ],
+      "type": "circular moving-block bootstrap over ordered unique NYSE session dates"
+    },
+    "familywise": {
+      "alpha": 0.05,
+      "blocked_unrun_invalid_claim_p": 1.0,
+      "family_size": 8,
+      "method": "Holm step-down FWER",
+      "selection_rule": "No secondary endpoint, sensitivity block length, Q2, sensor or clock may replace failed primary claim."
+    },
+    "primary_claims": {
+      "A1_vs_A0_DOWN": {
+        "alternative": "lower",
+        "null": 0.0,
+        "stat": "mean paired calibrated activation log-loss difference A1-A0"
+      },
+      "A1_vs_A0_UP": {
+        "alternative": "lower",
+        "null": 0.0,
+        "stat": "mean paired calibrated activation log-loss difference A1-A0"
+      },
+      "P1_vs_P0_DOWN": {
+        "alternative": "lower",
+        "null": 0.0,
+        "stat": "mean paired calibrated conditional-path log-loss difference P1-P0"
+      },
+      "P1_vs_P0_UP": {
+        "alternative": "lower",
+        "null": 0.0,
+        "stat": "mean paired calibrated conditional-path log-loss difference P1-P0"
+      },
+      "P2_vs_P1_DOWN": {
+        "alternative": "lower",
+        "null": 0.0,
+        "stat": "mean paired calibrated conditional-path log-loss difference P2-P1"
+      },
+      "P2_vs_P1_UP": {
+        "alternative": "lower",
+        "null": 0.0,
+        "stat": "mean paired calibrated conditional-path log-loss difference P2-P1"
+      },
+      "Q1_vs_Q0_DOWN": {
+        "claim_p": "max component p-values",
+        "components": [
+          "fakeout_rate_delta_lower_than_0",
+          "timely_capture_delta_greater_than_-0.05",
+          "mean_confirmation_price_cost_atr_lower_than_0.25"
+        ],
+        "type": "intersection_union"
+      },
+      "Q1_vs_Q0_UP": {
+        "claim_p": "max component p-values",
+        "components": [
+          "fakeout_rate_delta_lower_than_0",
+          "timely_capture_delta_greater_than_-0.05",
+          "mean_confirmation_price_cost_atr_lower_than_0.25"
+        ],
+        "type": "intersection_union"
+      }
+    },
+    "q1_ci_gate": "95% one-sided block-bootstrap bounds must also satisfy fakeout UCB<0, timely-capture LCB>=-0.05 and confirmation-cost UCB<=0.25 ATR.",
+    "q1_components": {
+      "confirmation_price_cost_atr": {
+        "alternative": "lower",
+        "definition": "mean s*(p_Q1-p_Q0)/A0 over Q1-entered episodes; wait-price cost only, not spread/impact",
+        "null": 0.25
+      },
+      "fakeout_rate_delta": {
+        "alternative": "lower",
+        "definition": "entered-episode original-range fakeout rate Q1 minus Q0",
+        "estimability": "both policies need entered episodes in point estimate and at least half bootstrap draws",
+        "null": 0.0
+      },
+      "timely_capture_delta": {
+        "alternative": "greater",
+        "definition": "mean over ALL original triggers of [policy entered before raw favorable first-passage time AND raw first-passage result favorable], Q1 minus Q0",
+        "null": -0.05
+      }
+    },
+    "robustness_cannot_create_new_primary_rule": true,
+    "robustness_only": [
+      "name holdout",
+      "sector holdout",
+      "44-session block",
+      "66-session block",
+      "raw uncalibrated loss",
+      "era splits"
+    ]
+  },
+  "market_values_read_by_this_packet": false,
+  "outcomes_read": false,
+  "promotion_only_gates": [
+    "prospective shadow evidence",
+    "execution-grade spread/impact/fill qualification",
+    "consumer-owner adjudication",
+    "production/browser proof for surfaced product"
+  ],
+  "remaining_pre_outcome_gates": [
+    "W1 acceptance",
+    "W2 records/source acceptance",
+    "strict population-unit scientific adoption",
+    "authoritative corporate-action snapshot",
+    "runtime source snapshot digest for exact objects used",
+    "TOI strict feature/detector adapter implementation and exact content hash",
+    "activation person-period/competing-risk row-construction acceptance",
+    "exact Q0/Q1 lawful reference implementation acceptance",
+    "independent preregistration review",
+    "TrialLedger registration only after all preceding gates"
+  ],
+  "schema": "toi.r0.model_evaluation_freeze_candidate.v1",
+  "search_accounting": {
+    "canonical_owner": "existing engine.trial_ledger.TrialLedger",
+    "declared_budget_floor": 22,
+    "itemized_configs": 22,
+    "ledger_write_in_this_packet": false,
+    "placebo_seed": 20261006,
+    "planning_ids_are_native_trial_ids": false,
+    "trial_family_if_adopted": "toi_w3_r0"
+  },
+  "solver": {
+    "actual_run_requirement": "Record Python+NumPy versions and re-run the byte-identical synthetic validation before any market-data execution.",
+    "armijo_c": 0.0001,
+    "binary_objective": "mean binary NLL + 0.5*lambda*sum(beta^2); intercept unpenalized",
+    "contract_id": "toi_r0_stat_contract_v1",
+    "failure_rule": "Any non-finite state, singular Hessian, non-descent Newton step, failed line search or max-iteration nonconvergence makes that fold/model unavailable. Do not switch solvers.",
+    "gradient_infinity_tolerance": 1e-08,
+    "house_fitter_not_equivalent": {
+      "engine/validation.platt_fit": "different GD recipe and identity-shrinkage calibration; comparator only",
+      "scripts/build_cycle_pattern_tr1.py": "same lambda*W/n scaling",
+      "scripts/fit_cycle_hazard.py": "gradient uses lambda*w/n, equivalent to mean NLL + lambda/(2n)||w||^2, not frozen TOI objective"
+    },
+    "initialization": "all coefficients and intercepts zero; calibration slope initialized at 1 and intercepts at 0",
+    "max_iterations": 100,
+    "minimum_step": "2^-20",
+    "multinomial_objective": "reference-class softmax mean NLL + 0.5*lambda*sum(B^2); reference class=continued_risk; intercepts unpenalized",
+    "optimizer": "deterministic full-batch Newton with Armijo backtracking",
+    "ridge_lambda": 1.0,
+    "source_file": "toi_r0_stat_contract.py",
+    "source_sha256": "d19fef5fe7429d92f05ef6edc0cd5face490355c2ecfe213d9ff0ceaf69ac7ce",
+    "synthetic_validation_sha256": "dc2812c8709e0579e6b065f79985a9a918fd942800eb5efd74e79818cb02bc5c",
+    "validation_environment": {
+      "numpy": "2.5.2",
+      "python": "3.14.7"
+    }
+  },
+  "source_or_production_mutation": false,
+  "source_pins": {
+    "house_blobs": {
+      "donor_w3_configuration_proposal": "539c8a91ec5131dfcded377baca162fb2e81ac07",
+      "donor_w3_hypothesis_proposal": "85d40fafcd44e1ec6c52b7e758ea766f7f530c59",
+      "engine/grading_stats.py": "09b7a8a3003ebce9c3e58b2271b21ccdbcc5033d",
+      "engine/trial_ledger.py": "eb364fe9fa53f46d0455e194d3e3ccdbb5732778",
+      "engine/validation.py": "e9bbe0e77ae571b62a9f5b8b8e4e7a950c035399",
+      "options_research_protocol": "aa4be7b8c80d872e8b5838dacfceda2feea92a5d",
+      "scripts/build_cycle_pattern_tr1.py": "0cded042729d132e51e0fd66069ab1aeed6394e1",
+      "scripts/fit_cycle_hazard.py": "48ea82d12803bb64e0c954ed66912a8df2c88088"
+    },
+    "macro_main_freshness_fence": "3ed9be2dc59eb94cb84a4511ca5f97969dcfbdd9",
+    "protected_mastermind": "9a24ef2c4b27ac95a4d1f72f5eae1073657cd7c2",
+    "toi_carrier_parent": "d58d23b113782d93aaab2d1e600f847a79880b08"
+  },
+  "status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+  "trial_ledger_written": false
+}

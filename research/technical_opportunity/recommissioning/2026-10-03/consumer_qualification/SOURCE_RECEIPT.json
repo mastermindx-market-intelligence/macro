@@ -1,0 +1,26 @@
+{
+  "source_commit": "88804ed7079700c598bb8e04aa64307d1335402d",
+  "files": [
+    {
+      "path": "scripts/build_confluence_screener.py",
+      "blob": "118c23550f5d0bf41e39a6a3c2198e9890f534f8",
+      "sha256": "a942cf2571169e987dbff006f0eab3f8f070a621ba1aa1fd2321d18b3c2e47c6"
+    },
+    {
+      "path": "templates/confluence_screener.html.j2",
+      "blob": "8e18461db98d7141d573cd047aa8637189ad4250",
+      "sha256": "a782c6288f2d24917511a182470d521993c567297a965dc7bba8a7e53de83e5b"
+    },
+    {
+      "path": "templates/_seo_head.html.j2",
+      "blob": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8",
+      "sha256": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee"
+    },
+    {
+      "path": "tests/test_confluence_screener_page.py",
+      "blob": "cfc2c0ba08162f4515e62b8b0607317ea746257d",
+      "sha256": "2d1201e9bf2e55892e2f13aec20608ad47bdaa9856ca35c410bfd70d5b03e58b"
+    }
+  ],
+  "scope": "Isolated repair proposal only; not a source worktree or approved production change"
+}
