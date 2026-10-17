@@ -1,0 +1,29 @@
+{
+  "artifact": "thetadata_eod/_manifest.json",
+  "artifact_sha256": "08cac520cea37a8b3c430dc4a9a430a63ba45a7e9a2782e841efc66a91f1215b",
+  "daily_refresh": {
+    "D": "2026-10-09",
+    "S": "2026-10-08",
+    "ad_ready_roots": 369,
+    "ad_universe_count": 375,
+    "complete_t1_roots": 372,
+    "eod_S_roots": 372,
+    "failure_counts_by_reason": {},
+    "finished_at": "2026-10-10T01:04:25.406377+00:00",
+    "greeks_S_roots": 372,
+    "mode": "incremental_daily",
+    "oi_D_roots": 372,
+    "oi_D_source": "snapshot_open_interest",
+    "started_at": "2026-10-10T01:00:05.605424+00:00",
+    "status": "healthy",
+    "terminal_health": "reachable"
+  },
+  "historical_quote_known_at_proven": false,
+  "observed_at": "2026-10-11T10:31:27.782317+00:00",
+  "provider_requests": 0,
+  "root_surface_quality_certified": false,
+  "schema": "factor_atlas.s3.batch_metadata_observation/v1",
+  "scope": "collector batch metadata, not per-quote or per-file immutable publication history",
+  "source_host": "documented original M1 options owner",
+  "top_level_updated_at": "2026-08-23T00:26:58.063098+00:00"
+}
