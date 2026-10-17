@@ -239,7 +239,8 @@ __all__ = [
 # are cached in the module namespace; the six contract modules stay eager because the
 # thin CI lane's closure claim enumerates exactly those files.  ``from lib.dataos
 # import *`` and every name in ``__all__`` still resolve — pinned by
-# tests/test_dataos_read_contract.py (W5).
+# tests/test_dataos_read_contract.py (W5); the static all-exports-resolve guard cannot see
+# runtime bindings, so this file is listed in its EXEMPT table with that pin as the reason.
 _LAZY_MODULES = ('price_views', 'read_contract', 'basket_read')
 _LAZY_NAMES: dict[str, str] = {}
 for _module, _names in (
