@@ -624,23 +624,6 @@ def _details_json(envelopes, name_index, nodes, edges, site_dir: Path) -> str:
 # ---------------------------------------------------------------------------
 
 
-def _basket_node_meta(nodes: pd.DataFrame, basket_id: str) -> dict:
-    """``{node_id, name_en, name_zh, kind}`` for a basket row, or ``{}``."""
-    if "node_id" not in nodes.columns:
-        return {}
-    for row in nodes.to_dict("records"):
-        if row.get("node_id") != basket_id or row.get("kind") != "basket":
-            continue
-        en = row.get("name_en") if isinstance(row.get("name_en"), str) else ""
-        zh = row.get("name_zh") if isinstance(row.get("name_zh"), str) else ""
-        return {
-            "node_id": basket_id,
-            "name_en": en or basket_id,
-            "name_zh": zh or en or basket_id,
-        }
-    return {}
-
-
 def _basket_record_to_chain(
     record: dict, basket_meta: dict, site_dir: Path,
     member_edge_id: str = "",
@@ -744,7 +727,13 @@ def _build_ticker_lookup(
 
     site_dir = Path(root) / "site"
     unmapped = _unmapped_basket_slugs(Path(root))
-    store_view = _FrameStore(nodes, edges)
+    # Convert each frame to records ONCE. ``hierarchy_paths`` runs
+    # ``_records`` (a DataFrame ``to_dict``) on every call; handing it lists
+    # makes that a cheap row copy. Measured: ~50 s of the first cut's ~43 s
+    # overrun was repeated ``to_dict`` across ~121 basket calls.
+    node_rows = nodes.to_dict("records") if hasattr(nodes, "to_dict") else list(nodes)
+    edges_records = edges.to_dict("records") if hasattr(edges, "to_dict") else list(edges)
+    store_view = _FrameStore(node_rows, edges_records)  # type: ignore[arg-type]
 
     # 1. Public house basket ids present in the graph (kind == "basket" and
     #    starts with one of the five families). Sorted for deterministic build
@@ -753,7 +742,7 @@ def _build_ticker_lookup(
     #    49 today and the rest are smaller.
     public_baskets: list[str] = []
     if "node_id" in nodes.columns and "kind" in nodes.columns:
-        for row in nodes.to_dict("records"):
+        for row in node_rows:
             nid = row.get("node_id")
             if not isinstance(nid, str) or not nid:
                 continue
@@ -766,8 +755,18 @@ def _build_ticker_lookup(
 
     # 2. basket_id → list of (anchor, chain, via) records (the same shape
     #    hierarchy_paths returns; ``via`` here is just the EXPRESSES hop).
+    #    A basket reaches a theme only through an EXPRESSES row whose src is
+    #    the basket (structural_navigation.hierarchy_paths), so a basket with
+    #    no such row at any time returns [] — skip the call, same result.
+    expresses_src = {
+        str(r.get("src") or "") for r in edges_records
+        if str(r.get("type") or "") == "EXPRESSES"
+    }
     basket_records: dict[str, list[dict]] = {}
     for basket_id in public_baskets:
+        if basket_id not in expresses_src:
+            basket_records[basket_id] = []
+            continue
         try:
             basket_records[basket_id] = sn.hierarchy_paths(
                 store_view, basket_id, as_of,
@@ -779,11 +778,19 @@ def _build_ticker_lookup(
 
     # 3. Cache basket node metadata (name_en/name_zh). One pass over nodes.
     basket_meta: dict[str, dict] = {}
-    if "node_id" in nodes.columns:
-        for row in nodes.to_dict("records"):
-            nid = row.get("node_id")
-            if isinstance(nid, str) and nid in basket_records:
-                basket_meta[nid] = _basket_node_meta(nodes, nid)
+    for row in node_rows:
+        nid = row.get("node_id")
+        if (
+            isinstance(nid, str) and nid in basket_records
+            and nid not in basket_meta and row.get("kind") == "basket"
+        ):
+            en = row.get("name_en") if isinstance(row.get("name_en"), str) else ""
+            zh = row.get("name_zh") if isinstance(row.get("name_zh"), str) else ""
+            basket_meta[nid] = {
+                "node_id": nid,
+                "name_en": en or nid,
+                "name_zh": zh or en or nid,
+            }
 
     # 4. Live MEMBER_OF edges per company, liveness via _collapse_relevant_edges.
     from engine.theme_graph.ontology import (  # noqa: PLC0415
@@ -803,16 +810,24 @@ def _build_ticker_lookup(
     # which MEMBER_OF edge ids live for each (company → basket) pair so the
     # parity walk can match ``hierarchy_paths(company)``'s via tuple exactly.
     member_edge_index: dict[str, dict[str, set[str]]] = {}
-    edges_records = edges.to_dict("records") if hasattr(edges, "to_dict") else []
     company_ids = set()
     if "node_id" in nodes.columns and "kind" in nodes.columns:
-        for row in nodes.to_dict("records"):
+        for row in node_rows:
             if row.get("kind") == "company" and isinstance(row.get("node_id"), str):
                 company_ids.add(row["node_id"])
+    # Group edge rows by endpoint in ONE pass, preserving original order
+    # (``_collapse_relevant_edges`` uses the row index as a tie-break, and it
+    # already skips rows not touching ``node_id`` — so a per-company slice in
+    # original order yields the identical live set).
+    rows_by_company: dict[str, list[dict]] = {}
+    for r in edges_records:
+        for end in {str(r.get("src") or ""), str(r.get("dst") or "")}:
+            if end in company_ids:
+                rows_by_company.setdefault(end, []).append(r)
     for company_id in sorted(company_ids):
         try:
             live, _future = _collapse_relevant_edges(
-                edges_records, node_id=company_id, asof=asof_date,
+                rows_by_company.get(company_id, []), node_id=company_id, asof=asof_date,
                 knowledge_cutoff=cutoff_date,
             )
         except Exception as exc:  # noqa: BLE001
@@ -840,7 +855,7 @@ def _build_ticker_lookup(
     if "node_id" not in nodes.columns:
         return lookup
 
-    for row in nodes.to_dict("records"):
+    for row in node_rows:
         if row.get("kind") != "company":
             continue
         company_id = row.get("node_id")
