@@ -1,0 +1,199 @@
+{
+  "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+  "mission": "A15",
+  "whole_mission_accepted": false,
+  "pr": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/839",
+  "source_head": "a49629399ad380516bd062dc072cedbb6e801fa6",
+  "base_head": "d660d98b1ebc0bdf0d1b16d66202b1760f6cc94a",
+  "source_hashes": {
+    "terminal/lib/heatmapCapitalization.ts": "bd10b0d58078cf235fee75de98fc510e91352bd86bb36009c4843450230eb377",
+    "terminal/components/heatmap/HeatmapView.tsx": "98d3605d37a0decaf69c9828f7057fe835ba9c310482b3ef1780b7fedb0555d9",
+    "terminal/components/heatmap/Treemap.tsx": "51b284e851011198374854f765c6efd6cb9f682450e7e52f62438adfb1bc995b",
+    "terminal/components/heatmap/types.ts": "a815136d6c0e0396d1e6d36eae63097fa92deddd7e0989c33e42c3e1f22170e2",
+    "terminal/lib/__tests__/heatmapCapitalization.test.ts": "aaff6acdce0610a75282571a0486cdc7ce8700c2fefe0f6135bdbb5bef7d1ecd",
+    "terminal/lib/__tests__/heatmapCapDisclosure.test.tsx": "74b45e9451f04d50806c86b13ea9a4cc97d92ae0cbea32b3389f4c56e9ed7e02"
+  },
+  "fabric_run": "rs_20261006T170959Z_6909",
+  "native_started": true,
+  "native_returncode": 0,
+  "native_cleanup_proven": true,
+  "native_residual_count": 0,
+  "scoped_actual_browser": {
+    "pass": 11,
+    "fail": 0,
+    "skip": 0,
+    "runtime": "declared synthetic manifest/flow/quotes in own production-mode Next start",
+    "native_touch": false,
+    "live_authenticated": false
+  },
+  "parent_validation": {
+    "focused_pass": 24,
+    "typecheck_exit": 0,
+    "normal_build_exit": 0,
+    "unit_pass": 7715,
+    "unit_todo": 4,
+    "unit_files": 470,
+    "unit_max_workers": 2,
+    "responsive_pass": 41,
+    "responsive_skip": 4,
+    "responsive_fail": 0,
+    "responsive_projects": [
+      "desktop",
+      "tablet",
+      "mobile"
+    ],
+    "responsive_exit": 0,
+    "earlier_concurrent_pine_timeout_preserved": true,
+    "isolated_pine_pass": 4,
+    "local_port3145_stopped": true
+  },
+  "release_state": "CURRENT_HEAD_PR_APPROVAL_REQUIRED; DISPATCH_REAL_UI_FAILURE; APP_ENROLLMENT_PENDING",
+  "merged": false,
+  "deployed": false,
+  "actual_live_new_mode": false,
+  "updated_at": "2026-10-08T21:44:10.127542+00:00",
+  "reviewed_source_head": "16b30bf005ca9040aa556b9dcb630de3ae4872b0",
+  "source_unchanged_after_controller_refresh": true,
+  "reviewed_base_head": "8f3d04f1c7b2d26a90623497b30f0901160d03a2",
+  "historical_required_ci": {
+    "conclusion": "success",
+    "headSha": "94dff15fdf5270f145e374ae6810881426549242",
+    "jobs": [
+      {
+        "conclusion": "success",
+        "databaseId": 112892176602,
+        "name": "Investigation PostgreSQL invariants",
+        "status": "completed",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37650471663/job/112892176602"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 112892176829,
+        "name": "Terminal e2e serial (shard)",
+        "status": "completed",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37650471663/job/112892176829"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 112892176859,
+        "name": "Terminal unit + typecheck (shard)",
+        "status": "completed",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37650471663/job/112892176859"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 112892176888,
+        "name": "Ingest + signal-layer tests",
+        "status": "completed",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37650471663/job/112892176888"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 112892176917,
+        "name": "Terminal e2e desktop-2 (shard)",
+        "status": "completed",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37650471663/job/112892176917"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 112892176999,
+        "name": "Terminal e2e mobile (shard)",
+        "status": "completed",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37650471663/job/112892176999"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 112892177073,
+        "name": "Terminal e2e tablet (shard)",
+        "status": "completed",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37650471663/job/112892177073"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 112892177198,
+        "name": "Quote Hub tests",
+        "status": "completed",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37650471663/job/112892177198"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 112892177294,
+        "name": "Terminal e2e desktop-1 (shard)",
+        "status": "completed",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37650471663/job/112892177294"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 112908819298,
+        "name": "Terminal typecheck + tests",
+        "status": "completed",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37650471663/job/112908819298"
+      }
+    ],
+    "event": "workflow_dispatch",
+    "run_id": 37650471663
+  },
+  "historical_release_gate": {
+    "pull_request_run": 37650481196,
+    "head": "94dff15fdf5270f145e374ae6810881426549242",
+    "conclusion": "action_required",
+    "jobs": [],
+    "synthetic_merge_head": "adbfd24e100ae3ec51b8dfa30837e4315c8aec0b",
+    "synthetic_merge_check_runs": 0,
+    "normal_merge_refused": true,
+    "approval_tool_review": "DENIED_PRE_EXECUTION; USER_ACTION_PENDING",
+    "protection_bypass": false,
+    "approval_observed_20261008": {
+      "status": "in_progress",
+      "run_attempt": 2,
+      "triggering_actor": "chriswong6031-creator",
+      "qualifies_current_head": false
+    }
+  },
+  "required_ci": {
+    "run_id": 37707991707,
+    "headSha": "a49629399ad380516bd062dc072cedbb6e801fa6",
+    "event": "workflow_dispatch",
+    "conclusion": "failure",
+    "mobile_job": 113086877001,
+    "mobile_passed": 365,
+    "mobile_skipped": 158,
+    "mobile_failed": 1,
+    "failure": "Seasonal read stays useful: noninteractive .fin-ro-tick-year SVG line intercepts the hovered .fin-ro-band",
+    "log": "a15-mobile-failure-20261008.log"
+  },
+  "release_gate": {
+    "pull_request_run": 37707997477,
+    "head": "a49629399ad380516bd062dc072cedbb6e801fa6",
+    "conclusion": "action_required",
+    "jobs": [],
+    "synthetic_merge_head": "24dd7cda98c3dcb1633936959e5ca0ca2ad0caf4",
+    "old_user_approval_qualifies_this_head": false,
+    "automation_pr": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/850",
+    "automation_head": "c47ee8e37bfccd9f39e44114ceccadfb8dc2c3aa",
+    "one_time_app_enrolled": false,
+    "protection_bypass": false
+  },
+  "existing_owner_fix_proof": {
+    "owner_pr": 846,
+    "owner_head": "ac4a3a60423b7a34aeb3c80243773bbbfb379518",
+    "path": "terminal/components/fin/RegimeOutlook.tsx",
+    "module_sha256": "f40b77c19dabffb9ab130457b61ec95900851557a1fab54cc84fc4fa781cc0cf",
+    "change": "Set pointerEvents=none on decorative tick group",
+    "actual_next_cases": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "projects": [
+        "desktop",
+        "tablet",
+        "mobile"
+      ]
+    },
+    "temporary_proof_only": true,
+    "a15_checkout_restored_clean": true,
+    "owned_server3145_stopped": true,
+    "incorporated": false,
+    "log": "seasonal-owner846-proof-20261008.log"
+  }
+}

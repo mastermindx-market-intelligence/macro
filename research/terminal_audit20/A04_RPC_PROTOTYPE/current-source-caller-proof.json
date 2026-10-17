@@ -1,0 +1,30 @@
+{
+  "source_base": "64c1ea5e25a335a0b0636e73e7fdbe0f8beb7b0e",
+  "current_merged_deployed": "8f3d04f1c7b2d26a90623497b30f0901160d03a2",
+  "blobs": {
+    "terminal/app/api/drawings/route.ts": [
+      "113079062eb2671c4ba44a6f21bb21c7e2104023",
+      "113079062eb2671c4ba44a6f21bb21c7e2104023"
+    ],
+    "terminal/lib/drawingOutbox.ts": [
+      "61f16fbd41643d2b83d83d6792f916a046a31c58",
+      "61f16fbd41643d2b83d83d6792f916a046a31c58"
+    ],
+    "terminal/lib/drawings.ts": [
+      "cb43a31036733364cc687acafa101797f5363bcd",
+      "cb43a31036733364cc687acafa101797f5363bcd"
+    ],
+    "terminal/lib/drawingTools.ts": [
+      "7cc19b1bdac93157766d233dde2a6a0f55710e20",
+      "7cc19b1bdac93157766d233dde2a6a0f55710e20"
+    ]
+  },
+  "all_four_unchanged": true,
+  "actual_caller": {
+    "path": "terminal/components/TerminalShell.tsx",
+    "save_line": 1602,
+    "load_line": 2355,
+    "source_gate": "exact incumbent PR597 owner binding unresolved"
+  },
+  "no_source_takeover": true
+}
