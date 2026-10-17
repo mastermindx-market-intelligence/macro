@@ -54,6 +54,9 @@ from engine.capital_structure.issuer_state_contracts import (
     ECONOMIC_TERM_EFFECTIVE_NAMES,
     ECONOMIC_TERM_FLAG_NAMES,
     ECONOMIC_TERM_NAMES,
+    ECONOMIC_TERM_PRICE_FORMULA_NAMES,
+    ECONOMIC_TERM_STRUCTURE_NAMES,
+    ECONOMIC_TERM_STRUCTURE_TYPES,
     ECONOMIC_TERM_UNITS,
     TERM_FACT_ORIGINS,
     UNIT_KINDS,
@@ -67,6 +70,7 @@ from engine.capital_structure.issuer_state_contracts import (
     _ID,
     sha256_of,
     stable_id,
+    structure_from_record,
 )
 from engine.capital_structure.term_integration import INSTRUMENT_IDENTITY_KEYS
 
@@ -109,6 +113,11 @@ BINDING_RECORD_KEYS = (
     "evidence",
     "supersedes",
 )
+#: I2 (SPEC_I2 §6): an OPTIONAL structured-term reading of an occurrence.  It is
+#: deliberately not part of ``TERM_RECORD_KEYS``, which stays the closed set of
+#: keys every occurrence carries: a pre-I2 record is byte-identical, and a record
+#: with a structure carries exactly one key more.
+STRUCTURE_KEY = "structure"
 EVIDENCE_KEYS = ("manifest_id", "span_id", "text_sha256")
 EXTRACTION_KEYS = ("method", "parser_version")
 POINT_IN_TIME_KEYS = ("available_at", "event_time")
@@ -211,6 +220,35 @@ def _refuse_numbers(value: Any, path: str = "<root>") -> None:
     raise ContractViolation(f"{path}: unsupported type {type(value).__name__}")
 
 
+def _refuse_structure_numbers(value: Any, path: str = "<root>") -> None:
+    """No float anywhere in a structured term; exact integers stay exact.
+
+    A structure's day counts, rounding places and period lengths are integers by
+    contract (SPEC_I2 §1.5); every MONEY and RATE figure inside one is a
+    :class:`Quantity` whose value is an exact decimal string.  A float is still
+    refused at every depth, because a float here is a silent rounding of a
+    contractual term.
+    """
+    if value is None or isinstance(value, (bool, str)):
+        return
+    if isinstance(value, int):
+        return
+    if isinstance(value, (float, Decimal, complex)):
+        raise ContractViolation(
+            f"{path}: exact integers and decimal strings only, a {type(value).__name__} is refused ({value!r})"
+        )
+    if isinstance(value, Mapping):
+        for key, item in value.items():
+            _require(isinstance(key, str), f"{path}: non-string key {key!r}")
+            _refuse_structure_numbers(item, f"{path}.{key}")
+        return
+    if isinstance(value, (list, tuple)):
+        for index, item in enumerate(value):
+            _refuse_structure_numbers(item, f"{path}[{index}]")
+        return
+    raise ContractViolation(f"{path}: unsupported type {type(value).__name__}")
+
+
 def _refuse_identity_keys(value: Any, path: str = "<root>") -> None:
     """A term occurrence is pre-instrument: no identity or capacity key at any depth."""
     if isinstance(value, Mapping):
@@ -252,14 +290,58 @@ def _evidence_ref(value: Any, label: str) -> dict[str, str]:
 
 
 def _category(name: str) -> str:
-    """``quantity``, ``flag`` or ``date``: the three categories partition the vocabulary."""
+    """``quantity``, ``flag``, ``date`` or ``structure``: the categories partition the vocabulary."""
     if name in ECONOMIC_TERM_UNITS:
         return "quantity"
     if name in ECONOMIC_TERM_FLAG_NAMES:
         return "flag"
     if name in ECONOMIC_TERM_DATE_NAMES:
         return "date"
-    raise ContractViolation(f"economic term name {name!r} has no unit, flag or date category")
+    if name in ECONOMIC_TERM_STRUCTURE_NAMES:
+        # I2 (SPEC_I2 §1.3): these five names carry a structure and nothing else.
+        return "structure"
+    raise ContractViolation(f"economic term name {name!r} has no unit, flag, date or structure category")
+
+
+def _validated_structure(record: Mapping[str, Any], name: str, label: str) -> Any:
+    """Parse and admit one occurrence's ``structure``, or refuse it (SPEC_I2 §6).
+
+    The structure must be the type its name carries, and the five structure-only
+    names enter ONLY as ``adjudicated_gold`` (SPEC_I2 §0 item 8): model prose
+    never mints a reset, an anti-dilution method, a settlement election, a
+    conversion condition or an accrual term.
+    """
+    raw = record.get(STRUCTURE_KEY)
+    if raw is None:
+        return None
+    _refuse_structure_numbers(raw, f"{label}.{STRUCTURE_KEY}")
+    _refuse_identity_keys(raw, f"{label}.{STRUCTURE_KEY}")
+    parsed = structure_from_record(raw, f"{label}.{STRUCTURE_KEY}")
+    expected = ECONOMIC_TERM_STRUCTURE_TYPES.get(name)
+    _require(
+        expected is not None,
+        f"{label}.{STRUCTURE_KEY}: the term {name!r} carries no structure",
+    )
+    _require(
+        type(parsed).__name__ == expected,
+        f"{label}.{STRUCTURE_KEY}: {name!r} carries a {expected}, got {type(parsed).__name__}",
+    )
+    if name in ECONOMIC_TERM_STRUCTURE_NAMES:
+        _require(
+            record["fact_origin"] == GOLD_ORIGIN,
+            f"{label}.fact_origin: {name!r} enters only as {GOLD_ORIGIN!r}, got {record['fact_origin']!r}",
+        )
+    elif name in ECONOMIC_TERM_PRICE_FORMULA_NAMES:
+        _require(
+            parsed.has_market_component or record["value"] is not None,
+            f"{label}: an all-fixed price formula states the fixed price it evaluates to",
+        )
+        _require(
+            not parsed.has_market_component or record["value"] is None,
+            f"{label}.value: a market price formula is not a fact until the pricing date, "
+            "so the occurrence carries its verbatim formula and no value",
+        )
+    return parsed
 
 
 def _record_sequence(value: Any, label: str) -> tuple:
@@ -303,8 +385,14 @@ def validate_economic_term_record(record: Any) -> dict[str, Any]:
     _require(isinstance(record, Mapping), "instrument_economic_term: mapping required")
     label = "instrument_economic_term"
     _refuse_identity_keys(record)
-    _refuse_numbers(record)
-    _closed_keys(record, TERM_RECORD_KEYS, label)
+    has_structure = STRUCTURE_KEY in record
+    if has_structure:
+        # The structure's own numbers are integers by contract (SPEC_I2 §1.5);
+        # every other key keeps the exact-decimal-string-only law.
+        _refuse_numbers({key: item for key, item in record.items() if key != STRUCTURE_KEY})
+    else:
+        _refuse_numbers(record)
+    _closed_keys(record, TERM_RECORD_KEYS + ((STRUCTURE_KEY,) if has_structure else ()), label)
     _require(
         record["schema"] == TERM_RECORD_SCHEMA,
         f"{label}.schema: {TERM_RECORD_SCHEMA!r} required, got {record['schema']!r}",
@@ -385,14 +473,25 @@ def validate_economic_term_record(record: Any) -> dict[str, Any]:
         f"{label}.occurrence_id: must be the evidence digest {occurrence_id!r}, got {record['occurrence_id']!r}",
     )
 
+    structure = _validated_structure(record, name, label)
     if status == "deferred":
         for field_name, item in (
             ("value", value),
             ("flag", flag),
             ("expression", expression),
             ("date_value", date_value),
+            (STRUCTURE_KEY, structure),
         ):
             _require(item is None, f"{label}.{field_name}: a deferred record carries no fact, got {item!r}")
+    elif category == "structure":
+        _require(structure is not None, f"{label}.{STRUCTURE_KEY}: an observed {name!r} record carries its structure")
+        for field_name, item in (
+            ("value", value),
+            ("flag", flag),
+            ("expression", expression),
+            ("date_value", date_value),
+        ):
+            _require(item is None, f"{label}.{field_name}: an observed {name!r} record carries no {field_name}")
     elif category == "quantity":
         _require(flag is None, f"{label}.flag: an observed quantity term carries no flag")
         _require(date_value is None, f"{label}.date_value: an observed quantity term carries no date")
@@ -548,17 +647,39 @@ def _effective_at(records: Sequence[Mapping[str, Any]]) -> str | None:
     return _extreme_timestamp(records, "event_time", latest=True)
 
 
+def _structure_key(record: Mapping[str, Any]) -> str | None:
+    """The canonical digest of an occurrence's structure, or ``None``.
+
+    Two structures are the same reading only if their canonical JSON is, so a
+    conflicting structure at the same ``effective_at`` is a contradiction this
+    module reports rather than a winner it picks (SPEC_I1 §4.4, SPEC_I2 §6).
+    """
+    structure = record.get(STRUCTURE_KEY)
+    return None if structure is None else sha256_of(_record_of(structure))
+
+
+def _record_of(value: Any) -> Any:
+    return value.as_record() if hasattr(value, "as_record") else value
+
+
 def _value_key(record: Mapping[str, Any], name: str) -> tuple:
     """The identity of a stated value, used to decide whether members disagree.
 
     ``Decimal`` comparison makes "1.50" and "1.5" one value; a formula is
-    compared verbatim, because two spellings of a formula are two readings.
+    compared verbatim, because two spellings of a formula are two readings.  An
+    I2 structure is part of that identity: the same number under a different
+    reset schedule is a different reading of the contract.
     """
     category = _category(name)
+    structure = _structure_key(record)
+    if category == "structure":
+        return ("structure", structure)
     if category == "quantity":
         if record["value"] is not None:
-            return ("value", Decimal(record["value"]))
-        return ("expression", record["expression"])
+            base: tuple = ("value", Decimal(record["value"]))
+        else:
+            base = ("expression", record["expression"])
+        return base if structure is None else base + ("structure", structure)
     if category == "flag":
         return ("flag", record["flag"])
     return ("date_value", record["date_value"])
@@ -612,7 +733,19 @@ def _admitted_term(instrument_id: str, name: str, records: Sequence[Mapping[str,
         interpretation_version=_interpretation_version(records),
         available_at=_earliest_available(records),
         effective_at=_effective_at(records),
+        structure=_admitted_structure(name, records),
     )
+
+
+def _admitted_structure(name: str, records: Sequence[Mapping[str, Any]]) -> Any:
+    """The structure an admitted term carries, parsed from its winning record."""
+    if _category(name) not in ("structure", "quantity"):
+        return None
+    smallest = min(records, key=lambda item: item["occurrence_id"])
+    raw = smallest.get(STRUCTURE_KEY)
+    if raw is None:
+        return None
+    return structure_from_record(raw, f"instrument_economic_term[{smallest['occurrence_id']}].{STRUCTURE_KEY}")
 
 
 def _contradicted_term(
@@ -868,6 +1001,7 @@ __all__ = [
     "GOLD_ORIGIN",
     "IMPLEMENTATION",
     "POINT_IN_TIME_KEYS",
+    "STRUCTURE_KEY",
     "TERM_BINDING_SCHEMA",
     "TERM_RECORD_KEYS",
     "TERM_RECORD_SCHEMA",

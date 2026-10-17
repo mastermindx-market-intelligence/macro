@@ -9,4 +9,11 @@
    page's basketdata folder (default 'basketdata/' for US). #}
 <section id="forming-narratives"></section>
 <script src="forming_narratives.js"></script>
-<script>renderFormingNarratives({ base: "{{ ne_base | default('basketdata/') }}" });</script>
+<script>
+  // This optional asset may be denied to an anonymous visitor (HTTP 401).
+  // Leave the server's access policy unchanged and do not throw from a missing
+  // global; authenticated pages still execute the same renderer exactly once.
+  if (typeof window.renderFormingNarratives === "function") {
+    window.renderFormingNarratives({ base: "{{ ne_base | default('basketdata/') }}" });
+  }
+</script>

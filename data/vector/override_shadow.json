@@ -2,7 +2,7 @@
   "schema": "override_shadow.v1",
   "stub": false,
   "stub_note": "v1: W1 measured overlay merged onto the W3 panel payload (weekly gated-vs-raw series, prior-cycle same-point context, cum gap). Per-cycle attribution + breakeven fan live in data/vector/gate_attribution.json.",
-  "generated_at": "2026-10-16 17:39 UTC",
+  "generated_at": "2026-10-17 06:38 UTC",
   "audience": "owner-only",
   "override": {
     "id": "midterm_blackout",
@@ -33,38 +33,38 @@
     "dampening_path_pct": [
       -84.0,
       -77.0,
-      -34.0
+      -35.0
     ],
     "dampening_note": "Amplitude is dampening cycle-over-cycle (institutionalisation) \u2014 the last leg is the CURRENT drawdown, still open, never banked.",
     "pivot_fit_mae_days": 7.2,
     "pivot_fit_note": "IN-SAMPLE: the same pivots also set the 1064/364 parameters \u2014 this is fit quality, not forecast skill."
   },
   "counterfactual": {
-    "asof": "2026-10-16",
+    "asof": "2026-10-17",
     "gated_pct": {
       "conservative": 0.0,
-      "moderate": 41.4,
-      "aggressive": 82.6,
-      "optimal": 41.4
+      "moderate": 41.3,
+      "aggressive": 82.3,
+      "optimal": 41.3
     },
     "raw_pct": {
       "conservative": 0.0,
-      "moderate": 41.4,
-      "aggressive": 82.6,
-      "optimal": 41.4
+      "moderate": 41.3,
+      "aggressive": 82.3,
+      "optimal": 41.3
     },
     "raw_source": "signals.parquet alloc_*_raw (W0 dual series)",
     "parity_ok": true,
-    "ytd_raw_mean_pct": 28.0,
-    "ytd_raw_days_gt0": 160,
-    "ytd_days": 289
+    "ytd_raw_mean_pct": 28.1,
+    "ytd_raw_days_gt0": 161,
+    "ytd_days": 290
   },
   "falsifiers": {
     "items": [
       {
         "key": "dampening",
         "level": "watch",
-        "text": "Bear is shallower than prior cycles (-34% vs ~-80% avg) \u2014 institutionalisation may be compressing the cycle; the bottom could be mushier. Don't wait for a \u221280% washout.",
+        "text": "Bear is shallower than prior cycles (-35% vs ~-80% avg) \u2014 institutionalisation may be compressing the cycle; the bottom could be mushier. Don't wait for a \u221280% washout.",
         "evaluability": "in_window",
         "evaluable": true,
         "why": "Fires only once the projected bottom window opens (2026-10-01) \u2014 a fair-comparison guard, and that date is inside the gate window."
@@ -107,11 +107,11 @@
   "as_of": "2026-10-16",
   "gate_engaged": "2026-01-01",
   "days_since_gate": 288,
-  "current_ungated_alloc": 0.4137,
-  "current_gated_alloc": 0.4137,
+  "current_ungated_alloc": 0.4133,
+  "current_gated_alloc": 0.4133,
   "cum_gap_pct": 0.0,
-  "gated_equity_final": 0.963875,
-  "raw_equity_final": 0.963875,
+  "gated_equity_final": 0.96168,
+  "raw_equity_final": 0.96168,
   "weekly_series": [
     {
       "date": "2026-01-04",
@@ -320,8 +320,8 @@
     },
     {
       "date": "2026-10-18",
-      "gated_equity": 0.963875,
-      "raw_equity": 0.963875
+      "gated_equity": 0.96168,
+      "raw_equity": 0.96168
     }
   ],
   "prior_cycles": {

@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_asymmetry.v1",
-  "as_of": "2026-10-16",
-  "generated_at": "2026-10-16T18:23:56Z",
+  "as_of": "2026-10-17",
+  "generated_at": "2026-10-17T07:16:54Z",
   "hard_caveat": "not a buy score; no behavior-changing consumer",
   "authority": {
     "is_context_only": true,
@@ -104,8 +104,8 @@
             "theme_thesis_ledger:falsifiers.status"
           ],
           "stale": false,
-          "note_en": "watch_conditions=252, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
-          "note_zh": "改判条件总数=252，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
+          "note_en": "watch_conditions=256, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
+          "note_zh": "改判条件总数=256，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
         },
         "orthogonality": {
           "value": 0.515,
@@ -200,8 +200,8 @@
             "theme_thesis_ledger:falsifiers.status"
           ],
           "stale": false,
-          "note_en": "watch_conditions=108, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
-          "note_zh": "改判条件总数=108，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
+          "note_en": "watch_conditions=111, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
+          "note_zh": "改判条件总数=111，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
         },
         "orthogonality": {
           "value": 0.255,
@@ -248,8 +248,8 @@
             "finnhub_recs:revision_direction"
           ],
           "stale": false,
-          "note_en": "activity accelerating (ACCELERATING) and revisions following (level=POSITIVE, breadth=0.786); gap narrowing. no_dispersion_data",
-          "note_zh": "活动加速（ACCELERATING）且修正跟进（水平=POSITIVE，广度=0.786）；差距收窄。no_dispersion_data"
+          "note_en": "activity accelerating (ACCELERATING) and revisions following (level=POSITIVE, breadth=0.75); gap narrowing. no_dispersion_data",
+          "note_zh": "活动加速（ACCELERATING）且修正跟进（水平=POSITIVE，广度=0.75）；差距收窄。no_dispersion_data"
         },
         "cyclical_dislocation": {
           "value": 0.243,
@@ -296,8 +296,8 @@
             "theme_thesis_ledger:falsifiers.status"
           ],
           "stale": false,
-          "note_en": "watch_conditions=84, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
-          "note_zh": "改判条件总数=84，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
+          "note_en": "watch_conditions=87, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
+          "note_zh": "改判条件总数=87，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
         },
         "orthogonality": {
           "value": 0.235,
@@ -345,8 +345,8 @@
             "finnhub_recs:revision_direction"
           ],
           "stale": false,
-          "note_en": "activity accelerating (ACCELERATING) and revisions following (level=POSITIVE, breadth=0.416); gap narrowing. no_dispersion_data",
-          "note_zh": "活动加速（ACCELERATING）且修正跟进（水平=POSITIVE，广度=0.416）；差距收窄。no_dispersion_data"
+          "note_en": "activity accelerating (ACCELERATING) and revisions following (level=POSITIVE, breadth=0.541); gap narrowing. no_dispersion_data",
+          "note_zh": "活动加速（ACCELERATING）且修正跟进（水平=POSITIVE，广度=0.541）；差距收窄。no_dispersion_data"
         },
         "cyclical_dislocation": {
           "value": 0.294,
@@ -393,8 +393,8 @@
             "theme_thesis_ledger:falsifiers.status"
           ],
           "stale": false,
-          "note_en": "watch_conditions=78, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
-          "note_zh": "改判条件总数=78，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
+          "note_en": "watch_conditions=81, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
+          "note_zh": "改判条件总数=81，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
         },
         "orthogonality": {
           "value": 0.164,
@@ -442,8 +442,8 @@
             "finnhub_recs:revision_direction"
           ],
           "stale": false,
-          "note_en": "activity accelerating (ACCELERATING) but revisions lagging (level=NEGATIVE, breadth=-0.291); member dispersion: no_dispersion_data",
-          "note_zh": "活动加速（ACCELERATING）但分析师修正滞后（水平=NEGATIVE，广度=-0.291）；成员分散：no_dispersion_data"
+          "note_en": "activity accelerating (ACCELERATING) but revisions lagging (level=NEGATIVE, breadth=-0.309); member dispersion: no_dispersion_data",
+          "note_zh": "活动加速（ACCELERATING）但分析师修正滞后（水平=NEGATIVE，广度=-0.309）；成员分散：no_dispersion_data"
         },
         "cyclical_dislocation": {
           "value": 0.3,
@@ -490,8 +490,8 @@
             "theme_thesis_ledger:falsifiers.status"
           ],
           "stale": false,
-          "note_en": "watch_conditions=60, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
-          "note_zh": "改判条件总数=60，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
+          "note_en": "watch_conditions=63, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
+          "note_zh": "改判条件总数=63，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
         },
         "orthogonality": {
           "value": 0.216,
@@ -538,8 +538,8 @@
             "finnhub_recs:revision_direction"
           ],
           "stale": false,
-          "note_en": "activity accelerating (ACCELERATING) and revisions following (level=POSITIVE, breadth=0.667); gap narrowing. no_dispersion_data",
-          "note_zh": "活动加速（ACCELERATING）且修正跟进（水平=POSITIVE，广度=0.667）；差距收窄。no_dispersion_data"
+          "note_en": "activity accelerating (ACCELERATING) and revisions following (level=POSITIVE, breadth=0.643); gap narrowing. no_dispersion_data",
+          "note_zh": "活动加速（ACCELERATING）且修正跟进（水平=POSITIVE，广度=0.643）；差距收窄。no_dispersion_data"
         },
         "cyclical_dislocation": {
           "value": 0.184,
@@ -624,8 +624,8 @@
           "note_zh": "瓶颈波段=band=NEUTRAL，活动加速=accel=0.99，综合紧张度=0.31"
         },
         "stale_consensus_gap": {
-          "value": 0.2,
-          "band": "low",
+          "value": 0.85,
+          "band": "high",
           "inputs": [
             "foresight_cascade:demand_band",
             "foresight_cascade:broadening_state",
@@ -634,8 +634,8 @@
             "finnhub_recs:revision_direction"
           ],
           "stale": false,
-          "note_en": "activity not accelerating (INSUFFICIENT_HISTORY) and revisions lagging — aligned weakness. no_dispersion_data",
-          "note_zh": "活动未加速（INSUFFICIENT_HISTORY）且修正滞后——一致疲软。no_dispersion_data"
+          "note_en": "activity accelerating (RISING) but revisions lagging (level=POSITIVE, breadth=0.514); member dispersion: no_dispersion_data",
+          "note_zh": "活动加速（RISING）但分析师修正滞后（水平=POSITIVE，广度=0.514）；成员分散：no_dispersion_data"
         },
         "cyclical_dislocation": {
           "value": 0.286,
@@ -778,8 +778,8 @@
             "theme_thesis_ledger:falsifiers.status"
           ],
           "stale": false,
-          "note_en": "watch_conditions=120, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
-          "note_zh": "改判条件总数=120，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
+          "note_en": "watch_conditions=123, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
+          "note_zh": "改判条件总数=123，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
         },
         "orthogonality": {
           "value": 0.343,
@@ -1018,8 +1018,8 @@
             "finnhub_recs:revision_direction"
           ],
           "stale": false,
-          "note_en": "activity not accelerating (ROLLING), revisions positive (level=POSITIVE, breadth=0.23); no gap. no_dispersion_data",
-          "note_zh": "活动未加速（ROLLING），修正正面（水平=POSITIVE，广度=0.23）；无差距。no_dispersion_data"
+          "note_en": "activity not accelerating (ROLLING), revisions positive (level=POSITIVE, breadth=0.19); no gap. no_dispersion_data",
+          "note_zh": "活动未加速（ROLLING），修正正面（水平=POSITIVE，广度=0.19）；无差距。no_dispersion_data"
         },
         "cyclical_dislocation": {
           "value": 0.179,
@@ -1066,8 +1066,8 @@
             "theme_thesis_ledger:falsifiers.status"
           ],
           "stale": false,
-          "note_en": "watch_conditions=58, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
-          "note_zh": "改判条件总数=58，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
+          "note_en": "watch_conditions=60, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
+          "note_zh": "改判条件总数=60，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
         },
         "orthogonality": {
           "value": 0.473,
@@ -1104,7 +1104,7 @@
           "note_zh": "瓶颈波段=band=TIGHT (text)，活动加速=accel=1.28，综合紧张度=0.67"
         },
         "stale_consensus_gap": {
-          "value": 0.2,
+          "value": 0.15,
           "band": "low",
           "inputs": [
             "foresight_cascade:demand_band",
@@ -1114,8 +1114,8 @@
             "finnhub_recs:revision_direction"
           ],
           "stale": false,
-          "note_en": "activity not accelerating (MIXED) and revisions lagging — aligned weakness. no_dispersion_data",
-          "note_zh": "活动未加速（MIXED）且修正滞后——一致疲软。no_dispersion_data"
+          "note_en": "activity not accelerating (ROLLING), revisions positive (level=POSITIVE, breadth=0.167); no gap. no_dispersion_data",
+          "note_zh": "活动未加速（ROLLING），修正正面（水平=POSITIVE，广度=0.167）；无差距。no_dispersion_data"
         },
         "cyclical_dislocation": {
           "value": 0.3,
@@ -1162,8 +1162,8 @@
             "theme_thesis_ledger:falsifiers.status"
           ],
           "stale": false,
-          "note_en": "watch_conditions=42, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
-          "note_zh": "改判条件总数=42，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
+          "note_en": "watch_conditions=44, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
+          "note_zh": "改判条件总数=44，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
         },
         "orthogonality": {
           "value": 0.291,
@@ -1306,8 +1306,8 @@
             "finnhub_recs:revision_direction"
           ],
           "stale": false,
-          "note_en": "activity not accelerating (ROLLING), revisions positive (level=POSITIVE, breadth=0.466); no gap. no_dispersion_data",
-          "note_zh": "活动未加速（ROLLING），修正正面（水平=POSITIVE，广度=0.466）；无差距。no_dispersion_data"
+          "note_en": "activity not accelerating (ROLLING), revisions positive (level=POSITIVE, breadth=0.557); no gap. no_dispersion_data",
+          "note_zh": "活动未加速（ROLLING），修正正面（水平=POSITIVE，广度=0.557）；无差距。no_dispersion_data"
         },
         "cyclical_dislocation": {
           "value": 0.123,
@@ -1354,8 +1354,8 @@
             "theme_thesis_ledger:falsifiers.status"
           ],
           "stale": false,
-          "note_en": "watch_conditions=54, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
-          "note_zh": "改判条件总数=54，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
+          "note_en": "watch_conditions=56, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
+          "note_zh": "改判条件总数=56，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
         },
         "orthogonality": {
           "value": 0.563,
@@ -1390,8 +1390,8 @@
           "note_zh": "该主题无瓶颈波段或活动数据"
         },
         "stale_consensus_gap": {
-          "value": 0.2,
-          "band": "low",
+          "value": 0.35,
+          "band": "med",
           "inputs": [
             "foresight_cascade:demand_band",
             "foresight_cascade:broadening_state",
@@ -1400,8 +1400,8 @@
             "finnhub_recs:revision_direction"
           ],
           "stale": false,
-          "note_en": "activity not accelerating (MIXED) and revisions lagging — aligned weakness. no_dispersion_data",
-          "note_zh": "活动未加速（MIXED）且修正滞后——一致疲软。no_dispersion_data"
+          "note_en": "activity accelerating (RISING) and revisions following (level=POSITIVE, breadth=0.416); gap narrowing. no_dispersion_data",
+          "note_zh": "活动加速（RISING）且修正跟进（水平=POSITIVE，广度=0.416）；差距收窄。no_dispersion_data"
         },
         "cyclical_dislocation": {
           "value": null,
@@ -1448,8 +1448,8 @@
             "theme_thesis_ledger:falsifiers.status"
           ],
           "stale": false,
-          "note_en": "watch_conditions=42, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
-          "note_zh": "改判条件总数=42，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
+          "note_en": "watch_conditions=44, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
+          "note_zh": "改判条件总数=44，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
         },
         "orthogonality": {
           "value": 0.93,
@@ -1496,8 +1496,8 @@
             "finnhub_recs:revision_direction"
           ],
           "stale": false,
-          "note_en": "activity not accelerating (FLAT_LOW) and revisions lagging — aligned weakness. no_dispersion_data",
-          "note_zh": "活动未加速（FLAT_LOW）且修正滞后——一致疲软。no_dispersion_data"
+          "note_en": "activity not accelerating (MIXED) and revisions lagging — aligned weakness. no_dispersion_data",
+          "note_zh": "活动未加速（MIXED）且修正滞后——一致疲软。no_dispersion_data"
         },
         "cyclical_dislocation": {
           "value": 0.526,
@@ -1544,8 +1544,8 @@
             "theme_thesis_ledger:falsifiers.status"
           ],
           "stale": false,
-          "note_en": "watch_conditions=48, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
-          "note_zh": "改判条件总数=48，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
+          "note_en": "watch_conditions=50, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
+          "note_zh": "改判条件总数=50，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
         },
         "orthogonality": {
           "value": 0.388,
@@ -1590,8 +1590,8 @@
             "finnhub_recs:revision_direction"
           ],
           "stale": false,
-          "note_en": "activity not accelerating (ROLLING), revisions positive (level=POSITIVE, breadth=0.337); no gap. no_dispersion_data",
-          "note_zh": "活动未加速（ROLLING），修正正面（水平=POSITIVE，广度=0.337）；无差距。no_dispersion_data"
+          "note_en": "activity not accelerating (ROLLING), revisions positive (level=POSITIVE, breadth=0.348); no gap. no_dispersion_data",
+          "note_zh": "活动未加速（ROLLING），修正正面（水平=POSITIVE，广度=0.348）；无差距。no_dispersion_data"
         },
         "cyclical_dislocation": {
           "value": null,
@@ -1638,8 +1638,8 @@
             "theme_thesis_ledger:falsifiers.status"
           ],
           "stale": false,
-          "note_en": "watch_conditions=58, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
-          "note_zh": "改判条件总数=58，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
+          "note_en": "watch_conditions=60, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
+          "note_zh": "改判条件总数=60，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
         },
         "orthogonality": {
           "value": 0.93,
@@ -1732,8 +1732,8 @@
             "theme_thesis_ledger:falsifiers.status"
           ],
           "stale": false,
-          "note_en": "watch_conditions=33, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
-          "note_zh": "改判条件总数=33，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
+          "note_en": "watch_conditions=36, machine_checkable=0 (0%), armed=0 (0%) → clarity=0.00",
+          "note_zh": "改判条件总数=36，机器可验证=0（0%），已激活=0（0%）→ 清晰度=0.00"
         },
         "orthogonality": {
           "value": 0.93,
@@ -1757,13 +1757,12 @@
     "divergence_log[semicap_equipment]: stale (as_of=2026-09-26)",
     "divergence_log[fintech_payments]: stale (as_of=2026-08-28)",
     "divergence_log[space_satellite]: stale (as_of=2026-08-08)",
-    "divergence_log[data_center_power]: stale (as_of=2026-09-26)",
     "divergence_log[solar]: stale (as_of=2026-10-10)",
     "finnhub_recs: parquet absent — per-member revision dispersion unavailable"
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-10-16T18:23:56Z",
-  "inputs_hash": "sha256:bab43dc2e0eb1b13fc39d019e92bf66081b74cb148fe4b9163a9d767d0fcf8c7",
+  "produced_at": "2026-10-17T07:16:54Z",
+  "inputs_hash": "sha256:5a92d5b3f1753207068074f343c56d90cd4708b457fdae8c12ffe8b67295caa6",
   "tier": "display"
 }
