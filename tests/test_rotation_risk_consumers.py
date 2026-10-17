@@ -896,3 +896,56 @@ def test_settled_turn_freshness_metadata_respects_existing_unentitled_projection
     assert "expected_completed_session" not in redacted
     assert "source_warnings" not in redacted
     assert context == before
+
+
+# Review adjudication: a failed exchange-calendar computation is UNKNOWN,
+# not proof that the source is stale or permission to call it current.
+@pytest.mark.parametrize("exc", [KeyError("calendar timezone missing"), ValueError("calendar unqualified")])
+def test_settled_reader_survives_calendar_failure_without_false_stale_claim(tmp_path, monkeypatch, exc):
+    from datetime import datetime, timezone
+
+    native = envelope()
+    write(tmp_path, "data/risk_envelope/latest.json", native)
+    write(tmp_path, "data/market_state/latest.json", {"asof": "2026-10-06"})
+    def broken(now): raise exc
+    monkeypatch.setattr(rc.nyse_calendar, "expected_last_session", broken)
+    context = rc.read_preferred_context(tmp_path, now=datetime(2026, 10, 8, 22, tzinfo=timezone.utc))
+    assert context["usable"] is True
+    assert context["source_current_at_turn"] is None
+    assert context["expected_completed_session"] is None
+    rendered = rc.render_context(context)
+    assert "market calendar unavailable" in rendered
+    assert "not an all-clear" in rendered
+    assert "Last-known, not current" not in rendered
+
+
+def test_weekend_last_completed_session_is_not_marked_stale_when_matched(tmp_path):
+    from datetime import datetime, timezone
+
+    native = envelope()
+    native["source_session"] = native["as_of"] = "2026-10-09"
+    native["measured_state"]["as_of"] = "2026-10-09"
+    native["rotation_context"]["as_of"] = "2026-10-09"
+    native["stale_after"] = None
+    write(tmp_path, "data/risk_envelope/latest.json", native)
+    write(tmp_path, "data/market_state/latest.json", {"asof": "2026-10-09"})
+    out = rc.read_preferred_context(tmp_path, now=datetime(2026, 10, 10, 15, tzinfo=timezone.utc))
+    assert out["usable"] is True
+    assert out["source_current_at_turn"] is True
+    assert out["expected_completed_session"] == "2026-10-09"
+    assert "Last-known, not current" not in rc.render_context(out)
+
+
+def test_short_context_budget_keeps_dated_warning_and_lag_caveat(tmp_path):
+    from datetime import datetime, timezone
+
+    native = _native_warning_envelope()
+    write(tmp_path, "data/risk_envelope/latest.json", native)
+    write(tmp_path, "data/market_state/latest.json", {"asof": native["source_session"]})
+    context = rc.read_preferred_context(tmp_path, now=datetime(2026, 10, 8, 22, tzinfo=timezone.utc))
+    text = rc.render_context(context, char_budget=900)
+    assert "Last-known, not current" in text
+    assert "not an all-clear" in text
+    assert "Attributed source warnings" in text
+    assert "Credit stress" in text
+    assert len(text) <= 900

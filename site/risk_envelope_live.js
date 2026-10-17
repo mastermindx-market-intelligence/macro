@@ -95,7 +95,7 @@
     if (!base[0] || !base[1] || !verdict) return;
     var selected = base, summary = document.getElementById("risk-response-summary");
     if (verdict !== "RISK_OFF" && summary && !summary.hidden &&
-        ["warning", "partial-warning", "checking", "unavailable"].indexOf(summary.getAttribute("data-state")) >= 0) {
+        ["warning", "partial-warning", "measured-risk-off", "checking", "unavailable"].indexOf(summary.getAttribute("data-state")) >= 0) {
       var action = document.getElementById("risk-response-action");
       var en = action && action.querySelector(".l-en"), zh = action && action.querySelector(".l-zh");
       if (en && zh && en.textContent && zh.textContent) selected = [en.textContent, zh.textContent];
@@ -205,13 +205,25 @@
       hz.stage_reason === "required_source_state_unmapped");
     var rows = fgCauses(d, copy);
     var warningTitle = fgc.warning_title || copy.partial_warning;
-    var warningAction = fgc.warning_action || copy.partial_warning;
+    var measured = d.measured_state || {};
+    var qualifiedRiskOff = measured.usable === true && measured.verdict === "RISK_OFF" &&
+      measured.as_of === session;
+    var warningAction = qualifiedRiskOff ?
+      (fgc.measured_risk_off_action || fgc.warning_action || copy.partial_warning) :
+      (fgc.warning_action || copy.partial_warning);
     if (view.pending) return {state: "checking", title: fgc.checking_title || copy.checking,
-      cause: ["", ""], action: fgc.checking_action || copy.checking, date: session};
+      cause: ["", ""], action: qualifiedRiskOff ? warningAction :
+        (fgc.checking_action || copy.checking), date: session};
     if (["FRAGILE", "TRANSMITTING", "BREAKDOWN"].indexOf(view.stage) >= 0 && rows[0].length && session)
       return {state: "warning", title: warningTitle, cause: [rows[0].join(" · "), rows[1].join(" · ")],
         action: warningAction, date: session};
-    if (view.stage === "NONE" && session && (d.measured_state || {}).usable === true) return {state: "quiet"};
+    if (view.stage === "NONE" && session && measured.usable === true) {
+      if (qualifiedRiskOff) return {state: "measured-risk-off",
+        title: fgc.measured_risk_off_title || warningTitle,
+        cause: fgc.measured_risk_off_cause || ["Market State: Risk-off", "市场状态：避险"],
+        action: warningAction, date: session};
+      return {state: "quiet"};
+    }
     if (partialGrounds && rows[0].length && session)
       return {state: "partial-warning", title: warningTitle,
         cause: [(fgc.partial_prefix || copy.partial_hint)[0] + rows[0].join(" · "),
@@ -236,7 +248,7 @@
       syncPrimaryAction();
       return;
     }
-    if (["warning", "partial-warning", "checking"].indexOf(view.state) >= 0) fgUnresolvedRisk = true;
+    if (["warning", "partial-warning", "measured-risk-off", "checking"].indexOf(view.state) >= 0) fgUnresolvedRisk = true;
     sec.hidden = false;
     sec.setAttribute("data-state", view.state);
     textPair(document.getElementById("risk-response-title"), view.title);

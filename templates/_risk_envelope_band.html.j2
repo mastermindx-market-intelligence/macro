@@ -14,6 +14,9 @@
   'foreground': {
     'warning_title': ['Risk warning', '风险警告'],
     'warning_action': ['Review exposure. Respect existing stops.', '检查风险敞口，遵守既定止损。'],
+    'measured_risk_off_title': ['Risk-off market backdrop', '市场背景：避险'],
+    'measured_risk_off_cause': ['Market State reports Risk-off; systemic hazard confirmation is separate.', '市场状态显示避险；系统性压力确认另有依据。'],
+    'measured_risk_off_action': ['Reduce risk. Protect capital.', '降低风险，保护本金。'],
     'unavailable_title': ['Risk read unavailable', '暂无风险读数'],
     'unavailable_action': ['Verify conditions before adding risk.', '加仓前核实条件。'],
     'checking_title': ['Checking · change not confirmed', '确认中 · 变化未确认'],
@@ -65,6 +68,8 @@
 {%- set _hz = _re.get('hazard_summary') or {} -%}
 {%- set _stage = _hz.get('stage') -%}
 {%- set _session = _re.get('source_session') -%}
+{%- set _ms = _re.get('measured_state') or {} -%}
+{%- set _qualified_risk_off = _expected is string and _expected == _session and _ms.get('usable') is sameas true and _ms.get('as_of') == _session and _ms.get('verdict') == 'RISK_OFF' -%}
 {# _expected is the existing measured owner's session, not a build clock. #}
 {%- set _contrib = _hz.get('contributing_sources') or [] -%}
 {%- if _contrib is string or _contrib is mapping or _contrib is not sequence %}{% set _contrib = [] %}{% endif -%}
@@ -79,13 +84,17 @@
 {%- if _rows.zh.append(_name[1] ~ '：' ~ _word[1]) %}{% endif -%}
 {%- endfor -%}
 {%- if _stage in ('FRAGILE', 'TRANSMITTING', 'BREAKDOWN') and _contrib and _expected is string and _expected == _session and _rows.en -%}
-{%- set _v.state = 'warning' %}{% set _v.title = _fg.warning_title %}{% set _v.action = _fg.warning_action %}
+{%- set _v.state = 'warning' %}{% set _v.title = _fg.warning_title %}{% set _v.action = _fg.measured_risk_off_action if _qualified_risk_off else _fg.warning_action %}
 {%- set _v.cause = [_rows.en | join(' · '), _rows.zh | join(' · ')] %}
 {%- set _v.date = _session -%}
 {%- elif _stage == 'NONE' and _expected is string and _expected == _session and (_re.get('measured_state') or {}).get('usable') is sameas true -%}
+{%- if _qualified_risk_off -%}
+{%- set _v.state = 'measured-risk-off' %}{% set _v.title = _fg.measured_risk_off_title %}{% set _v.cause = _fg.measured_risk_off_cause %}{% set _v.action = _fg.measured_risk_off_action %}{% set _v.date = _session -%}
+{%- else -%}
 {%- set _v.state = 'quiet' %}{% set _v.hidden = true -%}
+{%- endif -%}
 {%- elif 'stage' in _hz and _stage is none and _hz.get('stage_reason') in ('required_coverage_unavailable', 'required_source_state_unmapped') and _expected is string and _expected == _session and _rows.en -%}
-{%- set _v.state = 'partial-warning' %}{% set _v.title = _fg.warning_title %}{% set _v.action = _fg.warning_action %}
+{%- set _v.state = 'partial-warning' %}{% set _v.title = _fg.warning_title %}{% set _v.action = _fg.measured_risk_off_action if _qualified_risk_off else _fg.warning_action %}
 {%- set _v.cause = [_fg.partial_prefix[0] ~ (_rows.en | join(' · ')), _fg.partial_prefix[1] ~ (_rows.zh | join(' · '))] %}
 {%- set _v.date = _session -%}
 {%- endif -%}

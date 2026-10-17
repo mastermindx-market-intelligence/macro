@@ -435,10 +435,12 @@ def read_preferred_context(root: Path, *, now: datetime) -> dict:
         # never let the artifact or its freshly rebuilt wrapper set this clock.
         try:
             expected = nyse_calendar.expected_last_session(now).isoformat()
-        except (ValueError, OverflowError):
+        except (ValueError, OverflowError, TypeError, KeyError, AttributeError):
+            # A calendar failure is unknown, not proof the source is stale.
+            # Preserve the last-known evidence rather than blanking the digest.
             expected = None
         out["expected_completed_session"] = expected
-        out["source_current_at_turn"] = (expected is not None and
+        out["source_current_at_turn"] = (None if expected is None else
                                          out.get("source_session") == expected)
     return out
 
@@ -503,6 +505,9 @@ def render_context(context: dict, *, lang: str = "en", char_budget: int = 1800) 
               "These are complementary descriptions. Shared price/breadth inputs are not extra votes. Capital policy is separate."),
              ("相对跑赢不等于资金净流入、机构换手、成分股广度改善或未来抛售预测。" if zh else
               "Relative outperformance does not establish net inflows, institutional ownership transfers, constituent breadth, or a predicted selloff.")]
+    if not live and "source_current_at_turn" in context and context["source_current_at_turn"] is None:
+        lines.insert(1, ("美股交易日历暂不可用，无法验证此历史读数为当前；并非风险解除。" if zh else
+                         "US market calendar unavailable; current-session status unverified, not an all-clear."))
     if not live and context.get("source_current_at_turn") is False:
         # Truthful last-known context, not a freshly confirmed trading stance.
         # Prepend this above the backdrop so even short model budgets preserve

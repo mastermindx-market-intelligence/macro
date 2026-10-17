@@ -257,7 +257,7 @@
     if (!basePair || verdict === "RISK_OFF") return basePair;
     var summary = document.getElementById("risk-response-summary");
     if (!summary || summary.hidden ||
-        ["warning", "partial-warning", "checking", "unavailable"].indexOf(summary.getAttribute("data-state")) < 0) return basePair;
+        ["warning", "partial-warning", "measured-risk-off", "checking", "unavailable"].indexOf(summary.getAttribute("data-state")) < 0) return basePair;
     var action = document.getElementById("risk-response-action");
     var en = action && action.querySelector(".l-en"), zh = action && action.querySelector(".l-zh");
     return en && zh && en.textContent && zh.textContent ? [en.textContent, zh.textContent] : basePair;

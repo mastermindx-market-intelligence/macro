@@ -1146,3 +1146,79 @@ def test_actual_market_state_patcher_preserves_warning_and_updates_recovery_base
                                     'MIXED':'Trade small. Stay selective.',
                                     'RISK_OFF':'Reduce risk. Protect capital.'}[verdict]
     assert result['score'] == result['big'] == '44'
+
+
+# R10: a qualified RISK_OFF measured backdrop is not permission to hide the
+# foreground when the separate systemic hazard organ says NONE or is partial.
+# No escalation of the hazard stage, forecast probability or sizing authority.
+def test_risk_off_measured_backdrop_does_not_disappear_under_quiet_hazard():
+    e = source_envelope()
+    e['measured_state'].update(usable=True, verdict='RISK_OFF', score=40,
+                               as_of=e['source_session'])
+    e['hazard_summary'].update(stage='NONE', contributing_sources=[])
+    before = deepcopy(e)
+    vm = _vm(risk_envelope=e)
+    vm['market_state'].update(asof=e['source_session'], verdict='RISK_OFF',
+                              color='red', score=40)
+    html = _render(vm)
+    fragment = _foreground_fragment(html)
+    assert 'data-state="measured-risk-off"' in fragment
+    assert 'hidden' not in fragment.split('>')[0]
+    assert 'Risk-off market backdrop' in fragment
+    assert 'Reduce risk. Protect capital.' in fragment
+    assert '降低风险，保护本金。' in fragment
+    assert 'Reduce risk. Protect capital.' in _wtd_action_fragment(html)
+    assert e == before
+
+
+def test_partial_hazard_cannot_downgrade_qualified_measured_risk_off_action():
+    e = _partial_live_warning()
+    e['measured_state'].update(usable=True, verdict='RISK_OFF', score=40,
+                               as_of=e['source_session'])
+    out = _js_value(_WTD_DOM+'applyFeed(FEED);console.log(JSON.stringify({foreground:foregroundResult(),action:actionResult()}));',e)
+    assert out['foreground']['state'] == 'partial-warning'
+    assert 'Credit stress: building' in out['foreground']['cause']
+    assert out['foreground']['action'] == 'Reduce risk. Protect capital.'
+    assert out['action']['en'] == 'Reduce risk. Protect capital.'
+
+
+def test_live_measured_risk_off_with_quiet_hazard_is_visible_without_new_hazard():
+    e = _partial_live_warning()
+    e['hazard_summary'].update(stage='NONE', contributing_sources=[])
+    e['live_transition'].update(candidate_stage='NONE', stable_stage='NONE', pending=None)
+    e['measured_state'].update(usable=True, verdict='RISK_OFF', score=40,
+                               as_of=e['source_session'])
+    before = deepcopy(e)
+    out = _js_value(_FOREGROUND_DOM+'applyFeed(FEED);console.log(JSON.stringify(foregroundResult()));', e)
+    assert out['state'] == 'measured-risk-off'
+    assert not out['hidden']
+    assert out['title'] == 'Risk-off market backdrop'
+    assert out['action'] == 'Reduce risk. Protect capital.'
+    assert e == before
+
+
+def test_old_or_unqualified_risk_off_measurement_cannot_force_current_foreground():
+    for mutation in ('stale', 'unusable'):
+        e = _partial_live_warning()
+        e['hazard_summary'].update(stage='NONE', contributing_sources=[])
+        e['live_transition'].update(candidate_stage='NONE', stable_stage='NONE', pending=None)
+        e['measured_state'].update(usable=True, verdict='RISK_OFF', score=40,
+                                   as_of=e['source_session'])
+        if mutation == 'stale': e['measured_state']['as_of'] = '2026-09-18'
+        else: e['measured_state']['usable'] = False
+        out = _js_value(_FOREGROUND_DOM+'applyFeed(FEED);console.log(JSON.stringify(foregroundResult()));',e)
+        assert out['state'] != 'measured-risk-off'
+        assert 'Risk-off market backdrop' not in out['title']
+
+
+def test_unconfirmed_hazard_change_never_weakens_verified_measured_risk_off_action():
+    e = _live_fixture()
+    e['measured_state'].update(usable=True, verdict='RISK_OFF', score=40,
+                               as_of=e['source_session'])
+    e['hazard_summary'].update(stage='FRAGILE')
+    e['live_transition'].update(stable_stage='NONE', candidate_stage='FRAGILE',
+                                pending={'stage':'FRAGILE','ticks':1,'needs':2})
+    out = _js_value(_FOREGROUND_DOM+'applyFeed(FEED);console.log(JSON.stringify(foregroundResult()));',e)
+    assert out['state'] == 'checking'
+    assert not out['hidden']
+    assert out['action'] == 'Reduce risk. Protect capital.'
