@@ -1,0 +1,54 @@
+{
+  "schema": "slr_p0.artifact_manifest.v1",
+  "scope": "Research documents, source audit and analytical illustrations. No market outcome study or production code.",
+  "files": [
+    {
+      "path": "ASTRA_DEEP_RESEARCH_2026-10-07.md",
+      "bytes": 45494,
+      "sha256": "29d0bb9c276c8def222dfe33105afecf670e2aa853eb1c0a1e099cc912f35d4a",
+      "git_blob_sha": "9900aefcb9f58b77dc27425c6e347a9a3240e8df"
+    },
+    {
+      "path": "METHODS_DERIVATION.json",
+      "bytes": 1421,
+      "sha256": "71316475775572a32811be3550fcb71b265b226c0a15983d54a9078d36839ac3",
+      "git_blob_sha": "4f48657928023c8c08650e12620aa8c3246cd775"
+    },
+    {
+      "path": "POWER_ILLUSTRATION.json",
+      "bytes": 1597,
+      "sha256": "215ed383ac0f3710b926a3a40daa871df7f3f092c7928664244f19bbe6e945c0",
+      "git_blob_sha": "01dc600463d56b902d295070a2d70a292cc5fc05"
+    },
+    {
+      "path": "RESEARCH_TO_BUILD_HANDOFF.md",
+      "bytes": 8734,
+      "sha256": "8ce135e599e1b7bcc2c309055969c8a7663941c3055e7070501330c113a960bd",
+      "git_blob_sha": "315ee7f57ea8a9b56743c3747db662e9df354e98"
+    },
+    {
+      "path": "SLR_P0_DEVELOPMENT_PREREG_2026-10-07.md",
+      "bytes": 25912,
+      "sha256": "f6e5b6372a46179c6721299c4a98e8120277b49f6d86296d65a6596c6d71627b",
+      "git_blob_sha": "626aed1f8286ff92ea76110f3819d2c27eea91ef"
+    },
+    {
+      "path": "SLR_P0_DEVELOPMENT_RESULTS_2026-10-07.md",
+      "bytes": 5810,
+      "sha256": "e0187db32271c2f911c70058db717a7d4742f78716635936d34faa74b0f0f0a5",
+      "git_blob_sha": "b1a704be38a11f6d7b49e462c6b3f88489751ac0"
+    },
+    {
+      "path": "SOURCE_DATA_AUDIT_2026-10-07.json",
+      "bytes": 8345,
+      "sha256": "a5a2c1858ccc973f23ca32e3aba40751b314393adb90378ef70e91056694ffcb",
+      "git_blob_sha": "75cf9b7b30c1e5a075d8fab1780035eef1c9f02e"
+    },
+    {
+      "path": "SOURCE_REGISTER.md",
+      "bytes": 26648,
+      "sha256": "7b356ab3d5f20de40682c7430b28120dc9dd3bd8301f5b0619c5f8de2c7f8675",
+      "git_blob_sha": "43a4e464c90fe62b15c661fd989ebf91f81f41aa"
+    }
+  ]
+}
