@@ -630,6 +630,38 @@ def _end_of_collect_quality(args: argparse.Namespace, registry: dict,
         run_quality_audits()
 
 
+def _run_shared_qledger_postcollect(root, *, only: str) -> None:
+    """Keep shared QLedger issuance out of narrow --only refreshes.
+
+    Weekly, Smart Money, Government Revenue and Intl ETF all invoke collect
+    with --only; those adapter-scoped calls must not implicitly register
+    Intel Hub claims or grade the full ledger. Full/region collection and
+    standalone grading keep their incumbent contracts. This does not fence
+    other explicit producers or qualify native storage activation.
+    """
+    if only:
+        log.info("[qledger] skip shared registrar and grader on partial "
+                 "--only=%s; full/region collection owns this work", only)
+        return
+
+    # qledger adapters — register today's claims from each desk so the nightly
+    # grader can grade them at maturity. Idempotent; non-fatal.
+    try:
+        from scripts.backfill_qledger_intel_hub import run as _hub_backfill
+        _hub_result = _hub_backfill(root)
+        log.info("qledger intel_hub adapter: +%d claims (blocked=%d rejected=%d)",
+                 _hub_result.get("n_registered", 0),
+                 _hub_result.get("n_blocked", 0),
+                 _hub_result.get("n_rejected", 0))
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.warning("qledger intel_hub adapter failed: %s", e)
+
+    # qledger nightly grader — runs after quality audits so the parquet layer is
+    # fully refreshed. Non-fatal: a grader crash must not abort the collection run.
+    from scripts.grade_qledger import run_as_collect_step as _grade_qledger
+    _grade_qledger()
+
+
 def main() -> int:
     args = _build_arg_parser().parse_args()
 
@@ -1169,22 +1201,7 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("europe_news_intel ingest step failed: %s", e)
 
-    # qledger adapters — register today's claims from each desk so the nightly
-    # grader can grade them at maturity. Idempotent; non-fatal.
-    try:
-        from scripts.backfill_qledger_intel_hub import run as _hub_backfill
-        _hub_result = _hub_backfill(config.ROOT)
-        log.info("qledger intel_hub adapter: +%d claims (blocked=%d rejected=%d)",
-                 _hub_result.get("n_registered", 0),
-                 _hub_result.get("n_blocked", 0),
-                 _hub_result.get("n_rejected", 0))
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.warning("qledger intel_hub adapter failed: %s", e)
-
-    # qledger nightly grader — runs after quality audits so the parquet layer is
-    # fully refreshed. Non-fatal: a grader crash must not abort the collection run.
-    from scripts.grade_qledger import run_as_collect_step as _grade_qledger
-    _grade_qledger()
+    _run_shared_qledger_postcollect(config.ROOT, only=args.only)
 
     # CCTV 新闻联播 backfill-finalization watcher (W4/D5) — drives a three-state
     # machine (SCRAPING → FINALIZING → FINALIZED) that monitors the long-running

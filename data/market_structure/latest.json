@@ -1,7 +1,7 @@
 {
   "schema": "market_structure_context.v1",
-  "asof": "2026-10-14",
-  "built_at": "2026-10-15T05:14:01.310936+00:00",
+  "asof": "2026-10-16",
+  "built_at": "2026-10-17T15:39:21.656974+00:00",
   "is_context_only": true,
   "display_only": true,
   "gamma": {
@@ -487,13 +487,15 @@
     ],
     "coverage": {
       "last_obs": "2026-10-14",
-      "expected_last_session": "2026-10-14",
-      "sessions_behind": 0,
+      "expected_last_session": "2026-10-16",
+      "sessions_behind": 2,
       "window_sessions": 20,
       "missing_recent": [
         "2026-09-24",
         "2026-10-12",
-        "2026-10-13"
+        "2026-10-13",
+        "2026-10-15",
+        "2026-10-16"
       ],
       "missing_in_regime": [
         "2026-10-12",
@@ -504,10 +506,10 @@
   },
   "systematic": {
     "vc": {
-      "alloc_bn": 271.984074,
-      "alloc_frac": 0.906614,
-      "flow_1d_bn": -4.691915,
-      "flow_5d_bn": -2.451032,
+      "alloc_bn": 271.076225,
+      "alloc_frac": 0.903587,
+      "flow_1d_bn": -5.735148,
+      "flow_5d_bn": -4.718323,
       "state": "cutting",
       "flow_window_n": 5,
       "aum_bn": 300.0,
@@ -515,10 +517,10 @@
       "series_start": "1927-12-30"
     },
     "cta": {
-      "score": 0.649311,
-      "z": -0.437429,
-      "flow_1d": -0.38722,
-      "flow_5d": -0.412429,
+      "score": 0.359578,
+      "z": -0.957484,
+      "flow_1d": -0.273431,
+      "flow_5d": -0.722259,
       "state": "cutting",
       "flow_window_n": 5,
       "cta_near_flat": false
@@ -526,22 +528,6 @@
     "agreement": "aligned_cutting",
     "flow_window_n": 5,
     "history": [
-      {
-        "date": "2024-10-16",
-        "vc_alloc_bn": 188.717583,
-        "vc_flow_bn": 0.871373,
-        "cta_score": 2.011965,
-        "cta_flow": 0.101946,
-        "spx_close": 5842.470215
-      },
-      {
-        "date": "2024-10-17",
-        "vc_alloc_bn": 189.680925,
-        "vc_flow_bn": 0.963342,
-        "cta_score": 1.914711,
-        "cta_flow": -0.097254,
-        "spx_close": 5841.470215
-      },
       {
         "date": "2024-10-18",
         "vc_alloc_bn": 191.028233,
@@ -4525,12 +4511,28 @@
         "cta_score": 0.649311,
         "cta_flow": -0.38722,
         "spx_close": 7718.939941
+      },
+      {
+        "date": "2026-10-15",
+        "vc_alloc_bn": 276.811372,
+        "vc_flow_bn": 4.827298,
+        "cta_score": 0.63301,
+        "cta_flow": -0.016301,
+        "spx_close": 7744.060059
+      },
+      {
+        "date": "2026-10-16",
+        "vc_alloc_bn": 271.076225,
+        "vc_flow_bn": -5.735148,
+        "cta_score": 0.359578,
+        "cta_flow": -0.273431,
+        "spx_close": 7659.439941
       }
     ]
   },
   "vol": {
-    "rv21": 0.099917,
-    "rv63": 0.110301,
+    "rv21": 0.099622,
+    "rv63": 0.11067,
     "rv_cross_state": "calm",
     "vix_curve": [
       {
@@ -6581,20 +6583,20 @@
     ]
   },
   "week_map": {
-    "week_start": "2026-10-12",
-    "week_end": "2026-10-16",
-    "locked_close": 7811.54,
-    "locked_at": "2026-10-09T00:00:00",
-    "band_1sigma_lo": 7680.2,
-    "band_1sigma_hi": 7942.88,
-    "band_2sigma_lo": 7548.86,
-    "band_2sigma_hi": 8074.22,
+    "week_start": "2026-10-19",
+    "week_end": "2026-10-23",
+    "locked_close": 7659.44,
+    "locked_at": "2026-10-16T00:00:00",
+    "band_1sigma_lo": 7524.58,
+    "band_1sigma_hi": 7794.3,
+    "band_2sigma_lo": 7389.71,
+    "band_2sigma_hi": 7929.17,
     "gamma_flip": 7740.445123,
-    "implied_weekly_pct": 1.68,
+    "implied_weekly_pct": 1.76,
     "source": "spx_iv30_scaled_5d"
   },
   "state_changes": {
-    "vs_asof": "2026-10-13",
+    "vs_asof": "2026-10-15",
     "items": [
       {
         "key": "vc_state",
@@ -6611,26 +6613,18 @@
         "note_en": "Systematic agreement: Split → Aligned cutting",
         "note_zh": "系统化机构一致性：分歧 → 一致减仓",
         "display_only": true
-      },
-      {
-        "key": "cor1m_regime",
-        "from": "dispersion",
-        "to": "normal",
-        "note_en": "Correlation regime: Dispersion (stock-picker's market) → Normal correlation",
-        "note_zh": "相关性机制：分散（选股市场） → 正常相关性",
-        "display_only": true
       }
     ]
   },
   "prev_state": {
-    "as_of": "2026-10-13",
+    "as_of": "2026-10-15",
     "state": {
       "gamma_regime": "long",
       "vc_state": "adding",
       "cta_state": "cutting",
       "agreement": "split",
       "rv_cross_state": "calm",
-      "cor1m_regime": "dispersion"
+      "cor1m_regime": "normal"
     }
   }
 }
