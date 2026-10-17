@@ -1,0 +1,52 @@
+{
+  "source_url": "https://www.usda.gov/oce/commodity/wasde/wasde1026.pdf",
+  "landing_url": "https://www.usda.gov/about-usda/general-information/staff-offices/office-chief-economist/commodity-markets/wasde-report",
+  "policy_url": "https://www.usda.gov/about-usda/policies-and-links",
+  "pdf_sha256": "6cc97c08be7e683b6114ae8e16d49fce2f21dce3ed3f9933b0acbd2d37e6840b",
+  "sidecar_sha256": "1a215b20c74538f8532757ce2ee043b5784a3e6573e857a8d51eeca8ffd2c80e",
+  "publication_time": "2026-10-09T16:00:00Z",
+  "facts_review": {
+    "parent": "12 source-text anchors verified against original physical pages 1-2; all six sidecar bullets attributed and qualified as estimates/forecasts",
+    "anchors": [
+      "October 9, 2026",
+      "WASDE - 676",
+      "2026/27",
+      "raised by 23 million bushels to 740 million",
+      "20 percent below last year",
+      "up 234 million bushels to 16.0 billion",
+      "2.7-bushel increase in yield to 181.2",
+      "ending stocks rise by 282 million bushels to 1.8 billion",
+      "forecast at 4.56 billion bushels, up 27 million",
+      "53.1 bushels per acre",
+      "ending stocks are up 5 million bushels to 315 million",
+      "Prices are unchanged for 2026/27. The U.S. season-average soybean price is forecast at $12.00 per bushel"
+    ],
+    "pages": 40
+  },
+  "rights_scope": {
+    "basis": "USDA policy permits copying/distribution of public-domain information with attribution; this is an agency-authored official statistical report, with no identified separately licensed photograph or third-party notice in the retained 40 pages.",
+    "decision": "QUALIFIED_FOR_ORIGINAL_REPORT_PRIVATE_RESEARCH_INBOX_AND_ATTRIBUTED_TEXT_SUMMARY",
+    "interpretation": "The original unmodified report retains agency marks as source identification. This is not permission to extract or use its logo, signature, flyer artwork or other graphics as Mastermind branding, endorsement or article illustration.",
+    "attribution": "U.S. Department of Agriculture",
+    "public_article_approval": false,
+    "no_general_license_for_other_material": true
+  },
+  "independent_checker": {
+    "run": "mmx-press-usda-sidecar-check-20261014-001",
+    "state": "TERMINAL",
+    "rc": 75,
+    "signal": "admission",
+    "reason": "active_lane_limit_reached",
+    "result_consumed": true,
+    "accepted": false,
+    "retry": false,
+    "replacement": false,
+    "usage_receipt": "MISSING"
+  },
+  "window": "Research 21-day only; not a fresh Brief event",
+  "stock_ticker": null,
+  "press_staging": false,
+  "publication": false,
+  "cutover": false,
+  "d14_credit": "0/10"
+}

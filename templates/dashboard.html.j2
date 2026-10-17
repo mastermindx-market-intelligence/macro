@@ -312,6 +312,7 @@
    returns empty. DOMContentLoaded fires after the body parses. #}
 <script>try{document.addEventListener('DOMContentLoaded',function(){if(window.matchMedia&&window.matchMedia('(max-width:640px)').matches){document.querySelectorAll('body.page-macro .ud-watch-details[open]').forEach(function(d){d.removeAttribute('open');});}});}catch(e){}</script>
 <link rel="stylesheet" href="tier_preview.css">
+{% if mode != 'stocks' %}<link rel="stylesheet" href="risk_radar_workspace.css">{% endif %}
 {% if mode != 'stocks' %}
 <link rel="preload" href="/fonts/InterDisplay-600.woff2" as="font" type="font/woff2" crossorigin>
 {% endif %}
@@ -4121,8 +4122,8 @@ body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}
   body.page-macro.mx4-grid #sx-v5-fed,
   body.page-macro.mx4-grid #sx-v5-sentiment,
   body.page-macro.mx4-grid #sx-v5-sector{grid-column:span 6;}
-  body.page-macro.mx4-grid #sx-news-v2{grid-column:span 6;}
-  body.page-macro.mx4-grid #sx-aibrief-v2{grid-column:span 6;}
+  /* AI Brief and Alerts inherit .sx's tablet span. ID-specific spans here
+     would outrank the full-width .sx rule at <=700px. */
 }
 /* ≤700px — full width stack */
 @media(max-width:700px){
@@ -4130,6 +4131,18 @@ body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}
   body.page-macro.mx4-grid #sx-v5-fed,
   body.page-macro.mx4-grid #sx-v5-sentiment,
   body.page-macro.mx4-grid #sx-v5-sector{grid-column:span 12;}
+}
+
+/* Mobile Alerts Centre: reserve the top-right card action slot.
+   The status pill must wrap rather than sit beneath the sparkle at 320px. */
+@media(max-width:700px){
+  body.page-macro.mx4-grid #sx-news-v2 .mx5-card-title-row{
+    padding-right:64px;flex-wrap:wrap;row-gap:8px;
+  }
+  body.page-macro.mx4-grid #sx-news-v2 .mx5-card-title{margin-bottom:0;}
+  body.page-macro.mx4-grid #sx-news-v2 .mx5-card-badge{
+    max-width:100%;white-space:normal;
+  }
 }
 
 /* Expanded card spans full width */
@@ -12967,6 +12980,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>
       </div>
       <div class="mx5-dlg-body">
+        {% if mode != 'stocks' %}{% include "_risk_radar_workspace.html.j2" %}{% endif %}
 
         {# — Risk Brief: one hero, not two — #}
         {% set _dlgr_rdr = market_state.radar if market_state.radar is defined else {} %}
@@ -13347,6 +13361,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         {% if (_dlgr_iov_n > 0) or (_dlgr_iov_det != 'STEADY') or (_dlgr_iov_spill in ('watching','transmitting')) %}
         <details class="riskdlg-fold" id="riskdlg-overseas-more">
         <summary>{{ t('Tracked overseas markets','追踪中的海外市场') }}</summary>
+        {# Baked overseas evidence stays inert until this native disclosure opens. #}
+        <template data-overseas-fold>
         <div class="mx5-dlg-eyebrow">
           {{ t('Overseas','海外') }}
           {{ help('Context only — does not move the US score. Tiles link to the full International page. Ring = each market\'s pullback-risk score (0-100), coloured by band — the odds a fresh drop is brewing, not a grade of today\'s trend. The hover card carries the trend read, which can point the other way: a market already deep in a selloff can sit beside a mid ring.','仅供参考——不影响美国评分。点击卡片可进入完整国际页面。环形为各市场回撤风险评分（0-100），按等级着色——衡量的是新一轮下跌酝酿的可能，而非当前趋势的评级。悬停卡片显示趋势解读，两者方向可能相反：已深度下跌的市场也可能配上中等的环形。') }}
@@ -13550,7 +13566,25 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         </div>
         {% endif %}
         {# Task 8: footer removed — honesty now lives in the eyebrow help() tip above #}
+        </template>
         </details>
+        <script>
+        (function () {
+          var fold = document.getElementById('riskdlg-overseas-more');
+          if (!fold) return;
+          function hydrateOverseas() {
+            if (!fold.open) return;
+            var inert = fold.querySelector(':scope > template[data-overseas-fold]');
+            if (!inert) return;
+            fold.appendChild(inert.content);
+            inert.remove();
+            fold.removeEventListener('toggle', hydrateOverseas);
+          }
+          fold.addEventListener('toggle', hydrateOverseas);
+          if (fold.open) hydrateOverseas();
+        })();
+        </script>
+
         {% endif %}
 
         </section>
@@ -13598,8 +13632,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           </div>
           {% endfor %}
         </div>
-        {% endif %}
         </div>{# /riskdlg-ladder #}
+        {% endif %}
 
         {# Macro UX follow-up 2026-09-23: detailed volatility evidence belongs
            in Risk Detail, not the primary scorecard. Same vm['vol_weather'],
@@ -18454,6 +18488,7 @@ window.__CHART_SWAP__ = {
 {# GD-3: live-provisional Risk Envelope overlay — same mode gate as the band
    include inside the existing #dlg-risk dialog (_risk_envelope_band.html.j2). #}
 {% if mode != 'stocks' %}<script async src="risk_envelope_live.js"></script>{% endif %}
+{% if mode != 'stocks' %}<script defer src="risk_radar_workspace.js"></script>{% endif %}
 <script async src="release_publications_live.js"></script>
 <script>
 /* Keep .help tooltips on-screen: flip below the icon when it's near the top of

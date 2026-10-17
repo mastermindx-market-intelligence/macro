@@ -1,0 +1,28 @@
+{
+  "canonical_source_writes": 0,
+  "contract": "defense.retrospective_method_review_adjudication.v1",
+  "exact_retained_stdout_sha256": "020503a914743ecc0a5c8c6023385681947d01083350f47752635ceeb7b049b0",
+  "numeric_implementation_review": false,
+  "predictive_efficacy_review": false,
+  "principal_ruling": "SUPPORTED_BOUNDARY_REPAIRS_APPLIED; RESEARCH_SCOPE_STAYS_DESCRIPTIVE",
+  "rejected_or_bounded": [
+    "Review asserts a one-time reread prohibition without commission authority; exact replay verification remains authorized.",
+    "Review estimated ~8 calendar entry sessions: exact5;8 denotes ticker/entry windows.",
+    "No effective sample size is admitted;6awards/13groups are descriptive counts, not independence bounds.",
+    "Elapsed-to-cutoff is expressly authorized and never replaces h63; no post-hoc primary horizon is created.",
+    "No additional entry-shift sensitivity is needed to validate the fixed descriptive rule; no tuning/test/trial is created.",
+    "Native public receipt and price owner evidence were omitted from the reviewer prompt, not absent; owner receipts govern exact bytes."
+  ],
+  "run": "defense-retrospective-method-review-01a13300-20261013-a",
+  "scope_sha256": "a7d54f3c9a4fe8e3f71ec6e2058317cb85d9b093abf50c2796e97d93b60d984f",
+  "supported_repairs": [
+    "explicit0/23FA1admissibility and0coveragecredit",
+    "non-precedence flag matrix and coexistence counts",
+    "actual owner normalization and original235ledgerhash",
+    "outcome exposure record and no predictive selection/unseen holdout",
+    "both fixed benchmark comparisons, distinct prior labels",
+    "calendar owner/hash, exact entry/censoring and administrative cutoff",
+    "separate target verdicts; no performance null"
+  ],
+  "worker_ruling": "REPAIR"
+}

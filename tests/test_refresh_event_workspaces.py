@@ -1738,3 +1738,23 @@ def test_chained_generations_never_carry_a_clock_earlier_than_a_row_observation(
             for path in (generation_dir / "workspaces").glob("*.json")
         }
         validate_generation_clocks(manifest, rows)
+
+
+@pytest.mark.parametrize("ticker,expected", [
+    ("rtx", "a2026-07x238xkerexhibit99.htm"),
+    ("noc", "noc-06302026xearningsrelea.htm"),
+])
+def test_generic_ex99_current_defense_release_manifests(ticker, expected):
+    from scripts.refresh_event_workspaces import _manifest_exhibit_count
+    # Captured official SEC document maps; no fabricated replacement date/body.
+    raw = (FIXTURES / f"{ticker}_2026q2_index_headers.html").read_bytes()
+    assert _select_exhibit_99_1(_parse_sgml_manifest(raw.decode())) == expected
+    assert _manifest_exhibit_count(raw) == 1
+
+
+def test_generic_ex99_ambiguity_does_not_grant_release_admission():
+    assert _select_exhibit_99_1([("EX-99", "a.htm"), ("EX-99", "b.htm")]) is None
+    assert _select_exhibit_99_1([("EX-99", "ex991.htm"), ("EX-99", "other.htm")]) is None
+    assert _select_exhibit_99_1([("8-K", "main.htm"), ("EX-101.SCH", "x.xsd")]) is None
+    assert _select_exhibit_99_1([("EX-99", "image.jpg")]) is None
+    assert _select_exhibit_99_1([("EX-99", "other.htm"), ("EX-99.1", "release.htm")]) == "release.htm"
