@@ -1,0 +1,15 @@
+{
+  "schema": "mastermind.leadership_lab.peer_evidence_status/v1",
+  "status": "SUPERSEDED",
+  "do_not_use_for_current_semantics": true,
+  "superseded_subject_head": "2f8b9107fe4674d6c993274d0306409f03b27b35",
+  "replacement_owner": "engine/leadership_lab/peers.py",
+  "reasons": [
+    "RS_PERCENTILE_SIGN_WAS_NOT_RETURN_BREADTH",
+    "PRE_REPAIR_SNAPSHOT_NOT_REVISION_BOUND"
+  ],
+  "current_contract_tests": [
+    "tests/test_leadership_lab_peers.py::test_positive_rs_percentiles_are_not_positive_return_breadth",
+    "tests/test_leadership_lab_peers.py::test_committed_peer_evidence_is_explicitly_superseded"
+  ]
+}
