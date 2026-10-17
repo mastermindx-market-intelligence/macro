@@ -603,7 +603,13 @@ def _compose_year_row_header(
         skip_units = (
             year_row + 1 < header_limit
             and not any(cell["facts"] for cell in year_cells)
-            and units == ["(Dollars in millions)"]
+            # The other observed CAT annual headings use the same one-row
+            # position for different, but exact, statement-unit labels.
+            and units in (
+                ["(Dollars in millions)"],
+                ["(Dollars in millions except per share data)"],
+                ["(Millions of dollars)"],
+            )
         )
         if skip_units:
             year_row += 1

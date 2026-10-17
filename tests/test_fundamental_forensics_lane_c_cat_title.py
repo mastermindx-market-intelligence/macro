@@ -119,3 +119,35 @@ def test_lane_c_only_whitelisted_unit_band_and_pure_years_are_composed(
             toc() + _cat_year_header(units=unit_band, years=year_cells),
             title=TITLE,
         )
+
+
+@pytest.mark.parametrize("annual_kind,unit", [
+    ("Consolidated Results of Operations for the Years Ended December 31",
+     "(Dollars in millions except per share data)"),
+    ("Consolidated Statement of Cash Flow for the Years Ended December 31",
+     "(Millions of dollars)"),
+])
+def test_lane_c_cat_annual_income_cashflow_unit_variants(annual_kind: str, unit: str) -> None:
+    # The real CAT 10-Ks place three comparative years after exactly this
+    # one nonnumeric unit band; their period groups must not be inferred from
+    # arbitrary prose.
+    html = f"""
+    <table><tr><td>{annual_kind}</td></tr></table>
+    <table>
+      <tr><td colspan="4">{annual_kind},</td></tr>
+      <tr><td colspan="4">{unit}</td></tr>
+      <tr><td> </td><td>2025</td><td>2024</td><td>2023</td></tr>
+      <tr>
+        <td>Operating result</td>
+        <td><ix:nonFraction name="us-gaap:NetIncomeLoss" contextRef="d2025" id="cat-annual-25" unitRef="usd">12</ix:nonFraction></td>
+        <td><ix:nonFraction name="us-gaap:NetIncomeLoss" contextRef="d2024" id="cat-annual-24" unitRef="usd">11</ix:nonFraction></td>
+        <td><ix:nonFraction name="us-gaap:NetIncomeLoss" contextRef="d2023" id="cat-annual-23" unitRef="usd">10</ix:nonFraction></td>
+      </tr>
+    </table>
+    """
+    parsed = parse_displayed_primary_table(html, title=annual_kind)
+    assert parsed["columns_iso"] == ["2025-12-31", "2024-12-31", "2023-12-31"]
+    assert parsed["columns_source"] == "composed_year_row"
+    assert [f["fact_id"] for f in parsed["rows"][0]["value_facts"]] == [
+        "cat-annual-25", "cat-annual-24", "cat-annual-23"
+    ]
