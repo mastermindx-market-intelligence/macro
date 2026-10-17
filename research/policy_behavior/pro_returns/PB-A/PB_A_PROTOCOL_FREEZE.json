@@ -1,0 +1,149 @@
+{
+  "schema": "mastermind.pb_a_baseline_protocol.v1",
+  "operation_key": "PB-A-POLICY-BEHAVIOR-BASELINE-20261007",
+  "frozen_at_utc": "2026-10-07T02:50:36Z",
+  "study_kind": "RETROSPECTIVE_FEASIBILITY_PILOT_NOT_PROSPECTIVE_VALIDATION",
+  "authority": "RESEARCH_ONLY",
+  "procedure_sha": "9a24ef2c4b27ac95a4d1f72f5eae1073657cd7c2",
+  "commission_sha": "7abc3dc596c5a6463effb37422bf9bd34bbdf1ba",
+  "research_source_sha": "ee86db2c832c73a36837c1240df871700340d6da",
+  "parent_pr": "https://github.com/mastermindx-market-intelligence/macro/pull/8560",
+  "protocol_conflicts": [
+    "PB-A explicitly requests >=20 US episodes and a bounded pilot; parent W1 preregistration requests 40–60 cross-family episodes before its full comparison. This is PB-A's narrower feasibility pilot, not W1 completion or the parent confirmatory comparison."
+  ],
+  "sample_design": "Fixed purposive 24-event methodological casebook, selected for instrument and regime diversity, not a complete event census or prevalence sample. Researchers already know historical events; no claim of outcome-blind research.",
+  "selected_event_dates": [
+    "2018-12-19",
+    "2019-01-30",
+    "2019-07-31",
+    "2019-10-11",
+    "2020-03-03",
+    "2020-03-15",
+    "2020-03-23",
+    "2020-04-09",
+    "2020-08-27",
+    "2020-11-19",
+    "2021-11-03",
+    "2021-12-15",
+    "2022-03-16",
+    "2022-06-15",
+    "2022-08-26",
+    "2023-03-12",
+    "2023-03-22",
+    "2023-05-03",
+    "2023-08-02",
+    "2023-11-01",
+    "2024-01-31",
+    "2024-05-01:FOMC",
+    "2024-05-01:TREASURY",
+    "2024-05-29"
+  ],
+  "split": {
+    "development": "event date < 2023-01-01",
+    "chronological_reporting_subset": "event date >= 2023-01-01",
+    "honesty": "No training, optimization or real unseen holdout. Chronological reporting subset remains retrospectively reconstructed."
+  },
+  "primary_target": {
+    "name": "fed_target_midpoint_net_direction",
+    "horizons_calendar_months": [
+      1,
+      3,
+      6
+    ],
+    "classes": [
+      "DOWN",
+      "HOLD",
+      "UP"
+    ],
+    "definition": "Sign of effective target midpoint on the calendar horizon date minus the most recently decided target midpoint known by the episode cut. A just-announced rate decision is absorbed into the anchor; its next-day effective change is not counted as a successful forecast.",
+    "endpoint_time": "End of the horizon date in America/New_York; effective daily rate from DFEDTARU/DFEDTARL.",
+    "missing_policy": "Unavailable anchor/outcome => NOT_SCORED; never substitute zero."
+  },
+  "secondary_policy_target": {
+    "name": "first_subsequent_rate_change_within_horizon",
+    "definition": "Direction of first target change DECIDED strictly after cut and effective by horizon; HOLD if none. Exclude the already-known event decision. Report separately from net movement; requires decision/effective-date reconciliation."
+  },
+  "model_rules": {
+    "M0": {
+      "name": "LITERAL",
+      "rule": "Faithfully code a clean explicit contemporaneous forward rate path as UP/DOWN/HOLD. Do not turn an inflation goal, justification, generic readiness, funding change or liquidity support into a rate forecast. Vague two-sided guidance or no clean rate implication => ABSTAIN. Conditional forward guidance must retain conditions. Same directional signal is extrapolated to each horizon as an explicitly assumed baseline; it is not a claim the official promised that horizon."
+    },
+    "M1": {
+      "name": "INVERTED",
+      "rule": "UP<->DOWN from M0. M0 HOLD has two possible opposites, so ABSTAIN; M0 ABSTAIN => ABSTAIN."
+    },
+    "M2": {
+      "name": "ACTIONS_CONSTRAINTS_MINIMAL",
+      "rule": "For a new FOMC/Fed policy-rate decision: continue the sign of the known DECIDED rate change; a rate hold => HOLD. At a newly decided conventional 0–0.25% floor, a cut => HOLD, under the explicitly stated conventional-floor assumption. If the event makes no new rate decision, ABSTAIN. Balance-sheet changes, liquidity support, Treasury funding composition and speeches are not automatically mapped into Fed rate changes.",
+      "scope": "A deliberately minimal action-plus-institutional-constraint implementation of M2. Qualitative motives, beneficiaries and feasible alternatives are recorded but never inserted into its predictions. Does not test every possible richer M2 model."
+    },
+    "C0": {
+      "name": "NO_CHANGE_INSTITUTIONAL_NULL",
+      "rule": "Always HOLD when the rate anchor is available; identical probability convention. Separately reported comparator, not a replacement for M0/M1/M2."
+    },
+    "C1": {
+      "name": "UNCONSTRAINED_ACTION_ABLATION",
+      "rule": "M2 without the conventional-floor exception; action-only continuation. Separately reported to isolate the floor assumption."
+    }
+  },
+  "probability_convention": {
+    "kind": "FIXED_RESEARCH_DESIGN_NOT_EMPIRICALLY_CALIBRATED",
+    "modal_probability": 0.6,
+    "other_each": 0.2,
+    "sensitivity_modal_probabilities": [
+      0.4,
+      0.6,
+      0.8
+    ],
+    "abstention_probabilities": null
+  },
+  "metrics": {
+    "primary": [
+      "count",
+      "coverage",
+      "abstentions",
+      "direction_accuracy",
+      "multiclass_brier_sum_squared_range_0_to_2",
+      "negative_log_likelihood_natural_log"
+    ],
+    "comparisons": "Pairwise/common coverage only, alongside each model's own coverage. Do not compare unpaired accuracy as skill.",
+    "uncertainty": "Cluster block bootstrap paired score differences by four prespecified historical regimes; report sensitivity rather than formal evidence of generalization with only four clusters. Leave-one-regime-out summaries; no horizon pooling.",
+    "calibration": "Reliability summary only; calibration slope unavailable for a fixed modal probability, no fitted calibration claim."
+  },
+  "regimes": [
+    {
+      "id": "2018_2019_NORMALIZATION",
+      "start": "2018-01-01",
+      "end": "2019-12-31"
+    },
+    {
+      "id": "2020_PANDEMIC",
+      "start": "2020-01-01",
+      "end": "2020-12-31"
+    },
+    {
+      "id": "2021_2022_INFLATION",
+      "start": "2021-01-01",
+      "end": "2022-12-31"
+    },
+    {
+      "id": "2023_2024_RESTRICTIVE_LIQUIDITY",
+      "start": "2023-01-01",
+      "end": "2024-12-31"
+    }
+  ],
+  "other_targets": [
+    "policy_surprise_vs_pre_cut_pricing",
+    "ust_2y",
+    "ust_10y",
+    "real_10y",
+    "breakeven_10y",
+    "DXY",
+    "growth_expectations",
+    "inflation_expectations",
+    "strategic_sector_relative"
+  ],
+  "other_target_rule": "Record target-specific observed outcomes if admissible data are available, but abstain unless each model has a clean separately frozen target forecast. Missing archived expectations, DXY rights/series, or transmission mapping are explicit target-level gaps; do not pool them with policy accuracy.",
+  "leakage_contract": "Predictor accepts a narrow decision-time feature object only, not outcomes, retrospective outcome histories, future revisions, or the full row. Forecast artifact is frozen before outcome join. All input source time upper bounds <= cut. Corrections, mutable links, and date-only uncertainties retained. Historical documentary certification is not contemporaneous archived byte certification.",
+  "result_gate": "Complete >=20 historically source-time-certified rows with explicit certification scope, runnable pilot or named target-level data deficiencies, exact lineage and honest limitations. No live inference, rank, gate, size, trading, merger or deployment."
+}
