@@ -89,6 +89,18 @@ def test_current_descriptor_requires_existing_native_row_and_matching_cut():
     with pytest.raises(ValueError,match='cut_mismatch'):merge(rows=descriptors(day=date(2026,10,7)))
 
 
+def test_lagged_cut_seals_its_own_session_and_skips_missing_native_rows():
+    later=date(2026,10,9)
+    updated=pd.concat([history(('PLTR',)),history(('PLTR','NEW'),day=later)],ignore_index=True)
+    out=merge_recovery_observations(pd.DataFrame(),updated,descriptors(('PLTR','NEW')),as_of=DAY,observed_at='2026-10-10T01:00:00+00:00',enabled=True)
+    sealed=out[out[COLUMNS[2]].notna()]
+    assert list(zip(sealed.date.dt.date,sealed.ticker))==[(DAY,'PLTR')]
+    assert json.loads(sealed.iloc[0][COLUMNS[1]])['as_of']==DAY.isoformat()
+    assert len(out)==3  # a lagged cut never mints a native row for NEW
+    with pytest.raises(ValueError,match='without_native'):
+        merge_recovery_observations(pd.DataFrame(),history(('PLTR',),day=later),descriptors(('NEW',),day=later),as_of=later,observed_at='2026-10-10T01:00:00+00:00',enabled=True)
+
+
 def test_no_mutation_and_parquet_roundtrip(tmp_path):
     old=history();new=history();rows=descriptors();before=deepcopy(rows)
     out=merge(old=old,new=new,rows=rows)
