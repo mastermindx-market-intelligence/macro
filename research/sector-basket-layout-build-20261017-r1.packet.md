@@ -1,0 +1,1889 @@
+# Sector / basket presentation implementation — bounded patch
+Original root: 01a14889-48f6-7390-8aa1-c6352c67f0e4
+Immediate parent: 01a14889-48f6-7390-8aa1-c6352c67f0e4
+Run: sector-basket-layout-build-20261017-r1
+Role: leaf worker. No children. No browser, Paper, provider, account, secret, host, deployment, GitHub or notification operations.
+User authorizes full sector/basket redesign; parent retains design authority, integration, review and release.
+WHY NOT FABLE: concrete bounded source implementation from supplied bytes; no strategic decision delegated. Use current admitted economical Fabric route.
+Source: mastermindx-market-intelligence/macro at d7c2316d1626b980cd17224bb090a4b6f17d6141.
+Delivery: one valid unified Git patch named sector-basket-workspace.patch, with a brief separate final result giving file list and actual validation. Do not mutate a repository or publish anything. The supplied template is the exact baseline; create files only in your admitted artifact workspace.
+Status: provisional design. Paper writes are disconnected and visual approval has NOT occurred. Do not claim acceptance or shipped status.
+
+## Outcome
+Implement a reversible presentation enhancement for the existing basket detail template. Four tabs: Overview / Members / Ecosystem / Changes. Preserve all current source data, recommendation and member eligibility semantics, controllers, primary cycle SVG, stock links and global navigation. No new risk, graph, ranking, score, notification or backend engine.
+
+## Allowed patch paths
+- templates/basket_detail.html.j2 (narrow integration hooks and stable section wrappers)
+- site/assets/css/basket-workspace.css (new, scoped)
+- site/assets/js/basket-workspace.js (new)
+- tests/test_basket_workspace_source.py (new, meaningful source/render contract checks using standard library; optional only if useful)
+No other paths. Parent will regenerate the paired site/basket/ai_software.html from this exact data snapshot.
+
+## Required implementation
+1. Keep render() and all existing builders/functions as content owners. Add stable data-basket-section wrappers around each complete section (including h2 plus panel) in the constructed HTML; group semantic sections, not translated text matching.
+2. Call an idempotent window.BasketWorkspace.enhance(app, DETAIL) at the end of render, after existing sort bindings and FTR call. Scope state to the page; selected tab and disclosure states survive async full render. Capture relevant focus before app.innerHTML changes via a narrow before-render hook if needed, restore it sensibly. Never restore focus to hidden nodes.
+3. Enhancement moves actual existing nodes, not copies of innerHTML. Keep legacy content fully readable if the JS file fails. Only hide moved sections after all destinations exist. No whole-document mutation observer, timers, polling, double fetches or duplicate rendering.
+4. Structure:
+   - Persistent identity/recommendation hero remains above tabs; use original title, lifecycle, recoChip/entry distinctions and receipt. CSS should emphasize the meaningful native recommendation, not promote raw score as dominant. Preserve existing source disclosures.
+   - Always visible live context mount after hero for native FTR live strip/staleness/coherence. These may arrive after tab layout.
+   - Overview: price/cycle; compact native MTF structure; existing timing/risk and group read. Secondary details in labelled native details disclosures. No fake composite agreement grade.
+   - Members: original Act-now and early-turn-watch assessment, original holdings table and controller. Add search filtering to rows without mutating _sort or reconstructing tables. All original assessment/entry columns, personalities, grouping, coverage, stock links survive. Show matched row count and an actual no-match recovery action; min 44px mobile controls.
+   - Ecosystem: house basket thesis/member relationship context, cross-market links, group earnings. Explicit non-alarmist unavailable GMI subtheme / business-link coverage for this basket; no fabricated grouping. An exact future mount may accept qualified data later, no request now. Preserve any incumbent generic theme-research/basket-intelligence mount in its own wrapper.
+   - Changes: actual score history/timeline, prior group episodes and membership log.
+   - Score composition/flip distance/anatomy remain reachable under Overview details. Do not remove any capability.
+5. Critical FTR fix: injectFtrWidgets currently app.insertBefore(el, firstH2) and app.insertBefore(anatEl, scoreH2). After moving sections, headings are not direct children. Route top strips into the explicit live context mount when present (else incumbent insertion). Insert anatomy using scoreH2.parentNode rather than app. Preserve old node removal, staleness/coherence qualifications and restoreBasketScoreState. Root warns this is a concrete regression; not optional.
+6. Tab behavior: ARIA tabs/tabpanels, selected+tabindex, Left/Right/Home/End keys, programmatic reveal of section anchors on hashchange, and linkable panel state without hijacking existing fragments. Use a query param such as basket_tab for tab selection if fragment conflicts; preserve unrelated URL state. Search/filters and details survive async refresh. Native popstate navigation. Restore resize notifications when returning to chart.
+7. CSS: calm institutional graphite/dark and white/cool light treatments, Inter system font token, original theme.css tokens only. No invented token values, hardcoded hues, decorative gradients, huge blank hero, emoji, content made invisible by color. Health colors stay independent from zh price polarity. Desktop content width existing shell; do not add a new global header/sidebar. Mobile 390px: no page overflow, chart stacked, tab controls reachable, native table scroll container, responsive typography/touch sizes. Do not hide useful capabilities at mobile.
+8. JS must be plain browser JavaScript, no dependencies/build system. No eval, inline stylesheets, arbitrary HTML injection from unescaped data, external services or localStorage with investment data. Presentation-owned ephemeral state only.
+9. Hook stylesheet/script from template with ../assets/... paths. The enhancement script must be available before boot executes or reliably enhance existing content afterward. No race.
+10. Avoid touching score math, recoNoEntry, recoChip, entryCell, sortMembers, stock_base, risk sources, existing pulse/crossmarket fetches, theme/language behavior, _ftrTryInject ownership. Pending #7669 and #7870 remain held and are NOT to be imported or released. #7870's future generic mount integration is a documented seam only; baseline does not yet carry it.
+
+## Validation
+- Build a syntactically valid unified patch against exact supplied template.
+- Syntax-check new JS with node --check if available.
+- Verify balanced wrapper boundaries in generated/rendered HTML using supplied DETAIL fixture if possible.
+- Test idempotence, preserved original nodes/listeners, tab state after re-render, nested-heading FTR insertion, unknown hash, no-data and search no-match with any already-available DOM unit runtime. Do not install/launch browsers, do not claim screenshot/visual proof.
+- If a requested check is unavailable, name it. Do not fake test results or merely assert function-name presence as behavior proof.
+
+## Exact baseline template
+<FILE path="templates/basket_detail.html.j2">
+{% set nav_prefix = '../' %}
+{% macro t(en, zh='') -%}
+<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
+{%- endmacro %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ basket_name }} — Theme detail</title>
+<script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
+<link rel="stylesheet" href="../theme.css">
+<style>
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font:14px/1.5 -apple-system,"Segoe UI",Roboto,Helvetica,sans-serif; margin:0; padding:18px; }
+  @media (min-width:1100px){ body{ padding:24px max(34px,calc((100vw - 1340px)/2)); } }
+  a { text-decoration:none; color:inherit; }
+  h1 { font-size:22px; margin:0; }
+  h2 { font-size:15px; margin:26px 0 6px; display:flex; align-items:center; gap:8px; }
+  h2 .idx { font-size:11px; color:var(--muted); border:1px solid var(--line); border-radius:6px; padding:1px 6px; font-weight:600; }
+  .muted { color:var(--muted); } .sm { font-size:12px; }
+  .pos { color:var(--ink-up, var(--up)); } .neg { color:var(--ink-down, var(--down)); }
+  .back { font-size:12.5px; color:var(--muted); }
+  .back:hover { color:var(--ink-link, var(--link)); }
+  .chip { display:inline-block; font-size:11px; padding:1px 8px; margin:0 4px 4px 0; border-radius:7px; background:var(--panel2); border:1px solid var(--line); color:var(--muted); }
+  /* standout-board cross-reference: ★ marks a member currently on the US standout buy board */
+  .sb-star { color:var(--ink-warn, var(--warn)); text-decoration:none; font-size:12px; }
+  .sb-star:hover { filter:brightness(1.15); }
+  .chip.sb-chip { color:var(--ink-warn, var(--warn)); border-color:color-mix(in srgb, var(--warn) 38%, var(--line)); background:color-mix(in srgb, var(--warn) 12%, var(--panel2)); }
+  /* W4 stock-personality slim chips in holdings table (display-only, R-SP13) */
+  .sp-td-chip,.sp-td-mode{display:inline-block;font-size:9.5px;font-weight:600;padding:0px 5px;border-radius:5px;cursor:help;white-space:nowrap}
+  .sp-td-chip{background:color-mix(in srgb,var(--muted) 8%,transparent);color:var(--muted);border:1px solid color-mix(in srgb,var(--muted) 22%,transparent)}
+  .sp-td-mode{background:color-mix(in srgb,var(--info) 8%,transparent);color:var(--ink-info, var(--info,var(--link)));border:1px solid color-mix(in srgb,var(--info,var(--link)) 28%,transparent)}
+  /* within-theme member context chip (basket_member_context.py band — display-only cohort read) */
+  .mc-chip{display:inline-block;font-size:9.5px;font-weight:600;padding:0px 5px;border-radius:5px;white-space:nowrap;cursor:help}
+  .mc-chip.pos{background:color-mix(in srgb,var(--up) 10%,transparent);color:var(--ink-up, var(--up));border:1px solid color-mix(in srgb,var(--up) 28%,transparent)}
+  .mc-chip.warn{background:color-mix(in srgb,var(--warn) 10%,transparent);color:var(--ink-warn, var(--warn));border:1px solid color-mix(in srgb,var(--warn) 28%,transparent)}
+  .mc-chip.neg{background:color-mix(in srgb,var(--down) 10%,transparent);color:var(--ink-down, var(--down));border:1px solid color-mix(in srgb,var(--down) 28%,transparent)}
+  .mc-chip.neu{background:color-mix(in srgb,var(--muted) 8%,transparent);color:var(--muted);border:1px solid color-mix(in srgb,var(--muted) 22%,transparent)}
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin-top:10px; }
+  .hero { display:flex; flex-wrap:wrap; gap:18px; align-items:flex-start; }
+  .hero .lhs { flex:1; min-width:280px; }
+  .hero .thesis { font-size:13px; line-height:1.55; color:var(--text); opacity:.9; max-width:75ch; margin:8px 0 0; }
+  .scoreboxes { display:flex; gap:10px; flex-wrap:wrap; }
+  .sbx { background:var(--panel2); border:1px solid var(--line); border-radius:11px; padding:10px 14px; text-align:center; min-width:96px; }
+  .sbx .v { font-size:26px; font-weight:740; font-variant-numeric:tabular-nums; line-height:1; }
+  .sbx .k { font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-top:4px; }
+  .timing-strip { display:grid; grid-template-columns:repeat(7,minmax(72px,1fr)); gap:6px; margin-top:9px; }
+  .timing-cell { background:var(--panel2); border:1px solid var(--line); border-radius:8px; padding:6px 8px; min-width:0; }
+  .timing-cell .k { color:var(--muted); font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; white-space:nowrap; }
+  .timing-cell .v { font-size:13px; font-weight:720; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .lrc { background:var(--panel); border:1px solid var(--line); border-radius:var(--r-card,12px); margin-top:10px; padding:12px 14px; }
+  html[data-theme="light"] .lrc { background:var(--panel); box-shadow:var(--card-shadow); }
+  .lrc-head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:8px; }
+  .lrc-eyebrow { font-size:9.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+  .lrc-asof { font-size:10px; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .lrc-stance-row { display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
+  .lrc-stance { font-size:17px; font-weight:620; line-height:1.25; flex:1; min-width:0; }
+  .lrc-figure { font-size:22px; font-weight:720; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .lrc-figure.up { color:var(--ink-up, var(--up)); }
+  .lrc-figure.down { color:var(--ink-down, var(--down)); }
+  .lrc-figure.muted { color:var(--muted); }
+  .lrc-chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+  .lrc-chip { font-size:10px; font-weight:600; padding:3px 8px; border-radius:var(--r-ctl,8px); background:var(--panel2); border:1px solid var(--line); color:var(--muted); }
+  html[data-theme="light"] .lrc-chip { background:var(--panel2); }
+  .lrc-chip.state-fresh { color:var(--text); }
+  .lrc-chip.state-stale { color:var(--muted); }
+  .lrc-sowhat { font-size:11px; color:var(--muted); margin-bottom:6px; max-width:48ch; }
+  .lrc-receipt summary { cursor:pointer; font-size:11px; font-weight:650; color:var(--muted); margin-top:4px; }
+  .lrc-ledger { margin-top:10px; display:grid; grid-template-columns:minmax(88px, 0.35fr) 1fr; gap:0; border-top:1px solid var(--line); }
+  .lrc-ledger-row { display:contents; }
+  .lrc-ledger-row > div { padding:8px 0; border-bottom:1px solid var(--line); }
+  .lrc-ledger-label { font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); padding-right:10px; }
+  .lrc-ledger-text { font-size:12px; line-height:1.45; font-variant-numeric:tabular-nums; }
+  @media (max-width:720px) {
+    .lrc-ledger { grid-template-columns:1fr; }
+    .lrc-ledger-row > .lrc-ledger-label { padding-bottom:2px; border-bottom:none; }
+  }
+  .tlabel { font-size:11px; font-weight:700; letter-spacing:.05em; padding:3px 9px; border-radius:7px; text-transform:uppercase; }
+  .treco { font-size:12px; font-weight:700; padding:3px 11px; border-radius:8px; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:12px; }
+  .tx { background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--c,var(--muted)); border-radius:11px; padding:12px 14px; }
+  .tx .k { font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+  .tx .v { font-size:20px; font-weight:720; font-variant-numeric:tabular-nums; margin:5px 0 3px; }
+  .tx .d { font-size:11.5px; color:var(--muted); line-height:1.4; }
+  .cbar { display:flex; height:8px; border-radius:5px; overflow:hidden; background:var(--line); margin:8px 0; }
+  .cbar i { display:block; height:100%; }
+  .kpis { display:flex; flex-wrap:wrap; gap:16px; }
+  .kpis .k { font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  .kpis .v { font-size:16px; font-weight:680; font-variant-numeric:tabular-nums; }
+  table { border-collapse:collapse; width:100%; font-size:13px; }
+  th,td { padding:7px 9px; border-bottom:1px solid var(--line); white-space:nowrap; }
+  th { color:var(--muted); font-weight:500; text-align:right; cursor:pointer; user-select:none; }
+  th:first-child,td:first-child { text-align:left; }
+  td.num,th.num { text-align:right; font-variant-numeric:tabular-nums; }
+  .ts { overflow-x:auto; }
+  .tk { font-weight:680; } .tk:hover { color:var(--ink-link, var(--link)); }
+  .cv { font-weight:700; border-radius:6px; padding:1px 7px; font-size:12px; }
+  /* confluence cascade tier badge (T1 master -> T4 earliest), ported from subsectors_china */
+  .tier { display:inline-block; font-weight:800; font-size:10px; padding:1px 5px; border-radius:5px; letter-spacing:.02em; color:#fff; vertical-align:middle; }
+  /* White text on the fill, so the FILL carries the text grade — the --ink-* rung
+     is identity in dark and lands 5.3–6.5:1 in light (see subsectors). */
+  .tier.T1 { background:var(--fill-up, var(--up)); }
+  .tier.T2 { background:color-mix(in srgb, var(--fill-up, var(--up)) 84%, #000); }
+  .tier.T3 { background:var(--fill-info, var(--info)); } .tier.T4 { background:#3c4a8c; }
+  html[data-lang="zh"] .tier.T2 { background:color-mix(in srgb, var(--fill-up, var(--up)) 84%, #000); }
+  .tier .prov { font-weight:700; opacity:.8; margin-left:1px; }
+  .why { color:var(--muted); font-size:11.5px; white-space:normal; max-width:42ch; }
+  #hold { table-layout:fixed; }
+  #hold th,#hold td { vertical-align:top; }
+  #hold .hold-stock { width:30%; }
+  #hold .hold-potential { width:76px; }
+  #hold .hold-verdict { width:34%; white-space:normal; }
+  #hold .hold-entry { width:24%; white-space:normal; }
+  #hold .hold-20d { width:72px; }
+  .hold-company { color:var(--muted); font-size:11.5px; }
+  .v-short { display:none; font-weight:700; }
+  .act-table .act-entry { white-space:normal; max-width:24ch; }
+  .fast-watch { margin-top:12px; padding-top:11px; border-top:1px solid var(--line); }
+  .fast-watch-title { color:var(--ink-warn, var(--warn)); font-weight:720; margin-bottom:2px; }
+  .watch-table .watch-blocker { white-space:normal; min-width:230px; }
+  .timeline .ev { display:flex; gap:8px; padding:6px 0; border-top:1px solid var(--line); font-size:12.5px; }
+  .timeline .ev:first-child { border-top:0; }
+  .timeline .dt { color:var(--muted); width:84px; flex:0 0 84px; font-variant-numeric:tabular-nums; }
+  .sev-high { color:var(--ink-down, var(--down)); } .sev-medium { color:var(--ink-warn, var(--warn)); }
+  footer { color:var(--muted); font-size:11.5px; margin-top:28px; border-top:1px solid var(--line); padding-top:12px; max-width:95ch; }
+  .disc { font-size:11.5px; color:var(--muted); margin-top:6px; max-width:90ch; }
+  /* ---- cross-market narrative chip ---- */
+  .xm-hot { font-size:12.5px; margin:2px 0 10px; padding:7px 11px; border-radius:8px;
+    background:rgba(251,146,60,.10); border:1px solid rgba(251,146,60,.35); color:var(--text); }
+  .xm-row { display:flex; flex-wrap:wrap; gap:8px; }
+  .xm-chip { display:inline-flex; align-items:center; gap:7px; font-size:12.5px; color:inherit;
+    border:1px solid var(--line); border-radius:9px; padding:5px 10px; background:var(--panel2); transition:border-color .15s; }
+  .xm-chip:hover { border-color:var(--muted); }
+  .xm-flag { font-size:14px; line-height:1; }
+  .xm-nm { font-weight:600; max-width:24ch; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .xm-sc { font-weight:740; font-variant-numeric:tabular-nums; }
+  .xm-ar.pos { color:var(--ink-up, var(--up)); } .xm-ar.neg { color:var(--ink-down, var(--down)); } .xm-ar.muted { color:var(--muted); }
+  /* ── FTR W3: live strip in basket detail header ─────────────────────── */
+  .ftr-live-strip { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:8px 12px;
+    background:var(--panel2); border:1px solid var(--line); border-radius:9px; margin-top:8px; font-size:12.5px; }
+  .ftr-ls-pill { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; padding:2px 8px; border-radius:12px; }
+  .ftr-ls-pill.live { background:var(--wash-ok); border:1px solid var(--ring-ok); color:var(--ink-ok, var(--ok)); }
+  .ftr-ls-pill.pre  { background:rgba(79,140,255,.12); border:1px solid rgba(79,140,255,.30); color:var(--ink-link, var(--link)); }
+  .ftr-ls-pill.post,.ftr-ls-pill.closed { background:rgba(139,147,167,.08); border:1px solid var(--line); color:var(--muted); }
+  .ftr-ls-chg { font-size:18px; font-weight:800; font-variant-numeric:tabular-nums; }
+  .ftr-ls-chg.up { color:var(--ink-up, var(--up)); } .ftr-ls-chg.dn { color:var(--ink-down, var(--down)); }
+  .ftr-ls-rank { font-size:12px; color:var(--muted); }
+  /* ── FTR W8: anatomy panel ────────────────────────────────────────────── */
+  .ftr-anatomy-card { background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; margin-top:8px; }
+  .ftr-anatomy-hd { padding:13px 16px 10px; border-bottom:1px solid var(--line); display:grid; grid-template-columns:1fr auto auto; gap:12px; align-items:start; }
+  .ftr-ah-why { font-size:12px; color:var(--muted); line-height:1.45; max-width:38ch; }
+  .ftr-ah-why strong { color:var(--text); }
+  .ftr-ah-score { font-size:32px; font-weight:800; font-variant-numeric:tabular-nums; line-height:1; text-align:center; }
+  .ftr-leg-list { padding:12px 16px; display:grid; gap:8px; }
+  .ftr-leg-row { display:grid; grid-template-columns:96px 1fr 56px 52px; align-items:center; gap:9px; }
+  .ftr-leg-lbl { font-size:11px; color:var(--muted); font-weight:500; }
+  .ftr-leg-wt  { font-size:9.5px; color:var(--muted); }
+  .ftr-leg-bar { height:8px; background:color-mix(in srgb, var(--text) 14%, var(--panel2)); border-radius:4px; overflow:hidden; position:relative; }
+  .ftr-leg-bar-ctr { position:absolute; left:50%; top:0; bottom:0; width:1px; background:color-mix(in srgb, var(--muted) 30%, transparent); }
+  .ftr-leg-fill { position:absolute; top:0; bottom:0; border-radius:3px; }
+  .ftr-leg-fill.pos { left:50%; background:var(--up); }
+  .ftr-leg-fill.neg { right:50%; background:var(--down); }
+  .ftr-leg-fill.crowd { left:50%; background:var(--ink-warn, var(--amber,#fb923c)); }
+  .ftr-leg-val { font-size:12px; font-weight:700; font-variant-numeric:tabular-nums; text-align:right; }
+  .ftr-leg-src { font-size:10.5px; color:var(--muted); text-align:right; }
+  .ftr-anatomy-ft { padding:9px 16px; border-top:1px solid var(--line); background:rgba(251,146,60,.03);
+    display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+  .ftr-crowd-note { background:rgba(251,146,60,.10); border:1px solid rgba(251,146,60,.30); color:var(--ink-warn, var(--amber,#fb923c)); padding:3px 9px; border-radius:6px; font-size:11px; font-weight:700; }
+
+  .ftr-anatomy-disclosure { margin:8px 0 2px; }
+  .ftr-anatomy-disclosure > summary { cursor:pointer; list-style:none; width:max-content; max-width:100%; color:var(--link); font-size:12px; font-weight:700; padding:5px 8px; border-radius:var(--r-sm); }
+  .ftr-anatomy-disclosure > summary::-webkit-details-marker { display:none; }
+  .ftr-anatomy-disclosure > summary::after { content:'  ›'; color:var(--muted); }
+  .ftr-anatomy-disclosure[open] > summary::after { content:'  ⌄'; }
+  .ftr-anatomy-disclosure > summary:focus-visible { outline:2px solid var(--link); outline-offset:2px; }
+  /* ---- sector-cycle mini-chart ---- */
+  .cyc-readrow { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:9px; }
+  .cyc-pchip { font-size:11.5px; font-weight:700; padding:2px 9px; border-radius:7px; }
+  .cyc-rk { font-size:11.5px; color:var(--muted); border:1px solid var(--line); border-radius:7px; padding:2px 8px; }
+  .cyc-rk b { color:var(--text); font-variant-numeric:tabular-nums; }
+  .cyc-rk.pos { color:var(--ink-up, var(--up)); border-color:color-mix(in srgb, var(--up) 38%, var(--line)); }
+  .cyc-rk.neg { color:var(--ink-down, var(--down)); border-color:color-mix(in srgb, var(--down) 38%, var(--line)); }
+  /* ── GR1 · Group read band (group_pulse.v1 + group_earnings_pulse.v1) ──────────
+     A context-only read plane: how much of the group is moving, whether it moves
+     one way, where it sits on its arc, and what earnings are doing to it.
+     --gr is deliberately a NON-directional hue. Nothing in this band is a buy or
+     sell read (DNR:KILL-PSS-SR3-PARTICIPATION), so it must never borrow --up /
+     --down for its own chrome. Actual member moves inside the band still route
+     through --up / --down so zh 红涨绿跌 flips them. */
+  :root { --gr:#8f8ae0; }
+  html[data-theme="light"] { --gr:#5a51bd; }
+  .gpr-band { position:relative; background:var(--panel); border:1px solid var(--line);
+    border-radius:12px; margin-top:10px; overflow:hidden; }
+  .gpr-band::before { content:""; position:absolute; inset:0 0 auto; height:2px;
+    background:linear-gradient(90deg,var(--gr),color-mix(in srgb,var(--gr) 15%,transparent)); }
+  html[data-theme="light"] .gpr-band { box-shadow:0 1px 2px rgba(28,36,48,.05),0 10px 26px -14px rgba(28,36,48,.18); }
+  .gpr-hd { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; padding:13px 16px 0; }
+  .gpr-eyebrow { font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--gr); }
+  .gpr-asof { margin-left:auto; font-size:11px; color:var(--muted); }
+  .gpr-asof b { font-variant-numeric:tabular-nums; font-weight:620; color:var(--text); }
+  .gpr-stance { display:flex; flex-wrap:wrap; align-items:flex-start; gap:9px; padding:10px 16px 0; }
+  .gpr-tok { font-size:10.5px; font-weight:800; letter-spacing:.07em; text-transform:uppercase;
+    padding:3px 9px; border-radius:7px; white-space:nowrap; border:1px solid; flex:0 0 auto; margin-top:4px; }
+  .gpr-tok.act { color:var(--gr); border-color:color-mix(in srgb,var(--gr) 55%,var(--line));
+    background:color-mix(in srgb,var(--gr) 12%,transparent); }
+  .gpr-tok.mut { color:var(--muted); border-color:var(--line); background:var(--panel2); }
+  .gpr-read { font-size:17px; font-weight:620; line-height:1.42; max-width:52ch; letter-spacing:-.004em; }
+  .gpr-backdrop { padding:7px 16px 0; font-size:12px; color:var(--muted); max-width:72ch; }
+  .gpr-tiles { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; padding:13px 16px 0; }
+  .gpr-tile { background:var(--panel2); border:1px solid var(--line); border-radius:9px; padding:9px 11px 10px; min-width:0; }
+  html[data-theme="light"] .gpr-tile { background:#f3f6fb; }
+  .gpr-tile .k { font-size:9.5px; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+    color:var(--muted); display:flex; align-items:center; gap:5px; }
+  .gpr-tile .v { font-size:14.5px; font-weight:660; line-height:1.35; margin:5px 0 3px; }
+  .gpr-tile .v b { font-variant-numeric:tabular-nums; font-weight:780; }
+  .gpr-tile .d { font-size:11px; color:var(--muted); line-height:1.45; }
+  .gpr-tile .d b { color:var(--text); font-variant-numeric:tabular-nums; font-weight:640; }
+  .gpr-i { font-size:9.5px; line-height:1; color:var(--muted); border:1px solid var(--line); border-radius:50%;
+    width:13px; height:13px; display:inline-flex; align-items:center; justify-content:center; cursor:help; flex:0 0 auto; }
+  .gpr-i:hover { color:var(--gr); border-color:var(--gr); }
+  .gpr-mchips { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+  .gpr-mchip { font-size:10px; border:1px solid var(--line); border-radius:5px; padding:0 5px;
+    color:var(--muted); white-space:nowrap; cursor:help; }
+  .gpr-mchip b { color:var(--text); font-weight:680; }
+  .gpr-mchip .n { font-variant-numeric:tabular-nums; }
+  /* the arc rail — where the group sits on the washout→advance→distribute arc.
+     A position marker on a described arc, never a forecast: no arrow, no "next". */
+  .gpr-arc { margin:13px 16px 0; padding:11px 13px 10px; border:1px solid var(--line);
+    border-radius:9px; background:color-mix(in srgb,var(--gr) 4%,var(--panel2)); }
+  .gpr-arc-k { font-size:9.5px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--muted); }
+  .gpr-rail { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); margin-top:10px; position:relative; }
+  .gpr-rail::before { content:""; position:absolute; left:10%; right:10%; top:4px; height:1px; background:var(--line); }
+  .gpr-stop { position:relative; text-align:center; min-width:0; }
+  .gpr-dot { width:9px; height:9px; border-radius:50%; margin:0 auto; background:var(--panel);
+    border:1px solid var(--line); position:relative; z-index:1; }
+  .gpr-stop.on .gpr-dot { background:var(--gr); border-color:var(--gr);
+    box-shadow:0 0 0 4px color-mix(in srgb,var(--gr) 20%,transparent); }
+  .gpr-stop .lbl { display:block; margin-top:8px; font-size:9.5px; line-height:1.3; color:var(--muted); }
+  .gpr-stop.on .lbl { color:var(--text); font-weight:700; }
+  .gpr-arc-note { margin-top:10px; font-size:11px; color:var(--muted); display:flex; align-items:center; gap:6px; }
+  /* what we're watching — windows, not certainties */
+  .gpr-watch { margin-top:13px; padding:12px 16px 14px; border-top:1px solid var(--line);
+    background:color-mix(in srgb,var(--gr) 3%,transparent); }
+  .gpr-watch-k { font-size:9.5px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--muted); }
+  .gpr-wcols { display:grid; grid-template-columns:1fr 1fr; gap:10px 24px; margin-top:9px; }
+  .gpr-wcol h5 { margin:0 0 5px; font-size:11.5px; font-weight:700; }
+  .gpr-wcol h5 .ar { color:var(--muted); font-weight:600; margin-right:4px; }
+  .gpr-wcol ul { margin:0; padding-left:16px; }
+  .gpr-wcol li { font-size:12px; line-height:1.55; color:var(--muted); }
+  .gpr-foot { margin-top:11px; font-size:11px; color:var(--muted); }
+  .gpr-null { padding:13px 16px 15px; font-size:12.5px; color:var(--muted); max-width:74ch; line-height:1.55; }
+  /* honest split bar — 1px gaps + a track border so neutral segments survive light mode */
+  .gpr-bar { display:flex; height:9px; border-radius:5px; overflow:hidden; background:var(--panel2);
+    border:1px solid var(--line); margin:9px 0 7px; gap:1px; }
+  .gpr-bar i { display:block; height:100%; }
+  .gpr-key { display:flex; flex-wrap:wrap; gap:4px 14px; font-size:11px; color:var(--muted); }
+  .gpr-key b { font-variant-numeric:tabular-nums; font-weight:660; }
+  .gpr-key .sw { display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:4px; vertical-align:middle; }
+  .gpr-ep th, .gpr-ep td { white-space:nowrap; }
+  .gpr-ep .win { font-variant-numeric:tabular-nums; }
+  @media (max-width:720px){
+    .gpr-hd,.gpr-stance,.gpr-backdrop,.gpr-tiles { padding-left:11px; padding-right:11px; }
+    .gpr-watch,.gpr-null { padding-left:11px; padding-right:11px; }
+    .gpr-arc { margin-left:11px; margin-right:11px; }
+    .gpr-tiles { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .gpr-read { font-size:15px; }
+    .gpr-wcols { grid-template-columns:1fr; }
+    .gpr-stop .lbl { font-size:8.5px; }
+    .gpr-asof { margin-left:0; flex-basis:100%; }
+  }
+  @media (max-width:720px){
+    html, body { overflow-x:hidden; }
+    body { padding:12px; font-size:13px; }
+    h1 { font-size:19px; }
+    h2 { align-items:flex-start; flex-wrap:wrap; line-height:1.25; }
+    .panel { border-radius:9px; padding:11px; }
+    .hero .lhs { min-width:0; }
+    .scoreboxes { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); width:100%; }
+    .timing-strip { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .sbx { min-width:0; padding:9px 8px; }
+    .sbx .k { overflow-wrap:anywhere; }
+    .ts { overflow-x:visible; }
+    #hold { font-size:12px; }
+    #hold th,#hold td { padding:6px 5px; white-space:normal; overflow-wrap:anywhere; }
+    #hold .hold-stock { width:42%; }
+    #hold .hold-potential { width:58px; text-align:center; }
+    #hold .hold-verdict { width:auto; }
+    #hold .hold-entry,
+    #hold .hold-20d { display:none; }
+    .act-table { table-layout:fixed; font-size:12px; }
+    .act-table th,.act-table td { padding:6px 5px; white-space:normal; overflow-wrap:anywhere; }
+    .act-table .act-name { width:42%; }
+    .act-table .act-conv { width:58px; text-align:center; }
+    .act-table .act-entry,
+    .act-table .act-20d { display:none; }
+    .watch-table { font-size:12px; }
+    .watch-table th,.watch-table td { white-space:normal; padding:6px 5px; }
+    .watch-table .watch-20d { display:none; }
+    .watch-table .watch-blocker { min-width:0; }
+    .hold-company { display:none; }
+    .v-full { display:none; }
+    .v-short { display:inline; }
+    .cv { padding:1px 6px; }
+    .disc, footer { max-width:100%; }
+  }
+</style>
+<style data-basket-flow-layout>
+[data-basket-tone="up"]{--c:var(--up)}
+[data-basket-tone="down"]{--c:var(--down)}
+[data-basket-tone="warn"]{--c:var(--warn)}
+[data-basket-tone="muted"]{--c:var(--muted)}
+.basket-flow-cards{margin-top:13px;display:grid;grid-template-columns:minmax(230px,2fr) minmax(0,3fr);gap:10px;align-items:stretch}
+.basket-flow-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;min-width:0}
+.basket-flow-metrics>.sbx{min-width:0;overflow-wrap:anywhere}
+@media(max-width:720px){.basket-flow-cards{grid-template-columns:minmax(0,1fr)}}
+</style>
+<style data-basket-hold-sort>
+#hold .hold-sort{appearance:none;font:inherit;color:inherit;background:transparent;border:0;border-radius:var(--r-sm);display:inline-flex;align-items:center;justify-content:flex-end;gap:3px;width:100%;min-height:32px;padding:2px;cursor:pointer;white-space:normal;line-height:1.2}
+#hold .hold-sort:hover{background:var(--panel2);color:var(--ink-link,var(--link))}
+#hold .hold-sort:focus-visible{outline:2px solid var(--ink-link,var(--link));outline-offset:2px}
+#hold .hold-sort-icon{font-size:10px}
+@media(max-width:720px){ #hold .hold-potential{width:80px}#hold .hold-sort{white-space:nowrap}}
+#hold .hold-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+</style>
+</head>
+<body>
+{% set nav_context_links = [
+  {'href': back_href | default('../baskets.html'), 'icon': '🧺', 'en': 'All themes', 'zh': '全部主题'},
+] %}
+{% include "_site_nav.html.j2" %}
+
+<a class="back" href="{{ back_href | default('../sector_central.html#actnow-section') }}">← {{ t(back_label_en | default('Sector Intelligence'), back_label_zh | default('行业情报')) }}</a>
+
+<!-- ── Shock de-escalation banner (FTR W1 / PS-R3, de-escalation only) ── -->
+<!-- Fetched from ../live/shock_state.json (basket detail pages live under site/basket/). -->
+<div id="ftr-shock-banner"></div>
+<!-- ── Policy-lever state chip (FTR W1 / PS-W2-F, display-only) ── -->
+<div id="ftr-lever-chip"></div>
+<script>
+(function(){
+'use strict';
+function isZh(){return document.documentElement.getAttribute('data-lang')==='zh';}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+// Shock banner
+fetch('../live/shock_state.json',{cache:'no-cache'})
+  .then(function(r){if(!r.ok)throw 0;return r.json();})
+  .then(function(d){
+    if(!d||!d.active)return;
+    var el=document.getElementById('ftr-shock-banner');
+    if(!el)return;
+    var msg=isZh()?
+      ('⚠ 冲击状态 — 评分与叙事依据冲击前数据计算，有效期至 '+esc(d.expires)+'，届前请酌情折扣。冲击期的剧烈反转多难持续：历史26次中约六成在一天内消退。'):
+      ('⚠ SHOCK regime: scores &amp; narrative computed on pre-shock data — discount until '+esc(d.expires)+'. Sharp reversals during shocks usually don&#39;t hold: in 26 past cases about 6 in 10 faded within a day.');
+    el.innerHTML='<div style="background:rgba(250,204,21,.10);border:1px solid rgba(250,204,21,.4);color:var(--ink-warn, var(--warn));border-radius:9px;padding:9px 14px;margin:8px 0;font-size:13px">'+msg+'</div>';
+  }).catch(function(){/* absent file → no banner */});
+// Policy-lever chip
+fetch('../policy_lever.json',{cache:'no-cache'})
+  .then(function(r){if(!r.ok)throw 0;return r.json();})
+  .then(function(d){
+    if(!d||!d.state)return;
+    var el=document.getElementById('ftr-lever-chip');
+    if(!el)return;
+    var s=d.state, c=s==='ARMED'?'var(--down)':s==='ELEVATED'?'var(--orange)':'var(--muted)';
+    var sZh={'ARMED':'已触发','ELEVATED':'警戒','QUIET':'平静'}[s]||s;
+    // Use framing/framing_zh from the JSON itself — single source of truth, immune to drift
+    var disc=isZh()?(d.framing_zh||d.framing||''):(d.framing||'');
+    el.innerHTML='<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:12px;margin:4px 0 8px">'
+      +'<span style="font-weight:700;padding:1px 9px;border-radius:10px;border:1px solid '+c+';color:'+c+'">'
+      +'<span class="l-en">'+esc(s)+'</span><span class="l-zh">'+esc(sZh)+'</span>'
+      +'</span>'
+      +'<span style="color:var(--muted);font-size:11.5px">'+esc(disc)+'</span>'
+      +'</div>';
+  }).catch(function(){/* absent file → no chip */});
+})();
+</script>
+
+<div id="app"></div>
+
+<footer>
+  {{ t(
+    'Research dashboard, not investment advice. Theme and member scores help prioritize what to study; they are not a buy list or an order.',
+    '研究看板，非投资建议。主题与成分股评分用于安排研究优先级，不是买入清单或下单指令。') }}
+  {{ t('Generated', '生成于') }} <span>{{ generated_utc }}</span>.
+</footer>
+
+<script>
+const DETAIL = {{ detail_json|safe }};
+const L = (en,zh)=>`<span class="l-en">${en}</span><span class="l-zh">${zh==null?en:zh}</span>`;
+const BENCH = DETAIL.bench_label || 'S&P 500';          // regional benchmark label (CSI 300 / Hang Seng / S&P-TSX)
+const BENCHZ = DETAIL.bench_label_zh || BENCH;
+const esc = s => (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const briefText = (s,max=260) => {
+  s = String(s || '').replace(/\s+/g,' ').trim();
+  if(s.length <= max) return s;
+  const cut = s.slice(0,max);
+  const stop = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('; '));
+  return (stop > 90 ? cut.slice(0,stop+1) : cut.replace(/\s+\S*$/,'')).trim() + '...';
+};
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const fmtPct = x => x==null ? '—' : (x>=0?'+':'')+(x*100).toFixed(1)+'%';
+const fmtPP = x => x==null ? '—' : (x>=0?'+':'')+(x*100).toFixed(1)+'pp';
+const cls = x => x==null?'muted':(x>=0?'pos':'neg');
+const TIER_LABELS={
+  T1:['confirmed setup','已确认机会'],
+  T2:['early setup','早期机会'],
+  T3:['forming','形成中'],
+  T4:['first sign','初现迹象']
+};
+function tierBadgeHtml(tier,provisional){
+  if(!tier) return '';
+  const lab=TIER_LABELS[tier]||['entry setup','入场机会'];
+  const tipEn={T1:'The entry read is active. Check the wider setup and your risk plan before acting.',T2:'An early, higher-conviction entry window. It is not a promise.',T3:'An early entry read that is not confirmed yet. It may change.',T4:'The earliest and least-certain entry read. Treat it as a watch.'}[tier]||'Entry timing context.';
+  const tipZh={T1:'入场判断已生效。操作前请结合整体布局和自己的风险计划。',T2:'较早、信心较高的入场窗口。它不是承诺。',T3:'较早的入场判断，尚未确认，仍可能变化。',T4:'最早、也最不确定的入场判断。先放进观察列表。'}[tier]||'入场时机背景。';
+  return `<span class="tier ${esc(tier)}" data-tip-en="Technical tier ${esc(tier)}: ${esc(tipEn)}${provisional?' Provisional — may change.':''}" data-tip-zh="技术层级 ${esc(tier)}：${esc(tipZh)}${provisional?' 暂定，仍可能变化。':''}">${L(lab[0],lab[1])}</span>`;
+}
+const LABEL_COLOR = {dominant:['rgba(250,204,21,.16)','rgba(250,204,21,.55)','#eab308'],emerging:['rgba(74,222,128,.15)','rgba(74,222,128,.5)','#22c55e'],fading:['rgba(251,146,60,.15)','rgba(251,146,60,.5)','#f97316'],deteriorating:['rgba(248,113,113,.15)','rgba(248,113,113,.5)','#ef4444'],neutral:['var(--panel2)','var(--line)','var(--muted)']};
+const RECO_COLOR = {enter:['rgba(34,197,94,.20)','rgba(34,197,94,.65)','#16a34a'],accumulate:['rgba(74,222,128,.14)','rgba(74,222,128,.5)','#22c55e'],hold:['var(--panel2)','var(--line)','var(--muted)'],trim:['rgba(251,146,60,.15)','rgba(251,146,60,.55)','#f97316'],avoid:['rgba(248,113,113,.16)','rgba(248,113,113,.6)','#ef4444']};
+const COMP_COLOR = {trend:'#5aa7ff',breadth:'#4ade80',impulse:'#a78bfa',macro:'#2dd4bf',mtf:'#f0abfc',volhole:'#fbbf24',crowding:'#fb7185'};
+// zh 红涨绿跌: swap green↔red in color triplets
+const _isZh=()=>document.documentElement.getAttribute('data-lang')==='zh';
+const ZH_G2R={'rgba(74,222,128,.15)':'rgba(248,113,113,.15)','rgba(74,222,128,.5)':'rgba(248,113,113,.5)','#22c55e':'#ef4444','rgba(34,197,94,.20)':'rgba(248,113,113,.16)','rgba(34,197,94,.65)':'rgba(248,113,113,.6)','rgba(74,222,128,.14)':'rgba(248,113,113,.15)','#16a34a':'#ef4444'};
+const ZH_R2G={'rgba(248,113,113,.15)':'rgba(74,222,128,.15)','rgba(248,113,113,.5)':'rgba(74,222,128,.5)','#ef4444':'#22c55e','rgba(248,113,113,.16)':'rgba(34,197,94,.20)','rgba(248,113,113,.6)':'rgba(34,197,94,.65)'};
+function zhColor(c){if(!_isZh())return c;return c.map(v=>ZH_G2R[v]||ZH_R2G[v]||v);}
+const badge=(cls,c,en,zh)=>{const cc=zhColor(c);return`<span class="${cls}" style="background:${cc[0]};border:1px solid ${cc[1]};color:${cc[2]}">${L(en,zh)}</span>`;};
+// A1 — display-only verb demotion: never render a green ACCUMULATE/ENTER action chip when
+// the theme's own clean_entry texture is false. The payload reco is NOT mutated (alerts +
+// downstream readers keep continuity) — only what the chip says changes. (Mirrors baskets_desk.js.)
+const RECO_NOENTRY = ['rgba(245,158,11,.16)','rgba(245,158,11,.55)','#d97706'];
+const recoNoEntry = t => (t.reco==='accumulate'||t.reco==='enter') && !(((t.textures||{}).clean_entry)||{}).flag;
+const recoChip = t => recoNoEntry(t)
+  ? `<span class="treco" style="background:${RECO_NOENTRY[0]};border:1px solid ${RECO_NOENTRY[1]};color:${RECO_NOENTRY[2]}" title="In favour, but no member has a clean entry — do not chase; wait for a setup.">${L('IN FAVOUR — NO ENTRY','看好但无干净入场')}</span>`
+  : badge('treco',RECO_COLOR[t.reco]||RECO_COLOR.hold,t.reco_en||(t.reco||'—'),t.reco_zh||'');
+const RECO_NOENTRY_WHY = () => L('In favour, but no member has a clean entry — do not chase; wait for a setup.','看好，但无成分股具备干净入场点 — 勿追，等待入场时机。');
+
+function spark(values,{w=160,h=34,color=''}={}){
+  const vs=(values||[]).map(v=>v&&v.value!=null?+v.value:null).filter(v=>v!=null);
+  if(vs.length<2) return `<span class="muted sm">${L('history accruing','历史累积中')}</span>`;
+  const mn=Math.min(...vs),mx=Math.max(...vs),sp=(mx-mn)||1;
+  const pts=vs.map((v,i)=>[i/(vs.length-1)*w,h-3-(v-mn)/sp*(h-7)]);
+  const d=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const col=color||(vs[vs.length-1]>=vs[0]?cssv('--up'):cssv('--down'));
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><path d="${d}" fill="none" stroke="${col}" stroke-width="1.6"/></svg>`;
+}
+// plain-number-array sparkline (the MTF engine emits raw RSI/hist arrays, not {value} objects)
+function sparkN(arr,color='',{w=110,h=26}={}){
+  const vs=(arr||[]).map(Number).filter(v=>isFinite(v));
+  if(vs.length<3) return '';
+  const mn=Math.min(...vs),mx=Math.max(...vs),sp=(mx-mn)||1;
+  const pts=vs.map((v,i)=>[i/(vs.length-1)*w,h-2-(v-mn)/sp*(h-5)]);
+  const d=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><path d="${d}" fill="none" stroke="${color||cssv('--muted')}" stroke-width="1.4"/></svg>`;
+}
+// ---- equal-weight sector/theme cycle mini-chart. Self-contained inline SVG — no extra deps. ----
+const CYC_PHASE_ZH={Peak:'见顶',Expansion:'上行',Downturn:'回落',Recovery:'入场良机',Trough:'筑底'};
+function fmtYM(t){if(!t)return'—';const p=String(t).split('-');const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return (M[(+p[1]||1)-1]||'')+" "+p[0];}
+function cycleSectionHtml(cyc,bid){
+  if(!cyc||!cyc.price||cyc.price.length<8) return '';
+  const W=760,H=168,PL=10,PR=12,PT=16,PB=14;
+  const pts=cyc.price, xs=pts.map(p=>p.x), vs=pts.map(p=>p.v);
+  const x0=(cyc.xDomain&&cyc.xDomain[0])||Math.min.apply(null,xs), x1=(cyc.xDomain&&cyc.xDomain[1])||Math.max.apply(null,xs);
+  let lo=Math.min.apply(null,vs), hi=Math.max.apply(null,vs); const pad=((hi-lo)||1)*0.08; lo-=pad; hi+=pad;
+  const SX=x=>PL+(x-x0)/((x1-x0)||1)*(W-PL-PR), SY=v=>PT+(1-(v-lo)/((hi-lo)||1))*(H-PT-PB);
+  const acc=cyc.accent||cssv('--link');
+  const d=pts.map((p,i)=>(i?'L':'M')+SX(p.x).toFixed(1)+' '+SY(p.v).toFixed(1)).join(' ');
+  const marks=(cyc.turns||[]).filter(t=>!t.provisional&&t.rebased!=null).map(t=>{const pk=t.k==='peak',x=SX(t.x),y=SY(t.rebased);const c=pk?cssv('--down'):cssv('--up');
+    return pk?`<path d="M${x.toFixed(1)} ${(y-7).toFixed(1)} l-3.4 6 l6.8 0 z" fill="${c}" opacity=".9"/>`:`<path d="M${x.toFixed(1)} ${(y+7).toFixed(1)} l-3.4 -6 l6.8 0 z" fill="${c}" opacity=".9"/>`;}).join('');
+  const lp=pts[pts.length-1], nx=SX(lp.x), ny=SY(lp.v);
+  const nowDot=`<circle cx="${nx.toFixed(1)}" cy="${ny.toFixed(1)}" r="3.8" fill="${acc}" stroke="var(--bg)" stroke-width="1.6"/>`;
+  const tdx=cyc.today!=null?SX(cyc.today):null;
+  const todayLine=tdx!=null?`<line x1="${tdx.toFixed(1)}" y1="${PT}" x2="${tdx.toFixed(1)}" y2="${H-PB}" stroke="${cssv('--muted')}" stroke-width="1" stroke-dasharray="2 3" opacity=".5"/>`:'';
+  let proj='';const pr=cyc.proj;
+  if(pr&&pr.central_x!=null&&pr.central_x<=x1+0.02){
+    const ymd=t=>{if(!t)return null;const q=String(t).split('-');return (+q[0])+(((+q[1]||1)-1)/12);};
+    const clo=ymd(pr.low),chi=ymd(pr.high),cxp=SX(pr.central_x),up=pr.nextTurn==='peak';
+    if(clo!=null&&chi!=null){const a=SX(Math.max(clo,cyc.today||x0)),b2=SX(Math.min(chi,x1));if(b2>a)proj+=`<rect x="${a.toFixed(1)}" y="${PT}" width="${(b2-a).toFixed(1)}" height="${H-PT-PB}" fill="${acc}" opacity=".10"/>`;}
+    proj+=`<line x1="${cxp.toFixed(1)}" y1="${PT}" x2="${cxp.toFixed(1)}" y2="${H-PB}" stroke="${acc}" stroke-width="1.3" stroke-dasharray="3 3" opacity=".85"/><text x="${cxp.toFixed(1)}" y="${(PT-4).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="800" fill="${acc}">${up?'▲':'▼'}</text>`;
+  }
+  const svg=`<svg viewBox="0 0 ${W} ${H}" width="100%" preserveAspectRatio="none" style="display:block;height:168px"><path d="${d}" fill="none" stroke="${acc}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>${todayLine}${proj}${marks}${nowDot}</svg>`;
+  const nw=cyc.now||{}, ph=(cyc.phases||{})[nw.phase]||{}, hue=ph.hue||cssv('--muted');
+  const sig=nw.signature||{};
+  const projTxt=(pr&&pr.central)?(L('next ','下一')+(pr.nextTurn==='peak'?L('peak','顶部'):L('trough','底部'))+' '+fmtYM(pr.central)+((pr.low&&pr.high)?(' ('+fmtYM(pr.low)+' – '+fmtYM(pr.high)+')'):'')):'—';
+  const chips=`<div class="cyc-readrow">
+      <span class="cyc-pchip" style="background:${hue}22;border:1px solid ${hue};color:${hue}">${L(nw.phaseLabel||nw.phase||'—', CYC_PHASE_ZH[nw.phase]||nw.phaseLabel||'—')}</span>
+      ${nw.pos!=null?`<span class="cyc-rk">${L('cycle pos','周期位置')} <b>${Math.round(nw.pos)}/100</b></span>`:''}
+      ${sig.score!=null?`<span class="cyc-rk">${L('washout↔euphoria','超卖↔过热')} <b>${Math.round(sig.score)}/100</b> ${L(esc(sig.label||''),esc(sig.label_zh||sig.label||''))}</span>`:''}
+      ${nw.rs_rank?`<span class="cyc-rk">RS #${nw.rs_rank}</span>`:''}
+      ${nw.above200d!=null?`<span class="cyc-rk ${nw.above200d?'pos':'neg'}">${nw.above200d?L('above 200d','200日上'):L('below 200d','200日下')}</span>`:''}
+    </div>`;
+  const fullLink=cyc.full_href?` <a href="${esc(cyc.full_href)}" style="color:var(--ink-link, var(--link))">${L('Open the full cycle dashboard →','打开完整周期看板 →')}</a>`:'';
+  return `<h2><span class="idx">◷</span>${L('Theme cycle','主题周期')} <span class="chip">${L('rebased price · auto-detected turns','再基准化价格 · 自动识别拐点')}</span></h2>
+    <div class="panel">
+      <div class="muted sm" style="margin-bottom:8px">${L("Equal-weight price on the cycle clock: past turns, current position, and projected next turn. Rhythm only.","等权价格的周期时钟：历史拐点、当前位置与下一拐点投影。仅看节奏。")}</div>
+      ${svg}
+      ${chips}
+      <div class="muted sm" style="margin-top:9px">${L('Projected next turn','推演下一拐点')}: ${projTxt}.${fullLink}</div>
+    </div>`;
+}
+const VH_COLOR={EXPANSION_UP:'--up',COILED_UP:'--up',IN_HOLE:'--warn',EXPANDED:'--muted',COILED_DOWN:'--down',EXPANSION_DOWN:'--down'};
+// The consolidated-candle Multi-Timeframe + vol-hole/whale/flow panel.
+function mtfTapeHtml(th){
+  const m=th.mtf, t=th.tape;
+  if(!m && !t) return '';
+  const closeOnly=!!(m&&m.source==='equal_weight_close');
+  const conf=(m&&m.confluence)||{};
+  const GR={'TREND-FOLLOW':'--up','BUY-THE-DIP':'--up','CAUTION':'--warn','AVOID':'--down','WAIT':'--muted'};
+  const gcol=cssv(GR[conf.grade]||'--muted');
+  const TFL={D:'Daily','3D':'3-Day',W:'Weekly',M:'Monthly'}, TFZ={D:'日线','3D':'3日',W:'周线',M:'月线'};
+  const tfcard=(k)=>{const s=((m&&m.tf)||{})[k]; if(!s) return '';
+    const sgn=s.sign||0, col=sgn>0?cssv('--up'):sgn<0?cssv('--down'):cssv('--muted');
+    const arr=sgn>0?'▲':sgn<0?'▼':'·';
+    const macd=s.macd_pos?'MACD+':'MACD−';
+    const x=s.cross_up?' ⤴':s.cross_dn?' ⤵':s.approaching_up?' ↗':s.approaching_dn?' ↘':'';
+    return `<div class="tx" style="--c:${col};min-width:128px;flex:1">
+      <div class="k">${L(TFL[k],TFZ[k])} <span style="color:${col};font-weight:700">${arr}</span></div>
+      <div class="v" style="font-size:13px">RSI ${s.rsi14==null?'—':s.rsi14} · <span style="color:${col}">${macd}${x}</span></div>
+      <div class="d">${sparkN(s.spark_rsi,col)}</div></div>`;};
+  const tfs=['D','3D','W','M'].map(tfcard).join('')||`<span class="muted sm">${L('history accruing','历史累积中')}</span>`;
+  let h=`<h2><span class="idx">◆</span>${closeOnly?L('Equal-weight index — multi-timeframe structure','等权指数 — 多周期结构'):L('Consolidated index — multi-timeframe &amp; flow','合成指数 — 多周期与资金流')} <span class="chip">${closeOnly?L('close-only · flow unavailable','仅收盘价 · 无资金流'):L('equal-weight candle','等权合成K线')}</span></h2>
+  <div class="panel"><div class="muted sm" style="margin-bottom:9px">${closeOnly?L('Equal-weight basket close: daily, 3-day, weekly and monthly trend structure. Volume and flow are not inferred.','等权篮子收盘价：日线、3日、周线与月线趋势结构。不推断成交量与资金流。'):L('Equal-weight basket candle: timeframe trend, volatility, and flow context.','等权篮子K线：多周期趋势、波动与资金流背景。')}</div>`;
+  if(m){
+    h+=`<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:9px">
+      ${conf.grade?`<span class="treco" style="background:${gcol}22;border:1px solid ${gcol};color:${gcol};padding:2px 9px;border-radius:7px;font-weight:680">${esc(conf.grade)}</span>`:''}
+      <div><div style="font-weight:640">${L(esc(conf.headline||''),esc(conf.headline_zh||conf.headline||''))}</div>
+      <div class="muted sm" style="max-width:64ch">${L(esc(conf.sub||''),esc(conf.sub_zh||conf.sub||''))}</div></div></div>
+    <div class="cards" style="gap:8px">${tfs}</div>`;
+  }
+  if(t){
+    const vh=t.volhole||{}, wh=t.whale||{}, fl=t.flow||{}, cov=t.coverage||{};
+    const vc=cssv(VH_COLOR[vh.state]||'--muted');
+    const pos=vh.pos_in_box!=null?Math.round(vh.pos_in_box*100):null;
+    const posbar=pos!=null?`<div style="position:relative;height:8px;border-radius:5px;background:linear-gradient(90deg,rgba(248,113,113,.3),rgba(250,204,21,.25),rgba(74,222,128,.3));margin:6px 0">
+        <span style="position:absolute;left:${pos}%;top:-3px;width:3px;height:14px;background:${vc};border-radius:2px;transform:translateX(-1px)"></span></div>`:'';
+    const flcol=fl.cmf>0.05?cssv('--up'):fl.cmf<-0.05?cssv('--down'):cssv('--muted');
+    const whcol=wh.accumulation>=75?cssv('--up'):wh.accumulation>=50?cssv('--up'):wh.accumulation>=35?cssv('--warn'):cssv('--down');
+    h+=`<div class="basket-flow-cards">
+      <div class="tx" data-basket-tone="${(VH_COLOR[vh.state]||'--muted').slice(2)}">
+        <div class="k">🕳️ ${L('Volatility black hole','波动黑洞')} <span style="color:${vc};font-weight:700">${esc((vh.state||'').replace(/_/g,' '))}</span></div>
+        <div class="v" style="font-size:13px">${L(esc(vh.label_en||''),esc(vh.label_zh||vh.label_en||''))}</div>
+        ${posbar}
+        <div class="d">${vh.bandwidth_pctile!=null?L('squeeze '+Math.round(vh.bandwidth_pctile*100)+'%ile','压缩 '+Math.round(vh.bandwidth_pctile*100)+'分位'):''}${vh.realized_vol_pctile!=null?' · '+L('realized-vol '+Math.round(vh.realized_vol_pctile*100)+'%ile','实现波动 '+Math.round(vh.realized_vol_pctile*100)+'分位'):''}</div>
+      </div>
+      <div class="basket-flow-metrics">
+      <div class="sbx" style="flex:1"><div class="v" style="color:${whcol};font-size:18px">${wh.accumulation==null?'—':wh.accumulation}</div><div class="k">🐋 ${L('whale acc.','巨鲸吸筹')}<br><span style="color:${whcol}">${L(esc(wh.label_en||''),esc(wh.label_zh||''))}</span>${wh.trend_5d!=null?` <span class="${cls(wh.trend_5d)}">${wh.trend_5d>0?'▲':'▼'}</span>`:''}</div></div>
+      <div class="sbx" style="flex:1"><div class="v" style="color:${flcol};font-size:18px">${fl.cmf==null?'—':(fl.cmf>0?'+':'')+fl.cmf}</div><div class="k">${L('net flow','净流向')}<br><span style="color:${flcol}">${L(esc(fl.label_en||''),esc(fl.label_zh||''))}</span></div></div>
+      <div class="sbx" style="flex:1"><div class="v" style="font-size:15px">${fl.dollar_vol_surge!=null?fl.dollar_vol_surge+'×':'—'}</div><div class="k">${L('vol surge','量能脉冲')}<br>${L('vs 63d median','对比63日中位')}</div></div>
+      </div>
+    </div>`;
+    if(cov.coverage_pct!=null) h+=`<div class="muted sm" style="margin-top:7px">${L('Flow coverage','资金流覆盖')}: ${cov.n_with_volume||0}/${cov.n_live||0} ${L('members with volume','成分股有成交量')} (${Math.round(cov.coverage_pct*100)}%)</div>`;
+    if(t.danny_caveat) h+=`<div class="disc" style="margin-top:4px">${L(esc(t.danny_caveat.en||''),esc(t.danny_caveat.zh||''))}</div>`;
+  }
+  h+=`<div class="disc">${closeOnly?L('MTF uses the region’s equal-weight close series; no synthetic volume, whale or flow signal is created.','多周期采用该地区的等权收盘价序列；不会合成成交量、巨鲸或资金流信号。'):L('MTF gates against the long-term trend; whale and flow are context only.','多周期用于约束长期趋势；巨鲸与资金流仅供参考。')}</div></div>`;
+  return h;
+}
+
+function convCell(c){
+  // no stockdata record at all = a data-coverage gap, said in plain words (never a blank
+  // or an ambiguous "thin"); a record that exists but carries no score stays "thin".
+  if(!c) return `<span class="muted sm" data-tip-en="Not in the per-stock library yet, so it has no conviction read. A coverage gap in our data — not a negative view of the stock." data-tip-zh="该股尚未纳入个股库，暂无信念评分。这是数据覆盖缺口，并非看空该股。">${L('not covered yet','暂未覆盖')}</span>`;
+  if(c.score==null) return `<span class="muted sm">${L('thin','数据稀疏')}</span>`;
+  const s=c.score; const col = s>=66?cssv('--up'):s>=40?cssv('--warn'):cssv('--down');
+  const bg = s>=66?'rgba(74,222,128,.14)':s>=40?'rgba(250,204,21,.14)':'rgba(248,113,113,.14)';
+  return `<span class="cv" style="background:${bg};color:${col}">${s}</span>`;
+}
+
+// ---- Leadership Health (display-only, deterministic — a shape/fragility read, not a forecast).
+// "Contested": the (slow, validated) lifecycle label is constructive while >=2 of the faster
+// descriptive textures disagree. Computed purely from already-published payload fields.
+function contestedList(th,b){
+  const tx=th.textures||{}, rr=tx.rollover_risk||{}, cyc=(b||{}).cycle||null;
+  const list=[];
+  if(cyc && (((cyc.turns||[]).some(x=>x&&x.provisional&&x.k==='peak')) || ((cyc.proj||{}).nextTurn==='trough')))
+    list.push(['cycle clock at a provisional peak / projecting a trough next','周期时钟处于临时顶部 / 推演下一拐点为底部']);
+  if(th.rs_pctile!=null && th.rs_pctile>=0.95)
+    list.push(['very extended (RS ≥95%ile)','相对强度极端延展（≥95分位）']);
+  const early = rr.band==='low' && (rr.reasons||[]).length>0 && th.rs_pctile!=null && th.rs_pctile>=0.9;
+  if(rr.band==='elevated'||rr.band==='high')
+    list.push(['roll-over risk '+rr.band+(rr.reasons&&rr.reasons.length?': '+rr.reasons.join(' · '):''),'回落风险'+(rr.band_zh||rr.band)+(rr.reasons&&rr.reasons.length?'：'+rr.reasons.join(' · '):'')]);
+  else if(early)
+    list.push(['early cracks: '+(rr.reasons||[]).join(' · '),'初现裂痕：'+(rr.reasons||[]).join(' · ')]);
+  if(th.delta_5d!=null && th.delta_5d<0)
+    list.push(['negative 5-day relative return ('+fmtPct(th.delta_5d)+')','5日相对收益为负（'+fmtPct(th.delta_5d)+'）']);
+  return list;
+}
+// Distance-to-label-change (engine flip_distance — the same literals the label logic reads,
+// so this meter can never disagree with the label). Lists each route's remaining gap.
+function flipDistanceHtml(th){
+  const fd=th.flip_distance; if(!fd) return '';
+  const pp=fd.route_b_pp;
+  const rowA=`<div class="ev"><span class="dt">${L('Route A · 5d','路径A · 5日')}</span><span>${L(esc(fd.note_en||'—'),esc(fd.note_zh||fd.note_en||'—'))}${fd.nearest_route==='a'?` <span class="chip">${L('nearest route','最近路径')}</span>`:''}</span></div>`;
+  let bTxt,bTxtZh;
+  if(pp==null){ bTxt='20-day relative return unavailable.'; bTxtZh='20日相对收益不可用。'; }
+  else if(pp>0){ bTxt=`the 20-day relative return sits ${pp.toFixed(2)} pp above the momentum flip (a 20d relative ≤ 0 removes the label's momentum leg) — descriptive, not a forecast.`;
+                 bTxtZh=`20日相对收益高于动量翻转线 ${pp.toFixed(2)} 个百分点（20日相对收益 ≤ 0 将使标签失去动量支撑）— 描述性，非预测。`; }
+  else { bTxt=`the 20-day relative return is already ≤ 0 (${pp.toFixed(2)} pp) — the momentum leg no longer supports a constructive label. Descriptive, not a forecast.`;
+         bTxtZh=`20日相对收益已 ≤ 0（${pp.toFixed(2)} 个百分点）— 动量项已不支撑积极标签。描述性，非预测。`; }
+  const rowB=`<div class="ev"><span class="dt">${L('Route B · 20d','路径B · 20日')}</span><span>${L(esc(bTxt),esc(bTxtZh))}${fd.nearest_route==='b'?` <span class="chip">${L('nearest route','最近路径')}</span>`:''}</span></div>`;
+  return `<h2><span class="idx">⇄</span>${L('Distance to label change','距标签翻转')} <span class="chip">${L('context','背景')}</span></h2>
+  <div class="panel">
+	    <div class="muted sm" style="margin-bottom:6px">${L('How close the current label is to flipping. Measures fragility, not direction.','当前标签距离翻转有多近。衡量脆弱性，不衡量方向。')}</div>
+    <div class="timeline">${rowA}${rowB}</div>
+  </div>`;
+}
+
+// ---- cross-market narrative cross-reference (display-only, gated; fetched once) ----
+let XM=null;
+function xmktHtml(){
+  if(!XM) return '';
+  const reg=DETAIL.region, bid=(DETAIL.basket||{}).id;
+  const link=(((XM.links||{})[reg])||{})[bid];
+  if(!link||!(link.others||[]).length) return '';
+  const RM=XM.regions||{}, dz=(XM.disclaimer||{});
+  const arrow=o=>o.accel>0.4?'▲':o.accel<-0.4?'▼':'·';
+  const chip=o=>{const rm=RM[o.region]||{}, lc=LABEL_COLOR[o.label]||LABEL_COLOR.neutral;
+    const cav=(o.regime_caveat?` <span title="different macro regime — read with care">⚠</span>`:'')
+            +(o.co_listed?` <span title="co-listed A/H names (largely the same companies)">⇄</span>`:'');
+    return `<a class="xm-chip" href="../${esc(rm.dir)}/${esc(o.bid)}.html" style="border-color:${lc[1]}" title="${esc(o.name)} · score ${o.score}">
+      <span class="xm-flag">${rm.flag||''}</span><span class="xm-nm">${L(esc(o.name),esc(o.name_zh||o.name))}</span>
+      <span class="xm-sc" style="color:${lc[2]}">${o.score==null?'—':o.score}</span>
+      <span class="xm-ar ${o.accel>0?'pos':o.accel<0?'neg':'muted'}">${arrow(o)}</span>${cav}</a>`;};
+  const hot=link.hotter_elsewhere||[];
+  const hotline=hot.length?`<div class="xm-hot">🔥 ${L('Heating up abroad','海外升温')}: ${hot.map(r=>(RM[r]||{}).flag+' '+L((RM[r]||{}).en,(RM[r]||{}).zh)).join(' · ')} — ${L('the same narrative is already dominant or emerging there','同一叙事在那里已主导或新兴')}</div>`:'';
+  return `<h2><span class="idx">◈</span>${L('Same narrative elsewhere','其他市场的同一叙事')}</h2>
+    <div class="panel">
+      <div class="muted sm" style="margin-bottom:9px">${L('The analog '+esc(link.canon_en)+' theme in other markets, with its live desk score — a cross-market read to spot a narrative early. Never a signal.','其他市场对应的'+esc(link.canon_zh)+'主题及其实时台面评分 — 用于尽早发现叙事的跨市场参考。绝非信号。')}</div>
+      ${hotline}
+      <div class="xm-row">${link.others.map(chip).join('')}</div>
+      <div class="disc">${L(esc(dz.en||''),esc(dz.zh||''))}</div>
+    </div>`;
+}
+function timingStripHtml(th){
+  const tm=th.timing||{}, rel=tm.relative||{}, pf=th.perf||{};
+  const rv=(hz)=>rel[hz]!=null?rel[hz]:((pf[hz]||{}).rel);
+  const tone={accelerating:'pos',improving:'pos',decelerating:'neg',weakening:'neg',steady:'muted'}[tm.state]||'muted';
+  const cell=(k,v,c='')=>`<div class="timing-cell"><div class="k">${k}</div><div class="v ${c}">${v}</div></div>`;
+  return `<div class="timing-strip">
+    ${['1d','5d','10d','20d'].map(hz=>cell(L(hz.toUpperCase()+' vs '+BENCH,hz.toUpperCase()+' vs '+BENCHZ),fmtPct(rv(hz)),cls(rv(hz)))).join('')}
+    ${cell(L('5d velocity','5日速度'),fmtPP(tm.velocity_5d),cls(tm.velocity_5d))}
+    ${cell(L('acceleration z','加速度 z'),tm.accel_z==null?'—':(tm.accel_z>=0?'+':'')+Number(tm.accel_z).toFixed(2),cls(tm.accel_z))}
+    ${cell(L('fast state','快速状态'),L(esc((tm.state||'steady').replace('_',' ')),esc(tm.state_zh||tm.state||'平稳')),tone)}
+  </div>
+  <div class="muted sm" style="margin-top:5px">${L('Fast moves are context; the slower trend, breadth and cycle still drive the recommendation.','快速波动只作背景；较慢的趋势、广度和周期仍决定建议。')}</div>`;
+}
+function leadershipReceiptHtml(lr){
+  /* receipt row keys: interval benchmark measure sample freshness authority */
+  if(!lr||typeof lr!=='object') return '';
+  const st=lr.state||'unavailable';
+  const rel=lr.rel_20d;
+  const figCls=st==='leading'?'up':st==='lagging'?'down':'muted';
+  const fig=(st==='unavailable'||rel==null)?'—':((rel>=0?'+':'')+(rel*100).toFixed(1)+' pt');
+  const bench=lr.benchmark||{};
+  const smp=lr.sample||{};
+  const ts=lr.theme_state||{};
+  const tsStat=ts.status||'missing';
+  const tsChip={
+    fresh:L('Theme state current','主题状态当前'),
+    stale:L('Theme state stale','主题状态陈旧'),
+    missing:L('Theme state missing','主题状态缺失'),
+    not_published:L('Theme state not published','主题状态未发布'),
+    invalid:L('Theme state dated after this read','主题状态日期晚于本次判读')
+  }[tsStat]||L('Theme state missing','主题状态缺失');
+  const tsChipCls=tsStat==='fresh'?'state-fresh':'state-stale';
+  const reason=lr.reason_en?`<span class="lrc-chip">${L(esc(lr.reason_en),esc(lr.reason_zh||lr.reason_en))}</span>`:'';
+  const rowHtml=(lr.rows||[]).map(r=>`<div class="lrc-ledger-row" data-key="${esc(r.key)}"><div class="lrc-ledger-label">${L(esc(r.label_en),esc(r.label_zh))}</div><div class="lrc-ledger-text">${L(esc(r.text_en),esc(r.text_zh))}</div></div>`).join('');
+  return `<section class="lrc" data-state="${esc(st)}">
+    <div class="lrc-head">
+      <div class="lrc-eyebrow">${L('LEADERSHIP READ','领涨判读')}</div>
+      <div class="lrc-asof">${lr.as_of?esc(lr.as_of):'—'}</div>
+    </div>
+    <div class="lrc-stance-row">
+      <div class="lrc-stance">${L(esc(lr.stance_en||''),esc(lr.stance_zh||''))}${reason}</div>
+      <div class="lrc-figure ${figCls}">${fig}</div>
+    </div>
+    <div class="lrc-chips">
+      <span class="lrc-chip">${L('Descriptive','描述性')}</span>
+      <span class="lrc-chip">${L('Daily closes','日收盘')}</span>
+      <span class="lrc-chip">${L('vs '+esc(bench.label||BENCH),'vs '+esc(bench.label_zh||BENCHZ))}</span>
+      <span class="lrc-chip">${esc(smp.observed_n!=null?smp.observed_n:'—')}/${esc(smp.configured_n!=null?smp.configured_n:'—')} ${L('members','成分')}</span>
+      <span class="lrc-chip ${tsChipCls}">${tsChip}</span>
+    </div>
+    <div class="lrc-sowhat">${L('Context only — the recommendation above still comes from trend, breadth and cycle.','仅作背景——上方建议仍由趋势、广度与周期决定。')}</div>
+    <details class="lrc-receipt"><summary>${L('How this is measured','口径')}</summary>
+      <div class="lrc-ledger">${rowHtml}</div>
+    </details>
+  </section>`;
+}
+/* ── GR1:READ:BEGIN — Group read (group_pulse.v1 / group_earnings_pulse.v1) ─────
+   Assembles the three nightly artifacts into ONE plain-word read: a stance line, four
+   glance tiles, the arc rail, and the conditions we are watching. Every panel renders a
+   quiet null state when its file or key is absent — these artifacts land only after the
+   first post-merge nightly, and a missing file must never break the page.
+
+   CONTEXT TIER, ZERO AUTHORITY. Participation is description, never a buy/sell read
+   (DNR:KILL-PSS-SR3-PARTICIPATION); the arc carries the Oracle P8 null in its hover
+   (G0-3); nothing here is ranked, sized, gated, or fused into a score (R-TIL-3). */
+var GRP=null, GRE=null, GRH=null;      // pulse · earnings pulse · closed-episode history
+
+/* ── GR1:MATRIX:BEGIN — pure data → plain words. No DOM, no page globals, so the
+   node-shelled matrix test (tests/test_group_read_stance_matrix.py) can enumerate every
+   (participation × sign × state_change × arc) combination and prove none of them leaks a
+   raw slug or an internal state name. Keep this region dependency-free. ── */
+// Three members is the floor the episode ledger itself uses for an ACTIVE basket-day.
+// Below it a share is arithmetic, not a group: two names out of four is 50% and still
+// nothing to read, so the movers floor is folded into the band rather than bolted on.
+var GR_MIN_MOVERS=3;
+// The engine's own floor under `agreement_pct` (group_pulse.AGREEMENT_MIN_N). It is
+// HIGHER than the movers floor above, so a basket can carry a direction word and no
+// agreement percentage — the tile must be able to say so rather than print a dash.
+// Pinned against the engine constant by tests/test_group_read_surface.py.
+var GR_MIN_AGREEMENT_N=4;
+function grPBand(p){
+  var pa=(p||{}).participation||{}, a=pa.activity_share, n=pa.activity_n;
+  if(a==null) return 'unknown';
+  if(n!=null&&n<GR_MIN_MOVERS) return 'thin';
+  if(a>=0.5) return 'broad';
+  if(a>=0.25) return 'some';
+  return 'thin';
+}
+// The arc ladder collapsed to the families the copy actually distinguishes.
+function grArcFamily(s){
+  if(s==='washout_in_progress'||s==='washout_complete_awaiting_reclaim') return 'washout';
+  if(s==='turning') return 'turning';
+  if(s==='advancing') return 'advancing';
+  if(s==='distributing') return 'distributing';
+  if(s==='quiet') return 'quiet';
+  return 'unknown';
+}
+// STANCE MATRIX. Ordered rules, first match wins — the same disclosed-ladder idiom the
+// arc state itself uses. Returns plain words only: never a state name, never a bare
+// statistic, never forward/refutation vocabulary. `stance` answers "so what do I do",
+// including when the honest answer is "nothing".
+function grStance(p){
+  var pb=grPBand(p), dir=((p||{}).direction||{}), ep=((p||{}).episode||{});
+  var sign=dir.sign, chg=ep.state_change, arc=grArcFamily(((p||{}).arc||{}).state);
+  var up=(sign==='up'), dn=(sign==='down'), aligned=(up||dn);
+  var TOK={
+    watch:{en:'Watch — don\'t chase', zh:'观察，不要追', cls:'act'},
+    aside:{en:'Stand aside',            zh:'先观望',                 cls:'mut'},
+    none: {en:'Nothing to do',          zh:'暂无操作',           cls:'mut'},
+    thin: {en:'Not enough data',        zh:'数据不足',           cls:'mut'}
+  };
+  function out(tok,en,zh){return {tok:TOK[tok], en:en, zh:zh, pband:pb, arc:arc};}
+  // 1 — coverage refusal. Printed as a plain-word reason, never a silent blank.
+  if(pb==='unknown'||arc==='unknown')
+    return out('thin','Too few members are covered to read this group today.',
+                      '本组今日可用成分股太少，暂无读数。');
+  // 2 — nothing at all is moving
+  if(((p||{}).participation||{}).activity_n===0)
+    return out('none','Quiet. No unusual group activity right now.',
+                      '安静。这组个股目前没有异常动作。');
+  // 3 — a couple of names moving is a stock story, not a group story
+  if(pb==='thin')
+    return out('none','Only a few names are moving — this is not a group move.',
+                      '只有少数个股在动 — 还谈不上整体行情。');
+  // 4 — the group is picking up members
+  if(chg==='strengthening'){
+    if(pb==='broad'&&up)  return out('watch','This group is moving up together, and more of it each session.',
+                                             '这组个股正同向上涨，参与面还在扩大。');
+    if(pb==='broad'&&dn)  return out('watch','This group is moving down together, and more of it each session.',
+                                             '这组个股正同向下跌，参与面还在扩大。');
+    if(pb==='broad')      return out('aside','More of this group is moving, but still not together.',
+                                             '在动的个股更多了，但方向依然不一致。');
+    if(aligned)           return out('watch','More names are joining, and they move '+(up?'up':'down')+' together.',
+                                             '加入的个股在增多，且同向'+(up?'上涨':'下跌')+'。');
+    return out('aside','More names are moving, but not in one direction.',
+                       '在动的个股更多了，但没有统一方向。');
+  }
+  // 5 — the group is shedding members
+  if(chg==='cooling'){
+    if(pb==='broad'&&aligned) return out('watch','Still moving '+(up?'up':'down')+' together, but fewer names each session.',
+                                                 '仍在同向'+(up?'上涨':'下跌')+'，但参与个股逐日减少。');
+    if(pb==='broad')          return out('aside','Fewer names are moving, and still not together.',
+                                                 '在动的个股在减少，方向依然不一致。');
+    if(aligned)               return out('watch','Fewer names are moving, though they still move '+(up?'up':'down')+' together.',
+                                                 '在动的个股在减少，但仍是同向'+(up?'上涨':'下跌')+'。');
+    return out('aside','Fewer names are moving, and not in one direction.',
+                       '在动的个股在减少，且没有统一方向。');
+  }
+  // 6 — steady, or moving without a running episode
+  if(pb==='broad'&&aligned) return out('watch','Most of this group is moving, and moving '+(up?'up':'down')+' together.',
+                                               '这组多数个股在动，且同向'+(up?'上涨':'下跌')+'。');
+  if(pb==='broad')          return out('aside','Most of this group is moving, but not together.',
+                                               '这组多数个股在动，但并不同步。');
+  if(aligned)               return out('watch','Part of this group is moving, and moving '+(up?'up':'down')+' together.',
+                                               '这组部分个股在动，且同向'+(up?'上涨':'下跌')+'。');
+  return out('aside','Part of this group is moving, but not in one direction.',
+                     '这组部分个股在动，但方向不一致。');
+}
+// Arc → the backdrop sentence under the stance. Context, never the stance itself.
+function grArcWords(state){
+  var M={
+    washout_in_progress:              ['Backdrop: members are still washing out.','背景：成分股仍在出清。','Washing out'],
+    washout_complete_awaiting_reclaim:['Backdrop: washed out, but not reclaiming yet.','背景：已出清，但尚未收复。','Washed out'],
+    turning:                          ['Backdrop: washed out, and starting to reclaim.','背景：出清后开始收复。','Turning'],
+    advancing:                        ['Backdrop: most members sit in an established uptrend.','背景：多数成分股处于既有上升趋势。','Advancing'],
+    distributing:                     ['Backdrop: trends are breaking down across members.','背景：成分股的趋势正在瓦解。','Distributing'],
+    quiet:                            ['Backdrop: no clear group arc right now.','背景：目前没有明确的整体阶段。','No clear arc'],
+    insufficient_coverage:            ['Backdrop: too few members covered to place the group.','背景：覆盖成分股过少，无法定位阶段。','Not enough covered']
+  };
+  return M[state]||M.insufficient_coverage;
+}
+var GR_ARC_ZH={'Washing out':'出清中','Washed out':'已出清','Turning':'转向中',
+  'Advancing':'上行','Distributing':'派发','No clear arc':'暂无阶段','Not enough covered':'覆盖不足'};
+// Agreement is a NET LEAN over the members that are moving (|up-down| / moving), not a
+// head count — so it is spoken as a band and the raw figure is demoted to small print.
+function grAgreeWord(a){
+  // A refused agreement must never surface as a dash placeholder — that exact shape
+  // shipped "Up — —" once. The headline path drops the band on null before calling
+  // this, so today the arm is unreachable; it returns words so any future caller
+  // that reaches it degrades to a refusal, not to punctuation.
+  if(a==null) return ['not enough moving to read','在动个股太少，暂无读数'];
+  if(a>=0.7)  return ['almost all the same way','几乎完全同向'];
+  if(a>=0.4)  return ['mostly the same way','多数同向'];
+  if(a>=0.15) return ['split','存在分歧'];
+  return ['no shared direction','没有统一方向'];
+}
+// WHAT WE'RE WATCHING — deterministic conditions read off today's values. Windows, not
+// certainties; never LLM-written; never phrased as a test that a thesis could fail.
+function grWatchList(p){
+  var pa=(p||{}).participation||{}, dir=(p||{}).direction||{}, arc=(p||{}).arc||{}, ep=(p||{}).episode||{};
+  var a=pa.activity_share, ag=dir.agreement_pct, fam=grArcFamily(arc.state), s=[], w=[];
+  if(a==null||a<0.5) s.push(['more than half the group moving on the same session','同一交易日有过半成分股在动']);
+  else s.push(['the group holding above half its members for another session','下一交易日仍有过半成分股在动']);
+  if(dir.sign==='up'||dir.sign==='down') s.push(['a second session with members moving the same way','连续两个交易日方向保持一致']);
+  else s.push(['the moving names settling into one direction','在动的个股收敛到同一方向']);
+  if(fam==='washout'||fam==='turning') s.push(['more members reclaiming their 20-day line','更多成分股收复20日线']);
+  else if(fam==='advancing') s.push(['members holding their 50-day line while the group runs','上行期间成分股守住50日线']);
+  else s.push(['the group staying active into another session','该组在下一交易日继续活跃']);
+  if(a!=null&&a>=0.25) w.push(['activity narrowing to one or two names','活跃收窄到一两只个股']);
+  else w.push(['the moving names going quiet again','在动的个股重新转静']);
+  // With no agreement figure there is nothing to fade, so the watch condition is the
+  // one that would actually read as weakness on a group we cannot yet call: the movers
+  // never converging. Phrased for THIS column — the strengthen list carries the
+  // positive form, and the same words in both columns would read as a contradiction.
+  if(ag==null) w.push(['the moving names never settling into one direction','在动的个股始终无法收敛到同一方向']);
+  else if(ag>=0.33) w.push(['agreement fading below a third of the movers','一致度跌到在动个股的三分之一以下']);
+  if(fam==='distributing'||fam==='advancing') w.push(['more members losing their 50-day line','更多成分股跌破50日线']);
+  else if(ep.active_now) w.push(['three quiet sessions in a row','连续三个交易日转静']);
+  return {up:s.slice(0,3), down:w.slice(0,3)};
+}
+/* ── GR1:MATRIX:END ── */
+
+// Oracle P8 — the null this arc read must disclose, verbatim, on Tier 2.
+var GR_P8_EN='Group washout→turn constructions showed no standalone edge in our graded tests; this arc is context, not a signal.';
+var GR_P8_ZH='在我们的历史检验中，“整体出清→转向”单独使用并未显现优势；此阶段只是背景，不是信号。';
+var GR_SESSION={amc:['after close','盘后'], bmo:['before open','盘前'], unknown:['time not set','时间未定']};
+// A share over a known covered count is printed as the count it came from — "8 of 13",
+// never a bare percentage at glance tier.
+function grCount(share,n){ return (share==null||n==null)?null:Math.round(share*n); }
+function grTip(en,zh){ return ` data-tip-en="${esc(en)}" data-tip-zh="${esc(zh)}"`; }
+function grInfo(en,zh){ return `<span class="gpr-i"${grTip(en,zh)}>i</span>`; }
+
+function grArcRail(p){
+  var arc=(p||{}).arc||{}, words=grArcWords(arc.state);
+  var order=['washout_in_progress','washout_complete_awaiting_reclaim','turning','advancing','distributing'];
+  var lit=order.indexOf(arc.state);
+  var stops=order.map(function(k,i){
+    var lab=grArcWords(k)[2];
+    return `<div class="gpr-stop${i===lit?' on':''}"><div class="gpr-dot"></div><span class="lbl">${L(esc(lab),esc(GR_ARC_ZH[lab]||lab))}</span></div>`;
+  }).join('');
+  // The contract counts TRADING SESSIONS, not calendar days (engine/group_pulse.py: "the
+  // unit is sessions, not calendar days"). 90 sessions is ~126 calendar days, so printing
+  // "days" understated every page by ~40%. The unit word is pinned by
+  // tests/test_group_read_surface.py::test_the_capitulation_age_prints_sessions_not_days.
+  // Belt and braces on the engine-side refusal. The age is nulled under the coverage
+  // floor when the artifact is REBUILT, so gating here is what closes the window on
+  // bytes that predate that — and what keeps the rail honest against any future
+  // artifact that carries a value under a state that refuses to read the group.
+  var age=(arc.state==='insufficient_coverage')?null:arc.capitulation_median_age_d;
+  var note=age!=null
+    ? L(`The typical member's low was about <b>${age}</b> trading session${age===1?'':'s'} ago. Context, not a signal.`,`成分股的低点中位数约在 <b>${age}</b> 个交易日前。仅为背景，不是信号。`)
+    : L('Context, not a signal.','仅为背景，不是信号。');
+  var off=(lit<0)?` <span class="muted">${L('— this group is not on the arc right now.','— 这组目前不处于上述任何一段。')}</span>`:'';
+  return `<div class="gpr-arc">
+    <div class="gpr-arc-k">${L('Where the group sits','这组处于哪一段')}${off}</div>
+    <div class="gpr-rail">${stops}</div>
+    <div class="gpr-arc-note">${grInfo(GR_P8_EN,GR_P8_ZH)}<span>${note}</span></div>
+  </div>`;
+}
+
+function grTiles(p,e){
+  var pa=p.participation||{}, dir=p.direction||{}, arc=p.arc||{}, nc=p.n_covered;
+  var t=[];
+  // 1 — PARTICIPATION
+  var an=pa.activity_n, ab=pa.activity_basis||{};
+  // A trend share divides by the covered members that HAVE that moving average, which
+  // is not n_covered whenever the basket holds a name too young for the line. Counting
+  // the share back against n_covered prints a number nothing computed, so the divide
+  // is reconstructed from the denominator the artifact publishes for each leg.
+  // A legacy artifact carries no trend denominator, and n_covered is NOT a stand-in:
+  // substituting it invents the numerator too (8 of 14 where the truth is 7 of 11).
+  // grCount returns null on a null n, so the clause drops instead — for one nightly.
+  var n50=pa.trend_n_50d, n200=pa.trend_n_200d;
+  var t50=grCount(pa.trend_share_50d,n50), t200=grCount(pa.trend_share_200d,n200);
+  var trendD;
+  if(t50==null) trendD=L('Trend coverage pending.','趋势读数待补。');
+  else {
+    // The 200-day clause is DROPPED when its share is null (a basket young enough to
+    // have no 200-day line at all) rather than printing an empty count beside a label.
+    var t2En=t200==null?'':` · 200-day: <b>${t200}</b> of <b>${n200}</b>`;
+    var t2Zh=t200==null?'':` · 200日线：<b>${n200}</b> 只中 <b>${t200}</b> 只`;
+    trendD=L(`Above their 50-day line: <b>${t50}</b> of <b>${n50}</b>${t2En}`,
+             `站上50日线：<b>${n50}</b> 只中 <b>${t50}</b> 只${t2Zh}`);
+  }
+  var basisEn=`Unusual activity means a member's move against SPY was large versus its own last 63 sessions, or its volume ran at least 1.5× its own 63-day median. Volume confirmed on ${ab.ret_and_volume||0}; ${ab.ret_only||0} on price alone.`;
+  var basisZh=`异动指该股对冲SPY后的涨跌明显大于其自身近63个交易日的常态，或成交量至少达到自身63日中位数的1.5倍。其中 ${ab.ret_and_volume||0} 只有成交量配合，${ab.ret_only||0} 只仅凭价格。`;
+  t.push(`<div class="gpr-tile"><div class="k">${L('Participation','参与度')}${grInfo(basisEn,basisZh)}</div>
+    <div class="v">${an==null||nc==null?L('Not covered','暂无覆盖'):L(`<b>${an}</b> of <b>${nc}</b> moving unusually today`,`<b>${nc}</b> 只中 <b>${an}</b> 只今日异动`)}</div>
+    <div class="d">${trendD}</div>
+    ${an?`<div class="d" style="margin-top:4px">${ab.ret_and_volume?L(`Volume backed <b>${ab.ret_and_volume}</b> of them${ab.ret_only?`; <b>${ab.ret_only}</b> on price alone`:''}.`,`其中 <b>${ab.ret_and_volume}</b> 只有成交量配合${ab.ret_only?`；<b>${ab.ret_only}</b> 只仅凭价格`:''}。`):L(`Price move only — no volume confirmation.`,`仅价格异动，无成交量配合。`)}</div>`:''}</div>`);
+  // 2 — DIRECTION. Refuses below the movers floor: a "direction" over one or two names is
+  // arithmetic, not a group read, and 100% agreement among one member is meaningless.
+  var aw=grAgreeWord(dir.agreement_pct);
+  var signW=dir.sign==='up'?['Up','上行']:dir.sign==='down'?['Down','下行']:['Mixed','方向混杂'];
+  var mv=dir.median_move_spy_adj, fewMovers=(an!=null&&an<GR_MIN_MOVERS);
+  // TWO floors govern this tile and the hover names both, because a reader who sees the
+  // percentage withheld on a basket the direction word still describes has no other way
+  // to find out why. Quoting only one of them contradicts the other in between.
+  var agEn=`Agreement is the net lean among the members with unusual activity today: ups minus downs, over that same count — not a head count of who agrees. A direction word needs at least ${GR_MIN_MOVERS} members moving; the agreement percentage needs at least ${GR_MIN_AGREEMENT_N}, because a net lean over two or three names lands on 0% or 100% whatever the group is doing. Below about a third of the movers the group has no single direction.`;
+  var agZh=`一致度指今日异动个股中的净偏向：上涨数减下跌数，除以同一基数，而非“几只同向”的计数。给出方向词至少需要 ${GR_MIN_MOVERS} 只在动；给出一致度百分比至少需要 ${GR_MIN_AGREEMENT_N} 只，因为两三只个股的净偏向无论如何都会落在0%或100%。低于在动个股约三分之一时，该组没有统一方向。`;
+  var chips=[];
+  function mchip(m,en,zh,tipEn,tipZh,withRet){
+    if(!m||!m.ticker) return;
+    var r=withRet&&m.ret!=null?` <span class="n ${cls(m.ret)}">${fmtPct(m.ret)}</span>`:'';
+    chips.push(`<span class="gpr-mchip"${grTip(tipEn,tipZh)}>${L(en,zh)} <b>${esc(m.ticker)}</b>${r}</span>`);
+  }
+  mchip(dir.leader,'Most active','最活跃','The member with the largest unusual move against SPY today.','今日对冲SPY后异动幅度最大的成分股。',false);
+  mchip(dir.strongest,'Strongest','最强','Best member move today, after taking SPY out.','剔除SPY后今日表现最好的成分股。',true);
+  mchip(dir.weakest,'Weakest','最弱','Worst member move today, after taking SPY out.','剔除SPY后今日表现最差的成分股。',true);
+  // With the agreement share refused there is no band to append, and the em-dash clause
+  // rendered its placeholder: six live baskets sat at exactly the movers floor and put
+  // "Up — —" in the tile's largest type. The sign word stands alone; the small print
+  // below already says in words why no percentage follows it.
+  var dirV=fewMovers?L('Too few moving to read','在动个股太少')
+    :(dir.agreement_pct==null?L(esc(signW[0]),esc(signW[1]))
+    :L(`${esc(signW[0])} <span style="font-weight:520;color:var(--muted)">— ${esc(aw[0])}</span>`,`${esc(signW[1])} <span style="font-weight:520;color:var(--muted)">— ${esc(aw[1])}</span>`));
+  // The median move is a leg over the COVERED members, so it survives an agreement the
+  // engine declined to compute — the refusal is stated in plain words and carries no
+  // count of its own, since the count it was decided on is not the one printed here.
+  var mvEn=mv==null?'':` · median <span class="${cls(mv)}">${fmtPct(mv)}</span> vs SPY`;
+  var mvZh=mv==null?'':` · 中位涨跌 <span class="${cls(mv)}">${fmtPct(mv)}</span>（对冲SPY）`;
+  var dirD=fewMovers
+    ? L(`A group direction needs at least <b>${GR_MIN_MOVERS}</b> members moving; <b>${an}</b> today.`,`判断整体方向至少需要 <b>${GR_MIN_MOVERS}</b> 只在动，今日仅 <b>${an}</b> 只。`)
+    : (dir.agreement_pct==null
+      ? L(`Too few members moving to read agreement${mvEn}`,`在动的个股太少，暂不读一致度${mvZh}`)
+      : L(`<b>${Math.round(dir.agreement_pct*100)}%</b> net agreement among the <b>${an==null?'—':an}</b> moving${mvEn}`,`在动的 <b>${an==null?'—':an}</b> 只中净一致度 <b>${Math.round(dir.agreement_pct*100)}%</b>${mvZh}`));
+  t.push(`<div class="gpr-tile"><div class="k">${L('Direction','方向')}${grInfo(agEn,agZh)}</div>
+    <div class="v">${dirV}</div><div class="d">${dirD}</div>
+    ${chips.length?`<div class="gpr-mchips">${chips.join('')}</div>`:''}</div>`);
+  // 3 — ARC. The drawdown percentile is precision, so it lives in the hover beside the
+  // Oracle P8 null; the tile keeps the counts a reader can act on the meaning of.
+  // REFUSAL MEANS REFUSAL: below the coverage floor the state word stands alone with a
+  // plain-word reason and the tile prints NO figure — the old branch tested a count that
+  // is never null, so the refusal word shipped with a confident number underneath it.
+  // And the washout count is read against the members with a LONG ENOUGH HISTORY to have
+  // a washout read, which is the denominator the state was decided on; against n_covered
+  // the same 9 members printed 0.64 while the arc had judged 0.82.
+  var aWords=grArcWords(arc.state), arcRefused=(arc.state==='insufficient_coverage');
+  var wo=arc.washed_out_n, woN=arc.washout_readable_n;
+  var rec=grCount(arc.reclaimed_20d_share,arc.reclaimed_readable_n);
+  var dd=arcRefused?null:arc.drawdown_pctile_own_history;
+  var arcTipEn=GR_P8_EN+(dd==null?'':` Right now the group is further below its own high than it has been ${Math.round(dd*100)}% of the time in its own history.`);
+  var arcTipZh=GR_P8_ZH+(dd==null?'':` 目前该组距自身高点的回撤幅度，深于其自身历史上 ${Math.round(dd*100)}% 的时间。`);
+  var arcD;
+  if(arcRefused||wo==null)
+    arcD=L('Too few members are covered to read this group today.','本组今日可用成分股太少，暂无读数。');
+  else {
+    var recEn=rec==null?'':` · <b>${rec}</b> back above their 20-day line`;
+    var recZh=rec==null?'':` · <b>${rec}</b> 只已收复20日线`;
+    // No denominator on a legacy artifact: print the count alone rather than divide it
+    // by the wrong n. A missing figure is honest; a confident wrong one is not.
+    arcD=woN==null
+      ? L(`<b>${wo}</b> washed out${recEn}`,`已出清 <b>${wo}</b> 只${recZh}`)
+      : L(`<b>${wo}</b> of <b>${woN}</b> with enough history washed out${recEn}`,`有足够历史的 <b>${woN}</b> 只中 <b>${wo}</b> 只已出清${recZh}`);
+  }
+  t.push(`<div class="gpr-tile"><div class="k">${L('Arc','阶段')}${grInfo(arcTipEn,arcTipZh)}</div>
+    <div class="v">${L(esc(aWords[2]),esc(GR_ARC_ZH[aWords[2]]||aWords[2]))}</div>
+    <div class="d">${arcD}</div></div>`);
+  // 4 — EARNINGS
+  t.push(`<div class="gpr-tile">${grEarnTileBody(e)}</div>`);
+  return `<div class="gpr-tiles">${t.join('')}</div>`;
+}
+
+function grGuidanceWords(g){
+  var M={'RAISING':['More members raising than cutting','上调指引的成分股多于下调'],
+    'BROAD-RAISE':['Raising across the board','普遍上调指引'],
+    'NEUTRAL':['Raises and cuts balance out','上调与下调基本持平'],
+    'CUTTING':['More members cutting than raising','下调指引的成分股多于上调']};
+  return M[(g||{}).band]||null;
+}
+
+function grEarnTileBody(e){
+  var kEn='Earnings', kZh='财报';
+  if(!e) return `<div class="k">${L(kEn,kZh)}</div><div class="v" style="color:var(--muted);font-size:13px">${L('Not in tonight&rsquo;s file','今晚文件中暂无')}</div>
+    <div class="d">${L('The earnings read is built each night; it appears here once the first run lands.','财报读数每晚生成，首次运行后会在此显示。')}</div>`;
+  var s=e.season||{}, r=e.results||{}, sy=e.sympathy||{};
+  var head, det;
+  if((s.n_reported||0)===0){
+    head=L('Between reports','报期之外');
+    det=s.n_upcoming_14d?L(`<b>${s.n_upcoming_14d}</b> due in the next two weeks`,`未来2周有 <b>${s.n_upcoming_14d}</b> 只待报`)
+                        :L('Nothing reported, nothing due in two weeks.','无已报，未来2周也无待报。');
+  } else {
+    head=L(`<b>${s.n_reported}</b> of <b>${s.n_members}</b> reported`,`<b>${s.n_members}</b> 只中 <b>${s.n_reported}</b> 只已报`);
+    var parts=[];
+    if(r.n_beat!=null) parts.push(L(`<b>${r.n_beat}</b> beat`,`<b>${r.n_beat}</b> 只超预期`));
+    if(r.n_miss!=null) parts.push(L(`<b>${r.n_miss}</b> missed`,`<b>${r.n_miss}</b> 只不及预期`));
+    if(r.n_inline) parts.push(L(`<b>${r.n_inline}</b> in line`,`<b>${r.n_inline}</b> 只符合`));
+    if(s.n_upcoming_14d) parts.push(L(`<b>${s.n_upcoming_14d}</b> due in two weeks`,`未来2周 <b>${s.n_upcoming_14d}</b> 只待报`));
+    det=parts.join(L(' · ',' · '));
+  }
+  var symEn,symZh;
+  if(sy.ratio!=null){
+    symEn=`Members move about ${sy.ratio}× as much on each other's report days as they do on an ordinary day. Measured over ${sy.n_events} report days from ${sy.n_reporters} members, last ${sy.window_q} quarters.`;
+    symZh=`在彼此的财报日，本组成分股的波动约为平常的 ${sy.ratio} 倍。基于 ${sy.n_reporters} 只个股的 ${sy.n_events} 个财报日，近 ${sy.window_q} 个季度。`;
+  } else {
+    symEn=`Not enough report days in this group yet to say whether members move together on each other's numbers (${sy.n_events||0} so far).`;
+    symZh=`本组的财报日样本还不够，无法判断成分股是否会因彼此的业绩同步波动（目前 ${sy.n_events||0} 个）。`;
+  }
+  var symLine=sy.ratio!=null
+    ? L(`Members move about <b>${sy.ratio}×</b> as much on each other&rsquo;s report days.`,`在彼此的财报日，成分股波动约为平常的 <b>${sy.ratio}×</b>。`)
+    : L('Too few report days to read co-movement yet.','财报日样本不足，暂无法读取同步性。');
+  return `<div class="k">${L(kEn,kZh)}${grInfo(symEn,symZh)}</div><div class="v">${head}</div>
+    <div class="d">${det}${det?'<br>':''}${symLine}</div>`;
+}
+
+// Coverage warnings arrive as machine slugs. They are disclosed, never printed raw.
+function grCoverageWords(list){
+  var en=[], zh=[];
+  (list||[]).forEach(function(s){
+    var m=/^members_without_activity_read:(\d+)$/.exec(String(s));
+    if(m){ en.push(m[1]+' member'+(m[1]==='1'?'':'s')+' had no usable activity read today');
+           zh.push(m[1]+' 只成分股今日没有可用的活跃度读数'); return; }
+    if(s==='below_coverage_floor'){ en.push('too few members covered to place this group on its arc');
+      zh.push('覆盖成分股过少，无法在阶段轴上定位这组'); return; }
+    en.push('part of the roster is not fully covered'); zh.push('部分成分股覆盖不完整');
+  });
+  return en.length?[en.join('; '), zh.join('；')]:null;
+}
+function grBand(bid){
+  var p=GRP&&GRP[bid], e=GRE&&GRE[bid];
+  var h=`<h2><span class="idx">◎</span>${L('Group read','整体读数')} <span class="chip">${L('context · not a buy signal','背景 · 非买入信号')}</span></h2>`;
+  if(!p){
+    return h+`<div class="gpr-band"><div class="gpr-hd"><span class="gpr-eyebrow">${L('Group read','整体读数')}</span></div>
+      <div class="gpr-null">${L('This read is assembled each night from how the members actually traded — how many moved, whether they moved the same way, and where the group sits in its own cycle. It appears here after the first nightly run.','这份读数每晚根据成分股的实际交易生成：多少只在动、是否同向、以及这组处于自身周期的哪一段。首次夜间运行后将在此显示。')}</div></div>`;
+  }
+  var st=grStance(p), bd=grArcWords((p.arc||{}).state), w=grWatchList(p);
+  var cw=grCoverageWords(p.coverage_warnings);
+  var li=function(x){return `<li>${L(esc(x[0]),esc(x[1]))}</li>`;};
+  return h+`<div class="gpr-band">
+    <div class="gpr-hd">
+      <span class="gpr-eyebrow">${L('Group read','整体读数')}</span>
+      <span class="gpr-asof">${L('as of','截至')} <b>${esc(p.as_of||'—')}</b> · ${L(`<b>${p.n_covered}</b> of <b>${p.n_members}</b> members covered`,`<b>${p.n_members}</b> 只成分股中覆盖 <b>${p.n_covered}</b> 只`)}${cw?` ${grInfo(cw[0],cw[1])}`:''}</span>
+    </div>
+    <div class="gpr-stance">
+      <span class="gpr-tok ${st.tok.cls}">${L(esc(st.tok.en),esc(st.tok.zh))}</span>
+      <div class="gpr-read">${L(esc(st.en),esc(st.zh))}</div>
+    </div>
+    <div class="gpr-backdrop">${L(esc(bd[0]),esc(bd[1]))}</div>
+    ${grTiles(p,e)}
+    ${grArcRail(p)}
+    <div class="gpr-watch">
+      <div class="gpr-watch-k">${L('What we&rsquo;re watching','我们在盯什么')}</div>
+      <div class="gpr-wcols">
+        <div class="gpr-wcol"><h5><span class="ar">↑</span>${L('Signs it is broadening','扩散的迹象')}</h5><ul>${w.up.map(li).join('')}</ul></div>
+        <div class="gpr-wcol"><h5><span class="ar">↓</span>${L('Signs it is fading','消退的迹象')}</h5><ul>${w.down.map(li).join('')}</ul></div>
+      </div>
+      <div class="gpr-foot">${L('Windows, not certainties — re-drawn nightly. Nothing here ranks, sizes or gates a position.','这是观察窗口，不是确定结论 — 每晚重绘。此处内容不参与排序、仓位或准入。')}</div>
+    </div>
+  </div>`;
+}
+
+function grEpisodesSection(bid){
+  var rows=(GRH&&GRH[bid])||null, p=GRP&&GRP[bid];
+  var h=`<h2>${L('Has this happened before','以前发生过吗')} <span class="chip">${L('closed group episodes','已结束的整体行情')}</span></h2>`;
+  if(!rows||!rows.length){
+    var since=p&&p.as_of?esc(p.as_of):null;
+    return h+`<div class="panel"><div class="muted sm">${rows?
+      L('No completed group episodes recorded yet'+(since?' — the log started '+since:'')+'.','尚未记录到已结束的整体行情'+(since?'（记录自 '+since+' 开始）':'')+'。'):
+      L('The episode log is built each night; it appears here after the first run.','行情记录每晚生成，首次运行后将在此显示。')}</div></div>`;
+  }
+  var body=rows.map(function(r){
+    var ever=r.members_ever_active, kept=(r.members_persisted!=null?r.members_persisted:grCount(r.persistence_share,ever));
+    return `<tr>
+      <td class="win">${esc(r.start_date||'—')} → ${esc(r.end_date||'—')}</td>
+      <td class="num">${L(`<b>${r.sessions_active}</b> of ${r.sessions_span}`,`${r.sessions_span} 中 <b>${r.sessions_active}</b>`)}</td>
+      <td class="num">${ever==null?'—':ever}</td>
+      <td>${(kept==null||!ever)?'<span class="muted">—</span>':L(`<b>${kept}</b> of ${ever} stayed active throughout`,`${ever} 只中 <b>${kept}</b> 只全程保持活跃`)}</td>
+    </tr>`;}).join('');
+  return h+`<div class="panel"><div class="ts"><table class="gpr-ep">
+    <thead><tr><th>${L('Window','时段')}</th><th class="num">${L('Active sessions','活跃交易日')}</th>
+      <th class="num">${L('Members involved','参与成分股')}</th><th style="text-align:left">${L('Stayed the course','全程参与')}</th></tr></thead>
+    <tbody>${body}</tbody></table></div>
+    <div class="disc">${L('A group episode starts when at least half the members — and at least three of them — move unusually on the same session, and closes after three quiet sessions in a row. Newest first, last ten only. Past episodes describe what happened; they do not say what happens next.','当至少一半成分股（且不少于三只）在同一交易日出现异动时，计为一段整体行情；连续三个交易日转静则结束。最新在前，仅列最近十段。历史行情只描述已经发生的事，不预告接下来。')}</div></div>`;
+}
+
+function grEarningsSection(bid){
+  var e=GRE&&GRE[bid];
+  var h=`<h2><span class="idx">◧</span>${L('Earnings across this group','本组的财报局面')} <span class="chip">${L('context · not a buy signal','背景 · 非买入信号')}</span></h2>`;
+  if(!e) return h+`<div class="panel"><div class="muted sm">${L('The earnings read is assembled each night from members&rsquo; reported figures, guidance and analyst revisions. It appears here after the first run.','财报读数每晚根据成分股的实际业绩、指引与分析师上下调生成，首次运行后将在此显示。')}</div></div>`;
+  var s=e.season||{}, r=e.results||{}, g=e.guidance||{}, rv=e.revisions||{}, dr=e.drift||{}, sy=e.sympathy||{};
+  // Season clock. n_upcoming_14d is the COUNT; `next` is a preview capped by the builder,
+  // so the count never comes from next.length.
+  var nx=(s.next||[]), extra=(s.n_upcoming_14d||0)-nx.length;
+  var upcoming=nx.length?`<div class="ts"><table><thead><tr><th>${L('Reporting next','即将公布')}</th><th>${L('Date','日期')}</th><th>${L('When','时段')}</th></tr></thead><tbody>`
+      +nx.map(function(x){var w=GR_SESSION[x.session]||GR_SESSION.unknown;
+        return `<tr><td>${stkGR(x.ticker)}</td><td class="num">${esc(x.date||'—')}</td><td>${L(esc(w[0]),esc(w[1]))}</td></tr>`;}).join('')
+      +`</tbody></table></div>`
+      +(extra>0?`<div class="muted sm" style="margin-top:6px">${L(`Showing the next ${nx.length}; <b>${s.n_upcoming_14d}</b> members report within two weeks.`,`仅列最近 ${nx.length} 只；未来2周共有 <b>${s.n_upcoming_14d}</b> 只成分股公布。`)}</div>`:'')
+    :`<div class="muted sm">${L('No member reports due in the next two weeks.','未来2周无成分股公布财报。')}</div>`;
+  // Results — n_no_data is SHOWN, never divided away.
+  var nb=r.n_beat||0, nm=r.n_miss||0, ni=r.n_inline||0, nd=r.n_no_data||0, tot=nb+nm+ni+nd||1;
+  var seg=function(n,c){return n?`<i style="width:${(n/tot*100).toFixed(1)}%;background:${c}"></i>`:'';};
+  // Directional inks are var() references, not resolved values: zh 红涨绿跌 swaps --up and
+  // --down on the root, so the bar re-colours on a language toggle with no re-render.
+  var bar=`<div class="gpr-bar">${seg(nb,'var(--up)')}${seg(ni,'var(--muted)')}${seg(nm,'var(--down)')}${seg(nd,'var(--line)')}</div>`;
+  var key=`<div class="gpr-key">
+    <span><span class="sw" style="background:var(--up)"></span>${L('Beat','超预期')} <b>${nb}</b></span>
+    <span><span class="sw" style="background:var(--muted)"></span>${L('In line','符合')} <b>${ni}</b></span>
+    <span><span class="sw" style="background:var(--down)"></span>${L('Missed','不及预期')} <b>${nm}</b></span>
+    <span><span class="sw" style="background:var(--line)"></span>${L('No figure yet','暂无数据')} <b>${nd}</b></span></div>`;
+  var refused=/floor/.test(String(r.beat_basis||''))&&/not met/.test(String(r.beat_basis||''));
+  var resNote=refused
+    ? L('Too few members have reported to read a beat rate for the group yet — the individual figures still stand.','已报成分股太少，暂无法读取本组的超预期比例 — 单只个股的数字仍然成立。')
+    : L(`<b>${nd}</b> of <b>${nb+nm+ni+nd}</b> members have no comparable figure yet — they are counted, never divided away.`,`<b>${nb+nm+ni+nd}</b> 只成分股中有 <b>${nd}</b> 只尚无可比数据 — 它们计入分母，不会被抹去。`);
+  // Guidance / revisions / drift
+  var gw=grGuidanceWords(g);
+  var guid=gw?L(`${esc(gw[0])} — <b>${g.n_filers}</b> members gave one.`,`${esc(gw[1])} — 共 <b>${g.n_filers}</b> 只给出指引。`)
+    :L(`Guidance reads are thin this season — only <b>${g.n_filers||0}</b> member${(g.n_filers||0)===1?'':'s'} gave one, so we do not call a direction.`,`本季指引样本很薄 — 只有 <b>${g.n_filers||0}</b> 只给出指引，因此不做方向判断。`);
+  var rvN=grCount(rv.net_up_share,rv.n_covered);
+  var revs=rvN==null?L(`Not enough analyst coverage to read revisions — <b>${rv.n_covered||0}</b> members covered.`,`分析师覆盖不足，无法读取上下调 — 仅覆盖 <b>${rv.n_covered||0}</b> 只。`)
+    :L(`Analysts are nudging estimates up on <b>${rvN}</b> of the <b>${rv.n_covered}</b> members they cover.`,`在覆盖的 <b>${rv.n_covered}</b> 只中，分析师对 <b>${rvN}</b> 只上调了预估。`);
+  var drN=grCount(dr.pos_share_5d,dr.n);
+  var drift=drN==null?L(`Too few reporters to read what happens after the print — <b>${dr.n||0}</b> so far.`,`已报样本太少，无法读取公布后的走势 — 目前 <b>${dr.n||0}</b> 只。`)
+    :L(`Five sessions after reporting, <b>${drN}</b> of <b>${dr.n}</b> were still ahead of SPY.`,`公布后第五个交易日，<b>${dr.n}</b> 只中有 <b>${drN}</b> 只仍跑赢SPY。`);
+  // Sympathy — the "do earnings move this group together" stat, always with its counts.
+  var d2=sy.directional||{};
+  var symp=sy.ratio==null
+    ? L(`Not enough report days in this group yet to say whether members move together on each other&rsquo;s numbers — <b>${sy.n_events||0}</b> so far, from <b>${sy.n_reporters||0}</b> members.`,`本组财报日样本不足，暂无法判断成分股是否因彼此的业绩同步波动 — 目前仅 <b>${sy.n_events||0}</b> 个，来自 <b>${sy.n_reporters||0}</b> 只。`)
+    : L(`On each other&rsquo;s report days, the rest of the group moves about <b>${sy.ratio}×</b> as much as on an ordinary day — measured over <b>${sy.n_events}</b> report days from <b>${sy.n_reporters}</b> members.`,`在彼此的财报日，其余成分股的波动约为平常的 <b>${sy.ratio}×</b> — 基于 <b>${sy.n_reporters}</b> 只个股的 <b>${sy.n_events}</b> 个财报日。`);
+  var dirLine=(d2.beat_day_median==null&&d2.miss_day_median==null)?''
+    :`<div class="muted sm" style="margin-top:5px">${L(`On a member&rsquo;s beat day the rest moved <span class="${cls(d2.beat_day_median)}">${fmtPct(d2.beat_day_median)}</span> (<b>${d2.n_beat_days}</b> days); on a miss day <span class="${cls(d2.miss_day_median)}">${fmtPct(d2.miss_day_median)}</span> (<b>${d2.n_miss_days}</b> days), against SPY.`,`某只超预期当日，其余成分股中位涨跌 <span class="${cls(d2.beat_day_median)}">${fmtPct(d2.beat_day_median)}</span>（<b>${d2.n_beat_days}</b> 天）；不及预期当日为 <span class="${cls(d2.miss_day_median)}">${fmtPct(d2.miss_day_median)}</span>（<b>${d2.n_miss_days}</b> 天），均已剔除SPY。`)}</div>`;
+  return h+`<div class="panel">
+    <div class="kpis" style="margin-bottom:11px">
+      <div><div class="k">${L('Reported','已报')}</div><div class="v">${s.n_reported==null?'—':s.n_reported}<span class="muted" style="font-size:12px;font-weight:400"> / ${s.n_members==null?'—':s.n_members}</span></div></div>
+      <div><div class="k">${L('Due in 2 weeks','未来2周')}</div><div class="v">${s.n_upcoming_14d==null?'—':s.n_upcoming_14d}</div></div>
+      <div><div class="k">${L('Beat / missed','超预期 / 不及')}</div><div class="v"><span class="pos">${nb}</span>/<span class="neg">${nm}</span></div></div>
+      <div><div class="k">${L('No figure yet','暂无数据')}</div><div class="v">${nd}</div></div>
+    </div>
+    ${bar}${key}
+    <div class="muted sm" style="margin-top:7px">${resNote}</div>
+    <div style="margin-top:13px">${upcoming}</div>
+    <div style="margin-top:13px;display:grid;gap:6px;font-size:12.5px">
+      <div>${guid}</div><div>${revs}</div><div>${drift}</div>
+    </div>
+    <div style="margin-top:11px;padding-top:10px;border-top:1px solid var(--line);font-size:12.5px">${symp}${dirLine}</div>
+    <div class="disc">${L('Every count is printed with the members it came from, and members with no comparable figure are counted rather than dropped. Descriptive only — nothing here ranks a name or sizes a position.','每个计数都附带其来源的成分股数；无可比数据的成分股计入分母，而不是被剔除。仅为描述 — 不对任何个股排序或决定仓位。')}</div>
+  </div>`;
+}
+// Member chips for the holdings table: which name led the activity, and which sat at each
+// end of the day's move. Cohort context on the row it belongs to — never a rank.
+function grMemberChips(bid,sym){
+  var p=GRP&&GRP[bid]; if(!p||!sym) return '';
+  var d=p.direction||{}, out=[];
+  function add(m,en,zh,tEn,tZh){
+    if(m&&m.ticker===sym) out.push(`<span class="gpr-mchip"${grTip(tEn,tZh)}>${L(en,zh)}</span>`);
+  }
+  add(d.leader,'Most active','最活跃','Largest unusual move in the group today, after taking SPY out.','剔除SPY后，今日组内异动幅度最大。');
+  add(d.strongest,'Strongest today','今日最强','Best member move today, after taking SPY out.','剔除SPY后今日表现最好的成分股。');
+  add(d.weakest,'Weakest today','今日最弱','Worst member move today, after taking SPY out.','剔除SPY后今日表现最差的成分股。');
+  return out.length?`<div class="gpr-mchips" style="margin-top:3px">${out.join('')}</div>`:'';
+}
+// Same per-stock link base render() uses; markets with no per-stock page get a plain ticker.
+function stkGR(sym){
+  var base=(typeof DETAIL!=='undefined'&&DETAIL)?(DETAIL.stock_base||''):'';
+  return base?`<a class="tk" href="${base}${encodeURIComponent(sym||'')}">${esc(sym||'')}</a>`
+             :`<span class="tk">${esc(sym||'')}</span>`;
+}
+/* ── GR1:READ:END ── */
+
+// Timing cards use the producer's labels; missing evidence never becomes a verdict.
+function timingCardsHtml(textures){
+  const record=v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
+  const tx=record(textures), ba=record(tx.bull_age), ob=record(tx.overbought), ce=record(tx.clean_entry), rr=record(tx.rollover_risk);
+  const finite=v=>typeof v==='number'&&Number.isFinite(v);
+  const words=(en,zh)=>typeof en==='string'&&en.trim()?L(esc(en),esc(typeof zh==='string'&&zh.trim()?zh:en)):'—';
+  const zhLabels={neutral:'中性',elevated:'偏高',overbought:'超买',oversold:'超卖',high:'高',low:'低',young:'初期',building:'上升中',mature:'成熟',aging:'老化',downtrend:'下行'};
+  const label=(en,zh)=>words(en,zh||(Object.prototype.hasOwnProperty.call(zhLabels,en)?zhLabels[en]:en));
+  const reasonsZh={'accelerating':'动量加速','not extended':'涨幅未过度延伸','RSI room':'RSI仍有空间','breadth supportive':'广度支持','above 200d trend':'位于200日趋势上方','shallow pullback':'浅幅回调','momentum rolling over':'动量转弱','decelerating':'动量减速','breadth weakening':'广度转弱','more new lows':'新低增多','below 50d':'低于50日均线','rolling off the high':'自高位回落'};
+  const reasons=(en,zh)=>{
+    if(!Array.isArray(en)) return '';
+    return en.map((r,i)=>{
+      if(typeof r!=='string'||!r.trim()) return '';
+      let translated=Array.isArray(zh)&&typeof zh[i]==='string'?zh[i]:null;
+      if(!translated&&Object.prototype.hasOwnProperty.call(reasonsZh,r)) translated=reasonsZh[r];
+      if(!translated){const m=r.match(/^extended \(RS (\d+)%ile\)$/);if(m) translated='涨幅偏高（相对强弱第'+m[1]+'百分位）';}
+      return words(r,translated||r);
+    }).filter(Boolean).join(' · ');
+  };
+  let age='—',ageDetail=[];
+  if(ba.in_bull===false){age=L('No uptrend','非上升趋势');ageDetail.push(L('Downtrend','下行趋势'));}
+  else if(ba.in_bull===true){
+    if(finite(ba.approx_months)&&ba.approx_months>=0) age=ba.approx_months<1?L('Under 1 month','不足1个月'):L(ba.approx_months+(ba.approx_months===1?' month':' months'),ba.approx_months+'个月');
+    if(finite(ba.days)&&ba.days>=0) ageDetail.push(L(ba.days+(ba.days===1?' day':' days'),ba.days+'天'));
+    if(ba.stage) ageDetail.push(label(ba.stage,ba.stage_zh));
+  }
+  if(finite(ba.drawdown_from_peak)) ageDetail.push(L((ba.drawdown_from_peak*100).toFixed(1)+'% from peak','距峰值 '+(ba.drawdown_from_peak*100).toFixed(1)+'%'));
+  const obDetail='RSI '+(finite(ob.rsi)?ob.rsi:'—')+' · '+L('RS percentile','相对强弱百分位')+' '+(finite(ob.rs_pctile)?Math.round(ob.rs_pctile*100):'—');
+  const clean=ce.flag===true?L('Yes','是'):ce.flag===false?L('No','否'):'—';
+  const card=(key,color,en,zh,value,detail)=>`<div class="tx" data-basket-texture="${key}" data-basket-tone="${color.slice(2)}"><div class="k">${L(en,zh)}</div><div class="v">${value}</div><div class="d">${detail}</div></div>`;
+  return `<h2><span class="idx">01</span>${L('Timing &amp; risk','择时与风险')}</h2><div class="cards">`
+    +card('bull_age',(ba.in_bull===true?'--up':ba.in_bull===false?'--down':'--muted'),'Uptrend age','上升趋势时长',age,ageDetail.join(' · '))
+    +card('overbought',(finite(ob.value)&&ob.value>=0.6?'--down':finite(ob.value)&&ob.value>=0.35?'--warn':'--muted'),'Overbought','超买度',label(ob.band,ob.band_zh),obDetail)
+    +card('clean_entry',(ce.flag===true?'--up':'--muted'),'Clean entry','干净入场',clean,reasons(ce.reasons,ce.reasons_zh))
+    +card('rollover_risk',(rr.band==='high'?'--down':rr.band==='elevated'?'--warn':rr.band==='low'?'--up':'--muted'),'Roll-over risk','回落风险',label(rr.band,rr.band_zh),reasons(rr.reasons,rr.reasons_zh))+'</div>';
+}
+// Native details is the state owner. Carry only its open/focus state across DOM refreshes.
+function basketScoreState(app){
+  const detail=app&&app.querySelector('details.ftr-anatomy-disclosure');
+  return detail?{open:detail.open,focused:detail.querySelector('summary')===document.activeElement}:null;
+}
+function restoreBasketScoreState(app,state){
+  const detail=state&&app&&app.querySelector('details.ftr-anatomy-disclosure');
+  if(!detail) return;
+  detail.open=state.open;
+  if(state.focused){const summary=detail.querySelector('summary');if(summary) summary.focus({preventScroll:true});}
+}
+
+// Native header buttons own keyboard activation; _sort remains the existing order owner.
+function holdSortHeader(col,en,zh,klass){
+  const active=_sort.col===col;
+  const sortValue=col==='recommend'?'other':(_sort.dir===1?'ascending':'descending');
+  const aria=active?' aria-sort="'+sortValue+'"':'';
+  const icon=active?(_sort.dir===1?'↑':'↓'):'↕';
+  const context=col==='recommend'
+    ? L(_sort.dir===1&&active?', reversed research order':', research order',_sort.dir===1&&active?'，反向研究顺序':'，研究顺序')
+    : L(' return','收益');
+  const help=col==='recommend'?' data-tip-en="Research order combines entry setup, verdict and Potential; it is not numeric score order. Activate to reverse the order." data-tip-zh="研究顺序结合入场条件、结论与潜力，并非仅按数值大小排列。点击可反转顺序。"':'';
+  return `<th scope="col" class="num ${klass}" data-s="${col}"${aria}${help}><button type="button" class="hold-sort" data-hold-sort="${col}">${L(esc(en),esc(zh))}<span class="hold-sort-icon" aria-hidden="true">${icon}</span><span class="hold-sr-only">${context}</span></button></th>`;
+}
+function restoreHoldSortFocus(app,key){
+  if(!key||!app) return;
+  const button=Array.from(app.querySelectorAll('#hold button[data-hold-sort]')).find(b=>b.dataset.holdSort===key);
+  if(button) button.focus({preventScroll:true});
+}
+
+function render(){
+  const app=document.getElementById('app');
+  const scoreUi=basketScoreState(app);
+  const focusedSort=document.activeElement&&document.activeElement.closest('#hold button[data-hold-sort]');
+  const sortFocusKey=focusedSort?focusedSort.dataset.holdSort:null;
+  const d=DETAIL, b=d.basket||{}, th=d.theme||{}, tx=th.textures||{};
+  const SB=d.stock_base||'';   // per-stock link base ('' for markets with no per-stock page → plain ticker)
+  const stk=(sym)=> SB ? `<a class="tk" href="${SB}${encodeURIComponent(sym)}">${esc(sym)}</a>` : `<span class="tk">${esc(sym)}</span>`;
+  const lc=LABEL_COLOR[th.label]||LABEL_COLOR.neutral, rc=RECO_COLOR[th.reco]||RECO_COLOR.hold;
+  const tags=(b.tags||[]).map(x=>`<span class="chip">${esc(x)}</span>`).join('');
+  // Leadership Health: contested modifier — the label itself is untouched, the modifier only
+  // says >=2 faster descriptive textures currently disagree with it (never a forecast).
+  const cList=contestedList(th,b);
+  const contested=(th.label==='dominant'||th.label==='emerging')&&cList.length>=2;
+  const lifeBadge=contested
+    ? `<span class="tlabel" style="background:${lc[0]};border:1px solid ${lc[1]};color:${lc[2]}" title="contested — faster descriptive textures disagree with the validated label: ${esc(cList.map(x=>x[0]).join(' | '))}. A shape/fragility read, not a forecast.">${L((th.label_en||th.label||'—')+' · contested',(th.label_zh||th.label_en||'—')+' · 存在分歧')}</span>`
+    : badge('tlabel',lc,th.label_en||(th.label||'—'),th.label_zh||'');
+  const fdc=th.flip_distance||null;
+  const flipCap=(contested&&fdc&&fdc.route_a_bps!=null&&fdc.route_a_bps>0)
+    ? `<div class="muted sm" style="margin-top:6px" title="${esc(fdc.note_en||'')}">${L(`${Math.round(fdc.route_a_bps)} bps from FADING${fdc.route_a_sessions_est!=null?` (~${fdc.route_a_sessions_est} bad session${fdc.route_a_sessions_est!==1?'s':''})`:''} — descriptive, not a forecast`,`距「退潮」仅${Math.round(fdc.route_a_bps)}个基点${fdc.route_a_sessions_est!=null?`（约${fdc.route_a_sessions_est}个坏交易日）`:''} — 描述性，非预测`)}</div>`:'';
+  // ---- hero ----
+  let h=`<div class="panel hero">
+    <div class="lhs">
+      <h1>${L(esc(b.name),esc(b.name_zh))}</h1>
+      <div style="margin:6px 0">${b.parent?`<span class="chip">${L(esc(b.parent),esc(b.parent_zh||b.parent))}</span>`:''}${b.category?`<span class="chip">${L(esc(b.category),esc(b.category_zh||b.category))}</span>`:''}${tags}</div>
+      <div class="thesis">${L(esc(briefText(b.thesis)),esc(briefText(b.thesis)))}</div>
+    </div>
+    <div>
+      <div class="scoreboxes">
+        <div class="sbx"><div class="v">${th.score!=null?th.score:'—'}</div><div class="k">${L('score','评分')}</div></div>
+        <div class="sbx"><div class="v" style="font-size:13px;padding-top:7px">${lifeBadge}</div><div class="k">${L('lifecycle','生命周期')}</div></div>
+        <div class="sbx"><div class="v" style="font-size:13px;padding-top:7px">${recoChip(th)}</div><div class="k">${L('action','结论')}</div></div>
+        <div class="sbx"><div class="v ${cls((th.perf&&th.perf['1d'])?th.perf['1d'].rel:null)}">${fmtPct((th.perf&&th.perf['1d'])?th.perf['1d'].rel:null)}</div><div class="k">${L('1d vs '+BENCH,'1日 vs '+BENCHZ)}</div></div>
+      </div>
+      ${timingStripHtml(th)}
+      ${leadershipReceiptHtml(DETAIL.leadership_receipt)}
+      <div class="muted sm" style="margin-top:8px;max-width:42ch">${recoNoEntry(th)?RECO_NOENTRY_WHY():L(esc(th.reco_why_en||''),esc(th.reco_why_zh||''))}</div>
+      ${contested?`<div class="muted sm" style="margin-top:6px;max-width:46ch">${L('Contested','存在分歧')}: ${cList.map(x=>L(esc(x[0]),esc(x[1]))).join(' · ')}</div>`:''}
+      ${flipCap}
+    </div>
+  </div>`;
+
+  // ---- GR1 group read: what the members are actually doing, in plain words ----
+  h+=grBand(b.id);
+
+  // ---- cross-market narrative cross-reference (same theme in other markets) ----
+  h+=xmktHtml();
+
+  // ---- sector cycle mini-chart (where this theme sits on its cycle clock) ----
+  h+=cycleSectionHtml(b.cycle, b.id);
+
+  // ---- WHAT TO ACT ON NOW (stock level, gated by theme health) ----
+  const an=d.act_now||{};
+  h+=`<h2>${L('What to act on now','现在该做什么')} <span class="chip">${L('gated by theme health','按主题健康度筛选')}</span></h2><div class="panel">`;
+  if(an.status==='ok' && (an.buys||[]).length){
+    h+=`<div class="muted sm" style="margin-bottom:8px">${L('Member stocks with a clean entry right now — buy/add verdict, cycle not blocking, decent entry price. Ranked by entry quality.','当前具备干净入场点的成分股 — 买入/加仓结论、周期未阻断、入场价尚可。按入场质量排序。')}</div>
+    <div class="ts"><table class="act-table"><thead><tr><th class="act-name">${L('Stock','个股')}</th><th class="num act-conv">${L('Conviction','信念')}</th><th>${L('Verdict','结论')}</th><th class="num act-entry">${L('Entry','入场')}</th><th class="num act-5d">5d</th><th class="num act-20d">20d</th></tr></thead><tbody>`+
+      an.buys.map(x=>`<tr><td class="act-name">${stk(x.symbol)} <span class="muted sm hold-company">${esc(x.name||'')}</span></td>
+        <td class="num act-conv">${convCell({score:x.score})}</td>
+        <td>${x.verdict?L(esc(x.verdict),esc(x.verdict_zh||x.verdict)):'—'}</td>
+        <td class="num act-entry">${x.entry_status?('<b style="color:'+(x.act_level>=3?cssv('--up'):cssv('--g-cold'))+'">'+esc((x.entry_status||'').replace('_',' '))+'</b>'+(x.zone_low!=null?' <span class="muted sm">$'+x.zone_low.toFixed(2)+(x.zone_high&&x.zone_high!=x.zone_low?'–$'+x.zone_high.toFixed(2):'')+'</span>':'')):(x.entry_pct!=null?Math.round(x.entry_pct*100)+'%':'—')}</td>
+        <td class="num act-5d ${cls(x.ret_5d)}">${fmtPct(x.ret_5d)}</td>
+        <td class="num act-20d ${cls(x.ret_20d)}">${fmtPct(x.ret_20d)}</td></tr>`).join('')+
+      `</tbody></table></div>`;
+  } else {
+    const dn = an.status==='theme_out_of_favour';
+    h+=`<div style="display:flex;align-items:center;gap:11px"><span style="font-size:24px">${dn?'🚫':'⏳'}</span>
+      <div><div style="font-weight:680;color:${dn?'var(--down)':'var(--warn)'}">${dn?L('No buys — theme out of favour','无买入 — 主题暂不被青睐'):L('No clean entry right now','当前无干净入场点')}</div>
+      <div class="muted sm">${L(esc(an.note_en||'Nothing to act on right now.'),esc(an.note_zh||''))}</div></div></div>`;
+  }
+  const fastWatch=an.early_turn_watch||[];
+  if(fastWatch.length){
+    h+=`<div class="fast-watch">
+      <div class="fast-watch-title">${L('Fast-turn watch — not a buy','快速转折观察 — 不是买入')}</div>
+      <div class="muted sm" style="margin-bottom:7px">${L('A fresh early-turn sign appears here instead of being hidden. The blocker column explains why it is still not a buy.','新的早期转折迹象会显示在这里，而不是被隐藏。“阻断原因”一列说明它为什么还算不上买点。')}</div>
+      <div class="ts"><table class="watch-table"><thead><tr>
+        <th>${L('Stock','个股')}</th><th>${L('Turn','转折')}</th><th class="num">${L('Potential','潜力')}</th>
+        <th class="watch-blocker">${L('Why blocked','阻断原因')}</th><th class="num">${L('5d','5日')}</th><th class="num watch-20d">${L('20d','20日')}</th>
+      </tr></thead><tbody>${fastWatch.map(x=>`<tr>
+        <td>${stk(x.symbol)} <span class="hold-company">${esc(x.name||'')}</span></td>
+        <td>${tierBadgeHtml(x.tier,!!x.provisional)}</td>
+        <td class="num">${convCell({score:x.score})}</td>
+        <td class="watch-blocker">${L(esc(x.blocker_en||'not confirmed'),esc(x.blocker_zh||x.blocker_en||'尚未确认'))}</td>
+        <td class="num ${cls(x.ret_5d)}">${fmtPct(x.ret_5d)}</td>
+        <td class="num watch-20d ${cls(x.ret_20d)}">${fmtPct(x.ret_20d)}</td>
+      </tr>`).join('')}</tbody></table></div>
+    </div>`;
+  }
+  // coverage disclosure: members with no conviction read can never appear above — say so
+  // in plain words instead of silently omitting them (an all-uncovered basket otherwise
+  // reads "no clean entry", which is a data gap dressed up as a verdict).
+  const unc=an.uncovered||[];
+  if(unc.length){const nAll=(d.members||[]).length;
+    h+=`<div class="muted sm" style="margin-top:8px">${L(unc.length+' of '+nAll+' members have no conviction read yet (not in the per-stock library), so they cannot be ranked here: '+unc.map(esc).join(', ')+'.',nAll+' 只成分股中有 '+unc.length+' 只暂无信念评分（尚未纳入个股库），无法在此排序：'+unc.map(esc).join('、')+'。')}</div>`;}
+  h+=`<div class="disc">${L('Buy candidates use the per-stock Conviction Profile (buy/add verdict + entry axis), gated by theme health. Fast-turn watch names remain non-actionable until the listed blocker clears. Not an order — size and confirm yourself.','买入候选基于个股信念档案（买入/加仓结论 + 入场轴），并按主题健康度筛选。快速转折观察中的个股在所列阻断解除前仍不可操作。非下单指令 — 请自行确定仓位并确认。')}</div></div>`;
+
+  // ---- consolidated index: multi-timeframe technicals + vol-hole / whale / flow ----
+  h+=mtfTapeHtml(th);
+
+  // ---- translated Timing & risk, with explicit missing evidence ----
+  h+=timingCardsHtml(tx);
+
+  // ---- distance to label change (engine flip_distance; display-only fragility meter) ----
+  h+=flipDistanceHtml(th);
+
+  // ---- score composition + perf + breadth ----
+  const comp=th.components||{}, W=th.weights||{trend:.26,breadth:.18,impulse:.07,macro:.18,mtf:.16,volhole:.05,crowding:.10};
+  const POS=['trend','breadth','impulse','macro','mtf','volhole'].filter(k=>comp[k]!=null);
+  const parts=POS.map(k=>({k,v:Math.max(0,(comp[k]||0))*(W[k]||0)}));
+  parts.push({k:'crowding',v:(comp.crowding||0)*(W.crowding||0)});
+  const tot=parts.reduce((a,p)=>a+Math.abs(p.v),0)||1;
+  const bar=parts.filter(p=>Math.abs(p.v)>.001).map(p=>`<i style="width:${(Math.abs(p.v)/tot*100).toFixed(1)}%;background:${COMP_COLOR[p.k]};${p.k==='crowding'?'opacity:.55':''}"></i>`).join('');
+  const bd=th.breadth||{}, ref=b.reference;
+  h+=`<h2><span class="idx">02</span>${L('Score composition &amp; performance','评分构成与表现')}</h2>
+  <div class="panel">
+    <div class="cbar">${bar}</div>
+    <div class="muted sm">${POS.concat(['crowding']).map(k=>`<span style="margin-right:12px"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${COMP_COLOR[k]};margin-right:3px"></span>${k} ${comp[k]==null?'—':(k==='crowding'?'−':(comp[k]>=0?'+':''))+Math.abs(comp[k]).toFixed(2)}</span>`).join('')}</div>
+    <div class="kpis" style="margin-top:12px">
+      ${['1d','5d','10d','20d','60d','ytd'].map(hz=>{const p=(th.perf||{})[hz]||{};return `<div><div class="k">${L(hz.toUpperCase()+' vs '+BENCH, hz.toUpperCase()+' vs '+BENCHZ)}</div><div class="v ${cls(p.rel)}">${fmtPct(p.rel)}</div></div>`;}).join('')}
+      <div><div class="k">${L('above 50d','站上50日')}</div><div class="v">${bd.pct50==null?'—':Math.round(bd.pct50*100)+'%'}</div></div>
+      <div><div class="k">${L('new hi / lo','新高/低')}</div><div class="v"><span class="pos">${bd.nh||0}</span>/<span class="neg">${bd.nl||0}</span></div></div>
+      <div><div class="k">${L('adv / dec today','今日涨/跌')}</div><div class="v"><span class="pos">${th.adv||0}</span>/<span class="neg">${th.dec||0}</span></div></div>
+    </div>
+    ${ref?`<div class="muted sm" style="margin-top:10px">${L('Cross-checked vs','交叉验证')} <b>${esc(ref.label)}</b>: ${L('daily corr','日相关')} <b>${ref.corr}</b>, ${L('market-adjusted','剔除市场')} <b>${ref.rel_corr}</b> (${ref.n} ${L('sessions','日')})</div>`:''}
+  </div>`;
+
+  // ---- score history + change timeline ----
+  const tl=d.timeline||[];
+  h+=`<h2><span class="idx">03</span>${L('Score history &amp; changes','评分历史与变化')}</h2>
+  <div class="panel">
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div>${spark(d.history,{color:lc[2]})}</div><span class="muted sm">${L('daily theme score; accrues from the archive','每日主题评分；自归档累积')}</span></div>
+    <div class="timeline" style="margin-top:10px">${tl.length?tl.map(e=>`<div class="ev"><span class="dt">${esc((e.ts||'').slice(0,10))}</span><span class="sev-${esc(e.severity)}">${L(esc(e.headline),esc(e.headline_zh||e.headline))}</span></div>`).join(''):`<div class="muted sm">${L('No recorded score/recommendation changes yet.','尚无评分/建议变化记录。')}</div>`}</div>
+  </div>`;
+
+  // ---- GR1: has this group moved together before, and what are earnings doing to it ----
+  h+=grEpisodesSection(b.id);
+  h+=grEarningsSection(b.id);
+
+  // ---- holdings scoreboard ----
+  const mem=(d.members||[]).slice();
+  const verdictScore=(c)=>{const v=String((c&&c.verdict)||'').toLowerCase();
+    if(!v) return -1;
+    let s=1;
+    if(v.includes('reversal buy')||v.includes('buy zone')) s=6;
+    else if((v.includes('high-conviction')||v.includes('high-confluence')) && !v.includes('wait')) s=5;
+    else if(v.includes('leader') && !(v.includes('poor entry')||v.includes('extended')||v.includes('wait'))) s=4;
+    else if(v.includes('constructive')||v.includes('basing')||v.includes('setting up')||v.includes('uptrend')||v.includes('candidate')) s=3;
+    else if(v.includes('neutral')||v.includes('watch')||v.includes('screen')||v.includes('context')||v.includes('exposure')) s=2;
+    if(v.includes('poor entry')||v.includes('extended')||v.includes('ran hot')||v.includes('topping')||v.includes('hold off')) s=Math.min(s,1);
+    if(v.includes('lagging')||v.includes('downtrend')||v.includes('avoid')) s=0;
+    if(v.includes('earnings')||v.includes('stressed')||v.includes('accounting')) s=Math.min(s,3);
+    if(c&&c.cycle_blocked) s-=2.5;
+    return s;
+  };
+  const recommendScore=(m)=>{const c=m.conviction||{}, entry=c.entry||{};
+    return verdictScore(c)*100 + ((c.score==null?-25:+c.score)||0) + ((entry.act_level||0)*8) + (m.on_board?12:0);
+  };
+  // confluence cascade tier weights (operator re-ranked 2026-07-06: T2 above T1 for entry quality).
+  const TIER_W={T1:0.9,T2:1.0,T3:0.6,T4:0.4};
+  const tierW=(c)=>{const s=c&&c.signal; return (s&&s.tier&&TIER_W[s.tier])||0;};
+  const tierBadge=(c)=>{const sg=c&&c.signal; if(!sg||!sg.tier) return ''; return ' '+tierBadgeHtml(sg.tier,!!sg.provisional);};
+  const sortMembers=(items)=>{
+    // default 'recommend' order: fresh-confluence names first (T1>T2>T3>T4), then the
+    // conviction blend; other columns keep the plain numeric sort. Mirrors subsectors_china
+    // (class -> tier weight). Unrated names (tierW 0) all sit below any eligible tier.
+    if(_sort.col==='recommend'){
+      return items.slice().sort((a,b)=>{
+        const ta=tierW(a.conviction), tb=tierW(b.conviction);
+        if(ta!==tb) return (tb-ta)*(-_sort.dir);
+        return (recommendScore(a)-recommendScore(b))*_sort.dir;
+      });
+    }
+    const key=m=>_sort.col==='conv'?((m.conviction||{}).score):_sort.col==='r20'?m.ret_20d:m.ret_ytd;
+    return items.slice().sort((a,b)=>{const x=key(a),y=key(b); if(x==null)return 1; if(y==null)return -1; return (x-y)*_sort.dir;});
+  };
+  const shortVerdict=(c)=>{const v=String((c&&c.verdict)||'').toLowerCase();
+    if(!v) return L('—','—');
+    if(c&&c.cycle_blocked) return L('Blocked','阻断');
+    if(v.includes('reversal buy')||v.includes('buy zone')) return L('Buy zone','买入区');
+    if(v.includes('high-conviction')||v.includes('high-confluence')) return L('Leader','领先');
+    if(v.includes('leader')&&v.includes('poor entry')) return L('Wait','等待');
+    if(v.includes('leader')) return L('Leader','领先');
+    if(v.includes('constructive')||v.includes('basing')||v.includes('setting up')||v.includes('candidate')) return L('Setting up','酝酿');
+    if(v.includes('extended')||v.includes('ran hot')||v.includes('topping')||v.includes('hold off')) return L('Wait','等待');
+    if(v.includes('lagging')||v.includes('downtrend')||v.includes('avoid')) return L('Avoid','回避');
+    if(v.includes('earnings')||v.includes('stressed')||v.includes('accounting')) return L('Confirm','确认');
+    return L('Watch','观察');
+  };
+  // entry-timing chip (the SECOND gauge) per member: buy now / wait for the pullback to $X
+  const entryCell=(c)=>{const e=c&&c.entry; if(!e||!e.status) return '<span class="muted sm">—</span>';
+    const col = e.act_level>=3?cssv('--up'):e.act_level>=2?cssv('--g-cold'):e.act_level>=1?cssv('--warn'):cssv('--down');
+    const zone = e.zone_low!=null?(' $'+e.zone_low.toFixed(2)+(e.zone_high&&e.zone_high!=e.zone_low?'–$'+e.zone_high.toFixed(2):'')):'';
+    return `<span style="font-weight:700;color:${col}">${L(esc(e.headline||e.status),esc(e.headline_zh||e.status))}</span><span class="muted sm">${zone}</span>`;};
+  // W4 personality slim chip — display-only context, no ranking power (R-SP13).
+  // chart_map/mode_map: short EN/ZH labels (≤3 words EN) matching the board chip vocab.
+  const _SP_C={'event_gapper':'Event-gapper','failed_breakout_trap':'Breakout-fade','mean_reversion_rubber_band':'Mean-reversion','smooth_compounder_grind':'Smooth grind','stair_step_leader':'Stair-step','volatile_momentum_vehicle':'Volatile momo','basing_accumulator':'Basing','defensive_range_stock':'Defensive','mixed_chart':'Mixed'};
+  const _SP_CZ={'event_gapper':'事件跳空','failed_breakout_trap':'突破易回落','mean_reversion_rubber_band':'均值回归','smooth_compounder_grind':'平稳复利','stair_step_leader':'阶梯领涨','volatile_momentum_vehicle':'高波动','basing_accumulator':'筑底','defensive_range_stock':'防御','mixed_chart':'混合'};
+  const _SP_M={'event_override':'Pre-earnings','forced_liquidation':'Forced liq','squeeze':'Squeeze','options_pin':'Pin','negative_gamma_trend':'Neg-gamma','sector_rotation_feeder':'Rotation','post_news_attention':'News spike','stale_dead_money':'Dead money','accumulation':'Accumul.','distribution':'Distrib.'};
+  const _SP_MZ={'event_override':'财报窗口','forced_liquidation':'被动清仓','squeeze':'逼空','options_pin':'期权钉住','negative_gamma_trend':'负Gamma','sector_rotation_feeder':'轮动','post_news_attention':'新闻后','stale_dead_money':'死钱','accumulation':'积累','distribution':'派发'};
+  function personalityChip(c) {
+    if (!c) return '';
+    const p = c.personality;
+    if (!p) return '';
+    const ch = p.chart, mo = p.mode;
+    let out = '';
+    if (ch) {
+      const en = _SP_C[ch] || ch, zh = _SP_CZ[ch] || ch;
+      out += `<span class="sp-td-chip" data-tip-en="Chart personality: ${esc(ch)}. Context only — no ranking power." data-tip-zh="图形个性：${esc(ch)}。仅供参考。">${L(esc(en),esc(zh))}</span>`;
+    }
+    if (mo) {
+      const en = _SP_M[mo] || mo, zh = _SP_MZ[mo] || mo;
+      out += `<span class="sp-td-mode" data-tip-en="Current mode: ${esc(mo)}. Fast-layer state, context only." data-tip-zh="当前模式：${esc(mo)}。快速层，仅供参考。">${L(esc(en),esc(zh))}</span>`;
+    }
+    return out ? `<div style="margin-top:2px;display:flex;flex-wrap:wrap;gap:2px">${out}</div>` : '';
+  }
+  // Within-theme member context chip (basket_member_context.py — display-only cohort read).
+  // Shows where a member sits WITHIN its basket: leader vs chase vs laggard.
+  // This is purely cohort context; it never scores or ranks.
+  function memberCtxChip(m) {
+    const ctx = m.member_ctx;
+    if (!ctx || !ctx.band || ctx.band === 'na') return '';
+    const en = ctx.band_en || ctx.band;
+    const zh = ctx.band_zh || en;
+    const tone = ctx.tone || 'neu';
+    // Build a plain-word tooltip so users understand what this measures
+    const tipEn = 'Within theme: where this member sits in its basket right now — based on its extension relative to basket peers and 20-day relative strength. Context only.';
+    const tipZh = '主题内位置：该成分股在篮子内的当前位置 — 基于相对同侪的延展度与20日相对强度。仅供参考。';
+    return `<div style="margin-top:2px"><span class="mc-chip ${esc(tone)}" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(tipZh)}">${L(esc(en), esc(zh))}</span></div>`;
+  }
+  // W2a: per-member nb-chg span so live.js can paint live price changes on the holdings table.
+  // data-mkt="us" assumed for US basket detail pages (CN/HK detail pages use their own builders).
+  const rows=sortMembers(mem).map(m=>{const c=m.conviction;
+    const star=m.on_board?` <a class="sb-star" href="${SB?'../us_stocks.html':'#'}" title="On the US Prophet buy board right now">★</a>`:'';
+    // Hidden live-chg span: live.js writes the changePct here; aria-hidden to avoid screen reader noise.
+    const liveSym=m.symbol?`<span class="nb-chg" data-sym="${esc(m.symbol)}" data-mkt="us" aria-hidden="true" style="display:none"></span>`:'';
+    return `<tr>
+      <td class="hold-stock">${stk(m.symbol)}${star}${tierBadge(c)}${liveSym} <span class="hold-company">${esc(m.name||'')}</span>${personalityChip(c)}${memberCtxChip(m)}${grMemberChips(b.id,m.symbol)}</td>
+      <td class="num hold-potential">${convCell(c)}</td>
+      <td class="hold-verdict">${c&&c.verdict?`<span class="v-full">${L(esc(c.verdict),esc(c.verdict_zh||c.verdict))}</span><span class="v-short">${shortVerdict(c)}</span>`:'<span class="muted sm">—</span>'}${c&&c.cycle_blocked?` <span class="chip" title="cycle state blocks a buy">⚠</span>`:''}</td>
+      <td class="hold-entry">${entryCell(c)}</td>
+      <td class="num hold-20d ${cls(m.ret_20d)}">${fmtPct(m.ret_20d)}</td>
+    </tr>`;}).join('');
+  const nBoard=mem.filter(m=>m.on_board).length;
+  h+=`<h2><span class="idx">04</span>${L('Holdings — own-it conviction + entry timing','成分股 — 持有信念 + 入场择时')} <span class="chip">${mem.length} ${L('names','只')}</span>${nBoard?` <span class="chip sb-chip" title="Members currently on the US Prophet buy board">★ ${nBoard} ${L('on Prophet board','在 Prophet 榜')}</span>`:''}</h2>
+  <div class="panel"><div class="ts tbl-scroll"><table id="hold">
+    <caption class="hold-sr-only">${L('Holdings. Column buttons change sort order. Potential uses research priority rather than numeric score order.','成分股。列标题按钮可改变排序。潜力列采用研究优先顺序，而非简单数值排序。')}</caption>
+    <colgroup><col class="hold-stock"><col class="hold-potential"><col class="hold-verdict"><col class="hold-entry"><col class="hold-20d"></colgroup>
+    <thead><tr><th scope="col">${L('Stock','个股')}</th>${holdSortHeader('recommend','Potential','潜力','hold-potential')}<th scope="col">${L('Verdict','结论')}</th><th scope="col" class="hold-entry">${L('Entry now','入场时机')}</th>${holdSortHeader('r20','20d','20日','hold-20d')}</tr></thead>
+    <tbody>${rows}</tbody></table></div>
+    <div class="disc">${L('Potential combines cycle state, room to run, survivability and entry timing. The default order puts fresh entry setups first, then weighs verdict quality and Potential; cycle-blocked names move down. ⚠ means the cycle blocks a buy.','潜力综合周期状态、上涨空间、生存质量和入场时机。默认排序优先显示新的入场机会，再结合结论质量与潜力；被周期阻断的个股会下调。⚠ 表示周期阻止买入。')}</div>
+    <div class="disc" style="margin-top:4px">${L('Conviction score = earnings/flow edge, not trend leadership — a rotation leader can score low here.','信念评分＝盈利/资金面优势，非趋势领涨度 — 轮动领涨股在此可能低分。')}</div>
+  </div>`;
+
+  // ---- changelog + flags ----
+  const warns=[]; if((b.missing||[]).length) warns.push(`<span class="chip">${L('excluded','已排除')}: ${b.missing.map(esc).join(', ')}</span>`);
+  (b.partial||[]).forEach(p=>warns.push(`<span class="chip">${esc(p.symbol)} ${L('enters','进入于')} ${esc(p.from)}</span>`));
+  const clog=(b.changelog||[]).map(c=>`<div class="ev"><span class="dt">${esc(c.date)}</span><span>${esc(c.action)}: ${esc(c.note)}</span></div>`).join('');
+  h+=`<h2><span class="idx">05</span>${L('Membership log','成分变更记录')}</h2>
+  <div class="panel"><div>${warns.join(' ')}</div><div class="timeline" style="margin-top:6px">${clog||('<span class="muted sm">'+L('—','—')+'</span>')}</div></div>`;
+
+  document.getElementById('app').innerHTML=h;
+  // sortable holdings
+  document.querySelectorAll('#hold th[data-s]').forEach(th2=>{
+    const button=th2.querySelector('button[data-hold-sort]');
+    if(button) button.onclick=()=>sortHold(button.dataset.holdSort);
+  });
+  // Snapshot score details do not depend on optional authenticated live reads.
+  if(window._ftrTryInject) window._ftrTryInject();
+  restoreBasketScoreState(app,scoreUi);
+  restoreHoldSortFocus(app,sortFocusKey);
+}
+let _sort={col:'recommend',dir:-1};
+function sortHold(col){
+  if(!document.querySelector('#hold tbody')) return;
+  _sort = _sort.col===col?{col,dir:-_sort.dir}:{col,dir:-1};
+  render();
+}
+function boot(){
+  render();
+  // fetch the cross-market links once, then re-render so the "same narrative elsewhere" chip
+  // appears (display-only; absent file or no cross-ref simply leaves it out).
+  fetch('../crossmarketdata/links.json',{cache:'no-store'}).then(r=>r.ok?r.json():null)
+    .then(cm=>{ if(cm){ XM=cm; render(); if(window._ftrTryInject) window._ftrTryInject(); } }).catch(()=>{});
+  // GR1 — the three nightly group-read artifacts. Each lands independently and re-renders;
+  // a 404 (before the first nightly, or a non-US basket that has no US pulse row) is a
+  // normal outcome and simply leaves the panels in their plain-word null state.
+  ['../basketdata/pulse.json','../basketdata/earnings_pulse.json','../basketdata/episodes.json']
+    .forEach(function(url,i){
+      fetch(url,{cache:'no-cache'}).then(function(r){ if(!r.ok) throw 0; return r.json(); })
+        .then(function(j){ if(i===0)GRP=j; else if(i===1)GRE=j; else GRH=j;
+          render(); if(window._ftrTryInject) window._ftrTryInject(); }).catch(function(){});
+    });
+}
+if(document.readyState!=='loading') boot(); else document.addEventListener('DOMContentLoaded',boot);
+
+/* ── FTR W3: live strip in basket detail header + W8 anatomy panel ──────────
+   FT-R1: no slow state mutation. FT-R2: display/de-escalation. FT-R12: stale-gated.
+   FT-R3: T+1 fade note. FT-R8: graceful absent-file (fail-silent fetch). */
+(function(){
+'use strict';
+function isZh(){return document.documentElement.getAttribute('data-lang')==='zh';}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function L(en,zh){return'<span class="l-en">'+en+'</span><span class="l-zh">'+(zh==null?en:zh)+'</span>';}
+function fmtPct(v,dec){if(v==null)return'—';var d=dec||2;return(v>=0?'+':'')+v.toFixed(d)+'%';}
+function cls(v){return v==null?'muted':v>=0?'up':'dn';}
+
+var BID = (DETAIL.basket||{}).id||'';
+var WEIGHTS = {trend:0.26,breadth:0.18,impulse:0.07,macro:0.18,mtf:0.16,volhole:0.05,crowding:0.10};
+// Raw [en, zh, source] triples — wrapped in L() at render so the why-line can
+// build separate EN/ZH sentences (bilingual contract: no tag-stripped L() output).
+var LEG_LABELS = {
+  trend:    ['Trend','趋势',    '5/20/60d rets'],
+  breadth:  ['Breadth','广度',  '% above 50d MA'],
+  impulse:  ['Impulse','脉冲',  '1d accel z'],
+  macro:    ['Macro','宏观',    'macro prior'],
+  mtf:      ['MTF','多周期',    'multi-timeframe'],
+  volhole:  ['Vol-hole','波动洞','gap / cluster'],
+  crowding: ['Crowding','拥挤度','rs_pctile'],
+};
+var LEG_ORDER = ['trend','breadth','impulse','macro','mtf','volhole','crowding'];
+
+// ── W8: Score anatomy panel HTML ──────────────────────────────────────────
+function anatomyPanelHtml(th){
+  if(!th||th.score==null) return '';
+  var comp = th.components||{};
+  var score = th.score;
+  var rsPct = th.rs_pctile;
+  var crowdPenActive = (rsPct!=null&&rsPct>=0.85)||comp.crowding>0.3;
+
+  // Why-this-score summary
+  var posEn=[], posZh=[], negEn=[], negZh=[];
+  LEG_ORDER.filter(k=>k!=='crowding').forEach(function(k){
+    var v=comp[k];
+    if(v==null||v===0) return;
+    var ll=LEG_LABELS[k];
+    if(v>0){ posEn.push(ll[0]); posZh.push(ll[1]); }
+    else{ negEn.push(ll[0]); negZh.push(ll[1]); }
+  });
+  var macroAbsent = comp.macro==null||comp.macro===0;
+  var why='';
+  if(posEn.length) why+=L('<strong>'+posEn.join(' + ')+'</strong> fired. ','<strong>'+posZh.join(' + ')+'</strong>发力。');
+  if(negEn.length) why+=L('<span style="color:var(--ink-down, var(--down))">'+negEn.join(' + ')+'</span> dragging. ','<span style="color:var(--ink-down, var(--down))">'+negZh.join(' + ')+'</span>拖累。');
+  if(macroAbsent) why+=L('Macro leg absent — score renormalises over available legs. ','宏观缺失 — 评分在现有腿上重新归一化。');
+  if(crowdPenActive) why+=L('<span style="color:var(--ink-warn, var(--amber,#fb923c))">Crowding penalty active (rs_pctile '+(rsPct!=null?rsPct.toFixed(3):'—')+')</span>. ','<span style="color:var(--ink-warn, var(--amber,#fb923c))">拥挤惩罚生效（rs_pctile '+(rsPct!=null?rsPct.toFixed(3):'—')+'）</span>。');
+
+  var html='<div class="ftr-anatomy-card">'
+    +'<div class="ftr-anatomy-hd">'
+    +'<div><div style="font-size:13px;font-weight:700">'+L('Score details','评分详情')+'</div>'
+    +'<div class="ftr-ah-why">'+why+'</div></div>'
+    +'<div style="text-align:center"><div class="ftr-ah-score" style="color:'+(score>=66?'var(--up)':score>=40?'var(--link)':'var(--down)')+'">'+score+'</div>'
+    +'<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:3px">'+L('score','评分')+'</div></div>'
+    +'</div>'
+    +'<div class="ftr-leg-list">';
+
+  // Compute total weight for renorm (exclude absent macro)
+  var availW = LEG_ORDER.filter(function(k){return k!=='crowding'&&comp[k]!=null;}).reduce(function(a,k){return a+(WEIGHTS[k]||0);},0)+(WEIGHTS.crowding||0);
+  if(availW<=0) availW=1;
+
+  LEG_ORDER.forEach(function(k){
+    var v = comp[k];
+    var w = WEIGHTS[k]||0;
+    var isCrowd = k==='crowding';
+    var absent = v==null||(k==='macro'&&macroAbsent);
+    var contrib = absent?0:((v*(w/availW))||0);
+    var ll = LEG_LABELS[k]||[k,k,k];
+    // Bar fill: center=0, pos goes right, neg goes left; crowding amber
+    var barFillPct = absent?0:Math.min(50,Math.abs(v)*35);
+    var barClass = isCrowd?'crowd':(v>=0?'pos':'neg');
+    var valColor = absent?'var(--muted)':isCrowd?'var(--ink-warn, var(--amber,#fb923c))':(v>=0?'var(--up)':'var(--down)');
+    var crowdStyle = isCrowd?'background:rgba(251,146,60,.04);border-radius:6px;padding:4px 0;':'';
+    html+='<div class="ftr-leg-row" style="'+crowdStyle+'">'
+      +'<div><div class="ftr-leg-lbl"'+(isCrowd?' style="color:var(--ink-warn, var(--amber,#fb923c))"':'')+'>'+L(ll[0],ll[1])+'</div>'
+      +'<div class="ftr-leg-wt"'+(isCrowd?' style="color:var(--ink-warn, var(--amber,#fb923c))"':'')+'>wt '+(w).toFixed(2)+(absent?' · absent':isCrowd?' · PENALTY':(contrib>=0?(' · +'+(Math.abs(contrib)*100).toFixed(1)+'pts'):(' · '+(contrib>=0?'+':'')+((contrib)*100).toFixed(1)+'pts')))+'</div></div>'
+      +'<div class="ftr-leg-bar"><div class="ftr-leg-bar-ctr"></div>'
+      +(absent?'':'<div class="ftr-leg-fill '+barClass+'" style="width:'+barFillPct.toFixed(1)+'%"></div>')
+      +'</div>'
+      +'<div class="ftr-leg-val" style="color:'+valColor+'">'+(absent?L('no prior','无先验'):((v>=0&&!isCrowd?'+':'')+v.toFixed(3)))+'</div>'
+      +'<div class="ftr-leg-src">'+esc(ll[2])+'</div>'
+      +'</div>';
+  });
+
+  html+='</div>';
+  // Footer
+  var ftNotes=[];
+  if(crowdPenActive) ftNotes.push('<span class="ftr-crowd-note">'+L('Crowding penalty: rs_pctile '+(rsPct!=null?rsPct.toFixed(3):'—')+' ≥ 0.85 — blocks ACCUMULATE','拥挤惩罚：rs_pctile '+(rsPct!=null?rsPct.toFixed(3):'—')+' ≥ 0.85 — 阻止增仓')+'</span>');
+  var nAvailLegs = Object.keys(comp).filter(function(k){return k!=='crowding'&&comp[k]!=null;}).length;
+  if(macroAbsent) ftNotes.push('<span style="font-size:11px;color:var(--muted)">'+L('Macro context is absent, so the score is rebalanced across '+nAvailLegs+' available inputs. Adding macro context would change the calibrated score, so it stays excluded until separately validated.','宏观背景缺失，因此评分会在现有 '+nAvailLegs+' 个输入之间重新平衡。加入宏观背景会改变校准评分，因此在单独验证前保持排除。')+'</span>');
+  if(ftNotes.length) html+='<div class="ftr-anatomy-ft">'+ftNotes.join('')+'</div>';
+  html+='</div>';
+  return html;
+}
+
+// ── staleness banner (TS-R6): shown when basket detail as_of predates today's session
+function stalenessBannerHtml(detailAsOf){
+  if(!detailAsOf) return '';
+  // Compare detail as_of date to today in ET so 19:00–24:00 UTC (next UTC day) does
+  // not falsely flag a same-session as_of as stale.
+  var today=(function(){try{return new Date().toLocaleDateString('en-CA',{timeZone:'America/New_York'});}catch(e){return new Date().toISOString().slice(0,10);}})();
+  if(detailAsOf>=today) return '';
+  // The page's data predates the current calendar day → session not yet ingested
+  return '<div style="display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:8px;'
+    +'background:rgba(250,204,21,.10);border:1px solid rgba(250,204,21,.35);margin-bottom:10px">'
+    +'<span style="font-size:18px">⏳</span>'
+    +'<div><div style="font-weight:680;color:var(--ink-warn, var(--warn))">'
+    +L('Data as of '+esc(detailAsOf)+' close — today\'s session not yet ingested (nightly pending)',
+       '数据截至 '+esc(detailAsOf)+' 收盘 — 今日行情尚未录入（等待夜间更新）')
+    +'</div></div></div>';
+}
+
+// ── verdict-evidence coherence chip (TS-R6)
+// Shown when the page verdict is DETERIORATING/AVOID but the same record's
+// mtf ladder reads BOTTOMING/TURN SIGNALED — a self-contradictory snapshot.
+function coherenceChipHtml(theme, detailAsOf){
+  if(!theme) return '';
+  var reco=(theme.reco||'').toLowerCase();
+  var weakRecos=['deteriorating','avoid','reduce','trim'];
+  if(weakRecos.indexOf(reco)<0) return '';
+  var mtf=theme.mtf||{};
+  var ladderState=(mtf.ladder_state||'').toUpperCase();
+  var ladderLabel=(mtf.ladder_label||'').toUpperCase();
+  // Coherence concern: verdict is bearish but ladder shows a bullish formation
+  var bullishLadders=['BOTTOMING','TURN SIGNALED','INFLECTING','EMERGING'];
+  var isBullishLadder=bullishLadders.some(function(s){
+    return ladderState.indexOf(s)>=0||ladderLabel.indexOf(s)>=0;
+  });
+  if(!isBullishLadder) return '';
+  var verdictDisp=(theme.reco_en||theme.reco||'').toUpperCase();
+  var ladderDisp=ladderLabel||ladderState;
+  var dateDisp=detailAsOf?' ('+detailAsOf+')'  :'';
+  return '<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 14px;border-radius:8px;'
+    +'background:rgba(139,147,167,.08);border:1px solid var(--line);margin-bottom:10px">'
+    +'<span style="font-size:16px;flex:none">&#x2696;</span>'
+    +'<div><div style="font-weight:680;color:var(--muted)">'
+    +L('Mixed evidence: verdict '+esc(verdictDisp)+dateDisp+' vs timeframes '+esc(ladderDisp)+' — see anatomy panel',
+       '证据分歧：结论 '+esc(verdictDisp)+dateDisp+' 与多周期 '+esc(ladderDisp)+' 不一致 — 详见解剖面板')
+    +'</div>'
+    +'<div style="font-size:11px;color:var(--muted);margin-top:3px">'
+    +L('The nightly scoring reflects the slower structural read; the MTF tape captures the shorter-term turn. Both are shown — do not merge them.',
+       '夜间评分反映较慢的结构性判断；多周期行情捕捉短期拐点。两者均已展示——请勿将其合并解读。')
+    +'</div></div></div>';
+}
+
+// ── W3: live strip HTML ────────────────────────────────────────────────────
+function liveStripHtml(pb, tw, totalBaskets, pulseMode){
+  if(!pb) return '';
+  var session = pb.session||'closed';
+  var mode = pulseMode||'live';
+  var chg = pb.live_ew_chg_pct;
+  var rank = pb.tape_rank;
+  var sessMap={pre:{cls:'pre',en:'PREMARKET',zh:'盘前'},rth:{cls:'live',en:'LIVE · RTH',zh:'实盘'},post:{cls:'post',en:'POST-MARKET',zh:'盘后'},closed:{cls:'closed',en:'CLOSED',zh:'休市'}};
+  var si = sessMap[session]||sessMap.closed;
+  var html='<div class="ftr-live-strip">'
+    +'<span class="ftr-ls-pill '+si.cls+'">'+L(esc(si.en),esc(si.zh))+'</span>';
+  // Show values in all modes when available (TS-R1 honest-delay law)
+  if(chg!=null){
+    html+='<span class="ftr-ls-chg '+(chg>=0?'up':'dn')+'">'+fmtPct(chg,2)+'</span>';
+    if(rank!=null&&totalBaskets>0){
+      // tape_rank is higher-is-stronger → translate to position from the top (plain words, docs/DESIGN_DOCTRINE.md)
+      var pos=totalBaskets-rank+1;
+      var ordEn=(function(p){var m=p%100;if(m>=11&&m<=13)return p+'th';switch(p%10){case 1:return p+'st';case 2:return p+'nd';case 3:return p+'rd';default:return p+'th';}})(pos);
+      html+='<span class="ftr-ls-rank" style="color:var(--muted)">'+L(ordEn+' of '+totalBaskets+' on today&#39;s board','今日板块榜第'+pos+'/'+totalBaskets+'位')+'</span>';
+    }
+  }
+  // Mode pill for non-live reads
+  if(mode!=='live'){
+    var modeLabels={delayed:L('DELAYED','延迟数据'),last_rth:L('LAST SESSION','上一交易时段'),eod:L('EOD CLOSE','收盘价')};
+    var mLabel=modeLabels[mode]||L(mode.toUpperCase(),mode);
+    html+='<span style="display:inline-block;padding:1px 7px;border-radius:5px;font-size:9.5px;border:1px solid var(--line);color:var(--muted);margin-left:4px">'+mLabel+'</span>';
+  }
+  if(tw&&(tw.state==='WATCH'||tw.state==='IGNITION')){
+    // User-first copy: STRONG SIGN / EARLY SIGN, with a plain-language caution.
+    var isIgn=tw.state==='IGNITION';
+    // FC-R5 / FL-D: append cohort_flow tilt context to hover receipt (display-only;
+    // NOT a leg; NOT in K count; buy-vs-sell direction is approximate).
+    var cfTip='';
+    var cfTipZh='';
+    if(tw.cohort_flow&&tw.cohort_flow.pc_word){
+      var cfWord=tw.cohort_flow.pc_word;
+      var cfWordEn=cfWord==='call_tilted'?'call-tilted':cfWord==='put_tilted'?'put-tilted':'balanced';
+      var cfWordZh=cfWord==='call_tilted'?'看涨偏重':cfWord==='put_tilted'?'看跌偏重':'多空均衡';
+      var cfPc=tw.cohort_flow.pc_ratio!=null?' (P/C '+tw.cohort_flow.pc_ratio+')':'';
+      cfTip=' Options tape: '+cfWordEn+cfPc+' — size and call/put mix are solid reads; direction approx.';
+      cfTipZh=' 期权带：'+cfWordZh+cfPc+' — 规模与看涨/看跌比例更可靠；方向仅供参考。';
+    }
+    var twTipEn='Fast-turn context: '+(isIgn?'strong sign':'early sign')+'. In 26 past cases, about 6 in 10 sharp one-day flips faded within a day. Slow ratings are unchanged; context only, not a buy signal.'+cfTip;
+    var twTipZh='快速拐点参考：'+(isIgn?'较强迹象':'初步迹象')+'。历史26次剧烈单日反转中，约六成在一天内消退。慢速评级不变；仅供参考，不是买入信号。'+cfTipZh;
+    html+='<span data-tip-en="'+esc(twTipEn)+'" data-tip-zh="'+esc(twTipZh)+'" style="display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;'
+      +(isIgn?'background:rgba(249,115,22,.16);border:1px solid rgba(249,115,22,.36);color:var(--ink-orange, var(--orange,#f97316))':'background:rgba(250,204,21,.10);border:1px solid rgba(250,204,21,.30);color:var(--ink-warn, var(--warn))')+'">&#9889;'+L(isIgn?'STRONG SIGN':'EARLY SIGN',isIgn?'较强迹象':'初步迹象')+'</span>';
+  }
+  html+='<span style="font-size:10.5px;color:var(--muted);margin-left:auto">'+L('15-min delayed','15分钟延迟')+'</span>';
+  html+='</div>';
+  return html;
+}
+
+// ── Fetch + inject ─────────────────────────────────────────────────────────
+function injectFtrWidgets(pulse, turnWatch){
+  var pb=null, tw=null, totalBaskets=0, pulseMode='live';
+  if(pulse){
+    var baskets=pulse.baskets||[];
+    pulseMode=pulse.mode||'live';
+    totalBaskets=baskets.filter(function(b){return b.tape_rank!=null;}).length;
+    pb=baskets.find(function(b){return b.id===BID;})||null;
+    // Override session from top-level
+    if(pb) pb.session=pulse.session||'closed';
+  }
+  if(turnWatch){
+    var twArr=turnWatch.baskets||[];
+    tw=twArr.find(function(b){return b.basket_id===BID;})||null;
+    if(tw&&tw.state!=='WATCH'&&tw.state!=='IGNITION') tw=null;
+  }
+
+  // Inject live strip after the hero panel in #app
+  var app=document.getElementById('app');
+  if(!app) return;
+  const scoreUi=basketScoreState(app);
+  // Remove old injections to avoid duplicates
+  var oldStrip=app.querySelector('.ftr-live-strip');
+  if(oldStrip) oldStrip.remove();
+  var oldAnatomy=app.querySelector('.ftr-w8-anatomy-section');
+  if(oldAnatomy) oldAnatomy.remove();
+  var oldStaleBanner=app.querySelector('.ftr-stale-banner');
+  if(oldStaleBanner) oldStaleBanner.remove();
+  var oldCoherenceChip=app.querySelector('.ftr-coherence-chip');
+  if(oldCoherenceChip) oldCoherenceChip.remove();
+
+  var detailAsOf=(DETAIL.as_of||'').slice(0,10);
+
+  // Staleness banner: shown when basket data predates today's session (TS-R6)
+  var bannerHtml=stalenessBannerHtml(detailAsOf);
+  if(bannerHtml){
+    var bannerEl=document.createElement('div');
+    bannerEl.className='ftr-stale-banner';
+    bannerEl.innerHTML=bannerHtml;
+    var firstH2b=app.querySelector('h2');
+    if(firstH2b) app.insertBefore(bannerEl, firstH2b); else app.prepend(bannerEl);
+  }
+
+  // Verdict-evidence coherence chip (TS-R6)
+  var th2cohere=(DETAIL.theme||{});
+  var coherenceHtml=coherenceChipHtml(th2cohere, detailAsOf);
+  if(coherenceHtml){
+    var coherenceEl=document.createElement('div');
+    coherenceEl.className='ftr-coherence-chip';
+    coherenceEl.innerHTML=coherenceHtml;
+    var firstH2c=app.querySelector('h2');
+    if(firstH2c) app.insertBefore(coherenceEl, firstH2c); else app.prepend(coherenceEl);
+  }
+
+  // Insert live strip before first <h2> or at start of #app
+  var firstH2=app.querySelector('h2');
+  var stripEl=document.createElement('div');
+  stripEl.innerHTML=liveStripHtml(pb, tw, totalBaskets, pulseMode);
+  if(stripEl.firstChild){
+    if(firstH2) app.insertBefore(stripEl.firstChild, firstH2);
+    else app.appendChild(stripEl.firstChild);
+  }
+
+  // Insert anatomy panel after "Score composition" h2 (idx=02)
+  var h2s=app.querySelectorAll('h2');
+  var scoreH2=null;
+  h2s.forEach(function(h){if(h.textContent.indexOf('02')>-1&&(h.textContent.indexOf('Score')>-1||h.textContent.indexOf('评分')>-1)){scoreH2=h;}});
+  if(scoreH2){
+    // anatomy panel goes BEFORE the score composition section (before the h2 for idx 02)
+    var th2=(DETAIL.theme||{});
+    var anatEl=document.createElement('div');
+    anatEl.className='ftr-w8-anatomy-section';
+    anatEl.innerHTML='<details class="ftr-anatomy-disclosure"><summary>'+L('How this score is built','评分如何构成')+'</summary>'+anatomyPanelHtml(th2)+'</details>';
+    app.insertBefore(anatEl, scoreH2);
+  }
+  restoreBasketScoreState(app,scoreUi);
+}
+
+// Fetch pulse (basket_detail lives under site/basket/ so use ../ prefix)
+var _pulse=null, _tw=null;
+function tryInject(){injectFtrWidgets(_pulse,_tw);}
+// Expose so boot() can re-inject after XM re-render (Fix: XM re-render wipes #app.innerHTML)
+window._ftrTryInject = tryInject;
+// Also cover scripts executed after the initial page render.
+tryInject();
+fetch('../live/basket_pulse.json',{cache:'no-cache'})
+  .then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(d){_pulse=d;tryInject();}).catch(function(){});
+fetch('../basketdata/turn_watch.json',{cache:'no-cache'})
+  .then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(d){_tw=d;tryInject();}).catch(function(){});
+})();
+</script>
+<script src="../theme.js"></script>
+</body>
+</html>
+
+</FILE>
+
+## Exact representative data snapshot (14 Oct 2026, distinct from current live)
+<FILE path="fixture-detail.json">
+{"basket":{"id":"ai_software","name":"AI Software & Platforms","name_zh":"AI 软件与平台","category":"AI & Technology","thesis":"Software and platform names trying to monetize AI through apps, seats and workflows.","weighting":"equal","created":"2023-05-09","n_members":17,"members":[{"symbol":"DDOG","name":"Datadog","added":"2023-05-09","rationale":"Observability volume scales with AI workloads","last":269.33,"ret_1d":-0.0494,"ret_5d":-0.0074,"ret_10d":-0.0165,"ret_20d":0.167,"ret_ytd":0.9805},{"symbol":"PLTR","name":"Palantir Technologies","added":"2023-05-09","rationale":"AIP — the AI-deployment narrative leader","last":200.97,"ret_1d":-0.0369,"ret_5d":0.0353,"ret_10d":0.0744,"ret_20d":0.1527,"ret_ytd":0.1306},{"symbol":"META","name":"Meta Platforms","added":"2023-05-09","rationale":"Generative ad tooling + recommendation lift","last":737.54,"ret_1d":-0.0327,"ret_5d":0.0225,"ret_10d":0.017,"ret_20d":0.0963,"ret_ytd":0.1202},{"symbol":"MSFT","name":"Microsoft","added":"2023-05-09","rationale":"Copilot seat monetization at scale","last":533.69,"ret_1d":-0.018,"ret_5d":0.0074,"ret_10d":0.0405,"ret_20d":0.0885,"ret_ytd":0.1105},{"symbol":"CRWD","name":"CrowdStrike","added":"2023-05-09","rationale":"CrowdStrike — AI-driven endpoint/SecOps; data-flywheel moat","last":249.29,"ret_1d":-0.0456,"ret_5d":-0.0608,"ret_10d":-0.0584,"ret_20d":0.0329,"ret_ytd":1.1272},{"symbol":"GOOGL","name":"Alphabet Inc. (Class A)","added":"2023-05-09","rationale":"Gemini + Workspace AI distribution","last":347.64,"ret_1d":-0.0174,"ret_5d":-0.0082,"ret_10d":0.0103,"ret_20d":0.0139,"ret_ytd":0.1128},{"symbol":"SNOW","name":"SNOW","added":"2023-05-09","rationale":"Snowflake — data cloud + Cortex AI (was off-cache; now in the deep store)","last":335.08,"ret_1d":-0.0634,"ret_5d":0.0067,"ret_10d":-0.0132,"ret_20d":0.0123,"ret_ytd":0.5275},{"symbol":"WDAY","name":"Workday, Inc.","added":"2023-05-09","rationale":"Workday — AI in HCM/finance system-of-record; seat-expansion tell","last":188.77,"ret_1d":0.0148,"ret_5d":0.0245,"ret_10d":-0.0089,"ret_20d":0.0054,"ret_ytd":-0.1211},{"symbol":"NOW","name":"ServiceNow","added":"2023-05-09","rationale":"Agentic workflows on the enterprise system-of-record","last":139.98,"ret_1d":0.0099,"ret_5d":0.0153,"ret_10d":0.0445,"ret_20d":0.0011,"ret_ytd":-0.0862},{"symbol":"NET","name":"NET","added":"2023-05-09","rationale":"Cloudflare — edge inference + developer AI platform","last":324.33,"ret_1d":-0.0672,"ret_5d":-0.0543,"ret_10d":-0.0661,"ret_20d":-0.001,"ret_ytd":0.6451},{"symbol":"PANW","name":"Palo Alto Networks","added":"2023-05-09","rationale":"Palo Alto Networks — AI-native security platform consolidation","last":375.04,"ret_1d":-0.0554,"ret_5d":-0.0753,"ret_10d":-0.0561,"ret_20d":-0.0016,"ret_ytd":1.036},{"symbol":"INTU","name":"Intuit","added":"2023-05-09","rationale":"Intuit — AI woven into tax/QuickBooks; consumer + SMB AI monetization","last":310.44,"ret_1d":0.0298,"ret_5d":0.0493,"ret_10d":0.1312,"ret_20d":-0.0196,"ret_ytd":-0.5247},{"symbol":"ADBE","name":"Adobe Inc.","added":"2023-05-09","rationale":"Creative AI both moat and threat","last":240.68,"ret_1d":0.0186,"ret_5d":0.034,"ret_10d":0.0031,"ret_20d":-0.0392,"ret_ytd":-0.3123},{"symbol":"IBM","name":"IBM","added":"2023-05-09","rationale":"IBM — watsonx + consulting; the enterprise hybrid-AI distribution","last":227.88,"ret_1d":-0.0126,"ret_5d":0.0334,"ret_10d":0.0361,"ret_20d":-0.0405,"ret_ytd":-0.215},{"symbol":"CRM","name":"Salesforce","added":"2023-05-09","rationale":"Agentforce vs seat-deflation fear — contested","last":235.95,"ret_1d":-0.0087,"ret_5d":0.0507,"ret_10d":0.0278,"ret_20d":-0.0566,"ret_ytd":-0.1032},{"symbol":"ORCL","name":"Oracle Corporation","added":"2023-05-09","rationale":"OCI capacity for AI training revenue","last":130.55,"ret_1d":-0.0883,"ret_5d":-0.0873,"ret_10d":-0.0456,"ret_20d":-0.0847,"ret_ytd":-0.3212},{"symbol":"APP","name":"AppLovin","added":"2023-05-09","rationale":"AppLovin — AXON AI ad engine; the clearest AI-revenue inflection","last":262.19,"ret_1d":-0.0371,"ret_5d":-0.0679,"ret_10d":-0.0972,"ret_20d":-0.1971,"ret_ytd":-0.6109}],"observation":{"effective_as_of":"2026-10-14","configured_members":["MSFT","GOOGL","META","PLTR","NOW","CRM","ORCL","ADBE","DDOG","INTU","IBM","WDAY","PANW","CRWD","APP","SNOW","NET"],"configured_n":17,"in_panel_members":["MSFT","GOOGL","META","PLTR","NOW","CRM","ORCL","ADBE","DDOG","INTU","IBM","WDAY","PANW","CRWD","APP","SNOW","NET"],"in_panel_n":17,"observed_members":["MSFT","GOOGL","META","PLTR","NOW","CRM","ORCL","ADBE","DDOG","INTU","IBM","WDAY","PANW","CRWD","APP","SNOW","NET"],"observed_n":17,"missing_columns":[],"missing_at_asof":[],"coverage":1,"status":"complete","aggregate_eligible":true,"min_members":3,"min_coverage":0.6,"basis":"exact_close_at_effective_as_of","authority":"measurement_only"},"changelog":[{"date":"2023-05-09","action":"create","note":"Seeded AI Software & Platforms — 9 equal-weight members from the S&P 1500 cache."},{"date":"2026-06-14","action":"note","note":"Theme names outside the free S&P-1500 cache, excluded: SNOW (not in free cache)."},{"date":"2026-06-18","action":"add","note":"Expanded membership with liquid on-theme names and deeper close history."}],"reference":{"label":"XLK","name":"loose — broad tech","corr":0.67,"rel_corr":0.26,"n":775},"missing":[],"partial":[],"perf":{"1d":{"ret":-0.02703106320319615,"rel":-0.016221389710407763},"5d":{"ret":-0.004352133195846375,"rel":0.0054520347416989745},"10d":{"ret":0.0020528429757544764,"rel":-0.007086543959586189},"20d":{"ret":0.008566029853829482,"rel":-0.014590308966008436},"60d":{"ret":0.17446561001422545,"rel":0.14341973813051379},"mtd":{"ret":0.0020528429757544764,"rel":-0.007086543959586189},"ytd":{"ret":0.11362414098250806,"rel":-0.02376893575544048},"full":{"ret":1.552797808130821,"rel":0.7571916803461487}},"cycle":{"name":"AI Software & Platforms","name_zh":"AI 软件与平台","accent":"#fb923c","asOf":"2026-10-14","today":2026.784,"xDomain":[2023.695,2027.089],"price":[{"x":2023.695,"v":100},{"x":2023.704,"v":98.8},{"x":2023.723,"v":94.03},{"x":2023.742,"v":95.31},{"x":2023.761,"v":98.26},{"x":2023.78,"v":98.07},{"x":2023.799,"v":95.14},{"x":2023.819,"v":92.08},{"x":2023.838,"v":99.25},{"x":2023.857,"v":105.11},{"x":2023.876,"v":107.63},{"x":2023.895,"v":109.52},{"x":2023.914,"v":114.42},{"x":2023.934,"v":113.48},{"x":2023.953,"v":115.92},{"x":2023.972,"v":116.88},{"x":2023.991,"v":116.48},{"x":2024.011,"v":111.64},{"x":2024.03,"v":119.04},{"x":2024.049,"v":121.95},{"x":2024.068,"v":124.3},{"x":2024.088,"v":128.54},{"x":2024.107,"v":137.3},{"x":2024.126,"v":135.56},{"x":2024.145,"v":133.44},{"x":2024.164,"v":135},{"x":2024.183,"v":131.76},{"x":2024.203,"v":129.49},{"x":2024.222,"v":134.31},{"x":2024.241,"v":132.76},{"x":2024.26,"v":132.77},{"x":2024.279,"v":131.78},{"x":2024.298,"v":124.16},{"x":2024.318,"v":128.89},{"x":2024.337,"v":127.97},{"x":2024.356,"v":128.68},{"x":2024.375,"v":132.75},{"x":2024.394,"v":130.33},{"x":2024.413,"v":122.46},{"x":2024.433,"v":126.49},{"x":2024.452,"v":130.55},{"x":2024.471,"v":133.09},{"x":2024.49,"v":138.09},{"x":2024.509,"v":143.23},{"x":2024.528,"v":139.31},{"x":2024.548,"v":134.41},{"x":2024.567,"v":132.79},{"x":2024.586,"v":126.25},{"x":2024.605,"v":131.53},{"x":2024.624,"v":137.1},{"x":2024.643,"v":138.51},{"x":2024.663,"v":139.48},{"x":2024.682,"v":132.76},{"x":2024.701,"v":141.81},{"x":2024.72,"v":146.85},{"x":2024.739,"v":145.84},{"x":2024.758,"v":149.67},{"x":2024.778,"v":155.12},{"x":2024.797,"v":153.77},{"x":2024.816,"v":153.36},{"x":2024.835,"v":152.16},{"x":2024.854,"v":169.76},{"x":2024.873,"v":170.35},{"x":2024.893,"v":181.53},{"x":2024.912,"v":180.75},{"x":2024.931,"v":194.44},{"x":2024.95,"v":187.86},{"x":2024.969,"v":185.3},{"x":2024.988,"v":183.2},{"x":2025.005,"v":182.7},{"x":2025.025,"v":175.96},{"x":2025.044,"v":180.77},{"x":2025.063,"v":188.68},{"x":2025.082,"v":192.25},{"x":2025.101,"v":198.49},{"x":2025.12,"v":204.99},{"x":2025.14,"v":192.29},{"x":2025.159,"v":185.51},{"x":2025.178,"v":175.81},{"x":2025.197,"v":172.05},{"x":2025.216,"v":174.15},{"x":2025.235,"v":167.12},{"x":2025.255,"v":149.46},{"x":2025.274,"v":161.9},{"x":2025.293,"v":159.37},{"x":2025.312,"v":175.19},{"x":2025.331,"v":184.79},{"x":2025.35,"v":186.1},{"x":2025.37,"v":200.02},{"x":2025.389,"v":197.22},{"x":2025.408,"v":203.85},{"x":2025.427,"v":210.05},{"x":2025.446,"v":209.01},{"x":2025.465,"v":207.5},{"x":2025.485,"v":214.72},{"x":2025.504,"v":219.66},{"x":2025.523,"v":210.9},{"x":2025.542,"v":218},{"x":2025.561,"v":220.63},{"x":2025.58,"v":212.81},{"x":2025.6,"v":215.03},{"x":2025.619,"v":215.07},{"x":2025.638,"v":212.71},{"x":2025.657,"v":218.94},{"x":2025.676,"v":220.1},{"x":2025.695,"v":228.46},{"x":2025.715,"v":240.63},{"x":2025.734,"v":237.53},{"x":2025.753,"v":237.86},{"x":2025.772,"v":234.38},{"x":2025.791,"v":236.26},{"x":2025.81,"v":245.92},{"x":2025.83,"v":249.33},{"x":2025.849,"v":240.86},{"x":2025.868,"v":236.42},{"x":2025.887,"v":221.96},{"x":2025.906,"v":230.4},{"x":2025.925,"v":238.27},{"x":2025.945,"v":234.22},{"x":2025.964,"v":232.69},{"x":2025.983,"v":234.11},{"x":2026.003,"v":222.6},{"x":2026.022,"v":225.6},{"x":2026.041,"v":212.23},{"x":2026.06,"v":211.79},{"x":2026.079,"v":203.06},{"x":2026.099,"v":184.94},{"x":2026.118,"v":186.49},{"x":2026.137,"v":180.53},{"x":2026.156,"v":180.22},{"x":2026.175,"v":196.99},{"x":2026.194,"v":190.26},{"x":2026.214,"v":187.37},{"x":2026.233,"v":172.27},{"x":2026.252,"v":180.76},{"x":2026.271,"v":165.41},{"x":2026.29,"v":188.8},{"x":2026.309,"v":187.31},{"x":2026.329,"v":190.95},{"x":2026.348,"v":200.65},{"x":2026.367,"v":204.33},{"x":2026.386,"v":210.03},{"x":2026.405,"v":238.22},{"x":2026.424,"v":225.04},{"x":2026.444,"v":210.41},{"x":2026.463,"v":204.42},{"x":2026.482,"v":205.46},{"x":2026.501,"v":219.67},{"x":2026.52,"v":221.19},{"x":2026.539,"v":219.93},{"x":2026.559,"v":208.38},{"x":2026.578,"v":225.55},{"x":2026.597,"v":242.33},{"x":2026.616,"v":246.57},{"x":2026.635,"v":243.32},{"x":2026.654,"v":255.37},{"x":2026.674,"v":248.53},{"x":2026.693,"v":246.05},{"x":2026.712,"v":250.49},{"x":2026.731,"v":254.91},{"x":2026.75,"v":255.68},{"x":2026.769,"v":264.26},{"x":2026.789,"v":255.28}],"turns":[{"i":0,"date":"2023-09-12","t":"2023-09","x":2023.695,"px":0.97,"k":"trough","mag_pct":null,"major":false,"provisional":false,"rebased":99.6,"osc":null},{"i":359,"date":"2025-02-18","t":"2025-02","x":2025.131,"px":2.01,"k":"peak","mag_pct":106.5,"major":true,"provisional":false,"rebased":206.4,"osc":82.9},{"i":392,"date":"2025-04-04","t":"2025-04","x":2025.255,"px":1.46,"k":"trough","mag_pct":27.6,"major":true,"provisional":false,"rebased":149.92,"osc":16.1},{"i":533,"date":"2025-10-27","t":"2025-10","x":2025.819,"px":2.43,"k":"peak","mag_pct":66.9,"major":true,"provisional":false,"rebased":249.52,"osc":68.2},{"i":646,"date":"2026-04-10","t":"2026-04","x":2026.271,"px":1.61,"k":"trough","mag_pct":33.7,"major":true,"provisional":false,"rebased":165.32,"osc":5.5},{"i":681,"date":"2026-06-01","t":"2026-06","x":2026.413,"px":2.46,"k":"peak","mag_pct":52.7,"major":true,"provisional":false,"rebased":252.6,"osc":45.1},{"i":698,"date":"2026-06-25","t":"2026-06","x":2026.479,"px":1.91,"k":"trough","mag_pct":22.5,"major":true,"provisional":false,"rebased":196.13,"osc":48.1},{"i":772,"date":"2026-10-09","t":"2026-10","x":2026.769,"px":2.57,"k":"peak","mag_pct":35,"major":true,"provisional":true,"rebased":263.9,"osc":84.2}],"proj":{"nextTurn":"peak","central":"2026-10","low":"2026-08","high":"2027-01","central_x":2026.776,"overdue":true,"overdue_frac":1.024,"last_confirmed_x":2026.479,"last_confirmed_t":"2026-06","period_yrs":{"median":0.59,"lo":0.26,"hi":1.07}},"phases":{"Trough":{"label":"Trough","short":"Bottoming","hue":"#5b9bf0"},"Recovery":{"label":"Recovery","short":"Prime entry","hue":"#2dd4bf"},"Expansion":{"label":"Expansion","short":"Trending","hue":"#45b873"},"Peak":{"label":"Peak","short":"Topping","hue":"#e0a030"},"Downturn":{"label":"Downturn","short":"Rolling over","hue":"#e0556b"}},"basis":"equal_weight_close","now":{"phase":"Peak","phaseLabel":"Topping","pos":85.1,"signal":null,"above200d":true,"ret_win_pct":155.3,"lastTrough":"2026-06","lastPeak":"2026-10","signature":null}}},"members":[{"symbol":"DDOG","name":"Datadog","added":"2023-05-09","rationale":"Observability volume scales with AI workloads","last":269.33,"ret_1d":-0.0494,"ret_5d":-0.0074,"ret_10d":-0.0165,"ret_20d":0.167,"ret_ytd":0.9805,"conviction":{"score":50,"band":"constructive","band_zh":"正在筑底","verdict":"Extended — wait for a pullback","verdict_zh":"过度拉伸 — 等待回撤","cycle_blocked":true,"entry_pct":27,"valuation_band":null,"validation_status":"neutral_ic","entry":{"status":"await_confluence","act_level":1,"headline":"Cycle turn — awaiting confluence cross","headline_zh":"周期拐点 — 等待共振交叉确认","zone_low":275.8,"zone_high":283.3,"zone_pct":-1.3},"signal":null,"trust":"event-edge","spotlight":"out_of_play","personality":{"chart":"mixed_chart","mode":"options_pin"}},"on_board":false,"member_ctx":{"ticker":"DDOG","name":"DDOG","ext":null,"ext_z":null,"grade":null,"ret20":23,"ret_fast":5.5,"ext_rel":null,"ext_rank":null,"rs_rank":1,"rs_fast_rank":0.82,"band":"na","band_en":"—","band_zh":"—","tone":"neu","parabolic":false}},{"symbol":"PLTR","name":"Palantir Technologies","added":"2023-05-09","rationale":"AIP — the AI-deployment narrative leader","last":200.97,"ret_1d":-0.0369,"ret_5d":0.0353,"ret_10d":0.0744,"ret_20d":0.1527,"ret_ytd":0.1306,"conviction":{"score":3,"band":"low","band_zh":"暂无买点","verdict":"Extended — wait for a pullback","verdict_zh":"过度拉伸 — 等待回撤","cycle_blocked":true,"entry_pct":22,"valuation_band":null,"validation_status":"neutral_ic","entry":{"status":"extended","act_level":0,"headline":"Extended — wait for a pullback","headline_zh":"过度拉伸 — 等待回撤","zone_low":190.6,"zone_high":196.7,"zone_pct":-7.2},"signal":null,"trust":"event-edge","spotlight":"out_of_play","personality":{"chart":"mixed_chart","mode":null}},"on_board":false,"member_ctx":{"ticker":"PLTR","name":"PLTR","ext":null,"ext_z":null,"grade":null,"ret20":20.9,"ret_fast":11.6,"ext_rel":null,"ext_rank":null,"rs_rank":0.94,"rs_fast_rank":0.94,"band":"na","band_en":"—","band_zh":"—","tone":"neu","parabolic":false}},{"symbol":"META","name":"Meta Platforms","added":"2023-05-09","rationale":"Generative ad tooling + recommendation lift","last":737.54,"ret_1d":-0.0327,"ret_5d":0.0225,"ret_10d":0.017,"ret_20d":0.0963,"ret_ytd":0.1202,"conviction":{"score":38,"band":"neutral","band_zh":"中性","verdict":"Neutral — no clear edge","verdict_zh":"中性 — 无明显优势","cycle_blocked":false,"entry_pct":59,"valuation_band":null,"validation_status":"neutral_ic","entry":{"status":"buy_soon","act_level":2,"headline":"Buy soon — on confirmation","headline_zh":"即将买入 — 待确认","zone_low":738.7,"zone_high":762.5,"zone_pct":-1.6},"signal":null,"trust":"event-edge","spotlight":"out_of_play","personality":{"chart":"mixed_chart","mode":null}},"on_board":false,"member_ctx":{"ticker":"META","name":"META","ext":null,"ext_z":null,"grade":null,"ret20":13.9,"ret_fast":3.2,"ext_rel":null,"ext_rank":null,"rs_rank":0.88,"rs_fast_rank":0.65,"band":"na","band_en":"—","band_zh":"—","tone":"neu","parabolic":false}},{"symbol":"MSFT","name":"Microsoft","added":"2023-05-09","rationale":"Copilot seat monetization at scale","last":533.69,"ret_1d":-0.018,"ret_5d":0.0074,"ret_10d":0.0405,"ret_20d":0.0885,"ret_ytd":0.1105,"conviction":{"score":3,"band":"low","band_zh":"暂无买点","verdict":"Extended — wait for a pullback","verdict_zh":"过度拉伸 — 等待回撤","cycle_blocked":true,"entry_pct":45,"valuation_band":null,"validation_status":"neutral_ic","entry":{"status":"extended","act_level":0,"headline":"Extended — wait for a pullback","headline_zh":"过度拉伸 — 等待回撤","zone_low":516.4,"zone_high":529.1,"zone_pct":-2},"signal":null,"trust":"event-edge","spotlight":"out_of_play","personality":{"chart":"stair_step_leader","mode":null}},"on_board":false,"member_ctx":{"ticker":"MSFT","name":"MSFT","ext":23,"ext_z":1.94,"grade":"stretched","ret20":8.8,"ret_fast":4.1,"ext_rel":20.9,"ext_rank":0.78,"rs_rank":0.82,"rs_fast_rank":0.76,"band":"beyond","band_en":"Extended beyond theme","band_zh":"延展超出主题","tone":"neg","parabolic":false}},{"symbol":"CRWD","name":"CrowdStrike","added":"2023-05-09","rationale":"CrowdStrike — AI-driven endpoint/SecOps; data-flywheel moat","last":249.29,"ret_1d":-0.0456,"ret_5d":-0.0608,"ret_10d":-0.0584,"ret_20d":0.0329,"ret_ytd":1.1272,"conviction":{"score":23,"band":"low","band_zh":"暂无买点","verdict":"Extended — wait for a pullback","verdict_zh":"过度拉伸 — 等待回撤","cycle_blocked":true,"entry_pct":21,"valuation_band":null,"validation_status":"neutral_ic","entry":{"status":"extended","act_level":0,"headline":"Extended — wait for a pullback","headline_zh":"过度拉伸 — 等待回撤","zone_low":260,"zone_high":260,"zone_pct":-0.5},"signal":null,"trust":"event-edge","spotlight":"out_of_play","personality":{"chart":"mixed_chart","mode":"negative_gamma_trend"}},"on_board":false,"member_ctx":{"ticker":"CRWD","name":"CRWD","ext":null,"ext_z":null,"grade":null,"ret20":7.7,"ret_fast":-0.6,"ext_rel":null,"ext_rank":null,"rs_rank":0.76,"rs_fast_rank":0.35,"band":"na","band_en":"—","band_zh":"—","tone":"neu","parabolic":false}},{"symbol":"GOOGL","name":"Alphabet Inc. (Class A)","added":"2023-05-09","rationale":"Gemini + Workspace AI distribution","last":347.64,"ret_1d":-0.0174,"ret_5d":-0.0082,"ret_10d":0.0103,"ret_20d":0.0139,"ret_ytd":0.1128,"conviction":{"score":24,"band":"neutral","band_zh":"中性","verdict":"Neutral — no clear edge","verdict_zh":"中性 — 无明显优势","cycle_blocked":false,"entry_pct":48,"valuation_band":null,"validation_status":"neutral_ic","entry":{"status":"extended","act_level":0,"headline":"Extended — wait for a pullback","headline_zh":"过度拉伸 — 等待回撤","zone_low":346.8,"zone_high":346.8,"zone_pct":-0.2},"signal":null,"trust":"event-edge","spotlight":"out_of_play","personality":{"chart":"basing_accumulator","mode":"accumulation"}},"on_board":false,"member_ctx":{"ticker":"GOOGL","name":"GOOGL","ext":2.1,"ext_z":-1.32,"grade":"intrend","ret20":1.4,"ret_fast":1,"ext_rel":0,"ext_rank":0.56,"rs_rank":0.65,"rs_fast_rank":0.47,"band":"in_range","band_en":"In range","band_zh":"区间内","tone":"neu","parabolic":false}},{"symbol":"SNOW","name":"SNOW","added":"2023-05-09","rationale":"Snowflake — data cloud + Cortex AI (was off-cache; now in the deep store)","last":335.08,"ret_1d":-0.0634,"ret_5d":0.0067,"ret_10d":-0.0132,"ret_20d":0.0123,"ret_ytd":0.5275,"conviction":{"score":27,"band":"neutral","band_zh":"观察","verdict":"Extended — wait for a pullback","verdict_zh":"过度拉伸 — 等待回撤","cycle_blocked":true,"entry_pct":24,"valuation_band":null,"validation_status":"neutral_ic","entry":{"status":"extended","act_level":0,"headline":"Extended — wait for a pullback","headline_zh":"过度拉伸 — 等待回撤","zone_low":321.1,"zone_high":328.1,"zone_pct":-3.1},"signal":null,"trust":"event-edge","spotlight":"out_of_play","personality":{"chart":"mixed_chart","mode":null}},"on_board":false,"member_ctx":{"ticker":"SNOW","name":"SNOW","ext":43.8,"ext_z":1.11,"grade":"stretched","ret20":1.2,"ret_fast":-1.3,"ext_rel":41.7,"ext_rank":1,"rs_rank":0.59,"rs_fast_rank":0.29,"band":"beyond","band_en":"Extended beyond theme","band_zh":"延展超出主题","tone":"neg","parabolic":false}},{"symbol":"WDAY","name":"Workday, Inc.","added":"2023-05-09","rationale":"Workday — AI in HCM/finance system-of-record; seat-expansion tell","last":188.77,"ret_1d":0.0148,"ret_5d":0.0245,"ret_10d":-0.0089,"ret_20d":0.0054,"ret_ytd":-0.1211,"conviction":{"score":66,"band":"constructive","band_zh":"正在筑底","verdict":"Constructive — building a base","verdict_zh":"建设性 — 正在筑底","cycle_blocked":false,"entry_pct":57,"valuation_band":null,"validation_status":"neutral_ic","entry":{"status":"buy_soon","act_level":2,"headline":"Buy soon — on confirmation","headline_zh":"即将买入 — 待确认","zone_low":184.3,"zone_high":186,"zone_pct":-0.5},"signal":null,"trust":"event-edge","spotlight":"out_of_play","personality":{"chart":"mixed_chart","mode":null}},"on_board":false,"member_ctx":{"ticker":"WDAY","name":"WDAY","ext":null,"ext_z":null,"grade":null,"ret20":-2.4,"ret_fast":-1.7,"ext_rel":null,"ext_rank":null,"rs_rank":0.35,"rs_fast_rank":0.24,"band":"na","band_en":"—","band_zh":"—","tone":"neu","parabolic":false}},{"symbol":"NOW","name":"ServiceNow","added":"2023-05-09","rationale":"Agentic workflows on the enterprise system-of-record","last":139.98,"ret_1d":0.0099,"ret_5d":0.0153,"ret_10d":0.0445,"ret_20d":0.0011,"ret_ytd":-0.0862,"conviction":{"score":57,"band":"neutral","band_zh":"中性","verdict":"Neutral — no clear edge","verdict_zh":"中性 — 无明显优势","cycle_blocked":false,"entry_pct":57,"valuation_band":null,"validation_status":"neutral_ic","entry":{"status":"await_confluence","act_level":1,"headline":"Cycle turn — awaiting confluence cross","headline_zh":"周期拐点 — 等待共振交叉确认","zone_low":135.2,"zone_high":138.6,"zone_pct":-1.2},"signal":null,"trust":"event-edge","spotlight":"out_of_play","personality":{"chart":"mixed_chart","mode":null}},"on_board":false,"member_ctx":{"ticker":"NOW","name":"NOW","ext":null,"ext_z":null,"grade":null,"ret20":-2.3,"ret_fast":6.7,"ext_rel":null,"ext_rank":null,"rs_rank":0.41,"rs_fast_rank":0.88,"band":"na","band_en":"—","band_zh":"—","tone":"neu","parabolic":false}},{"symbol":"NET","name":"NET","added":"2023-05-09","rationale":"Cloudflare — edge inference + developer AI platform","last":324.33,"ret_1d":-0.0672,"ret_5d":-0.0543,"ret_10d":-0.0661,"ret_20d":-0.001,"ret_ytd":0.6451,"conviction":{"score":8,"band":"low","band_zh":"暂无买点","verdict":"Extended — wait for a pullback","verdict_zh":"过度拉伸 — 等待回撤","cycle_blocked":true,"entry_pct":27,"valuation_band":null,"validation_status":"neutral_ic","entry":{"status":"bounce_wait","act_level":0,"headline":"Bounce — turn not confirmed; wait","headline_zh":"反弹 — 转向未确认，先观望","zone_low":302.1,"zone_high":309.2,"zone_pct":-3.4},"signal":null,"trust":"event-edge","spotlight":"out_of_play","personality":{"chart":"mean_reversion_rubber_band","mode":"negative_gamma_trend"}},"on_board":false,"member_ctx":{"ticker":"NET","name":"NET","ext":34.5,"ext_z":0.98,"grade":"steady","ret20":-0.1,"ret_fast":-6.6,"ext_rel":32.4,"ext_rank":0.89,"rs_rank":0.53,"rs_fast_rank":0.12,"band":"beyond","band_en":"Extended beyond theme","band_zh":"延展超出主题","tone":"neg","parabolic":false}},{"symbol":"PANW","name":"Palo Alto Networks","added":"2023-05-09","rationale":"Palo Alto Networks — AI-native security platform consolidation","last":375.04,"ret_1d":-0.0554,"ret_5d":-0.0753,"ret_10d":-0.0561,"ret_20d":-0.0016,"ret_ytd":1.036,"conviction":{"score":7,"band":"low","band_zh":"暂无买点","verdict":"Extended — wait for a pullback","verdict_zh":"过度拉伸 — 等待回撤","cycle_blocked":true,"entry_pct":21,"valuation_band":null,"validation_status":"neutral_ic","entry":{"status":"bounce_wait","act_level":0,"headline":"Bounce — turn not confirmed; wait","headline_zh":"反弹 — 转向未确认，先观望","zone_low":392.3,"zone_high":392.3,"zone_pct":-1.2},"signal":null,"trust":"event-edge","spotlight":"out_of_play","personality":{"chart":"mixed_chart","mode":"negative_gamma_trend"}},"on_board":false,"member_ctx":{"ticker":"PANW","name":"PANW","ext":null,"ext_z":null,"grade":null,"ret20":5.8,"ret_fast":2.2,"ext_rel":null,"ext_rank":null,"rs_rank":0.71,"rs_fast_rank":0.53,"band":"na","band_en":"—","band_zh":"—","tone":"neu","parabolic":false}},{"symbol":"INTU","name":"Intuit","added":"2023-05-09","rationale":"Intuit — AI woven into tax/QuickBooks; consumer + SMB AI monetization","last":310.44,"ret_1d":0.0298,"ret_5d":0.0493,"ret_10d":0.1312,"ret_20d":-0.0196,"ret_ytd":-0.5247,"conviction":{"score":81,"band":"neutral","band_zh":"中性","verdict":"Lagging — relative weakness","verdict_zh":"落后 — 相对弱势","cycle_blocked":false,"entry_pct":55,"valuation_band":null,"validation_status":"neutral_ic","entry":{"status":"buy_now","act_level":3,"headline":"Buy zone — entry open now","headline_zh":"买入区 — 入场窗口已开启","zone_low":302.6,"zone_high":310.4,"zone_pct":-1.3},"signal":{"tier":"T2","tier_sub":"deep","ticks":0,"bars_to_cross":null,"provisional":false},"trust":"event-edge","spotlight":"out_of_play","personality":{"chart":"mixed_chart","mode":null}},"on_board":true,"member_ctx":{"ticker":"INTU","name":"INTU","ext":-17.9,"ext_z":0.52,"grade":"steady","ret20":-2,"ret_fast":13.1,"ext_rel":-20,"ext_rank":0.22,"rs_rank":0.47,"rs_fast_rank":1,"band":"in_range","band_en":"In range","band_zh":"区间内","tone":"neu","parabolic":false}},{"symbol":"ADBE","name":"Adobe Inc.","added":"2023-05-09","rationale":"Creative AI both moat and threat","last":240.68,"ret_1d":0.0186,"ret_5d":0.034,"ret_10d":0.0031,"ret_20d":-0.0392,"ret_ytd":-0.3123,"conviction":{"score":69,"band":"neutral","band_zh":"中性","verdict":"Neutral — no clear edge","verdict_zh":"中性 — 无明显优势","cycle_blocked":false,"entry_pct":57,"valuation_band":null,"validation_status":"neutral_ic","entry":{"status":"await_confluence","act_level":1,"headline":"Cycle turn — awaiting confluence cross","headline_zh":"周期拐点 — 等待共振交叉确认","zone_low":235.4,"zone_high":240.7,"zone_pct":-1.1},"signal":null,"trust":"event-edge","spotlight":"out_of_play","personality":{"chart":"basing_accumulator","mode":"negative_gamma_trend"}},"on_board":false,"member_ctx":{"ticker":"ADBE","name":"ADBE","ext":-5.7,"ext_z":0.93,"grade":"steady","ret20":-3.9,"ret_fast":0.3,"ext_rel":-7.8,"ext_rank":0.44,"rs_rank":0.29,"rs_fast_rank":0.41,"band":"laggard","band_en":"Laggard · room","band_zh":"落后 · 有空间","tone":"neu","parabolic":false}},{"symbol":"IBM","name":"IBM","added":"2023-05-09","rationale":"IBM — watsonx + consulting; the enterprise hybrid-AI distribution","last":227.88,"ret_1d":-0.0126,"ret_5d":0.0334,"ret_10d":0.0361,"ret_20d":-0.0405,"ret_ytd":-0.215,"conviction":{"score":75,"band":"neutral","band_zh":"中性","verdict":"Neutral — no clear edge","verdict_zh":"中性 — 无明显优势","cycle_blocked":false,"entry_pct":57,"valuation_band":null,"validation_status":"neutral_ic","entry":{"status":"await_confluence","act_level":1,"headline":"Cycle turn — awaiting confluence cross","headline_zh":"周期拐点 — 等待共振交叉确认","zone_low":224.5,"zone_high":227.9,"zone_pct":-0.7},"signal":null,"trust":"event-edge","spotlight":"out_of_play","personality":{"chart":"mixed_chart","mode":"event_override"}},"on_board":false,"member_ctx":{"ticker":"IBM","name":"IBM","ext":-9.3,"ext_z":-0.58,"grade":"steady","ret20":-4,"ret_fast":3.6,"ext_rel":-11.4,"ext_rank":0.33,"rs_rank":0.24,"rs_fast_rank":0.71,"band":"laggard","band_en":"Laggard · room","band_zh":"落后 · 有空间","tone":"neu","parabolic":false}},{"symbol":"CRM","name":"Salesforce","added":"2023-05-09","rationale":"Agentforce vs seat-deflation fear — contested","last":235.95,"ret_1d":-0.0087,"ret_5d":0.0507,"ret_10d":0.0278,"ret_20d":-0.0566,"ret_ytd":-0.1032,"conviction":{"score":9,"band":"low","band_zh":"暂无买点","verdict":"Extended — wait for a pullback","verdict_zh":"过度拉伸 — 等待回撤","cycle_blocked":true,"entry_pct":45,"valuation_band":null,"validation_status":"neutral_ic","entry":{"status":"topping","act_level":0,"headline":"Topping — protect gains","headline_zh":"见顶 — 保护利润","zone_low":231.6,"zone_high":232.9,"zone_pct":-1.6},"signal":null,"trust":"event-edge","spotlight":"out_of_play","personality":{"chart":"basing_accumulator","mode":"stale_dead_money"}},"on_board":false,"member_ctx":{"ticker":"CRM","name":"CRM","ext":18.6,"ext_z":1.83,"grade":"stretched","ret20":-5.7,"ret_fast":2.8,"ext_rel":16.5,"ext_rank":0.67,"rs_rank":0.18,"rs_fast_rank":0.59,"band":"in_range","band_en":"In range","band_zh":"区间内","tone":"neu","parabolic":false}},{"symbol":"ORCL","name":"Oracle Corporation","added":"2023-05-09","rationale":"OCI capacity for AI training revenue","last":130.55,"ret_1d":-0.0883,"ret_5d":-0.0873,"ret_10d":-0.0456,"ret_20d":-0.0847,"ret_ytd":-0.3212,"conviction":{"score":38,"band":"neutral","band_zh":"中性","verdict":"Lagging — relative weakness","verdict_zh":"落后 — 相对弱势","cycle_blocked":false,"entry_pct":41,"valuation_band":null,"validation_status":"neutral_ic","entry":{"status":"extended","act_level":0,"headline":"Extended — wait for a pullback","headline_zh":"过度拉伸 — 等待回撤","zone_low":130.1,"zone_high":132.9,"zone_pct":-3.1},"signal":null,"trust":"event-edge","spotlight":"out_of_play","personality":{"chart":"basing_accumulator","mode":"negative_gamma_trend"}},"on_board":false,"member_ctx":{"ticker":"ORCL","name":"ORCL","ext":-18.7,"ext_z":-0.29,"grade":"steady","ret20":-8.5,"ret_fast":-4.6,"ext_rel":-20.8,"ext_rank":0.11,"rs_rank":0.12,"rs_fast_rank":0.18,"band":"laggard","band_en":"Laggard · room","band_zh":"落后 · 有空间","tone":"neu","parabolic":false}},{"symbol":"APP","name":"AppLovin","added":"2023-05-09","rationale":"AppLovin — AXON AI ad engine; the clearest AI-revenue inflection","last":262.19,"ret_1d":-0.0371,"ret_5d":-0.0679,"ret_10d":-0.0972,"ret_20d":-0.1971,"ret_ytd":-0.6109,"conviction":{"score":0,"band":"low","band_zh":"暂无买点","verdict":"Hold off — timing against you","verdict_zh":"暂缓 — 时机不利","cycle_blocked":true,"entry_pct":35,"valuation_band":null,"validation_status":"neutral_ic","entry":{"status":"blocked","act_level":0,"headline":"Blocked — failed cycle","headline_zh":"受阻 — 失败周期","zone_low":null,"zone_high":null,"zone_pct":null},"signal":null,"trust":"event-edge","spotlight":"out_of_play","personality":{"chart":"mixed_chart","mode":"negative_gamma_trend"}},"on_board":false,"member_ctx":{"ticker":"APP","name":"APP","ext":null,"ext_z":null,"grade":null,"ret20":-17.9,"ret_fast":-10.9,"ext_rel":null,"ext_rank":null,"rs_rank":0.06,"rs_fast_rank":0.06,"band":"na","band_en":"—","band_zh":"—","tone":"neu","parabolic":false}}],"theme":{"id":"ai_software","name":"AI Software & Platforms","name_zh":"AI 软件与平台","category":"AI & Technology","score":56,"components":{"trend":0.006,"breadth":0.207,"impulse":-0.785,"macro":0.249,"mtf":0.7,"volhole":0,"crowding":0.3},"mtf":{"tf":{"D":{"sign":-1,"rsi14":56,"macd_pos":false,"cross_up":false,"cross_dn":true,"approaching_up":false,"approaching_dn":false,"days_to_cross":null,"spark_rsi":[58,56,53,53,55,57,56,58,59,56,57,64,60,61,51,56]},"3D":{"sign":1,"rsi14":65,"macd_pos":true,"cross_up":false,"cross_dn":false,"approaching_up":false,"approaching_dn":false,"days_to_cross":null,"spark_rsi":[64,63,62,61,68,60,60,61,64,66,66,62,64,64,67,65]},"W":{"sign":1,"rsi14":64,"macd_pos":true,"cross_up":false,"cross_dn":false,"approaching_up":false,"approaching_dn":false,"days_to_cross":null,"spark_rsi":[56,56,56,50,57,62,64,62,66,62,61,62,64,64,67,64]},"M":{"sign":1,"rsi14":66,"macd_pos":true,"cross_up":true,"cross_dn":false,"approaching_up":false,"approaching_dn":false,"days_to_cross":null,"spark_rsi":[76,76,80,81,71,70,58,50,50,52,65,57,60,65,65,66]}},"confluence":{"headline":"Healthy pullback within an uptrend","headline_zh":"上升趋势内的健康回调","sub":"The bigger picture is up; the short-term dip is a buy-the-dip setup, not a trend change.","sub_zh":"大格局向上；短期回调是逢低买入的机会，而非趋势反转。","grade":"BUY-THE-DIP","grade_zh":"逢低买入","short_sign":-1,"mid_sign":1,"long_sign":1,"per_tf":{"D":"down","3D":"up","W":"up","2W":"flat","ME":"up"}},"momentum_score":0.7,"trend_aligned":false,"ladder_state":"TOP WATCH","ladder_label":"NEARING A HIGH","ladder_label_zh":"接近高点","regime":"neutral","as_of":"2026-10-15","n_bars":3215,"has_monthly":true,"source":"member_ohlcv"},"tape":{"volhole":{"state":"IN_HOLE","label_en":"In the hole — compressed, coiling","label_zh":"处于波动洞内 — 压缩蓄势","compressed":true,"bandwidth_pctile":0.04,"realized_vol_pctile":0.21,"pos_in_box":0.603,"to_upper_pct":3.7,"to_lower_pct":5.96,"breakout_up":false,"breakdown":false,"score":0,"directional":true},"as_of":"2026-10-15","whale":{"accumulation":1.6,"trend_5d":-1.6,"band":"distributing","label_en":"Accumulation low","label_zh":"吸筹水平偏低","rising":false,"directional":false},"flow":{"cmf":-0.081,"net_flow_5d":-54015201968.00447,"net_flow_20d":-123257544989.79817,"obv_rising":true,"dollar_vol":61920143105.80597,"dollar_vol_surge":0.97,"inflow":false,"label_en":"Net outflow (distribution)","label_zh":"净流出（派发）","directional":false},"danny":{"score":42.6,"buy":false,"buy_strong":false,"sell":false,"ribbon":1,"above_poc":true,"directional":false},"danny_caveat":{"en":"Descriptive positioning readout only — no directional read. Time-controlled replication retired all contrarian claims (2026-07-06): the 2021+ survivorship-honest panel was all-null (DT-W1a), and on the 64y panel the one pooled survivor (accumulation-surge fade) is null in the modern era (2011-2026 CI spans zero) and survivor-flattered (DT-W2). Values describe where the name sits; they do not predict.","zh":"仅为描述性位置读数 — 无方向性判断。控制时间因素的复检已于2026-07-06退役全部逆向解读：2021年后无幸存偏差样本全部无效应（DT-W1a）；64年样本中唯一合并显著项（吸筹激增后转弱）在2011-2026年代为零效应且受幸存偏差夸大（DT-W2）。数值仅描述所处位置，不构成预测。"},"coverage":{"n_live":17,"n_with_volume":17,"coverage_pct":1}},"label":"deteriorating","label_en":"DETERIORATING","label_zh":"走弱","reco":"avoid","reco_en":"AVOID","reco_zh":"回避","reco_why_en":"Momentum and breadth breaking down — stand aside.","reco_why_zh":"动量与广度同步走弱 — 暂避。","regime_demoted":false,"chase_demoted":false,"reasons":["20d -1.5% vs S&P 500","decelerating","dip within an uptrend","coiled in a volatility hole"],"reasons_zh":["20日 -1.5% 相对标普500","减速中","上升趋势中的回调","在波动洞内蓄势"],"signal_strength":{"grade":"backtested","kind":"risk","measured":true,"metric":"fwd 21d drawdown","mean_pct":-3.59,"t_hac":-15.516,"n":4015,"en":"Backtested risk read — on 27y of clean sector history this label precedes deeper forward drawdowns (it is a risk timer, not a return forecast).","zh":"已回测的风险信号 — 在27年干净行业历史上，该标签领先于更深的前向回撤（风险计时器，非收益预测）。"},"flip_distance":{"route_a_bps":null,"route_b_pp":-1.46,"route_a_sessions_est":null,"nearest_route":null,"note_en":"Rollover guard not armed — the other guard legs (net new highs / score / 20d momentum / breadth / long trend) do not currently line up. Descriptive — a shape read, not a forecast.","note_zh":"回落护栏未就位 — 其余护栏条件（净新高/评分/20日动量/广度/长期趋势）当前未同时满足。描述性 — 形态读数，非预测。"},"rs_pctile":0.702,"accel_z":-0.72,"ext_abs":null,"long_sign":1,"perf":{"1d":{"rel":-0.0162,"ret":-0.027},"5d":{"rel":0.0055,"ret":-0.0044},"10d":{"rel":-0.0071,"ret":0.0021},"20d":{"rel":-0.0146,"ret":0.0086},"60d":{"rel":0.1434,"ret":0.1745},"ytd":{"rel":-0.0238,"ret":0.1136}},"timing":{"relative":{"1d":-0.0162,"5d":0.0055,"10d":-0.0071,"20d":-0.0146},"velocity_1d":-0.0171,"velocity_5d":0.0182,"accel_z":-0.72,"state":"improving","state_zh":"改善","display_only":true},"observation":{"effective_as_of":"2026-10-14","configured_members":["MSFT","GOOGL","META","PLTR","NOW","CRM","ORCL","ADBE","DDOG","INTU","IBM","WDAY","PANW","CRWD","APP","SNOW","NET"],"configured_n":17,"in_panel_members":["MSFT","GOOGL","META","PLTR","NOW","CRM","ORCL","ADBE","DDOG","INTU","IBM","WDAY","PANW","CRWD","APP","SNOW","NET"],"in_panel_n":17,"observed_members":["MSFT","GOOGL","META","PLTR","NOW","CRM","ORCL","ADBE","DDOG","INTU","IBM","WDAY","PANW","CRWD","APP","SNOW","NET"],"observed_n":17,"missing_columns":[],"missing_at_asof":[],"coverage":1,"status":"complete","aggregate_eligible":true,"min_members":3,"min_coverage":0.6,"basis":"exact_close_at_effective_as_of","authority":"measurement_only"},"breadth":{"pct50":0.647,"pct200":0.706,"nh":0,"nl":1,"n":17,"n50":17,"n200":17},"impulse":{"up3":0,"down3":9,"net":-9,"n":17},"leadership":{"breadth":"broad","top":[{"ticker":"DDOG","name":"Datadog","ret_20d":0.167,"share":0.17,"alpha":null},{"ticker":"PLTR","name":"Palantir Technologies","ret_20d":0.153,"share":0.15,"alpha":null},{"ticker":"META","name":"Meta Platforms","ret_20d":0.096,"share":0.1,"alpha":null}]},"leadership_split":false,"leaders":[],"leadership_split_note_en":null,"leadership_split_note_zh":null,"n_members":17,"textures":{"bull_age":{"in_bull":true,"days":57,"approx_months":2.7,"drawdown_from_peak":-0.034,"from_52w_high":-0.034,"stage":"building","stage_zh":"上升中","directional":false},"overbought":{"rsi":50.6,"rs_pctile":0.702,"pct_extended":null,"value":0.262,"band":"neutral","band_zh":"中性","directional":false},"clean_entry":{"flag":false,"quality":0.7,"reasons":["not extended","RSI room","breadth supportive","above 200d trend"],"directional":false},"rollover_risk":{"risk":0.1,"band":"low","band_zh":"低","reasons":["momentum rolling over","more new lows"],"directional":false,"hist_fade":false,"hist_fade_n":null},"breadth_divergence":{"risk":0.328,"band":"low","band_zh":"低","reasons":["basket -3% off 252d high vs median member -11% (7pp gap)","6/17 members below 50d under a pinned basket"],"directional":false,"basket_off_high":-0.034,"member_dd_med":-0.1077,"pct_above_50":0.647,"share_below_50":0.353,"pinned":true,"grade":"descriptive","grade_note":"Descriptive texture — no separately measured forward-drawdown edge on the proxy; a narrowing lens, never a forecast."}},"adv":4,"dec":13,"net_ad":-9,"parent":"Software","tags":["ai","software","saas"],"rank":11,"rank_5d":-13,"delta_5d":0.0055,"pulse_heat":"broken","pulse_rank_delta_1d":null,"pulse_rank_delta_5d":null,"pulse_rank_delta_20d":-8,"pulse_score_delta_5d":null,"pulse_heat_grade":"backtested","weights":{"trend":0.26,"breadth":0.18,"impulse":0.07,"macro":0.18,"mtf":0.16,"volhole":0.05,"crowding":0.1}},"act_now":{"status":"theme_out_of_favour","buys":[],"uncovered":[],"early_turn_watch":[{"symbol":"INTU","name":"Intuit","tier":"T2","provisional":false,"score":81,"cycle_blocked":false,"entry_status":"buy_now","entry_headline":"Buy zone — entry open now","entry_headline_zh":"买入区 — 入场窗口已开启","blocker_en":"theme gate: deteriorating","blocker_zh":"主题门槛：走弱","ret_5d":0.0493,"ret_20d":-0.0196}],"note_en":"Theme is out of favour (deteriorating) — no stock buys recommended here right now.","note_zh":"主题暂不被青睐（走弱）— 当前不建议买入该主题个股。"},"history":[{"date":"2026-06-18","value":46},{"date":"2026-06-22","value":44},{"date":"2026-06-23","value":46},{"date":"2026-06-24","value":45},{"date":"2026-06-25","value":41},{"date":"2026-06-26","value":54},{"date":"2026-06-29","value":52},{"date":"2026-06-30","value":49},{"date":"2026-07-01","value":57},{"date":"2026-07-02","value":55},{"date":"2026-07-06","value":57},{"date":"2026-07-09","value":63},{"date":"2026-07-10","value":58},{"date":"2026-07-14","value":68},{"date":"2026-07-15","value":61},{"date":"2026-07-17","value":62},{"date":"2026-07-20","value":64},{"date":"2026-07-24","value":55},{"date":"2026-07-27","value":60},{"date":"2026-07-28","value":61},{"date":"2026-07-29","value":68},{"date":"2026-07-30","value":66},{"date":"2026-07-31","value":67},{"date":"2026-08-07","value":70},{"date":"2026-08-12","value":64},{"date":"2026-08-13","value":74},{"date":"2026-08-17","value":59},{"date":"2026-08-18","value":64},{"date":"2026-08-19","value":65},{"date":"2026-08-20","value":63},{"date":"2026-08-21","value":66},{"date":"2026-08-24","value":61},{"date":"2026-08-25","value":60},{"date":"2026-08-26","value":57},{"date":"2026-08-27","value":71},{"date":"2026-08-28","value":65},{"date":"2026-08-31","value":68},{"date":"2026-09-03","value":67},{"date":"2026-09-04","value":59},{"date":"2026-09-08","value":62},{"date":"2026-09-09","value":72},{"date":"2026-09-10","value":65},{"date":"2026-09-11","value":63},{"date":"2026-09-14","value":72},{"date":"2026-09-16","value":66},{"date":"2026-09-17","value":70},{"date":"2026-09-21","value":69},{"date":"2026-09-23","value":69},{"date":"2026-09-24","value":65},{"date":"2026-09-25","value":60},{"date":"2026-09-30","value":65},{"date":"2026-10-01","value":66},{"date":"2026-10-02","value":63},{"date":"2026-10-05","value":66},{"date":"2026-10-06","value":67},{"date":"2026-10-08","value":66},{"date":"2026-10-14","value":56}],"timeline":[{"ts":"2026-10-14T00:00:00","type":"theme_deteriorating","severity":"high","headline":"🔻 AI Software & Platforms is deteriorating","headline_zh":"🔻 AI 软件与平台 走弱"},{"ts":"2026-10-01T00:00:00","type":"reco_change","severity":"medium","headline":"↑ AI Software & Platforms: Avoid → Accumulate","headline_zh":"↑ AI 软件与平台：规避 → 加仓"},{"ts":"2026-09-25T00:00:00","type":"theme_deteriorating","severity":"high","headline":"🔻 AI Software & Platforms is deteriorating","headline_zh":"🔻 AI 软件与平台 走弱"},{"ts":"2026-09-24T00:00:00","type":"reco_change","severity":"medium","headline":"↑ AI Software & Platforms: Hold → Accumulate","headline_zh":"↑ AI 软件与平台：持有 → 加仓"},{"ts":"2026-09-21T00:00:00","type":"reco_change","severity":"medium","headline":"↓ AI Software & Platforms: Accumulate → Hold","headline_zh":"↓ AI 软件与平台：加仓 → 持有"},{"ts":"2026-09-16T00:00:00","type":"reco_change","severity":"medium","headline":"↑ AI Software & Platforms: Avoid → Accumulate","headline_zh":"↑ AI 软件与平台：规避 → 加仓"},{"ts":"2026-09-11T00:00:00","type":"theme_deteriorating","severity":"high","headline":"🔻 AI Software & Platforms is deteriorating","headline_zh":"🔻 AI 软件与平台 走弱"},{"ts":"2026-09-10T00:00:00","type":"reco_change","severity":"medium","headline":"↑ AI Software & Platforms: TRIM → ACCUMULATE","headline_zh":"↑ AI 软件与平台：TRIM → ACCUMULATE"},{"ts":"2026-09-08T00:00:00","type":"reco_change","severity":"medium","headline":"↓ AI Software & Platforms: HOLD → TRIM","headline_zh":"↓ AI 软件与平台：HOLD → TRIM"},{"ts":"2026-09-04T00:00:00","type":"reco_change","severity":"medium","headline":"↑ AI Software & Platforms: TRIM → HOLD","headline_zh":"↑ AI 软件与平台：TRIM → HOLD"},{"ts":"2026-09-03T00:00:00","type":"theme_topping","severity":"high","headline":"⚠️ AI Software & Platforms: strength fading off the high","headline_zh":"⚠️ AI 软件与平台：高位动能减弱"},{"ts":"2026-08-28T00:00:00","type":"reco_change","severity":"medium","headline":"↑ AI Software & Platforms: HOLD → ACCUMULATE","headline_zh":"↑ AI 软件与平台：HOLD → ACCUMULATE"},{"ts":"2026-08-24T00:00:00","type":"reco_change","severity":"medium","headline":"↓ AI Software & Platforms: ACCUMULATE → HOLD","headline_zh":"↓ AI 软件与平台：ACCUMULATE → HOLD"},{"ts":"2026-08-20T00:00:00","type":"theme_topping","severity":"high","headline":"⚠️ AI Software & Platforms: strength fading off the high","headline_zh":"⚠️ AI 软件与平台：高位动能减弱"},{"ts":"2026-08-19T00:00:00","type":"reco_change","severity":"medium","headline":"↑ AI Software & Platforms: HOLD → ACCUMULATE","headline_zh":"↑ AI 软件与平台：HOLD → ACCUMULATE"},{"ts":"2026-08-17T00:00:00","type":"reco_change","severity":"medium","headline":"↓ AI Software & Platforms: ACCUMULATE → HOLD","headline_zh":"↓ AI 软件与平台：ACCUMULATE → HOLD"},{"ts":"2026-07-29T00:00:00","type":"reco_change","severity":"medium","headline":"↓ AI Software & Platforms: ENTER → ACCUMULATE","headline_zh":"↓ AI 软件与平台：ENTER → ACCUMULATE"},{"ts":"2026-07-21T00:00:00","type":"reco_change","severity":"medium","headline":"↓ AI Software & Platforms: ENTER → HOLD","headline_zh":"↓ AI 软件与平台：ENTER → HOLD"},{"ts":"2026-07-20T00:00:00","type":"theme_emerging","severity":"medium","headline":"🌱 AI Software & Platforms is emerging","headline_zh":"🌱 AI 软件与平台 进入新兴阶段"}],"as_of":"2026-10-14","market_concentration":{"adv":223,"dec":209,"ad_ratio":1.07,"pct_above_50":34.9,"pct_above_200":49.4,"nh":16,"nl":10,"directional":false,"ad_3d":1.3,"ad_w":1.51,"ad_m":0.98,"verdict":"mixed","verdict_zh":"中性"},"leadership_receipt":{"schema":"mi.leadership_receipt.v1","state":"lagging","stance_en":"Lagging its benchmark over the last 20 sessions","stance_zh":"近20个交易日落后基准","reason_en":null,"reason_zh":null,"window_sessions":20,"rel_5d":0.0054520347416989745,"rel_20d":-0.014590308966008436,"rel_60d":0.14341973813051379,"benchmark":{"label":"S&P 500","label_zh":"标普500"},"as_of":"2026-10-14","sample":{"observed_n":17,"configured_n":17,"coverage":1,"status":"complete","basis":"exact_close_at_effective_as_of","aggregate_eligible":true,"min_members":3,"min_coverage":0.6},"roster_changed":false,"breadth":{"pct50":0.647,"pct200":0.706,"n":17,"label":"broad","label_zh":"广泛"},"leaders":[{"ticker":"DDOG","ret_20d":0.167},{"ticker":"PLTR","ret_20d":0.153},{"ticker":"META","ret_20d":0.096}],"split":{"flag":false,"note_en":null,"note_zh":null},"theme_state":{"status":"missing","as_of":"2026-10-16","stale_legs_n":8,"quadrant":null},"authority":{"display_only":true,"may_rank":false,"may_size":false,"may_gate":false,"may_escalate":false},"rows":[{"key":"interval","label_en":"Observation interval","label_zh":"观察区间","text_en":"Daily close-to-close returns over 5, 20 and 60 sessions, as of 2026-10-14.","text_zh":"按日收盘价计算的5、20、60个交易日收益，截至2026-10-14。"},{"key":"benchmark","label_en":"Benchmark","label_zh":"基准","text_en":"S&P 500, cap-weighted. The basket is equal-weight and rebalanced monthly, so part of any gap is weighting, not stock selection.","text_zh":"标普500，市值加权。篮子为等权、按月再平衡，因此差距有一部分来自权重而非选股。"},{"key":"measure","label_en":"Raw, not normalized","label_zh":"原始值，未标准化","text_en":"Raw excess return: basket return minus benchmark return, in percentage points. Not volatility- or beta-adjusted.","text_zh":"原始超额收益：篮子收益减基准收益，以百分点计。未按波动率或贝塔调整。"},{"key":"sample","label_en":"Sample and roster","label_zh":"样本与成分","text_en":"17 of 17 members observed (coverage 100%) at 2026-10-14. Roster is today's; history before a member's curation date is context, not a track record. Names are never backfilled into past memberships.","text_zh":"截至2026-10-14观察到17个成分中的17个（覆盖率100%）。成分为当前名单；成分纳入日之前的历史仅作背景，不是业绩记录。不会把今天的名字回填进过去的成分。"},{"key":"freshness","label_en":"Freshness and coverage","label_zh":"新鲜度与覆盖","text_en":"Theme state not available for this basket today.","text_zh":"今日该篮子无可用主题状态。"},{"key":"authority","label_en":"Diagnostic authority","label_zh":"判读权限","text_en":"Display-only context. It never ranks, sizes, gates or escalates, and it is not a forecast.","text_zh":"仅作展示背景。不排序、不定仓位、不设门槛、不升级，也不是预测。"}]},"stock_base":"../stock.html#","back":"../sector_central.html#actnow-section","region":"us","bench_label":"S&P 500","bench_label_zh":"标普500"}
+</FILE>
