@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.mechanism_pathways.v1",
-  "as_of": "2026-10-15",
+  "as_of": "2026-10-17",
   "display_only": true,
   "not_a_signal": true,
   "authority": {
@@ -28,7 +28,7 @@
       "family": "equity-leadership",
       "driver": "ai_semis",
       "pathway_role": "primary",
-      "as_of": "2026-10-15",
+      "as_of": "2026-10-17",
       "direction_en": "AI/semis unwind — tech-led de-rating",
       "direction_zh": "AI/半导体回吐 — 科技主导的回调",
       "confidence_ceiling": "context_only",
@@ -38,7 +38,7 @@
       "nodes": [
         {
           "node_id": "driver_ai_semis",
-          "as_of": "2026-10-15",
+          "as_of": "2026-10-17",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "ai_semis",
@@ -47,8 +47,8 @@
             "zh": "AI/半导体回吐 — 科技主导的回调"
           },
           "direction": -1,
-          "value": 2.12,
-          "z_or_percentile": 2.25,
+          "value": 2.41,
+          "z_or_percentile": 2.01,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "trigger",
@@ -58,7 +58,7 @@
         },
         {
           "node_id": "leg_ai_semis_0",
-          "as_of": "2026-10-15",
+          "as_of": "2026-10-17",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "semis RS",
@@ -78,17 +78,17 @@
         },
         {
           "node_id": "leg_ai_semis_1",
-          "as_of": "2026-10-15",
+          "as_of": "2026-10-17",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "growth vs value",
           "observation": {
-            "en": "growth vs value (-2.1σ)",
-            "zh": "成长对价值 (-2.1σ)"
+            "en": "growth vs value (-2.6σ)",
+            "zh": "成长对价值 (-2.6σ)"
           },
           "direction": "negative",
-          "value": -2.1,
-          "z_or_percentile": -2.1,
+          "value": -2.6,
+          "z_or_percentile": -2.6,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "required_leg",
@@ -98,17 +98,17 @@
         },
         {
           "node_id": "leg_ai_semis_2",
-          "as_of": "2026-10-15",
+          "as_of": "2026-10-17",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "tech vs utilities",
           "observation": {
-            "en": "tech vs utilities (-1.7σ)",
-            "zh": "科技对公用事业 (-1.7σ)"
+            "en": "tech vs utilities (-2.2σ)",
+            "zh": "科技对公用事业 (-2.2σ)"
           },
           "direction": "negative",
-          "value": -1.7,
-          "z_or_percentile": -1.7,
+          "value": -2.2,
+          "z_or_percentile": -2.2,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "required_leg",
@@ -160,7 +160,7 @@
       "family": "credit",
       "driver": "credit_stress",
       "pathway_role": "alternate",
-      "as_of": "2026-10-15",
+      "as_of": "2026-10-17",
       "direction_en": "credit spreads widening — stress",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
@@ -170,7 +170,7 @@
       "nodes": [
         {
           "node_id": "driver_credit_stress",
-          "as_of": "2026-10-15",
+          "as_of": "2026-10-17",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "credit_stress",
@@ -179,7 +179,7 @@
             "zh": ""
           },
           "direction": "",
-          "value": 0.94,
+          "value": 1.2,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",
@@ -196,7 +196,7 @@
       "family": "inflation",
       "driver": "oil_shock",
       "pathway_role": "alternate",
-      "as_of": "2026-10-15",
+      "as_of": "2026-10-17",
       "direction_en": "oil spiking — energy leads, breakevens up",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
@@ -206,7 +206,7 @@
       "nodes": [
         {
           "node_id": "driver_oil_shock",
-          "as_of": "2026-10-15",
+          "as_of": "2026-10-17",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "oil_shock",
@@ -215,7 +215,7 @@
             "zh": ""
           },
           "direction": "",
-          "value": 0.66,
+          "value": 0.93,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",
@@ -226,7 +226,7 @@
         },
         {
           "node_id": "transmission_sticky_inflation_order1",
-          "as_of": "2026-10-15",
+          "as_of": "2026-10-17",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -246,7 +246,7 @@
         },
         {
           "node_id": "transmission_sticky_inflation_order2",
-          "as_of": "2026-10-15",
+          "as_of": "2026-10-17",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -266,7 +266,7 @@
         },
         {
           "node_id": "transmission_sticky_inflation_order3",
-          "as_of": "2026-10-15",
+          "as_of": "2026-10-17",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",

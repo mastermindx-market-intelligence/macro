@@ -1,3 +1,6 @@
+/* EdgeOne immutable-cache recovery 2026-10-15: the previous 9a961fc8 URL
+   was requested before its corrected bytes reached the edge and is stale.
+   Re-seed the content-addressed asset key; no executable logic changes. */
 /* Make the dashboard's data tables behave like a screener: click any column
    header to sort, and tables long enough to scroll get a live filter box.
 
