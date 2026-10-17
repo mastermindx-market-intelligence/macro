@@ -1049,6 +1049,7 @@ def _user_display_name(user: dict) -> str | None:
 @app.get("/api/gmi/bea/industry/{industry_code}")
 def gmi_bea_industry_current(
     industry_code: str,
+    request: Request,
     user: dict = Depends(require_site_full_user),
 ) -> Response:
     """Authenticated BEA GVC read *availability*, never unadmitted industry data.
@@ -1068,6 +1069,13 @@ def gmi_bea_industry_current(
         # Source-code grammar is checked before attempting a registry read.
         if not is_exact_source_industry_code(industry_code):
             raise BEADescriptiveRefused("UNSAFE_EXACT_INDUSTRY_CODE")
+        # This is a CURRENT-vintage endpoint only. Silently ignoring an as-of
+        # request could falsely dress retrospective 2026 allocations as PIT.
+        # Refuse *all* query parameters until a canonical temporal contract
+        # explicitly qualifies a future mode.
+        if request.query_params:
+            raise HTTPException(
+                422, detail={"error": "BEA_CURRENT_ONLY_NO_QUERY_PARAMETERS"})
         # The canonical Data OS registry path is owned by lib/dataos/registry.py.
         registry = load_registry()
         packet = current_industry_candidate(

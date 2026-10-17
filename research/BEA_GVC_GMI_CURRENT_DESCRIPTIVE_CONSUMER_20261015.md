@@ -146,6 +146,23 @@ CI remain separate gates. No original private BEA response was opened,
 previously denied access/producer-string edit replayed, source installed,
 PR merged or deployment attempted.
 
+## Current-only API request fence — October 17
+
+The authenticated `GET /api/gmi/bea/industry/{industry_code}` now rejects
+**every query parameter** before reading the canonical registry. This is
+deliberate: `?year=2019`, `?as_of=2018-01-01`, `?known_at=...` or an
+unrecognized `?format=` must never silently receive the May-2026 current
+vintage under a false point-in-time expectation. There is no historical
+temporal mode or approved crosswalk in this endpoint. The source code is
+validated first and entitlement still uses the existing Supabase/site-full
+dependency; 422 responses inherit `private,no-store`.
+
+The adversarial regression initially reproduced 503/registry access for
+`?known_at=2018-01-01` and then passed when the current-only fence was
+implemented. The combined GMI, API-paywall and cache suite passed **36 tests**.
+This is a product/query truthfulness improvement, not a native source
+read, publication authorization or live browser proof.
+
 ## Production remains HELD
 
 Real acceptance still requires lawful original 72-response L0 validation, source industry axis resolution, accepted 5241X/5241XX mapping or explicit unresolved handling, installed L0/L1 UTC ingest/revision/correction chain and registry PRODUCED promotion by the current Data OS owner. Existing app authentication and entitlement then must be proven alongside same-generation browser/API descriptive results. This candidate is not a release, approval, producer or new control plane.

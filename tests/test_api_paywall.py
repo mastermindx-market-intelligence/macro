@@ -94,6 +94,22 @@ def test_gmi_bea_registry_exception_coarsens_private_path(monkeypatch):
     assert r.headers.get("cache-control") == "private, no-store"
 
 
+def test_gmi_bea_current_route_rejects_historical_or_unknown_queries_before_registry(monkeypatch):
+    def forbidden_source_read():
+        raise AssertionError("historical/unsupported query accessed Data OS registry")
+    monkeypatch.setattr("lib.dataos.registry.load_registry", forbidden_source_read)
+    for query in (
+        "?known_at=2018-01-01", "?as_of=2019-09-01",
+        "?year=2021", "?edition=2026-05-21", "?format=csv",
+        "?asof=2020-01-01&known_at=2020-01-02",
+        "?unexpected_private_key=1",
+    ):
+        response = client.get("/api/gmi/bea/industry/5241X" + query)
+        assert response.status_code == 422, (query, response.status_code, response.text)
+        assert response.headers.get("cache-control") == "private, no-store"
+        assert "source_generation_id" not in response.text
+
+
 def test_ask_keeps_registered_behavior_while_paid_switch_off(monkeypatch):
     monkeypatch.setattr(
         "engine.neuralweb.ask_brain.ask",
