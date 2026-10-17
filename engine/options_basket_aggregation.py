@@ -72,7 +72,10 @@ _IV_METHODS = {"iv30_total_variance_act365f", "iv30_exact_act365f"}
 def _number(value: object, label: str, minimum: float | None = None) -> float:
     if isinstance(value, (bool, np.bool_)) or not isinstance(value, Real):
         raise ValueError(f"{label}: numeric scalar required; coercion refused")
-    out = float(value)
+    try:
+        out = float(value)
+    except (OverflowError, ValueError) as error:
+        raise ValueError(f"{label}: nonfinite or below minimum") from error
     if not isfinite(out) or (minimum is not None and out < minimum):
         raise ValueError(f"{label}: nonfinite or below minimum")
     return out
@@ -222,6 +225,7 @@ def aggregate(members: Sequence[Member], *, definition: Definition, asof: dateti
     warnings = ["REPORTED_PREMIUM_SINGLE_NAME_DOMINATED"] if top_share is not None and top_share>policy.premium_dominance else []
     reasons = ["INCOMPLETE_IV_COVERAGE"] if n!=total else []
     model = None
+    attribution = None
     if correlation is None:
         reasons.append("CORRELATION_UNAVAILABLE")
     else:
@@ -238,9 +242,39 @@ def aggregate(members: Sequence[Member], *, definition: Definition, asof: dateti
         reasons.extend("CORRELATION_"+r if not r.startswith("CORRELATION_") else r for r in model_reasons)
         if n==total and not model_reasons:
             weighted_iv = np.array([r.weight*r.iv for r in active])
-            variance = float(weighted_iv @ matrix @ weighted_iv)*30/365
-            if not isfinite(variance): raise ValueError("nonfinite modeled variance")
-            model = sqrt(max(variance,0))
+            annual_variance = float(weighted_iv @ matrix @ weighted_iv)
+            if not isfinite(annual_variance): raise ValueError("nonfinite modeled variance")
+            annual_sigma = sqrt(max(annual_variance, 0))
+            horizon_scale = sqrt(30 / 365)
+            model = annual_sigma * horizon_scale
+            if annual_sigma <= 1e-12:
+                # For a truly cancelling portfolio, sigma's derivative is undefined.
+                # Never divide through a nearly-zero denominator or invent shares.
+                reasons.append("ZERO_MODELED_RISK_ATTRIBUTION_UNDEFINED")
+            else:
+                exposures = matrix @ weighted_iv
+                marginal = horizon_scale * exposures / annual_sigma
+                components = []
+                for i, row in enumerate(active):
+                    component = float(weighted_iv[i] * marginal[i])
+                    marginal_per_weight = float(row.iv * marginal[i])
+                    components.append({"root": row.root,
+                                       "weight": float(row.weight),
+                                       "component_move": component,
+                                       "marginal_per_unit_weight": marginal_per_weight,
+                                       "share_of_modeled_move": component / model})
+                if not all(isfinite(p[k]) for p in components for k in
+                           ("component_move", "marginal_per_unit_weight", "share_of_modeled_move")):
+                    raise ValueError("nonfinite modeled risk attribution")
+                attribution = {"method": "iv_scaled_correlation_euler",
+                               "correlation_method": correlation.method,
+                               "correlation_source_ref": correlation.source_ref,
+                               "horizon_days": 30, "day_count_basis": "ACT/365F",
+                               "total_modeled_move": model,
+                               "unit": "fractional_one_sigma_30calendar_day_move",
+                               "components": components,
+                               "marginal_weight_constraint": "unconstrained weight perturbation, not a self-financing trade",
+                               "display_only": True, "not_dealer_inventory": True}
     for value in (mean,rms,median,premium_total,top_share,model):
         if value is not None and not isfinite(value): raise ValueError("nonfinite aggregation")
     return {
@@ -262,6 +296,7 @@ def aggregate(members: Sequence[Member], *, definition: Definition, asof: dateti
         "headline_mean_iv":mean if headline_ok else None,
         "headline_label":"covered-constituent annual IV statistic",
         "hybrid_expected_move":model,
+        "hybrid_risk_attribution":attribution,
         "hybrid_label":"modeled: constituent IV with supplied correlation",
         "premium":{"complete":len(premiums)==total,"root_count":len(premiums),
                    "total_reported":premium_total if premiums else None,"top_share_reported":top_share,
