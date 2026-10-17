@@ -1,0 +1,51 @@
+{
+  "schema": "healthcare_shadow_duplicate_witness.v1",
+  "status": "READ_ONLY_SOURCE_LEDGER_CENSUS_NOT_A_TRADING_BACKTEST",
+  "repo": "mastermindx-market-intelligence/macro",
+  "resource": "data/personality_timing/gate_shadow.jsonl",
+  "two_day": {
+    "ref": "c77843e3a3cd78",
+    "blob_sha": "79e75c9599753ebeebb11157024c2f691a6733eb",
+    "first_date": "2026-07-26",
+    "second_date": "2026-07-27",
+    "rows_first": 158,
+    "rows_second": 158,
+    "side_legs_first": 176,
+    "side_legs_second": 176,
+    "side_legs_repeated": 176,
+    "side_legs_new": 0
+  },
+  "fifteen_date": {
+    "ref": "b3d3c38bdce5cd",
+    "blob_sha": "02c73db07fbae00251a843591081623d3d912305",
+    "dates": 15,
+    "from": "2026-07-26",
+    "to": "2026-08-10",
+    "ledger_rows": 1427,
+    "fired_side_legs": 1658,
+    "unique_side_event_keys": 441,
+    "republications": 1217,
+    "republication_pct": 73.4,
+    "max_days_one_event": 15,
+    "healthcare_matched": [
+      "BMY",
+      "BSX",
+      "ISRG",
+      "PFE",
+      "ZTS"
+    ],
+    "healthcare_rows": 25,
+    "healthcare_fired_legs": 34,
+    "healthcare_unique_legs": 6,
+    "healthcare_republications": 28
+  },
+  "key": "(sym,side,rung,entry_date)",
+  "not_proven": [
+    "current entire-ledger duplicate count",
+    "live trade effect",
+    "return strategy superiority",
+    "optimal intraday ticker timeframes"
+  ],
+  "prior_host_denial_retried": false,
+  "product_engine_changed": false
+}
