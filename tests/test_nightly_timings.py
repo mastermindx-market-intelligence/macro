@@ -130,6 +130,77 @@ def test_synthetic_86_percent_run_trips_the_warning(env, capsys):
     assert "engine" in warn[0] and "86%" in warn[0]
 
 
+def test_a_cap_raise_without_a_creep_budget_silences_the_alarm(env, capsys):
+    """THE regression this split exists to prevent, stated as a measurement.
+
+    2026-09-25's collect night ran 229.4m. Under the old 240m cap that is 95.6% and
+    the tripwire fires. Raise the cap to 300 for publish headroom and the SAME night
+    becomes 76.5% — the alarm that predicted the incident goes quiet precisely
+    because the incident was addressed. This test pins the failure mode, so the
+    budget argument below cannot be dropped as redundant.
+    """
+    now = _write_start(seconds_ago=229.4 * 60)
+    nt.cmd_finish(300.0, env / "ledger", now=now)
+    assert not [l for l in capsys.readouterr().out.splitlines() if l.startswith("::warning")], (
+        "a 229.4m night under a 300m cap must be silent — if this ever warns, the "
+        "premise of the creep budget is wrong and the split can be removed")
+
+
+def test_the_creep_budget_keeps_the_alarm_on_the_old_workload(env, capsys):
+    """Same 229.4m night, same 300m cap, creep budget pinned at the old 240m: the
+    tripwire fires again at 95.6%, and the annotation names both numbers so the
+    reader is not left wondering which budget it measured."""
+    now = _write_start(seconds_ago=229.4 * 60)
+    row = nt.cmd_finish(300.0, env / "ledger", now=now, warn_minutes=240.0)
+    assert row["cap_minutes"] == 300.0
+    assert row["warn_minutes"] == 240.0
+    assert row["pct_of_cap"] == pytest.approx(76.5, abs=0.2)
+    assert row["warn_pct"] == pytest.approx(95.6, abs=0.2)
+    warn = [l for l in capsys.readouterr().out.splitlines() if l.startswith("::warning")]
+    assert len(warn) == 1, f"expected exactly one tripwire line, got {warn!r}"
+    assert warn[0].startswith("::warning title=nightly budget 85% tripwire::")
+    assert "96%" in warn[0] and "240m creep budget" in warn[0] and "cap 300m" in warn[0]
+
+
+def test_omitting_the_creep_budget_preserves_the_historical_behaviour(env, capsys):
+    """Every other instrumented job passes one argument. Their alarm must measure
+    against the cap exactly as before, and the row must say so."""
+    now = _write_start(seconds_ago=0.86 * 240.0 * 60)
+    row = nt.cmd_finish(240.0, env / "ledger", now=now)
+    assert row["warn_minutes"] == 240.0 and row["cap_minutes"] == 240.0
+    assert row["warn_pct"] == pytest.approx(row["pct_of_cap"], abs=0.01)
+    warn = [l for l in capsys.readouterr().out.splitlines() if l.startswith("::warning")]
+    assert len(warn) == 1 and "timeout-minutes" in warn[0] and "creep budget" not in warn[0]
+
+
+def test_the_step_summary_line_never_mixes_the_two_bases(env, monkeypatch, tmp_path):
+    """The summary percentage is CAP basis; the tripwire fires on the BUDGET.
+
+    Once the two differ, a line that prints one and flags on the other reads as a
+    self-contradiction in the Actions summary a human actually opens: 2026-09-25's
+    229.4m night under cap 300 / budget 240 is 76% of cap and 96% of budget, so the
+    pre-split format wrote "(76%) - >85% BUDGET TRIPWIRE" with no 96% anywhere. The
+    ::warning was taught both bases; this line was not. Nothing covered it, because
+    the `env` fixture deletes GITHUB_STEP_SUMMARY.
+    """
+    summary = tmp_path / "step_summary.md"
+    monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(summary))
+    now = _write_start(seconds_ago=229.4 * 60)
+    row = nt.cmd_finish(300.0, env / "ledger", now=now, warn_minutes=240.0)
+    assert row["pct_of_cap"] == pytest.approx(76.5, abs=0.2)
+    assert row["warn_pct"] == pytest.approx(95.6, abs=0.2)
+    line = [l for l in summary.read_text(encoding="utf-8").splitlines()
+            if l.startswith("- timings")]
+    assert len(line) == 1, f"expected one timings line, got {line!r}"
+    line = line[0]
+    # the cap basis it reports, and the budget basis it is actually alarming on
+    assert "300m cap (76%)" in line, line
+    assert "TRIPWIRE" in line, line
+    assert "96% of 240m budget" in line, (
+        "the tripwire flagged on the budget but the line named only the cap "
+        f"percentage - a reader cannot tell why 76% tripped an 85% alarm: {line!r}")
+
+
 def test_84_percent_run_does_not_warn(env, capsys):
     cap = 240.0
     now = _write_start(seconds_ago=0.84 * cap * 60)
@@ -879,9 +950,29 @@ def test_finish_cap_argument_matches_timeout_minutes(workflow):
             continue
         finish = spec["steps"][idx]
         run = finish.get("run", "")
-        expected = f"bash scripts/ci/nightly_timings_finish.sh {spec['timeout-minutes']}"
-        if run.strip() != expected:
-            bad.append(f"{key}: timeout-minutes={spec['timeout-minutes']} but finish step runs {run.strip()!r}")
+        # Form: `bash scripts/ci/nightly_timings_finish.sh <cap> [<creep-budget>]`.
+        # The cap token stays pinned to timeout-minutes — that is the anti-drift
+        # half. The optional second token is the creep budget (see the collect
+        # job's finish step): a cap may be raised for survival headroom without
+        # dragging the 85% alarm up with it, but the budget may never EXCEED the
+        # cap, because a budget above the cap can never fire before the kill.
+        toks = run.strip().split()
+        head = ["bash", "scripts/ci/nightly_timings_finish.sh"]
+        cap = spec["timeout-minutes"]
+        if toks[:2] != head or not 3 <= len(toks) <= 4:
+            bad.append(f"{key}: finish step runs {run.strip()!r} — expected "
+                       f"`bash scripts/ci/nightly_timings_finish.sh {cap} [creep-budget]`")
+        elif toks[2] != str(cap):
+            bad.append(f"{key}: timeout-minutes={cap} but finish step runs {run.strip()!r}")
+        elif len(toks) == 4:
+            try:
+                budget = float(toks[3])
+            except ValueError:
+                bad.append(f"{key}: creep budget {toks[3]!r} is not a number")
+            else:
+                if not 0 < budget <= float(cap):
+                    bad.append(f"{key}: creep budget {toks[3]} must be >0 and <= the "
+                               f"{cap}m cap — a budget above the cap never fires")
         # Exactly always(), never `always() && <condition>`: a conditioned finish
         # step is a tripwire that goes dark on the nights it is needed. (The
         # trailing YAML comment on the engine step is stripped by the parser.)

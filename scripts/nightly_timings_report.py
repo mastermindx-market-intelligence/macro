@@ -112,7 +112,7 @@ def report(ledger_dir: Path, nights: int, show_bands: bool,
         out.append(f"no timings rows under {ledger_dir} — has the nightly run since W2 shipped?")
         return out
 
-    header = (f"{'job':<24} {'cap':>5} {'nights':>6} {'median':>8} {'max':>8} "
+    header = (f"{'job':<24} {'budget':>7} {'nights':>6} {'median':>8} {'max':>8} "
               f"{'med%':>5} {'max%':>5} {'>85%':>5}  flag")
     out.append(header)
     out.append("-" * len(header))
@@ -120,17 +120,25 @@ def report(ledger_dir: Path, nights: int, show_bands: bool,
         recent = sorted(rows, key=lambda r: (r.get("date", ""), r.get("end", "")))[-nights:]
         elapsed = [float(r["elapsed_minutes"]) for r in recent]
         cap = float(recent[-1].get("cap_minutes") or 0)
+        # The alarm's basis, which is the creep budget when the job passes one and
+        # the cap otherwise. Reading cap_minutes here would make every trend line
+        # rescale the moment a cap is raised for publish headroom — the same silent
+        # disarm the finish step's budget argument exists to prevent. Rows written
+        # before the budget shipped (and cmd_backfill's rows) carry no warn_minutes,
+        # so they fall back to the cap and read exactly as they did before.
+        basis = float(recent[-1].get("warn_minutes") or cap)
         med = statistics.median(elapsed)
         mx = max(elapsed)
-        med_pct = 100.0 * med / cap if cap else 0.0
-        max_pct = 100.0 * mx / cap if cap else 0.0
-        breaches = sum(1 for e in elapsed if cap and 100.0 * e / cap > WARN_PCT)
+        med_pct = 100.0 * med / basis if basis else 0.0
+        max_pct = 100.0 * mx / basis if basis else 0.0
+        breaches = sum(1 for e in elapsed if basis and 100.0 * e / basis > WARN_PCT)
         flag = ""
         if breaches:
             flag = "TRIPWIRE — re-budget or trim NOW"
         elif med_pct > WATCH_PCT:
-            flag = "creep watch (median >70% of cap)"
-        out.append(f"{job:<24} {cap:>4.0f}m {len(recent):>6} {med:>7.1f}m {mx:>7.1f}m "
+            flag = "creep watch (median >70% of budget)"
+        budget_txt = f"{basis:.0f}m" + ("*" if basis != cap else "")
+        out.append(f"{job:<24} {budget_txt:>7} {len(recent):>6} {med:>7.1f}m {mx:>7.1f}m "
                    f"{med_pct:>4.0f}% {max_pct:>4.0f}% {breaches:>5}  {flag}")
 
         if show_bands:

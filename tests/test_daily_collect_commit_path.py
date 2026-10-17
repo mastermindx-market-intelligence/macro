@@ -1024,3 +1024,293 @@ jobs:
 
     with pytest.raises(AssertionError, match="exactly one producer seed"):
         test_daily_collector_keeps_us_panel_seed_cache_authority()
+
+
+# --------------------------------------------------------------------------
+# A JOB-LEVEL timeout schedules NOTHING — the claim the 2026-09-25 night killed.
+# --------------------------------------------------------------------------
+#
+# Authoritative run 36078806272 (collect job 107895940199, mac-builder-5,
+# schedule, source SHA 72038badf7e3):
+#
+#   00:43:08Z  job starts
+#   04:38:22Z  `run collectors` ends (~230.7m)
+#   04:43:31Z  `commit market data` starts   -> 04:45:40Z success (checkpoint EXISTS)
+#   04:45:40Z  `push market data` starts     -> completed_at NULL (hard-stopped)
+#   04:48:08Z  job terminalizes `cancelled`  = 245.0m = the 240m cap + ~5m grace
+#
+# In that job's steps[], EVERY step after the push — including the `if: cancelled()`
+# salvage push and the `if: always()` W2 finish — carries a NULL `started_at`.  They
+# were never scheduled.  `data/ops/nightly_timings/collect.jsonl` has no row for the
+# run at all, which is the same fact read from the ledger side: the telemetry that
+# was supposed to explain the death died with it.  Canada's source clock stayed on
+# 2026-09-23 while a complete, committed night sat on a runner that was about to be
+# wiped by the next job's checkout.
+#
+# `if: always()` / `if: cancelled()` steps DO run after an ordinary cancellation, AND
+# they run after a hard job-level timeout for as long as the bounded ~5-minute grace
+# lasts.  That is measured both ways on the SAME 240m cap: job 105033526139 (run
+# 35168062576, 2026-09-17) had its cap fire at 04:48:55Z and still ran `push market
+# data` to success at 04:50:53Z, `salvage push` at 04:50:57Z and the W2 finish at
+# 04:51:42Z; job 107895940199 (run 36078806272, 2026-09-25) fired at 04:43:08Z, spent
+# the grace on a push that only started at cap+2:32, and was killed at cap+5:00 with
+# every later step carrying a null `started_at`.  So the belt is REAL but BOUNDED —
+# it is not a budget to plan against, and the market-commit-push band (9.6m/10.7m on
+# 09-23/09-24) is already about twice the grace.
+#
+# That distinction is not cosmetic: while the source said the checkpoint "survives a
+# job-cap cancel", a 240m cap looked safe even as the W2 ledger printed 94.5%
+# (09-23), 94.3% (09-24) and 101.1% (09-17) of cap.  The false promise is what let
+# the margin be read as covered.  These tests keep the corrected reading in the
+# source so the next reader inherits the measurement instead of the reassurance.
+
+_JOB_CAP = re.compile(r"job[-\s]?(?:cap|timeout|level timeout)|cap timeout|at the cap", re.I)
+#: Any verb that turns the bounded grace into a guarantee.  Deliberately wide: the
+#: first version of these tests keyed on "surviv" alone and a one-word rewrite to
+#: "outlives" walked straight through it.
+_SURVIVES = re.compile(
+    r"surviv|outliv|outlast|outrun|withstand|immune|unaffected|proof against|"
+    r"guarantee|always (?:runs|records|rescue|publish)|never (?:lost|missed)|"
+    r"has rescued|cannot be lost|comfortable", re.I)
+#: The bounded half.  A comment may only discuss the cap if it also says the grace
+#: runs out — otherwise it is selling the belt as a budget again.
+_BOUNDED = re.compile(
+    r"exhaust|bounded|ceiling|runs? out|ran out|never scheduled|null `?started_at`?|"
+    r"not a budget|can be exhausted", re.I)
+#: The two measurements this repair is built on.  Pinning both job ids keeps the
+#: refuting case in the source: a future reader who sees only 107895940199 will
+#: re-derive "the tail never runs after a cap", which is false.
+_SURVIVED_JOB = "105033526139"
+_EXHAUSTED_JOB = "107895940199"
+
+
+def _collect_region() -> str:
+    """Just the `collect:` job's block, so a same-named step in another job cannot
+    silently become what these pins are reading."""
+    text = DAILY.read_text()
+    start = text.index("\n  collect:\n")
+    nxt = re.compile(r"\n  [A-Za-z_][A-Za-z0-9_-]*:\n")
+    m = nxt.search(text, start + 1)
+    return text[start:m.start() if m else len(text)]
+
+
+def _comment_block_above(needle: str) -> str:
+    """The `#` comment lines immediately above the collect step naming `needle`.
+
+    Blank lines are walked THROUGH rather than treated as the top of the block: the
+    first version stopped at one, so inserting a single blank line above the step
+    reported the postmortem as deleted and failed an innocent formatting edit.
+    """
+    lines = _collect_region().splitlines()
+    for i, line in enumerate(lines):
+        if line.lstrip().startswith("- name:") and needle in line:
+            block: list[str] = []
+            j = i - 1
+            while j >= 0:
+                stripped = lines[j].strip()
+                if stripped.startswith("#"):
+                    block.append(stripped.lstrip("#").strip())
+                elif stripped:
+                    break
+                j -= 1
+            return " ".join(reversed(block))
+    raise AssertionError(f"no collect step whose `- name:` contains {needle!r}")
+
+
+def test_no_collect_step_name_promises_it_survives_the_job_cap(collect_steps):
+    """A step NAME is the one piece of the workflow that shows up in the Actions UI
+    next to its own cancellation, so a survival promise there is read as a receipt."""
+    offenders = [
+        name for step in collect_steps
+        if (name := str(step.get("name") or ""))
+        and _JOB_CAP.search(name) and _SURVIVES.search(name)
+    ]
+    assert not offenders, (
+        "a collect step name promises it survives the job cap: "
+        f"{offenders}. The grace is ~5 minutes and can be exhausted before the step is "
+        f"ever scheduled (job {_EXHAUSTED_JOB}, 2026-09-25). Name what the step does, "
+        "not what it withstands."
+    )
+
+
+def test_the_salvage_push_is_documented_as_a_bounded_belt_with_both_measurements():
+    """POSITIVE pin, not just an absence check.
+
+    The salvage push is reachable after a cap (job 105033526139 ran it to success 2:02
+    past its cap) and unreachable once the grace is spent (job 107895940199). Both
+    facts must stay in the source: drop the first and the next reader writes the step
+    off as dead; drop the second and the cap looks covered again.
+    """
+    block = _comment_block_above("salvage push")
+    assert _JOB_CAP.search(block), (
+        "the salvage push comment no longer relates the step to the job cap at all — "
+        "the 2026-09-25 finding has been deleted rather than kept. Block was:\n" + block)
+    assert _BOUNDED.search(block), (
+        "the salvage push comment describes the grace window without saying it is "
+        "bounded/exhaustible, which is how it gets budgeted against again. Block was:\n"
+        + block)
+    assert not _SURVIVES.search(block), (
+        "the salvage push comment promises the step survives or always rescues a capped "
+        "night. It is a belt with a hard ceiling. Block was:\n" + block)
+    for job in (_SURVIVED_JOB, _EXHAUSTED_JOB):
+        assert job in block, (
+            f"the salvage push comment no longer cites job {job}. Both measurements are "
+            "load-bearing: one proves the step runs past a cap, the other proves the "
+            f"grace can run out first. Block was:\n{block}")
+
+
+def test_the_w2_finish_comment_keeps_the_exhausted_grace_case():
+    """Unconditional. The first version wrapped its assertions in
+    `if _JOB_CAP.search(block):`, so deleting the cap vocabulary made the test assert
+    nothing while still reporting green — the evasion is cheaper than the compliance.
+    """
+    block = _comment_block_above("timings ledger + 85% budget tripwire")
+    assert _JOB_CAP.search(block), (
+        "the W2 finish comment no longer says how it behaves at the job cap. Without "
+        "that, `always()` reads as unconditional. Block was:\n" + block)
+    assert _BOUNDED.search(block), (
+        "the W2 finish comment must keep the exhausted-grace case: on 2026-09-25 this "
+        "step was never scheduled and that night has NO ledger row, which is why the "
+        "cap cannot be sized on post-timeout telemetry. Block was:\n" + block)
+    assert not _SURVIVES.search(block), (
+        "the W2 finish comment promises a row is always recorded. Block was:\n" + block)
+
+
+def test_the_creep_budget_is_pinned_below_the_raised_cap():
+    """The cap raise must not disarm the alarm that justified it.
+
+    `WARN_PCT` is applied to the finish step's budget argument, so with a single
+    number the 240 -> 300 raise would move the 85% line from 204m to 255m and silence
+    every night this repair cites (242.5m, 226.7m, 226.3m, 229.4m, 220.1m).
+    """
+    steps = yaml.safe_load(DAILY.read_text())["jobs"]["collect"]["steps"]
+    finish = [s for s in steps if "nightly_timings_finish.sh" in str(s.get("run") or "")]
+    assert len(finish) == 1, f"expected exactly one W2 finish step, found {len(finish)}"
+    toks = str(finish[0]["run"]).strip().split()
+    cap = yaml.safe_load(DAILY.read_text())["jobs"]["collect"]["timeout-minutes"]
+    assert toks[2] == str(cap), f"finish cap arg {toks[2]} != timeout-minutes {cap}"
+    assert len(toks) == 4, (
+        f"the collect finish step passes only a cap ({toks[2]}m), so the 85% tripwire "
+        f"rescales to {0.85 * float(cap):.0f}m and stops firing on the ~226m nights that "
+        "forced this cap raise. Pass an explicit creep budget as the second argument.")
+    assert float(toks[3]) <= float(cap), "creep budget must not exceed the cap"
+    assert 0.85 * float(toks[3]) <= 220.0, (
+        f"creep budget {toks[3]}m puts the 85% line at {0.85 * float(toks[3]):.0f}m, above "
+        "the 220.1m (2026-09-26) night this repair is meant to keep visible.")
+
+
+def test_a_failed_push_cannot_advance_the_served_source_receipt(collect_steps):
+    """`published` is the receipt a downstream job reads to decide the source
+    session advanced.  It must DEFAULT to false and flip to true only after the
+    push itself returned success — never on a path a failed, killed or skipped
+    push can reach.
+
+    2026-09-25 is what makes this load-bearing rather than tidy: that night's
+    collections WERE committed locally and the push was then killed inside the
+    job cap's grace, so the protected tree never moved.  A receipt written
+    before `push_do` returns would have reported that lost night as a published
+    source session, and the served page would have been called current while
+    serving the previous session.
+    """
+    push = collect_steps[_index_of(collect_steps, MARKET_PUSH_STEP)]
+    lines = str(push.get("run") or "").splitlines()
+
+    false_at = [i for i, l in enumerate(lines) if "published=false" in l]
+    true_at = [i for i, l in enumerate(lines) if "published=true" in l]
+    assert len(false_at) == 1, (
+        f"expected exactly one published=false default, found {len(false_at)}"
+    )
+    assert len(true_at) == 1, (
+        f"expected exactly one published=true, found {len(true_at)} — a second "
+        "way to advance the receipt is a second way to lie about the session"
+    )
+    assert false_at[0] < true_at[0], (
+        "published=false must be the DEFAULT, written before any push attempt"
+    )
+
+    def _indent(i: int) -> int:
+        return len(lines[i]) - len(lines[i].lstrip())
+
+    assert _indent(true_at[0]) > _indent(false_at[0]), (
+        "published=true must be nested inside the success branch, not at the "
+        f"step's top level (indent {_indent(true_at[0])} vs default "
+        f"{_indent(false_at[0])})"
+    )
+
+    # The discriminating assertion.  A receipt guarded only by the rebase, the
+    # append-only fence or the retry loop would advance on a night whose push
+    # never landed, so the nearest ENCLOSING conditional must be the push call
+    # itself.  One-liner `if ...; fi` guards are closed and never enclosing.
+    guards = [
+        l.strip()
+        for l in lines[: true_at[0]]
+        if l.strip().startswith("if ") and not l.strip().endswith("fi")
+    ]
+    assert guards, "published=true is not inside any conditional"
+    assert "push_do" in guards[-1], (
+        "the source receipt must advance only when the push itself succeeded; "
+        f"its nearest enclosing guard is {guards[-1]!r}"
+    )
+
+    # And the receipt has to still be worth pinning: something downstream reads it.
+    outputs = yaml.safe_load(DAILY.read_text())["jobs"]["collect"].get("outputs") or {}
+    assert any("pushdata.outputs.published" in str(v) for v in outputs.values()), (
+        "no collect job output reads the push receipt any more — if that is "
+        "deliberate, rewrite this pin against whatever consumes it now"
+    )
+
+
+def test_a_no_op_rerun_cannot_mint_a_fictitious_source_session(collect_steps):
+    """A rerun that collects nothing must leave `committed` false.
+
+    The consumer half of this is already pinned: the push step is gated on
+    `steps.commitdata.outputs.committed == 'true'`
+    (test_each_checkpoint_keeps_the_commit_push_split) and the receipt only
+    advances inside push_do's success branch
+    (test_a_failed_push_cannot_advance_the_served_source_receipt). Neither one
+    pins the PRODUCER, so an edit that hoisted `committed=true` above the
+    empty-index check would hand a no-op rerun a published source session and
+    both existing tests would stay green — the served page would then call
+    itself current off a night that collected nothing.
+
+    The mechanism being pinned: `committed=false` is written first, the step
+    exits 0 on an empty index, and `committed=true` is reachable only after a
+    real `git commit`.
+    """
+    commit = collect_steps[_index_of(collect_steps, MARKET_COMMIT_STEP)]
+    lines = str(commit.get("run") or "").splitlines()
+
+    false_at = [i for i, l in enumerate(lines) if "committed=false" in l]
+    true_at = [i for i, l in enumerate(lines) if "committed=true" in l]
+    empty_at = [i for i, l in enumerate(lines) if "git diff --cached --quiet" in l]
+    commit_at = [i for i, l in enumerate(lines) if l.strip().startswith("git commit ")]
+
+    assert len(false_at) == 1, f"expected one committed=false default, found {len(false_at)}"
+    assert len(true_at) == 1, (
+        f"expected one committed=true, found {len(true_at)} — a second way to "
+        "claim a session is a second way to invent one"
+    )
+    assert empty_at, (
+        "the empty-index check is gone; a rerun with nothing staged would fall "
+        "through to the commit and mint a source session out of no data"
+    )
+    assert commit_at, f"{MARKET_COMMIT_STEP!r} no longer commits"
+
+    assert false_at[0] < empty_at[0], (
+        "committed=false must be the DEFAULT, written before the empty-index check"
+    )
+    # The discriminating order: the empty-index early exit has to sit between the
+    # default and the flip, so the no-op path can never reach committed=true.
+    assert empty_at[0] < true_at[0], (
+        f"committed=true (line {true_at[0]}) is reachable before the empty-index "
+        f"check (line {empty_at[0]}) — a rerun that collected nothing would report "
+        "a published source session"
+    )
+    assert commit_at[0] < true_at[0], (
+        f"committed=true (line {true_at[0]}) is set before `git commit` (line "
+        f"{commit_at[0]}) — it would claim a commit that had not happened yet"
+    )
+    assert "exit 0" in lines[empty_at[0]], (
+        "the empty-index check no longer exits the step; a bare message lets "
+        f"control reach committed=true anyway: {lines[empty_at[0]].strip()!r}"
+    )
