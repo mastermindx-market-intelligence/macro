@@ -136,8 +136,11 @@ def _qualify_settled_session_at_turn(context: dict, now: datetime) -> dict:
     except (ValueError, OverflowError, TypeError, KeyError, AttributeError):
         expected = None
     context["expected_completed_session"] = expected
-    context["source_current_at_turn"] = (None if expected is None else
-                                         context.get("source_session") == expected)
+    source = context.get("source_session")
+    # The current session can exist before the incumbent daily settle buffer:
+    # newer-than-completed is unverified, not an *older* stale observation.
+    context["source_current_at_turn"] = (
+        None if expected is None or source > expected else source == expected)
     return context
 
 
@@ -513,8 +516,16 @@ def render_context(context: dict, *, lang: str = "en", char_budget: int = 1800) 
              ("相对跑赢不等于资金净流入、机构换手、成分股广度改善或未来抛售预测。" if zh else
               "Relative outperformance does not establish net inflows, institutional ownership transfers, constituent breadth, or a predicted selloff.")]
     if not live and "source_current_at_turn" in context and context["source_current_at_turn"] is None:
-        lines.insert(1, ("美股交易日历暂不可用，无法验证此历史读数为当前；并非风险解除。" if zh else
-                         "US market calendar unavailable; current-session status unverified, not an all-clear."))
+        expected = context.get("expected_completed_session")
+        if expected is None:
+            caveat = ("美股交易日历暂不可用，无法验证此历史读数为当前；并非风险解除。" if zh else
+                      "US market calendar unavailable; current-session status unverified, not an all-clear.")
+        else:
+            caveat = (f"来源交易日 {context.get('source_session')} 尚未完成结算确认；"
+                      f"最新已完成美股交易日 {expected}，这不是风险解除确认。" if zh else
+                      f"Source session {context.get('source_session')} is not yet a completed US session; "
+                      f"latest completed {expected}. Unverified, not an all-clear.")
+        lines.insert(1, caveat)
     if not live and context.get("source_current_at_turn") is False:
         # Truthful last-known context, not a freshly confirmed trading stance.
         # Prepend this above the backdrop so even short model budgets preserve

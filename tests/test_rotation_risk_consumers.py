@@ -983,3 +983,32 @@ def test_compact_live_context_does_not_become_settled_by_calendar_annotation():
     assert result["usable"] is True
     assert "source_current_at_turn" not in result
     assert "expected_completed_session" not in result
+
+
+# R12: settled data newer than the latest COMPLETED session is unverified,
+# not a stale older observation and not an all-clear.
+@pytest.mark.parametrize("moment,source_day,produced", [
+    ("2026-10-07T14:01:00Z", "2026-10-07", "2026-10-07T12:01:00Z"),
+    ("2026-10-08T20:30:00Z", "2026-10-08", "2026-10-08T20:15:00Z"),
+])
+def test_current_session_settled_source_before_completion_is_unverified_not_stale(
+        moment, source_day, produced):
+    from datetime import datetime
+
+    native = envelope()
+    native["source_session"] = native["as_of"] = source_day
+    native["measured_state"]["as_of"] = source_day
+    native["rotation_context"]["as_of"] = source_day
+    native["observed_at"] = native["produced_at"] = produced
+    native["stale_after"] = None
+    out = rc.compact_context(native, now=datetime.fromisoformat(moment.replace("Z", "+00:00")))
+    assert out["usable"] is True
+    assert out["expected_completed_session"] < source_day
+    assert out["source_current_at_turn"] is None
+    en = rc.render_context(out)
+    zh = rc.render_context(out, lang="zh")
+    assert "not yet a completed US session" in en
+    assert "not an all-clear" in en
+    assert "Last-known, not current" not in en
+    assert "尚未完成" in zh
+    assert len(en) <= 1800 and len(zh) <= 1800
