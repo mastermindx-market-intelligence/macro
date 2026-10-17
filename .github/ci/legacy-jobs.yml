@@ -26218,6 +26218,59 @@ jobs:
           tests/test_tiingo_capture_admission.py -q
 
 
+  dataos-acceptance:
+    # Data OS completion acceptance (A02 correction/supersession, A03 interrupted
+    # publish + recovery, R01 prior-finding regression pins): SYNTHETIC hermetic
+    # fixtures driven through the real read and publish seams. Strict-xfail pins are
+    # open FINDINGS (A03-F1..F3), not tolerated failures; a fix that lands flips them
+    # to XPASS and fails this job until the pin is retired. Reads no data/ or site/ bytes.
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    paths:
+      - .github/ci/legacy-jobs.yml
+      - .github/workflows/ci.yml
+      - config/dataset_registry.yml
+      - config/delisted_symbols.yml
+      - config/issuer_group_allowlist.yml
+      - lib/__init__.py
+      - lib/config.py
+      - lib/dataos/__init__.py
+      - lib/dataos/identity.py
+      - lib/dataos/nulls.py
+      - lib/dataos/price.py
+      - lib/dataos/price_views.py
+      - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
+      - lib/dataos/registry.py
+      - lib/dataos/temporal.py
+      - lib/delisted_symbols.py
+      - lib/ticker_aliases.py
+      - research/data_os_completion/2026-10-13/A02_UPDATE_CORRECTION.md
+      - research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md
+      - research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md
+      - scripts/__init__.py
+      - scripts/build_security_master.py
+      - tests/verification/__init__.py
+      - tests/verification/test_a02_corrections.py
+      - tests/verification/test_a03_recovery.py
+      - tests/verification/test_r01_prior_findings.py
+    timeout-minutes: 12
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install bounded data test dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: Data OS acceptance suites (A02 corrections, A03 recovery, R01 pins)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/verification/test_a02_corrections.py
+          tests/verification/test_a03_recovery.py
+          tests/verification/test_r01_prior_findings.py -q -rs
+
   dataos-web-workspace:
     # Stored-data readers and the bounded canonical Lab adapter are optional
     # consumers of the pure Data OS foundation. Keep its pytest/pyyaml-only
