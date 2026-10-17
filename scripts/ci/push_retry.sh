@@ -350,6 +350,49 @@ push_classify() {
   return 0
 }
 
+# Cheap final-tree metadata guard for the legacy QLedger publication path.
+# The accepted native gate is separate and remains unchanged. This checks ONLY
+# the named HEAD claims blob; it does not claim to certify all newly reachable
+# intermediate history (the server's GH001 classification remains terminal).
+# No body read, large-file hydration, issuer clock, ref write, or push occurs.
+_push_qledger_legacy_head_size_guard() {
+  if _push_terminal_failure; then return "$PUSH_TERMINAL_RC"; fi
+  # Keep generic push lanes Git-light: no extra Git discovery when the
+  # canonical QLedger artifact is absent from this checkout.
+  [ -f data/qledger/claims.jsonl ] || return 0
+  local in_repo row mode kind oid bytes path reason
+  # Generic shell/test callers with no current Git worktree preserve the
+  # existing push path (which will classify its own Git failure).
+  in_repo=$(git rev-parse --is-inside-work-tree 2>/dev/null) || return 0
+  [ "$in_repo" = "true" ] || return 0
+  if ! row=$(git ls-tree -l HEAD -- data/qledger/claims.jsonl 2>&1); then
+    reason="QLedger final-tree size cannot be verified; no Git push attempted"
+  elif [ -z "$row" ]; then
+    # Other publishers and source trees without this artifact are unaffected.
+    return 0
+  else
+    IFS=$' \t' read -r mode kind oid bytes path <<< "$row"
+    if [[ "$row" == *$'\n'* ]] ||
+       [ "$mode" != "100644" ] || [ "$kind" != "blob" ] ||
+       [[ ! "$oid" =~ ^[0-9a-f]{40}$ && ! "$oid" =~ ^[0-9a-f]{64}$ ]] ||
+       [[ ! "$bytes" =~ ^[0-9]+$ ]] ||
+       [ "$path" != "data/qledger/claims.jsonl" ]; then
+      reason="QLedger tracked claims object metadata invalid; no Git push attempted"
+    elif [ "$bytes" -le 104857600 ]; then
+      return 0
+    else
+      reason="QLedger HEAD claims blob is $bytes bytes (over GitHub 100 MiB); no Git push attempted"
+    fi
+  fi
+  PUSH_TERMINAL_RC=75
+  PUSH_TERMINAL_OUTPUT="$reason"
+  PUSH_FAIL_CLASS="qledger-integrity"
+  PUSH_STOP="$reason; automatic retry stopped"
+  PUSH_N_OTHER=$(( ${PUSH_N_OTHER:-0} + 1 ))
+  printf '::error title=QLedger Git blob preflight::%s\n' "$reason" >&2
+  return 75
+}
+
 # `git push` with classification. Extra args are passed through. Returns push's status.
 push_do() {
   if _push_terminal_failure; then return "$PUSH_TERMINAL_RC"; fi
@@ -361,6 +404,7 @@ push_do() {
     for qledger_arg in "$@"; do qledger_args+=("--push-arg=$qledger_arg"); done
     push_qledger_guard publish-candidate "${qledger_args[@]}" || return $?
   fi
+  _push_qledger_legacy_head_size_guard || return $?
   if [ -n "${PUSH_ALARM}" ]; then
     out=$(perl -e 'alarm shift @ARGV; exec @ARGV or die' -- "${PUSH_ALARM}" git push "$@" 2>&1) || rc=$?
   else
