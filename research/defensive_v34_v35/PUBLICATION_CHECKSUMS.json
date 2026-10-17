@@ -1,0 +1,40 @@
+{
+  "schema": "mmx.defensive.v34_v35.researchpublication.v1",
+  "date": "2026-10-13",
+  "regime_history_cutoff": "2026-10-08",
+  "paper_equity_cutoff": "2026-10-13",
+  "paper_freeze_utc": "2026-10-14T01:17:50.623340+00:00",
+  "source_finality": "AFTER_CLOSE_VENDOR_UNATTESTED",
+  "archive_sha256": "d84942c91cbc72427be4a73ddf3e2484835f87ee0bac293c636ccb25970f9f32",
+  "archive_bytes": 70373,
+  "archive_git_blob_sha": "648bb31e233703652620754ccc9e321de5bdc30c",
+  "report_sha256": "eb777faf90fb1484bd14315d819dd774a378e846508c8277f96c4df523444c70",
+  "readme_sha256": "f1f4f67dc66a617a2861283d52f2a1ba811adb30c4db6caaa86cb56ad3e1c0dc",
+  "table_sha256": {
+    "V34_ExAnte_Regime_Entry_Policies.csv": "09dfb3909a6eb2a711d3ca1dadeb3ea55c1a6cd189c65e3b61912742c90b8adc",
+    "V34_ExAnte_Regime_Paired_Entries.csv": "2c8abf0833111e1e7a8ef9239d4982087e3442e587ac222aaa355fff89c2b495",
+    "V35_Oct13_108_Dual_Signal_Paper.csv": "cba6ad28c18aed1ec4f2c7b5ac9466a01e7ca9f18c8776cd7bbf90ae85fec1aa",
+    "V35_Core_Five_Oct13_Paper.csv": "c336d9cfea2c2a9ad61a9b8e12a444d281e78176df338d5f68214836be4c3c6b",
+    "V35_Actual_Freeze_Receipt.json": "ac22b0f56f1465d0b6e632a5c5f46902cad31d5496ccc4d4ccad7c2711df4e53"
+  },
+  "mechanical_tests": {
+    "V34": 7,
+    "V35": 7
+  },
+  "original_washout_watches": 198,
+  "paper_rows": 108,
+  "no_future_return_observed": true,
+  "production_setting_change": false,
+  "broker_order_or_fill": false,
+  "autonomous_watcher_created": false,
+  "raw_ohlc_included": false,
+  "related_research_prs": [
+    9034,
+    9064,
+    9129,
+    9174,
+    9176,
+    9180,
+    9195
+  ]
+}
