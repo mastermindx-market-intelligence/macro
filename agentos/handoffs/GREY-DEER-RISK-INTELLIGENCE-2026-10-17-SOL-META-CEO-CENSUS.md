@@ -2,12 +2,11 @@
 workstream: WS:GREY-DEER-RISK-INTELLIGENCE
 session: 01a14837-d202-71fa-918c-99124fb860c5
 model: sol
-ended_because: blocked
+ended_because: ci_handoff
 mission: 'Continue Chairman Chris Wong''s existing Risk On/Risk Off, Risk Radar and Grey Deer programme as
   Meta-CEO: recover custody, establish useful exposure-level intelligence, validate claims and finish real
   backend-to-user delivery. MISSION_COMPLETE: false. Execution model GPT-6 Astra Pro; Sol is the assigned Meta-CEO
-  role. This cumulative checkpoint preserves completed work and actual CI, authentication, runtime-release
-  and empirical gates; it does not close the parent mission.'
+  role. This cumulative checkpoint preserves completed work and current CI, runtime-release and empirical gates; authentication is now verified; it does not close the parent mission.'
 state_before: Architecture freeze and accepted GD-3 natural four-clock proof existed; GD1B was accepted without
   promotion, GD1C blocked, five-case atlas explanatory, stage-1b 0/12. W5 source was merged but genuine forward
   issuance was unproved. Existing warning and product carriers had distinct writer/release constraints. No
@@ -130,6 +129,16 @@ verified:
     tests fail on both head and base, with four null Chinese watch items. Same-cause hosted attribution remains
     unknown due to differing signatures. CI=true versus missing CI reproduces the summary/signature mechanism;
     distinct reasons remain distinct. No CI/translation/guard edit or exemption.
+- claim: Authenticated incumbent Radar delivery and one real Copilot failure are captured.
+  command: research/grey_deer/live_delivery_20261017/capture_manifest.json and README.md
+  result: User-supplied signed-in browser verified. Native component dates, null stage reason and relative-strength
+    qualification are visible. One default-Fast market question completed in 175 seconds / four checks with only
+    a portfolio evidence caveat; no requested market reasoning was delivered. Actual backend cause remains under investigation.
+- claim: Existing sibling workspace and shared-test repair were recovered and integrated without duplicate work.
+  command: PR9517 merge9cfa8918b55a; normal git merge e8cb76a6 into owned PR9515; targeted pytest
+  result: Local integration15bdaec7351d preserved original protocol/outcome ancestry. Only CI manifest overlapped,
+    with no conflict. Recurring-briefs plus census tests passed 90 in 11.20s, receipt ac9aa77cff8415dab094bdbd3b872ceac6139bf805ee4b7e6f4ea35eacfadef2.
+    Independent sibling source review accepted with remaining exact-probability and inherited-wording gaps; current live publication remains unverified.
 unverified:
 - claim: Full Mastermind release qualification, production decision and actual delivery of the merged source
     correction.
@@ -144,38 +153,52 @@ unverified:
     separately and compare every candidate-owned blob. The enclosing proposed record is not a pre-merge proof.'
 - claim: Current entitled warning delivery, long-open refresh, expiry and backend-to-user clocks.
   what_would_verify: 'Original #8132 warning carrier with actual writer/release clearance; current authenticated
-    browser paint and production receipts through the existing publisher. Human authentication is still needed
-    on the cloud browser; do not invent selectors after the bounded failed form identification.'
+    browser paint and production receipts through the existing publisher. Authentication and bounded incumbent
+    Radar paint are now verified; new workspace publication, exact source-to-paint identity, all-state freshness/expiry
+    and current Terminal proof remain outstanding.'
 - claim: New predictive, remaining-loss, propagation or re-entry superiority.
   what_would_verify: Admitted immutable inputs, executable preregistration and counted trial family, chronological/prospective
     evaluation, calibrated incremental value, dependence-qualified uncertainty and costs. No unscanned holdout
     may be claimed from inspected history.
 unresolved:
-- The parent programme is incomplete. A descriptive census and source merge do not establish finished warning
+- >-
+  The parent programme is incomplete. A descriptive census and source merge do not establish finished warning
   delivery or a new policy.
-- Macro evidence source delivery remains subject to current-head native gates. Prior 8bcd569 has shared weekly-brief
-  failure classified unknown; this checkpoint cannot certify its enclosing commit and is not armed.
-- The future-date source correction is merged but absent from the observed live runtime. The standard release
+- >-
+  Macro evidence source delivery remains subject to current-head native gates. Prior 126c9 failed the shared weekly-brief tests;
+  their existing #9517 repair is now integrated at 15bdaec7351d with 90 local tests passing. This checkpoint cannot
+  certify its enclosing commit and is not armed.
+- >-
+  The future-date source correction is merged but absent from the observed live runtime. The standard release
   is a full exact-master archive with 1507 repository differences from live; broader qualification and the
   canonical production decision remain outstanding.
-- W5 legitimate issuance remains absent at the frozen source pin and current refresh adds BACKFILL_ASOF; existing
+- >-
+  W5 legitimate issuance remains absent at the frozen source pin and current refresh adds BACKFILL_ASOF; existing
   QLedger/nightly publication custody remains controlling.
-- Paper adapter catalog is not accepted for write. No compatibility or source-writer gate was bypassed.
-- Current authenticated Macro/Radar and Terminal consumer proof is outstanding; older accepted GD-3 natural
-  production proof remains accepted and must not be rerun by default.
-- Company/theme historical membership, native-country/factor coverage, intraday execution and release-vintage
+- >-
+  Paper adapter catalog is not accepted for write. No compatibility or source-writer gate was bypassed.
+- >-
+  Authenticated incumbent Macro/Radar date/null/relative-strength disclosure is captured and accepted within scope.
+  The new #9517 workspace is not yet observed served; current Terminal proof and exact clock binding remain open.
+  One completed Copilot request failed usefulness. Prior GD-3 natural production proof remains accepted and must not be rerun by default.
+- >-
+  Company/theme historical membership, native-country/factor coverage, intraday execution and release-vintage
   evidence remain incomplete.
-- The broad research extension remains proposed; current Sol owns methodological decisions, while actual data/source-purpose
+- >-
+  The broad research extension remains proposed; current Sol owns methodological decisions, while actual data/source-purpose
   and numerical-policy contracts remain evidence gates.
-- The T13 worker's remote_desktop_commander read-only dependency probe aborted after 1,036 seconds with no
+- >-
+  The T13 worker's remote_desktop_commander read-only dependency probe aborted after 1,036 seconds with no
   process handle; no parquet command was submitted. Root completed the result through studio_direct. Both native
   children are explicitly stopped; the Fabric review was NOT_ACCEPTED and is terminal. No durable watcher or
   autonomous wake is claimed.
 next_actions:
-- 'First read PR #9515, its exact current head/check/merge state and this receipt. Prior 8bcd569 failed pack
-  6/ci-gate; preserve unknown native attribution. Resolve through actual shared CI/translation custody or newly
-  valid native evidence, then finish ordinary source gates on the same unarmed carrier. No replacement PR,
-  guard waiver or inferred merge.'
+- 'Finish ordinary source gates on the same #9515 carrier after the existing #9517 shared-test repair was integrated.
+  Verify the exact current head and binding native checks; do not reuse old failed runs or waive a guard.
+  After normal expected-head merge, fetch main separately and compare owned blobs.'
+- 'Preserve #9517 release custody and observe its covering render; verify the changed authenticated workspace.
+  Trace the captured Copilot request through the existing response record and gateway before a custody-qualified
+  repair. Preserve real evidence limitations, probability qualification and numerical policy owners.'
 - 'Mastermind #1567 is merged as b08223680180 with native queue and fetched-blob proof; do not redo the repair
   or push its merged branch. Use the recorded exact archive and old runtime baseline to qualify the complete
   standard release, then obtain its required production decision and capture installed-source, changed-path
@@ -238,3 +261,12 @@ A second isolated workspace owns only the clock repair: `/Volumes/Mastermind 2/a
 At this update the source operations remain open. Mastermind exact-head CI run 39016492939 has one session-local watch (PID 98141, 90-second interval). Macro head 950aba25f09883a64a5d03dc4c3cdc73e476bee8 has a blocking recurring-briefs failure in run 39015478488: the same two tests fail on the exact base, but differing recorded signatures make native attribution unknown. That head is unarmed. Subsequent document changes will supersede its run and watcher; verify the current PR head instead of reusing this old receipt. These are session-local observers, not durable automation or autonomous wake. No CI gate was changed, no source carrier bypassed, no production deployment performed.
 
 The current canonical strategic-state loader explicitly reports autonomous_production_deploy: prohibited. Source work can complete under the standing commission; runtime deployment needs a concrete exact-release approval. This is the actual remaining deployment authority boundary, not an inferred absence of an archived author.
+
+
+## Authenticated continuation and current-main integration — October 17
+
+This section supersedes earlier authentication and immediate-next-action statements. The user supplied a signed-in browser and asked this mission to continue. Root captured the incumbent Radar, expanded source disclosures and one completed Copilot question. The [delivery evidence](../../research/grey_deer/live_delivery_20261017/README.md) and hashed captures establish useful component-date/null disclosures but a failed market-intelligence answer: after 175 seconds, the final answer consisted only of a portfolio caveat. Source-level investigation identifies a blank-answer/caveat path; the exact live request's cause is not yet established. No provider retry, allocation or trade was submitted.
+
+Existing #9517 source merged as 9cfa8918b55a at 11:42:43Z. Its independent source review is accepted for the supplied descendant only, with exact forecast qualification, inherited wording and exposure/recovery usefulness still open. At12:50Z its covering render39029743025 remained in progress, successor39032477826 pending, and a fresh authenticated page still showed the incumbent layout. Preserve its original writer/release custody.
+
+The same sibling had already repaired the shared recurring-briefs tests. Root integrated fetched main e8cb76a6cd742690584f7a16b92ca195a151a71a into the clean, unarmed #9515 branch at 15bdaec7351dbe2f1bf1a227b6e7498a8b3c0ac7. The sole overlapping CI manifest merged cleanly. Ninety relevant tests pass. Original preregistration, frozen outcomes, rejected studies and all source-policy boundaries remain unchanged. Current enclosing-head CI and normal merge are still required; this is a source-time checkpoint, not a claim that this turn or the parent mission has completed.

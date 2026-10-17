@@ -441,7 +441,9 @@ waves:
     title: Meta-CEO source and all-date exposure census, recorded-version reconstruction and continuation revision
     status: awaiting_ci
     pr: 9515
-    # Prior Macro head 8bcd569: ci-pack-6/ci-gate failed on shared weekly-brief translations; native same-cause attribution unknown. Enclosing head needs its own gates.
+    # Prior 126c9 failed shared weekly-brief tests; existing #9517 repair integrated at 15bdaec7351d,90 relevant tests pass. Enclosing head needs native gates.
+    # Authenticated incumbent Radar dates/null disclosures captured; one Copilot market question failed after 175s with only a portfolio caveat.
+    # #9517 source review accepted within scope; exact probability qualification remains incomplete; existing covering render and live acceptance pending.
     # T13 metadata read complete: H2 absent 348/1321 origins; source-purpose and actual Massive/T12 sample unadmitted; zero fits/trials.
     # Consumer source-function comparison complete; Mastermind PR1567 implements the future-date fix, reviewed head 1e6a8a23fac1, 184 native tests pass.
     # Mastermind #1567 merged b08223680180 after successful native queue; fetched master and both owned blobs verified. Runtime remains Oct9; full archive qualification/production decision and live parity remain open.
@@ -453,8 +455,12 @@ next_action: >
   and RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md. Complete the isolated
   GD-RR-CENSUS-20261017 carrier in PR 9515 through normal source gates; read
   agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md,
-  then inspect the source/release preflight. Prior Macro head 8bcd569 is blocked by
-  shared weekly-brief CI; native attribution remains unknown. Mastermind PR1567
+  then inspect live_delivery_20261017/README.md and the source/release preflight.
+  Existing #9517 repaired shared weekly-brief tests; its main source is integrated
+  at 15bdaec7351d and 90 relevant local tests pass. Finish enclosing-head native gates.
+  Preserve #9517 release custody; verify the newly served workspace after its
+  covering render. Trace the captured Copilot failure through the existing response
+  record and gateway before a custody-qualified repair. Mastermind PR1567
   merged as b08223680180 with native queue and fetched-blob proof. Its source repair
   is not installed: the healthy observed runtime remains at October 9 source.
   Canonical strategic state prohibits autonomous production deployment. Qualify
@@ -474,8 +480,10 @@ next_action: >
   scopes. QLedger/nightly publication repair remains with its existing owners.
   No proxy carrier, second publisher or alternate episode store. Preserve Envelope
   rank/gate/size/execute false, Prophet raw rank and Portfolio numerical policy.
-  Paper writes require actual catalog qualification; entitled Radar browser proof
-  requires the existing secure sign-in flow. Whole programme not finally accepted.
+  Paper writes require actual catalog qualification. Authentication and bounded
+  incumbent Radar disclosure proof are now verified; new workspace delivery, exact
+  source-to-paint clocks, expiry, current Terminal and useful Copilot answers remain
+  open. Whole programme not finally accepted.
 ---
 
 # Grey Deer Risk Intelligence & Capital Protection
