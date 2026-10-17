@@ -6687,6 +6687,7 @@ jobs:
           tests/test_fundamental_forensics_state_peer_cohort.py
           tests/test_fundamental_forensics_statement_grid.py
           tests/test_fundamental_forensics_statement_grid_p5b.py
+          tests/test_fundamental_forensics_lane_c_cat_title.py
           tests/test_fundamental_forensics_ui.py
           tests/test_fundamental_forensics_wave2_operator.py
           -q
