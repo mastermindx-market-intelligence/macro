@@ -2,11 +2,11 @@
 
 # Agent OS state
 
-Generated: 2026-10-16T14:48:24Z  |  98 workstreams (77 active · 5 blocked · 12 done · 4 parked)
+Generated: 2026-10-17T04:04:05Z  |  98 workstreams (77 active · 5 blocked · 12 done · 4 parked)
 
 | Input | Value |
 |---|---|
-| active_builds | data/governance/active_builds.json@2026-10-16T14:48:24.544214+00:00 |
+| active_builds | data/governance/active_builds.json@2026-10-17T04:04:04.857764+00:00 |
 | active_builds age | 0.0h |
 | worktrees | 1 |
 | records | 98 WS · 498 DEC · 534 DSC · 719 handoffs |

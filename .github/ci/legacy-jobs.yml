@@ -2632,6 +2632,7 @@ jobs:
       - "engine/narrative_crossmarket.py"
       - "engine/narrative_emergence.py"
       - "engine/narrative_rotation.py"
+      - "engine/short_volume.py"
       - "engine/neuralweb/__init__.py"
       - "engine/neuralweb/brief_context.py"
       - "engine/neuralweb/capability_broker.py"
@@ -5032,6 +5033,7 @@ jobs:
       - "engine/name_score.py"
       - "engine/name_score_grader.py"
       - "engine/narrative_rotation.py"
+      - "engine/short_volume.py"
       - "engine/neuralweb/envelope.py"
       - "engine/neuralweb/synapse.py"
       - "engine/ohlc_reconstruct.py"
@@ -5366,6 +5368,7 @@ jobs:
       - "engine/rri_shadow.py"
       - "engine/session_anchor.py"
       - "engine/setups.py"
+      - "engine/short_volume.py"
       - "engine/signal_archive.py"
       - "engine/signal_gate.py"
       - "engine/signal_quality.py"
@@ -6980,6 +6983,7 @@ jobs:
           tests/test_capital_structure_capacity_c2.py
           tests/test_capital_structure_capacity_c2b.py
           tests/test_capital_structure_capacity_c2c_a.py
+          tests/test_capital_structure_capacity_c2x.py
           tests/test_capital_structure_registration_integration.py
           tests/test_capital_structure_share_basis.py
           tests/test_capital_structure_authorized_shares.py
@@ -6988,6 +6992,8 @@ jobs:
           tests/test_capital_structure_instrument_economics.py
           tests/test_capital_structure_supply_scenarios.py
           tests/test_capital_structure_transactions.py
+          tests/test_capital_structure_variable_terms.py
+          tests/test_capital_structure_supply_variable.py
           tests/test_nwqs_c_dilution.py
           tests/test_compile_capital_structure_registration_lifecycles.py
           tests/test_covenant_terms.py
@@ -11967,6 +11973,7 @@ jobs:
       - "engine/market_state.py"
       - "engine/name_score_grader.py"
       - "engine/narrative_rotation.py"
+      - "engine/short_volume.py"
       - "engine/neuralweb/__init__.py"
       - "engine/neuralweb/envelope.py"
       - "engine/neuralweb/synapse.py"
@@ -12552,6 +12559,7 @@ jobs:
       - engine/name_score_grader.py
       - engine/narrative_crossmarket.py
       - engine/narrative_rotation.py
+      - engine/short_volume.py
       - engine/neuralweb/__init__.py
       - engine/neuralweb/brief_context.py
       - engine/neuralweb/capability_broker.py
@@ -14638,9 +14646,15 @@ jobs:
       - "config/global_liquidity_transmission_v1.yml"
       - "engine/global_liquidity_accounting.py"
       - "engine/global_liquidity_knowledge_time.py"
+      # GLT T08 (W2, 2026-10-17): the measurement-only component outlook
+      # accounting imports the accounting + knowledge-time modules above; its
+      # suite is wired here in the SAME commit per the W1 contract-delta lesson
+      # (a new test file without a path gate is an unwired suite).
+      - "engine/global_liquidity_outlook.py"
       - "engine/global_liquidity_transmission.py"
       - "tests/test_global_liquidity_accounting.py"
       - "tests/test_global_liquidity_knowledge_time.py"
+      - "tests/test_global_liquidity_outlook.py"
       - "tests/test_global_liquidity_sources_v2.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
@@ -14651,8 +14665,8 @@ jobs:
           python-version: "3.12"
       - name: install GLT contract test dependencies
         run: pip install pytest pandas numpy pyyaml
-      - name: global liquidity T03–T05 contracts — source manifest, knowledge time, monetary accounting
-        run: python -m pytest tests/test_global_liquidity_accounting.py tests/test_global_liquidity_knowledge_time.py tests/test_global_liquidity_sources_v2.py -q
+      - name: global liquidity T03–T05 + T08 contracts — source manifest, knowledge time, monetary accounting, component outlook
+        run: python -m pytest tests/test_global_liquidity_accounting.py tests/test_global_liquidity_knowledge_time.py tests/test_global_liquidity_sources_v2.py tests/test_global_liquidity_outlook.py -q
 
   ric-d0-fed-path-provenance:
     if: ${{ false }}
@@ -18928,6 +18942,7 @@ jobs:
       - engine/narrative_crossmarket.py
       - engine/narrative_emergence.py
       - engine/narrative_rotation.py
+      - engine/short_volume.py
       - engine/neuralweb/__init__.py
       - engine/neuralweb/brief_context.py
       - engine/neuralweb/capability_broker.py
@@ -19347,12 +19362,16 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_theme_graph_hierarchy.py -q
       - name: theme graph — V4-D2A identity-resolution bridge (hostile fixtures, two-clock law, reproducibility)
         run: TZ=UTC python -m pytest tests/test_theme_graph_identity_resolution.py -q
+      - name: theme graph — L13 micro-theme RS proxy display reader (Gate #2 vendor-input exclusion)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_micro_rs_proxy_display.py -q
       - name: theme graph — W3A local-theme plane (hostile tests D-M, capability sidecar, rights gate)
         run: TZ=UTC python -m pytest tests/test_theme_graph_local_plane.py -q
       - name: theme graph — W-C per-use rights verdict (fresh registry snapshot, revocation, ancestry)
         run: TZ=UTC python -m pytest tests/test_theme_graph_rights_use.py -q
       - name: theme graph — hierarchy probation proposals + ontology tier filter
         run: TZ=UTC python -m pytest tests/test_theme_graph_probation_hierarchy.py -q
+      - name: theme graph — L12 hierarchy breadth display reader (Gate #2 vendor-input exclusion)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_hierarchy_breadth_display.py -q
       - name: theme graph — source-rights registry shape + F20 grandfather pin
         run: TZ=UTC python -m pytest tests/test_theme_sources_registry.py -q
       - name: market ontology — GMI exposure composer (shock->theme->company, rights + as-of + typed nulls)
@@ -27347,6 +27366,7 @@ jobs:
       - "engine/name_score_grader.py"
       - "engine/narrative_crossmarket.py"
       - "engine/narrative_rotation.py"
+      - "engine/short_volume.py"
       - "engine/neuralweb/__init__.py"
       - "engine/neuralweb/brief_context.py"
       - "engine/neuralweb/capability_broker.py"
@@ -28163,6 +28183,61 @@ jobs:
           tests/test_tiingo_capture_admission.py -q
 
 
+  dataos-acceptance:
+    # Data OS completion acceptance (A02 correction/supersession, A03 interrupted
+    # publish + recovery, R01 prior-finding regression pins): SYNTHETIC hermetic
+    # fixtures driven through the real read and publish seams. Strict-xfail pins are
+    # open FINDINGS (A03-F1..F3), not tolerated failures; a fix that lands flips them
+    # to XPASS and fails this job until the pin is retired. Reads no data/ or site/ bytes.
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    paths:
+      - .github/ci/legacy-jobs.yml
+      - .github/workflows/ci.yml
+      - config/dataset_registry.yml
+      - config/delisted_symbols.yml
+      - config/issuer_group_allowlist.yml
+      - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+      - lib/__init__.py
+      - lib/config.py
+      - lib/dataos/__init__.py
+      - lib/dataos/identity.py
+      - lib/dataos/nulls.py
+      - lib/dataos/price.py
+      - lib/dataos/price_views.py
+      - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
+      - lib/dataos/registry.py
+      - lib/dataos/temporal.py
+      - lib/delisted_symbols.py
+      - lib/symbol_directory_receipts.py
+      - lib/ticker_aliases.py
+      - research/data_os_completion/2026-10-13/A02_UPDATE_CORRECTION.md
+      - research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md
+      - research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md
+      - scripts/__init__.py
+      - scripts/build_security_master.py
+      - tests/verification/__init__.py
+      - tests/verification/test_a02_corrections.py
+      - tests/verification/test_a03_recovery.py
+      - tests/verification/test_r01_prior_findings.py
+    timeout-minutes: 12
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install bounded data test dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: Data OS acceptance suites (A02 corrections, A03 recovery, R01 pins)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/verification/test_a02_corrections.py
+          tests/verification/test_a03_recovery.py
+          tests/verification/test_r01_prior_findings.py -q -rs
+
   dataos-web-workspace:
     # Stored-data readers and the bounded canonical Lab adapter are optional
     # consumers of the pure Data OS foundation. Keep its pytest/pyyaml-only
@@ -28281,6 +28356,115 @@ jobs:
           tests/test_dataos_web_lab_worker.py tests/test_dataos_web_readers.py
           tests/test_dataos_rights_matrix.py
           tests/test_dataos_web_workspace.py tests/test_tiingo_produced_contracts.py -q -rs
+
+  dataos-verification:
+    # Data OS completion verification (Q01 independent exact-rational oracle, Q02
+    # adversarial access at the real dispatcher + CLI, Q03 frozen-workload bench
+    # contract, F01 cross-consumer journey, A01 vertical acceptance journey): SYNTHETIC
+    # hermetic fixtures through the real seams. Strict-xfail pins are open FINDINGS,
+    # not tolerated failures. F01 J8 (blob-generation pins) enforces exact equality
+    # only with DATAOS_VERIFY_GENERATION=1, so a moving main never reds this job.
+    # The suites read no data/ or site/ bytes; the two site/factordata leaves are
+    # declared because lib/dataos/web_lab.py names them (contract-delta closure).
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    paths:
+      - .github/ci/legacy-jobs.yml
+      - .github/workflows/ci.yml
+      - collectors/tiingo_archive.py
+      - config/dataset_registry.yml
+      - config/market_memory_canary.v1.json
+      - contracts/theme_graph/membership_collection.v2.schema.json
+      - engine/__init__.py
+      - engine/basket_membership_pit.py
+      - engine/canon.py
+      - engine/conditions.py
+      - engine/earnings_release/filing_key.py
+      - engine/indicators.py
+      - engine/lab.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/brain_analogues.py
+      - engine/neuralweb/market_memory.py
+      - engine/neuralweb/market_memory_episode_comparison.py
+      - engine/neuralweb/market_memory_episode_features.py
+      - engine/neuralweb/market_memory_episode_retrieval.py
+      - engine/neuralweb/market_memory_history.py
+      - engine/neuralweb/market_memory_history_archive.py
+      - engine/neuralweb/market_memory_history_dossier.py
+      - engine/neuralweb/market_memory_history_filings.py
+      - engine/neuralweb/market_memory_history_macro.py
+      - engine/neuralweb/market_memory_history_transcripts.py
+      - engine/neuralweb/market_memory_identity.py
+      - engine/neuralweb/market_memory_lineage.py
+      - engine/neuralweb/market_memory_operating_cortex_service.py
+      - engine/neuralweb/market_memory_pit.py
+      - engine/neuralweb/market_memory_projection.py
+      - engine/neuralweb/market_memory_retained_context_cohort.py
+      - engine/neuralweb/market_memory_trusted.py
+      - engine/predictive_signals.py
+      - engine/price_ladder.py
+      - engine/stock_technicals.py
+      - engine/strategy_signals.py
+      - engine/tech_catalog.py
+      - engine/tech_stars.py
+      - engine/technicals.py
+      - engine/trial_ledger.py
+      - engine/validation.py
+      - lib/__init__.py
+      - lib/config.py
+      - lib/dataos/__init__.py
+      - lib/dataos/identity.py
+      - lib/dataos/nulls.py
+      - lib/dataos/price.py
+      - lib/dataos/price_views.py
+      - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
+      - lib/dataos/registry.py
+      - lib/dataos/temporal.py
+      - lib/dataos/tiingo_boats_tape.py
+      - lib/dataos/tiingo_reader.py
+      - lib/dataos/tiingo_views.py
+      - lib/dataos/tiingo_workspace.py
+      - lib/dataos/web_api.py
+      - lib/dataos/web_history.py
+      - lib/dataos/web_lab.py
+      - lib/dataos/web_lab_worker.py
+      - lib/dataos/web_readers.py
+      - lib/dataos/web_workspace.py
+      - lib/store.py
+      - research/data_os_completion/2026-10-13/F01_JOURNEY.md
+      - scripts/data_workspace.py
+      - scripts/tiingo_materialize.py
+      - scripts/tiingo_research_query.py
+      - site/factordata/factors.json
+      - site/factordata/insider_signals.json
+      - tests/verification/__init__.py
+      - tests/verification/bench_q03.py
+      - tests/verification/journey_a01.py
+      - tests/verification/journey_f01_census.py
+      - tests/verification/test_access_q02.py
+      - tests/verification/test_bench_q03_contract.py
+      - tests/verification/test_journey_a01.py
+      - tests/verification/test_journey_f01.py
+      - tests/verification/test_oracle_q01.py
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install bounded data test dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: Data OS verification suites (Q01 oracle, Q02 access, Q03 contract, F01 + A01 journeys)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/verification/test_oracle_q01.py
+          tests/verification/test_access_q02.py
+          tests/verification/test_bench_q03_contract.py
+          tests/verification/test_journey_f01.py
+          tests/verification/test_journey_a01.py -q -rs
 
   dataos-foundation:
     scope: exclusive
@@ -28471,6 +28655,23 @@ jobs:
       - config/delisted_symbols.yml
       - data/reference/**
       - lib/dataos/identity.py
+      # M01 (DATA-OS-COMPLETION): the frozen market support matrix. Its suite reads the
+      # committed US/HK/CN stores and the HK Connect roster (pyarrow) and pins the record
+      # research/data_os_completion/2026-10-13/M01_SUPPORT_MATRIX.md to the code, so it
+      # rides this pandas+pyarrow code-gate job. The data globs make a store or roster
+      # change re-prove the matrix, on the data/reference/** precedent above.
+      - lib/dataos/price.py
+      - lib/dataos/price_views.py
+      - lib/dataos/registry.py
+      - lib/dataos/web_readers.py
+      - config/dataset_registry.yml
+      - research/data_os_completion/2026-10-13/M01_SUPPORT_MATRIX.md
+      - tests/test_dataos_support_matrix.py
+      - data/stocks/**
+      - data/hk_stocks/**
+      - data/china_stocks_raw/**
+      - data/canada_stocks/**
+      - data/hk_connect_roster/**
       - lib/ticker_aliases.py
       - lib/delisted_symbols.py
       - lib/symbol_directory_receipts.py
@@ -28482,6 +28683,17 @@ jobs:
       - collectors/china_ths_concepts.py
       - collectors/china_analyst.py
       - collectors/china_tushare_spine.py
+      # U04 (DATA-OS-COMPLETION): the mode-bound basket composition read. The module is
+      # stdlib-only, but its suite pins engine.basket_membership_pit's vocabulary and its
+      # default members_asof reader (pandas), so it rides this pandas code-gate job, not
+      # the thin pandas-free dataos-foundation lane (whose tripwire a pandas import would
+      # destroy). read_contract/temporal/nulls are the C02 owner the read binds to.
+      - lib/dataos/basket_read.py
+      - lib/dataos/read_contract.py
+      - lib/dataos/temporal.py
+      - lib/dataos/nulls.py
+      - engine/basket_membership_pit.py
+      - tests/test_dataos_basket_read.py
       - tests/test_identity_seam_agreement.py
       # ITP A8 (DEC-ITP-ISSUER-UNIVERSE-ADMITS-R1-CONSTITUENTS-2026-10-07): the hermetic
       # universe-admission suite needs pandas+pyarrow for its tmp parquet fixtures,
@@ -28489,6 +28701,13 @@ jobs:
       # the data-gate house-law-registry job, which never runs on a pull request.
       - scripts/build_security_master.py
       - tests/test_build_security_master_universe.py
+      # C04 (DATA-OS-COMPLETION): the view-contract sidecar emitter reads the two committed
+      # reference parquets (pandas+pyarrow) and serialises engine.price_ladder's C01 mapping,
+      # so its hermetic tmp_path suite rides this pandas code-gate job, not the thin
+      # pandas-free dataos-foundation lane (whose tripwire a pandas import would destroy).
+      - engine/price_ladder.py
+      - scripts/emit_view_contract.py
+      - tests/test_emit_view_contract.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -28500,14 +28719,26 @@ jobs:
         # pandas+pyarrow: the suite reads the committed security_master/vendor_aliases
         # parquet through lib.dataos.identity.VendorAliasTable. pyyaml: the registry itself.
         run: pip install pytest pyyaml pandas pyarrow
+      - name: basket composition read binds membership, identity and price to one request (U04)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_dataos_basket_read.py -q -rs
       - name: identity seams — ADOPT surfaces must agree, divergences must stay declared
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_identity_seam_agreement.py -q -rs
+      - name: market support matrix — record matches the code, every market keeps its read (M01)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_dataos_support_matrix.py -q -rs
       - name: security master universe admits the S&P 400/600 constituents (hermetic)
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_build_security_master_universe.py -q -rs
+      - name: view-contract sidecar emitter writes data/stocks/_view_contract.json (C04, hermetic)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_emit_view_contract.py -q -rs
 
   ticker-news-qbus:
     # Package N — Terminal per-ticker news feed correctness kernel (PR #8454).
@@ -29965,8 +30196,9 @@ jobs:
       - scripts/build_international_macro.py
       - scripts/build_intl.py
       - scripts/build_intl_library.py
-      # The eight suites the step runs, plus helper suites they import.
+      # Dashboard suites and the helper suites they import.
       - "tests/test_dashboard_template_render.py"
+      - "tests/test_risk_radar_workspace.py"
       # #7798: source-dated Hottest Desk leadership/recommendation contract.
       - "tests/test_macro_sector_desk.py"
       # #7859: volatility-placement tests used to live only in gate:data
@@ -29985,6 +30217,7 @@ jobs:
       # Templates the renders load by name.
       - "templates/_macro_sector_desk.html.j2"
       - "templates/dashboard.html.j2"
+      - "templates/_risk_radar_workspace.html.j2"
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
@@ -30137,6 +30370,7 @@ jobs:
           tests/test_macro_sector_desk.py
           tests/test_macro_risk_dialog.py
           tests/test_risk_envelope_radar_integration.py
+          tests/test_risk_radar_workspace.py
           tests/test_us_stocks_s2_compression.py
           tests/test_unified_dashboard_b2w2.py
           tests/test_ud_b2_w1_vw_fold.py
@@ -31295,7 +31529,9 @@ jobs:
       - "tests/test_grey_deer_pullback_stage1b.py"
       - "tests/test_grey_deer_pullback_stage1b_addendum.py"
       - "scripts/research/grey_deer_episode_samples.py"
+      - "scripts/research/grey_deer_exposure_census.py"
       - "tests/test_grey_deer_episode_samples.py"
+      - "tests/test_grey_deer_exposure_census.py"
       - "lib/observed_moves.py"
       - "engine/vol_forecast.py"
       - "lib/nyse_calendar.py"
@@ -31379,6 +31615,7 @@ jobs:
           tests/test_grey_deer_pullback_stage1b.py
           tests/test_grey_deer_pullback_stage1b_addendum.py
           tests/test_grey_deer_episode_samples.py
+          tests/test_grey_deer_exposure_census.py
 
   sni-s1-residual:
     if: ${{ false }}
@@ -32019,6 +32256,27 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml requests
       - name: c19-wp24-consumer-states
         run: python -m pytest tests/test_c19_wp24_consumer_states.py -q -p no:cacheprovider
+  c19-wp24-dtc-map:
+    if: ${{ false }}
+    gate: code
+    # C19 WP24 DQ4 (MAS-263): narrative-rotation crowding keys FINRA days-to-cover by ticker (index or `ticker` column), never positionally, and drops the censored 999.99 sentinel (dtc_capped, else >= DTC_SENTINEL) before the context-only avg_days_to_cover. Hermetic: tmp_path only, no data/ reads, no network.
+    timeout-minutes: 10
+    paths:
+      - "collectors/finra.py"
+      - "engine/narrative_rotation.py"
+      - "engine/short_volume.py"
+      - "engine/theme_crowding.py"
+      - "tests/test_c19_wp24_dtc_map.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml requests
+      - name: c19-wp24-dtc-map
+        run: python -m pytest tests/test_c19_wp24_dtc_map.py -q -p no:cacheprovider
   c19-wp29-hk-southbound-two-period:
     if: ${{ false }}
     gate: code
@@ -32038,6 +32296,24 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: c19-wp29-hk-southbound-two-period
         run: python -m pytest tests/test_c19_wp29_hk_southbound_two_period.py -q -p no:cacheprovider
+  c19-wp15-operating-driver-pins:
+    if: ${{ false }}
+    gate: code
+    # C19 WP15 (MAS-265/MAS-274) N2/N4 pins: beta is not a driver coefficient; margin is not markup (offline, stdlib).
+    timeout-minutes: 10
+    paths:
+      - "tests/test_operating_driver_scenario.py"
+      - "engine/operating_driver_scenario.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: c19-wp15-operating-driver-pins
+        run: python -m pytest tests/test_operating_driver_scenario.py -q -p no:cacheprovider
 
   grey-deer-pboc-liquidity:
     # Grey Deer GD-4C: the typed PBOC liquidity state that reads an OMO window.

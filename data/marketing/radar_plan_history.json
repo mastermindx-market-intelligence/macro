@@ -2,6 +2,31 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-10-17",
+      "tickers": [
+        "ACMR",
+        "AFG",
+        "CACI",
+        "CMI",
+        "CVX",
+        "EMR",
+        "FMC",
+        "HCC",
+        "IDA",
+        "MDU",
+        "MRSH",
+        "NWS",
+        "OVV",
+        "PEG",
+        "PINS",
+        "PVH",
+        "QDEL",
+        "SYF",
+        "TGT",
+        "TSN"
+      ]
+    },
+    {
       "as_of": "2026-10-16",
       "tickers": [
         "AA",
@@ -141,40 +166,6 @@
         "OMC",
         "RYAN",
         "SPY"
-      ]
-    },
-    {
-      "as_of": "2026-10-10",
-      "tickers": [
-        "AMG",
-        "APG",
-        "ASML",
-        "ATR",
-        "AVR",
-        "BNL",
-        "BORR",
-        "CCOI",
-        "COKE",
-        "CTVA",
-        "DAL",
-        "EGBN",
-        "ELF",
-        "EXTR",
-        "HCC",
-        "IRDM",
-        "JOE",
-        "LFUS",
-        "LOPE",
-        "LPG",
-        "MTUS",
-        "PDFS",
-        "PDI",
-        "PHK",
-        "TNDM",
-        "TRMB",
-        "WH",
-        "WS",
-        "YOU"
       ]
     }
   ]
