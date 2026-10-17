@@ -1,0 +1,182 @@
+// Paper R11 -> the existing Macro Bonds route. This module owns only an in-page preview.
+// The three pure R11 functions are retained verbatim from the reviewed source ZIP
+// SHA-256 9cbdaa99307ee4d575b7051e1940dd8dc18f09d26452b30bf363ecdb6d54f9b8.
+// No fixture market narratives, signal engine, storage, network or trade action is imported.
+const finite = (value) => typeof value === 'number' && Number.isFinite(value);
+const text = (value) => typeof value === 'string' && value.trim().length > 0;
+
+export function calculateDurationScenario({positionValue, durationYears, yieldChangeBp}) {
+  if (!finite(positionValue) || positionValue <= 0) throw new TypeError('position value must be a positive finite number');
+  if (!finite(durationYears) || durationYears <= 0) throw new TypeError('duration must be a positive finite number');
+  if (!finite(yieldChangeBp)) throw new TypeError('yield change must be a finite number');
+  const rawPct = -durationYears * yieldChangeBp / 100;
+  const rawAmount = positionValue * (-durationYears * yieldChangeBp / 10000);
+  if (!finite(rawPct) || !finite(rawAmount)) throw new RangeError('finite inputs caused arithmetic overflow');
+  const normalize = (v) => Object.is(v, -0) ? 0 : v;
+  return {
+    priceChangePct: normalize(Number(rawPct.toFixed(4))),
+    priceChangeAmount: normalize(Number(rawAmount.toFixed(2))),
+  };
+}
+
+// One atomic preview: validate every input before exposing any result. The
+// interface range is not a financial accuracy guarantee for large yield moves.
+export function buildDurationPreview({shockInput, positions} = {}) {
+  const invalid = (field, message) => ({state: 'invalid', field, message, yieldChangeBp: null, results: []});
+  let yieldChangeBp;
+  if (typeof shockInput === 'number') yieldChangeBp = shockInput;
+  else if (typeof shockInput === 'string' && /^[+-]?(?:\d+\.?\d*|\.\d+)$/.test(shockInput.trim())) yieldChangeBp = Number(shockInput.trim());
+  else return invalid('yieldChangeBp', 'Enter a number from −300 to +300 basis points.');
+  if (!finite(yieldChangeBp) || Math.abs(yieldChangeBp) > 300)
+    return invalid('yieldChangeBp', 'Enter a number from −300 to +300 basis points.');
+  if (!Array.isArray(positions) || positions.length === 0)
+    return invalid('positions', 'Position and modified-duration inputs are unavailable.');
+  const seen = new Set();
+  const results = [];
+  for (const row of positions) {
+    if (!row || !text(row.id) || seen.has(row.id)) return invalid('positions', 'Each position needs a distinct identity.');
+    seen.add(row.id);
+    try { results.push({id: row.id, ...calculateDurationScenario({...row, yieldChangeBp})}); }
+    catch { return invalid('positions', 'Position or modified duration is invalid. No results are shown.'); }
+  }
+  return {state: 'valid', field: null, message: null, yieldChangeBp, results,
+    approximation: 'First-order parallel-yield price estimate only. Large shocks can materially reduce accuracy.'};
+}
+
+export function describeYieldShock(yieldChangeBp) {
+  if (!Number.isFinite(yieldChangeBp)) {
+    throw new TypeError('yield change must be a finite number');
+  }
+  if (yieldChangeBp === 0) return 'What if yields do not change?';
+  const direction = yieldChangeBp > 0 ? 'rise' : 'fall';
+  return `What would a ${(Math.abs(yieldChangeBp) / 100).toFixed(2)} percentage-point ${direction} in yields do?`;
+}
+
+const numberFromMetadata = (value) => typeof value === 'string' && /^[+]?(?:\d+\.?\d*|\.\d+)$/.test(value.trim()) ? Number(value.trim()) : NaN;
+const signed = (value) => `${value < 0 ? '−' : value > 0 ? '+' : ''}${Math.abs(value)}`;
+const money = (value) => `${value < 0 ? '−' : value > 0 ? '+' : ''}$${Math.abs(value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+const mounted = new WeakMap();
+
+/** Native dialog owns focus containment/Escape. The draft exists only in this DOM. */
+export function mountDurationWorkflow(root) {
+  if (!root?.querySelector || !root?.querySelectorAll) return () => {};
+  if (mounted.has(root)) return mounted.get(root);
+  const dialog = root.querySelector('#bonds-duration-dialog');
+  const triggers = [...root.querySelectorAll('[data-duration-open]')];
+  const notice = root.querySelector('[data-duration-unavailable]');
+  for (const trigger of triggers) trigger.disabled = true;
+  if (!dialog) return () => {};
+  const keys = ['input', 'slider', 'form', 'editor', 'edit', 'reset', 'title-en', 'title-zh',
+    'state-en', 'state-zh', 'error', 'error-en', 'error-zh', 'shock-en', 'shock-zh', 'edit-en', 'edit-zh'];
+  const fields = Object.fromEntries(keys.map(key => [key, dialog.querySelector(`[data-duration-${key}]`)]));
+  const title = dialog.querySelector('#duration-title');
+  const closes = [...dialog.querySelectorAll('[data-duration-close]')];
+  const rows = [...dialog.querySelectorAll('[data-duration-row]')].map(node => ({node,
+    value: node.querySelector('[data-duration-value]'), empty: node.querySelector('[data-duration-empty]'),
+    percent: node.querySelector('[data-duration-percent]')}));
+  function clear() {
+    for (const row of rows) {
+      if (row.value) { row.value.textContent = ''; row.value.hidden = true; }
+      if (row.empty) row.empty.hidden = false;
+      if (row.percent) { row.percent.textContent = ''; row.percent.hidden = true; }
+    }
+  }
+  clear();
+  const supported = typeof dialog.showModal === 'function' && typeof dialog.close === 'function';
+  if (!supported || !triggers.length || !closes.length || keys.some(k => !fields[k]) ||
+      rows.length !== 2 || rows.some(r => !r.value || !r.empty || !r.percent)) {
+    if (notice) notice.hidden = false;
+    dialog.dataset.durationState = 'unavailable';
+    return () => {};
+  }
+  const pair = (key, en, zh) => { fields[`${key}-en`].textContent = en; fields[`${key}-zh`].textContent = zh; };
+  const listeners = [];
+  let lastTrigger = null;
+  let disposed = false;
+  function listen(node, event, fn) { node.addEventListener(event, fn); listeners.push([node, event, fn]); }
+  function render() {
+    clear(); // Clear BOTH rows before validating any row; no stale partial comparison.
+    pair('shock', 'Not calculated', '未计算');
+    const originValid = dialog.dataset.durationOrigin === 'illustrative';
+    const preview = buildDurationPreview({shockInput: fields.input.value,
+      positions: originValid ? rows.map(({node}) => ({id: node.dataset.positionId,
+        positionValue: numberFromMetadata(node.dataset.positionValue),
+        durationYears: numberFromMetadata(node.dataset.modifiedDuration)})) : []});
+    // Unknown input identity is an unavailable lane, not an excuse to reuse demo holdings.
+    const shockError = originValid && preview.field === 'yieldChangeBp';
+    fields.input.setAttribute('aria-invalid', String(shockError));
+    fields.slider.disabled = preview.state !== 'valid';
+    fields.error.hidden = preview.state === 'valid';
+    fields.edit.hidden = preview.state !== 'valid' && !shockError;
+    if (preview.state !== 'valid') {
+      dialog.dataset.durationState = shockError ? 'invalid' : 'unavailable';
+      pair('title', 'Result unavailable.', '无法提供估算。');
+      pair('error', shockError ? 'Enter a number from −300 to +300 basis points. Nothing is capped; previous estimates are removed.' : 'Example inputs are unavailable. No sourced holdings or substitute values are inferred.',
+        shockError ? '请输入 −300 至 +300 基点之间的数值。不会自动截断；原有估算已清除。' : '示例输入不可用；不会推断实际持仓，也不会用其他数值替代。');
+      pair('edit', 'Correct yield shock →', '修正收益率变动 →');
+      pair('state', 'No scenario estimate is shown. Independent rate and credit evidence is unchanged.', '不显示情景估算；独立的利率与信用信息保持不变。');
+      return false;
+    }
+    dialog.dataset.durationState = 'valid';
+    const shock = preview.yieldChangeBp;
+    pair('title', shock === 0 ? 'No yield change is selected.' : `A ${signed(shock)} bp yield shock is selected.`,
+      shock === 0 ? '所选情景：收益率不变。' : `所选情景：收益率变动 ${signed(shock)} 基点。`);
+    pair('shock', `${signed(shock)} bp`, `${signed(shock)} 基点`);
+    fields.slider.value = String(shock);
+    fields.slider.setAttribute('aria-valuetext', String(shock));
+    const byId = new Map(preview.results.map(row => [row.id, row]));
+    for (const row of rows) {
+      const result = byId.get(row.node.dataset.positionId);
+      row.value.textContent = money(result.priceChangeAmount); row.value.hidden = false;
+      row.empty.hidden = true;
+      row.percent.textContent = `${signed(result.priceChangePct)}%`; row.percent.hidden = false;
+    }
+    pair('error', '', '');
+    pair('edit', 'Edit assumptions →', '编辑假设 →');
+    pair('state', 'Illustrative first-order price estimates only. Independent rate and credit evidence is unchanged.', '仅为一阶价格估算示例；独立的利率与信用信息保持不变。');
+    return true;
+  }
+  const edit = () => { fields.editor.hidden = false; fields.input.focus(); fields.input.select(); };
+  listen(fields.input, 'input', render);
+  listen(fields.slider, 'input', () => { fields.input.value = fields.slider.value; render(); });
+  listen(fields.reset, 'click', () => { fields.input.value = '50'; render(); fields.input.focus(); });
+  listen(fields.edit, 'click', edit);
+  listen(fields.form, 'submit', event => {
+    event.preventDefault();
+    if (render()) { fields.editor.hidden = true; title?.focus(); }
+    else edit();
+  });
+  listen(dialog, 'close', () => { lastTrigger?.focus(); });
+  for (const close of closes) listen(close, 'click', () => { dialog.close(); });
+  for (const trigger of triggers) listen(trigger, 'click', () => {
+    if (disposed || dialog.open) return;
+    lastTrigger = trigger;
+    render();
+    try { dialog.showModal(); title?.focus(); }
+    catch {
+      clear(); dialog.dataset.durationState = 'unavailable';
+      for (const button of triggers) button.disabled = true;
+      if (notice) notice.hidden = false;
+    }
+  });
+  render();
+  fields.input.disabled = false; fields.reset.disabled = false; fields.edit.disabled = false;
+  for (const trigger of triggers) trigger.disabled = false;
+  if (notice) notice.hidden = true;
+  const dispose = () => {
+    if (disposed) return;
+    disposed = true;
+    if (dialog.open) dialog.close();
+    for (const [node, event, fn] of listeners) node.removeEventListener(event, fn);
+    clear(); dialog.dataset.durationState = 'unavailable';
+    fields.input.disabled = true; fields.slider.disabled = true; fields.reset.disabled = true; fields.edit.disabled = true;
+    for (const trigger of triggers) trigger.disabled = true;
+    if (notice) notice.hidden = false;
+    mounted.delete(root);
+  };
+  mounted.set(root, dispose);
+  return dispose;
+}
+
+// Inline modules run after HTML parsing, so the existing route's drawer is present.
+if (typeof document !== 'undefined') mountDurationWorkflow(document);
