@@ -22,6 +22,10 @@
     'checking_title': ['Checking · change not confirmed', '确认中 · 变化未确认'],
     'checking_action': ['Keep current protection until confirmed.', '确认前保持既有保护。'],
     'partial_prefix': ['Partial read · ', '读数不全 · '],
+    'leadership_old_prefix': ['Leadership cohort: older read (', '龙头股群体：较早读数（'],
+    'leadership_old_suffix': [')', '）'],
+    'leadership_missing': ['Leadership cohort: unavailable', '龙头股群体：读数不可用'],
+    'leadership_unverified': ['Leadership cohort: freshness unverified', '龙头股群体：新鲜度未验证'],
     'settled_label': ['Settled: ', '收盘：'],
     'source_label': ['Source session: ', '来源交易日：'],
     'open_details': ['Risk details', '风险详情']
@@ -83,6 +87,28 @@
 {%- if _rows.en.append(_name[0] ~ ': ' ~ _word[0]) %}{% endif -%}
 {%- if _rows.zh.append(_name[1] ~ '：' ~ _word[1]) %}{% endif -%}
 {%- endfor -%}
+{# A missing REQUIRED source may explain the partial result, but its stale native
+   state may never be added to the fresh hazard-evidence votes above. The owner
+   already identifies unreadable_sources; do not infer a new missing signal. #}
+{%- set _lag = namespace(en='', zh='') -%}
+{%- set _unreadable = _hz.get('unreadable_sources') or [] -%}
+{%- if _stage is none and _hz.get('stage_reason') in ('required_coverage_unavailable', 'required_source_state_unmapped') and _unreadable is sequence and _unreadable is not string and _unreadable is not mapping and 'leadership-crack-latest' in _unreadable -%}
+  {%- set _lead_rows = _prov | selectattr('source_id', 'defined') | selectattr('source_id', 'equalto', 'leadership-crack-latest') | list -%}
+  {%- if _lead_rows|length == 1 and _lead_rows[0] is mapping and _lead_rows[0].get('required') is sameas true -%}
+    {%- set _lead = _lead_rows[0] -%}
+    {%- if _lead.get('coverage') == 'MISSING' -%}
+      {%- set _lag.en = _fg.leadership_missing[0] -%}{%- set _lag.zh = _fg.leadership_missing[1] -%}
+    {%- elif _lead.get('coverage') == 'STALE' -%}
+      {%- set _last = _lead.get('as_of') -%}
+      {%- if _last is string and _last|length == 10 and _last[4] == '-' and _last[7] == '-' and _last.replace('-', '').isdigit() and _session is string and _last < _session -%}
+        {%- set _lag.en = _fg.leadership_old_prefix[0] ~ _last ~ _fg.leadership_old_suffix[0] -%}
+        {%- set _lag.zh = _fg.leadership_old_prefix[1] ~ _last ~ _fg.leadership_old_suffix[1] -%}
+      {%- else -%}
+        {%- set _lag.en = _fg.leadership_unverified[0] -%}{%- set _lag.zh = _fg.leadership_unverified[1] -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endif -%}
 {%- if _stage in ('FRAGILE', 'TRANSMITTING', 'BREAKDOWN') and _contrib and _expected is string and _expected == _session and _rows.en -%}
 {%- set _v.state = 'warning' %}{% set _v.title = _fg.warning_title %}{% set _v.action = _fg.measured_risk_off_action if _qualified_risk_off else _fg.warning_action %}
 {%- set _v.cause = [_rows.en | join(' · '), _rows.zh | join(' · ')] %}
@@ -95,7 +121,7 @@
 {%- endif -%}
 {%- elif 'stage' in _hz and _stage is none and _hz.get('stage_reason') in ('required_coverage_unavailable', 'required_source_state_unmapped') and _expected is string and _expected == _session and _rows.en -%}
 {%- set _v.state = 'partial-warning' %}{% set _v.title = _fg.warning_title %}{% set _v.action = _fg.measured_risk_off_action if _qualified_risk_off else _fg.warning_action %}
-{%- set _v.cause = [_fg.partial_prefix[0] ~ (_rows.en | join(' · ')), _fg.partial_prefix[1] ~ (_rows.zh | join(' · '))] %}
+{%- set _v.cause = [_fg.partial_prefix[0] ~ (_rows.en | join(' · ')) ~ (' · ' ~ _lag.en if _lag.en else ''), _fg.partial_prefix[1] ~ (_rows.zh | join(' · ')) ~ (' · ' ~ _lag.zh if _lag.zh else '')] %}
 {%- set _v.date = _session -%}
 {%- endif -%}
 {%- endif -%}

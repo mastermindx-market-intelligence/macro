@@ -1222,3 +1222,58 @@ def test_unconfirmed_hazard_change_never_weakens_verified_measured_risk_off_acti
     assert out['state'] == 'checking'
     assert not out['hidden']
     assert out['action'] == 'Reduce risk. Protect capital.'
+
+
+# R13: show WHY a native partial warning cannot certify whole-market damage.
+# An old required Leadership observation is NOT a new cohort-damage vote.
+def test_partial_foreground_explains_old_required_leadership_date_in_both_clients():
+    e = _partial_live_warning()
+    lead = next(s for s in e['provenance']['sources'] if s['source_id'] == 'leadership-crack-latest')
+    lead.update(coverage='STALE', state='CRACKING', as_of='2026-09-18', required=True)
+    e['hazard_summary']['unreadable_sources'] = ['leadership-crack-latest']
+    e.pop('live_transition', None)
+    settled = _foreground_fragment(_foreground_render(e))
+    assert 'data-state="partial-warning"' in settled
+    assert 'Leadership cohort: older read (2026-09-18)' in settled
+    assert '龙头股群体：较早读数（2026-09-18）' in settled
+    assert 'AI-hardware leaders: weakening' not in settled
+    live = _partial_live_warning()
+    lead = next(s for s in live['provenance']['sources'] if s['source_id'] == 'leadership-crack-latest')
+    lead.update(coverage='STALE', state='CRACKING', as_of='2026-09-18', required=True)
+    live['hazard_summary']['unreadable_sources'] = ['leadership-crack-latest']
+    out = _js_value(_FOREGROUND_DOM+'applyFeed(FEED);console.log(JSON.stringify(foregroundResult()));',live)
+    assert out['state'] == 'partial-warning'
+    assert 'Leadership cohort: older read (2026-09-18)' in out['cause']
+    assert 'AI-hardware leaders: weakening' not in out['cause']
+    assert out['action'] == 'Review exposure. Respect existing stops.'
+
+
+@pytest.mark.parametrize('mutation', ['not_unreadable', 'duplicate', 'not_required', 'future_clock'])
+def test_partial_foreground_does_not_invent_old_required_leadership_clock(mutation):
+    e = _partial_live_warning()
+    lead = next(s for s in e['provenance']['sources'] if s['source_id'] == 'leadership-crack-latest')
+    lead.update(coverage='STALE', as_of='2026-09-18', required=True)
+    e['hazard_summary']['unreadable_sources'] = ['leadership-crack-latest']
+    if mutation == 'not_unreadable': e['hazard_summary']['unreadable_sources'] = []
+    elif mutation == 'duplicate': e['provenance']['sources'].append(deepcopy(lead))
+    elif mutation == 'not_required': lead['required'] = False
+    else: lead['as_of'] = '2026-09-20'
+    settled = _foreground_fragment(_foreground_render(e))
+    live = _js_value(_FOREGROUND_DOM+'applyFeed(FEED);console.log(JSON.stringify(foregroundResult()));',e)
+    for text in (settled, live['cause']):
+        assert 'Leadership cohort: older read' not in text
+        assert '2026-09-18' not in text or 'Settled:' in text
+    assert live['state'] == 'partial-warning'
+
+
+def test_missing_required_leadership_reports_unavailable_not_a_fake_date():
+    e = _partial_live_warning()
+    lead = next(s for s in e['provenance']['sources'] if s['source_id'] == 'leadership-crack-latest')
+    lead.update(coverage='MISSING', as_of=None, state=None, required=True)
+    e['hazard_summary']['unreadable_sources'] = ['leadership-crack-latest']
+    settled = _foreground_fragment(_foreground_render(e))
+    live = _js_value(_FOREGROUND_DOM+'applyFeed(FEED);console.log(JSON.stringify(foregroundResult()));',e)
+    for text in (settled, live['cause']):
+        assert 'Leadership cohort: unavailable' in text
+        assert 'older read (' not in text
+    assert 'Credit stress: building' in live['cause']

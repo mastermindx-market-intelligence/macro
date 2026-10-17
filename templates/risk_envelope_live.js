@@ -165,6 +165,31 @@
     return rows;
   }
 
+  // Presentation of the EXISTING owner's unreadable required Leadership source.
+  // Its stale state never votes as fresh evidence. The current-session cause
+  // and the old required-source date remain separate, source-qualified facts.
+  function fgRequiredLeadershipGap(d, copy) {
+    var hz = d.hazard_summary || {}, prov = d.provenance || {};
+    var unreadable = hz.unreadable_sources;
+    var rows = prov.sources;
+    if (!Array.isArray(unreadable) || unreadable.indexOf("leadership-crack-latest") < 0 ||
+        !Array.isArray(rows)) return ["", ""];
+    var leads = rows.filter(function (row) { return row && row.source_id === "leadership-crack-latest"; });
+    if (leads.length !== 1 || leads[0].required !== true) return ["", ""];
+    var lead = leads[0], fgc = copy.foreground || {};
+    if (lead.coverage === "MISSING")
+      return fgc.leadership_missing || ["Leadership cohort: unavailable", "龙头股群体：读数不可用"];
+    if (lead.coverage !== "STALE") return ["", ""];
+    var asof = lead.as_of, session = d.source_session;
+    if (typeof asof === "string" && /^\d{4}-\d{2}-\d{2}$/.test(asof) &&
+        typeof session === "string" && asof < session) {
+      var prefix = fgc.leadership_old_prefix || ["Leadership cohort: older read (", "龙头股群体：较早读数（"];
+      var suffix = fgc.leadership_old_suffix || [")", "）"];
+      return [prefix[0] + asof + suffix[0], prefix[1] + asof + suffix[1]];
+    }
+    return fgc.leadership_unverified || ["Leadership cohort: freshness unverified", "龙头股群体：新鲜度未验证"];
+  }
+
   /* Foreground presentation state from the already-qualified view plus the
      source-owned source_session (never built/event time): checking while a
      transition is unconfirmed; warning only on the engine's own stage WITH fully
@@ -224,11 +249,15 @@
         action: warningAction, date: session};
       return {state: "quiet"};
     }
-    if (partialGrounds && rows[0].length && session)
+    if (partialGrounds && rows[0].length && session) {
+      var missing = fgRequiredLeadershipGap(d, copy);
       return {state: "partial-warning", title: warningTitle,
-        cause: [(fgc.partial_prefix || copy.partial_hint)[0] + rows[0].join(" · "),
-                (fgc.partial_prefix || copy.partial_hint)[1] + rows[1].join(" · ")],
+        cause: [(fgc.partial_prefix || copy.partial_hint)[0] + rows[0].join(" · ") +
+                 (missing[0] ? " · " + missing[0] : ""),
+                (fgc.partial_prefix || copy.partial_hint)[1] + rows[1].join(" · ") +
+                 (missing[1] ? " · " + missing[1] : "")],
         action: warningAction, date: session};
+    }
     return {state: "unavailable", title: fgc.unavailable_title || copy.unknown,
       cause: ["", ""], action: fgc.unavailable_action || copy.unknown, date: ""};
   }
