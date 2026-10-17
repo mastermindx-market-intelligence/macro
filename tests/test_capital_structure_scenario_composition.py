@@ -565,3 +565,401 @@ def test_s0_a_component_input_error_is_wrapped_by_type_only(
     assert str(excinfo.value) == "action on 'nope' has no route"
     assert isinstance(excinfo.value.__cause__, capacity_module.CapacityInputError)
     assert real is not refused
+
+
+# ---------------------------------------------------------------------------
+# §3 / §11 — the action-check table and the joint check, read from C2
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "route_id,action,settlement,value,expected_status,expected_owner",
+    [
+        (CB.WARRANT_ROUTE, "warrant_exercise", "cash", "1500000", "not_a_capacity_route", "supply"),
+        (CB.CONVERSION_ROUTE, "conversion", "cashless", None, "not_a_capacity_route", "supply"),
+        (CB.EXCHANGE_ROUTE, "exchange", "cash", "500000", "not_a_capacity_route", "supply"),
+        (CB.REDEMPTION_ROUTE, "redemption", "cash", "600000", "not_a_capacity_route", "supply"),
+        (CB.REPURCHASE_ROUTE, "repurchase", "cash", "400000", "not_a_capacity_route", "supply"),
+        (CB.DEBT_ROUTE, "debt_draw", "cash", "500000", "not_a_capacity_route", "funding_only"),
+        (CB.OTHER_ROUTE, "other", "cash", "250000", "not_a_capacity_route", "funding_only"),
+        (CB.EQUITY_LINE_ROUTE, "equity_line", "cash", None, "not_modelled", "capacity_unmodelled"),
+        (CB.DIRECT_ROUTE, "registered_direct", "cash", "1000000", "not_modelled", "capacity_unmodelled"),
+        (CB.PIPE_ROUTE, "pipe", "cash", "3000000", "not_modelled", "capacity_unmodelled"),
+    ],
+)
+def test_s0_the_action_check_table_reads_the_owner_from_capacity(
+    route_id: str, action: str, settlement: str, value: str | None,
+    expected_status: str, expected_owner: str,
+) -> None:
+    """§3: S0 never re-derives an owner; it reads capacity's own partition."""
+    result = compose(actions=[CB.action(route_id, action, settlement, value)])
+    check(result)
+    entry = checks_of(result)[route_id]
+    assert (entry.status, entry.owner) == (expected_status, expected_owner)
+    assert entry.action == action and entry.settlement == settlement
+    assert entry.fixed is (value is not None)
+    assert entry.blocker_ids == ()
+    if expected_status == "not_modelled" and entry.fixed:
+        # C2b's own unknown id, carried verbatim: capacity owns the Unknown and
+        # S0 references it rather than minting a second one.
+        assert entry.unknown_ids == (f"action_route_not_modelled:{route_id}",)
+        assert f"action_route_not_modelled:{route_id}" in {
+            item.unknown_id for item in result.capacity_envelope.unknowns
+        }
+    else:
+        assert entry.unknown_ids == ()
+
+
+def test_s0_a_recorded_only_capacity_action_is_not_applied() -> None:
+    result = compose(actions=[ActionSelection(TAKE_A, "shelf_takedown", "cash")])
+    check(result)
+    entry = checks_of(result)[TAKE_A]
+    assert (entry.status, entry.owner, entry.fixed) == ("not_applied", "capacity", False)
+    assert result.joint_check.status == "no_capacity_actions"
+    # An unpriced action is unknown, never zero (§5, A26).
+    row = issuance_of(result)[TAKE_A]
+    assert row.shares_low.status == "unknown" and row.shares_low.value is None
+    assert row.unknown_id == f"scenario_shares_unpriced:{TAKE_A}"
+    assert result.scenario_new_shares_low.status == "unknown"
+    assert recon_of(result)[TAKE_A].status == "funding_unpriced"
+
+
+def test_s0_an_action_on_an_ineligible_route_is_named() -> None:
+    registration, shares = C1.standard_registration(withdrawn="observed")
+    result = compose(
+        actions=[C2.cash(TAKE_A, "shelf_takedown", "1000000")],
+        capacity_kwargs={"registration": registration, "share_basis": shares},
+    )
+    check(result)
+    entry = checks_of(result)[TAKE_A]
+    assert entry.status == "ineligible_route" and entry.owner == "capacity"
+    assert entry.blocker_ids == (f"asserted_action_on_ineligible_route:{TAKE_A}",)
+    assert result.joint_check.status == "infeasible"
+    assert f"asserted_action_on_ineligible_route:{TAKE_A}" in result.joint_check.blocker_ids
+
+
+def test_s0_a_price_branch_infeasibility_leaves_the_joint_indeterminate() -> None:
+    """§3: only a single-branch blocker is `infeasible_on_price_branch`."""
+    result = compose(
+        actions=[C2.shares(ATM_A, "at_the_market", "800000")],
+        capacity_kwargs=C2.path_kwargs(path=C2.PRICE_PATH, programme=C2.ATM_PROGRAMME),
+    )
+    check(result)
+    entry = checks_of(result)[ATM_A]
+    assert entry.status == "infeasible_on_price_branch"
+    assert entry.blocker_ids == (f"asserted_actions_infeasible_on_price_branch:optimistic:{ATM_A}",)
+    assert result.joint_check.status == "indeterminate"
+    assert result.joint_check.aggregate_status == "unknown"
+
+
+def test_s0_the_joint_check_reports_no_witness_of_its_own() -> None:
+    """§3: capacity's witness stays reachable only through the envelope."""
+    result = compose(actions=[C2.cash(TAKE_A, "shelf_takedown", "6000000")])
+    record = check(result)
+    assert set(record["joint_check"]) == {
+        "status", "aggregate_status", "binding", "blocker_ids", "note",
+    }
+    assert result.capacity_envelope.feasible_witness, "capacity's own witness is still there"
+    assert result.joint_check.binding == result.capacity_envelope.binding_constraints
+    assert result.joint_check.blocker_ids == tuple(sorted(result.capacity_envelope.blockers))
+
+
+def test_s0_a_fixed_unmodelled_action_leaves_the_joint_indeterminate() -> None:
+    result = compose(actions=[CB.action(CB.PIPE_ROUTE, "pipe", "cash", "3000000")])
+    check(result)
+    assert checks_of(result)[CB.PIPE_ROUTE].status == "not_modelled"
+    assert result.joint_check.status == "indeterminate"
+    assert result.joint_check.aggregate_status == "unknown"
+    assert result.coverage[0].status == "indeterminate"
+
+
+def test_s0_one_scenario_carries_capacity_and_instrument_actions_together() -> None:
+    """The SPEC_C2B precondition §3 depends on: no refusal, each recorded once."""
+    instruments, warrant_id = cash_warrant()
+    result = compose(
+        actions=[
+            C2.cash(TAKE_A, "shelf_takedown", "6000000"),
+            warrant_action(
+                warrant_id, "cash",
+                Quantity.known("1000000", "shares", share_basis="scenario_incremental_issuance"),
+            ),
+        ],
+        instruments=instruments,
+    )
+    check(result)
+    entries = checks_of(result)
+    assert sorted(entries) == sorted([TAKE_A, warrant_id])
+    assert entries[TAKE_A].status == "within_capacity"
+    assert entries[warrant_id].status == "not_a_capacity_route"
+    assert entries[warrant_id].owner == "supply"
+    assert result.joint_check.status == "feasible"
+
+
+# ---------------------------------------------------------------------------
+# §4 / §11.4 — one canonical owner per cash amount, one test per table row
+# ---------------------------------------------------------------------------
+
+
+def test_s0_reconciles_a_fixed_usd_capacity_action_with_funding() -> None:
+    """§4 row 1: gross is the asserted usd, net is gross x (1 - fee_rate)."""
+    result = compose(actions=[C2.cash(TAKE_A, "shelf_takedown", "6000000")])
+    check(result)
+    row = recon_of(result)[TAKE_A]
+    assert (row.owner, row.status, row.conflict_id) == ("capacity", "agree", None)
+    assert money(row.canonical_gross) == Decimal("6000000")
+    assert money(row.canonical_net) == Decimal("6000000") * (1 - Decimal(FEE_RATE))
+    assert money(row.canonical_net) == Decimal("5700000.00")
+    assert money(row.funding_amount) == Decimal("6000000")
+    assert result.blockers == ()
+
+
+def test_s0_a_capacity_action_without_a_fee_rate_leaves_net_unknown() -> None:
+    result = compose(actions=[C2.cash(TAKE_A, "shelf_takedown", "6000000")], fee_rate=None)
+    check(result)
+    row = recon_of(result)[TAKE_A]
+    assert row.status == "agree"
+    assert money(row.canonical_gross) == Decimal("6000000")
+    assert row.canonical_net.status == "unknown" and row.canonical_net.value is None
+    assert money(row.funding_amount) == Decimal("6000000")
+
+
+def test_s0_reconciles_a_fixed_share_action_at_a_fixed_price() -> None:
+    """§4 row 2: a share quantity at one price is one canonical amount."""
+    result = compose(actions=[C2.shares(TAKE_A, "shelf_takedown", "1000000")])
+    check(result)
+    row = recon_of(result)[TAKE_A]
+    assert row.status == "agree"
+    assert money(row.canonical_gross) == Decimal("2000000")
+    assert money(row.canonical_net) == Decimal("1900000.00")
+    assert money(row.funding_amount) == Decimal("2000000.00")
+
+
+def test_s0_a_path_priced_share_action_is_funding_unpriced() -> None:
+    """§4: canonical known, F1 unknown -- F1 needs a fixed usd price."""
+    result = compose(
+        actions=[C2.shares(TAKE_A, "shelf_takedown", "1000000")],
+        price=PriceAssumption(kind="path", path=C2.PRICE_PATH),
+        capacity_kwargs=C2.a21_kwargs(),
+    )
+    check(result)
+    row = recon_of(result)[TAKE_A]
+    assert row.status == "funding_unpriced" and row.conflict_id is None
+    assert money(row.canonical_gross) == Decimal("2000000")
+    assert row.funding_amount.status == "unknown" and row.funding_amount.value is None
+    assert f"scenario_cash_unpriced:{TAKE_A}" in unknown_ids_of(result)
+    # S0 substituted nothing into F1's schedule: F1 still books the flow with no
+    # amount and still names its own unknown.
+    flows = {
+        flow.flow_id: flow
+        for period in result.funding_schedule.periods
+        for flow in (*period.sources, *period.uses)
+    }
+    assert flows[f"source:{TAKE_A}:gross"].amount.status == "unknown"
+    assert flows[f"source:{TAKE_A}:gross"].amount.value is None
+    assert f"unknown:action_amount:{TAKE_A}" in {
+        item.unknown_id for item in result.funding_schedule.unknowns
+    }
+    assert result.coverage[0].status == "indeterminate"
+
+
+def test_s0_a_branched_share_action_has_a_range_and_picks_neither_end() -> None:
+    result = compose(
+        actions=[C2.shares(ATM_A, "at_the_market", "800000")],
+        capacity_kwargs=C2.path_kwargs(path=C2.PRICE_PATH, programme=C2.ATM_PROGRAMME),
+    )
+    check(result)
+    row = recon_of(result)[ATM_A]
+    assert row.status == "funding_unpriced"
+    assert row.canonical_gross.status == "unknown" and row.canonical_gross.value is None
+    assert "pessimistic 1600000 usd" in row.canonical_gross.note
+    assert "optimistic 2400000 usd" in row.canonical_gross.note
+    assert f"scenario_cash_unpriced:{ATM_A}" in unknown_ids_of(result)
+
+
+def test_s0_a_cash_warrant_disagrees_with_funding_and_names_both_values() -> None:
+    """§4 row 3 and §0.3: I1 says n x K, F1 booked shares x the scenario price."""
+    instruments, warrant_id = cash_warrant(exercise_price="1.50")
+    result = compose(
+        actions=[warrant_action(
+            warrant_id, "cash",
+            Quantity.known("1000000", "shares", share_basis="scenario_incremental_issuance"),
+        )],
+        instruments=instruments,
+    )
+    check(result)
+    row = recon_of(result)[warrant_id]
+    assert (row.owner, row.status) == ("supply", "disagree")
+    assert money(row.canonical_gross) == Decimal("1500000")
+    assert money(row.canonical_net) == Decimal("1425000")
+    assert money(row.funding_amount) == Decimal("2000000.00")
+    assert row.conflict_id == f"cash_effect_disagreement:{warrant_id}"
+    assert row.conflict_id in result.blockers
+    # S0 never substituted the canonical value into F1's schedule.
+    flows = {
+        flow.flow_id: flow
+        for period in result.funding_schedule.periods
+        for flow in (*period.sources, *period.uses)
+    }
+    assert money(flows[f"source:{warrant_id}:gross"].amount) == Decimal("2000000.00")
+
+
+def test_s0_a_cashless_warrant_moves_no_cash_on_either_side() -> None:
+    """§4 row 4: no cash, so the reconciliation is not applicable."""
+    instrument_id, instrument = SS.make_instrument(
+        "series_s0_cashless_warrants", instruments_outstanding="1000000",
+        shares_per_instrument="1", exercise_price="1.50", cashless_exercise_permitted=True,
+    )
+    instruments = SS.instrument_set((instrument_id, instrument))
+    result = compose(
+        actions=[warrant_action(
+            instrument_id, "cashless",
+            Quantity.known("1000000", "shares", share_basis="scenario_incremental_issuance"),
+        )],
+        instruments=instruments,
+    )
+    check(result)
+    row = recon_of(result)[instrument_id]
+    assert row.status == "not_applicable" and row.conflict_id is None
+    assert row.canonical_gross.status == "not_applicable"
+    assert row.canonical_net.status == "not_applicable"
+    assert row.funding_amount.status == "not_applicable"
+    assert result.blockers == ()
+    # n x (P - K) / P = 1,000,000 x (2.00 - 1.50) / 2.00, exactly.
+    shares = money(issuance_of(result)[instrument_id].shares_low)
+    assert shares == Decimal(250_000)
+    assert Fraction(shares) == (
+        Fraction(1_000_000)
+        * (Fraction(Decimal("2.00")) - Fraction(Decimal("1.50")))
+        / Fraction(Decimal("2.00"))
+    )
+
+
+def test_s0_a_pre_funded_warrant_pays_the_residual_exercise_price() -> None:
+    """§4 row 5: n x R is supply's, and F1 books no cash for it."""
+    instrument_id, instrument = SS.make_instrument(
+        "series_s0_prefunded_warrants", kind="pre_funded_warrant",
+        instruments_outstanding="1000000", shares_per_instrument="1",
+        prefunded_residual_price="0.001",
+    )
+    instruments = SS.instrument_set((instrument_id, instrument))
+    result = compose(
+        actions=[warrant_action(instrument_id, "pre_funded")], instruments=instruments
+    )
+    check(result)
+    row = recon_of(result)[instrument_id]
+    assert money(row.canonical_gross) == Decimal("1000000") * Decimal("0.001")
+    assert money(row.canonical_gross) == Decimal("1000")
+    assert money(row.canonical_net) == Decimal("950")
+    assert row.funding_amount.status == "not_applicable"
+    assert row.status == "funding_unpriced"
+    assert f"scenario_cash_unpriced:{instrument_id}" in unknown_ids_of(result)
+    assert money(issuance_of(result)[instrument_id].shares_low) == Decimal(1_000_000)
+
+
+def test_s0_a_physical_conversion_relief_is_not_a_cash_amount() -> None:
+    """§4 row 6: no cash, and relieving the converted debt is valid."""
+    instruments, note_id = branching_note(conversion_price="5.00")
+    result = compose(
+        actions=[ActionSelection(note_id, "conversion", "physical")],
+        instruments=instruments,
+        extra_facts=(maturity_fact(note_id),),
+    )
+    check(result)
+    row = recon_of(result)[note_id]
+    assert row.status == "not_applicable" and row.conflict_id is None
+    assert row.canonical_gross.status == "not_applicable"
+    assert result.blockers == ()
+    # 1,000,000 principal at a 5.00 conversion price: exactly 200,000 shares.
+    assert money(issuance_of(result)[note_id].shares_low) == Decimal(200_000)
+    assert money(issuance_of(result)[note_id].shares_high) == Decimal(200_000)
+    # The maturity F1 flipped to conditional is excluded from its own closing and
+    # is never added back by S0.
+    relieved = [
+        flow
+        for period in result.funding_schedule.periods
+        for flow in (*period.sources, *period.uses)
+        if flow.flow_id == f"use:{note_id}"
+    ]
+    assert len(relieved) == 1
+    assert relieved[0].certainty == "conditional"
+    assert relieved[0].condition.startswith("relieved under scenario")
+    assert money(result.coverage[0].scenario_net) == Decimal(0)
+
+
+def test_s0_a_cash_settled_conversion_conflicts_with_funding_relief() -> None:
+    """§4 row 7 and §0.3: a cash use against a relief is a named conflict."""
+    instruments, note_id = branching_note(conversion_price="5.00")
+    result = compose(
+        actions=[ActionSelection(note_id, "conversion", "cash")],
+        instruments=instruments,
+        extra_facts=(maturity_fact(note_id),),
+    )
+    check(result)
+    row = recon_of(result)[note_id]
+    assert row.status == "conflict"
+    assert row.conflict_id == f"conversion_cash_settlement_vs_relief:{note_id}"
+    assert row.conflict_id in result.blockers
+    assert money(row.canonical_gross) == Decimal("400000")
+    assert money(row.funding_amount) == Decimal("1000000")
+    assert money(issuance_of(result)[note_id].shares_low) == Decimal(0)
+
+
+def test_s0_a_repurchase_is_a_cash_use_owned_by_funding() -> None:
+    """§4 row 8: F1 is canonical and the I-trace has no row of its own."""
+    result = compose(actions=[CB.action(CB.REPURCHASE_ROUTE, "repurchase", "cash", "400000")])
+    check(result)
+    row = recon_of(result)[CB.REPURCHASE_ROUTE]
+    assert row.status == "agree" and row.conflict_id is None
+    assert money(row.canonical_gross) == Decimal("400000")
+    assert money(row.funding_amount) == Decimal("400000")
+    flows = {
+        flow.flow_id: flow
+        for period in result.funding_schedule.periods
+        for flow in (*period.sources, *period.uses)
+    }
+    assert f"use:{CB.REPURCHASE_ROUTE}:repurchase" in flows
+    # §7: an outflow is subtracted from the scenario's own net, so the balance
+    # falls below the floor by exactly the floor less (computed closing - 400,000).
+    assert money(result.coverage[0].scenario_net) == Decimal("-400000.00")
+    assert money(result.coverage[0].scenario_balance) == COMPUTED_CLOSING - Decimal("400000.00")
+    assert result.coverage[0].status == "shortfall"
+    assert money(result.coverage[0].shortfall) == LIQUIDITY_FLOOR - (
+        COMPUTED_CLOSING - Decimal("400000.00")
+    )
+    assert money(result.coverage[0].shortfall) == Decimal("1378000.00")
+
+
+def test_s0_a_redemption_is_a_cash_use_owned_by_funding() -> None:
+    result = compose(actions=[CB.action(CB.REDEMPTION_ROUTE, "redemption", "cash", "600000")])
+    check(result)
+    row = recon_of(result)[CB.REDEMPTION_ROUTE]
+    assert row.status == "agree" and row.owner == "supply"
+    assert money(row.canonical_gross) == Decimal("600000")
+    assert money(row.funding_amount) == Decimal("600000")
+    assert money(result.coverage[0].scenario_net) == Decimal("-600000.00")
+
+
+def test_s0_an_other_action_stays_unknown_on_both_sides() -> None:
+    """§4 row 9: F1's own `unknown:action_amount` is carried, never resolved."""
+    result = compose(actions=[CB.action(CB.OTHER_ROUTE, "other", "cash", "250000")])
+    check(result)
+    row = recon_of(result)[CB.OTHER_ROUTE]
+    assert row.status == "funding_unpriced"
+    assert row.canonical_gross.status == "unknown" and row.canonical_gross.value is None
+    assert row.funding_amount.status == "not_applicable"
+    assert f"scenario_cash_unpriced:{CB.OTHER_ROUTE}" in unknown_ids_of(result)
+    assert f"unknown:action_amount:{CB.OTHER_ROUTE}" in {
+        item.unknown_id for item in result.funding_schedule.unknowns
+    }
+
+
+def test_s0_a_debt_draw_is_funding_only_and_agrees_with_itself() -> None:
+    result = compose(actions=[CB.action(CB.DEBT_ROUTE, "debt_draw", "cash", "500000")])
+    check(result)
+    row = recon_of(result)[CB.DEBT_ROUTE]
+    assert (row.owner, row.status) == ("funding_only", "agree")
+    assert money(row.canonical_gross) == Decimal("500000")
+    assert money(row.funding_amount) == Decimal("500000")
+    # §7: the net side is the gross less the scenario fee, 500,000 - 25,000.
+    assert money(result.coverage[0].scenario_net) == Decimal("475000.00")
+    assert money(result.coverage[0].gross_basis) == Decimal("500000")
