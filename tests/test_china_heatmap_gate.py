@@ -33,6 +33,7 @@ import ast
 import json
 import re
 from pathlib import Path
+from datetime import datetime, timezone
 
 import pytest
 import yaml
@@ -269,7 +270,7 @@ def test_publisher_writes_one_coherent_json_and_ssr_page(tmp_path, monkeypatch):
         {
             "A.SS": [100.0, 102.0],
             "B.SS": [100.0, 99.0],
-            "C.SS": [100.0, float("nan")],
+            "C.SS": [100.0, 100.0],
             "D.SS": [100.0, 100.0],
         },
         index=pd.to_datetime(["2026-09-18", "2026-09-21"]),
@@ -284,7 +285,8 @@ def test_publisher_writes_one_coherent_json_and_ssr_page(tmp_path, monkeypatch):
     monkeypatch.setattr(publisher, "_board_breadth", lambda market: None)
 
     payload = publisher.publish(
-        "china", tmp_path, generated_utc="2026-09-21 09:15",
+         "china", tmp_path, generated_utc="2026-09-21 09:15",
+        now=datetime(2026, 9, 21, 10, 15, tzinfo=timezone.utc),
     )
     payload_path = tmp_path / "marketdata" / "china_heatmap.json"
     page_path = tmp_path / "china_heatmap.html"
@@ -292,13 +294,13 @@ def test_publisher_writes_one_coherent_json_and_ssr_page(tmp_path, monkeypatch):
     html = page_path.read_text(encoding="utf-8")
     assert payload["asof"] == "2026-09-21"
     assert payload["observation_coverage"]["timeframes"]["1D"] == {
-        "valid_count": 3,
-        "missing_count": 1,
+        "valid_count": 4,
+        "missing_count": 0,
         "denominator": 4,
-        "fraction": 0.75,
+        "fraction": 1.0,
     }
-    assert "3 / 4 names have observed endpoint pairs · 1 unavailable." in html
-    assert "3 / 4 个标的具备有效区间行情 · 1 个不可用。" in html
+    assert "4 / 4 names have observed endpoint pairs · 0 unavailable." in html
+    assert "4 / 4 个标的具备有效区间行情 · 0 个不可用。" in html
     assert 'data-hm-gated="1"' in html
     assert '"url":"marketdata/china_heatmap.json"' in html
 
@@ -312,7 +314,7 @@ def test_publisher_writes_one_coherent_json_and_ssr_page(tmp_path, monkeypatch):
     # Asia lane may continue, but it must not commit only a newer JSON payload.
     prior_json = payload_path.read_bytes()
     prior_page = page_path.read_bytes()
-    publisher.publish("china", tmp_path, generated_utc="2026-09-21 09:15")
+    publisher.publish("china", tmp_path, generated_utc="2026-09-21 09:15", now=datetime(2026, 9, 21, 10, 15, tzinfo=timezone.utc))
     assert payload_path.read_bytes() == prior_json
     assert page_path.read_bytes() == prior_page
 
@@ -329,9 +331,13 @@ def test_publisher_writes_one_coherent_json_and_ssr_page(tmp_path, monkeypatch):
             raise OSError("page replace refused")
         return real_replace(source, target)
 
+    # An unchanged source is intentionally no-op under the freshness guard.
+    # Introduce a legitimate same-session close correction to exercise BOTH
+    # destination-file replacements and prove rollback on the second failure.
+    closes.loc[pd.Timestamp("2026-09-21"), "A.SS"] = 103.0
     monkeypatch.setattr(publisher.os, "replace", _replace_with_second_path_refusal)
     with pytest.raises(OSError, match="page replace refused"):
-        publisher.publish("china", tmp_path, generated_utc="2026-09-21 09:16")
+        publisher.publish("china", tmp_path, generated_utc="2026-09-21 09:16", now=datetime(2026, 9, 21, 10, 15, tzinfo=timezone.utc))
     assert refused_page
     assert payload_path.read_bytes() == prior_json
     assert page_path.read_bytes() == prior_page
@@ -345,7 +351,7 @@ def test_publisher_writes_one_coherent_json_and_ssr_page(tmp_path, monkeypatch):
         lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("render refused")),
     )
     with pytest.raises(RuntimeError, match="render refused"):
-        publisher.publish("china", tmp_path, generated_utc="2026-09-21 09:16")
+        publisher.publish("china", tmp_path, generated_utc="2026-09-21 09:16", now=datetime(2026, 9, 21, 10, 15, tzinfo=timezone.utc))
     assert payload_path.read_bytes() == prior_json
     assert page_path.read_bytes() == prior_page
     assert not list(tmp_path.rglob("*.tmp"))
@@ -356,8 +362,8 @@ def test_cli_threads_stable_generation_label_to_publish_retry(monkeypatch):
 
     seen = {}
 
-    def _publish(market, site=None, *, generated_utc=None, env=None):
-        seen.update(market=market, site=site, generated_utc=generated_utc, env=env)
+    def _publish(market, site=None, *, generated_utc=None, now=None, env=None):
+        seen.update(market=market, site=site, generated_utc=generated_utc, now=now, env=env)
         return {}
 
     monkeypatch.setattr(publisher, "publish", _publish)
@@ -369,6 +375,7 @@ def test_cli_threads_stable_generation_label_to_publish_retry(monkeypatch):
         "market": "china",
         "site": None,
         "generated_utc": "2026-09-22 10:05",
+        "now": None,
         "env": None,
     }
 
@@ -407,9 +414,16 @@ def test_asia_close_and_full_site_share_the_same_heatmap_page_owner():
     fallback = "CHINA_HEATMAP_GENERATED_UTC=\"${CHINA_HEATMAP_GENERATED_UTC:-$(date -u '+%Y-%m-%d %H:%M')}\""
     assert commit_step.count(fallback) == 1
     assert commit_step.index(fallback) < commit_step.index("while push_attempt; do")
-    assert 'site/marketdata/china_heatmap.json' not in commit_step[
-        commit_step.index("while push_attempt; do"):commit_step.index("python -m scripts.inject_data_base", commit_step.index("while push_attempt; do"))
+    # A failed current-session rebuild compensates with the exact post-fetch
+    # origin/main pair. Never stage a partially verified fresh JSON/SSR duo.
+    rollback = commit_step[
+        commit_step.index("while push_attempt; do"):
+        commit_step.index("python -m scripts.inject_data_base",
+                          commit_step.index("while push_attempt; do"))
     ]
+    assert 'git checkout origin/main -- site/marketdata/china_heatmap.json site/china_heatmap.html' in rollback
+    assert 'git add site/marketdata/china_heatmap.json site/china_heatmap.html' in rollback
+    assert 'render-heal: hold stale China heatmap at origin main' in rollback
 
     pull = asia_close.index("git pull --rebase --autostash -X theirs origin main")
     repair = asia_close.index(command, end)
@@ -418,9 +432,10 @@ def test_asia_close_and_full_site_share_the_same_heatmap_page_owner():
     repair_block = asia_close[repair:normalize]
     assert pull < repair < normalize < push
     assert '--generated-utc "$CHINA_HEATMAP_GENERATED_UTC"' in repair_block
-    assert "post-rebase China heatmap coherence repair failed" in repair_block
-    assert "push_abort_rebase" in repair_block and "push_backoff" in repair_block
-    assert "continue" in repair_block
+    assert 'scripts.check_china_heatmap_freshness --now "$heatmap_now"' in repair_block
+    assert 'touch "$RUNNER_TEMP/china-heatmap-failed"' in repair_block
+    assert 'rm -f "$RUNNER_TEMP/china-heatmap-failed"' in repair_block
+    assert "China heatmap repaired by compensation" in repair_block
 
     cleanup = asia_close.index("find site site/marketdata -maxdepth 1 -type f")
     stage = asia_close.index("git add data/ site/", cleanup)

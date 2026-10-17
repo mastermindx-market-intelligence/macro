@@ -29,10 +29,11 @@ import argparse
 import json
 import logging
 import os
+import re
 import shutil
 import sys
 import tempfile
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import numpy as np
@@ -44,6 +45,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from engine import market_heatmap as hm  # noqa: E402
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
+from scripts.check_china_heatmap_freshness import (  # noqa: E402
+    ChinaHeatmapFreshnessError, validate_china_heatmap,
+)
 
 log = logging.getLogger("build_market_heatmap")
 
@@ -276,12 +280,153 @@ def _load_canada() -> tuple[pd.DataFrame, pd.DataFrame, dict, dict, dict]:
 _LOADERS = {"china": _load_china, "hk": _load_hk, "canada": _load_canada}
 
 
-def build(market: str, site: Path | None = None, *, generated_utc: str | None = None) -> dict:
+def _normalise_now(now: datetime | None) -> datetime:
+    value = now or datetime.now(timezone.utc)
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+    return value.astimezone(timezone.utc)
+
+
+def _plausible_published_china_session(payload: object) -> str | None:
+    """Return ``asof`` for a structurally plausible published China payload.
+
+    This deliberately does not compare the payload with the caller's close
+    panel. A generic render can have an inferior checkout; using that checkout
+    to decide whether a newer on-disk publication is "valid" recreates the
+    exact backward-overwrite failure this lane is meant to prevent.
+    """
+    if not isinstance(payload, dict):
+        return None
+    if payload.get("market") != "china" or payload.get("source") != "daily-close":
+        return None
+    try:
+        session = date.fromisoformat(str(payload.get("asof") or "").strip()).isoformat()
+    except ValueError:
+        return None
+    tiles = payload.get("tiles")
+    n_tiles = payload.get("n_tiles")
+    if (
+        not isinstance(tiles, list)
+        or not tiles
+        or isinstance(n_tiles, bool)
+        or not isinstance(n_tiles, int)
+        or n_tiles != len(tiles)
+    ):
+        return None
+    tickers = [
+        str(tile.get("t") or "").strip()
+        for tile in tiles
+        if isinstance(tile, dict)
+    ]
+    if len(tickers) != len(tiles) or not all(tickers) or len(set(tickers)) != len(tickers):
+        return None
+    return session
+
+
+def _validate_hk_completed_session(
+    payload: dict, closes: pd.DataFrame, cons: pd.DataFrame, now: datetime,
+) -> str:
+    """Fail-closed settled HK cash-session payload, with current-member coverage.
+
+    The HK breadth cache may be a runner-local restored snapshot while the
+    committed deep panel remains several sessions back. A regenerated timestamp
+    is never proof of fresh EOD marks. This is a local check on the incumbent
+    publisher, not an alternate store or exchange calendar.
+    """
+    from lib import hk_calendar
+    completed = hk_calendar.expected_last_session(now).isoformat()
+    current = list(dict.fromkeys(map(str, cons.index)))
+    if not current:
+        raise RuntimeError("HK heatmap missing curated membership")
+    source_idx = pd.to_datetime(closes.index).tz_localize(None).normalize()
+    source = closes.copy()
+    source.index = source_idx
+    session = pd.Timestamp(completed)
+    represented = [t for t in current if t in source.columns]
+    if session not in source.index:
+        raise RuntimeError(f"HK heatmap close stale: source missing {completed}")
+    current_values = pd.to_numeric(source.loc[session, represented], errors="coerce")
+    valid = sum(pd.notna(x) and float(x) > 0 for x in current_values)
+    if valid / len(current) < 0.95:
+        raise RuntimeError(
+            f"HK heatmap close stale: only {valid}/{len(current)} positive "
+            f"observations on required {completed}"
+        )
+    prior = hk_calendar.last_session_on_or_before(
+        date.fromisoformat(completed) - timedelta(days=1)
+    )
+    if pd.Timestamp(prior) not in source.index:
+        raise RuntimeError(f"HK heatmap previous session absent: {prior}")
+    prior_values = pd.to_numeric(
+        source.loc[pd.Timestamp(prior), represented], errors="coerce"
+    )
+    paired = sum(
+        pd.notna(a) and pd.notna(b) and float(a) > 0 and float(b) > 0
+        for a, b in zip(current_values, prior_values)
+    )
+    if paired / len(current) < 0.95:
+        raise RuntimeError(
+            f"HK heatmap previous session incomplete: 1D paired "
+            f"{paired}/{len(current)} for {prior}->{completed}"
+        )
+    tiles = payload.get("tiles")
+    if (payload.get("market") != "hk" or payload.get("map_type") != "stocks"
+        or payload.get("source") != "daily-close"
+        or payload.get("asof") != completed or not isinstance(tiles, list)
+        or payload.get("n_tiles") != len(tiles)):
+        raise RuntimeError(f"HK heatmap payload session/identity disagrees with {completed}")
+    members = set(current)
+    shown = [tile.get("t") for tile in tiles if isinstance(tile, dict)]
+    if (len(shown) != len(tiles) or len(set(shown)) != len(shown)
+        or not set(shown).issubset(members)
+        or len(shown) / len(current) < 0.95):
+        raise RuntimeError("HK heatmap payload membership coverage/identity invalid")
+    valid_1d = sum(
+        isinstance((tile.get("perf") or {}).get("1D"), (int, float))
+        and not isinstance((tile.get("perf") or {}).get("1D"), bool)
+        and np.isfinite((tile.get("perf") or {}).get("1D"))
+        for tile in tiles
+    )
+    if valid_1d / len(current) < 0.95:
+        raise RuntimeError(
+            f"HK heatmap 1D observations incomplete: {valid_1d}/{len(current)} "
+            f"rendered across {prior}->{completed}"
+        )
+    return completed
+
+
+def _validate_hk_page(html: str, session: str) -> None:
+    """One SSR market-day receipt matching the exact committed HK JSON pair."""
+    if 'id="hm-ssr"' not in html or "marketdata/hk_heatmap.json" not in html:
+        raise RuntimeError("HK heatmap SSR missing its payload/summary anchor")
+    match = re.search(
+        r'class=["\'][^"\']*\bhx-pulse-when\b[^"\']*["\'][^>]*>\s*'
+        r'(\d{4}-\d{2}-\d{2})\s*</',
+        html,
+    )
+    if not match or match.group(1) != session:
+        raise RuntimeError(f"HK heatmap SSR session does not equal JSON {session}")
+
+
+def build(
+    market: str, site: Path | None = None, *,
+    generated_utc: str | None = None,
+    now: datetime | None = None,
+) -> dict:
     """Assemble + write one market's heatmap JSON. Returns the payload."""
     site = site or (config.ROOT / config.load()["storage"]["site_dir"])
     cons, closes, caps, weights, names_zh = _LOADERS[market]()
 
-    generated_utc = generated_utc or datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
+    clock = _normalise_now(now)
+    generated_utc = generated_utc or clock.strftime("%Y-%m-%d %H:%M")
+    if market == "hk":
+        # Never allow a still-open HK cash session to leak through a Yahoo
+        # in-progress bar. The separate HK source collector validates marks.
+        from lib import hk_calendar
+        cutoff = pd.Timestamp(hk_calendar.expected_last_session(clock))
+        closes = closes.copy()
+        closes.index = pd.to_datetime(closes.index).tz_localize(None).normalize()
+        closes = closes.loc[closes.index <= cutoff]
     payload = hm.build_market_heatmap(
         market, cons, closes,
         caps=caps or None,
@@ -290,10 +435,43 @@ def build(market: str, site: Path | None = None, *, generated_utc: str | None = 
         generated_utc=generated_utc,
         board_breadth=_board_breadth(market),
     )
+    if market == "china":
+        validate_china_heatmap(
+            payload, closes, now=clock,
+            expected_tickers={str(t) for t in cons.index},
+        )
+    elif market == "hk":
+        _validate_hk_completed_session(payload, closes, cons, clock)
 
     outdir = site / "marketdata"
     outdir.mkdir(parents=True, exist_ok=True)
     out = outdir / f"{market}_heatmap.json"
+    if market == "china" and out.is_file():
+        try:
+            existing = json.loads(out.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            existing = None
+        old_session = _plausible_published_china_session(existing)
+        candidate_session = str(payload.get("asof") or "")
+        if old_session and old_session > candidate_session:
+            raise ChinaHeatmapFreshnessError(
+                "China heatmap regression refused",
+                f"existing={old_session} candidate={candidate_session}",
+            )
+        if old_session == candidate_session and isinstance(existing, dict):
+            try:
+                validate_china_heatmap(
+                    existing, closes, now=clock,
+                    expected_tickers={str(t) for t in cons.index},
+                )
+            except ChinaHeatmapFreshnessError:
+                pass
+            else:
+                old_fields, new_fields = dict(existing), dict(payload)
+                old_fields.pop("generated_utc", None)
+                new_fields.pop("generated_utc", None)
+                if old_fields == new_fields:
+                    return existing
     out.write_text(json.dumps(payload, separators=(",", ":"), ensure_ascii=False))
     log.info("wrote %s — %d tiles, %d sectors, size=%s, asof=%s",
              out.name, payload["n_tiles"], len(payload["sectors"]),
@@ -301,11 +479,15 @@ def build(market: str, site: Path | None = None, *, generated_utc: str | None = 
     return payload
 
 
-def build_all(site: Path | None = None, *, generated_utc: str | None = None) -> dict[str, dict]:
+def build_all(
+    site: Path | None = None, *,
+    generated_utc: str | None = None, now: datetime | None = None,
+) -> dict[str, dict]:
     out: dict[str, dict] = {}
+    clock = _normalise_now(now)
     for m in MARKETS:
         try:
-            out[m] = build(m, site, generated_utc=generated_utc)
+            out[m] = build(m, site, generated_utc=generated_utc, now=clock)
         except Exception as e:  # noqa: BLE001 — one market must never break the others / the site
             log.error("%s heatmap failed: %s", m, e)
     return out
@@ -439,6 +621,7 @@ def publish(
     site: Path | None = None,
     *,
     generated_utc: str | None = None,
+    now: datetime | None = None,
     env: Environment | None = None,
 ) -> dict:
     """Publish one coherent JSON + SSR-page pair and return the exact payload.
@@ -455,10 +638,64 @@ def publish(
     # destination temps only after both artifacts are complete.
     with tempfile.TemporaryDirectory(prefix=f".{market}-heatmap-publish-") as staging:
         staged_site = Path(staging)
-        payload = build(market, staged_site, generated_utc=generated_utc)
+        clock = _normalise_now(now)
+        payload = build(market, staged_site, generated_utc=generated_utc, now=clock)
         render_page(market, payload, staged_site, env=env)
+        if market == "hk":
+            _validate_hk_page(
+                (staged_site / "hk_heatmap.html").read_text(encoding="utf-8"),
+                str(payload["asof"]),
+            )
+            latest = site / "marketdata" / "hk_heatmap.json"
+            if latest.is_file():
+                try:
+                    old_hk = json.loads(latest.read_text(encoding="utf-8"))
+                except (OSError, ValueError):
+                    old_hk = None
+                if isinstance(old_hk, dict) and old_hk.get("market") == "hk":
+                    previous = str(old_hk.get("asof") or "")
+                    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", previous) and previous > payload["asof"]:
+                        raise RuntimeError(
+                            f"HK heatmap regression refused: published={previous}, candidate={payload['asof']}"
+                        )
+        if market == "china":
+            current_json = site / "marketdata" / "china_heatmap.json"
+            current_html = site / "china_heatmap.html"
+            if current_json.is_file():
+                try:
+                    old = json.loads(current_json.read_text(encoding="utf-8"))
+                except (OSError, ValueError):
+                    old = None
+                old_session = _plausible_published_china_session(old)
+                if old_session and old_session > str(payload.get("asof") or ""):
+                    raise ChinaHeatmapFreshnessError(
+                        "China heatmap regression refused",
+                        f"published={old_session} candidate={payload.get('asof')}",
+                    )
+                if old_session == payload.get("asof") and isinstance(old, dict):
+                    old_fields, new_fields = dict(old), dict(payload)
+                    old_fields.pop("generated_utc", None)
+                    new_fields.pop("generated_utc", None)
+                    if old_fields == new_fields and current_html.is_file():
+                        from scripts.check_china_heatmap_freshness import validate_china_heatmap_page
+                        try:
+                            validate_china_heatmap_page(
+                                current_html.read_text(encoding="utf-8"),
+                                str(payload["asof"]),
+                            )
+                        except (ChinaHeatmapFreshnessError, OSError, ValueError):
+                            pass
+                        else:
+                            log.info("China JSON/SSR unchanged — preserve published pair")
+                            return old
         _commit_staged_pair(market, staged_site, site)
     return payload
+
+
+def _parse_now(raw: str | None) -> datetime | None:
+    if raw is None:
+        return None
+    return datetime.fromisoformat(raw.strip().replace("Z", "+00:00"))
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -469,14 +706,16 @@ def main(argv: list[str] | None = None) -> int:
                     help="also render the matching standalone SSR page(s)")
     ap.add_argument("--generated-utc",
                     help="stable generation label (YYYY-MM-DD HH:MM) for publish retries")
+    ap.add_argument("--now", help="freeze the completed-session clock (ISO-8601)")
     args = ap.parse_args(argv)
+    now = _parse_now(args.now)
     if args.market:
         if args.render_page:
-            publish(args.market, generated_utc=args.generated_utc)
+            publish(args.market, generated_utc=args.generated_utc, now=now)
         else:
-            build(args.market, generated_utc=args.generated_utc)
+            build(args.market, generated_utc=args.generated_utc, now=now)
     else:
-        payloads = build_all(generated_utc=args.generated_utc)
+        payloads = build_all(generated_utc=args.generated_utc, now=now)
         if args.render_page:
             render_pages(payloads)
     return 0

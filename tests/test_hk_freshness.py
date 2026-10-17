@@ -540,3 +540,335 @@ class TestParquetIndexMax:
     def test_missing_file_is_none(self, tmp_path):
         from engine.hk_freshness import _parquet_index_max
         assert _parquet_index_max(tmp_path / "nope.parquet") is None
+
+
+# HKEX settled-close recovery: 2026-10-12 Yahoo panel missing the complete day
+
+def _hk_close_fixture(n=20):
+    symbols=[f"{i:04d}.HK" for i in range(1,n+1)]
+    dates=pd.to_datetime(["2026-10-08","2026-10-09","2026-10-12"])
+    df=pd.DataFrame({s:[99.,100.,float("nan")] for s in symbols},index=dates)
+    return df,symbols
+
+
+def _hk_candle(base=100.0,close=101.0):
+    return pd.DataFrame({"close":[99.,base,close]},index=pd.to_datetime([
+        "2026-10-08","2026-10-09","2026-10-12"]))
+
+
+def test_hk_vendor_code_volume_units_and_auction_cutoff():
+    from datetime import datetime,timezone
+    from collectors import china_stock_tencent as tx
+    assert tx.tencent_code("0700.HK")=="hk00700"
+    assert tx.tencent_code("9988.HK")=="hk09988"
+    assert tx.tencent_code("601398.SS")=="sh601398"
+    assert tx.tencent_code("000001.SZ")=="sz000001"
+    node={"data":{"hk00700":{"day":[
+        ["2026-10-09","100","100","101","99","1234"],
+        ["2026-10-12","100","102","103","99","1357"],
+        ["2026-10-13","99","98","100","97","1511"]]}}}
+    df=tx.frame_from_payload("0700.HK",node)
+    assert float(df.loc["2026-10-12","volume"])==1357.0  # HK shares, never x100
+    before=tx.keep_completed_sessions(
+        df,datetime(2026,10,12,8,30,tzinfo=timezone.utc),market="HK")
+    assert str(before.index.max().date())=="2026-10-09"  # 16:30 HKT pre-settle
+    after=tx.keep_completed_sessions(
+        df,datetime(2026,10,12,11,tzinfo=timezone.utc),market="HK")
+    assert str(after.index.max().date())=="2026-10-12"
+    cn={"data":{"sh600519":{"qfqday":[
+        ["2026-10-09","100","100","101","99","13"]]}}}
+    assert float(tx.frame_from_payload("600519.SS",cn).iloc[-1]["volume"])==1300.0
+
+
+def test_hk_settled_candles_qualify_exact_95pct_without_fabricating_missing():
+    from datetime import datetime,timezone
+    from collectors.hk_breadth import repair_settled_hk_closes
+    closes,members=_hk_close_fixture()
+    def fetch(ticker,count,retries):
+        assert count==12 and retries==1
+        return _hk_candle(base=104) if ticker==members[-1] else _hk_candle()
+    fixed=repair_settled_hk_closes(
+        closes,members,now=datetime(2026,10,12,12,tzinfo=timezone.utc),
+        fetcher=fetch,max_workers=6)
+    assert int(fixed.loc["2026-10-12"].notna().sum())==19
+    assert pd.isna(fixed.at[pd.Timestamp("2026-10-12"),members[-1]])
+    assert float(fixed.at[pd.Timestamp("2026-10-12"),members[0]])==101
+    assert closes.loc["2026-10-12"].isna().all()
+
+
+def test_hk_close_refuses_below_95pct_and_never_mutates_source():
+    from datetime import datetime,timezone
+    import pytest
+    from collectors.hk_breadth import repair_settled_hk_closes
+    closes,members=_hk_close_fixture()
+    def partial(ticker,*_args):
+        return _hk_candle() if ticker in members[:18] else None
+    with pytest.raises(RuntimeError,match="18/20"):
+        repair_settled_hk_closes(
+            closes,members,now=datetime(2026,10,12,12,tzinfo=timezone.utc),
+            fetcher=partial,max_workers=6)
+    assert closes.loc["2026-10-12"].isna().all()
+
+
+def test_hk_preauction_does_not_accept_early_or_future_close():
+    from datetime import datetime,timezone
+    from collectors.hk_breadth import repair_settled_hk_closes
+    closes,members=_hk_close_fixture()
+    def cannot_fetch(*_args):
+        raise AssertionError("vendor may not certify an unfinished HKEX session")
+    same=repair_settled_hk_closes(
+        closes,members,now=datetime(2026,10,12,8,30,tzinfo=timezone.utc),
+        fetcher=cannot_fetch)
+    assert same.index.max()==pd.Timestamp("2026-10-09")
+    assert pd.Timestamp("2026-10-12") not in same.index
+
+
+def _hk_publisher_fixture(n=160, observed=152):
+    symbols=[f"{i:04d}.HK" for i in range(1,n+1)]
+    cons=pd.DataFrame({
+        "name":[f"HK {i}" for i in range(1,n+1)],
+        "sector":["Financial Services" for _ in symbols],
+    },index=pd.Index(symbols,name="ticker"))
+    idx=pd.to_datetime(["2026-10-08","2026-10-09","2026-10-12"])
+    closes=pd.DataFrame({
+        t:[100.,101.,102. if i<observed else float("nan")]
+        for i,t in enumerate(symbols)
+    },index=idx)
+    return cons,closes
+
+
+def test_hk_heatmap_atomic_publisher_requires_settled_source_and_ssr(tmp_path,monkeypatch):
+    from scripts import build_market_heatmap as publisher
+    current=datetime(2026,10,12,12,tzinfo=timezone.utc)
+    cons,closes=_hk_publisher_fixture()
+    monkeypatch.setitem(publisher._LOADERS,"hk",lambda: (cons,closes,{}, {},{}))
+    monkeypatch.setattr(publisher,"_board_breadth",lambda _:None)
+    site=tmp_path/"site"
+    result=publisher.publish("hk",site=site,now=current,
+                             generated_utc="2026-10-12 12:00")
+    json_path=site/"marketdata/hk_heatmap.json"
+    page=site/"hk_heatmap.html"
+    assert result["asof"]=="2026-10-12"
+    assert page.is_file() and json_path.is_file()
+    assert publisher._validate_hk_page(page.read_text(),"2026-10-12") is None
+    assert publisher._validate_hk_completed_session(result,closes,cons,current)=="2026-10-12"
+    old_json=json_path.read_bytes()
+    old_html=page.read_bytes()
+    # A current source/session with byte-identical semantics may be rebuilt;
+    # a transient stale date must never replace the accepted coherent pair.
+    monkeypatch.setitem(publisher._LOADERS,"hk",
+                        lambda: (cons,closes.loc[closes.index<"2026-10-12"],{},{},{}))
+    with pytest.raises(RuntimeError,match="HK heatmap close stale"):
+        publisher.publish("hk",site=site,now=current,
+                          generated_utc="2026-10-12 12:10")
+    assert json_path.read_bytes()==old_json
+    assert page.read_bytes()==old_html
+
+
+def test_hk_heatmap_publisher_rejects_94pct_and_preauction(monkeypatch,tmp_path):
+    from scripts import build_market_heatmap as publisher
+    cons,partial=_hk_publisher_fixture(observed=150)
+    monkeypatch.setitem(publisher._LOADERS,"hk",lambda:(cons,partial,{}, {},{}))
+    monkeypatch.setattr(publisher,"_board_breadth",lambda _:None)
+    now=datetime(2026,10,12,12,tzinfo=timezone.utc)
+    with pytest.raises(RuntimeError,match="only 150/160"):
+        publisher.publish("hk",site=tmp_path/"site",now=now)
+    assert not (tmp_path/"site/marketdata/hk_heatmap.json").exists()
+    assert not (tmp_path/"site/hk_heatmap.html").exists()
+    # At 16:30 HKT the new session is not complete and its temporary candles
+    # may not be used to advance the EOD map.
+    earlier=datetime(2026,10,12,8,30,tzinfo=timezone.utc)
+    prior=publisher.publish("hk",site=tmp_path/"site",now=earlier)
+    assert prior["asof"]=="2026-10-09", (
+        "Before HKEX settlement, the most recent completed day remains Friday"
+    )
+
+
+def test_hk_heatmap_uses_the_incumbent_asia_publisher_not_us_nightly():
+    from pathlib import Path
+    root=Path(__file__).resolve().parents[1]
+    workflow=(root/".github/workflows/asia-close.yml").read_text()
+    dag=(root/"config/dag.yml").read_text()
+    first=workflow.index("name: publish HK heatmap from settled close")
+    cn=workflow.index("name: publish China heatmap from the settled close")
+    successor=workflow.index("name: CN Prophet Live arming pass",first)
+    assert cn<first<successor
+    assert workflow.count("name: publish HK heatmap from settled close")==1
+    opening=workflow[first:successor]
+    assert "continue-on-error: true" in opening
+    assert '--market hk --render-page' in opening
+    assert 'HK_HEATMAP_GENERATED_UTC' in opening
+    assert 'touch "$RUNNER_TEMP/hk-heatmap-failed"' in opening
+    assert 'git checkout HEAD -- site/marketdata/hk_heatmap.json site/hk_heatmap.html' in opening
+    engine=workflow[workflow.index("name: commit engine outputs"):]
+    assert engine.count('python -m scripts.build_market_heatmap --market hk --render-page')==2
+    assert 'git checkout origin/main -- site/marketdata/hk_heatmap.json site/hk_heatmap.html' in engine
+    assert 'render-heal: hold stale HK heatmap at origin main' in engine
+    tail=workflow[workflow.index("name: fail if China/HK heatmap missed settled close"):]
+    assert 'if [ -f "$RUNNER_TEMP/hk-heatmap-failed" ]' in tail
+    assert 'if [ "$failed" -ne 0 ]; then exit 1; fi' in tail
+    assert "id: publish_hk_heatmap" in dag
+    assert "module: scripts.build_market_heatmap" in dag
+
+
+def test_hk_deep_source_reuses_adjusted_breadth_cache_for_completed_day():
+    """Same existing HK stock owner, no new provider and 95% exact session."""
+    from collectors.hk_closes_deep import reconcile_settled_hk_cache
+    names=[f"{i:04d}.HK" for i in range(1,161)]
+    days=pd.to_datetime(["2026-10-08","2026-10-09"])
+    baseline=pd.DataFrame({s:[99.,100.] for s in names},index=days)
+    cache=pd.DataFrame({s:[99.,100.,101. if i<152 else float("nan")]
+                        for i,s in enumerate(names)},
+                      index=pd.to_datetime(["2026-10-08","2026-10-09","2026-10-12"]))
+    before=baseline.copy(deep=True)
+    result=reconcile_settled_hk_cache(
+        baseline,names,cache=cache,reference=baseline,
+        now=datetime(2026,10,12,12,tzinfo=timezone.utc))
+    assert result.index.max()==pd.Timestamp("2026-10-12")
+    assert int(result.loc["2026-10-12"].notna().sum())==152
+    assert pd.isna(result.at[pd.Timestamp("2026-10-12"),names[-1]])
+    pd.testing.assert_frame_equal(before,baseline)
+    assert (result.loc["2026-10-09"]==100.).all()
+
+
+def test_hk_deep_source_never_rebases_different_adjustment_histories():
+    import pytest
+    from collectors.hk_closes_deep import reconcile_settled_hk_cache
+    names=[f"{i:04d}.HK" for i in range(1,21)]
+    dates=pd.to_datetime(["2026-10-08","2026-10-09"])
+    baseline=pd.DataFrame({s:[99.,100.] for s in names},index=dates)
+    cache=pd.DataFrame({s:[99.,100.,101.] for s in names},
+                       index=pd.to_datetime(["2026-10-08","2026-10-09","2026-10-12"]))
+    for name in names[18:]:
+        cache.loc["2026-10-09",name]=105.
+    with pytest.raises(RuntimeError,match="18/20"):
+        reconcile_settled_hk_cache(
+            baseline,names,cache=cache,reference=baseline,
+            now=datetime(2026,10,12,12,tzinfo=timezone.utc))
+    assert baseline.index.max()==pd.Timestamp("2026-10-09")
+
+
+def test_hk_deep_source_respects_1730_hkt_settlement():
+    from collectors.hk_closes_deep import reconcile_settled_hk_cache
+    names=[f"{i:04d}.HK" for i in range(1,21)]
+    dates=pd.to_datetime(["2026-10-08","2026-10-09"])
+    baseline=pd.DataFrame({s:[99.,100.] for s in names},index=dates)
+    cache=pd.DataFrame({s:[99.,100.,101.] for s in names},
+                       index=pd.to_datetime(["2026-10-08","2026-10-09","2026-10-12"]))
+    before_close=reconcile_settled_hk_cache(
+        baseline,names,cache=cache,reference=baseline,
+        now=datetime(2026,10,12,8,30,tzinfo=timezone.utc))
+    assert before_close.index.max()==pd.Timestamp("2026-10-09")
+    assert pd.Timestamp("2026-10-12") not in before_close.index
+
+
+def test_hk_deep_owner_orders_after_breadth_in_existing_asia_shard():
+    from pathlib import Path
+    src=(Path(__file__).resolve().parents[1]/"scripts/collect.py").read_text()
+    assert src.index('("hk_breadth", "collectors.hk_breadth"') < src.index(
+        '("hk_closes_deep", "collectors.hk_closes_deep"')
+    assert 'serial_keys = [k for k in registry if k not in _CONCURRENT_HOSTS]' in src
+
+
+def test_hk_deep_cold_runner_preserves_published_close_without_breadth_cache():
+    """A missed Actions cache restore cannot erase a qualified deep close."""
+    from collectors.hk_closes_deep import reconcile_settled_hk_cache
+    names=[f"{i:04d}.HK" for i in range(1,161)]
+    old=pd.DataFrame({s:[99.,100.] for s in names},
+                     index=pd.to_datetime(["2026-10-08","2026-10-09"]))
+    durable=old.copy()
+    durable.loc[pd.Timestamp("2026-10-12"),:] = float("nan")
+    for t in names[:153]:
+        durable.at[pd.Timestamp("2026-10-12"),t]=101.
+    out=reconcile_settled_hk_cache(
+        old,names,cache=None,reference=durable,
+        now=datetime(2026,10,13,6,45,tzinfo=timezone.utc))
+    assert out.index.max()==pd.Timestamp("2026-10-12")
+    assert int(out.loc["2026-10-12"].notna().sum())==153
+    assert (out.loc["2026-10-09"]==100.).all()
+
+
+def test_hk_deep_cold_runner_rejects_unverified_stored_prices():
+    from collectors.hk_closes_deep import reconcile_settled_hk_cache
+    names=[f"{i:04d}.HK" for i in range(1,21)]
+    old=pd.DataFrame({s:[99.,100.] for s in names},
+                     index=pd.to_datetime(["2026-10-08","2026-10-09"]))
+    wrong=old.copy()
+    wrong.loc[pd.Timestamp("2026-10-12"),:] = 101.
+    # A forged back-adjusted reference that disagrees on the prior close can
+    # never be laundered through the durable-store fallback.
+    for ticker in names[18:]:
+        wrong.loc["2026-10-09",ticker]=105.
+    import pytest
+    with pytest.raises(RuntimeError,match="18/20"):
+        reconcile_settled_hk_cache(
+            old,names,cache=None,reference=wrong,
+            now=datetime(2026,10,13,6,45,tzinfo=timezone.utc))
+
+
+def test_hk_breadth_repairs_missing_yesterday_when_today_is_full():
+    from collectors.hk_breadth import repair_settled_hk_closes
+    names = [f"{i:04d}.HK" for i in range(1, 21)]
+    source = pd.DataFrame(
+        {t: [99.0, 100.0, 102.0] for t in names},
+        index=pd.to_datetime(["2026-10-08", "2026-10-09", "2026-10-13"]),
+    )
+    candle = pd.DataFrame(
+        {"close": [99.0, 100.0, 101.0, 102.0]},
+        index=pd.to_datetime(["2026-10-08", "2026-10-09",
+                              "2026-10-12", "2026-10-13"]),
+    )
+    calls = []
+    def supplier(ticker, *_args):
+        calls.append(ticker)
+        return candle
+    fixed = repair_settled_hk_closes(
+        source, names, now=datetime(2026, 10, 13, 12,
+                                   tzinfo=timezone.utc), fetcher=supplier,
+    )
+    assert len(calls) == 20
+    assert int(fixed.loc["2026-10-12"].notna().sum()) == 20
+    assert int(fixed.loc["2026-10-13"].notna().sum()) == 20
+    assert float(fixed.loc["2026-10-13", names[0]]) == 102.0
+
+
+def test_hk_deep_cold_runner_repairs_yesterday_without_erasing_today():
+    from collectors.hk_closes_deep import reconcile_settled_hk_cache
+    names = [f"{i:04d}.HK" for i in range(1, 21)]
+    source = pd.DataFrame(
+        {t: [99.0, 100.0, 102.0] for t in names},
+        index=pd.to_datetime(["2026-10-08", "2026-10-09", "2026-10-13"]),
+    )
+    cache = pd.DataFrame(
+        {t: [99.0, 100.0, 101.0, 102.0] for t in names},
+        index=pd.to_datetime(["2026-10-08", "2026-10-09",
+                              "2026-10-12", "2026-10-13"]),
+    )
+    fixed = reconcile_settled_hk_cache(
+        source, names, cache=cache, reference=source,
+        now=datetime(2026, 10, 13, 12, tzinfo=timezone.utc),
+    )
+    assert int(fixed.loc["2026-10-12"].notna().sum()) == 20
+    assert int(fixed.loc["2026-10-13"].notna().sum()) == 20
+    assert float(fixed.loc["2026-10-13", names[0]]) == 102.0
+
+
+def test_hk_heatmap_refuses_today_when_previous_close_missing():
+    from scripts.build_market_heatmap import _validate_hk_completed_session
+    names = [f"{i:04d}.HK" for i in range(1, 21)]
+    cons = pd.DataFrame(index=pd.Index(names, name="ticker"))
+    closes = pd.DataFrame(
+        {t: [99.0, 100.0, 102.0] for t in names},
+        index=pd.to_datetime(["2026-10-08", "2026-10-09", "2026-10-13"]),
+    )
+    payload = {
+        "market": "hk", "map_type": "stocks", "source": "daily-close",
+        "asof": "2026-10-13", "n_tiles": 20,
+        "tiles": [{"t": t, "perf": {"1D": 2.0}} for t in names],
+    }
+    import pytest
+    with pytest.raises(RuntimeError, match="previous session absent"):
+        _validate_hk_completed_session(
+            payload, closes, cons,
+            datetime(2026, 10, 13, 12, tzinfo=timezone.utc),
+        )

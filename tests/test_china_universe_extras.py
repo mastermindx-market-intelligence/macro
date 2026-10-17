@@ -112,6 +112,11 @@ def test_fetch_unions_extra_tickers(monkeypatch, tmp_path):
     closes = pd.DataFrame(1.0, index=idx, columns=cols).cumsum()
     monkeypatch.setattr(ad, "_download_closes",
                         lambda tickers, period: closes[[t for t in tickers if t in closes.columns]])
+    from lib import cn_calendar
+    # Synthetic 400-bar 2020/2021 fixture is complete only under its own test
+    # exchange clock; a test run years later must not request Tencent prices.
+    monkeypatch.setattr(cn_calendar, "expected_last_session",
+                        lambda now=None: idx[-1].date())
 
     ad.fetch()
     mb = pd.read_parquet(ad.members_path)
@@ -160,6 +165,11 @@ def test_sina_outage_reuses_cached_membership_and_advances_closes(monkeypatch, t
         index=idx,
     )
     monkeypatch.setattr(ad, "_download_closes", lambda tickers, period: fresh[list(tickers)])
+    # Synthetic Sep 11 2026 prices are a completed session only under their
+    # original exchange clock, not the wall clock on the CI runner in October.
+    from lib import cn_calendar
+    monkeypatch.setattr(cn_calendar, "expected_last_session",
+                        lambda now=None: dt.date(2026, 9, 11))
 
     ad.fetch()
 
@@ -208,10 +218,10 @@ def _ohlc_frame(rows: list[tuple[str, float]]) -> pd.DataFrame:
     )
 
 
-def test_tencent_code_maps_a_share_suffixes_only():
+def test_tencent_code_maps_mainland_and_hk_suffixes():
     assert tx.tencent_code("600118.SS") == "sh600118"
     assert tx.tencent_code("000001.SZ") == "sz000001"
-    assert tx.tencent_code("0700.HK") is None
+    assert tx.tencent_code("0700.HK") == "hk00700"
     assert tx.tencent_code("AAPL") is None
 
 
@@ -379,3 +389,193 @@ def test_cached_membership_refuses_below_width_floor(tmp_path):
     ).to_parquet(ad.members_path)
     with pytest.raises(RuntimeError, match="too small"):
         ad._cached_universe()
+
+
+# ── Settled close repair: 2026-10-12 phantom all-null Yahoo row ──────────────
+
+def _wide_settled_fixture(n=100, current=0):
+    members = [f"{i:06d}.SS" for i in range(600000, 600000 + n)]
+    idx = pd.to_datetime(["2026-10-08", "2026-10-09", "2026-10-12"])
+    data = {t: [9.0, 10.0, 11.0 if i < current else float("nan")]
+            for i, t in enumerate(members)}
+    return pd.DataFrame(data, index=idx), members
+
+
+def _settled_qfq_frame(close=11.0, prior=10.0, session="2026-10-12"):
+    return pd.DataFrame({"close": [9.0, prior, close]}, index=pd.to_datetime([
+        "2026-10-08", "2026-10-09", session,
+    ]))
+
+
+def test_settled_china_search_cannot_accept_a_phantom_all_null_day():
+    """The Oct 12 all-NaN timestamp must NOT count as collected market truth."""
+    closes, members = _wide_settled_fixture(100, 0)
+    calls = []
+
+    def blank(ticker, count, retries):
+        calls.append(ticker)
+        return None
+
+    with pytest.raises(RuntimeError, match="coverage 0/100"):
+        cu.repair_settled_search_closes(
+            closes, members, now=dt.datetime(2026, 10, 12, 12,
+                                            tzinfo=dt.timezone.utc),
+            fetcher=blank, local_reader=lambda _: None, max_workers=4,
+        )
+    assert len(calls) == 100
+    assert closes.loc["2026-10-12"].isna().all(), "failure must not mutate caller data"
+
+
+def test_settled_china_search_accepts_basis_checked_real_candles_only():
+    """One adjusted-basis mismatch and an unobserved suspended name stay null."""
+    closes, members = _wide_settled_fixture(100, 0)
+    def qualified(ticker, count, retries):
+        assert count == 12 and retries == 1
+        if ticker == members[96]:
+            return _settled_qfq_frame(prior=10.2)  # >0.5% basis mismatch
+        if ticker in (members[97], members[98], members[99]):
+            return None
+        return _settled_qfq_frame()
+
+    fixed = cu.repair_settled_search_closes(
+        closes, members, now=dt.datetime(2026, 10, 12, 12,
+                                        tzinfo=dt.timezone.utc),
+        fetcher=qualified, local_reader=lambda _: None, max_workers=8,
+    )
+    assert int(fixed.loc["2026-10-12"].notna().sum()) == 96
+    assert fixed.at[pd.Timestamp("2026-10-12"), members[0]] == 11
+    for t in members[96:]:
+        assert pd.isna(fixed.at[pd.Timestamp("2026-10-12"), t])
+    assert (fixed.loc["2026-10-09"].dropna() == 10).all()
+    assert closes.loc["2026-10-12"].isna().all()
+
+
+def test_settled_china_search_fails_when_95pct_cannot_be_source_verified():
+    closes, members = _wide_settled_fixture(100, 0)
+
+    def partial(ticker, *_):
+        return _settled_qfq_frame() if ticker in members[:94] else None
+
+    with pytest.raises(RuntimeError, match="94/100"):
+        cu.repair_settled_search_closes(
+            closes, members, now=dt.datetime(2026, 10, 12, 12,
+                                            tzinfo=dt.timezone.utc),
+            fetcher=partial, local_reader=lambda _: None, max_workers=8,
+        )
+    assert closes.loc["2026-10-12"].isna().all()
+
+
+def test_settled_china_search_ignores_future_and_preclose_vendor_candles():
+    closes, members = _wide_settled_fixture(10, 0)
+    def future_only(_ticker, *_):
+        return _settled_qfq_frame(session="2026-10-13")
+    with pytest.raises(RuntimeError, match="0/10"):
+        cu.repair_settled_search_closes(
+            closes, members, now=dt.datetime(2026, 10, 12, 12,
+                                            tzinfo=dt.timezone.utc),
+            fetcher=future_only, local_reader=lambda _: None, max_workers=4,
+        )
+
+
+def test_settled_china_search_skips_secondary_provider_for_healthy_source():
+    closes, members = _wide_settled_fixture(100, 96)
+    def should_not_call(*_args):
+        raise AssertionError("current Yahoo data must not trigger another collector")
+    out = cu.repair_settled_search_closes(
+        closes, members, now=dt.datetime(2026, 10, 12, 12,
+                                        tzinfo=dt.timezone.utc),
+        fetcher=should_not_call, local_reader=should_not_call,
+    )
+    assert int(out.loc["2026-10-12"].notna().sum()) == 96
+    assert (out.loc["2026-10-09"].dropna() == 10).all()
+
+
+
+def test_china_search_uses_existing_adjusted_stock_store_without_network():
+    """Recovery of real closed bars stays inside the original store graph."""
+    closes,members=_wide_settled_fixture(100,0)
+    reads=[]
+    def canonical_adjusted(ticker):
+        reads.append(ticker)
+        if ticker==members[98]:
+            return _settled_qfq_frame(prior=10.2)
+        if ticker==members[99]:
+            return None
+        return _settled_qfq_frame()
+    def network(*_args):
+        raise AssertionError(">=95% local evidence must skip all vendor calls")
+    fixed=cu.repair_settled_search_closes(
+        closes,members,now=dt.datetime(2026,10,12,12,tzinfo=dt.timezone.utc),
+        local_reader=canonical_adjusted,fetcher=network)
+    assert len(reads)==100
+    assert int(fixed.loc["2026-10-12"].notna().sum())==98
+    assert fixed.at[pd.Timestamp("2026-10-12"),members[0]]==11.0
+    assert pd.isna(fixed.at[pd.Timestamp("2026-10-12"),members[98]])
+    assert pd.isna(fixed.at[pd.Timestamp("2026-10-12"),members[99]])
+    assert closes.loc["2026-10-12"].isna().all()
+    assert (fixed.loc["2026-10-09"].dropna()==10.0).all()
+
+
+def test_china_search_uses_existing_provider_only_after_local_undercoverage():
+    """One existing Tencent close can complete the gap; same basis law still applies."""
+    closes,members=_wide_settled_fixture(100,0)
+    candidates=set()
+    def local(ticker):
+        return _settled_qfq_frame() if ticker in members[:94] else None
+    def fallback(ticker,count,retries):
+        candidates.add(ticker)
+        assert count==12 and retries==1
+        return _settled_qfq_frame() if ticker==members[94] else None
+    fixed=cu.repair_settled_search_closes(
+        closes,members,now=dt.datetime(2026,10,12,12,tzinfo=dt.timezone.utc),
+        local_reader=local,fetcher=fallback,max_workers=4)
+    assert int(fixed.loc["2026-10-12"].notna().sum())==95
+    assert candidates==set(members[94:])
+    assert closes.loc["2026-10-12"].isna().all()
+
+
+def test_china_search_never_splices_incompatible_local_adjustment_basis():
+    closes,members=_wide_settled_fixture(100,0)
+    calls=[]
+    def local(ticker):
+        return _settled_qfq_frame(prior=10.3) if ticker in members[94:] else _settled_qfq_frame()
+    def would_bypass_basis(ticker,*_args):
+        calls.append(ticker)
+        return _settled_qfq_frame()
+    with pytest.raises(RuntimeError,match="94/100"):
+        cu.repair_settled_search_closes(
+            closes,members,now=dt.datetime(2026,10,12,12,tzinfo=dt.timezone.utc),
+            local_reader=local,fetcher=would_bypass_basis,max_workers=4)
+    assert calls==[], "a different vendor cannot silently bless a known basis mismatch"
+    assert closes.loc["2026-10-12"].isna().all()
+
+
+def test_china_search_repairs_missing_yesterday_even_when_today_is_full():
+    """Prevent a current-day row from hiding a missing previous session."""
+    members = [f"{i:06d}.SS" for i in range(600000, 600100)]
+    source = pd.DataFrame(
+        {t: [9.0, 10.0, 12.0] for t in members},
+        index=pd.to_datetime(["2026-10-08", "2026-10-09", "2026-10-13"]),
+    )
+    pername = pd.DataFrame(
+        {"close": [9.0, 10.0, 11.0, 12.0]},
+        index=pd.to_datetime(["2026-10-08", "2026-10-09",
+                              "2026-10-12", "2026-10-13"]),
+    )
+    reads = []
+    def existing_stock(ticker):
+        reads.append(ticker)
+        return pername
+    def no_network(*_args):
+        raise AssertionError("source-qualified local bars already cover both sessions")
+    out = cu.repair_settled_search_closes(
+        source, members, now=dt.datetime(2026, 10, 13, 12,
+                                        tzinfo=dt.timezone.utc),
+        local_reader=existing_stock, fetcher=no_network,
+    )
+    assert len(reads) == 100
+    assert int(out.loc["2026-10-12"].notna().sum()) == 100
+    assert int(out.loc["2026-10-13"].notna().sum()) == 100
+    assert float(out.loc["2026-10-12", members[0]]) == 11.0
+    assert float(out.loc["2026-10-13", members[0]]) == 12.0
+    assert pd.Timestamp("2026-10-12") not in source.index
