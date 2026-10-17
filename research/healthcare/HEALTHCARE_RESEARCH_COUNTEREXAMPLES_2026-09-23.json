@@ -1,0 +1,193 @@
+{
+  "artifact_kind": "research_counterexamples",
+  "revision": "R1",
+  "operation_key": "gmi-healthcare-deep-research-20260923-sol-001",
+  "research_date": "2026-09-23",
+  "foundation": "research/healthcare/HEALTHCARE_RESEARCH_FOUNDATION_2026-09-23.md",
+  "source_reference_scope": "S01-S24 refer only to the companion foundation source register; these are document-local locators, not new canonical entity IDs.",
+  "purpose": "Adversarial research examples for later contract mapping and test design. These are not executable tests or accepted production schemas.",
+  "execution_status": "NOT_EXECUTED",
+  "product_authority": {
+    "may_create_canonical_memberships": false,
+    "may_rank": false,
+    "may_gate_trades": false,
+    "may_size": false,
+    "may_execute": false,
+    "may_publish_full_fidelity_evidence": false
+  },
+  "cases": [
+    {
+      "case": "HC-R01",
+      "challenge": "A newly generated clinical artifact is presented as historically valid evidence despite zero point-in-time backing.",
+      "expected_behavior": "Show generation freshness separately from observation freshness and historical coverage; retain legacy limitations.",
+      "evidence_to_resolve": "Actual versioned source observations and point-in-time coverage receipts, not a fresh render timestamp.",
+      "source_refs": [],
+      "repository_evidence": "site/basketdata/clinical_pipeline.json at 668237947e016f679782e41e61c91c9133a5ea99"
+    },
+    {
+      "case": "HC-R02",
+      "challenge": "A therapeutic platform inherits a diagnostics-only interpretation because both are mapped to an old broad theme ID.",
+      "expected_behavior": "Preserve existing IDs and introduce reviewed orthogonal research facets without automatically changing price memberships.",
+      "evidence_to_resolve": "Existing-owner ontology mapping and consumer compatibility proof.",
+      "source_refs": [],
+      "repository_evidence": "config/clinical_modalities.yml at 668237947e016f679782e41e61c91c9133a5ea99"
+    },
+    {
+      "case": "HC-R03",
+      "challenge": "A companion diagnostic is generalized to every drug, specimen or patient within an oncology category.",
+      "expected_behavior": "Bind the assertion to the actual assay, biomarker, specimen, therapeutic product and indication.",
+      "evidence_to_resolve": "Relevant regulatory decision and label version.",
+      "source_refs": ["S03", "S04"]
+    },
+    {
+      "case": "HC-R04",
+      "challenge": "Regulatory approval is automatically converted to coverage, payment or treatment availability for all payers.",
+      "expected_behavior": "Keep regulatory, payer-policy and care-delivery assertions separate; unsupported transitions remain unknown.",
+      "evidence_to_resolve": "Specific payer geography, eligibility policy, effective date and delivery capability.",
+      "source_refs": ["S11", "S13", "S20"]
+    },
+    {
+      "case": "HC-R05",
+      "challenge": "A trial population is copied into the approved indication without considering the regulator's actual scope.",
+      "expected_behavior": "Preserve study population, label population and any stated extrapolation as separate evidence.",
+      "evidence_to_resolve": "Dated regulatory scope and the original study context; no automatic age or indication substitution.",
+      "source_refs": ["S11"]
+    },
+    {
+      "case": "HC-R06",
+      "challenge": "A historically pending manufacturing authorization is asserted to remain pending today.",
+      "expected_behavior": "Retain the historical assertion and mark current status unresolved until refreshed.",
+      "evidence_to_resolve": "Later site/product authorization or commercial-release receipt.",
+      "source_refs": ["S08"]
+    },
+    {
+      "case": "HC-R07",
+      "challenge": "An opening ceremony is treated as proof of approved and operating commercial production.",
+      "expected_behavior": "Separate facility opening, regulatory qualification, production start and realized output.",
+      "evidence_to_resolve": "Each stage's own dated evidence.",
+      "source_refs": ["S08"]
+    },
+    {
+      "case": "HC-R08",
+      "challenge": "Planned future payload-linker capacity is counted in current supply or as proof of industry shortage.",
+      "expected_behavior": "Keep future plans, current qualified output and shortage evidence distinct.",
+      "evidence_to_resolve": "Commissioning and qualification plus comparable supply-demand observations.",
+      "source_refs": ["S06"]
+    },
+    {
+      "case": "HC-R09",
+      "challenge": "Different isotope and product observations are merged into one timeless radiopharmaceutical shortage claim.",
+      "expected_behavior": "Require isotope, product, geography, time and units; reject unscoped aggregation.",
+      "evidence_to_resolve": "Current underlying supply evidence; search-only DOE material cannot support a quantified accepted constraint.",
+      "source_refs": ["S09", "S10"]
+    },
+    {
+      "case": "HC-R10",
+      "challenge": "A technology licensing agreement is promoted into an asset-specific manufacturing relationship.",
+      "expected_behavior": "Represent only the disclosed licensed rights and assigned responsibilities.",
+      "evidence_to_resolve": "A distinct manufacturing contract or direct disclosure naming the relevant scope.",
+      "source_refs": ["S05"]
+    },
+    {
+      "case": "HC-R11",
+      "challenge": "An undisclosed target is guessed from a company's other programs and treated as fact.",
+      "expected_behavior": "Keep the target undisclosed and quarantine semantic guesses as hypotheses.",
+      "evidence_to_resolve": "Explicit source disclosure and a qualified mapping.",
+      "source_refs": ["S05"]
+    },
+    {
+      "case": "HC-R12",
+      "challenge": "An unnamed customer in a supply announcement is matched to a prominent product without evidence.",
+      "expected_behavior": "Retain an unnamed counterparty and prohibit a synthetic company-product supply edge.",
+      "evidence_to_resolve": "Direct counterparty or contract evidence.",
+      "source_refs": ["S07"]
+    },
+    {
+      "case": "HC-R13",
+      "challenge": "A net profit-sharing percentage is applied to gross product sales as the partner's revenue exposure.",
+      "expected_behavior": "Preserve the contractual and accounting basis; do not calculate an unsupported revenue share.",
+      "evidence_to_resolve": "Disclosed relevant revenue, costs, adjustments and partner accounting.",
+      "source_refs": ["S12"]
+    },
+    {
+      "case": "HC-R14",
+      "challenge": "A company's entire reported revenue is allocated independently to every associated theme.",
+      "expected_behavior": "Permit overlapping discovery while avoiding additive double counting; undisclosed allocation remains unknown.",
+      "evidence_to_resolve": "Business/product-period disclosure and an accepted aggregation policy.",
+      "source_refs": ["S17", "S21"]
+    },
+    {
+      "case": "HC-R15",
+      "challenge": "Today's registry record is used to reconstruct historical phase, sponsorship or membership.",
+      "expected_behavior": "Require contemporaneous snapshots or explicit historical source versions; expose gaps.",
+      "evidence_to_resolve": "Actual history coverage through the existing BioCatalyst owner.",
+      "source_refs": [],
+      "repository_evidence": "engine/theme_clinical.py at 668237947e016f679782e41e61c91c9133a5ea99"
+    },
+    {
+      "case": "HC-R16",
+      "challenge": "A primary-completion date becomes a guaranteed company readout or publication date.",
+      "expected_behavior": "Separate endpoint-data collection, study completion, public result posting and sponsor guidance.",
+      "evidence_to_resolve": "The correct event-specific source, status and date precision.",
+      "source_refs": ["S24"]
+    },
+    {
+      "case": "HC-R17",
+      "challenge": "Study registrations, estimated enrollment or Phase 3 counts are labelled measured spending or commercial success.",
+      "expected_behavior": "Keep descriptive activity separate from economic measurement and predictive validation.",
+      "evidence_to_resolve": "Independent expenditure evidence or a predeclared, point-in-time evaluation with suitable controls.",
+      "source_refs": [],
+      "repository_evidence": "engine/theme_clinical.py and clinical_pipeline.json at 668237947e016f679782e41e61c91c9133a5ea99"
+    },
+    {
+      "case": "HC-R18",
+      "challenge": "The FDA AI list is treated as an exhaustive universe or its entry count as paid adoption.",
+      "expected_behavior": "Expose source coverage limits and require a separate commercial-use denominator.",
+      "evidence_to_resolve": "Version-scoped authorization evidence and actual deployment or usage evidence.",
+      "source_refs": ["S14", "S15"]
+    },
+    {
+      "case": "HC-R19",
+      "challenge": "Every device pathway is labelled drug-like approval, or a device identifier is treated as a listed issuer.",
+      "expected_behavior": "Preserve authorization type and namespace-specific identity; resolve company/security through existing owners.",
+      "evidence_to_resolve": "Submission details and a qualified entity join.",
+      "source_refs": ["S14", "S15", "S16"]
+    },
+    {
+      "case": "HC-R20",
+      "challenge": "A quarterly report's fiscal end is assigned to subsequent-event narrative, or a dataset release date replaces its observation year.",
+      "expected_behavior": "Track observation interval, publication date and event-effective date independently.",
+      "evidence_to_resolve": "Each assertion's actual temporal locator, preserving unknown precision.",
+      "source_refs": ["S11", "S12", "S19"]
+    },
+    {
+      "case": "HC-R21",
+      "challenge": "Fee-for-service payer spending is substituted for all-payer utilization or global manufacturer net revenue.",
+      "expected_behavior": "Preserve population exclusions, coding unit and accounting basis; require explicit reconciliation.",
+      "evidence_to_resolve": "Comparable code/product mappings, periods, populations and financial disclosures.",
+      "source_refs": ["S18", "S19"]
+    },
+    {
+      "case": "HC-R22",
+      "challenge": "An enabling platform's new license or contingent milestone is counted as realized recurring product economics.",
+      "expected_behavior": "Separate signed rights, contingencies, launched partner products and recognized revenue channels.",
+      "evidence_to_resolve": "Actual reported royalties or product sales and applicable contract scope.",
+      "source_refs": ["S05", "S21"]
+    },
+    {
+      "case": "HC-R23",
+      "challenge": "A government-hosted composite terminology is declared entirely unrestricted for redistribution.",
+      "expected_behavior": "Check component-level rights and keep access permission separate from publication permission.",
+      "evidence_to_resolve": "Relevant source terms and existing rights-owner approval; no unlicensed corpus import.",
+      "source_refs": ["S01", "S22"]
+    },
+    {
+      "case": "HC-R24",
+      "challenge": "An accessible research page or local example bypasses the existing protected evidence path, or an inaccessible web read is generalized to total provider outage.",
+      "expected_behavior": "Retain existing custody/publication boundaries and scope failures to the tested path. Local research fixtures grant no product or trade authority.",
+      "evidence_to_resolve": "An authorized source-feasibility receipt and real-path authenticated consumer proof when implementation is commissioned.",
+      "source_refs": ["S10", "S23"],
+      "repository_evidence": "scripts/build_biocatalyst.py at 668237947e016f679782e41e61c91c9133a5ea99"
+    }
+  ]
+}
