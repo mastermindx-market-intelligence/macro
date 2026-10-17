@@ -2227,6 +2227,40 @@ document.querySelectorAll('.more-btn[data-more]').forEach(function(btn){
     btn.style.display = 'none';
   });
 });
+// Only the International sector board has a page-owned fourteen-row collapse.
+// tablesort.js counts ALL matching rows, and must not announce matches that
+// .sbmore.hidden still keeps invisible. Reveal the collapsed rows for an active
+// query before tablesort's input handler runs; restore collapse on Clear/Reset
+// unless the visitor deliberately chose Show all. Never change another table.
+(function(){
+  var table = document.querySelector('table.sb.sortable');
+  var more = document.querySelector('.more-btn[data-more="sbmore"]');
+  if (!table || !more) return;
+  function filterInput(){
+    var anchor = table.parentNode && table.parentNode.classList.contains('tbl-scroll')
+      ? table.parentNode : table;
+    var control = anchor.previousElementSibling;
+    return control && control.classList.contains('tbl-filter')
+      ? control.querySelector('input[type="search"]') : null;
+  }
+  function syncVisibility(value){
+    var active = String(value || '').trim().length > 0;
+    var expanded = more.style.display === 'none';
+    table.querySelectorAll('tbody tr.sbmore').forEach(function(row){
+      row.classList.toggle('hidden', !active && !expanded);
+    });
+  }
+  document.addEventListener('input', function(event){
+    var input = filterInput();
+    if (input && event.target === input) syncVisibility(input.value);
+  }, true);
+  // tablesort's no-match reset sets input.value itself without firing input.
+  document.addEventListener('click', function(event){
+    var reset = event.target.closest && event.target.closest('[data-tablesort-reset]');
+    var input = filterInput();
+    if (reset && input && reset.parentNode === input.parentNode) syncVisibility('');
+  }, true);
+})();
 </script>
 
 {% if mode != 'stocks' and perf and perf.leaderboard %}
