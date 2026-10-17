@@ -5644,3 +5644,16 @@
 {"date":"2026-10-16","ticker":"DAL","rank":null,"score":15,"lean":1,"broken":true}
 {"date":"2026-10-16","ticker":"CHRW","rank":null,"score":13,"lean":1,"broken":true}
 {"date":"2026-10-16","ticker":"BWXT","rank":null,"score":13,"lean":1,"broken":true}
+{"date":"2026-10-16","ticker":"A","rank":6,"score":48,"lean":1,"entry_tier":"T1","broken":false}
+{"date":"2026-10-16","ticker":"CVX","rank":10,"score":44,"lean":1,"entry_tier":"T1","broken":false}
+{"date":"2026-10-16","ticker":"SNAP","rank":24,"score":29,"lean":1,"entry_tier":"T2","broken":false}
+{"date":"2026-10-16","ticker":"KVYO","rank":25,"score":29,"lean":1,"entry_tier":"T2","broken":false}
+{"date":"2026-10-16","ticker":"KO","rank":26,"score":29,"lean":1,"broken":false}
+{"date":"2026-10-16","ticker":"REBN","rank":27,"score":28,"lean":1,"broken":false}
+{"date":"2026-10-16","ticker":"AZN","rank":28,"score":28,"lean":1,"entry_tier":"T2","broken":false}
+{"date":"2026-10-16","ticker":"BP","rank":29,"score":28,"lean":1,"entry_tier":"T2","broken":false}
+{"date":"2026-10-16","ticker":"BMY","rank":30,"score":27,"lean":1,"broken":false}
+{"date":"2026-10-16","ticker":"TSM","rank":null,"score":26,"lean":1,"broken":true}
+{"date":"2026-10-16","ticker":"SPCX","rank":null,"score":26,"lean":1,"broken":true}
+{"date":"2026-10-16","ticker":"PANW","rank":null,"score":23,"lean":1,"broken":true}
+{"date":"2026-10-16","ticker":"COIN","rank":null,"score":19,"lean":1,"broken":true}
