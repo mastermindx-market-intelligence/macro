@@ -26,9 +26,11 @@ sys.path.insert(0, str(_ROOT))
 
 from engine.qledger_store_protocol import (  # noqa: E402
     BASE_PATH, BlobInfo, ProtocolLimits, RebasePlan, SnapshotIntegrityError,
-    VerifiedSnapshot, rebase_verified_pending, validate_publication,
+    VerifiedSnapshot, open_logical_bytes, rebase_verified_pending, validate_publication,
 )
-from engine.qledger_store_sources import GitTreeSource, verify_source_snapshot  # noqa: E402
+from engine.qledger_store_sources import (  # noqa: E402
+    GitTreeSource, read_legacy_claims_blob, verify_source_snapshot,
+)
 
 _OID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 _DIGEST = re.compile(r"[0-9a-f]{64}\Z")
@@ -427,6 +429,153 @@ def rebase_native_pending(
         original_candidate_snapshot=receipt.original_candidate_snapshot,
         authorized_transaction_ids=receipt.authorized_transaction_ids,
         limits=receipt.limits,
+    )
+
+
+def _require_direct_candidate(
+    repo: Path, candidate_oid: str, accepted_tip_oid: str, *,
+    limits: ProtocolLimits, allow_already_accepted: bool = False,
+) -> None:
+    """Do not certify a stale anchor across unaccounted intermediate commits.
+
+    Native no-op readback may name the already accepted commit itself. Every
+    new candidate is one single-parent commit directly over the supplied tip.
+    Other histories require their original owner's explicit reconciliation.
+    """
+    if candidate_oid == accepted_tip_oid and allow_already_accepted:
+        return
+    raw, _ = _git(repo, ["cat-file", "commit", _oid(candidate_oid)],
+                  output_limit=limits.page_bytes)
+    digest = hashlib.sha1 if len(candidate_oid) == 40 else hashlib.sha256
+    if digest(b"commit " + str(len(raw)).encode() + b"\0" + raw).hexdigest() != candidate_oid:
+        _fail("HASH_MISMATCH", "candidate ancestry bytes changed after publication validation")
+    parents = [line[7:] for line in raw.split(b"\n\n", 1)[0].split(b"\n")
+               if line.startswith(b"parent ")]
+    if parents != [_oid(accepted_tip_oid).encode("ascii")]:
+        _fail("CONFLICT", "candidate must have exactly the supplied accepted tip as its sole parent")
+
+
+@dataclass(frozen=True)
+class PublicationContinuityWitness:
+    """Mechanical proof for explicitly supplied objects, never release authority.
+
+    The caller still owns remote-tip acceptance, historical issuer rights,
+    mixed-version writer exclusion and production admission. No returned field
+    grants custody or changes the current hard-legacy production selection.
+    """
+
+    status: str
+    publication: PublicationGateResult
+    source_tree_oid: str
+    source_logical_digest: str
+    source_logical_bytes: int
+    source_blob_oid: str | None
+    transaction_ids: tuple[str, ...]
+    accepted_tip_oid: str
+    planned_transaction_ids: tuple[str, ...] = ()
+    already_present_transaction_ids: tuple[str, ...] = ()
+    source_assurance: str = "EXPLICIT_GIT_OBJECTS_NOT_REMOTE_ACCEPTANCE"
+    effect: str = "not_attempted"
+    eligible_for_cutover: bool = False
+
+
+def check_legacy_conversion_candidate(
+    repo: Path, *, candidate_oid: str, accepted_baseline_oids: Iterable[str],
+    target_ref: str, binding: NativePublicationBinding,
+    expected_legacy_blob_oid: str, conversion_transaction_id: str,
+    limits: ProtocolLimits,
+) -> PublicationContinuityWitness:
+    """Bind a zero-base conversion to exact legacy Git bytes without migrating.
+
+    Candidate integrity and object bounds are insufficient by themselves: the
+    converted ordered stream must be the exact prior source, and its sole
+    storage transaction must be the explicitly supplied conversion identity.
+    """
+    if not _native_binding(binding):
+        _fail("PUBLICATION_INPUT", "conversion proof requires an explicit native binding")
+    _profile(limits)
+    if type(conversion_transaction_id) is not str or not _TAG.fullmatch(conversion_transaction_id):
+        _fail("PUBLICATION_INPUT", "an explicit conversion transaction identity is required")
+    # Reject invalid binding, inventory and ancestry before loading the legacy
+    # body. A candidate may not silently skip any post-tip source commit.
+    publication = check_publish_candidate(
+        repo, candidate_oid=candidate_oid, accepted_baseline_oids=accepted_baseline_oids,
+        target_ref=target_ref, binding=binding, limits=limits,
+    )
+    _require_direct_candidate(repo, candidate_oid, binding.accepted_tip_oid, limits=limits)
+    source_tree = _commit_tree(repo, binding.accepted_tip_oid, limits=limits)
+    original = read_legacy_claims_blob(
+        repo, tree_oid=source_tree, expected_blob_oid=expected_legacy_blob_oid, limits=limits,
+    )
+    if not original.raw_bytes or not original.raw_bytes.endswith(b"\n"):
+        _fail("CONVERSION_INPUT", "conversion requires a nonempty LF-terminated legacy source")
+    _, candidate = _candidate_snapshot(repo, publication.tree_oid, binding, limits=limits)
+    transactions = candidate._transactions
+    if len(transactions) > 1:
+        _fail("CAPACITY", "conversion supports exactly one bounded append transaction")
+    if (candidate.root.base.size != 0 or candidate.root.base.digest != hashlib.sha256(b"").hexdigest()
+            or len(transactions) != 1 or transactions[0].kind != "append"
+            or transactions[0].transaction_id != conversion_transaction_id):
+        _fail("CONFLICT", "conversion must have an empty base and the one declared append transaction")
+    if (candidate.root.logical_size != original.byte_count
+            or candidate.root.logical_digest != original.logical_digest):
+        _fail("CONFLICT", "conversion differs from the exact legacy logical stream")
+    # Compare bytes without parsing, sorting, deduplicating or allocating another
+    # complete copy. Ordered raw occurrences and legacy malformed lines survive.
+    original_view = memoryview(original.raw_bytes)
+    offset = 0
+    with open_logical_bytes(candidate) as stream:
+        while chunk := stream.read(65536):
+            if chunk != original_view[offset:offset + len(chunk)]:
+                _fail("CONFLICT", "conversion changed the original ordered raw bytes")
+            offset += len(chunk)
+    if offset != original.byte_count:
+        _fail("CONFLICT", "conversion did not retain the complete legacy source")
+    return PublicationContinuityWitness(
+        "LEGACY_CONVERSION_VERIFIED", publication, source_tree,
+        original.logical_digest, original.byte_count, original.blob_oid,
+        (conversion_transaction_id,), binding.accepted_tip_oid,
+        planned_transaction_ids=(conversion_transaction_id,),
+    )
+
+
+def check_native_operation_candidate(
+    repo: Path, *, candidate_oid: str, accepted_baseline_oids: Iterable[str],
+    target_ref: str, binding: NativePublicationBinding,
+    native_operation_receipt: NativeOperationReceipt, limits: ProtocolLimits,
+) -> PublicationContinuityWitness:
+    """Connect actual Git trees to the existing exact pending/rebase contract.
+
+    The receipt records supplied operation intent, not a claim that an external
+    authority assigned it. Both the candidate and named accepted tip are read
+    from immutable Git objects, never substituted from a current working tree.
+    """
+    if not _native_binding(binding):
+        _fail("PUBLICATION_INPUT", "native continuity requires an explicit native binding")
+    _profile(limits)
+    _receipt(native_operation_receipt)
+    receipt = native_operation_receipt
+    if (receipt.operation_id != binding.operation_id or receipt.lane_id != binding.lane_id
+            or receipt.limits.fingerprint != limits.fingerprint):
+        _fail("CONFLICT", "operation, lane or limits differ from the explicit publisher binding")
+    publication = check_publish_candidate(
+        repo, candidate_oid=candidate_oid, accepted_baseline_oids=accepted_baseline_oids,
+        target_ref=target_ref, binding=binding, limits=limits,
+    )
+    _require_direct_candidate(repo, candidate_oid, binding.accepted_tip_oid,
+                              limits=limits, allow_already_accepted=True)
+    source_tree = _commit_tree(repo, binding.accepted_tip_oid, limits=limits)
+    accepted = verify_source_snapshot(GitTreeSource(repo, tree_oid=source_tree, limits=limits), limits=limits)
+    required = rebase_native_pending(accepted, native_operation_receipt=receipt)
+    _, candidate = _candidate_snapshot(repo, publication.tree_oid, binding, limits=limits)
+    if candidate.root_bytes != required.snapshot.root_bytes:
+        _fail("CONFLICT", "Git candidate is not the accepted prefix plus the declared pending transactions")
+    return PublicationContinuityWitness(
+        "NATIVE_OPERATION_VERIFIED", publication, source_tree,
+        accepted.receipt.logical_digest, accepted.receipt.logical_size, None,
+        receipt.authorized_transaction_ids, binding.accepted_tip_oid,
+        planned_transaction_ids=required.applied,
+        already_present_transaction_ids=required.already_applied,
     )
 
 

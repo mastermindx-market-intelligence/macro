@@ -1,0 +1,16 @@
+{
+  "source_checkout": "c346c0cb13c9e086e3affccfa35e124ad2334f8c",
+  "proof_identity": "f2f3643cac7fdf12706ab5ae3cef6f6331df64316f159c23d53ddec35862aac6",
+  "proof_summary": "104 passed, 1 skipped, 15 warnings in 545.76s (0:09:05)",
+  "proved_at": "2026-10-14T16:42:45.256616+00:00",
+  "outputs": 109,
+  "actual_conflict": "Three generated FMS files against protected main b4e1d4c724a91a608448b468baf94d4558bf91e8",
+  "preservation": "All 94 upstream observations and receipts preserved; one existing contractor correction appended; all 68 corrected cases match V16.",
+  "targeted_fms_checks": "9 passed; 101 deselected",
+  "release_control_parity": "All seven inventoried release-control files match V16.",
+  "browser_evidence_boundary": "54 of 55 configured inputs unchanged; only static FMS graph differs. Prior visual/timing proof is bounded reuse, not fresh installed proof.",
+  "warnings": "15 warnings, including pytest cleanup directory warnings; no failing test.",
+  "hosted_ci": "New exact head required; V16 hosted CI passed on previous head.",
+  "release_effects": "No protected merge, owner CAS, dispatch, deployment or publication.",
+  "mission_complete": false
+}

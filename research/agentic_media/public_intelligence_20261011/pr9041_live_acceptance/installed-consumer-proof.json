@@ -1,0 +1,39 @@
+{
+  "schema": "press.aggregate_installed_consumer.v1",
+  "observed_at": "2026-10-13T00:46:28.346382+00:00",
+  "head": "604d4ec4a5608dafa0442edbb237d188d1a7d5eb",
+  "head_after": "604d4ec4a5608dafa0442edbb237d188d1a7d5eb",
+  "source_sha256": "89a9ae3b591a569e10cfd2146dcfe7d8565728d68369d80ade723c7a1081f197",
+  "positive_historical_fixture_routes": [
+    "fact-sheets",
+    "research"
+  ],
+  "negative_controls": [
+    {
+      "control": "unknown-route",
+      "error": "source is not its canonical White House document"
+    },
+    {
+      "control": "expired-event",
+      "error": "event is outside the current Brief publication window"
+    },
+    {
+      "control": "rights",
+      "error": "source-specific candidate rights qualification required"
+    },
+    {
+      "control": "feed",
+      "error": "source feed identity mismatch"
+    },
+    {
+      "control": "body",
+      "error": "source body hash mismatch"
+    }
+  ],
+  "runtime_inputs_unchanged": true,
+  "staging_writes": 0,
+  "provider_calls": 0,
+  "publication_approved": false,
+  "qualification_scope": "Synthetic historical consumer controls only, not admission of a current story",
+  "accepted": true
+}

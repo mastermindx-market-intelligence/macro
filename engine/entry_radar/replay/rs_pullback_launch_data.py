@@ -20,6 +20,9 @@ from engine.entry_radar.contracts import AUTHORITY_BLOCK
 
 INPUT_SCHEMA = "mastermind.rs_pullback_launch.phase1_input.v1"
 PANEL_SCHEMA = "mastermind.rs_pullback_launch.phase1_panel.v1"
+# Explicit opt-in only. The original v1 window selection and frame shape remain.
+INPUT_V2_SCHEMA = "mastermind.rs_pullback_launch.phase1_input.v2"
+PANEL_V2_SCHEMA = "mastermind.rs_pullback_launch.phase1_panel.v2"
 CENSUS_SCHEMA = "mastermind.rs_pullback_launch.phase1_census.v1"
 ADMISSION_SCHEMA = "mastermind.rs_pullback_launch.phase1_admission.v1"
 ROLES = ("stock", "spy", "qqq", "sector")
@@ -411,15 +414,50 @@ def _aggregate(rows: list[dict[str, Any]], stream: str, meta: Mapping[str, Any],
     return result
 
 
+def _event_window_anchor(candidate: Mapping[str, Any], opening: datetime,
+                         closing: datetime, cutoff: datetime) -> tuple[datetime | None, str | None]:
+    """Validate one caller-declared endpoint; never search for a favorable bar.
+
+    This selects feature geometry only. Observation/revision/metadata/context
+    visibility must continue to use the actual cutoff, not this older endpoint.
+    Missing or invalid per-candidate policy retains an unavailable frame.
+    """
+    try:
+        anchor = _clock(candidate.get("event_anchor_at"))
+    except InputContractError:
+        return None, "EVENT_ANCHOR_INVALID"
+    age_limit = candidate.get("max_feature_age_seconds")
+    if type(age_limit) is not int or age_limit < 0:
+        return anchor, "EVENT_ANCHOR_AGE_LIMIT_INVALID"
+    if not opening < anchor <= closing:
+        return anchor, "EVENT_ANCHOR_OUTSIDE_SESSION"
+    if anchor > cutoff:
+        return anchor, "EVENT_ANCHOR_AFTER_DECISION"
+    delta = anchor - opening
+    elapsed_us = ((delta.days * 86400 + delta.seconds) * 1000000
+                  + delta.microseconds)
+    if elapsed_us < 1800000000 or elapsed_us % 1800000000:
+        return anchor, "EVENT_ANCHOR_NOT_30M_BOUNDARY"
+    if (cutoff - anchor).total_seconds() > age_limit:
+        return anchor, "EVENT_ANCHOR_TOO_OLD"
+    return anchor, None
+
+
 def build_input_panel(bundle: Mapping[str, Any]) -> dict[str, Any]:
     """Preserve every predeclared candidate, including unavailable/nonfire rows.
 
     Calendar sessions are supplied by the existing calendar owner with a receipt;
     this adapter does not invent another exchange calendar. Calendar timestamps
     and all bars are true UTC instants, never Terminal's ET display epochs.
+
+    V2 requires an explicit event_anchor_at and max_feature_age_seconds on each
+    candidate. Both feature windows end at that completed 30m boundary, while
+    all input visibility and current context still use actual decision_at. V1
+    continues to use the newest completed windows and its original frame shape.
     """
-    if bundle.get("schema") != INPUT_SCHEMA:
+    if bundle.get("schema") not in (INPUT_SCHEMA, INPUT_V2_SCHEMA):
         raise InputContractError("unsupported input schema")
+    event_anchored = bundle["schema"] == INPUT_V2_SCHEMA
     if bundle.get("input_kind") not in {"SYNTHETIC_CONFORMANCE", "OBSERVED_MARKET"}:
         raise InputContractError("input_kind must distinguish fixtures from market evidence")
     candidates = bundle.get("candidates", [])
@@ -456,6 +494,9 @@ def build_input_panel(bundle: Mapping[str, Any]) -> dict[str, Any]:
             "calendar_receipt_sha256": (visible_calendar or {}).get("receipt_sha256"),
             "label_endpoint": None, "label_status": "NOT_COMPUTED_PHASE1",
         }
+        if event_anchored:
+            frame.update(event_anchor_at=None, feature_age_seconds=None,
+                         max_feature_age_seconds=None)
         errors = frame["refusals"]
         if visible_calendar is None:
             errors.append("CALENDAR_INPUT_INVALID" if calendar_invalid
@@ -487,6 +528,20 @@ def build_input_panel(bundle: Mapping[str, Any]) -> dict[str, Any]:
             errors.append("CALENDAR_NOT_KNOWN_AT_DECISION")
             result.append(frame)
             continue
+        window_cutoff = cutoff
+        if event_anchored:
+            anchor, anchor_error = _event_window_anchor(candidate, opening, closing, cutoff)
+            limit = candidate.get("max_feature_age_seconds")
+            frame.update(
+                event_anchor_at=_iso(anchor) if anchor is not None else None,
+                feature_age_seconds=(cutoff - anchor).total_seconds() if anchor is not None else None,
+                max_feature_age_seconds=limit if type(limit) is int and limit >= 0 else None,
+            )
+            if anchor_error:
+                errors.append(anchor_error)
+                result.append(frame)
+                continue
+            window_cutoff = anchor
         # Diagnostic coverage endpoint only; no outcome/policy is computed.
         # A later policy study must bind a common episode-origin endpoint.
         endpoint = cutoff + timedelta(minutes=120)
@@ -505,7 +560,7 @@ def build_input_panel(bundle: Mapping[str, Any]) -> dict[str, Any]:
             }
             frame["bars"][role] = {}
             for minutes in (15, 30):
-                elapsed = (min(cutoff, closing) - opening).total_seconds()
+                elapsed = (min(window_cutoff, closing) - opening).total_seconds()
                 completed = int(elapsed // (minutes*60))
                 if not completed:
                     frame["bars"][role][str(minutes)] = None
@@ -576,7 +631,8 @@ def build_input_panel(bundle: Mapping[str, Any]) -> dict[str, Any]:
         frame["snapshot_sha256"] = digest(frame)
     return {
         **({"calendar_source_snapshot": copy.deepcopy(calendar)} if bound_calendar else {}),
-        "schema": PANEL_SCHEMA, "input_kind": bundle["input_kind"],
+        "schema": PANEL_V2_SCHEMA if event_anchored else PANEL_SCHEMA,
+        "input_kind": bundle["input_kind"],
         "input_bundle_sha256": digest(bundle), "population_count": len(candidates),
         "retained_count": len(result), "available_count": sum(r["availability"] == "available" for r in result),
         "status": "SYNTHETIC_CONFORMANCE_ONLY" if bundle["input_kind"] == "SYNTHETIC_CONFORMANCE"
