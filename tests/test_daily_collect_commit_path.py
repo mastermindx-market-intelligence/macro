@@ -685,6 +685,272 @@ def test_r2_publish_is_itself_non_fatal(collect_steps, step_name):
     )
 
 
+# ── GH001 qledger-oversize carve-out (2026-10-16/17 stall) ───────────────────
+# GitHub rejects ANY commit whose tree contains a blob > 100 MiB (GH001,
+# 104857600 bytes). data/qledger/claims.jsonl is an append-only monolith that
+# crossed that limit on 2026-10-15 and stayed over it the next two nights, so
+# `collect`'s market commit ("data: daily collection") was rejected WHOLE and
+# data/baskets/ohlcv, data/stocks, breadth and macro stores stopped publishing
+# (runs 38830626430 / job 116748357565 on 10-16; 38987623960 / job 117262684428
+# on 10-17, "GH001 large-file rejection; automatic retry stopped"). The fix
+# is to UNSTAGE every staged qledger blob whose size is within 1 MiB of the
+# limit and let the market plane ship without the ledger — the ledger's
+# shrinkage is owned by the qledger publication program, not by `collect`.
+# These tests pin the carve-out so a future regression in daily.yml cannot
+# silently re-sink the market plane.
+
+import os  # noqa: E402
+
+
+def _run_market_commit(tmp_path, collect_steps, mutate):
+    """Materialize a fresh git repo, mutate it, and run the verbatim `run:` body
+    of the market-commit step. Returns (subprocess.CompletedProcess, parsed
+    GITHUB_OUTPUT dict, Path to repo)."""
+    run = str(collect_steps[_index_of(collect_steps, MARKET_COMMIT_STEP)]["run"])
+    assert "${{" not in run, (
+        "test harness must run the step body verbatim — if daily.yml grew a "
+        "${{ ... }} interpolation, render it through the GitHub env first or "
+        "rewrite the test runner; do NOT silently swallow the substitution."
+    )
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    subprocess.run(["git", "init", "-q", "-b", "main"], cwd=repo, check=True)
+    env = {
+        **os.environ,
+        "GIT_CONFIG_GLOBAL": os.devnull,
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GITHUB_OUTPUT": str(tmp_path / "gh_output"),
+    }
+    for k, v in {
+        "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t",
+        "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t",
+    }.items():
+        env.setdefault(k, v)
+    subprocess.run(["git", "config", "user.name", "t"], cwd=repo, env=env, check=True)
+    subprocess.run(["git", "config", "user.email", "t@t"], cwd=repo, env=env, check=True)
+    # Base files: every plane the step is responsible for, frozen at a known state.
+    (repo / "data" / "baskets" / "ohlcv").mkdir(parents=True)
+    (repo / "data" / "qledger").mkdir(parents=True)
+    (repo / "site" / "qledger").mkdir(parents=True)
+    (repo / "data" / "capital_structure").mkdir(parents=True)
+    (repo / "data" / "hk").mkdir(parents=True)
+    (repo / "data" / "baskets" / "ohlcv" / "NVDA.parquet").write_bytes(b"v1")
+    (repo / "data" / "qledger" / "claims.jsonl").write_bytes(b'{"claim_id":"c0"}\n')
+    (repo / "site" / "qledger" / "track_record.json").write_bytes(b"{}")
+    (repo / "data" / "capital_structure" / "source_manifest.jsonl").write_bytes(b"m1\n")
+    (repo / "data" / "hk" / "x.csv").write_bytes(b"h1\n")
+    subprocess.run(["git", "add", "data", "site"], cwd=repo, env=env, check=True)
+    subprocess.run(["git", "commit", "-q", "-m", "base"], cwd=repo, env=env, check=True)
+    mutate(repo)
+    proc = subprocess.run(
+        ["bash", "--noprofile", "--norc", "-eo", "pipefail", "-c", run],
+        cwd=repo, env=env, capture_output=True, text=True, timeout=300,
+    )
+    out_path = tmp_path / "gh_output"
+    outputs = {}
+    if out_path.exists():
+        for line in out_path.read_text().splitlines():
+            if "=" in line:
+                k, v = line.split("=", 1)
+                outputs[k] = v  # last write wins, matching GITHUB_OUTPUT semantics
+    return proc, outputs, repo
+
+
+def _grow(path, size):
+    """Make `path` exactly `size` bytes — sparse so no real MB of zeros lands
+    on disk. Appends one valid claim line first so the file is well-formed JSONL
+    up to the first byte of the sparse hole."""
+    with open(path, "r+b") as f:
+        f.seek(0, 2)
+        f.write(b'{"claim_id":"c1"}\n')
+        f.truncate(size)
+
+
+_LIMIT = 104857600
+_MARGIN = 1048576
+
+
+def test_qledger_carve_oversized_ledger_no_longer_sinks_the_market_commit(tmp_path, collect_steps):
+    """The exact GH001 reproduction: a single 100 MiB+ ledger blob used to drop
+    the WHOLE market commit. With the carve-out, market data publishes and the
+    ledger is left for the qledger publication program."""
+
+    def mutate(repo):
+        (repo / "data" / "baskets" / "ohlcv" / "NVDA.parquet").write_bytes(b"v2")
+        _grow(repo / "data" / "qledger" / "claims.jsonl", _LIMIT + 4096)
+        (repo / "site" / "qledger" / "track_record.json").write_bytes(b'{"n":1}')
+        (repo / "data" / "capital_structure" / "source_manifest.jsonl").write_bytes(b"m2\n")
+        (repo / "data" / "hk" / "x.csv").write_bytes(b"h2\n")
+
+    proc, outputs, repo = _run_market_commit(tmp_path, collect_steps, mutate)
+    assert proc.returncode == 0, f"step failed: stdout={proc.stdout!r} stderr={proc.stderr!r}"
+    subject = subprocess.run(
+        ["git", "log", "-1", "--format=%s"], cwd=repo,
+        env={**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"},
+        capture_output=True, text=True, check=True,
+    ).stdout
+    assert subject.startswith("data: daily collection"), subject
+    # Market plane landed (the whole reason the carve-out exists).
+    blob = subprocess.run(
+        ["git", "show", "HEAD:data/baskets/ohlcv/NVDA.parquet"], cwd=repo,
+        env={**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"},
+        capture_output=True, check=True,
+    ).stdout
+    assert blob == b"v2"
+    # The exact GH001 invariant: no blob in HEAD may exceed the hard limit. THIS
+    # is what 116748357565 / 117262684428 lost — and the only thing the carve-out
+    # has to guarantee going forward.
+    ls = subprocess.run(
+        ["git", "ls-tree", "-r", "-l", "HEAD"], cwd=repo,
+        env={**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"},
+        capture_output=True, text=True, check=True,
+    ).stdout
+    oversized = [
+        line for line in ls.splitlines()
+        # format: "<mode> <type> <object> <size>\t<path>"; type is "blob" for files
+        if line.split("\t", 1)[0].split()[1] == "blob"
+        and int(line.split("\t", 1)[0].split()[3]) > _LIMIT
+    ]
+    assert not oversized, f"GH001: HEAD still carries a >{_LIMIT}B blob: {oversized}"
+    # The qledger plane is held back, not deleted — the working tree is the
+    # source of truth and the carve-out is only an unstage.
+    for spec in (
+        ("HEAD:data/qledger/claims.jsonl", b'{"claim_id":"c0"}\n'),
+        ("HEAD:site/qledger/track_record.json", b"{}"),
+    ):
+        out = subprocess.run(
+            ["git", "show", spec[0]], cwd=repo,
+            env={**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"},
+            capture_output=True, check=True,
+        ).stdout
+        assert out == spec[1], f"{spec[0]!r} drifted: {out!r}"
+    # The pre-existing carve-outs still hold: capital_structure and hk are
+    # still un-staged from the market commit (they ride their own checkpoints).
+    for spec in (
+        ("HEAD:data/capital_structure/source_manifest.jsonl", b"m1\n"),
+        ("HEAD:data/hk/x.csv", b"h1\n"),
+    ):
+        out = subprocess.run(
+            ["git", "show", spec[0]], cwd=repo,
+            env={**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"},
+            capture_output=True, check=True,
+        ).stdout
+        assert out == spec[1], f"{spec[0]!r} drifted: {out!r}"
+    # CRITICAL: the working-tree ledger is INTACT. The carve-out un-stages; it
+    # does not revert (reverting would feed tomorrow the old manifest).
+    wt_size = (repo / "data" / "qledger" / "claims.jsonl").stat().st_size
+    assert wt_size == _LIMIT + 4096, (
+        f"working-tree ledger size {wt_size} ≠ {_LIMIT + 4096}; "
+        "the carve-out must NOT `git checkout` or otherwise revert the file"
+    )
+    status = subprocess.run(
+        ["git", "status", "--porcelain", "--", "data/qledger/claims.jsonl"],
+        cwd=repo,
+        env={**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"},
+        capture_output=True, text=True, check=True,
+    ).stdout
+    assert "data/qledger/claims.jsonl" in status, (
+        f"working-tree ledger should still be modified in the index after the "
+        f"carve-out (carve-out un-stages, not reverts); got status: {status!r}"
+    )
+    # Outputs + warning are the user-visible contract: the run is honest about
+    # what it did NOT publish.
+    assert outputs.get("committed") == "true"
+    assert outputs.get("qledger_carved") == "true"
+    assert "::warning title=qledger carved out of market commit::" in proc.stdout
+    assert "data/qledger/claims.jsonl" in proc.stdout
+
+
+@pytest.mark.parametrize("size,carved", [(_LIMIT - _MARGIN + 1, True), (_LIMIT - _MARGIN, False)])
+def test_qledger_carve_threshold(tmp_path, collect_steps, size, carved):
+    """Threshold: carve when the blob is STRICTLY within the margin of the limit."""
+
+    def mutate(repo):
+        (repo / "data" / "baskets" / "ohlcv" / "NVDA.parquet").write_bytes(b"v2")
+        _grow(repo / "data" / "qledger" / "claims.jsonl", size)
+
+    proc, outputs, repo = _run_market_commit(tmp_path, collect_steps, mutate)
+    if carved:
+        assert outputs.get("qledger_carved") == "true", (
+            f"size={size} should carve but outputs={outputs!r}"
+        )
+        head_claims = subprocess.run(
+            ["git", "show", "HEAD:data/qledger/claims.jsonl"], cwd=repo,
+            env={**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"},
+            capture_output=True, check=True,
+        ).stdout
+        assert head_claims == b'{"claim_id":"c0"}\n', (
+            f"size={size}: carved, but HEAD claims should equal base; got {head_claims!r}"
+        )
+    else:
+        assert "qledger_carved" not in outputs, (
+            f"size={size} should NOT carve but outputs={outputs!r}"
+        )
+        head_size = subprocess.run(
+            ["git", "cat-file", "-s", "HEAD:data/qledger/claims.jsonl"], cwd=repo,
+            env={**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"},
+            capture_output=True, text=True, check=True,
+        ).stdout.strip()
+        assert int(head_size) == size, f"size={size}: HEAD claims size {head_size}"
+    # The market plane publishes either way — that's the carve-out's reason to exist.
+    nvda = subprocess.run(
+        ["git", "show", "HEAD:data/baskets/ohlcv/NVDA.parquet"], cwd=repo,
+        env={**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"},
+        capture_output=True, check=True,
+    ).stdout
+    assert nvda == b"v2"
+
+
+def test_qledger_carve_only_ledger_changed_commits_nothing(tmp_path, collect_steps):
+    """If the ONLY staged change is the oversize ledger, the whole market
+    commit is a no-op — no regression on the existing empty-diff guard."""
+
+    def mutate(repo):
+        _grow(repo / "data" / "qledger" / "claims.jsonl", _LIMIT + 4096)
+
+    proc, outputs, repo = _run_market_commit(tmp_path, collect_steps, mutate)
+    assert proc.returncode == 0, f"step failed: stdout={proc.stdout!r} stderr={proc.stderr!r}"
+    assert "no market data changes to commit" in proc.stdout
+    assert outputs.get("committed") == "false"
+    subject = subprocess.run(
+        ["git", "log", "-1", "--format=%s"], cwd=repo,
+        env={**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"},
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+    assert subject == "base", f"HEAD should still be the base commit; got subject={subject!r}"
+
+
+def test_qledger_carve_small_ledger_growth_is_published_as_before(tmp_path, collect_steps):
+    """A ledger well below the threshold must still publish — the carve-out is
+    a SAFETY VALVE, not a switch that turns off ledger publishing forever."""
+
+    def mutate(repo):
+        with open(repo / "data" / "qledger" / "claims.jsonl", "ab") as f:
+            f.write(b'{"claim_id":"c2"}\n')
+        (repo / "site" / "qledger" / "track_record.json").write_bytes(b'{"n":1}')
+        (repo / "data" / "baskets" / "ohlcv" / "NVDA.parquet").write_bytes(b"v2")
+
+    proc, outputs, repo = _run_market_commit(tmp_path, collect_steps, mutate)
+    assert outputs.get("committed") == "true"
+    assert "qledger_carved" not in outputs, (
+        f"small ledger should NOT trigger the carve-out; outputs={outputs!r}"
+    )
+    new_claims = (repo / "data" / "qledger" / "claims.jsonl").read_bytes()
+    head_claims = subprocess.run(
+        ["git", "show", "HEAD:data/qledger/claims.jsonl"], cwd=repo,
+        env={**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"},
+        capture_output=True, check=True,
+    ).stdout
+    assert head_claims == new_claims, "small ledger growth did not land in HEAD"
+    head_tr = subprocess.run(
+        ["git", "show", "HEAD:site/qledger/track_record.json"], cwd=repo,
+        env={**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"},
+        capture_output=True, check=True,
+    ).stdout
+    assert head_tr == b'{"n":1}'
+    assert "qledger carved" not in proc.stdout
+
+
 # ── the other way to lose a night: publish it, then overwrite it ──────────────
 # The commit path above makes a night REAL. This guard covers the mirror defect:
 # a LATER job in the same night restoring a stale GHA cache on top of what an
