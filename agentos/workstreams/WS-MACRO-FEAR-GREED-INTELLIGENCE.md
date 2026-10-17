@@ -27,8 +27,9 @@ waves:
     title: "One existing-owner producer-to-Risk-Radar vertical, proof and publication"
     status: in_progress
 next_action: >
-  Publish the verified registered workspace branch through a PR, verify
-  every binding check and merge, then verify the actual served Macro path.
+  Complete the genuine CI repairs on PR 9548, observe the repaired exact-head
+  checks, merge only on concluded applicable checks, and verify the served Macro
+  Risk Radar study through the existing render/publication lane.
 landmines:
   - "The legacy machine-consumed dial and existing regime/risk/trade authority stay unchanged."
   - "VIX acceleration is not VVIX. Absolute VIX threshold and liquidity-shock classifier kills remain binding."
@@ -93,47 +94,83 @@ marked two sessions delayed, while VIX dynamics are dated **2026-10-16**. Credit
 breadth and VVIX clocks differ; the UI exposes this. This is source-pin research
 evidence, not a claim about the currently served dashboard.
 
-## Completion frontier
+## Current delivery frontier - October 17 recovery
 
-Feature code, current visual evidence, deterministic contracts and the frozen
-replay are ready for protected publication. Next: commit this one registered
-workspace, reconcile current main, open its PR, verify binding checks, merge and
-verify the actual served Macro path. No production deployment has been claimed.
+PR **#9548** is the sole delivery carrier. The recovered source candidate is
+`54592828c335d461f86d308f424064113098b57b`. Its CI run `39034640285`
+concluded with genuine failures, not a deployment or acceptance:
 
-## Action-specific capability evidence
+- `contract-delta` and `ci-pack-0`: nine new import-closure edges were absent
+  from the existing exclusive jobs. Four jobs needed both
+  `engine/fear_greed_intelligence.py` and `engine/vol_velocity.py`;
+  `dashboard-render-contract` also needed the frozen research document.
+- `ci-pack-6`: the replay entrypoint lacked a repository-root import pin.
 
-`studio_git_publish_status` returned `TYPED_GIT_PRECHECK_REFUSED / NOT_APPLIED`
-for this Macro operation; its exact internal exception is not exposed. Bounded
-diagnosis found a repository-selection mismatch: CLI status without `--repository
-macro` returns "workspace is not registered to the source repository", whereas
-`mmx-workspace status --repository macro --lane web` resolves this exact registered
-workspace, branch and HEAD successfully. The status call submitted no modifying
-effect. Do not retry that unchanged helper or alter its host configuration.
-Normal Macro Git/PR delivery remains within the existing attended host-command
-and repository assignment; no permission denial, replacement workspace, writer
-lease conflict or uncertain publication effect was observed.
+This recovery widens those exact existing path declarations and pins direct
+script imports to this checkout. It changes no estimator, threshold, source
+input, collector, authorization, test exclusion or replay budget. Direct
+retention reason: `LOWER_TOTAL_OVERHEAD` for the bounded 18-line repair; no
+worker or Executive Job was submitted.
 
-## Production-route correction before PR
+Verified locally after repair: **49 passed in 175.44 seconds**, using
+`.venv/bin/python -m pytest -q tests/test_check_script_import_pinning.py
+ tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure
+ tests/test_fear_greed_intelligence.py`. The replay script also returned its
+CLI help when invoked by absolute path from `/tmp`, with no data publication.
+The prior 200-feature-test, 39-render-test, 145-browser-assertion and 16-state
+visual receipts above remain candidate evidence; they are not a claim of a
+fresh production run. The frozen replay retains its ORIGINAL script hash and
+source candidate; do not rewrite its provenance to pretend the import-only
+repair produced those earlier results.
 
-A real origin baseline returned Macro 200, Transmission 200, and Macro Signals
-404. The latter is deliberate `@never_site` policy in `app/deploy/Caddyfile`, not
-a render lag. The study was therefore kept inside Risk Radar and the retired
-page’s template restored unchanged. Both the existing Risk Radar stylesheet and
-a nonexistent new asset returned anonymous 401 under the current asset tier
-policy. The new feature now extends the existing stylesheet; no asset allowlist,
-authentication, entitlement or research-tool boundary was altered.
+The PR was visibly disarmed while retaining `merge-blocked` before changing
+its head; recovery comment: PR #9548 issuecomment-6243168672. After publishing
+all required repairs, re-arm the existing merge backstop and consume the new
+exact-head checks. The old red run is not the repaired candidate's verdict.
+Do not waive binding checks or use the inactive pilot-base status as a
+feature-test failure: the applicable trusted authority context is main.
 
-The first source candidate was committed and pushed successfully to the same
-registered branch (`ec44cba8cb26f0b7d310719905ac4b8ab954a74a`), with matching remote
-readback. The scoped route correction and its 200-test/145-assertion proof are complete;
-commit and push it on this same branch, then open the PR.
-The shared remote-tracking fetch race was reconciled against GitHub main at
-`9bca84d4a12cd03514d6116709ba2549b20f34a1`; no blind fetch retry or replacement
-workspace was used.
+## Custody and effect facts
 
-Browser capability: the Browser connector requires an originating extension
-context not present in this chat. Local Chrome metadata reads work. A read-only
-JavaScript request against an existing shared Macro tab returned Apple-event
-connection error -609; a subsequent exact-ID read found that tab absent. No
-authentication, session or settings change was attempted. Use a fresh dedicated
-owned tab after publication, not the vanished shared tab.
+Continue this same registered operation and workspace:
+`/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017`.
+No conflicting source writer or uncertain publication effect was observed.
+The workspace contains retained ignored test/research outputs; do not remove
+or sparsify it as an idle-session cleanup.
+
+The typed `studio_git_publish_status` helper previously refused precheck
+without applying an effect because it did not resolve the Macro registration.
+`mmx-workspace status --repository macro --lane web` resolves this operation.
+Do not retry that unchanged helper. Normal same-workspace Git/PR delivery is
+the existing working carrier, not a permission workaround.
+
+A shared origin/main fetch race reported another writer had already advanced
+the remote-tracking ref to `9f9e71a8943e9436bfc68acb961b56166fb61d79`.
+Readback confirmed that exact ref. No force update, blind fetch retry or new
+workspace was used. Only the shared CI manifest overlapped the feature's
+changed paths; its unrelated new job declarations are not feature ownership.
+The applicable Macro workspace/delivery guides were unchanged at that ref.
+
+## Remaining production proof
+
+The customer origin intentionally 404s the old Macro Signals route; the full
+study remains inside Macro Risk Radar, with Transmission as causal context.
+Existing admitted caches, stylesheet, controller and publisher remain the only
+owners. Prior anonymous HTTP reads returned Macro 200 and gated assets 401;
+no authentication, asset entitlement or route policy was changed.
+
+The dedicated Chrome proof tab targets
+`/macro.html?fgi_proof=macro-fear-greed-dynamics-20261017`. Its last exact
+JavaScript attempt explicitly reported that JavaScript through Apple Events
+is disabled. That interaction requires the human Chrome control
+View -> Developer -> Allow JavaScript from Apple Events. Do not retry it
+without an evidenced permission change or alter the setting programmatically.
+The Browser connector separately reported a missing originating extension
+context. These facts do not invalidate the completed candidate-source browser
+proof, but that proof is not authenticated production acceptance.
+
+Next executable action: publish the repaired candidate on PR #9548, observe
+and repair its actual applicable checks, merge when concluded successful,
+reuse a covering render and the normal VPS updater, then verify the served
+Macro/native disclosures. Preserve any exact pending effect. Update MAS-283
+only to the evidence-supported state. **MISSION_COMPLETE: false.**
