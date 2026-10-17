@@ -374,15 +374,17 @@ if ! cmp -s "$APP_DIR/app/deploy/update.sh" /usr/local/bin/macro-update; then
 	fi
 fi
 
-# Caddyfile: reinstall + validate + reload ONLY when it actually changed (a bad
-# config can never take the site down — reload is gated on `caddy validate`).
-if ! cmp -s "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile; then
-	if caddy validate --config "$APP_DIR/app/deploy/Caddyfile" --adapter caddyfile; then
-		install -m 0644 "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile
-		systemctl reload caddy 2>/dev/null || systemctl restart caddy
-		RECONCILED=1
+# Caddyfile: saved bytes do not describe the complete live configuration or
+# exclude other writers. Defer this phase until whole-config preservation and
+# publication custody are qualified; independent updater phases still proceed.
+if cmp -s "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile; then
+	: # Unchanged saved bytes are a no-op, not live-config acceptance.
+else
+	MM_CADDY_COMPARE_RC=$?
+	if [ "$MM_CADDY_COMPARE_RC" -eq 1 ]; then
+		echo "macro-update: Caddy phase deferred; whole-config preservation/custody is not qualified" >&2
 	else
-		echo "macro-update: refusing Caddyfile update — validation failed" >&2
+		echo "macro-update: Caddy phase deferred; saved/candidate comparison failed (rc=$MM_CADDY_COMPARE_RC)" >&2
 	fi
 fi
 
