@@ -593,7 +593,21 @@ def _compose_year_row_header(
         if len(distinct) != 1:
             return None
         month, day = distinct[0]
-        year_cells = rows[index + 1]
+        year_row = index + 1
+        year_cells = rows[year_row]
+        # CAT annual statements print a factless, unit-only band between the
+        # "at December 31," title and the bare-year comparative row.  This is
+        # a narrow, source-observed interstitial, not an invitation to skip any
+        # arbitrary narrative or extra header row.
+        units = [str(cell["text"]).strip() for cell in year_cells if str(cell["text"]).strip()]
+        skip_units = (
+            year_row + 1 < header_limit
+            and not any(cell["facts"] for cell in year_cells)
+            and units == ["(Dollars in millions)"]
+        )
+        if skip_units:
+            year_row += 1
+            year_cells = rows[year_row]
         if any(cell["facts"] for cell in year_cells):
             return None
         years: list[str] = []
@@ -607,7 +621,10 @@ def _compose_year_row_header(
         if len(years) < 2:
             return None
         composed = [f"{int(year):04d}-{month:02d}-{day:02d}" for year in years]
-        return composed, frozenset({index, index + 1})
+        consumed = {index, year_row}
+        if skip_units:
+            consumed.add(index + 1)
+        return composed, frozenset(consumed)
     return None
 
 
@@ -823,6 +840,19 @@ class _StatementTableParser(HTMLParser):
         discard, any single cell whose whole text is the title."""
         if not self._discarded:
             return self._title_hit(" ".join(cell["text"] for cell in cells))
+        # CAT annual balance sheets render the entire title in one cell with a
+        # terminal comma ("... December 31,").  After a discarded factless TOC,
+        # accept that precise punctuation variant only if the title is the
+        # row's sole nonblank text and the row carries no numeric facts.  The
+        # ordinary full-cell exact-title rule below remains unchanged; a note
+        # with neighboring text or any other suffix cannot exploit this seam.
+        nonblank = [cell for cell in cells if cell["text"].strip()]
+        if len(nonblank) == 1 and not any(cell.get("facts") for cell in cells):
+            title_text = nonblank[0]["text"].strip()
+            if title_text.endswith(","):
+                hit = self._title_hit(title_text[:-1].rstrip())
+                if hit is not None:
+                    return hit
         for cell in cells:
             hit = self._title_hit(cell["text"])
             if hit is not None:

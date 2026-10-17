@@ -1,0 +1,121 @@
+"""Lane C synthetic CAT annual heading recovery after discarded factless TOC."""
+from __future__ import annotations
+
+import pytest
+
+from engine.fundamental_forensics.statement_graph import (
+    StatementGraphError,
+    parse_displayed_primary_table,
+)
+
+TITLE = "Consolidated Financial Position at December 31"
+
+
+def toc() -> str:
+    return "<table><tr><td>Consolidated Financial Position at December 31</td></tr></table>"
+
+
+def statement(title_row: str) -> str:
+    return f"""
+    <table>
+    <tr>{title_row}</tr>
+    <tr><td>Line</td><td>December 31, 2025</td><td>December 31, 2024</td></tr>
+    <tr>
+      <td>Assets</td>
+      <td><ix:nonFraction name="us-gaap:Assets" contextRef="c2025" id="cat-syn-a25" unitRef="usd" decimals="-6" scale="6">200</ix:nonFraction></td>
+      <td><ix:nonFraction name="us-gaap:Assets" contextRef="c2024" id="cat-syn-a24" unitRef="usd" decimals="-6" scale="6">180</ix:nonFraction></td>
+    </tr>
+    </table>
+    """
+
+
+def test_lane_c_comma_terminated_single_cell_title_after_toc_rearms() -> None:
+    # CAT 2023–25 10-K real heading ends in a comma; manifest title does not.
+    html = toc() + statement(f"<td>{TITLE},</td>")
+    parsed = parse_displayed_primary_table(html, title=TITLE)
+    assert parsed["columns_iso"] == ["2025-12-31", "2024-12-31"]
+    assert [row["label"] for row in parsed["rows"]] == ["Assets"]
+    assert [fact["fact_id"] for fact in parsed["rows"][0]["value_facts"]] == [
+        "cat-syn-a25", "cat-syn-a24",
+    ]
+
+
+@pytest.mark.parametrize("unsafe", [
+    f"<td>{TITLE},</td><td>Note 12, to financial position and ratios</td>",
+    f"<td>See {TITLE}, for further discussion</td>",
+    f"<td>{TITLE}.</td>",
+    f"<td>{TITLE}, extra annotation</td>",
+])
+def test_lane_c_comma_rearm_does_not_accept_note_or_other_punctuation(unsafe: str) -> None:
+    # None of these are a *complete single title*, so no post-TOC re-arm.
+    html = toc() + statement(unsafe)
+    with pytest.raises(
+        StatementGraphError,
+        match=r"^displayed statement table is absent: Consolidated Financial Position at December 31$",
+    ):
+        parse_displayed_primary_table(html, title=TITLE)
+
+
+def test_lane_c_comma_title_with_empty_neighbor_still_rearms() -> None:
+    # EDGAR chrome can print empty spacer cells alongside the title.
+    html = toc() + statement(f"<td>{TITLE},</td><td>  </td>")
+    parsed = parse_displayed_primary_table(html, title=TITLE)
+    assert parsed["columns_iso"] == ["2025-12-31", "2024-12-31"]
+
+
+def test_lane_c_comma_title_with_fact_is_not_a_heading() -> None:
+    heading = (f"<td>{TITLE},"
+               '<ix:nonFraction name="us-gaap:Assets" contextRef="c2025" '
+               'id="bad-title-fact" unitRef="usd">30</ix:nonFraction></td>')
+    with pytest.raises(StatementGraphError, match=r"^displayed statement table is absent"):
+        parse_displayed_primary_table(toc() + statement(heading), title=TITLE)
+
+
+def test_lane_c_no_toc_title_before_discard_remains_unchanged() -> None:
+    html = statement(f"<td>{TITLE},</td>")
+    parsed = parse_displayed_primary_table(html, title=TITLE)
+    assert parsed["columns_iso"] == ["2025-12-31", "2024-12-31"]
+
+
+def _cat_year_header(*, units: str = "(Dollars in millions)", years: str = "<td>2025</td><td>2024</td>") -> str:
+    return f"""
+    <table>
+      <tr><td colspan="3">{TITLE},</td></tr>
+      <tr><td colspan="3">{units}</td></tr>
+      <tr><td> </td>{years}</tr>
+      <tr>
+        <td>Assets</td>
+        <td><ix:nonFraction name="us-gaap:Assets" contextRef="c2025" id="cat-2025" unitRef="usd">200</ix:nonFraction></td>
+        <td><ix:nonFraction name="us-gaap:Assets" contextRef="c2024" id="cat-2024" unitRef="usd">180</ix:nonFraction></td>
+      </tr>
+    </table>
+    """
+
+
+def test_lane_c_cat_10k_unit_band_between_banner_and_years_reconstructs() -> None:
+    parsed = parse_displayed_primary_table(toc() + _cat_year_header(), title=TITLE)
+    assert parsed["columns_iso"] == ["2025-12-31", "2024-12-31"]
+    assert parsed["columns_source"] == "composed_year_row"
+    assert [row["label"] for row in parsed["rows"]] == ["Assets"]
+    assert [fact["fact_id"] for fact in parsed["rows"][0]["value_facts"]] == ["cat-2025", "cat-2024"]
+
+
+@pytest.mark.parametrize("unit_band,year_cells", [
+    ("See accompanying notes", "<td>2025</td><td>2024</td>"),
+    ("(Dollars in thousands)", "<td>2025</td><td>2024</td>"),
+    ("(Dollars in millions) extra", "<td>2025</td><td>2024</td>"),
+    ("(Dollars in millions)", "<td>2025</td><td>Q4</td>"),
+    ("(Dollars in millions)", "<td>2025</td><td> </td>"),
+])
+def test_lane_c_only_whitelisted_unit_band_and_pure_years_are_composed(
+    unit_band: str, year_cells: str
+) -> None:
+    # A notes footer ends a factless capture before the column phase. Either
+    # typed absence remains a refusal rather than inventing a statement row.
+    refusal = (r"^displayed statement table is absent" if unit_band == "See accompanying notes"
+               else r"^displayed statement columns are absent")
+    with pytest.raises(StatementGraphError, match=refusal):
+        parse_displayed_primary_table(
+            toc() + _cat_year_header(units=unit_band, years=year_cells),
+            title=TITLE,
+        )
