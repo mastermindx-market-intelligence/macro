@@ -26936,6 +26936,7 @@ jobs:
 
   entry-radar-identity-snapshot:
     # Actual five-file/Parquet observation boundary for the existing pure identity owner.
+    # Includes R23's byte-to-semantic preparation tests: no publisher/read-clock admission.
     # A passing synthetic read is not publication, market admission, or live trading proof.
     if: ${{ false }}
     gate: code
@@ -26946,12 +26947,16 @@ jobs:
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/market_memory_identity_candidate.py
+      - research/MARKET_MEMORY_INITIAL_REFERENCE_CANDIDATE_2026-10-14.md
       - lib/__init__.py
       - lib/dataos/**
       - tests/__init__.py
       - tests/conftest.py
       - tests/test_dataos_identity.py
       - tests/test_entry_radar_identity_observation_snapshot.py
+      - tests/test_market_memory_identity_candidate.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26960,8 +26965,8 @@ jobs:
           python-version: "3.12"
       - name: install actual Parquet reader test dependencies
         run: pip install pytest pyyaml pyarrow
-      - name: actual-clock identity snapshot file boundary
-        run: python -m pytest tests/test_entry_radar_identity_observation_snapshot.py -q
+      - name: actual-clock identity snapshot and physically decoded initial-reference candidate
+        run: python -m pytest tests/test_entry_radar_identity_observation_snapshot.py tests/test_market_memory_identity_candidate.py -q
 
   entry-radar-rs-pullback-calendar:
     if: ${{ false }}
@@ -28701,6 +28706,13 @@ jobs:
       # the data-gate house-law-registry job, which never runs on a pull request.
       - scripts/build_security_master.py
       - tests/test_build_security_master_universe.py
+      # C04 (DATA-OS-COMPLETION): the view-contract sidecar emitter reads the two committed
+      # reference parquets (pandas+pyarrow) and serialises engine.price_ladder's C01 mapping,
+      # so its hermetic tmp_path suite rides this pandas code-gate job, not the thin
+      # pandas-free dataos-foundation lane (whose tripwire a pandas import would destroy).
+      - engine/price_ladder.py
+      - scripts/emit_view_contract.py
+      - tests/test_emit_view_contract.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -28728,6 +28740,10 @@ jobs:
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_build_security_master_universe.py -q -rs
+      - name: view-contract sidecar emitter writes data/stocks/_view_contract.json (C04, hermetic)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_emit_view_contract.py -q -rs
 
   ticker-news-qbus:
     # Package N — Terminal per-ticker news feed correctness kernel (PR #8454).
@@ -28737,6 +28753,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # MI W14 (2026-10-17): scripts/build_qbus_news_universe.py reads via the native parquet helper.
+      - lib/native_parquet.py
       - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
@@ -31518,7 +31536,9 @@ jobs:
       - "tests/test_grey_deer_pullback_stage1b.py"
       - "tests/test_grey_deer_pullback_stage1b_addendum.py"
       - "scripts/research/grey_deer_episode_samples.py"
+      - "scripts/research/grey_deer_exposure_census.py"
       - "tests/test_grey_deer_episode_samples.py"
+      - "tests/test_grey_deer_exposure_census.py"
       - "lib/observed_moves.py"
       - "engine/vol_forecast.py"
       - "lib/nyse_calendar.py"
@@ -31602,6 +31622,7 @@ jobs:
           tests/test_grey_deer_pullback_stage1b.py
           tests/test_grey_deer_pullback_stage1b_addendum.py
           tests/test_grey_deer_episode_samples.py
+          tests/test_grey_deer_exposure_census.py
 
   sni-s1-residual:
     if: ${{ false }}
