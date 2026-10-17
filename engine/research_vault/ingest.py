@@ -189,7 +189,7 @@ def _receipt_read_workers(store, concurrency: int) -> int:
     ``r2_store.R2Store`` (EXACT type, so an overridden-``get_bytes``
     subclass or any duck store stays serial). Its ``get_bytes`` is a
     read-only ``get_object`` plus an independent ``responseBody.read``
-    against ONE boto3 client built once in ``R2Store.__init__`` — i.e.
+    against the read boto3 client built once in ``R2Store.__init__`` — i.e.
     before any worker thread starts, which is the AWS Boto3 guide's
     ("Multithreading or multiprocessing with clients") precondition for
     sharing a client across same-process threads. The worker calls create
