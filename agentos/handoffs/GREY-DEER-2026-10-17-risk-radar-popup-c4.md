@@ -24,6 +24,8 @@ changed:
     what: Add template boundaries and a reproducible isolated full-page interaction and anonymous component evidence harness.
   - path: .github/ci/legacy-jobs.yml
     what: Register the new suite and partial in the existing dashboard-render-contract code gate, including its execution step.
+  - path: tests/test_recurring_briefs.py
+    what: Repair the sole remaining CI failure with exact complete-translation contracts and source-faithful partial-translation checks; leave producer and generated data unchanged.
   - path: mockups/evidence/risk-radar-workspace-20261017
     what: Preserve canonical theme/language/viewport and hover/focus captures, source hashes and browser results.
 verified:
@@ -36,8 +38,11 @@ verified:
   - claim: The canonical anonymous component matrix is captured.
     command: python scripts/capture_page_evidence.py --registry /tmp/rkw-final-preview-20261017/page_registry.json --site-dir /tmp/rkw-final-preview-20261017 --routes /risk-radar-component.html --repo macro --output-dir mockups/evidence/risk-radar-workspace-20261017 --manifest mockups/evidence/risk-radar-workspace-20261017/manifest.json --smells mockups/evidence/risk-radar-workspace-20261017/smells.json --viewports desktop,mobile --locales en,zh --themes dark,light --force-state 'driver_hover:hover(.rkw-driver:first-child)' --force-state 'horizon_focus:focus(button[data-rkw-horizon="21"])' --settle-ms 450
     result: 24/24 captures; the fixture uses actual Macro CSS and rendered source snapshots without a saved session or production route.
+  - claim: The recurring-briefs suite distinguishes complete and partial source translations without masking missing rows.
+    command: python -m pytest tests/test_recurring_briefs.py -q --disable-warnings --maxfail=1
+    result: 78 passed on the carrier artifact and again with immutable main artifact 1aeaf6874e4d3ed8d4f76205c236994ec7a3bcb9; both original failures reproduced on CI baseline 4cb9007a6 and current main. Two translation-loss/index-shift mutations were caught. Exact receipts are in ci-repair.json.
 unverified:
-  - PR checks, merge, normal rendered main output and served production bytes remain release steps at this checkpoint.
+  - Updated PR checks, merge, normal rendered main output and served production bytes remain release steps at this checkpoint.
   - No authenticated production visual session is available through the connected Browser extension in this conversation.
   - Editable Paper boards were not updated; the connector's current write catalog is unapproved.
 unresolved:

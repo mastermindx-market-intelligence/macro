@@ -71,3 +71,20 @@ Supplemental settled full-page inspector views:
 
 Normal PR/CI, a covering render and served-byte verification are separate
 release steps; local evidence alone does not establish production delivery.
+
+## CI release repair
+
+CI run `39016123857` passed the Risk Radar contract and rendering gates but failed
+only `recurring-briefs`: two assertions assumed a real `zh` block meant every
+weekly row had a translation. The tested baseline and then-current main both
+contained four explicit null watch translations; the existing producer correctly
+retained its pending marker. The tests now assert exact complete translations,
+exact real-source pairs and stable pairing across absent/null/blank translations.
+No weekly runtime or generated data was changed.
+
+The **78-case recurring-briefs suite passed** on both the carrier artifact and
+the immutable main artifact. The old two failures were reproduced against both
+CI baseline and main; mutations that discard valid translations or shift later
+pairs were caught. [ci-repair.json](ci-repair.json) records the exact source
+references, artifact/test hashes and outcomes. The 78 cases are distinct from
+the 133 Risk Radar/template cases; repeated runs are not additional unique tests.
