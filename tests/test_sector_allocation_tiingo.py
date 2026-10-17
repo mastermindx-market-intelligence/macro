@@ -122,6 +122,52 @@ class Projection(unittest.TestCase):
         x=self.data['BIL']
         self.data['BIL']=replace(x,rows=x.rows[:-1]+(dict(x.rows[-1],close_tradj=10**400),))
         self.assertRaisesRegex(Refused,'INVALID_ADJUSTED_CLOSE',self.invoke)
+    def test_native_reader_eod_thirteen_symbol_integration(self):
+        """Actual incumbent raw->materialize->read path on invented data only.
+
+        Needs the real Macro source checkout with pyarrow (existing Data OS CI
+        pack). No vendor request, private archive or source-rights promotion.
+        """
+        import json
+        import tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+        import collectors.tiingo_archive as archive
+        from scripts.tiingo_materialize import materialize_one
+        from lib.dataos.tiingo_reader import read_research_history
+
+        with tempfile.TemporaryDirectory() as directory:
+            base=Path(directory)
+            with patch.object(archive, 'EXTERNAL_MOUNT', base):
+                lake=archive.Archive(base/'tiingo', check_mount=False, free_floor=0)
+                result={}
+                for j,symbol in enumerate(INPUTS):
+                    request=archive.request_path('eod-bars',symbol,{
+                        'startDate':self.days[0], 'endDate':ANCHOR})
+                    invented=[{'date':day, 'close':float(100+j+i/10),
+                               'adjClose':float(100+j+i/10),
+                               'splitFactor':1, 'divCash':0}
+                              for i,day in enumerate(self.days)]
+                    stored=lake.store_response('eod-bars',symbol,request,
+                        json.dumps(invented,separators=(',',':')).encode(),
+                        received_at='2026-10-12T18:00:00+00:00')
+                    receipt_files=list((lake.root/'receipts'/'eod-bars'/'2026-10-12').glob('*.json'))
+                    matches=[json.loads(f.read_text()) for f in receipt_files
+                             if json.loads(f.read_text()).get('raw_sha256')==stored['raw_sha256']
+                             and json.loads(f.read_text()).get('symbol')==symbol]
+                    self.assertEqual(len(matches),1)
+                    self.assertEqual(materialize_one(lake.root,matches[0],free_floor=0)['status'],'WRITTEN')
+                    result[symbol]=read_research_history('eod-bars',symbol,
+                        (('2026-10-12',stored['raw_sha256']),),
+                        self.days[0],ANCHOR,CUTOFF,root=lake.root,
+                        check_mount=False,acknowledge_hindsight=True)
+                projection=project_histories(result,anchor_market_day=ANCHOR,
+                                              capture_cutoff_utc=CUTOFF)
+                self.assertEqual(len(projection.series),13)
+                self.assertEqual(len(projection.session_days),253)
+                self.assertFalse(projection.historical_pit_admitted)
+                self.assertFalse(projection.may_rank or projection.may_gate or projection.may_size)
+                self.assertEqual(public_summary(projection)['source_use'],'UNQUALIFIED')
     def test_invalid_capture_clock_refused(self):
         self.assertRaisesRegex(Refused,'UTC_CUTOFF',lambda:project_histories(self.data,anchor_market_day=ANCHOR,capture_cutoff_utc='2026-10-17T13:00:00'))
 
