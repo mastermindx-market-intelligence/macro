@@ -230,7 +230,8 @@ def dispatch(workspace: DataWorkspace, request: dict, *, config_path: Path) -> d
         return history_dossier(workspace, **_fields(args,
             {"ref", "manifest_sha256", "date", "macro_ref", "macro_sha256", "reveal_outcomes",
              "filings_ref", "filings_sha256", "filings_offset",
-             "transcripts_ref", "transcripts_version", "transcripts_offset"},
+             "transcripts_ref", "transcripts_version", "transcripts_offset",
+             "payems_ref", "payems_version", "payems_sha256", "payems_max_periods"},
             {"ref", "manifest_sha256", "date"}))
     if action == "history_transcript":
         from lib.dataos.web_history import history_transcript
@@ -288,6 +289,16 @@ def dispatch(workspace: DataWorkspace, request: dict, *, config_path: Path) -> d
                                     "body_action":"history_transcript","body_identity":"same_version_row_and_metadata_digest",
                                     "max_page_chars":12000,"max_page_fragment_json_bytes":48*1024,
                                     "speaker_roles_verified":False,"point_in_time_eligible":False},
+                     "payems_vintages":{
+                         "required_source_ref":"macro_snapshot:fred_vintage/payems_all_vintages.parquet",
+                         "requires_exact_content_sha256":True,"requires_observed_file_version":True,
+                         "max_source_bytes":8*1024*1024,
+                         "max_decoded_arrow_bytes":64*1024*1024,
+                         "max_source_rows":400000,"max_periods":24,
+                         "source_revisions_only":"PAYEMS_RECORDED_DATE",
+                         "intraday_publication_time_verified":False,
+                         "point_in_time_trading_eligible":False,
+                         "scope":"optional_research_only_date_projection"},
                      "outcomes":"excluded unless explicitly revealed"},
             freshness="stored data clocks where available; filesystem mtime is not freshness",
             access="host bindings and the existing Studio account-scoped transport")
