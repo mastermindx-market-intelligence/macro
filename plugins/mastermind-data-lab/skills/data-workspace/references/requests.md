@@ -9,7 +9,7 @@ The host configuration fixes roots and test-workspace paths. Requests cannot sup
 | browse | root alias; optional path, offset, limit 1–200, expected_directory_version |
 | describe | ref |
 | read | ref; optional columns, time_column, start, end, equals, offset, limit 1–200, expected_version |
-| history_dossier; optional PAYEMS triple payems_ref/payems_version/payems_sha256 and payems_max_periods (1-24) | ref to manifest.json, manifest_sha256, date; optional paired macro_ref/macro_sha256 and filings_ref/filings_sha256; filings_offset (default 0); reveal_outcomes (boolean, default false) |
+| history_dossier | ref to manifest.json, manifest_sha256, date; optional paired macro_ref/macro_sha256, filings_ref/filings_sha256, payems_ref/payems_version/payems_sha256; filings_offset (default 0), payems_max_periods (1–24); reveal_outcomes (boolean, default false) |
 | lab_signals | Optional query, limit 1–100 |
 | lab_plan | signal_id, refs; optional horizon_bars, cost_bps, n_configs_searched |
 | lab_run | request (the plan's inner request), time_column, column_map, bar_frequency ("daily"); optional start, end, expected_versions |
@@ -100,28 +100,28 @@ All bytes pass through the unchanged descriptor-confined source reader. The exac
 ## Recorded payroll-vintage context
 
 First verify that the **installed** Data & Lab capabilities advertise
-\`history.payems_vintages\`; a merged source branch or workflow update alone
+`history.payems_vintages`; a merged source branch or workflow update alone
 does not establish installation. Describe the original bound source and
 obtain its current file-version token. Independently verify the content SHA256
 from the retained source receipt or exact source bytes; never guess either.
 
-\`\`\`json
+```json
 {"action":"history_dossier","ref":"web_test_runs:<observed archive>/manifest.json","manifest_sha256":"<exact archive manifest digest>","date":"2020-03-16","payems_ref":"macro_snapshot:fred_vintage/payems_all_vintages.parquet","payems_version":"<exact observed statv1 source version>","payems_sha256":"<verified full source SHA256>","payems_max_periods":12}
-\`\`\`
+```
 
 All three PAYEMS fields must be provided together and the reference is
 restricted to the exact existing source family. Source read is through the
 unchanged descriptor, no-symlink, no-hardlink and replacement guard. Both
 the source's compressed bytes and its decoded Parquet logical bytes are
-bounded. The output's \`source_sha256_verified_by_projection\` reflects
+bounded. The output's `source_sha256_verified_by_projection` reflects
 verification of these exact supplied bytes, not historical publication
 eligibility of this source or a whole archive.
 
-The response returns historical \`realtime_start\` of each selected economic
-period without disclosing the later supersession date. \`latest_value\` is
-only the value carried by the eligible recorded vintage. \`NO_RETAINED_VINTAGE_AT_CUTOFF\`
+The response returns historical `realtime_start` of each selected economic
+period without disclosing the later supersession date. `latest_value` is
+only the value carried by the eligible recorded vintage. `NO_RETAINED_VINTAGE_AT_CUTOFF`
 is a real coverage gap, not a zero. The selected first-print chronology remains
-separate, and \`coverage.full_macro_revision_history\` stays \`NOT_INCLUDED\`.
+separate, and `coverage.full_macro_revision_history` stays `NOT_INCLUDED`.
 This is day-granular, retrospective historical evidence, not intraday PIT,
 forecast consensus, a trading signal, or evidence of a complete macro universe.
 
