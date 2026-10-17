@@ -28538,6 +28538,23 @@ jobs:
       - config/delisted_symbols.yml
       - data/reference/**
       - lib/dataos/identity.py
+      # M01 (DATA-OS-COMPLETION): the frozen market support matrix. Its suite reads the
+      # committed US/HK/CN stores and the HK Connect roster (pyarrow) and pins the record
+      # research/data_os_completion/2026-10-13/M01_SUPPORT_MATRIX.md to the code, so it
+      # rides this pandas+pyarrow code-gate job. The data globs make a store or roster
+      # change re-prove the matrix, on the data/reference/** precedent above.
+      - lib/dataos/price.py
+      - lib/dataos/price_views.py
+      - lib/dataos/registry.py
+      - lib/dataos/web_readers.py
+      - config/dataset_registry.yml
+      - research/data_os_completion/2026-10-13/M01_SUPPORT_MATRIX.md
+      - tests/test_dataos_support_matrix.py
+      - data/stocks/**
+      - data/hk_stocks/**
+      - data/china_stocks_raw/**
+      - data/canada_stocks/**
+      - data/hk_connect_roster/**
       - lib/ticker_aliases.py
       - lib/delisted_symbols.py
       - lib/symbol_directory_receipts.py
@@ -28586,6 +28603,10 @@ jobs:
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_identity_seam_agreement.py -q -rs
+      - name: market support matrix — record matches the code, every market keeps its read (M01)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_dataos_support_matrix.py -q -rs
       - name: security master universe admits the S&P 400/600 constituents (hermetic)
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
