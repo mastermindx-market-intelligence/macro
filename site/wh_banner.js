@@ -3,13 +3,16 @@
 
      • WHITE HOUSE ALERT (blue/red)  — fetched from wh_banner.json
          (built by scripts/build_whitehouse.py from the WH RSS + LLM brain).
-     • RISK RADAR ALERT (orange)     — fetched from rr_banner.json
+     • RISK RADAR ALERT (deep red)     — fetched from rr_banner.json
          (built by scripts/build_rr_banner.py; fires only at the radar's EXTREME,
           gate-confirmed "risk-off" band — the get-out-now tier, not every reading).
 
-   When only one channel is live it renders exactly like a single tape. When BOTH
-   are live the one 42px bar ALTERNATES between them — crossfading every ~9s, label
-   + top-accent swapping with the active channel (pauses on hover).
+   A published severe Risk Radar alert takes precedence over the news tape. It
+   stays visible after acknowledgement and does not scroll or alternate away.
+   The issue date remains explicit: this legacy feed is not a freshness proof.
+   News-only dismissal is unchanged. The new multi-market warning projection is
+   not activated by this bounded client repair; its publisher/consumer rollout
+   and long-open-page refresh remain separate release work.
 
    Degrade-silent: no file, no alerts, or any error → nothing renders. The page is
    never blocked (loaded `defer`), and all model-derived text is written via
@@ -60,7 +63,10 @@
     var wh = whChannel(whData, root, reduce);
     if (wh) channels.push(wh);
     var rr = rrChannel(rrData, root, reduce);
-    if (rr) channels.push(rr);
+    if (rr) channels.unshift(rr);
+    // A critical warning must not rotate out or be hidden behind the first news
+    // channel in reduced-motion mode. News remains available on its own page.
+    if (rr && rr.critical) channels = [rr];
     if (!channels.length) return;
 
     injectStyle();
@@ -79,22 +85,28 @@
     });
     bar.appendChild(stage);
 
-    // One shared dismiss button — hides the whole bar and records every currently
-    // live alert-id under its channel's key, so a genuinely NEW alert (or a new
-    // radar state) re-opens the bar, but an old one merely expiring does not.
-    var close = txt("button", "whb-x", "×");
+    // Severe warnings can be acknowledged, not erased by a routine dismissal.
+    // News-only dismissal retains its existing monotonic behaviour.
+    var requiresAcknowledgement = channels.some(function (c) { return !!c.critical; });
+    var close = txt("button", "whb-x", requiresAcknowledgement ? "✓" : "×");
+    if (requiresAcknowledgement) close.setAttribute("aria-pressed", "false");
     function syncCloseLabel() {
       close.setAttribute(
         "aria-label",
         document.documentElement.getAttribute("data-lang") === "zh"
-          ? "关闭市场提醒"
-          : "Dismiss market alert"
+          ? (requiresAcknowledgement ? "确认风险警告（保持显示）" : "关闭市场提醒")
+          : (requiresAcknowledgement ? "Acknowledge risk warning (keep visible)" : "Dismiss market alert")
       );
     }
     syncCloseLabel();
     document.addEventListener("langchange", syncCloseLabel);
     close.addEventListener("click", function (ev) {
       ev.stopPropagation();
+      if (requiresAcknowledgement) {
+        close.setAttribute("aria-pressed", "true");
+        bar.classList.add("whb-acknowledged");
+        return;
+      }
       channels.forEach(function (c) { c.dismiss(); });
       bar.parentNode && bar.parentNode.removeChild(bar);
       document.documentElement.classList.remove("whb-on");
@@ -110,7 +122,7 @@
     // apply the first (or only) channel's accent, then start alternation if needed
     applyAccent(bar, channels[0]);
     faces[0].classList.add("is-active");
-    if (channels.length > 1 && !reduce) startAlternation(bar, faces, channels);
+    if (channels.length > 1 && !reduce && !channels[0].critical) startAlternation(bar, faces, channels);
 
     fullBleed(bar, close);
     scaleDurations(bar, reduce);
@@ -196,134 +208,46 @@
   }
 
   // ---------------------------------------------------------------------------
-  // RISK RADAR channel — orange "get out" tape flashing WHY it amplified, how far
-  // the market is projected to fall, and the odds (mirrors the Risk Radar card).
+  // RISK RADAR channel — a steady, dated notice for the legacy extreme feed.
+  // No forecast, score threshold or producer authority changes here.
   // ---------------------------------------------------------------------------
   function rrChannel(data, root, reduce) {
     var a = data && data.alert;
     if (!a || !a.headline_en) return null;
 
-    var dismissed = readDismissed("rrb_dismissed");
-    if (a.id && dismissed[a.id]) return null;
-
+    // Older dismissal records must not erase a still-published severe warning.
+    // The legacy producer is US-only; never accept an arbitrary payload URL.
+    var href = root + "macro.html";
     var label = el("a", "whb-label whb-label-rr");
-    label.href = root + (a.href || "macro.html");
+    label.href = href;
     label.appendChild(el("span", "whb-dot"));
     var lt = el("span", "whb-label-tx");
     lt.appendChild(txt("span", "whb-en", "RISK RADAR ALERT"));
     lt.appendChild(txt("span", "whb-zh", "风险雷达警报"));
     label.appendChild(lt);
 
-    var view = el("div", "whb-view");
-    var track = el("div", "whb-track" + (reduce ? " whb-static" : ""));
-    track.appendChild(buildRrRun(a, root));
-    if (!reduce) track.appendChild(buildRrRun(a, root)); // 2nd copy → seamless
-    view.appendChild(track);
+    var view = el("div", "whb-view whb-risk-view");
+    var summary = el("a", "whb-risk-summary");
+    summary.href = href;
+    summary.appendChild(biTxt("whb-ttl", "⚠ " + a.headline_en,
+      "⚠ " + (a.headline_zh || a.headline_en)));
+    var sourceDate = a.asof != null ? a.asof : data.asof;
+    var issued = null;
+    if (typeof sourceDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(sourceDate)) {
+      var parsed = new Date(sourceDate + "T00:00:00Z");
+      if (!isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === sourceDate) issued = sourceDate;
+    }
+    summary.appendChild(biTxt("whb-issued",
+      "Last issued " + (issued || "date unavailable") + " · Verify latest Risk Radar",
+      "上次发布：" + (issued || "日期未知") + " · 请核对最新风险雷达"));
+    view.appendChild(summary);
 
     return {
-      kind: "rr",
-      label: label,
-      view: view,
-      top: "linear-gradient(90deg,#f4b13a,#ec7a1e 55%,#d2455c)",
-      warm: true, // warms the bar background while this channel is showing
-      dismiss: function () {
-        try {
-          if (a.id) dismissed[a.id] = 1;
-          localStorage.setItem(
-            "rrb_dismissed", Object.keys(dismissed).sort().join("|"));
-        } catch (e) {}
-      },
+      kind: "rr", label: label, view: view,
+      top: "linear-gradient(90deg,#d2455c,#a91e35)",
+      critical: true,
+      dismiss: function () {}, // acknowledgement is handled by the shared bar
     };
-  }
-
-  // one pass of the Risk-Radar tape: headline · why amplified · projected fall + odds
-  function buildRrRun(a, root) {
-    var run = el("div", "whb-run");
-    var href = root + (a.href || "macro.html");
-
-    // 1 — headline: dominant scare + score
-    var s1 = el("a", "whb-seg");
-    s1.href = href;
-    s1.appendChild(el("span", "whb-pipe whb-tone-danger"));
-    var ttl = el("span", "whb-ttl");
-    ttl.appendChild(txt("span", "whb-en", "🛑 " + a.headline_en));
-    ttl.appendChild(txt("span", "whb-zh", "🛑 " + (a.headline_zh || a.headline_en)));
-    s1.appendChild(ttl);
-    if (a.score != null) {
-      var sc = el("span", "whb-chip");
-      sc.appendChild(txt("span", "whb-sym", a.score + "/100"));
-      s1.appendChild(sc);
-    }
-    run.appendChild(s1);
-    run.appendChild(txt("span", "whb-div", "◆"));
-
-    // 2 — WHY it was amplified: leading legs + co-firing threats + conjunction
-    var s2 = el("a", "whb-seg");
-    s2.href = href;
-    s2.appendChild(rrTag("WHY AMPLIFIED", "为何放大"));
-    (a.reasons || []).forEach(function (r) {
-      var chip = el("span", "whb-chip");
-      chip.appendChild(biTxt("whb-sym", r.en, r.zh));
-      if (r.pctile != null) {
-        chip.appendChild(txt("span", "whb-rr-p",
-          r.pctile + "th" + (r.confirmed ? " ✓" : "")));
-      }
-      s2.appendChild(chip);
-    });
-    (a.amplifiers || []).forEach(function (m) {
-      if (!m || !m.en) return;
-      var chip = el("span", "whb-chip whb-amp");
-      chip.appendChild(biTxt("whb-sym", m.en, m.zh));
-      if (m.score != null) chip.appendChild(txt("span", "whb-rr-p", String(m.score)));
-      s2.appendChild(chip);
-    });
-    if (a.conjunction_n && a.conjunction_n > 1) {
-      var cj = el("span", "whb-chip whb-conj");
-      cj.appendChild(biTxt("whb-sym",
-        a.conjunction_n + " threats firing together",
-        a.conjunction_n + " 项风险共振"));
-      s2.appendChild(cj);
-    }
-    run.appendChild(s2);
-    run.appendChild(txt("span", "whb-div", "◆"));
-
-    // 3 — projected fall + odds (same numbers the Risk Radar card shows)
-    var s3 = el("a", "whb-seg");
-    s3.href = href;
-    s3.appendChild(rrTag("PROJECTED", "预计"));
-    var fall = el("span", "whb-chip whb-fall");
-    fall.appendChild(biTxt("whb-sym", "≥5% pullback", "≥5% 回撤"));
-    s3.appendChild(fall);
-    if (a.odds_pct != null) {
-      var big = el("span", "whb-rr-big");
-      big.appendChild(txt("span", "whb-rr-pct", a.odds_pct + "%"));
-      big.appendChild(biTxt("whb-rr-hz", "within 21 days", "21 日内"));
-      s3.appendChild(big);
-    }
-    if (a.lift != null) {
-      var lc = el("span", "whb-chip");
-      var base = a.base_pct != null ? " " + a.base_pct + "%" : "";
-      lc.appendChild(biTxt("whb-sym",
-        a.lift + "× vs normal" + base, a.lift + "× 对比常态" + base));
-      s3.appendChild(lc);
-    }
-    if (Array.isArray(a.ramp) && a.ramp.length) {
-      var rc = el("span", "whb-chip whb-ramp");
-      a.ramp.forEach(function (h, i) {
-        if (i) rc.appendChild(txt("span", "whb-div", "·"));
-        rc.appendChild(biTxt("whb-sym", h.h_en + " " + h.pct + "%",
-          h.h_zh + " " + h.pct + "%"));
-      });
-      s3.appendChild(rc);
-    }
-    run.appendChild(s3);
-    return run;
-  }
-
-  function rrTag(en, zh) {
-    var k = el("span", "whb-rr-k");
-    k.appendChild(biTxt("", en, zh));
-    return k;
   }
 
   // ---------------------------------------------------------------------------
@@ -342,6 +266,7 @@
   function applyAccent(bar, ch) {
     bar.style.setProperty("--whb-top", ch.top);
     bar.classList.toggle("whb-warm", !!ch.warm);
+    bar.classList.toggle("whb-critical", !!ch.critical);
   }
 
   function startAlternation(bar, faces, channels) {
@@ -369,6 +294,10 @@
         bar.style.marginTop = -(v("paddingTop") + v("marginTop")) + "px";
         bar.style.marginLeft = -(v("paddingLeft") + v("marginLeft")) + "px";
         bar.style.marginRight = -(v("paddingRight") + v("marginRight")) + "px";
+        // Restore the width removed by the host gutters; max-width:100vw still
+        // prevents the long news tape from expanding the document sideways.
+        bar.style.width = "calc(100% + " + (v("paddingLeft") + v("marginLeft") +
+          v("paddingRight") + v("marginRight")) + "px)";
       } catch (e) {}
     };
     onResize();
@@ -426,6 +355,18 @@
       "-webkit-backdrop-filter:saturate(1.3) blur(2px);backdrop-filter:saturate(1.3) blur(2px);overflow:hidden}",
       // warmer backdrop while the orange Risk-Radar channel is showing
       ".whb.whb-warm{background:linear-gradient(90deg,rgba(44,32,20,.96),rgba(48,24,22,.96))}",
+      // Warning severity is not a price direction: deep red in both languages.
+      ".whb.whb-critical{height:auto;min-height:64px;background:linear-gradient(90deg,rgba(74,13,25,.98),rgba(47,12,20,.98))}",
+      ".whb-critical .whb-label-rr{background:linear-gradient(90deg,#9b1830,#741527)}",
+      ".whb-critical .whb-dot::after{animation:none}",
+      ".whb-critical .whb-risk-view{-webkit-mask-image:none;mask-image:none;contain:none}",
+      ".whb-risk-summary{display:flex;flex-direction:column;gap:3px;min-width:0;padding:10px 16px;",
+      "white-space:normal;overflow-wrap:anywhere;text-decoration:none;color:inherit}",
+      ".whb-risk-summary:hover .whb-ttl{text-decoration:underline}",
+      ".whb-issued{font-size:11px;color:#f0c7cf}",
+      ".whb-acknowledged .whb-x{opacity:1;background:rgba(255,255,255,.09)}",
+      ".whb a:focus-visible{outline:2px solid currentColor;outline-offset:-3px}",
+      "@media(prefers-reduced-motion:reduce){.whb *,.whb *::after{animation:none!important;transition:none!important}}",
       ".whb::before{content:'';position:absolute;left:0;right:0;top:0;height:2px;",
       "background:var(--whb-top,linear-gradient(90deg,#3d6fd6,#d9a441 50%,#d2455c))}",
       // stage holds one face per channel; when .multi they overlap and crossfade
