@@ -19355,6 +19355,8 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_theme_graph_hierarchy.py -q
       - name: theme graph — V4-D2A identity-resolution bridge (hostile fixtures, two-clock law, reproducibility)
         run: TZ=UTC python -m pytest tests/test_theme_graph_identity_resolution.py -q
+      - name: theme graph — L13 micro-theme RS proxy display reader (Gate #2 vendor-input exclusion)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_micro_rs_proxy_display.py -q
       - name: theme graph — W3A local-theme plane (hostile tests D-M, capability sidecar, rights gate)
         run: TZ=UTC python -m pytest tests/test_theme_graph_local_plane.py -q
       - name: theme graph — W-C per-use rights verdict (fresh registry snapshot, revocation, ancestry)
