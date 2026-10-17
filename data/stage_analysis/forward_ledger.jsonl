@@ -2659,3 +2659,6 @@
 {"date": "2026-10-14", "ticker": "BRZE", "sga_score": 46, "gate_tier": null, "weeks_in_stage": 7, "earnings_present": true, "sentiment": 0.5, "performance": 7.5, "session_source": "stage_source_asof"}
 {"date": "2026-10-14", "ticker": "DNA", "sga_score": 46, "gate_tier": null, "weeks_in_stage": 2, "earnings_present": true, "sentiment": -0.5, "performance": 2.5, "session_source": "stage_source_asof"}
 {"date": "2026-10-14", "ticker": "GEN", "sga_score": 46, "gate_tier": null, "weeks_in_stage": 8, "earnings_present": true, "sentiment": 0.8, "performance": 8.5, "session_source": "stage_source_asof"}
+{"date": "2026-10-14", "ticker": "HTFL", "sga_score": 46, "gate_tier": null, "weeks_in_stage": 8, "earnings_present": true, "sentiment": 0.85, "performance": 9.2, "session_source": "stage_source_asof"}
+{"date": "2026-10-14", "ticker": "PRTH", "sga_score": 46, "gate_tier": null, "weeks_in_stage": 3, "earnings_present": true, "sentiment": -0.5, "performance": 7.2, "session_source": "stage_source_asof"}
+{"date": "2026-10-14", "ticker": "SONY", "sga_score": 52, "gate_tier": "T2", "weeks_in_stage": 5, "earnings_present": true, "sentiment": 0.75, "performance": 7.5, "session_source": "stage_source_asof"}

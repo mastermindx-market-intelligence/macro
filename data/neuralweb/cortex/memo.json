@@ -1,32 +1,35 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-10-15T09:27:25+00:00",
-  "summary": "Shadow/context-only committee read as of 2026-10-15: the US backdrop is MIXED (44), not an actionable risk-off signal. The meaningful deterioration is internal: leadership moved from INTACT to CRACKING, breadth is at the 14th percentile with a price divergence, liquidity is contracting, HY OAS widened roughly 40 bp over 21 days, and systematic flows are aligned cutting. Credit is the dominant Risk Radar scare, but the caution cell\u2019s measured 21-session pullback rate is 16.0% versus a 17.8% base rate (0.9x), so it does not establish a bearish edge. Rates remain restrictive: real 10-year yield is 2.88%, term premium is rising, and the curve is bear-steepening. At the same time, recession risk is off, financial conditions remain loose on their older observation clock, volatility is calm/normalizing, and two of three major indices retain uptrends. The correct interpretation is unresolved transition and fragile participation, not an originated position. Factor intelligence is immature: only 10 panel dates, the >=60-date floor is unmet, Pair G is dormant, no factor attention observations have been graded, and the composite is non-tradeable. The graded-spine sample returned was capped and dominated by unsigned-MFE board rows, so it cannot support a clean directional conclusion. A proposed leadership/credit/breadth persistence hypothesis was rejected as invalid because its metric was not in the gradeable registry; no hypothesis was registered or treated as evidence.",
+  "as_of": "2026-10-17T19:12:22+00:00",
+  "summary": "Context-only shadow memo: the measured US backdrop is RISK_OFF (score 40), driven by weak breadth, deteriorating trend and volatility conditions, while the macro regime remains low-confidence Q2/Reflation and is near a transition boundary. This is a live contradiction, not a directional call. Liquidity quantity is expanding, but its quality is stress-expansion: credit spreads are widening, NFCI is tightening and the RRP buffer is exhausted. The risk radar is loud on credit/growth stress, yet its exact-state 21-day drawdown rate remains below the unconditional base rate, so it is an early attention flag rather than a measured edge. Factor evidence is immature: only eight panel dates, no Pair-G ledger, no factor-attention history and no tradeable composite. The graded spine sample reviewed was dominated by context-only Canadian-board rows using unsigned MFE proxies and therefore does not establish current directional reliability. Two inert causal proposals were registered for later grading; neither is a signal or escalation.",
   "what_fired": [
-    "Attention: leadership-credit-breadth deterioration. Retain while at least two remain adverse: leadership CRACKING/BROKEN, HY OAS 21-day change above zero, or breadth below the 30th percentile; clear after all three normalize under the pre-committed criterion.",
-    "Attention: long-end premium pressure. Retain while at least two remain true: real 10-year yield has not fallen 20 bp from 2.88%, term-premium direction remains rising, or the curve remains a bear steepener.",
-    "Attention: overdue and conflicting Master Brain theses. All displayed theses remain open beyond their check-by dates; the Long Treasuries thesis directly meets its stated adverse condition through real yield above 2.5% plus bear steepening, while China-overweight context conflicts with China Q3/contracting liquidity, Fear-band context, and a strengthening dollar."
+    "Measured US market state changed from MIXED to RISK_OFF as trend and volatility component scores deteriorated.",
+    "Credit and growth scares are jointly elevated, with only the credit OAS-rate-of-change leg confirmed; the radar remains advisory and below-base-rate in its exact state.",
+    "Defensive-relative price action is visible while technology, semiconductors and small caps have weakened; the rotation artifact still classifies the evidence as mixed and does not establish inflows or a causal handoff.",
+    "Systematic positioning changed to aligned cutting across volatility-control and CTA context.",
+    "Two shadow hypotheses were registered for evaluation on 2026-11-14: low-volatility liquidity deceleration versus 21-day breadth deterioration, and high-volatility cycle-state dwell versus 21-day entry quality."
   ],
-  "contradictions_review": "Current graph contradictions are substantive but display-only. Q2 reflation conflicts with a caution Risk Radar and with bonds/FX cross-asset divergence; FX dollar and rates/credit both contradict the equity-regime label. Leadership CRACKING, weak breadth, contracting liquidity and credit widening conflict with still-positive trend and calm volatility. This is a tension between resilient headline tape and deteriorating internals, not independent confirmation: lineage is only partial and several sources share equity-price dependencies. The briefing also reports ticker-level demand-versus-supply divergences. Factor Pair G contributes no evidence because its ledger is absent until the panel reaches 60 distinct dates. Open-thesis review adds explicit conflicts: Long Treasuries versus its own real-yield/bear-steepener falsifier, and China overweight versus current China, dollar and liquidity context.",
+  "contradictions_review": "Four current contradiction records were reviewed. First, Q2/Reflation conflicts with the measured RISK_OFF market state. Second, the rising-growth regime vector conflicts with a growth-scare radar reading of 82.7. Third, 30 ticker-level demand-versus-supply divergences remain in the intelligence briefing. Fourth, the options contradiction record contains no current names and supplies no independent evidence. Factor Pair G is dormant because the panel has only eight dates versus the required 60. Open Master Brain theses also require governance attention: semiconductors-underweight theses are overdue and coexist with current leadership cracking; the China-overweight thesis conflicts with Q3/Stagflation and contracting liquidity; long-Treasury overweight theses conflict with restrictive and rising real yields, rising term premium and a bear steepener. These are review conflicts only, not new positions.",
   "decaying_families": [
-    "Altdata: negative shrunken IC across pooled 5/21/63-day horizons and especially weak in Q2; held and unarmed.",
-    "Policy and policy-intent families: negative signed excess across most observed horizons/regimes, with thin samples in some cells; unarmed.",
-    "Desk families at 63 days\u2014AI desk, narrative brain, radar desk, stock desk and thematic desk\u2014show negative signed excess; all remain unarmed or vacuous under the held-out test.",
-    "Demand-chain: only 9/12 effective events and negative pooled 21-day signed excess; still accruing, not decision-grade.",
-    "Board families show positive unsigned-MFE summaries, but their held-out allocation tests are vacuous or below the pre-registered bar; these should not be read as directional efficacy.",
-    "Factor composite: negative IC legs include investment, low-volatility, low-beta and composite; panel history is below the required floor and the composite is non-tradeable."
+    "Risk radar: 51 graded rows, zero alerts, and the current exact-state 21-day drawdown rate is 16.0% versus a 17.8% base rate; loud caution has not yet demonstrated an above-base edge.",
+    "Factor intelligence: history floor not met, no Pair-G records and no graded attention firings; investment, low-volatility, low-beta and composite scorecard legs have negative IC, while the composite is non-tradeable.",
+    "Desk families: radar, stock desk, thematic desk, narrative brain and policy-intent kernel rows are unarmed; many have negative signed excess and/or vacuous held-out allocation tests.",
+    "Altdata: unarmed across regimes because pooled out-of-sample performance is negative.",
+    "Open thesis ledger: numerous theses remain open beyond their check-by dates, creating stale unresolved claims that should be scored or retired rather than carried forward."
   ],
   "deserves_operator": [
-    "Reconcile leadership CRACKING, breadth divergence and widening credit against the still-MIXED headline regime at the stated falsifiable normalization conditions; do not promote the caution radar because its measured pullback rate is below base.",
-    "Review the long-end-premium pathway after the next rates update. Current evidence is consistent with pressure\u2014restrictive/rising real yields and rising term premium\u2014but issuance/demand and model-agreement legs are missing, so the pathway is incomplete.",
-    "Score, close or explicitly re-date every overdue Master Brain thesis. Prioritize the Long Treasuries thesis because its written falsifier is currently met, then reconcile the China-overweight thesis with current China Q3/contracting-liquidity and stronger-dollar context.",
-    "Treat factor output as shadow-only until the panel reaches 60 dates and Pair G activates; there are currently zero contradiction records and zero graded factor-attention firings.",
-    "Repair and, if still worthwhile, restake the rejected persistence hypothesis using an allowed gradeable metric such as hit_rate_difference, with the same minimum sample and matched-base design. The rejected submission created no registered hypothesis.",
-    "Do not infer engine skill from the capped spine dump or from unsigned-MFE board outcomes. Use signed excess and non-vacuous held-out comparisons for any later reliability judgment."
+    "US regime-versus-market-state divergence: close only after the regime and measured state agree for three consecutive completed sessions, or both reclassify together.",
+    "Liquidity quantity-versus-quality tension: treat as benign only if HY OAS 20-day change becomes non-positive and NFCI stops tightening while liquidity remains expanding; retain attention if stress confirmation persists through two further weekly observations.",
+    "Semiconductor theses: score or retire the overdue open theses. De-escalate the conflict only if SMH/SPY recovers above its 20-session average and remains positive for three consecutive sessions.",
+    "China-equity thesis conflict: clear only if China exits Q3 into Q1/Q2, liquidity stops contracting and FXI/SPY is positive over 20 sessions.",
+    "Long-Treasury thesis conflict: clear only if the 10-year real yield falls at least 20bp and the bear-steepener condition ends.",
+    "Risk-radar calibration mismatch: close if the radar moves above its unconditional 21-day drawdown base rate or returns to calm without a qualifying drawdown; otherwise retain through one further 21-session grading window.",
+    "Registered hypothesis c\u200bortex-2026-10-17-in-low-volatility-regimes-negative-10-d-42d41c: return 2026-11-14; require hit rate above 0.55 with n>=35 plus matched-breadth and shuffled-sign falsifiers.",
+    "Registered hypothesis cortex-2026-10-17-in-high-volatility-regimes-extended-dur-930154: return 2026-11-14; require adverse-entry-quality hit rate above 0.55 with n>=25 plus shuffled-transition and fire-selection-collider audits."
   ],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-10-14",
+    "as_of": "2026-10-17",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -38,8 +41,8 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 127,
-      "total_rows": 135
+      "ungradeable": 141,
+      "total_rows": 149
     },
     "is_context_only": true
   },
@@ -51,8 +54,9 @@
     "list_factor_contradictions": 1,
     "read_kernel": 1,
     "read_master_brain_theses": 1,
+    "read_causal_candidates": 1,
     "flag_attention": 1,
-    "stake_hypothesis": 1,
+    "stake_hypothesis": 4,
     "write_memo": 1
   },
   "is_context_only": true,
@@ -63,36 +67,20 @@
     "model_used": "claude-opus-4-8",
     "provider_attempts": [
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cg3nUsgLt4zQda3EKw31j'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cg3nW8KgMQegybjuxvX6h'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cg3nagWJY3LkE2QReVTH7'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cg3np8P9nMuK2z6AHGmvm'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
         "provider": "codex",
@@ -135,10 +123,10 @@
         "error_message": null
       }
     ],
-    "tool_call_batches": 4,
-    "individual_tool_calls": 10,
+    "tool_call_batches": 6,
+    "individual_tool_calls": 14,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-10-15T08:48:43Z"
+    "context_as_of": "2026-10-17T18:53:54Z"
   }
 }
