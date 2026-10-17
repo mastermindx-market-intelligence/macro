@@ -73,6 +73,7 @@ from engine.capital_structure.issuer_state_contracts import (
     RulePack,
     ScenarioResult,
     ShareBasisResult,
+    SignedQuantity,
     Unknown,
     sha256_of,
     stable_id,
@@ -210,6 +211,22 @@ def _usd_not_applicable(note: str | None = None) -> Quantity:
     return Quantity(unit="usd", status="not_applicable", note=note)
 
 
+def _signed_usd(value: Decimal | None, note: str | None = None) -> SignedQuantity:
+    """A signed money amount: F1's deficit case leaves the balance negative (§7).
+
+    ``Quantity`` refuses a negative by contract and S0 never clamps, rounds or
+    withholds an exact value, so the four signed coverage fields carry the
+    contract's :class:`SignedQuantity` instead.
+    """
+    if value is None:
+        return SignedQuantity.unknown("usd", note=note)
+    return SignedQuantity.known(_decimal_text(value), "usd", note=note)
+
+
+def _signed_usd_not_applicable(note: str | None = None) -> SignedQuantity:
+    return SignedQuantity(unit="usd", status="not_applicable", note=note)
+
+
 def _shares(value: int | None, note: str | None = None) -> Quantity:
     basis = "scenario_incremental_issuance"
     if value is None:
@@ -238,7 +255,7 @@ def _flow_amount(flow: Flow | None) -> Quantity:
     return flow.amount
 
 
-def _known_decimal(quantity: Quantity) -> Decimal | None:
+def _known_decimal(quantity: Quantity | SignedQuantity) -> Decimal | None:
     return quantity.decimal if quantity.status == "known" else None
 
 
@@ -472,17 +489,25 @@ def _joint_check(index: _ActionIndex, checks: Sequence[ActionCheck], evaluation:
     statuses = {check.status for check in checks}
     applied = {route_id for route_id, record in index.applied.items() if record["fixed"] and record["applied"]}
     fixed_unmodelled = any(check.status == "not_modelled" and check.fixed for check in checks)
+    any_fixed = any(check.fixed for check in checks)
+    # SPEC_S0 §3 chains these four in this order: an infeasibility first, then an
+    # open residual question, then a known feasible answer, and only then "the
+    # scenario asserts no fixed capacity action".
     if aggregate.status == "contradicted" or statuses & {"infeasible", "ineligible_route"}:
         status = "infeasible"
-    elif not applied:
-        status = "no_capacity_actions"
-    elif "infeasible_on_price_branch" in statuses or fixed_unmodelled or aggregate.status == "unknown":
+    elif (
+        "infeasible_on_price_branch" in statuses
+        or fixed_unmodelled
+        or (aggregate.status == "unknown" and any_fixed)
+    ):
         status = "indeterminate"
-    elif aggregate.status == "known":
+    elif applied and aggregate.status == "known":
         status = "feasible"
-    else:
+    elif applied:
         # A withheld or inapplicable aggregate leaves the residual question open.
         status = "indeterminate"
+    else:
+        status = "no_capacity_actions"
     note = _JOINT_NOTES[status]
     if aggregate.note:
         note = f"{note}; capacity aggregate note: {aggregate.note}"
@@ -972,8 +997,12 @@ def _coverage(
                     period_start=period.period_start,
                     period_end=period.period_end,
                     gap=Quantity.unknown("usd", note="not evaluated: the joint check is infeasible"),
-                    scenario_net=Quantity.unknown("usd", note="not evaluated: the joint check is infeasible"),
-                    scenario_balance=Quantity.unknown("usd", note="not evaluated: the joint check is infeasible"),
+                    scenario_net=SignedQuantity.unknown(
+                        "usd", note="not evaluated: the joint check is infeasible"
+                    ),
+                    scenario_balance=SignedQuantity.unknown(
+                        "usd", note="not evaluated: the joint check is infeasible"
+                    ),
                     shortfall=Quantity.unknown("usd", note="not evaluated: the joint check is infeasible"),
                     status="not_evaluated",
                     note=note,
@@ -1000,11 +1029,13 @@ def _coverage(
             status = "shortfall"
             shortfall_quantity = _usd(shortfall)
         note = COVERAGE_SCENARIO_ONLY_NOTE
-        gross_basis: Quantity | None = None
-        net_basis: Quantity | None = None
+        gross_basis: SignedQuantity | None = None
+        net_basis: SignedQuantity | None = None
         if scenario.fee_rate is not None:
-            gross_basis = _usd(grosses[index], "requested gross proceeds, before the scenario fee rate")
-            net_basis = _usd(net, "requested proceeds after the scenario fee rate and any outflow")
+            gross_basis = _signed_usd(
+                grosses[index], "requested gross proceeds, before the scenario fee rate"
+            )
+            net_basis = _signed_usd(net, "requested proceeds after the scenario fee rate and any outflow")
             note = (
                 f"{note}; gross_basis {_quantity_text(gross_basis)} usd, "
                 f"net_basis {_quantity_text(net_basis)} usd at fee rate {scenario.fee_rate}"
@@ -1014,8 +1045,10 @@ def _coverage(
                 period_start=period.period_start,
                 period_end=period.period_end,
                 gap=period.gap,
-                scenario_net=_usd(net, "cumulative scenario-action conditional flows through this period"),
-                scenario_balance=_usd(
+                scenario_net=_signed_usd(
+                    net, "cumulative scenario-action conditional flows through this period"
+                ),
+                scenario_balance=_signed_usd(
                     balance,
                     None if balance is not None
                     else "the period's non-conditional balance or the scenario proceeds are unknown",
@@ -1030,7 +1063,7 @@ def _coverage(
     return tuple(periods)
 
 
-def _quantity_text(quantity: Quantity) -> str:
+def _quantity_text(quantity: Quantity | SignedQuantity) -> str:
     return quantity.value if quantity.status == "known" and quantity.value is not None else quantity.status
 
 

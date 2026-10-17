@@ -1112,7 +1112,7 @@ S0_NEW_TABLES = (
 S0_ALL_ADDITIONS = S0_NEW_TABLES + (
     "ActionCheck", "AuthorizedHeadroomDisclosure", "COVERAGE_SCENARIO_ONLY_NOTE",
     "CashReconciliation", "CoveragePeriod", "IssuanceRow", "JointCheck", "PriceBasis",
-    "ScenarioResult",
+    "ScenarioResult", "SignedQuantity",
 )
 
 

@@ -1939,6 +1939,73 @@ def _optional_note(value: Any, field_name: str) -> str | None:
 
 
 @dataclass(frozen=True)
+class SignedQuantity:
+    """A unit-bearing SIGNED money amount whose absence is a first-class state.
+
+    :class:`Quantity` refuses a negative value by contract, and that refusal is
+    right for every fact and every component record.  SPEC_S0 §7 needs one
+    exception: in F1's deficit case the period's non-conditional balance is
+    negative, and S0's ``scenario_balance`` must stay exact rather than be
+    clamped to zero, rounded, or withheld as an unknown (A26).  This record is
+    that exception and nothing else -- it carries the same fields as
+    :class:`Quantity`, serialises to the same shape (``signed_usd_quantity``),
+    and only the four signed coverage fields use it.  A share count is never
+    signed, so ``share_basis`` must stay null.
+    """
+
+    unit: str
+    status: str = "unknown"
+    value: str | None = None
+    share_basis: str | None = None
+    security_class_id: str | None = None
+    applicability: str | None = None
+    provenance: Provenance | None = None
+    note: str | None = None
+
+    def __post_init__(self) -> None:
+        _member(self.unit, UNIT_KINDS, "signed_quantity.unit")
+        _member(self.status, QUANTITY_STATUSES, "signed_quantity.status")
+        if self.status == "known":
+            _decimal(self.value, "signed_quantity.value", nonnegative=False)
+        else:
+            _require(
+                self.value is None,
+                f"signed_quantity.value must be null when status is {self.status!r}",
+            )
+        _require(
+            self.share_basis is None,
+            "signed_quantity.share_basis: a signed money amount carries no share basis",
+        )
+        if self.security_class_id is not None:
+            _identifier(self.security_class_id, "signed_quantity.security_class_id")
+        if self.provenance is not None:
+            _require(
+                isinstance(self.provenance, Provenance), "signed_quantity.provenance: Provenance required"
+            )
+
+    @classmethod
+    def known(cls, value: str, unit: str, **kwargs: Any) -> "SignedQuantity":
+        return cls(unit=unit, status="known", value=value, **kwargs)
+
+    @classmethod
+    def unknown(cls, unit: str, **kwargs: Any) -> "SignedQuantity":
+        return cls(unit=unit, status="unknown", value=None, **kwargs)
+
+    @property
+    def decimal(self) -> Decimal | None:
+        return Decimal(self.value) if self.status == "known" and self.value is not None else None
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+def _signed_usd_field(quantity: Any, field_name: str) -> "SignedQuantity":
+    _require(isinstance(quantity, SignedQuantity), f"{field_name}: SignedQuantity required")
+    _require(quantity.unit == "usd", f"{field_name}: a signed usd SignedQuantity is required")
+    return quantity
+
+
+@dataclass(frozen=True)
 class ActionCheck:
     """One scenario action against the component that owns it (SPEC_S0 §3).
 
@@ -2151,13 +2218,13 @@ class CoveragePeriod:
     period_start: str
     period_end: str
     gap: Quantity
-    scenario_net: Quantity
-    scenario_balance: Quantity
+    scenario_net: SignedQuantity
+    scenario_balance: SignedQuantity
     shortfall: Quantity
     status: str
     note: str
-    gross_basis: Quantity | None = None
-    net_basis: Quantity | None = None
+    gross_basis: SignedQuantity | None = None
+    net_basis: SignedQuantity | None = None
 
     def __post_init__(self) -> None:
         label = f"coverage_period[{self.period_start}]"
@@ -2165,8 +2232,8 @@ class CoveragePeriod:
         _date(self.period_end, "coverage_period.period_end")
         _require(self.period_end > self.period_start, f"{label}: period_end must follow period_start")
         _usd_field(self.gap, f"{label}.gap")
-        _usd_field(self.scenario_net, f"{label}.scenario_net")
-        _usd_field(self.scenario_balance, f"{label}.scenario_balance")
+        _signed_usd_field(self.scenario_net, f"{label}.scenario_net")
+        _signed_usd_field(self.scenario_balance, f"{label}.scenario_balance")
         _usd_field(self.shortfall, f"{label}.shortfall")
         _member(self.status, COVERAGE_STATUSES, f"{label}.status")
         _require(
@@ -2178,9 +2245,9 @@ class CoveragePeriod:
             f"{label}: the gross and net bases are reported together or not at all",
         )
         if self.gross_basis is not None:
-            _usd_field(self.gross_basis, f"{label}.gross_basis")
+            _signed_usd_field(self.gross_basis, f"{label}.gross_basis")
         if self.net_basis is not None:
-            _usd_field(self.net_basis, f"{label}.net_basis")
+            _signed_usd_field(self.net_basis, f"{label}.net_basis")
         if self.status == "covered":
             _require(
                 self.shortfall.status == "known" and self.shortfall.decimal == 0,
@@ -3440,6 +3507,7 @@ __all__ = [
     "ShareBasisResult",
     "ShareInputs",
     "ShareObservationRef",
+    "SignedQuantity",
     "StateRequest",
     "SupplyEnvelope",
     "TERM_FACT_ORIGINS",
