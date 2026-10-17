@@ -850,6 +850,8 @@ def _sync_read(diversity) -> dict:
         div = float(diversity)
     except (TypeError, ValueError):
         return {"in_sync": None, "sync_en": None, "sync_zh": None}
+    if isinstance(diversity, (bool, np.bool_)) or not math.isfinite(div) or div < 0:
+        return {"in_sync": None, "sync_en": None, "sync_zh": None}
     in_sync = div <= SYNC_DIVERSITY_MAX
     return {
         "in_sync": in_sync,
@@ -927,163 +929,122 @@ def _conf_action(state: str | None) -> tuple[str, str]:
 
 
 def _mtf_grade_plain(grade: str | None) -> tuple[str, str]:
-    """Convert MTF grade slug to plain bilingual pair."""
-    _map: dict[str, tuple[str, str]] = {
-        "TREND-FOLLOW": ("Go with the trend", "顺势而为"),
-        "BUY-THE-DIP":  ("Dip is buyable", "回调可买"),
-        "CAUTION":      ("Wait — signals mixed", "等待——信号混乱"),
-        "AVOID":        ("Stand aside", "按兵不动"),
-        "DON'T CHASE":  ("Watch — don't chase", "观望——勿追高"),
-        "WAIT":         ("Watch — wait", "观望等待"),
+    """Describe index timeframe conditions; an index never authorizes an asset entry."""
+    unavailable = ("Timeframe read unavailable", "周期读数缺失")
+    labels = {
+        "TREND-FOLLOW": ("Timeframes trending up", "各周期趋势向上"),
+        "BUY-THE-DIP": ("Pullback within structural uptrend", "结构上升趋势内回调"),
+        "CAUTION": ("Signals mixed", "信号分化"),
+        "AVOID": ("Defensive conditions", "条件偏防御"),
+        "DON'T CHASE": ("Structural headwinds", "结构逆风"),
+        "WAIT": ("Mixed / unconfirmed", "分化／尚未确认"),
     }
-    if not grade:
-        return ("Mixed — wait", "混合——等待")
-    return _map.get(grade.upper(), (grade, grade))
+    if not isinstance(grade, str):
+        return unavailable
+    return labels.get(grade.upper(), unavailable)
 
 
 # --------------------------------------------------------------------------- #
 # sector_stance helper
 # --------------------------------------------------------------------------- #
-def sector_stance(
-    conf: dict,
-    breadth: dict,
-    in_sync: bool | None = None,
-    index_shock: str | None = None,
-) -> dict:
-    """Return the plain-word sector stance for the hero section.
+def sector_stance(conf: dict, breadth: dict, in_sync: bool | None = None,
+                  index_shock: str | None = None) -> dict:
+    """Describe breadth and warnings, never authorize a whole-sector trade.
 
-    tone ∈ {act, selective, getready, watch, protect, standaside}
-
-    Take-profits three-way (seat ruling, W6 r2) outranks the rest:
-      1. Act — in-sync AND zero take-profits/blow-off board rows (existing
-         breadth gate still required; "in sync" only when in_sync is True).
-      2. Selective — 1 to <FRAC_TOP_PROTECT of members stretched: name the
-         count, never "in sync", never complex-level Protect.
-      3. Protect — ≥FRAC_TOP_PROTECT of members in take-profits/blow-off
-         states OR the index-level shock itself firing.
-
-    Then, with zero stretched rows:
-      Many Washout bottom-forming     → getready
-      12-mo broad but short-term thin → watch
-      Broad + strong momentum         → act
-      else                            → standaside
+    Numeric allocation and conviction policy are untouched. Legacy tone keys are
+    presentation tokens. Positive breadth cannot clear an individual asset.
     """
-    _null = {
-        "word_en": "Stand aside", "word_zh": "按兵不动",
-        "sub_en":  "Not enough signal to read the complex right now.",
-        "sub_zh":  "目前信号不足，无法判断大宗商品整体走势。",
-        "tone":    "standaside",
-        "tip_en":  "", "tip_zh": "",
+    incomplete = {
+        "word_en": "Data incomplete", "word_zh": "数据不完整", "tone": "standaside",
+        "sub_en": "A complete commodity read is unavailable. Missing data is not clearance.",
+        "sub_zh": "商品整体读数不完整；缺失数据不代表条件有利。",
+        "tip_en": "", "tip_zh": "",
     }
     try:
-        members_conf = (conf.get("members") or []) if isinstance(conf, dict) else []
-        n_breadth = max(1, breadth.get("n_members") or 1)
-        n_board = len(members_conf) if members_conf else n_breadth
-        n_bull = breadth.get("n_bull_momentum") or 0
-        n_up = breadth.get("n_up_trend") or 0
-
-        bottom_states = {"Washout bottom forming", "Basing — early bottom signs"}
-
-        stretched = stretched_members(members_conf)
+        if not isinstance(conf, dict) or not isinstance(breadth, dict):
+            return incomplete
+        members = conf.get("members")
+        if not isinstance(members, list) or not members:
+            return incomplete
+        counts = [breadth.get(k) for k in
+                  ("n_members", "n_up_trend", "n_bull_momentum", "n_low_risk")]
+        if any(isinstance(v, (bool, np.bool_))
+               or not isinstance(v, (int, float, np.integer, np.floating))
+               or not math.isfinite(float(v)) or float(v) != int(v) for v in counts):
+            return incomplete
+        total, n_up, n_bull, n_calm = (int(v) for v in counts)
+        if total <= 0 or any(v < 0 or v > total for v in (n_up, n_bull, n_calm)):
+            return incomplete
+        by_name = {}
+        for member in members:
+            if not isinstance(member, dict) or not member.get("name"):
+                return incomplete
+            name = member["name"]
+            if name not in MEMBER_LABELS:
+                return incomplete
+            if member.get("state") not in _CONF_STATE_ACTION or member.get("null_reason"):
+                return incomplete
+            if name in by_name and by_name[name]["state"] != member["state"]:
+                return incomplete
+            by_name[name] = member
+        if len(by_name) != total:
+            return incomplete
+        members = list(by_name.values())
+        stretched = stretched_members(members)
         n_top = len(stretched)
-        names_en, names_zh = _stretched_name_list(stretched)
-        n_bot = sum(1 for m in members_conf if (m.get("state") or "") in bottom_states)
-
-        frac_top = n_top / max(1, n_board)
-        frac_bot = n_bot / n_breadth
-        frac_up  = n_up  / n_breadth
-        frac_mom = n_bull / n_breadth
-        if in_sync is None:
-            in_sync = _sync_read(breadth.get("trend_diversity")).get("in_sync")
-
-        index_conf = (conf.get("index") or {}) if isinstance(conf, dict) else {}
+        tip_en, tip_zh = _stretched_name_list(stretched)
+        n_bot = sum(m["state"] in {"Washout bottom forming", "Basing — early bottom signs"}
+                    for m in members)
+        index_conf = conf.get("index") or {}
         index_top = is_board_stretched(index_conf.get("state"))
-        shock_firing = (index_shock or "") in _INDEX_BLOWOFF_SHOCKS
-        index_protect = index_top or shock_firing
-
-        # Glance sub = count + stance only. Counted names live on tip_en/tip_zh
-        # (hero LENS, Tier 2) — auditable, no cap.
-        tip_en = names_en
-        tip_zh = names_zh
-
-        # 3. Protect — proportional board gate or index-level shock.
-        if frac_top >= FRAC_TOP_PROTECT or index_protect:
-            total = int(n_board)
-            if n_top <= 0:
-                sub_en = "The index itself is blowing off — trim, don't add."
-                sub_zh = "指数本身处于喷发——减仓，勿追加。"
-                tip_en = tip_zh = ""
-            elif n_top == 1:
-                sub_en = (f"1 of {total} commodities is stretched or euphoric"
-                          " — trim, don't add.")
-                sub_zh = f"{total}个品种中有1个处于超买或亢奋状态——减仓，勿追加。"
+        index_warning = index_top or index_shock in _INDEX_BLOWOFF_SHOCKS
+        if in_sync is None:
+            in_sync = _sync_read(breadth.get("trend_diversity"))["in_sync"]
+        result = {
+            "word_en": "Mixed conditions", "word_zh": "品种分化", "tone": "watch",
+            "sub_en": (f"12-month trend up in {n_up}/{total}; short-term momentum up in "
+                       f"{n_bull}/{total}. Members tell different stories; evaluate each asset separately."),
+            "sub_zh": (f"12个月趋势向上{n_up}/{total}；短期动量向上{n_bull}/{total}。"
+                       "各品种走势分化，需分别评估。"),
+            "tip_en": tip_en, "tip_zh": tip_zh,
+        }
+        if index_shock in {"washout", "exogenous_pressure"}:
+            result.update(word_en="Index downside shock", word_zh="指数下行冲击", tone="protect",
+                          sub_en="The index has a downside shock. Individual asset conditions remain separate.",
+                          sub_zh="指数出现下行冲击，仍需分别评估各品种条件。")
+        elif n_top / total >= FRAC_TOP_PROTECT or index_warning:
+            if n_top / total >= FRAC_TOP_PROTECT:
+                result.update(word_en="Widespread overextension", word_zh="多品种超涨", tone="protect")
+            elif index_shock == "exogenous_bid" and not index_top:
+                result.update(word_en="Index upside shock", word_zh="指数上行冲击", tone="protect")
             else:
-                sub_en = (f"{n_top} of {total} commodities are stretched or euphoric"
-                          " — trim, don't add.")
-                sub_zh = f"{total}个品种中有{n_top}个处于超买或亢奋状态——减仓，勿追加。"
-            return {
-                "word_en": "Protect gains",  "word_zh": "保护利润",
-                "sub_en":  sub_en, "sub_zh": sub_zh, "tone": "protect",
-                "tip_en":  tip_en, "tip_zh": tip_zh,
-            }
-
-        # 2. Scoped middle — some stretched, below the complex-level gate.
-        if n_top >= 1:
-            total = int(n_board)
-            if n_top == 1:
-                sub_en = f"1 of {total} stretched — trim that, don't add"
-                sub_zh = f"{total}个品种中有1个超涨——减那个，勿追加。"
+                result.update(word_en="Index overextension", word_zh="指数超涨", tone="protect")
+            if n_top:
+                verb = "is" if n_top == 1 else "are"
+                result.update(
+                    sub_en=f"{n_top} of {total} commodities {verb} stretched or euphoric — asset-specific warnings.",
+                    sub_zh=f"{total}个品种中有{n_top}个超涨或亢奋——需逐品种查看警示。")
             else:
-                sub_en = f"{n_top} of {total} stretched — trim those, don't add"
-                sub_zh = f"{total}个品种中有{n_top}个超涨——减那些，勿追加。"
-            return {
-                "word_en": "In favour",  "word_zh": "倾向做多",
-                "sub_en":  sub_en, "sub_zh": sub_zh, "tone": "selective",
-                "tip_en":  tip_en, "tip_zh": tip_zh,
-            }
-
-        if frac_bot >= 0.20:
-            return {
-                "word_en": "Get ready",  "word_zh": "准备就绪",
-                "sub_en":  f"{n_bot} of {int(n_breadth)} commodities are washing out or basing — watch for early turns.",
-                "sub_zh":  f"{int(n_breadth)}个品种中有{n_bot}个正在洗盘或筑底——关注早期转势信号。",
-                "tone":    "getready",
-                "tip_en":  "", "tip_zh": "",
-            }
-        if frac_up >= 0.6 and frac_mom < 0.4:
-            return {
-                "word_en": "Watch — don't chase",  "word_zh": "观望，勿追高",
-                "sub_en":  (f"Long-term trends are broad ({int(n_up)}/{int(n_breadth)} trending up), "
-                            f"but short-term momentum is thin ({int(n_bull)}/{int(n_breadth)}). "
-                            "Not a fresh breakout — late-move divergence."),
-                "sub_zh":  (f"长期趋势广泛（{int(n_breadth)}个中有{int(n_up)}个向上），"
-                            f"但短期动量偏弱（{int(n_bull)}/{int(n_breadth)}）。"
-                            "并非新突破——后期走势背离。"),
-                "tone":    "watch",
-                "tip_en":  "", "tip_zh": "",
-            }
-        if frac_up >= 0.5 and frac_mom >= 0.4:
-            if in_sync is True:
-                sync_en = "the complex is in sync."
-                sync_zh = "整体共振。"
-            elif in_sync is False:
-                sync_en = "but members are telling different stories."
-                sync_zh = "但各品种走势并不一致。"
-            else:
-                sync_en = "breadth is broad."
-                sync_zh = "广度较宽。"
-            return {
-                "word_en": "Act",  "word_zh": "行动",
-                "sub_en":  (f"Broad trend ({int(n_up)}/{int(n_breadth)} up) with solid momentum "
-                            f"({int(n_bull)}/{int(n_breadth)}) — {sync_en}"),
-                "sub_zh":  (f"趋势广泛（{int(n_up)}/{int(n_breadth)}向上），"
-                            f"动量稳健（{int(n_bull)}/{int(n_breadth)}）——{sync_zh}"),
-                "tone":    "act",
-                "tip_en":  "", "tip_zh": "",
-            }
-        return _null
-    except Exception:  # noqa: BLE001 — always returns a safe dict
-        return _null
+                result.update(sub_en="Index-level warning only — not a sector trade instruction.",
+                              sub_zh="仅为指数层面的警示，不是板块交易指令。")
+        elif n_top:
+            suffix = "warning" if n_top == 1 else "warnings"
+            result.update(tone="selective",
+                          sub_en=f"{n_top} of {total} stretched — asset-specific {suffix}",
+                          sub_zh=f"{total}个品种中有{n_top}个超涨——需逐品种查看警示。")
+        elif n_bot / total >= 0.20:
+            result.update(word_en="Bottoming watch", word_zh="底部观察", tone="getready",
+                          sub_en=f"{n_bot} of {total} washing out or basing. A watch state, not entry permission.",
+                          sub_zh=f"{total}个品种中有{n_bot}个正在洗盘或筑底。仅供观察，不代表入场条件成立。")
+        elif n_up / total > 0.5 and n_bull / total > 0.5 and in_sync is True:
+            result.update(word_en="Broad trend strength", word_zh="趋势普遍较强", tone="act",
+                          sub_en=(f"12-month trend up in {n_up}/{total}; short-term momentum up in {n_bull}/{total}. "
+                                  "Long-term trend dispersion is low. This is not an entry signal for every asset."),
+                          sub_zh=(f"12个月趋势向上{n_up}/{total}；短期动量向上{n_bull}/{total}。"
+                                  "长期趋势离散度较低，不代表所有品种均适合入场。"))
+        return result
+    except (TypeError, ValueError, KeyError, AttributeError, OverflowError):
+        return incomplete
 
 
 # --------------------------------------------------------------------------- #

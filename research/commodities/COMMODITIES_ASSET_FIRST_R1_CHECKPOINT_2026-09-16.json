@@ -1,0 +1,69 @@
+{
+  "operation": "commodities-asset-first-safety-r1-20260916-sol-001",
+  "status": "BUILT_NOT_PROVEN",
+  "repository": "mastermindx-market-intelligence/macro",
+  "branch": "claude/commodities-asset-first-safety-r1-20260916-sol-001",
+  "pr_number": 7198,
+  "base_sha": "bb02c526c4809564338f2a7208e063dbe86bc476",
+  "procedure_sha": "8ba7deedde164c90298d3e88785d98e02fa5e2d2",
+  "code_commit": "1c0e7f85388be15f102adf1a3e8a7156a1fe91f1",
+  "verification": {
+    "source_commit": "1c0e7f85388be15f102adf1a3e8a7156a1fe91f1",
+    "command": "python3 -m pytest tests/test_commodities_w6_truth.py tests/test_commodity_mtf_verdict_honesty.py tests/test_commodities_ignition_copy.py tests/test_commodity_signals.py tests/test_commodity_confluence.py tests/test_forex.py tests/test_commodity_index.py tests/test_commodity_conviction.py tests/test_commodity_alerts.py -q -p no:cacheprovider",
+    "result": {
+      "passed": 336,
+      "failed": 0,
+      "warnings": 2,
+      "runtime_seconds": 38.46
+    },
+    "warnings": "Existing NumPy divide warnings in synthetic FX calibration test; not suppressed.",
+    "source_archive": "read-only exact committed source; no Git working tree",
+    "data_fixture": "Same-revision committed FRED/Yahoo/COT groups; other declared groups explicitly empty. Not complete live-data replay.",
+    "log_sha256": "49cc14e042371e772e5e4fcae20aafe563fded100f29b14b1dd83be76d49cb1e",
+    "visual": {
+      "manifest": "mockups/evidence/commodities-asset-first-r1/manifest.json",
+      "manifest_sha256": "7e79929a25f065412684eb21545ef0c95f04052856cbb9e801d6d3000c3d083b",
+      "states": 32,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "viewports": [
+        1440,
+        390
+      ],
+      "geometry_failures": 0,
+      "production_proof": false
+    },
+    "design_ratchet_blocking": 0,
+    "visual_evidence_gate_exit": 0,
+    "independent_review": "NOT_OBTAINED",
+    "merged": false,
+    "deployed": false
+  },
+  "history": {
+    "initial_red_checkpoint": "5328abd2e46aa57adc1249e17454d5db1dce1605",
+    "first_implementation": "eadb5a771190e2e4c053875823b42bdfa00a7dc2",
+    "index_guidance": "d1163e0a712dcd83e1afd386a56397bb17ad10d1",
+    "mobile_warning_fix": "8710b19b9a49e180f1fb8e24fe9c2017e3aba96a",
+    "reproducible_fixture_producers": "1c0e7f85388be15f102adf1a3e8a7156a1fe91f1"
+  },
+  "effects": {
+    "numerical_policy_changed": false,
+    "production_modified": false,
+    "new_vendor_requests": 0,
+    "new_executive_job": false
+  },
+  "remaining": [
+    "Independent exact-head review",
+    "Current integrated CI/security on main",
+    "Release blockers: existing HK #7163 and macro verdict/parser consistency",
+    "Served browser and coherent data/publication proof",
+    "Subsequent asset decision matrix and independently validated numerical challengers"
+  ],
+  "next_action": "Publish and consume independent review of this exact semantic candidate plus committed evidence; clear current CI/release gates without bypass before production acceptance."
+}
