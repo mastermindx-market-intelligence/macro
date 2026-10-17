@@ -11,6 +11,43 @@ This is the resumption file (fable-mode L.1). A cold successor reads this file, 
 `agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-*.md`, and the Slack thread from the last consumed
 counterpart edge, then resumes in one cycle. It is updated at wave boundaries; it is not a session log.
 
+## 0A. Current Meta-CEO continuation — 2026-10-17
+
+**Chairman commission:** Chris Wong's North Star is early, accurate, actionable recognition of building risk, existing damage, rotation and recovery at the relevant exposure/horizon, with measured executable lead and uncertainty. Sol is accountable for this continuation. Existing source writers, original release holds, accepted capabilities and numerical policy owners retain their actual authority. This section supersedes earlier scheduling/next-action lines where the October 17 evidence differs; it does not rewrite their historical receipts.
+
+### Verified result and acceptance boundary
+
+The new [findings and dated action map](RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md), [source census](risk_radar_source_consumer_audit_20261017.md), [contract annex](risk_radar_architecture_contract_20261017.md) and [research programme design](risk_radar_research_protocol_20261017.md) extend this existing plan. The declared 36-ETF all-date census has 8,486 reference sessions and 305,496 exposure/date rows. The protocol was committed before execution, exact source/method hashes are bound, and no frozen stage-1/stage-1b run was repeated. The stored outputs are retrospective exploratory evidence with zero new model fits and zero promoted claims.
+
+The September–October reconstruction includes 128 recorded artifact/date versions and explicit unknown availability/delivery/execution clocks. It identifies the September semiconductor rebound, renewed October damage, selective XLP/XLV strength, XLU's residual damage and the rolling-peak clearance counterexample. It does not establish a successful issued forecast.
+
+**New census: descriptive evidence accepted within scope; source delivery awaiting this branch's normal repository gates. Whole programme: not finally accepted.** The original GD-3 natural four-clock acceptance and GD-UI-RADAR-1 remain DONE/DO_NOT_REDO. Stage-1 null, stage-1b 0/12, the phase-only downside rejection, worsened probability challenger and GD1C membership block remain evidence.
+
+At source pin 3ab3382af89242c7b7fe8c65360bd883a7dd3504, W5's forward_log.jsonl is absent. Its refusal artifact contains BACKFILL_ASOF and CLOCK, including the October 15 refusal written October 16. W5 remains merged without the required production proof. Do not backfill issuance or manually rerun the blocked nightly/QLedger route.
+
+### Resequenced verticals and measurable acceptance
+
+These targets are proposed delivery acceptance for the changed surfaces, not claims of current performance. A qualified descriptive slice may advance while predictive power remains unavailable.
+
+| Order / existing scope | Concrete work | Acceptance evidence | Current constraint |
+|---|---|---|---|
+| 1 — source clocks and publication health | Preserve per-input session, actual availability, production and publication; make mixed bundles explicit. | The October 16/15/14 regression keeps all dates; no restamping; stale required input withholds only its joint conclusion; independently valid facts remain visible. Real artifact receipts connect to the published bundle. | QLedger/nightly owners retain the publication blockage. No transplant of #9428's refused changes. |
+| 2 — Envelope exposure descriptions | Add the seven independently qualified fields by country/index/sector/subsector/theme/factor/company and horizon, with basis, coverage and membership. | Every field resolves definition and source identity; missing values carry reasons; relative gain and absolute preservation separate; four authority flags remain false. Healthy SPY plus damaged sector is an explicit case. | Annex is proposed; no predictive competence or new policy authority follows from a field existing. |
+| 3 — original warning publisher / W6 | Repair native projection, country/scope selection, state/expiry semantics and refresh in #8132's owner path. | All ten contract-annex cases pass. Long-open and focus-return pages receive a new published warning within a proposed 120-second paint budget. Expired/unavailable signals cannot display as current calm; measured source-to-publication latency is reported separately. | Original #8132 HOLD/REQUEST_CHANGES; no second publisher, no premium-feed public exposure. |
+| 4 — Macro / Terminal / Paper | Implement in existing p1 1-0 / p6 A5I-0 experience; preserve source dates and withheld forecasts through explanatory summaries. | Actual entitled browser paint for each changed consumer, source identity and clocks captured, long-open update and failed-fetch/expiry witnessed. New proof covers changed behavior; accepted GD-3 proof is not mechanically repeated. | Public Macro inspected; Radar detail opens sign-in. Paper catalog currently not accepted for writes. Terminal's checked-in newer proof is local synthetic only. |
+| 5 — GD-9A comparison then authorized consumer changes | Capture unchanged legacy interpretations beside qualified native evidence; expose elevated mapping, stale-tail and clock losses. | Eight source-audit counterexamples plus a real captured input; original book/policy/settlement/rank bytes unchanged in the comparison. Prospective parity/rollback and existing cutover acceptance precede authority changes. | GD-9A remains census-only today. Portfolio owns numerical decisions; Prophet raw ranking/admission stay intact. |
+| 6 — turning-point research | Bind exact features, clocks, incumbent comparators, finite trial family, dependence/power and utility before the next execution freeze. | Separate preemption, recognition, further loss, propagation, stabilization, repair and decision costs. Incremental forward proper-loss value, calibration, executable lead and burden are required; failure or insufficient power yields NO_PROMOTION. | No untouched historical holdout; legitimate prospective issuance currently absent. T13/T14/T19 remain their existing drafts, not silently activated. |
+| 7 — recovery and defense policy | Test exit, defensive destination and re-entry separately under existing numerical owners. | Absolute/cash-relative and relative performance reported separately; failed recoveries, missed upside, whipsaws, execution gaps and doubled-cost stress retained. Rolling-high clearance alone cannot establish recovery. | Requires qualified execution data and independent prospective evidence; no automatic held-position exit in Grey Deer v1. |
+
+Broad-index confirmation is a comparator for systemic escalation. Exposure descriptions should not disappear merely because SPY is healthy. Any earlier exposure warning or action authority still requires its own source, empirical and policy qualification. The research plan compares these paths at matched attention burden rather than choosing the one with the most attractive retrospective example.
+
+### Immediate next action and custody
+
+Complete this isolated census/documentation carrier through its own source checks and normal PR gates. Then address the smallest qualified source-clock/consumer comparison vertical whose owner has actual writer clearance; retain the original warning, active observed-pullback and release carriers. At the first legitimate natural W5 issuance, inspect original rows, refusals and workflow annotations before recording production proof; grade only after each horizon matures.
+
+The active October 17 census found #8721 live, #9428 active with explicit rejected commit/CSS/findings writes, #9440 research active and #9457 session-quality active. #8132 remains held. Their uncommitted trees are not ours to reproduce. #8772's draft planning material is a recovered reference; this continuation remains the merged programme's resumption file. No replacement programme, episode lifecycle store, forward ledger, policy owner or publisher was created.
+
+
 ## 0. Read this first
 
 1. **Authority.** Chairman-directed handoff of the whole program to Fable orchestration (package

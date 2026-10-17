@@ -1,0 +1,157 @@
+# Risk Radar / Grey Deer source-to-consumer audit — 2026-10-17
+
+## Audit result
+
+**The current source contains useful independent risk context, but three seams remain material: source clocks can diverge inside one headline; the warning publisher suppresses or drops information that other consumers can see; and Portfolio still interprets legacy Radar fields through its own older vocabulary and validation contract.** The latter is an existing compatibility path, not evidence that Grey Deer has acquired allocation authority.
+
+This was a read-only source audit. No tests, production requests, releases, flag changes, source writes, book operations, or Studio processes were performed during the audit. This document is the subsequently authorized save of the completed audit.
+
+### Immutable sources
+
+| Repository | Revision used |
+|---|---|
+| Macro | 3ab3382af89242c7b7fe8c65360bd883a7dd3504 |
+| Mastermind / Portfolio | a552a5e506ae808efa575c2e13cb56f478c72b87 |
+| Terminal | b8a694357e2c5cf7c2921d2260732b8a757a90d9 |
+
+## 1. Source-to-consumer census
+
+| Layer | What current source does | Important boundary |
+|---|---|---|
+| **Macro regime** | Growth and inflation axes are weighted means of available signed components. Market components use 20-session slope, standardized against 60 trailing slopes, with a 0.45 neutral threshold. Confirmed quad changes require seven consecutive candidate dates or an axis shock of 0.85. Liquidity uses a 20-session change, ±$25bn bands, and a default three-business-day lag. | Macro environment description; it is not an exposure-specific damage or recovery model. Source: [axes](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/engine/axes.py), [regime](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/engine/regime.py), [configuration](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/config.yml#L3197-L3246). |
+| **Market State** | Six legs: trend 24%, risk appetite 18%, volatility 16%, breadth 16%, liquidity 14%, stress 12%; available legs are renormalized. Trend averages SPY, QQQ and IWM; its timeframe weights are D15%, 3D15%, W40%, M30%. Score bands are Risk On ≥60, Mixed ≥42, otherwise Risk Off. Raw blend, imposed caps and cap causes are separate fields. | Deliberately confirms existing conditions. RSP, DIA, sectors and companies do not independently enter its trend board. Broad-index strength and sector damage therefore need separate fields. [Current engine](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/engine/market_state.py#L40-L55), blob d375d69c5f361e348a8f85e73f2da1bc43b71aec. |
+| **Radar → Market State** | _radar_to_rd carries the producer’s authority, gross factor, probabilities, evidence, scare detail and recovery. Only an earned Radar ceiling can replace the measured score; watch/caution normally remain advisory. | Preserve raw_score, score_source, score_caps, can_force and evidence together. The current engine already distinguishes measured state from a ceiling; downstream flattening must not lose that distinction. [Mapping and assembly](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/engine/market_state.py#L722-L796). |
+| **Warning publisher on main** | scripts/build_rr_banner.py reads only data/regime/latest.json.risk_radar; it publishes only when gated state equals risk-off. It copies h5/h10/h21 probability, lift and dominant-scare evidence. | No native Envelope/warning projection. No exposure/country collection. No source-age, probability-evidence or can_force qualification in build_alert. All lesser states, missing inputs and failures become alert:null. [Publisher](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/scripts/build_rr_banner.py), blob b561a8e1b0cea575d326218d4ff35f9e018cd09c. |
+| **Macro banner client** | Fetches White House and Radar payloads once at boot. Its interval alternates already-loaded channels. The Radar segment labels the fixed ≥5% event threshold “PROJECTED.” | An open page does not receive new Radar evidence through this script. Fixed event threshold is being presented as projected magnitude; no expiry check equivalent to the White House channel was found for Radar. [Client](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/templates/wh_banner.js#L25-L64), [projected segment](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/templates/wh_banner.js#L290-L308). |
+| **Envelope → World State → Neural Web** | World State reads the settled Envelope with the selected Market State session as its expected session. It copies the qualified context into the market lobe; it does not recompute it. | Session mismatch intentionally makes that context unavailable. World State uses the settled reader, although a separate explicitly invoked live-context reader exists. [Reader](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/engine/neuralweb/rotation_risk_context.py#L67-L147), [World State call](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/engine/neuralweb/world_state.py#L4897-L4910), [market lobe](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/engine/neuralweb/mastermind_context.py#L350-L364). |
+| **Terminal bridge and UI** | Current bridge selects qualified live/settled source, preserves score causes and source clocks, admits only a matching Envelope with four authority flags false, and writes atomically. Oracle chip refreshes every 60 seconds and on focus. The chip separately displays measured state, hazard, unavailable required inputs and contradiction. | Preserve this working implementation; the obsolete nested-source mismatch is already addressed in the current code. Its recorded browser proof is explicitly local synthetic evidence. [Bridge](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b8a694357e2c5cf7c2921d2260732b8a757a90d9/ingest/pull_macro_risk.py), [chip](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b8a694357e2c5cf7c2921d2260732b8a757a90d9/terminal/components/fin/OracleDash.tsx#L421-L448), [proof boundary](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b8a694357e2c5cf7c2921d2260732b8a757a90d9/docs/verification/gd-risk-disclosure-20261015/README.md). |
+| **Portfolio Envelope consumer** | brain/neural_web_context.py requalifies the inner Envelope on every call, including cached wrappers. It checks session, clocks, authority and scope, then passes it into market_view as advisory context with validated=False. | The Envelope supplies no extra direction, confidence, vote or numerical book authority. [Qualifier](https://github.com/mastermindx-market-intelligence/Mastermind/blob/a552a5e506ae808efa575c2e13cb56f478c72b87/brain/neural_web_context.py#L381-L479), [advisory adapter](https://github.com/mastermindx-market-intelligence/Mastermind/blob/a552a5e506ae808efa575c2e13cb56f478c72b87/brain/market_view.py#L1009-L1064). |
+| **Prophet eligibility** | Canonical decision specifies a board-hash/session-bound sidecar after raw ranking, preserving all candidates and counterfactual outcomes. Searches found the schema in decisions/plans, not an implementation. | Treat as specified but missing, not working delivery. Raw Prophet rank/admission remains its owner’s authority. [Decision](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/agentos/decisions/DEC-PROPHET-RANK-PRESERVED-MARKET-ELIGIBILITY-SIDECAR.md). |
+
+## 2. Material discrepancies
+
+### A. October 16 is a recorded snapshot date, not proof of uniform October 16 input knowledge
+
+At the Macro pin:
+
+- data/regime/latest.json, blob 199aa3094ff290b9dbdcae367b78914c5402a355, says October 16, built 2026-10-16T22:50:40Z; its Radar is caution with ungated risk-off.
+- data/market_state/latest.json, blob af900d96005460e16e91103da55e2df78fccbd6f, says October 16, score/raw score **40**, **RISK_OFF**, blend; components are trend46/risk14/vol47/breadth0/liquidity62/stress87.
+- site/rr_banner.json, blob 2f531c1422e0874461a3ccecaf103731040d23d1, still says October 15, generated 2026-10-16T23:25:48Z, alert:null.
+- Root independently established the matching pinned Envelope remains October 15 and committed SPY history ends October 15.
+
+The newer regime stamp is **not automatically false**. engine/run.py:174–201 explicitly supports earlyclose/intraday runs that heal prices ephemerally and commit snapshot pointers without committing that price store.
+
+The reproducibility problem is the next step. build_site.py independently loads the newer latest.json and rebuilds a frame from committed stores. The frame ends at SPY’s actual stored last date, while Market State stamps its result with latest.date. Equal-asof Market State overwrites are allowed. This can produce a newer headline using newer condition fields and older tape, without per-tape source receipts. [No-regress design](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/engine/run.py#L174-L201), [independent reads](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/scripts/build_site.py#L6083-L6090), [frame cutoff](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/engine/inputs.py#L164-L171), [snapshot/persistence](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/engine/market_state.py#L1140-L1188).
+
+**Consequence:** preserve the October 16 recorded state, but do not use it as reconstructed October 16 close-based evidence. The census cutoff of October 15 is sound. Cross-consumer qualification will also drop the October 15 Envelope when paired with an October 16 measured source; that is a visible bundle-publication gap, not permission to restamp evidence.
+
+### B. Missing-input coverage and “fresh” have different meanings
+
+Market State’s October 16 payload says all input vintages are within their cadence windows, yet its liquidity component is degraded because NFCI does not survive the feature-frame availability limit. The stored NFCI vintage is October 2, age14, cadence14, stalefalse.
+
+This is not necessarily contradictory mathematically: **release cadence, feature availability and same-session coverage are different properties**. The product needs all three. “Freshness:false” must not conceal a missing feature; the existing component’s degraded explanation should survive every projection.
+
+The regime axes similarly set confidence to zero below the minimum component count while continuing to emit an axis score. Quad classification consumes that score. A low-coverage label may therefore still exist; it must not be treated as a fully evidenced macro verdict. Default historical input assembly also uses revised/reference-date economics; the release-time PIT route is explicitly a shadow option. [Axes](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/engine/axes.py#L65-L98), [PIT boundary](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/engine/inputs.py#L137-L160).
+
+### C. Publisher silence conflates five conditions
+
+The legacy publisher cannot distinguish calm, an early warning deliberately below its threshold, stale data, missing data, and build failure: all become alert:null. Even when it publishes, it discards the probability-evidence object and does not independently qualify expiry or source authority.
+
+A directly reproducible source counterexample is a dictionary containing state:"risk-off" and an ancient asof: build_alert returns an alert. The client still renders “PROJECTED ≥5% pullback” when no odds were supplied.
+
+The existing #8132 owner should handle this path. This finding does not authorize proxy publication of held or refused work.
+
+### D. Portfolio validated is a legacy source-family qualification, not an exact forecast certification
+
+This distinction is important enough to correct the audit’s preliminary message.
+
+market_view.py:44–52 explicitly reserves validated status for three historical source families: Radar, MTF and cycles. _plane_record combines that family flag with current-block freshness. The Radar adapter’s validated=True is **consistent with this existing contract**; the audit did not establish that its original approval was invalid.
+
+However:
+
+- It does not read the forward log or qualify the exact current probability definition/calibration/evidence.
+- It converts top_score/100 into the field named confidence.
+- It turns caution into a risk-off vote.
+- net_posture_tilt is an **unweighted discrete vote mean**, not probability aggregation; that confidence number does not weight the mean.
+- The resulting consensus feeds explanatory conflict and defensive-floor language; Market View itself sizes nothing. [Semantics](https://github.com/mastermindx-market-intelligence/Mastermind/blob/a552a5e506ae808efa575c2e13cb56f478c72b87/brain/market_view.py#L44-L52), [adapter](https://github.com/mastermindx-market-intelligence/Mastermind/blob/a552a5e506ae808efa575c2e13cb56f478c72b87/brain/market_view.py#L293-L325), [vote](https://github.com/mastermindx-market-intelligence/Mastermind/blob/a552a5e506ae808efa575c2e13cb56f478c72b87/brain/market_view.py#L1227-L1264).
+
+**The gap is missing semantic and evidence provenance.** “Family historically graded,” “current forecast calibrated,” “current hazard competent,” and “consumer may alter allocation” need separate qualification fields.
+
+A separate regime_frame fallback reads only the last forward-log row’s state; it does not inspect its date, maturity or definition. That is a concrete stale-tail risk. [Fallback](https://github.com/mastermindx-market-intelligence/Mastermind/blob/a552a5e506ae808efa575c2e13cb56f478c72b87/brain/regime_frame.py#L568-L618).
+
+### E. Held-position and entry consumers have concrete vocabulary/clock losses
+
+portfolio/held_risk.py maps Radar **caution** or **risk-off** to elevated damage context, but omits Radar **elevated**. With non-caution legacy risk_state, an elevated Radar therefore yields market_regime.state:"ok". Its output also names the older regime.risk_state as market_state, rather than consuming canonical market_state.v1. [Role mapping](https://github.com/mastermindx-market-intelligence/Mastermind/blob/a552a5e506ae808efa575c2e13cb56f478c72b87/portfolio/held_risk.py#L1337-L1379), [misnamed block](https://github.com/mastermindx-market-intelligence/Mastermind/blob/a552a5e506ae808efa575c2e13cb56f478c72b87/portfolio/held_risk.py#L1677-L1703).
+
+portfolio/context_gate.py reduces its risk source to {state,source}; the source asof, expiry, evidence and authority disappear. Its cache refreshes by file mtime; returned assessment as_of comes from the caller. It can park or shrink new entries through the existing conviction path. **That path’s current effective runtime activation was not established.** [Source loss](https://github.com/mastermindx-market-intelligence/Mastermind/blob/a552a5e506ae808efa575c2e13cb56f478c72b87/portfolio/context_gate.py#L107-L126), [gate](https://github.com/mastermindx-market-intelligence/Mastermind/blob/a552a5e506ae808efa575c2e13cb56f478c72b87/portfolio/context_gate.py#L312-L346), [consumer](https://github.com/mastermindx-market-intelligence/Mastermind/blob/a552a5e506ae808efa575c2e13cb56f478c72b87/portfolio/conviction.py#L531-L568).
+
+### F. Terminal preserves more context than its Copilot summary
+
+The current Oracle disclosure names unavailable required sources and their dates. curateMarketRisk, however, reduces an admitted Envelope’s hazard to stage and omits the required-source failure/date maps. An admitted degraded envelope with null stage therefore loses much of its explanation before entering Copilot. Rejected-envelope reasons are preserved separately. [Curator](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b8a694357e2c5cf7c2921d2260732b8a757a90d9/terminal/lib/copilotTools.ts#L1179-L1219).
+
+Also preserve the delivery qualification: the source contains a refresh job and browser poller, while the committed terminal/public/data/market_risk.json was absent at the pin. That is not proof that its production overlay is absent. The checked-in verification record expressly says LOCAL_SYNTHETIC_BROWSER_ONLY.
+
+## 3. Existing owners and carrier status
+
+The canonical programme registry assigns:
+
+- **portfolio-desk**: book state, mandates, sizing, simulated settlement and ledgers.
+- **portfolio-control-plane**: modes, contracts, packet gates, locks and scheduler.
+- **macro-intelligence-adapter**: Portfolio-side refresh and qualification; it explicitly says effective Neural Web runtime authority is un-attested.
+- **Grey Deer**: Macro market truth and Envelope semantics; Prophet retains raw ranking; Terminal mirrors.
+
+These are functional owners, not proof of a live writer. [Registry](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/config/mastermind_programs.yml#L1102-L1196), [adapter boundary](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/config/mastermind_programs.yml#L2629-L2669).
+
+The current Grey Deer record says **GD-9A has a merged census only, not an adapter**; GD-10 remains todo. No active modifying carrier for this narrow seam was established by the bounded records. The decision reserves cutover for prospective parity, rollback, and Sol plus Chairman approval. [Workstream](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md#L334-L345), [ownership/cutover decision](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/agentos/decisions/DEC-PORTFOLIO-CONSUMES-NOT-RECOMPUTES-MARKET-RISK.md).
+
+## 4. Smallest safe next vertical: an additive GD-9A comparison receipt
+
+**First make the disagreement reproducible without changing any current decision.**
+
+Use immutable captured inputs and already-written local risk artifacts. Do **not** call macro_risk.risk_state() as a read: despite its “PURE” docstring, default dwell handling writes persistent state. [Actual save](https://github.com/mastermindx-market-intelligence/Mastermind/blob/a552a5e506ae808efa575c2e13cb56f478c72b87/brain/macro_risk.py#L633-L704).
+
+A comparison receipt should contain:
+
+1. **Identity:** actual book/consumer, source repo/blob/hash, original source session, event/observation/production/consumer-read clocks, price basis and available definition/calibration identity.
+2. **Native evidence:** measured state, hazard, damage/rotation/repair fields, required and optional coverage, exact withheld/unavailable reasons, four authority flags.
+3. **Legacy interpretation unchanged:** original MarketView status, direction, magnitude, confidence field, vote membership, existing gate/held-risk interpretation and original policy-owner outputs.
+4. **Separate qualifications:** historical family approval; exact current probability-surface evidence; present source freshness/coverage; downstream numerical authority. Unknown remains unknown.
+5. **Differences:** lost clock, unmapped state, score labeled confidence, unavailable exact calibration, source-session mismatch, duplicate source lineage and divergent interpretation.
+6. **No-effect proof:** existing prompts/key order, flags, scores, caps, target weights, account state, position/settlement ledgers and policy outputs unchanged. A research receipt is the sole new artifact.
+
+Eight discriminating cases are sufficient for the first implementation:
+
+1. Caution + can_force:false + withheld probability: preserve legacy vote but expose the separate qualifications.
+2. Change only Radar intensity: no newly asserted calibrated confidence or probability.
+3. Exercise every native Radar state, including elevated, missing and unknown.
+4. New wrapper/Market State session with an older Envelope: preserve history; refuse current-session equivalence.
+5. Fresh measured state plus stale required hazard input: retain measured state and the hazard’s specific unavailability.
+6. Recently rewritten file with an old forward-log tail: mtime cannot refresh the source.
+7. Same Radar evidence arriving through multiple paths: one lineage, no independence claim.
+8. Run the comparison and demonstrate unchanged book, policy and existing-prompt artifacts.
+
+After that receipt is verified, the next vertical is the **per-component clock and bundle-publication repair**, followed by original-owner warning delivery and real authenticated backend-to-user proof. The historical census and empirical work can proceed independently while those release carriers remain constrained.
+
+
+## Additional company and theme qualification — October 17
+
+At Macro 3ab3382af89242c7b7fe8c65360bd883a7dd3504, the [Leadership Crack snapshot](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/data/leadership_crack/latest.json), blob 420a1679e17f2e69cbfc1fa7d74acef84568b01e, is dated October 14: CRACKING since October 13; 42 members pass the producer's freshness rule; median drawdown −20.86%; share at least 10% down 90.48%; share at least 30% down 23.81%; velocity z −2.0764. The six deepest native drawdowns are ICHR −50.07%, CBRS −46.01%, UCTT −45.99%, CRWV −38.94%, CRDO −36.63% and WDC −34.76%.
+
+These are descriptive damage observations in a current tracked AI-hardware cohort. They are not forecasts of remaining loss, a comprehensive technology universe, or independently authorized company trade instructions.
+
+- **Membership:** [`_live_members`](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/engine/leadership_crack.py#L96) unions currently non-removed members of four cohorts. Their 12/24/4/16 entries de-duplicate to 42 tickers. Added/curated-added dates and historical membership masks are not applied.
+- **Basis:** [`_load_closes`](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/engine/leadership_crack.py#L115) reads basket parquet closes. [The producer](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/scripts/fetch_basket_ohlcv.py#L563) uses yfinance auto_adjust=True; newly fetched overlapping history takes precedence at line 650. Native damage uses 63-row rolling highs of adjusted closes, unlike the ETF census's split-adjusted, dividend-unadjusted damage basis. Individual corporate-action histories were not re-audited.
+- **Velocity:** [`_compute` and `_velocity_z`](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/engine/leadership_crack.py#L168) sum five daily average member returns and subtract the corresponding SPY sum, then normalize against 120 prior observations, minimum 60, shifted one observation. This is not a compounded five-session portfolio return.
+- **Carnage/state:** Native carnage_share_ema is a span-three EMA of the share down at least 20%. [State entry](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/engine/leadership_crack.py#L232) may occur on one valid observation; only exiting BROKEN has the three-clear-observation counter.
+- **Freshness/denominators:** The loader forward-fills three panel rows before `_fresh_members` measures weekday lag against the panel maximum. Thus 42 fresh does not prove 42 raw October 14 observations or present wall-clock freshness. Drawdown shares divide by n_fresh even when a member's 63-row drawdown is unavailable; missing drawdowns do not enter the numerator, while the median skips them. Per-member raw source dates and coverage are not exported.
+- **Time:** [`_build`](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/engine/leadership_crack.py#L336) chooses the last date with valid velocity, median damage and carnage EMA. Its asof is a calculation date, not an issuance/delivery receipt. Current-roster replay must not become a historical watched-cohort track record.
+
+### Subsector/theme clock qualification
+
+The pinned [state.json](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/data/subsector_rotation/state.json), blob 86b36ebde761507e0991b1db054b62a38dc1d3af, contains **269** subsector keys. An earlier inspection estimate of 273 is not supported by those bytes. Rows have emerging/name/quadrant/theme/turn_state but no intrinsic asof.
+
+Applying the exact [`_snapshot` projection](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/engine/subsector_rotation_alerts.py#L102) to the pinned [site payload](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/site/marketdata/subsector_rotation.json) yields all 269 identical keys/values, zero differences. The payload declares asof October 14 and generated_utc October 16 at 23:23; it contains 268 Finviz nodes plus the synthetic mega-cap node. The source perf_snapshot also declares October 14.
+
+This establishes consistency with the producer's declared observation, not original availability or a unique first-seen time. [The Finviz collector](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/scripts/fetch_finviz_themes.py#L388) derives its session from collection time through session_date, not a vendor observation timestamp. Quadrants are cross-sectional return comparisons; theme-history aggregation uses today's tree. Neither establishes fund flows or point-in-time theme composition.
+
+The [existing ledger qualifications](https://github.com/mastermindx-market-intelligence/macro/blob/3ab3382af89242c7b7fe8c65360bd883a7dd3504/data/subsector_rotation/ledgers_meta.json)—1,613 quarantined snapshot rows, 12 quarantined turns, 12 quarantined nominations and four July gaps—remain unchanged. This read does not heal, reclassify or erase them.

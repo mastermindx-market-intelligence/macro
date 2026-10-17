@@ -31295,7 +31295,9 @@ jobs:
       - "tests/test_grey_deer_pullback_stage1b.py"
       - "tests/test_grey_deer_pullback_stage1b_addendum.py"
       - "scripts/research/grey_deer_episode_samples.py"
+      - "scripts/research/grey_deer_exposure_census.py"
       - "tests/test_grey_deer_episode_samples.py"
+      - "tests/test_grey_deer_exposure_census.py"
       - "lib/observed_moves.py"
       - "engine/vol_forecast.py"
       - "lib/nyse_calendar.py"
@@ -31379,6 +31381,7 @@ jobs:
           tests/test_grey_deer_pullback_stage1b.py
           tests/test_grey_deer_pullback_stage1b_addendum.py
           tests/test_grey_deer_episode_samples.py
+          tests/test_grey_deer_exposure_census.py
 
   sni-s1-residual:
     if: ${{ false }}

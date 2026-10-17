@@ -49,7 +49,29 @@ AgentOS records: `agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md`, eight
 
 The wave matrix is a mechanical index under 3. The GD-1 packet governs GD-1 research conduct under 2–3.
 
-## Current next action (updated 2026-10-14, Opus seat W7/W8)
+## Current next action (2026-10-17, Meta-CEO continuation)
+
+Read [the existing continuation §0A](GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md),
+then [the dated findings/action map](RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md).
+The new all-date census is accepted descriptive evidence only: 36 exposures,
+8,486 reference sessions, 305,496 rows; zero new fits or promotions. Its frozen
+protocol, outputs, recorded-version corrections, calendar and peak-aging evidence
+are in [all_date_census/](all_date_census/). Source/release verification is tracked
+with this carrier; full programme acceptance remains outstanding.
+
+Supporting records: [source audit](risk_radar_source_consumer_audit_20261017.md),
+[contract annex](risk_radar_architecture_contract_20261017.md),
+[methods](risk_radar_turning_point_methods_20261017.md),
+[research design](risk_radar_research_protocol_20261017.md) and
+[calendar qualification](risk_radar_calendar_qualification_20261017.md).
+
+W5 forward issuance is still unproved at source pin 3ab3382: forward_log absent,
+BACKFILL_ASOF/CLOCK refusals retained. Source-clock qualification, existing-owner
+warning delivery and authenticated consumer proof are the next delivery verticals.
+Preserve active writers, #9428 refusals, #8132 hold, numerical policy owners and
+all accepted/failed historical evidence.
+
+## Prior next action (updated 2026-10-14, Opus seat W7/W8)
 
 - Read `GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md` §0 and §3 NEXT, then the latest
   `agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-14-OPUS-W7W8.md`. W0–W5, W7 and W8 are merged
