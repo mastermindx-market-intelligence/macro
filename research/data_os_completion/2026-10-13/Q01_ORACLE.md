@@ -206,3 +206,17 @@ data row was read or printed. No market conclusion of any kind follows.
 - hermeticity grep (P6) → no hits.
 - `PY scripts/check_contract_delta.py --base a0fa900488db2f9270a2ce5cda6f7418a87eb86f`
   → quoted in the return packet (P7).
+
+## Seat ruling 2026-10-17 — FINDING F1 closed by D00.D3 clarification
+
+D00.D3 is clarified (seat 972d2923, Fable Meta-CEO, 2026-10-17): the product `S(t; v)` runs over
+QUALIFIED events, and an event whose qualification is `INFERRED` is **UNRESOLVED**, not absent.
+A revision set with no observation at all is the ABSENT case and the factor is 1 (the oracle's
+pre-registered reading). A revision set that CONTAINS an inferred event cannot assert its share
+basis, so `split_factor`, `sadj_view` and `total_return_view` refuse with the typed
+`NOT_CONFIRMED` (D00.D4: context may be shown, computation refuses); RAW is untouched. Silently
+computing factor 1 would state "no split happened" without a qualified receipt — the false
+consensus C03 exists to prevent. The SUT behaviour observed at first run is therefore the lawful
+one. `test_Q01_06_not_confirmed_pre_registered_oracle_factor` (strict xfail) is replaced by
+`test_Q01_06_not_confirmed_is_a_typed_refusal_by_ruling`, which pins the refusal; the
+either-reading guard `test_Q01_06_not_confirmed_event_is_never_applied_as_confirmed` stays.

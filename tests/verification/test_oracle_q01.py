@@ -579,13 +579,20 @@ def test_Q01_06_typed_refusals(case, entry, expected_reason):
 # no refusal. [Observed against the SUT during the pre-freeze shape probe and
 # at first run: the SUT raises ViewRefusal(NOT_CONFIRMED) instead — recorded
 # as FINDING F1 in Q01_ORACLE.md, never silently re-matched.]
-@pytest.mark.xfail(strict=True,
-                   reason="Q01 FINDING F1: oracle says split_factor stays Fraction(1) "
-                          "(unqualified event not in the product; no qualification refusal "
-                          "enumerated in D00.D3); SUT raises NOT_CONFIRMED")
-def test_Q01_06_not_confirmed_pre_registered_oracle_factor():
+# SEAT RULING 2026-10-17 (D00.D3 clarification "ABSENT vs UNRESOLVED", recorded in
+# D00_SEMANTIC_DECISIONS.md and Q01_ORACLE.md): an INFERRED event that is PRESENT in
+# the revision set is an UNRESOLVED observation, not an absent one. Leaving the factor
+# at 1 would assert "no split happened" without a qualified receipt — exactly the
+# false consensus C03 exists to prevent — so SADJ/TOTAL_RETURN refuse with the typed
+# NOT_CONFIRMED (D00.D4: context may be shown, computation refuses); RAW is untouched.
+# The pre-registered factor-1 reading remains correct for the ABSENT case (a revision
+# set with no observation at all). FINDING F1 is CLOSED-BY-RULING; this test now pins
+# the ruled behaviour instead of carrying a strict xfail.
+def test_Q01_06_not_confirmed_is_a_typed_refusal_by_ruling():
     revs = ActionRevisionSet("q01-nc", (split_event("q01-nc1", Fraction(2), qualification="INFERRED"),))
-    assert split_factor(ROW_DATE, revs, AS_AT, mic=MIC) == Fraction(1)
+    with pytest.raises(ViewRefusal) as ei:
+        split_factor(ROW_DATE, revs, AS_AT, mic=MIC)
+    assert ei.value.reason == RefusalReason.NOT_CONFIRMED
 
 
 def test_Q01_06_not_confirmed_event_is_never_applied_as_confirmed():
