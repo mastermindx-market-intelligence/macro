@@ -1,0 +1,424 @@
+{
+  "schema": "mastermind.policy_behavior_casebook_seed.v1",
+  "as_of": "2026-10-07",
+  "status": "UNCERTIFIED_SOURCE_SEED",
+  "authority": "RESEARCH_ONLY",
+  "parent_prereg": "research/policy_behavior/POLICY_BEHAVIOR_CASEBOOK_PREREG_2026-10-07.md",
+  "warnings": [
+    "Candidate episodes are not yet PIT-certified casebook rows.",
+    "Publication date is not a substitute for first-public timestamp.",
+    "Later reporting may be used for archaeology only unless the underlying fact was public by the decision cut.",
+    "No causal or private-intent effect size is estimated in this seed."
+  ],
+  "sources": [
+    {
+      "id": "B01",
+      "publisher": "Reuters",
+      "publication_date": "2025-08-13",
+      "title": "Bessent presses BOJ after speaking with Ueda",
+      "url": "https://www.streetinsider.com/Reuters/Bessent%2Bsays%2BBOJ%2Bis%2Bbehind%2Bthe%2Bcurve%2Bon%2Binflation%2C%2Blikely%2Bto%2Bhike%2Brates%2C%2Bin%2BBloomberg%2Binterview/25198471.html",
+      "role": "independent_reporting_underlying_interview"
+    },
+    {
+      "id": "B02",
+      "publisher": "Reuters",
+      "publication_date": "2026-01-26",
+      "title": "US rate check and history of Japanese lobbying",
+      "url": "https://www.streetinsider.com/Reuters/US%2Brate%2Bcheck%2Bmasks%2Bstiff%2Bhurdle%2Bto%2Bcoordinated%2Byen%2Bintervention/25889274.html",
+      "role": "independent_reporting_reconstruction"
+    },
+    {
+      "id": "B03",
+      "publisher": "Reuters",
+      "publication_date": "2026-08-04",
+      "title": "Bessent supports consideration of larger FIMA facility",
+      "url": "https://www.streetinsider.com/Reuters/US%2BTreasurys%2BBessent%3A%2BReasonable%2Bfor%2BFed%2Bto%2Bconsider%2Bupsizing%2BFIMA/26862443.html",
+      "role": "independent_reporting_interview"
+    },
+    {
+      "id": "B04",
+      "publisher": "Reuters",
+      "publication_date": "2026-09-01",
+      "title": "Bessent urges decisive Japanese monetary steps",
+      "url": "https://whbl.com/2026/09/01/bessent-meets-bojs-ueda-calls-for-sound-policy-to-avoid-currency-volatility-treasury-says/",
+      "role": "independent_reporting_analysis"
+    },
+    {
+      "id": "B05",
+      "publisher": "Bank of Japan",
+      "publication_date": "2026-09-18",
+      "title": "Change in the guideline for money market operations",
+      "url": "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
+      "role": "primary_policy_decision"
+    },
+    {
+      "id": "B06",
+      "publisher": "Federal Reserve",
+      "publication_date": "2024-02-21",
+      "title": "FIMA repo facility FAQs",
+      "url": "https://www.federalreserve.gov/monetarypolicy/fima-repo-facility-faqs.htm",
+      "role": "primary_instrument_description"
+    },
+    {
+      "id": "B07",
+      "publisher": "NVIDIA",
+      "publication_date": "2026-09-28",
+      "title": "Additional $150 billion repurchase authorization",
+      "url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-a-150-Billion-Share-Repurchase-Authorization-Increase/default.aspx",
+      "role": "primary_issuer_action"
+    },
+    {
+      "id": "B08",
+      "publisher": "Reuters",
+      "publication_date": "2026-09-28",
+      "title": "NVIDIA buyback amid competition and relative underperformance",
+      "url": "https://wifc.com/2026/09/28/nvidia-adds-150-billion-to-existing-share-repurchase-plan/",
+      "role": "independent_market_reporting"
+    },
+    {
+      "id": "B09",
+      "publisher": "Wall Street Journal",
+      "publication_date": "2026-09-28",
+      "title": "Treasury yields climb; technology stocks drop",
+      "url": "https://www.wsj.com/livecoverage/stock-market-today-dow-sp-500-nasdaq-09-28-2026",
+      "role": "contemporaneous_market_recap"
+    },
+    {
+      "id": "B10",
+      "publisher": "Akamai",
+      "publication_date": "2026-09-24",
+      "title": "Anthropic seven-year commitment and contingent warrant",
+      "url": "https://www.akamai.com/newsroom/press-release/akamai-announces-11-6-billion-multi-year-agreement-with-anthropic-to-support-growing-demand",
+      "role": "primary_issuer_contract"
+    },
+    {
+      "id": "B11",
+      "publisher": "Reuters",
+      "publication_date": "2026-09-25",
+      "title": "AI-related stocks support market",
+      "url": "https://www.streetinsider.com/Market%2BCheck/Wall%2BStreet%2Bends%2Bhigher%2Bas%2Binvestors%2Bbuy%2BAI%2Bstocks%3B%2BMicrosoft%2Brallies/27103604.html",
+      "role": "independent_market_reporting"
+    },
+    {
+      "id": "B12",
+      "publisher": "Reuters",
+      "publication_date": "2026-09-29",
+      "title": "White House AI meeting and voluntary agreement",
+      "url": "https://www.investing.com/news/stock-market-news/trump-to-host-zuckerberg-anthropics-amodei-and-other-ai-titans-tuesday-4922037",
+      "role": "independent_policy_industry_reporting"
+    },
+    {
+      "id": "B13",
+      "publisher": "MP Materials",
+      "publication_date": "2025-07-10",
+      "title": "Public-private rare-earth support agreements",
+      "url": "https://investors.mpmaterials.com/investor-news/news-details/2025/MP-Materials-Announces-Transformational-Public-Private-Partnership-with-the-Department-of-Defense-to-Accelerate-U-S--Rare-Earth-Magnet-Independence/default.aspx",
+      "role": "primary_issuer_contract"
+    },
+    {
+      "id": "B14",
+      "publisher": "BIS Bulletin",
+      "publication_date": "2026-10-01",
+      "title": "Circular relationships among AI firms",
+      "url": "https://www.bis.org/publications/bulletin-137-circular-relationships-among-ai-firms.pdf",
+      "role": "primary_empirical_research"
+    },
+    {
+      "id": "B15",
+      "publisher": "Edmans et al.",
+      "publication_date": "2018-05-30",
+      "title": "Strategic News Releases in Equity Vesting Months",
+      "url": "https://www.ecgi.global/sites/default/files/working_papers/documents/finaledmansgoncalves-pintogroen-xuwang.pdf",
+      "role": "primary_empirical_research"
+    },
+    {
+      "id": "B16",
+      "publisher": "Federal Reserve",
+      "publication_date": "2023-12-01",
+      "title": "Monetary tightening and nonfinancial corporate debt servicing",
+      "url": "https://www.federalreserve.gov/econres/notes/feds-notes/monetary-policy-tightening-and-debt-servicing-costs-of-nonfinancial-companies-20231201.html",
+      "role": "primary_empirical_research"
+    }
+  ],
+  "candidate_episodes": [
+    {
+      "episode_id": "PB-0001",
+      "family": "INDUSTRIAL_POLICY_SELECTIVE_SUPPORT",
+      "event_date": "2025-07-10",
+      "actors": [
+        "US Department of Defense",
+        "MP Materials"
+      ],
+      "description": "MP Materials announced public-private support including a ten-year NdPr price floor and future magnet offtake protection alongside financing/equity arrangements.",
+      "source_ids": [
+        "B13"
+      ],
+      "rhetoric_action_relation": "NOT_YET_CODED",
+      "hypotheses": [
+        "strategic capacity support",
+        "selective downside-risk reduction",
+        "shareholder-return support is not automatically implied"
+      ],
+      "pit_certified": false
+    },
+    {
+      "episode_id": "PB-0002",
+      "family": "US_JAPAN_POLICY_PRESSURE",
+      "event_date": "2025-08-13",
+      "actors": [
+        "US Treasury",
+        "Scott Bessent",
+        "Bank of Japan",
+        "Kazuo Ueda"
+      ],
+      "description": "Bessent publicly pressed the case for BOJ tightening after speaking with Ueda.",
+      "source_ids": [
+        "B01"
+      ],
+      "hypotheses": [
+        "material US pressure",
+        "domestic Japanese inflation already justified tightening",
+        "public pressure may reinforce rather than originate the move"
+      ],
+      "pit_certified": false
+    },
+    {
+      "episode_id": "PB-0003",
+      "family": "US_JAPAN_OPERATIONAL_SIGNAL",
+      "event_date": "2026-01-23",
+      "actors": [
+        "Federal Reserve Bank of New York",
+        "US Treasury",
+        "Japan MOF"
+      ],
+      "description": "New York Fed yen rate check; later reporting placed the operation in a history of Japanese requests for US cooperation.",
+      "source_ids": [
+        "B02"
+      ],
+      "hypotheses": [
+        "operational coordination signal",
+        "pre-intervention signaling",
+        "Japan-initiated cooperation"
+      ],
+      "pit_certified": false
+    },
+    {
+      "episode_id": "PB-0004",
+      "family": "US_JAPAN_FX_INTERVENTION",
+      "event_date": "2026-07-31",
+      "actors": [
+        "US Treasury",
+        "Japan MOF"
+      ],
+      "description": "US and Japan jointly supported the yen.",
+      "source_ids": [
+        "B04"
+      ],
+      "hypotheses": [
+        "joint FX objective",
+        "constraint on BOJ path",
+        "temporary market-functioning operation"
+      ],
+      "pit_certified": false
+    },
+    {
+      "episode_id": "PB-0005",
+      "family": "US_JAPAN_LIQUIDITY_BACKSTOP",
+      "event_date": "2026-08-04",
+      "actors": [
+        "US Treasury",
+        "Federal Reserve",
+        "Japan"
+      ],
+      "description": "Bessent supported consideration of larger FIMA capacity in the context of Japanese intervention.",
+      "source_ids": [
+        "B03",
+        "B06"
+      ],
+      "hypotheses": [
+        "support adjustment while limiting forced Treasury liquidation",
+        "market-functioning safeguard",
+        "not evidence of actual facility use"
+      ],
+      "pit_certified": false
+    },
+    {
+      "episode_id": "PB-0006",
+      "family": "US_JAPAN_POLICY_PRESSURE",
+      "event_date": "2026-08-30",
+      "actors": [
+        "Scott Bessent",
+        "Kazuo Ueda"
+      ],
+      "description": "Bessent met Ueda; subsequent reporting said pressure reinforced an already expected tightening path.",
+      "source_ids": [
+        "B04"
+      ],
+      "hypotheses": [
+        "external constraint reinforced timing",
+        "domestic conditions dominated",
+        "signaling to FX market"
+      ],
+      "pit_certified": false
+    },
+    {
+      "episode_id": "PB-0007",
+      "family": "JAPAN_POLICY_DECISION",
+      "event_date": "2026-09-18",
+      "actors": [
+        "Bank of Japan"
+      ],
+      "description": "BOJ set the overnight target at 1.25%, effective September 24.",
+      "source_ids": [
+        "B05"
+      ],
+      "hypotheses": [
+        "domestic-data response",
+        "partly externally constrained path",
+        "pre-priced decision"
+      ],
+      "pit_certified": false
+    },
+    {
+      "episode_id": "PB-0008",
+      "family": "AI_COMMERCIAL_FINANCING_LINK",
+      "event_date": "2026-09-24",
+      "actors": [
+        "Akamai",
+        "Anthropic"
+      ],
+      "description": "Akamai disclosed an $11.6B seven-year Anthropic commitment with a warrant tied to purchases and contingent expansion.",
+      "source_ids": [
+        "B10"
+      ],
+      "hypotheses": [
+        "genuine capacity demand",
+        "equity incentive reinforces commercial loop",
+        "financing-linked demand requires independent-cash follow-through"
+      ],
+      "pit_certified": false
+    },
+    {
+      "episode_id": "PB-0009",
+      "family": "AI_MARKET_RESPONSE",
+      "event_date": "2026-09-25",
+      "actors": [
+        "Microsoft",
+        "Akamai",
+        "AI complex"
+      ],
+      "description": "Market reporting associated gains in AI-linked names with new developments while broad indexes rose.",
+      "source_ids": [
+        "B11"
+      ],
+      "hypotheses": [
+        "information-driven rerating",
+        "common AI factor",
+        "follow-through from prior announcements"
+      ],
+      "pit_certified": false
+    },
+    {
+      "episode_id": "PB-0010",
+      "family": "CAPITAL_RETURN_DISCRETIONARY_ANNOUNCEMENT",
+      "event_date": "2026-09-28",
+      "actors": [
+        "NVIDIA"
+      ],
+      "description": "NVIDIA authorized an additional $150B of repurchases, taking remaining authorization to $235B through FY2028.",
+      "source_ids": [
+        "B07",
+        "B08",
+        "B09"
+      ],
+      "hypotheses": [
+        "issuer confidence / capital return",
+        "own-stock support",
+        "broader index-support spillover",
+        "central scheduling remains unproven"
+      ],
+      "pit_certified": false
+    },
+    {
+      "episode_id": "PB-0011",
+      "family": "WHITE_HOUSE_INDUSTRY_COORDINATION",
+      "event_date": "2026-09-29",
+      "actors": [
+        "White House",
+        "major AI / technology executives"
+      ],
+      "description": "White House and technology executives reached voluntary AI measures while supporting continued data-center expansion.",
+      "source_ids": [
+        "B12"
+      ],
+      "hypotheses": [
+        "policy-industry coordination channel",
+        "regulatory bargain",
+        "market-support objective requires separate evidence"
+      ],
+      "pit_certified": false
+    },
+    {
+      "episode_id": "PB-0012",
+      "family": "RESEARCH_CONTEXT_CIRCULAR_AI",
+      "event_date": "2026-10-01",
+      "actors": [
+        "BIS researchers"
+      ],
+      "description": "BIS research reported 46.4% of disclosed intra-AI deal value as circular under its broad commercial-relationship definition for 2021-2025.",
+      "source_ids": [
+        "B14"
+      ],
+      "hypotheses": [
+        "financing links can amplify demand and fragility",
+        "metric does not imply fabricated revenue",
+        "full-round counting must be respected"
+      ],
+      "pit_certified": false
+    },
+    {
+      "episode_id": "PB-0013",
+      "family": "RESEARCH_CONTEXT_ANNOUNCEMENT_TIMING",
+      "event_date": "2018-05-30",
+      "actors": [
+        "Edmans et al."
+      ],
+      "description": "Research linked scheduled executive-equity vesting to more positive discretionary releases and temporary market effects.",
+      "source_ids": [
+        "B15"
+      ],
+      "hypotheses": [
+        "announcement timing is incentive-sensitive",
+        "does not identify government coordination in 2026"
+      ],
+      "pit_certified": false
+    },
+    {
+      "episode_id": "PB-0014",
+      "family": "RESEARCH_CONTEXT_RATE_TRANSMISSION",
+      "event_date": "2023-12-01",
+      "actors": [
+        "Federal Reserve researchers"
+      ],
+      "description": "Historical research found heterogeneous debt-service pass-through from tightening across firms.",
+      "source_ids": [
+        "B16"
+      ],
+      "hypotheses": [
+        "high rates impose uneven burdens",
+        "cash-rich / less-bank-dependent firms may be relatively insulated",
+        "not a direct 2026 estimate"
+      ],
+      "pit_certified": false
+    }
+  ],
+  "next_seed_expansion": [
+    "2026 Fed hike / Warsh communication episodes",
+    "Treasury issuance / buyback / dealer-intermediation actions",
+    "Iran / Hormuz energy-shock episodes",
+    "US-China tariff / industrial-policy episodes",
+    "Intel / government-equity and other strategic-capital cases",
+    "negative controls: stress windows without supportive company announcements",
+    "rhetoric-action alignment cases so the sample is not divergence-selected"
+  ]
+}
