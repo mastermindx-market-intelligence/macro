@@ -349,11 +349,8 @@ def _state_changed(current: dict, last: dict) -> bool:
 
 def _tool_read_world_state(root: Path, _params: dict) -> dict:
     """Read data/neuralweb/world_state.json (the N1 blackboard)."""
-    p = _data(root, "neuralweb", "world_state.json")
-    try:
-        return json.loads(p.read_text(encoding="utf-8"))
-    except Exception as exc:  # noqa: BLE001
-        return {"error": f"world_state unreadable: {exc}"}
+    from engine.neuralweb.regime_change_evidence import read_world_state_evidence
+    return read_world_state_evidence(root)
 
 
 def _tool_query_spine(root: Path, params: dict) -> dict:
@@ -1159,35 +1156,11 @@ def _tool_read_mechanism_pathways(root: Path, _params: dict) -> dict:
     board_ordering, mastermind_arming. is_context_only always true.
     Fails open with structured gaps when absent.
     """
-    p = _data(root, "neuralweb", "mechanism_pathways.json")
-    if not p.exists():
-        return {
-            "is_context_only": True,
-            "display_only": True,
-            "not_a_signal": True,
-            "gaps": [
-                "data/neuralweb/mechanism_pathways.json: absent — "
-                "build_mechanism_pathways has not run yet"
-            ],
-            "note": (
-                "Mechanism pathway artifact not yet built. "
-                "Run the nightly build_mechanism_pathways job."
-            ),
-        }
-    try:
-        artifact = json.loads(p.read_text(encoding="utf-8"))
-        # Mandate fields always present regardless of artifact version
-        artifact.setdefault("is_context_only", True)
-        artifact.setdefault("display_only", True)
-        artifact.setdefault("not_a_signal", True)
-        return artifact
-    except Exception as exc:  # noqa: BLE001
-        return {
-            "is_context_only": True,
-            "display_only": True,
-            "not_a_signal": True,
-            "gaps": [f"data/neuralweb/mechanism_pathways.json: unreadable — {exc}"],
-        }
+    # Same tool and producer: qualify legacy/current evidence before either
+    # customer Brain or internal Cortex sees it. Source flags cannot grant
+    # authority; association-table signs cannot become observed transmission.
+    from engine.neuralweb.mechanism_evidence import read_evidence
+    return read_evidence(root)
 
 
 def _tool_read_theme_state(root: Path, params: dict) -> dict:
