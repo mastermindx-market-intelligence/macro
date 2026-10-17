@@ -19,46 +19,117 @@ owns_paths:
   - terminal/lib/chart-engine/**
   - terminal/lib/__tests__/chartEngine*.test.ts
   - terminal/lib/__tests__/lwcAdapter.test.ts
+  - terminal/components/ChartPanel.tsx
+  - terminal/bench/chart-engine.cadence.bench.ts
   - docs/chart-engine/**
+  - docs/chart-engine-completion/**
   - docs/CHART_ENGINE_MASTERPLAN.md
 discoveries:
   - DSC:LANE-RECONCILIATION-HOLD-CLOSES-HOST
+  - DSC:CANVAS-ENGINE-INPUT-CONTROLLER-UNWIRED-AT-PR969
+  - DSC:CHART-ENGINE-PRESENTED-INTERVAL-IS-INPUT-BOUND
+  - DSC:CHART-ENGINE-Q03B-ZOOM-P95-GAP-IS-ACK-PACED-PHASE
+  - DSC:CHART-ENGINE-Q03B-FIRST-WHEEL-IS-RENDERER-IDLE-WAKEUP
+  - DSC:CHART-ENGINE-Q03B-V2-FIRST-WHEEL-ELEVATION-PERSISTS-WITH-HEARTBEAT
 waves:
   - id: P2-CONTRACT
     title: Portable main-chart contract — api.ts widened, LWC adapter implements it, census + reference-semantics dossier
-    status: awaiting_ci
+    status: done
     pr: 969
   - id: P3-RENDERER-LIBRARY
-    title: Owned canvas renderer as pure library — model, series, scales, ticks, input, axis gestures, crosshair, paint, keyboard, LOD, snapshot, decorations
-    status: awaiting_ci
-    pr: 969
-    next_action: >
-      When Terminal PR 969 merges, open the follow-up PR from branch claude/ce-integrate2-1012
-      (decor lane already merged there) against master with the merge-on-green label and
-      native auto-merge.
+    title: Owned canvas renderer as pure library — model, series, scales, ticks, input, axis gestures, crosshair, paint, keyboard, LOD, snapshot, decorations; wave-4 hardening F-01..F-16 (PR 991)
+    status: done
+    pr: 991
   - id: P3-CHARTPANEL-MIGRATION
-    title: Migrate ChartPanel.tsx raw lightweight-charts call sites onto the engine contract (M01 primary series, M02 studies, M03 decorations)
-    status: in_progress
+    title: Migrate ChartPanel.tsx raw lightweight-charts call sites onto the engine contract (M01 primary series, M02 studies, M03 decorations) with the ?engine=mm mount selector and the F-13 impl guard
+    status: done
+    pr: 992
     depends_on: [P3-RENDERER-LIBRARY]
-    next_action: >
-      In flight as wave 4 lane OPUS-MIG (branch claude/ce-migration-1013): a grok-4.6 operator lane
-      rebases M01->M02->M03 onto the current master ChartPanel.tsx and wires the opt-in ?engine=mm
-      selector, qwen3.8-max reviews the head, then the six evidence crops are recaptured on the Mac
-      and the full npm test plus the responsive e2e contract run before the seat opens the PR.
-  - id: P4-ACCEPTANCE-DARK-LAUNCH
-    title: Conformance corpus green on "mm", engine selector dark launch, production crops, rollback drill
-    status: todo
+  - id: P3B-BOUNDARY-CLOSURE
+    title: migration2 — ChartPanel boundary closure, PaneHandle identity ruling, Q04 accessibility proofs, forced-lwc fallback removed so ?engine=mm mounts the owned engine for real
+    status: done
+    pr: 999
     depends_on: [P3-CHARTPANEL-MIGRATION]
+    next_action: >
+      Done. PR 999 merged as master 9938c0cb0 (2026-10-17); deployed as ce8 through the
+      git-gated build (VERIFY OK: deployment-id == gitsrc HEAD == served dpl); live engine
+      proof --mm-expect mm --probe 4/4 PASS at 07:57Z: P01-A01 impl=mm with no fallback
+      warning, A02a/b lwc with storage untouched, A03 trackingMode refusal -> lwc.
+  - id: P4-PERF
+    title: Canvas performance wave — O(1) live extents, float-index zoom anchor, paint budget
+    status: done
+    pr: 994
+    depends_on: [P3-RENDERER-LIBRARY]
+  - id: P4-CADENCE-Q03
+    title: Presented-frame cadence instrument (PR 995) and Q03b per-input presentation latency + measured vsync (PR 998); official receipts rule the P03 flip gate
+    status: done
+    pr: 998
+    depends_on: [P4-PERF]
+  - id: P4-Q03C-PROTOCOL-V2
+    title: Q03b protocol v2 — wall-clock CDP wheel dispatch, harness rAF awake start, protocol-tagged receipt and INVALID rules (branch claude/ce-q03c-1013)
+    status: in_progress
+    depends_on: [P4-CADENCE-Q03]
+    next_action: >
+      Official v2 receipt taken once at 1b7ec6a6b (2026-10-14T07:11:40Z): VALID (zoom input_marks 60 = dispatch.scheduled 60, input_unpresented 0, dispatch_dev_max_ms 0.988 <= 2, heartbeat_mode through with leadin_presentations 0) and FAIL: mm zoom input_to_present p95 21.655 ms > 20 and p99 42.429 ms > 33.4 (runs p95 25.8 / 21.7 / 24.6, p99 42.8 / 42.4 / 38.9; median run 2 by pan p95); pan input_to_present p95 8.905 / p99 9.686 PASS. lwc comparator: runs 1-2 zoom p95 25.5 / 25.3, p99 42.6 / 35.7 (both fail the same budgets); run 3 aborted by a bench-harness navigation race ('Execution context was destroyed' in waitReady, bench/chart-engine.cadence.bench.ts:169), so that session wrote no lwc receipt file; the complete ledger-only lwc comparator taken at 2026-10-14T07:57:33Z (same head, port 3111, load1 17.98) failed in all three runs (zoom p95 26.2 / 24.8 / 25.6, p99 41.6 / 52.3 / 47.2; median receipt cadence-lwc-1b7ec6a6b5ed80f49db2b9d4353cadb98a3f79a8-m2studio.json, budget_ok false, not committed) - a ledger comparator, not a ruling input or a condition of the mm ruling receipt ->
+      FAIL recorded, hold stands. Merge the instrument via the explicit-base stack merge
+      (parent e206cd046) as PR 1027 with no receipt committed; do not re-run.
+  - id: P4-ACCEPTANCE-DARK-LAUNCH
+    title: Conformance corpus green on "mm", engine selector dark launch, production crops, rollback drill, acceptance-gap closure (PR 993) and census follow-ups (PR 997)
+    status: in_progress
+    pr: 993
+    depends_on: [P3B-BOUNDARY-CLOSURE]
+    next_action: >
+      After PR 999 merges bring PR 993 (GAPS: 31 ledger rows pinned, 4 defect fixes) current
+      with the user-token update-branch, then PR 997 (census follow-ups C01-A03) the same way,
+      deploying and live-proving each merged master; the rollback drill is the live P01-A03
+      row (engineProbe=refuse -> lwc) re-proven at every deploy. __P4_NEXT__
+  - id: P5-DEFAULT-FLIP
+    title: P03 — flip the default engine to "mm" (LWC stays selectable as the rollback for >= 1 release)
+    status: todo
+    depends_on: [P4-Q03C-PROTOCOL-V2, P4-ACCEPTANCE-DARK-LAUNCH]
+    next_action: >
+      HELD by DEC:CHART-ENGINE-Q03B-PROTOCOL-V2-WALL-CLOCK-INPUT until an mm zoom receipt
+      passes under protocol v2 (p95 <= 20 / p99 <= 33.4 ms over all 60 wheels). Branch
+      claude/ce-p03-1013 (9576169f9) carries the flip; the pan half is already lifted.
+      The v2 receipt FAILED (VALID (zoom input_marks 60 = dispatch.scheduled 60, input_unpresented 0, dispatch_dev_max_ms 0.988 <= 2, heartbeat_mode through with leadin_presentations 0) and FAIL: mm zoom input_to_present p95 21.655 ms > 20 and p99 42.429 ms > 33.4 (runs p95 25.8 / 21.7 / 24.6, p99 42.8 / 42.4 / 38.9; median run 2 by pan p95); pan input_to_present p95 8.905 / p99 9.686 PASS. lwc comparator: runs 1-2 zoom p95 25.5 / 25.3, p99 42.6 / 35.7 (both fail the same budgets); run 3 aborted by a bench-harness navigation race ('Execution context was destroyed' in waitReady, bench/chart-engine.cadence.bench.ts:169), so that session wrote no lwc receipt file; the complete ledger-only lwc comparator taken at 2026-10-14T07:57:33Z (same head, port 3111, load1 17.98) failed in all three runs (zoom p95 26.2 / 24.8 / 25.6, p99 41.6 / 52.3 / 47.2; median receipt cadence-lwc-1b7ec6a6b5ed80f49db2b9d4353cadb98a3f79a8-m2studio.json, budget_ok false, not committed) - a ledger comparator, not a ruling input or a condition of the mm ruling receipt), so the hold stands; the next legitimate
+      step is a prospective v3 decision with a new falsifiable diagnosis, not a re-measurement.
+  - id: P6-LWC-RETIREMENT
+    title: P04 — retire the lightweight-charts adapter and dependency
+    status: todo
+    depends_on: [P5-DEFAULT-FLIP]
+    next_action: >
+      Held at least one release behind the P03 flip; never before a production release has
+      run with mm as the default and the rollback row still proven.
 landmines:
   - >
-    Editing terminal/components/ChartPanel.tsx reds `npm test` until the six evidence crops
-    are recaptured; lanes therefore only ever run the chart-engine vitest subset.
+    Editing terminal/components/ChartPanel.tsx reds `npm test` until the three ChartPanel-locked
+    evidence packets (b_pl_6 batch-1, optionsLevelAxis, visualIntelligence) are recaptured on a
+    Mac; budget the recapture before every PR that touches ChartPanel.
   - >
-    Lanes never edit ChartPanel.tsx, lib/paneSync.ts or lib/chart-engine/index.ts; one
-    integration session is the single writer and lanes return PROPOSED_PATCHES instead.
+    ChartPanel.tsx, lib/paneSync.ts and lib/chart-engine/index.ts have one writer (the seat
+    session); lanes return PROPOSED_PATCHES for those three files instead of editing them.
   - >
     No `lightweight-charts` import may appear in lib/chart-engine/api.ts or lib/chart-engine/canvas/;
     the integration merge script refuses the lane otherwise.
+  - >
+    master is strictly protected (three CI contexts, strict: true) and raced by 20+ auto-merge
+    armed PRs from other sessions: every landing puts a waiting PR BEHIND, and the controller's
+    bot refresh deadlocks that PR's pull_request run as action_required until Terminal PR 989
+    lands. Bring seat PRs current one at a time with the user-token update-branch; approve or
+    re-run a held run only on your own head.
+  - >
+    claude/ce-q03c-1013 descends from PR 998's final branch head e206cd046 while master carries
+    998's squash; a natural merge or rebase re-conflicts on the bench, its test and bench.md.
+    Only the explicit-base plumbing stack merge (parent e206cd046) is correct.
+  - >
+    D10 and the v2 DEC bind the bench budgets, workload and protocol prospectively: a FAIL is
+    recorded and the hold stands, an INVALID run is repeated unread, and nothing is amended
+    after a result (no warm-up wheel, larger n, first-input exclusion, lwc-parity substitute,
+    or product-level rAF keep-awake).
+  - >
+    The official receipt needs load1 < 24 on the reference Mac (M2 Studio, 100 Hz panel,
+    dpr 2); other sessions routinely drive load1 to 50-150, so build ahead and start the bench
+    the moment the window opens, never by killing another session's process.
 do_not_redo:
   - >
     The 24 wave-1/2 lanes and the decor lane are merged and deterministically accepted
@@ -67,19 +138,37 @@ do_not_redo:
     The C02 contract widening forced typing fixes on the paneSync and conformance test fakes
     (Terminal commits ca17729c6 and 8fb010a91); extend those fakes when api.ts grows instead
     of rewriting them.
+  - >
+    Q03 is adjudicated, not open: the official presented-frame receipt at 453f92fb4 lifted the
+    PAN half; the ZOOM half rules only on the Q03b per-input latency metric. The official Q03b
+    v1 receipt at e206cd046 (mm zoom p95 20.562 / p99 37.175, lwc p99 38.407) FAILED and the
+    hold stands; protocol v2 (DEC:CHART-ENGINE-Q03B-PROTOCOL-V2-WALL-CLOCK-INPUT) is the only
+    sanctioned re-measurement and it is taken once.
+  - >
+    normalizeEngineOptions IS wired (canvas/index.ts:141 and :502); the 2026-10-12 "unwired
+    gate" gap was a misreading (census F-5). Do not open a lane to wire it.
+  - >
+    The PaneHandle identity question is ruled (migration2): a handle denotes ONE pane for its
+    lifetime, index() reports the pane's CURRENT slot after swapPanes/movePane, and the
+    disposal ladder mirrors LwcPaneHandle. Do not re-litigate it per adapter.
 artifacts:
   - docs/CHART_ENGINE_MASTERPLAN.md
   - docs/chart-engine/
+  - docs/chart-engine-completion/
   - terminal/lib/chart-engine/
+  - terminal/bench/chart-engine.cadence.bench.ts
 next_action: >
-  Terminal PR 969 (head f2b5d2c0a after the G01 ratchet allowlisted the master #929 type-only
-  LargeTradesOverlay import) is armed with merge-on-green and native auto-merge; once it merges,
-  open PR2 from claude/ce-integrate2-1012 (cc140a0b3) the same way and deploy each merged master
-  with the git-gated build. Wave 4 (2026-10-12) is already running as two Opus suborchestrators
-  over the m2 agent-pools fabric (OPUS-P1: PAINT/MODEL/LWCPRIM/ACCEPT2 lanes for review findings
-  F-01..F-16 plus the ACCEPT gaps, integrating on claude/ce-integrate3-1013; OPUS-MIG: M01->M02->M03
-  rebase, ?engine=mm opt-in selector and the six-crop recapture on claude/ce-migration-1013); do not
-  launch a parallel wave for the same findings - consume those two branches when they are pushed.
+  The official Q03b v2 receipt (2026-10-14T07:11:40Z, head 1b7ec6a6b, load1 19.71 before / 19.62 at run / 18.66 after) FAILED:
+  VALID (zoom input_marks 60 = dispatch.scheduled 60, input_unpresented 0, dispatch_dev_max_ms 0.988 <= 2, heartbeat_mode through with leadin_presentations 0) and FAIL: mm zoom input_to_present p95 21.655 ms > 20 and p99 42.429 ms > 33.4 (runs p95 25.8 / 21.7 / 24.6, p99 42.8 / 42.4 / 38.9; median run 2 by pan p95); pan input_to_present p95 8.905 / p99 9.686 PASS. lwc comparator: runs 1-2 zoom p95 25.5 / 25.3, p99 42.6 / 35.7 (both fail the same budgets); run 3 aborted by a bench-harness navigation race ('Execution context was destroyed' in waitReady, bench/chart-engine.cadence.bench.ts:169), so that session wrote no lwc receipt file; the complete ledger-only lwc comparator taken at 2026-10-14T07:57:33Z (same head, port 3111, load1 17.98) failed in all three runs (zoom p95 26.2 / 24.8 / 25.6, p99 41.6 / 52.3 / 47.2; median receipt cadence-lwc-1b7ec6a6b5ed80f49db2b9d4353cadb98a3f79a8-m2studio.json, budget_ok false, not committed) - a ledger comparator, not a ruling input or a condition of the mm ruling receipt. The zoom half of the P03 hold therefore stands and the P03 flip and
+  P04 retirement stay held; nothing in the protocol, budgets or workload may be amended after
+  this result. Ship what is proven: merge the Q03c protocol-v2 instrument (PR 1027, stack-merged
+  with parent e206cd046) so the bound protocol lives on master with the FAIL recorded in its
+  body and no receipt committed; land PR 993 (GAPS) and PR 997 (census follow-ups) in that
+  order, deploying and live-proving each merged master with --mm-expect mm --probe; close the
+  acceptance ledger on claude/ce-close-1013. The only legitimate next wave for the zoom half
+  is a prospective v3 decision with a new falsifiable diagnosis (stage breakdown of the first
+  wheel and of the per-frame mm zoom cost at equal phase), taken to the Chairman as a decision,
+  never a post-result exclusion.
 ---
 
 # Native Chart Engine
@@ -91,9 +180,40 @@ stays selectable as the rollback path throughout.
 
 Delivery runs as m2 agent-pools fabric lanes that each own a bounded package, commit to
 `claude/ce-<pkg>-<wave>`, prove a mutant falsifier RED→GREEN, and return a RESULT.md that the
-integration session digests before merging `--no-ff`. Waves 1-3 (2026-10-12, suffix `-1012`)
-ran under a two-hour Grok/GLM burn directive that the Chairman ended the same day; from wave 4
-(suffix `-1013`) routing follows the normal law: `pool plan` sizes every fan-out, operator-class
+integration session digests before merging. Waves 1-3 (2026-10-12, suffix `-1012`) ran under
+a two-hour Grok/GLM burn directive that the Chairman ended the same day; from wave 4 (suffix
+`-1013`) routing follows the normal law: `pool plan` sizes every fan-out, operator-class
 commissions go to grok-4.6/glm-5.3 operators that dispatch MiniMax/Qwen executors with
 qwen3.8-max review, and Opus suborchestrators (ROUTE: ORCHESTRATION) coordinate multi-lane
 commissions under the Fable seat, which keeps PR, merge, deploy and live verification.
+
+## Shipped 2026-10-13 to 2026-10-17 (each merged master deployed with the git-gated build and live-proven)
+
+| PR | Branch | What | Live |
+| --- | --- | --- | --- |
+| 969 | claude/ce-integrate-1012 | contract, canvas renderer library, workflows, conformance corpus | 04:04Z merge |
+| 992 | claude/ce-migration-1013 | ChartPanel M01-M03 migration, mount selector, F-13 guard | ce3, dpl 0e011e81c, 14:41Z |
+| 991 | claude/ce-integrate4-1013 | wave-4 P04 hardening F-01..F-16 + ACCEPT gaps | ce4, dpl 175ad49e8, 16:58Z |
+| 994 | claude/ce-perf-1013 | perf wave | ce5, dpl 2c16b32e6, 18:11Z |
+| 995 | claude/ce-cadence-1013 | Q03 presented-frame cadence instrument + F-4 canvas locale | ce6, dpl fdc7c7f96, 20:14Z |
+| 998 | claude/ce-cadence2-1013 | Q03b per-input presentation latency + measured vsync | ce7, dpl 34e390257, 21:10Z |
+| 999 | claude/ce-migration2-1013 | boundary closure, PaneHandle ruling, Q04 a11y proofs, forced-lwc fallback removed | ce8, dpl 9938c0cb0, 2026-10-17T07:57Z |
+
+Every live proof ran the four P01 rows (`engine=mm`, default, `engine=bogus`,
+`engine=mm&engineProbe=refuse`) against the served `data-dpl-id`; through PR 998 the mm row
+sits at the F-13 stage (mm created, guard mounts lwc with the F-13 warning) by design;
+from PR 999 (ce8) `?engine=mm` mounts the owned engine with no warning.
+
+## Acceptance state at close (2026-10-14)
+
+| Row | State | Evidence |
+| --- | --- | --- |
+| P01-A01 opt-in `?engine=mm` mounts the owned canvas engine | PROVEN at ce8 (dpl 9938c0cb0, 2026-10-17T07:57Z: impl=mm, no fallback warning) | live proof `--mm-expect mm --probe` at the ce8 deploy (P01-A01 impl=mm, no fallback warning) |
+| P01-A02a/b default and bogus `?engine=` stay on lwc, storage untouched | PROVEN at every deploy ce3..ce8 | live proof cases A02a/A02b, dpl read from the wire |
+| P01-A03 `engineProbe=refuse` → typed refusal → lwc | PROVEN at every deploy ce3..ce8 | live proof case A03 (trackingMode refusal wording) |
+| Q03 pan half (per-input presentation latency) | LIFTED | official Q03b v1 receipt at e206cd046: mm p95 9.138 / p99 9.639 |
+| Q03 zoom half | HELD. The official protocol-v2 receipt (2026-10-14T07:11:40Z, head 1b7ec6a6b, load1 19.71 before / 19.62 at run / 18.66 after) was VALID and FAILED: VALID (zoom input_marks 60 = dispatch.scheduled 60, input_unpresented 0, dispatch_dev_max_ms 0.988 <= 2, heartbeat_mode through with leadin_presentations 0) and FAIL: mm zoom input_to_present p95 21.655 ms > 20 and p99 42.429 ms > 33.4 (runs p95 25.8 / 21.7 / 24.6, p99 42.8 / 42.4 / 38.9; median run 2 by pan p95); pan input_to_present p95 8.905 / p99 9.686 PASS. lwc comparator: runs 1-2 zoom p95 25.5 / 25.3, p99 42.6 / 35.7 (both fail the same budgets); run 3 aborted by a bench-harness navigation race ('Execution context was destroyed' in waitReady, bench/chart-engine.cadence.bench.ts:169), so that session wrote no lwc receipt file; the complete ledger-only lwc comparator taken at 2026-10-14T07:57:33Z (same head, port 3111, load1 17.98) failed in all three runs (zoom p95 26.2 / 24.8 / 25.6, p99 41.6 / 52.3 / 47.2; median receipt cadence-lwc-1b7ec6a6b5ed80f49db2b9d4353cadb98a3f79a8-m2studio.json, budget_ok false, not committed) - a ledger comparator, not a ruling input or a condition of the mm ruling receipt. Per DEC:CHART-ENGINE-Q03B-PROTOCOL-V2-WALL-CLOCK-INPUT the hold stands, the result is recorded (a shared mm+lwc failure recorded as shared), budgets and workload do not move, and the protocol is not amended after the fact. P03 (default → mm) and P04 (LWC retirement) stay HELD; the Q03c PR ships the v2 instrument only, with no receipt committed. | official protocol-v2 receipt, seat, port 3111, head 1b7ec6a6b |
+| P03 default flip / P04 LWC retirement | HELD (gated on the zoom half) | branch `claude/ce-p03-1013` @ 9576169f9 held; P04 ≥ 1 release behind P03 |
+| Contract census C01-A01..A03 | ACCEPTED | 136-row ledger; F-5 corrected C01-A02 to PROVEN (5ef43528b) |
+
+Rollback is one flag: `?engine=lwc` / `mm.engine` storage, or the `resolveMountEngineImpl` default; the lwc adapter stays in the bundle until P4/P6 retire it.
