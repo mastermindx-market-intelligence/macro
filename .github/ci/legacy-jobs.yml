@@ -2632,6 +2632,7 @@ jobs:
       - "engine/narrative_crossmarket.py"
       - "engine/narrative_emergence.py"
       - "engine/narrative_rotation.py"
+      - "engine/short_volume.py"
       - "engine/neuralweb/__init__.py"
       - "engine/neuralweb/brief_context.py"
       - "engine/neuralweb/capability_broker.py"
@@ -5032,6 +5033,7 @@ jobs:
       - "engine/name_score.py"
       - "engine/name_score_grader.py"
       - "engine/narrative_rotation.py"
+      - "engine/short_volume.py"
       - "engine/neuralweb/envelope.py"
       - "engine/neuralweb/synapse.py"
       - "engine/ohlc_reconstruct.py"
@@ -5366,6 +5368,7 @@ jobs:
       - "engine/rri_shadow.py"
       - "engine/session_anchor.py"
       - "engine/setups.py"
+      - "engine/short_volume.py"
       - "engine/signal_archive.py"
       - "engine/signal_gate.py"
       - "engine/signal_quality.py"
@@ -11967,6 +11970,7 @@ jobs:
       - "engine/market_state.py"
       - "engine/name_score_grader.py"
       - "engine/narrative_rotation.py"
+      - "engine/short_volume.py"
       - "engine/neuralweb/__init__.py"
       - "engine/neuralweb/envelope.py"
       - "engine/neuralweb/synapse.py"
@@ -12552,6 +12556,7 @@ jobs:
       - engine/name_score_grader.py
       - engine/narrative_crossmarket.py
       - engine/narrative_rotation.py
+      - engine/short_volume.py
       - engine/neuralweb/__init__.py
       - engine/neuralweb/brief_context.py
       - engine/neuralweb/capability_broker.py
@@ -18928,6 +18933,7 @@ jobs:
       - engine/narrative_crossmarket.py
       - engine/narrative_emergence.py
       - engine/narrative_rotation.py
+      - engine/short_volume.py
       - engine/neuralweb/__init__.py
       - engine/neuralweb/brief_context.py
       - engine/neuralweb/capability_broker.py
@@ -27347,6 +27353,7 @@ jobs:
       - "engine/name_score_grader.py"
       - "engine/narrative_crossmarket.py"
       - "engine/narrative_rotation.py"
+      - "engine/short_volume.py"
       - "engine/neuralweb/__init__.py"
       - "engine/neuralweb/brief_context.py"
       - "engine/neuralweb/capability_broker.py"
