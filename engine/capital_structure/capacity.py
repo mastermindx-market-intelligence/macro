@@ -27,6 +27,23 @@ on shared pools this adapter models only for takedowns and ATM programmes, so
 the aggregate becomes a named unknown with no witness and no binding constraint
 rather than a number that silently ignores the consumption.
 
+C2x consumes the X0a transaction ledger as fact (SPEC_C2X): the additive
+``transactions=`` keyword on :func:`explain_capacity` carries a
+:class:`~engine.capital_structure.transactions.TransactionLedger` whose
+point-in-time usage rows replace, floor or block the A15 usage assumptions.  A
+KNOWN evidenced usage becomes the deduction itself, with provenance
+``transaction_observations``; an UNKNOWN usage whose floor is certified tightens
+the optimistic end of the bracket and refuses any assumption below that floor; a
+CONTRADICTED usage blocks its path.  A scenario resolution never overrides a fact
+and is never applied below an evidenced floor, and both refusals are recorded
+rather than raised, so a saved scenario survives the nightly arrival of new
+evidence.  Facts, assumptions and unknowns stay separately visible in ``inputs``.
+With no ledger nothing changes at all: the two new ``inputs`` keys are absent and
+every envelope, input and receipt is byte-identical, which is why the
+``IMPLEMENTATION`` adapter id is NOT bumped.  :func:`evaluate_capacity` keeps the
+three-parameter signature masterplan §9 freezes for it in ``INTERFACE_OWNERSHIP``,
+so the ledger arrives through :func:`explain_capacity`.
+
 Nothing here re-implements optimisation, rule text, the public-float test or the
 20% test; those are imported.  Arithmetic is exact (``Decimal``/``Fraction``)
 and floats are refused.  An unknown stays unknown -- never ``0``, never
@@ -79,6 +96,7 @@ from engine.capital_structure.issuer_state_contracts import (
     RouteBound,
     RulePack,
     Unknown,
+    UnknownResolution,
     WitnessAllocation,
     _record,
     sha256_of,
@@ -94,6 +112,7 @@ from engine.capital_structure.rule_applicability import (
     rule_status_as_of,
 )
 from engine.capital_structure.share_basis import AUTHORIZED_CAPITAL_KINDS, _available_instant
+from engine.capital_structure.transactions import TransactionLedger
 
 IMPLEMENTATION = "capital_structure.capacity.c2_adapter.v2+" + capacity_joint.IMPLEMENTATION
 
@@ -162,6 +181,40 @@ NON_CAPACITY_OWNERS: dict[str, str] = {
     "pipe": CAPACITY_UNMODELLED_OWNER,
 }
 
+#: SPEC_C2X §2: the two ledger usage-key classes capacity consumes, and the
+#: capacity unknown id each one resolves.  ``programme_usage:<P>:<programme_key>``
+#: is the third admitted shape; a ``shelf_usage`` row that carries a programme key
+#: is not one of the named forms and is never consumed.
+SHELF_USAGE_PREFIX = "shelf_usage"
+PROGRAMME_USAGE_PREFIX = "programme_usage"
+
+#: SPEC_C2X §2: the ONLY ledger Unknown that still certifies an evidenced floor.
+USAGE_HISTORY_INCOMPLETE_PREFIX = "usage_history_incomplete"
+
+#: SPEC_C2X §2: emitted when one path carries more than one programme usage row.
+MULTIPLE_PROGRAMMES_PREFIX = "programme_usage_multiple_programmes"
+
+#: SPEC_C2X §5: a contradicted usage row blocks its path.
+USAGE_CONTRADICTED_PREFIX = "usage_contradicted"
+
+#: SPEC_C2X §3/§6: the closed disposition vocabulary of one consumed ledger row.
+DISPOSITION_EVIDENCE = "evidence"
+DISPOSITION_SUPERSEDED_BY_FACT = "superseded_by_fact"
+DISPOSITION_UNRESOLVED_WITH_FLOOR = "unresolved_with_floor"
+DISPOSITION_APPLIED_ABOVE_FLOOR = "applied_above_floor"
+DISPOSITION_REFUSED_BELOW_FLOOR = "refused_below_evidenced_floor"
+DISPOSITION_NOT_CONSUMABLE = "evidence_not_consumable"
+DISPOSITION_CONTRADICTED = "contradicted_evidence"
+USAGE_DISPOSITIONS = (
+    DISPOSITION_EVIDENCE,
+    DISPOSITION_SUPERSEDED_BY_FACT,
+    DISPOSITION_UNRESOLVED_WITH_FLOOR,
+    DISPOSITION_APPLIED_ABOVE_FLOOR,
+    DISPOSITION_REFUSED_BELOW_FLOOR,
+    DISPOSITION_NOT_CONSUMABLE,
+    DISPOSITION_CONTRADICTED,
+)
+
 
 class CapacityInputError(ValueError):
     """A capacity input could not be read exactly as supplied."""
@@ -203,12 +256,21 @@ def explain_capacity(
     rules: RulePack,
     *,
     pack: rule_applicability.RuleApplicabilityPack | None = None,
+    transactions: TransactionLedger | None = None,
 ) -> CapacityEvaluation:
-    """As :func:`evaluate_capacity`, plus the digested inputs and kernel records."""
+    """As :func:`evaluate_capacity`, plus the digested inputs and kernel records.
+
+    ``transactions`` is the additive SPEC_C2X keyword: an X0a
+    :class:`~engine.capital_structure.transactions.TransactionLedger` at the same
+    ``as_of`` for the same issuer, whose usage rows capacity consumes as fact, as
+    an evidenced floor or as a contradiction.  ``evaluate_capacity`` keeps the
+    three-parameter signature ``INTERFACE_OWNERSHIP`` freezes for it, so a caller
+    that supplies a ledger reads ``explain_capacity(...).envelope``.
+    """
     if pack is None:
         pack = load_rule_applicability_pack()
     try:
-        return _Builder(state, scenario, rules, pack).run()
+        return _Builder(state, scenario, rules, pack, transactions).run()
     except CapacityInputError:
         raise
     except (ContractViolation, JointModelError, RuleApplicabilityError) as exc:
@@ -336,6 +398,20 @@ def _money_text(value: Fraction | None) -> str | None:
     if value is None:
         return None
     return _decimal_text(Decimal(value.numerator) / Decimal(value.denominator))
+
+
+def _quantity_fraction(body: Any) -> Fraction | None:
+    """Exact money ``Fraction`` for a KNOWN ledger ``Quantity`` record.
+
+    SPEC_C2X §0 item 4: an unknown, contradicted or withheld quantity yields
+    ``None`` -- never ``0`` and never the floor.  A float is refused rather than
+    converted, because :func:`_exact_decimal` accepts only ``Decimal`` instances
+    and exact decimal text.
+    """
+    if not isinstance(body, Mapping) or body.get("status") != "known":
+        return None
+    value = _exact_decimal(body.get("value"))
+    return None if value is None else Fraction(value)
 
 
 def _sequence(value: Any) -> tuple[Any, ...]:
@@ -636,6 +712,36 @@ class _NonCapacityAction:
 
 
 @dataclass(frozen=True)
+class _UsageEvidence:
+    """SPEC_C2X §6: one ledger usage row exactly as capacity consumed or refused it.
+
+    The row is the ledger's and is never rewritten; the disposition is capacity's.
+    Amounts stay exact ``Fraction`` money here and are rendered as decimal text in
+    ``inputs["transaction_usage"]``, so a fact, an assumption and an unknown stay
+    separately visible.
+    """
+
+    usage_key: str
+    status: str
+    usage: Fraction | None
+    evidenced_floor: Fraction | None
+    complete_through: str | None
+    disposition: str
+    resolution_assumed: Fraction | None
+
+    def as_record(self) -> dict[str, Any]:
+        return {
+            "usage_key": self.usage_key,
+            "status": self.status,
+            "usage": _money_text(self.usage),
+            "evidenced_floor": _money_text(self.evidenced_floor),
+            "complete_through": self.complete_through,
+            "disposition": self.disposition,
+            "resolution_assumed": _money_text(self.resolution_assumed),
+        }
+
+
+@dataclass(frozen=True)
 class _RoutePlan:
     route_id: str
     route_kind: str
@@ -653,6 +759,45 @@ def _unknown_bound(unit: str, note: str, share_basis: str | None = None) -> Quan
     return Quantity.unknown(unit, note=note)
 
 
+def _check_transactions(
+    state: CapitalState, transactions: TransactionLedger | None
+) -> TransactionLedger | None:
+    """SPEC_C2X §1: the four refusals on the additive ``transactions`` keyword.
+
+    A ledger is point-in-time, so neither a stale nor a lookahead one may be
+    joined.  Capacity reads ONE source of truth: when the state already carries a
+    ``supported``/``partial`` ``transactions`` family, its records must be the
+    ledger's records exactly.  Capacity never reads that family when the keyword
+    is ``None`` -- with no ledger nothing changes.
+    """
+    if transactions is None:
+        return None
+    if not isinstance(transactions, TransactionLedger):
+        raise CapacityInputError(
+            "transactions: a TransactionLedger from engine.capital_structure.transactions "
+            "is required"
+        )
+    if transactions.as_of != state.request.as_of:
+        raise CapacityInputError(
+            f"transactions.as_of {transactions.as_of!r} is not the state cutoff "
+            f"{state.request.as_of!r}; a ledger is point-in-time, so neither a stale "
+            "nor a lookahead ledger may be joined"
+        )
+    if transactions.issuer_id != state.request.issuer_id:
+        raise CapacityInputError(
+            f"transactions.issuer_id {transactions.issuer_id!r} is not the state issuer "
+            f"{state.request.issuer_id!r}"
+        )
+    family = state.family("transactions")
+    if family is not None and family.provenance.support in ("supported", "partial"):
+        if _record(family.records) != _record(transactions.family_state().records):
+            raise CapacityInputError(
+                "transactions: the state's transactions family carries different records "
+                "than the supplied ledger; capacity reads one source of truth"
+            )
+    return transactions
+
+
 class _Builder:
     """One ``explain_capacity`` call: read, resolve, solve twice, emit."""
 
@@ -662,6 +807,7 @@ class _Builder:
         scenario: FinancingScenario,
         rules: RulePack,
         pack: rule_applicability.RuleApplicabilityPack,
+        transactions: TransactionLedger | None = None,
     ) -> None:
         if not isinstance(state, CapitalState):
             raise CapacityInputError("state: a CapitalState is required")
@@ -671,6 +817,8 @@ class _Builder:
             raise CapacityInputError("rules: a RulePack is required")
         if not isinstance(pack, rule_applicability.RuleApplicabilityPack):
             raise CapacityInputError("pack: a RuleApplicabilityPack is required")
+        # SPEC_C2X §1: refused before anything is read, so no partial digest exists.
+        transactions = _check_transactions(state, transactions)
         cutoff = _utc(state.request.as_of)
         scenario_as_of = _utc(scenario.as_of)
         if cutoff is None or scenario_as_of is None or cutoff != scenario_as_of:
@@ -712,6 +860,20 @@ class _Builder:
         self.rule_unknown_by_id = {item.unknown_id: item for item in rule_unknowns}
         self.resolutions = {item.unknown_id: item for item in scenario.unknown_resolutions}
         self.assumptions = dict(scenario.other_assumptions)
+        self.transactions = transactions
+        #: SPEC_C2X §3: the effective resolution the ledger decides for a usage key
+        #: -- an evidenced fact, or ``None`` when the scenario assumption was
+        #: refused below an evidenced floor or the row contradicted.  A key absent
+        #: here is decided by the scenario exactly as before C2x.
+        self.fact_resolutions: dict[str, UnknownResolution | None] = {}
+        #: SPEC_C2X §4: certified evidenced floors, per capacity usage key.
+        self.usage_floors: dict[str, Fraction] = {}
+        #: SPEC_C2X §5: path_id -> the note naming the X0 reason codes.
+        self.contradicted_usage: dict[str, str] = {}
+        #: SPEC_C2X §4: the ledger's own resolving fact for a floored shelf key.
+        self.usage_resolving_facts: dict[str, str] = {}
+        #: SPEC_C2X §6: every row consumed or refused, sorted by usage_key.
+        self.usage_evidence: tuple[_UsageEvidence, ...] = ()
         self.unknowns: list[Unknown] = []
         self.blockers: list[str] = []
         self.absent_rules: set[str] = set()
@@ -769,6 +931,9 @@ class _Builder:
                 raise CapacityInputError(f"registration path {path.path_id!r} appears more than once")
             seen.add(path.path_id)
         self._price_view()
+        # SPEC_C2X §3: the effective resolution per usage key is decided BEFORE
+        # _registered_pools runs, so every downstream line runs unchanged.
+        self._digest_transaction_usage()
         if not self.paths:
             self.unknowns.append(
                 _unknown(
@@ -947,7 +1112,20 @@ class _Builder:
         )
 
     def _resolution(self, unknown_id: str) -> Any:
-        """One supplied A15/baby-shelf resolution, or ``None`` when not supplied."""
+        """One supplied A15/baby-shelf resolution, or ``None`` when not supplied.
+
+        SPEC_C2X §3: a usage key the transaction ledger decided returns the
+        ledger's effective resolution instead -- an evidenced fact carrying
+        ``transaction_observations`` provenance, or ``None`` when the scenario
+        assumption was refused below an evidenced floor or the row contradicted.
+        With no ledger ``fact_resolutions`` is empty and this is the C2a line.
+        """
+        if unknown_id in self.fact_resolutions:
+            return self.fact_resolutions[unknown_id]
+        return self._scenario_resolution(unknown_id)
+
+    def _scenario_resolution(self, unknown_id: str) -> Any:
+        """The scenario's own resolution of one unknown, validated; ``None`` if absent."""
         resolution = self.resolutions.get(unknown_id)
         if resolution is None:
             return None
@@ -958,6 +1136,267 @@ class _Builder:
                 f"got unit {assumed.unit!r} status {assumed.status!r}"
             )
         return resolution
+
+    # -- SPEC_C2X §2-§5: consuming the transaction ledger's usage rows ------
+
+    def _digest_transaction_usage(self) -> None:
+        """Decide one effective resolution per usage key, before any pool is built.
+
+        Only rows whose ``usage_key`` names an ELIGIBLE path of this state are
+        read (§2).  A row capacity may not consume under the stated rule is
+        reported in ``inputs["transaction_usage"]`` and then ignored, so the path
+        behaves exactly as it did before C2x -- evidence that cannot be consumed
+        is never used.
+        """
+        if self.transactions is None:
+            return
+        eligible = {
+            path.path_id for path in self.paths if path.classification != "ineligible"
+        }
+        shelf: dict[str, list[Mapping[str, Any]]] = {}
+        programme: dict[str, list[Mapping[str, Any]]] = {}
+        for row in self.transactions.usage:
+            usage_key = row.get("usage_key")
+            if not isinstance(usage_key, str):
+                continue
+            if usage_key.startswith(f"{SHELF_USAGE_PREFIX}:"):
+                path_id = usage_key[len(SHELF_USAGE_PREFIX) + 1:]
+                if path_id in eligible:
+                    shelf.setdefault(path_id, []).append(row)
+                continue
+            if usage_key.startswith(f"{PROGRAMME_USAGE_PREFIX}:"):
+                rest = usage_key[len(PROGRAMME_USAGE_PREFIX) + 1:]
+                named = [
+                    item for item in eligible if rest == item or rest.startswith(f"{item}:")
+                ]
+                if named:
+                    programme.setdefault(max(named, key=len), []).append(row)
+        entries: list[_UsageEvidence] = []
+        for path_id in sorted(set(shelf) | set(programme)):
+            capacity_key = f"{SHELF_USAGE_PREFIX}:{path_id}"
+            for row in shelf.get(path_id, ()):
+                entries.append(self._consume_usage_row(row, capacity_key, path_id))
+            rows = programme.get(path_id, ())
+            if len(rows) > 1:
+                # §2: capacity cannot tell which programme the reservation names, so
+                # it consumes NONE of them and says what would resolve it.
+                self.unknowns.append(
+                    _unknown(
+                        f"{MULTIPLE_PROGRAMMES_PREFIX}:{path_id}",
+                        f"{len(rows)} at-the-market programme usage rows are reconciled under "
+                        f"{path_id}, so none of them states the programme usage",
+                        f"which at-the-market programme the reservation under {path_id} "
+                        "refers to",
+                        (f"{PROGRAMME_USAGE_PREFIX}:{path_id}", path_id),
+                    )
+                )
+                capacity_key = f"{PROGRAMME_USAGE_PREFIX}:{path_id}"
+                for row in rows:
+                    entries.append(self._usage_entry(row, capacity_key, DISPOSITION_NOT_CONSUMABLE))
+            elif rows:
+                entries.append(
+                    self._consume_usage_row(
+                        rows[0], f"{PROGRAMME_USAGE_PREFIX}:{path_id}", path_id
+                    )
+                )
+        self.usage_evidence = tuple(sorted(entries, key=lambda item: item.usage_key))
+
+    def _usage_entry(
+        self, row: Mapping[str, Any], capacity_key: str, disposition: str
+    ) -> _UsageEvidence:
+        """The §6 ``inputs`` entry for one row, carrying capacity's disposition."""
+        supplied = self._scenario_resolution(capacity_key)
+        return _UsageEvidence(
+            usage_key=str(row.get("usage_key")),
+            status=str(row.get("status")),
+            usage=_quantity_fraction(row.get("usage")),
+            evidenced_floor=_quantity_fraction(row.get("evidenced_floor")),
+            complete_through=_text(row.get("complete_through")),
+            disposition=disposition,
+            resolution_assumed=(
+                None if supplied is None else Fraction(supplied.assumed.decimal)
+            ),
+        )
+
+    def _consume_usage_row(
+        self, row: Mapping[str, Any], capacity_key: str, path_id: str
+    ) -> _UsageEvidence:
+        """§3: the disposition table for one ledger row against one scenario resolution."""
+        usage_key = str(row.get("usage_key"))
+        status = str(row.get("status"))
+        supplied = self._scenario_resolution(capacity_key)
+        assumed = None if supplied is None else Fraction(supplied.assumed.decimal)
+        amount = _quantity_fraction(row.get("usage"))
+        floor = _quantity_fraction(row.get("evidenced_floor"))
+        if status == "contradicted":
+            # §5: the path is blocked and the scenario resolution is ignored, never
+            # applied.  Recorded, never raised.
+            self.fact_resolutions[capacity_key] = None
+            self.contradicted_usage[path_id] = self._contradiction_note(usage_key)
+            self.blockers.append(f"{USAGE_CONTRADICTED_PREFIX}:{usage_key}")
+            disposition = DISPOSITION_CONTRADICTED
+        elif status == "known" and amount is not None:
+            # §0 item 2: a KNOWN evidenced usage replaces the scenario resolution.
+            self.fact_resolutions[capacity_key] = self._fact_resolution(
+                capacity_key, usage_key, row, amount
+            )
+            disposition = (
+                DISPOSITION_SUPERSEDED_BY_FACT if supplied is not None else DISPOSITION_EVIDENCE
+            )
+        elif status == "unknown" and floor is not None and self._floor_is_certified(row, path_id):
+            if supplied is None:
+                disposition = DISPOSITION_UNRESOLVED_WITH_FLOOR
+            elif assumed is not None and assumed >= floor:
+                # Applied exactly as today: nothing is registered, so _resolution
+                # returns the scenario resolution untouched.
+                disposition = DISPOSITION_APPLIED_ABOVE_FLOOR
+            else:
+                # §0 item 3: never applied below an evidenced floor, and recorded
+                # rather than raised so a saved scenario survives new evidence.
+                self.fact_resolutions[capacity_key] = None
+                disposition = DISPOSITION_REFUSED_BELOW_FLOOR
+            if disposition != DISPOSITION_APPLIED_ABOVE_FLOOR:
+                self.usage_floors[capacity_key] = floor
+                self._note_resolving_fact(capacity_key, usage_key)
+        else:
+            # §2: an uncertified floor (a share-denominated amount, an
+            # unapportionable overlap) is reported and then not used at all.
+            disposition = DISPOSITION_NOT_CONSUMABLE
+        return _UsageEvidence(
+            usage_key=usage_key,
+            status=status,
+            usage=amount,
+            evidenced_floor=floor,
+            complete_through=_text(row.get("complete_through")),
+            disposition=disposition,
+            resolution_assumed=assumed,
+        )
+
+    def _floor_is_certified(self, row: Mapping[str, Any], path_id: str) -> bool:
+        """§2: certified only when ``usage_history_incomplete`` is the WHOLE reason.
+
+        Any other Unknown naming this usage_key, its path or one of its
+        contributors -- ``usage_amount_unknown:``, an unapportionable overlap --
+        leaves the row unconsumable, because then the floor is not a bound on the
+        usage capacity is about to deduct.
+        """
+        assert self.transactions is not None
+        expected = f"{USAGE_HISTORY_INCOMPLETE_PREFIX}:{row.get('usage_key')}"
+        naming = {
+            item.unknown_id
+            for item in self.transactions.unknowns
+            if self._unknown_names_usage(item, row, path_id)
+        }
+        return naming == {expected}
+
+    @staticmethod
+    def _unknown_names_usage(
+        unknown: Unknown, row: Mapping[str, Any], path_id: str
+    ) -> bool:
+        """Whether one ledger Unknown names this usage_key, its path or its contributors."""
+        names = {str(row.get("usage_key")), path_id}
+        names.update(
+            str(item.get("transaction_id"))
+            for item in _sequence(row.get("contributors"))
+            if isinstance(item, Mapping) and item.get("transaction_id")
+        )
+        names.discard("")
+        affects = tuple(unknown.affects)
+        return any(name in unknown.unknown_id or name in affects for name in names)
+
+    def _note_resolving_fact(self, capacity_key: str, usage_key: str) -> None:
+        """§4: the floored shelf Unknown names the missing history the ledger names.
+
+        X0a already computed it -- "424B final pricing supplements after
+        ``complete_through``" or since inception -- so capacity quotes the
+        ledger's own resolving fact rather than inventing one.
+        """
+        assert self.transactions is not None
+        expected = f"{USAGE_HISTORY_INCOMPLETE_PREFIX}:{usage_key}"
+        for item in self.transactions.unknowns:
+            if item.unknown_id == expected and item.resolving_fact:
+                self.usage_resolving_facts[capacity_key] = item.resolving_fact
+                return
+
+    def _contradiction_note(self, usage_key: str) -> str:
+        """§5: a contradicted bound note naming the X0 reason codes for this key."""
+        assert self.transactions is not None
+        codes: set[str] = set()
+        for item in self.transactions.unknowns:
+            if usage_key in item.unknown_id or usage_key in tuple(item.affects):
+                codes.add(item.unknown_id)
+        codes.update(
+            limit
+            for limit in self.transactions.support_limits()
+            if limit == f"contradicted:{usage_key}"
+        )
+        for row in self.transactions.usage:
+            if row.get("usage_key") != usage_key:
+                continue
+            for field in ("usage", "evidenced_floor"):
+                body = row.get(field)
+                note = _text(body.get("note")) if isinstance(body, Mapping) else None
+                if note:
+                    codes.update(part.strip() for part in note.split(";") if part.strip())
+        joined = ", ".join(sorted(codes))
+        return (
+            f"the transaction ledger contradicts the usage under {usage_key}"
+            + (f": {joined}" if joined else "")
+        )
+
+    def _fact_resolution(
+        self,
+        capacity_key: str,
+        usage_key: str,
+        row: Mapping[str, Any],
+        amount: Fraction,
+    ) -> UnknownResolution:
+        """§3: an internal resolution carrying the evidenced amount AS A FACT.
+
+        The provenance cites exactly the contributing transactions X0a reconciled
+        -- their latest ``available_at`` and the evidence refs they expose.  A ref
+        is never fabricated: when the ledger exposes none, provenance is ``None``
+        and the applicability string names the key and the ledger receipt digest.
+        """
+        assert self.transactions is not None
+        digest = self.transactions.receipt.input_digest
+        contributors = {
+            str(item.get("transaction_id"))
+            for item in _sequence(row.get("contributors"))
+            if isinstance(item, Mapping) and item.get("transaction_id")
+        }
+        sources = [
+            item
+            for item in self.transactions.transactions
+            if str(item.get("transaction_id")) in contributors
+        ]
+        stamps = sorted(
+            stamp
+            for stamp in (_text(item.get("available_at")) for item in sources)
+            if stamp is not None
+        )
+        refs = _unique_refs([ref for item in sources for ref in _span_refs(item.get("evidence"))])
+        provenance = (
+            Provenance(
+                "transaction_observations",
+                available_at=stamps[-1] if stamps else None,
+                evidence=refs,
+            )
+            if (stamps or refs)
+            else None
+        )
+        applicability = (
+            f"transaction-evidenced usage reconciled under {usage_key}"
+            if provenance is not None
+            else f"usage {usage_key} stated by transaction ledger receipt {digest}"
+        )
+        return UnknownResolution(
+            capacity_key,
+            Quantity.known(
+                _money_text(amount), "usd", applicability=applicability, provenance=provenance
+            ),
+            f"transaction ledger receipt {digest} states {usage_key} as fact",
+        )
 
     def _route_ids(self, path: _ShelfPath) -> tuple[str, ...]:
         if path.classification == "ineligible":
@@ -1118,9 +1557,16 @@ class _Builder:
         bound in the result means "leave the caller's bound alone".  ``P`` is never
         zero when it is unresolved: the pessimistic branch substitutes ``P = S``
         (nothing left to sell) and the optimistic branch ``P = 0``.
+
+        SPEC_C2X §4: a CERTIFIED evidenced floor ``F`` replaces that optimistic
+        ``P = 0`` with ``P = F``, so ``atm_limit`` becomes ``S - F`` and the pool
+        bound ``remaining - F``, while the pessimistic branch is unchanged.  The
+        key stays unresolved and ``F`` is never read as the usage.  ``F > S`` is
+        the resolved overrun: a blocker and a contradicted at-the-market limit.
         """
         atm_id = f"at_the_market:{path_id}"
         reserved_fraction = Fraction(reserved)
+        floor = self.usage_floors.get(f"{PROGRAMME_USAGE_PREFIX}:{path_id}")
         if programme is None:
             self.unknowns.append(
                 _unknown(
@@ -1132,11 +1578,31 @@ class _Builder:
                     (atm_id, path_id, pool_id),
                 )
             )
-            atm_limit = _unknown_bound(
-                "usd",
-                f"the programme usage under {path_id} is unresolved, so the at-the-market limit "
-                "S-P is not known; it is never zero and never the whole reservation",
-            )
+            optimistic_usage = Fraction(0) if floor is None else floor
+            if floor is not None and floor > reserved_fraction:
+                blockers.append(f"programme_usage_exceeds_reservation:{path_id}")
+                atm_limit = Quantity(
+                    unit="usd",
+                    status="contradicted",
+                    note=(
+                        f"the evidenced floor on the gross dollars sold under the at-the-market "
+                        f"programme exceeds the reservation under {path_id} by "
+                        f"{_money_text(floor - reserved_fraction)}"
+                    ),
+                )
+            elif floor is None:
+                atm_limit = _unknown_bound(
+                    "usd",
+                    f"the programme usage under {path_id} is unresolved, so the at-the-market "
+                    "limit S-P is not known; it is never zero and never the whole reservation",
+                )
+            else:
+                atm_limit = _unknown_bound(
+                    "usd",
+                    f"the programme usage under {path_id} is unresolved but is at least "
+                    f"{_money_text(floor)}, so the at-the-market limit S-P is not known; it is "
+                    "never zero and never the whole reservation less the evidenced floor",
+                )
             bound = (
                 None
                 if remaining is None
@@ -1152,14 +1618,23 @@ class _Builder:
                 status="unresolved",
                 value=None,
                 pessimistic=reserved_fraction,
-                optimistic=Fraction(0),
-                atm_limit={"pessimistic": Fraction(0), "optimistic": reserved_fraction},
+                optimistic=optimistic_usage,
+                atm_limit=(
+                    # A floor above the reservation contradicts the programme, so no
+                    # branch substitute is offered for it: unknown, never a number.
+                    {}
+                    if floor is not None and floor > reserved_fraction
+                    else {
+                        "pessimistic": Fraction(0),
+                        "optimistic": reserved_fraction - optimistic_usage,
+                    }
+                ),
                 pool_bound=(
                     {}
-                    if remaining is None
+                    if remaining is None or (floor is not None and floor > reserved_fraction)
                     else {
                         "pessimistic": Fraction(remaining) - reserved_fraction,
-                        "optimistic": Fraction(remaining),
+                        "optimistic": Fraction(remaining) - optimistic_usage,
                     }
                 ),
             )
@@ -1284,11 +1759,18 @@ class _Builder:
                     reasons.append("the gross registered amount")
                 if usage is None:
                     reasons.append("completed takedowns excluding programme sales")
+                    shelf_key = f"{SHELF_USAGE_PREFIX}:{path_id}"
                     self.unknowns.append(
                         _unknown(
-                            f"shelf_usage:{path_id}",
+                            shelf_key,
                             f"the amount already taken down under {path_id} is not known",
-                            f"the 424B/8-K takedown history of {path_id} through {self.sale_iso}",
+                            # SPEC_C2X §4: a certified floor names the missing 424B
+                            # history after the ledger's own completeness date.
+                            self.usage_resolving_facts.get(
+                                shelf_key,
+                                f"the 424B/8-K takedown history of {path_id} through "
+                                f"{self.sale_iso}",
+                            ),
                             (path_id,),
                         )
                     )
@@ -1308,6 +1790,39 @@ class _Builder:
                     f"{path_id} is not known: {' and '.join(reasons) or 'a deduction'} "
                     "is unresolved; the gross registered amount is a ceiling substitute only",
                 )
+            if path_id in self.contradicted_usage:
+                # SPEC_C2X §5: a contradicted usage row blocks the path.  The bound
+                # names the X0 reason codes, and the existing contradicted-bound
+                # rule below drops the ceiling substitute -- no route under this
+                # path is feasible.
+                bound = Quantity(
+                    unit="usd", status="contradicted", note=self.contradicted_usage[path_id]
+                )
+            else:
+                shelf_floor = self.usage_floors.get(f"{SHELF_USAGE_PREFIX}:{path_id}")
+                if shelf_floor is not None and fee.gross is not None:
+                    # SPEC_C2X §4: the evidenced floor replaces 0 in the ceiling
+                    # substitute.  The bound itself stays unknown -- a floor is
+                    # never read as the usage, and never as zero.
+                    reserved = (
+                        Fraction(continuing.assumed.decimal)
+                        if continuing is not None
+                        else Fraction(0)
+                    )
+                    net = fee.gross - shelf_floor - reserved
+                    if net < 0:
+                        bound = Quantity(
+                            unit="usd",
+                            status="contradicted",
+                            note=(
+                                f"the evidenced floor on completed takedowns and the "
+                                f"continuing-offering reservation exceed the gross registered "
+                                f"amount under {path_id} by {_money_text(-net)}"
+                            ),
+                        )
+                        blockers.append(f"registered_overrun:{path_id}")
+                    else:
+                        substitute = net
             takedown_limit = bound
             atm_limit: Quantity | None = None
             has_atm = False
@@ -3266,6 +3781,19 @@ class _Builder:
                 if self.unmodelled_consumption
                 else {}
             ),
+            **(
+                {
+                    "transaction_ledger": {
+                        "issuer_id": self.transactions.issuer_id,
+                        "as_of": self.transactions.as_of,
+                        "input_digest": self.transactions.receipt.input_digest,
+                        "rule_digest": self.transactions.receipt.rule_digest,
+                    },
+                    "transaction_usage": [item.as_record() for item in self.usage_evidence],
+                }
+                if self.transactions is not None
+                else {}
+            ),
             "remaining_capacity": self._remaining_record(),
             "registration_paths": path_records,
             "baby_shelf": self.baby_shelf_inputs,
@@ -3356,15 +3884,21 @@ __all__ = [
     "DOCUMENT_TERM_SCHEMA",
     "FEE_TABLE_TERM_NAME",
     "IMPLEMENTATION",
+    "MULTIPLE_PROGRAMMES_PREFIX",
     "NASDAQ_OFFERING_ASSUMPTIONS",
     "NASDAQ_RULE_ID",
     "NON_CAPACITY_OWNERS",
+    "PROGRAMME_USAGE_PREFIX",
     "REGISTRATION_PATH_SCHEMA",
     "REFERENCE_PACK_MANIFEST_ID",
     "ROUTE_EXCLUSIVITY_KEY",
     "SHARE_BASIS_RESULT_SCHEMA",
     "SHARE_COUNT_SCHEMAS",
     "SHELF_FAMILIES",
+    "SHELF_USAGE_PREFIX",
+    "USAGE_CONTRADICTED_PREFIX",
+    "USAGE_DISPOSITIONS",
+    "USAGE_HISTORY_INCOMPLETE_PREFIX",
     "bind_funding_schedule",
     "evaluate_capacity",
     "explain_capacity",

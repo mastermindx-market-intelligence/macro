@@ -1,8 +1,8 @@
 {
   "schema": "altdata.by_ticker.v2",
-  "as_of": "2026-10-16",
-  "generated_utc": "2026-10-16T18:04:51.269682+00:00",
-  "n_tickers": 2919,
+  "as_of": "2026-10-17",
+  "generated_utc": "2026-10-17T20:14:16.114284+00:00",
+  "n_tickers": 2940,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
   "note": "Per-ticker weighted alt-data rollup. convergence_score = distinct independent channels (count); weighted_score ranks by channel quality. Donors / position-size recorded as context, never a voting channel.",
@@ -16,7 +16,7 @@
       "weighted_score": 0.65,
       "congress_net": 22,
       "congress_members": 1,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 10.3,
       "convergence_score": 2,
@@ -31,7 +31,7 @@
       "weighted_score": 0.45,
       "congress_net": 16,
       "congress_members": 1,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": -87.5,
       "convergence_score": 1,
@@ -47,7 +47,7 @@
       "weighted_score": 0.65,
       "congress_net": 14,
       "congress_members": 1,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 5.2,
       "convergence_score": 2,
@@ -65,7 +65,7 @@
       "congress_net": 8,
       "congress_members": 1,
       "insider_mspr": 100.0,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 4.0,
       "convergence_score": 3,
@@ -82,7 +82,7 @@
       "weighted_score": 1.35,
       "congress_net": 6,
       "congress_members": 2,
-      "days_to_earnings": 21,
+      "days_to_earnings": 20,
       "next_earnings": "2026-11-06",
       "congress_position_usd": 117226500.0,
       "convergence_score": 3,
@@ -98,7 +98,7 @@
       "weighted_score": 0.65,
       "congress_net": 6,
       "congress_members": 1,
-      "days_to_earnings": 17,
+      "days_to_earnings": 16,
       "next_earnings": "2026-11-02",
       "earnings_surprise_pct": 5.9,
       "news_bull_ratio": 0.84,
@@ -169,7 +169,7 @@
       "weighted_score": 0.45,
       "congress_net": 4,
       "congress_members": 1,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 100.0,
       "convergence_score": 1,
@@ -184,7 +184,7 @@
       "weighted_score": 0.45,
       "congress_net": 4,
       "congress_members": 1,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 165.2,
       "convergence_score": 1,
@@ -212,7 +212,7 @@
       "weighted_score": 0.45,
       "congress_net": 4,
       "congress_members": 1,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 19.6,
       "convergence_score": 1,
@@ -231,21 +231,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "MSI": {
-      "ticker": "MSI",
-      "channels": [
-        "gov_contract_accel"
-      ],
-      "weighted_score": 0.9,
-      "gov_contract_usd_30d": 166520236.0,
-      "gov_contract_accel": 62.28,
-      "days_to_earnings": 13,
-      "next_earnings": "2026-10-29",
-      "earnings_surprise_pct": 14.6,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "IBM": {
       "ticker": "IBM",
       "channels": [
@@ -256,12 +241,12 @@
         "patent_cluster"
       ],
       "weighted_score": 2.5,
-      "gov_contract_usd_30d": 135355963.0,
-      "gov_contract_accel": 23.76,
+      "gov_contract_usd_30d": 135339184.0,
+      "gov_contract_accel": 23.69,
       "patents": 823,
       "hf_downloads_30d": 11730627.0,
       "insider_mspr": 100.0,
-      "days_to_earnings": 5,
+      "days_to_earnings": 4,
       "next_earnings": "2026-10-21",
       "earnings_surprise_pct": 0.0,
       "github_stars": 7887,
@@ -273,12 +258,12 @@
     "GD": {
       "ticker": "GD",
       "channels": [
-        "gov_contract"
+        "gov_contract_accel"
       ],
-      "weighted_score": 0.45,
-      "gov_contract_usd_30d": 106582733.0,
-      "gov_contract_accel": 1.88,
-      "days_to_earnings": 7,
+      "weighted_score": 0.9,
+      "gov_contract_usd_30d": 103417460.0,
+      "gov_contract_accel": 2.09,
+      "days_to_earnings": 6,
       "next_earnings": "2026-10-23",
       "earnings_surprise_pct": 7.3,
       "donor_usd": 189000.0,
@@ -292,9 +277,9 @@
         "gov_contract"
       ],
       "weighted_score": 0.45,
-      "gov_contract_usd_30d": 82516548.0,
+      "gov_contract_usd_30d": 82450751.0,
       "gov_contract_accel": 0.84,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 56.7,
       "convergence_score": 1,
@@ -308,9 +293,9 @@
         "special_situation"
       ],
       "weighted_score": 0.65,
-      "gov_contract_usd_30d": 76251543.0,
-      "gov_contract_accel": 1.36,
-      "days_to_earnings": 7,
+      "gov_contract_usd_30d": 75929428.0,
+      "gov_contract_accel": 1.35,
+      "days_to_earnings": 6,
       "next_earnings": "2026-10-23",
       "earnings_surprise_pct": 21.5,
       "convergence_score": 2,
@@ -326,9 +311,9 @@
       ],
       "weighted_score": 1.55,
       "gov_contract_usd_30d": 69226598.0,
-      "gov_contract_accel": 2.49,
+      "gov_contract_accel": 2.53,
       "wsb_mentions": 91,
-      "days_to_earnings": 17,
+      "days_to_earnings": 16,
       "next_earnings": "2026-11-02",
       "earnings_surprise_pct": 10.7,
       "github_stars": 22136,
@@ -343,7 +328,7 @@
       ],
       "weighted_score": 0.45,
       "gov_contract_usd_30d": 66506794.0,
-      "gov_contract_accel": 0.28,
+      "gov_contract_accel": 0.95,
       "congress_position_usd": 110530500.0,
       "convergence_score": 1,
       "trump_linked": false,
@@ -355,28 +340,12 @@
         "gov_contract_accel"
       ],
       "weighted_score": 0.9,
-      "gov_contract_usd_30d": 54203977.0,
-      "gov_contract_accel": 6.8,
-      "days_to_earnings": 4,
+      "gov_contract_usd_30d": 54024704.0,
+      "gov_contract_accel": 11.14,
+      "days_to_earnings": 3,
       "next_earnings": "2026-10-20",
       "earnings_surprise_pct": 14.1,
       "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "GEO": {
-      "ticker": "GEO",
-      "channels": [
-        "gov_contract_accel",
-        "special_situation"
-      ],
-      "weighted_score": 1.1,
-      "gov_contract_usd_30d": 53590841.0,
-      "gov_contract_accel": 3.27,
-      "days_to_earnings": 20,
-      "next_earnings": "2026-11-05",
-      "earnings_surprise_pct": 32.1,
-      "convergence_score": 2,
       "trump_linked": false,
       "affiliated": false
     },
@@ -392,46 +361,32 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "DELL": {
-      "ticker": "DELL",
+    "MSI": {
+      "ticker": "MSI",
       "channels": [
-        "activist_13d",
         "gov_contract"
       ],
-      "weighted_score": 0.65,
-      "gov_contract_usd_30d": 32476463.0,
-      "gov_contract_accel": 0.91,
-      "donor_usd": 120500.0,
-      "convergence_score": 2,
+      "weighted_score": 0.45,
+      "gov_contract_usd_30d": 26827420.0,
+      "gov_contract_accel": 0.19,
+      "days_to_earnings": 12,
+      "next_earnings": "2026-10-29",
+      "earnings_surprise_pct": 14.6,
+      "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
     },
     "AXON": {
       "ticker": "AXON",
       "channels": [
-        "gov_contract"
+        "gov_contract_accel"
       ],
-      "weighted_score": 0.45,
-      "gov_contract_usd_30d": 26426891.0,
-      "gov_contract_accel": 1.63,
-      "days_to_earnings": 18,
+      "weighted_score": 0.9,
+      "gov_contract_usd_30d": 26133862.0,
+      "gov_contract_accel": 3.82,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 90.0,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "CDW": {
-      "ticker": "CDW",
-      "channels": [
-        "gov_contract"
-      ],
-      "weighted_score": 0.45,
-      "gov_contract_usd_30d": 21493523.0,
-      "gov_contract_accel": 0.45,
-      "days_to_earnings": 18,
-      "next_earnings": "2026-11-03",
-      "earnings_surprise_pct": 2.6,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
@@ -439,12 +394,12 @@
     "ACM": {
       "ticker": "ACM",
       "channels": [
-        "gov_contract",
+        "gov_contract_accel",
         "special_situation"
       ],
-      "weighted_score": 0.65,
-      "gov_contract_usd_30d": 18816466.0,
-      "gov_contract_accel": 1.68,
+      "weighted_score": 1.1,
+      "gov_contract_usd_30d": 18611405.0,
+      "gov_contract_accel": 3.33,
       "convergence_score": 2,
       "trump_linked": false,
       "affiliated": false
@@ -461,6 +416,49 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "A": {
+      "ticker": "A",
+      "channels": [
+        "gov_contract_accel",
+        "news_sentiment",
+        "special_situation"
+      ],
+      "weighted_score": 1.3,
+      "gov_contract_usd_30d": 17496297.0,
+      "gov_contract_accel": 2.21,
+      "news_bull_ratio": 0.9,
+      "congress_position_usd": 219201000.0,
+      "convergence_score": 3,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "CDW": {
+      "ticker": "CDW",
+      "channels": [
+        "gov_contract"
+      ],
+      "weighted_score": 0.45,
+      "gov_contract_usd_30d": 15288437.0,
+      "gov_contract_accel": 0.33,
+      "days_to_earnings": 17,
+      "next_earnings": "2026-11-03",
+      "earnings_surprise_pct": 2.6,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "MMS": {
+      "ticker": "MMS",
+      "channels": [
+        "gov_contract_accel"
+      ],
+      "weighted_score": 0.9,
+      "gov_contract_usd_30d": 14451520.0,
+      "gov_contract_accel": 6.0,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "RIVN": {
       "ticker": "RIVN",
       "channels": [
@@ -469,7 +467,7 @@
       "weighted_score": 0.5,
       "gov_grant_usd": 333365319.0,
       "gov_grant_accel": null,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 22.9,
       "convergence_score": 1,
@@ -493,7 +491,7 @@
       "dpi_lean": "accumulation",
       "patents": 601,
       "wsb_mentions": 40,
-      "days_to_earnings": 6,
+      "days_to_earnings": 5,
       "next_earnings": "2026-10-22",
       "earnings_surprise_pct": 200.0,
       "stocktwits_bull_ratio": 1.0,
@@ -515,7 +513,7 @@
       "gov_grant_usd": 7820571.0,
       "gov_grant_accel": 0.32,
       "patents": 236,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": -123.5,
       "stocktwits_bull_ratio": 0.89,
@@ -556,7 +554,7 @@
       "weighted_score": 0.5,
       "gov_grant_usd": 7039265.0,
       "gov_grant_accel": 0.94,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 11.9,
       "convergence_score": 1,
@@ -575,7 +573,7 @@
       "gov_grant_accel": 0.4,
       "trump_side": "sell",
       "insider_mspr": 100.0,
-      "days_to_earnings": 21,
+      "days_to_earnings": 20,
       "next_earnings": "2026-11-06",
       "earnings_surprise_pct": 8.1,
       "convergence_score": 3,
@@ -591,7 +589,7 @@
       "weighted_score": 0.7,
       "gov_grant_usd": 5712242.0,
       "gov_grant_accel": 0.23,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": -22.0,
       "convergence_score": 2,
@@ -607,7 +605,7 @@
       "gov_grant_usd": 1654031.0,
       "gov_grant_accel": 0.91,
       "insider_mspr": 100.0,
-      "days_to_earnings": 4,
+      "days_to_earnings": 3,
       "next_earnings": "2026-10-20",
       "earnings_surprise_pct": 12.3,
       "convergence_score": 1,
@@ -623,7 +621,7 @@
       "gov_grant_usd": 675526.0,
       "gov_grant_accel": null,
       "insider_mspr": 100.0,
-      "days_to_earnings": 6,
+      "days_to_earnings": 5,
       "next_earnings": "2026-10-22",
       "earnings_surprise_pct": 8.3,
       "congress_position_usd": 127828500.0,
@@ -641,7 +639,7 @@
       "gov_grant_usd": 291981.0,
       "gov_grant_accel": 0.28,
       "trump_side": "buy",
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": -95.0,
       "convergence_score": 1,
@@ -658,7 +656,7 @@
       "gov_grant_usd": 72228.0,
       "gov_grant_accel": 0.03,
       "insider_mspr": 100.0,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 12.4,
       "convergence_score": 2,
@@ -673,11 +671,22 @@
       "weighted_score": 0.2,
       "gov_grant_usd": 45064.0,
       "gov_grant_accel": null,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 3.4,
       "news_bull_ratio": 0.86,
       "congress_position_usd": 78724500.0,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "EBS": {
+      "ticker": "EBS",
+      "channels": [
+        "lobbying"
+      ],
+      "weighted_score": 0.3,
+      "lobbying_usd": 450000.0,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
@@ -689,7 +698,7 @@
       ],
       "weighted_score": 0.3,
       "lobbying_usd": 290000.0,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 2.3,
       "convergence_score": 1,
@@ -716,7 +725,7 @@
       ],
       "weighted_score": 0.8,
       "lobbying_usd": 230000.0,
-      "days_to_earnings": 5,
+      "days_to_earnings": 4,
       "next_earnings": "2026-10-21",
       "earnings_surprise_pct": 10.2,
       "convergence_score": 2,
@@ -741,7 +750,7 @@
       ],
       "weighted_score": 0.3,
       "lobbying_usd": 200000.0,
-      "days_to_earnings": 17,
+      "days_to_earnings": 16,
       "next_earnings": "2026-11-02",
       "earnings_surprise_pct": 0.9,
       "convergence_score": 1,
@@ -779,7 +788,7 @@
       ],
       "weighted_score": 0.3,
       "lobbying_usd": 170000.0,
-      "days_to_earnings": 4,
+      "days_to_earnings": 3,
       "next_earnings": "2026-10-20",
       "earnings_surprise_pct": 7.5,
       "convergence_score": 1,
@@ -793,7 +802,7 @@
       ],
       "weighted_score": 0.3,
       "lobbying_usd": 160000.0,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": -6.2,
       "convergence_score": 1,
@@ -807,7 +816,7 @@
       ],
       "weighted_score": 0.3,
       "lobbying_usd": 142000.0,
-      "days_to_earnings": 6,
+      "days_to_earnings": 5,
       "next_earnings": "2026-10-22",
       "earnings_surprise_pct": 30.0,
       "convergence_score": 1,
@@ -833,7 +842,7 @@
       ],
       "weighted_score": 0.5,
       "lobbying_usd": 120000.0,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 11.1,
       "convergence_score": 2,
@@ -848,7 +857,7 @@
       ],
       "weighted_score": 0.5,
       "lobbying_usd": 110000.0,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 32.8,
       "convergence_score": 2,
@@ -862,24 +871,9 @@
       ],
       "weighted_score": 0.2,
       "lobbying_usd": 90000.0,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 17.5,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "DD": {
-      "ticker": "DD",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "lobbying_usd": 90000.0,
-      "days_to_earnings": 20,
-      "next_earnings": "2026-11-05",
-      "earnings_surprise_pct": 6.8,
-      "congress_position_usd": 70680000.0,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
@@ -917,7 +911,7 @@
       "weighted_score": 1.0,
       "insider_net_usd": 1509627811.0,
       "insider_buyers": 94,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 2.2,
       "convergence_score": 1,
@@ -958,7 +952,7 @@
       "weighted_score": 1.2,
       "insider_net_usd": 245257284.0,
       "insider_buyers": 127,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": -10.9,
       "convergence_score": 2,
@@ -974,7 +968,7 @@
       "weighted_score": 0.8,
       "insider_net_usd": 219556784.0,
       "insider_buyers": 2,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 29.2,
       "convergence_score": 2,
@@ -1050,7 +1044,7 @@
       "weighted_score": 1.0,
       "insider_net_usd": 98736477.0,
       "insider_buyers": 55,
-      "days_to_earnings": 6,
+      "days_to_earnings": 5,
       "next_earnings": "2026-10-22",
       "earnings_surprise_pct": 0.0,
       "convergence_score": 1,
@@ -1091,7 +1085,7 @@
       "dpi_z": 1.75,
       "dpi_basis": "z_score",
       "trump_side": "buy",
-      "days_to_earnings": 5,
+      "days_to_earnings": 4,
       "next_earnings": "2026-10-21",
       "earnings_surprise_pct": 10.2,
       "congress_position_usd": 233058000.0,
@@ -1143,7 +1137,7 @@
       "dpi": 0.518,
       "dpi_z": 0.17,
       "dpi_basis": "z_score",
-      "days_to_earnings": 6,
+      "days_to_earnings": 5,
       "next_earnings": "2026-10-22",
       "earnings_surprise_pct": 400.0,
       "convergence_score": 0,
@@ -1157,7 +1151,7 @@
       "dpi": 0.587,
       "dpi_z": 0.86,
       "dpi_basis": "z_score",
-      "days_to_earnings": 10,
+      "days_to_earnings": 9,
       "next_earnings": "2026-10-26",
       "earnings_surprise_pct": 2.4,
       "congress_position_usd": 189115500.0,
@@ -1243,7 +1237,7 @@
       "dpi": 0.371,
       "dpi_z": 0.03,
       "dpi_basis": "z_score",
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 500.0,
       "convergence_score": 1,
@@ -1267,7 +1261,7 @@
         "special_situation"
       ],
       "weighted_score": 0.6,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 65.4,
       "convergence_score": 2,
@@ -1300,7 +1294,7 @@
         "13f_add"
       ],
       "weighted_score": 0.4,
-      "days_to_earnings": 12,
+      "days_to_earnings": 11,
       "next_earnings": "2026-10-28",
       "earnings_surprise_pct": 9.3,
       "convergence_score": 1,
@@ -1333,7 +1327,7 @@
       "patents": 706,
       "wsb_mentions": 36,
       "hf_downloads_30d": 1474129.0,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 1.6,
       "congress_position_usd": 1652610000.0,
@@ -1349,7 +1343,7 @@
       ],
       "weighted_score": 0.95,
       "insider_mspr": 100.0,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 30.7,
       "congress_position_usd": 102904500.0,
@@ -1385,7 +1379,7 @@
         "special_situation"
       ],
       "weighted_score": 0.6,
-      "days_to_earnings": 6,
+      "days_to_earnings": 5,
       "next_earnings": "2026-10-22",
       "earnings_surprise_pct": 6.6,
       "congress_position_usd": 47290500.0,
@@ -1410,7 +1404,7 @@
         "13f_add"
       ],
       "weighted_score": 0.4,
-      "days_to_earnings": 21,
+      "days_to_earnings": 20,
       "next_earnings": "2026-11-06",
       "convergence_score": 1,
       "trump_linked": false,
@@ -1423,7 +1417,7 @@
         "fda_label_expansion"
       ],
       "weighted_score": 0.9,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 9.6,
       "clinical_phase3_starts": 11,
@@ -1440,7 +1434,7 @@
         "fda_label_expansion"
       ],
       "weighted_score": 0.9,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 28.3,
       "clinical_phase3_starts": 5,
@@ -1457,7 +1451,7 @@
         "fda_approval"
       ],
       "weighted_score": 1.0,
-      "days_to_earnings": 14,
+      "days_to_earnings": 13,
       "next_earnings": "2026-10-30",
       "earnings_surprise_pct": 0.3,
       "clinical_phase3_starts": 7,
@@ -1488,7 +1482,7 @@
         "special_situation"
       ],
       "weighted_score": 1.1,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 50.0,
       "clinical_phase3_starts": 16,
@@ -1507,7 +1501,7 @@
         "special_situation"
       ],
       "weighted_score": 1.9,
-      "days_to_earnings": 14,
+      "days_to_earnings": 13,
       "next_earnings": "2026-10-30",
       "earnings_surprise_pct": 5.2,
       "clinical_phase3_starts": 35,
@@ -1524,7 +1518,7 @@
         "fda_label_expansion"
       ],
       "weighted_score": 1.15,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 13.2,
       "clinical_phase3_starts": 31,
@@ -1540,8 +1534,8 @@
         "material_8k"
       ],
       "weighted_score": 0.55,
-      "material_8k_30d": 19,
-      "days_to_earnings": 20,
+      "material_8k_30d": 18,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 133.3,
       "convergence_score": 1,
@@ -1556,7 +1550,7 @@
       ],
       "weighted_score": 0.75,
       "material_8k_30d": 11,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 2.7,
       "convergence_score": 2,
@@ -1571,7 +1565,7 @@
       ],
       "weighted_score": 0.75,
       "material_8k_30d": 8,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 20.0,
       "convergence_score": 2,
@@ -1586,7 +1580,7 @@
       ],
       "weighted_score": 1.05,
       "material_8k_30d": 6,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": -147.0,
       "convergence_score": 2,
@@ -1600,7 +1594,7 @@
       ],
       "weighted_score": 0.55,
       "material_8k_30d": 4,
-      "days_to_earnings": 6,
+      "days_to_earnings": 5,
       "next_earnings": "2026-10-22",
       "earnings_surprise_pct": 7.6,
       "convergence_score": 1,
@@ -1614,36 +1608,10 @@
       ],
       "weighted_score": 0.55,
       "material_8k_30d": 3,
-      "days_to_earnings": 17,
+      "days_to_earnings": 16,
       "next_earnings": "2026-11-02",
       "earnings_surprise_pct": -209.5,
       "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "CLSK": {
-      "ticker": "CLSK",
-      "channels": [
-        "material_8k"
-      ],
-      "weighted_score": 0.55,
-      "material_8k_30d": 3,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "EXE": {
-      "ticker": "EXE",
-      "channels": [
-        "material_8k",
-        "special_situation"
-      ],
-      "weighted_score": 0.75,
-      "material_8k_30d": 3,
-      "days_to_earnings": 11,
-      "next_earnings": "2026-10-27",
-      "earnings_surprise_pct": 9.0,
-      "convergence_score": 2,
       "trump_linked": false,
       "affiliated": false
     },
@@ -1655,7 +1623,7 @@
       ],
       "weighted_score": 0.75,
       "material_8k_30d": 3,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 0.0,
       "convergence_score": 2,
@@ -1671,7 +1639,7 @@
       ],
       "weighted_score": 1.05,
       "material_8k_30d": 3,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": -10.0,
       "days_to_cover": 14.2,
@@ -1687,23 +1655,9 @@
       ],
       "weighted_score": 0.55,
       "material_8k_30d": 3,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 78.0,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "QBTS": {
-      "ticker": "QBTS",
-      "channels": [
-        "material_8k"
-      ],
-      "weighted_score": 0.55,
-      "material_8k_30d": 3,
-      "days_to_earnings": 20,
-      "next_earnings": "2026-11-05",
-      "earnings_surprise_pct": -8.3,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
@@ -1716,7 +1670,7 @@
       ],
       "weighted_score": 0.75,
       "material_8k_30d": 3,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 11.9,
       "convergence_score": 2,
@@ -1730,7 +1684,7 @@
       ],
       "weighted_score": 0.55,
       "material_8k_30d": 3,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 13.8,
       "convergence_score": 1,
@@ -1744,7 +1698,7 @@
       ],
       "weighted_score": 0.55,
       "material_8k_30d": 3,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 1.3,
       "convergence_score": 1,
@@ -1770,24 +1724,10 @@
       ],
       "weighted_score": 0.55,
       "material_8k_30d": 2,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 4.6,
       "donor_usd": 139000.0,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "AON": {
-      "ticker": "AON",
-      "channels": [
-        "material_8k"
-      ],
-      "weighted_score": 0.55,
-      "material_8k_30d": 2,
-      "days_to_earnings": 14,
-      "next_earnings": "2026-10-30",
-      "earnings_surprise_pct": 1.1,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
@@ -1799,7 +1739,7 @@
       ],
       "weighted_score": 0.55,
       "material_8k_30d": 2,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": -12.4,
       "convergence_score": 1,
@@ -1814,7 +1754,7 @@
       ],
       "weighted_score": 0.75,
       "material_8k_30d": 2,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 6.7,
       "convergence_score": 2,
@@ -1828,7 +1768,7 @@
       ],
       "weighted_score": 0.55,
       "material_8k_30d": 2,
-      "days_to_earnings": 12,
+      "days_to_earnings": 11,
       "next_earnings": "2026-10-28",
       "earnings_surprise_pct": 17.0,
       "convergence_score": 1,
@@ -1842,7 +1782,7 @@
       ],
       "weighted_score": 0.55,
       "material_8k_30d": 2,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": -1.5,
       "convergence_score": 1,
@@ -1856,7 +1796,7 @@
       ],
       "weighted_score": 0.55,
       "material_8k_30d": 2,
-      "days_to_earnings": 12,
+      "days_to_earnings": 11,
       "next_earnings": "2026-10-28",
       "earnings_surprise_pct": 3.6,
       "convergence_score": 1,
@@ -1870,9 +1810,20 @@
       ],
       "weighted_score": 0.55,
       "material_8k_30d": 2,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 2.6,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "CLSK": {
+      "ticker": "CLSK",
+      "channels": [
+        "material_8k"
+      ],
+      "weighted_score": 0.55,
+      "material_8k_30d": 2,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
@@ -1888,6 +1839,50 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "CVX": {
+      "ticker": "CVX",
+      "channels": [
+        "material_8k",
+        "special_situation",
+        "trump"
+      ],
+      "weighted_score": 1.25,
+      "material_8k_30d": 2,
+      "trump_side": "buy",
+      "days_to_earnings": 13,
+      "next_earnings": "2026-10-30",
+      "earnings_surprise_pct": 4.5,
+      "congress_position_usd": 147451500.0,
+      "convergence_score": 3,
+      "trump_linked": true,
+      "affiliated": false
+    },
+    "CW": {
+      "ticker": "CW",
+      "channels": [
+        "material_8k"
+      ],
+      "weighted_score": 0.55,
+      "material_8k_30d": 2,
+      "days_to_earnings": 18,
+      "next_earnings": "2026-11-04",
+      "earnings_surprise_pct": 2.8,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "DKS": {
+      "ticker": "DKS",
+      "channels": [
+        "material_8k",
+        "special_situation"
+      ],
+      "weighted_score": 0.75,
+      "material_8k_30d": 2,
+      "convergence_score": 2,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "TMO": {
       "ticker": "TMO",
       "channels": [
@@ -1895,7 +1890,7 @@
         "news_sentiment"
       ],
       "weighted_score": 0.45,
-      "days_to_earnings": 5,
+      "days_to_earnings": 4,
       "next_earnings": "2026-10-21",
       "earnings_surprise_pct": 5.6,
       "news_bull_ratio": 0.88,
@@ -1964,7 +1959,7 @@
       ],
       "weighted_score": 0.5,
       "trump_side": "sell",
-      "days_to_earnings": 10,
+      "days_to_earnings": 9,
       "next_earnings": "2026-10-26",
       "earnings_surprise_pct": -21.4,
       "convergence_score": 1,
@@ -1985,7 +1980,7 @@
       "app_reviews": 20321677,
       "patents": 493,
       "hf_downloads_30d": 27618762.0,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 12.6,
       "github_stars": 193614,
@@ -2016,7 +2011,7 @@
       ],
       "weighted_score": 0.5,
       "trump_side": "sell",
-      "days_to_earnings": 4,
+      "days_to_earnings": 3,
       "next_earnings": "2026-10-20",
       "earnings_surprise_pct": 17.3,
       "convergence_score": 1,
@@ -2031,7 +2026,7 @@
       ],
       "weighted_score": 0.7,
       "trump_side": "buy",
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": -22.5,
       "convergence_score": 2,
@@ -2049,7 +2044,7 @@
       "weighted_score": 1.3,
       "trump_side": "sell",
       "wsb_mentions": 110,
-      "days_to_earnings": 12,
+      "days_to_earnings": 11,
       "next_earnings": "2026-10-28",
       "earnings_surprise_pct": -87.5,
       "stocktwits_bull_ratio": 0.81,
@@ -2066,7 +2061,7 @@
       ],
       "weighted_score": 0.5,
       "trump_side": "buy",
-      "days_to_earnings": 12,
+      "days_to_earnings": 11,
       "next_earnings": "2026-10-28",
       "earnings_surprise_pct": 12.3,
       "convergence_score": 1,
@@ -2080,7 +2075,7 @@
       ],
       "weighted_score": 0.5,
       "trump_side": "buy",
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 20.0,
       "convergence_score": 1,
@@ -2095,7 +2090,7 @@
       ],
       "weighted_score": 0.7,
       "trump_side": "sell",
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 2.5,
       "convergence_score": 2,
@@ -2109,7 +2104,7 @@
       ],
       "weighted_score": 0.5,
       "trump_side": "sell",
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 11.8,
       "convergence_score": 1,
@@ -2134,7 +2129,7 @@
       ],
       "weighted_score": 0.5,
       "trump_side": "buy",
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 400.0,
       "convergence_score": 1,
@@ -2164,7 +2159,7 @@
       "weighted_score": 1.6,
       "trump_side": "buy",
       "patents": 1233,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": -0.7,
       "congress_position_usd": 100347000.0,
@@ -2179,7 +2174,7 @@
       ],
       "weighted_score": 0.5,
       "trump_side": "sell",
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 2.8,
       "convergence_score": 1,
@@ -2205,7 +2200,7 @@
       ],
       "weighted_score": 0.5,
       "trump_side": "buy",
-      "days_to_earnings": 5,
+      "days_to_earnings": 4,
       "next_earnings": "2026-10-21",
       "earnings_surprise_pct": 2.8,
       "congress_position_usd": 43710000.0,
@@ -2220,27 +2215,11 @@
       ],
       "weighted_score": 0.5,
       "trump_side": "buy",
-      "days_to_earnings": 17,
+      "days_to_earnings": 16,
       "next_earnings": "2026-11-02",
       "earnings_surprise_pct": -3.9,
       "congress_position_usd": 102765000.0,
       "convergence_score": 1,
-      "trump_linked": true,
-      "affiliated": false
-    },
-    "CVX": {
-      "ticker": "CVX",
-      "channels": [
-        "special_situation",
-        "trump"
-      ],
-      "weighted_score": 0.7,
-      "trump_side": "buy",
-      "days_to_earnings": 14,
-      "next_earnings": "2026-10-30",
-      "earnings_surprise_pct": 4.5,
-      "congress_position_usd": 147451500.0,
-      "convergence_score": 2,
       "trump_linked": true,
       "affiliated": false
     },
@@ -2265,7 +2244,7 @@
       ],
       "weighted_score": 1.15,
       "trump_side": "buy",
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 216.3,
       "stocktwits_bull_ratio": 1.0,
@@ -2282,7 +2261,7 @@
       ],
       "weighted_score": 0.5,
       "trump_side": "buy",
-      "days_to_earnings": 6,
+      "days_to_earnings": 5,
       "next_earnings": "2026-10-22",
       "earnings_surprise_pct": 1.4,
       "congress_position_usd": 133873500.0,
@@ -2297,7 +2276,7 @@
       ],
       "weighted_score": 0.5,
       "trump_side": "buy",
-      "days_to_earnings": 12,
+      "days_to_earnings": 11,
       "next_earnings": "2026-10-28",
       "earnings_surprise_pct": 3.1,
       "convergence_score": 1,
@@ -2311,7 +2290,7 @@
       ],
       "weighted_score": 0.5,
       "trump_side": "buy",
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 1.2,
       "convergence_score": 1,
@@ -2341,7 +2320,7 @@
       ],
       "weighted_score": 0.5,
       "trump_side": "sell",
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 15.7,
       "convergence_score": 1,
@@ -2351,16 +2330,14 @@
     "TYL": {
       "ticker": "TYL",
       "channels": [
-        "analyst_upgrade_cluster",
         "trump"
       ],
-      "weighted_score": 0.85,
+      "weighted_score": 0.5,
       "trump_side": "sell",
-      "analyst_bull_ratio": 1.0,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": -3.8,
-      "convergence_score": 2,
+      "convergence_score": 1,
       "trump_linked": true,
       "affiliated": false
     },
@@ -2372,7 +2349,7 @@
       ],
       "weighted_score": 0.7,
       "trump_side": "buy",
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 0.0,
       "news_bull_ratio": 0.86,
@@ -2387,7 +2364,7 @@
       ],
       "weighted_score": 0.5,
       "trump_side": "sell",
-      "days_to_earnings": 4,
+      "days_to_earnings": 3,
       "next_earnings": "2026-10-20",
       "earnings_surprise_pct": 7.8,
       "congress_position_usd": 91186500.0,
@@ -2413,7 +2390,7 @@
       ],
       "weighted_score": 0.5,
       "trump_side": "buy",
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": -16.7,
       "convergence_score": 1,
@@ -2427,7 +2404,7 @@
       ],
       "weighted_score": 0.5,
       "trump_side": "sell",
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 103.1,
       "convergence_score": 1,
@@ -2458,7 +2435,7 @@
       ],
       "weighted_score": 0.5,
       "trump_side": "sell",
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 5.0,
       "convergence_score": 1,
@@ -2472,7 +2449,7 @@
       ],
       "weighted_score": 0.5,
       "trump_side": "sell",
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 49.2,
       "convergence_score": 1,
@@ -2489,7 +2466,7 @@
       "weighted_score": 1.1,
       "app_rating": 4.84,
       "app_reviews": 30598539,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 41.0,
       "congress_position_usd": 74074500.0,
@@ -2508,7 +2485,7 @@
       "app_rating": 4.7,
       "app_reviews": 26877747,
       "hf_downloads_30d": 180683688.0,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 216.3,
       "github_stars": 200970,
@@ -2525,7 +2502,7 @@
       "weighted_score": 0.4,
       "app_rating": 4.91,
       "app_reviews": 18191168,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": -23.5,
       "convergence_score": 1,
@@ -2540,7 +2517,7 @@
       "weighted_score": 0.4,
       "app_rating": 4.89,
       "app_reviews": 8389464,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 28.8,
       "congress_position_usd": 115506000.0,
@@ -2556,7 +2533,7 @@
       "weighted_score": 0.4,
       "app_rating": 4.92,
       "app_reviews": 7387821,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 27.3,
       "convergence_score": 1,
@@ -2571,7 +2548,7 @@
       "weighted_score": 0.4,
       "app_rating": 4.8,
       "app_reviews": 7644653,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 100.0,
       "convergence_score": 1,
@@ -2588,7 +2565,7 @@
       "weighted_score": 1.1,
       "app_rating": 4.84,
       "app_reviews": 7236067,
-      "days_to_earnings": 12,
+      "days_to_earnings": 11,
       "next_earnings": "2026-10-28",
       "earnings_surprise_pct": 80.8,
       "congress_position_usd": 112716000.0,
@@ -2604,7 +2581,7 @@
       "weighted_score": 0.4,
       "app_rating": 4.81,
       "app_reviews": 7258560,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 14.3,
       "convergence_score": 1,
@@ -2620,7 +2597,7 @@
       "weighted_score": 0.55,
       "app_rating": 4.75,
       "app_reviews": 7435254,
-      "days_to_earnings": 4,
+      "days_to_earnings": 3,
       "next_earnings": "2026-10-20",
       "earnings_surprise_pct": 1.3,
       "stocktwits_bull_ratio": 0.82,
@@ -2652,7 +2629,7 @@
       "weighted_score": 0.4,
       "app_rating": 4.72,
       "app_reviews": 6272988,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 93.4,
       "convergence_score": 1,
@@ -2668,7 +2645,7 @@
       "weighted_score": 0.6,
       "app_rating": 4.78,
       "app_reviews": 5794342,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": -200.0,
       "convergence_score": 2,
@@ -2684,7 +2661,7 @@
       "weighted_score": 0.6,
       "app_rating": 4.51,
       "app_reviews": 5960796,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": -25.0,
       "convergence_score": 2,
@@ -2709,7 +2686,7 @@
       ],
       "weighted_score": 0.4,
       "patents": 296,
-      "days_to_earnings": 21,
+      "days_to_earnings": 20,
       "next_earnings": "2026-11-06",
       "convergence_score": 1,
       "trump_linked": false,
@@ -2735,7 +2712,7 @@
       "weighted_score": 0.75,
       "patents": 263,
       "analyst_bull_ratio": 1.0,
-      "days_to_earnings": 4,
+      "days_to_earnings": 3,
       "next_earnings": "2026-10-20",
       "earnings_surprise_pct": 12.0,
       "congress_position_usd": 146428500.0,
@@ -2767,7 +2744,7 @@
       "wsb_mentions": 373,
       "opt_vol_oi": 0.592,
       "opt_put_call": 0.29,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 189.3,
       "convergence_score": 2,
@@ -2794,7 +2771,7 @@
       ],
       "weighted_score": 0.35,
       "wsb_mentions": 117,
-      "days_to_earnings": 17,
+      "days_to_earnings": 16,
       "next_earnings": "2026-11-02",
       "earnings_surprise_pct": -42.9,
       "convergence_score": 2,
@@ -2820,7 +2797,7 @@
       ],
       "weighted_score": 0.15,
       "wsb_mentions": 60,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 0.0,
       "convergence_score": 1,
@@ -2835,7 +2812,7 @@
       ],
       "weighted_score": 0.3,
       "wsb_mentions": 51,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 6.7,
       "github_stars": 6821,
@@ -2848,17 +2825,15 @@
     "V": {
       "ticker": "V",
       "channels": [
-        "analyst_upgrade_cluster",
         "special_situation"
       ],
-      "weighted_score": 0.55,
+      "weighted_score": 0.2,
       "wsb_mentions": 43,
-      "analyst_bull_ratio": 0.88,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 2.8,
       "congress_position_usd": 357864000.0,
-      "convergence_score": 2,
+      "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
     },
@@ -2889,7 +2864,7 @@
       "channels": [],
       "weighted_score": 0,
       "wsb_mentions": 30,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 26.3,
       "convergence_score": 0,
@@ -2917,7 +2892,7 @@
       ],
       "weighted_score": 0.85,
       "hf_downloads_30d": 67180382.0,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": -13.0,
       "github_stars": 251025,
@@ -2946,7 +2921,7 @@
       ],
       "weighted_score": 0.7,
       "hf_downloads_30d": 29127933.0,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 2.7,
       "congress_position_usd": 922141500.0,
@@ -2975,7 +2950,7 @@
       "weighted_score": 0.65,
       "opt_vol_oi": 0.122,
       "opt_put_call": 0.15,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 2.5,
       "congress_position_usd": 47662500.0,
@@ -2991,7 +2966,7 @@
       "weighted_score": 0.65,
       "opt_vol_oi": 0.309,
       "opt_put_call": 2.02,
-      "days_to_earnings": 17,
+      "days_to_earnings": 16,
       "next_earnings": "2026-11-02",
       "earnings_surprise_pct": 1.2,
       "convergence_score": 1,
@@ -3006,7 +2981,7 @@
       "weighted_score": 0.65,
       "opt_vol_oi": 0.393,
       "opt_put_call": 0.05,
-      "days_to_earnings": 4,
+      "days_to_earnings": 3,
       "next_earnings": "2026-10-20",
       "earnings_surprise_pct": 13.9,
       "congress_position_usd": 90163500.0,
@@ -3022,7 +2997,7 @@
       "weighted_score": 0.65,
       "opt_vol_oi": 0.118,
       "opt_put_call": 0.02,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": -133.3,
       "convergence_score": 1,
@@ -3037,7 +3012,7 @@
       "weighted_score": 0.65,
       "opt_vol_oi": 0.292,
       "opt_put_call": 1.88,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 0.2,
       "convergence_score": 1,
@@ -3053,7 +3028,7 @@
       "weighted_score": 0.85,
       "opt_vol_oi": 0.232,
       "opt_put_call": 0.18,
-      "days_to_earnings": 17,
+      "days_to_earnings": 16,
       "next_earnings": "2026-11-02",
       "earnings_surprise_pct": -3.1,
       "convergence_score": 2,
@@ -3082,7 +3057,7 @@
       "weighted_score": 0.65,
       "opt_vol_oi": 0.383,
       "opt_put_call": 0.06,
-      "days_to_earnings": 12,
+      "days_to_earnings": 11,
       "next_earnings": "2026-10-28",
       "earnings_surprise_pct": 0.0,
       "convergence_score": 1,
@@ -3098,7 +3073,7 @@
       "weighted_score": 0.85,
       "opt_vol_oi": 0.164,
       "opt_put_call": 0.16,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": -75.0,
       "news_bull_ratio": 0.87,
@@ -3163,9 +3138,6 @@
       "weighted_score": 0,
       "opt_vol_oi": 0.132,
       "opt_put_call": 0.07,
-      "days_to_earnings": 0,
-      "next_earnings": "2026-10-16",
-      "earnings_surprise_pct": 13.9,
       "congress_position_usd": 49848000.0,
       "convergence_score": 0,
       "trump_linked": false,
@@ -3193,7 +3165,7 @@
       "weighted_score": 0.2,
       "opt_vol_oi": 0.137,
       "opt_put_call": 1.22,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": -6.3,
       "convergence_score": 1,
@@ -3208,23 +3180,10 @@
       "weighted_score": 0.2,
       "opt_vol_oi": 0.318,
       "opt_put_call": 6.67,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 2.3,
       "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "TGT": {
-      "ticker": "TGT",
-      "channels": [
-        "analyst_upgrade_cluster",
-        "news_sentiment"
-      ],
-      "weighted_score": 0.55,
-      "analyst_bull_ratio": 1.0,
-      "news_bull_ratio": 0.84,
-      "convergence_score": 2,
       "trump_linked": false,
       "affiliated": false
     },
@@ -3246,7 +3205,7 @@
       ],
       "weighted_score": 0.35,
       "analyst_bull_ratio": 0.94,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 5.7,
       "congress_position_usd": 209017500.0,
@@ -3273,7 +3232,7 @@
       ],
       "weighted_score": 0.5,
       "analyst_bull_ratio": 0.83,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 112.5,
       "stocktwits_bull_ratio": 1.0,
@@ -3305,17 +3264,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "DLTR": {
-      "ticker": "DLTR",
-      "channels": [
-        "analyst_upgrade_cluster"
-      ],
-      "weighted_score": 0.35,
-      "analyst_bull_ratio": 0.88,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "WTW": {
       "ticker": "WTW",
       "channels": [
@@ -3323,20 +3271,9 @@
       ],
       "weighted_score": 0.35,
       "analyst_bull_ratio": 1.0,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 7.0,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "SNPS": {
-      "ticker": "SNPS",
-      "channels": [
-        "analyst_upgrade_cluster"
-      ],
-      "weighted_score": 0.35,
-      "analyst_bull_ratio": 1.0,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
@@ -3372,7 +3309,7 @@
       ],
       "weighted_score": 0.35,
       "analyst_bull_ratio": 1.0,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 6.7,
       "convergence_score": 1,
@@ -3386,10 +3323,24 @@
       ],
       "weighted_score": 0.35,
       "analyst_bull_ratio": 1.0,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 61.6,
       "congress_position_usd": 96022500.0,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "EOG": {
+      "ticker": "EOG",
+      "channels": [
+        "analyst_upgrade_cluster"
+      ],
+      "weighted_score": 0.35,
+      "analyst_bull_ratio": 1.0,
+      "days_to_earnings": 19,
+      "next_earnings": "2026-11-05",
+      "earnings_surprise_pct": 1.2,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
@@ -3402,7 +3353,7 @@
       ],
       "weighted_score": 0.55,
       "analyst_bull_ratio": 0.94,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 19.7,
       "convergence_score": 2,
@@ -3416,23 +3367,73 @@
       ],
       "weighted_score": 0.35,
       "analyst_bull_ratio": 0.94,
-      "days_to_earnings": 6,
+      "days_to_earnings": 5,
       "next_earnings": "2026-10-22",
       "earnings_surprise_pct": 6.8,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
     },
-    "STX": {
-      "ticker": "STX",
+    "VLTO": {
+      "ticker": "VLTO",
+      "channels": [
+        "analyst_upgrade_cluster"
+      ],
+      "weighted_score": 0.35,
+      "analyst_bull_ratio": 0.94,
+      "days_to_earnings": 10,
+      "next_earnings": "2026-10-27",
+      "earnings_surprise_pct": 11.0,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "DOCU": {
+      "ticker": "DOCU",
+      "channels": [
+        "analyst_upgrade_cluster"
+      ],
+      "weighted_score": 0.35,
+      "analyst_bull_ratio": 0.89,
+      "congress_position_usd": 52591500.0,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "WSM": {
+      "ticker": "WSM",
       "channels": [
         "analyst_upgrade_cluster"
       ],
       "weighted_score": 0.35,
       "analyst_bull_ratio": 1.0,
-      "days_to_earnings": 11,
-      "next_earnings": "2026-10-27",
-      "earnings_surprise_pct": 12.1,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "WST": {
+      "ticker": "WST",
+      "channels": [
+        "analyst_upgrade_cluster",
+        "news_sentiment"
+      ],
+      "weighted_score": 0.55,
+      "analyst_bull_ratio": 1.0,
+      "days_to_earnings": 5,
+      "next_earnings": "2026-10-22",
+      "earnings_surprise_pct": 13.9,
+      "news_bull_ratio": 0.88,
+      "convergence_score": 2,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "ARMK": {
+      "ticker": "ARMK",
+      "channels": [
+        "analyst_upgrade_cluster"
+      ],
+      "weighted_score": 0.35,
+      "analyst_bull_ratio": 1.0,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
@@ -3445,7 +3446,7 @@
       ],
       "weighted_score": 0.75,
       "insider_mspr": 100.0,
-      "days_to_earnings": 6,
+      "days_to_earnings": 5,
       "next_earnings": "2026-10-22",
       "earnings_surprise_pct": 17.9,
       "news_bull_ratio": 0.88,
@@ -3460,7 +3461,7 @@
       ],
       "weighted_score": 0.55,
       "insider_mspr": 100.0,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 4.1,
       "convergence_score": 1,
@@ -3475,7 +3476,7 @@
       ],
       "weighted_score": 0.75,
       "insider_mspr": 100.0,
-      "days_to_earnings": 14,
+      "days_to_earnings": 13,
       "next_earnings": "2026-10-30",
       "earnings_surprise_pct": 8.2,
       "congress_position_usd": 53661000.0,
@@ -3490,7 +3491,7 @@
       ],
       "weighted_score": 0.55,
       "insider_mspr": 100.0,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 10.8,
       "convergence_score": 1,
@@ -3504,7 +3505,7 @@
       ],
       "weighted_score": 0.55,
       "insider_mspr": 100.0,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 25.3,
       "convergence_score": 1,
@@ -3520,7 +3521,7 @@
       ],
       "weighted_score": 0.9,
       "insider_mspr": 100.0,
-      "days_to_earnings": 4,
+      "days_to_earnings": 3,
       "next_earnings": "2026-10-20",
       "earnings_surprise_pct": 8.6,
       "stocktwits_bull_ratio": 0.88,
@@ -3537,7 +3538,7 @@
       ],
       "weighted_score": 0.55,
       "insider_mspr": 100.0,
-      "days_to_earnings": 6,
+      "days_to_earnings": 5,
       "next_earnings": "2026-10-22",
       "earnings_surprise_pct": 0.0,
       "convergence_score": 1,
@@ -3551,7 +3552,7 @@
       ],
       "weighted_score": 0.55,
       "insider_mspr": 100.0,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 39.0,
       "convergence_score": 1,
@@ -3565,7 +3566,7 @@
       ],
       "weighted_score": 0.55,
       "insider_mspr": 100.0,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 8.1,
       "convergence_score": 1,
@@ -3580,7 +3581,7 @@
       ],
       "weighted_score": 0.75,
       "insider_mspr": 100.0,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 11.8,
       "donor_usd": 124500.0,
@@ -3595,7 +3596,7 @@
       ],
       "weighted_score": 0.55,
       "insider_mspr": 100.0,
-      "days_to_earnings": 4,
+      "days_to_earnings": 3,
       "next_earnings": "2026-10-20",
       "earnings_surprise_pct": 10.0,
       "congress_position_usd": 67332000.0,
@@ -3633,7 +3634,7 @@
       ],
       "weighted_score": 0.55,
       "insider_mspr": 100.0,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 29.7,
       "convergence_score": 1,
@@ -3647,7 +3648,7 @@
       ],
       "weighted_score": 0.55,
       "insider_mspr": 100.0,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 3.0,
       "congress_position_usd": 71842500.0,
@@ -3663,47 +3664,10 @@
       ],
       "weighted_score": 0.75,
       "insider_mspr": 100.0,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 14.8,
       "convergence_score": 2,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "IBN": {
-      "ticker": "IBN",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "days_to_earnings": 0,
-      "next_earnings": "2026-10-16",
-      "earnings_surprise_pct": 7.5,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "RF": {
-      "ticker": "RF",
-      "channels": [],
-      "weighted_score": 0,
-      "days_to_earnings": 0,
-      "next_earnings": "2026-10-16",
-      "earnings_surprise_pct": 6.2,
-      "donor_usd": 139500.0,
-      "convergence_score": 0,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "SLB": {
-      "ticker": "SLB",
-      "channels": [],
-      "weighted_score": 0,
-      "days_to_earnings": 0,
-      "next_earnings": "2026-10-16",
-      "earnings_surprise_pct": 7.8,
-      "congress_position_usd": 47755500.0,
-      "convergence_score": 0,
       "trump_linked": false,
       "affiliated": false
     },
@@ -3711,7 +3675,7 @@
       "ticker": "CCK",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 3,
+      "days_to_earnings": 2,
       "next_earnings": "2026-10-19",
       "earnings_surprise_pct": 15.8,
       "convergence_score": 0,
@@ -3724,7 +3688,7 @@
         "news_sentiment"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 3,
+      "days_to_earnings": 2,
       "next_earnings": "2026-10-19",
       "earnings_surprise_pct": 4.8,
       "news_bull_ratio": 0.9,
@@ -3736,7 +3700,7 @@
       "ticker": "CB",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 4,
+      "days_to_earnings": 3,
       "next_earnings": "2026-10-20",
       "earnings_surprise_pct": 9.5,
       "congress_position_usd": 89838000.0,
@@ -3751,7 +3715,7 @@
         "special_situation"
       ],
       "weighted_score": 0.7,
-      "days_to_earnings": 4,
+      "days_to_earnings": 3,
       "next_earnings": "2026-10-20",
       "earnings_surprise_pct": 5.4,
       "congress_position_usd": 80352000.0,
@@ -3765,7 +3729,7 @@
         "special_situation"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 4,
+      "days_to_earnings": 3,
       "next_earnings": "2026-10-20",
       "earnings_surprise_pct": 5.7,
       "congress_position_usd": 98394000.0,
@@ -3777,7 +3741,7 @@
       "ticker": "PEGA",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 4,
+      "days_to_earnings": 3,
       "next_earnings": "2026-10-20",
       "earnings_surprise_pct": -21.7,
       "congress_position_usd": 72028500.0,
@@ -3789,7 +3753,7 @@
       "ticker": "PNR",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 4,
+      "days_to_earnings": 3,
       "next_earnings": "2026-10-20",
       "earnings_surprise_pct": 1.8,
       "congress_position_usd": 51150000.0,
@@ -3801,7 +3765,7 @@
       "ticker": "ABT",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 5,
+      "days_to_earnings": 4,
       "next_earnings": "2026-10-21",
       "earnings_surprise_pct": 2.3,
       "congress_position_usd": 71052000.0,
@@ -3816,7 +3780,7 @@
         "special_situation"
       ],
       "weighted_score": 0.7,
-      "days_to_earnings": 5,
+      "days_to_earnings": 4,
       "next_earnings": "2026-10-21",
       "earnings_surprise_pct": 5.4,
       "congress_position_usd": 102904500.0,
@@ -3828,7 +3792,7 @@
       "ticker": "PGR",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 5,
+      "days_to_earnings": 4,
       "next_earnings": "2026-10-21",
       "earnings_surprise_pct": 3.2,
       "congress_position_usd": 49429500.0,
@@ -3840,7 +3804,7 @@
       "ticker": "ALK",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 6,
+      "days_to_earnings": 5,
       "next_earnings": "2026-10-22",
       "earnings_surprise_pct": 5.2,
       "congress_position_usd": 121504500.0,
@@ -3852,7 +3816,7 @@
       "ticker": "CMCSA",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 6,
+      "days_to_earnings": 5,
       "next_earnings": "2026-10-22",
       "earnings_surprise_pct": 7.2,
       "congress_position_usd": 47104500.0,
@@ -3866,7 +3830,7 @@
         "short_squeeze"
       ],
       "weighted_score": 0.3,
-      "days_to_earnings": 6,
+      "days_to_earnings": 5,
       "next_earnings": "2026-10-22",
       "earnings_surprise_pct": 4.0,
       "days_to_cover": 13.1,
@@ -3882,7 +3846,7 @@
         "stocktwits_bull"
       ],
       "weighted_score": 0.35,
-      "days_to_earnings": 6,
+      "days_to_earnings": 5,
       "next_earnings": "2026-10-22",
       "earnings_surprise_pct": 27.3,
       "stocktwits_bull_ratio": 0.75,
@@ -3896,7 +3860,7 @@
       "ticker": "MSM",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 6,
+      "days_to_earnings": 5,
       "next_earnings": "2026-10-22",
       "earnings_surprise_pct": 11.7,
       "congress_position_usd": 47895000.0,
@@ -3908,24 +3872,10 @@
       "ticker": "NSC",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 6,
+      "days_to_earnings": 5,
       "next_earnings": "2026-10-22",
       "earnings_surprise_pct": 9.0,
       "convergence_score": 0,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "WST": {
-      "ticker": "WST",
-      "channels": [
-        "news_sentiment"
-      ],
-      "weighted_score": 0.2,
-      "days_to_earnings": 6,
-      "next_earnings": "2026-10-22",
-      "earnings_surprise_pct": 13.9,
-      "news_bull_ratio": 0.88,
-      "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
     },
@@ -3935,7 +3885,7 @@
         "affiliation"
       ],
       "weighted_score": 0.5,
-      "days_to_earnings": 7,
+      "days_to_earnings": 6,
       "next_earnings": "2026-10-23",
       "earnings_surprise_pct": 2.7,
       "convergence_score": 1,
@@ -3946,7 +3896,7 @@
       "ticker": "ITW",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 7,
+      "days_to_earnings": 6,
       "next_earnings": "2026-10-23",
       "earnings_surprise_pct": 1.4,
       "convergence_score": 0,
@@ -3957,7 +3907,7 @@
       "ticker": "FTAI",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 10,
+      "days_to_earnings": 9,
       "next_earnings": "2026-10-26",
       "earnings_surprise_pct": -14.4,
       "congress_position_usd": 109972500.0,
@@ -3971,7 +3921,7 @@
         "news_sentiment"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 8.6,
       "news_bull_ratio": 0.94,
@@ -3985,7 +3935,7 @@
         "short_squeeze"
       ],
       "weighted_score": 0.3,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 3.3,
       "days_to_cover": 12.5,
@@ -3998,7 +3948,7 @@
       "ticker": "BKNG",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 3.7,
       "convergence_score": 0,
@@ -4009,7 +3959,7 @@
       "ticker": "CARR",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 3.6,
       "convergence_score": 0,
@@ -4022,7 +3972,7 @@
         "special_situation"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 19.1,
       "congress_position_usd": 43849500.0,
@@ -4036,7 +3986,7 @@
         "special_situation"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 2.6,
       "congress_position_usd": 44547000.0,
@@ -4048,7 +3998,7 @@
       "ticker": "LH",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 4.2,
       "congress_position_usd": 75841500.0,
@@ -4060,7 +4010,7 @@
       "ticker": "MDLZ",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 9.0,
       "congress_position_usd": 56730000.0,
@@ -4074,7 +4024,7 @@
         "special_situation"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 5.5,
       "congress_position_usd": 171492000.0,
@@ -4088,7 +4038,7 @@
         "special_situation"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 10.1,
       "congress_position_usd": 42733500.0,
@@ -4102,7 +4052,7 @@
         "stocktwits_bull"
       ],
       "weighted_score": 0.15,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 7.8,
       "stocktwits_bull_ratio": 1.0,
@@ -4116,7 +4066,7 @@
       "ticker": "RNR",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 12.9,
       "congress_position_usd": 69750000.0,
@@ -4130,7 +4080,7 @@
         "stocktwits_bull"
       ],
       "weighted_score": 0.15,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 9.1,
       "stocktwits_bull_ratio": 0.69,
@@ -4143,7 +4093,7 @@
       "ticker": "UPS",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 11,
+      "days_to_earnings": 10,
       "next_earnings": "2026-10-27",
       "earnings_surprise_pct": 6.7,
       "congress_position_usd": 82723500.0,
@@ -4155,7 +4105,7 @@
       "ticker": "ADP",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 12,
+      "days_to_earnings": 11,
       "next_earnings": "2026-10-28",
       "earnings_surprise_pct": 1.9,
       "congress_position_usd": 50685000.0,
@@ -4167,7 +4117,7 @@
       "ticker": "BBVA",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 12,
+      "days_to_earnings": 11,
       "next_earnings": "2026-10-28",
       "earnings_surprise_pct": 6.8,
       "congress_position_usd": 47290500.0,
@@ -4181,7 +4131,7 @@
         "special_situation"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 12,
+      "days_to_earnings": 11,
       "next_earnings": "2026-10-28",
       "earnings_surprise_pct": 18.9,
       "congress_position_usd": 57474000.0,
@@ -4196,7 +4146,7 @@
         "special_situation"
       ],
       "weighted_score": 0.4,
-      "days_to_earnings": 12,
+      "days_to_earnings": 11,
       "next_earnings": "2026-10-28",
       "earnings_surprise_pct": 7.1,
       "clinical_phase3_starts": 32,
@@ -4211,7 +4161,7 @@
         "news_sentiment"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 12,
+      "days_to_earnings": 11,
       "next_earnings": "2026-10-28",
       "earnings_surprise_pct": 1.2,
       "news_bull_ratio": 0.86,
@@ -4223,7 +4173,7 @@
       "ticker": "LVS",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 12,
+      "days_to_earnings": 11,
       "next_earnings": "2026-10-28",
       "earnings_surprise_pct": -23.4,
       "convergence_score": 0,
@@ -4234,7 +4184,7 @@
       "ticker": "PSX",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 12,
+      "days_to_earnings": 11,
       "next_earnings": "2026-10-28",
       "earnings_surprise_pct": 22.5,
       "donor_usd": 135000.0,
@@ -4246,7 +4196,7 @@
       "ticker": "TDY",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 12,
+      "days_to_earnings": 11,
       "next_earnings": "2026-10-28",
       "earnings_surprise_pct": 8.7,
       "convergence_score": 0,
@@ -4257,7 +4207,7 @@
       "ticker": "UBS",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 12,
+      "days_to_earnings": 11,
       "next_earnings": "2026-10-28",
       "earnings_surprise_pct": -3.3,
       "congress_position_usd": 140988000.0,
@@ -4271,7 +4221,7 @@
         "clinical_phase3_start"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 12,
+      "days_to_earnings": 11,
       "next_earnings": "2026-10-28",
       "earnings_surprise_pct": 9.1,
       "clinical_phase3_starts": 2,
@@ -4286,7 +4236,7 @@
         "activist_13d"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 14.8,
       "congress_position_usd": 56358000.0,
@@ -4298,7 +4248,7 @@
       "ticker": "EPD",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 12.0,
       "congress_position_usd": 58311000.0,
@@ -4313,7 +4263,7 @@
         "special_situation"
       ],
       "weighted_score": 0.4,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 4.5,
       "clinical_phase3_starts": 6,
@@ -4326,7 +4276,7 @@
       "ticker": "ICE",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 3.3,
       "congress_position_usd": 4437355500.0,
@@ -4340,7 +4290,7 @@
         "short_squeeze"
       ],
       "weighted_score": 0.3,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 203.9,
       "days_to_cover": 13.0,
@@ -4353,7 +4303,7 @@
       "ticker": "ILMN",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 6.5,
       "convergence_score": 0,
@@ -4366,7 +4316,7 @@
         "clinical_phase3_start"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 39.4,
       "clinical_phase3_starts": 8,
@@ -4380,7 +4330,7 @@
       "ticker": "MO",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": -1.3,
       "congress_position_usd": 64728000.0,
@@ -4394,7 +4344,7 @@
         "github_momentum"
       ],
       "weighted_score": 0.3,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": -66.7,
       "github_stars": 16136,
@@ -4406,7 +4356,7 @@
       "ticker": "RMD",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 1.7,
       "congress_position_usd": 61101000.0,
@@ -4418,7 +4368,7 @@
       "ticker": "TWLO",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 22.0,
       "github_stars": 2083,
@@ -4430,7 +4380,7 @@
       "ticker": "VMC",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 13,
+      "days_to_earnings": 12,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 3.6,
       "congress_position_usd": 59334000.0,
@@ -4445,7 +4395,7 @@
         "special_situation"
       ],
       "weighted_score": 0.7,
-      "days_to_earnings": 14,
+      "days_to_earnings": 13,
       "next_earnings": "2026-10-30",
       "earnings_surprise_pct": 12.1,
       "congress_position_usd": 43524000.0,
@@ -4457,7 +4407,7 @@
       "ticker": "CHTR",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 14,
+      "days_to_earnings": 13,
       "next_earnings": "2026-10-30",
       "earnings_surprise_pct": 7.0,
       "congress_position_usd": 347029500.0,
@@ -4469,7 +4419,7 @@
       "ticker": "CL",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 14,
+      "days_to_earnings": 13,
       "next_earnings": "2026-10-30",
       "earnings_surprise_pct": 4.2,
       "congress_position_usd": 68262000.0,
@@ -4481,7 +4431,7 @@
       "ticker": "LIN",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 14,
+      "days_to_earnings": 13,
       "next_earnings": "2026-10-30",
       "earnings_surprise_pct": 0.2,
       "congress_position_usd": 129595500.0,
@@ -4495,7 +4445,7 @@
         "clinical_phase3_start"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 14,
+      "days_to_earnings": 13,
       "next_earnings": "2026-10-30",
       "earnings_surprise_pct": 56.6,
       "clinical_phase3_starts": 5,
@@ -4510,7 +4460,7 @@
         "clinical_phase3_start"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 14,
+      "days_to_earnings": 13,
       "next_earnings": "2026-10-30",
       "earnings_surprise_pct": 10.0,
       "clinical_phase3_starts": 5,
@@ -4525,7 +4475,7 @@
         "short_squeeze"
       ],
       "weighted_score": 0.3,
-      "days_to_earnings": 14,
+      "days_to_earnings": 13,
       "next_earnings": "2026-10-30",
       "earnings_surprise_pct": 2.0,
       "days_to_cover": 17.2,
@@ -4538,7 +4488,7 @@
       "ticker": "XOM",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 14,
+      "days_to_earnings": 13,
       "next_earnings": "2026-10-30",
       "earnings_surprise_pct": -4.3,
       "congress_position_usd": 270025500.0,
@@ -4552,7 +4502,7 @@
         "special_situation"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 17,
+      "days_to_earnings": 16,
       "next_earnings": "2026-11-02",
       "earnings_surprise_pct": 3.7,
       "convergence_score": 1,
@@ -4563,7 +4513,7 @@
       "ticker": "FANG",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 17,
+      "days_to_earnings": 16,
       "next_earnings": "2026-11-02",
       "earnings_surprise_pct": 8.7,
       "convergence_score": 0,
@@ -4574,7 +4524,7 @@
       "ticker": "HALO",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 17,
+      "days_to_earnings": 16,
       "next_earnings": "2026-11-02",
       "earnings_surprise_pct": 25.4,
       "congress_position_usd": 71982000.0,
@@ -4588,7 +4538,7 @@
         "news_sentiment"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 17,
+      "days_to_earnings": 16,
       "next_earnings": "2026-11-02",
       "earnings_surprise_pct": 8.1,
       "news_bull_ratio": 0.84,
@@ -4602,7 +4552,7 @@
         "short_squeeze"
       ],
       "weighted_score": 0.3,
-      "days_to_earnings": 17,
+      "days_to_earnings": 16,
       "next_earnings": "2026-11-02",
       "earnings_surprise_pct": 12.2,
       "days_to_cover": 16.3,
@@ -4615,7 +4565,7 @@
       "ticker": "SPG",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 17,
+      "days_to_earnings": 16,
       "next_earnings": "2026-11-02",
       "earnings_surprise_pct": 3.5,
       "congress_position_usd": 121039500.0,
@@ -4629,7 +4579,7 @@
         "short_squeeze"
       ],
       "weighted_score": 0.3,
-      "days_to_earnings": 17,
+      "days_to_earnings": 16,
       "next_earnings": "2026-11-02",
       "earnings_surprise_pct": -87.8,
       "days_to_cover": 15.0,
@@ -4645,7 +4595,7 @@
         "special_situation"
       ],
       "weighted_score": 0.4,
-      "days_to_earnings": 17,
+      "days_to_earnings": 16,
       "next_earnings": "2026-11-02",
       "earnings_surprise_pct": 1.2,
       "clinical_phase3_starts": 2,
@@ -4658,7 +4608,7 @@
       "ticker": "NSP",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 17,
+      "days_to_earnings": 16,
       "next_earnings": "2026-11-02",
       "earnings_surprise_pct": 433.3,
       "convergence_score": 0,
@@ -4671,7 +4621,7 @@
         "news_sentiment"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 17,
+      "days_to_earnings": 16,
       "next_earnings": "2026-11-02",
       "earnings_surprise_pct": 24.8,
       "news_bull_ratio": 0.88,
@@ -4683,7 +4633,7 @@
       "ticker": "AFL",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": -1.1,
       "convergence_score": 0,
@@ -4697,7 +4647,7 @@
         "special_situation"
       ],
       "weighted_score": 0.4,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 12.3,
       "clinical_phase3_starts": 10,
@@ -4711,7 +4661,7 @@
       "ticker": "ANET",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 18.8,
       "convergence_score": 0,
@@ -4724,7 +4674,7 @@
         "short_squeeze"
       ],
       "weighted_score": 0.3,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 9.3,
       "days_to_cover": 12.7,
@@ -4739,7 +4689,7 @@
         "special_situation"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 1.9,
       "congress_position_usd": 45058500.0,
@@ -4753,7 +4703,7 @@
         "special_situation"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 8.9,
       "congress_position_usd": 46825500.0,
@@ -4765,7 +4715,7 @@
       "ticker": "HUT",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 48.0,
       "convergence_score": 0,
@@ -4779,7 +4729,7 @@
         "stocktwits_bull"
       ],
       "weighted_score": 0.35,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": -25.0,
       "stocktwits_bull_ratio": 0.92,
@@ -4794,7 +4744,7 @@
         "short_squeeze"
       ],
       "weighted_score": 0.3,
-      "days_to_earnings": 18,
+      "days_to_earnings": 17,
       "next_earnings": "2026-11-03",
       "earnings_surprise_pct": 29.6,
       "days_to_cover": 13.2,
@@ -4809,7 +4759,7 @@
         "short_squeeze"
       ],
       "weighted_score": 0.3,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 15.2,
       "days_to_cover": 13.9,
@@ -4822,7 +4772,7 @@
       "ticker": "AM",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": -11.1,
       "congress_position_usd": 163029000.0,
@@ -4836,7 +4786,7 @@
         "special_situation"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 800.0,
       "convergence_score": 1,
@@ -4847,7 +4797,7 @@
       "ticker": "CPAY",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 6.6,
       "convergence_score": 0,
@@ -4858,7 +4808,7 @@
       "ticker": "CTSH",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": -0.7,
       "congress_position_usd": 73609500.0,
@@ -4872,7 +4822,7 @@
         "special_situation"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 38.0,
       "congress_position_usd": 81328500.0,
@@ -4886,7 +4836,7 @@
         "short_squeeze"
       ],
       "weighted_score": 0.3,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 5.8,
       "days_to_cover": 15.0,
@@ -4901,7 +4851,7 @@
         "short_squeeze"
       ],
       "weighted_score": 0.3,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 0.0,
       "days_to_cover": 13.3,
@@ -4914,7 +4864,7 @@
       "ticker": "DVN",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 20.8,
       "convergence_score": 0,
@@ -4925,7 +4875,7 @@
       "ticker": "EMR",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 1.8,
       "congress_position_usd": 106438500.0,
@@ -4937,7 +4887,7 @@
       "ticker": "ET",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 51.3,
       "congress_position_usd": 214365000.0,
@@ -4951,7 +4901,7 @@
         "special_situation"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 5.7,
       "congress_position_usd": 59101500.0,
@@ -4963,7 +4913,7 @@
       "ticker": "MCD",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 1.8,
       "congress_position_usd": 121272000.0,
@@ -4977,7 +4927,7 @@
         "activist_13d"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": -34.8,
       "convergence_score": 1,
@@ -4990,7 +4940,7 @@
         "news_sentiment"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 12.2,
       "news_bull_ratio": 0.83,
@@ -5004,7 +4954,7 @@
         "clinical_phase3_start"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 17.1,
       "clinical_phase3_starts": 14,
@@ -5017,7 +4967,7 @@
       "ticker": "OSW",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 0.0,
       "congress_position_usd": 51429000.0,
@@ -5031,7 +4981,7 @@
         "special_situation"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 2.5,
       "congress_position_usd": 63379500.0,
@@ -5045,7 +4995,7 @@
         "news_sentiment"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 23.2,
       "news_bull_ratio": 0.91,
@@ -5057,7 +5007,7 @@
       "ticker": "PRU",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 17.6,
       "congress_position_usd": 57055500.0,
@@ -5072,7 +5022,7 @@
         "special_situation"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 22.9,
       "congress_position_usd": 85560000.0,
@@ -5084,7 +5034,7 @@
       "ticker": "SCI",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 1.1,
       "convergence_score": 0,
@@ -5097,7 +5047,7 @@
         "special_situation"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 2.0,
       "convergence_score": 1,
@@ -5110,7 +5060,7 @@
         "short_squeeze"
       ],
       "weighted_score": 0.3,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": -12.0,
       "days_to_cover": 13.1,
@@ -5125,7 +5075,7 @@
         "news_sentiment"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 25.1,
       "news_bull_ratio": 0.9,
@@ -5139,7 +5089,7 @@
         "news_sentiment"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 4.6,
       "news_bull_ratio": 0.9,
@@ -5153,7 +5103,7 @@
         "github_momentum"
       ],
       "weighted_score": 0.3,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 75.0,
       "github_stars": 19765,
@@ -5167,7 +5117,7 @@
         "short_squeeze"
       ],
       "weighted_score": 0.3,
-      "days_to_earnings": 19,
+      "days_to_earnings": 18,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 11.5,
       "days_to_cover": 13.0,
@@ -5180,7 +5130,7 @@
       "ticker": "AMN",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 250.0,
       "congress_position_usd": 58311000.0,
@@ -5194,7 +5144,7 @@
         "special_situation"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 31.2,
       "convergence_score": 1,
@@ -5208,7 +5158,7 @@
         "special_situation"
       ],
       "weighted_score": 0.4,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 2.9,
       "news_bull_ratio": 0.86,
@@ -5220,10 +5170,24 @@
       "ticker": "COP",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 9.5,
       "convergence_score": 0,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "DD": {
+      "ticker": "DD",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "days_to_earnings": 19,
+      "next_earnings": "2026-11-05",
+      "earnings_surprise_pct": 6.8,
+      "congress_position_usd": 70680000.0,
+      "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
     },
@@ -5233,7 +5197,7 @@
         "github_momentum"
       ],
       "weighted_score": 0.3,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 38.5,
       "github_stars": 3765,
@@ -5248,7 +5212,7 @@
         "special_situation"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 3.1,
       "congress_position_usd": 46360500.0,
@@ -5262,7 +5226,7 @@
         "news_sentiment"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 5.4,
       "news_bull_ratio": 0.85,
@@ -5276,7 +5240,7 @@
         "news_sentiment"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 14.9,
       "news_bull_ratio": 0.91,
@@ -5291,7 +5255,7 @@
         "special_situation"
       ],
       "weighted_score": 0.5,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 63.0,
       "days_to_cover": 15.1,
@@ -5306,7 +5270,7 @@
         "news_sentiment"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 11.8,
       "news_bull_ratio": 0.94,
@@ -5318,7 +5282,7 @@
       "ticker": "PODD",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 15.3,
       "congress_position_usd": 106810500.0,
@@ -5330,7 +5294,7 @@
       "ticker": "PRMB",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 6.2,
       "convergence_score": 0,
@@ -5341,7 +5305,7 @@
       "ticker": "SNDK",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 16.6,
       "convergence_score": 0,
@@ -5352,7 +5316,7 @@
       "ticker": "TFX",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 37.5,
       "congress_position_usd": 241614000.0,
@@ -5364,7 +5328,7 @@
       "ticker": "TRUP",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 45.5,
       "congress_position_usd": 220875000.0,
@@ -5378,7 +5342,7 @@
         "special_situation"
       ],
       "weighted_score": 0.2,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": -36.4,
       "congress_position_usd": 52638000.0,
@@ -5390,7 +5354,7 @@
       "ticker": "TTWO",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 20,
+      "days_to_earnings": 19,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": -112.5,
       "congress_position_usd": 58869000.0,
@@ -5402,7 +5366,7 @@
       "ticker": "ENB",
       "channels": [],
       "weighted_score": 0,
-      "days_to_earnings": 21,
+      "days_to_earnings": 20,
       "next_earnings": "2026-11-06",
       "earnings_surprise_pct": 7.0,
       "convergence_score": 0,
@@ -5421,19 +5385,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "A": {
-      "ticker": "A",
-      "channels": [
-        "news_sentiment",
-        "special_situation"
-      ],
-      "weighted_score": 0.4,
-      "news_bull_ratio": 0.9,
-      "congress_position_usd": 219201000.0,
-      "convergence_score": 2,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "TOL": {
       "ticker": "TOL",
       "channels": [
@@ -5441,6 +5392,17 @@
       ],
       "weighted_score": 0.2,
       "news_bull_ratio": 0.88,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "TGT": {
+      "ticker": "TGT",
+      "channels": [
+        "news_sentiment"
+      ],
+      "weighted_score": 0.2,
+      "news_bull_ratio": 0.84,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
@@ -6067,15 +6029,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "DOCU": {
-      "ticker": "DOCU",
-      "channels": [],
-      "weighted_score": 0,
-      "congress_position_usd": 52591500.0,
-      "convergence_score": 0,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "CUTR": {
       "ticker": "CUTR",
       "channels": [],
@@ -6128,6 +6081,15 @@
       "channels": [],
       "weighted_score": 0,
       "congress_position_usd": 48592500.0,
+      "convergence_score": 0,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "SLB": {
+      "ticker": "SLB",
+      "channels": [],
+      "weighted_score": 0,
+      "congress_position_usd": 47755500.0,
       "convergence_score": 0,
       "trump_linked": false,
       "affiliated": false
@@ -6230,6 +6192,26 @@
       "weighted_score": 0,
       "donor_usd": 182500.0,
       "convergence_score": 0,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "RF": {
+      "ticker": "RF",
+      "channels": [],
+      "weighted_score": 0,
+      "donor_usd": 139500.0,
+      "convergence_score": 0,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "DELL": {
+      "ticker": "DELL",
+      "channels": [
+        "activist_13d"
+      ],
+      "weighted_score": 0.2,
+      "donor_usd": 120500.0,
+      "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
     },
@@ -14245,16 +14227,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "GAUZ": {
-      "ticker": "GAUZ",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "MTY": {
       "ticker": "MTY",
       "channels": [
@@ -14755,6 +14727,16 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "VALE": {
+      "ticker": "VALE",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "ZVRA": {
       "ticker": "ZVRA",
       "channels": [
@@ -15097,16 +15079,6 @@
     },
     "SAP": {
       "ticker": "SAP",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "SFD": {
-      "ticker": "SFD",
       "channels": [
         "special_situation"
       ],
@@ -15495,6 +15467,16 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "SITC": {
+      "ticker": "SITC",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "TSE": {
       "ticker": "TSE",
       "channels": [
@@ -15657,16 +15639,6 @@
     },
     "ELLO": {
       "ticker": "ELLO",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "GPRK": {
-      "ticker": "GPRK",
       "channels": [
         "special_situation"
       ],
@@ -17395,16 +17367,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "RYN": {
-      "ticker": "RYN",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "EZRA": {
       "ticker": "EZRA",
       "channels": [
@@ -17487,6 +17449,16 @@
     },
     "WM": {
       "ticker": "WM",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "GEO": {
+      "ticker": "GEO",
       "channels": [
         "special_situation"
       ],
@@ -17607,6 +17579,16 @@
     },
     "RVLY": {
       "ticker": "RVLY",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "SRXH": {
+      "ticker": "SRXH",
       "channels": [
         "special_situation"
       ],
@@ -19616,6 +19598,16 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "BRC": {
+      "ticker": "BRC",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "DBGI": {
       "ticker": "DBGI",
       "channels": [
@@ -19686,6 +19678,16 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "ATHR": {
+      "ticker": "ATHR",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "NFJ": {
       "ticker": "NFJ",
       "channels": [
@@ -19746,8 +19748,28 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "GTE": {
+      "ticker": "GTE",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "INDV": {
       "ticker": "INDV",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "MEDS": {
+      "ticker": "MEDS",
       "channels": [
         "special_situation"
       ],
@@ -19768,6 +19790,16 @@
     },
     "RUBI": {
       "ticker": "RUBI",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "CGC": {
+      "ticker": "CGC",
       "channels": [
         "special_situation"
       ],
@@ -20326,8 +20358,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "NHPBP": {
-      "ticker": "NHPBP",
+    "HLTC": {
+      "ticker": "HLTC",
       "channels": [
         "special_situation"
       ],
@@ -20368,16 +20400,6 @@
     },
     "BGMSP": {
       "ticker": "BGMSP",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "DKS": {
-      "ticker": "DKS",
       "channels": [
         "special_situation"
       ],
@@ -20906,6 +20928,16 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "LBGJ": {
+      "ticker": "LBGJ",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "PMA": {
       "ticker": "PMA",
       "channels": [
@@ -21036,6 +21068,16 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "NIKI": {
+      "ticker": "NIKI",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "ENRDW": {
       "ticker": "ENRDW",
       "channels": [
@@ -21048,6 +21090,16 @@
     },
     "AVAL": {
       "ticker": "AVAL",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "IRS": {
+      "ticker": "IRS",
       "channels": [
         "special_situation"
       ],
@@ -21080,16 +21132,6 @@
       "ticker": "BHR-PD",
       "channels": [
         "activist_13d"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "DAICW": {
-      "ticker": "DAICW",
-      "channels": [
-        "special_situation"
       ],
       "weighted_score": 0.2,
       "convergence_score": 1,
@@ -21258,6 +21300,16 @@
     },
     "RICK": {
       "ticker": "RICK",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "TRUG": {
+      "ticker": "TRUG",
       "channels": [
         "special_situation"
       ],
@@ -21456,6 +21508,16 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "EXE": {
+      "ticker": "EXE",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "LANWF": {
       "ticker": "LANWF",
       "channels": [
@@ -21478,6 +21540,16 @@
     },
     "IRAB-UN": {
       "ticker": "IRAB-UN",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "MGRX": {
+      "ticker": "MGRX",
       "channels": [
         "special_situation"
       ],
@@ -21576,16 +21648,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "SUZ": {
-      "ticker": "SUZ",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "ATCHW": {
       "ticker": "ATCHW",
       "channels": [
@@ -21648,6 +21710,16 @@
     },
     "RIG": {
       "ticker": "RIG",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "SOARW": {
+      "ticker": "SOARW",
       "channels": [
         "special_situation"
       ],
@@ -21756,16 +21828,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "LNAI": {
-      "ticker": "LNAI",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "RPC": {
       "ticker": "RPC",
       "channels": [
@@ -21816,8 +21878,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "TRPPF": {
-      "ticker": "TRPPF",
+    "TCEYF": {
+      "ticker": "TCEYF",
       "channels": [
         "special_situation"
       ],
@@ -21946,8 +22008,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "CBRGF": {
-      "ticker": "CBRGF",
+    "CBGGF": {
+      "ticker": "CBGGF",
       "channels": [
         "special_situation"
       ],
@@ -22636,8 +22698,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "T-PA": {
-      "ticker": "T-PA",
+    "T-PC": {
+      "ticker": "T-PC",
       "channels": [
         "special_situation"
       ],
@@ -22728,6 +22790,16 @@
     },
     "VOXR": {
       "ticker": "VOXR",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "CMLSQ": {
+      "ticker": "CMLSQ",
       "channels": [
         "special_situation"
       ],
@@ -23116,8 +23188,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "SUNFF": {
-      "ticker": "SUNFF",
+    "SLFQF": {
+      "ticker": "SLFQF",
       "channels": [
         "special_situation"
       ],
@@ -23206,8 +23278,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "PONOR": {
-      "ticker": "PONOR",
+    "PONOU": {
+      "ticker": "PONOU",
       "channels": [
         "special_situation"
       ],
@@ -23496,6 +23568,16 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "HIT": {
+      "ticker": "HIT",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "MBC": {
       "ticker": "MBC",
       "channels": [
@@ -23618,16 +23700,6 @@
     },
     "BRBS": {
       "ticker": "BRBS",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "SKYQ": {
-      "ticker": "SKYQ",
       "channels": [
         "special_situation"
       ],
@@ -23846,6 +23918,16 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "ARAI": {
+      "ticker": "ARAI",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "JENA-RI": {
       "ticker": "JENA-RI",
       "channels": [
@@ -23986,6 +24068,16 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "INSW": {
+      "ticker": "INSW",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "NWTG": {
       "ticker": "NWTG",
       "channels": [
@@ -24006,8 +24098,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "QETAU": {
-      "ticker": "QETAU",
+    "QETAR": {
+      "ticker": "QETAR",
       "channels": [
         "special_situation"
       ],
@@ -24098,6 +24190,16 @@
     },
     "PMAX": {
       "ticker": "PMAX",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "TRMD": {
+      "ticker": "TRMD",
       "channels": [
         "special_situation"
       ],
@@ -24546,16 +24648,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "BMBL": {
-      "ticker": "BMBL",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "JYNT": {
       "ticker": "JYNT",
       "channels": [
@@ -24996,8 +25088,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "ONFOW": {
-      "ticker": "ONFOW",
+    "ONFOP": {
+      "ticker": "ONFOP",
       "channels": [
         "special_situation"
       ],
@@ -25096,8 +25188,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "SBXUF": {
-      "ticker": "SBXUF",
+    "SBXWF": {
+      "ticker": "SBXWF",
       "channels": [
         "special_situation"
       ],
@@ -25276,6 +25368,26 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "IBN": {
+      "ticker": "IBN",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "RYET": {
+      "ticker": "RYET",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "AORT": {
       "ticker": "AORT",
       "channels": [
@@ -25356,8 +25468,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "TDS-PU": {
-      "ticker": "TDS-PU",
+    "TDS-PV": {
+      "ticker": "TDS-PV",
       "channels": [
         "special_situation"
       ],
@@ -25656,8 +25768,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "SCCG": {
-      "ticker": "SCCG",
+    "SCCE": {
+      "ticker": "SCCE",
       "channels": [
         "special_situation"
       ],
@@ -25698,16 +25810,6 @@
     },
     "HWCPZ": {
       "ticker": "HWCPZ",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "KRP": {
-      "ticker": "KRP",
       "channels": [
         "special_situation"
       ],
@@ -26996,6 +27098,16 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "BSVN": {
+      "ticker": "BSVN",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "CELZ": {
       "ticker": "CELZ",
       "channels": [
@@ -28136,6 +28248,16 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "NVNIW": {
+      "ticker": "NVNIW",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "TEAD": {
       "ticker": "TEAD",
       "channels": [
@@ -28216,6 +28338,16 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "LRN": {
+      "ticker": "LRN",
+      "channels": [
+        "activist_13d"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "GOOS": {
       "ticker": "GOOS",
       "channels": [
@@ -28228,16 +28360,6 @@
     },
     "MAGH": {
       "ticker": "MAGH",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "NTCL": {
-      "ticker": "NTCL",
       "channels": [
         "special_situation"
       ],
@@ -28536,6 +28658,16 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "MSGR": {
+      "ticker": "MSGR",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "DTCKF": {
       "ticker": "DTCKF",
       "channels": [
@@ -28798,6 +28930,16 @@
     },
     "TRT": {
       "ticker": "TRT",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "DPLS": {
+      "ticker": "DPLS",
       "channels": [
         "special_situation"
       ],
@@ -30546,6 +30688,26 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "PINE-PA": {
+      "ticker": "PINE-PA",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "CTRVP": {
+      "ticker": "CTRVP",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "LICN": {
       "ticker": "LICN",
       "channels": [
@@ -30628,6 +30790,36 @@
     },
     "LUCYW": {
       "ticker": "LUCYW",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "LUCD": {
+      "ticker": "LUCD",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "EHTH": {
+      "ticker": "EHTH",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "BMEZ": {
+      "ticker": "BMEZ",
       "channels": [
         "special_situation"
       ],
