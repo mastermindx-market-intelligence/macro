@@ -817,8 +817,6 @@ def describe_lineage_universe(closes: Mapping[str, pd.Series], benchmark: pd.Ser
 
         current = deepcopy(rows[-1])
         # Count subjects whose leave-one-out basket exists on the cut session (calendar[-1]).
-        if t not in src_errs and bench_exc_str is None and not peer_exc if False else True:
-            pass  # placeholder — keep the simpler check below
         has_basket_t, _ = basket_data.get(t, ([False] * len(calendar), [None] * len(calendar)))
         if has_basket_t and has_basket_t[-1] and t not in src_errs and bench_exc_str is None:
             with_peer_basket += 1
