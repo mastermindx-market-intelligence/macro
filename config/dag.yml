@@ -3481,6 +3481,25 @@ lanes:
           collect byproducts remain unstaged. Every complete source receipt is
           published to keep current-state health live; a normalized semantic
           fingerprint separates quiet heartbeat folds from alert-worthy evidence.
+      - id: restore_defense_market_owner
+        module: scripts.restore_defense_market_owner
+        args: [--root, .]
+        note: >
+          Restore the pinned existing market owner before projection; missing or
+          inconsistent owner bytes refuse the generation.
+      - id: restore_event_workspace_owner
+        module: scripts.restore_event_workspace_owner
+        args: [--root, .]
+        note: >
+          Restore the existing financial-owner generation and require the reviewed
+          defense issuer set. This reads the owner; it does not create a financial
+          publication or grant new acquisition authority.
+      - id: build_government_revenue_research_state
+        module: scripts.build_government_revenue_research_state
+        args: [--root, .]
+        note: >
+          Compose the existing registered research state with the projection clock;
+          no retrospective forecast issuance or outcome backfill is permitted.
       - id: build_government_revenue
         module: scripts.build_government_revenue
         args: [--live-materialization]
@@ -3502,21 +3521,20 @@ lanes:
           projection but cannot append, retime, or backfill its ledger. No trade-signal
           scoring, ranking, sizing, gating, or escalation is permitted.
 
+      - id: install_proof_dependencies
+        module: pip
+        args: [install, "fastapi>=0.115,<1.0", httpx]
+        note: Install the API dependencies required by the complete candidate proof.
       - id: prove_government_revenue_candidates
-        module: pytest
-        args:
-          - -p
-          - no:cacheprovider
-          - tests/test_government_revenue_candidates.py
-          - tests/test_government_revenue_candidate_projection.py
-          - tests/test_government_revenue_candidate_fixture.py
-          - -q
+        module: scripts.ci.govrev_candidate_proof
+        args: [prove, --root, .]
         note: >
-          Conditional, read-only proof over candidate artifacts changed by this run.
-          The workflow may add xdist flags when available, but falls back to the same
-          serial pytest suite when that optional runner dependency is absent. This
-          declaration records the executable module without granting the prover any
-          writer, ranking, sizing, gating, or escalation authority.
+          The mandatory sealed helper runs the three complete candidate suites,
+          records collection and JUnit evidence, and binds immutable pre/post
+          source, runtime and output bytes. Missing pytest refuses; missing xdist
+          uses serial proof. Rebuilds after rebase must match the accepted receipt
+          exactly or run a new proof. Publication verifies committed generation
+          identity; no direct pytest exit can substitute for this gate.
 
   # ── filing-forensics-sec.yml / acquire_project_sync ──────────────────────
   - workflow: .github/workflows/filing-forensics-sec.yml

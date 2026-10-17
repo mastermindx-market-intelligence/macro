@@ -1,168 +1,29 @@
 {
   "schema": "stock_desk.v1",
   "as_of": "2026-10-14",
-  "generated_at": "2026-10-15T09:06:24.177244+00:00",
+  "generated_at": "2026-10-17T08:04:06.378006+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-10-14-ETSY-20261015090624-1",
-      "ticker": "ETSY",
-      "name": "Etsy",
-      "lean": "constructive",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The constructive base-building verdict is supported by an unblocked entry, improving daily cycle and strong quality axis, but this is only a tentative relative-strength lean because the weekly trend remains mixed and liquidity is contracting. The historically weak directional accuracy of constructive notes keeps conviction low.",
-      "evidence": [
-        "Verdict: Constructive \u2014 building a base",
-        "Entry unblocked; price above rising 10-day average",
-        "Quality axis 84th percentile; accounting clean",
-        "Weekly timeframe has not turned",
-        "US net liquidity contracting"
-      ],
-      "dissent": "The daily bounce may fail before the weekly trend confirms, while falling net income and an expensive value profile leave little fundamental cushion.",
-      "falsifier": {
-        "text": "ETSY falls back below its 10-day average and the new daily cycle rolls over while the S&P 500 holds its trend.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "ETSY",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 20
-        }
-      },
-      "check_by": "2026-11-11",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-10-14-RSG-20261015090624-2",
-      "ticker": "RSG",
-      "name": "Republic Services",
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 15,
-      "thesis": "RSG remains a bullish with-trend leader, so extension alone is not a valid bearish call; the shipped risk controls instead argue for watching rather than chasing. The weak industry basket, contracting liquidity and stretched daily cycle offset the fresh-buy setup.",
-      "evidence": [
-        "Verdict: Constructive \u2014 building a base",
-        "Weekly and daily trends agree",
-        "Board state: HOLD \u2014 EXTENDED",
-        "Daily phase stretched; investor phase late",
-        "Industrials equal-weight basket below long-term trend"
-      ],
-      "dissent": "The fresh cycle low, positive MACD and clean fundamentals could sustain relative outperformance despite the extension.",
-      "falsifier": {
-        "text": "RSG clears its recent high and continues outperforming the S&P 500 without first resetting its stretched daily cycle.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-11-04",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-10-14-PR-20261015090624-3",
-      "ticker": "PR",
-      "name": "Permian Resources",
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 15,
-      "thesis": "The constructive turn is intact, but the risk reshape argues against a directional bet near the high: the daily cycle is stretched, the weekly picture is mixed and the prior cycle topped early. Those genuine structural cautions offset the unblocked setup without justifying a short against intact momentum.",
-      "evidence": [
-        "Verdict: Constructive \u2014 building a base",
-        "Price 0.3% below its 52-week high",
-        "Daily phase stretched; prior cycle left-translated",
-        "Weekly timeframe has not turned",
-        "Accounting flag: watch"
-      ],
-      "dissent": "Positive momentum above both major averages and favorable revisions could extend the breakout before any reset.",
-      "falsifier": {
-        "text": "PR establishes a sustained new high and outperforms the S&P 500 as the weekly timeframe turns bullish.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-11-04",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-10-14-RS-20261015090624-4",
-      "ticker": "RS",
-      "name": "Reliance, Inc.",
-      "lean": "constructive",
-      "conviction": "low",
-      "horizon_d": 15,
-      "thesis": "RS has an unblocked, in-band entry and a right-translated daily cycle, supporting a tentative constructive relative lean. Earnings in seven days and contracting liquidity are explicit risk controls that sharply limit confidence.",
-      "evidence": [
-        "Verdict: Constructive \u2014 building a base",
-        "Entry axis 64th percentile and unblocked",
-        "Daily phase in-band; cycle translation right",
-        "Accounting clean",
-        "Earnings in 7 days"
-      ],
-      "dissent": "The earnings event can overwhelm the setup, while net income contraction and the still-mixed weekly trend may prevent relative follow-through.",
-      "falsifier": {
-        "text": "RS loses its 10-day average after earnings and underperforms the S&P 500 as the daily cycle rolls over.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "RS",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 15
-        }
-      },
-      "check_by": "2026-11-04",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-10-14-DIS-20261015090624-5",
-      "ticker": "DIS",
-      "name": "Walt Disney Co/The",
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The deterministic verdict finds no clear edge: a short-term bottoming attempt and clean accounting are countered by weak selection, a left-translated prior cycle and a lagging sector basket. With the board also flagging extension, the appropriate risk-controlled read is watch rather than chase or short.",
-      "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Selection axis 45th percentile",
-        "Prior cycle left-translated",
-        "Communication Services equal-weight basket below long-term trend",
-        "Board state: HOLD \u2014 EXTENDED"
-      ],
-      "dissent": "Strong net-income growth, positive MACD and favorable October-November seasonality could turn the rebound into sustained relative strength.",
-      "falsifier": {
-        "text": "DIS turns its weekly timeframe bullish and sustains outperformance versus the S&P 500 above its recent swing high.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-11-11",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-10-14-CSGP-20261015090624-6",
-      "ticker": "CSGP",
-      "name": "CoStar Group",
+      "id": "2026-10-14-GEHC-20261017080406-1",
+      "ticker": "GEHC",
+      "name": "GE HealthCare",
       "lean": "cautious",
-      "conviction": "medium",
+      "conviction": "low",
       "horizon_d": 20,
-      "thesis": "This is genuine relative weakness rather than mere extension: CSGP remains below both major averages, carries a lagging verdict and has a left-translated prior cycle. The risk controls and deteriorating fundamentals support a cautious relative-to-S&P lean despite the nascent daily bounce.",
+      "thesis": "The daily rebound is improving, but the deterministic verdict remains relative weakness and the weekly trend has not confirmed. The risk controls argue against treating the bottoming signal as a durable turn while revisions and residual momentum remain negative.",
       "evidence": [
         "Verdict: Lagging \u2014 relative weakness",
-        "22.0% below the 200-day average and below the 50-day average",
-        "Selection axis 31st percentile; momentum z-score -2.68",
-        "Prior cycle left-translated",
-        "Net income down 95.3%; accounting flag watch"
+        "Weekly timeframe has not turned",
+        "Selection: revisions z -1.05; momentum z -1.67",
+        "Below 200-day average; accounting watch"
       ],
-      "dissent": "A new daily cycle, positive MACD and the rejection of the recent low could produce a powerful mean-reversion rally from deeply depressed levels.",
+      "dissent": "The rejected cycle low, positive MACD and recovery above the 10- and 50-day averages could develop into a broader reversal.",
       "falsifier": {
-        "text": "CSGP reclaims and holds above its 200-day average while outperforming the S&P 500 over the same period.",
+        "text": "The weekly trend turns bullish while GEHC holds above its 200-day average and gains relative strength versus the S&P 500.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "CSGP",
+          "subject_ticker": "GEHC",
           "vs": "SPY",
           "op": ">",
           "threshold": 0.05,
@@ -171,6 +32,139 @@
       },
       "check_by": "2026-11-11",
       "engine_verdict": "Lagging \u2014 relative weakness"
+    },
+    {
+      "id": "2026-10-14-ENSG-20261017080406-2",
+      "ticker": "ENSG",
+      "name": "Ensign Group",
+      "lean": "constructive",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The constructive base verdict is supported by the validated entry framework: a fresh buy signal, an early investor phase and agreement between daily and weekly trends. Conviction stays low because historical constructive calls have weak directional accuracy and the stock remains below its 200-day average.",
+      "evidence": [
+        "Verdict: Constructive \u2014 building a base",
+        "Fresh buy; entry not blocked",
+        "Bullish weekly trend and early investor phase",
+        "Quality factor z 0.926; accounting watch"
+      ],
+      "dissent": "Failure to reclaim the 200-day average could reveal that the apparent base is only a countertrend bounce.",
+      "falsifier": {
+        "text": "ENSG closes below the October 7 cycle low of 169.22 or the daily cycle becomes failed.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "ENSG",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 20
+        }
+      },
+      "check_by": "2026-11-11",
+      "engine_verdict": "Constructive \u2014 building a base"
+    },
+    {
+      "id": "2026-10-14-PR-20261017080406-3",
+      "ticker": "PR",
+      "name": "Permian Resources",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 15,
+      "thesis": "The constructive verdict and intact momentum argue against a directional short, but the validated entry brake says not to chase a late, stretched cycle only 0.3% below its 52-week high. The prior left-translated cycle and deteriorating net income leave the relative direction too conflicted for a positive lean.",
+      "evidence": [
+        "Verdict: Constructive \u2014 building a base",
+        "Entry not blocked, but daily phase is stretched",
+        "Late investor phase; prior cycle left-translated",
+        "Net-income growth -12.1%"
+      ],
+      "dissent": "Price remains above both major moving averages with positive MACD, so momentum could persist and drive further relative outperformance.",
+      "falsifier": {
+        "text": "PR forms a new base away from its 52-week high and then resumes its advance with a right-translated cycle.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-11-04",
+      "engine_verdict": "Constructive \u2014 building a base"
+    },
+    {
+      "id": "2026-10-14-DIS-20261017080406-4",
+      "ticker": "DIS",
+      "name": "Walt Disney Co/The",
+      "lean": "cautious",
+      "conviction": "medium",
+      "horizon_d": 20,
+      "thesis": "This is an actual relative-weakness setup rather than extension alone: the verdict is lagging, the prior cycle topped early, and its sector basket is below its long-term trend. The macro-risk control further reduces confidence that the daily bounce will outperform the S&P 500.",
+      "evidence": [
+        "Verdict: Lagging \u2014 relative weakness",
+        "Prior cycle left-translated",
+        "Communication Services equal-weight basket below long-term trend",
+        "Negative selection legs: SUE -1.51, revisions -0.51, momentum -0.50"
+      ],
+      "dissent": "DIS is above both major moving averages with positive MACD, strong reported net-income growth and favorable October-November seasonality.",
+      "falsifier": {
+        "text": "DIS establishes a right-translated cycle and sustains improving relative strength versus the S&P 500 as its sector basket recovers above its long-term trend.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "DIS",
+          "vs": "SPY",
+          "op": ">",
+          "threshold": 0.05,
+          "horizon_d": 20
+        }
+      },
+      "check_by": "2026-11-11",
+      "engine_verdict": "Lagging \u2014 relative weakness"
+    },
+    {
+      "id": "2026-10-14-RHHBY-20261017080406-5",
+      "ticker": "RHHBY",
+      "name": "Roche Holding (ADR)",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The constructive base verdict and unblocked entry argue against shorting the turn, but the weekly trend remains unconfirmed and the prior cycle topped early. With no quality data and only contextual residual momentum in selection, there is not enough validated support for a relative-performance call.",
+      "evidence": [
+        "Verdict: Constructive \u2014 building a base",
+        "Entry unblocked; price above 50- and 200-day averages",
+        "Weekly timeframe has not turned",
+        "Prior cycle left-translated; quality axis unavailable"
+      ],
+      "dissent": "The new daily cycle, positive momentum and proximity to the 52-week high could resolve into continued relative leadership.",
+      "falsifier": {
+        "text": "The weekly trend turns bullish and RHHBY sustains relative strength versus the S&P 500 through a right-translated cycle.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-11-11",
+      "engine_verdict": "Constructive \u2014 building a base"
+    },
+    {
+      "id": "2026-10-14-NWN-20261017080406-6",
+      "ticker": "NWN",
+      "name": "NW Natural",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The deterministic verdict says there is no clear edge, and the validated entry improvement is offset by an unconfirmed weekly trend, late investor phase and weak quality axis. The setup supports watching the turn rather than asserting relative outperformance or underperformance.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
+        "Entry unblocked; swing low and 10-day recovery",
+        "Below 200-day average; weekly trend unconfirmed",
+        "Quality z -0.57; accounting watch"
+      ],
+      "dissent": "Low-volatility and low-beta characteristics, positive MACD and strong net-income growth could help NWN outperform if defensive leadership returns.",
+      "falsifier": {
+        "text": "NWN reclaims and holds above its 200-day average while its weekly trend turns bullish and relative strength versus the S&P 500 improves.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-11-11",
+      "engine_verdict": "Neutral \u2014 no clear edge"
     }
   ],
   "disclaimer": "Accountable AI judgment on the deterministic top picks. The cross-sectional rank has no validated forward edge; these leans are fallible, falsifiable conditionals graded against reality \u2014 never position sizes. See the track record."
