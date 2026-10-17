@@ -1,0 +1,20 @@
+{
+  "browser_proofs": 0,
+  "checks": [
+    "schema",
+    "authority_false",
+    "m6_companion_blobs_and_counts",
+    "m7_representation_partition",
+    "m8_pin_shape_and_refresh_rule",
+    "m9_policy_binding",
+    "external_gates_still_false",
+    "profile_fail_closed",
+    "sticky_native_staging_hold"
+  ],
+  "failed": 0,
+  "kind": "consumer_r13_manifest_verification",
+  "native_application_tests": 0,
+  "native_staging_actions": 0,
+  "passed": 9,
+  "production_acceptance": false
+}
