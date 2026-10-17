@@ -15,6 +15,14 @@ UID = "11111111-1111-1111-1111-111111111111"
 def _clean(monkeypatch):
     monkeypatch.delenv("PAYWALL_ENABLED", raising=False)
     paywall._ENT_CACHE.clear()
+    # The BEA endpoint is permanently paid-gated, even with the global
+    # PAYWALL_ENABLED staged off. Keep all tests hermetic with a paid fixture;
+    # individual negative tests override this to a free account.
+    monkeypatch.setattr(
+        paywall, "_store_entitlement",
+        lambda uid: ({"tier": "essential", "status": "active",
+                      "features": ["site_full"]}, True),
+    )
     app.dependency_overrides[require_user] = lambda: {"id": UID, "email": "u@example.test"}
     yield
     app.dependency_overrides.clear()
@@ -38,6 +46,20 @@ def test_gmi_bea_route_respects_existing_paid_site_gate(monkeypatch):
     assert r.status_code == 403
     assert r.json()["detail"]["required_feature"] == "site_full"
     assert r.headers.get("cache-control") == "private, no-store"
+
+
+def test_gmi_bea_paid_gate_is_always_enforced_even_when_global_wall_off(monkeypatch):
+    monkeypatch.delenv("PAYWALL_ENABLED", raising=False)
+    monkeypatch.setattr(
+        paywall, "_store_entitlement",
+        lambda uid: ({"tier": "free", "status": "none", "features": []}, True),
+    )
+    paywall._ENT_CACHE.clear()
+    response = client.get("/api/gmi/bea/industry/5241X")
+    assert response.status_code == 403
+    assert response.json()["detail"]["required_feature"] == "site_full"
+    assert response.headers.get("cache-control") == "private, no-store"
+    assert "SOURCE_UNREGISTERED" not in response.text
 
 
 def test_gmi_bea_route_always_returns_source_unavailable_not_unadmitted_rows():
@@ -83,7 +105,7 @@ def test_gmi_bea_claimed_produced_metadata_does_not_enable_unbound_rows(monkeypa
     assert body["annual_descriptive"] == []
 
 
-def test_gmi_bea_registry_exception_coarsens_private_path(monkeypatch):
+def test_gmi_bea_registry_exception_coarsens_private_path(monkeypatch, caplog):
     def unavailable_registry():
         raise OSError("secret-data-root/on-private-disk")
     monkeypatch.setattr("lib.dataos.registry.load_registry", unavailable_registry)
@@ -92,6 +114,10 @@ def test_gmi_bea_registry_exception_coarsens_private_path(monkeypatch):
     assert r.json()["detail"] == {"error": "BEA_SOURCE_REGISTRY_UNAVAILABLE"}
     assert "secret-data-root" not in r.text
     assert r.headers.get("cache-control") == "private, no-store"
+    # Operators receive a bounded cause *type*, never private original path.
+    assert "gmi BEA native source refusal" in caplog.text
+    assert "OSError" in caplog.text
+    assert "secret-data-root" not in caplog.text
 
 
 def test_gmi_bea_current_route_rejects_historical_or_unknown_queries_before_registry(monkeypatch):
@@ -108,6 +134,22 @@ def test_gmi_bea_current_route_rejects_historical_or_unknown_queries_before_regi
         assert response.status_code == 422, (query, response.status_code, response.text)
         assert response.headers.get("cache-control") == "private, no-store"
         assert "source_generation_id" not in response.text
+
+
+def test_gmi_bea_internal_packet_refusal_is_not_misreported_as_client_422(monkeypatch):
+    from lib.dataos.registry import Registry
+    from engine.market_ontology import bea_gvc_current as gmi
+
+    def refused_packet(_packet):
+        raise gmi.BEADescriptiveRefused("private-source-invalid")
+
+    monkeypatch.setattr("lib.dataos.registry.load_registry", lambda: Registry(()))
+    monkeypatch.setattr(gmi, "candidate_packet_bytes", refused_packet)
+    response = client.get("/api/gmi/bea/industry/5241X")
+    assert response.status_code == 503
+    assert response.json()["detail"] == {"error": "BEA_SOURCE_REGISTRY_UNAVAILABLE"}
+    assert "private-source-invalid" not in response.text
+    assert response.headers.get("cache-control") == "private, no-store"
 
 
 def test_ask_keeps_registered_behavior_while_paid_switch_off(monkeypatch):

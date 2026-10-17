@@ -410,6 +410,31 @@ def test_source_industry_names_are_preserved_without_silent_aliases():
     assert check(rows=rows)["reason"] == "SOURCE_INDUSTRY_NAME_INVALID"
 
 
+def test_source_name_rejects_surrogate_bidi_and_zero_width_spoofing():
+    for invalid_name in ("Invalid" + chr(0xD800) + "name",
+                         "Insurance" + chr(0x202E) + "Carriers",
+                         "Insurance" + chr(0x200B) + "Carriers",
+                         "Insurance" + chr(0x2066) + "Carriers"):
+        rows = fake_rows()
+        rows[0]["industry_name"] = invalid_name
+        assert check(rows=rows)["reason"] == "SOURCE_INDUSTRY_NAME_INVALID"
+
+
+def test_machine_packet_rejects_synthetic_aggregate_residual_overflow():
+    from copy import deepcopy
+    source = check()
+    forgery = deepcopy(source)
+    first = forgery["annual_descriptive"][0]
+    first["world_import_million_USD"] += 1000000
+    first["region_rounding_difference_million_USD"] += 1000000
+    second = forgery["annual_descriptive"][1]
+    second["year_over_year_change_million_USD"]["world_import_million_USD"] -= 1000000
+    second["year_over_year_change_million_USD"][
+        "region_rounding_difference_million_USD"] -= 1000000
+    with pytest.raises(gmi.BEADescriptiveRefused, match="RESIDUAL"):
+        gmi.candidate_packet_bytes(forgery)
+
+
 def test_invalid_source_digest_and_source_framing_refuse():
     body = encoded(fake_rows())
     actual = hashlib.sha256(body).hexdigest()

@@ -163,6 +163,44 @@ implemented. The combined GMI, API-paywall and cache suite passed **36 tests**.
 This is a product/query truthfulness improvement, not a native source
 read, publication authorization or live browser proof.
 
+## Fabric C3 security review repairs — October 17
+
+Independent, **paid M2 Fabric review** `gmi-bea-20261017-c3-fabric-review-001`
+returned a terminal, evidence-backed **REQUEST_CHANGES** verdict against
+source head `17e466e3a1a7fb333d34ce657079f11f72f4ab39`. It independently
+executed 28 GMI/paywall tests, reproduced the ten curated CI import-closure
+defects on that exact head, and independently tested that widening those ten
+job path lists resolves the blocking failure. The fix was already published
+on this original branch at `8a7d8dbf85c80d837a12242da08db6755f028ded`
+and validated locally against the existing two focused CI contract tests.
+This is C3 labor evidence, **not formal GitHub approval**.
+
+The reviewer also reproduced defense-in-depth issues. The current source
+branch now reuses `enforce_site_full(user, always=True)` on the GMI route,
+so an actual free-tier session is refused 403 even when
+`PAYWALL_ENABLED=0`. No second entitlement plane exists; test fixtures
+use the incumbent `_store_entitlement` source and exercise both paid and
+free states. Host-side source/candidate failures are separately coarsened to
+503 with a bounded exception **type-only** log entry, never 422 blaming the
+client or exposing private source paths. Name and packet validation refuses
+lone Unicode surrogates, bidi overrides, zero-width format controls and C0
+characters; JSON serialization escapes non-ASCII safely. Machine packet
+validation additionally checks that the absolute signed **annual** rounding
+residual cannot exceed 3 per commodity with a rounding flag and pins the
+May-2026 source commodity-axis expectation as `COMMODITIES_PER_YEAR=139`.
+No token aliasing, historical PIT, rights or trade authorizations were
+weakened. New adversarial tests first failed on the old implementation,
+then passed after fixing the root defects.
+
+The combined GMI leaf, API-paywall and API-no-store suites passed
+**40 tests** locally. The remaining nonblocking performance issue
+(an uncached canonical registry YAML read on paid GMI availability requests)
+is not treated as an alternate source/status owner; optimizations must
+preserve timely native revocation and owner decision evidence. The
+original-source axes denied by platform safety were **not** re-read.
+An exact-head hosted CI and current-head independent review remain distinct
+release gates.
+
 ## Production remains HELD
 
 Real acceptance still requires lawful original 72-response L0 validation, source industry axis resolution, accepted 5241X/5241XX mapping or explicit unresolved handling, installed L0/L1 UTC ingest/revision/correction chain and registry PRODUCED promotion by the current Data OS owner. Existing app authentication and entitlement then must be proven alongside same-generation browser/API descriptive results. This candidate is not a release, approval, producer or new control plane.

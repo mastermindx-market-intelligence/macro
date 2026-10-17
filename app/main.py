@@ -1050,7 +1050,7 @@ def _user_display_name(user: dict) -> str | None:
 def gmi_bea_industry_current(
     industry_code: str,
     request: Request,
-    user: dict = Depends(require_site_full_user),
+    user: dict = Depends(require_user),
 ) -> Response:
     """Authenticated BEA GVC read *availability*, never unadmitted industry data.
 
@@ -1060,22 +1060,28 @@ def gmi_bea_industry_current(
     accepted native-reader binding is needed before any data-serving expansion.
     """
     from engine.market_ontology.bea_gvc_current import (
-        BEADescriptiveRefused, candidate_packet_bytes, current_industry_candidate,
+        candidate_packet_bytes, current_industry_candidate,
         is_exact_source_industry_code,
     )
     from lib.dataos.registry import load_registry
+    from app.paywall import enforce_site_full
 
+    # This is a paid descriptive-data desk, not a switch-optional registered
+    # route. Reuse the incumbent paywall's always-on premium entitlement check.
+    # Refuse free users BEFORE revealing source registry availability.
+    enforce_site_full(user, always=True)
+
+    # Distinguish an invalid CLIENT query (422) from malformed SERVER-side
+    # native/source evidence (503). Both checks happen before any source read.
+    if not is_exact_source_industry_code(industry_code):
+        raise HTTPException(
+            422, detail={"error": "UNSAFE_EXACT_INDUSTRY_CODE"})
+    # The route is CURRENT-only: never ignore a historical/as-of query while
+    # returning the retrospective May-2026 edition.
+    if request.query_params:
+        raise HTTPException(
+            422, detail={"error": "BEA_CURRENT_ONLY_NO_QUERY_PARAMETERS"})
     try:
-        # Source-code grammar is checked before attempting a registry read.
-        if not is_exact_source_industry_code(industry_code):
-            raise BEADescriptiveRefused("UNSAFE_EXACT_INDUSTRY_CODE")
-        # This is a CURRENT-vintage endpoint only. Silently ignoring an as-of
-        # request could falsely dress retrospective 2026 allocations as PIT.
-        # Refuse *all* query parameters until a canonical temporal contract
-        # explicitly qualifies a future mode.
-        if request.query_params:
-            raise HTTPException(
-                422, detail={"error": "BEA_CURRENT_ONLY_NO_QUERY_PARAMETERS"})
         # The canonical Data OS registry path is owned by lib/dataos/registry.py.
         registry = load_registry()
         packet = current_industry_candidate(
@@ -1087,12 +1093,12 @@ def gmi_bea_industry_current(
             raise HTTPException(
                 503, detail={"error": "BEA_NATIVE_OWNER_READ_NOT_ADMITTED"})
         payload = candidate_packet_bytes(packet)
-    except BEADescriptiveRefused:
-        raise HTTPException(422, detail={"error": "UNSAFE_EXACT_INDUSTRY_CODE"}) from None
     except HTTPException:
         raise
-    except Exception:
-        # Never leak filesystem/config/auth/provider diagnostics to the caller.
+    except Exception as exc:
+        # Coarsen the SERVER failure to its class, never log the original path
+        # or user/source contents. The client gets a stable typed 503.
+        log.warning("gmi BEA native source refusal (%s)", type(exc).__name__)
         raise HTTPException(
             503, detail={"error": "BEA_SOURCE_REGISTRY_UNAVAILABLE"}) from None
     return Response(

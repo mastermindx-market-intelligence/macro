@@ -14,6 +14,7 @@ import hashlib
 import json
 import re
 from typing import Any
+import unicodedata
 
 from lib.dataos.registry import DatasetStatus, Layer, Registry
 
@@ -24,6 +25,7 @@ EDITION_DATE = "2026-05-21"
 RIGHTS_SCOPE = "bea_public_domain_current_descriptive_scope_20261014"
 RIGHTS_DECISION = "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
 MAX_BYTES = 16 * 1024 * 1024
+COMMODITIES_PER_YEAR = 139  # BEA GVC May-2026 original matrix axis size
 MAX_JSON_SAFE_INTEGER = (1 << 53) - 1
 YEARS = tuple(range(2017, 2025))
 REGIONS = (
@@ -48,13 +50,22 @@ def is_exact_source_industry_code(value: object) -> bool:
     return type(value) is str and bool(_CODE.fullmatch(value))
 
 
+def _safe_source_label(value: object) -> bool:
+    """Exact source label, excluding invisible Unicode spoofing/invalid surrogates."""
+    return (
+        type(value) is str and bool(value.strip()) and len(value) <= 256
+        and not any(unicodedata.category(ch) in {"Cc", "Cf", "Cs", "Zl", "Zp"}
+                    for ch in value)
+    )
+
+
 class BEADescriptiveRefused(ValueError):
     """Malformed trusted input; never leak data from a partial source."""
 
 
 def _payload(data: Any) -> bytes:
     return json.dumps(data, sort_keys=True, separators=(",", ":"),
-                      ensure_ascii=False, allow_nan=False).encode("utf-8")
+                      ensure_ascii=True, allow_nan=False).encode("utf-8")
 
 
 def _json_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -205,10 +216,7 @@ def current_industry_candidate(
                 (year, commodity) in visited):
             return _unavailable("SOURCE_GRAIN_OR_IDENTITY_INVALID", industry_code_exact)
         source_industry_name = row.get("industry_name")
-        if (type(source_industry_name) is not str
-                or not source_industry_name.strip()
-                or len(source_industry_name) > 256
-                or any(ord(char) < 32 for char in source_industry_name)):
+        if not _safe_source_label(source_industry_name):
             return _unavailable("SOURCE_INDUSTRY_NAME_INVALID", industry_code_exact)
         existing_industry_name = industry_names_by_year.get(year)
         if existing_industry_name is None:
@@ -301,11 +309,11 @@ def current_industry_candidate(
             quality[year]["negative_region_adjustment_commodities"] += 1
         if rounding != 0:
             quality[year]["rounding_residual_commodities"] += 1
-    if len(visited) != len(YEARS) * 139:
+    if len(visited) != len(YEARS) * COMMODITIES_PER_YEAR:
         return _unavailable("INCOMPLETE_COMMODITY_YEARS", industry_code_exact)
     for year in YEARS:
         codes = tuple(by_year[year])
-        if len(codes) != 139 or len(set(codes)) != 139:
+        if len(codes) != COMMODITIES_PER_YEAR or len(set(codes)) != COMMODITIES_PER_YEAR:
             return _unavailable("INCOMPLETE_COMMODITY_YEARS", industry_code_exact)
         if seen_commodity_order is None:
             seen_commodity_order = codes
@@ -455,7 +463,7 @@ def candidate_packet_bytes(packet: Mapping[str, Any]) -> bytes:
                 "UNRESOLVED_5241X_VS_5241XX"
                 if packet["industry_code_exact"] == "5241X" else "NOT_APPLIED")
             or type(packet.get("rows_examined")) is not int
-            or packet["rows_examined"] != len(YEARS) * 139):
+            or packet["rows_examined"] != len(YEARS) * COMMODITIES_PER_YEAR):
         raise BEADescriptiveRefused("CANDIDATE_PACKET_AUTHORITY_INVALID")
     for field in ("source_generation_id", "source_lineage_sha256",
                   "producer_code_sha256", "owner_expected_view_sha256_claim"):
@@ -464,8 +472,7 @@ def candidate_packet_bytes(packet: Mapping[str, Any]) -> bytes:
     names = packet.get("industry_names_by_accounting_year")
     if (type(names) is not dict
             or set(names) != {str(year) for year in YEARS}
-            or any(type(value) is not str or not value.strip() or len(value) > 256
-                   or any(ord(char) < 32 for char in value)
+            or any(not _safe_source_label(value)
                    for value in names.values())):
         raise BEADescriptiveRefused("CANDIDATE_PACKET_INDUSTRY_LABEL_INVALID")
     stable = len(set(names.values())) == 1
@@ -494,9 +501,12 @@ def candidate_packet_bytes(packet: Mapping[str, Any]) -> bytes:
             raise BEADescriptiveRefused("CANDIDATE_PACKET_SIGNED_ACCOUNTING_INVALID")
         quality = row.get("quality")
         if (type(quality) is not dict or set(quality) != _QUALITY_FIELDS
-                or any(type(value) is not int or not 0 <= value <= 139
+                or any(type(value) is not int or not 0 <= value <= COMMODITIES_PER_YEAR
                        for value in quality.values())):
             raise BEADescriptiveRefused("CANDIDATE_PACKET_QUALITY_INVALID")
+        if (abs(amounts["region_rounding_difference_million_USD"])
+                > 3 * quality["rounding_residual_commodities"]):
+            raise BEADescriptiveRefused("CANDIDATE_PACKET_RESIDUAL_OUT_OF_BOUND")
         difference = row.get("year_over_year_change_million_USD")
         expected = None if prior is None else {
             field: amounts[field] - prior[field] for field in _ANNUAL_AMOUNT_FIELDS
