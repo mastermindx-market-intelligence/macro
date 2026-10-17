@@ -14,7 +14,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
+import tempfile
 from collections import Counter
 from datetime import datetime, timezone
 from functools import lru_cache
@@ -273,9 +275,49 @@ def build_event(bundle: Mapping[str, Any], source: bytes, chosen: Mapping[str, M
     return event
 
 
+CASE_ID_RE = re.compile(r"[A-Za-z0-9_][A-Za-z0-9._-]{0,127}\Z")
+
+
+class ProducerInputError(ValueError):
+    """A stable, input-safe error code; never put source contents in the message."""
+
+    def __init__(self, code: str):
+        self.code = code
+        super().__init__(code)
+
+
+def _safe_case_id(value: object) -> str:
+    if not isinstance(value, str) or CASE_ID_RE.fullmatch(value) is None:
+        raise ProducerInputError("case_id_invalid")
+    return value
+
+
+def _read_case_file(path: Path, root: Path, *, code: str) -> bytes:
+    """Only read regular, non-symlink files contained by the supplied case root."""
+    if path.is_symlink() or not path.resolve(strict=False).is_relative_to(root.resolve()):
+        raise ProducerInputError(code)
+    try:
+        return path.read_bytes()
+    except OSError:
+        raise ProducerInputError(code) from None
+
+
 def _load_family(labels: Path, case_id: str, family: str) -> dict | None:
+    case_id = _safe_case_id(case_id)
+    if family not in FAMILIES:
+        raise ProducerInputError("family_invalid")
     path = labels / f"{case_id}.{family}.json"
-    return json.loads(path.read_text()) if path.exists() else None
+    if path.is_symlink() or not path.resolve(strict=False).is_relative_to(labels.resolve()):
+        raise ProducerInputError("label_path_outside_root")
+    if not path.exists():
+        return None
+    try:
+        result = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        raise ProducerInputError("label_json_malformed") from None
+    if not isinstance(result, dict):
+        raise ProducerInputError("label_json_not_object")
+    return result
 
 
 def produce_case(bundle: Mapping[str, Any], source: bytes, returns: Mapping[str, Mapping[str, Any]],
@@ -333,27 +375,127 @@ def produce_case(bundle: Mapping[str, Any], source: bytes, returns: Mapping[str,
         return "rejected", exc.code, None
 
 
-def run(bundles: Path, labels: Path, out: Path, cases: list[str] | None = None, shadow_family: str | None = None) -> dict:
+
+def _published_name(shadow_family: str | None) -> str:
+    if shadow_family is not None and shadow_family not in FAMILIES:
+        raise ProducerInputError("family_invalid")
+    return "events_shadow_" + shadow_family if shadow_family else "events"
+
+
+def _case_result(case_dir: Path, bundles: Path, labels: Path, shadow_family: str | None,
+                 counts: Counter) -> tuple[str, str, dict | None, str]:
+    case_id = case_dir.name
+    try:
+        _safe_case_id(case_id)
+        if case_dir.is_symlink() or not case_dir.resolve().is_relative_to(bundles.resolve()):
+            raise ProducerInputError("case_path_outside_root")
+        try:
+            bundle = json.loads(_read_case_file(case_dir / "bundle.json", case_dir, code="bundle_read_failed"))
+        except (UnicodeError, json.JSONDecodeError):
+            raise ProducerInputError("bundle_json_malformed") from None
+        if not isinstance(bundle, dict):
+            raise ProducerInputError("bundle_json_not_object")
+        if _safe_case_id(bundle.get("case_id")) != case_id:
+            raise ProducerInputError("bundle_case_id_mismatch")
+        if not {"source_sha256", "issuer", "segments"} <= set(bundle):
+            raise ProducerInputError("bundle_fields_missing")
+        if not isinstance(bundle["source_sha256"], str) or not isinstance(bundle["segments"], list):
+            raise ProducerInputError("bundle_fields_invalid")
+        source = _read_case_file(case_dir / "source.txt", case_dir, code="source_read_failed")
+        returns = {fam: _load_family(labels, case_id, fam) for fam in FAMILIES}
+        kind, code, event = produce_case(bundle, source, returns, shadow_family, counts)
+        return kind, code, event, case_id
+    except ProducerInputError as exc:
+        return "rejected", exc.code, None, case_id
+
+
+def run(bundles: Path, labels: Path, out: Path, cases: list[str] | None = None,
+        shadow_family: str | None = None) -> dict:
+    name = _published_name(shadow_family)
+    if not bundles.is_dir() or bundles.is_symlink():
+        raise ProducerInputError("bundles_root_invalid")
+    case_dirs = sorted(p for p in bundles.iterdir() if p.is_dir())
+    if cases is not None:
+        if not cases:
+            raise ProducerInputError("requested_cases_empty")
+        requested = [_safe_case_id(cid) for cid in cases]
+        if len(requested) != len(set(requested)):
+            raise ProducerInputError("requested_cases_duplicate")
+        requested_set = set(requested)
+        present = {p.name for p in case_dirs}
+        if requested_set - present:
+            raise ProducerInputError("requested_cases_missing")
+        case_dirs = [p for p in case_dirs if p.name in requested_set]
+
+    # A failed build cannot truncate the last published pair. Staging is entirely
+    # private to the explicit output directory; only completed runs are published.
     out.mkdir(parents=True, exist_ok=True)
     counts: Counter = Counter()
     outcome = {"emitted": Counter(), "deferred": Counter(), "rejected": Counter()}
-    case_dirs = sorted(p for p in bundles.iterdir() if p.is_dir() and (not cases or p.name in cases))
-    name = "events_shadow_" + shadow_family if shadow_family else "events"
-    with (out / f"{name}.jsonl").open("w") as fh:
-        for case_dir in case_dirs:
-            bundle = json.loads((case_dir / "bundle.json").read_text())
-            source = (case_dir / "source.txt").read_bytes()
-            returns = {fam: _load_family(labels, bundle["case_id"], fam) for fam in FAMILIES}
-            kind, code, event = produce_case(bundle, source, returns, shadow_family, counts)
-            outcome[kind][code] += 1
-            if event is not None:
-                fh.write(json.dumps({"case_id": bundle["case_id"], "shadow": bool(shadow_family),
-                                     "novelty_source": "label_provisional", "event": event}, sort_keys=True) + "\n")
-    report = {"producer_version": PRODUCER_VERSION, "mode": "shadow:" + shadow_family if shadow_family else "adjudicated",
-              "n_cases": len(case_dirs), **{k: dict(sorted(v.items())) for k, v in outcome.items()},
-              "n_emitted": sum(outcome["emitted"].values()), "normalisation": dict(sorted(counts.items()))}
-    (out / f"{name}_report.json").write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
+    with tempfile.TemporaryDirectory(dir=out, prefix=f".{name}.staging.") as temp_dir:
+        temp_events = Path(temp_dir) / f"{name}.jsonl"
+        temp_report = Path(temp_dir) / f"{name}_report.json"
+        with temp_events.open("w", encoding="utf-8") as fh:
+            for case_dir in case_dirs:
+                kind, code, event, case_id = _case_result(case_dir, bundles, labels, shadow_family, counts)
+                outcome[kind][code] += 1
+                if event is not None:
+                    fh.write(json.dumps({"case_id": case_id, "shadow": bool(shadow_family),
+                                         "novelty_source": "label_provisional", "event": event},
+                                        sort_keys=True) + "\n")
+        event_bytes = temp_events.read_bytes()
+        n_emitted = sum(outcome["emitted"].values())
+        if sum(sum(v.values()) for v in outcome.values()) != len(case_dirs):
+            raise ProducerInputError("case_accounting_invalid")
+        report = {
+            "producer_version": PRODUCER_VERSION,
+            "mode": "shadow:" + shadow_family if shadow_family else "adjudicated",
+            "n_cases": len(case_dirs),
+            **{k: dict(sorted(v.items())) for k, v in outcome.items()},
+            "n_emitted": n_emitted,
+            "normalisation": dict(sorted(counts.items())),
+            "events_sha256": sha256(event_bytes).hexdigest(),
+            "events_bytes": len(event_bytes),
+        }
+        temp_report.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        # Two independent path replacements cannot be atomic together. A reader
+        # MUST verify the digest in the report: a crash between replacements is
+        # detectable and fails closed, never a valid mixed-generation receipt.
+        os.replace(temp_events, out / f"{name}.jsonl")
+        os.replace(temp_report, out / f"{name}_report.json")
     return report
+
+
+def read_verified_output(out: Path, shadow_family: str | None = None) -> tuple[dict, tuple[dict, ...]]:
+    """Load a complete producer generation, refusing stale/mismatched receipts."""
+    name = _published_name(shadow_family)
+    try:
+        raw = (out / f"{name}.jsonl").read_bytes()
+        report = json.loads((out / f"{name}_report.json").read_text(encoding="utf-8"))
+        if not isinstance(report, dict):
+            raise ValueError("report not object")
+        if report.get("producer_version") != PRODUCER_VERSION:
+            raise ValueError("producer version mismatch")
+        if report.get("mode") != ("shadow:" + shadow_family if shadow_family else "adjudicated"):
+            raise ValueError("mode mismatch")
+        if report.get("events_sha256") != sha256(raw).hexdigest() or report.get("events_bytes") != len(raw):
+            raise ValueError("generation digest mismatch")
+        rows = tuple(json.loads(line) for line in raw.splitlines())
+        if any(not isinstance(row, dict) or row.get("shadow") is not bool(shadow_family)
+               or row.get("novelty_source") != "label_provisional" for row in rows):
+            raise ValueError("unverified row shape")
+        emitted = report["emitted"]
+        outcomes = (emitted, report["deferred"], report["rejected"])
+        if any(not isinstance(item, dict) or any(not isinstance(n, int) or n < 0 for n in item.values())
+               for item in outcomes):
+            raise ValueError("invalid counts")
+        if report["n_emitted"] != len(rows) or report["n_emitted"] != sum(emitted.values()):
+            raise ValueError("event count mismatch")
+        if report["n_cases"] != sum(sum(item.values()) for item in outcomes):
+            raise ValueError("case count mismatch")
+    except (OSError, UnicodeError, ValueError, TypeError, KeyError, IndexError):
+        raise ProducerInputError("output_generation_unverified") from None
+    return report, rows
 
 
 def main(argv: list[str] | None = None) -> int:
