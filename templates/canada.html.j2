@@ -375,6 +375,7 @@
   body.page-canada .cax-flip{font-size:11.5px;color:var(--muted);background:rgba(224,160,48,.08);border:1px solid rgba(224,160,48,.25);border-radius:10px;padding:7px 10px;max-width:46ch}
   body.page-canada .cax-hero-btns{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;position:relative}
   body.page-canada .cax-hbtn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.13);color:var(--text);border-radius:999px;padding:5px 12px;font-size:11.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  body.page-canada .cax-hbtn{min-height:40px;box-sizing:border-box}
   body.page-canada .cax-hbtn:hover{background:rgba(255,255,255,.09)}
   /* when a hero button also carries .gbtn, let the shared glass-button recipe own the surface */
   body.page-canada .cax-hbtn.gbtn{background:var(--gbtn-bg);border:1px solid var(--gbtn-brd);gap:6px}
@@ -597,12 +598,17 @@
   body.page-canada .cax-soarrow.dn{color:var(--ink-down, var(--down))}
   body.page-canada .cax-sotkr{flex:0 0 auto;font-weight:700;color:var(--text);text-decoration:none;font-variant-numeric:tabular-nums}
   body.page-canada .cax-sotkr:hover{text-decoration:underline}
+  @media (max-width:600px){
+    body.page-canada .cax-sorow{min-height:40px;align-items:center}
+    body.page-canada .cax-sotkr{display:inline-flex;align-items:center;align-self:stretch}
+  }
   body.page-canada .cax-soname{flex:1 1 auto;min-width:0;color:var(--muted);font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   [data-theme="light"] body.page-canada .cax-socell{border-top-color:rgba(0,0,0,.10)}
   body.page-canada .cax-stk{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px}
   body.page-canada .cax-stk .tkr{flex:0 0 auto}
   body.page-canada .cax-stk:last-of-type{border-bottom:none}
   body.page-canada .cax-tkr-btn{display:inline-block;background:rgba(91,155,240,.10);border:1px solid rgba(91,155,240,.35);color:#a9c8f5;border-radius:8px;padding:3px 10px;font-weight:700;font-size:12px;cursor:pointer;text-decoration:none;transition:background .15s,border-color .15s}
+  body.page-canada .cax-tkr-btn{display:inline-flex;align-items:center;min-height:40px;box-sizing:border-box}
   body.page-canada .cax-tkr-btn:hover{background:rgba(91,155,240,.22);border-color:rgba(91,155,240,.6)}
   body.page-canada .cax-stk .meta{flex:1;min-width:0;color:var(--muted);font-size:10.5px;line-height:1.35}
   body.page-canada .cax-stk .meta b{color:var(--text);font-weight:650;font-size:11.5px}
