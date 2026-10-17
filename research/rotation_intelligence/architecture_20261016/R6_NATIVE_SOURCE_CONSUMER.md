@@ -30,7 +30,7 @@ A passing 253-session projection is still hindsight-only: one 2026 capture of ea
 
 ## Actual test evidence
 
-[19 reference tests](test_tiingo_allocation_adapter_r6.py) passed in the local isolated Python 3.13.4 harness (final run 19/19, 0.668 s). The tests began red against a defined unimplemented interface and then passed on the implementation. py_compile passed. The fake data and minimal test-only mirrors of the exact native type/calendar are *not* a real source read or M2 native-test proof. Three adversarial mutations to vintage, PIT and session guards independently made their targeted tests fail. A fourth input-universe mutation generated unrelated fixture errors, so it is excluded from quality claims.
+[19 reference tests](test_tiingo_allocation_adapter_r6.py) passed in the local isolated Python 3.13.5 harness (final run 19/19, 0.668 s). The tests began red against a defined unimplemented interface and then passed on the implementation. py_compile passed. The fake data and minimal test-only mirrors of the exact native type/calendar are *not* a real source read or M2 native-test proof. Three adversarial mutations to vintage, PIT and session guards independently made their targeted tests fail. A fourth input-universe mutation generated unrelated fixture errors, so it is excluded from quality claims.
 
 Committed Git blob equality was checked against executed local bytes:
 - Implementation git blob b38d3ca9866b90f3fc4eb2b7e2332e6697ee9957, SHA-256 aabb2e76606d19ab339b0214ce475e713999427f57198636244f61bba6ad6644.
