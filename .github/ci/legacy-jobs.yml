@@ -5859,6 +5859,8 @@ jobs:
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "data/fundamental_forensics/**"
       - "tests/test_fundamental_forensics_*"
+      - "tests/test_fif_pf_health_entity.py"
+      - "tests/test_fif_pf_health_pointer.py"
       - "tests/fixtures/fundamental_forensics/**"
       - "tests/fixtures/fundamental_forensics_held_out/**"
       - "research/financial_intelligence_fabric/**"
