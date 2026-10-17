@@ -175,6 +175,29 @@ def test_render_unreadable_store_yields_empty_state(monkeypatch):
     assert "tt-empty" in html
     assert "The theme map could not be loaded" in html
     assert "主题地图无法加载" in html
+    # U2: the header carries no summary/missing lines over an empty store
+    header = html.split('<header class="tt-hero">', 1)[1].split("</header>", 1)[0]
+    assert "tt-summary" not in header
+    assert "tt-missing" not in header
+    assert "As of" not in header
+
+
+def test_render_unknown_date_reads_date_unavailable_without_as_of():
+    nodes, edges = _fixtures_two_macros()
+    ctx = compose(REPO, nodes=nodes, edges=edges)
+    ctx["as_of"] = ""
+    html = render(REPO, ctx=ctx)
+    header = html.split('<header class="tt-hero">', 1)[1].split("</header>", 1)[0]
+    assert "Date unavailable" in header and "日期未知" in header
+    assert "As of" not in header and "截至" not in header
+    ctx["as_of"] = "2026-10-17"
+    html = render(REPO, ctx=ctx)
+    assert "As of 2026-10-17" in html and "截至 2026-10-17" in html
+
+
+def test_template_has_no_inline_style_attributes():
+    tpl = (REPO / "templates" / "theme_tree.html.j2").read_text(encoding="utf-8")
+    assert 'style="' not in tpl
 
 
 def test_render_full_layout_carries_counts_and_zones():
@@ -189,8 +212,11 @@ def test_render_full_layout_carries_counts_and_zones():
     assert re.search(r"<b>\s*3\s*</b>\s*themes", html)
     assert re.search(r"<b>\s*3\s*</b>\s*个主题", html)
     assert re.search(r"<b>\s*4\s*</b>\s*micro-themes", html)
-    # one hero, one footnote
-    assert html.count("A map of how we group companies") == 2
+    # U2: exactly one footnote (fine print at the bottom, never in the header)
+    assert html.count("A map of how we group companies") == 1
+    assert html.count("这是我们对公司归类的地图") == 1
+    header = html.split("</header>", 1)[0]
+    assert "A map of how we group companies" not in header
     # breadth strip ticks present
     assert 'tt-strip-tick' in html
     # both categories rendered as <details>
@@ -323,3 +349,13 @@ def test_compose_real_graph_summary_matches_reader(monkeypatch):
     assert s == {"macro_count": 10, "theme_count": 18,
                  "sub_theme_count": 12, "micro_count": 68,
                  "missing_count": 0}, f"real-graph summary drift: {s}"
+
+
+def test_as_of_reads_store_belief_time_and_rejects_garbage(tmp_path):
+    import scripts.build_theme_tree_page as mod
+    meta = tmp_path / "_meta.json"
+    meta.write_text('{"belief_time": "2026-10-17", "computed_at": "x"}', encoding="utf-8")
+    assert mod._as_of_date(meta) == "2026-10-17"
+    meta.write_text('{"belief_time": "soon"}', encoding="utf-8")
+    assert mod._as_of_date(meta) == ""
+    assert mod._as_of_date(tmp_path / "missing.json") == ""

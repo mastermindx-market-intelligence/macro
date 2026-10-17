@@ -43,6 +43,9 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
 .tt-summary{font-size:14px;color:var(--text);margin:0 0 8px;line-height:1.55;max-width:880px}
 .tt-summary b{font-weight:800}
 .tt-disclosure{font-size:12.5px;color:var(--muted);margin:0;line-height:1.5;max-width:760px;font-style:italic}
+.tt-footnote{margin-top:18px}
+.tt-asof-unknown{font-style:italic}
+.tt-cat-empty{margin:14px 0 6px;color:var(--muted);font-size:13.5px}
 .tt-missing{font-size:12px;color:var(--ink-warn, var(--warn));margin:18px 0 0;padding:10px 14px;border-radius:var(--r-ctl,8px);background:var(--ff-tint-warn-6);border:1px solid var(--ff-tint-warn-40-line)}
 .tt-missing b{color:var(--ink-warn, var(--warn))}
 
@@ -54,6 +57,7 @@ html[data-theme="dark"] .tt-cat[open]{background:var(--ff-tint-info-4-panel);box
 html[data-theme="light"] .tt-cat[open]{background:var(--panel);box-shadow:var(--popover-shadow)}
 .tt-cat summary{list-style:none;cursor:pointer;padding:18px 22px;display:grid;grid-template-columns:1fr auto;gap:8px 18px;align-items:center;color:var(--text);font-weight:700}
 .tt-cat summary::-webkit-details-marker{display:none}
+.tt-cat summary::marker,.tt-theme summary::marker{content:""}
 .tt-cat summary:hover{background:var(--ff-tint-info-8)}
 .tt-cat summary .caret{flex:none;color:var(--muted);font-size:11px;transition:transform .25s}
 .tt-cat[open] summary .caret{transform:rotate(90deg)}
@@ -113,7 +117,9 @@ html[data-theme="light"] .tt-strip-tick{background:var(--text);opacity:.6}
 @media (max-width:560px){
   .wrap{padding:0 14px}
   body{padding:18px 0 56px}
-  .tt-cat summary{grid-template-columns:1fr;gap:4px}
+  .tt-cat summary{grid-template-columns:1fr auto;gap:4px 12px;align-items:start;padding:14px 16px;min-height:44px}
+  .tt-cat summary .caret{padding-top:4px}
+  .tt-theme summary{min-height:44px}
   .tt-cat-head-meta{font-size:11.5px}
   .tt-h1{font-size:26px}
   .tt-theme summary{flex-wrap:wrap}
@@ -138,12 +144,18 @@ html[data-theme="light"] .tt-strip-tick{background:var(--text);opacity:.6}
     <span class="l-en">Every theme we track, from broad category down to its smallest pieces.</span>
     <span class="l-zh">我们追踪的每个主题：从大类一直到最细的分支。</span>
   </p>
-  {% if tree.asof or tree.available %}
+  {% if tree.as_of %}
   <p class="tt-asof"><span class="bdot"></span>
-    <span class="l-en">As of {{ tree.asof or 'Date unavailable' }}</span>
-    <span class="l-zh">截至 {{ tree.asof or '日期未知' }}</span>
+    <span class="l-en">As of {{ tree.as_of }}</span>
+    <span class="l-zh">截至 {{ tree.as_of }}</span>
+  </p>
+  {% elif tree.available %}
+  <p class="tt-asof tt-asof-unknown">
+    <span class="l-en">Date unavailable</span>
+    <span class="l-zh">日期未知</span>
   </p>
   {% endif %}
+  {% if tree.available %}
   <p class="tt-summary">
     <span class="l-en">
       <b>{{ tree.summary.macro_count }}</b> categories,
@@ -158,15 +170,12 @@ html[data-theme="light"] .tt-strip-tick{background:var(--text);opacity:.6}
       <b>{{ tree.summary.micro_count }}</b> 个细分主题。
     </span>
   </p>
-  <p class="tt-disclosure">
-    <span class="l-en">A map of how we group companies. It is not a ranking or a signal.</span>
-    <span class="l-zh">这是我们对公司归类的地图，不是排名，也不是信号。</span>
-  </p>
   {% if tree.summary.missing_count and tree.summary.missing_count > 0 %}
   <p class="tt-missing">
     <span class="l-en"><b>{{ tree.summary.missing_count }} item{{ '' if tree.summary.missing_count == 1 else 's' }} could not be shown</b> — the underlying graph is being updated.</span>
     <span class="l-zh"><b>{{ tree.summary.missing_count }} 项无法显示</b>——底层图谱正在更新。</span>
   </p>
+  {% endif %}
   {% endif %}
 </header>
 
@@ -201,7 +210,7 @@ html[data-theme="light"] .tt-strip-tick{background:var(--text);opacity:.6}
   </summary>
   <div class="tt-cat-body">
     {% if is_empty %}
-    <p style="margin:14px 0 6px;color:var(--muted);font-size:13.5px">
+    <p class="tt-cat-empty">
       <span class="l-en">Nothing mapped here yet — we haven't built this category.</span>
       <span class="l-zh">尚未归入任何主题——这个大类我们还没建好。</span>
     </p>
@@ -278,7 +287,7 @@ html[data-theme="light"] .tt-strip-tick{background:var(--text);opacity:.6}
 </details>
 {% endfor %}
 
-<p class="tt-disclosure" style="margin-top:18px">
+<p class="tt-disclosure tt-footnote">
   <span class="l-en">A map of how we group companies. It is not a ranking or a signal.</span>
   <span class="l-zh">这是我们对公司归类的地图，不是排名，也不是信号。</span>
 </p>
