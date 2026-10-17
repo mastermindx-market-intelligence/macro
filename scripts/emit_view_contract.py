@@ -22,8 +22,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT))   # unconditional: the strong pin the import-pinning test requires
 
 import pandas as pd  # noqa: E402
 from engine.price_ladder import terminal_daily_ohlc_contract_v1  # noqa: E402
