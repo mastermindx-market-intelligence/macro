@@ -1240,6 +1240,16 @@ jobs:
         # public twin; terms, capacity, runway, scores, probabilities, and Prophet
         # authority stay absent.
         run: python -m scripts.build_capital_structure_projection
+      - name: build the capital-structure state bundle (registration family; whole generation or nothing)
+        id: cs_state
+        # Reads the same verified generation, the generation-bound health horizon
+        # and the projection.json written immediately above, and publishes one
+        # data/capital_structure/state_bundle.json (one CapitalState per covered
+        # issuer, registration family only) or refuses and leaves the last good
+        # bundle in place. It has no public twin: the state API is entitled-only.
+        # Fatal like the projection — a bundle that does not bind the served
+        # projection must not ride this checkpoint (DEC-CS-V2-STATE-BUNDLE-U1).
+        run: python -m scripts.build_capital_structure_state
       # Diagnostics only — changes NO behavior. When the compiler above fails, the
       # ledger it rejected is the one artifact that identifies WHY, and today it is
       # unrecoverable: the failure skips every later step, so the post-collect tree
@@ -1274,6 +1284,7 @@ jobs:
             data/capital_structure/telemetry.json
             data/capital_structure/ingestion_run.json
             data/capital_structure/health.json
+            data/capital_structure/state_bundle.json
           if-no-files-found: warn
           retention-days: 14
       # ── THE CAPITAL-STRUCTURE CHECKPOINT ────────────────────────────────────
@@ -1329,6 +1340,7 @@ jobs:
           && steps.cs_terms.outcome == 'success'
           && steps.cs_projection.outcome == 'success'
           && steps.cs_health.outcome == 'success'
+          && steps.cs_state.outcome == 'success'
         id: commitcs
         run: |
           echo "committed=false" >> "$GITHUB_OUTPUT"

@@ -72,6 +72,8 @@ CAPITAL_STRUCTURE_MODULES = {
         "projection — canonical/public twin must stay byte-identical",
     "scripts.check_capital_structure_health":
         "ingestion-truth gate — selected filings with zero durable evidence must fail",
+    "scripts.build_capital_structure_state":
+        "state bundle — one generation or nothing, binds the served projection",
 }
 
 # The compilers that must stay fatal for their OWN checkpoint.  The two
@@ -82,6 +84,7 @@ FATAL_COMPILERS = (
     "scripts.compile_capital_structure_document_terms",
     "scripts.build_capital_structure_projection",
     "scripts.check_capital_structure_health",
+    "scripts.build_capital_structure_state",
 )
 
 # Staged path -> the step ids in THIS job that produce it.
@@ -93,7 +96,7 @@ FATAL_COMPILERS = (
 # collector's ledger in THIS tree and fails closed unless the bytes match the
 # receipt `collect` stamped.
 CS_STAGED_PATH_PRODUCERS = {
-    "data/capital_structure": ("cs_handoff", "cs_spine", "cs_terms", "cs_projection", "cs_health"),
+    "data/capital_structure": ("cs_handoff", "cs_spine", "cs_terms", "cs_projection", "cs_health", "cs_state"),
     "site/capital-structure-data": ("cs_handoff", "cs_spine", "cs_terms", "cs_projection", "cs_health"),
 }
 CS_GATING_PRODUCERS = sorted(
@@ -419,6 +422,11 @@ def test_health_precedes_projection_and_binds_public_freshness(steps):
         "capital-structure order must be event compiler → document terms → "
         "health → projection so public freshness cannot use an older horizon; "
         f"got terms={terms}, health={health}, projection={projection}"
+    )
+    state = _index_of_run(steps, "scripts.build_capital_structure_state")
+    assert projection < state, (
+        "the state bundle binds the served projection's generation, so it must run "
+        f"after the projection it reads; got projection={projection}, state={state}"
     )
 
 
