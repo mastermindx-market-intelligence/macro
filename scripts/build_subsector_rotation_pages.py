@@ -29,12 +29,16 @@ log = logging.getLogger("build_subsector_rotation_pages")
 
 # mirror the map's QUAD / QUADX (keep the detail page and the map in lock-step).
 QUAD = {
+    "unavailable": ("Unmeasured", "未测得", "q-na"),
+    "neutral": ("Neutral", "中性", "q-neutral"),
     "leading":   ("Leading",   "领先", "q-lead"),
     "weakening": ("Weakening", "走弱", "q-weak"),
     "improving": ("Improving", "改善", "q-impr"),
     "lagging":   ("Lagging",   "落后", "q-lag"),
 }
 QUADX = {
+    "unavailable": ("insufficient comparable data", "可比数据不足"),
+    "neutral": ("no relative direction", "暂无相对方向"),
     "leading":   ("strong & rising",   "强且上行"),
     "weakening": ("strong but fading", "强但转弱"),
     "improving": ("turning up",        "触底回升"),
@@ -59,6 +63,12 @@ def _lede(sub: dict) -> tuple[str, str]:
     """Plain-language 'where it sits' sentence, per quadrant + acceleration."""
     name, q = sub["name"], sub["quadrant"]
     name_zh = sub.get("name_zh") or name
+    if q not in QUAD or q == "unavailable":
+        return (f"There is not enough comparable data to assign {name} a rotation state; no leadership or lagging claim is made.",
+                f"{name_zh} 的可比数据不足，不判定领先或落后。")
+    if q == "neutral":
+        return (f"{name} has no relative direction at the rotation origin; this is measured neutrality, not missing data.",
+                f"{name_zh} 处于轮动原点，暂无相对方向；这是已测得的中性状态，而非数据缺失。")
     accel = sub.get("accel")
     accel_up = accel is not None and accel > 0
     en = {

@@ -268,6 +268,8 @@
   function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
 
   var QUAD = {
+    unavailable:{en:'Unmeasured',zh:'未测得',cls:'q-na'},
+    neutral:{en:'Neutral',zh:'中性',cls:'q-neutral'},
     leading:    {en:'Leading',   zh:'领先', cls:'q-lead'},
     weakening:  {en:'Weakening', zh:'走弱', cls:'q-weak'},
     improving:  {en:'Improving', zh:'改善', cls:'q-impr'},
@@ -300,7 +302,7 @@
     el.className='sr-scope sr-strip';
     var m={}; _data.subsectors.forEach(function(s){m[s.key]=s;});
     function dual(en,zh){return '<span class="l-en">'+esc(en)+'</span><span class="l-zh">'+esc(zh||en)+'</span>';}
-    function chip(s){var v=s.perf&&s.perf['1W'];var q=QUAD[s.quadrant];
+    function chip(s){var v=s.perf&&s.perf['1W'];var q=QUAD[s.quadrant]||QUAD.unavailable;
       return '<a class="srx-chip" href="'+PAGE_HREF+'"><span class="srx-q '+q.cls+'"></span>'
         +'<b>'+dual(s.name,s.name_zh)+'</b><span class="srx-th">'+dual(s.theme,s.theme_zh)+'</span>'
         +'<span class="srx-pc '+pcCls(v)+'">'+fmtPc(v)+'</span></a>';}
@@ -319,6 +321,53 @@
   function drawTrackRecord(el){
     var tr=_data.track_record;
     if(!tr){el.style.display='none';return;}
+    el.style.display='';
+    function coverageCell(e){
+      var c=e.coverage, n=Number.isSafeInteger(e.n_matured)&&e.n_matured>=0?e.n_matured:null;
+      var fields=['input_rows','due_rows','measured_rows','unavailable_due_rows','pending_rows','invalid_rows'];
+      var ok=c&&fields.every(function(k){return Number.isSafeInteger(c[k])&&c[k]>=0;})
+        &&c.measured_rows===n&&c.measured_rows+c.unavailable_due_rows===c.due_rows
+        &&c.due_rows+c.pending_rows+c.invalid_rows===c.input_rows;
+      if(!ok)return (n==null?'—':n)+' / —';
+      var en=c.unavailable_due_rows+' excluded; '+c.pending_rows+' pending; '+c.invalid_rows+' invalid. Due counts parsed observations whose outcome window has elapsed.';
+      var zh=c.unavailable_due_rows+' 条未计入；'+c.pending_rows+' 条待到期；'+c.invalid_rows+' 条无效。已到期指结果窗口已结束的记录。';
+      var reasons=[['invalid_population','invalid member population','成分组合无效'],
+        ['benchmark_unavailable','benchmark price unavailable','基准价格缺失'],
+        ['member_unavailable','member prices unavailable','成分价格缺失'],
+        ['pricing_error','price-read error','价格读取错误'],
+        ['nonfinite_outcome','invalid computed return','计算收益无效'],
+        ['unavailable_unclassified','other unavailable outcome','其他结果缺失']];
+      reasons.forEach(function(r){var v=(c.status_counts||{})[r[0]];
+        if(Number.isSafeInteger(v)&&v>0){en+=' '+v+' '+r[1]+'.';zh+=' '+v+' '+r[2]+'。';}});
+      return '<span tabindex="0" data-tip-en="'+esc(en)+'" data-tip-zh="'+esc(zh)+'" aria-label="'+esc(L(en,zh))+'">'
+        +n+' / '+c.due_rows+'</span>'
+        +(c.unavailable_due_rows?'<small style="display:block;white-space:normal;color:var(--warn)">'+c.unavailable_due_rows+' '+L('excluded','条未计入')+'</small>':'');
+    }
+    function hitCell(s,b,c){
+      var rate=typeof s.hit_rate==='number'&&Number.isFinite(s.hit_rate)&&s.hit_rate>=0&&s.hit_rate<=1?s.hit_rate:null;
+      var shown=fpct(rate),unknown='<small style="display:block;white-space:normal;color:var(--muted)">'+L('Range unknown','区间未知')+'</small>';
+      if(!b||!c||b.method!=='unknown_binary_outcomes_extremes'||b.population_basis!=='parsed_due_directional_calls'||b.is_confidence_interval!==false)return shown+unknown;
+      var h=b.observed_hits,m=b.measured_calls,d=b.due_calls,u=b.unmeasured_calls;
+      var valid=[h,m,d,u].every(function(n){return Number.isSafeInteger(n)&&n>=0;})
+        &&h<=m&&m<=d&&u===d-m&&c.due_rows===d&&c.measured_rows===m&&c.unavailable_due_rows===u
+        &&(s.n==null&&m===0||Number.isSafeInteger(s.n)&&s.n===m)
+        &&(s.hit_count==null&&m===0||Number.isSafeInteger(s.hit_count)&&s.hit_count===h);
+      if(!valid||m>0&&(rate==null||Math.abs(rate-h/m)>.0005001))return shown+unknown;
+      if(d===0){
+        if(b.status!=='EMPTY'||b.lower!==null||b.upper!==null)return shown+unknown;
+        return shown+'<small style="display:block">'+L('No due calls','无到期记录')+'</small>';
+      }
+      var lo=h/d,hi=(h+u)/d;
+      if(!Number.isFinite(b.lower)||!Number.isFinite(b.upper)||Math.abs(b.lower-lo)>1e-12||Math.abs(b.upper-hi)>1e-12
+        ||b.status!==(u?'BOUNDED':'COMPLETE'))return shown+unknown;
+      shown=fpct(m?h/m:null);
+      if(!u)return shown+'<small style="display:block;white-space:normal">'+L('All due calls measured','全部到期记录均已评估')+'</small>';
+      var range=(Math.floor(lo*1000)/10)+'–'+(Math.ceil(hi*1000)/10)+'%';
+      var en=h+' known hits among '+m+' measured calls; '+u+' of '+d+' due calls are unmeasured. They could all miss or all hit. This is not a confidence interval or a future-performance estimate.';
+      var zh=m+' 条已评估判断中有 '+h+' 条命中；'+d+' 条到期判断中有 '+u+' 条未评估。这些判断可能全部未命中或全部命中。这不是置信区间，也不是未来表现预测。';
+      return shown+'<small tabindex="0" style="display:block;white-space:normal;color:var(--warn)" data-tip-en="'+esc(en)+'" data-tip-zh="'+esc(zh)+'" aria-label="'+esc(L(en,zh))+'">'
+        +L('Logged-call range: ','已记录判断区间：')+range+'</small>';
+    }
     function fpct(v){return v==null?'—':(v*100).toFixed(0)+'%';}
     function fic(v){return v==null?'—':(v>0?'+':'')+(+v).toFixed(3);}
     function ft(v){return v==null?'—':(+v).toFixed(1);}
@@ -328,9 +377,10 @@
     var hs=tr.horizons||{};
     var rows=Object.keys(hs).map(function(h){
       var e=hs[h], bs=e.by_stage||{}, em=bs.emerging||{}, fa=bs.fading||{};
+      var hb=e.logged_call_hit_bounds||{}, hc=(e.coverage||{}).by_stage||{};
       var prov=(tr.proven||{})[h];
-      return '<tr><td>'+h+'d</td><td class="num">'+(e.n_matured||0)+'</td>'
-        +'<td class="num">'+fpct(em.hit_rate)+'</td><td class="num">'+fpct(fa.hit_rate)+'</td>'
+      return '<tr><td>'+esc(h)+'d</td><td class="num">'+coverageCell(e)+'</td>'
+        +'<td class="num">'+hitCell(em,hb.emerging,hc.emerging)+'</td><td class="num">'+hitCell(fa,hb.fading,hc.fading)+'</td>'
         +'<td class="num">'+fic(e.score_ic)+'</td><td class="num">'+ft(e.score_ic_t_hac)
         +(prov?' <span class="sr-ok">✓</span>':'')+'</td></tr>';
     }).join('');
@@ -344,6 +394,9 @@
         +'<span class="sr-tr-q" style="color:var('+vb[2]+');border-color:var('+vb[2]+')">'+L(vb[0],vb[1])+'</span>'
         +'<span class="sr-tr-meta">'+(tr.n_days||0)+' '+L('days logged','天')+' · '+(tr.n_snapshots||0)+' '+L('calls logged','次记录')+'</span></div>'
       +'<div class="sr-tr-note">'+L(esc(tr.note||''),esc(tr.note_zh||tr.note||''))+'</div>'
+      +'<div class="sr-tr-note">'+(tr.outcome_coverage_policy==='all_frozen_members_required'
+        ?L('Only complete baskets enter the results. Exclusions can bias the measured sample; an absent denominator means coverage was not recorded.', '仅完整组合计入结果。排除记录可能使样本偏差；分母缺失表示未记录覆盖率。')
+        :L('This generation does not establish complete-basket coverage.', '此版数据未证实完整组合覆盖情况。'))+'</div>'
       // D-6: plainify column headers; move jargon behind ? receipt on table caption
       +'<div class="sr-tr-body"><table class="sr-tr-tbl"><caption style="text-align:left;padding:4px 8px;font-size:10px;color:var(--muted);">'
         +'<span class="rcf-help" tabindex="0" role="button" style="cursor:help;"'
@@ -353,8 +406,8 @@
         +' data-tip-rc-en="rank fit = information coefficient · reliability = HAC t-stat"'
         +' data-tip-rc-zh="排序吻合 = 信息系数 · 可靠度 = HAC t 统计量"'
         +'>?</span></caption><thead><tr>'
-        +'<th>'+L('Horizon','周期')+'</th><th class="num">'+L('Matured','已到期')+'</th>'
-        +'<th class="num">'+L('Emerging hit','升温命中')+'</th><th class="num">'+L('Fading hit','退潮命中')+'</th>'
+        +'<th>'+L('Horizon','周期')+'</th><th class="num">'+L('Measured / due','已评估 / 已到期')+'</th>'
+        +'<th class="num">'+L('Measured emerging hit','已评估升温命中')+'</th><th class="num">'+L('Measured fading hit','已评估退潮命中')+'</th>'
         +'<th class="num">'+L('Rank fit','排序吻合')+'</th><th class="num">'+L('Reliability','可靠度')+'</th></tr></thead>'
         +'<tbody>'+rows+'</tbody></table></div>'
       +(misses?'<div class="sr-tr-misses"><span class="sr-tr-mlab">'+L('Recently wrong (logged)','近期误判（已记录）')+'</span>'+misses+'</div>':'')
@@ -439,7 +492,7 @@
   function _rerender(){ if(_rerenderRoot) render(_rerenderRoot); }
 
   /* ---------- rotation map (RRG-style scatter with rotation tails) ---------- */
-  var QCOL={leading:'--up',weakening:'--warn',improving:'--link',lagging:'--down'};
+  var QCOL={neutral:'--muted',unavailable:'--muted',leading:'--up',weakening:'--warn',improving:'--link',lagging:'--down'};
   // plain-language subtitle for each quadrant (the four corners, in layman terms).
   var QUADX={
     leading:  {en:'strong & rising',    zh:'强且上行'},
@@ -642,7 +695,7 @@
       fa=(_data.highlights.fading||[]).map(itemByKey).filter(Boolean).slice(0,MAX);
     }
     function row(d,i){
-      var q=QUAD[d.quadrant], w1=d.perf?d.perf['1W']:null, m1=d.perf?d.perf['1M']:null;
+      var q=QUAD[d.quadrant]||QUAD.unavailable, w1=d.perf?d.perf['1W']:null, m1=d.perf?d.perf['1M']:null;
       var key=d.rs_mom, kt=(key==null?'—':(key>0?'+':(key<0?'−':''))+Math.abs(+key).toFixed(1));
       return '<div class="sr-vs-row" data-k="'+esc(keyOf(d))+'">'
         +'<span class="sr-vs-rk">'+(i+1)+'</span>'
@@ -908,7 +961,7 @@
     var hideTCol = (_unit==='themes'||_unit==='sectors');
     var its=items().slice().sort(function(a,b){
       var va=sortVal(a),vb=sortVal(b);
-      if(va==null)va=-1e9; if(vb==null)vb=-1e9;
+      if(va==null&&vb==null)return 0; if(va==null)return 1; if(vb==null)return -1;
       if(typeof va==='string')return _sortDir*va.localeCompare(vb);
       return _sortDir*(va-vb);
     });
@@ -919,9 +972,9 @@
       return '<th class="'+(c.num?'num':'')+on+'" data-k="'+c.k+'">'+L(c.en,c.zh)+'</th>';
     }).join('');
     var rows=its.map(function(d,ri){
-      var rankTd='<td class="num" style="color:var(--muted);font-variant-numeric:tabular-nums;">'+(ri+1)+'</td>';
+      var rankTd='<td class="num" style="color:var(--muted);font-variant-numeric:tabular-nums;">'+(d.rotation_status==='UNAVAILABLE'||d.quadrant==='unavailable'?'—':ri+1)+'</td>';
       var tds=rankTd+COLS.filter(function(c){return !(hideTCol&&c.k==='theme');}).map(function(c){
-        if(c.k==='quadrant'){var q=QUAD[d.quadrant];return '<td><span class="sr-q '+q.cls+'">'+(isZh()?q.zh:q.en)+'</span></td>';}
+        if(c.k==='quadrant'){var q=QUAD[d.quadrant]||QUAD.unavailable;return '<td><span class="sr-q '+q.cls+'">'+(isZh()?q.zh:q.en)+'</span></td>';}
         if(c.k==='turn_state'){var ts=TSTATE[d.turn_state];
           return '<td>'+(ts?'<span class="sr-ts '+ts.cls+'">'+(isZh()?ts.zh:ts.en)+'</span>':'<span class="sr-ts-na">—</span>')+'</td>';}
         var v=cellVal(d,c);
@@ -1059,7 +1112,7 @@
 
   function showTip(k,cx,cy){
     var d=items().filter(function(x){return keyOf(x)===k;})[0]; if(!d){hideTip();return;}
-    var q=QUAD[d.quadrant];
+    var q=QUAD[d.quadrant]||QUAD.unavailable;
     var el=tipEl();
     // One context line: what it is, then where it ranks. Never two lines.
     var ctx=[];
@@ -1190,6 +1243,7 @@
     +'.sr-vs-row>b{font-size:11px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;} .sr-vs-k{font-weight:800;}'
     +'@media (max-width:640px){.sr-vs-body{grid-template-columns:1fr;gap:0;} .sr-vs-mid{min-width:0;padding:14px 0;} .sr-vs-mid::before{top:50%;bottom:auto;left:0;right:0;transform:translateY(-50%);width:auto;height:1px;} .sr-vs-chd,.sr-vs-row{grid-template-columns:16px 9px minmax(0,1fr) 48px 48px 44px;gap:7px;}}'
     +'.sr-q{font-size:10px;font-weight:800;padding:1px 7px;border-radius:6px;white-space:nowrap;}'
+    +'.sr-q.q-na,.sr-q.q-neutral{color:var(--muted);background:var(--panel2);}'
     +'.sr-q.q-lead{color:var(--ink-up, var(--up));background:color-mix(in srgb,var(--up) 15%,transparent);} .sr-q.q-weak{color:var(--ink-warn, var(--warn));background:color-mix(in srgb,var(--warn) 15%,transparent);} .sr-q.q-impr{color:var(--ink-link, var(--link));background:color-mix(in srgb,var(--link) 15%,transparent);} .sr-q.q-lag{color:var(--ink-down, var(--down));background:color-mix(in srgb,var(--down) 15%,transparent);}'
     +'.sr-table-wrap{margin-top:14px;overflow:auto;max-height:640px;}'
     +'.sr-table{width:100%;border-collapse:collapse;font-size:12px;} .sr-table th{position:sticky;top:0;background:var(--panel);text-align:left;padding:9px 10px;font-weight:700;color:var(--muted);border-bottom:1px solid var(--line);cursor:pointer;white-space:nowrap;z-index:1;user-select:none;} .sr-table th.num{text-align:right;} .sr-table th.on{color:var(--text);} .sr-table th.on::after{content:" ▾";} .sr-table th.on.asc::after{content:" ▴";}'
