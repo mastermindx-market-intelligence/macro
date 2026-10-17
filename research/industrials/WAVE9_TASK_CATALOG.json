@@ -1,0 +1,175 @@
+{
+  "research_only": true,
+  "not_a_native_schema": true,
+  "source_document": "INDUSTRIALS_WAVE9_RESEARCH_TO_PRODUCT_CATALOG_2026-09-23.md",
+  "tasks": [
+    {
+      "task_id": "W9-J01",
+      "investor_question": "What does this business actually sell into the theme?",
+      "evidence_and_boundary": "Source-scoped business/product, application, ownership-effective date; matched revenue/profit denominator when disclosed",
+      "useful_output_and_falsifier": "Explain documented role and undisclosed purity; falsified by disposal, product withdrawal or narrower scope",
+      "prior_research_and_consumer": "W1-W2/W2X; GMI evidence, Data OS identity, shared detail"
+    },
+    {
+      "task_id": "W9-J02",
+      "investor_question": "Does announced customer demand become supplier business?",
+      "evidence_and_boundary": "Announcement, financing, reservation, order/RPO and cancellation definitions, project timing",
+      "useful_output_and_falsifier": "Show conditional demand transmission, not revenue forecast; failure is non-conversion or uneconomic terms",
+      "prior_research_and_consumer": "W2/W5; relationship and native financial/operating evidence"
+    },
+    {
+      "task_id": "W9-J03",
+      "investor_question": "Is recovery end demand or dealer/channel replenishment?",
+      "evidence_and_boundary": "Matching sell-in, sell-through, inventory stock and target where available; region and period",
+      "useful_output_and_falsifier": "Explain competing inventory/demand mechanisms; reject a retail-recovery claim based only on factory shipments",
+      "prior_research_and_consumer": "W2-W3; business cycle panel, existing theme context"
+    },
+    {
+      "task_id": "W9-J04",
+      "investor_question": "Can orders become profitable deliveries?",
+      "evidence_and_boundary": "Backlog cohort, accepted price/cost terms, qualified throughput, estimate changes, margin and cash",
+      "useful_output_and_falsifier": "Show conversion risks and retained economics; falsifier is overruns, cancellations or cash absorption",
+      "prior_research_and_consumer": "W2/W5-W6; contract/execution module"
+    },
+    {
+      "task_id": "W9-J05",
+      "investor_question": "Who benefits when aerospace durability changes?",
+      "evidence_and_boundary": "Maintenance-obligation holder, billing basis, active hours/cycles, work completion and compensation",
+      "useful_output_and_falsifier": "Explain role-dependent direction; reject universal positive repair-demand interpretation",
+      "prior_research_and_consumer": "W4; contract-role and installed-base modules"
+    },
+    {
+      "task_id": "W9-J06",
+      "investor_question": "Does new equipment create valuable future service?",
+      "evidence_and_boundary": "Installation investment, eligible active cohorts, paid attachment, renewal, net service contribution and timing",
+      "useful_output_and_falsifier": "Finite scenario with visible delay/cost exposure; falsifier is weaker attachment, durability economics or early retirement",
+      "prior_research_and_consumer": "W4/W6; existing forecast/scenario owner plus evidence"
+    },
+    {
+      "task_id": "W9-J07",
+      "investor_question": "Why would the customer replace rather than repair, buy used or rent?",
+      "evidence_and_boundary": "Comparable workload, installed cost, operating savings, trade value, funding and horizon",
+      "useful_output_and_falsifier": "Explain customer decision threshold; falsifier is attractive alternatives or financing constraint",
+      "prior_research_and_consumer": "W3; customer-economics dossier"
+    },
+    {
+      "task_id": "W9-J08",
+      "investor_question": "Does rental growth earn back the fleet?",
+      "evidence_and_boundary": "Purchase cohort, utilization/rate/mix, maintenance, disposal and full investment perimeter",
+      "useful_output_and_falsifier": "Lifetime return scenario rather than EBITDA-only ranking; adverse residuals or capital inflation can break it",
+      "prior_research_and_consumer": "W3; asset-lifecycle/cash module"
+    },
+    {
+      "task_id": "W9-J09",
+      "investor_question": "Is distributor growth profitable after serving the customer?",
+      "evidence_and_boundary": "Daily sales, account/product mix, service costs, receivables/inventory and supplier terms",
+      "useful_output_and_falsifier": "Show contribution and capital absorption; falsifier is discounts or funding growing faster than economics",
+      "prior_research_and_consumer": "W3; customer contribution and cash bridge"
+    },
+    {
+      "task_id": "W9-J10",
+      "investor_question": "Is freight improving physically or only in reported revenue?",
+      "evidence_and_boundary": "Shipments/tonnage/loads, period-matched yield, fuel, mix, network costs and reinvestment",
+      "useful_output_and_falsifier": "Separate activity from invoices; falsifier is pass-through/mix rather than density/productivity",
+      "prior_research_and_consumer": "W3; operating-comparison module"
+    },
+    {
+      "task_id": "W9-J11",
+      "investor_question": "Does a broker retain more profit per transaction?",
+      "evidence_and_boundary": "Transactions, gross profit, purchased transport, full operating costs and denominator",
+      "useful_output_and_falsifier": "Compare broker contribution without mixing carrier revenue margins; falsifier is spread compression or service loss",
+      "prior_research_and_consumer": "W3; native financial comparison"
+    },
+    {
+      "task_id": "W9-J12",
+      "investor_question": "Is recurring service becoming more durable?",
+      "evidence_and_boundary": "Defined paid cohort, renewal/exit, realized price, covered obligations, full cost-to-serve",
+      "useful_output_and_falsifier": "Conditional retained-contribution model; no inferred retention from total revenue",
+      "prior_research_and_consumer": "W6/W8; cohort and contract module"
+    },
+    {
+      "task_id": "W9-J13",
+      "investor_question": "Do consumables and certification relationships replenish themselves?",
+      "evidence_and_boundary": "Active instruments/certificates, use, recurring fees, new cohort entry and exits, quality/capacity",
+      "useful_output_and_falsifier": "Explain repeat demand versus customer replacement burden; falsifier is cohort attrition or costly replenishment",
+      "prior_research_and_consumer": "W6-W7; repeat-use evidence module"
+    },
+    {
+      "task_id": "W9-J14",
+      "investor_question": "Will retrofit economics persuade the party paying?",
+      "evidence_and_boundary": "Adjusted no-project baseline, measured benefit, payer/beneficiary, disruption, horizon and installed cost",
+      "useful_output_and_falsifier": "Customer-benefit scenario with split-incentive limits; falsifier is unsupported baseline or inadequate captured benefit",
+      "prior_research_and_consumer": "W6; customer return module"
+    },
+    {
+      "task_id": "W9-J15",
+      "investor_question": "Does local service density improve contribution?",
+      "evidence_and_boundary": "Compatible geographic work, stops/accounts, resource capacity, retention, prices and full route/service cost",
+      "useful_output_and_falsifier": "Show local capacity thresholds, not uniform scale economies; falsifier is churn or costly resource additions",
+      "prior_research_and_consumer": "W6/W8; local service-economics module"
+    },
+    {
+      "task_id": "W9-J16",
+      "investor_question": "Does the water contract reward conservation and reliable supply?",
+      "evidence_and_boundary": "Volume versus availability/outcome payment, cost structure, obligations, penalties and capital",
+      "useful_output_and_falsifier": "Explain customer/provider incentive alignment; failure is lower usage undermining fixed-cost coverage",
+      "prior_research_and_consumer": "W6; contract and asset-lifecycle modules"
+    },
+    {
+      "task_id": "W9-J17",
+      "investor_question": "Is payroll growth service quality or client-funds income?",
+      "evidence_and_boundary": "Retained service fees, client balances/obligations, maturity vintages, yield and financing costs",
+      "useful_output_and_falsifier": "Separate service economics and net interest; never treat client principal as excess equity cash",
+      "prior_research_and_consumer": "W8; financial/risk decomposition"
+    },
+    {
+      "task_id": "W9-J18",
+      "investor_question": "What drives professional-employer-service profit?",
+      "evidence_and_boundary": "Fees, benefits pass-through, insurance revenue/cost, risk-bearing population and claims basis",
+      "useful_output_and_falsifier": "Separate administration growth from insurance contribution; falsifier is unfavorable risk development",
+      "prior_research_and_consumer": "W8; business financial module"
+    },
+    {
+      "task_id": "W9-J19",
+      "investor_question": "Is staffing improvement hours, wage pass-through or comparison charges?",
+      "evidence_and_boundary": "Accepted hours, bill/pay rates, repricing lag, mix, recruiting cost, receivables and prior charges",
+      "useful_output_and_falsifier": "Show spread and funding of recovery; falsifier is lower hours or wage/collection pressure",
+      "prior_research_and_consumer": "W8; operating and cash bridge"
+    },
+    {
+      "task_id": "W9-J20",
+      "investor_question": "Who keeps outsourcing/automation productivity savings?",
+      "evidence_and_boundary": "Outcome/transaction/hour billing, customer concession, labor saved, tool/migration cost, volume and quality",
+      "useful_output_and_falsifier": "Transition-versus-steady contribution; falsifier is customer repricing, volume erosion or migration burden",
+      "prior_research_and_consumer": "W5/W8; contract/productivity module"
+    },
+    {
+      "task_id": "W9-J21",
+      "investor_question": "Is transport capital earning through a full capacity cycle?",
+      "evidence_and_boundary": "Fleet/asset availability, trip times or passenger usage, concession terms, commissioning, leases, depreciation and cash interest",
+      "useful_output_and_falsifier": "Separate current scarcity or accounting transition from lifecycle returns",
+      "prior_research_and_consumer": "W3/W8; network/asset capital module"
+    },
+    {
+      "task_id": "W9-J22",
+      "investor_question": "Does portfolio change improve the shareholder's claim?",
+      "evidence_and_boundary": "Effective ownership, purchase price, organic/acquired split, finance, dilution, corporate costs and minority claims",
+      "useful_output_and_falsifier": "Reconcile business improvement to equity cash; falsifier is overpayment or financing absorbing benefits",
+      "prior_research_and_consumer": "W2-W8; company capital-allocation module"
+    },
+    {
+      "task_id": "W9-J23",
+      "investor_question": "What changed relative to a genuinely dated expectation?",
+      "evidence_and_boundary": "Same measure, basis, fiscal endpoint, contributor/issuer source, vintage, publication window and intervening events",
+      "useful_output_and_falsifier": "Separate guidance, external aggregate, house forecast and scenario; refuse verdict when comparison unsupported",
+      "prior_research_and_consumer": "W6-W9; incumbent earnings/evidence owners"
+    },
+    {
+      "task_id": "W9-J24",
+      "investor_question": "Does the thesis improve forecasts or explain stock mispricing?",
+      "evidence_and_boundary": "Predeclared universe/horizon, immutable prediction and input vintage, matched outcomes, valid prices/actions, baseline and costs when relevant",
+      "useful_output_and_falsifier": "Report calibrated and held-out evidence only when run; failure includes missing coverage or baseline dominance",
+      "prior_research_and_consumer": "W1/W7-W9; existing evaluation/forecast/price owners"
+    }
+  ]
+}
