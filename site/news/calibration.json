@@ -2,7 +2,7 @@
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
   "asof": "2026-10-16",
-  "n_events_logged": 1593,
+  "n_events_logged": 1654,
   "n_events_graded": 954,
   "classes": [
     {
@@ -21,7 +21,7 @@
     {
       "event_type": "bankruptcy_restructuring",
       "direction": "bearish",
-      "n": 17,
+      "n": 18,
       "n_graded": 13,
       "hit_5d": 0.23076923076923078,
       "hit_21d": 0.6666666666666666,
@@ -86,12 +86,12 @@
     {
       "event_type": "earnings_result",
       "direction": "mixed",
-      "n": 723,
+      "n": 773,
       "n_graded": 414,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
       "avg_rel_5d": 0.0013331790830613294,
-      "avg_rel_21d": -0.004168882888168073,
+      "avg_rel_21d": -0.005323381267580658,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
       "verdict": "context_only"
@@ -115,9 +115,9 @@
       "n": 42,
       "n_graded": 27,
       "hit_5d": 0.4074074074074074,
-      "hit_21d": 0.4444444444444444,
+      "hit_21d": 0.47368421052631576,
       "avg_rel_5d": 0.0007538148148148149,
-      "avg_rel_21d": 0.0005890370370370373,
+      "avg_rel_21d": -0.0013043859649122806,
       "wilson_low_5d": 0.245145,
       "wilson_high_5d": 0.592736,
       "verdict": "insufficient"
@@ -138,7 +138,7 @@
     {
       "event_type": "litigation",
       "direction": "bearish",
-      "n": 289,
+      "n": 293,
       "n_graded": 232,
       "hit_5d": 0.5258620689655172,
       "hit_21d": 0.48148148148148145,
@@ -151,7 +151,7 @@
     {
       "event_type": "macro_release",
       "direction": "informational",
-      "n": 137,
+      "n": 138,
       "n_graded": 55,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -164,7 +164,7 @@
     {
       "event_type": "management_change",
       "direction": "mixed",
-      "n": 29,
+      "n": 30,
       "n_graded": 25,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -203,7 +203,7 @@
     {
       "event_type": "policy_trade_control",
       "direction": "mixed",
-      "n": 98,
+      "n": 99,
       "n_graded": 41,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -255,7 +255,7 @@
     {
       "event_type": "rating_change",
       "direction": "mixed",
-      "n": 32,
+      "n": 34,
       "n_graded": 24,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -268,7 +268,7 @@
     {
       "event_type": "regulatory_probe",
       "direction": "bearish",
-      "n": 15,
+      "n": 16,
       "n_graded": 8,
       "hit_5d": 0.625,
       "hit_21d": 0.7142857142857143,
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 1922,
+    "n_sampled": 1940,
     "n_graded": 0,
     "classes": []
   }

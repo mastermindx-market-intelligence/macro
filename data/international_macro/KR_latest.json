@@ -8,7 +8,7 @@
   "scope_en": "Republic of Korea national economy; KOSPI is market context.",
   "scope_zh": "大韩民国全国经济；KOSPI仅作市场背景。",
   "asof": "2026-10-15",
-  "built": "2026-10-16 17:39 UTC",
+  "built": "2026-10-17 06:38 UTC",
   "regime": {
     "quad": "Q1",
     "name": "Goldilocks",
@@ -207,7 +207,7 @@
     "top_score": 37,
     "dominant_en": "Calm — no driver elevated",
     "dominant_zh": "平静 — 无驱动升高",
-    "h21": 0.346,
+    "h21": 0.381,
     "measure": ">=5% index pullback within h business days (measured on this market's own history)",
     "trajectory": {
       "intensity": 36.7,
@@ -218,8 +218,8 @@
       "phase": "receding",
       "reached_risk": true,
       "state_now": "calm",
-      "odds_now": 0.346,
-      "odds_peak": 0.346,
+      "odds_now": 0.381,
+      "odds_peak": 0.381,
       "odds_delta": 0.0,
       "spark": [
         54.8,
@@ -531,7 +531,7 @@
     {
       "metric": "cpi_yoy",
       "asof": "2025-04",
-      "age_days": 563,
+      "age_days": 564,
       "state": "stale",
       "label_en": "Inflation",
       "label_zh": "通胀"
@@ -539,7 +539,7 @@
     {
       "metric": "gdp",
       "asof": "2026-04",
-      "age_days": 198,
+      "age_days": 199,
       "state": "stale",
       "label_en": "Growth",
       "label_zh": "增长"
@@ -547,7 +547,7 @@
     {
       "metric": "unemployment",
       "asof": "2026-07",
-      "age_days": 107,
+      "age_days": 108,
       "state": "stale",
       "label_en": "Labour",
       "label_zh": "就业"
@@ -555,7 +555,7 @@
     {
       "metric": "yield_10y",
       "asof": "2026-08",
-      "age_days": 76,
+      "age_days": 77,
       "state": "fresh",
       "label_en": "Rates",
       "label_zh": "利率"
