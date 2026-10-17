@@ -1267,6 +1267,7 @@ jobs:
     # is no longer the active reason — the path stays for parity.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - "lib/exchange_holidays.py"
       - "config.yml"
       - "config/market_reference.yml"
@@ -2348,6 +2349,7 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
@@ -3515,6 +3517,7 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - "config/dataset_registry.yml"
       - "config/intelligence_workspace/datapoints.v1.json"
       - "contracts/intelligence_workspace/datapoint_registry.schema.json"
@@ -3668,6 +3671,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
@@ -4770,6 +4774,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/intl_history_mount.py"
@@ -5086,6 +5091,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -5924,6 +5930,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "scripts/inject_wh_banner.py"
       - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
@@ -7380,6 +7387,7 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/us_cash_calendar.py"
@@ -8764,6 +8772,7 @@ jobs:
     # Git subprocess inference otherwise claims unrelated template and code trees.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - ".github/workflows/**"
       - "scripts/ci/*.sh"
       - "data/**"
@@ -8913,6 +8922,7 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
@@ -9393,6 +9403,7 @@ jobs:
     # new import fails the closure-coverage audit by name — add it here.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - "lib/exchange_holidays.py"
       - "tests/test_options_payoff_lab_consumer.py"
       - "tests/test_options_skew_source_note.py"
@@ -9553,6 +9564,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - "contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json"
       - "data/sector_intelligence/fixtures/finance_intelligence_read_model.v1.valid.json"
       - "tests/test_finance_intelligence_contract.py"
@@ -9663,6 +9675,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/__init__.py"
       - "lib/config.py"
@@ -10192,6 +10205,7 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - "config.yml"
       - "config/sparse_worktree.json"
       - "engine/__init__.py"
@@ -10255,6 +10269,7 @@ jobs:
     # sparse tree). Packing ceilings unchanged.
     runs-on: ubuntu-latest
     paths:
+      - "scripts/inject_wh_banner.py"
       - engine/__init__.py
       - engine/analyst_revisions.py
       - engine/canon.py
@@ -10483,6 +10498,7 @@ jobs:
     # they read by name — not templates/** or engine/** wholesale, whose PRs
     # validated-claims-source already grades.
     paths:
+      - "scripts/inject_wh_banner.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -12340,6 +12356,7 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -12409,6 +12426,7 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -12726,6 +12744,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "scripts/inject_wh_banner.py"
       # Connected Research Factory import closure (PR9463).
       - engine/oracle/compounds.py
       - engine/oracle/graph.py
@@ -13832,6 +13851,7 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      - "scripts/inject_wh_banner.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -15201,6 +15221,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       # Connected Research Factory import closure (PR9463).
       - engine/research_codegen/__init__.py
       - engine/research_codegen/accounting_contract.py
@@ -15890,6 +15911,7 @@ jobs:
     # was doing all the rest of the selecting.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/__init__.py"
       - "lib/config.py"
@@ -15944,6 +15966,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
@@ -17444,6 +17467,7 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
       - "scripts/build_risk_envelope.py"
       - "site/marketdata/rotation_events.json"
@@ -17929,6 +17953,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
@@ -18723,6 +18748,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       # cx-int engine (2026-10-13): the engine stream's five contract suites and their measured import closure.
@@ -19485,6 +19511,7 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - "tests/fixtures/government_program_ontology/builders.py"
       - "tests/test_government_program_public_capacity.py"
       - "tests/test_government_program_capacity_ui.py"
@@ -20132,6 +20159,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -20257,6 +20285,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
@@ -21347,6 +21376,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       # Connected Research Factory import closure (PR9463).
       - engine/research_codegen/__init__.py
       - engine/research_codegen/accounting_contract.py
@@ -22624,6 +22654,7 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       # Connected Research Factory import closure (PR9463).
       - engine/research_codegen/__init__.py
       - engine/research_codegen/accounting_contract.py
@@ -23894,6 +23925,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/__init__.py"
       - "lib/config.py"
@@ -23968,6 +24000,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/__init__.py"
       - "lib/config.py"
@@ -25243,6 +25276,7 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - "tests/test_energy_economic_change_non_regression.py"
       - "tests/fixtures/energy_non_regression/**"
       - "data/baskets/membership.json"
@@ -25420,6 +25454,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
@@ -25902,6 +25937,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - lib/dataos/web_history.py
       - lib/dataos/web_readers.py
       - lib/dataos/web_workspace.py
@@ -27238,6 +27274,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -28517,6 +28554,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
@@ -29568,6 +29606,7 @@ jobs:
     # new import fails the closure-coverage audit by name — add it here.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
       - "engine/market_os/**"
       - "scripts/build_macro_workspaces.py"
@@ -29659,6 +29698,7 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
       - "engine/__init__.py"
       - "engine/market_os/**"
@@ -29808,6 +29848,7 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -29944,6 +29985,7 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - engine/research_codegen/__init__.py
       - engine/research_codegen/accounting_contract.py
       - engine/research_codegen/admission.py
@@ -30321,6 +30363,7 @@ jobs:
     # read or run; an unlisted closure file is an uncovered path. No
     # tests/** catch-all.
     paths:
+      - "scripts/inject_wh_banner.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/pages.py"
       - "lib/exchange_holidays.py"
@@ -30454,6 +30497,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       - "tests/mining_casebook.py"
       - "tests/test_mining_shared_contract.py"
       - "tests/test_mining_shared_contract_probes.py"
@@ -30567,6 +30611,7 @@ jobs:
     # is listed under `paths:` below).
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/__init__.py"
       - "lib/config.py"
@@ -30764,6 +30809,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/inject_wh_banner.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/config.py"
       - "lib/pages.py"

@@ -616,3 +616,59 @@ def test_source_guard_fires_on_synthetic_offenders():
         "    html_out = write_page(site_root / 'leader_radar.html', rendered)\n"
         "    log(html_out)\n"
     ) == []
+
+
+
+# ROR-1: write-time alert mount survives every standalone or express render.
+# The nightly site-wide injector is an idempotent backup, not the only writer.
+# Regression: closing-bell Oct16 removed data-whb from US/CN/HK pages while
+# the data-base shim survived (see Mastermind #1478, Macro #9440).
+def test_write_page_keeps_alert_client_on_root_dashboard_rebuild(tmp_path, monkeypatch):
+    monkeypatch.setattr(pages_mod, "_ensure_shim_asset", lambda: None)
+    site = tmp_path / "site"
+    site.mkdir()
+    for name in ("macro", "china", "hk"):
+        out = site / f"{name}.html"
+        before = (
+            '<!doctype html><html><head><meta charset="utf-8"><title>宏观</title>'
+            '</head><body><main>Original market view</main></body></html>'
+        )
+        write_page(out, before)
+        first = out.read_text()
+        assert first.count("data-whb") == 1, name
+        assert first.count("data-dbase") == 1, name
+        assert '<script defer data-whb data-root="" src="wh_banner.js"></script>' in first, name
+        assert first.index("data-dbase") < first.index("<title>"), name
+        assert first.index("data-whb") < first.rfind("</body>"), name
+
+        # The next closing-bell/express builder starts from a fresh Jinja
+        # string lacking any prior injected script. It must not strip the rail.
+        next_raw = before.replace("Original market view", "Next settled session")
+        write_page(out, next_raw)
+        after = out.read_text()
+        assert "Next settled session" in after, name
+        assert after.count("data-whb") == 1, name
+        assert after.count("data-dbase") == 1, name
+        assert '<script defer data-whb data-root="" src="wh_banner.js"></script>' in after, name
+
+
+def test_write_page_alert_mount_nested_depth_and_idempotence(tmp_path, monkeypatch):
+    monkeypatch.setattr(pages_mod, "_ensure_shim_asset", lambda: None)
+    root = tmp_path / "site"
+    target = root / "stocks" / "NVDA.html"
+    target.parent.mkdir(parents=True)
+    raw = '<html><head><meta charset="utf-8"></head><body><main>NVDA</main></body></html>'
+    write_page(target, raw)
+    one = target.read_text()
+    assert '<script defer data-whb data-root="../" src="../wh_banner.js"></script>' in one
+    assert one.count("data-whb") == 1
+    write_page(target, one)
+    assert target.read_text() == one, "writing already-injected markup must be byte-idempotent"
+
+    # The existing post-render asset stamper's old versioned reference is
+    # already a valid mount; do not add another, or replace the URL stamp.
+    stamped = one.replace('../wh_banner.js"', '../wh_banner.js?v=deadbeef"')
+    write_page(target, stamped)
+    after = target.read_text()
+    assert 'src="../wh_banner.js?v=deadbeef"' in after
+    assert after.count("data-whb") == 1

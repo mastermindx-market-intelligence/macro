@@ -738,10 +738,19 @@ def _ensure_shim_asset() -> None:
 
 
 def write_page(path: Path | str, html: str, *, encoding: str | None = None) -> Path:
-    """Write a site HTML page with the data-base shim injected (depth-aware,
-    idempotent). ALL builders must write site/**/*.html through this — a raw
-    write_text drops the shim whenever the builder runs standalone."""
+    """Write a site HTML page with both canonical client shims at write time.
+
+    The data-base shim must remain first in <head>. The existing White House /
+    Risk Radar banner script is inserted at </body> using its ONE canonical
+    injector. Standalone, closing-bell and express-render rebuilds must not
+    remove a banner that the nightly post-render sweep already added.
+    """
+    from scripts.inject_wh_banner import inject_text as inject_wh_banner_text
+
     p = Path(path)
-    p.write_text(inject_text(html, dbase_prefix(p)), encoding=encoding)
+    prefix = dbase_prefix(p)
+    rendered = inject_text(html, prefix)
+    rendered = inject_wh_banner_text(rendered, prefix)
+    p.write_text(rendered, encoding=encoding)
     _ensure_shim_asset()
     return p
