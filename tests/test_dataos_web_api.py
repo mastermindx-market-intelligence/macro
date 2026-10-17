@@ -578,7 +578,13 @@ def test_U03_capabilities_declare_the_view_without_widening_the_cap(case):
     assert caps["read_view"]["refused_modes"] == ["RECONSTRUCT", "REPLAY"]
     assert caps["read_view"]["generation_token"] == "statv1"
     assert caps["max_response_bytes"] == 131072 == web_api.MAX_RESPONSE_BYTES
-    assert caps["actions"] == ["search", "browse", "describe", "read", "lab_signals", "lab_plan", "lab_run"]
+    # The seven canonical actions lead the list unchanged and U03 adds NO action of its own —
+    # the view rides on `read`. Sibling programs may append their own actions after them, so
+    # this pins the invariant U03 owns rather than the whole list.
+    canonical = ["search", "browse", "describe", "read", "lab_signals", "lab_plan", "lab_run"]
+    assert caps["actions"][: len(canonical)] == canonical
+    assert "read_view" not in caps["actions"]
+    assert len(caps["actions"]) == len(set(caps["actions"]))
 
 
 def test_U03_an_oversized_view_is_REQUEST_TOO_LARGE(case):
