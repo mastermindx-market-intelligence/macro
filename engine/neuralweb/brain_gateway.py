@@ -6374,7 +6374,7 @@ def _dispatch_brain_tool(
                     return {"error": result.get("error", "drawing_plan_invalid"), "index": index, "emitted": 0}
                 results.append(result)
             return {"client_executed": True, "v": 2, "type": "command_plan", "commands": results,
-                    "note": "Validated drawing plan; no chart action has been emitted or applied yet."}
+                    "note": "Drawing plan passed contract checks; no chart action has been emitted or applied yet."}
         if tool_name == "emit_chart_command":
             args = tool_params.get("args")
             if tool_params.get("op") == "draw.tool":
