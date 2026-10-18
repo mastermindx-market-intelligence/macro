@@ -47,6 +47,9 @@ artifacts:
   - research/grey_deer/risk_radar_research_protocol_20261017.md
   - research/grey_deer/all_date_census/PROTOCOL_2026-10-17.json
   - research/grey_deer/all_date_census/v1/manifest.json
+  - research/grey_deer/all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md
+  - research/grey_deer/live_delivery_20261017/9573_source_landing.json
+  - research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/HELPER_CANDIDATE_SEMANTIC_REVIEW_2026-10-18.md
   - research/ROTATION_RISK_CONFLUENCE_IMPLEMENTATION_2026-10-08.md
   - research/ROTATION_RISK_CONFLUENCE_DELIVERY_2026-10-09.md
   - research/grey_deer/GREY_DEER_RISK_INTELLIGENCE_ARCHITECTURE_FREEZE_2026-08-19.md
@@ -449,43 +452,58 @@ waves:
     # Original Massive SPY identity and one T12 sample frozen; controls10/18,3/21,1/24 and warmup/immaturity failures retained.
     # Retained FRED model purposes remain UNKNOWN/HOLD; T13/T14/T19 drafts and budgets unchanged.
     # Mastermind1567 source is separately merged; full standard release qualification, production decision and live parity remain open.
+    # Continuation evidence 9573 merged 1ed4b870 at 2026-10-18T02:37:11Z; all 44 artifacts separately verified.
+    # Subsequent helper qualification and proposed all-date baseline admission remain open; zero new fits/promotions.
     depends_on: [GD-PB-W7, GD-PB-W8]
 next_action: >
   Read research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md section 0A
   and the cumulative GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS handoff.
-  Macro PR 9515 is merged and its source landing verified; never push that closed branch.
-  Continue the native evidence operation risk-radar-meta-ceo-evidence-20261017-01a14837
-  through normal source gates. The delivered 9517 desktop workspace has accepted
-  bounded proof under live_delivery_20261017/delivered_workspace; preserve exact
-  probability qualifiers as an open defect. Current workspace writer 9548 and gateway
-  writer 9447 have intersecting source paths; preserve their actual pending effects.
-  Use the completed Copilot source diagnosis before a custody-qualified repair;
-  require an installed changed path and a useful authenticated answer, not only tests.
-  Original SPY/T12 identity is frozen once. A separately reviewed metadata-only contract
-  and source were committed at9102e6954db1 before one October18 run. Its2138 window
-  records preserve null labels,1901 unknown dates and39 horizon intersections. Supported
-  pairs9/2/0 across4/2/0 events refuse the21-session matched lane and admit no model.
-  Before feature joins or fitting, qualify exact calendar/outcomes, source purpose and
-  availability, dependence, chronological evaluation, common-support baselines and trials.
-  Preserve severe control shortfalls and FRED-purpose UNKNOWN/HOLD; no sample mutation,
-  source swap, trial registration or activation of existing T13/T14/T19 drafts occurred.
-  Mastermind1567 source is merged; the October17 runtime observation still had October9 code.
-  The exact wrapper/helper review found298 deployment-eligible paths outside rollback scope
-  and health-result/transaction-order weaknesses. The forward_evaluation review confirms
-  marker-ownership, failed-activation, retained-output and baseline-completeness gaps.
-  Read its actual registry/package, service/health/caller locks and settlement reader next;
-  qualify transport, bounded repairs, complete current-master bundle and rollback/activation
-  transaction before the canonical production decision.
-  Autonomous production deployment remains prohibited; 1507 repository differences
-  are not a transfer count or live book/prompt/ledger parity. Existing publisher8132,
-  measured-pullback8721,9428 refusal boundaries and QLedger/nightly owners remain intact.
-  Require genuine natural W5 issuance; never backfill foresight. Do not rerun accepted
-  GD3 natural four-clock proof or frozen stage1/stage1b. Keep all failed/rejected claims.
-  Authentication is resolved; all-state warning freshness/expiry, current Terminal,
-  granular recovery/action usefulness and empirical superiority remain open.
-  Preserve Envelope rank/gate/size/execute false and Portfolio/Prophet numerical policy.
-  Paper writes still require actual catalog qualification. Whole programme remains active
-  and not finally accepted.
+  Macro 9515 and 9573 are merged with separate landing verification; never rearm those
+  closed carriers. Continue evidence operation risk-radar-release-qualification-20261018-0304
+  at its admitted 084ac334 base through normal source gates. The old 9573 workspace remains
+  closed read-only under native PRESERVED_UNPUBLISHED; do not force cleanup.
+  Advance the two-file helper repair in Mastermind operation risk-radar-release-integrity-20261018-0310
+  at d65414 through its source carrier https://github.com/mastermindx-market-intelligence/Mastermind/pull/1610,
+  created 2026-10-18T07:56:07.107077Z, exact head 797c760f3e18eb6993579f56986103de9d9fdcb4 on
+  sol/web-risk-radar-release-integrity-20261018-0310. Only the two owned files change. At 08:03:00Z the head
+  was unchanged, CI run 39109519443 was running with three pytest shards in progress, and CodeQL had passed.
+  That observation is historical: the same run concluded FAILURE at unchanged head, with shard 1 failing
+  08:18:20Z, shard 0 at 08:20:23Z and required test at 08:20:34Z; shard 2 passed. Three static contract tests
+  expect old Datadog inline formatting, a forward-transaction substring and the removed DIRS declaration.
+  These unresolved failures follow the helper refactor, not unrelated baseline failures. Inspect their exact
+  companion-test semantics and exact hunk custody before repair; 1586's test_forward_evaluation.py remains
+  draft/HOLD and the 642 Datadog-test intersection is unqualified. At 08:28:04.970897Z the same 1610 head
+  was confirmed OPEN/draft with autoMergeRequest:null, no queue or merge. Source landing remains unobserved.
+  No fix, waiver or rerun claimed.
+  Observer PID 2864 completed 08:22:04.981746Z with exit 1; no active watcher remains. Release stays held;
+  no production deployment is authorized or performed.
+  Final native run 07:52:15-07:54:37Z passed
+  49 tests with zero failures/errors/skips for helper 1ebfd44 and test 1e463a91; independent
+  source/portability reviews and shell syntax/diff checks pass. Preserve the exact 44-case
+  pre-native receipt and both earlier native failures. The 07:46Z census of 396 open PRs found no active helper/test
+  delta; forward-module/test writer 1586 at 52bee91 remains outside this repair.
+  Direct package, registry, health, lock and settlement-caller reviews are complete within
+  scope. The 02:42Z runtime still had 732cf7be; the August 11 cohort was active at 03:06Z,
+  with no observed settlement WAL/JSON receipts at 03:14Z and readable, nonempty NAV guard inputs at 03:22Z.
+  These dated observations are not future stop/recovery or complete book-integrity proof.
+  After normal source acceptance, qualify the exact complete release, permitted startup
+  effects and concrete recovery before the reserved production decision. Autonomous
+  production deployment remains prohibited; Portfolio/Prophet retain numerical policy.
+  Preserve T13's 2138 unscored records, supported pairs 9/2/0 and h21 matched refusal.
+  Six all-date artifacts match; the separate proposed 532-unit exposure-B0/pooled-B0/B1
+  comparison remains NOT_ADMITTED under Yahoo model-purpose UNKNOWN/not a source and
+  absent estimator executable/runtime. Resolve that purpose before executable admission;
+  no fits, source swap, sampler restart or T13/T14/T19 budget expenditure is authorized.
+  Preserve FRED UNKNOWN/HOLD, null independent N, prior failures and revised-history limits.
+  Delivered 9517 desktop scope is accepted; exact forecast qualifiers, all-state warning
+  freshness/expiry, current Terminal proof and useful exposure/recovery delivery remain open.
+  At 07:54Z Macro writers 9447 at b3fa7603 and 9548 at f28a75ec remain open/non-draft.
+  Use the completed Copilot diagnosis only after those current source effects are
+  reconciled; require an installed changed path and useful authenticated answer.
+  Preserve publisher 8132, measured-pullback 8721, 9428 refusal and QLedger/nightly custody.
+  Require natural W5 issuance, never backfill or rerun accepted GD3/frozen stage1/stage1b.
+  Keep Envelope rank/gate/size/execute false. Paper writes require actual catalog qualification.
+  Whole programme remains active and not finally accepted.
 
 ---
 
