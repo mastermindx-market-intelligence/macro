@@ -427,5 +427,48 @@ def test_overview_hero_discloses_exact_source_generation():
         action_board_sha256="b" * 64,
     )
     assert 'data-si-as-of="2026-09-14"' in html
+    # A static/anonymous shell must disclose the actual last validated source date,
+    # even before client JS or premium data authorization can hydrate.
+    assert '<span id="asof">2026-09-14</span>' in html
     assert f'data-si-baskets-sha256="{"a" * 64}"' in html
     assert f'data-si-action-board-sha256="{"b" * 64}"' in html
+
+
+def test_hero_asof_is_bound_on_the_context_rich_render_too():
+    # The normal theme-context hero is a separate branch from the fallback
+    # used in the generation test above. Both must display the same baked date.
+    ctx = {
+        "leadership": {
+            "state": "steady",
+            "trailing_leader": {"id": "theme-1", "name": "Former Lead", "name_zh": "旧领涨"},
+            "stance_en": "Stay selective",
+            "stance_zh": "保持审慎",
+            "days_in_state": 0,
+            "strength": [],
+        },
+        "migration": {"note_en": "", "note_zh": ""},
+        "state_changes": {},
+    }
+    html = _env().get_template(PAGE_TPL.name).render(
+        flows_html=None,
+        pgate=None,
+        bottoming=None,
+        theme_context=ctx,
+        factor_season=None,
+        flow=None,
+        basket_member_syms=[],
+        action_board=_board(),
+        generated_utc="2026-10-15T06:00:00Z",
+        source_as_of="2026-10-14",
+    )
+    assert 'data-si-as-of="2026-10-14"' in html
+    assert '<span id="asof">2026-10-14</span>' in html
+    assert html.count('id="asof"') == 1
+
+
+def test_hero_never_mints_a_date_when_no_source_asof_is_available():
+    html = _render_page(_board())
+    assert '<span id="asof">—</span>' in html
+    # Client hydration is allowed to fill an unknown date, but never to
+    # overwrite the server-pinned market session with a different cache vintage.
+    assert "ao.textContent.trim()==='—'" in html
