@@ -7085,6 +7085,15 @@ canada:
 # with per-country flags. Taiwan macro is thin on keyless sources -> degrades.
 # ===========================================================================
 intl:
+  # Chairman confirmed permitted user-facing EOD redistribution on 2026-10-09.
+  # This is a source-scoped publication decision, NOT a provider session-clock
+  # attestation, trading authorization, or blanket rights grant to other feeds.
+  # Missing current saved observations/collector receipts still fail closed.
+  eod_publication:
+    status: confirmed
+    scope: intl-index-fx-eod-user-facing-v1
+    decision_ref: chairman-user-facing-redistribution-confirmed-2026-10-09
+
   # -- Plane A: prices (group=intl) — yfinance indices + vol + FX -------------
   yahoo:
     retries: 3
@@ -7405,6 +7414,10 @@ china_special_situations:
 us_board_gate:
   gated: true
   preview_rows: 3
+  # Today is a separate bounded Featured shelf, not the Screener prefix.
+  # Keep enough names on the landing view to communicate real board breadth
+  # without widening the protected Screener or historical Plans payloads.
+  today_preview_rows: 6
   # The four panels ADJACENT to the board on the same page — "More fresh
   # triggers" (.topsetups), "Market leaders" (.topsetups.leaders-strip),
   # "Recently fired" (.pbr-l), the Act-Now board (#action-board) and the theme
@@ -7477,7 +7490,9 @@ yahoo:
   # All EOD adjusted closes, one parquet per ticker under data/yahoo/.
   tickers:
     sectors: [XLB, XLC, XLE, XLF, XLI, XLK, XLP, XLRE, XLU, XLV, XLY]
-    extras: [SMH, IWM, RSP, SPY, QQQ, "^DJI", "^RUT", IJH,   # ^RUT = true Russell 2000 index level; IJH = S&P MidCap 400 (mid-cap leg of the size spectrum)
+    # DIA is the ETF price leg for preregistered Dow-vs-Nasdaq rotation context;
+    # ^DJI is an index level and cannot substitute for DIA's dated ETF closes.
+    extras: [SMH, IWM, RSP, SPY, QQQ, DIA, "^DJI", "^RUT", IJH,   # ^RUT = true Russell 2000 index level; IJH = S&P MidCap 400 (mid-cap leg of the size spectrum)
              SOXX, IGV, XBI, IBB, GDX, GDXJ, KRE, KBE, ITB, XHB, XME, XOP, OIH, XRT, TAN,  # deep-history thematic ETFs (directional model — narrow purer-driver exposures)
              MAGS,                # Roundhill Magnificent Seven ETF — mega-cap leadership concentration tracker (hk_context_chips em_dm_rs / HKRV-W4)
              GLD,                 # SPDR Gold Shares — the gold leg of the GDX/GDXJ miners complex (miners-vs-metal RS) and the bullion tape scripts/research/hs2_event_reactions reads. Same failure as ^GSPC below: seeded once by a research pass (#2569, 2026-07-14), in NO group here, so it froze that day while GDX/GDXJ/GC=F stayed current
@@ -7598,6 +7613,7 @@ intraday_flow:
 # --------------------------------------------------------------------------- #
 leader_radar:
   enabled: true                    # kill-switch: false → noindex stub, skip JSON
+  recovery_capture_enabled: true   # 2026-10-11 WP5: capture the first-seen recovery observation per (date, ticker) row of state_history.parquet (engine/leader_recovery_observations.py); literal true only — false stops new captures and deletes nothing
   basket_keys:                     # LR-R12 basket keys from data/baskets/membership.json
     - mag7
     - ai_infra

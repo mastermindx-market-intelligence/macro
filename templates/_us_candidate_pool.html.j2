@@ -9,12 +9,12 @@
 .ucp>summary{padding:12px 14px;cursor:pointer;line-height:1.6;font-weight:650}.ucp>summary:focus-visible{outline:2px solid var(--link);outline-offset:2px}
 .ucp-summary-count{font-weight:400;color:var(--muted);margin-left:12px}.ucp-body{padding:0 14px 12px}.ucp-note{color:var(--muted);margin:4px 0 12px;line-height:1.6}
 .ucp-controls{display:flex;gap:14px;flex-wrap:wrap;align-items:end;margin:10px 0}.ucp-search{display:grid;gap:5px;flex:1;min-width:180px}.ucp-search input{width:100%;box-sizing:border-box;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:9px;font:inherit}
-.ucp-controls input:focus-visible{outline:2px solid var(--link);outline-offset:2px}.ucp-toggle{display:flex;gap:7px;align-items:center;padding:9px 0}
-.ucp-list{max-height:420px;overflow:auto;overscroll-behavior:contain}.ucp-row{display:grid;grid-template-columns:minmax(150px,1fr) minmax(180px,1.25fr) 100px;gap:12px;padding:12px 0;border-top:1px solid var(--line);align-items:start}.ucp-row[hidden]{display:none!important}
-.ucp-identity,.ucp-decision,.ucp-score{display:flex;flex-direction:column;gap:4px;min-width:0}.ucp-identity a{color:var(--link);font-weight:700;width:fit-content}.ucp-name{overflow-wrap:anywhere}.ucp-placement{font-weight:600}.ucp-score{text-align:right}.ucp-receipt{color:var(--muted);font-size:11px;line-height:1.6}.ucp-receipt summary{cursor:pointer}.ucp-receipt code{display:block;overflow-wrap:anywhere;font-size:10px}.ucp-status{margin:8px 0;color:var(--muted)}
+.ucp-controls input:focus-visible{outline:2px solid var(--link);outline-offset:2px}.ucp-toggle{display:flex;gap:7px;align-items:center;padding:9px 0}.ucp-view{display:flex;gap:4px;align-items:center}.ucp-view button{min-height:36px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:6px 10px;background:var(--panel2);color:var(--muted);font:inherit;cursor:pointer}.ucp-view button[aria-pressed="true"]{color:var(--text);border-color:var(--link)}.ucp-view button:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.ucp-list{max-height:420px;overflow:auto;overscroll-behavior:contain}.ucp-row{display:grid;grid-template-columns:minmax(150px,1fr) minmax(180px,1.25fr) 100px;gap:12px;padding:12px 0;border-top:1px solid var(--line);align-items:start}.ucp-row[hidden]{display:none!important}.ucp[data-view="grid"] .ucp-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;padding:2px 0}.ucp[data-view="grid"] .ucp-row{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:var(--r-card,12px);padding:12px;min-width:0}.ucp[data-view="grid"] .ucp-score{text-align:left}.ucp[data-view="grid"] .ucp-decision{flex:1}
+.ucp-identity,.ucp-decision,.ucp-score{display:flex;flex-direction:column;gap:4px;min-width:0}.ucp-identity a{color:var(--link);font-weight:700;width:fit-content}.ucp-name{overflow-wrap:anywhere}.ucp-placement{font-weight:600}.ucp-score{text-align:right}.ucp-receipt{color:var(--muted);font-size:11px;line-height:1.6}.ucp-receipt summary{cursor:pointer}.ucp-receipt code{display:block;overflow-wrap:anywhere;font-size:10px}.ucp-status{margin:8px 0;color:var(--muted)}.ucp-context-btn{width:fit-content;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2);color:var(--link);padding:5px 8px;font:inherit;cursor:pointer}.ucp-context-btn:focus-visible{outline:2px solid var(--link);outline-offset:2px}.ucp-context-panel{margin:10px 0 0;padding:12px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel2);line-height:1.55}.ucp-context-panel[hidden]{display:none}.ucp-context-title{font-weight:750;margin-bottom:4px}.ucp-context-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:7px;margin-top:8px}.ucp-context-item{padding:8px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);min-width:0}.ucp-context-k{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.04em}.ucp-context-v{display:block;overflow-wrap:anywhere}.ucp-context-note{color:var(--muted);margin-top:8px}
 @media(max-width:600px){.ucp-row{grid-template-columns:minmax(0,1fr) 82px;gap:8px}.ucp-decision{grid-column:1/-1;grid-row:2}.ucp-score{grid-column:2;grid-row:1}.ucp-summary-count{display:block;margin-left:0}.ucp-controls{gap:6px}.ucp-list{max-height:520px}}
 </style>
-<details class="ucp" id="us-candidate-pool" data-status="{{ _pool.status|e }}" data-total="{{ _pc.eligible if _pc.eligible is not none else 0 }}" data-as-of="{{ _pool.as_of or '' }}" data-source-digest="{{ _pool.source_digest or '' }}">
+<details class="ucp" id="us-candidate-pool" data-status="{{ _pool.status|e }}" data-total="{{ _pc.eligible if _pc.eligible is not none else 0 }}" data-as-of="{{ _pool.as_of or '' }}" data-source-digest="{{ _pool.source_digest or '' }}" data-view="table">
   <summary><span class="l-en">All eligible candidates</span><span class="l-zh">全部候选股票</span>
     {% if _pc.eligible is not none %}<span class="ucp-summary-count">{{ _pc.eligible }} <span class="l-en">eligible</span><span class="l-zh">个候选</span> · {{ _pc.off_buy_lane }} <span class="l-en">outside main list</span><span class="l-zh">个不在主榜</span></span>{% endif %}
   </summary>
@@ -39,11 +39,16 @@
     <p><span class="l-en">No eligible candidates in this snapshot.</span><span class="l-zh">此快照中暂无符合条件的候选。</span></p>
     {% else %}
     <div class="ucp-controls">
+      <div class="ucp-view" role="group" aria-label="Candidate view">
+        <button type="button" data-ucp-view="table" aria-pressed="true"><span class="l-en">Table</span><span class="l-zh">列表</span></button>
+        <button type="button" data-ucp-view="grid" aria-pressed="false"><span class="l-en">Grid</span><span class="l-zh">网格</span></button>
+      </div>
       <label class="ucp-search" for="ucp-search"><span><span class="l-en">Find ticker, company or sector</span><span class="l-zh">查找代码、公司或板块</span></span><input id="ucp-search" type="search" autocomplete="off"></label>
       <label class="ucp-toggle"><input id="ucp-outside" type="checkbox"><span><span class="l-en">Outside main list only</span><span class="l-zh">仅看主榜之外</span></span></label>
     </div>
     <p class="ucp-status" aria-live="polite"><span data-ucp-matched>{{ _pool.rows|length }}</span> <span class="l-en">shown of</span><span class="l-zh">个匹配，共加载</span> <span data-ucp-loaded>{{ _pool.rows|length }}</span> <span class="l-en">loaded</span><span class="l-zh">个</span> · {{ _pc.unscored }} <span class="l-en">without a final score in the full pool</span><span class="l-zh">个候选尚无最终评分</span></p>
     <div class="ucp-list">{% with rows=_pool.rows %}{% include "_us_candidate_pool_rows.html.j2" %}{% endwith %}</div>
+    <section class="ucp-context-panel" data-ucp-context-panel hidden aria-live="polite"></section>
     <p class="ucp-no-match muted" hidden><span class="l-en">No matches in the loaded candidates.</span><span class="l-zh">已加载的候选中没有匹配结果。</span></p>
     {% if _pool_gate %}<div class="pg-more ucp-more"><span class="l-en">{{ _pool_gate.locked }} more candidates are available with full access.</span><span class="l-zh">完整访问权限可查看另外 {{ _pool_gate.locked }} 个候选。</span></div>{% endif %}
     {% endif %}
@@ -54,9 +59,14 @@
   'use strict';
   var root=document.getElementById('us-candidate-pool');
   if(!root || root.dataset.filterBound) return;
-  var search=root.querySelector('#ucp-search'), outside=root.querySelector('#ucp-outside');
-  if(!search || !outside) return;
+  var search=root.querySelector('#ucp-search'), outside=root.querySelector('#ucp-outside'), views=root.querySelectorAll('[data-ucp-view]');
+  if(!search || !outside || !views.length) return;
   root.dataset.filterBound='true';
+  function setView(view){
+    if(view!=='grid') view='table';
+    root.dataset.view=view;
+    for(var j=0;j<views.length;j++) views[j].setAttribute('aria-pressed',String(views[j].dataset.ucpView===view));
+  }
   function filter(){
     var term=search.value.trim().toLocaleLowerCase(), rows=root.querySelectorAll('.ucp-row'), shown=0;
     for(var i=0;i<rows.length;i++){
@@ -68,8 +78,92 @@
     root.querySelector('.ucp-no-match').hidden=shown!==0;
   }
   search.addEventListener('input',filter); outside.addEventListener('change',filter);
-  root.addEventListener('candidate-pool-hydrated',filter);
-  filter();
+  for(var j=0;j<views.length;j++) views[j].addEventListener('click',function(){setView(this.dataset.ucpView);});
+  var contextRequestSerial=0;
+  function contextText(value, fallback){
+    if(typeof value==='string' && value.trim()) return value;
+    if(typeof value==='number' && Number.isFinite(value)) return String(value);
+    return fallback || 'Unavailable';
+  }
+  function contextItems(value){
+    if(!Array.isArray(value)) return [];
+    return value.map(function(item){
+      return item && typeof item==='object' && !Array.isArray(item) ? item : {};
+    });
+  }
+  function appendLine(parent, label, value){
+    var item=document.createElement('div'); item.className='ucp-context-item';
+    var k=document.createElement('span'); k.className='ucp-context-k'; k.textContent=label;
+    var v=document.createElement('span'); v.className='ucp-context-v'; v.textContent=contextText(value);
+    item.appendChild(k); item.appendChild(v); parent.appendChild(item);
+  }
+  function showContext(ticker, state, body){
+    var panel=root.querySelector('[data-ucp-context-panel]'); if(!panel) return;
+    panel.replaceChildren(); panel.hidden=false; panel.dataset.ticker=ticker; panel.dataset.state=state;
+    var title=document.createElement('div'); title.className='ucp-context-title'; title.textContent=ticker+' · Company context'; panel.appendChild(title);
+    var grid=document.createElement('div'); grid.className='ucp-context-grid'; panel.appendChild(grid);
+    if(state==='ready'){
+      appendLine(grid,'Authority',body.authority==='context_only'?'Context only':String(body.authority||'Unavailable'));
+      appendLine(grid,'Event',String(body.event_id||'Unavailable'));
+      appendLine(grid,'Event date',String(body.event_date||'Unavailable'));
+      var reported=contextItems(body.reported)[0], guidance=contextItems(body.guidance)[0];
+      appendLine(grid,contextText(reported&&reported.label,'Reported'),reported&&reported.value);
+      appendLine(grid,contextText(guidance&&guidance.label,'Guidance'),guidance&&guidance.value);
+      var cov=contextItems(body.coverage_states).slice(0,3).map(function(x){return contextText(x.label,'Coverage')+': '+contextText(x.state);}).join(' · ');
+      appendLine(grid,'Coverage',cov);
+      appendLine(grid,'Lifecycle',contextText(body.lifecycle_state));
+      var watch=contextItems(body.watch).slice(0,3);
+      for(var wi=0;wi<watch.length;wi++){
+        appendLine(grid,contextText(watch[wi].label,'Watch'),watch[wi].value);
+      }
+      var sources=contextItems(body.source_states).slice(0,8).map(function(x){return contextText(x.kind,'Source')+': '+contextText(x.status);}).join(' · ');
+      appendLine(grid,'Sources',sources);
+    }else if(state==='loading'){
+      appendLine(grid,'Company context','Loading company context…');
+    }else if(state==='not-covered'){
+      appendLine(grid,'Company context','Not covered for this ticker');
+    }else{
+      appendLine(grid,'Company context','Temporarily unavailable');
+    }
+    var note=document.createElement('div'); note.className='ucp-context-note';
+    note.textContent=state==='not-covered'
+      ? 'Coverage absence is not negative evidence. The candidate stays in the canonical roster.'
+      : 'Context only. This panel does not change stock entry-quality, Prophet outlook, B4 Availability, plan identity, or candidate membership.';
+    panel.appendChild(note);
+    panel.scrollIntoView({block:'nearest'});
+  }
+  root.addEventListener('click',function(ev){
+    var btn=ev.target.closest('[data-ucp-context]'); if(!btn || !root.contains(btn)) return;
+    var ticker=String(btn.dataset.ucpContext||'').trim().toUpperCase(); if(!ticker) return;
+    var requestSerial=++contextRequestSerial;
+    btn.disabled=true;
+    showContext(ticker,'loading',{});
+    fetch('/api/event-workspace/'+encodeURIComponent(ticker),{credentials:'same-origin',headers:{Accept:'application/json'}})
+      .then(function(resp){
+        if(resp.status===404) return resp.json().catch(function(){return {};}).then(function(body){
+          var absent=body && body.code==='event_workspace_not_covered' && body.ticker===ticker;
+          return {state:absent?'not-covered':'unavailable',body:absent?body:{}};
+        });
+        if(!resp.ok) return {state:'unavailable',body:{}};
+        return resp.json().then(function(body){
+          var ok=body && body.schema==='event_workspace_public_glance.v1' && body.available===true && body.ticker===ticker && body.authority==='context_only';
+          return {state:ok?'ready':'unavailable',body:ok?body:{}};
+        }).catch(function(){return {state:'unavailable',body:{}};});
+      })
+      .then(function(result){if(requestSerial===contextRequestSerial) showContext(ticker,result.state,result.body);})
+      .catch(function(){if(requestSerial===contextRequestSerial) showContext(ticker,'unavailable',{});})
+      .finally(function(){btn.disabled=false;});
+  });
+  root.addEventListener('candidate-pool-hydrated',function(){
+    ++contextRequestSerial;
+    var panel=root.querySelector('[data-ucp-context-panel]');
+    if(panel){
+      panel.replaceChildren(); panel.hidden=true;
+      delete panel.dataset.ticker; delete panel.dataset.state;
+    }
+    filter();
+  });
+  setView(root.dataset.view); filter();
 })();
 </script>
 {% endif %}

@@ -1,0 +1,111 @@
+{
+  "README.md": {
+    "bytes": 5928,
+    "sha256": "4a358010261d823ecc762c17c57a09fd9911238a42c64bfd50dc42910410c6ff"
+  },
+  "aapl-deep-fundamentals-collection.json": {
+    "bytes": 114,
+    "sha256": "fcd69588f6e1c2c265995fd723540e61d237d3d0f90c7c5321434cc2de518565"
+  },
+  "aapl-deep-fundamentals-materialization.log": {
+    "bytes": 448,
+    "sha256": "04823e0b1b06cd9b5af9825497dc22a7798b7dba24667dcb20219b4aea557858"
+  },
+  "aapl-deep-fundamentals-qualified.json": {
+    "bytes": 4581,
+    "sha256": "7b610de5535c8f8c4b985f4a1dfc7b2cb778b214955288b5784cae473638ac06"
+  },
+  "boats-live-case-classification-green.log": {
+    "bytes": 99,
+    "sha256": "9af5ee5b0d4b05b6500e3db2470ffa539e4101b6cfe108948e08106b5ca1992c"
+  },
+  "boats-live-case-classification-red.log": {
+    "bytes": 3243,
+    "sha256": "61bf351be9e4f7ce943150504d165d1ced45b6e2f8c9db998a55c573b60c1be6"
+  },
+  "boats-live-case-green.log": {
+    "bytes": 99,
+    "sha256": "3931929a86b1401a55444cfdcdd02e2bfef80e7fdef4919932292c805f8be59b"
+  },
+  "boats-live-case-red.log": {
+    "bytes": 8168,
+    "sha256": "30377cbb6f7535b9eae739eb8ff14917106e018417b5edefedd5bfc9721e93c5"
+  },
+  "boats-live-case-source-qualification.json": {
+    "bytes": 1167,
+    "sha256": "c7a97ee78c3ba6770ec7a51e2c706ac45a2c2fd11e6f647789c17f3d05f23cb5"
+  },
+  "eod-wave5-final-qualified-archive.json": {
+    "bytes": 5262702,
+    "sha256": "8e06ca8646fb2c45264551b4433d4a30c7ce21f8ecf76460b20da3312bcf6dde"
+  },
+  "eod-wave5-materialization.log": {
+    "bytes": 232,
+    "sha256": "d97fe70ae1284b21d2411606b62dd3895e3c228aba377172ea1769f9ac8c46f0"
+  },
+  "fabric-local-path-diagnosis-20261011.json": {
+    "bytes": 1093,
+    "sha256": "f7ca5fad887f445f4bb392710460b3355442abbf7315ee03115ee30694ae964e"
+  },
+  "independent-consumer-case-review.txt": {
+    "bytes": 2386,
+    "sha256": "eee86b0b13d9fb846844958fa4361e924004919d32834a4bcda47359520df229"
+  },
+  "independent-source-pin-review.txt": {
+    "bytes": 2979,
+    "sha256": "126fcf5c68a329fcf10b9e7ae28ba6fac3f24b733b07dbb5dce2a4c483b1af41"
+  },
+  "macro-8870-landed-case-branch-receipt.json": {
+    "bytes": 1781,
+    "sha256": "e95483c082076f754692daacd26730d1a8f8c8c86399a67815db6fd3adf41565"
+  },
+  "macro-8870-premerge-exact-carrier.json": {
+    "bytes": 8480,
+    "sha256": "9ce61618a8aa2a6ecfbf8fceaeac86a4634270ea6206a2fdcc428361776b0101"
+  },
+  "tiingo-boats-raw-20261012-01a12ab6-qualified.json": {
+    "bytes": 46575,
+    "sha256": "1fa075737c90dffc9443ca3164d9449f9682bb390aa23f65aa863b7ba0f29af2"
+  },
+  "tiingo-boats-raw-20261012-01a12ab6-repaired-replay.json": {
+    "committed_safe_bytes": 1991,
+    "committed_safe_sha256": "3a25dacc06fb081c8266f881c467ee342de2dbbc1b31015a804df38ab32ecb18",
+    "omitted_fields": [
+      "qualified_display_lineage[].sale_conditions"
+    ],
+    "original_private_bytes": 1805,
+    "original_private_sha256": "6715ecfe44a0ad329efe671f5f829ce2ca879d61517741f6ad1b23668d31ec0e"
+  },
+  "tiingo-boats-raw-20261012-01a12ab6-result.json": {
+    "bytes": 462,
+    "sha256": "4269340d19ac3e4a3cec4f6f68e71b602b19d2f939fe966b182bd485da20ecf0"
+  },
+  "tiingo-boats-raw-20261012-01a12ab6-scope.json": {
+    "bytes": 1491,
+    "sha256": "0b6d3de3faa45a761efdfd1e79b7d90fde78de9a6bc2225d9c12a2f2a3089726"
+  },
+  "tiingo-boats-raw-20261012-01a12ab6-vendor-case-replay.json": {
+    "bytes": 34593,
+    "sha256": "472bdea59d2a67e9f7c04762a7f94f57adad6d23ae2662dfa6d1fadca4f57830"
+  },
+  "verify-aapl-deep.py": {
+    "bytes": 3445,
+    "sha256": "7dc11b0818fc54a04fe1d01f26e0f3ee00b93a3f8fc85838a28378e779f29bc4"
+  },
+  "verify-eod-wave5.py": {
+    "bytes": 7265,
+    "sha256": "e3d19b5adb91dc96341553bd670585dfc5db04c62e6ca5598b2204af11f9384b"
+  },
+  "verify-open.py": {
+    "bytes": 4540,
+    "sha256": "0c3f8e57057b413c772745fb11dc0216572d04d34f2d377a660e7407604a122b"
+  },
+  "verify-repaired-replay.py": {
+    "bytes": 4123,
+    "sha256": "91d84bf4e63820915fdac57b4d87a4b3a6cb04c4d1a0c1d3ab7fc89fd9df0225"
+  },
+  "verify-vendor-case.py": {
+    "bytes": 3618,
+    "sha256": "a5b9b9737a545104ec5a853b8399120098555cf01a81e1559835c2bf5c827bca"
+  }
+}

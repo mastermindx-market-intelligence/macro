@@ -377,3 +377,53 @@ def test_wrong_object_ack_cannot_become_an_accepted_plan_child_or_continuation(c
     assert child["reason"] == "ack_drawing_id_mismatch" and child["effect_state"] == "unknown"
     assert child["id"] == "ai_a_0" and child["automatic_retry_allowed"] is False
     assert "continuation_target" not in child
+
+
+def test_thinking_limit_after_applied_plan_preserves_receipts_without_redispatch(chart, monkeypatch):
+    from tests.test_brain_gateway import _CaptureClient, _MockResponse, _MockUsage, _ThinkBlock
+
+    commands = composition("recovery")
+    client = _CaptureClient([
+        _MockResponse([block("emit_chart_plan", {"commands": commands}, "recovery-plan")], "tool_use"),
+        _MockResponse([_ThinkBlock("UNFINISHED_CHART_THINKING")], "max_tokens", _MockUsage(1399, 4000)),
+    ])
+    monkeypatch.setattr(gw, "_build_lane_providers",
+                        lambda *a, **kw: [{"client": client, "model": "deepseek-chat"}])
+    events = []
+    for raw in gw.chat_stream("Showcase a complete technical drawing analysis", USER, lane="fast",
+                              context=context(chart), root=chart["root"]):
+        if not raw.startswith("data: "):
+            continue
+        event = json.loads(raw[6:])
+        events.append(event)
+        if event.get("type") == "command" and event.get("v") == 2:
+            acknowledge(chart, event)
+
+    wires = [event for event in events if event.get("type") == "command"]
+    assert [wire["id"] for wire in wires] == [command["id"] for command in commands]
+    assert [row["id"] for row in chart["session"]["drawings"]] == [command["id"] for command in commands]
+    tool_rounds = [kwargs for kwargs in client.stream_kwargs if "tools" in kwargs]
+    synthesis = [kwargs for kwargs in client.stream_kwargs if "tools" not in kwargs]
+    assert len(tool_rounds) == 2 and len(synthesis) == 1
+    assert [kwargs["max_tokens"] for kwargs in tool_rounds] == [4000, 4000]
+    assert synthesis[0]["max_tokens"] == 8000
+    assert client.create_kwargs == []
+    results = [
+        row for message in synthesis[0]["messages"] if isinstance(message.get("content"), list)
+        for row in message["content"] if isinstance(row, dict)
+        and row.get("type") == "tool_result" and row.get("tool_use_id") == "recovery-plan"
+    ]
+    assert len(results) == 1
+    receipt = json.loads(results[0]["content"])
+    assert receipt["plan_status"] == "accepted"
+    assert receipt["counts"]["accepted"] == len(commands)
+    assert [row["id"] for row in receipt["commands"]] == [command["id"] for command in commands]
+    assert all(row["effect_state"] == "applied_not_render_verified" for row in receipt["commands"])
+    assert not any(
+        (row.get("type") if isinstance(row, dict) else getattr(row, "type", "")) == "thinking"
+        for message in synthesis[0]["messages"] if isinstance(message.get("content"), list)
+        for row in message["content"]
+    )
+    done = next(event for event in events if event.get("type") == "done")
+    assert done["degraded"] is False
+    assert done["usage"]["output_tokens"] == 4020

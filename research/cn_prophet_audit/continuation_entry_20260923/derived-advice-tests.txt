@@ -1,0 +1,22 @@
+........................................................................ [ 21%]
+.................F...................................................... [ 43%]
+........................................................................ [ 65%]
+........................................................................ [ 87%]
+...........................................                              [100%]
+=================================== FAILURES ===================================
+_________ test_conflicting_action_sources_are_visible_and_not_promoted _________
+
+    def test_conflicting_action_sources_are_visible_and_not_promoted():
+        item = {"id": "cn_semis", "name": "Semiconductors"}
+        result = assemble_act_now([], {"act_now": {"buy": [item], "reduce": [item]}}, [])
+        assert result["display_lanes"]["buy_now"] == []
+        row = result["display_lanes"]["reduce_avoid"][0]
+>       assert row["action_disagreement"] is True
+E       assert False is True
+
+tests/test_china_act_now.py:1053: AssertionError
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .github, .grok, .warp, admin, app, browser, calibration, collectors, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_china_act_now.py::test_conflicting_action_sources_are_visible_and_not_promoted
+1 failed, 330 passed in 24.83s

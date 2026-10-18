@@ -1,0 +1,189 @@
+{
+ "data_gate_bypassed_for_mechanics_only": true,
+ "design": {
+  "base_svi": [
+   0.02,
+   0.1,
+   -0.5,
+   0.0,
+   0.1
+  ],
+  "expiries": [
+   1000,
+   2000
+  ],
+  "jitter_seed": 20,
+  "noise_seeds": "1000+i",
+  "sessions": 20,
+  "strikes": [
+   80.0,
+   83.33333333333333,
+   86.66666666666667,
+   90.0,
+   93.33333333333333,
+   96.66666666666667,
+   100.0,
+   103.33333333333334,
+   106.66666666666667,
+   110.0,
+   113.33333333333334,
+   116.66666666666667,
+   120.0
+  ],
+  "taus": [
+   0.1,
+   0.25
+  ]
+ },
+ "label": "NON_EVIDENTIAL synthetic mechanics: seeded synthetic raw-SVI sessions with known truth; demonstrates that the S4 code path runs end to end; NOT market evidence and NOT a verdict input",
+ "mechanics_decision_is_not_a_verdict": true,
+ "mechanics_result": {
+  "attrition": {},
+  "bars": {
+   "benchmark_dense_pass_rate": {
+    "bar": ">= 0.99",
+    "pass": true,
+    "value": 1.0
+   },
+   "mean_D_ci95_upper": {
+    "bar": "<= 0.1",
+    "pass": true,
+    "value": -3.4572494419097657
+   },
+   "median_perturbation_state_change": {
+    "bar": "<= 0.1",
+    "pass": true,
+    "value": 0.0
+   },
+   "svi_failed_slice_rate": {
+    "bar": "<= 0.05",
+    "pass": true,
+    "value": 0.0
+   }
+  },
+  "decision": "KEEP",
+  "evaluation_flags": {
+   "bench:SUPPORTED": 64,
+   "svi:SUPPORTED": 64
+  },
+  "holdout_benchmark_states": {
+   "ADMISSIBLE": 8
+  },
+  "holdout_blocks": 2,
+  "holdout_rows": [
+   {
+    "D": -3.4053541599578554,
+    "L_bench": 3.4060646470782423,
+    "L_svi": 0.0007104871203867114,
+    "bench_state": "ADMISSIBLE",
+    "n_heldout_nodes": 8,
+    "perturbation_state_change_fraction": 0.0,
+    "session": "synthetic-12",
+    "svi_state": "ADMITTED|ADMITTED"
+   },
+   {
+    "D": -3.5412004275550952,
+    "L_bench": 3.5412004275550952,
+    "L_svi": 0.0,
+    "bench_state": "ADMISSIBLE",
+    "n_heldout_nodes": 8,
+    "perturbation_state_change_fraction": 0.0,
+    "session": "synthetic-13",
+    "svi_state": "ADMITTED|ADMITTED"
+   },
+   {
+    "D": -3.5511173851586584,
+    "L_bench": 3.5511173851586584,
+    "L_svi": 0.0,
+    "bench_state": "ADMISSIBLE",
+    "n_heldout_nodes": 8,
+    "perturbation_state_change_fraction": 0.0,
+    "session": "synthetic-14",
+    "svi_state": "ADMITTED|ADMITTED"
+   },
+   {
+    "D": -3.478453945986237,
+    "L_bench": 3.478453945986237,
+    "L_svi": 0.0,
+    "bench_state": "ADMISSIBLE",
+    "n_heldout_nodes": 8,
+    "perturbation_state_change_fraction": 0.0,
+    "session": "synthetic-15",
+    "svi_state": "ADMITTED|ADMITTED"
+   },
+   {
+    "D": -3.3261491427376932,
+    "L_bench": 3.3261491427376932,
+    "L_svi": 0.0,
+    "bench_state": "ADMISSIBLE",
+    "n_heldout_nodes": 8,
+    "perturbation_state_change_fraction": 0.0,
+    "session": "synthetic-16",
+    "svi_state": "ADMITTED|ADMITTED"
+   },
+   {
+    "D": -3.7063628744650825,
+    "L_bench": 3.7063628744650825,
+    "L_svi": 0.0,
+    "bench_state": "ADMISSIBLE",
+    "n_heldout_nodes": 8,
+    "perturbation_state_change_fraction": 0.0,
+    "session": "synthetic-17",
+    "svi_state": "ADMITTED|ADMITTED"
+   },
+   {
+    "D": -3.506568127550854,
+    "L_bench": 3.506568127550854,
+    "L_svi": 0.0,
+    "bench_state": "ADMISSIBLE",
+    "n_heldout_nodes": 8,
+    "perturbation_state_change_fraction": 0.0,
+    "session": "synthetic-18",
+    "svi_state": "ADMITTED|ADMITTED"
+   },
+   {
+    "D": -3.362202841678168,
+    "L_bench": 3.362202841678168,
+    "L_svi": 0.0,
+    "bench_state": "ADMISSIBLE",
+    "n_heldout_nodes": 8,
+    "perturbation_state_change_fraction": 0.0,
+    "session": "synthetic-19",
+    "svi_state": "ADMITTED|ADMITTED"
+   }
+  ],
+  "holdout_svi_failed_slices": 0,
+  "holdout_svi_slices": 16,
+  "lam_grid": [
+   0.01,
+   0.1,
+   1.0
+  ],
+  "lam_selected": 0.01,
+  "lam_training_median_L_svi": {
+   "0.01": 0.0,
+   "0.1": 0.0,
+   "1.0": 0.0
+  },
+  "mbb": {
+   "B": 2000,
+   "block": 5,
+   "ci95": [
+    -3.5217569418253447,
+    -3.4572494419097657
+   ],
+   "mean": -3.4846761131362056,
+   "n": 8,
+   "n_blocks": 2,
+   "seed": 101
+  },
+  "n_holdout": 8,
+  "n_holdout_paired": 8,
+  "n_sessions_input": 20,
+  "n_sessions_usable": 20,
+  "n_train": 12
+ },
+ "screen_counts_total": {
+  "ADMITTED": 1040
+ }
+}

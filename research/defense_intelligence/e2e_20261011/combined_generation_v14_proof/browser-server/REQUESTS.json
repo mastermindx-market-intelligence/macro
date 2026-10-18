@@ -1,0 +1,6602 @@
+[
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 78.7723750108853
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 39.2112499976065
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 39.99662499700207
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 41.046291997190565
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 39.18245900422335
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 40.66225000133272
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 44.78641699824948
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 64.05758298933506
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 68.48829198861495
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 69.89408300432842
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 127.12187500437722
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 30.92154100886546
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 33.383917005266994
+  },
+  {
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 9.070707994396798
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 33.439915991039015
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 20.45487498980947
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 23.135875002481043
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 23.767334001604468
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 25.832416999037378
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 25.366041008965112
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 32.90950000518933
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 14.313334002508782
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 24.472582997987047
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 19.879708997905254
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 9.334666989161633
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 8.916959006455727
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 13.591916998848319
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 118.71845900896005
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 473.78812500392087
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 435.874207993038
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 404.14412500103936
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 383.92750000639353
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 298.4806250024121
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 307.44575000426266
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 307.69104199134745
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 330.6119999906514
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 330.63183299964294
+  },
+  {
+    "path": "/fonts/Inter-800.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 277.69995799462777
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 206.94495800125878
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 231.8796250037849
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 232.98066700226627
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 250.49554200086277
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 259.05912499001715
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 188.49870799749624
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 156.40408400213346
+  },
+  {
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 145.58416701038368
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 223.7580000073649
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 180.76891599048395
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 180.92541699297726
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 181.08329200185835
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 217.85287499369588
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 218.22833399346564
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 295.5885419942206
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 193.3124999923166
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 206.0804590000771
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 165.7422079879325
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 196.99900000705384
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 213.60049999202602
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 288.76345900062006
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 204.19141699676402
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 179.72674999327864
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 283.18724999553524
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 228.4953329944983
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 368.51941600616556
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 375.6315420032479
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 376.70979199174326
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 376.89233299170155
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 378.35999998787884
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 360.4510840086732
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 312.83108399657067
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 140.17120900098234
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 250.4080829967279
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 216.24620900547598
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 180.67187500128057
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 228.5355000058189
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 166.13058400980663
+  },
+  {
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 120.84445900109131
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 216.21112500724848
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 251.32991699501872
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 278.8569580006879
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 278.00091699464247
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 372.8196250012843
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 414.2242090019863
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 194.54045899328776
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 175.0792079983512
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 258.575291998568
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 245.59562500508036
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 259.2366250028135
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 260.4688330029603
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 227.27275000943337
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 116.66487499314826
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 266.57004200387746
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 485.5275419977261
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 286.08820799854584
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 293.17333399376366
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 319.9790000071516
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 320.03237499156967
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 320.5440419988008
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 346.85083299700636
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 312.08483400405385
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 393.35183300136123
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 794.2320000001928
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 714.3032500025583
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 725.6143330014311
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 859.4732089986792
+  },
+  {
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 233.45200000039767
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 755.5282910034293
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 170.77795798832085
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 182.890458003385
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 183.20437500369735
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 188.2152500038501
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 190.08249999023974
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 189.8596249957336
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 46.46366600354668
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 20.15054201183375
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 15.888207999523729
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 9.967416990548372
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 235.91337499965448
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 245.21624999761116
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 146.87383400450926
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 17.84516600309871
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 166.83870799897704
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 20887.06020799873
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 15149.406000011368
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 8717.44266699534
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 15030.693124994286
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 8637.78462499613
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 15331.015417003073
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 21080.847082994296
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 8890.37887500308
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 27.3765000019921
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 106.18679100298323
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 190.49004100088496
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 207.30833300331142
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 215.21179199044127
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 222.99545799614862
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 261.56587500008754
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 380.6019999901764
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 292.70404198905453
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 247.63079099648166
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 290.33499999786727
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 101.63087499677204
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 140.6047079944983
+  },
+  {
+    "path": "/fonts/Inter-500.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 154.61470899754204
+  },
+  {
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 150.18933299870696
+  },
+  {
+    "path": "/fonts/Inter-800.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 237.64920799294487
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 238.08366600133013
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 230.3933329967549
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 242.12037499819417
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 281.5289580030367
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 321.4539170003263
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 310.47195800056215
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 422.0720000012079
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 5505.563083992456
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5290.53491599916
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 20.128749994910322
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 5520.758375001606
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 24223.509165996802
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11811.559124995256
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 18394.719874995644
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 6.258459005039185
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5525.032666992047
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 9.500250002020039
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5.515832992387004
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 1.906625009723939
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5.959499991149642
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 99.81741700903513
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 99.11787499731872
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 100.01208299945574
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 13.486249998095445
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 11.784791000536643
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 117.54054100310896
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 124.9670000106562
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 19.37037499737926
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 212.0861250004964
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 271.4392920024693
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 769.4747500063386
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 318.09670900111087
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 914.1578330018092
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 615.2143329964019
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 266.66900000418536
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 395.0477089965716
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 304.81991700071376
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 183.95420799788553
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 288.6659170035273
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 104.45554199395701
+  },
+  {
+    "path": "/government-revenue-data/candidates.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.960832994896919
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 8.118625002680346
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 30.29562499432359
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 34.52370798913762
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 41.51366699079517
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 42.124625004362315
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 55.67433300893754
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 72.64433399541304
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 50.07308399945032
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 27.51200000056997
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 28.08658400317654
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 30.493625003146008
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 65.06045800051652
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 65.21029199939221
+  },
+  {
+    "path": "/fonts/Inter-500.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 77.6454580045538
+  },
+  {
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 56.80525000207126
+  },
+  {
+    "path": "/fonts/Inter-800.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 58.73404099838808
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 71.55633300135378
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 16.417666993220337
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 25.451666995650157
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 26.773707999382168
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 28.71933300048113
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 30.623917002230883
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 35.59283299546223
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 61.4654579985654
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 70.2856249990873
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 137.00066700403113
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 208.43600000080187
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 165.07633301080205
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 174.85291699995287
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 192.1183749946067
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 287.8296670096461
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 133.83550000435207
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 231.18341600638814
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 254.02679199760314
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 187.94587498996407
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 188.62679200537968
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 146.12341699830722
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 378.48674999258947
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 368.1800829945132
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 578.9384170057019
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 704.6609579992946
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 717.8348749876022
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 644.3071250105277
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 2660.4507910087705
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 2682.797000001301
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 2826.4488340064418
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 430.7003750000149
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 820.8316250093048
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 158.554459005245
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 8.98133400187362
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 26.080291994730942
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 26.422917013405822
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 28.09420799894724
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 28.48004199040588
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 42.89220900682267
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 33.773457995266654
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 30.193667000276037
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 34.20004200597759
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 33.982041000854224
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 34.97912499005906
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 59.45933298789896
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 69.45324999105651
+  },
+  {
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 57.97054099093657
+  },
+  {
+    "path": "/fonts/Inter-500.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 94.19016599713359
+  },
+  {
+    "path": "/fonts/Inter-800.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 65.58479099476244
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 40.50329099118244
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 16.105125003377907
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 21.20395800739061
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 23.42533400224056
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 32.39170799497515
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 34.73558399127796
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 33.32891600439325
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 13.924124999903142
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 24.459207998006605
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 93.6886669951491
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 132.85624999844003
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 117.87333300162572
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 141.083875001641
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 476.57941600482445
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 127.00179200328421
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 148.10295800270978
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 377.1400829864433
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 752.6097500085598
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 246.56308400153648
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 287.61754199513234
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 1025.6617920094868
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 14.906124997651204
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 1322.7932909940137
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 2017.6406250102445
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 925.3817089920631
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 277.82550000119954
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 184.94529199961107
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 49.687750011798926
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 259.0477500052657
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 266.44354200107045
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 265.0544589996571
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 19.391334004467353
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 19.98079199984204
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 20.21404200058896
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 19.965416999184527
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 21.380582998972386
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 30.34525000839494
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 29.173125003580935
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 16.19616699463222
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 17.949458007933572
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 20.91708300577011
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 8.329000003868714
+  },
+  {
+    "path": "/fonts/Inter-500.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 8.347124996362254
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.06883399572689
+  },
+  {
+    "path": "/fonts/Inter-800.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.025333991507068
+  },
+  {
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 8.91812500776723
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.766874991939403
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 17.620041995542124
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 18.634958993061446
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 17.929833004018292
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 19.502666997141205
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 19.718957992154174
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 22.31187500001397
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 7.302375001017936
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 11.103750002803281
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 3.4492499980842695
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 9.736709005665034
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 64.71587499254383
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 110.93208300007973
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 128.73137500719167
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 163.2118330016965
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 183.34166701242793
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 42.27050000918098
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 52.77333300909959
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 114.26783300703391
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 149.50475000659935
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 197.57695800217334
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 361.0531250014901
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 112.649666989455
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 1011.132625004393
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 674.0295420022449
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 1388.142791998689
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 1276.9247079995694
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 756.0912089975318
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 1482.1576660033315
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 970.6568749970756
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 6.696750002447516
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 13.864375010598451
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 16.655125000397675
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 15.282624997780658
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 26.197165992925875
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 37.645999997039326
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 42.05983300926164
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 43.60249999444932
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 48.052207988803275
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 42.67433300265111
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 65.78237500798423
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 65.88920899957884
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 25.740833996678703
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 26.655207999283448
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 25.299917004304007
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 50.310624996200204
+  },
+  {
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 87.29687498998828
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 61.305249997531064
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 100.70237499894574
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 30.54833300120663
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 34.68166598759126
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 115.53220800124109
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 15.217833002679981
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 23.011708006379195
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 88.06066699617077
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 116.60520800796803
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 152.10762500646524
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 139.49866700568236
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 159.33504200074822
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 213.173292009742
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 70.47091700951569
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 84.5669580012327
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 104.19020800327417
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 35.696291000931524
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 34.113957997760735
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 526.8124580034055
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 571.590459003346
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 358.48391699255444
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 215.56287500425242
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 272.80687500024214
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 506.85175000398885
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 334.83512500242796
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 255.52895799046382
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 304.79112500324845
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 188.90141599695198
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 201.36883300438058
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 102.90483399876393
+  },
+  {
+    "path": "/government-revenue-data/candidates.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 16.876708003110252
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5.23058399267029
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 12.726291999570094
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 20.23637499951292
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 16.194625000935048
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 19.916917008231394
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 20.012042004964314
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 35.90999999141786
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 33.46108399273362
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 32.82391700486187
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 22.05816700006835
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 21.77691699762363
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5.45224999950733
+  },
+  {
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 9.820708990446292
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 3.7457920116139576
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 14.173624993418343
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.502333010663278
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.179167006048374
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 15.482625007280149
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 16.216999996686354
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 16.057000000728294
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 20.272292007575743
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 7.1608330035815015
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.751042005722411
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 9.429999990970828
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.02849999954924
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.814416999579407
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 3.67745800758712
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 125.8151249930961
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 140.01599999028258
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 140.6549579987768
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.622542009921744
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 157.83399999781977
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 160.03145898866933
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 20.406499999808148
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 20.446624999749474
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 170.78466700331774
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 163.10479100502562
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 140.73883301171008
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 113.4076250018552
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 150.09120799368247
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 192.49129200761672
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 114.9093330022879
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 156.77500001038425
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 274.7573340020608
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 238.0332089960575
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 96.65825001138728
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 89.74974999728147
+  },
+  {
+    "path": "/government-revenue-data/candidates.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 3.4016249992419034
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.202708005323075
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 23.909041003207676
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 24.15216699591838
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 25.759750002180226
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 26.212249998934567
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 30.960583011619747
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 37.099334003869444
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 25.959125006920658
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.318458000663668
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.392125005135313
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.488416992709972
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5.814542004372925
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 7.6545420015463606
+  },
+  {
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 20.2916670095874
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 26.73754098941572
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 9.212458011461422
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.440416997880675
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 17.313584001385607
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 18.540542005212046
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 20.285000005969778
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 19.172166008502245
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 8.54091701330617
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 7.0728330028941855
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 14.50366601056885
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 3.7991669960319996
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 2.1232919971225783
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.214374988805503
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 85.72908399219159
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 106.39299999456853
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 144.16787499794737
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 113.29612499685027
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 105.06316700775642
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 21.359249993111007
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 23.832541002775542
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 118.8126250053756
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 169.0473339986056
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 161.7167079966748
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 157.10154200496618
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 160.79387500940356
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 497.5741249945713
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 498.64629199146293
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 292.0177089981735
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 348.09720900375396
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 135.25754200236406
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 108.62758399161976
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 98.20974999456666
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 79.40066599985585
+  },
+  {
+    "path": "/government-revenue-data/candidates.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 3.842124991933815
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 6.849458004580811
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 17.08491700992454
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 19.41820900538005
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 20.036083995364606
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 20.280208002077416
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 20.822375008719973
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 20.9509170090314
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 31.68358300172258
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 34.1140840027947
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.606333999428898
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.376667000353336
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.917084006592631
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 6.283832990447991
+  },
+  {
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 6.717041993397288
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 30.034791998332366
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 38.925625005504116
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 39.20395900786389
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 39.933500011102296
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 40.39962499518879
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 59.07704200944863
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 83.93950000754558
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 52.22516698995605
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 39.719541993690655
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 24.54254199983552
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5.609208004898392
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 8.783249999396503
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 23.36704099434428
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 99.3741659913212
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 178.04804199840873
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 268.56045800377615
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 286.6692499956116
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 190.46420900849625
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 400.7163750065956
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 101.77220799960196
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 212.79262499592733
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 307.0278329978464
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 305.22245800239034
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 86.0177080030553
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 301.99220799840987
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 297.869374990114
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 105.81458300293889
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 226.26758299884386
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 273.2067909964826
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 235.02483300399035
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 102.76079199684318
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 116.97533300321084
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 430.28845799562987
+  },
+  {
+    "path": "/government-revenue-data/candidates.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 116.54966700007208
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.437459007021971
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 20.539874996757135
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 20.700499997474253
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 20.91458300128579
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 22.405125011573546
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 21.498667003470473
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 21.62412498728372
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 22.526665998157114
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.473999998997897
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 23.439083000994287
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 16.051208003773354
+  },
+  {
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.637291008606553
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.943958011921495
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.015667001833208
+  },
+  {
+    "path": "/fonts/Inter-800.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 19.00749999913387
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 15.481541995541193
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 40.64841699437238
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 42.560457994113676
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 42.20024999813177
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 42.216208996251225
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 42.44416698929854
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 42.66966700379271
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 25.99908399861306
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.070791995734908
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 15.977082992321812
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 3.3884160075103864
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 6.7494579998310655
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 7.211999996798113
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 79.06095799989998
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 170.61100000864826
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 180.65995899087284
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 219.63491699716542
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 85.03858299809508
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 78.36158300051466
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 256.1355419893516
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 39.70987499633338
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 431.3043750007637
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 434.16949998936616
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 313.69962499593385
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 286.13858298922423
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 341.9153750000987
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 344.899167001131
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 610.546500000055
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 590.3867499873741
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 607.1320000046398
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 180.34791700483765
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 152.42712499457411
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 105.28229200281203
+  },
+  {
+    "path": "/government-revenue-data/candidates.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 6.1512499960372224
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 3.1199999939417467
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 9.10845899488777
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 16.22262501041405
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 18.646541007910855
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 17.834334008512087
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 17.839708001702093
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 18.87212500150781
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 21.40254099504091
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 21.91070799017325
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 6.607041999814101
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 7.950541999889538
+  },
+  {
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.695958006777801
+  },
+  {
+    "path": "/fonts/Inter-800.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 6.372583011398092
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 7.686249999096617
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 8.638999992399476
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 17.13420799933374
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.1907089992892
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.624208996887319
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.678249997203238
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 13.66945898917038
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 15.048792003653944
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 22.749541996745393
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5.998458000249229
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 6.140375000541098
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 2.328499991563149
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.546541997115128
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 7.067124999593943
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 149.1309589910088
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 934.9840840004617
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 874.0983329917071
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 885.0620410084957
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 50.101459011784755
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 43.095125001855195
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 925.7055830094032
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 47.60550000355579
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 149.8582080093911
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 175.86820799624547
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 165.6198749988107
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 152.24037501320709
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 160.7035829947563
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 304.50845799350645
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 180.84804200043436
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 305.61650000163354
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 201.41037499706727
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 189.89783301367424
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 160.64566699787974
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 108.84187500050757
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 94.92120800132398
+  },
+  {
+    "path": "/government-revenue-data/candidates.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 2.2373330139089376
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.022583010140806
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 21.375458003603853
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 23.503791002440266
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 24.277916993014514
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 24.80949999880977
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 25.81066600396298
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 31.73341699584853
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 23.325415997533128
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.299624999286607
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 13.060042008874007
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 13.526166003430262
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.088083005626686
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.204874989227392
+  },
+  {
+    "path": "/fonts/Inter-800.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5.855583003722131
+  },
+  {
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.682208993472159
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 13.69129100930877
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.237249986152165
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.713333005900495
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.91629099776037
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.259166993317194
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 13.11524999618996
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 13.653624992002733
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5.515208002179861
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5.762000000686385
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 3.4332079958403483
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 8.556709013646469
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 9.39624999591615
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 105.86262500146404
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 124.44525001046713
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 122.74570899899118
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 129.19500000134576
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 14.84537500073202
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 151.18825000536162
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 25.456874995143153
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 25.74645799177233
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 102.59508399758488
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 150.5370410013711
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 146.72491600504145
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 116.76499999884982
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 104.05670799082145
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 146.8788750062231
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 145.67658401210792
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 145.34154199645855
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 173.3732919965405
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 148.2735000026878
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 114.35583399725147
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 158.84804099914618
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 84.70958399993833
+  },
+  {
+    "path": "/government-revenue-data/candidates.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 3.6375830095494166
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 8.8985420006793
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 13.356708994251676
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 13.06904200464487
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 13.470250007230788
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 23.28129200031981
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 23.079790989868343
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 24.05108298989944
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 18.729415998677723
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 24.37112500774674
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 21.024458008469082
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 32.335625000996515
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 8.912083998438902
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.310791000141762
+  },
+  {
+    "path": "/fonts/Inter-800.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 27.91816700482741
+  },
+  {
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 30.714166001416743
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 37.416499995742925
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 123.04083400522359
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 124.36287499440368
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 125.32104201090988
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 125.70662499638274
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 126.24908299767412
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 129.92062501143664
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 61.61683300160803
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 110.95666600158438
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 58.30079199222382
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.65779199800454
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 29.262625001138076
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 37.50716699869372
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 162.45150000031572
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 310.45599999197293
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 368.5102919989731
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 55.345125001622364
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 409.12470799230505
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 59.006124996813014
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 413.95408399694134
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 47.85008300677873
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 121.48829200305045
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 664.2792920029024
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 658.0966659967089
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 265.41641700896434
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 270.39233400137164
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 252.1997080039
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 228.92029200738762
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 233.8387500058161
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 242.1179579978343
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 157.23500000603963
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 155.85954098787624
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 79.26770800258964
+  },
+  {
+    "path": "/government-revenue-data/candidates.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 3.285707993200049
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 2.767917001619935
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.567833000095561
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.43112501106225
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 12.531917003798299
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.68516700656619
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 13.35825001297053
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 13.372417000937276
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.750374993425794
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 9.16283400147222
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.405166999087669
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.067292002029717
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 1.101041998481378
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 2.7222080097999424
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 8.87608299672138
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5.991792000713758
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.2657080048229545
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5.843459002790041
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 9.880875004455447
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.040332999778911
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.100750005221926
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 4.291958000976592
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 6.160500008263625
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 4.226667006150819
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 1.7787909891922027
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 1.3847079972038046
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 1.6315409884555265
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 96.73029198893346
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 112.83587499929126
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 102.49054100131616
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 123.1463750009425
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 22.53987498988863
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 137.33691700326744
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 80.98279101250228
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 90.69029099191539
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 143.14804199966602
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 108.50862500956282
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 171.2350420129951
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 171.3911660044687
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 130.89420899632387
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 134.13866600603797
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 141.7619999992894
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 108.57491700153332
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 176.9054589967709
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 85.50091600045562
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 80.74054199096281
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 72.05195899587125
+  },
+  {
+    "path": "/government-revenue-data/candidates.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 1.7976249946514145
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 7.749041993520223
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 11.755125000490807
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 10.869165998883545
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 29.496333008864895
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 30.230624994146638
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 30.48345800198149
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 30.76041699387133
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 43.285332998493686
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 34.476458007702604
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 22.17295799346175
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 23.53529099491425
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 114.48187500354834
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 114.59191600442864
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 177.19079200469423
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 107.3093750019325
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 110.1408749964321
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 110.62454199418426
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 119.05587500950787
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 131.68454200786073
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 137.22095800039824
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 63.61729100171942
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 20.037458001752384
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 19.42566700745374
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 22.112958002253436
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 28.98083400214091
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 80.46662500419188
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 101.40829200099688
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 78.9617919945158
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 201.37320800859015
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 147.40441700269002
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 52.68550000619143
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 212.63579100195784
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 44.53975000069477
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 115.98400000366382
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 204.2350000119768
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 205.39575000293553
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 159.29058300389443
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 233.49612500169314
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 230.13558400270995
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 159.05929199652746
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 292.52133300178684
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 223.98450000036974
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 234.36191699875053
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 260.25674999982584
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 146.88004199706484
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 156.107458009501
+  },
+  {
+    "path": "/government-revenue-data/candidates.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.956750010023825
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5.126124990056269
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 10.580042013316415
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 15.878499994869344
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 17.473542000516318
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 17.154291999759153
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 17.285958005231805
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 17.31758400273975
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 16.54916700499598
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 16.83737499115523
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 9.328957996331155
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 14.139083999907598
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 2.9665830079466105
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.359708997071721
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 9.048666994203813
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 9.672457992564887
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.433541003498249
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.111584011814557
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.923458994715475
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.339791002683342
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 13.131957995938137
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 4.286917013814673
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5.608583000139333
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 6.0493749915622175
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 2.38491699565202
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 2.9677499987883493
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 2.5899169995682314
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 105.01645799377002
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 106.70783399837092
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 109.80683399247937
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 117.7536670002155
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 124.73475000297185
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 23.2309169950895
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 78.01804099290166
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 82.44545799971092
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 136.71200000680983
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 137.63304099848028
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 124.28475001070183
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 96.26424999441952
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 119.8702909896383
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 103.4295830031624
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 67.36116600222886
+  },
+  {
+    "path": "/government-revenue-data/candidates.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 2.2137500054668635
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 73.16366699524224
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 87.16154099965934
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 71.31008300348185
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 102.84341599617619
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 138.29049999185372
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 2.956416006782092
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.143500010599382
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 10.379416999057867
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.883165996754542
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 16.009708007914014
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 17.11533400521148
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 17.27329099958297
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 15.138499991735443
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 15.37566700426396
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 13.246542002889328
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.723417006782256
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 6.065999987185933
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 7.796208999934606
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.02041700121481
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 8.144708001054823
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 8.654749995912425
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.468333002994768
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 13.711166990105994
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 13.816666003549471
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 14.835499998298474
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 13.483167000231333
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 3.4841249871533364
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 7.406000004266389
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.673707997426391
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 1.7001670057652518
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 1.8809169996529818
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 110.76312500517815
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 125.67045800096821
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 133.89354100218043
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 129.92154101084452
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 131.10370900540147
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 14.645250004832633
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 36.13654099171981
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 70.65291699836962
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 142.37758300441783
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 157.41425000305753
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 361.7514579964336
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 417.94895799830556
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 76.88541599782184
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 167.8217080043396
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 180.76379199919757
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 284.3942500039702
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 262.12133299850393
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 182.79841600451618
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 118.99304199323524
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 94.17937499529216
+  },
+  {
+    "path": "/government-revenue-data/candidates.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 2.6257919962517917
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 8.112000010441989
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 27.93645899510011
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 32.724999997299165
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 29.341458997805603
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 30.45462499721907
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 39.801750011974946
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 40.06004201073665
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 36.861082990071736
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 24.675167005625553
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 19.92904099461157
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 20.894250003038906
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.90879100956954
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.52925000153482
+  },
+  {
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 14.395624995813705
+  },
+  {
+    "path": "/fonts/Inter-800.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 14.854833003482781
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 19.337290999828838
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.301457994501106
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.536791989579797
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 18.702417000895366
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 19.999875003122725
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 20.796999990125187
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 20.53050001268275
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 22.675958010950126
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.28783299261704
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 15.33433300210163
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5.6362500035902485
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 3.4416249982314184
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 6.020250002620742
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 129.83883399283513
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 130.3971670131432
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 166.81916700326838
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 177.16079199453816
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 33.605958000407554
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 201.97525000548922
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 44.23254099674523
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 32.47862501302734
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 360.9886250051204
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 357.9779159917962
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 314.8371249990305
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 344.0853330102982
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 221.17199999047443
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 331.03050000499934
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 222.62516600312665
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 226.3037499942584
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 134.49858299281914
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 195.88875000772532
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 132.95958400703967
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 93.41012500226498
+  },
+  {
+    "path": "/government-revenue-data/candidates.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 7.396582994260825
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 3.252624999731779
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 8.363790999283083
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 19.075874995905906
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 19.759292001253925
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 20.16133299912326
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 19.414875001530163
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 19.441541997366585
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 18.83099999395199
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 18.858208000892773
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 19.27266600250732
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.213375004241243
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 6.926250003743917
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 8.945374996983446
+  },
+  {
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.615291996742599
+  },
+  {
+    "path": "/fonts/Inter-800.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 6.298541004071012
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.835374996531755
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.720125006628223
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 10.930999997071922
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.48437500523869
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.549082992132753
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.822000004234724
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.09075000951998
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 5.940415998338722
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 7.564166997326538
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 5.779582992545329
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 2.0005830010632053
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 2.765041994280182
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 2.8189580043544993
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 105.59745899809059
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 115.8970410033362
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 112.56854199746158
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5.648958001984283
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 125.4519590002019
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 133.9226659911219
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 20.66775001003407
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 27.112582989502698
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 278.60345800581854
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 294.48075000254903
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 126.21387500257697
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 101.52816699701361
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 149.7765829990385
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 151.563207997242
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 209.04250000603497
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 218.4456249960931
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 108.11758400814142
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 111.84991699701641
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 75.91833299375139
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 76.71974999539088
+  },
+  {
+    "path": "/government-revenue-data/candidates.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 3.4638750075828284
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 2.5314579979749396
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.55295799637679
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 12.740958001813851
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 15.124874989851378
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 15.349374996731058
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 16.54262500233017
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 16.865792000317015
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.047999989590608
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 19.95425000495743
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.426665994804353
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.637624993454665
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 2.591500000562519
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 1.9509999983711168
+  },
+  {
+    "path": "/fonts/Inter-800.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 2.9422080115182325
+  },
+  {
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5.767458991613239
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 8.51045799208805
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5.956709006568417
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.035207997541875
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.379624993423931
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.00041698757559
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 11.633583009825088
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 12.2509170032572
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 2.849750002496876
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 2.814541003317572
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 1.3570839946623892
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 6.6549580078572035
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 5.576708004809916
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 120.87137500930112
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 119.66029200993944
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 127.23591600661166
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 128.57341599010397
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 18.60524999210611
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 143.5019589989679
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 23.598542000399902
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 19.80058399203699
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 94.25479199853726
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 217.6705839956412
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 241.45366599259432
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 307.8032909979811
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 324.8209169978509
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 147.83762500155717
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 262.58837500063237
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 359.3343749962514
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 427.9176670097513
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 331.84491700376384
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 128.86920900200494
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 85.96749999560416
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 70.22008299827576
+  },
+  {
+    "path": "/government-revenue-data/candidates.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 3.54062499536667
+  },
+  {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 57.702666003024206
+  },
+  {
+    "path": "/navigation-refresh.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 213.46279099816456
+  },
+  {
+    "path": "/supabase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 214.08125000016298
+  },
+  {
+    "path": "/government-revenue-critical-theme.css",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 218.77091699570883
+  },
+  {
+    "path": "/government-revenue-investor.js",
+    "query": "v=11562d7b",
+    "status": 200,
+    "elapsed_ms": 221.7552920046728
+  },
+  {
+    "path": "/theme.js",
+    "query": "v=c4daaedd",
+    "status": 200,
+    "elapsed_ms": 230.68274999968708
+  },
+  {
+    "path": "/government-revenue-investor-start.js",
+    "query": "v=5e3af056",
+    "status": 200,
+    "elapsed_ms": 215.18541700788774
+  },
+  {
+    "path": "/stock-logos.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 17.197166991536506
+  },
+  {
+    "path": "/live.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 16.73254100023769
+  },
+  {
+    "path": "/logo_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 19.73837499099318
+  },
+  {
+    "path": "/live_config.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 17.284000001382083
+  },
+  {
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 5.077334004454315
+  },
+  {
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.622375010512769
+  },
+  {
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 3.155332989990711
+  },
+  {
+    "path": "/fonts/Inter-800.woff2",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.123708000406623
+  },
+  {
+    "path": "/api/government-revenue/defense-economics",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 18.21220899000764
+  },
+  {
+    "path": "/government-revenue-theme-context.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 17.550292002852075
+  },
+  {
+    "path": "/government-revenue-sbir.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 18.807790998835117
+  },
+  {
+    "path": "/government-revenue-briefcase-ui.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 18.708124989643693
+  },
+  {
+    "path": "/government-revenue-dossiers.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 19.052000003284775
+  },
+  {
+    "path": "/government-revenue-candidate-radar.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 30.84366700204555
+  },
+  {
+    "path": "/government-revenue-briefcase.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 32.06325000792276
+  },
+  {
+    "path": "/account.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 21.769458006019704
+  },
+  {
+    "path": "/government-revenue-page.js",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 13.737249988480471
+  },
+  {
+    "path": "/nav_market.js",
+    "query": "v=20261011-account-identity",
+    "status": 200,
+    "elapsed_ms": 12.016250009764917
+  },
+  {
+    "path": "/government-revenue-data/identity-atlas.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.679999998188578
+  },
+  {
+    "path": "/government-revenue-data/workspace.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.202249998343177
+  },
+  {
+    "path": "/government-revenue-data/program-dossier.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 9.578458004398271
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 134.5710410096217
+  },
+  {
+    "path": "/api/government-revenue/sbir-progression",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 138.99112500075717
+  },
+  {
+    "path": "/api/government-revenue/fms-cases",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 171.00687501078937
+  },
+  {
+    "path": "/api/government-revenue/research-state",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 21.46274999540765
+  },
+  {
+    "path": "/api/government-revenue/budget-programs",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 194.65895800385624
+  },
+  {
+    "path": "/api/government-revenue/theme-context",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 23.732542002107948
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 195.50083400099538
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 20.095083003980108
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 160.5433329968946
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 130.47391599684488
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 129.3310840119375
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 103.55641700152773
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 150.00679099466652
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 185.55570900207385
+  },
+  {
+    "path": "/api/government-revenue/mapping-backlog",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 97.06524999637622
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100",
+    "status": 200,
+    "elapsed_ms": 176.05937499320135
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 244.87275000137743
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToxMDA",
+    "status": 200,
+    "elapsed_ms": 155.85616700991523
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYToyMDA",
+    "status": 200,
+    "elapsed_ms": 89.99091699661221
+  },
+  {
+    "path": "/api/government-revenue/candidates",
+    "query": "limit=100&cursor=Y3ExOmdyY3ExLThmMWNjNDg5ZmRmMWUxNDM4NGUwMzhjOTo3OGU2ZmYwMTRiNWY5MGU4ZmYyYTozMDA",
+    "status": 200,
+    "elapsed_ms": 109.95512499357574
+  },
+  {
+    "path": "/government-revenue-data/candidates.json",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 4.873166006291285
+  }
+]

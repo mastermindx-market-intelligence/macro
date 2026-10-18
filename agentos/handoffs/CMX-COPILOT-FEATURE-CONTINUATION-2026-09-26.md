@@ -1,3 +1,49 @@
+---
+workstream: WS:TERMINAL-AI-COPILOT
+session: claude/cmx-a2c-stream-command-ack-20260925
+model: sol
+ended_because: blocked
+mission: >
+  Historical September 26 handoff: preserve published chart-copilot host changes
+  and the exact held widget/target/native frontier until genuinely permitted recovery.
+state_before: >
+  The incumbent chart state, command queue and ACK owners existed. The host-side
+  scoped Stop bridge was prepared; consuming widget work and two semantic repairs
+  remained explicitly unimplemented at the historical handoff boundary.
+changed:
+  - path: terminal:terminal/lib/chartBus.ts
+    what: Historical host-side batch-scoped pending cancellation on the existing queue.
+  - path: terminal:terminal/components/BrainWidget.tsx
+    what: Historical optional scoped Stop bridge binding; no consuming widget acceptance claimed.
+  - path: agentos/handoffs/CMX-COPILOT-FEATURE-CONTINUATION-2026-09-26.md
+    what: Historical blocked source checkpoint and its preserved chronological continuation log.
+prs: [7151, 8014]
+verified:
+  - claim: The historical source checkpoint records the published host and held consumer separately.
+    command: git show cbcccd4b66b803f55342adde5c573d62fd8fa411:agentos/handoffs/CMX-COPILOT-FEATURE-CONTINUATION-2026-09-26.md
+    result: Records Terminal 05dca6c1fa68bfd876bfdbe686868eec06294449; widget consumer held; no tests, compiler or deployment claimed at that boundary.
+  - claim: The historical checkpoint was authored by Sol CEO on the original carrier.
+    command: git show -s --format=fuller cbcccd4b66b803f55342adde5c573d62fd8fa411
+    result: Sol CEO; September 26, 2026 at 21:14:14 -0700; scoped Stop host and held widget continuation.
+unverified:
+  - claim: At the historical handoff, the consuming widget and combined end-to-end qualification were not complete.
+    what_would_verify: A genuinely permitted recovery followed by source integration, combined tests, normal release and live model/chart acceptance.
+unresolved:
+  - Historical platform refusals were TOOL_DEGRADED / EFFECT_NONE; no retry authority was inferred.
+  - Historical source-only publication did not establish target/native/Stop or production acceptance.
+next_actions:
+  - Historical next action was to consume genuinely permitted same-operation recovery; the later dated entries record what actually followed.
+  - For current execution, read WS:TERMINAL-AI-COPILOT and the latest dated integration entry in this file.
+do_not_redo:
+  - Preserve the historical published source and the exact refused-effect boundary recorded at cbcccd4b66b803f55342adde5c573d62fd8fa411.
+  - Do not relabel subsequent test or deployment receipts as September 26 evidence.
+danger_areas:
+  - This ended_because value belongs to the original historical handoff, not the active October 18 workstream.
+  - Queue cancellation never implies undo of applied changes or provider termination.
+---
+
+**Metadata scope:** The frontmatter records the original September 26, 2026 blocked handoff at Macro cbcccd4b66b803f55342adde5c573d62fd8fa411, whose author is Sol CEO. The workstream link was added on October 18 for indexing this existing objective. The chronological entries below include subsequent recovery and active integration. `ended_because: blocked` applies only to that historical handoff; it does not declare the October 18 work blocked, ended or complete. Current state belongs to `WS:TERMINAL-AI-COPILOT`. All original body entries are preserved.
+
 # Copilot feature continuation — scoped queue Stop host prepared; widget consumer held
 
 FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION (publication/readback required)
@@ -420,3 +466,20 @@ Remaining release work: current-main joins preserving #8005 → #8014; enroll th
 
 
 Final local compiler qualification: `npx --no-install next typegen` succeeded, followed by `npx --no-install tsc --noEmit --incremental false` with exit 0 and no diagnostics after the optional callback cleanup guard was corrected. This is a source compiler result before the current-main join, not a production build or deployment receipt.
+
+
+## Advanced chart drawing workspace — attended integration checkpoint, 2026-10-18
+
+Chris Wong's current commission explicitly asks for an end-to-end upgrade and rollout of advanced multi-tool drawings, visible/configurable technical indicators, and an expandable AI layer below the upper-left study legend with individual element deletion. The incumbent #757 / #8014 foundations are retained. Their original active worktrees were read only. Principal implementation is isolated in the owned `sol/web-chart-ai-drawing-workspace-20261018-c4-001` branches under operation `chart-ai-drawing-workspace-20261018-c4-001`, using the protected NO WORKER STARTED + lawful principal-tools/custody exception. Protected Mastermind source was read at d5cce731a23588ddbf4df806bd9e8dcfa5eecf24. The native architecture adviser performed read-only principal reviews; no Fabric worker or shell-dispatched agent was started. This checkpoint does not waive normal CI, deployment, or live acceptance.
+
+Implemented: the Terminal advertises 48 admitted tools projected from its incumbent 99-tool native registry, with explicit semantic anchor contracts and actual stored-drawing readback. The Brain uses receiver capabilities and `emit_chart_plan` for 1–24 unique drawing commands sharing one frozen target and the turn cap; it validates the whole plan before dispatch and reports every child's applied/rejected/cancelled/unverified outcome honestly. No second chart queue, rendering owner, or drawing registry was added. Native channel/pattern/wave/measurement/annotation tools and custom Fibonacci settings reach their real renderers; three-pivot Fibonacci extension uses raw-price arithmetic on both linear and logarithmic displays. Indicator enablement attaches and reveals the requested study or module while preserving unrelated settings/hidden flags. The upper-left AI layer groups compound constructions and supports exact element/group visibility and deletion, global hide, and AI-only clear while preserving human drawings.
+
+Current-main joins retain Terminal master 367f488e5c67d0871d4a34c2aa7371f327d44c3d (including context-menu cleanup and Lab work) and Macro main 48f8d916587ef6487bfffff663879221397453c6. Terminal joined source is 7f0da48b8a7ec87af09100f23c5f734c41797352. Macro upgrade checkpoint is 753230b6348ace677cd528241ea17af384eaa133; its pending main-join commit also preserves main's principal/history epoch isolation, retained-context catalog/citations, risk grounding, and thinking-limit recovery alongside chart target/ACK/replay/Stop boundaries. Shared widget/theme assets were actually emitted through `lib.site_assets.copy_asset`; all 127 template/site pairs and both JavaScript syntax checks passed. The existing unrun-brain-gateway CI owner now includes the new chart contracts and required widget browser tests; the legacy CI manifest validated 254 logical jobs without executing its destructive local runner.
+
+Executed joined-source checks: the combined gateway/doctrine/analyst/drawing-plan selection returned 627 passes and two protocol literal-guard failures; after correcting and compressing protocol v14, all 26 doctrine tests passed, including the two guard cases and previously crowded-out default/multi-timeframe routing. The existing 12,000-character doctrine budget and router are unchanged. The final 6,411-character protocol retains temporal evidence, exact targets, visibility, cancellation, and receipt limits, while explicitly asking for complementary evidence-supported showcase constructions (normally 4–8 across at least three useful tool families). Read-only review corrected native coordinate units and made configuration-before-drawing conditional. All seven chart-widget browser cases passed, including cold guest recovery, late events after done, and previous-principal isolation. A real gateway stream fixture with an accepted drawing plan followed by a thinking-only token limit preserved receipts and completed synthesis without redispatch. Broader selected history/instant-lane checks passed after the existing security-master data fixtures were materialized.
+
+Terminal browser evidence on the joined source: 30/30 existing Visual Intelligence cases passed across desktop/tablet/phone and EN/ZH, with no skips/retries/flakes; the new drawing workspace matrix passed all eight executing cases (six responsive language cases plus desktop queue and logarithmic-arithmetic cases), with four explicitly declared non-desktop skips for the two viewport-independent cases. The 24-command normal-motion queue and cancellation-prefix behavior passed. Fourteen actual drawing screenshots and fourteen mirror attachments are retained with an exact compressed reporter output and source hashes. PL6 batch 1 and 2 owners actually regenerated 24 and 16 captures. Historical source-bound crop claims were preserved as history, not relabeled as qualification of new source.
+
+Known separate local diagnostic: the current-main `test_chat_launcher_stub.py::test_no_dynamic_child_asset_is_document_relative` flags `stock.html#` from an ordinary ticker navigation anchor as if it were a loaded resource. The relevant template and test are byte-identical to main; no product failure was established and no broad allowlist was added. Its incumbent owner is the data-gated template/site job. Do not conflate this diagnostic with the 127/127 emitted-pair verification or claim the full repository suite passed.
+
+MISSION_COMPLETE remains false. Finish the remaining actual options-axis captures and source-bound evidence/type checks; publish the two owned integration PRs with their parent lineage; conclude normal required CI; merge and deploy through the existing Macro updater and target-SHA Terminal release owner; verify served revision/assets and ordinary-model multi-tool analysis, visible study controls, AI-layer element deletion, and authenticated history. These local fixtures do not establish live-provider selection, analytical correctness, or production pixel proof. Preserve incumbent authentication and do not replay uncertain effects.

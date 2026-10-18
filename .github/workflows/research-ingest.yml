@@ -36,6 +36,11 @@ name: research-ingest
 on:
   workflow_dispatch:
     inputs:
+      materialize_only:
+        description: "Bounded immutable full-text derivatives only; no catalog/corpus/receipt publication"
+        required: false
+        default: false
+        type: boolean
       publish_forensics:
         description: "Build and publish the private Filing Forensics launch state"
         required: false
@@ -58,9 +63,9 @@ permissions:
   contents: write
 
 concurrency:
-  # Only the latest ingest matters — cancel any in-flight run.
+  # Let the active publication writer settle; newer pending cycles may coalesce.
   group: research-ingest
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   ingest:
@@ -71,13 +76,26 @@ jobs:
       R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
       R2_BUCKET: ${{ secrets.R2_BUCKET }}
-      # Research vault store — a SEPARATE Cloudflare account/bucket. Each falls
-      # back to the shared R2_* above when its secret is unset (same-account case).
+      # Research vault store — a PRIVATE bucket with an explicit credential
+      # namespace. The engine intentionally does NOT inherit the shared R2_* values
+      # above. Same-account credentials remain possible only when these dedicated
+      # names are populated explicitly, and R2_RESEARCH_BUCKET must differ from
+      # the configured shared/public R2_BUCKET.
       R2_RESEARCH_ENDPOINT: ${{ secrets.R2_RESEARCH_ENDPOINT }}
       R2_RESEARCH_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}
       R2_RESEARCH_SECRET_ACCESS_KEY: ${{ secrets.R2_RESEARCH_SECRET_ACCESS_KEY }}
       R2_RESEARCH_BUCKET: ${{ secrets.R2_RESEARCH_BUCKET }}
     steps:
+      - name: admit one explicit producer mode
+        env:
+          MATERIALIZE_ONLY: ${{ github.event_name == 'workflow_dispatch' && inputs.materialize_only }}
+          PUBLISH_FORENSICS: ${{ inputs.publish_forensics }}
+          BOOTSTRAP_FORENSICS: ${{ inputs.bootstrap_forensics_sources }}
+        run: |
+          if [ "$MATERIALIZE_ONLY" = "true" ] && { [ "$PUBLISH_FORENSICS" = "true" ] || [ "$BOOTSTRAP_FORENSICS" = "true" ]; }; then
+            echo "::error::materialize_only cannot be combined with forensics publication or bootstrap"
+            exit 1
+          fi
       - uses: actions/checkout@v4
         id: checkout
         with:
@@ -167,9 +185,15 @@ jobs:
         # an hour in which ingestion accomplished nothing concluded green.
         # --require-store: on the scheduled run, "no store configured" means the R2
         # secrets did not reach the runner, not "nothing to do".
+        env:
+          MATERIALIZE_ONLY: ${{ github.event_name == 'workflow_dispatch' && inputs.materialize_only }}
         run: |
           set +e
-          python -m scripts.ingest_research --require-store
+          if [ "$MATERIALIZE_ONLY" = "true" ]; then
+            python -m scripts.ingest_research --require-store --materialize-only
+          else
+            python -m scripts.ingest_research --require-store
+          fi
           echo "rc=$?" >> "$GITHUB_OUTPUT"
           exit 0
       # Salvage-push the repo snapshots regardless of the ingest step's rc
@@ -179,7 +203,7 @@ jobs:
       # payload is deterministic + timestamp-free, so an hour with no new/changed
       # reports produces no diff and no commit.
       - name: commit catalog snapshot (salvage-push)
-        if: always()
+        if: ${{ always() && !inputs.materialize_only }}
         run: |
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
           git config user.name "dashboard-bot"

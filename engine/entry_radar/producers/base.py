@@ -43,6 +43,7 @@ from engine.entry_radar.contracts import (
     Nomination,
     NominationError,
     ProducerRead,
+    finite_or_none,
     parse_ts,
     utcnow,
 )

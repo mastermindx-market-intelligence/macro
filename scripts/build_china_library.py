@@ -4898,6 +4898,19 @@ def main(alpha: dict | None = None) -> dict | None:
                      len(_ripening_rows) + len(_ripening_falling), _rn)
         except Exception as _re:  # noqa: BLE001 — ledger is additive, never fatal
             log.warning("W1-B ripening ledger failed (%s)", _re)
+        # Library provenance only: the ONE W3C selection finalizer is later in
+        # build_china, after served reasons/fallback/board_since. This prospective
+        # generation belongs to the existing library invocation, never a render retry.
+        try:
+            import uuid as _w3c_uuid
+            from datetime import datetime as _w3c_dt, timezone as _w3c_tz
+            from engine.theme_graph.selection_cohort_publication import source_handoff
+            wide["w3c_source"] = source_handoff(
+                generation_id=_w3c_uuid.uuid4().hex,
+                availability="PARTIAL" if failed else "VALID",
+                available_at=_w3c_dt.now(_w3c_tz.utc).isoformat())
+        except Exception as _w3c_source_e:  # noqa: BLE001 — existing source publication survives
+            log.warning("W3C library provenance unavailable (%s)", _w3c_source_e)
         # Serialize BEFORE opening the file; on TypeError name the offending key path
         # (a bare "keys must be str..." from json.dumps is unlocatable in CI logs —
         # that anonymity is what let the 07-13 tuple-key crash run for 3 sessions).
@@ -5032,6 +5045,16 @@ def main(alpha: dict | None = None) -> dict | None:
             )
             wide["track_ledger"] = None
         setups = wide
+        # Honest zero-universe outage: this is NOT a valid finalized empty cohort.
+        try:
+            import uuid as _w3c_uuid
+            from datetime import datetime as _w3c_dt, timezone as _w3c_tz
+            from engine.theme_graph.selection_cohort_publication import source_handoff
+            wide["w3c_source"] = source_handoff(
+                generation_id=_w3c_uuid.uuid4().hex, availability="OUTAGE",
+                available_at=_w3c_dt.now(_w3c_tz.utc).isoformat())
+        except Exception as _w3c_source_e:  # noqa: BLE001 — preserve incumbent outage publication
+            log.warning("W3C outage provenance unavailable (%s)", _w3c_source_e)
         _standouts_path = site / "factordata" / "china_standouts.json"
         _standouts_payload = json.dumps(
             wide,

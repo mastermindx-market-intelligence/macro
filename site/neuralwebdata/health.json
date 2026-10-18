@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.health.v1",
-  "produced_at": "2026-09-26T10:17:07.232492+00:00",
-  "as_of": "2026-09-25",
+  "produced_at": "2026-10-18T07:13:40.700701+00:00",
+  "as_of": "2026-10-16",
   "overall_status": "degraded",
   "lobes": [
     {
@@ -12,14 +12,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26T09:19:57+00:00",
+      "as_of": "2026-10-18T06:45:53+00:00",
       "produced_at": null,
-      "age_hours": 0.8,
+      "age_hours": 0.36,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 28958,
+      "byte_size": 29143,
       "gaps": []
     },
     {
@@ -32,12 +32,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 0.63,
+      "age_hours": 0.2,
       "freshness_sla_hours": 9999,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 5,
-      "byte_size": 9105,
+      "row_count": 22,
+      "byte_size": 62048,
       "gaps": []
     },
     {
@@ -48,14 +48,14 @@
       "tier": "display",
       "horizon_role": "tactical_entry",
       "storage": "git",
-      "as_of": "2026-09-24",
+      "as_of": "2026-10-14",
       "produced_at": null,
-      "age_hours": 58.14,
+      "age_hours": 103.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "stale",
       "row_count": null,
-      "byte_size": 2137059,
+      "byte_size": 2753238,
       "gaps": [],
       "support_impact": {
         "direct_consumers": [
@@ -140,14 +140,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
-      "produced_at": "2026-09-26T09:49:29.208899+00:00",
-      "age_hours": 10.14,
+      "as_of": "2026-10-18",
+      "produced_at": "2026-10-18T03:34:47.457548+00:00",
+      "age_hours": 7.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 55761,
+      "byte_size": 57224,
       "gaps": []
     },
     {
@@ -158,15 +158,80 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26T03:57:30.074385+00:00",
+      "as_of": "2026-10-16T11:32:41.889930+00:00",
       "produced_at": null,
-      "age_hours": 6.18,
+      "age_hours": 43.58,
       "freshness_sla_hours": 30,
       "staleness_from": null,
-      "status": "fresh",
+      "status": "stale",
       "row_count": null,
-      "byte_size": 277103,
-      "gaps": []
+      "byte_size": 280636,
+      "gaps": [],
+      "support_impact": {
+        "direct_consumers": [
+          "engine/experiments_registry.py",
+          "engine/qledger_ui.py",
+          "scripts/grade_qledger.py",
+          "scripts/build_allocation.py",
+          "scripts/build_alt_data.py"
+        ],
+        "transitive_downstream_count": 33,
+        "transitive_downstream_top": [
+          {
+            "artifact_id": "site-experiments",
+            "hop": 1,
+            "via_module": "engine/experiments_registry.py"
+          },
+          {
+            "artifact_id": "site-allocation",
+            "hop": 1,
+            "via_module": "scripts/build_allocation.py"
+          },
+          {
+            "artifact_id": "site-ai-desk-us",
+            "hop": 1,
+            "via_module": "scripts/build_allocation.py"
+          },
+          {
+            "artifact_id": "qledger-claims",
+            "hop": 2,
+            "via_module": "engine/qledger.py"
+          },
+          {
+            "artifact_id": "site-regime-timeline",
+            "hop": 2,
+            "via_module": "scripts/build_site.py"
+          },
+          {
+            "artifact_id": "site-macro-signals",
+            "hop": 2,
+            "via_module": "scripts/build_site.py"
+          },
+          {
+            "artifact_id": "site-factors",
+            "hop": 2,
+            "via_module": "scripts/build_site.py"
+          },
+          {
+            "artifact_id": "site-momentum-display",
+            "hop": 2,
+            "via_module": "scripts/build_site.py"
+          },
+          {
+            "artifact_id": "site-neuralweb-health-history",
+            "hop": 2,
+            "via_module": "scripts/build_site.py"
+          },
+          {
+            "artifact_id": "site-neuralweb-governance-recent",
+            "hop": 2,
+            "via_module": "scripts/build_site.py"
+          }
+        ],
+        "bound": "upper",
+        "note": "Downstream surfaces that read this artifact directly or transitively. Bound is upper: shared-producer inversion may fold in additional artifacts beyond those that directly depend on this one.",
+        "available": true
+      }
     },
     {
       "id": "site-radar-ticker",
@@ -176,14 +241,14 @@
       "tier": "display",
       "horizon_role": "tactical_entry",
       "storage": "git",
-      "as_of": "2026-09-26",
-      "produced_at": "2026-09-26T09:49:38.854527+00:00",
-      "age_hours": 10.14,
+      "as_of": "2026-10-17",
+      "produced_at": "2026-10-18T05:52:03.332200+00:00",
+      "age_hours": 31.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 164784,
+      "byte_size": 106681,
       "gaps": []
     },
     {
@@ -194,50 +259,15 @@
       "tier": "display",
       "horizon_role": "tactical_entry",
       "storage": "git",
-      "as_of": "2026-09-24",
+      "as_of": "2026-10-16",
       "produced_at": null,
-      "age_hours": 58.14,
+      "age_hours": 55.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
-      "status": "stale",
+      "status": "fresh",
       "row_count": null,
-      "byte_size": 3419917,
-      "gaps": [],
-      "support_impact": {
-        "direct_consumers": [
-          "scripts/build_china.py",
-          "scripts/export_signal_contracts.py",
-          "scripts/backfill_stock_open.py",
-          "engine/neuralweb/mastermind_context.py",
-          "engine/neuralweb/market_packet.py"
-        ],
-        "transitive_downstream_count": 4,
-        "transitive_downstream_top": [
-          {
-            "artifact_id": "site-artifact-manifest",
-            "hop": 1,
-            "via_module": "scripts/export_signal_contracts.py"
-          },
-          {
-            "artifact_id": "site-golden-signals",
-            "hop": 1,
-            "via_module": "scripts/export_signal_contracts.py"
-          },
-          {
-            "artifact_id": "neuralweb-market-plane",
-            "hop": 1,
-            "via_module": "engine/neuralweb/mastermind_context.py"
-          },
-          {
-            "artifact_id": "site-neuralweb-market-plane",
-            "hop": 1,
-            "via_module": "engine/neuralweb/mastermind_context.py"
-          }
-        ],
-        "bound": "upper",
-        "note": "Downstream surfaces that read this artifact directly or transitively. Bound is upper: shared-producer inversion may fold in additional artifacts beyond those that directly depend on this one.",
-        "available": true
-      }
+      "byte_size": 4487731,
+      "gaps": []
     },
     {
       "id": "site-china-cycle-phase",
@@ -247,25 +277,15 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-24",
+      "as_of": "2026-10-16",
       "produced_at": null,
-      "age_hours": 58.14,
+      "age_hours": 55.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
-      "status": "stale",
+      "status": "fresh",
       "row_count": null,
-      "byte_size": 6965,
-      "gaps": [],
-      "support_impact": {
-        "direct_consumers": [
-          "engine/china_market_state.py"
-        ],
-        "transitive_downstream_count": 0,
-        "transitive_downstream_top": [],
-        "bound": "upper",
-        "note": "Downstream surfaces that read this artifact directly or transitively. Bound is upper: shared-producer inversion may fold in additional artifacts beyond those that directly depend on this one.",
-        "available": true
-      }
+      "byte_size": 7063,
+      "gaps": []
     },
     {
       "id": "site-china-market-state",
@@ -275,14 +295,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
-      "produced_at": "2026-09-25T13:09:20Z",
-      "age_hours": 34.14,
+      "as_of": "2026-10-16",
+      "produced_at": "2026-10-16T12:15:32Z",
+      "age_hours": 55.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 12713,
+      "byte_size": 12892,
       "gaps": []
     },
     {
@@ -293,9 +313,9 @@
       "tier": "infrastructure",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
+      "as_of": "2026-10-17",
       "produced_at": null,
-      "age_hours": 34.14,
+      "age_hours": 31.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
@@ -311,9 +331,9 @@
       "tier": "infrastructure",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
+      "as_of": "2026-10-17",
       "produced_at": null,
-      "age_hours": 34.14,
+      "age_hours": 31.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
@@ -331,12 +351,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 0.37,
+      "age_hours": 0.1,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 489305,
-      "byte_size": 12705645,
+      "row_count": 519190,
+      "byte_size": 13480982,
       "gaps": []
     },
     {
@@ -349,12 +369,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 0.36,
+      "age_hours": 0.09,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 140,
-      "byte_size": 18758,
+      "row_count": 169,
+      "byte_size": 20184,
       "gaps": []
     },
     {
@@ -365,14 +385,14 @@
       "tier": "infrastructure",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26T09:46:42Z",
-      "produced_at": "2026-09-26T09:46:42Z",
-      "age_hours": 0.36,
+      "as_of": "2026-10-18T07:02:31Z",
+      "produced_at": "2026-10-18T07:02:31Z",
+      "age_hours": 0.09,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 25839,
+      "byte_size": 27775,
       "gaps": []
     },
     {
@@ -383,14 +403,14 @@
       "tier": "infrastructure",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26T09:46:49Z",
-      "produced_at": "2026-09-26T09:46:49Z",
-      "age_hours": 0.36,
+      "as_of": "2026-10-18T07:03:06Z",
+      "produced_at": "2026-10-18T07:03:06Z",
+      "age_hours": 0.08,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 10111,
+      "byte_size": 10508,
       "gaps": []
     },
     {
@@ -401,14 +421,14 @@
       "tier": "infrastructure",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26T09:46:46Z",
-      "produced_at": "2026-09-26T09:46:46Z",
-      "age_hours": 0.36,
+      "as_of": "2026-10-18T07:02:36Z",
+      "produced_at": "2026-10-18T07:02:36Z",
+      "age_hours": 0.09,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 255810,
+      "byte_size": 248188,
       "gaps": []
     },
     {
@@ -419,14 +439,14 @@
       "tier": "infrastructure",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26T10:04:26Z",
-      "produced_at": "2026-09-26T10:04:26Z",
-      "age_hours": 0.06,
+      "as_of": "2026-10-18T07:03:19Z",
+      "produced_at": "2026-10-18T07:03:19Z",
+      "age_hours": 0.07,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 200401,
+      "byte_size": 381008,
       "gaps": []
     },
     {
@@ -437,14 +457,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-24",
-      "produced_at": "2026-09-26T09:46:54Z",
-      "age_hours": 58.14,
+      "as_of": "2026-10-15",
+      "produced_at": "2026-10-17T18:52:40Z",
+      "age_hours": 79.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "stale",
       "row_count": null,
-      "byte_size": 722424,
+      "byte_size": 743176,
       "gaps": [
         "stable edges (Tier-S): data/oracle/graph_s.json absent — gitignored/Mac-local on this run",
         "stable edges (Tier-M): data/oracle/graph_m.json absent — gitignored/Mac-local on this run",
@@ -521,14 +541,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
-      "produced_at": "2026-09-26T09:46:54Z",
-      "age_hours": 34.14,
+      "as_of": "2026-10-13",
+      "produced_at": "2026-10-17T18:52:41Z",
+      "age_hours": 127.13,
       "freshness_sla_hours": 30,
       "staleness_from": "produced_at",
       "status": "fresh_partial",
-      "row_count": 1919,
-      "byte_size": 529265,
+      "row_count": 2176,
+      "byte_size": 600153,
       "gaps": [
         "confluence_strength: no clusters in lobes block — no discount"
       ]
@@ -543,12 +563,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 0.34,
+      "age_hours": 10.77,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 2073,
-      "byte_size": 492130,
+      "row_count": 2342,
+      "byte_size": 557638,
       "gaps": []
     },
     {
@@ -559,14 +579,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
-      "produced_at": "2026-09-26T09:48:04Z",
-      "age_hours": 10.14,
+      "as_of": "2026-10-17",
+      "produced_at": "2026-10-17T18:53:43Z",
+      "age_hours": 31.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 211482,
+      "byte_size": 227820,
       "gaps": []
     },
     {
@@ -579,12 +599,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 0.34,
+      "age_hours": 10.77,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 26,
-      "byte_size": 6212,
+      "row_count": 28,
+      "byte_size": 6632,
       "gaps": []
     },
     {
@@ -677,12 +697,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 29.23,
+      "age_hours": 54.5,
       "freshness_sla_hours": 9999,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 23,
-      "byte_size": 12901,
+      "row_count": 26,
+      "byte_size": 14582,
       "gaps": []
     },
     {
@@ -695,12 +715,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 29.23,
+      "age_hours": 54.5,
       "freshness_sla_hours": 9999,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 13,
-      "byte_size": 6893,
+      "row_count": 14,
+      "byte_size": 7424,
       "gaps": []
     },
     {
@@ -741,12 +761,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 1.12,
+      "age_hours": 0.61,
       "freshness_sla_hours": 9999,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 42,
-      "byte_size": 12222,
+      "row_count": 63,
+      "byte_size": 18333,
       "gaps": []
     },
     {
@@ -861,12 +881,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 12.46,
+      "age_hours": 10.77,
       "freshness_sla_hours": 26,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 67,
-      "byte_size": 7780,
+      "row_count": 95,
+      "byte_size": 11039,
       "gaps": []
     },
     {
@@ -897,12 +917,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 0.34,
+      "age_hours": 0.2,
       "freshness_sla_hours": 9999,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 177,
-      "byte_size": 104713,
+      "row_count": 344,
+      "byte_size": 255067,
       "gaps": []
     },
     {
@@ -913,14 +933,14 @@
       "tier": "shadow",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25T22:39:35+00:00",
+      "as_of": "2026-10-17T19:12:22+00:00",
       "produced_at": null,
-      "age_hours": 11.48,
+      "age_hours": 11.92,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 2366,
+      "byte_size": 7918,
       "gaps": []
     },
     {
@@ -933,12 +953,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 29.23,
+      "age_hours": 10.77,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 106,
-      "byte_size": 94966,
+      "row_count": 184,
+      "byte_size": 167994,
       "gaps": []
     },
     {
@@ -951,12 +971,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 29.23,
+      "age_hours": 10.77,
       "freshness_sla_hours": 9999,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 15,
-      "byte_size": 24984,
+      "row_count": 46,
+      "byte_size": 77181,
       "gaps": []
     },
     {
@@ -969,12 +989,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 29.23,
+      "age_hours": 10.77,
       "freshness_sla_hours": 9999,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 36,
-      "byte_size": 43098,
+      "row_count": 72,
+      "byte_size": 83983,
       "gaps": []
     },
     {
@@ -987,12 +1007,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 23.18,
+      "age_hours": 23.73,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 99,
-      "byte_size": 58541,
+      "row_count": 150,
+      "byte_size": 89359,
       "gaps": []
     },
     {
@@ -1003,14 +1023,14 @@
       "tier": "infrastructure",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
+      "as_of": "2026-10-17",
       "produced_at": null,
-      "age_hours": 34.14,
+      "age_hours": 31.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 413,
+      "byte_size": 415,
       "gaps": []
     },
     {
@@ -1021,14 +1041,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
+      "as_of": "2026-10-16",
       "produced_at": null,
-      "age_hours": 34.14,
+      "age_hours": 55.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 5768,
+      "byte_size": 7310,
       "gaps": []
     },
     {
@@ -1041,12 +1061,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 1.12,
+      "age_hours": 0.61,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": 427,
-      "byte_size": 70804,
+      "byte_size": 68082,
       "gaps": []
     },
     {
@@ -1057,7 +1077,7 @@
       "tier": "shadow",
       "horizon_role": "tactical_entry",
       "storage": "git",
-      "as_of": "2026-09-26 09:45 UTC",
+      "as_of": "2026-10-17 18:50 UTC",
       "produced_at": null,
       "age_hours": null,
       "freshness_sla_hours": 30,
@@ -1077,12 +1097,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 0.06,
+      "age_hours": 0.07,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 2928,
-      "byte_size": 93688,
+      "row_count": 2866,
+      "byte_size": 95332,
       "gaps": []
     },
     {
@@ -1093,14 +1113,14 @@
       "tier": "display",
       "horizon_role": "tactical_entry",
       "storage": "git",
-      "as_of": "2026-09-24",
+      "as_of": "2026-10-14",
       "produced_at": null,
-      "age_hours": 58.14,
+      "age_hours": 103.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "stale",
-      "row_count": 2928,
-      "byte_size": 3031367,
+      "row_count": 2866,
+      "byte_size": 2968860,
       "gaps": [],
       "support_impact": {
         "direct_consumers": [
@@ -1158,15 +1178,25 @@
       "tier": "infrastructure",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26T04:01:10.646863+00:00",
+      "as_of": "2026-10-16T11:36:48.261835+00:00",
       "produced_at": null,
-      "age_hours": 6.12,
+      "age_hours": 43.52,
       "freshness_sla_hours": 30,
       "staleness_from": null,
-      "status": "fresh",
+      "status": "stale",
       "row_count": null,
-      "byte_size": 51083,
-      "gaps": []
+      "byte_size": 51100,
+      "gaps": [],
+      "support_impact": {
+        "direct_consumers": [
+          "docs/CLAIM_ACCOUNTABILITY.md"
+        ],
+        "transitive_downstream_count": 0,
+        "transitive_downstream_top": [],
+        "bound": "upper",
+        "note": "Downstream surfaces that read this artifact directly or transitively. Bound is upper: shared-producer inversion may fold in additional artifacts beyond those that directly depend on this one.",
+        "available": true
+      }
     },
     {
       "id": "rule-experiment-registry",
@@ -1178,7 +1208,7 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 29.23,
+      "age_hours": 54.5,
       "freshness_sla_hours": 8760,
       "staleness_from": null,
       "status": "fresh",
@@ -1222,7 +1252,7 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 29.23,
+      "age_hours": 54.5,
       "freshness_sla_hours": 9999,
       "staleness_from": null,
       "status": "fresh",
@@ -1238,14 +1268,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-01",
-      "produced_at": "2026-09-26T10:08:12Z",
-      "age_hours": 610.14,
+      "as_of": "2026-10-14",
+      "produced_at": "2026-10-18T07:07:40Z",
+      "age_hours": 103.13,
       "freshness_sla_hours": 30,
       "staleness_from": "generated_utc",
       "status": "fresh",
       "row_count": null,
-      "byte_size": 198567,
+      "byte_size": 300879,
       "gaps": []
     },
     {
@@ -1256,14 +1286,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-01",
-      "produced_at": "2026-09-26T10:08:12Z",
-      "age_hours": 610.14,
+      "as_of": "2026-10-14",
+      "produced_at": "2026-10-18T07:07:40Z",
+      "age_hours": 103.13,
       "freshness_sla_hours": 30,
       "staleness_from": "generated_utc",
       "status": "fresh",
       "row_count": null,
-      "byte_size": 198567,
+      "byte_size": 300879,
       "gaps": []
     },
     {
@@ -1274,14 +1304,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
-      "produced_at": "2026-09-26T10:08:12Z",
-      "age_hours": 10.14,
+      "as_of": "2026-10-18",
+      "produced_at": "2026-10-18T07:07:40Z",
+      "age_hours": 7.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh_partial",
       "row_count": null,
-      "byte_size": 1613,
+      "byte_size": 1573,
       "gaps": [
         "options_structure: no usable options_hub/gex payload for SPX/SPY/QQQ"
       ]
@@ -1294,14 +1324,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
-      "produced_at": "2026-09-26T10:08:12Z",
-      "age_hours": 10.14,
+      "as_of": "2026-10-18",
+      "produced_at": "2026-10-18T07:07:40Z",
+      "age_hours": 7.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh_partial",
       "row_count": null,
-      "byte_size": 1613,
+      "byte_size": 1573,
       "gaps": [
         "options_structure: no usable options_hub/gex payload for SPX/SPY/QQQ"
       ]
@@ -1316,12 +1346,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 23.18,
+      "age_hours": 23.73,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 67,
-      "byte_size": 43387,
+      "row_count": 87,
+      "byte_size": 55631,
       "gaps": []
     },
     {
@@ -1332,14 +1362,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
-      "produced_at": "2026-09-25T21:49:49Z",
-      "age_hours": 34.14,
+      "as_of": "2026-10-17",
+      "produced_at": "2026-10-17T19:14:01Z",
+      "age_hours": 31.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 45060,
+      "byte_size": 43407,
       "gaps": []
     },
     {
@@ -1350,18 +1380,18 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
-      "produced_at": "2026-09-26T05:25:16.478081+00:00",
-      "age_hours": 10.14,
+      "as_of": "2026-10-18",
+      "produced_at": "2026-10-18T04:16:55.605570+00:00",
+      "age_hours": 7.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh_partial",
       "row_count": null,
-      "byte_size": 16569,
+      "byte_size": 25214,
       "gaps": [
-        "latest_board_coordinates: 7 tickers missing from panel at 2026-09-24: ['VKTX', 'EU', 'TME', 'PL', 'ONON']...",
-        "fire_coordinates: 23 buy-lane entries skipped (tier_cascade=null — held/topped, not fires)",
-        "fire_coordinates: 6 tickers had no panel row at 2026-09-24: ['VKTX', 'EU', 'TME', 'PL', 'ONON']..."
+        "latest_board_coordinates: 5 tickers missing from panel at 2026-10-14: ['RHHBY', 'AZN', 'BZ', 'EDU', 'KVYO']",
+        "fire_coordinates: 9 buy-lane entries skipped (tier_cascade=null — held/topped, not fires)",
+        "fire_coordinates: 5 tickers had no panel row at 2026-10-14: ['RHHBY', 'AZN', 'BZ', 'EDU', 'KVYO']"
       ]
     },
     {
@@ -1372,18 +1402,18 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
-      "produced_at": "2026-09-26T05:25:16.478081+00:00",
-      "age_hours": 10.14,
+      "as_of": "2026-10-18",
+      "produced_at": "2026-10-18T04:16:55.605570+00:00",
+      "age_hours": 7.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh_partial",
       "row_count": null,
-      "byte_size": 16569,
+      "byte_size": 25214,
       "gaps": [
-        "latest_board_coordinates: 7 tickers missing from panel at 2026-09-24: ['VKTX', 'EU', 'TME', 'PL', 'ONON']...",
-        "fire_coordinates: 23 buy-lane entries skipped (tier_cascade=null — held/topped, not fires)",
-        "fire_coordinates: 6 tickers had no panel row at 2026-09-24: ['VKTX', 'EU', 'TME', 'PL', 'ONON']..."
+        "latest_board_coordinates: 5 tickers missing from panel at 2026-10-14: ['RHHBY', 'AZN', 'BZ', 'EDU', 'KVYO']",
+        "fire_coordinates: 9 buy-lane entries skipped (tier_cascade=null — held/topped, not fires)",
+        "fire_coordinates: 5 tickers had no panel row at 2026-10-14: ['RHHBY', 'AZN', 'BZ', 'EDU', 'KVYO']"
       ]
     },
     {
@@ -1474,14 +1504,14 @@
       "tier": "shadow",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
-      "produced_at": "2026-09-26T08:58:47Z",
-      "age_hours": 34.14,
+      "as_of": "2026-10-16",
+      "produced_at": "2026-10-18T06:18:26Z",
+      "age_hours": 55.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 392985,
+      "byte_size": 393316,
       "gaps": []
     },
     {
@@ -1492,14 +1522,14 @@
       "tier": "infrastructure",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
-      "produced_at": "2026-09-25T22:39:40.163382+00:00",
-      "age_hours": 11.48,
+      "as_of": "2026-10-16",
+      "produced_at": "2026-10-17T19:14:00.551385+00:00",
+      "age_hours": 11.9,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 107601,
+      "byte_size": 98825,
       "gaps": []
     },
     {
@@ -1510,14 +1540,14 @@
       "tier": "infrastructure",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
-      "produced_at": "2026-09-25T22:39:40.163382+00:00",
-      "age_hours": 11.48,
+      "as_of": "2026-10-16",
+      "produced_at": "2026-10-17T19:14:00.551385+00:00",
+      "age_hours": 11.9,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 107601,
+      "byte_size": 98825,
       "gaps": []
     },
     {
@@ -1528,14 +1558,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26T07:02:39Z",
-      "produced_at": "2026-09-26T07:02:39Z",
-      "age_hours": 3.09,
+      "as_of": "2026-10-18T05:37:19Z",
+      "produced_at": "2026-10-18T05:37:19Z",
+      "age_hours": 1.51,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": 14,
-      "byte_size": 1641,
+      "byte_size": 1644,
       "gaps": []
     },
     {
@@ -1546,14 +1576,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26T07:02:39Z",
-      "produced_at": "2026-09-26T07:02:39Z",
-      "age_hours": 3.09,
+      "as_of": "2026-10-18T05:37:19Z",
+      "produced_at": "2026-10-18T05:37:19Z",
+      "age_hours": 1.51,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": 20,
-      "byte_size": 12842,
+      "byte_size": 19180,
       "gaps": []
     },
     {
@@ -1564,14 +1594,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
-      "produced_at": "2026-09-25T22:39:40.311658+00:00",
-      "age_hours": 11.48,
+      "as_of": "2026-10-16",
+      "produced_at": "2026-10-17T19:14:00.648870+00:00",
+      "age_hours": 11.9,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "degraded",
       "row_count": null,
-      "byte_size": 19383,
+      "byte_size": 21505,
       "gaps": [
         "degraded: self-reported"
       ],
@@ -1594,14 +1624,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
-      "produced_at": "2026-09-25T22:39:40.311658+00:00",
-      "age_hours": 11.48,
+      "as_of": "2026-10-16",
+      "produced_at": "2026-10-17T19:14:00.648870+00:00",
+      "age_hours": 11.9,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "degraded",
       "row_count": null,
-      "byte_size": 19383,
+      "byte_size": 21505,
       "gaps": [
         "degraded: self-reported"
       ],
@@ -1626,12 +1656,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 11.0,
+      "age_hours": 10.77,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 45,
-      "byte_size": 515027,
+      "row_count": 56,
+      "byte_size": 646489,
       "gaps": []
     },
     {
@@ -1642,14 +1672,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
-      "produced_at": "2026-09-25T21:32:47Z",
-      "age_hours": 34.14,
+      "as_of": "2026-10-17",
+      "produced_at": "2026-10-17T18:57:17Z",
+      "age_hours": 31.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 6022,
+      "byte_size": 5378,
       "gaps": []
     },
     {
@@ -1660,14 +1690,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
-      "produced_at": "2026-09-25T21:32:47Z",
-      "age_hours": 34.14,
+      "as_of": "2026-10-17",
+      "produced_at": "2026-10-17T18:57:17Z",
+      "age_hours": 31.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 6022,
+      "byte_size": 5378,
       "gaps": []
     },
     {
@@ -1678,14 +1708,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-23",
-      "produced_at": "2026-09-25T21:12:30Z",
-      "age_hours": 82.14,
+      "as_of": "2026-10-15",
+      "produced_at": "2026-10-17T18:52:40Z",
+      "age_hours": 79.13,
       "freshness_sla_hours": 30,
       "staleness_from": "produced_at",
       "status": "fresh_partial",
       "row_count": null,
-      "byte_size": 722416,
+      "byte_size": 743176,
       "gaps": [
         "stable edges (Tier-S): data/oracle/graph_s.json absent — gitignored/Mac-local on this run",
         "stable edges (Tier-M): data/oracle/graph_m.json absent — gitignored/Mac-local on this run",
@@ -1700,14 +1730,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25T21:12:18Z",
-      "produced_at": "2026-09-25T21:12:18Z",
-      "age_hours": 12.93,
+      "as_of": "2026-10-17T18:52:06Z",
+      "produced_at": "2026-10-17T18:52:06Z",
+      "age_hours": 12.26,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 25769,
+      "byte_size": 27780,
       "gaps": []
     },
     {
@@ -1718,14 +1748,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25T21:12:25Z",
-      "produced_at": "2026-09-25T21:12:25Z",
-      "age_hours": 12.93,
+      "as_of": "2026-10-17T18:52:36Z",
+      "produced_at": "2026-10-17T18:52:36Z",
+      "age_hours": 12.25,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 10113,
+      "byte_size": 10508,
       "gaps": []
     },
     {
@@ -1736,17 +1766,27 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
-      "produced_at": "2026-09-26T09:59:25Z",
-      "age_hours": 34.14,
+      "as_of": "2026-10-14",
+      "produced_at": "2026-10-16T18:16:51Z",
+      "age_hours": 103.13,
       "freshness_sla_hours": 30,
       "staleness_from": "produced_at",
-      "status": "fresh_partial",
+      "status": "stale",
       "row_count": null,
-      "byte_size": 8657,
+      "byte_size": 8303,
       "gaps": [
         "SRF take-up and discount-window primary credit not collected yet — srf_takeup_bn / discount_window_primary_credit_bn stay null"
-      ]
+      ],
+      "support_impact": {
+        "direct_consumers": [
+          "templates/committee.html.j2"
+        ],
+        "transitive_downstream_count": 0,
+        "transitive_downstream_top": [],
+        "bound": "upper",
+        "note": "Downstream surfaces that read this artifact directly or transitively. Bound is upper: shared-producer inversion may fold in additional artifacts beyond those that directly depend on this one.",
+        "available": true
+      }
     },
     {
       "id": "site-cortex-memo",
@@ -1756,14 +1796,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25T22:39:35+00:00",
+      "as_of": "2026-10-17T19:12:22+00:00",
       "produced_at": null,
-      "age_hours": 11.48,
+      "age_hours": 11.92,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 2366,
+      "byte_size": 7918,
       "gaps": []
     },
     {
@@ -1774,14 +1814,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
+      "as_of": "2026-10-18",
       "produced_at": null,
-      "age_hours": 10.14,
+      "age_hours": 7.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 10984,
+      "byte_size": 10947,
       "gaps": []
     },
     {
@@ -1792,14 +1832,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
+      "as_of": "2026-10-18",
       "produced_at": null,
-      "age_hours": 10.14,
+      "age_hours": 7.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 10984,
+      "byte_size": 10947,
       "gaps": []
     },
     {
@@ -1812,12 +1852,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 0.01,
+      "age_hours": 0.02,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 63,
-      "byte_size": 8903,
+      "row_count": 82,
+      "byte_size": 11659,
       "gaps": []
     },
     {
@@ -1828,14 +1868,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
-      "produced_at": "2026-09-26T10:07:24Z",
-      "age_hours": 10.14,
+      "as_of": "2026-10-18",
+      "produced_at": "2026-10-18T07:06:35Z",
+      "age_hours": 7.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 40402,
+      "byte_size": 38353,
       "gaps": []
     },
     {
@@ -1846,14 +1886,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
-      "produced_at": "2026-09-26T10:07:24Z",
-      "age_hours": 10.14,
+      "as_of": "2026-10-18",
+      "produced_at": "2026-10-18T07:06:35Z",
+      "age_hours": 7.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 40402,
+      "byte_size": 38353,
       "gaps": []
     },
     {
@@ -1866,12 +1906,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 0.01,
+      "age_hours": 0.02,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 383,
-      "byte_size": 154134,
+      "row_count": 480,
+      "byte_size": 193364,
       "gaps": []
     },
     {
@@ -1884,12 +1924,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 0.01,
+      "age_hours": 0.02,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 373,
-      "byte_size": 1542089,
+      "row_count": 523,
+      "byte_size": 2190258,
       "gaps": []
     },
     {
@@ -1900,14 +1940,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
-      "produced_at": "2026-09-26T10:07:24Z",
-      "age_hours": 10.14,
+      "as_of": "2026-10-18",
+      "produced_at": "2026-10-18T07:06:35Z",
+      "age_hours": 7.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 90632,
+      "byte_size": 90372,
       "gaps": []
     },
     {
@@ -1918,14 +1958,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
-      "produced_at": "2026-09-26T10:07:24Z",
-      "age_hours": 10.14,
+      "as_of": "2026-10-18",
+      "produced_at": "2026-10-18T07:06:35Z",
+      "age_hours": 7.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 214660,
+      "byte_size": 214685,
       "gaps": []
     },
     {
@@ -1936,14 +1976,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
-      "produced_at": "2026-09-26T10:07:24Z",
-      "age_hours": 10.14,
+      "as_of": "2026-10-18",
+      "produced_at": "2026-10-18T07:06:35Z",
+      "age_hours": 7.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 214660,
+      "byte_size": 214685,
       "gaps": []
     },
     {
@@ -1954,14 +1994,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
-      "produced_at": "2026-09-26T10:07:24Z",
-      "age_hours": 10.14,
+      "as_of": "2026-10-18",
+      "produced_at": "2026-10-18T07:06:35Z",
+      "age_hours": 7.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 75967,
+      "byte_size": 75934,
       "gaps": []
     },
     {
@@ -1972,14 +2012,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
-      "produced_at": "2026-09-26T10:07:24Z",
-      "age_hours": 10.14,
+      "as_of": "2026-10-18",
+      "produced_at": "2026-10-18T07:06:35Z",
+      "age_hours": 7.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 75967,
+      "byte_size": 75934,
       "gaps": []
     },
     {
@@ -1990,14 +2030,14 @@
       "tier": "infrastructure",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
-      "produced_at": "2026-09-26T10:07:23.061161+00:00",
-      "age_hours": 10.14,
+      "as_of": "2026-10-18",
+      "produced_at": "2026-10-18T07:06:33.576292+00:00",
+      "age_hours": 7.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 165852,
+      "byte_size": 168986,
       "gaps": []
     },
     {
@@ -2008,14 +2048,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
+      "as_of": "2026-10-17",
       "produced_at": null,
-      "age_hours": 10.14,
+      "age_hours": 31.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 50230,
+      "byte_size": 50177,
       "gaps": []
     },
     {
@@ -2028,12 +2068,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 5.62,
+      "age_hours": 16.37,
       "freshness_sla_hours": 240,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 1241,
-      "byte_size": 21275,
+      "row_count": 1243,
+      "byte_size": 21300,
       "gaps": []
     },
     {
@@ -2044,17 +2084,82 @@
       "tier": "shadow",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
-      "produced_at": "2026-09-26T09:59:25Z",
-      "age_hours": 34.14,
+      "as_of": "2026-10-14",
+      "produced_at": "2026-10-16T18:16:51Z",
+      "age_hours": 103.13,
       "freshness_sla_hours": 30,
       "staleness_from": "produced_at",
-      "status": "fresh_partial",
+      "status": "stale",
       "row_count": null,
-      "byte_size": 8657,
+      "byte_size": 8303,
       "gaps": [
         "SRF take-up and discount-window primary credit not collected yet — srf_takeup_bn / discount_window_primary_credit_bn stay null"
-      ]
+      ],
+      "support_impact": {
+        "direct_consumers": [
+          "engine/neuralweb/world_state.py",
+          "engine/neuralweb/ask_brain.py",
+          "engine/neuralweb/contradictions.py",
+          "engine/neuralweb/causal_inventory.py",
+          "engine/neuralweb/brief_context.py"
+        ],
+        "transitive_downstream_count": 28,
+        "transitive_downstream_top": [
+          {
+            "artifact_id": "world-state",
+            "hop": 1,
+            "via_module": "engine/neuralweb/world_state.py"
+          },
+          {
+            "artifact_id": "feeds-plane",
+            "hop": 2,
+            "via_module": "scripts/build_feeds.py"
+          },
+          {
+            "artifact_id": "cortex-memo",
+            "hop": 2,
+            "via_module": "engine/neuralweb/cortex.py"
+          },
+          {
+            "artifact_id": "cortex-attention-firings",
+            "hop": 2,
+            "via_module": "engine/neuralweb/cortex.py"
+          },
+          {
+            "artifact_id": "hypothesis-inbox",
+            "hop": 2,
+            "via_module": "engine/neuralweb/cortex.py"
+          },
+          {
+            "artifact_id": "site-cortex-memo",
+            "hop": 2,
+            "via_module": "engine/neuralweb/cortex.py"
+          },
+          {
+            "artifact_id": "neuralweb-market-plane",
+            "hop": 2,
+            "via_module": "engine/neuralweb/mastermind_context.py"
+          },
+          {
+            "artifact_id": "site-neuralweb-market-plane",
+            "hop": 2,
+            "via_module": "engine/neuralweb/mastermind_context.py"
+          },
+          {
+            "artifact_id": "macro-context-latest",
+            "hop": 2,
+            "via_module": "scripts/build_macro_context.py"
+          },
+          {
+            "artifact_id": "spine-index",
+            "hop": 3,
+            "via_module": "engine/neuralweb/query.py"
+          }
+        ],
+        "bound": "upper",
+        "note": "Downstream surfaces that read this artifact directly or transitively. Bound is upper: shared-producer inversion may fold in additional artifacts beyond those that directly depend on this one.",
+        "available": true
+      }
     },
     {
       "id": "treasury-watch",
@@ -2064,17 +2169,15 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-24",
+      "as_of": "2026-10-15",
       "produced_at": null,
-      "age_hours": 58.14,
+      "age_hours": 79.13,
       "freshness_sla_hours": 48,
       "staleness_from": null,
       "status": "stale",
       "row_count": null,
-      "byte_size": 6789,
-      "gaps": [
-        "no calendar quarter-end within 45d of as_of — tga.quarter_end null"
-      ],
+      "byte_size": 6454,
+      "gaps": [],
       "support_impact": {
         "direct_consumers": [],
         "transitive_downstream_count": 0,
@@ -2092,9 +2195,9 @@
       "tier": "infrastructure",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25T21:51:03.666324+00:00",
+      "as_of": "2026-10-17T20:27:18.269899+00:00",
       "produced_at": null,
-      "age_hours": 12.29,
+      "age_hours": 10.67,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
@@ -2112,13 +2215,52 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 29.23,
+      "age_hours": 54.5,
       "freshness_sla_hours": null,
       "staleness_from": null,
       "status": "fresh",
       "row_count": 2,
       "byte_size": 5862,
       "gaps": []
+    },
+    {
+      "id": "causal-filing-budget",
+      "path": "data/neuralweb/causal_filing_budget.jsonl",
+      "producer": "scripts/causal_ingest_brainstorm.py",
+      "cadence": "on-demand",
+      "tier": "infrastructure",
+      "horizon_role": "context",
+      "storage": "git",
+      "as_of": null,
+      "produced_at": null,
+      "age_hours": null,
+      "freshness_sla_hours": null,
+      "staleness_from": null,
+      "status": "missing",
+      "row_count": null,
+      "byte_size": null,
+      "gaps": [],
+      "support_impact": {
+        "direct_consumers": [
+          "scripts/run_causal_brainstorm.py"
+        ],
+        "transitive_downstream_count": 2,
+        "transitive_downstream_top": [
+          {
+            "artifact_id": "causal-brainstorm-runs",
+            "hop": 1,
+            "via_module": "scripts/run_causal_brainstorm.py"
+          },
+          {
+            "artifact_id": "causal-llm-lane",
+            "hop": 1,
+            "via_module": "scripts/run_causal_brainstorm.py"
+          }
+        ],
+        "bound": "upper",
+        "note": "Downstream surfaces that read this artifact directly or transitively. Bound is upper: shared-producer inversion may fold in additional artifacts beyond those that directly depend on this one.",
+        "available": true
+      }
     },
     {
       "id": "dt-contra-state",
@@ -2128,14 +2270,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
+      "as_of": "2026-10-17",
       "produced_at": null,
-      "age_hours": 10.14,
+      "age_hours": 31.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 39562,
+      "byte_size": 40101,
       "gaps": []
     },
     {
@@ -2146,14 +2288,14 @@
       "tier": "infrastructure",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
+      "as_of": "2026-10-18",
       "produced_at": null,
-      "age_hours": 10.14,
+      "age_hours": 7.13,
       "freshness_sla_hours": 48,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 5458,
+      "byte_size": 5463,
       "gaps": []
     },
     {
@@ -2164,14 +2306,14 @@
       "tier": "infrastructure",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
+      "as_of": "2026-10-18",
       "produced_at": null,
-      "age_hours": 10.14,
+      "age_hours": 7.13,
       "freshness_sla_hours": 48,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 5458,
+      "byte_size": 5463,
       "gaps": []
     },
     {
@@ -2184,12 +2326,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 0.36,
+      "age_hours": 0.09,
       "freshness_sla_hours": 48,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 57,
-      "byte_size": 5962,
+      "row_count": 75,
+      "byte_size": 6244,
       "gaps": []
     },
     {
@@ -2202,7 +2344,7 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 29.21,
+      "age_hours": 54.49,
       "freshness_sla_hours": 8760,
       "staleness_from": null,
       "status": "fresh",
@@ -2218,14 +2360,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
-      "produced_at": "2026-09-25T21:32:49Z",
-      "age_hours": 34.14,
+      "as_of": "2026-10-17",
+      "produced_at": "2026-10-17T18:57:19Z",
+      "age_hours": 31.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 317,
-      "byte_size": 309599,
+      "row_count": 326,
+      "byte_size": 319127,
       "gaps": []
     },
     {
@@ -2271,14 +2413,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26T07:49:03.676234+00:00",
+      "as_of": "2026-10-18T06:27:15.485924+00:00",
       "produced_at": null,
-      "age_hours": 2.32,
+      "age_hours": 0.67,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 4010,
+      "byte_size": 4005,
       "gaps": []
     },
     {
@@ -2289,15 +2431,78 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26T10:01:47Z",
+      "as_of": "2026-10-16T18:18:59Z",
       "produced_at": null,
-      "age_hours": 0.11,
+      "age_hours": 36.81,
       "freshness_sla_hours": 30,
       "staleness_from": null,
-      "status": "fresh",
+      "status": "stale",
       "row_count": null,
-      "byte_size": 91876,
-      "gaps": []
+      "byte_size": 96555,
+      "gaps": [],
+      "support_impact": {
+        "direct_consumers": [
+          "engine/master_brain.py",
+          "engine/forward_calendar_context.py",
+          "engine/inflation_intelligence.py"
+        ],
+        "transitive_downstream_count": 29,
+        "transitive_downstream_top": [
+          {
+            "artifact_id": "master-brain-theses",
+            "hop": 1,
+            "via_module": "engine/master_brain.py"
+          },
+          {
+            "artifact_id": "cortex-memo",
+            "hop": 2,
+            "via_module": "engine/neuralweb/cortex.py"
+          },
+          {
+            "artifact_id": "cortex-attention-firings",
+            "hop": 2,
+            "via_module": "engine/neuralweb/cortex.py"
+          },
+          {
+            "artifact_id": "hypothesis-inbox",
+            "hop": 2,
+            "via_module": "engine/neuralweb/cortex.py"
+          },
+          {
+            "artifact_id": "site-cortex-memo",
+            "hop": 2,
+            "via_module": "engine/neuralweb/cortex.py"
+          },
+          {
+            "artifact_id": "neuralweb-market-plane",
+            "hop": 3,
+            "via_module": "engine/neuralweb/mastermind_context.py"
+          },
+          {
+            "artifact_id": "site-neuralweb-market-plane",
+            "hop": 3,
+            "via_module": "engine/neuralweb/mastermind_context.py"
+          },
+          {
+            "artifact_id": "spine-index",
+            "hop": 3,
+            "via_module": "engine/neuralweb/query.py"
+          },
+          {
+            "artifact_id": "kernel-estimates",
+            "hop": 4,
+            "via_module": "engine/neuralweb/kernel.py"
+          },
+          {
+            "artifact_id": "kernel-families",
+            "hop": 4,
+            "via_module": "engine/neuralweb/decay.py"
+          }
+        ],
+        "bound": "upper",
+        "note": "Downstream surfaces that read this artifact directly or transitively. Bound is upper: shared-producer inversion may fold in additional artifacts beyond those that directly depend on this one.",
+        "available": true
+      }
     },
     {
       "id": "inflation-intelligence",
@@ -2307,14 +2512,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
+      "as_of": "2026-10-16",
       "produced_at": null,
-      "age_hours": 10.14,
+      "age_hours": 55.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 83190,
+      "byte_size": 115520,
       "gaps": []
     },
     {
@@ -2325,14 +2530,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
+      "as_of": "2026-10-16",
       "produced_at": null,
-      "age_hours": 34.14,
+      "age_hours": 55.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 64019,
+      "byte_size": 169713,
       "gaps": []
     },
     {
@@ -2343,14 +2548,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
+      "as_of": "2026-10-18",
       "produced_at": null,
-      "age_hours": 10.14,
+      "age_hours": 7.13,
       "freshness_sla_hours": 36,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 696704,
+      "byte_size": 697856,
       "gaps": []
     },
     {
@@ -2361,14 +2566,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
+      "as_of": "2026-10-18",
       "produced_at": null,
-      "age_hours": 10.14,
+      "age_hours": 7.13,
       "freshness_sla_hours": 36,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 1834156,
+      "byte_size": 1241832,
       "gaps": []
     },
     {
@@ -2379,15 +2584,76 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
+      "as_of": "2026-10-14",
       "produced_at": null,
-      "age_hours": 34.14,
+      "age_hours": 103.13,
       "freshness_sla_hours": 36,
       "staleness_from": null,
-      "status": "fresh",
+      "status": "stale",
       "row_count": null,
-      "byte_size": 22724,
-      "gaps": []
+      "byte_size": 22446,
+      "gaps": [],
+      "support_impact": {
+        "direct_consumers": [
+          "engine/neuralweb/world_state.py"
+        ],
+        "transitive_downstream_count": 28,
+        "transitive_downstream_top": [
+          {
+            "artifact_id": "world-state",
+            "hop": 1,
+            "via_module": "engine/neuralweb/world_state.py"
+          },
+          {
+            "artifact_id": "feeds-plane",
+            "hop": 2,
+            "via_module": "scripts/build_feeds.py"
+          },
+          {
+            "artifact_id": "cortex-memo",
+            "hop": 2,
+            "via_module": "engine/neuralweb/cortex.py"
+          },
+          {
+            "artifact_id": "cortex-attention-firings",
+            "hop": 2,
+            "via_module": "engine/neuralweb/cortex.py"
+          },
+          {
+            "artifact_id": "hypothesis-inbox",
+            "hop": 2,
+            "via_module": "engine/neuralweb/cortex.py"
+          },
+          {
+            "artifact_id": "site-cortex-memo",
+            "hop": 2,
+            "via_module": "engine/neuralweb/cortex.py"
+          },
+          {
+            "artifact_id": "neuralweb-market-plane",
+            "hop": 2,
+            "via_module": "engine/neuralweb/mastermind_context.py"
+          },
+          {
+            "artifact_id": "site-neuralweb-market-plane",
+            "hop": 2,
+            "via_module": "engine/neuralweb/mastermind_context.py"
+          },
+          {
+            "artifact_id": "macro-context-latest",
+            "hop": 2,
+            "via_module": "scripts/build_macro_context.py"
+          },
+          {
+            "artifact_id": "spine-index",
+            "hop": 3,
+            "via_module": "engine/neuralweb/query.py"
+          }
+        ],
+        "bound": "upper",
+        "note": "Downstream surfaces that read this artifact directly or transitively. Bound is upper: shared-producer inversion may fold in additional artifacts beyond those that directly depend on this one.",
+        "available": true
+      }
     },
     {
       "id": "transmission-chains-state",
@@ -2397,14 +2663,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
+      "as_of": "2026-10-16",
       "produced_at": null,
-      "age_hours": 34.14,
+      "age_hours": 55.13,
       "freshness_sla_hours": 36,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 49635,
+      "byte_size": 143556,
       "gaps": []
     },
     {
@@ -2415,14 +2681,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
+      "as_of": "2026-10-18",
       "produced_at": null,
-      "age_hours": 10.14,
+      "age_hours": 7.13,
       "freshness_sla_hours": 36,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 268262,
+      "byte_size": 270684,
       "gaps": []
     },
     {
@@ -2433,14 +2699,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25T21:49Z",
+      "as_of": "2026-10-17T19:12Z",
       "produced_at": null,
-      "age_hours": 12.32,
+      "age_hours": 11.93,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 20874,
+      "byte_size": 20877,
       "gaps": []
     },
     {
@@ -2451,14 +2717,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25T21:49Z",
+      "as_of": "2026-10-17T19:12Z",
       "produced_at": null,
-      "age_hours": 12.32,
+      "age_hours": 11.93,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 20874,
+      "byte_size": 20877,
       "gaps": []
     },
     {
@@ -2471,7 +2737,7 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 29.23,
+      "age_hours": 23.75,
       "freshness_sla_hours": 36,
       "staleness_from": null,
       "status": "fresh",
@@ -2489,7 +2755,7 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 29.23,
+      "age_hours": 54.5,
       "freshness_sla_hours": 192,
       "staleness_from": null,
       "status": "fresh",
@@ -2507,7 +2773,7 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 29.23,
+      "age_hours": 54.5,
       "freshness_sla_hours": 192,
       "staleness_from": null,
       "status": "fresh",
@@ -2523,9 +2789,9 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25T21:51:03Z",
+      "as_of": "2026-10-17T20:27:18Z",
       "produced_at": null,
-      "age_hours": 12.29,
+      "age_hours": 10.67,
       "freshness_sla_hours": 36,
       "staleness_from": null,
       "status": "fresh",
@@ -2543,12 +2809,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 11.0,
+      "age_hours": 10.67,
       "freshness_sla_hours": 36,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 69,
-      "byte_size": 27781,
+      "row_count": 89,
+      "byte_size": 35781,
       "gaps": []
     },
     {
@@ -2559,9 +2825,9 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25T21:51:04Z",
+      "as_of": "2026-10-17T20:27:18Z",
       "produced_at": null,
-      "age_hours": 12.29,
+      "age_hours": 10.67,
       "freshness_sla_hours": 36,
       "staleness_from": null,
       "status": "fresh",
@@ -2577,9 +2843,9 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25T21:51:04Z",
+      "as_of": "2026-10-17T20:27:18Z",
       "produced_at": null,
-      "age_hours": 12.29,
+      "age_hours": 10.67,
       "freshness_sla_hours": 36,
       "staleness_from": null,
       "status": "fresh",
@@ -2597,12 +2863,12 @@
       "storage": "git",
       "as_of": null,
       "produced_at": null,
-      "age_hours": 29.23,
+      "age_hours": 54.5,
       "freshness_sla_hours": 200,
       "staleness_from": null,
       "status": "fresh",
-      "row_count": 12,
-      "byte_size": 5023,
+      "row_count": 18,
+      "byte_size": 7075,
       "gaps": []
     },
     {
@@ -2613,9 +2879,9 @@
       "tier": "infrastructure",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-22T21:33:45+00:00",
+      "as_of": "2026-10-13T13:06:07+00:00",
       "produced_at": null,
-      "age_hours": 84.57,
+      "age_hours": 114.03,
       "freshness_sla_hours": 200,
       "staleness_from": null,
       "status": "degraded",
@@ -2643,9 +2909,9 @@
       "tier": "shadow",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25T21:51:04Z",
+      "as_of": "2026-10-17T20:27:18Z",
       "produced_at": null,
-      "age_hours": 12.29,
+      "age_hours": 10.67,
       "freshness_sla_hours": 36,
       "staleness_from": null,
       "status": "fresh",
@@ -2661,14 +2927,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
+      "as_of": "2026-09-29",
       "produced_at": null,
-      "age_hours": 34.14,
+      "age_hours": 463.13,
       "freshness_sla_hours": 2160,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 2296,
+      "byte_size": 2298,
       "gaps": []
     },
     {
@@ -2679,9 +2945,9 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
+      "as_of": "2026-09-30",
       "produced_at": null,
-      "age_hours": 10.14,
+      "age_hours": 439.13,
       "freshness_sla_hours": 2160,
       "staleness_from": null,
       "status": "fresh",
@@ -2725,14 +2991,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
+      "as_of": "2026-09-30",
       "produced_at": null,
-      "age_hours": 10.14,
+      "age_hours": 439.13,
       "freshness_sla_hours": 2160,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 24112,
+      "byte_size": 24116,
       "gaps": []
     },
     {
@@ -2743,15 +3009,23 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-26",
+      "as_of": "2026-09-30",
       "produced_at": null,
-      "age_hours": 10.14,
+      "age_hours": 439.13,
       "freshness_sla_hours": 168,
       "staleness_from": null,
-      "status": "fresh",
+      "status": "stale",
       "row_count": null,
       "byte_size": 34173,
-      "gaps": []
+      "gaps": [],
+      "support_impact": {
+        "direct_consumers": [],
+        "transitive_downstream_count": 0,
+        "transitive_downstream_top": [],
+        "bound": "upper",
+        "note": "Downstream surfaces that read this artifact directly or transitively. Bound is upper: shared-producer inversion may fold in additional artifacts beyond those that directly depend on this one.",
+        "available": true
+      }
     },
     {
       "id": "capability-audit",
@@ -2787,14 +3061,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25T21:40:53+00:00",
+      "as_of": "2026-10-17T20:27:50+00:00",
       "produced_at": null,
-      "age_hours": 12.46,
+      "age_hours": 10.66,
       "freshness_sla_hours": 48,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 8426,
+      "byte_size": 8460,
       "gaps": []
     },
     {
@@ -2805,14 +3079,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25T21:40:53+00:00",
+      "as_of": "2026-10-17T20:27:50+00:00",
       "produced_at": null,
-      "age_hours": 12.46,
+      "age_hours": 10.66,
       "freshness_sla_hours": 48,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 420,
+      "byte_size": 1197,
       "gaps": []
     },
     {
@@ -2851,14 +3125,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
+      "as_of": "2026-10-16",
       "produced_at": null,
-      "age_hours": 34.14,
+      "age_hours": 55.13,
       "freshness_sla_hours": 30,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 151254,
+      "byte_size": 153073,
       "gaps": []
     },
     {
@@ -2869,14 +3143,14 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
-      "produced_at": "2026-09-25T21:48:54Z",
-      "age_hours": 34.14,
+      "as_of": "2026-10-17",
+      "produced_at": "2026-10-17T20:49:57Z",
+      "age_hours": 31.13,
       "freshness_sla_hours": 48,
       "staleness_from": null,
       "status": "fresh",
       "row_count": null,
-      "byte_size": 69220,
+      "byte_size": 69201,
       "gaps": []
     },
     {
@@ -2887,9 +3161,9 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-25",
-      "produced_at": "2026-09-25T21:48:54Z",
-      "age_hours": 34.14,
+      "as_of": "2026-10-17",
+      "produced_at": "2026-10-17T20:49:57Z",
+      "age_hours": 31.13,
       "freshness_sla_hours": 48,
       "staleness_from": null,
       "status": "fresh",
@@ -2905,94 +3179,63 @@
       "tier": "display",
       "horizon_role": "context",
       "storage": "git",
-      "as_of": "2026-09-01",
+      "as_of": "2026-10-16",
       "produced_at": null,
-      "age_hours": 610.14,
+      "age_hours": 55.13,
       "freshness_sla_hours": 36,
       "staleness_from": null,
-      "status": "stale",
+      "status": "fresh",
       "row_count": null,
-      "byte_size": 4698687,
-      "gaps": [],
-      "support_impact": {
-        "direct_consumers": [
-          "engine/neuralweb/mastermind_context.py",
-          "engine/prophet_bridge.py",
-          "app/government_revenue.py"
-        ],
-        "transitive_downstream_count": 2,
-        "transitive_downstream_top": [
-          {
-            "artifact_id": "neuralweb-market-plane",
-            "hop": 1,
-            "via_module": "engine/neuralweb/mastermind_context.py"
-          },
-          {
-            "artifact_id": "site-neuralweb-market-plane",
-            "hop": 1,
-            "via_module": "engine/neuralweb/mastermind_context.py"
-          }
-        ],
-        "bound": "upper",
-        "note": "Downstream surfaces that read this artifact directly or transitively. Bound is upper: shared-producer inversion may fold in additional artifacts beyond those that directly depend on this one.",
-        "available": true
-      }
+      "byte_size": 5283236,
+      "gaps": []
     }
   ],
   "cortex": {
     "cortex_source": "current_run",
-    "memo_as_of": "2026-09-26T10:15:50+00:00",
+    "memo_as_of": "2026-10-18T07:13:36+00:00",
     "run_status": {
-      "status": "ok",
-      "degraded": false,
-      "degradation_reason": null,
-      "model_used": "claude-opus-4-8",
+      "status": "degraded",
+      "degraded": true,
+      "degradation_reason": "model_unavailable",
+      "model_used": "claude-sonnet-4-6",
       "provider_attempts": [
         {
-          "provider": "codex",
-          "model": "gpt-5.6-sol",
+          "provider": "oauth",
+          "model": "claude-opus-4-8",
           "attempted": true,
-          "ok": true,
-          "error_type": null,
-          "error_message": null
+          "ok": false,
+          "error_type": "auth",
+          "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011Cg9HhhAaEvrwSTNGC9nPn'}"
         },
         {
-          "provider": "codex",
-          "model": "gpt-5.6-sol",
+          "provider": "oauth",
+          "model": "claude-opus-4-8",
           "attempted": true,
-          "ok": true,
-          "error_type": null,
-          "error_message": null
+          "ok": false,
+          "error_type": "auth",
+          "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011Cg9HhiNkRaWDHDXWLxDff'}"
         },
         {
-          "provider": "codex",
-          "model": "gpt-5.6-sol",
+          "provider": "oauth",
+          "model": "claude-sonnet-4-6",
           "attempted": true,
-          "ok": true,
-          "error_type": null,
-          "error_message": null
-        },
-        {
-          "provider": "codex",
-          "model": "gpt-5.6-sol",
-          "attempted": true,
-          "ok": true,
-          "error_type": null,
-          "error_message": null
+          "ok": false,
+          "error_type": "auth",
+          "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011Cg9HhjL3e6MGhs787GCrz'}"
         }
       ],
-      "tool_call_batches": 3,
-      "individual_tool_calls": 9,
+      "tool_call_batches": 0,
+      "individual_tool_calls": 0,
       "expected_min_tool_calls": 1,
       "context_stale": false,
-      "context_as_of": "2026-09-26T10:04:26Z"
+      "context_as_of": "2026-10-18T07:03:19Z"
     },
     "probation": {
       "granted": false,
       "n": 8,
       "min_n": 30
     },
-    "status": "fresh"
+    "status": "degraded"
   },
   "workflow_conformance_misses": [
     {
@@ -3062,37 +3305,39 @@
     }
   ],
   "summary_counts": {
-    "total_lobes": 133,
-    "fresh": 102,
-    "fresh_partial": 8,
-    "stale": 7,
-    "missing": 12,
+    "total_lobes": 134,
+    "fresh": 100,
+    "fresh_partial": 6,
+    "stale": 11,
+    "missing": 13,
     "degraded": 3,
     "not_locally_verifiable": 1,
     "unknown": 0,
-    "cortex_status": "fresh"
+    "cortex_status": "degraded"
   },
   "context_accrual": {
     "personality_forward_ledger": {
       "exists": true,
-      "rows": 109,
-      "last_append": "2026-09-17"
+      "rows": 158,
+      "last_append": "2026-10-13"
     },
     "fire_coordinates": {
       "exists": true,
-      "rows": 1569,
-      "last_asof": "2026-09-24",
-      "dna_nonnull_pct": 77.9
+      "rows": 1997,
+      "last_asof": "2026-10-14",
+      "dna_nonnull_pct": 79.0
     },
     "panel_partitions": {
       "latest": null,
       "n": 0
     },
     "stamper_gap": true,
-    "fires_seen_since_wire": 111,
+    "fires_seen_since_wire": 162,
     "stamper_gap_dates_sample": [
       "2026-07-07",
-      "2026-07-23"
+      "2026-07-20",
+      "2026-07-23",
+      "2026-09-03"
     ]
   }
 }

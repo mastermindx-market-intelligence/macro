@@ -978,3 +978,21 @@ def test_no_built_page_ever_emits_a_none_class_or_value(page: str, built_pages: 
     assert "mq-delta-None" not in html
     assert ">None<" not in html
     assert 'class="mq-delta mq-delta-"' not in html, "an empty sign class is the same bug"
+
+
+def test_bond_desk_cycle_phase_tokens_have_reviewed_pairs() -> None:
+    """The bond desk's closed cycle-phase vocabulary renders reviewed EN/ZH (2026-10-02).
+
+    `scripts/build_bonds.py` PHASE emits {recession, early, mid, late}; the
+    national_debt workspace republishes the token as the categorical
+    `bond_desk_cycle_phase`. Without an OWNER_VALUE entry the token deslugs to
+    an ASCII ZH twin and the copy-law gate goes red (main, ci-pack-10).
+    """
+    expected = {
+        "recession": {"en": "Recession", "zh": "衰退"},
+        "early": {"en": "Early-cycle recovery", "zh": "周期早段复苏"},
+        "mid": {"en": "Mid-cycle", "zh": "周期中段"},
+        "late": {"en": "Late-cycle", "zh": "周期晚段"},
+    }
+    for token, pair in expected.items():
+        assert labels.value_pair(token) == pair, token
