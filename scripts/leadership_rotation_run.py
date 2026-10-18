@@ -38,6 +38,8 @@ __all__ = [
     "evaluate_group",
     "evaluate_family",
     "SizeGateNotPassed",
+    "P1StatisticsNotQualified",
+    "assert_p1_statistics_qualified",
     "assert_size_gate_passed",
     "count_prior_looks",
     "record_look",
@@ -1455,6 +1457,33 @@ _SIZE_GATE_ROW_NAMES: Tuple[str, ...] = (
 _SIZE_GATE_SCHEMA = "leadership_rotation.size_gate.v1"
 
 
+class P1StatisticsNotQualified(RuntimeError):
+    """LR-W6: V2 size alone cannot authorize the first real-data P1 look."""
+
+    reason = "V3_STATISTICS_NOT_QUALIFIED"
+
+    def __init__(self) -> None:
+        super().__init__(
+            "V3_STATISTICS_NOT_QUALIFIED: P1 remains sealed under "
+            "DEC:LEADERSHIP-ROTATION-P1-WITHHELD-UNTIL-STATISTICS-REREGISTERED; "
+            "the dated V3 statistics, immutable protocol pin, fresh size AND "
+            "power evidence, and a verified read-side gate are not yet accepted"
+        )
+
+
+def assert_p1_statistics_qualified() -> None:
+    """Withhold all P1 reads until the successor V3 admission is implemented.
+
+    Existing V2/V2.1/T12R proofs establish size, NOT power: T13R found H1
+    degenerate and H2/H3 NOT_EXECUTABLE. No V3 specification or P0 V3
+    qualifying artifact is currently landed. Future V3 implementation must
+    replace this refusal with a commit-bound, fail-closed validator of the
+    accepted V3 protocol blob AND both its fresh size and power receipts.
+    Never replace it with a caller flag or an environmental override.
+    """
+    raise P1StatisticsNotQualified()
+
+
 class SizeGateNotPassed(RuntimeError):
     """The committed size-gate artifact does not prove the V2 §3 rule PASSED.
 
@@ -1785,7 +1814,8 @@ def run_p1(
     """The only P1 real-data reader. Order is binding: refuse before loading.
 
     Protocol landing (V1 + V2 blobs at the reading head), then the V2.1
-    amendment blob, then the prereg V2 §3 two-part size gate (T19 F9), then
+    amendment blob, then the prereg V2 §3 two-part size gate (T19 F9),
+    then the LR-W6 V3 statistics/power admission (currently WITHHELD), then
     the committed look count -- and only then is a single byte of market data
     read. The result carries the gate identity and the look index, and the
     look is appended to the ledger unless ``record`` is False.
@@ -1799,6 +1829,9 @@ def run_p1(
         repo, head=commit, path=st.PREREG_V2_1_PATH, blob_sha=st.PREREG_V2_1_BLOB_SHA
     )
     gate = assert_size_gate_passed(repo, commit=commit)
+    # LR-W6 accepted hold: the V2 size proof is not a V3 power proof. Check
+    # BEFORE counting a look, touching market data, output, or the look ledger.
+    assert_p1_statistics_qualified()
     prior = count_prior_looks(repo, commit=commit, partition="P1")
     look_count = prior + 1
 
