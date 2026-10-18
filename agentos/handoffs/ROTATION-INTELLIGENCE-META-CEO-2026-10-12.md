@@ -1,3 +1,39 @@
+---
+workstream: "WS:PROPHET-US-ENTRY-TIMING"
+session: "sol/web-rotation-intelligence-architecture-20261012"
+model: "sol"
+ended_because: "blocked"
+mission: "Preserve the October 12-13 original rotation-intelligence research frontier while continuing the same Chairman mission through its current October 17 successor handoff."
+state_before: "The historical cumulative record at PR9035 head8f53d4981389a0bfecb9d8dd9eb9637221563b00 contains the accepted research and original source/effect refusals, but has no YAML frontmatter. Its historical source-integration lane was blocked by workspace admission and original effect gates."
+changed:
+  -
+    path: "agentos/handoffs/ROTATION-INTELLIGENCE-META-CEO-2026-10-12.md"
+    what: "Add required handoff metadata only; preserve the original historical body verbatim and point future execution to the current successor record."
+prs:
+  - 9035
+verified:
+  -
+    claim: "The original historical body and its source/refusal records were retrieved at their exact immutable revision."
+    command: "GitHub fetch_file agentos/handoffs/ROTATION-INTELLIGENCE-META-CEO-2026-10-12.md at8f53d4981389a0bfecb9d8dd9eb9637221563b00"
+    result: "Blob700d3ac1b8d7279423f32d2c243bac4cc09f05de;10364 characters. Metadata preparation leaves the complete historical body unchanged."
+unverified:
+  -
+    claim: "The historical research constitutes deployed product behavior, predictive accuracy or user delivery."
+    what_would_verify: "Current successor handoff names the remaining natural production, native B4/Plan, authenticated UI, as-issued history and consented alert-delivery proofs."
+unresolved:
+  - "Historical blocked source and publication actions remain target-bound; current status and new release evidence belong to the October17 successor record."
+next_actions:
+  - "Read agentos/handoffs/ROTATION-INTELLIGENCE-META-CEO-2026-10-17-HANDOFF.md and original PR9035 current checkpoint before acting; do not execute superseded next actions from this historical body."
+  - "Reuse the original research and preserve exact held effects; qualify the current original writer, source and runtime admission under the current assignment."
+do_not_redo:
+  - "Original candidate archive census,54,699 retained rows,242-row diagnostic audit and qualified13 synthetic receipt cases remain historical accepted evidence."
+  - "Do not retry the original STORAGE_LOW_SPACE acquisition or held capture/source/validation effects through another identity, path or transport."
+  - "Do not recreate native B4, source-origin Plan relations, historical ledgers, publishers, alerts or other existing owners."
+danger_areas:
+  - "This is the historical October12-13 frontier; current source release state is in its October17 successor. Do not interpret the old no-merge/no-worker statements as current global state."
+  - "Adding knowledge metadata does not release a source hold, transfer custody, validate predictive alpha, or change protected skillpack law."
+---
+
 # Rotation intelligence — cumulative Meta-CEO frontier
 
 Updated 2026-10-13 UTC. **Operation:** rotation-intelligence-architecture-20261012. **MISSION_COMPLETE: false.** Initial architecture and original-candidate forensic phases are complete within their stated evidence limits. Product behavior is unchanged; no predictive or trading capability is promoted.
