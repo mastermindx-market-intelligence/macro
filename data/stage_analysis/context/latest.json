@@ -2,7 +2,7 @@
   "schema": "stage_context.v1",
   "asof": "2026-10-17",
   "data_session": "2026-10-14",
-  "built": "2026-10-17T06:01:26Z",
+  "built": "2026-10-17T17:50:43Z",
   "is_context_only": true,
   "display_only": true,
   "disclaimer": "Context only — stage classification display, never a signal or sizing input.",
@@ -78,6 +78,58 @@
     "spy_weeks": 25
   },
   "top_stage2": [
+    {
+      "ticker": "BRZE",
+      "company": "Braze Inc",
+      "sector": "Technology",
+      "stage_source_asof": "2026-10-14",
+      "stage_week_end": "2026-10-09",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 7,
+      "fresh": true,
+      "sga_score": 71,
+      "ma30_slope_pct5w": 4.941,
+      "pct_vs_ma30": 18.77,
+      "mansfield_rs": 5.21,
+      "vol_ratio": 0.76,
+      "event": "pullback_resume",
+      "gate_tier": "T1",
+      "blackout": false,
+      "arc_pos": 0.3375,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.5,
+        "performance": 7.5,
+        "tone_word": "confident",
+        "tags": [
+          "guidance_raised",
+          "margin_expansion",
+          "buyback_or_dividend",
+          "new_product",
+          "demand_acceleration"
+        ],
+        "quarter": "Q2",
+        "summary": "Braze reported Q2 FY2027 revenue of $227 million, up 26% year-over-year and 8% sequentially, with non-GAAP operating income of $22 million (9.7% margin) versus $6 million (3.4%) a year ago. Non-GAAP EPS was $0.19 versus $0.15, and record Q2 free cash flow was $22 million. Mana…"
+      },
+      "why": [
+        "Early in its climb — 7 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest",
+        "Also shows a strong confirmation from our other checks"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 7 周",
+        "已明显高于 30 周均线 — 可能需要回踩",
+        "其他多项验证同样给出强确认"
+      ],
+      "atr_14w": 4.0681,
+      "atr_ext": 1.129,
+      "atr_pct_price": 0.13999,
+      "sata_score": 6,
+      "sata_change_1w": 1,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 58.6
+    },
     {
       "ticker": "SWKS",
       "company": "Skyworks Solutions",
@@ -2841,56 +2893,6 @@
       "industry_percentile": 70.1
     },
     {
-      "ticker": "BRZE",
-      "company": "Braze Inc",
-      "sector": "Technology",
-      "stage_source_asof": "2026-10-14",
-      "stage_week_end": "2026-10-09",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 7,
-      "fresh": true,
-      "sga_score": 46,
-      "ma30_slope_pct5w": 4.941,
-      "pct_vs_ma30": 18.77,
-      "mansfield_rs": 5.21,
-      "vol_ratio": 0.76,
-      "event": "pullback_resume",
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.3375,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.5,
-        "performance": 7.5,
-        "tone_word": "confident",
-        "tags": [
-          "guidance_raised",
-          "margin_expansion",
-          "buyback_or_dividend",
-          "new_product",
-          "demand_acceleration"
-        ],
-        "quarter": "Q2",
-        "summary": "Braze reported Q2 FY2027 revenue of $227 million, up 26% year-over-year and 8% sequentially, with non-GAAP operating income of $22 million (9.7% margin) versus $6 million (3.4%) a year ago. Non-GAAP EPS was $0.19 versus $0.15, and record Q2 free cash flow was $22 million. Mana…"
-      },
-      "why": [
-        "Early in its climb — 7 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 7 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
-      ],
-      "atr_14w": 4.0681,
-      "atr_ext": 1.129,
-      "atr_pct_price": 0.13999,
-      "sata_score": 6,
-      "sata_change_1w": 1,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 58.6
-    },
-    {
       "ticker": "DNA",
       "company": "Ginkgo Bioworks Holdings Inc",
       "sector": "Healthcare",
@@ -3092,6 +3094,12 @@
       "sga_score": 31
     },
     {
+      "ticker": "ARI",
+      "company": "Apollo Commercial Real Estate Finance",
+      "weeks_in_stage": 5,
+      "sga_score": 29
+    },
+    {
       "ticker": "COCO",
       "company": "The Vita Coco Company",
       "weeks_in_stage": 4,
@@ -3102,6 +3110,18 @@
       "company": "Strategic Education, Inc.",
       "weeks_in_stage": 28,
       "sga_score": 29
+    },
+    {
+      "ticker": "BLBD",
+      "company": "Blue Bird Corp",
+      "weeks_in_stage": 2,
+      "sga_score": 28
+    },
+    {
+      "ticker": "CAL",
+      "company": "Caleres Inc",
+      "weeks_in_stage": 6,
+      "sga_score": 28
     },
     {
       "ticker": "CBOE",
@@ -3128,33 +3148,15 @@
       "sga_score": 25
     },
     {
+      "ticker": "DEC",
+      "company": "Diversified Energy Co",
+      "weeks_in_stage": 1,
+      "sga_score": 25
+    },
+    {
       "ticker": "ECL",
       "company": "Ecolab",
       "weeks_in_stage": 10,
-      "sga_score": 25
-    },
-    {
-      "ticker": "H",
-      "company": "Hyatt",
-      "weeks_in_stage": 4,
-      "sga_score": 25
-    },
-    {
-      "ticker": "HAL",
-      "company": "Halliburton",
-      "weeks_in_stage": 3,
-      "sga_score": 25
-    },
-    {
-      "ticker": "MDLZ",
-      "company": "Mondelez International",
-      "weeks_in_stage": 3,
-      "sga_score": 25
-    },
-    {
-      "ticker": "NOG",
-      "company": "Northern Oil and Gas, Inc.",
-      "weeks_in_stage": 3,
       "sga_score": 25
     }
   ],

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "TTWO-BULL-20261007",
-  "asof": "2026-10-16",
+  "asof": "2026-10-17",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 19.8,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": -0.082,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 20.0,
+    "horizon_pct_used": 22.2,
     "p1": -0.7214,
     "p2": -0.3607,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-10-08",
   "_first_t1_ts": "2026-10-09",
   "_first_t2_ts": null,
-  "days_elapsed": 9,
-  "tau": 0.2
+  "days_elapsed": 10,
+  "tau": 0.2222
 }

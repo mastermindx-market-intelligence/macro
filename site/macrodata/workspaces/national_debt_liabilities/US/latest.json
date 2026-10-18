@@ -187,7 +187,7 @@
         },
         "null_reason": null,
         "required": false,
-        "source_asof": "2026-10-15",
+        "source_asof": "2026-10-16",
         "status": "PRESENT"
       }
     ],
@@ -229,8 +229,8 @@
         "prior_value": 13.8
       },
       {
-        "current_value": 77.0,
-        "delta": 0.0,
+        "current_value": 78.0,
+        "delta": 1.0,
         "metric_id": "bond_desk_health_score_level",
         "note": "same method version; numeric comparison permitted",
         "prior_value": 77.0
@@ -243,10 +243,12 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [],
-    "correction_state": "none",
-    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "national_debt_liabilities-US-d9e1e6adc91a2581"
+    "changed_fingerprints": [
+      "bond_desk_health_score_level:bond_desk_health_score_level:3b3485e26f0db083"
+    ],
+    "correction_state": "superseded",
+    "note": "Same reference period as the predecessor print, but one or more owner-native metrics changed value: this print supersedes the prior one as a revision.",
+    "predecessor_generation_id": "national_debt_liabilities-US-cb9e584fdf8361ed"
   },
   "drivers": {
     "balance_sheet": [
@@ -367,11 +369,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-17T03:57:58Z",
+    "built_at": "2026-10-17T15:39:27Z",
     "calculation_as_of": "2026-10-14",
-    "code_version": "9b1bc6acc952cb7116d2f021a5022b7529153140",
-    "content_sha256": "cb9e584fdf8361ed1142b10b15bac38ef574f0cf46751cef2c22cf987a4c2245",
-    "generation_id": "national_debt_liabilities-US-cb9e584fdf8361ed",
+    "code_version": "b97f849930b9365010e2317263c9a29fc82cd0d4",
+    "content_sha256": "dc8d3a5b272000c635ddd503d0bfb3e0ddfa347882317aa13d81ec49ef5562fb",
+    "generation_id": "national_debt_liabilities-US-dc8d3a5b272000c6",
     "producer": "engine.market_os.macro_workspaces.national_debt",
     "rendered_at": null
   },
@@ -581,8 +583,8 @@
         "horizon": "current",
         "implication_id": "bond_desk_passthrough_read",
         "text": {
-          "en": "Bond-desk coverage state: health healthy (77/100), cycle phase recession -- a coverage read, not a forecast this composer originates.",
-          "zh": "债券台面覆盖状态：健康度healthy（77/100），周期阶段recession——此为覆盖读数，并非本组合器自行给出的预测。"
+          "en": "Bond-desk coverage state: health healthy (78/100), cycle phase recession -- a coverage read, not a forecast this composer originates.",
+          "zh": "债券台面覆盖状态：健康度healthy（78/100），周期阶段recession——此为覆盖读数，并非本组合器自行给出的预测。"
         },
         "trace_ref": "data/bonds/latest.json"
       },
@@ -1437,7 +1439,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-10-15",
+        "calculation_as_of": "2026-10-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "bonds_desk.health_score",
@@ -1448,10 +1450,10 @@
         "metric_id": "bond_desk_health_score_level",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-15",
+        "observed_at": "2026-10-16",
         "owner_ref": "data/bonds/latest.json",
         "reference_id": "mastermind.market_reference/v1#bond_desk_health_score_level",
-        "reference_period": "2026-10-15",
+        "reference_period": "2026-10-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1466,14 +1468,14 @@
           "value": null
         },
         "unit": "score_0_100",
-        "value": 77.0,
+        "value": 78.0,
         "value_type": "score_0_100"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-10-15",
+        "calculation_as_of": "2026-10-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "bonds_desk.health_label",
@@ -1484,10 +1486,10 @@
         "metric_id": "bond_desk_health_label",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-15",
+        "observed_at": "2026-10-16",
         "owner_ref": "data/bonds/latest.json",
         "reference_id": "mastermind.market_reference/v1#bond_desk_health_label",
-        "reference_period": "2026-10-15",
+        "reference_period": "2026-10-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1509,7 +1511,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-10-15",
+        "calculation_as_of": "2026-10-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "bonds_desk.cycle_phase",
@@ -1520,10 +1522,10 @@
         "metric_id": "bond_desk_cycle_phase",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-15",
+        "observed_at": "2026-10-16",
         "owner_ref": "data/bonds/latest.json",
         "reference_id": "mastermind.market_reference/v1#bond_desk_cycle_phase",
-        "reference_period": "2026-10-15",
+        "reference_period": "2026-10-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -3443,7 +3445,7 @@
         },
         "owner_ref": "scripts.build_bonds",
         "provider": "Mastermind Bond Desk",
-        "reference_period": "2026-10-15",
+        "reference_period": "2026-10-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",

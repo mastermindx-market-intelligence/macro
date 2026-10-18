@@ -1,57 +1,30 @@
 {
   "schema_version": 1,
   "produced_by": "sentinel",
-  "produced_at": "2026-10-17T07:47:26Z",
+  "produced_at": "2026-10-17T20:49:43Z",
   "as_of": "2026-10-17",
   "plan_status": "pass",
   "publish_enabled": false,
   "auditor_strict": true,
   "counts": {
-    "items": 28,
-    "passed": 26,
-    "quarantined": 2,
-    "quarantined_policy": 2,
+    "items": 25,
+    "passed": 25,
+    "quarantined": 0,
+    "quarantined_policy": 0,
     "quarantined_overflow": 0,
     "warnings": 0,
     "exceptions_applied": 0
   },
-  "reasons_histogram": {
-    "near_dup": 2
-  },
-  "quarantined": [
-    {
-      "id": "post-congress-004",
-      "account": "sophia",
-      "slot": "D1-S16",
-      "type": "congress",
-      "cashtag": "$EMR",
-      "headline": "",
-      "class": "policy",
-      "reasons": [
-        "near_dup:post-congress-003"
-      ]
-    },
-    {
-      "id": "post-cici-003",
-      "account": "cici",
-      "slot": "D1-S3",
-      "type": "macro",
-      "cashtag": "",
-      "headline": "",
-      "class": "policy",
-      "reasons": [
-        "near_dup:post-flagship-020"
-      ]
-    }
-  ],
+  "reasons_histogram": {},
+  "quarantined": [],
   "passed": [
     {
-      "id": "post-flagship-016",
+      "id": "post-flagship-015",
       "account": "flagship",
-      "slot": "D1-S16",
-      "type": "chart",
-      "cashtag": "$AFG",
-      "headline": ""
+      "slot": "D1-S15",
+      "type": "receipt",
+      "cashtag": "$NWS",
+      "headline": "$NWS rejected at 33 again"
     },
     {
       "id": "post-flagship-020",
@@ -62,11 +35,19 @@
       "headline": ""
     },
     {
-      "id": "post-flagship-049",
+      "id": "post-flagship-026",
       "account": "flagship",
-      "slot": "D1-S49",
+      "slot": "D1-S26",
+      "type": "signal",
+      "cashtag": "$ZTS",
+      "headline": ""
+    },
+    {
+      "id": "post-flagship-027",
+      "account": "flagship",
+      "slot": "D1-S27",
       "type": "chart",
-      "cashtag": "$SYF",
+      "cashtag": "$PPLI",
       "headline": ""
     },
     {
@@ -98,16 +79,32 @@
       "account": "founder",
       "slot": "D1-S6",
       "type": "chart",
-      "cashtag": "$PVH",
+      "cashtag": "$RRX",
       "headline": ""
     },
     {
-      "id": "post-founder-007",
+      "id": "post-founder-010",
       "account": "founder",
-      "slot": "D1-S7",
-      "type": "receipt",
-      "cashtag": "$QDEL",
+      "slot": "D1-S10",
+      "type": "chart",
+      "cashtag": "$COKE",
       "headline": ""
+    },
+    {
+      "id": "post-founder-016",
+      "account": "founder",
+      "slot": "D1-S16",
+      "type": "macro",
+      "cashtag": "",
+      "headline": "Growth firms while inflation stays warm"
+    },
+    {
+      "id": "post-founder-043",
+      "account": "founder",
+      "slot": "D1-S43",
+      "type": "receipt",
+      "cashtag": "$POWI",
+      "headline": "$POWI remains below the price where the most shares changed hands in the past six months."
     },
     {
       "id": "post-mover-001",
@@ -126,27 +123,11 @@
       "headline": ""
     },
     {
-      "id": "post-meagan-024",
+      "id": "post-meagan-013",
       "account": "meagan",
-      "slot": "D1-S24",
-      "type": "chart",
-      "cashtag": "$PINS",
-      "headline": ""
-    },
-    {
-      "id": "post-meagan-045",
-      "account": "meagan",
-      "slot": "D1-S45",
-      "type": "receipt",
-      "cashtag": "$NWS",
-      "headline": "$NWS got turned away at 33 again"
-    },
-    {
-      "id": "post-meagan-051",
-      "account": "meagan",
-      "slot": "D1-S51",
-      "type": "chart",
-      "cashtag": "$CMI",
+      "slot": "D1-S13",
+      "type": "macro",
+      "cashtag": "",
       "headline": ""
     },
     {
@@ -166,6 +147,14 @@
       "headline": ""
     },
     {
+      "id": "post-sophia-010",
+      "account": "sophia",
+      "slot": "D1-S10",
+      "type": "chart",
+      "cashtag": "$ULS",
+      "headline": ""
+    },
+    {
       "id": "post-sophia-012",
       "account": "sophia",
       "slot": "D1-S12",
@@ -174,76 +163,52 @@
       "headline": ""
     },
     {
-      "id": "post-sophia-015",
+      "id": "post-congress-004",
       "account": "sophia",
-      "slot": "D1-S15",
-      "type": "chart",
-      "cashtag": "$OVV",
+      "slot": "D1-S16",
+      "type": "congress",
+      "cashtag": "$EMR",
       "headline": ""
     },
     {
-      "id": "post-sophia-039",
-      "account": "sophia",
-      "slot": "D1-S39",
-      "type": "chart",
-      "cashtag": "$AFG",
-      "headline": "$AFG meets the old ceiling again"
-    },
-    {
-      "id": "post-sophia-043",
-      "account": "sophia",
-      "slot": "D1-S43",
-      "type": "chart",
-      "cashtag": "$HCC",
-      "headline": ""
-    },
-    {
-      "id": "post-sophia-054",
-      "account": "sophia",
-      "slot": "D1-S54",
+      "id": "post-kelly-002",
+      "account": "kelly",
+      "slot": "D1-S2",
       "type": "receipt",
       "cashtag": "$ACMR",
+      "headline": "$ACMR closed red again"
+    },
+    {
+      "id": "post-kelly-008",
+      "account": "kelly",
+      "slot": "D1-S8",
+      "type": "chart",
+      "cashtag": "$PPLI",
       "headline": ""
     },
     {
-      "id": "post-kelly-031",
+      "id": "post-kelly-012",
       "account": "kelly",
-      "slot": "D1-S31",
+      "slot": "D1-S12",
+      "type": "macro",
+      "cashtag": "",
+      "headline": ""
+    },
+    {
+      "id": "post-cici-024",
+      "account": "cici",
+      "slot": "D1-S24",
       "type": "receipt",
-      "cashtag": "$TSN",
+      "cashtag": "$VNO",
       "headline": ""
     },
     {
-      "id": "post-kelly-052",
-      "account": "kelly",
-      "slot": "D1-S52",
-      "type": "chart",
-      "cashtag": "$PEG",
-      "headline": ""
-    },
-    {
-      "id": "post-theme-005",
-      "account": "kelly",
-      "slot": "D1-S3",
-      "type": "theme_list",
-      "cashtag": "$EOSE",
-      "headline": "Energy Renewable selling off, -3.6% avg on Friday"
-    },
-    {
-      "id": "post-cici-042",
+      "id": "post-cici-027",
       "account": "cici",
-      "slot": "D1-S42",
-      "type": "chart",
-      "cashtag": "$MDU",
-      "headline": ""
-    },
-    {
-      "id": "post-cici-043",
-      "account": "cici",
-      "slot": "D1-S43",
-      "type": "chart",
-      "cashtag": "$IDA",
-      "headline": "The $IDA setup starts at 134"
+      "slot": "D1-S27",
+      "type": "watchlist",
+      "cashtag": "$PBR.A",
+      "headline": "Petrobras, $PBR.A, sits just under its range high"
     },
     {
       "id": "post-theme-006",
@@ -256,8 +221,8 @@
   ],
   "checks": {
     "near_dup": {
-      "pairs_checked": 295,
-      "hits": 2,
+      "pairs_checked": 252,
+      "hits": 0,
       "shared_media_hits": 0
     },
     "cadence": {
