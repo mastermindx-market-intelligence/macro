@@ -4939,8 +4939,9 @@ modules:
           excluded from the scheduled path; supersedes the original W-AUTO
           service-key line for CHF).
           Full mode: generator→skeptic→compiler→ingest (ISO-week idempotent,
-          ≤3 cards/week). Writes causal_mechanisms.jsonl, causal_brainstorm_runs.jsonl,
-          causal_llm_lane.json, governance.jsonl. Non-fatal (exit 0 always).
+          ≤3 cards/week). Writes causal_mechanisms.jsonl, causal_filing_budget.jsonl,
+          causal_brainstorm_runs.jsonl, causal_llm_lane.json, governance.jsonl.
+          Non-fatal (exit 0 always).
       - id: run_causal_brainstorm_status
         module: scripts.run_causal_brainstorm
         note: >
