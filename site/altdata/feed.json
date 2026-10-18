@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-18T11:08:51.213974+00:00",
+  "generated_utc": "2026-10-18T12:31:30.661720+00:00",
   "as_of": "2026-10-18",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -28714,14 +28714,6 @@
           "sellers": 0
         },
         {
-          "ticker": "COE",
-          "buy_usd": 124202047.0,
-          "sell_usd": 0.0,
-          "net_usd": 124202047.0,
-          "buyers": 37,
-          "sellers": 0
-        },
-        {
           "ticker": "GME",
           "buy_usd": 120152879.0,
           "sell_usd": 870659.0,
@@ -28735,6 +28727,14 @@
           "sell_usd": 0.0,
           "net_usd": 116087190.0,
           "buyers": 31,
+          "sellers": 0
+        },
+        {
+          "ticker": "COE",
+          "buy_usd": 115721754.0,
+          "sell_usd": 0.0,
+          "net_usd": 115721754.0,
+          "buyers": 34,
           "sellers": 0
         },
         {
