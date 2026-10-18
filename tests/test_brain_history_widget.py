@@ -472,3 +472,37 @@ def test_voice_error_aborts_and_late_end_cannot_release_a_new_session(page):
     page.evaluate("window.__speechInstances[0].onend();window.__speechInstances[0].onerror();MMBrain.close()")
     assert page.evaluate("window.__speechInstances[0].aborted") == 1
     assert page.evaluate("window.__speechInstances[1].aborted") == 1
+
+
+@pytest.mark.parametrize("width", [390, 820])
+def test_expanded_history_remains_reachable_after_phone_resize(page, width):
+    """Phone and tablet history overlays must return to the selected answer."""
+    page.set_viewport_size({"width": width, "height": 844})
+    menu = page.locator('.mmb-menu[data-act="side"]')
+    expect(menu).to_be_visible()
+    expect(page.locator('.mmb-threads')).to_be_hidden()
+    menu.click()
+    row = page.locator('#mmb-tlist .mmb-ti').first
+    expect(row).to_be_visible()
+    row.locator('.mmb-ti-body').click()
+    expect(page.locator('.mmb-msg.assistant')).to_be_visible()
+    expect(page.locator('.mmb-threads')).to_be_hidden()
+    assert not page.evaluate('document.documentElement.scrollWidth > innerWidth')
+
+
+def test_saved_response_has_accessible_heading_hierarchy_without_executable_markup(page):
+    """One- through six-marker headings use the same safe saved-answer renderer."""
+    text = '# Direct answer\nA readable first paragraph.\n## Evidence\nSupporting detail.\n### Next check\n<script>window.headingInjected=true</script>'
+    page.evaluate(r'''text => {
+      const old = window.fetch;
+      window.fetch = (url, options = {}) => /\/api\/brain\/threads\/[a-f0-9-]+$/.test(url)
+        ? Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({thread:{id:'11111111-1111-1111-1111-111111111111'},messages:[{role:'assistant',content:text}]})})
+        : old(url, options);
+    }''', text)
+    page.locator('#mmb-tlist .mmb-ti').first.locator('.mmb-ti-body').click()
+    expect(page.get_by_role('heading', name='Direct answer', exact=True, level=2)).to_be_visible()
+    expect(page.get_by_role('heading', name='Evidence', exact=True, level=2)).to_be_visible()
+    expect(page.get_by_role('heading', name='Next check', exact=True, level=3)).to_be_visible()
+    expect(page.locator('.mmb-txt')).to_contain_text('<script>window.headingInjected=true</script>')
+    assert page.evaluate('window.headingInjected === undefined')
+    assert page.locator('.mmb-txt script').count() == 0

@@ -39,7 +39,7 @@
      when Terminal embeds it. No model URL, CDN or executable markup is accepted. */
   var visualAssetBase = new URL('./', (DOC.currentScript && DOC.currentScript.src) || DOC.baseURI).href;
   var visualScriptVersion = '1d23a300';
-  var visualStyleVersion = 'e0d06dcb';
+  var visualStyleVersion = '98f7caf6';
   var visualAssetPromise = null;
   function loadVisualAssets() {
     if (visualAssetPromise) return visualAssetPromise;
@@ -191,6 +191,9 @@
     --mmb-fab-glow-h:0 20px 46px -14px rgba(24,52,140,.48),0 8px 20px -8px rgba(24,52,140,.32),
       0 0 36px -6px color-mix(in srgb,var(--mmb-info) 56%,transparent),inset 0 1px 0 #fff;
     --mmb-rim-w:1.75px;--mmb-rim-o:1}
+  /* Reading surfaces reuse the widget's portable dark/light palette. */
+  #mmb-root{--mmb-reading-plane:var(--mmb-plate)}
+  html[data-theme="light"] #mmb-root{--mmb-reading-plane:var(--mmb-panel)}
   #mmb-root *{box-sizing:border-box}
   /* ── launcher (bottom-right) ────────────────────────────────────────────────
      Presence is this control's whole job, and a glass pill dissolves on a white
@@ -266,7 +269,8 @@
     .mmb-sugg .mmb-sug{animation:none}
     #mmb-panel{transition:opacity .18s ease!important}
     .mmb-chip,.mmb-chip::after,.mmb-cardp,.mmb-cardp .ci svg,.mmb-seg button,
-    .mmb-send,.mmb-box,.mmb-sug,.mmb-tbtn{transition:none}}
+    .mmb-send,.mmb-box,.mmb-sug,.mmb-tbtn{transition:none}
+    .mmb-threads{transition:none!important}}
   #mmb-launch .ll{font:650 13.5px/1 var(--mmb-font);color:var(--mmb-text);white-space:nowrap}
   #mmb-launch .lk{font:600 11px/1 var(--mmb-font);color:var(--mmb-muted);margin-top:3px;white-space:nowrap}
   #mmb-launch .lt{display:flex;flex-direction:column}
@@ -286,7 +290,7 @@
   #mmb-scrim.open.max{opacity:var(--mmb-scrim-o-max);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
   #mmb-panel{position:fixed;z-index:2147483002;display:flex;flex-direction:column;overflow:hidden;font-family:var(--mmb-font);color:var(--mmb-text);
     right:18px;bottom:18px;width:min(440px,calc(100vw - 36px));height:min(720px,calc(100vh - 96px));
-    border-radius:22px;border:1px solid var(--mmb-line);background:color-mix(in srgb,var(--mmb-panel) 82%,transparent);
+    border-radius:var(--r-panel,20px);border:1px solid var(--mmb-line);background:var(--mmb-reading-plane);
     -webkit-backdrop-filter:blur(26px) saturate(1.15);backdrop-filter:blur(26px) saturate(1.15);
     box-shadow:var(--mmb-shadow-panel),inset 0 1px 0 var(--mmb-sheen);
     transform:translateY(16px) scale(.98);opacity:0;pointer-events:none;visibility:hidden;transform-origin:bottom right;
@@ -380,7 +384,9 @@
   .mmb-scroll::-webkit-scrollbar-thumb,.mmb-threads::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--mmb-violet) 34%,transparent);border-radius:8px;border:2px solid transparent;background-clip:padding-box}
   .mmb-scroll::-webkit-scrollbar-thumb:hover,.mmb-threads::-webkit-scrollbar-thumb:hover{background:color-mix(in srgb,var(--mmb-violet) 52%,transparent);background-clip:padding-box}
   .mmb-scroll::-webkit-scrollbar-track,.mmb-threads::-webkit-scrollbar-track{background:transparent}
-  #mmb-panel.max .mmb-scroll{padding:26px clamp(24px,10%,120px)}
+  /* The expanded conversation and composer share one measured reading column.
+     Keep the native history owner and the compact host's layout intact. */
+  #mmb-panel.max .mmb-scroll{padding:36px max(28px,calc((100% - 760px)/2));gap:24px}
   .mmb-empty{flex:1;display:flex;flex-direction:column;justify-content:center}
   .mmb-hero h1{margin:0;font:800 clamp(22px,3vw,38px)/1.1 var(--mmb-font);letter-spacing:-.02em}
   #mmb-panel:not(.max) .mmb-hero h1{font-size:22px}
@@ -427,21 +433,25 @@
   .mmb-msg.assistant{align-self:flex-start;align-items:flex-start;max-width:100%;width:100%}
   @keyframes mmb-pop{from{opacity:0;transform:translateY(14px) scale(.94)}60%{opacity:1}to{opacity:1;transform:none}}
   @media(prefers-reduced-motion:reduce){.mmb-msg.user{animation:none}}
-  .mmb-bub{font:14.5px/1.62 var(--mmb-font);word-break:break-word}
+  .mmb-bub{font:15.5px/1.7 var(--mmb-font);word-break:break-word}
+  #mmb-panel.max .mmb-bub{font-size:17px;line-height:1.75}
   /* USER: keep the violet-tinted gradient bubble */
-  .mmb-msg.user .mmb-bub{padding:12px 15px;border-radius:16px;background:linear-gradient(180deg,color-mix(in srgb,var(--mmb-info) 92%,#fff),var(--mmb-info));color:#fff;border-bottom-right-radius:5px;box-shadow:0 8px 22px -10px color-mix(in srgb,var(--mmb-info) 70%,transparent)}
+  .mmb-msg.user .mmb-bub{padding:12px 16px;border-radius:var(--r-card,16px);background:var(--mmb-panel2);color:var(--mmb-text);border:1px solid var(--mmb-line);box-shadow:none;font-size:14px;line-height:1.55}
   /* ASSISTANT: ghost block — NO per-message background/border/blur (the panel blurs once,
      so a per-bubble backdrop-filter is a needless repaint). Orb glyph anchors top-left. */
   .mmb-msg.assistant .mmb-bub{position:relative;width:100%;padding:2px 0 0 28px;background:none;border:none;box-shadow:none}
   .mmb-orbmark{position:absolute;left:0;top:1px;width:18px;height:18px;display:grid;place-items:center;pointer-events:none}
   .mmb-orbmark svg{width:18px;height:18px;fill:color-mix(in srgb,var(--mmb-violet) 85%,transparent)}
-  .mmb-bub p{margin:0 0 9px}.mmb-bub p:last-child{margin-bottom:0}
+  .mmb-bub p{margin:0 0 16px}.mmb-bub p:last-child{margin-bottom:0}
   .mmb-bub ul,.mmb-bub ol{margin:7px 0 9px 20px;padding:0}.mmb-bub li{margin:4px 0}
   .mmb-bub strong{font-weight:700;color:color-mix(in srgb,var(--mmb-text) 92%,var(--mmb-hi))}
   .mmb-bub em{font-style:italic;color:color-mix(in srgb,var(--mmb-text) 88%,var(--mmb-muted))}
-  .mmb-bub h4{margin:14px 0 6px;font:700 15.5px/1.3 var(--mmb-font);color:color-mix(in srgb,var(--mmb-text) 95%,var(--mmb-hi))}
-  .mmb-bub h5{margin:12px 0 5px;font:700 14.5px/1.3 var(--mmb-font);color:color-mix(in srgb,var(--mmb-text) 92%,var(--mmb-hi))}
-  .mmb-bub h4:first-child,.mmb-bub h5:first-child{margin-top:0}
+  .mmb-bub h2{margin:28px 0 14px;font:650 26px/1.23 var(--mmb-font);letter-spacing:-.035em;color:var(--mmb-hi);text-wrap:balance}
+  #mmb-panel.max .mmb-bub h2{font-size:32px}
+  .mmb-bub h3{margin:25px 0 11px;font:650 21px/1.35 var(--mmb-font);letter-spacing:-.02em;color:var(--mmb-hi)}
+  .mmb-bub h4{margin:22px 0 10px;font:650 18px/1.4 var(--mmb-font);color:var(--mmb-hi)}
+  .mmb-bub h5,.mmb-bub h6{margin:18px 0 8px;font:650 16px/1.45 var(--mmb-font);color:var(--mmb-hi)}
+  .mmb-bub :is(h2,h3,h4,h5,h6):first-child{margin-top:0}
   .mmb-bub code{font:13px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:color-mix(in srgb,var(--mmb-ink) 7%,transparent);border-radius:6px;padding:1.5px 6px}
   .mmb-bub a{color:var(--mmb-info);text-decoration:none}.mmb-bub a:hover{text-decoration:underline}
   .mmb-hr{border:none;border-top:1px solid color-mix(in srgb,var(--mmb-ink) 8%,transparent);margin:12px 0}
@@ -658,13 +668,13 @@
   .mmb-upgrade a{color:var(--mmb-info);font-weight:700;text-decoration:underline}
   /* composer */
   .mmb-comp{position:relative;flex:none;padding:14px clamp(18px,6%,64px) 14px}
-  #mmb-panel.max .mmb-comp{padding:14px clamp(24px,10%,120px) 16px}
+  #mmb-panel.max .mmb-comp{padding:16px max(28px,calc((100% - 760px)/2)) 20px}
   /* overflow is VISIBLE, deliberately. Nothing inside the box bleeds to its edge — the
      slash palette is inset by its own padding, the textarea and tool row are transparent —
      but the depth control's tip has to escape upward, and the old clip swallowed its first
      two lines. The palette's top corners are pinned below so losing the clip cannot square
      them off. */
-  .mmb-box{border-radius:18px;border:1px solid var(--mmb-line);background:var(--mmb-boxbg);overflow:visible;
+  .mmb-box{border-radius:var(--r-panel,18px);border:1px solid var(--mmb-line);background:var(--mmb-panel2);overflow:visible;
     -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:var(--mmb-shadow-box);
     transition:border-color .2s var(--mmb-ease-tint),box-shadow .2s var(--mmb-ease-tint)}
   .mmb-slash{border-radius:17px 17px 0 0}
@@ -889,13 +899,32 @@
   .mmb-gate p{margin:0;color:var(--mmb-muted);font:400 13.5px/1.5 var(--mmb-font);max-width:340px}
   .mmb-signin{margin-top:6px;padding:12px 26px;border:none;border-radius:12px;cursor:pointer;color:#fff;font:700 14px/1 var(--mmb-font);
     background:linear-gradient(180deg,color-mix(in srgb,var(--mmb-info) 92%,#fff),var(--mmb-info));box-shadow:0 10px 28px -8px color-mix(in srgb,var(--mmb-info) 70%,transparent)}
-  @media(max-width:560px){#mmb-panel,#mmb-panel.max,#mmb-panel.mmb-top{right:0;left:0;bottom:0;top:auto;margin:0;transform-origin:bottom center;transform:translateY(20px);width:100vw;height:88vh;border-radius:20px 20px 0 0}
+  /* Tablets retain a full reading column; history opens over the conversation. */
+  @media(max-width:960px){
+    #mmb-panel.max .mmb-rail{display:none}
+    #mmb-panel.max .mmb-menu{display:grid}
+    /* A desktop-expanded chat can survive a resize or device rotation. Its
+       retained history must become the same explicit history drawer. */
+    #mmb-panel.max .mmb-threads{position:absolute;left:0;top:0;bottom:0;width:min(300px,calc(100% - 54px));z-index:6;display:block;
+      background:var(--mmb-panel);border-right:1px solid var(--mmb-line);transform:translateX(-101%);visibility:hidden;transition:transform .26s var(--mmb-ease)}
+    #mmb-panel.max.show-side .mmb-threads{transform:none;visibility:visible;box-shadow:var(--mmb-shadow-side)}
+    #mmb-panel.max .mmb-sidescrim{display:block;position:absolute;inset:0;z-index:5;background:var(--mmb-sidescrim);opacity:0;pointer-events:none}
+    #mmb-panel.max.show-side .mmb-sidescrim{opacity:1;pointer-events:auto}
+  }
+  @media(max-width:560px){#mmb-panel,#mmb-panel.max,#mmb-panel.mmb-top{inset:0;margin:0;transform-origin:bottom center;transform:translateY(20px);width:100%;height:100vh;height:100dvh;border-radius:0}
+    .mmb-head{padding-top:max(12px,env(safe-area-inset-top))}
+    .mmb-scroll,#mmb-panel.max .mmb-scroll{padding:24px 18px;gap:22px}
+    .mmb-msg.assistant .mmb-bub{padding:0}
+    .mmb-msg.assistant .mmb-orbmark{display:none}
+    .mmb-bub,#mmb-panel.max .mmb-bub{font-size:16px;line-height:1.72}
+    .mmb-bub h2,#mmb-panel.max .mmb-bub h2{font-size:27px;line-height:1.23}
+    .mmb-bub h3{font-size:21px}
+    .mmb-comp,#mmb-panel.max .mmb-comp{padding:12px 14px calc(12px + env(safe-area-inset-bottom))}
     #mmb-panel.open{transform:none} .mmb-cards,#mmb-panel.max .mmb-cards{grid-template-columns:1fr}
-    /* mobile is compact-only: no large mode (the overlay isn't responsive there) */
+    /* Phones already use the full screen, so an expansion control is redundant. */
     .mmb-icon[data-act="max"]{display:none!important}
     .mmb-head .mmb-icon,.mmb-abtn,.mmb-ti-act,.mmb-ti-yes,.mmb-ti-no{min-width:44px;min-height:44px}
     .mmb-actions{height:auto;min-height:44px}
-    #mmb-panel.max .mmb-rail,#mmb-panel.max .mmb-threads{display:none}
     /* iOS: composer font MUST be ≥16px or Safari zooms the viewport on focus */
     .mmb-ta{font-size:16px}
     /* no hardware modifier on a phone — the hint would be a lie AND a squeeze */
@@ -1252,9 +1281,9 @@
       var qt = lines.map(function (l) { return l.replace(/^\s*>\s?/, ''); }).join('\n');
       mdInline(bq, qt); return bq;
     }
-    /* heading — ## → h4, ###+ → h5 */
-    var hm = first.match(/^(#{2,6})\s+(.*)/);
-    if (hm && lines.length === 1) { var h = el(hm[1].length <= 2 ? 'h4' : 'h5'); mdInline(h, hm[2]); return h; }
+    /* The conversation owns its heading outline; model headings remain text-only. */
+    var hm = first.match(/^(#{1,6})\s+(.*)/);
+    if (hm && lines.length === 1) { var h = el('h' + Math.max(2, hm[1].length)); mdInline(h, hm[2]); return h; }
     /* ordered list */
     if (/^\s*\d+\.\s+/.test(first)) {
       var ol = el('ol');
@@ -2055,7 +2084,7 @@
     var tm = el('div', 'tm'); tm.textContent = (t.lane || 'fast') + ' · ' + date;
     body.appendChild(tt); body.appendChild(tm);
     /* row-open (guarded so action clicks don't also open the thread) */
-    body.addEventListener('click', function () { openThread(t.id); if (!panel.classList.contains('max')) panel.classList.remove('show-side'); });
+    body.addEventListener('click', function () { openThread(t.id); if (!panel.classList.contains('max') || window.innerWidth <= 960) panel.classList.remove('show-side'); });
     d.appendChild(body);
 
     var acts = el('div', 'mmb-ti-acts');
@@ -3396,7 +3425,7 @@
     });
   }
   function toggleSide() { panel.classList.toggle('show-side'); }
-  function newChat() { stopVoice(); historyOpenGeneration++; abortStream(); threadId = null; pendingImages = []; renderThumbs(); root.querySelectorAll('.mmb-ti').forEach(function (el) { el.classList.remove('on'); }); clearMsgs(); ta.value = ''; autosize(); syncSend(); updateCounter(); closeSlash(); restoreDraft(); if (!panel.classList.contains('max')) panel.classList.remove('show-side'); }
+  function newChat() { stopVoice(); historyOpenGeneration++; abortStream(); threadId = null; pendingImages = []; renderThumbs(); root.querySelectorAll('.mmb-ti').forEach(function (el) { el.classList.remove('on'); }); clearMsgs(); ta.value = ''; autosize(); syncSend(); updateCounter(); closeSlash(); restoreDraft(); if (!panel.classList.contains('max') || window.innerWidth <= 960) panel.classList.remove('show-side'); }
 
   /* ── auth wiring ── */
   function onAuth(user) {
