@@ -369,5 +369,96 @@
         "2026-10-18T03:19:14.8586780Z ##[error]Process completed with exit code 1."
       ]
     }
-  ]
+  ],
+  "updated_at_utc": "2026-10-18T04:29:19Z",
+  "tail_publication_supplement": {
+    "observed_at_utc": "2026-10-18T04:29:19Z",
+    "job_id": 117575031614,
+    "job_name": "collect_tail",
+    "runner": "mac-builder-light",
+    "original_runtime_workspace": "/Users/chriswong/actions-runner-4/_work/macro/macro",
+    "started_at_utc": "2026-10-18T03:25:34Z",
+    "completed_at_utc": "2026-10-18T04:00:39Z",
+    "conclusion": "failure",
+    "actual_checkout": {
+      "sha": "fa3b584c80ed26db9ca01655c44c80da85d42ad8",
+      "log_at_utc": "2026-10-18T03:25:56.160835Z"
+    },
+    "initial_candidate": {
+      "sha": "477581d687b54c4086b47d9bb25a165ff39997c9",
+      "parent": "fa3b584c80ed26db9ca01655c44c80da85d42ad8",
+      "committed_at_utc": "2026-10-18T03:59:25Z"
+    },
+    "rejected_candidate": {
+      "sha": "9e980d3969825484333d8e9d1cdd4b314acc8519",
+      "parent": "08d09c100a601397b3da9b3b172729b14ea72e48",
+      "rebase_finished_at_utc": "2026-10-18T04:00:01Z",
+      "ref_evidence": "Original runner HEAD reflog 03:55-04:01 UTC; no intervening HEAD transition before 04:00:18Z rejection."
+    },
+    "caller": {
+      "workflow_blob": "25fda89c70eb6eef643fd11d1bdf02dfbbadd3fe",
+      "step_number": 31,
+      "step_name": "commit tail data",
+      "helper_path": "scripts/ci/push_retry.sh",
+      "helper_blob": "b3abe82ba137466fe42a1160b1ba2a65dd19e576",
+      "push_retry_label": "tail data",
+      "push_do_arguments": [],
+      "source_binding": "Bare push_do after existing main fetch, rebase/autostash and push_autostash_ok; proposed #9450 preflight absent."
+    },
+    "metadata_only_objects": {
+      "claims": {
+        "path": "data/qledger/claims.jsonl",
+        "blob": "97ae8d94ecf0b9fefb2241e50a83fb50c332bdb4",
+        "bytes": 148072797,
+        "github_display_mb": "141.21",
+        "limit_bytes": 104857600,
+        "bytes_above_limit": 43215197
+      },
+      "grades": {
+        "path": "data/qledger/grades.jsonl",
+        "blob": "cd7a134fb9fa73730747e289a846f8eef562fe5f",
+        "bytes": 79345831
+      },
+      "preserved_across_rebase": true,
+      "contents_read": false
+    },
+    "failure": {
+      "code": "GH001",
+      "at_utc": "2026-10-18T04:00:18.566721Z",
+      "automatic_retry_stopped_at_utc": "2026-10-18T04:00:18.567211Z",
+      "exit_code": 1
+    },
+    "separate_step_timeout": {
+      "step_name": "TIL W8 — Census HS-code import-flow ingest (non-fatal)",
+      "at_utc": "2026-10-18T03:41:13.664394Z",
+      "minutes": 15,
+      "relation": "Separate recorded non-fatal action timeout; not the demonstrated GitHub push-rejection cause."
+    },
+    "scope": "Actual failed tail publisher witness only. No ledger row content, push, recovery, cleanup, truncation, replay, ref change, writer transfer or #8756 cutover performed.",
+    "source_owner_disposition": "Original #9450 remains DRAFT/HOLD; actual source-ref/caller qualification and original Asia owner coordination still required. #8756 separate lossless cutover remains held; #9452 remains unselected.",
+    "log_excerpts": [
+      "2026-10-18T03:25:56.1608350Z fa3b584c80ed26db9ca01655c44c80da85d42ad8",
+      "2026-10-18T03:59:21.6864020Z \u001b[36;1mpush_retry_init \"tail data\"\u001b[0m",
+      "2026-10-18T03:59:21.6866710Z \u001b[36;1m    if push_do; then echo \"pushed tail data on attempt $PUSH_ATTEMPT\"; push_won; exit 0; fi\u001b[0m",
+      "2026-10-18T03:59:25.8681550Z [main 477581d687b] data: collect-tail accrual 2026-10-18",
+      "2026-10-18T04:00:01.8490570Z Successfully rebased and updated refs/heads/main.",
+      "2026-10-18T04:00:18.5667210Z remote: error: File data/qledger/claims.jsonl is 141.21 MB; this exceeds GitHub's file size limit of 100.00 MB        ",
+      "2026-10-18T04:00:18.5672110Z ##[error]tail data: GH001 large-file rejection; automatic retry stopped",
+      "2026-10-18T04:00:18.5684310Z ##[error]Process completed with exit code 1."
+    ]
+  },
+  "later_downstream_observation": {
+    "observed_at_utc": "2026-10-18T04:25:30Z",
+    "engine_job_id": 117575031870,
+    "engine_status": "in_progress",
+    "active_step_number": 26,
+    "active_step_started_at_utc": "2026-10-18T03:32:22Z",
+    "exact_cache_hit": "UNVERIFIED",
+    "actual_engine_checkout": "UNVERIFIED",
+    "prophet_step33": "pending",
+    "turnwatch_step43": "pending",
+    "factor_series": "success",
+    "factor_panel": "success",
+    "limitation": "Job-state success is not exact source/cache/Prophet evidence; no later completed engine log was read."
+  }
 }
