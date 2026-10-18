@@ -1,0 +1,37 @@
+/* Preview-only excerpt of canonical theme.css at b912fd97827cca925a7123aa2012e9765077f3f7. */
+:root {
+  --font-ui: -apple-system, BlinkMacSystemFont, Inter, "Segoe UI", Roboto,
+    "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    "Noto Sans CJK SC", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Mono",
+    Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  --fs-display: 46px;
+  --fs-num-xl: 38px;
+  --fs-h1: 28px;
+  --fs-num-lg: 22px;
+  --fs-h2: 17px;
+  --fs-md: 15px;
+  --fs-body: 14px;
+  --fs-h3: 14px;
+  --fs-sm: 12.5px;
+  --fs-label: 11px;
+  --fs-micro: 10px;
+  --bg: #0f1115;
+  --panel: #181b21;
+  --panel2: #1e222a;
+  --text: #d7dce3;
+  --muted: #8b93a1;
+  --line: #3a4150;
+  --link: #7aa7e0;
+  --card-shadow: 0 1px 0 rgba(255,255,255,.02);
+}
+html[data-theme="light"] {
+  --bg: #f7f8fa;
+  --panel: #ffffff;
+  --panel2: #eef1f6;
+  --text: #1c2430;
+  --muted: #5d6b7e;
+  --line: color-mix(in srgb, #1c2430 16%, #eaecf0);
+  --link: #285fff;
+  --card-shadow: 0 1px 3px rgba(20,30,50,.07);
+}

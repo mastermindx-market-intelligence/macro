@@ -1,0 +1,84 @@
+/* Scoped consumer of the existing theme.css tokens; no global navigation. */
+.bci-decision-desk { color: var(--text); font: 400 var(--fs-body)/1.55 var(--font-ui); min-width: 0; }
+.bci-decision-desk *, .bci-decision-desk *::before, .bci-decision-desk *::after { box-sizing: border-box; }
+.bci-decision-desk h2, .bci-decision-desk h3, .bci-decision-desk h4, .bci-decision-desk p { margin: 0; }
+.bci-dd-shell { max-width: 1280px; margin: 0 auto; padding: 36px; }
+.bci-dd-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+.bci-dd-eyebrow { font-size: var(--fs-label); font-weight: 650; letter-spacing: .14em; color: var(--muted); }
+.bci-dd-header h2 { margin-top: 10px; font-size: var(--fs-h1); line-height: 1.2; letter-spacing: -.035em; font-weight: 650; }
+.bci-dd-intro { margin-top: 12px !important; color: var(--muted); max-width: 640px; }
+.bci-dd-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 28px 0; }
+.bci-dd-views { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+.bci-decision-desk button, .bci-decision-desk select { font: inherit; color: var(--text); cursor: pointer; }
+.bci-dd-button, .bci-dd-view, .bci-dd-tab, .bci-dd-horizon select { min-height: 44px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 10px 16px; }
+.bci-dd-button:hover, .bci-dd-horizon select:hover { background: var(--panel2); }
+.bci-dd-view { background: transparent; border-color: transparent; padding: 7px 14px; font-size: var(--fs-sm) !important; }
+.bci-dd-view[aria-pressed="true"] { background: var(--panel2); font-weight: 650; }
+.bci-dd-horizon { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: var(--fs-sm); }
+.bci-dd-horizon select { font-size: var(--fs-sm); padding: 9px 12px; }
+.bci-dd-body { min-height: 180px; }
+.bci-dd-summary { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.bci-dd-summary h3 { font-size: var(--fs-h2); font-weight: 600; }
+.bci-dd-status, .bci-dd-muted { color: var(--muted); font-size: var(--fs-sm); }
+.bci-dd-status { padding: 6px 0; }
+.bci-dd-body > .bci-dd-status { color: var(--text); padding: 24px 0 8px; font-size: var(--fs-h2); }
+.bci-dd-text-button { background: transparent; color: var(--muted) !important; border: 0; padding: 8px 0; text-decoration: underline; text-underline-offset: 3px; min-height: 36px; font-size: var(--fs-sm) !important; }
+.bci-dd-cases { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin: 16px 0 22px; }
+.bci-dd-card { min-width: 0; border: 1px solid var(--line); border-radius: 14px; padding: 24px; background: var(--panel); display: flex; flex-direction: column; align-items: flex-start; }
+.bci-dd-card:only-child { max-width: 760px; grid-column: 1 / -1; width: 100%; }
+.bci-dd-card-top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; width: 100%; }
+.bci-dd-symbol { font: 650 var(--fs-h2)/1.3 var(--font-ui); overflow-wrap: anywhere; }
+.bci-dd-lane { color: var(--muted); font-size: var(--fs-sm); }
+.bci-dd-case-title { font-size: var(--fs-num-lg); font-weight: 600; line-height: 1.3; letter-spacing: -.025em; margin: 17px 0 10px !important; }
+.bci-dd-wording { color: var(--muted); font-size: var(--fs-md); margin: 0 0 10px !important; overflow-wrap: anywhere; }
+.bci-dd-field { margin: 13px 0; width: 100%; }
+.bci-dd-field h4 { color: var(--muted); font-size: var(--fs-sm); font-weight: 500; margin-bottom: 4px; }
+.bci-dd-field p { max-width: 74ch; overflow-wrap: anywhere; }
+.bci-dd-primary { margin-top: auto; padding-top: 11px; padding-bottom: 11px; background: var(--panel2); font-weight: 600 !important; }
+.bci-dd-scope { border: 1px solid var(--line); border-radius: 10px; background: var(--bg); padding: 13px 16px; color: var(--muted); font-size: var(--fs-sm); }
+.bci-dd-scope summary { cursor: pointer; min-height: 26px; }
+.bci-dd-scope p { margin-top: 10px; }
+.bci-dd-detail { background: var(--panel2); border: 1px solid var(--line); border-radius: 14px; padding: 24px; margin-top: 26px; scroll-margin-top: 20px; }
+.bci-dd-detail-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.bci-dd-detail-top h3 { font-size: var(--fs-num-lg); overflow-wrap: anywhere; }
+.bci-dd-detail-title { margin-top: 16px !important; font-size: var(--fs-h2); }
+.bci-dd-tabs { display: flex; gap: 5px; flex-wrap: wrap; margin: 22px 0 18px; }
+.bci-dd-tab { background: transparent; border-color: transparent; min-width: 90px; }
+.bci-dd-tab[aria-selected="true"] { background: var(--panel); border-color: var(--line); font-weight: 650; }
+.bci-dd-tab-panel { min-height: 150px; }
+.bci-dd-link { color: var(--link); display: inline-flex; padding: 10px 0; margin-right: 20px; text-underline-offset: 4px; overflow-wrap: anywhere; }
+.bci-decision-desk :focus-visible { outline: 2px solid var(--text); outline-offset: 3px; }
+.bci-decision-desk button:disabled { opacity: .65; cursor: wait; }
+html[data-theme="light"] .bci-dd-card, html[data-theme="light"] .bci-dd-detail { background: var(--panel); box-shadow: var(--card-shadow); }
+html[data-theme="light"] .bci-dd-views { background: var(--bg); }
+html[data-theme="light"] .bci-dd-view[aria-pressed="true"] { background: var(--panel); box-shadow: var(--card-shadow); }
+@media (min-width: 1120px) {
+  .bci-dd-shell:has(.bci-dd-detail) { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 0 26px; }
+  .bci-dd-shell:has(.bci-dd-detail) > .bci-dd-header, .bci-dd-shell:has(.bci-dd-detail) > .bci-dd-toolbar { grid-column: 1 / -1; }
+  .bci-dd-shell:has(.bci-dd-detail) .bci-dd-cases { grid-template-columns: minmax(0, 1fr); }
+  .bci-dd-shell:has(.bci-dd-detail) .bci-dd-detail { margin-top: 0; align-self: start; }
+  .bci-dd-shell:has(.bci-dd-detail) .bci-dd-summary { display: block; }
+}
+@media (max-width: 700px) {
+  .bci-dd-shell { padding: 22px 16px; }
+  .bci-dd-header { gap: 10px; }
+  .bci-dd-header h2 { font-size: 25px; }
+  .bci-dd-header > .bci-dd-button { padding: 8px 10px; font-size: var(--fs-sm); }
+  .bci-dd-eyebrow { letter-spacing: .08em; font-size: var(--fs-micro); }
+  .bci-dd-intro { font-size: var(--fs-sm); margin-top: 10px !important; }
+  .bci-dd-toolbar { display: block; margin: 20px 0 15px; }
+  .bci-dd-views { width: 100%; flex-wrap: nowrap; }
+  .bci-dd-view { flex: 1; min-width: 0; white-space: nowrap; padding: 7px 6px; font-size: 11.5px !important; }
+  .bci-dd-horizon { margin-top: 10px; justify-content: space-between; }
+  .bci-dd-summary { display: block; }
+  .bci-dd-status { font-size: 11.5px; }
+  .bci-dd-cases { grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: 10px; }
+  .bci-dd-card { padding: 17px; }
+  .bci-dd-case-title { font-size: 21px; margin-top: 14px !important; }
+  .bci-dd-wording { font-size: var(--fs-body); }
+  .bci-dd-field { margin: 8px 0; }
+  .bci-dd-card .bci-dd-primary { margin-top: 8px; }
+  .bci-dd-detail { padding: 18px; }
+  .bci-dd-tab { min-width: 0; flex: 1; padding: 9px 7px; font-size: var(--fs-sm); }
+}
+@media (prefers-reduced-motion: reduce) { .bci-decision-desk { scroll-behavior: auto; } }

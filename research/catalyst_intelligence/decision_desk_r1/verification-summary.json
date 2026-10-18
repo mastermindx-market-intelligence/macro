@@ -1,0 +1,156 @@
+{
+  "generated_at": "2026-10-18T11:20:47.896Z",
+  "browser": "155.0.8059.84",
+  "scope": "Component replay only; no source admission, authentication or live integration proof",
+  "checks": [
+    "Unaltered API fixture gives a plain research task, visible uncertainty and no machine codes at rest",
+    "Setup retains the exact issuer-bound company research destination",
+    "Missing forecasts stay in the Scenarios task without fabricated estimates",
+    "Sources preserves wording while explicitly exposing the producer evidence-link gap",
+    "Host-owned URL state restores the exact company case and Sources task",
+    "Keyboard tabs and Escape preserve selection semantics and return focus to the case",
+    "Captured API responses drive horizon changes, honest empty views and null-horizon review/history queries",
+    "Conflict replaces the forward-looking card, headline and company action across every detail task",
+    "Withdrawal and unavailable API clear the earlier case, count and open detail together",
+    "Host authorization-context change immediately removes the previous account’s data",
+    "Historical revisions remain distinct from withdrawn events in the card and Research task",
+    "Supplied source wording is rendered as text",
+    "Sixteen language/theme/viewport combinations preserve readable risk, action and detail without horizontal overflow",
+    "No browser runtime errors in the reviewed paths"
+  ],
+  "layouts": [
+    {
+      "lang": "en",
+      "theme": "dark",
+      "width": 320,
+      "cardHeight": 436.828125,
+      "actionBottomWithinComponent": 840
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "width": 390,
+      "cardHeight": 366.15625,
+      "actionBottomWithinComponent": 750
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "width": 768,
+      "cardHeight": 349.03125,
+      "actionBottomWithinComponent": 648
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "width": 1440,
+      "cardHeight": 349.03125,
+      "actionBottomWithinComponent": 648
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "width": 320,
+      "cardHeight": 436.828125,
+      "actionBottomWithinComponent": 840
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "width": 390,
+      "cardHeight": 366.15625,
+      "actionBottomWithinComponent": 750
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "width": 768,
+      "cardHeight": 349.03125,
+      "actionBottomWithinComponent": 648
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "width": 1440,
+      "cardHeight": 349.03125,
+      "actionBottomWithinComponent": 648
+    },
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 320,
+      "cardHeight": 338.859375,
+      "actionBottomWithinComponent": 673
+    },
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 390,
+      "cardHeight": 317.171875,
+      "actionBottomWithinComponent": 651
+    },
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 768,
+      "cardHeight": 349.03125,
+      "actionBottomWithinComponent": 648
+    },
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 1440,
+      "cardHeight": 349.03125,
+      "actionBottomWithinComponent": 648
+    },
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 320,
+      "cardHeight": 338.859375,
+      "actionBottomWithinComponent": 673
+    },
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 390,
+      "cardHeight": 317.171875,
+      "actionBottomWithinComponent": 651
+    },
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 768,
+      "cardHeight": 349.03125,
+      "actionBottomWithinComponent": 648
+    },
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 1440,
+      "cardHeight": 349.03125,
+      "actionBottomWithinComponent": 648
+    }
+  ],
+  "errors": [],
+  "source_base": "b912fd97827cca925a7123aa2012e9765077f3f7",
+  "api_candidate": "ec5c2e2544576f20348c6eadf834fe3cefae8039",
+  "direct_node_checks": 53,
+  "pytest_wrapper": {
+    "passed": 1,
+    "runtime": "M2 Studio Python 3.12.13; existing pytest runtime",
+    "scope": "invokes the 53 direct JavaScript cases"
+  },
+  "principal_review": {
+    "verdict": "ACCEPT_COMPONENT_SCOPE",
+    "blocking_issue_repaired": "superseded revision is distinct from event withdrawal",
+    "runtime_admission": false
+  },
+  "source_sha256": {
+    "templates/biocatalyst_decision_desk.js": "dc4057de1f8c40a505d12a0c86e8b9b9bda36fa1972dfd0d22dc6305b8d02d70",
+    "templates/biocatalyst_decision_desk.css": "3851ced297ead697958b7abcf6fe7a535026629c37e95782e11a7e3adacf32c6",
+    "tests/test_biocatalyst_decision_desk.cjs": "fa5e77bd9d355447a709bee26ee19ac67af3ac2d99590a0ec6f6fea731f99ee9",
+    "tests/test_biocatalyst_decision_desk.py": "6472c451690433c3cb0ed8e86c924e02ee8b176efae720891fc460718f0e222f",
+    "tests/verify_biocatalyst_decision_desk.cjs": "6ab1ada9e26ccedd150555eb709ea3a04a5cbb384551ce9bc26fe216b13f86fa"
+  }
+}

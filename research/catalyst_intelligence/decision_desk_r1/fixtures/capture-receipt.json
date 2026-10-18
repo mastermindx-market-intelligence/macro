@@ -1,0 +1,72 @@
+{
+  "candidate_head": "ec5c2e2544576f20348c6eadf834fe3cefae8039",
+  "fixture_kind": "existing synthetic owner cut through actual API",
+  "capture_method": "TestClient; existing _app test auth override; fixed _wmn_now; _read_bundle projection fixture",
+  "source_admission": false,
+  "entitled_runtime_verified": false,
+  "responses": [
+    {
+      "file": "company-page.json",
+      "status": 200,
+      "sha256": "1ab14fc75b88dd0788c35518003dbbd9100a181e1d7a4600e6425d27a383fec4",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-upcoming-7.json",
+      "status": 200,
+      "sha256": "3aef0f41e124b99271d4a5af4f655ba04b48845378d9023de7b416bc0e9ebf81",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-upcoming-30.json",
+      "status": 200,
+      "sha256": "7b2009eb4188422d4f22ca98aaf70c63d98203ac3f97f8b17d410dbd805d310f",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-upcoming-90.json",
+      "status": 200,
+      "sha256": "1ab14fc75b88dd0788c35518003dbbd9100a181e1d7a4600e6425d27a383fec4",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-upcoming-180.json",
+      "status": 200,
+      "sha256": "b5e271f890a84a16d015d876c1cb593351124f0f1617ce5e429994d0e4c1168f",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-upcoming-365.json",
+      "status": 200,
+      "sha256": "25b9ec8c561290abd1431eb7dfcb4a291a3c6fd4aba33fb57a8fbb0ff5f8aa12",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-reconcile-None.json",
+      "status": 200,
+      "sha256": "eff501b842aef02800270450c95ad5f4cabf6ffd655b7610f1a55206d6c2b20c",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-history-None.json",
+      "status": 200,
+      "sha256": "826125c20f8a140c918b2a2130fa4060aa57323d1d800481f957021a9a1b2476",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "company-detail.json",
+      "status": 200,
+      "sha256": "5ed49201f05cb1fb11bce7a9f3431a4baf2aa582685a5572148c6fb08b7987e2",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    }
+  ]
+}
