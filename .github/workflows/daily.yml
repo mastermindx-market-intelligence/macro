@@ -4510,6 +4510,19 @@ jobs:
           else
             echo "::warning::price_pressure R2 publish SKIPPED (restore=$PP_RESTORE build=$PP_BUILD) — a failed restore or build must never overwrite the canonical ledger"
           fi
+      - name: Dark Flow dated index (existing raw-price mirror; display only)
+        # Shares FINRA + membership + unadjusted prices already owned above.
+        # Never ingests, creates a second scheduler, or changes risk/alpha scores.
+        # The existing nightly engine alone records first-observed evidence.
+        timeout-minutes: 4
+        run: |
+          rc=0
+          python -m scripts.build_darkflow_index --record-observation || rc=$?
+          if [ "$rc" -eq 2 ]; then
+            echo "::warning::Dark Flow retained its last dated publication; required inputs unavailable"
+          elif [ "$rc" -ne 0 ]; then
+            exit "$rc"
+          fi
       - name: Entry Radar nightly reconcile (W5 forward evidence)
         # The SOLE durable writer of data/entry_radar/** (W5 prereg §8,
         # research/live_entry_radar/W5_FORWARD_EVIDENCE_PREREG.md). The W4

@@ -1,0 +1,89 @@
+{# One display-only consumer, shared by Macro and the existing Dark Pool Desk. #}
+{% macro df_label(en, zh) -%}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{%- endmacro %}
+<section id="dark-flow" class="df-panel {{ 'df-compact' if df_compact|default(false) else 'df-full' }}" data-darkflow data-source="darkflow_latest.json" aria-labelledby="df-title">
+  <header class="df-header">
+    <div>
+      <div class="df-eyebrow">{{ df_label('MARKET INTERNALS / OFF-EXCHANGE', '市场内部结构 / 场外交易') }}</div>
+      <h2 id="df-title">{{ df_label('Dark Flow', '场外交易透视') }}</h2>
+      <p>{{ df_label('An independent DIX-style reading. Trading composition, not investor intent.', '独立计算的 DIX 类指标。反映成交构成，不代表投资者意图。') }}</p>
+    </div>
+    <div class="df-actions">
+      <span class="df-universe">S&amp;P 500</span>
+      {% if df_compact|default(false) %}<a class="df-button" href="darkpool.html#dark-flow">{{ df_label('Open desk', '打开工作台') }} <span aria-hidden="true">↗</span></a>{% endif %}
+    </div>
+  </header>
+  <p class="df-status" data-df="status" role="status" aria-live="polite">{{ df_label('Loading the latest dated observation…', '正在读取最新交易日的观测…') }}</p>
+  <button class="df-button" data-df="retry" type="button" hidden>{{ df_label('Retry data', '重新读取') }}</button>
+  <div data-df="body" hidden>
+    <div class="df-overview">
+      <div class="df-reading">
+        <div class="df-eyebrow">{{ df_label('SHORT-MARKED SHARE', '卖空标记成交占比') }} <time data-df="asof"></time></div>
+        <div class="df-value"><span data-df="value">—</span><span class="df-percent">%</span></div>
+        <div class="df-deltas"><span><b data-df="change1">—</b> {{ df_label('pp / 1d', '百分点 / 1日') }}</span><span><b data-df="change5">—</b> {{ df_label('pp / 5d', '百分点 / 5日') }}</span></div>
+        <p class="df-muted" data-df="coverage"></p>
+        <p class="df-muted df-small">{{ df_label('Dollar-weighted, not market-cap weighted. High does not automatically mean bullish.', '按成交金额加权，而非市值加权。数值较高不自动等于看涨。') }}</p>
+      </div>
+      <div class="df-spark-box">
+        <div class="df-chart-heading"><h3>{{ df_label('Recent composition', '近期成交构成') }}</h3><span class="df-muted">{{ df_label('20 sessions', '20个交易日') }}</span></div>
+        <div data-df="spark" class="df-spark"></div>
+        <p class="df-muted df-small">{{ df_label('Missing sessions remain gaps. This is not net buying or net selling.', '缺失交易日保留为空白。这不是净买入或净卖出。') }}</p>
+      </div>
+    </div>
+    <div class="df-facts">
+      <div><span>{{ df_label('Historical percentile', '历史分位') }}</span><strong data-df="percentile">—</strong><small data-df="percentile-note"></small></div>
+      <div><span>{{ df_label('Names with a rising ratio', '占比上升的成分股') }}</span><strong data-df="breadth">—</strong><small>{{ df_label('Common names · 5 sessions · not price breadth', '共同成分股 · 5日 · 非价格广度') }}</small></div>
+      <div><span>{{ df_label('SPY price move', 'SPY 价格变动') }}</span><strong data-df="spy">—</strong><small>{{ df_label('Same five-session window · separate observation', '相同5日窗口 · 独立观测') }}</small></div>
+      <div><span>{{ df_label('Five-session average', '5日平均占比') }}</span><strong data-df="average">—</strong><small>{{ df_label('Not a forecast or a trading threshold', '不是预测或交易阈值') }}</small></div>
+    </div>
+    <p class="df-observed-read" data-df="observed-read"></p>
+    <details class="df-explore" data-df="explore"{% if not df_compact|default(false) %} open{% endif %}>
+      <summary>{{ df_label('Explore sectors, history and drivers', '查看行业、历史与变动来源') }} <span aria-hidden="true">↗</span></summary>
+      <div class="df-toolbar">
+        <label>{{ df_label('Series', '序列') }} <select data-df="sector" aria-label="Series / 序列"><option value="__market__">S&amp;P 500</option></select></label>
+        <label>{{ df_label('Sessions', '交易日') }} <select data-df="range" aria-label="Sessions / 交易日"><option value="63">63</option><option value="126">126</option><option value="252" selected>252</option></select></label>
+        <button class="df-button" data-df="history-retry" type="button" hidden>{{ df_label('Retry history', '重新读取历史') }}</button>
+      </div>
+      <p class="df-muted" data-df="history-status" role="status"></p>
+      <div data-df="history-chart" class="df-history-chart"></div>
+      <p class="df-muted df-small">{{ df_label('Reconstructed source vintage. Sector history uses current classifications; it is not a point-in-time investment backtest.', '按本次数据版本重建。行业历史使用当前分类，不是时点投资回测。') }}</p>
+      <div class="df-two-col">
+        <div>
+          <h3>{{ df_label('Sector composition', '行业成交构成') }}</h3>
+          <p class="df-muted df-small">{{ df_label('Select a sector to inspect its history. Coverage is by member count.', '选择行业查看历史。覆盖率按成分股数量计算。') }}</p>
+          <div class="df-table-scroll"><table class="df-table"><thead><tr><th>{{ df_label('Sector', '行业') }}</th><th>{{ df_label('Ratio', '占比') }}</th><th>{{ df_label('5d Δ', '5日变动') }}</th><th>{{ df_label('Coverage', '覆盖率') }}</th></tr></thead><tbody data-df="sectors"></tbody></table></div>
+        </div>
+        <div>
+          <h3>{{ df_label('What changed the index?', '哪些因素改变了指数？') }}</h3>
+          <p class="df-muted df-small">{{ df_label('Exact five-session attribution. A change in trading weights is not a capital-flow estimate.', '5日变动的精确分解。成交权重变化并非资金流估算。') }}</p>
+          <div class="df-attribution" data-df="attribution"></div>
+          <h4>{{ df_label('Largest contributions', '最大变动贡献') }}</h4>
+          <div class="df-table-scroll"><table class="df-table"><thead><tr><th>{{ df_label('Name', '股票') }}</th><th>{{ df_label('Ratio effect', '占比效应') }}</th><th>{{ df_label('Weight effect', '权重效应') }}</th><th>{{ df_label('Total pp', '总百分点') }}</th></tr></thead><tbody data-df="drivers"></tbody></table></div>
+        </div>
+      </div>
+      <section class="df-comparison" aria-labelledby="df-comparison-title">
+        <h3 id="df-comparison-title">{{ df_label('Is the trajectory changing?', '走势是否正在转变？') }}</h3>
+        <div class="df-facts df-dynamics">
+          <div><span>{{ df_label('Ratio velocity · 3 sessions', '占比速度 · 3个交易日') }}</span><strong data-df="velocity">—</strong><small>{{ df_label('Percentage points per session', '每个交易日的百分点变化') }}</small></div>
+          <div><span>{{ df_label('Ratio acceleration · 3 sessions', '占比加速度 · 3个交易日') }}</span><strong data-df="acceleration">—</strong><small>{{ df_label('Change in velocity per session', '每个交易日的速度变化') }}</small></div>
+        </div>
+        <p class="df-muted df-small">{{ df_label('A falling ratio with positive acceleration is falling more slowly; that is not yet a price reversal. Compare with the independently dated volatility observations below.', '占比下降而加速度为正，意味着下降速度减缓，并不等于价格已反转。请结合下方独立标明日期的波动率观测。') }}</p>
+        <div class="df-volatility" data-df="volatility" aria-live="polite"></div>
+        <p class="df-muted df-small" data-df="volatility-status"></p>
+        <button class="df-button" type="button" data-df="volatility-retry" hidden>{{ df_label('Retry volatility context', '重新读取波动率背景') }}</button>
+        <p class="df-muted df-small">{{ df_label('Read with price recovery, broad participation and credit conditions in Macro Risk Radar. These are separate observations, not an averaged score or a confirmed pivot.', '结合宏观风险雷达中的价格修复、广泛参与和信用状况研判。这些是独立观测，不是平均评分或已确认的拐点。') }}</p>
+      </section>
+      <details class="df-names"><summary>{{ df_label('Find a constituent reading', '查询成分股读数') }}</summary><label class="df-search">{{ df_label('Ticker', '代码') }} <input data-df="search" type="search" maxlength="16" autocomplete="off" placeholder="AAPL" aria-label="Ticker / 代码"></label><div class="df-name-results" data-df="names" aria-live="polite"></div></details>
+    </details>
+  </div>
+  <details class="df-method">
+    <summary>{{ df_label('Methodology, source clocks and limits', '计算方法、数据时间与局限') }}</summary>
+    <p><code>100 × Σ(raw close × short-marked volume) / Σ(raw close × FINRA volume)</code></p>
+    <p>{{ df_label('FINRA ShortVolume already includes ShortExemptVolume; it is counted once. Reported off-exchange activity includes ATS venues and non-ATS internalization. It is not investor short interest, institutional ownership, aggressor direction, or net demand.', 'FINRA 卖空成交量已包含豁免卖空成交量，只计一次。场外交易包含 ATS 场所与非 ATS 内部撮合，并非投资者卖空持仓、机构持仓、主动买卖方向或净需求。') }}</p>
+    <p>{{ df_label('The market reading requires at least 400 observations and 90% member-count coverage; sectors require five observations and 80%. Exact-date raw prices are required. No stale-price substitution. Historical percentiles compare only with prior observations, never with future data.', '市场读数要求至少400条观测及90%成分股覆盖；行业要求至少5条观测及80%覆盖。必须使用同日未复权价格，不以过期价格补齐。历史分位仅与此前观测比较。') }}</p>
+    <p>{{ df_label('Historical membership is combined with the existing observed-membership ledger. Sector classifications are current, not historical. Earlier source revisions and the known June 14–July 10, 2026 membership-accrual gap limit historical research. This display has no score, alert, allocation or trade authority.', '历史成分股与现有观测记录合并使用。行业分类为当前分类，而非历史分类。原始数据修订及2026年6月14日至7月10日的成分股记录缺口限制了历史研究。本展示不具有评分、预警、配置或交易权限。') }}</p>
+    <p data-df="sources" class="df-muted"></p>
+    <p class="df-source-links"><a href="https://www.finra.org/finra-data/browse-catalog/short-sale-volume-data" target="_blank" rel="noopener noreferrer">FINRA</a><a href="https://squeezemetrics.com/monitor/docs" target="_blank" rel="noopener noreferrer">{{ df_label('Original DIX methodology', '原版 DIX 方法') }}</a></p>
+    <p class="df-muted df-small">{{ df_label('Independently implemented; not SqueezeMetrics data and not verified as an exact reproduction of its published index.', '独立实现；未使用 SqueezeMetrics 数据，也未验证与其发布指数完全一致。') }}</p>
+  </details>
+  <noscript><p>{{ df_label('Enable JavaScript to inspect dated readings. The methodology remains available above.', '启用 JavaScript 查看交易日读数。上方计算方法仍可阅读。') }}</p></noscript>
+</section>

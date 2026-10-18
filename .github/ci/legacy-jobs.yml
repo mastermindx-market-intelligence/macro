@@ -33247,3 +33247,43 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: short-pressure availability guard
         run: python -m pytest tests/test_c19_wp24_short_pressure_availability.py -q -p no:cacheprovider
+
+  darkflow-index:
+    if: ${{ false }}
+    gate: code
+    # One existing CI-pack job owns deterministic arithmetic and the real shared
+    # component. No production writes, network market-data fetch or signal test.
+    timeout-minutes: 10
+    paths:
+      - "engine/darkflow*.py"
+      - "engine/ledger_lane.py"
+      - "collectors/base.py"
+      - "collectors/finra_short_volume.py"
+      - "lib/config.py"
+      - "lib/store.py"
+      - "lib/nyse_calendar.py"
+      - "lib/massive_ticker.py"
+      - "scripts/build_darkflow_index.py"
+      - "scripts/backfill_finra_short_volume.py"
+      - "tests/test_darkflow*.py"
+      - "tests/darkflow_browser.py"
+      - "templates/_darkflow_panel.html.j2"
+      - "templates/darkflow.*"
+      - "templates/dashboard.html.j2"
+      - "templates/darkpool.html.j2"
+      - "site/darkflow*.json"
+      - "site/basketdata/vol_weather.json"
+      - "config.yml"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: install bounded component dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml requests jinja2 playwright
+      - name: Dark Flow arithmetic, source snapshots, calendars and first-observation fences
+        run: python -m pytest tests/test_darkflow_index.py tests/test_darkflow_publish.py -q
+      - name: install component browser
+        run: python -m playwright install --with-deps chromium
+      - name: Dark Flow responsive interaction and typed-failure proof
+        run: python tests/darkflow_browser.py --source site --output /tmp/darkflow-browser
