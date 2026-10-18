@@ -2,7 +2,7 @@
  * current source resolution and rights admission. No browser financial join. */
 (function(global){
   'use strict';
-  var THEMES={golden_dome:['Golden Dome','金穹'],munitions_replenishment:['Munitions replenishment','弹药补充'],space:['Space','太空'],nato_fms_demand:['NATO and FMS demand','北约与对外军售需求'],fleet_sustainment_upgrades:['Fleet sustainment and upgrades','机队维护与升级'],shipbuilding:['Shipbuilding','造船']};
+  var THEMES={golden_dome:['Golden Dome','金穹'],munitions_replenishment:['Munitions replenishment','弹药补充'],space:['Space','太空'],nato_fms_demand:['NATO and FMS demand','北约与对外军售需求'],fleet_sustainment_upgrades:['Fleet sustainment and upgrades','装备维护与升级'],shipbuilding:['Shipbuilding','造船']};
   var RAILS={funding_stage:['Funding stage','资金阶段'],exposure:['Company role','公司角色'],economics:['Company economics','公司收益'],market_context:['Market context','市场背景'],contrary_case:['Limits and contrary evidence','限制与相反证据'],next_event:['Next event or condition','下一事件或条件']};
   var STATES={supported:['Reviewed source context','已复核来源背景'],partial:['Partial source coverage','部分来源覆盖'],stale:['Last observed source context','最后观测来源背景'],unreviewed:['Evidence not qualified','证据尚未核验'],not_asserted:['Relationship not asserted','未认定关系'],projection_missing:['Source projection missing','缺少来源投影'],source_unavailable:['Source unavailable','来源不可用'],blocked:['Evidence held','证据暂缓']};
   var DOCUMENTS={allocation_plan:['Allocation plan','分配计划'],congressional_notification:['Congressional notification','国会通知'],alliance_policy:['Alliance policy commitment','联盟政策承诺']};
