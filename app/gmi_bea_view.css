@@ -16,3 +16,11 @@
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 
 @media(pointer:coarse){.icon-button{width:44px;height:44px}.year-select button,.secondary-button,.text-button,.primary-button{min-height:44px}}
+
+/* Additional retrospective regional comparison, never a trading signal. */
+.region-mode{display:inline-flex;gap:3px;align-items:center;padding:3px;margin:0 0 16px;border:1px solid var(--line);border-radius:9px;background:var(--panel-soft)}
+.region-mode button{padding:6px 12px;min-height:34px;border-radius:6px;background:transparent;font-size:11px;font-weight:650;color:var(--muted)}
+.region-mode button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent-strong);box-shadow:0 1px 3px #182c4214}
+.region-mode button:hover{color:var(--accent)}
+.region-shift{margin:18px 0 0;padding:11px 13px;border:1px solid var(--accent-line);border-radius:8px;background:var(--accent-soft);font-size:11px;color:var(--text);font-variant-numeric:tabular-nums}
+@media(max-width:620px){.region-mode{margin-bottom:14px}.region-mode button{min-height:44px;padding:8px 12px}.region-shift{font-size:10px;line-height:1.7}}

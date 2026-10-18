@@ -90,6 +90,7 @@ def test_actual_http_empty_state_is_responsive_and_source_free(chromium, client,
     page.goto(ORIGIN + VIEW, wait_until="networkidle")
     expect(page.locator("#bea-state-title")).to_have_text("Not yet available")
     expect(page.locator("#bea-data-deck")).to_be_hidden()
+    expect(page.locator("#bea-region-change")).to_be_hidden()
     expect(page.locator("#bea-code")).to_have_value("5241X")
     assert page.locator("html").get_attribute("data-theme") == theme
     assert page.evaluate("document.documentElement.scrollWidth<=innerWidth")
@@ -162,6 +163,56 @@ def test_nonpublic_preview_signed_geometry_keyboard_and_accessible_values(chromi
     capture(page, "after-SYNTHETIC-UNPUBLISHED-preview-" + theme + "-" + str(width))
     assert not errors, errors
     context.close()
+
+
+def test_nonpublic_regional_change_mode_is_signed_and_retrospective(chromium, client):
+    """Annual regional differences use the same May-2026 edition, never PIT."""
+    packet = signed_fixture()
+    page = chromium.new_page(viewport={"width": 1024, "height": 1000})
+    connect(page, client, component=True)
+    page.goto(ORIGIN + VIEW, wait_until="networkidle")
+    page.evaluate(
+        "p=>{module.exports.applyTheme(document,window);"
+        "module.exports.renderResearchPreview(document,p)}", packet)
+    expect(page.locator("#bea-region-level")).to_have_attribute("aria-pressed", "true")
+    page.locator("#bea-region-change").click()
+    expect(page.locator("#bea-region-change")).to_have_attribute("aria-pressed", "true")
+    expect(page.locator("#bea-region-level")).to_have_attribute("aria-pressed", "false")
+    expect(page.locator("#bea-negative-legend")).to_have_text("Decrease from prior year")
+    expect(page.locator("#bea-positive-legend")).to_have_text("Increase from prior year")
+    expect(page.locator("#bea-region-title")).to_have_text("Regional changes from 2023")
+    expect(page.locator("#bea-region-bars .bar-row")).to_have_count(7)
+    china = page.locator("#bea-region-bars .bar-row").nth(1)
+    expect(china.locator(".bar-value")).to_have_text("+834")
+    expect(china.locator(".bar-fill")).to_have_attribute("data-sign", "positive")
+    expect(page.locator("#bea-region-shift")).to_contain_text("China")
+    expect(page.locator("#bea-region-shift")).to_contain_text("+834")
+    page.locator('#bea-years button[data-year="2020"]').click()
+    expect(page.locator("#bea-region-title")).to_have_text("Regional changes from 2019")
+    china = page.locator("#bea-region-bars .bar-row").nth(1)
+    expect(china.locator(".bar-value")).to_have_text("−1,529")
+    expect(china.locator(".bar-fill")).to_have_attribute("data-sign", "negative")
+    page.locator("#bea-preview-notice").evaluate(
+        "e=>e.textContent='SYNTHETIC TEST FIXTURE · UNPUBLISHED REGIONAL CHANGE · NOT REAL BEA DATA'")
+    capture(page, "after-SYNTHETIC-unpublished-regional-change")
+    assert china.locator(".bar-fill").evaluate(
+        "e=>e.getBoundingClientRect().right<="
+        "e.parentElement.getBoundingClientRect().left+"
+        "e.parentElement.getBoundingClientRect().width/2+1")
+    page.locator('#bea-years button[data-year="2017"]').click()
+    expect(page.locator("#bea-region-title")).to_have_text("Regional change not available")
+    expect(page.locator("#bea-region-bars .bar-row")).to_have_count(0)
+    expect(page.locator("#bea-region-shift")).to_contain_text("No previous accounting year")
+    page.locator("#bea-region-level").click()
+    expect(page.locator("#bea-region-title")).to_have_text("Regional import allocation")
+    expect(page.locator("#bea-negative-legend")).to_have_text("Negative adjustment")
+    expect(page.locator("#bea-positive-legend")).to_have_text("Positive allocation")
+    expect(page.locator("#bea-region-bars .bar-row")).to_have_count(7)
+    canada = page.locator("#bea-region-bars .bar-row").first
+    expect(canada.locator(".bar-value")).to_have_text("−139")
+    assert "2026" in page.locator("#bea-region-note").inner_text()
+    expect(page.locator("#bea-preview-notice")).to_contain_text("UNPUBLISHED")
+    page.close()
 
 
 @pytest.mark.parametrize("status,payload,title", [

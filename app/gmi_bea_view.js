@@ -143,7 +143,10 @@
     const years = byId("bea-years"); const history = byId("bea-trend");
     years.replaceChildren(); history.replaceChildren(); byId("bea-values-body").replaceChildren();
     const height = scale(packet.annual_descriptive.map(r => r.world_import_million_USD), 59);
+    let activeYear = 2024;
+    let regionalMode = "amounts";
     function paint(year, moveFocus) {
+      activeYear = year;
       const row = packet.annual_descriptive[year - 2017];
       byId("bea-year-name").textContent = packet.industry_names_by_accounting_year[String(year)];
       byId("bea-world").textContent = fmt(row.world_import_million_USD);
@@ -153,14 +156,45 @@
       for (const group of [years, history]) for (const button of group.querySelectorAll("button")) { const active = Number(button.dataset.year) === year; button.setAttribute("aria-pressed", String(active)); button.tabIndex = active ? 0 : -1; }
       if (moveFocus) moveFocus.querySelector('button[data-year="' + year + '"]').focus();
       const bars = byId("bea-region-bars"); bars.replaceChildren();
-      const values = CONTRACT.regions.map(r => row[r + "_import_million_USD"]); const width = scale(values, 48);
-      CONTRACT.regions.forEach((region, index) => {
-        const value = values[index], r = element(doc, "div", "bar-row");
-        const track = element(doc, "span", "track"), bar = element(doc, "span", "bar-fill");
-        track.setAttribute("aria-hidden", "true"); bar.dataset.sign = value < 0 ? "negative" : value > 0 ? "positive" : "zero";
-        bar.style.setProperty("--size", width(value) + "%"); track.append(bar);
-        r.append(element(doc, "span", "bar-title", LABELS[index]), track, element(doc, "span", "bar-value", signed(value))); bars.append(r);
-      });
+      const changes = regionalMode === "changes";
+      byId("bea-region-level").setAttribute("aria-pressed", String(!changes));
+      byId("bea-region-change").setAttribute("aria-pressed", String(changes));
+      byId("bea-negative-legend").textContent = changes ? "Decrease from prior year" : "Negative adjustment";
+      byId("bea-positive-legend").textContent = changes ? "Increase from prior year" : "Positive allocation";
+      const shift = byId("bea-region-shift");
+      shift.hidden = true;
+      shift.textContent = "";
+      byId("bea-region-title").textContent = changes ? (year === 2017
+        ? "Regional change not available" : "Regional changes from " + (year - 1)) : "Regional import allocation";
+      byId("bea-region-note").textContent = changes
+        ? "Signed differences from the prior accounting year, calculated retrospectively within the May 2026 edition—not observed real-time flows or investment signals."
+        : "Bars share a zero baseline. Negative values are accounting adjustments—not negative trade volumes. Same May 2026 vintage.";
+      const source = changes ? row.year_over_year_change_million_USD : row;
+      if (source === null) {
+        shift.hidden = false;
+        shift.textContent = "No previous accounting year is available for 2017; no annual change is calculated.";
+      } else {
+        const values = CONTRACT.regions.map(r => source[r + "_import_million_USD"]);
+        const width = scale(values, 48);
+        CONTRACT.regions.forEach((region, index) => {
+          const value = values[index], r = element(doc, "div", "bar-row");
+          const track = element(doc, "span", "track"), bar = element(doc, "span", "bar-fill");
+          track.setAttribute("aria-hidden", "true"); bar.dataset.sign = value < 0 ? "negative" : value > 0 ? "positive" : "zero";
+          bar.style.setProperty("--size", width(value) + "%"); track.append(bar);
+          r.append(element(doc, "span", "bar-title", LABELS[index]), track, element(doc, "span", "bar-value", signed(value))); bars.append(r);
+        });
+        if (changes) {
+          const largest = Math.max(...values.map(v => Math.abs(v)));
+          const ties = values.reduce((names, value, index) => {
+            if (Math.abs(value) === largest) names.push(LABELS[index]);
+            return names;
+          }, []);
+          shift.hidden = false;
+          shift.textContent = largest === 0 ? "No reported regional change from " + (year - 1) + "."
+            : ties.length > 1 ? "Equal largest changes: " + ties.join(", ") + "."
+            : "Largest reported change: " + ties[0] + " " + signed(values[LABELS.indexOf(ties[0])]) + " USD millions. This describes accounting, not capital rotation.";
+        }
+      }
       const quality = byId("bea-quality"); quality.replaceChildren();
       for (const [value, caption] of [[row.quality.nonpositive_world_commodities,"Commodities with zero or negative world imports"],[row.quality.negative_region_adjustment_commodities,"Commodities with negative regional adjustments"],[signed(row.region_rounding_difference_million_USD),"USD millions rounding residual · " + row.quality.rounding_residual_commodities + " flagged commodities"]]) {
         const card = element(doc, "div", "quality-item"); card.append(element(doc, "strong", "", value), element(doc, "span", "", caption)); quality.append(card);
@@ -186,6 +220,13 @@
       i = e.key === "Home" ? 0 : e.key === "End" ? 7 : (i + (e.key === "ArrowRight" ? 1 : -1) + 8) % 8;
       paint(CONTRACT.years[i], group);
     });
+    for (const [buttonId, mode] of [["bea-region-level", "amounts"], ["bea-region-change", "changes"]]) {
+      byId(buttonId).addEventListener("click", () => {
+        if (regionalMode === mode) return;
+        regionalMode = mode;
+        paint(activeYear);
+      });
+    }
     paint(2024);
   }
   async function jsonBody(response) {

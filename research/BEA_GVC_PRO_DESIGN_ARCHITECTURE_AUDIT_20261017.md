@@ -104,3 +104,50 @@ Validation uses the incumbent `scripts.ci_scope_dependencies.write_tracked_path_
 The original BEA source-axis/read denial, local-only native diagnostic push hold, source registry proposal state and missing genuine browser/API data generation are unchanged. No application behavior, production configuration, source bytes or trade/forecast authority is modified by this correction.
 
 The four canonical CI gates also pass under that exact full-Git-tree inventory: declared curated set, complete import closure, ordinary-code packing, and ancestor census (**4 passed,194 deselected**). This proof includes tracked site-path existence missing from the physical sparse checkout. All reviewed application and engine blobs remain byte-identical to the independently passed semantic head.
+
+
+## Regional annual-change comparison — October 17 continuation
+
+A bounded additive research interaction now lets an authorized future user switch the
+same seven signed regional-accounting bars between reported annual amounts
+and changes from the prior accounting year. It consumes the already
+validated year_over_year_change_million_USD from the same May-2026 vintage:
+no new factor, forecast, provider source, rank or authority is created.
+The source API and live browser still refuse unadmitted BEA L0/L1 data.
+
+* In Amounts mode, negative bars are publisher accounting adjustments;
+  in Annual change mode, negative bars correctly mean a decrease
+  relative to the preceding accounting year. The legend, heading and
+  method note update with the measurement, rather than confusing one
+  interpretation with the other. Both share an exact zero baseline,
+  visually preserve signs, and show source units in USD millions.
+* For 2017 the prior accounting year is unavailable: the annual-change
+  mode renders no bars and explains why, not seven fabricated zeros.
+  For 2018–2024 it reports the signed difference from the preceding year,
+  highlights only the largest absolute accounting change among the
+  seven regions (with ties and all-zero handled explicitly), and states
+  that this is not observed capital rotation or an investment signal.
+* The mode selector uses native accessible buttons with aria-pressed
+  state and a mobile touch target. It updates with the existing year
+  selector, keeping the 2026 publication-vintage meaning intact.
+
+A new test was intentionally RED before the controls existed, then
+passed with physical Chromium: it checks +834 reported China change
+for 2024 in the wholly synthetic fixture, −1,529 for 2020,
+negative-left baseline, the missing 2017 comparison and return to
+signed amount mode. It also asserts the nonpublication banner stays
+visible; normal production/503 returns keep the whole component hidden.
+These values are SYNTHETIC test inputs, never real BEA data,
+source quality, portfolio signals or publication proof.
+
+The review and accepted app backend are otherwise unchanged.
+
+### Verification of the additional regional-change research interaction
+
+On this additive source head, **87 GMI/source/HTTP/physical-browser tests passed**,
+including the new change/amount mode regression and the prior authenticated
+empty-state/browser parity suites. The regression first failed on the old
+interface (controls absent), then passed after implementation. JS syntax and
+diff whitespace checks also passed. The synthetic change screenshot is
+retained alongside the earlier before/after proof. This is source-level
+component verification, not actual data admission or production browser proof.
