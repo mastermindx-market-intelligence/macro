@@ -292,6 +292,10 @@
       view_id: text(value.view_id, 80),
       event_id: eventId,
       type: type,
+      notification_kind: ['new_observation', 'correction'].indexOf(value.notification_kind) >= 0 ? value.notification_kind : 'unclassified',
+      event_contract: /^government_procurement_event\.v[12]$/.test(value.event_contract || '') ? value.event_contract : null,
+      record_id: text(value.record_id, MAX_EVENT_ID_LENGTH) || null,
+      event_version: Number.isSafeInteger(value.event_version) && value.event_version >= 1 ? value.event_version : null,
       kind: text(value.kind, 40),
       title: text(value.title, 500),
       observed_at: text(value.observed_at, 80) || null,
@@ -398,7 +402,13 @@
     return event.kind === alertType;
   }
 
-  function alertCopy(type) {
+  function alertCopy(type, notificationKind) {
+    if (notificationKind === 'correction') {
+      return {
+        message: 'Correction to a previously observed matching record.',
+        warning: 'A prior observation was revised; this is not a new award, obligation or issuer revenue.'
+      };
+    }
     if (type === 'opportunity') {
       return { message: 'New matching procurement opportunity observed locally.', warning: null };
     }
@@ -646,10 +656,14 @@
         rows.forEach(function (event) {
           var eventId = text(event.event_id, MAX_EVENT_ID_LENGTH);
           if (!eventId || seen[eventId]) return;
-          var copyText = alertCopy(alert.type);
+          var notificationKind = (event.change || {}).is_correction === true ? 'correction' : 'new_observation';
+          var copyText = alertCopy(alert.type, notificationKind);
           var item = {
             id: makeId('gri'), alert_id: alert.id, view_id: alert.view_id, event_id: eventId,
-            type: alert.type, kind: text(event.kind, 40),
+            type: alert.type, kind: text(event.kind, 40), notification_kind: notificationKind,
+            event_contract: /^government_procurement_event\.v[12]$/.test(event.contract || '') ? event.contract : null,
+            record_id: text(event.record_id, MAX_EVENT_ID_LENGTH) || null,
+            event_version: Number.isSafeInteger(event.version) && event.version >= 1 ? event.version : null,
             title: text(event.title_original || event.title_zh, 500),
             observed_at: text(((event.change || {}).known_at), 80) || null,
             workspace_bundle_id: text(workspace.bundle_id, 100) || null,

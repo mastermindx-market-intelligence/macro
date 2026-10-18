@@ -470,3 +470,81 @@ def test_csv_filename_retains_day_or_undated(tmp_path: Path, as_of: str | None, 
     workspace["as_of"]=as_of
     out=_run_node(tmp_path,"const app=make(); process.stdout.write(JSON.stringify(app.buildCsvExport("+json.dumps(workspace)+",{mode:'changes'}))); ")
     assert out["filename"].startswith("government-revenue-"+expected+"-")
+
+
+@needs_node
+def test_local_correction_receipt_keeps_native_event_revision_and_does_not_repeat(tmp_path: Path) -> None:
+    original = _event("govws-original", "award_change")
+    corrected = _event("govws-corrected", "award_change")
+    corrected.update(record_id=original["record_id"], version=2)
+    corrected["change"].update(is_correction=True, type="action_corrected", known_at="2026-08-02T10:00:00Z")
+    new = _event("govws-new", "award_change")
+    out = _run_node(tmp_path, """
+      const app=make();
+      const view=app.createView({name:'Defense monitor',filters:{mode:'changes',ticker:'LMT'}}).view;
+      app.createAlert({view_id:view.id,type:'award_change'});
+      app.reconcile(BASE,{complete:true,bundle_matched:true});
+      const corrected=app.reconcile(NEXT,{complete:true,bundle_matched:true});
+      const repeated=app.reconcile(NEXT,{complete:true,bundle_matched:true});
+      const restored=make();
+      process.stdout.write(JSON.stringify({corrected,repeated,inbox:restored.listInbox()}));
+    """.replace("BASE", json.dumps(_workspace(original))).replace("NEXT", json.dumps(_workspace(original, corrected, new))))
+    receipts = {row["event_id"]: row for row in out["corrected"]["alerts"]}
+    correction = receipts["govws-corrected"]
+    assert correction["notification_kind"] == "correction"
+    assert correction["event_contract"] == "government_procurement_event.v2"
+    assert correction["record_id"] == original["record_id"]
+    assert correction["event_version"] == 2
+    assert "correct" in correction["message"].lower()
+    assert receipts["govws-new"]["notification_kind"] == "new_observation"
+    assert out["repeated"]["alerts"] == []
+    restored = {row["event_id"]: row for row in out["inbox"]}
+    assert restored["govws-corrected"] == correction
+
+
+@needs_node
+def test_local_alert_inbox_distinguishes_correction_new_and_unclassified_history_in_both_languages(tmp_path: Path) -> None:
+    original = _event("govws-old", "award_change")
+    correction = _event("govws-fix", "award_change")
+    correction["change"]["is_correction"] = True
+    script = r"""
+      const fs=require('fs'),values={},nodes={},listeners={};
+      const storage={getItem:k=>values[k]||null,setItem:(k,v)=>{values[k]=String(v)}};
+      const document={activeElement:null};global.window={localStorage:storage,document};
+      eval(fs.readFileSync(CORE,'utf8'));
+      const stateOwner=window.createGovernmentRevenueBriefcase({storage,ownerId:'test-user'});
+      const v=stateOwner.createView({name:'Defense',filters:{mode:'changes'}}).view;
+      const a=stateOwner.createAlert({view_id:v.id,type:'award_change'}).alert;
+      stateOwner.reconcile(BASE,{complete:true,bundle_matched:true});
+      stateOwner.reconcile(NEXT,{complete:true,bundle_matched:true});
+      const key='mastermind.government_revenue.briefcase.v1.user.test-user';
+      const state=JSON.parse(values[key]);
+      state.inbox.push({id:'legacy-alert',alert_id:a.id,view_id:v.id,event_id:'legacy',type:'award_change',kind:'award_change',message:'Old stored prose'});
+      values[key]=JSON.stringify(state);
+      function node(id){return nodes[id]||(nodes[id]={value:'',innerHTML:'',textContent:'',disabled:false,className:'',addEventListener:(kind,fn)=>listeners[id+':'+kind]=fn,focus(){}})}
+      function esc(x){return String(x||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+      eval(fs.readFileSync(UI,'utf8'));let lang='en',drawer;
+      window.mountGovernmentRevenueBriefcaseUI({get:node,tr:(en,zh)=>lang==='zh'?zh:en,esc,text:x=>String(x||''),onOwnerChange:cb=>cb('test-user'),openDrawer:value=>drawer=value});
+      listeners['localInbox:click']();const en=drawer.html;
+      lang='zh';listeners['localInbox:click']();
+      const restored=window.createGovernmentRevenueBriefcase({storage,ownerId:'test-user'}).listInbox();
+      process.stdout.write(JSON.stringify({en,zh:drawer.html,legacy:restored.find(x=>x.event_id==='legacy')}));
+    """.replace("CORE", json.dumps(str(MODULE))).replace("fs.readFileSync(UI,", "fs.readFileSync(" + json.dumps(str(ROOT / "templates/government-revenue-briefcase-ui.js")) + ",").replace("BASE", json.dumps(_workspace(original))).replace("NEXT", json.dumps(_workspace(original, correction, _event("govws-new-observation", "award_change"))))
+    path = tmp_path / "correction_inbox.js"
+    path.write_text(script)
+    result = subprocess.run(["node", str(path)], capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stderr
+    out = json.loads(result.stdout)
+    assert "Correction to a previously observed matching record" in out["en"]
+    assert "New matching award or action change" in out["en"]
+    assert "whether this was new information or a correction was not retained" in out["en"]
+    assert "not a new award, obligation or issuer revenue" in out["en"]
+    assert "匹配记录发生修正" in out["zh"]
+    assert "新的授标或行动变化" in out["zh"]
+    assert "未保留其属于新信息还是修正的分类" in out["zh"]
+    assert "Correction to a previously observed" not in out["zh"]
+    assert "匹配记录发生修正" not in out["en"]
+    assert out["legacy"]["notification_kind"] == "unclassified"
+    assert out["legacy"]["event_contract"] is None
+    assert out["legacy"]["event_version"] is None
+    assert out["legacy"]["record_id"] is None

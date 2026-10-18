@@ -28,7 +28,16 @@
        translated at write time would freeze the language it was written in. Copy is
        resolved HERE, at render time, from the stored type; the strings the state layer
        persists stay untouched and only stand in for a type this build does not know. */
-    function alertText(item){var byType={opportunity:{message:tr('New matching opportunity.','发现新的匹配机会。'),warning:null},award_change:{message:tr('New matching award or action change.','发现新的授标或行动变化。'),warning:null},recompete:{message:tr('New matching expiry watch.','发现新的到期观察。'),warning:tr('Worked out from contract dates — not an official recompete date or solicitation.','根据合同日期推算——非官方重新竞标日期或招标公告。')}}[item.type];return byType||{message:text(item.message),warning:item.warning||null}}
+    function alertText(item){
+      if(item.notification_kind==='correction')return{
+        message:tr('Correction to a previously observed matching record.','先前已观测的匹配记录发生修正。'),
+        warning:tr('A prior observation was revised; this is not a new award, obligation or issuer revenue.','先前观测已修订；这不代表新增授标、义务额或发行人收入。')
+      };
+      if(item.notification_kind!=='new_observation')return{
+        message:tr('Previously saved local alert; whether this was new information or a correction was not retained.','历史本地提醒：未保留其属于新信息还是修正的分类。'),
+        warning:item.type==='recompete'?tr('Worked out from contract dates — not an official recompete date or solicitation.','根据合同日期推算——非官方重新竞标日期或招标公告。'):null
+      };
+      var byType={opportunity:{message:tr('New matching opportunity.','发现新的匹配机会。'),warning:null},award_change:{message:tr('New matching award or action change.','发现新的授标或行动变化。'),warning:null},recompete:{message:tr('New matching expiry watch.','发现新的到期观察。'),warning:tr('Worked out from contract dates — not an official recompete date or solicitation.','根据合同日期推算——非官方重新竞标日期或招标公告。')}}[item.type];return byType||{message:text(item.message),warning:item.warning||null}}
     function selectedAlert(){if(!briefcase||!selectedView)return null;var type=get('alertType').value;return briefcase.listAlerts().find(function(row){return row.view_id===selectedView&&row.type===type})||null}
 
     function render(message,warn){
