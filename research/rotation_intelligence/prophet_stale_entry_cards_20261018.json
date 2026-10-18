@@ -2,7 +2,7 @@
   "schema": "mastermind.rotation_intelligence.prophet_stale_entry_static_receipt.v1",
   "operation": "rotation-intelligence-architecture-20261012",
   "original_carrier": "https://github.com/mastermindx-market-intelligence/macro/pull/9035",
-  "observed_at_utc": "2026-10-18T04:48:00Z",
+  "observed_at_utc": null,
   "scope": "Immutable source-built artifact and template route only; not a served, authenticated, refreshed, or B4-admitted consumer result. No producer/source/writer/workspace/browser/runtime mutation.",
   "source": {
     "macro_merge_commit": "4f52d22596545cbd67b5143e188baf5660237024",
@@ -123,5 +123,7 @@
     "Does not supersede accepted #9566 compact source release",
     "Does not prove actual latest served production page has changed",
     "No model-selected trade or customer recommendation"
-  ]
+  ],
+  "observed_date_utc": "2026-10-18",
+  "observed_clock_note": "This artifact was inspected in the current October18 continuation; an exact UTC observation clock was not captured. Source commit and generation emit clocks are separately pinned."
 }
