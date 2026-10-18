@@ -17,7 +17,7 @@ changed:
     what: "Released the existing source/evidence record as part of the same three-file PR9518 squash."
   -
     path: "agentos/handoffs/ROTATION-INTELLIGENCE-META-CEO-2026-10-17-HANDOFF.md"
-    what: "Preserve the original mission and effects, replace superseded Draft status, add current milestone and schema-valid handoff frontmatter."
+    what: "Preserve the original mission/effects, record the completed #9518 release and current production baseline, and supersede #9495 restoration routing with the incumbent #9566 split and exact blocking review."
   -
     path: "agentos/handoffs/ROTATION-INTELLIGENCE-META-CEO-2026-10-12.md"
     what: "Add required schema metadata to the original historical handoff while retaining its full10364-character body verbatim."
@@ -26,6 +26,7 @@ prs:
   - 9518
   - 9484
   - 9495
+  - 9566
 verified:
   -
     claim: "PR9518 exact reviewed head merged ordinarily; all three landed blobs equal the reviewed candidate and observed main."
@@ -63,6 +64,18 @@ verified:
     claim: "The later committed production baseline still fails current-price freshness even though the board now includes Russell source members."
     command: "git show ca0700187e17fa73f459e83ce688b5c838cd316e:PATH; pandas.read_parquet(BytesIO(...)); JSON source-clock read; git log -1 COMMIT -- PATH; gh run list --workflow daily.yml --limit 3"
     result: "DIA through October 14; QQQ October 16; Russell breadth October 13. Board blob147edbca74fef91cbe0123f22275d6f5321e7418 as_of October 14 and gate_go=false; emit20:16:50Z; source roster complete with1356 Russell members, but price-panel majority October 7,198/3063 at October 16,7 sessions behind. No new natural scheduled run in the follow-up. Canonical return6243511974."
+  -
+    claim: "The incumbent assigned compact-card restoration to #9566 and kept #9495 DRAFT / NO MERGE."
+    command: "GitHub read #9495 comment6243339773, get_pr_info(9566), and exact source-file readbacks at7acf61d43af04dfc94dfc26bb4c6edcca1f3790d."
+    result: "#9566 open, not Draft, explicitly armed by its owner; head7acf61d43af04dfc94dfc26bb4c6edcca1f3790d. Three-file compact restoration. Earlier return6243396155 routing is explicitly superseded; source/B4/Plan findings retained."
+  -
+    claim: "#9566 has a confirmed introduced CI test-registration defect."
+    command: "Read run39080355224 jobs117535866201 and117539169266; parse semantic evidence; inspect exact-head .github/ci/legacy-jobs.yml."
+    result: "contract-delta1 introduced/0 inherited: tests/test_us_prophet_original_card_layout.py is named by no workflow run step. All12 packs success; selected semantic evidence clear,272 passed proofs,0 infrastructure findings. ci-gate fails enforcing the introduced contract defect. Existing washout-turn-organ Prophet source/lifecycle/presentation step is a candidate owning run registration; no new job/waiver needed."
+  -
+    claim: "Independent principal review returned a distinct source-inferred passive-overlay navigation defect on #9566."
+    command: "Read exact-head templates/_prophet_workspace.css.j2, _prophet_card.html.j2, site/us_stocks.html, site/assets/css/2fa86f96.css, stocktable.js and tier_preview.js; independent principal source judgment; GitHub review write/readback."
+    result: "Both entire pv-ov containers raised to z5 above separate pv-setup-stock-link z4 on article cards; passive verdict/price spans lie outside the anchor. ETSY/RSG/ENSG setup cards exist. Source inference, not browser reproduction. REQUEST_CHANGES review5560777128 at exact7acf head read back verbatim; incumbent correction or exact disproving evidence required."
 unverified:
   -
     claim: "Natural production cache handoff, complete price coverage, fresh DIA/QQQ ratio and downstream Prophet adoption."
@@ -72,11 +85,15 @@ unverified:
     what_would_verify: "Original owners supply qualified same-read B3/B4 geometry/basis/gates and exact episode/Plan/generation joins, followed by authorized authenticated render and real opt-in transport receipts."
   -
     claim: "Original compact Prophet cards restored in production."
-    what_would_verify: "Incumbent9495 admitted source restoration compared to pre9260 reference across desktop/mobile,EN/ZH,light/dark; ordinary reviewed release; deployed render and authorized production browser readback."
+    what_would_verify: "The #9566 incumbent resolves its armed state through normal procedure, corrects CI registration and passive-overlay hit testing, qualifies the resulting exact head through checks/independent review, then supplies deployment and authorized production readback. Existing16-state candidate geometry evidence is reusable where dependencies remain unchanged; #9495 remains DRAFT / NO MERGE pending explicit compact-design compatibility."
   -
     claim: "Predictive accuracy or model-selected trades."
     what_would_verify: "Existing D06/track-record owner admits a point-in-time prospective controlled evaluation and retains canonical decisions/outcomes; October rotation is not an untouched holdout."
+  -
+    claim: "#9566 passive-overlay navigation and controls function correctly after correction."
+    what_would_verify: "Incumbent exact-head source correction or evidence disproving the source inference; proportionate navigation from passive verdict/price regions and caution/trigger/live control behavior, without repeating unchanged geometry work."
 unresolved:
+  - "#9566 head7acf61d43af04dfc94dfc26bb4c6edcca1f3790d remains open/armed with binding contract-delta/ci-gate failure and source review5560777128 requesting changes. Incumbent owns unarming/correction/requalification; do not push into its armed branch."
   - "Original Plan child prophet-plan-review-component-build-01a11e89-20261015-01 /34412 remains LOST/UNKNOWN; directory_owner_or_mode collection refusal with retry_authorized:false. Preserve original untracked five-red baseline test."
   - "Current source-writer/live-lease/pending-effect qualification for shared9495/8444 remains required; empty Executive addressable projection is not a custody transfer."
   - "Original Chrome consent unanswered; Paper UPSTREAM_SCHEMA_UNREVIEWED; no alternate carrier or repeated denied mutation."
@@ -84,8 +101,8 @@ unresolved:
   - "Source-map original child and daily-brief9369 lost review remain unresolved on original carriers."
 next_actions:
   - "Consume original9518 release receipt6243368898 and treat9518/9484 source releases as DO_NOT_REDO. At the next real normal-run boundary inspect daily.yml run source, cache qualification SAVE and exact-key restore hit, coverage and Prophet generation; do not dispatch or replay."
-  - "Current assigned receiver: consume9495 return6243396155, qualify the actual original writer/lease/pending effects on unchanged carrier, then prepare the smallest compact restoration using pre9260 parent9dd870a1b424eabb7da9199e9b6e485565a9a4e6. Preserve richer source at0661; do not whole-file overwrite or start a competing branch."
-  - "Integrate existing7018-byte truthful-copy patch6230950977 through the admitted9495 owner. Reuse its49 checks and synthetic compositions; only changed bindings need new relevant verification. Original Plan effect stays excluded."
+  - "Consume incumbent split9495/comment6243339773 and exact #9566 review5560777128. The #9566 incumbent must resolve its armed state normally, register the new regression suite in the appropriate existing CI run/path selection, resolve passive-overlay navigation, and qualify the corrected head. No second writer, unchanged-head rerun, waiver or guard weakening."
+  - "Keep #9495 DRAFT / NO MERGE pending explicit compatibility with the compact design. Its admitted owner retains the qualified7018-byte truthful-copy patch6230950977 and native B4/Plan work. Reuse49 checks/synthetic compositions; qualify actual writer/lease/pending effects before source integration and preserve the original Plan child. Do not expand #9566 with this work."
   - "Through incumbent native B4 owner, bind the existing same-read B3 verified_pair to genuine strategy geometry, adjustment/corporate-action basis and deterministic risk/liquidity/gap facts. Then qualify exact episode/Plan and current UI assertions; no display-side entry authority."
   - "Consume incumbent QLedger9450/8756 recovery evidence without repeating prior caller audits or altering held data. Existing7022/7976/9428 owners retain native rotation visibility, EOD clock and risk-context work; actual denied effects remain on original targets."
   - "Finish authorized production visual/history/alert verification only after their exact gates qualify, reusing accepted B03 and TurnWatch evidence unless changed behavior invalidates it."
@@ -100,6 +117,7 @@ do_not_redo:
   - "Original alert-turn red test/shadow0-to-4, Finviz366 ahead-of-close/572 uncomparable census, candidate archives/forensics and QLedger collect/Asia caller findings are retained; do not rerun without a material invalidator."
   - "Do not recreate, reset, release, chmod, retry or replace original held workspaces/workers/effects; no new collector, ranker, B4, history ledger, publisher, alert transport or control plane."
   - "Latest committed artifact baseline at ca0700187e17fa73f459e83ce688b5c838cd316e and receipt6243511974 is complete. Refresh at a real new natural-run/generation boundary, not by repeatedly rereading unchanged source files."
+  - "#9566 exact7acf source/CI review is complete: review5560777128, run39080355224, tested mergee2d54275f6fded5476f21b11d84d5cd77b35ca96, evidenceef27c76d97465e44d42151ce70f3c6b7d06b4de57aaab83e22b7752fcbe8af71. Do not re-audit or rerun unchanged CI; consume a changed source head or actual incumbent disproving evidence."
 danger_areas:
   - "Source merge is not scheduled adoption, production deployment, current entry permission, predictive accuracy or user delivery. A cache step success is not evidence of a restore hit."
   - "Current quotes, legacy partial/Buy signals, Featured membership, same-ticker Plans and source-emission time cannot replace native exact-episode entry authority and source clocks."
@@ -108,17 +126,31 @@ danger_areas:
   - "Original handoff8f53d498 lacked YAML frontmatter and failed scoped agentos validation; this continuation repairs format without granting authority or editing generated Agent OS views."
   - "Use protected procedure pin Mastermind@ee0f0d9ba71d76dbc8144f56f3566a1f9dc70a71 for this continuation; prior2cc4942e136ad4fb544fd5c72ab1856608a5dac1 remains historical provenance."
   - "Earlier missing-Russell and249/1758 panel descriptions were superseded by the20:16:50Z board: source-roster inclusion improved but majority prices are October7 in a different3063-member panel. Source complete does not mean completed-session price integrity."
+  - "The earlier #9495 compact-restoration routing in f7d5a8df/return6243396155/checkpoint6243573945 is superseded by incumbent comment6243339773. #9566 owns restoration; #9495's rich .po-card/grid geometry must not return through a routine rebase or merge. The16-state owner browser receipt does not clear original Chrome consent or establish production/authenticated behavior."
 ---
 
 # Meta-CEO rotation / Prophet recovery — canonical successor handoff
-**Checkpoint date:** 2026-10-17 (UTC)  
+**Canonical handoff date:** 2026-10-17; latest continuation 2026-10-18 00:27 UTC  
 **Mission:** Chairman's October defensive-rotation failure review and end-to-end Mastermind/Prophet rehabilitation.  
 **Original research operation:** rotation-intelligence-architecture-20261012.  
 **Original research carrier:** Macro draft PR #9035, branch sol/web-rotation-intelligence-architecture-20261012.  
 **Authority:** Current Chairman continuation; protected Mastermind Skillpack procedure pin **ee0f0d9ba71d76dbc8144f56f3566a1f9dc70a71** (bootstrap major 1 / Skillpack 1.0.1). Prior checkpoint pin 2cc4942e136ad4fb544fd5c72ab1856608a5dac1 remains historical provenance. No protected law or execution gate was changed.  
 **Classification:** MATERIAL_SOURCE_MILESTONE / CONTINUATION_WITH_SCOPED_BLOCKERS. **PR #9518 is merged; #9484 was already merged. The complete product mission is NOT accepted or delivered.** This knowledge record does not grant execution, source-custody, deployment or retry authority.
 
-## Current material milestone — 2026-10-17 release; 2026-10-18 00:07 UTC continuation
+## Current material milestone — 2026-10-18 00:27 UTC continuation
+
+**Restoration routing is superseded by the incumbent's later split.** [#9495 comment6243339773](https://github.com/mastermindx-market-intelligence/macro/pull/9495#issuecomment-6243339773) assigns original compact-card restoration to **#9566**, head **7acf61d43af04dfc94dfc26bb4c6edcca1f3790d**, and keeps **#9495 DRAFT / NO MERGE** until its richer renderer is explicitly reconciled with the Chairman's compact-card decision. The earlier restoration-through-9495 instruction in f7d5a8df, return6243396155 and checkpoint6243573945 is superseded. Source custody stays with each incumbent.
+
+**#9566 is held for two concrete issues.** [Principal REQUEST_CHANGES review5560777128](https://github.com/mastermindx-market-intelligence/macro/pull/9566#pullrequestreview-5560777128), submitted2026-10-18 00:23:22Z at the exact head, was read back verbatim.
+
+1. **Confirmed CI defect:** run39080355224, tested mergee2d54275f6fded5476f21b11d84d5cd77b35ca96, baseca0700187e17fa73f459e83ce688b5c838cd316e. [contract-delta117535866201](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39080355224/job/117535866201) found one introduced/zero inherited defect: tests/test_us_prophet_original_card_layout.py is a new suite named by no run step. [ci-gate117539169266](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39080355224/job/117539169266) correctly enforces that failure despite all12 packs succeeding and selected semantic evidence clear (272 passed proofs,0 infrastructure findings; SHA256ef27c76d97465e44d42151ce70f3c6b7d06b4de57aaab83e22b7752fcbe8af71). The existing washout-turn-organ job's “Prophet source, lifecycle and presentation contracts (one native process)” step already runs the shared-card suite. Incumbent should register the new suite in the appropriate existing run/path selection; no new job or waiver is warranted for these stdlib-only tests.
+2. **Source-inferred navigation defect:** the replacement .pv-ov rule raises both entire overlays to z5. Shared setup cards are article elements with separate sibling .pv-setup-stock-link anchors at z4; passive verdict/price spans are outside those anchors. Actual ETSY/RSG/ENSG setup cards exist. Root exact-file read and independent principal review agree; no compensating handler was found in inspected sources. This is source inference, not this review's browser reproduction. Passive overlay regions should preserve stock navigation while genuine caution/trigger/live controls retain hit testing. The incumbent must correct this or provide exact evidence disproving it.
+
+The hotfix source diff changes only the US override, generated HTML stylesheet reference/replacement, and two tests; shared macro, card data/markup/clocks/links/scripts are preserved. Source blobs: overridebabc63dd07d49323798b71543322ce2610dd10a0; generated HTML6f49751c2b580e09dae2b60d74f1f39cc72e02e6; shared macro2f2c2fe8b7e5d63ac271a89e12c699ac0da2a2f7; linked shared CSS1a5e97c8f5fa8d95e73b140f4e9a9c056200b29a. The owner's [16-state Chromium/affected-test return6243367076](https://github.com/mastermindx-market-intelligence/macro/pull/9566#issuecomment-6243367076) is reusable candidate evidence; it does not resolve passive-region navigation or prove production/authenticated acceptance.
+
+The incumbent explicitly armed #9566; its own normal release procedure must resolve that state before corrections are pushed. Parent did not unarm, push, rerun, merge, open a browser or start a replacement worker. Source review and binding CI refusal remain effective. #9495's qualified refusal-copy and B4/Plan work retain their original scope and effects.
+
+### Completed #9518 release and preserved production boundary
 
 **#9518 ordinary source release is complete.** Expected-head squash of reviewed `c46a92cad704357dfa2dba0f219fff80965a56e0` merged as **`9f9e71a8943e9436bfc68acb961b56166fb61d79` at 23:37:57 UTC**. Independent substantive review, applicable exact-head CI, conflict-free current-main composition, merge readback and three-file landed-blob equality are verified. Canonical detailed receipt: https://github.com/mastermindx-market-intelligence/macro/pull/9518#issuecomment-6243368898 . Review is COMMENT 5560645720, not a self-APPROVE or another GitHub account's approval. Actual required GitHub approvals were zero; no binding failing check was bypassed.
 
@@ -126,7 +158,7 @@ The 27 raw checks comprised 22 success, four conditional skips and one intention
 
 **#9484 stays merged, DO_NOT_REDO.** No naturally scheduled daily run carrying the releases appeared in the bounded lookup around 23:45 UTC. Old manual39027917710 is now FAILURE and predates these releases. Existing applicable scheduled38987623960 remains the earlier GH001/cancelled-engine run;38990665394 is the wrong-season ET-guard-only success. A green guard job is not a successful engine generation.
 
-**Prophet incumbent #9495 now has an exact-source restoration and authority return:** https://github.com/mastermindx-market-intelligence/macro/pull/9495#issuecomment-6243396155 . It reconciles compact-card direction6243149802 with unchanged Draft0661c53d2af2b3995163aef08e3b8ba285fc4e39. Pre-#9260 parent is9dd870a1b424eabb7da9199e9b6e485565a9a4e6. Shared compact macro blob2f2c2fe8b7e5d63ac271a89e12c699ac0da2a2f7 is intact, but this draft switches the board caller to po.opportunity_card. Therefore deleting the old CSS include alone cannot prove restoration and may remove retained setup styles. Restore through this incumbent, preserve richer source at its immutable commit, and avoid whole-file overlays across shared9495/8444 custody.
+**Prophet #9495's exact-source and entry-authority findings remain valid:** https://github.com/mastermindx-market-intelligence/macro/pull/9495#issuecomment-6243396155 . Its restoration routing is explicitly superseded above. At Draft0661c53d2af2b3995163aef08e3b8ba285fc4e39, pre-#9260 parent9dd870a1b424eabb7da9199e9b6e485565a9a4e6 and shared compact macro blob2f2c2fe8b7e5d63ac271a89e12c699ac0da2a2f7 are known, but this draft selects po.opportunity_card. Deleting the old include alone cannot restore the original renderer and may remove setup styles. Preserve its richer source at the immutable commit, keep it DRAFT / NO MERGE, and use the incumbent #9566 restoration carrier without whole-file overlays across shared9495/8444 custody.
 
 The current presenter blobce74a9eefb2155f61c60e8c948e42d460ed14e0b still maps legacy buy_now/partial to Buy while assessment_asof/strategy/horizon are absent; its related-security Plan list is not exact-episode entry authority. Compact visual acceptance does not resolve that substantive contract. Current Buy needs qualified native B4; missing authority remains unavailable; retain actual dated historical signals separately.
 
@@ -154,10 +186,11 @@ A follow-up daily lookup after this changed-artifact observation still showed no
 
 ## Successor's immediate, concrete first action
 
-1. Consume release receipt6243368898 and **do not redo #9518 or #9484 source release**. At the next real natural-run boundary inspect exact daily source revision, qualified same-run cache SAVE and actual exact-key restore hit, >=80% Russell completed-session close coverage, DIA native price/basis/availability, matched DIA/QQQ sessions and downstream Prophet panel/per-security dates. No manual market collection, daily replay or restamp.
-2. Current assigned receiver: consume9495 return6243396155 and the ready refusal-copy/fixture patch6230950977; qualify actual writer/live-lease/pending effects on the original carrier, then prepare the minimal original-card restoration. Do not wait solely on an archived author, and do not use the empty/stale Executive projection as source admission.
-3. Preserve the original LOST/UNKNOWN Plan child and denied collection. Repair native B4 facts through its incumbent owner, using the already-built same-read B3 and source-origin reader; then prove exact episode-to-Plan-to-authenticated display-to-as-issued history-to-real alert receipt. Source, UI, history and delivery remain separate acceptance stages.
-4. Advance only unaffected incumbent work while source/data/browser gates remain scoped: QLedger9450/8756, Alert7022, Finviz7976 and Risk9428 keep their originals. Do not redo accepted audits or replace refused effects.
+1. Consume release receipt6243368898 and **do not redo #9518 or #9484 source release**. At the next real natural-run boundary inspect exact daily source revision, qualified same-run cache SAVE and actual exact-key restore hit, >=80% Russell completed-session close coverage, DIA native price/basis/availability, matched DIA/QQQ sessions and downstream Prophet clocks. No manual collection, daily replay or restamp.
+2. Consume incumbent split6243339773 and #9566 review5560777128. The incumbent must resolve its armed state, repair the new-suite registration and passive-overlay hit testing, then qualify the changed exact head through normal CI/review and production acceptance. Do not create a competing writer, rerun unchanged CI or weaken a failing check.
+3. Keep #9495 DRAFT / NO MERGE until explicit compact-design compatibility. Its qualified refusal-copy/fixture patch6230950977 and native B4/Plan work remain in incumbent scope. Qualify actual writer/live-lease/pending effects before integration; the empty/stale Executive projection is not source admission.
+4. Preserve the original LOST/UNKNOWN Plan child and denied collection. Repair native B4 facts through its incumbent owner using existing same-read B3 and the source-origin reader; then prove exact episode-to-Plan-to-authenticated display-to-as-issued history-to-real alert receipt.
+5. Advance unaffected incumbent work while source/data/browser gates remain scoped: QLedger9450/8756, Alert7022, Finviz7976 and Risk9428 keep their originals. Do not redo accepted audits or replace refused effects.
 
 ## Chairman's end-state (DONE_WHEN)
 - Recognize macro regime and distinguish defensive rotation / AI hardware and semiconductor unwinds from a systemwide liquidity crisis; retain independent measured-state, hazard and capital-policy authority.
@@ -227,6 +260,6 @@ A follow-up daily lookup after this changed-artifact observation still showed no
 
 ## Handoff command for the next continuation
 
-“Continue the SAME original Chairman rotation / Sector Intelligence / Prophet / Risk Radar Meta-CEO mission from PR9035's current October17 handoff. #9518 is merged at9f9e71a8943e9436bfc68acb961b56166fb61d79; #9484 was already merged. Do not redo either. First consume naturally occurring postmerge daily cache/price/Prophet evidence if present, and advance incumbent9495 compact restoration from return6243396155 while preserving exact source custody and all Plan/browser/Paper effects. Keep current B4 authority, exact Plan relation, authenticated display, historical recommendations and actual opt-in alert delivery distinct. Advance safe independent owner work; do not invent a trade, prediction, deployment or customer receipt.”
+“Continue the SAME original Chairman rotation / Sector Intelligence / Prophet / Risk Radar Meta-CEO mission from PR9035's current October17 handoff. #9518 is merged at9f9e71a8943e9436bfc68acb961b56166fb61d79; #9484 was already merged. Do not redo either. First consume naturally occurring postmerge daily cache/price/Prophet evidence if present, and consume the #9566 incumbent compact-restoration split6243339773 and blocking review5560777128. Keep #9495 DRAFT / NO MERGE; its native B4/Plan/refusal-copy work remains incumbent-owned. Preserve exact source custody and all Plan/browser/Paper effects. Keep current B4 authority, exact Plan relation, authenticated display, historical recommendations and actual opt-in alert delivery distinct. Advance safe independent owner work; do not invent a trade, prediction, deployment or customer receipt.”
 
 **Final mission state:** source milestone verified; original product mission remains OPEN with scoped source/data/browser/effect blockers. This handoff is durable knowledge, not an execution admission or a completed product.
