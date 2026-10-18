@@ -31,6 +31,8 @@ LABEL_STANDARD = "http://www.xbrl.org/2003/role/label"
 LABEL_TERSE = "http://www.xbrl.org/2003/role/terseLabel"
 LABEL_PERIOD_START = "http://www.xbrl.org/2003/role/periodStartLabel"
 LABEL_PERIOD_END = "http://www.xbrl.org/2003/role/periodEndLabel"
+LABEL_NEGATED_PERIOD_START = "http://www.xbrl.org/2009/role/negatedPeriodStartLabel"
+_PERIOD_START_ROLES = frozenset({LABEL_PERIOD_START, LABEL_NEGATED_PERIOD_START})
 
 PRIMARY_STATEMENT_ROLES: dict[str, str] = {
     "income_statement": "http://www.apple.com/role/CONSOLIDATEDSTATEMENTSOFOPERATIONS",
@@ -1607,11 +1609,13 @@ def _enforce_cell_period_agreement(
                         day_before_start = None
                 instant_date = period.get("instant_date")
                 column_end = column.get("end")
-                # The anchor follows the row's presentation label role only: a
-                # periodStartLabel row anchors to the day before the column
-                # start, every other row (periodEndLabel, any other role or
-                # none) to the column end. Labels are never read here.
-                if preferred_role == LABEL_PERIOD_START:
+                # The anchor follows the row's presentation label role: a
+                # (negated) periodStartLabel row anchors to the day before the
+                # column start, every other row (periodEndLabel, any other
+                # role or none) to the column end. R7 does not read labels; a
+                # label can only choose among roles the filing declares, and
+                # only when the row maps to its presentation unambiguously.
+                if preferred_role in _PERIOD_START_ROLES:
                     if instant_date == day_before_start:
                         continue
                 elif instant_date == column_end:
@@ -1990,20 +1994,32 @@ def reconstruct_statement(
     )
     row_presentation: list[dict[str, Any] | None] = []
     row_preferred_label_roles: list[str | None] = []
-    concept_seen: dict[str, int] = {}
+    row_concepts: list[str] = []
     for spec in displayed["rows"]:
         value_facts = spec["value_facts"]
         concept = ""
         if value_facts:
             names = sorted({_prefixed_from_html_name(item.get("name")) for item in value_facts})
             concept = names[0]
+        row_concepts.append(concept)
+    displayed_counts: dict[str, int] = {}
+    for concept in row_concepts:
+        displayed_counts[concept] = displayed_counts.get(concept, 0) + 1
+    concept_seen: dict[str, int] = {}
+    for spec, concept in zip(displayed["rows"], row_concepts, strict=True):
         ordinal = concept_seen.get(concept, 0)
         concept_seen[concept] = ordinal + 1
-        presentation_row = _select_presentation_row(spec, by_concept.get(concept) or [], ordinal)
+        occurrences = by_concept.get(concept) or []
+        presentation_row = _select_presentation_row(spec, occurrences, ordinal)
         row_presentation.append(presentation_row)
-        row_preferred_label_roles.append(
-            presentation_row.get("preferred_label_role") if presentation_row else None
-        )
+        role = presentation_row.get("preferred_label_role") if presentation_row else None
+        # R7 trusts a row's period role only when the concept is displayed
+        # exactly as many times as it is presented. An extra or missing
+        # displayed row has no defined occurrence, so it anchors at the
+        # column end like a role-less row.
+        if displayed_counts[concept] != len(occurrences):
+            role = None
+        row_preferred_label_roles.append(role)
     _enforce_cell_period_agreement(
         columns=columns,
         displayed_rows=displayed["rows"],

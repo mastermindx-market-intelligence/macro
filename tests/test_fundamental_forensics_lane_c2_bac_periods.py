@@ -979,6 +979,154 @@ def test_r7_closing_cash_under_a_start_role_refuses() -> None:
         )
 
 
+# --- R7: a concept displayed a different number of times than presented ---
+
+_CASH = "us-gaap:CashCashEquivalentsAtCarryingValue"
+_LABEL_NEGATED_PERIOD_START = "http://www.xbrl.org/2009/role/negatedPeriodStartLabel"
+_BEGIN_CASH = "Cash and cash equivalents at beginning of year"
+_END_CASH = "Cash and cash equivalents at end of year"
+
+_ANNUAL_CASH_CONTEXTS = [
+    _duration("y25", "2025-01-01", "2025-12-31"),
+    _duration("y24", "2024-01-01", "2024-12-31"),
+    _instant("i2025", "2025-12-31"),
+    _instant("i2024", "2024-12-31"),
+    _instant("i2023", "2023-12-31"),
+]
+
+
+def _annual_cash_html(rows: str) -> str:
+    return f"""
+    <html><body>
+    <table>
+      <tr><td colspan="3">{CF_TITLE}</td></tr>
+      <tr><td>Years Ended December 31,</td><td colspan="2"></td></tr>
+      <tr><td></td><td>2025</td><td>2024</td></tr>
+      <tr><td>Net income</td><td>{_ix("y25", "c2n-ni25", name="us-gaap:NetIncomeLoss")}</td><td>{_ix("y24", "c2n-ni24", name="us-gaap:NetIncomeLoss")}</td></tr>
+      {rows}
+    </table>
+    </body></html>
+    """
+
+
+def _cash_row(label: str, first: str, second: str) -> str:
+    return f"<tr><td>{label}</td><td>{first}</td><td>{second}</td></tr>"
+
+
+def _cash_ix(context: str, fact_id: str, value: str) -> str:
+    return _ix(context, fact_id, name=_CASH, value=value)
+
+
+_BEGIN_ROW = _cash_row(
+    _BEGIN_CASH, _cash_ix("i2024", "c2n-b25", "300"), _cash_ix("i2023", "c2n-b24", "200")
+)
+_END_ROW = _cash_row(
+    _END_CASH, _cash_ix("i2025", "c2n-e25", "400"), _cash_ix("i2024", "c2n-e24", "300")
+)
+# An "end of year" row whose current-year cell is an untagged dash: positional
+# binding places its one tagged fact, the prior year-end instant, under 2025.
+_SHIFTED_END_ROW = _cash_row(_END_CASH, "&#8212;", _cash_ix("i2024", "c2n-e24", "300"))
+
+
+def _annual_cash_facts(*fact_ids: str) -> list[dict]:
+    contexts = {
+        "c2n-b25": ("i2024", "300"),
+        "c2n-b24": ("i2023", "200"),
+        "c2n-e25": ("i2025", "400"),
+        "c2n-e24": ("i2024", "300"),
+        "c2n-r24": ("i2024", "300"),
+    }
+    facts = [
+        _fact("c2n-ni25", "y25", name="us-gaap:NetIncomeLoss"),
+        _fact("c2n-ni24", "y24", name="us-gaap:NetIncomeLoss"),
+    ]
+    for fact_id in fact_ids:
+        context, value = contexts[fact_id]
+        facts.append(_fact(fact_id, context, name=_CASH, value=value))
+    return facts
+
+
+def _reconstruct_annual_cash(
+    rows: str,
+    facts: list[dict],
+    presentation_arcs: list[tuple[str, str, str | None]],
+) -> dict:
+    return _reconstruct(
+        _annual_cash_html(rows),
+        facts,
+        _ANNUAL_CASH_CONTEXTS,
+        statement_type="cash_flow",
+        title=CF_TITLE,
+        role=_CF_ROLE,
+        presentation_arcs=presentation_arcs,
+    )
+
+
+def test_r7_cash_presented_twice_displayed_twice_reconstructs() -> None:
+    result = _reconstruct_annual_cash(
+        _BEGIN_ROW + _END_ROW,
+        _annual_cash_facts("c2n-b25", "c2n-b24", "c2n-e25", "c2n-e24"),
+        _CASH_TWICE_ARCS,
+    )
+    beginning, ending = result["rows"][1], result["rows"][2]
+    assert [cell["value"] for cell in beginning["cells"]] == ["300", "200"]
+    assert [cell["value"] for cell in ending["cells"]] == ["400", "300"]
+
+
+def test_r7_extra_displayed_row_of_a_twice_presented_concept_refuses() -> None:
+    # Displayed three times, presented twice: the repeated "end of year" row
+    # has no presentation occurrence of its own, so it takes no start role and
+    # its shifted prior year-end instant must not pass as the 2025 balance.
+    with pytest.raises(StatementGraphError, match=_R7_PREFIX + r"0: .*period anchor"):
+        _reconstruct_annual_cash(
+            _BEGIN_ROW
+            + _END_ROW
+            + _cash_row(_END_CASH, "&#8212;", _cash_ix("i2024", "c2n-r24", "300")),
+            _annual_cash_facts("c2n-b25", "c2n-b24", "c2n-e25", "c2n-e24", "c2n-r24"),
+            _CASH_TWICE_ARCS,
+        )
+
+
+def test_r7_single_shifted_row_of_a_twice_presented_concept_refuses() -> None:
+    # Displayed once, presented twice: the row cannot claim the first
+    # occurrence's start role, so the prior year-end instant shifted under
+    # 2025 is held to the column end and refuses.
+    with pytest.raises(StatementGraphError, match=_R7_PREFIX + r"0: .*period anchor"):
+        _reconstruct_annual_cash(
+            _SHIFTED_END_ROW,
+            _annual_cash_facts("c2n-e24"),
+            _CASH_TWICE_ARCS,
+        )
+
+
+def test_r7_single_unshifted_row_of_a_twice_presented_concept_reconstructs() -> None:
+    # The honest version of the row above anchors at each column end.
+    result = _reconstruct_annual_cash(
+        _END_ROW,
+        _annual_cash_facts("c2n-e25", "c2n-e24"),
+        _CASH_TWICE_ARCS,
+    )
+    ending = result["rows"][1]
+    assert [cell["value"] for cell in ending["cells"]] == ["400", "300"]
+    assert [cell["period"]["end"] for cell in ending["cells"]] == [
+        "2025-12-31", "2024-12-31",
+    ]
+
+
+def test_r7_beginning_cash_with_negated_period_start_label_reconstructs() -> None:
+    result = _reconstruct_annual_cash(
+        _BEGIN_ROW + _END_ROW,
+        _annual_cash_facts("c2n-b25", "c2n-b24", "c2n-e25", "c2n-e24"),
+        [
+            ("cashroot", "cashbeg", _LABEL_NEGATED_PERIOD_START),
+            ("cashroot", "cashend", _LABEL_PERIOD_END),
+        ],
+    )
+    beginning = result["rows"][1]
+    assert beginning["preferred_label_role"] == _LABEL_NEGATED_PERIOD_START
+    assert [cell["value"] for cell in beginning["cells"]] == ["300", "200"]
+
+
 def test_r7_dimensioned_fact_with_agreeing_period_stays() -> None:
     html = _glued_bs_html()
     dims = [
