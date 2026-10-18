@@ -1,0 +1,197 @@
+[
+  {
+    "id": "I01",
+    "name": "Value tooltip",
+    "routes": [
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08"
+    ],
+    "node": "662W-1",
+    "entry": "Hover, keyboard focus or tap a value/information icon.",
+    "behavior": "Show measure, units, change baseline, observation time, source availability, provenance and mode in at most 80 words. Tap opens a sheet on mobile. A source-detail action keeps the current case and returns to the same metric.",
+    "dependencies": "A typed observation and lineage receipt; existing source date/gap fields where available. Raw values, revised releases, model estimates and synthetic fixtures remain distinguishable.",
+    "states": "Current, delayed, stale, unavailable, loading, source error.",
+    "effect": "Read-only inspection.",
+    "acceptance": "Missing is not zero. Build time cannot replace the observation clock. Focus and Esc dismissal restore the invoking value; color is accompanied by text."
+  },
+  {
+    "id": "I02",
+    "name": "Calculation popover",
+    "routes": [
+      "02",
+      "06"
+    ],
+    "node": "663U-1",
+    "entry": "Calculation icon, duration result or scenario price effect.",
+    "behavior": "Expose signed decimal shocks, units, sensitivity inputs and exclusions. Treasury price approximation uses modified duration and convexity. The corporate example separates benchmark-rate and spread duration and remains first order. Applying assumptions updates every dependent result together.",
+    "dependencies": "Verified calculation owner plus instrument/benchmark identity and sensitivity date. Inputs are user assumptions unless a qualified source is explicitly bound.",
+    "states": "Valid, invalid numeric input, absent sensitivity, incomparable benchmark, approximation warning.",
+    "effect": "Local scenario state; persistence only through an explicit save.",
+    "acceptance": "1 bp converts to 0.0001. Invalid input clears the calculated output and identifies the field. All-in corporate yield cannot be combined with a separate spread shock. Mathematical sensitivity is never labeled expected return."
+  },
+  {
+    "id": "I03",
+    "name": "Mechanism evidence drawer",
+    "routes": [
+      "01",
+      "03",
+      "04",
+      "05",
+      "06",
+      "08"
+    ],
+    "node": "6644-1",
+    "entry": "Select a mechanism, inspect evidence, funding conditions or overlapping inputs.",
+    "behavior": "Open the selected hypothesis with supporting observations, counterevidence, missing links, source lineage and the next independent check. The same observation may inform several hypotheses without becoming several independent confirmations. On mobile, expand one path and open its evidence sheet.",
+    "dependencies": "Existing rates/credit and cross-asset projections plus approved observations; explicit analytical interpretation and hypothesis identity. No new state engine is introduced by the view.",
+    "states": "Partly supported, contested, missing link, source stale, no evidence.",
+    "effect": "Read-only interpretation; Add to scenario carries the hypothesis into route 06.",
+    "acceptance": "Growth, substitution, safety demand and funding squeeze remain distinct. A Treasury price response does not fill a missing buyer-allocation link. Dashed edges carry no flow volume or causal proof."
+  },
+  {
+    "id": "I04",
+    "name": "Case monitor composer",
+    "routes": [
+      "01",
+      "02",
+      "03",
+      "05",
+      "06",
+      "08"
+    ],
+    "node": "665W-1",
+    "entry": "Monitor this view/case, Use this path or Manage monitors.",
+    "behavior": "Inherit the case revision and show all confirmation conditions, explicit invalidators, source freshness/alignment policy, session expiry and delivery mode before saving. A composer preview explains unresolved data. Canonical persistence and activation are different outcomes.",
+    "dependencies": "Existing canonical monitor/save/notification owner must be resolved in implementation. Qualified clocked evidence and a versioned rule definition are required for activation; a display-only projection cannot arm a qualified live monitor.",
+    "states": "Draft, saving, saved, effect uncertain, save failed, waiting, data paused, confirmed while watching, invalidated, expired, window closed.",
+    "effect": "A user-directed configuration save through the canonical owner. This design task activated no monitor or notification.",
+    "acceptance": "Fresh valid invalidation outranks confirmation. Unknown critical evidence blocks confirmation. The fifth eligible close is evaluated before expiry. Pauses do not extend the window silently. Late data cannot silently reopen or backdate a terminal outcome. Duplicate saves have one canonical effect."
+  },
+  {
+    "id": "I05",
+    "name": "Financing schedule",
+    "routes": [
+      "03",
+      "06"
+    ],
+    "node": "66AY-1",
+    "entry": "Open financing schedule/window or inspect issuer obligations.",
+    "behavior": "Retain legal obligor, recourse, collateral, currency, maturity/refixing schedule, cash restrictions, committed facilities, lease obligations and filing date separately. Source and mapping actions focus the relevant filing/schedule section; incomplete mapping remains visibly incomplete.",
+    "dependencies": "Dated issuer filings and an instrument/obligation-level schedule. Existing capital_structure.event.v1 may supply relevant filing facts but is not a complete bond-maturity or covenant feed.",
+    "states": "Reported snapshot, mapped schedule, missing maturity date, restricted cash, amended financing, stale roll-forward.",
+    "effect": "Read-only inspection; an explicit manual assumption belongs to the scenario revision.",
+    "acceptance": "Cash minus current debt is not labeled a funding gap or runway. Current classification is not an exact maturity calendar. Fixed debt reprices at contractual reset/refinance, not automatically with every market spread change."
+  },
+  {
+    "id": "I06",
+    "name": "FX hedge inspector",
+    "routes": [
+      "04",
+      "06"
+    ],
+    "node": "669F-1",
+    "entry": "Buyer selector, edit hedge assumptions or FX hedge inspector.",
+    "behavior": "Preserve buyer base currency, mandate, duration, asset currency, quote direction, hedge tenor and comparison horizon. Separate observed quotes from manual assumptions. Changing any shared perspective invalidates incompatible cached comparisons and recalculates the full table.",
+    "dependencies": "Exact forward/hedge quote, base instrument yield, quote clocks, day-count/annualization convention, costs and currency direction. The observed comparison pauses if a required quote is missing.",
+    "states": "Observed quote, manual assumption, expired quote, missing basis/forward, excluded instrument, incompatible duration.",
+    "effect": "Apply buyer perspective to the current case; save only on explicit action.",
+    "acceptance": "5.10% minus current annualized rolling-3M hedge cost 3.60% equals 1.50%. The 5 bp difference against a 1.55% JGB is not presented as a robust winner. Future roll costs remain open, and quotation inversion cannot reverse the economics accidentally."
+  },
+  {
+    "id": "I07",
+    "name": "CDS quote conventions",
+    "routes": [
+      "03",
+      "05"
+    ],
+    "node": "66DX-1",
+    "entry": "CDS value, quote details or contract inspector.",
+    "behavior": "Identify the reference legal entity, seniority, currency, tenor, restructuring clause, coupon/upfront/spread convention, price side, contributor coverage, event terms and observation time before comparing instruments. Cash-bond spread matching remains a separate eligibility check.",
+    "dependencies": "Licensed, correctly entitled instrument-level CDS observations and cash-bond metadata. A matching top-level CDS dataset was not established by the bounded local catalog search.",
+    "states": "Current, stale, no quote, insufficient contributors, contract mismatch, incomparable cash instrument.",
+    "effect": "Read-only quote inspection.",
+    "acceptance": "CDS spread is not a real-world default probability. A price move cannot stand in for a filing-confirmed refinancing event. No synthetic CDS path enters observed-support scoring."
+  },
+  {
+    "id": "I08",
+    "name": "Issuer currency funding",
+    "routes": [
+      "04"
+    ],
+    "node": "66CC-1",
+    "entry": "Issuer funding view switch.",
+    "behavior": "Compare the same borrower, tenor, seniority and fixed/floating base-currency obligation across issue currencies after a matched swap. Keep fees, collateral terms, tax, liquidity and execution timing inspectable. Switching back restores the investor perspective.",
+    "dependencies": "Borrower-specific new-issue terms, benchmark and spread, matched cross-currency swap terms, base currency, quote direction and same-time market inputs.",
+    "states": "Manual scenario, observed quote, missing swap/basis, tenor mismatch, borrower mismatch, incomplete costs.",
+    "effect": "Local comparison view; explicit save stores a case revision.",
+    "acceptance": "The manual USD/EUR/JPY example is illustrative. Absent direct basis or swap terms remains unavailable. CNH basis or a generic funding proxy does not substitute for direct market-wide USD cross-currency basis."
+  },
+  {
+    "id": "I09",
+    "name": "Episode filters",
+    "routes": [
+      "07"
+    ],
+    "node": "67NJ-1",
+    "entry": "Filter episodes, match mechanism, include contrary cases or inspect selection method.",
+    "behavior": "Select the mechanism, horizon, market/funding regime and macro backdrop using only information admissible at the cutoff. Show exclusions and retain failed/contrary episodes. Reset changes filters without discarding the case.",
+    "dependencies": "A versioned episode registry, eligible point-in-time features, data rights, release-clock admission and complete outcome windows for revealed analysis.",
+    "states": "Matches, valid zero matches, unavailable history, partial coverage, reset.",
+    "effect": "Read-only cohort selection; Save episode set persists explicit constraints through the canonical case owner.",
+    "acceptance": "No future outcome, revised later feature or chosen success label leaks into matching. Date-only vintage metadata cannot imply intraday knowability. Zero eligible matches is distinct from no loaded history."
+  },
+  {
+    "id": "I10",
+    "name": "Catalyst/check calendar",
+    "routes": [
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "08"
+    ],
+    "node": "67OU-1",
+    "entry": "View catalysts, auction/new-issue calendar, next check or attach a check.",
+    "behavior": "Show the dated check, certainty of its schedule, source, affected hypothesis and what finding would strengthen or weaken it. Separate announcements, settlement dates, expected dates, cancellations and delayed releases.",
+    "dependencies": "Official issuance/auction/release calendars and issuer reporting/financing records with availability clocks. The shown schedule is a fixture, not a current event feed.",
+    "states": "Scheduled, estimated, moved, cancelled, delayed, date unknown.",
+    "effect": "User-directed case attachment; no external message or real calendar action is implied.",
+    "acceptance": "Unknown dates stay unknown. Net issuance arithmetic and settlement timing do not establish which investor supplied the capital. Opening a check preserves the case and returns to its prior route."
+  },
+  {
+    "id": "I11",
+    "name": "Model evidence",
+    "routes": [
+      "06",
+      "07"
+    ],
+    "node": "67QO-1",
+    "entry": "Likelihood status or Model evidence.",
+    "behavior": "Show the registered target, horizon, model/data versions, admission coverage, effective episode count, out-of-time performance, baseline comparisons, calibration, uncertainty and abstention reason. Conditional paths remain available while qualification is pending.",
+    "dependencies": "An existing approved model/evaluation owner and reproducible qualification receipts; no such new R30 evaluation was run in this task.",
+    "states": "Unavailable, insufficient cohort, qualified model, incompatible requested target, drift/coverage abstention.",
+    "effect": "Read-only qualification inspection.",
+    "acceptance": "No LLM-authored probability. A probability trained for one event or horizon cannot be transferred to an arbitrary user monitor. Sliders are sensitivities and cannot silently become likelihood estimates."
+  },
+  {
+    "id": "I12",
+    "name": "Outcome fingerprint",
+    "routes": [
+      "07"
+    ],
+    "node": "67RX-1",
+    "entry": "Record the decision, then Reveal outcome; choose single episode or cohort distribution.",
+    "behavior": "Freeze the decision snapshot. Reveal response paths at common eligible horizons with explicit units, currency, price/total-return convention and coverage. Cohort mode shows the complete distribution and dependence-adjusted sample information; an unqualified cohort has a designed empty state.",
+    "dependencies": "Admitted episode histories and complete future windows. Current 1D/5D/20D values are explicitly synthetic interface fixtures, separate from documented historical research episodes.",
+    "states": "Hidden, revealed, incomplete horizon, revised history, no qualified cohort.",
+    "effect": "Local reveal/record state, persisted only through explicit case actions.",
+    "acceptance": "Later outcomes cannot alter the frozen hypothesis or matching features. Missing horizons remain blank. Overlapping episodes are not counted as independent trials."
+  }
+]

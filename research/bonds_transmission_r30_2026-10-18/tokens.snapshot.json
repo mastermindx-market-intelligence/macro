@@ -1,0 +1,114 @@
+{
+  "source_token_hash": "cfd3d65c",
+  "existing_tokens_only": true,
+  "items": [
+    {
+      "name": "--mx-dark-bg",
+      "value": "#0F1115"
+    },
+    {
+      "name": "--mx-dark-panel",
+      "value": "#181B21"
+    },
+    {
+      "name": "--mx-dark-panel2",
+      "value": "#1E222A"
+    },
+    {
+      "name": "--mx-dark-text",
+      "value": "#D7DCE3"
+    },
+    {
+      "name": "--mx-dark-muted",
+      "value": "#8B93A1"
+    },
+    {
+      "name": "--mx-dark-line",
+      "value": "#3A4150"
+    },
+    {
+      "name": "--mx-dark-up",
+      "value": "#45B873"
+    },
+    {
+      "name": "--mx-dark-down",
+      "value": "#E06464"
+    },
+    {
+      "name": "--mx-dark-warn",
+      "value": "#E0A030"
+    },
+    {
+      "name": "--mx-dark-info",
+      "value": "#5B9BF0"
+    },
+    {
+      "name": "--mx-light-bg",
+      "value": "#F7F8FA"
+    },
+    {
+      "name": "--mx-light-panel",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "--mx-light-panel2",
+      "value": "#EEF1F6"
+    },
+    {
+      "name": "--mx-light-text",
+      "value": "#1C2430"
+    },
+    {
+      "name": "--mx-light-muted",
+      "value": "#5D6B7E"
+    },
+    {
+      "name": "--mx-light-line",
+      "value": "#C9CCD1"
+    },
+    {
+      "name": "--mx-light-info",
+      "value": "#285FFF"
+    },
+    {
+      "name": "--mx-light-ink-up",
+      "value": "#1E6D47"
+    },
+    {
+      "name": "--mx-light-ink-down",
+      "value": "#B23C3D"
+    },
+    {
+      "name": "--mx-light-ink-warn",
+      "value": "#7D5922"
+    },
+    {
+      "name": "--mx-dark-warn-soft",
+      "value": "rgb(224 160 48 / 12%)"
+    },
+    {
+      "name": "--mx-dark-info-soft",
+      "value": "rgb(91 155 240 / 12%)"
+    },
+    {
+      "name": "--mx-light-up-soft",
+      "value": "#EAF7EF"
+    },
+    {
+      "name": "--mx-light-down-soft",
+      "value": "#FCECED"
+    },
+    {
+      "name": "--mx-light-warn-soft",
+      "value": "#FFF4E2"
+    },
+    {
+      "name": "--mx-light-info-soft",
+      "value": "#EAF2FC"
+    },
+    {
+      "name": "--font-ui",
+      "value": "Inter"
+    }
+  ]
+}

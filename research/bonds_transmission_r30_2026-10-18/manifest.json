@@ -1,7 +1,7 @@
 {
   "schema": "mastermind.design_handoff.bonds_transmission.r30",
   "operation_id": "bonds-transmission-r30-20261018-sol-001",
-  "status": "in_progress",
+  "status": "design_complete",
   "paper_file_id": "01M2WGNCX9475G79JRKJTCM08P",
   "owned_pages": [
     "p-1H-0",
@@ -21,64 +21,160 @@
       "shell": "63GM-1",
       "sidebar": "63GN-1",
       "topbar": "63GP-1",
-      "body": "63GQ-1"
+      "body": "63GQ-1",
+      "name": "R30 · 01 Bonds Desk · Light EN"
     },
     "curve": {
       "id": "63S3-1",
       "page": "p-1H-0",
       "topbar": "63TU-1",
       "body": "63TV-1",
-      "name": "02 Curve & Duration · Light EN"
+      "name": "R30 · 02 Curve & Duration · Light EN"
     },
     "credit": {
       "id": "63YS-1",
       "page": "p-1H-0",
       "topbar": "640J-1",
       "body": "640K-1",
-      "name": "03 Issuer & Credit Case · Light EN"
+      "name": "R30 · 03 Issuer & Credit Case · Light EN"
     },
     "capital": {
       "id": "648A-1",
       "page": "p-1H-0",
       "topbar": "64A1-1",
       "body": "64A2-1",
-      "name": "04 Capital Competition · Light EN"
+      "name": "R30 · 04 Capital Competition · Light EN"
     },
     "transmission": {
       "id": "64G1-1",
       "page": "p-1E-0",
       "topbar": "64HS-1",
       "body": "64HT-1",
-      "name": "05 Transmission Desk · Light EN"
+      "name": "R30 · 05 Transmission Desk · Light EN"
     },
     "scenario": {
       "id": "64PQ-1",
       "page": "p-1E-0",
       "topbar": "64RH-1",
       "body": "64RI-1",
-      "name": "06 Case Workspace · Scenarios · EN"
+      "name": "R30 · 06 Case Workspace · Scenarios · EN"
     },
     "replay": {
       "id": "64WP-1",
       "page": "p-1E-0",
       "topbar": "64YG-1",
       "body": "64YH-1",
-      "name": "07 Case Workspace · Replay · EN"
+      "name": "R30 · 07 Case Workspace · Replay · EN"
+    },
+    "overlays": {
+      "id": "65YV-1",
+      "page": "p-1E-0",
+      "body": "65YW-1",
+      "name": "R30 · S01 Overlays & Interaction Scorecards",
+      "type": "implementation_specimen"
+    },
+    "tools": {
+      "id": "6693-1",
+      "page": "p-1H-0",
+      "body": "6694-1",
+      "name": "R30 · S02 Advanced Tools & Scorecards",
+      "type": "implementation_specimen"
+    },
+    "mobile_bonds": {
+      "id": "66FJ-1",
+      "page": "p-1H-0",
+      "body": "66FR-1",
+      "actions": "66FS-1",
+      "name": "R30 · M01 Bonds Desk · Mobile Light EN",
+      "type": "responsive_specimen",
+      "width": 390,
+      "dark": false
+    },
+    "mobile_transmission": {
+      "id": "66HU-1",
+      "page": "p-1E-0",
+      "body": "66I2-1",
+      "actions": "66I3-1",
+      "name": "R30 · M02 Transmission · Mobile Light EN",
+      "type": "responsive_specimen",
+      "width": 390,
+      "dark": false
+    },
+    "mobile_zh": {
+      "id": "66MZ-1",
+      "page": "p-1E-0",
+      "body": "66N7-1",
+      "actions": "66N8-1",
+      "name": "R30 · M03 Evidence Sheet · Mobile Dark ZH",
+      "type": "responsive_specimen",
+      "width": 390,
+      "dark": true
+    },
+    "saved": {
+      "id": "670P-1",
+      "page": "p-1E-0",
+      "topbar": "672G-1",
+      "body": "672H-1",
+      "name": "R30 · 08 Saved Cases & Change Review · EN"
+    },
+    "tablet": {
+      "id": "676M-1",
+      "page": "p-1H-0",
+      "body": "679U-1",
+      "name": "R30 · T01 Capital Comparison · Tablet Light EN",
+      "type": "responsive_specimen",
+      "width": 768
+    },
+    "states": {
+      "id": "67EA-1",
+      "page": "p-1E-0",
+      "body": "67EB-1",
+      "name": "R30 · S03 State Specimens & Monitor Logic",
+      "type": "implementation_specimen"
+    },
+    "research_tools": {
+      "id": "67N6-1",
+      "page": "p-1E-0",
+      "body": "67N7-1",
+      "name": "R30 · S04 Research Tools & Scorecards",
+      "type": "implementation_specimen"
+    },
+    "implementation": {
+      "id": "67ZC-1",
+      "page": "p-1H-0",
+      "body": "67ZD-1",
+      "name": "R30 · S05 Implementation Map & Data Contract",
+      "type": "implementation_specimen"
+    },
+    "start_bonds": {
+      "id": "6885-1",
+      "page": "p-1H-0",
+      "body": "6886-1",
+      "name": "R30 · START · Bonds Journey & Build References",
+      "type": "navigation_index"
+    },
+    "start_transmission": {
+      "id": "6894-1",
+      "page": "p-1E-0",
+      "body": "6895-1",
+      "name": "R30 · START · Transmission Journey & Build Map",
+      "type": "navigation_index"
     }
   },
   "tokens_unchanged": "cfd3d65c",
   "claims": {
     "paper_design_applied": true,
+    "design_and_behavior_specified": true,
+    "jsx_exported": true,
     "backend_implemented": false,
     "live_market_data": false,
+    "monitor_activated": false,
     "forecast_validated": false
   },
   "pending": [
-    "Interaction and tool specimens",
-    "Responsive/theme/state specimens",
-    "Complete implementation scorecards",
-    "Preserve legacy boards in archive",
-    "Final visual and navigation review"
+    "Resolve exact runtime data and canonical case/monitor bindings",
+    "Implement and validate interactions/accessibility",
+    "Qualify point-in-time empirical models before percentages"
   ],
   "reuse_owners": [
     "macro_context.decision_workspaces.v1",
@@ -86,5 +182,326 @@
     "world_state.fx_dollar",
     "world_state.cross_asset_flows",
     "capital-structure-intelligence"
-  ]
+  ],
+  "completed_at": "2026-10-18T03:43:42Z",
+  "counts": {
+    "routes": 8,
+    "interactions": 12,
+    "atlases": 5,
+    "responsive": 4,
+    "indexes": 2,
+    "current_artboards": 19,
+    "archived_artboards": 28
+  },
+  "archive": {
+    "id": "p-1Y-1",
+    "root": "root_node_p-1Y-1",
+    "name": "ARCHIVE · Bonds + Transmission · pre-R30"
+  },
+  "page_positions": {
+    "start_bonds": [
+      0,
+      0
+    ],
+    "bonds": [
+      0,
+      700
+    ],
+    "curve": [
+      1560,
+      700
+    ],
+    "credit": [
+      0,
+      2350
+    ],
+    "capital": [
+      1560,
+      2350
+    ],
+    "tools": [
+      0,
+      4100
+    ],
+    "implementation": [
+      1560,
+      4100
+    ],
+    "mobile_bonds": [
+      3150,
+      700
+    ],
+    "tablet": [
+      3150,
+      2150
+    ],
+    "start_transmission": [
+      0,
+      0
+    ],
+    "transmission": [
+      0,
+      700
+    ],
+    "scenario": [
+      1560,
+      700
+    ],
+    "replay": [
+      0,
+      2350
+    ],
+    "saved": [
+      1560,
+      2350
+    ],
+    "overlays": [
+      0,
+      4100
+    ],
+    "states": [
+      1560,
+      4100
+    ],
+    "research_tools": [
+      0,
+      6300
+    ],
+    "mobile_transmission": [
+      3150,
+      700
+    ],
+    "mobile_zh": [
+      3630,
+      700
+    ]
+  },
+  "interactions": [
+    [
+      "I01",
+      "Value tooltip",
+      "662W-1",
+      "Hover / focus / tap a value",
+      "Unit, baseline, source clock and provenance."
+    ],
+    [
+      "I02",
+      "Calculation popover",
+      "663U-1",
+      "Inspect a derived result",
+      "Reproduce the formula; invalid inputs clear output."
+    ],
+    [
+      "I03",
+      "Evidence drawer",
+      "6644-1",
+      "Select a mechanism / funding check",
+      "Observed support, missing evidence and invalidators."
+    ],
+    [
+      "I04",
+      "Monitor composer",
+      "665W-1",
+      "Monitor / use this path",
+      "Explicit basket, clock, expiry and state precedence."
+    ],
+    [
+      "I05",
+      "Financing schedule",
+      "66AY-1",
+      "Open financing window",
+      "Legal obligor, restriction, maturity and roll-forward."
+    ],
+    [
+      "I06",
+      "FX hedge inspector",
+      "669F-1",
+      "Buyer selector / edit hedge",
+      "Current annualized cost, direction and roll sensitivity."
+    ],
+    [
+      "I07",
+      "CDS conventions",
+      "66DX-1",
+      "Inspect a CDS value / contract",
+      "Exact entity, tier, tenor, clause, quote and coverage."
+    ],
+    [
+      "I08",
+      "Issuer funding",
+      "66CC-1",
+      "Switch to issuer currency view",
+      "Same borrower, tenor and base currency."
+    ],
+    [
+      "I09",
+      "Episode filter",
+      "67NJ-1",
+      "Filter / contrary cases / method",
+      "Match only on information known at the cutoff."
+    ],
+    [
+      "I10",
+      "Catalyst calendar",
+      "67OU-1",
+      "Next check / auctions / catalysts",
+      "Date certainty and the hypothesis each check tests."
+    ],
+    [
+      "I11",
+      "Model evidence",
+      "67QO-1",
+      "Likelihood status / model evidence",
+      "Target, version, calibration and abstention evidence."
+    ],
+    [
+      "I12",
+      "Outcome fingerprint",
+      "67RX-1",
+      "Record view, then reveal outcome",
+      "Common horizons, preserved units and full cohorts."
+    ]
+  ],
+  "shared_design_reuse": [
+    {
+      "id": "G01",
+      "name": "Search and comparison",
+      "page": "p-1S-0",
+      "nodes": [
+        "1NAV-1",
+        "1NLR-1",
+        "5OWS-1",
+        "5P6D-1"
+      ]
+    },
+    {
+      "id": "G02",
+      "name": "Save, undo and effect uncertainty",
+      "page": "p-1T-0",
+      "nodes": [
+        "1TPI-1",
+        "1V82-1",
+        "5RAG-1",
+        "5RP0-1",
+        "5S01-1",
+        "5S90-1"
+      ]
+    },
+    {
+      "id": "G03",
+      "name": "Tools and research launcher",
+      "page": "p-1R-0",
+      "nodes": [
+        "5LOX-1",
+        "5LW3-1",
+        "5MR6-1"
+      ]
+    },
+    {
+      "id": "G04",
+      "name": "Account and settings",
+      "page": "p-1C-0",
+      "nodes": []
+    },
+    {
+      "id": "G05",
+      "name": "Terminal portfolio",
+      "page": "p-1O-0",
+      "nodes": []
+    },
+    {
+      "id": "G06",
+      "name": "Forex continuation bridge",
+      "page": "p-1F-0",
+      "nodes": [],
+      "ownership": "Other active session; destination binding only, no edit"
+    }
+  ],
+  "validation": {
+    "at": "2026-10-18T03:43:42Z",
+    "paper_file": "01M2WGNCX9475G79JRKJTCM08P",
+    "new_artboards": 19,
+    "product_routes": 8,
+    "core_interactions": 12,
+    "specification_atlases": 5,
+    "responsive_references": 4,
+    "start_guides": 2,
+    "archived_originals": 28,
+    "native_effects_observed": 163,
+    "unknown_effects": 0,
+    "scope_target_audit_pass": true,
+    "global_token_hash": "cfd3d65c",
+    "forex_mutated": false,
+    "all_current_board_positions_read_back": true,
+    "archive_identity_inventory_verified": true,
+    "visual_review": "Native screenshots reviewed during authoring; targeted final readback after substantive layout and semantic corrections.",
+    "arithmetic": [
+      {
+        "name": "Treasury -25 bp",
+        "computed": 1.97,
+        "expected": 1.97,
+        "pass": true
+      },
+      {
+        "name": "Treasury +25 bp",
+        "computed": -1.9300000000000002,
+        "expected": -1.93,
+        "pass": true
+      },
+      {
+        "name": "Treasury -8 bp",
+        "computed": 0.6260479999999999,
+        "expected": 0.626048,
+        "pass": true
+      },
+      {
+        "name": "Corporate net",
+        "computed": -1.44,
+        "expected": -1.44,
+        "pass": true
+      },
+      {
+        "name": "2s10s",
+        "computed": 41.99999999999999,
+        "expected": 42,
+        "pass": true
+      },
+      {
+        "name": "Hedged yield",
+        "computed": 1.4999999999999996,
+        "expected": 1.5,
+        "pass": true
+      },
+      {
+        "name": "Relative comparison",
+        "computed": -5.000000000000004,
+        "expected": -5,
+        "pass": true
+      },
+      {
+        "name": "Net supply",
+        "computed": 55,
+        "expected": 55,
+        "pass": true
+      },
+      {
+        "name": "Interest shock",
+        "computed": 10000000,
+        "expected": 10000000,
+        "pass": true
+      }
+    ],
+    "jsx_exports": 19,
+    "working_indicators_finished": true,
+    "not_performed": [
+      "Production implementation",
+      "Live data binding",
+      "Notification activation",
+      "Historical backtest",
+      "Forecast calibration",
+      "End-to-end browser interaction tests",
+      "Runtime accessibility testing",
+      "Deployment"
+    ]
+  }
 }
