@@ -482,3 +482,12 @@ def test_intraday_panel_never_claims_the_unqualified_fixed_minute_horizons():
     assert "Interval = change between two verified observations" in html
     assert "not a fixed 5/15/30/60-minute return or a forecast" in html
     assert 'id="si-intraday"' in html
+
+
+def test_us_market_internals_scope_is_not_mislabeled_full_sp1500():
+    # Incumbent basket_score.market_concentration("us") reads data/breadth,
+    # the S&P 500 BreadthAdapter, not the 400/600 union. No backfilled scope.
+    html = _render_page(_board())
+    assert 'id="si-breadth-scope"' in html
+    assert "Current US breadth here covers S&P 500 members only" in html
+    assert "S&P 400/600 aggregate participation is not yet qualified" in html
