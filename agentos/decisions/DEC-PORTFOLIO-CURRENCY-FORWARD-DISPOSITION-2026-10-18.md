@@ -7,7 +7,7 @@ question: >
 answer: >
   For this Portfolio delivery only, carry the unapplied entry-currency change as
   0036_portfolio_entry_currency.sql on Terminal #1044. The source proposal
-  is 5cff531c3a5311596b0469acfdf915d08c4d1cfd and the executable candidate file SHA-256
+  is ea57ad23691df6f848cce65fe814b6cd97f9cfa6 and the executable candidate file SHA-256
   is 9c09540e7b4e451e55a39d8229b3a73eb93c997578f3dadfdc3f24b47a7f7f4c.
   Preserve the applied #946/0032 file and reservation, #778's pending 0035 claim,
   and all other incumbent reservations. The old #866/0032 currency file is
@@ -58,13 +58,14 @@ alternatives:
 evidence:
   - "Chairman request in session chatgpt4-terminal-portfolio-20261018: enhance the exact Paper Portfolio design and implement it fully end to end in Terminal."
   - "Mastermind AGENTS.md at ef4be2f5c9b0b82fc11be83f03cf7bcdb8cea6f2: the currently assigned authorized principal resolves in-scope matters; historical model names are not a new live approver or runtime grant."
-  - "Terminal #1044 candidate 5cff531c3a5311596b0469acfdf915d08c4d1cfd; current base 051e13658bc2349ef9654f008e76e50675e10df5; only 0036 differs in RESERVATIONS.json relative to that base."
-  - "Terminal terminal/docs/verification/portfolio-workspace/verification.json at the candidate records the 168-open-PR census (2026-10-18T06:58:50Z), all ten paginated full file lists, and a 07:10:54Z delta check of updated PRs."
+  - "Terminal #1044 candidate ea57ad23691df6f848cce65fe814b6cd97f9cfa6; current base 367f488e5c67d0871d4a34c2aa7371f327d44c3d; only 0036 differs in RESERVATIONS.json relative to that base."
+  - "Terminal terminal/docs/verification/portfolio-workspace/verification.json at the candidate records the 168-open-PR census (2026-10-18T06:58:50Z), all ten paginated full file lists, a 07:10:54Z delta, and the independent 11:04:42Z update covering all 266 filenames in six other updated PRs with no competing 0036 claim."
   - "Terminal #778 at 88f2919a5c2222bcf05f452f2549b9af180dcae6 reserves 0035_saved_view_guard.sql; its SQL changes workspace_settings and its own saved-view guard, with no portfolio_positions reference."
   - "Terminal #946 applied receipt: https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/946#issuecomment-6112592004; preserved 0032 SQL SHA-256 9e360ed109d0c3d8ff3345e90515a2f8da443a03c22f9015514a1b18a2f23dd3."
   - "Original currency source: Terminal #866 at 60fd6d997df52d2d8331de85ab63014446e16ef9, SQL SHA-256 fe4def299cf733dd1718bda8ef30f006a6d19c5015f7673cbab05a4b298f99f5; inner business DDL remains byte-identical after the outer atomic-envelope change."
   - "Terminal tests/sql/audit09/run_native_fixture.py and committed native-postgres/wrapper receipts: 27 isolated cases pass through actual scripts.supabase_apply.run_apply, one application statement, five catalog readbacks, no network or production effects."
   - "Terminal PR-scoped namespace, migration-ledger and applier suites: 189 passed after the 0036 rename. Applied 0032 bytes and its reservation remain exact."
+  - "At 11:35:53Z the existing CurlRunner and documented primary credential pair returned six production catalog SELECT results. portfolio_positions exists with RLS enabled, forced RLS false, eight owner policies and no currency objects. Grants and policy rows are retained for post-application comparison. No DDL was sent; this is read-only transport/catalog evidence, not application or authenticated-user acceptance."
   - "Terminal #804 at ad80ceff67e9b9f95a131a74e6bf57aa19e97b39 has green required CI and qualified one-statement 0030 source but is draft/unapplied; #858 at 8abe1ff920be0b754f66d918df61f5ca6d7505ef is draft/unapplied with red browser CI and an unadopted repair proposal."
 affects:
   - "WS:MARKET-OS"
@@ -123,7 +124,7 @@ remain separate from schema application.
 ## Source pointers
 
 - [Portfolio candidate and implementation](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1044)
-- [Exact currency proposal](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5cff531c3a5311596b0469acfdf915d08c4d1cfd/supabase/migrations/0036_portfolio_entry_currency.sql)
-- [Verification and receipt index](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5cff531c3a5311596b0469acfdf915d08c4d1cfd/terminal/docs/verification/portfolio-workspace/verification.json)
+- [Exact currency proposal](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/ea57ad23691df6f848cce65fe814b6cd97f9cfa6/supabase/migrations/0036_portfolio_entry_currency.sql)
+- [Verification and receipt index](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/ea57ad23691df6f848cce65fe814b6cd97f9cfa6/terminal/docs/verification/portfolio-workspace/verification.json)
 - [Original namespace decision](DEC-SUPABASE-MIGRATION-NAMESPACE-TERMINAL-LEDGER-2026-09-06.md)
 - [Existing solo migration landing procedure](DEC-TERMINAL-MIGRATION-PR-LANDS-SOLO-WITH-LEDGER-FOLLOWUP.md)

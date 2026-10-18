@@ -25,13 +25,13 @@ changed:
   - path: "mastermind-terminal terminal/scripts/check_plain_language.mjs and guard tests"
     what: "Innermost JSX expression ownership suppresses the machine-attribute false positive while independent suffix enumeration retains visible conditional fallbacks."
   - path: "Terminal terminal/docs/PORTFOLIO_IMPLEMENTATION_AND_RESEARCH.md and verification/portfolio-workspace"
-    what: "Primary-source research, precise feature boundaries, 72 captures, source hashes and native runner receipts."
+    what: "Primary-source research, precise feature boundaries, 78 captures, current source hashes, native runner receipts and the read-only production catalog preflight."
   - path: "agentos/decisions/DEC-PORTFOLIO-CURRENCY-FORWARD-DISPOSITION-2026-10-18.md"
-    what: "Concrete narrow disposition proposed for independent review, with reciprocal partial amendment in the original namespace decision."
+    what: "Independently accepted narrow proposal with refreshed exact-candidate pointers and reciprocal partial amendment; canonical main acceptance remains pending."
 verified:
   - claim: "The current Terminal candidate is pushed, draft and unarmed."
     command: "git rev-parse HEAD; git push origin HEAD; gh pr view 1044 --json headRefOid,isDraft,autoMergeRequest"
-    result: "5cff531c3a5311596b0469acfdf915d08c4d1cfd, draft true, autoMergeRequest null; current master051e13658 merged without conflict."
+    result: "ea57ad23691df6f848cce65fe814b6cd97f9cfa6, draft true, autoMergeRequest null; current master367f488e5c67d0871d4a34c2aa7371f327d44c3d integrated without conflict."
   - claim: "The original full application suite and responsive acceptance passed."
     command: "npx vitest run; Playwright Portfolio suite across desktop/tablet/mobile; chart ONE-list retry case"
     result: "Initial8db source: 12,396 units, 743 files, four existing TODOs; 87 Portfolio browsers plus one chart-entry case. Initial hosted unit/typecheck also passed."
@@ -50,9 +50,18 @@ verified:
   - claim: "A fresh namespace census preserves #778's new0035 claim."
     command: "Fully paginated open-PR file census at06:58:50Z; updated-PR delta check at07:10:54Z; pinned #778 reservation/SQL read"
     result: "168 open PRs and ten full file lists in the census; #778 head88f2919a5c2222bcf05f452f2549b9af180dcae6 owns0035; delta found no further migration claim."
+  - claim: "The application review repairs and neutral-surface follow-up pass their bounded checks."
+    command: "Focused Vitest, full TypeScript, scoped lint, and real-route Playwright; exact commands and log hashes in Terminal verification.json."
+    result: "Original follow-up191 tests passed. Final controller/view54 passes include two new untargeted-Saved regressions;27 neutral/state browsers and12 final compact-layout browsers pass across EN/ZH, dark/light and desktop/tablet/mobile. Code58c9860f3f8207af58362c3c7fa5b228cff56ac5;70 captures refreshed. Final application and neutral CSS/header source reviews both returned ACCEPT at ea57ad23691df6f848cce65fe814b6cd97f9cfa6; reviewers read the executed evidence without claiming to rerun it."
+  - claim: "The existing currency transport can inspect the actual production catalog."
+    command: "Existing scripts.supabase_apply.CurlRunner, documented primary credential pair, six SELECT queries including the existing native fixture estate snapshot."
+    result: "11:35:53Z: table exists, RLS true, forced RLS false, eight existing owner policies, currency objects absent. No DDL sent. Read-only receipt SHA2564f80b4d6ed0a5ef4fc14bbe1b524d50f27f79d57c0a1a746454094e9d8d951c6. Dry-run also passes1statement/5readbacks with zero network calls."
+  - claim: "The C4 installer composition is source-qualified and admitted to the native queue."
+    command: "Independent source review of17ac;162 local installer/backend-release tests; actual-head hosted checks; guarded gh pr ready and normal native-queue admission."
+    result: "Combined-source ACCEPT, required test and all other head checks green. Queue entry MQE_lQDOTotz3c8AAAABJIFaq84ABAiKzgNU0-k enqueued 11:12:36Z; merge-group CI completed successfully and normal merge landed b92743765aa356a9e918054056ae92f704141723 at 11:45:20Z. Its inherited Fabric-only source delta is being reconciled before installation; no live stop/select/start."
 unverified:
-  - claim: "Current exact-head hosted CI and independent full application acceptance."
-    what_would_verify: "Concluded required checks and explicit ACCEPT on the actual candidate, preserving any source-hash binding across metadata-only changes."
+  - claim: "Current exact-head hosted CI."
+    what_would_verify: "Concluded required checks on the actual candidate. Both application and neutral CSS/header source reviews accepted ea57; its hosted unit/typecheck failure is under exact-log investigation, and browser shards are still running."
   - claim: "Production migration, persistence, RLS and market-data coverage."
     what_would_verify: "Accepted scoped decision, existing-carrier dry run and actual pre/post catalog receipts, normal release, then authenticated save/reopen and live coverage checks."
   - claim: "Editable Paper refinement."
@@ -61,19 +70,19 @@ unverified:
     what_would_verify: "Measured production timings/load and an explicit assistive-technology matrix; fixture/browser checks do not establish either."
 unresolved:
   - "Terminal #1044 remains draft/unarmed; no production DDL or deployment occurred."
-  - "The narrow currency decision is a concrete draft under independent review, not an accepted release disposition yet."
+  - "The narrow currency decision received source ACCEPT at a250b2254e28ec0513ff8eef0175a9f41f44cb20; refreshed pointers/evidence and normal Macro main acceptance remain before it becomes canonical."
   - "Current C4 Paper catalog actual1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db differs from expectedac18857df0aa6323646333368e5798e7c28de7b4d5f5dc3cb320276e3535daa9."
-  - "Mastermind #1603 at12fe3d9a7f5ed7deff75b1e8c9101227a92d0aa8 owns an adjacent C2 Business installer change; preserve its exact source custody when composing C4 qualification."
+  - "Mastermind #1611 at17ac4d82006888f787cf728a54fa0466a78a5171 had combined-source ACCEPT and all actual-head checks green; normal queue merge is b92743765aa356a9e918054056ae92f704141723. Reconcile its inherited Fabric-only source delta before installation. It explicitly adopts inherited #1603 source without claiming C2 live deployment."
 next_actions:
   - "Finish independent application, guard and decision reviews; address concrete findings and bind acceptance to actual source."
   - "Validate and publish this decision/checkpoint through normal Macro PR review and concluded gates. The original namespace decision receives only the named partial amendment."
-  - "Finish the smallest C4 installer cohort source repair, with exact immutable cohort, manifest CAS, no-effect refusal controls and existing rollback/lifecycle rules; independently review before same-seat installation."
+  - "Verify and accept the resulting protected C4 installer source delta, reconcile all C4 work, then use the existing independent RDC m2studio operator for guarded stop/select/start before same-C4 Paper calls."
   - "Use the qualified Paper adapter on file01M2WGNCX9475G79JRKJTCM08P pagep-1O-0, refine the owned Portfolio boards and verify exact design readback."
   - "Complete current required Terminal CI, accepted migration/application receipts, solo landing and immediate ledger follow-up, then VPS deployment and authenticated end-to-end acceptance."
 do_not_redo:
   - "Do not rebuild accepted MARKET-OS A1A/A1B work or use the redirected old WATCHLIST-PORTFOLIO workstream as a second program."
   - "Do not repeat the full12,396-unit or88-browser initial evidence solely for reporting; rerun only for a concrete source/base risk or required gate."
-  - "Do not recreate the existing Portfolio implementation, research report,72 captures, #1044 carrier or own worktrees."
+  - "Do not recreate the existing Portfolio implementation, research report,78 captures, #1044 carrier or own worktrees."
   - "Do not retry the unavailable paid Fabric carrier blindly: no worker started. Native principals are performing independent reviews; root retains bounded implementation custody."
 danger_areas:
   - "A create UUID reconciles the same mounted form intent while the record identity exists; deletion or a new form ends that guarantee. It is not a permanent transaction ledger."
@@ -105,8 +114,8 @@ No automatic watcher or production release effect is claimed.
 ## Durable source and working locations
 
 - [Current Terminal candidate](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1044)
-- [Implementation and primary-source research](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5cff531c3a5311596b0469acfdf915d08c4d1cfd/terminal/docs/PORTFOLIO_IMPLEMENTATION_AND_RESEARCH.md)
-- [Verification index and native receipts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5cff531c3a5311596b0469acfdf915d08c4d1cfd/terminal/docs/verification/portfolio-workspace/verification.json)
+- [Implementation and primary-source research](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/ea57ad23691df6f848cce65fe814b6cd97f9cfa6/terminal/docs/PORTFOLIO_IMPLEMENTATION_AND_RESEARCH.md)
+- [Verification index and native receipts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/ea57ad23691df6f848cce65fe814b6cd97f9cfa6/terminal/docs/verification/portfolio-workspace/verification.json)
 - [Exact Paper file/page](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1O-0)
 
 Terminal's owned worktree is
@@ -120,6 +129,14 @@ The Paper overview reference is artboard `628J-0`; Holdings `62FU-0`,
 Risk `62N4-0`, Targets `62S6-0`, mobile `632X-0`. The user page is `p-1O-0`.
 The other Research board remains future-design context. Exact object identity and
 scope must be read back before a mutation.
+
+## Current operational qualifications
+
+The Paper source proposal is [Mastermind #1611](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1611), with its [exact evidence](https://github.com/mastermindx-market-intelligence/Mastermind/blob/17ac4d82006888f787cf728a54fa0466a78a5171/docs/verification/paper-c4-runtime-20261018/verification.json). The existing independent RDC m2studio operator is qualified for installation work. A momentary C4 `/readyz` observation showed zero busy requests; it does not resolve background handles or establish an atomic drain. Reconcile the known work/effects and take a fresh external observation immediately before stop. Actual Paper edits remain on the original Studio C4 connection.
+
+The migration [read-only production receipt](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/ea57ad23691df6f848cce65fe814b6cd97f9cfa6/terminal/docs/verification/portfolio-workspace/production-catalog-preflight.json) does not mark the migration applied. The latest train observation at11:27:53Z found Terminal #960 atba7110dad69f9af0fa2eb943965d78fd3ceae567 mid-CI. Refresh its actual state before solo landing and preserve its carrier.
+
+Current protected Terminal deployment uses `bash /opt/terminal/terminal-build.sh --target-sha <exact accepted commit>` and the integrated source preflight. The old no-argument command and unbound-W2A claim in DEPLOY.md are stale. Verify the installed owner and bundle, use its normal path, and prove the served SHA marker as well as authenticated behavior. Do not reset the canonical deployment checkout manually ahead of the owner.
 
 ## Honest product boundary
 
