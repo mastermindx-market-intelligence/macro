@@ -33,13 +33,6 @@
   var LOCALES = ["en", "zh"];
   var AUTH_INTENTS = ["signin", "signup", "settings", "billing"];
   var ERROR_CODES = ["initialization_failed", "unsupported_context", "navigation_unavailable", "authentication_navigation"];
-  var SUPPRESS_CSS =
-    'html[data-mmx-shared-shell="1"] .site-nav,\n' +
-    'html[data-mmx-shared-shell="1"] [data-mmx-all-tools],\n' +
-    'html[data-mmx-shared-shell="1"] #mmx-all-tools,\n' +
-    'html[data-mmx-shared-shell="1"] .public-nav,\n' +
-    'html[data-mmx-shared-shell="1"] .landing-nav { display: none !important; }\n' +
-    'html[data-mmx-shared-shell="1"] { --nav-offset: 0px; --nav-height: 0px; }\n';
 
   if (typeof window === "undefined" || typeof document === "undefined") return;
   var w = window;
@@ -705,18 +698,28 @@
   }
 
   /* ---- chrome suppression ---- */
-  function applyChromeSuppression() {
-    if (state.chrome) return;
-    state.chrome = true;
-    var de = document.documentElement;
-    if (!de || typeof de.setAttribute !== "function") return;
-    try { de.setAttribute("data-mmx-shared-shell", "1"); } catch (e) {}
+  function proofChromeSuppression() {
+    // The static sheet precedes this blocking script. Computed style also proves a
+    // sheet that loaded before our listeners, and rejects a missing/gated/CSP-blocked
+    // response. The marker is inert until the trusted INIT sets the root attribute.
     try {
-      var style = document.createElement("style");
-      style.setAttribute("type", "text/css");
-      style.textContent = SUPPRESS_CSS;
-      (document.head || de).appendChild(style);
-    } catch (e) {}
+      var de = document.documentElement;
+      return !!de && de.getAttribute("data-mmx-shared-shell") === "1" &&
+        typeof w.getComputedStyle === "function" &&
+        w.getComputedStyle(de).getPropertyValue("--mmx-shared-shell-css-ready").trim() === "1";
+    } catch (e) { return false; }
+  }
+  function applyChromeSuppression() {
+    if (state.chrome) return proofChromeSuppression();
+    var de = document.documentElement;
+    if (!de || typeof de.setAttribute !== "function") return false;
+    try { de.setAttribute("data-mmx-shared-shell", "1"); } catch (e) { return false; }
+    if (!proofChromeSuppression()) {
+      try { de.removeAttribute("data-mmx-shared-shell"); } catch (e) {}
+      return false;
+    }
+    state.chrome = true;
+    return true;
   }
 
   /* ---- ready + restoration ---- */
@@ -739,6 +742,7 @@
   // withRestore=false acknowledges an applied context: never re-runs the initial
   // scroll/focus restoration and therefore never steals focus from the user.
   function sendReady(withRestore) {
+    if (!proofChromeSuppression()) { emitError("initialization_failed"); return; }
     if (!proofAppliedContext()) {
       emitError(withRestore === true ? "initialization_failed" : "unsupported_context");
       return;
@@ -914,6 +918,7 @@
       emitError("initialization_failed");
       return;
     }
+    if (!applyChromeSuppression()) { dropQueue(); emitError("initialization_failed"); return; }
     admitted = catalog;
     initializedPath = data.canonicalPath;
     lastLocationNotified = currentCanonical();
@@ -921,7 +926,6 @@
     initialBootWindow = bootWindow;
     pendingInitialReady = true;
     state.active = true;
-    applyChromeSuppression();
     installAnchors();
     installRuntime();
     drainQueue();

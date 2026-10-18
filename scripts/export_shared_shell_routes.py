@@ -19,9 +19,8 @@ import sys
 from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-from scripts import build_product_page_registry as registry_owner
+sys.path.insert(0, str(ROOT))
+from scripts import build_product_page_registry as registry_owner  # noqa: E402
 SCHEMA = "mastermind.shared_shell_routes.v1"
 PARAM = re.compile(r"<[^/<>]+>")
 ANCHOR = re.compile(r"<a\b[^>]*\bhref=[\"']([^\"']+)[\"'][^>]*>(.*?)</a>", re.S)

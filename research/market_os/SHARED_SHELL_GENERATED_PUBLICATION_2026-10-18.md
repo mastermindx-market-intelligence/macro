@@ -16,7 +16,7 @@ Every changed HTML file was compared with that incoming main after only two norm
 
 This retains the complete feature scope. It moves the repetitive capability/stamp emission to its existing generator owner; it does not remove routes, page adapters, the bridge asset, template changes, or tests. Both template and emitted copies of shared_shell_bridge.js remain in this PR, as do the required JS/CSS and plain HTML pairs.
 
-## Generator and source verification
+## 14:48 generator and source verification
 
 The retained source emits documentVersion 20261018.1 with bridge asset digest 9e98cc40 (full asset SHA-256 9e98cc403b65a433d2699885c793dcd8c95a656296d400074c977f5d7e5cb554).
 
@@ -35,3 +35,26 @@ The canonical registry projection remains 13,015 exact legacy paths, 14 native p
 5. Expose beta only after the separately reviewed Terminal release owner, installed runtime identity, data namespace, DNS/TLS, and responsive/fresh-session browser acceptance are proved.
 
 The beta service, DNS cutover, and public beta acceptance remain outstanding. The protected source procedure pin stays c355e6a4ce3c15ac1e46c14f642bb5984da810d2.
+
+## 2026-10-18 17:08 UTC — static stylesheet and publication integration
+
+The current source keeps protocol mmx.shared-shell.v1 and bridge/document versions 20261018.1. The bridge now uses a separate dormant stylesheet. Both files are published by the existing copy_asset owner, and each carries its own content digest:
+
+| Asset | Content stamp | SHA-256 |
+| --- | --- | --- |
+| shared_shell_bridge.js | 048314d5 | 048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d |
+| shared_shell.css | 6a3f8fe8 | 6a3f8fe83206789d7b4f8fe69842f7976d4e1d45d0be3582ab7b82cc3295cdbf |
+
+The common owner puts the stylesheet before the blocking bridge inside the existing capability block. Chrome suppression starts only after the existing trusted INIT and context checks. A guarded computed-style marker must be present before activation and before every READY; a missing, gated, blocked or unreadable stylesheet cannot produce a successful readiness claim. The parent contains the existing initialization_failed error in its retry/open-original boundary. Independent review found no substantive regression in the exact 11-file repair, patch SHA-256 897a5289cf744b011d31a8fc9c9fdf5e1c9741ead3be8799e3f8d9506b2954d5.
+
+The sole access addition is the exact /shared_shell.css asset in site_access.yml and the four existing Caddy access/cache matchers. The original runtime-style allowlist stays byte-identical. The actual runtime-style detector now reports no injected-style hits in either bridge copy. The publication check verifies both source/emitted assets. The render and engine-render lanes check finalized output before publication, and cannot push stale generated changes after a failed optional healing commit.
+
+The retained refresh updated 37 site documents, including the previously stale glossary and markets output, and mirrored the three about/chat/index plain-copy templates. It used the common injector, preserved all bytes outside its owned block, and retained each file's final-newline state. A separately recorded Markets correction added exactly the two newlines emitted by the current navigation include; the unchanged comparator proved this was the only remaining non-lane output difference. No market-data rebuild or comparator relaxation was used.
+
+Actual M2 verification passed: 184 bridge/navigation/owner/handoff Node cases; 89 injection/public-policy/export/Caddy Python cases; all 83 glossary/markets/research builder cases; the canonical template/site and asset-reference guards; the runtime-style guard; and the source claim scanner. The complete contract census against the exact joined base 7b318164a1a757bacbe9d0ad104ec76fc820ca07 reports zero introduced and zero inherited findings, with all three scheduling probes below their existing ceilings.
+
+A new in-memory projection proved idempotent current JS/CSS emission over 13,028 documents and 11 unchanged fragments, without writing the full site tree. Its receipt SHA-256 is 141af9795a1b8c76f0295de15be2f56e1b991bb7299ff90e88045368e8a4eb75. The later two-newline Markets output correction has its separate fresh-builder proof. Neither receipt substitutes for a generated-main commit and inspection of the actually served tree.
+
+The route projection still contains 13,015 legacy paths, 14 native paths, 293 directory entries and zero coverage gaps. Fourteen existing registry rows received evidence-backed archetype classification repairs; no route or access scope changed. The current registry SHA-256 is 5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023, already carried by the published Terminal candidate 1d6024c8ae39bafee328017fa96769d17b3be378.
+
+Fresh P0b renderer/browser receipts and a real local hydrated-shell browser run remain the next evidence steps at this checkpoint. The full generated publication, source landing, isolated beta installation, DNS/TLS and public browser acceptance remain pending. The source procedure pin remains c355e6a4ce3c15ac1e46c14f642bb5984da810d2.

@@ -11,6 +11,8 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const SRC = fs.readFileSync(path.join(__dirname, '..', '..', 'templates', 'shared_shell_bridge.js'), 'utf8');
+const CSS = fs.readFileSync(path.join(__dirname, '..', '..', 'templates', 'shared_shell.css'), 'utf8');
+const CSS_READY = /--mmx-shared-shell-css-ready:\s*([^;]+);/.exec(CSS)[1].trim();
 const PROD = 'https://beta.mastermind-x.com';
 
 function harness(opts) {
@@ -22,10 +24,13 @@ function harness(opts) {
     metaContent: '20261018.1',
     responseKind: 'content',
     standalone: false,
+    cssReady: CSS_READY,
+    cssReadError: false,
   }, opts || {});
   const sent = [];
   const seq = []; // ordered evidence of messages vs child-document mutations
-  const calls = { scrollTo: [], setTheme: [], setLang: [], focus: [] };
+  const calls = { scrollTo: [], setTheme: [], setLang: [], focus: [], cssReads: 0 };
+  let cssReady = o.cssReady;
   const winL = {};
   const docL = {};
   const nodes = [];
@@ -160,6 +165,15 @@ function harness(opts) {
     history: historyObj,
     scrollX: 0,
     scrollY: 0,
+    // Simulate a stylesheet already loaded before the blocking bridge executes;
+    // readiness must not depend on observing a link load event afterward.
+    getComputedStyle(el) {
+      calls.cssReads++;
+      if (o.cssReadError) throw new Error('stylesheet unavailable');
+      return { getPropertyValue(name) {
+        return name === '--mmx-shared-shell-css-ready' && el.getAttribute('data-mmx-shared-shell') === '1' ? cssReady : '';
+      } };
+    },
     scrollTo(x, y) { calls.scrollTo.push({ x, y }); seq.push('SCROLLTO'); },
     addEventListener(type, fn) { (winL[type] = winL[type] || []).push(fn); },
     dispatchEvent(evt) { dispatched.push(evt); (winL[evt.type] || []).slice().forEach((fn) => fn(evt)); return true; },
@@ -180,6 +194,7 @@ function harness(opts) {
     location: () => hloc,
     nativePushRef, nativeReplaceRef,
     api: () => sandbox.MMXSharedShell,
+    setCssReady: (value) => { cssReady = value; },
     activeCount: (type) => sent.filter((s) => s.msg.type === type).length,
     lastOf: (type) => { const l = sent.filter((s) => s.msg.type === type); return l.length ? l[l.length - 1].msg : null; },
     // ordering of one event loop turn of evidence, from a marker index
@@ -263,6 +278,9 @@ test('standalone page: zero surface', () => {
   assert.strictEqual(ctx.sandbox.MMXSharedShell, undefined);
   assert.strictEqual(ctx.sent.length, 0);
   assert.strictEqual(ctx.sandbox.history.pushState, ctx.nativePushRef);
+  assert.strictEqual(ctx.docEl.getAttribute('data-mmx-shared-shell'), null);
+  assert.strictEqual(ctx.calls.cssReads, 0);
+  assert.strictEqual(ctx.styles.length, 0);
 });
 
 test('candidate guards: flag, generation, referrer', () => {
@@ -333,8 +351,9 @@ test('valid INIT: chrome suppression, context, READY shape', () => {
   assert.strictEqual(ctx.docEl.getAttribute('lang'), 'en');
   assert.deepStrictEqual(seen.theme, ['dark']);
   assert.deepStrictEqual(seen.lang, ['en']);
-  assert.strictEqual(ctx.styles.length, 1);
-  const css = ctx.styles[0].textContent;
+  assert.strictEqual(ctx.styles.length, 0);
+  assert.ok(ctx.calls.cssReads > 0);
+  const css = CSS;
   assert.ok(css.indexOf('.site-nav') !== -1 && css.indexOf('[data-mmx-all-tools]') !== -1 && css.indexOf('#mmx-all-tools') !== -1);
   assert.ok(css.indexOf('.public-nav') !== -1 && css.indexOf('.landing-nav') !== -1);
   assert.ok(css.indexOf('--nav-offset: 0px') !== -1 && css.indexOf('--nav-height: 0px') !== -1);
@@ -349,6 +368,74 @@ test('valid INIT: chrome suppression, context, READY shape', () => {
   assert.strictEqual(ready.href, 'https://www.mastermind-x.com/tools?q=alpha#top');
   assert.ok(typeof ready.title === 'string' && ready.title.length <= 240);
   assert.ok(ctx.sent.every((s) => s.to === PROD));
+});
+
+test('static chrome rules are dormant and both published assets match their templates', () => {
+  assert.strictEqual(CSS_READY, '1');
+  for (const rule of CSS.replace(/\/\*[\s\S]*?\*\//g, '').split('}').filter((s) => s.trim())) {
+    const selectors = rule.split('{')[0].split(',');
+    assert.ok(selectors.every((selector) => selector.trim().startsWith('html[data-mmx-shared-shell="1"]')));
+  }
+  for (const [name, expected] of [['shared_shell.css', CSS], ['shared_shell_bridge.js', SRC]]) {
+    assert.strictEqual(fs.readFileSync(path.join(__dirname, '..', '..', 'site', name), 'utf8'), expected);
+  }
+});
+
+test('unverified INIT cannot activate or probe shell CSS', () => {
+  const ctx = harness();
+  ctx.dispatchMessage(ctx.initMsg(), { origin: 'https://evil.example' });
+  ctx.dispatchMessage(ctx.initMsg(), { source: {} });
+  ctx.dispatchMessage(ctx.initMsg({ frameGeneration: 'old-generation' }));
+  assert.strictEqual(ctx.docEl.getAttribute('data-mmx-shared-shell'), null);
+  assert.strictEqual(ctx.calls.cssReads, 0);
+  assert.strictEqual(ctx.styles.length, 0);
+  assert.strictEqual(ctx.activeCount('READY'), 0);
+});
+
+test('missing, blocked, wrong or unreadable CSS refuses activation and queued navigation', () => {
+  for (const options of [{ cssReady: '' }, { cssReady: 'wrong' }, { cssReadError: true }, { cssReady: null }]) {
+    const ctx = harness(options);
+    assert.strictEqual(ctx.api().navigate('/dashboard'), true);
+    ctx.activate();
+    assert.strictEqual(ctx.api().active, false);
+    assert.strictEqual(ctx.docEl.getAttribute('data-mmx-shared-shell'), null);
+    assert.strictEqual(ctx.activeCount('READY'), 0);
+    assert.strictEqual(ctx.activeCount('NAVIGATE'), 0);
+    assert.strictEqual(ctx.lastOf('ERROR').code, 'initialization_failed');
+    assert.strictEqual(ctx.docEl.__observers.length, 0);
+    assert.strictEqual(ctx.styles.length, 0);
+    assert.strictEqual(ctx.calls.focus.length, 0);
+  }
+  const unsupported = harness();
+  delete unsupported.sandbox.getComputedStyle;
+  unsupported.activate();
+  assert.strictEqual(unsupported.api().active, false);
+  assert.strictEqual(unsupported.activeCount('READY'), 0);
+  assert.strictEqual(unsupported.docEl.getAttribute('data-mmx-shared-shell'), null);
+});
+
+test('CSS removed during document boot cannot produce initial READY or restoration', () => {
+  const ctx = harness({ ready: 'loading' }).activate({ restore: { x: 10, y: 20 } });
+  assert.strictEqual(ctx.api().active, true);
+  ctx.setCssReady('');
+  ctx.fireDoc('DOMContentLoaded');
+  assert.strictEqual(ctx.activeCount('READY'), 0);
+  assert.strictEqual(ctx.lastOf('ERROR').code, 'initialization_failed');
+  assert.strictEqual(ctx.calls.scrollTo.length, 0);
+  assert.strictEqual(ctx.calls.focus.length, 0);
+});
+
+test('CSS removal prevents subsequent CONTEXT or repeated INIT readiness claims', () => {
+  const ctx = harness().activate();
+  const readyCount = ctx.activeCount('READY');
+  assert.strictEqual(readyCount, 1);
+  ctx.setCssReady('');
+  ctx.dispatchMessage(ctx.contextMsg());
+  assert.strictEqual(ctx.activeCount('READY'), readyCount);
+  assert.strictEqual(ctx.lastOf('ERROR').code, 'initialization_failed');
+  ctx.dispatchMessage(ctx.initMsg({ contextRevision: 5 }));
+  assert.strictEqual(ctx.activeCount('READY'), readyCount);
+  assert.strictEqual(ctx.lastOf('ERROR').code, 'initialization_failed');
 });
 
 test('CONTEXT apply, staleness, unsupported_context', () => {
@@ -1110,7 +1197,7 @@ test('legacy boot theme/lang overwrite is restored at DOM ready and never echoed
   assert.strictEqual(ctx.lastOf('READY').contextRevision, 3);
   assert.strictEqual(ctx.activeCount('CONTEXT_REQUEST'), 0); // restoration never echoes
   assert.strictEqual(ctx.docEl.__observers.length, 1);       // one anchor observer
-  assert.strictEqual(ctx.styles.length, 1);                  // chrome suppression applied once
+  assert.strictEqual(ctx.styles.length, 0);                  // static stylesheet; no runtime injection
   assert.strictEqual(ctx.calls.focus.length, 1);             // restored exactly once
   assert.ok(ctx.calls.scrollTo.some((s) => s.x === 0 && s.y === 900));
 });
@@ -1153,7 +1240,7 @@ test('a boot-window INIT repeated while loading still restores exactly once', ()
   ctx.dispatchMessage(ctx.initMsg()); // identical trusted INIT while still loading
   assert.strictEqual(ctx.docL.DOMContentLoaded.length, 1); // no second ready listener
   assert.strictEqual(ctx.docEl.__observers.length, 1);     // no duplicate observer
-  assert.strictEqual(ctx.styles.length, 1);                // no duplicate suppression
+  assert.strictEqual(ctx.styles.length, 0);                // static stylesheet; no runtime injection
   assert.strictEqual(ctx.activeCount('READY'), 0);
   ctx.doc.readyState = 'interactive';
   ctx.fireDoc('DOMContentLoaded');

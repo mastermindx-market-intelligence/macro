@@ -331,7 +331,7 @@
       if (loaded === false || !window.MDXTerminalOverlay) {
         var _ss = window.MMXSharedShell;
         if (_ss) {
-          // The controller is unavailable: offer only validated native presentation
+          // The controller is unavailable: offer only checked native presentation
           // state, retaining a page-only return without transient query or hash data.
           try {
             var _tu = new URL(directUrl, location.href);

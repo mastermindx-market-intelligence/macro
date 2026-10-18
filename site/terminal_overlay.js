@@ -66,7 +66,7 @@
      /terminal route BEFORE any overlay build, frame insert, history guard or
      body-lock effect. The child bridge only maps the beta origin onto this
      legacy origin, so an absolute app URL is never admitted and never passed to
-     it: the validated app origin is dropped and only the admitted route plus the
+     it: the configured app origin is dropped and only the admitted route plus the
      incumbent safe state travels. A claimed or refused handoff falls back to
      nothing - no raw Location write, no nested overlay, no API, no relay, no
      route registry. No candidate keeps the exact standalone behavior below. */

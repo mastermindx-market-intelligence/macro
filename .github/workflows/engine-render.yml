@@ -885,6 +885,7 @@ jobs:
         run: |
           python3 scripts/check_site_asset_refs.py site
           python -m scripts.check_government_revenue_projection
+          python scripts/inject_shared_shell.py --check --site-dir site || exit 1
       - name: commit rendered site (site/ ONLY — never data/, so every ledger stays pristine)
         # Fail closed: no cancelled run or failed guard is allowed to mutate main.
         if: ${{ success() }}
@@ -937,6 +938,7 @@ jobs:
           # finalized-tree step. Validate the exact healed tree represented by the index.
           python3 scripts/check_site_asset_refs.py site
           python -m scripts.check_government_revenue_projection
+          python scripts/inject_shared_shell.py --check --site-dir site || exit 1
           git commit -m "engine-render: regime recompute + re-render $(date -u +%F) (scope=${{ github.event.inputs.scope || 'all' }})"
           # --autostash: we commit site/ ONLY, leaving the render's throwaway data/ writes
           # unstaged; a plain `pull --rebase` refuses on a dirty tree and silently failed
@@ -1023,6 +1025,7 @@ jobs:
               # Recheck the actual post-rebase tree before creating a heal commit or push.
               python3 scripts/check_site_asset_refs.py site
               python -m scripts.check_government_revenue_projection
+              python scripts/inject_shared_shell.py --check --site-dir site || exit 1
               if ! git diff --quiet -- site/ templates/; then
                 # push_staged_clean: never bake conflict markers into the follow-up
                 # commit (P0 d29e4dd44d/#4167). On a dirty scan: unstage and push the
@@ -1052,6 +1055,13 @@ jobs:
                 exit 1
               fi
               python -m scripts.check_government_revenue_projection
+              # A skipped or failed optional heal commit must not leave the checker
+              # proving working-tree pages while an older HEAD is pushed.
+              if ! git diff --quiet HEAD -- site/ templates/; then
+                echo "::error title=shared-shell publication uncommitted::refusing to push a HEAD older than the validated site/templates tree"
+                exit 1
+              fi
+              python scripts/inject_shared_shell.py --check --site-dir site || exit 1
               if push_do; then echo "pushed engine-rendered site on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
             fi
             push_abort_rebase

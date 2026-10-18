@@ -37,6 +37,8 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "app/__init__.py"
       - "app/account_actions.py"
       - "app/account_prefs.py"
@@ -1778,6 +1780,8 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "tests/test_c19_wp32_correction.py"
       - "tests/test_c19_wp32_denial_cache.py"
       - "tests/test_c19_wp19_integrated_answer_entitlement_pins.py"
@@ -2582,6 +2586,8 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - "tests/test_c19_wp22_dhi_traversal.py"
@@ -3396,6 +3402,8 @@ jobs:
     # the production adapters and the seat evaluator CLI (offline; every adapter is injected in tests).
     timeout-minutes: 10
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "tests/test_c19_wp31_gates.py"
       - "tests/test_c19_wp31_stats.py"
       - "tests/test_c19_wp31_sources.py"
@@ -3824,6 +3832,8 @@ jobs:
     # is no longer the active reason — the path stays for parity.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "lib/exchange_holidays.py"
       - "config.yml"
       - "config/market_reference.yml"
@@ -4905,6 +4915,7 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
@@ -6073,6 +6084,8 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "config/dataset_registry.yml"
       - "config/intelligence_workspace/datapoints.v1.json"
       - "contracts/intelligence_workspace/datapoint_registry.schema.json"
@@ -7330,6 +7343,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/intl_history_mount.py"
@@ -7647,6 +7661,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -8486,6 +8501,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - "engine/government_revenue/program_dossier.py"
@@ -9957,6 +9974,8 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/us_cash_calendar.py"
@@ -10256,6 +10275,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
       # Connected Research Factory import closure (PR9463).
       - research/signal_engine/confluence.py
       - scripts/oracle_reversion_screen.py
@@ -11361,6 +11381,8 @@ jobs:
     # Git subprocess inference otherwise claims unrelated template and code trees.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - ".github/workflows/**"
       - "scripts/ci/*.sh"
       - "data/**"
@@ -11512,6 +11534,8 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
@@ -11992,6 +12016,8 @@ jobs:
     # new import fails the closure-coverage audit by name — add it here.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "lib/exchange_holidays.py"
       - "tests/test_options_payoff_lab_consumer.py"
       - "tests/test_options_skew_source_note.py"
@@ -12152,6 +12178,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json"
       - "data/sector_intelligence/fixtures/finance_intelligence_read_model.v1.valid.json"
       - "tests/test_finance_intelligence_contract.py"
@@ -12268,6 +12296,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/__init__.py"
       - "lib/config.py"
@@ -12797,6 +12827,7 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
       - "config.yml"
       - "config/sparse_worktree.json"
       - "engine/__init__.py"
@@ -12860,6 +12891,8 @@ jobs:
     # sparse tree). Packing ceilings unchanged.
     runs-on: ubuntu-latest
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - engine/__init__.py
       - engine/analyst_revisions.py
       - engine/canon.py
@@ -13088,6 +13121,8 @@ jobs:
     # they read by name — not templates/** or engine/** wholesale, whose PRs
     # validated-claims-source already grades.
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -13675,6 +13710,10 @@ jobs:
       # not the main-only data-health plane. Preserve real-data macro tests below.
       - name: Forex context bus and movement evidence (synthetic inputs, temporary output)
         run: python -m pytest tests/test_forex_context_bus.py -q
+      # Shared Shell keeps the existing document producer and finite route
+      # admission contracts on the code gate alongside page-injection coverage.
+      - name: Shared Shell finite routes and document compatibility
+        run: python -m pytest tests/test_export_shared_shell_routes.py tests/test_shared_shell_injection.py -q
 
   quant-q09-venue-concentration:
     if: ${{ false }}
@@ -14947,6 +14986,8 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -15016,6 +15057,7 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -15334,6 +15376,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "lib/shared_shell.py"
       # Connected Research Factory import closure (PR9463).
       - engine/oracle/compounds.py
       - engine/oracle/graph.py
@@ -16461,6 +16504,8 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -18540,6 +18585,8 @@ jobs:
     # was doing all the rest of the selecting.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/__init__.py"
       - "lib/config.py"
@@ -20581,6 +20628,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - "engine/government_revenue/program_dossier.py"
@@ -21377,6 +21426,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       # cx-int engine (2026-10-13): the engine stream's five contract suites and their measured import closure.
@@ -22793,6 +22843,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -24016,6 +24068,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
       - "scripts/build_turn_watch.py"
@@ -26649,6 +26702,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/__init__.py"
       - "lib/config.py"
@@ -26723,6 +26778,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/__init__.py"
       - "lib/config.py"
@@ -28771,6 +28828,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - lib/dataos/web_history.py
@@ -30114,6 +30173,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -31605,6 +31666,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # MI W14 (2026-10-17): scripts/build_qbus_news_universe.py reads via the native parquet helper.
@@ -32660,6 +32723,8 @@ jobs:
     # new import fails the closure-coverage audit by name — add it here.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
       - "engine/market_os/**"
       - "scripts/build_macro_workspaces.py"
@@ -32751,6 +32816,8 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
       - "engine/__init__.py"
       - "engine/market_os/**"
@@ -32900,6 +32967,7 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -33454,6 +33522,8 @@ jobs:
     # read or run; an unlisted closure file is an uncovered path. No
     # tests/** catch-all.
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/pages.py"
       - "lib/exchange_holidays.py"
@@ -33587,6 +33657,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "tests/mining_casebook.py"
       - "tests/test_mining_shared_contract.py"
       - "tests/test_mining_shared_contract_probes.py"
@@ -33700,6 +33772,8 @@ jobs:
     # is listed under `paths:` below).
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/__init__.py"
       - "lib/config.py"
@@ -33897,6 +33971,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/config.py"
       - "lib/pages.py"

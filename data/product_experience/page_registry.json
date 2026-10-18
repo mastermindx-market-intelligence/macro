@@ -2688,7 +2688,7 @@
       "access_shell": "anonymous",
       "payload_tier": "public_shell_premium_payload",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "instrument_analyzer",
       "design_system": {
         "compliant": false
       },
@@ -3196,7 +3196,7 @@
       "access_shell": "anonymous",
       "payload_tier": "public",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "intelligence_desk",
       "design_system": {
         "compliant": false
       },
@@ -3237,7 +3237,7 @@
       "access_shell": "anonymous",
       "payload_tier": "public_shell_premium_payload",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "instrument_analyzer",
       "design_system": {
         "compliant": false
       },
@@ -5561,7 +5561,7 @@
       "access_shell": "anonymous",
       "payload_tier": "public_shell_premium_payload",
       "nav_family": "public_nav.public",
-      "archetype": "unclassified",
+      "archetype": "editorial",
       "design_system": {
         "compliant": false
       },
@@ -6566,7 +6566,7 @@
       "access_shell": "anonymous",
       "payload_tier": "public_shell_premium_payload",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "regime_dashboard",
       "design_system": {
         "compliant": false
       },
@@ -12805,7 +12805,7 @@
       "access_shell": "anonymous",
       "payload_tier": "public_shell_premium_payload",
       "nav_family": "product_nav.research",
-      "archetype": "unclassified",
+      "archetype": "discovery_board",
       "design_system": {
         "compliant": false
       },
@@ -13907,7 +13907,7 @@
       "access_shell": "unknown",
       "payload_tier": "unknown",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "chart_workspace",
       "design_system": {
         "compliant": false
       },
@@ -13947,7 +13947,7 @@
       "access_shell": "unknown",
       "payload_tier": "unknown",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "chart_workspace",
       "design_system": {
         "compliant": false
       },
@@ -13987,7 +13987,7 @@
       "access_shell": "unknown",
       "payload_tier": "unknown",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "chart_workspace",
       "design_system": {
         "compliant": false
       },
@@ -14107,7 +14107,7 @@
       "access_shell": "unknown",
       "payload_tier": "unknown",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "utility",
       "design_system": {
         "compliant": false
       },
@@ -14189,7 +14189,7 @@
       "access_shell": "signed_in",
       "payload_tier": "unknown",
       "nav_family": "app_nav.rail",
-      "archetype": "unclassified",
+      "archetype": "chart_workspace",
       "design_system": {
         "compliant": false
       },
@@ -14271,7 +14271,7 @@
       "access_shell": "unknown",
       "payload_tier": "unknown",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "utility",
       "design_system": {
         "compliant": false
       },
@@ -14431,7 +14431,7 @@
       "access_shell": "paid",
       "payload_tier": "premium",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "chart_workspace",
       "design_system": {
         "compliant": false
       },
@@ -14516,7 +14516,7 @@
       "access_shell": "unknown",
       "payload_tier": "unknown",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "utility",
       "design_system": {
         "compliant": false
       },
