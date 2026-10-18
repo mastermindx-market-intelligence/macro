@@ -127,11 +127,13 @@ def project_histories(histories: object, *, anchor_market_day: str,
         partitions=history.source_partitions
         if type(partitions) is not tuple or not 1<=len(partitions)<=256:
             raise Refused(f'{symbol}:RECEIPT_REFERENCES_INVALID')
+        declared_receipt_days={}
         for item in partitions:
             if (type(item) is not tuple or len(item)!=2
                     or type(item[1]) is not str or not _SHA.fullmatch(item[1])
                     or _day(item[0],f'{symbol}:RECEIPT_DATE_INVALID')>cutoff.date()):
                 raise Refused(f'{symbol}:RECEIPT_REFERENCES_INVALID')
+            declared_receipt_days.setdefault(item[1],set()).add(item[0])
         if len(partitions)!=len(set(partitions)):
             raise Refused(f'{symbol}:RECEIPT_REFERENCES_INVALID')
         rows=history.rows
@@ -173,9 +175,13 @@ def project_histories(histories: object, *, anchor_market_day: str,
                 value=row.get(field)
                 if type(value) is not str or not _SHA.fullmatch(value):
                     raise Refused(f'{symbol}:ROW_RECEIPT_INVALID')
+            if row['source_sha256'] not in declared_receipt_days:
+                raise Refused(f'{symbol}:ROW_SOURCE_NOT_REFERENCED')
             observed=_utc(row.get('source_observed_at_utc'),f'{symbol}:ROW_CAPTURE_CLOCK')
             if observed>cutoff:
                 raise Refused(f'{symbol}:SOURCE_AFTER_CAPTURE_CUTOFF')
+            if observed.date().isoformat() not in declared_receipt_days[row['source_sha256']]:
+                raise Refused(f'{symbol}:ROW_CAPTURE_DAY_NOT_REFERENCED')
             adjustment=_utc(row.get('adjustment_asof_utc'),f'{symbol}:ADJUSTMENT_VINTAGE')
             if adjustment!=observed:
                 raise Refused(f'{symbol}:ADJUSTMENT_CLOCK_CONFLICT')
