@@ -1080,6 +1080,7 @@ on:
       - "tests/test_government_revenue_dossiers.py"
       - "tests/test_government_revenue_subaward_api.py"
       - "tests/test_government_revenue_ui.py"
+      - "tests/test_government_revenue_candidate_sources.py"
       - "tests/test_government_revenue_dossier_ui.py"
       - "tests/test_government_revenue_briefcase_ui.py"
       # D3 temporal contract suite (wired by the same PR that added it).
@@ -1870,6 +1871,7 @@ on:
       - "tests/test_build_portfolio_ctx.py"
       - "tests/test_portfolio_ctx_chains.py"   # TXI W4 per-ticker chains merge
       - "scripts/build_state_of_themes.py"
+      - "scripts/build_theme_tree_page.py"
       - "tests/test_state_of_themes.py"
       - "engine/portfolio_brief.py"
       - "tests/test_portfolio_brief.py"

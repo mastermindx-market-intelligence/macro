@@ -86,8 +86,8 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-10-17 08:21:14",
-  "runtime_s": 98.0,
+  "run_utc": "2026-10-18 08:12:44",
+  "runtime_s": 123.3,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
@@ -138,7 +138,7 @@
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 20.1,
+    "runtime_s": 22.2,
     "skipped": 5,
     "source": "baskets/membership.json",
     "state_turn": 60,
