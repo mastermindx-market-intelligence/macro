@@ -498,5 +498,187 @@
     },
     "publisher": "No accepted push from failed collect/tail; same-run engine output, Prophet/B1 and published main price coverage not established",
     "source_modification": false
+  },
+  "downstream_natural_production_readback": {
+    "evidence_date_utc": "2026-10-18",
+    "research_operation": "rotation-intelligence-architecture-20261012",
+    "scope": "Immutable, read-only observed GitHub Actions logs, published Git blobs, HTTP 200 public page and committed source/sidecar. Not an authenticated browser, trade authority, forecast or delivery receipt.",
+    "source_head_for_public_readback": "2cca92fb3f6ca34c5ab53f1e167a05a1375f6b37",
+    "newer_main_exists_note": "Source main advanced after the pinned HTTP read. This receipt attaches solely to the exact matched published bytes at 2cca92f, not arbitrary later HEAD.",
+    "render": {
+      "run_id": 39098723648,
+      "job_id": 117590417465,
+      "source_merge_sha": "4f52d22596545cbd67b5143e188baf5660237024",
+      "trigger": "Separate existing workflow_dispatch by mastermindxryan, NOT dispatched by this research operation",
+      "started_at_utc": "2026-10-18T04:54:44Z",
+      "completed_at_utc": "2026-10-18T07:28:10Z",
+      "run_conclusion": "success",
+      "inner_build_site": "actual native build_site executed and wrote site/us_stocks.html at 05:40:47Z (log 1014 KB)",
+      "protected_payload_write": "same inner build wrote /premiumdata/us_stocks.json: 99 locked board rows, 623 locked plans, 7 locked panels",
+      "r2_stockdata": "publish log 68 uploaded, 2882 unchanged, 0 failed at 07:03:51Z",
+      "site_push": "Succeeded on attempt 5 at 07:27:29Z after guarded rebase/contention; updated main e5c431a6a to 505de92e1. Render-step success distinct from public readback.",
+      "source_only_release": "#9566 original merge already accepted, DO_NOT_REDO",
+      "original_pending_cancelled": "39097008410 cancelled at04:54:27Z; older39092739745 cancelled at04:53:56Z; those are not production proof"
+    },
+    "public": {
+      "url": "https://www.mastermind-x.com/us_stocks.html",
+      "status": 200,
+      "http_response_date_utc": "2026-10-18T07:56:30Z",
+      "last_modified_utc": "2026-10-18T07:54:27Z",
+      "etag": "\"dm7sw6067rnofzf4\"",
+      "content_type": "text/html; charset=utf-8",
+      "content_length_bytes": 745744,
+      "body_sha256": "482428ffab46aee1ac0fc03e7f330fe215b635f891150b93e254137e89a57d94",
+      "public_body_git_blob": "77ea444a885df3e348a777f3d57f6613ea4e4f59",
+      "match": "One independent raw GitHub blob at main 2cca92f equals actual live HTTP body bytes and Git blob ID; exact public artifact publication PROVEN",
+      "board_asof": "2026-10-14",
+      "board_delayed": "1",
+      "cards": [
+        {
+          "section": "Today",
+          "ticker": "ETSY",
+          "class": "pv-buy pv-featured",
+          "visible_verb": "Buy",
+          "entry_copy": "Partial entry — half size now",
+          "historical_assessment": "2026-10-13",
+          "quote_clock": "Not supplied"
+        },
+        {
+          "section": "Candidates",
+          "ticker": "ETSY",
+          "class": "pv-buy pv-featured",
+          "visible_verb": "Buy",
+          "entry_copy": "Partial entry — half size now",
+          "historical_assessment": "2026-10-13",
+          "quote_clock": "Not supplied"
+        },
+        {
+          "section": "Candidates",
+          "ticker": "ENSG",
+          "class": "pv-buy pv-triage",
+          "visible_verb": "Buy",
+          "entry_copy": "Buy zone — entry open now",
+          "historical_assessment": "2026-10-13",
+          "quote_clock": "Not supplied"
+        }
+      ],
+      "outcome": "Compact page is PUBLICLY served, but actionable-looking legacy Buy presentation on delayed data is a real public consumer defect. Does not establish historical assessments false or grant current B4/trading authority.",
+      "incumbent_owner_return": "https://github.com/mastermindx-market-intelligence/macro/issues/6817#issuecomment-6245866251"
+    },
+    "coherent_public_shell_and_protected_payload_source": {
+      "protected_payload_path": "site/premiumdata/us_stocks.json",
+      "protected_blob": "26c006310ca2a43dc1722a904a609f34ad593f3b",
+      "schema": "tier_payload.v1",
+      "built": "2026-10-18 06:34",
+      "as_of": "2026-10-14",
+      "total_source_rows": 102,
+      "preview_rows": 3,
+      "locked_rows": 99,
+      "pair_id": "54aa5a5b52cb43f2918ab8ff1600f536",
+      "selection_receipt": "sha256:a432e513b2fea0af3c95351766881a8f7e79ad139860ab3682df50c331f5fc9e",
+      "page_pair_id_equal": true,
+      "page_selection_receipt_equal": true,
+      "scope": "Builder's complete source shell/protected payload generation and exact public HTML binding, NOT successful authenticated tier unlock or saved-history/consent acceptance"
+    },
+    "board": {
+      "site_blob": "9a761956238e2ad095af786ae3364c196fd77c04",
+      "as_of": "2026-10-14",
+      "gate_go": false,
+      "staleness_observed_at_utc": "2026-10-18T06:34:52.762359Z",
+      "price_panel_majority_through": "2026-10-07",
+      "expected_completed_session": "2026-10-16",
+      "panel_members_at_oct16": 198,
+      "panel_members_total": 3064,
+      "sessions_behind": 7,
+      "source_roster_total": 3069,
+      "russell_roster_members": 1356,
+      "qualification": "Roster membership and R2 SPY freshness cannot substitute for complete per-name panel-majority price and native B4."
+    },
+    "prophet": {
+      "index_path": "site/prophet/index.json",
+      "git_blob": "1d002b17996eeafbf0f69a70c38e393f352000ba",
+      "schema": "prophet.index/v1",
+      "asof": "2026-10-17",
+      "source_asof": "2026-10-14",
+      "source_board_asof": "2026-10-14",
+      "source_delayed": true,
+      "source_basis": "board_asof",
+      "gate_go": false,
+      "authority_tier": "display",
+      "plans_existing": 648,
+      "active": 626,
+      "open": 242,
+      "admitted": 71,
+      "duplicates": 40,
+      "reorigination_blocked": 4,
+      "eligible_after_skips": 27,
+      "validation_failed": 27,
+      "originated": 0,
+      "validator_stages": [
+        "clock_provenance"
+      ],
+      "validation_error_categories": {
+        "price_basis_stale": 27,
+        "board_delayed": 27,
+        "basis_not_panel_majority": 27,
+        "tier_observed_date_mismatch": 12,
+        "formation_tier_event_order": 13
+      },
+      "validation_errors_total": 106,
+      "native_fence_outcome": "27/27 are truthful refusals; do not relax or assert current entries/Plans. Separate source price repair and stale historical/current UI copy.",
+      "engine_job": {
+        "run_id": 39081858131,
+        "job_id": 117575031870,
+        "conclusion": "cancelled 2026-10-18T07:12:33Z",
+        "steps_33_35_36_43_47": "completed success, with real source/sidecar writes",
+        "oip_tail": "step157 failed: campaign build=failure, publish=skipped, candidate build=skipped; episode build/publish were success",
+        "oip_is_not_prophet": "Not proof Prophet stage failed; whole engine is NOT terminal success"
+      },
+      "prophet_live_pack": {
+        "as_of": "2026-10-16",
+        "universe": 3069,
+        "admitted_series": 3064,
+        "probed_names": 180,
+        "armed_names": 120,
+        "reverified_prices": 300,
+        "reported_mismatches": 0,
+        "tier4_eligible_states": 61,
+        "caveat": "Provisional-close pack/R2 issuance, not B4 new-entry selection or opt-in alert delivered."
+      }
+    },
+    "turnwatch_forward": {
+      "public_path": "site/turn_watch/turn_watch.json",
+      "public_git_blob": "bd7ebd2253ea13974aa21ce55a013a3353bba8c3",
+      "as_of": "2026-10-16",
+      "data_session": "2026-10-16",
+      "runtime_seconds_serialized": false,
+      "observations": 378,
+      "deck": 40,
+      "beyond_cap": 338,
+      "public_exact_sha256": "3ea8356b170e41fdb2e2c158eb4cfd4af021e9707b0b5bda027702d5cf44823e",
+      "sidecar_path": "data/us_prophet_rank/episode_inputs/turn_watch/2026-10-16.json",
+      "sidecar_git_blob": "a97dec620a760ee30713ba18208df39ae4edc5a4",
+      "sidecar_rows": 378,
+      "known_at": "2026-10-16T20:00:00Z",
+      "source_artifact_sha256": "sha256:3ea8356b170e41fdb2e2c158eb4cfd4af021e9707b0b5bda027702d5cf44823e",
+      "exact_public_sidecar_digest_match": true,
+      "canonical_intake": "us_prophet_ledgers job117618491585 queued at last observation; matching publication input is proven, B1 admission/history relation/customer consumer remain UNVERIFIED",
+      "do_not_redo": "#9568 source/151 tests/earlier 18+360 at old receipt cuts; don't rewrite v1 or manufacture exact joins"
+    },
+    "other_boundaries": {
+      "r2_engine_audit": "After normal engine R2 publisher, 5911 uploaded/5960 unchanged/0 failed; strict anchors stockdata/ohlc/massive_stock_day OK and SPY asof2026-10-16. This is not 3064-name panel freshness.",
+      "qledger": "Both accepted natural GH001 failed market/tail candidates remain unchanged and separate; #9450/#8756 held, no replay/truncation.",
+      "mtf": "Natural step18 MTF contract yielded seven real validator errors, fail-soft last-good restored; original source-workspace acquire PARTIAL/EFFECT_UNKNOWN; direct red six synthetic cases and no code publication. Evidence in mtf_signal_contract_20261018.json",
+      "source_custody": "#9495 remains Draft/No Merge, B4/Plan original lost effect, Chrome consent, Paper refusal, Risk Radar shared writers and QLedger roles preserved."
+    },
+    "not_proven": [
+      "Authenticated tier unlock/history",
+      "B1 exact relation and admission at new receipt",
+      "Whole nightly engine SUCCESS",
+      "Native B4 exact-episode ENTRY_OPEN",
+      "Model-selected trade or predictive alpha",
+      "Opt-in email/Discord customer delivery",
+      "Full 3064-name price coverage"
+    ]
   }
 }
