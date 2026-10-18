@@ -215,6 +215,47 @@ def test_run_p1_refuses_before_loader(tmp_path, monkeypatch):
     assert calls == ["assert"]
 
 
+# LR-W6 accepted science ruling: V2/V2.1/T12R is SIZED but T13R says
+# H1/H2/H3 are NOT_EXECUTABLE. Even a passing old size gate does not allow
+# the one-time P1 market-data read until V3 is preregistered and powered.
+@pytest.mark.parametrize("record", [True, False])
+def test_p1_v3_embargo_refuses_even_with_v2_size_gate_passed(tmp_path, monkeypatch, record):
+    from scripts import leadership_rotation_run as lr
+
+    calls = []
+    monkeypatch.setattr(
+        st, "assert_protocol_landed", lambda *_a, **_k: calls.append("v1_v2")
+    )
+    monkeypatch.setattr(
+        st, "assert_prereg_landed", lambda *_a, **_k: calls.append("v2_1")
+    )
+    monkeypatch.setattr(
+        lr, "assert_size_gate_passed",
+        lambda *_a, **_k: (calls.append("v2_size") or {"sized": True}),
+    )
+
+    def forbidden(*_a, **_k):
+        raise AssertionError("embargo did not stop before data/look effects")
+
+    monkeypatch.setattr(lr, "count_prior_looks", forbidden)
+    monkeypatch.setattr(lr, "record_look", forbidden)
+    monkeypatch.setattr(st, "load_closes_from_git", forbidden)
+    output = tmp_path / "must-not-write-p1.json"
+
+    with pytest.raises(lr.P1StatisticsNotQualified, match="V3_STATISTICS_NOT_QUALIFIED") as err:
+        lr.run_p1(str(tmp_path), commit="synthetic-commit", out=str(output), record=record)
+
+    assert err.value.reason == "V3_STATISTICS_NOT_QUALIFIED"
+    assert calls == ["v1_v2", "v2_1", "v2_size"]
+    assert not output.exists()
+
+
+def test_p0_synthetic_composer_stays_available_while_p1_is_sealed():
+    # The LR-W6 embargo is read-path-only; P0 study/synthetic controls remain valid.
+    synthetic = evaluate_family({}, start=0, end=10, partition="P0")
+    assert synthetic["partition"] == "P0"
+
+
 # MUTATION: scripts/leadership_rotation_run.py:1020 omit a name from falsifier_controls
 def test_falsifier_controls_ten_names_all_pass():
     fc = falsifier_controls()
