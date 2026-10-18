@@ -1559,3 +1559,50 @@ def test_v3_candidate_abstains_without_events_and_rejects_bad_inputs():
     ]
     with pytest.raises(ValueError, match="unique"):
         compare(dupes, [], [], measured_sessions=150)
+
+
+def test_v3_candidate_accepts_existing_p0_generator_without_market_access():
+    """Actual G1/G2 family generator + frozen arms, not hand-picked events.
+
+    This is one synthetic wiring smoke test; it is NOT size, power, H1 alpha,
+    a fitted margin or a pre-registration receipt. Never invoke run_p1.
+    """
+    import numpy as np
+    from scripts import leadership_rotation_episodes as ep
+    from scripts import leadership_rotation_p0 as p0
+    from scripts import leadership_rotation_study as st
+    from scripts.leadership_rotation_v3_candidate import (
+        candidate_h1_synthetic_comparison,
+    )
+
+    groups, truth = p0.simulate_family(
+        sigma=p0.G2_SIGMA,
+        delta=0.04,
+        rho=p0.G2_RHO,
+        n_formation=252 * 4,
+        seed_seq=np.random.SeedSequence([20261018, 104, 0]),
+    )
+    assert set(groups) == set(p0.GROUP_SIZES)
+    assert truth["n"] == 252 + 252 * 4 + p0.TAIL
+    ps = groups["defensive_sector"][0]
+    ratio, invalid = st.log_ratio(ps.num, ps.den)
+    assert not invalid.any()
+    start, end = st.WARMUP, st.WARMUP + 252 * 4 - 1
+    phases = ep.zigzag(ratio, start=start, end=end + 1)
+    _, a1, _ = st.arm_a1(ratio)
+    b2 = st.arm_b2(ratio)
+    a1 = [int(t) for t in a1 if start <= t <= end]
+    b2 = [int(t) for t in b2 if start <= t <= end]
+    result = candidate_h1_synthetic_comparison(
+        phases, a1, b2, measured_sessions=len(ratio),
+    )
+    assert result["scope"] == "P0_SYNTHETIC_ONLY"
+    assert result["size_or_power_proven"] is False
+    assert result["v3_preregistered"] is False
+    if result["status"] == "DESCRIPTIVE":
+        assert result["n_onsets"] > 0
+        assert result["a1"]["n_detected"] + result["a1"]["n_missed"] == result["n_onsets"]
+        assert result["b2"]["n_detected"] + result["b2"]["n_missed"] == result["n_onsets"]
+        assert -41 <= result["h1_delay_advantage_sessions"] <= 41
+    else:
+        assert result["reason"] == "NO_QUALIFYING_ONSETS"
