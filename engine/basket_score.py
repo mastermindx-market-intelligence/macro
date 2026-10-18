@@ -479,6 +479,15 @@ def market_concentration(region: str = "us") -> dict:
         return {}
     if b.empty:
         return {}
+    # Stamp the SOURCE market-session clock, not the page render clock.
+    # This US feed is S&P 500 only until a separate full-1500 issuer qualifies.
+    try:
+        tip = pd.Timestamp(b.index[-1])
+        if pd.isna(tip):
+            return {}
+        source_as_of = tip.date().isoformat()
+    except (TypeError, ValueError, OverflowError):
+        return {}
     last = b.iloc[-1]
     def f(c):
         try:
@@ -495,6 +504,8 @@ def market_concentration(region: str = "us") -> dict:
            "pct_above_200": round(f("pct_above_200"), 1) if f("pct_above_200") is not None else None,
            "nh": int(f("nh")) if f("nh") is not None else None,
            "nl": int(f("nl")) if f("nl") is not None else None,
+           "source_as_of": source_as_of,
+           "source_universe": "sp500_current_constituents" if region == "us" else f"{region}_breadth",
            "directional": False}
     for lbl, n in (("ad_3d", 3), ("ad_w", 5), ("ad_m", 21)):
         seg = b.iloc[-n:]
