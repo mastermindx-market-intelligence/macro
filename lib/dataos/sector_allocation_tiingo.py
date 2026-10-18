@@ -182,6 +182,10 @@ def project_histories(histories: object, *, anchor_market_day: str,
                 raise Refused(f'{symbol}:SOURCE_AFTER_CAPTURE_CUTOFF')
             if observed.date().isoformat() not in declared_receipt_days[row['source_sha256']]:
                 raise Refused(f'{symbol}:ROW_CAPTURE_DAY_NOT_REFERENCED')
+            # The original vendor snapshot cannot contain a later EOD market day.
+            # This mirrors the incumbent history reader's future-date refusal.
+            if day > observed.date().isoformat():
+                raise Refused(f'{symbol}:MARKET_AFTER_CAPTURE')
             adjustment=_utc(row.get('adjustment_asof_utc'),f'{symbol}:ADJUSTMENT_VINTAGE')
             if adjustment!=observed:
                 raise Refused(f'{symbol}:ADJUSTMENT_CLOCK_CONFLICT')
