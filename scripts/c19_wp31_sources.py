@@ -9,11 +9,22 @@ Governing documents
   "Shared episode dict" and "Sources (prereg §1–§3)", sha256
   ``5485384ad1f08a0211f634045d23d623d7e4d961924d5b9f5911ea6081149ef1``.
 
-This module implements ONLY the SOURCES part of the WP31 evaluator.  The episode
+This module implements the SOURCES part of the WP31 evaluator.  The episode
 dict produced by :func:`enumerate_episodes` and shaped by :func:`k_from_surface`,
 :func:`label_and_a0_from_companyfacts` and :func:`apply_leak_rules` is the sole
 interface to the sibling STATS and GATES modules; nothing is imported from them
-(they do not exist yet — lane law R6).
+(lane law R6).
+
+Wave 2 adds the S leg — the event-workspace revision-chain reader
+(:func:`parse_fiscal_q`, :func:`previous_fiscal_q`, :func:`s_event_ids`,
+:func:`resolve_company_id`, :func:`s_from_revisions`, :func:`s_from_workspace`,
+:func:`collect_s_legs`), the EX-99.1 manifest enrichment
+(:func:`enrich_exhibits`) and the prior-filings helper
+(:func:`prior_filings_from_submissions`).  Every production dependency
+(identity registry, revision-chain reader, SGML manifest parser) is imported
+lazily inside the function that uses it and is injectable as a parameter, so
+importing this module stays light and no test ever touches the production
+readers.
 
 Sources mirrored or wrapped, with their repo lines (lane laws R2–R4):
 - ``lib/exchange_holidays.py:273 early_close(market, day) -> time | None`` and
@@ -102,6 +113,20 @@ _COMPARATIVE_MAX_DAYS = 378
 
 _EX991_TYPE = re.compile(r"^EX-99\.1(?:\b|$)", re.I)  # mirrored (see docstring)
 _ITEM_202 = "2.02"  # collectors/edgar_earnings_8k.py:113
+
+#: Lifecycle states in which a revision's ``source_sha256`` is release-bearing
+#: (wave-2 spec §1.4).  Mirrors the vocabulary of
+#: ``engine/company_intelligence/events.py`` ``EVENT_STATES`` (lines 43-55
+#: there): "complete", "corrected", "derived_ready" and "distributed" carry a
+#: published source; "completed_partial" deliberately does not (prereg §2.5: a
+#: partial is never silent backing), and neither do "discovered", "scheduled",
+#: "rescheduled", "started", "superseded" or "cancelled".
+RELEASE_STATES: frozenset[str] = frozenset(
+    {"complete", "corrected", "derived_ready", "distributed"}
+)
+
+#: Exact fiscal-quarter label law (wave-2 spec §1.2): four digits, uppercase Q.
+_FISCAL_Q_RE = re.compile(r"^(\d{4})Q([1-4])$")
 
 # --------------------------------------------------------------------------
 # Fiscal-period helper: import the repo one, mirror it if the import fails (R3)
@@ -385,11 +410,18 @@ def _empty_k() -> dict[str, Any]:
 
 
 def _empty_s() -> dict[str, Any]:
+    """The empty S leg; every wave-2 key is always present (spec §1.4)."""
     return {
         "q_minus_1_resolved": False,
         "source_sha256": None,
         "generation_id": None,
+        "generated_at": None,
+        "observed_at": None,
+        "lifecycle_state": None,
         "record_ids": [],
+        "pit_unrecoverable": False,
+        "q_release_before_cutoff": False,
+        "reason": None,
     }
 
 
@@ -916,8 +948,13 @@ def apply_leak_rules(ep: dict[str, Any]) -> dict[str, Any]:
     observed/accepted clock is after the episode cutoff marks the episode
     ``NOT_EVALUABLE`` with reason ``"pre_cutoff_leak"`` — the K record clock is
     ``k["observed_at"]``, the SEC-leg clocks are ``a0["accepted_at"]`` and the
-    S leg's ``generated_at``/``observed_at`` when its reader supplies them
-    (the S reader is seat wave 2; :func:`s_from_workspace` stubs it).
+    S leg's ``generated_at``/``observed_at``, both supplied by the wave-2
+    reader :func:`s_from_revisions`.
+    Prereg §2.2/§2.4 (the q release is never a feature; pre-cutoff disclosure):
+    an S leg with ``s["q_release_before_cutoff"] is True`` — some release-bearing
+    ``q`` revision disclosed at or before the cutoff — is likewise a
+    ``pre_cutoff_leak``.  The check runs with the other pre-cutoff checks,
+    before ``pit_unrecoverable``.
     Prereg §2.3 (unrecoverable history is not guessed): a caller that cannot
     reconstruct the version that existed at the cutoff marks the episode by
     setting ``ep["pit_unrecoverable"] = True`` (top level or inside ``s``) and
@@ -943,6 +980,7 @@ def apply_leak_rules(ep: dict[str, Any]) -> dict[str, Any]:
         or _after_cutoff(a0_leg.get("accepted_at"))
         or _after_cutoff(s_leg.get("generated_at"))
         or _after_cutoff(s_leg.get("observed_at"))
+        or s_leg.get("q_release_before_cutoff") is True
     ):
         out["status"] = "NOT_EVALUABLE"
         out["not_evaluable_reason"] = "pre_cutoff_leak"
@@ -955,15 +993,532 @@ def apply_leak_rules(ep: dict[str, Any]) -> dict[str, Any]:
 
 
 # --------------------------------------------------------------------------
-# S reader stub (NOT built in this wave — spec "Sources" final bullet)
+# S reader — fiscal-quarter helpers (wave-2 spec §1.2)
 # --------------------------------------------------------------------------
 
 
-def s_from_workspace(*args: Any, **kwargs: Any) -> dict[str, Any]:
-    """Not implemented in this wave: the event-workspace S reader is owner-bound.
+def parse_fiscal_q(q: str) -> tuple[int, int]:
+    """``"2026Q3"`` -> ``(2026, 3)``; anything else raises ``ValueError``.
 
-    Prereg §3.2 names ``read_current_event_workspace`` as the S entry point,
-    but the build spec freezes it out of this lane; the seat supplies it in
-    wave 2.  Raises with the exact message the integration runner asserts.
+    Exact ``^(\\d{4})Q([1-4])$`` on the upper-cased-``Q`` label — the same
+    fiscal label the episode dict carries (``enumerate_episodes`` writes
+    ``f"{fiscal.year}Q{fiscal.quarter}"``).  Lowercase ``q``, a missing quarter
+    ("2026FY"), a 5th quarter or a non-string all refuse.
     """
-    raise NotImplementedError("S reader: owner-bound; seat wave 2")
+    match = _FISCAL_Q_RE.fullmatch(q) if isinstance(q, str) else None
+    if match is None:
+        raise ValueError(f"not a fiscal quarter label: {q!r}")
+    return int(match.group(1)), int(match.group(2))
+
+
+def previous_fiscal_q(q: str) -> str:
+    """The fiscal quarter immediately before ``q``: "2026Q1" -> "2025Q4"."""
+    year, quarter = parse_fiscal_q(q)
+    if quarter == 1:
+        return f"{year - 1}Q4"
+    return f"{year}Q{quarter - 1}"
+
+
+def s_event_ids(company_id: str, q: str) -> tuple[str, str]:
+    """``(q-1 event id, q event id)`` for one episode's SEC legs.
+
+    Each id is ``canonical_event_id(company_id, FiscalPeriod(year=Y,
+    quarter=N))`` with the default ``event_type="earnings_results"``
+    (``engine/company_intelligence/events.py:182``; lazily imported so this
+    module stays light).  ``calendar_end`` is not part of the canonical id and
+    is deliberately left unset.  A malformed ``q`` raises ``ValueError``.
+    """
+    from engine.company_intelligence.events import FiscalPeriod, canonical_event_id
+
+    q_year, q_quarter = parse_fiscal_q(q)
+    qm1_year, qm1_quarter = parse_fiscal_q(previous_fiscal_q(q))
+    qm1_id = canonical_event_id(
+        company_id, FiscalPeriod(year=qm1_year, quarter=qm1_quarter)
+    )
+    q_id = canonical_event_id(company_id, FiscalPeriod(year=q_year, quarter=q_quarter))
+    return qm1_id, q_id
+
+
+# --------------------------------------------------------------------------
+# S reader — identity (wave-2 spec §1.3)
+# --------------------------------------------------------------------------
+
+
+def resolve_company_id(
+    issuer: str, cutoff: datetime, *, resolve_ticker: Any = None
+) -> str | None:
+    """The issuer's ``company_id`` as of the cutoff, or ``None`` (fail closed).
+
+    The default resolver is bound lazily as
+    ``production_registry().resolve_ticker``
+    (``engine/company_intelligence/event_workspace.py:228``); the call is
+    ``resolve_ticker(issuer, asof=cutoff_utc.date())`` and a truthy
+    ``result.company_id`` is returned as a str.  ``None`` — the registry's
+    typed absence — an ``IdentityError`` (or any other exception: a resolver
+    bug must never crash the read) all map to ``None``.
+    """
+    if resolve_ticker is None:
+        from engine.company_intelligence.event_workspace import production_registry
+
+        resolve_ticker = production_registry().resolve_ticker
+    cutoff_utc = _aware_utc(cutoff, label="cutoff")
+    try:
+        result = resolve_ticker(issuer, asof=cutoff_utc.date())
+    except Exception:  # noqa: BLE001 - fail closed, never crash the read
+        return None
+    if result is None:
+        return None
+    company_id = getattr(result, "company_id", None)
+    if not isinstance(company_id, str) or not company_id:
+        return None
+    return company_id
+
+
+# --------------------------------------------------------------------------
+# S reader — the pure selection function (wave-2 spec §1.4)
+# --------------------------------------------------------------------------
+
+
+def _revision_clock(rev: Mapping[str, Any]) -> tuple[datetime | None, datetime | None]:
+    """(generated_at, observed_at) parsed as UTC; (None, None) when unshaped.
+
+    ``workspace.generated_at`` is the system clock of the workspace version;
+    ``observed_at`` is the revision's own system observation clock.  Both are
+    true UTC (prereg §2.1's clocks) and are parsed with :func:`_parse_utc` —
+    they are NOT submissions-JSON values and never go through the A2
+    correction.
+    """
+    if not isinstance(rev, Mapping):
+        return None, None
+    workspace = rev.get("workspace")
+    generated_at = (
+        _parse_utc(workspace.get("generated_at"))
+        if isinstance(workspace, Mapping)
+        else None
+    )
+    return generated_at, _parse_utc(rev.get("observed_at"))
+
+
+def _release_bearing(rev: Mapping[str, Any]) -> bool:
+    """A non-empty str ``source_sha256`` AND ``lifecycle_state`` release-bearing."""
+    sha = rev.get("source_sha256")
+    if not isinstance(sha, str) or not sha:
+        return False
+    return rev.get("lifecycle_state") in RELEASE_STATES
+
+
+def s_from_revisions(
+    qm1_revisions: Any, q_revisions: Any, cutoff: datetime
+) -> dict[str, Any]:
+    """The S leg from the verified revision chains (prereg §2.1, §2.3, §2.2).
+
+    ``qm1_revisions`` / ``q_revisions`` are the oldest-first revision lists
+    ``read_all_event_source_revisions`` returns for the q-1 and q events (each
+    receipt: ``generation_id``, ``source_sha256``, ``source_available_at``,
+    ``observed_at``, ``lifecycle_state``, ``workspace_receipt`` =
+    ``{"sha256", "bytes"}``, and a ``workspace`` body carrying
+    ``generated_at``).  ``cutoff`` must be aware UTC.
+
+    q-1 selection (prereg §2.1/§2.3):
+      1. Every q-1 revision's ``workspace.generated_at`` and ``observed_at``
+         are parsed.  ANY unparseable ``generated_at`` (any revision, not only
+         release-bearing ones) means the chain cannot be ordered against
+         ``C(e)``: ``pit_unrecoverable=True``, reason
+         ``"revision_time_unparseable"``, and the selection stops — the
+         version that existed at the cutoff is not guessed (prereg §2.3).
+      2. Candidates are revisions with ``generated_at <= C``; a revision with
+         a parseable ``observed_at > C`` is excluded (observed too late to be
+         a feature input); a missing ``observed_at`` does not disqualify —
+         ``generated_at`` is the prereg's clock.
+      3. No candidates -> ABSTAIN, reason ``"qm1_not_published_by_cutoff"``,
+         ``pit_unrecoverable=False``: the chain was walked to its root, so the
+         absence is real absence.
+      4. The newest candidate (last in oldest-first order) is the version that
+         existed at ``C``.  The reader dedupes carry-forward hops and keeps the
+         generation that introduced each ``source_sha256``, so the
+         newest-candidate IS the as-of-C view and a correction introduced
+         after ``C`` is never selected — prereg §2.1's last sentence.
+      5. A non-release-bearing newest candidate abstains — reason
+         ``"qm1_sha_missing"`` when its ``source_sha256`` is empty or not a
+         str, else ``"qm1_not_released"`` (a ``completed_partial`` partial is
+         never silent backing, prereg §2.5) — with NO fallback to an older
+         candidate: an older version is not the as-of-C view.
+      6. Otherwise resolved: sha, generation, lifecycle state, ISO-UTC clocks
+         (``observed_at`` may be None) and
+         ``record_ids=[workspace_receipt.sha256]`` (else ``[]``).
+
+    q-release check (prereg §2.2/§2.4), computed over ``q_revisions``
+    regardless of the q-1 outcome: a release-bearing q revision is a
+    pre-cutoff disclosure when ANY of its ``workspace.generated_at``, its
+    ``observed_at``, or its corrected source clock
+    :func:`_edgar_json_acceptance_utc` (the submissions-JSON
+    ``acceptanceDateTime``, stored unconverted — prereg §10 A2) is
+    ``<= C``; any such revision sets ``q_release_before_cutoff=True``.  A
+    release-bearing q revision whose source clock is missing, unparseable or
+    uncorrectable and that no system clock already flagged sets
+    ``pit_unrecoverable=True`` with reason ``"q_release_time_unresolved"`` —
+    unless a q-1 reason was set first; the first reason wins.
+    NOTHING else is copied from the q revisions: the q release is never a
+    feature (prereg §2.2).
+    """
+    cutoff_utc = _aware_utc(cutoff, label="cutoff")
+    s = _empty_s()
+
+    # --- q-1 selection -----------------------------------------------------
+    qm1_parsed: list[tuple[datetime, datetime | None, Mapping[str, Any]]] = []
+    time_unparseable = False
+    for rev in qm1_revisions or ():
+        generated_at, observed_at = _revision_clock(rev)
+        if generated_at is None:
+            time_unparseable = True
+            break
+        qm1_parsed.append((generated_at, observed_at, rev))  # type: ignore[arg-type]
+    if time_unparseable:
+        s["pit_unrecoverable"] = True
+        s["reason"] = "revision_time_unparseable"
+    else:
+        candidates = [
+            (generated_at, observed_at, rev)
+            for generated_at, observed_at, rev in qm1_parsed
+            if generated_at <= cutoff_utc
+            and (observed_at is None or observed_at <= cutoff_utc)
+        ]
+        if not candidates:
+            s["reason"] = "qm1_not_published_by_cutoff"
+        else:
+            generated_at, observed_at, selected = candidates[-1]
+            if not _release_bearing(selected):
+                sha = selected.get("source_sha256")
+                if not isinstance(sha, str) or not sha:
+                    s["reason"] = "qm1_sha_missing"
+                else:
+                    s["reason"] = "qm1_not_released"
+            else:
+                receipt = selected.get("workspace_receipt")
+                receipt_sha = (
+                    receipt.get("sha256") if isinstance(receipt, Mapping) else None
+                )
+                s.update(
+                    {
+                        "q_minus_1_resolved": True,
+                        "source_sha256": selected.get("source_sha256"),
+                        "generation_id": (
+                            selected.get("generation_id")
+                            if isinstance(selected.get("generation_id"), str)
+                            else None
+                        ),
+                        "lifecycle_state": selected.get("lifecycle_state"),
+                        "generated_at": _iso_utc(generated_at),
+                        "observed_at": (
+                            _iso_utc(observed_at) if observed_at is not None else None
+                        ),
+                        "record_ids": (
+                            [receipt_sha]
+                            if isinstance(receipt_sha, str) and receipt_sha
+                            else []
+                        ),
+                        "reason": None,
+                    }
+                )
+
+    # --- q-release check (prereg §2.2/§2.4) — always computed --------------
+    for rev in q_revisions or ():
+        if not isinstance(rev, Mapping) or not _release_bearing(rev):
+            continue
+        generated_at, observed_at = _revision_clock(rev)
+        source_at = _edgar_json_acceptance_utc(rev.get("source_available_at"))
+        if (
+            (generated_at is not None and generated_at <= cutoff_utc)
+            or (observed_at is not None and observed_at <= cutoff_utc)
+            or (source_at is not None and source_at <= cutoff_utc)
+        ):
+            s["q_release_before_cutoff"] = True
+        elif source_at is None:
+            s["pit_unrecoverable"] = True
+            if s["reason"] is None:  # the first reason wins (spec §1.4)
+                s["reason"] = "q_release_time_unresolved"
+    return s
+
+
+# --------------------------------------------------------------------------
+# S reader — the reading wrapper (wave-2 spec §1.5)
+# --------------------------------------------------------------------------
+
+
+def s_from_workspace(
+    issuer: str,
+    q: str,
+    cutoff: datetime,
+    *,
+    resolve_ticker: Any = None,
+    revisions_reader: Any = None,
+    revisions: Any = None,
+    max_hops: int = 500,
+) -> dict[str, Any]:
+    """One episode's S leg, read through the verified predecessor chain.
+
+    WHY THE CHAIN, NOT ``read_current_event_workspace``: prereg §2.1 reads
+    "event-workspace versions with ``generated_at <= C(e)``" and §2.3 makes a
+    version that "cannot be recovered (overwritten without history)"
+    ``pit_unrecoverable``.  ``read_current_event_workspace`` returns only the
+    newest version.  By evaluation time that version has been generated from
+    the ``q`` release, which lands after ``C(e)``.  The verified predecessor
+    chain IS the history §2.3 refers to, so the evaluator recovers the version
+    as of ``C(e)`` from ``read_all_event_source_revisions``.  This is how
+    §2.1/§2.3 are carried out; it is not a change to the S source.
+
+    Steps: identity (§1.3; ``None`` -> ``pit_unrecoverable``,
+    ``"identity_unresolved"``) -> event ids (a malformed ``q`` ->
+    ``"fiscal_q_unparseable"``) -> revisions (an injected ``revisions`` mapping
+    event_id -> list is used as given, skipping the reader; otherwise ONE
+    ``revisions_reader([qm1_id, q_id], max_hops=max_hops)`` call, the reader
+    bound lazily as ``read_all_event_source_revisions``; ANY exception —
+    ``WorkspaceChainIntegrityError``, ``WorkspaceChainNotPublished``, the
+    hop-bound refusal, anything else — -> ``"chain_unreadable"``) ->
+    :func:`s_from_revisions`.  Every failure is an unrecoverable dict:
+    ``_empty_s()`` plus ``pit_unrecoverable=True`` and the named reason.
+    """
+    company_id = resolve_company_id(issuer, cutoff, resolve_ticker=resolve_ticker)
+    if company_id is None:
+        s = _empty_s()
+        s["pit_unrecoverable"] = True
+        s["reason"] = "identity_unresolved"
+        return s
+    try:
+        qm1_id, q_id = s_event_ids(company_id, q)
+    except ValueError:
+        s = _empty_s()
+        s["pit_unrecoverable"] = True
+        s["reason"] = "fiscal_q_unparseable"
+        return s
+    if revisions is None:
+        if revisions_reader is None:
+            from engine.neuralweb.company_intelligence_reader import (
+                read_all_event_source_revisions,
+            )
+
+            revisions_reader = read_all_event_source_revisions
+        try:
+            revisions = revisions_reader([qm1_id, q_id], max_hops=max_hops)
+        except Exception:  # noqa: BLE001 - any chain failure refuses the leg
+            s = _empty_s()
+            s["pit_unrecoverable"] = True
+            s["reason"] = "chain_unreadable"
+            return s
+    return s_from_revisions(revisions.get(qm1_id, []), revisions.get(q_id, []), cutoff)
+
+
+# --------------------------------------------------------------------------
+# S reader — the batched reader (wave-2 spec §1.6)
+# --------------------------------------------------------------------------
+
+
+def _unrecoverable_s(reason: str) -> dict[str, Any]:
+    s = _empty_s()
+    s["pit_unrecoverable"] = True
+    s["reason"] = reason
+    return s
+
+
+def collect_s_legs(
+    episodes: Any,
+    *,
+    resolve_ticker: Any = None,
+    revisions_reader: Any = None,
+    max_hops: int = 500,
+) -> dict[tuple[str, str], dict[str, Any]]:
+    """Every episode's S leg from EXACTLY ONE revisions-reader call.
+
+    Keyed ``(issuer, q)``.  Identity is resolved for every episode first, then
+    ONE ``revisions_reader(all_ids, max_hops=max_hops)`` call covers the union
+    of every episode's two event ids.  The chain walk is O(hops) per call and
+    measured ~153 s in production (reader docstring, 2026-08-23), so one call
+    per episode is forbidden.  Each leg is then built through
+    :func:`s_from_workspace` with the shared revision map, so identity
+    failures (``"identity_unresolved"``) and a reader exception (every episode
+    that needed the map becomes ``"chain_unreadable"``) map exactly as in
+    :func:`s_from_workspace`.  Episodes whose status is not ELIGIBLE still get
+    a leg — their manifest stays honest — but they never trigger a second
+    reader call.
+    """
+    keys: list[tuple[str, str]] = []
+    cutoffs: dict[tuple[str, str], datetime | None] = {}
+    companies: dict[tuple[str, str], str | None] = {}
+    wanted_ids: dict[str, None] = {}
+    broken: dict[tuple[str, str], str] = {}
+    for ep in episodes or ():
+        if not isinstance(ep, Mapping):
+            continue
+        key = (str(ep.get("issuer") or ""), str(ep.get("q") or ""))
+        if key in companies:
+            continue
+        keys.append(key)
+        cutoff_dt = _parse_utc(ep.get("cutoff"))
+        cutoffs[key] = cutoff_dt
+        company_id = (
+            resolve_company_id(key[0], cutoff_dt, resolve_ticker=resolve_ticker)
+            if cutoff_dt is not None
+            else None
+        )
+        if cutoff_dt is None or company_id is None:
+            companies[key] = None
+            broken[key] = "identity_unresolved"
+            continue
+        companies[key] = company_id
+        try:
+            qm1_id, q_id = s_event_ids(company_id, key[1])
+        except ValueError:
+            broken[key] = "fiscal_q_unparseable"
+            continue
+        wanted_ids.setdefault(qm1_id, None)
+        wanted_ids.setdefault(q_id, None)
+
+    revision_map: dict[str, list[dict[str, Any]]] | None = None
+    reader_failed = False
+    if wanted_ids:
+        if revisions_reader is None:
+            from engine.neuralweb.company_intelligence_reader import (
+                read_all_event_source_revisions,
+            )
+
+            revisions_reader = read_all_event_source_revisions
+        try:
+            revision_map = revisions_reader(list(wanted_ids), max_hops=max_hops)
+        except Exception:  # noqa: BLE001 - one refusal refuses every needy leg
+            reader_failed = True
+
+    legs: dict[tuple[str, str], dict[str, Any]] = {}
+    for key in keys:
+        if key in broken:
+            legs[key] = _unrecoverable_s(broken[key])
+        elif reader_failed or revision_map is None:
+            legs[key] = _unrecoverable_s("chain_unreadable")
+        else:
+            legs[key] = s_from_workspace(
+                key[0],
+                key[1],
+                cutoffs[key],
+                resolve_ticker=resolve_ticker,
+                revisions=revision_map,
+            )
+    return legs
+
+
+# --------------------------------------------------------------------------
+# EX-99.1 manifest enrichment (wave-2 spec §2)
+# --------------------------------------------------------------------------
+
+
+def enrich_exhibits(
+    rows: Any, *, fetch_index_headers: Any
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Set ``exhibits`` (types only) and ``has_ex_99_1`` from the SGML headers.
+
+    Every input row reappears in order as a copy.  Only rows that are exactly
+    Form ``"8-K"``, carry the Item 2.02 exact token (:func:`_has_item_202`)
+    and whose uppercased ticker is in ``UNIVERSE`` are enriched; the rest pass
+    through untouched and the fetcher is never called for them.  For an
+    enriched row, ``fetch_index_headers(cik, accession)`` returns the filing's
+    ``-index-headers.html`` text (the URL is the wave-3 fetcher's business);
+    the text is parsed with ``_parse_sgml_manifest``, lazily imported from
+    ``scripts.refresh_event_workspaces`` (it html-unescapes first, so escaped
+    SGML parses), and the row gets ``exhibits=[{"type": T}, ...]`` — TYPES
+    ONLY, filenames dropped — plus ``has_ex_99_1`` from the existing matcher
+    :func:`_has_ex991`.  An empty manifest gives ``exhibits=[]`` and
+    ``has_ex_99_1=False``.  A fetcher raise or a non-str return enriches
+    nothing and appends ``{"ticker", "accession",
+    "reason": "index_headers_unavailable"}`` to ``failures``: the row then
+    carries no exhibit proof and :func:`enumerate_episodes` drops it (fail
+    closed); if that row was the first release, prereg §10 A3's
+    ``earlier_release_filing_dropped`` covers the episode.  No exhibit BODY is
+    ever fetched or read — only the SGML header manifest (label-exposure law).
+    """
+    from scripts.refresh_event_workspaces import _parse_sgml_manifest
+
+    enriched: list[dict[str, Any]] = []
+    failures: list[dict[str, Any]] = []
+    for row in rows or ():
+        out = dict(row) if isinstance(row, Mapping) else row
+        if not isinstance(out, dict):
+            enriched.append(out)
+            continue
+        issuer = str(out.get("ticker") or "").strip().upper()
+        if (
+            str(out.get("form") or "").strip() == "8-K"
+            and _has_item_202(out.get("items"))
+            and issuer in UNIVERSE
+        ):
+            try:
+                text = fetch_index_headers(out.get("cik"), out.get("accession"))
+            except Exception:  # noqa: BLE001 - a failed fetch drops the row
+                text = None
+            if isinstance(text, str):
+                manifest = _parse_sgml_manifest(text)
+                out["exhibits"] = [{"type": kind} for kind, _name in manifest]
+                out["has_ex_99_1"] = _has_ex991({"exhibits": out["exhibits"]})
+            else:
+                failures.append(
+                    {
+                        "ticker": issuer,
+                        "accession": out.get("accession"),
+                        "reason": "index_headers_unavailable",
+                    }
+                )
+        enriched.append(out)
+    return enriched, failures
+
+
+# --------------------------------------------------------------------------
+# Prior filings from EDGAR submissions pages (wave-2 spec §3; prereg §10 A2)
+# --------------------------------------------------------------------------
+
+
+def prior_filings_from_submissions(*pages: Any) -> list[dict[str, str]]:
+    """10-Q/10-K ``{"accession", "accepted_at", "form"}`` rows from submissions.
+
+    Each page is either an EDGAR submissions JSON (arrays under
+    ``filings.recent``) or an older-filings page (arrays at the top level);
+    the arrays are ``accessionNumber``, ``acceptanceDateTime`` and ``form``.
+    Only forms exactly ``"10-Q"`` or ``"10-K"`` are emitted (the original
+    filings A0 reads).  ``accepted_at`` is copied as given, UNCORRECTED: per
+    prereg §10 A2 ("A0 history") the submissions-JSON clock runs 4-5 hours
+    late, so the ``<= C(e)`` test can only exclude a filing that was in fact
+    available, never admit one that was not — the error is conservative, and
+    correcting it here would be a redesign of the registered rule.  Rows with
+    an empty accession or empty acceptance are skipped; unequal arrays zip to
+    the shortest; the first row wins on a duplicate accession; a malformed
+    page (not a Mapping, arrays not lists) contributes nothing and never
+    raises.
+    """
+    out: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for page in pages:
+        if not isinstance(page, Mapping):
+            continue
+        filings = page.get("filings")
+        source = page
+        if isinstance(filings, Mapping):
+            recent = filings.get("recent")
+            source = recent if isinstance(recent, Mapping) else None
+        if source is None:
+            continue
+        accessions = source.get("accessionNumber")
+        acceptances = source.get("acceptanceDateTime")
+        forms = source.get("form")
+        if not (
+            isinstance(accessions, list)
+            and isinstance(acceptances, list)
+            and isinstance(forms, list)
+        ):
+            continue
+        for accession, accepted_at, form in zip(accessions, acceptances, forms):
+            acc = accession.strip() if isinstance(accession, str) else ""
+            accepted = accepted_at.strip() if isinstance(accepted_at, str) else ""
+            kind = form.strip() if isinstance(form, str) else ""
+            if not acc or not accepted or kind not in ("10-Q", "10-K"):
+                continue
+            if acc in seen:
+                continue
+            seen.add(acc)
+            out.append({"accession": acc, "accepted_at": accepted, "form": kind})
+    return out

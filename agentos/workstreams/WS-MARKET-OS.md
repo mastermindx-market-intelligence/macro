@@ -313,3 +313,11 @@ The production task remains active. Beta installation, DNS cutover, actual publi
 - Supabase's two exact beta callback patterns are saved; its existing site URL is unchanged. DNS remains on the existing EdgeOne CNAME records. Paper write qualification remains false, so no new Paper file or bypass has been attempted. The accessible-file design census and programme design decisions remain in this branch.
 
 Owned evidence logs on M2: /tmp/shared-shell-principal-integration-green-20261018.log; /tmp/shared-shell-principal-final-stamp-python-20261018.log; /tmp/shared-shell-parent-auth-boundary-final-20261018.log; /tmp/shared-shell-all-principal-regressions-red-20261018.log; /tmp/shared-shell-lifecycle-credentials-red-20261018.log.
+
+### 2026-10-18 14:09 UTC — current Macro main integrated and verified
+
+Joined protected main eb0dbd77cf380f019d6a0e98bf5eb65656b80b92 into the e25071ab254264b39944a5ab35c9a0cc6734a634 integration checkpoint. All application source merged cleanly. Nine conflicts were generated HTML only; their incoming content was retained byte-for-byte before reapplying five required adapters (three US Stocks seams, ETF sign-in, and Special Situations sign-in). The other 54 generated adapter applications survived the merge, and the six previously documented mode-absent pairs remained absent.
+
+Post-join verification passed: 128 canonical template/site pairs; 13,028 stamped documents with no further injection changes; exact canonical registry SHA30516d80cd64baf1f542e0d1cbf90ed254a1eab02cb55da3504766f5ae245535 and native projection (13,015 legacy, 14 native, 293 directory, zero unregistered gaps); zero dead/pin/ticker asset references; ten actual isolated Caddy response-header cases; 182 Python tests with two existing skips; and all179 bridge/navigation/owner/Terminal-handoff tests. Sparse checkout omitted the registry working file after merge, so the check consumed its exact stage-zero Git blob at an explicit temporary path; no registry pin or content was changed.
+
+The independent bridge review and exact-source correction closure are now recorded in research/market_os/SHARED_SHELL_BRIDGE_PRINCIPAL_REVIEW_2026-10-18.md. The actual M2 parent source hash matched the reviewer snapshot. Installer transaction fixes and actual beta deployment/browser acceptance remain outstanding.

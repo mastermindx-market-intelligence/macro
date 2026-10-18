@@ -8,8 +8,8 @@
   "source_unknown": false,
   "source_basis": "board_asof",
   "source_mixed_vintage": false,
-  "source_board_sha256": "ab42ee610f288b8b9a05d9b5ce0aa506ef841c9d56be7b6b73f865eca402a8a1",
-  "source_board_snapshot_path": "data/prophet/origination_sources/ab42ee610f288b8b9a05d9b5ce0aa506ef841c9d56be7b6b73f865eca402a8a1.json.gz",
+  "source_board_sha256": "5edd46672a861690d7ecff98f50a5235887d132c5739713bafff83f03cded86c",
+  "source_board_snapshot_path": "data/prophet/origination_sources/5edd46672a861690d7ecff98f50a5235887d132c5739713bafff83f03cded86c.json.gz",
   "source_board_snapshot_encoding": "gzip",
   "cadence": "nightly-EOD",
   "authority_tier": "display",
@@ -151,11 +151,11 @@
     "validation_failed": 27,
     "validation_failures": [
       {
-        "ticker": "ETSY",
-        "id": "ETSY-BULL-20261013",
+        "ticker": "GMED",
+        "id": "GMED-BULL-20261013",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
           "tier_observed_date '2026-10-13' does not match price_basis_date '2026-10-14'",
@@ -167,22 +167,10 @@
         "id": "GEHC-BULL-20261013",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
           "tier_observed_date '2026-10-13' does not match price_basis_date '2026-10-14'"
-        ]
-      },
-      {
-        "ticker": "GMED",
-        "id": "GMED-BULL-20261013",
-        "stage": "clock_provenance",
-        "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
-          "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
-          "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
-          "tier_observed_date '2026-10-13' does not match price_basis_date '2026-10-14'",
-          "formation_date '2026-10-13' postdates tier_event_date '2026-10-09'"
         ]
       },
       {
@@ -190,7 +178,7 @@
         "id": "RHHBY-BULL-20261013",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
           "tier_observed_date '2026-10-16' does not match price_basis_date '2026-10-14'"
@@ -201,7 +189,7 @@
         "id": "NJR-BULL-20261013",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
           "formation_date '2026-10-13' postdates tier_event_date '2026-10-09'"
@@ -212,7 +200,7 @@
         "id": "SWX-BULL-20261013",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
           "formation_date '2026-10-13' postdates tier_event_date '2026-10-09'"
@@ -223,7 +211,7 @@
         "id": "L-BULL-20261013",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
           "formation_date '2026-10-13' postdates tier_event_date '2026-10-09'"
@@ -234,7 +222,7 @@
         "id": "OXY-BULL-20261008",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')"
         ]
@@ -244,7 +232,7 @@
         "id": "NEE-BULL-20261013",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
           "formation_date '2026-10-13' postdates tier_event_date '2026-10-09'"
@@ -255,7 +243,7 @@
         "id": "AVA-BULL-20261013",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
           "formation_date '2026-10-13' postdates tier_event_date '2026-10-09'"
@@ -266,7 +254,7 @@
         "id": "CXT-BULL-20261013",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
           "formation_date '2026-10-13' postdates tier_event_date '2026-10-09'"
@@ -277,7 +265,7 @@
         "id": "ACI-BULL-20260825",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
           "tier_observed_date '2026-10-13' does not match price_basis_date '2026-10-14'"
@@ -288,7 +276,7 @@
         "id": "RNR-BULL-20261008",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')"
         ]
@@ -298,7 +286,7 @@
         "id": "PSN-BULL-20261013",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
           "tier_observed_date '2026-10-13' does not match price_basis_date '2026-10-14'",
@@ -310,7 +298,7 @@
         "id": "CNX-BULL-20261013",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')"
         ]
@@ -320,7 +308,7 @@
         "id": "ORLY-BULL-20261008",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')"
         ]
@@ -330,7 +318,7 @@
         "id": "GWW-BULL-20261013",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')"
         ]
@@ -340,7 +328,7 @@
         "id": "EDU-BULL-20261013",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
           "tier_observed_date '2026-10-16' does not match price_basis_date '2026-10-14'"
@@ -351,7 +339,7 @@
         "id": "LRN-BULL-20261008",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')"
         ]
@@ -361,7 +349,7 @@
         "id": "LHX-BULL-20261013",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
           "formation_date '2026-10-13' postdates tier_event_date '2026-10-09'"
@@ -372,7 +360,7 @@
         "id": "EYE-BULL-20261008",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
           "tier_observed_date '2026-10-13' does not match price_basis_date '2026-10-14'",
@@ -384,7 +372,7 @@
         "id": "VNT-BULL-20261013",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
           "tier_observed_date '2026-10-13' does not match price_basis_date '2026-10-14'",
@@ -396,7 +384,7 @@
         "id": "LZ-BULL-20261013",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
           "tier_observed_date '2026-10-13' does not match price_basis_date '2026-10-14'",
@@ -408,7 +396,7 @@
         "id": "BL-BULL-20261013",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
           "tier_observed_date '2026-10-13' does not match price_basis_date '2026-10-14'"
@@ -419,10 +407,21 @@
         "id": "FLO-BULL-20261013",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
           "formation_date '2026-10-13' postdates tier_event_date '2026-10-09'"
+        ]
+      },
+      {
+        "ticker": "YUMC",
+        "id": "YUMC-BULL-20261013",
+        "stage": "clock_provenance",
+        "errors": [
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
+          "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
+          "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
+          "tier_observed_date '2026-10-16' does not match price_basis_date '2026-10-14'"
         ]
       },
       {
@@ -430,7 +429,7 @@
         "id": "GGG-BULL-20261008",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')"
         ]
@@ -440,7 +439,7 @@
         "id": "BZ-BULL-20261013",
         "stage": "clock_provenance",
         "errors": [
-          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-17' (2026-10-16); stale boards cannot originate plans",
+          "price_basis_date '2026-10-14' is not the last completed NYSE session for recorded_at '2026-10-18' (2026-10-16); stale boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
           "us_standouts staleness.basis must be 'panel_majority'; wrapper-only or undisclosed price authority is unsafe ('board_asof')",
           "tier_observed_date '2026-10-16' does not match price_basis_date '2026-10-14'"
@@ -515,9 +514,9 @@
           "n": 29,
           "names": [
             {
-              "ticker": "ETSY",
-              "name": "Etsy",
-              "score": 64.6,
+              "ticker": "GMED",
+              "name": "Globus Medical",
+              "score": 63.4,
               "why": [
                 "plan_not_built"
               ]
@@ -525,15 +524,7 @@
             {
               "ticker": "GEHC",
               "name": "GE HealthCare",
-              "score": 63.1,
-              "why": [
-                "plan_not_built"
-              ]
-            },
-            {
-              "ticker": "GMED",
-              "name": "Globus Medical",
-              "score": 63.1,
+              "score": 63.2,
               "why": [
                 "plan_not_built"
               ]
@@ -541,7 +532,7 @@
             {
               "ticker": "RHHBY",
               "name": "Roche Holding (ADR)",
-              "score": 60.8,
+              "score": 61.0,
               "why": [
                 "plan_not_built"
               ]
@@ -549,7 +540,7 @@
             {
               "ticker": "NJR",
               "name": "New Jersey Resources",
-              "score": 58.6,
+              "score": 58.8,
               "why": [
                 "plan_not_built"
               ]
@@ -557,7 +548,7 @@
             {
               "ticker": "SWX",
               "name": "Southwest Gas Corp",
-              "score": 58.4,
+              "score": 58.7,
               "why": [
                 "plan_not_built"
               ]
@@ -565,15 +556,7 @@
             {
               "ticker": "L",
               "name": "Loews Corporation",
-              "score": 57.0,
-              "why": [
-                "plan_not_built"
-              ]
-            },
-            {
-              "ticker": "OXY",
-              "name": "Occidental Petroleum Corp",
-              "score": 55.9,
+              "score": 57.3,
               "why": [
                 "plan_not_built"
               ]
@@ -581,7 +564,15 @@
             {
               "ticker": "NEE",
               "name": "Nextera Energy Inc",
-              "score": 55.7,
+              "score": 56.1,
+              "why": [
+                "plan_not_built"
+              ]
+            },
+            {
+              "ticker": "OXY",
+              "name": "Occidental Petroleum Corp",
+              "score": 56.1,
               "why": [
                 "plan_not_built"
               ]
@@ -589,7 +580,7 @@
             {
               "ticker": "AVA",
               "name": "Avista Corporation",
-              "score": 54.6,
+              "score": 55.0,
               "why": [
                 "plan_not_built"
               ]
@@ -597,7 +588,7 @@
             {
               "ticker": "CXT",
               "name": "Crane NXT",
-              "score": 54.0,
+              "score": 54.1,
               "why": [
                 "plan_not_built"
               ]
@@ -605,7 +596,7 @@
             {
               "ticker": "ACI",
               "name": "Albertsons",
-              "score": 53.1,
+              "score": 53.2,
               "why": [
                 "plan_not_built"
               ]
@@ -613,7 +604,7 @@
             {
               "ticker": "RNR",
               "name": "RenaissanceRe",
-              "score": 52.7,
+              "score": 52.8,
               "why": [
                 "plan_not_built"
               ]
@@ -621,6 +612,14 @@
             {
               "ticker": "PSN",
               "name": "Parsons Corporation",
+              "score": 51.8,
+              "why": [
+                "plan_not_built"
+              ]
+            },
+            {
+              "ticker": "CNX",
+              "name": "CNX Resources",
               "score": 51.7,
               "why": [
                 "plan_not_built"
@@ -638,7 +637,7 @@
             {
               "ticker": "YUM",
               "name": "Yum! Brands",
-              "score": 64.6,
+              "score": 64.8,
               "why": [
                 "already_open"
               ]
@@ -646,7 +645,7 @@
             {
               "ticker": "ENSG",
               "name": "Ensign Group",
-              "score": 61.6,
+              "score": 61.8,
               "why": [
                 "already_open"
               ]
@@ -654,7 +653,7 @@
             {
               "ticker": "UNH",
               "name": "Unitedhealth Group Inc",
-              "score": 60.5,
+              "score": 60.7,
               "why": [
                 "already_open"
               ]
@@ -662,7 +661,7 @@
             {
               "ticker": "AFG",
               "name": "American Financial Group",
-              "score": 58.1,
+              "score": 58.3,
               "why": [
                 "already_open"
               ]
@@ -670,7 +669,7 @@
             {
               "ticker": "OVV",
               "name": "Ovintiv",
-              "score": 58.1,
+              "score": 58.2,
               "why": [
                 "already_open"
               ]
@@ -678,7 +677,7 @@
             {
               "ticker": "ACGL",
               "name": "Arch Capital Group",
-              "score": 57.9,
+              "score": 58.1,
               "why": [
                 "already_open"
               ]
@@ -686,7 +685,7 @@
             {
               "ticker": "BF-B",
               "name": "Brown\u2013Forman",
-              "score": 57.1,
+              "score": 57.3,
               "why": [
                 "already_open"
               ]
@@ -694,7 +693,7 @@
             {
               "ticker": "PECO",
               "name": "Phillips Edison & Company",
-              "score": 56.7,
+              "score": 57.1,
               "why": [
                 "already_open"
               ]
@@ -702,7 +701,7 @@
             {
               "ticker": "FE",
               "name": "FirstEnergy",
-              "score": 56.3,
+              "score": 56.6,
               "why": [
                 "already_open"
               ]
@@ -710,7 +709,7 @@
             {
               "ticker": "AMT",
               "name": "American Tower Corp",
-              "score": 56.2,
+              "score": 56.3,
               "why": [
                 "already_open"
               ]
@@ -718,7 +717,7 @@
             {
               "ticker": "COR",
               "name": "Cencora",
-              "score": 56.0,
+              "score": 56.3,
               "why": [
                 "already_open"
               ]
@@ -726,7 +725,7 @@
             {
               "ticker": "SR",
               "name": "Spire",
-              "score": 55.6,
+              "score": 56.0,
               "why": [
                 "already_open"
               ]
@@ -734,7 +733,7 @@
             {
               "ticker": "EL",
               "name": "Estee Lauder Companies Cl A",
-              "score": 54.8,
+              "score": 55.2,
               "why": [
                 "already_open"
               ]
@@ -742,7 +741,7 @@
             {
               "ticker": "ODFL",
               "name": "Old Dominion",
-              "score": 53.9,
+              "score": 54.2,
               "why": [
                 "already_open"
               ]
@@ -759,7 +758,7 @@
             {
               "ticker": "PR",
               "name": "Permian Resources",
-              "score": 61.0,
+              "score": 61.3,
               "why": [
                 "not_ready"
               ]
@@ -767,7 +766,7 @@
             {
               "ticker": "DIS",
               "name": "Walt Disney Co/The",
-              "score": 60.8,
+              "score": 61.0,
               "why": [
                 "not_ready"
               ]
@@ -775,7 +774,7 @@
             {
               "ticker": "NWN",
               "name": "NW Natural",
-              "score": 58.8,
+              "score": 59.1,
               "why": [
                 "not_ready"
               ]
@@ -783,7 +782,7 @@
             {
               "ticker": "DG",
               "name": "Dollar General Corp",
-              "score": 56.9,
+              "score": 57.2,
               "why": [
                 "not_ready"
               ]
@@ -791,7 +790,7 @@
             {
               "ticker": "AMR",
               "name": "Alpha Metallurgical Resources, Inc.",
-              "score": 53.7,
+              "score": 53.9,
               "why": [
                 "not_ready"
               ]
@@ -799,7 +798,7 @@
             {
               "ticker": "FOX",
               "name": "Fox Corp   Class B",
-              "score": 51.7,
+              "score": 52.0,
               "why": [
                 "not_ready"
               ]
@@ -807,7 +806,7 @@
             {
               "ticker": "VNOM",
               "name": "Viper Energy",
-              "score": 46.9,
+              "score": 47.2,
               "why": [
                 "not_ready"
               ]
@@ -815,7 +814,7 @@
             {
               "ticker": "DLB",
               "name": "Dolby",
-              "score": 44.3,
+              "score": 44.5,
               "why": [
                 "not_ready"
               ]
@@ -840,7 +839,7 @@
             {
               "ticker": "COP",
               "name": "Conocophillips",
-              "score": 59.5,
+              "score": 59.8,
               "why": [
                 "ran_too_far",
                 "conviction_low"
@@ -849,7 +848,7 @@
             {
               "ticker": "CVX",
               "name": "Chevron Corp",
-              "score": 59.2,
+              "score": 59.5,
               "why": [
                 "ran_too_far",
                 "conviction_low"
@@ -858,7 +857,7 @@
             {
               "ticker": "SBAC",
               "name": "Sba Communications Corp",
-              "score": 52.6,
+              "score": 52.9,
               "why": [
                 "ran_too_far",
                 "conviction_low"
@@ -867,7 +866,7 @@
             {
               "ticker": "DRH",
               "name": "DiamondRock Hospitality Company",
-              "score": 52.4,
+              "score": 52.6,
               "why": [
                 "ran_too_far",
                 "conviction_low"
@@ -876,7 +875,7 @@
             {
               "ticker": "HAS",
               "name": "Hasbro",
-              "score": 50.6,
+              "score": 50.7,
               "why": [
                 "ran_too_far",
                 "conviction_low"
@@ -894,7 +893,7 @@
             {
               "ticker": "MRP",
               "name": "Millrose Properties, Inc.",
-              "score": 60.7,
+              "score": 60.8,
               "why": [
                 "stood_down",
                 "conviction_low",
@@ -904,7 +903,7 @@
             {
               "ticker": "LYV",
               "name": "Live Nation Entertainment In",
-              "score": 56.7,
+              "score": 57.0,
               "why": [
                 "stood_down",
                 "conviction_low",
@@ -924,7 +923,7 @@
             {
               "ticker": "CHTR",
               "name": "Charter Communications Inc A",
-              "score": 38.8,
+              "score": 38.9,
               "why": [
                 "stood_down",
                 "conviction_low",
@@ -944,7 +943,7 @@
             {
               "ticker": "EVR",
               "name": "Evercore",
-              "score": 36.8,
+              "score": 37.0,
               "why": [
                 "stood_down",
                 "conviction_low",
@@ -963,7 +962,7 @@
             {
               "ticker": "NHC",
               "name": "National Healthcare, Corp.",
-              "score": 62.8,
+              "score": 63.0,
               "why": [
                 "conviction_low"
               ]
@@ -971,15 +970,7 @@
             {
               "ticker": "JOE",
               "name": "St. Joe Company",
-              "score": 58.8,
-              "why": [
-                "conviction_low"
-              ]
-            },
-            {
-              "ticker": "FANG",
-              "name": "Diamondback Energy Inc",
-              "score": 56.6,
+              "score": 59.1,
               "why": [
                 "conviction_low"
               ]
@@ -987,7 +978,15 @@
             {
               "ticker": "AFL",
               "name": "Aflac",
-              "score": 56.5,
+              "score": 56.7,
+              "why": [
+                "conviction_low"
+              ]
+            },
+            {
+              "ticker": "FANG",
+              "name": "Diamondback Energy Inc",
+              "score": 56.7,
               "why": [
                 "conviction_low"
               ]
@@ -995,7 +994,7 @@
             {
               "ticker": "ETR",
               "name": "Entergy Corp",
-              "score": 54.6,
+              "score": 54.9,
               "why": [
                 "conviction_low"
               ]
@@ -1003,7 +1002,7 @@
             {
               "ticker": "FCFS",
               "name": "FirstCash",
-              "score": 51.1,
+              "score": 51.2,
               "why": [
                 "conviction_low"
               ]
@@ -1011,7 +1010,7 @@
             {
               "ticker": "COCO",
               "name": "The Vita Coco Company",
-              "score": 44.7,
+              "score": 44.9,
               "why": [
                 "conviction_low"
               ]
@@ -1019,7 +1018,7 @@
             {
               "ticker": "TDY",
               "name": "Teledyne Technologies",
-              "score": 43.3,
+              "score": 43.5,
               "why": [
                 "conviction_low"
               ]
@@ -1036,7 +1035,7 @@
             {
               "ticker": "LSTR",
               "name": "Landstar System",
-              "score": 45.7,
+              "score": 45.9,
               "why": [
                 "pointing_down"
               ]
@@ -1044,7 +1043,7 @@
             {
               "ticker": "KVYO",
               "name": "Klaviyo",
-              "score": 36.6,
+              "score": 36.8,
               "why": [
                 "pointing_down"
               ]
@@ -1069,7 +1068,7 @@
       "admitted": 43,
       "would_have_planned": 12,
       "cap": 12,
-      "rows_in_part": 43,
+      "rows_in_part": 44,
       "authority": "none"
     },
     "basis": "Admission is a STATUS CLASS (ANTICIPATION A1): an entry status in admitted_statuses, a signal tone in admitted_directions, conviction band above low, and a T1-T3 signal tier. The prior act-level gate is frozen with zero authority and keeps accruing a legacy shadow ledger so the two selections can be compared on the same tape. Ranking is unchanged. Every admitted candidate that is neither a duplicate ID nor blocked by an open plan is attempted; there is no positional plan-origination cap. Any candidate that cannot produce a plan is listed under validation_failures. Every plan carries a structure-anchored entry zone; the disclosed entry price remains the point-in-time price-basis close. Featured-board, sector, alert and portfolio-risk controls are separate and unchanged.",
@@ -1398,14 +1397,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 27.5,
+      "management_confidence": 26.9,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 58.5,
       "state": {
         "phase": "overtime",
-        "management_confidence": 27.5,
+        "management_confidence": 26.9,
         "recommended_action": "trim",
         "components": {
           "validity": 34.5,
@@ -2447,14 +2446,14 @@
       "closed": false,
       "pulse": "43d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "43\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 36.8,
+      "management_confidence": 36.7,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 83.64,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 36.8,
+        "management_confidence": 36.7,
         "recommended_action": "hold",
         "components": {
           "validity": 90.4,
@@ -3140,14 +3139,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 26.0,
+      "management_confidence": 25.3,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 506.3,
       "state": {
         "phase": "overtime",
-        "management_confidence": 26.0,
+        "management_confidence": 25.3,
         "recommended_action": "trim",
         "components": {
           "validity": 30.1,
@@ -4887,14 +4886,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 35.4,
+      "management_confidence": 35.1,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 33.35,
       "state": {
         "phase": "overtime",
-        "management_confidence": 35.4,
+        "management_confidence": 35.1,
         "recommended_action": "trim",
         "components": {
           "validity": 64.3,
@@ -5046,7 +5045,7 @@
       "closed": true,
       "pulse": "closed \u00b7 hit first target",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u8fbe\u5230\u9996\u4e2a\u76ee\u6807",
-      "management_confidence": 80.7,
+      "management_confidence": 80.5,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -5061,7 +5060,7 @@
       },
       "state": {
         "phase": "between_t1_t2",
-        "management_confidence": 80.7,
+        "management_confidence": 80.5,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -6758,10 +6757,10 @@
             "source": "us_stock_library"
           },
           "lane": {
-            "value": "watch",
-            "state": "available",
-            "reason": null,
-            "source": "us_standouts"
+            "value": null,
+            "state": "not_applicable",
+            "reason": "not_on_board",
+            "source": null
           },
           "spark": {
             "value": "board_read_sparks.json#WINA",
@@ -8812,14 +8811,14 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 35.8,
+      "management_confidence": 35.6,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 242.92,
       "state": {
         "phase": "overtime",
-        "management_confidence": 35.8,
+        "management_confidence": 35.6,
         "recommended_action": "trim",
         "components": {
           "validity": 68.1,
@@ -9192,14 +9191,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 21.6,
+      "management_confidence": 21.0,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 995.9,
       "state": {
         "phase": "overtime",
-        "management_confidence": 21.6,
+        "management_confidence": 21.0,
         "recommended_action": "trim",
         "components": {
           "validity": 16.0,
@@ -11484,14 +11483,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 33.7,
+      "management_confidence": 33.6,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 86.45,
       "state": {
         "phase": "overtime",
-        "management_confidence": 33.7,
+        "management_confidence": 33.6,
         "recommended_action": "trim",
         "components": {
           "validity": 58.8,
@@ -12329,7 +12328,7 @@
         "schema": "prophet.board_read/v1",
         "scope": "ticker",
         "ticker": "QBTS",
-        "as_of": "2026-10-07",
+        "as_of": "2026-10-16",
         "fields": {
           "status": {
             "value": null,
@@ -13298,14 +13297,14 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 25.7,
+      "management_confidence": 25.4,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 55.29,
       "state": {
         "phase": "overtime",
-        "management_confidence": 25.7,
+        "management_confidence": 25.4,
         "recommended_action": "trim",
         "components": {
           "validity": 37.0,
@@ -15301,14 +15300,14 @@
       "closed": false,
       "pulse": "43d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "43\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 32.9,
+      "management_confidence": 32.7,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 12.05,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 32.9,
+        "management_confidence": 32.7,
         "recommended_action": "wait",
         "components": {
           "validity": 21.0,
@@ -16831,7 +16830,7 @@
         "schema": "prophet.board_read/v1",
         "scope": "ticker",
         "ticker": "EU",
-        "as_of": "2026-10-16",
+        "as_of": "2026-10-07",
         "fields": {
           "status": {
             "value": null,
@@ -20515,14 +20514,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 37.9,
+      "management_confidence": 38.1,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 129.53,
       "state": {
         "phase": "overtime",
-        "management_confidence": 37.9,
+        "management_confidence": 38.1,
         "recommended_action": "trim",
         "components": {
           "validity": 72.3,
@@ -20966,14 +20965,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 31.3,
+      "management_confidence": 31.1,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 24.84,
       "state": {
         "phase": "overtime",
-        "management_confidence": 31.3,
+        "management_confidence": 31.1,
         "recommended_action": "trim",
         "components": {
           "validity": 50.4,
@@ -24417,14 +24416,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 38.0,
+      "management_confidence": 37.7,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 253.91,
       "state": {
         "phase": "overtime",
-        "management_confidence": 38.0,
+        "management_confidence": 37.7,
         "recommended_action": "trim",
         "components": {
           "validity": 62.6,
@@ -25741,14 +25740,14 @@
       "closed": true,
       "pulse": "closed \u00b7 hit second target",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u8fbe\u5230\u7b2c\u4e8c\u76ee\u6807",
-      "management_confidence": 90.2,
+      "management_confidence": 90.0,
       "recommended_action": "trail",
       "management_status": "available",
       "management_error": null,
       "last_price": 226.3,
       "state": {
         "phase": "at_t2",
-        "management_confidence": 90.2,
+        "management_confidence": 90.0,
         "recommended_action": "trail",
         "components": {
           "validity": 100.0,
@@ -26131,14 +26130,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 28.2,
+      "management_confidence": 27.9,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 257.81,
       "state": {
         "phase": "overtime",
-        "management_confidence": 28.2,
+        "management_confidence": 27.9,
         "recommended_action": "trim",
         "components": {
           "validity": 42.1,
@@ -28040,14 +28039,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 39.5,
+      "management_confidence": 39.6,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 5.97,
       "state": {
         "phase": "overtime",
-        "management_confidence": 39.5,
+        "management_confidence": 39.6,
         "recommended_action": "trim",
         "components": {
           "validity": 80.0,
@@ -29256,14 +29255,14 @@
       "closed": false,
       "pulse": "10d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "10\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 58.7,
+      "management_confidence": 58.0,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 74.49,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 58.7,
+        "management_confidence": 58.0,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -30517,14 +30516,14 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 25.0,
+      "management_confidence": 24.6,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 33.16,
       "state": {
         "phase": "overtime",
-        "management_confidence": 25.0,
+        "management_confidence": 24.6,
         "recommended_action": "trim",
         "components": {
           "validity": 31.0,
@@ -30907,7 +30906,7 @@
       "closed": false,
       "pulse": "12d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "12\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 52.1,
+      "management_confidence": 51.4,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -30922,7 +30921,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 52.1,
+        "management_confidence": 51.4,
         "recommended_action": null,
         "components": {
           "validity": 89.9,
@@ -31158,14 +31157,14 @@
       "closed": false,
       "pulse": "9d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "9\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 67.0,
+      "management_confidence": 67.2,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 127.41,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 67.0,
+        "management_confidence": 67.2,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -31967,14 +31966,14 @@
       "closed": false,
       "pulse": "12d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "12\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 59.1,
+      "management_confidence": 58.6,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 533.69,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 59.1,
+        "management_confidence": 58.6,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -32435,14 +32434,14 @@
       "closed": false,
       "pulse": "15d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "15\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 31.7,
+      "management_confidence": 30.6,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 173.45,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 31.7,
+        "management_confidence": 30.6,
         "recommended_action": "hold",
         "components": {
           "validity": 19.0,
@@ -34031,14 +34030,14 @@
       "closed": false,
       "pulse": "9d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "9\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 61.6,
+      "management_confidence": 61.2,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 55.2,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 61.6,
+        "management_confidence": 61.2,
         "recommended_action": "wait",
         "components": {
           "validity": 84.1,
@@ -34497,14 +34496,14 @@
       "closed": false,
       "pulse": "3d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "3\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 61.3,
+      "management_confidence": 61.1,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 395.62,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 61.3,
+        "management_confidence": 61.1,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -35401,14 +35400,14 @@
       "closed": false,
       "pulse": "11d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "11\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 63.2,
+      "management_confidence": 62.9,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 65.92,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 63.2,
+        "management_confidence": 62.9,
         "recommended_action": "wait",
         "components": {
           "validity": 99.0,
@@ -37029,14 +37028,14 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 22.5,
+      "management_confidence": 22.3,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 296.87,
       "state": {
         "phase": "overtime",
-        "management_confidence": 22.5,
+        "management_confidence": 22.3,
         "recommended_action": "trim",
         "components": {
           "validity": 27.8,
@@ -37188,14 +37187,14 @@
       "closed": false,
       "pulse": "43d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "43\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 39.1,
+      "management_confidence": 38.9,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 80.9,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 39.1,
+        "management_confidence": 38.9,
         "recommended_action": "wait",
         "components": {
           "validity": 42.5,
@@ -38950,14 +38949,14 @@
       "closed": false,
       "pulse": "36d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "36\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 49.6,
+      "management_confidence": 49.5,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 107.96,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 49.6,
+        "management_confidence": 49.5,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -39443,10 +39442,10 @@
             "source": "us_stock_library"
           },
           "lane": {
-            "value": null,
-            "state": "not_applicable",
-            "reason": "not_on_board",
-            "source": null
+            "value": "watch",
+            "state": "available",
+            "reason": null,
+            "source": "us_standouts"
           },
           "spark": {
             "value": "board_read_sparks.json#LIVN",
@@ -40118,14 +40117,14 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 30.7,
+      "management_confidence": 30.1,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 401.16,
       "state": {
         "phase": "overtime",
-        "management_confidence": 30.7,
+        "management_confidence": 30.1,
         "recommended_action": "trim",
         "components": {
           "validity": 40.1,
@@ -40572,14 +40571,14 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 23.8,
+      "management_confidence": 23.6,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 113.0,
       "state": {
         "phase": "overtime",
-        "management_confidence": 23.8,
+        "management_confidence": 23.6,
         "recommended_action": "trim",
         "components": {
           "validity": 32.1,
@@ -40731,14 +40730,14 @@
       "closed": false,
       "pulse": "3d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "3\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 67.0,
+      "management_confidence": 66.8,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 97.6,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 67.0,
+        "management_confidence": 66.8,
         "recommended_action": "wait",
         "components": {
           "validity": 100.0,
@@ -41408,14 +41407,14 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 27.7,
+      "management_confidence": 27.5,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 113.66,
       "state": {
         "phase": "overtime",
-        "management_confidence": 27.7,
+        "management_confidence": 27.5,
         "recommended_action": "trim",
         "components": {
           "validity": 31.2,
@@ -42851,14 +42850,14 @@
       "closed": false,
       "pulse": "15d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "15\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 37.9,
+      "management_confidence": 37.5,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 257.45,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 37.9,
+        "management_confidence": 37.5,
         "recommended_action": "wait",
         "components": {
           "validity": 16.6,
@@ -45258,14 +45257,14 @@
       "closed": false,
       "pulse": "3d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "3\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 67.0,
+      "management_confidence": 66.8,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 28.29,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 67.0,
+        "management_confidence": 66.8,
         "recommended_action": "wait",
         "components": {
           "validity": 100.0,
@@ -47304,14 +47303,14 @@
       "closed": false,
       "pulse": "43d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "43\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 39.1,
+      "management_confidence": 39.0,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 136.75,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 39.1,
+        "management_confidence": 39.0,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -47762,14 +47761,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 38.0,
+      "management_confidence": 38.6,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 208.52,
       "state": {
         "phase": "overtime",
-        "management_confidence": 38.0,
+        "management_confidence": 38.6,
         "recommended_action": "trim",
         "components": {
           "validity": 77.2,
@@ -48555,14 +48554,14 @@
       "closed": false,
       "pulse": "3d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "3\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 67.0,
+      "management_confidence": 66.8,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 45.41,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 67.0,
+        "management_confidence": 66.8,
         "recommended_action": "wait",
         "components": {
           "validity": 100.0,
@@ -50796,14 +50795,14 @@
       "closed": false,
       "pulse": "3d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "3\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 67.0,
+      "management_confidence": 66.8,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 336.17,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 67.0,
+        "management_confidence": 66.8,
         "recommended_action": "wait",
         "components": {
           "validity": 99.9,
@@ -51471,14 +51470,14 @@
       "closed": false,
       "pulse": "15d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "15\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 44.2,
+      "management_confidence": 43.5,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 286.92,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 44.2,
+        "management_confidence": 43.5,
         "recommended_action": "wait",
         "components": {
           "validity": 30.2,
@@ -51941,14 +51940,14 @@
       "closed": false,
       "pulse": "29d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "29\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 37.7,
+      "management_confidence": 37.5,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 276.33,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 37.7,
+        "management_confidence": 37.5,
         "recommended_action": "hold",
         "components": {
           "validity": 89.3,
@@ -52172,14 +52171,14 @@
       "closed": false,
       "pulse": "3d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "3\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 66.8,
+      "management_confidence": 66.6,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 179.4,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 66.8,
+        "management_confidence": 66.6,
         "recommended_action": "wait",
         "components": {
           "validity": 100.0,
@@ -53170,14 +53169,14 @@
       "closed": false,
       "pulse": "15d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "15\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 36.7,
+      "management_confidence": 35.8,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 1650.0,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 36.7,
+        "management_confidence": 35.8,
         "recommended_action": "hold",
         "components": {
           "validity": 41.4,
@@ -54538,14 +54537,14 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 23.7,
+      "management_confidence": 23.6,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 85.3,
       "state": {
         "phase": "overtime",
-        "management_confidence": 23.7,
+        "management_confidence": 23.6,
         "recommended_action": "trim",
         "components": {
           "validity": 23.5,
@@ -55311,14 +55310,14 @@
       "closed": false,
       "pulse": "15d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "15\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 54.2,
+      "management_confidence": 53.7,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 19.11,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 54.2,
+        "management_confidence": 53.7,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -55783,14 +55782,14 @@
       "closed": false,
       "pulse": "11d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "11\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 47.5,
+      "management_confidence": 47.0,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 465.33,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 47.5,
+        "management_confidence": 47.0,
         "recommended_action": "wait",
         "components": {
           "validity": 40.6,
@@ -56022,14 +56021,14 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 33.9,
+      "management_confidence": 33.7,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 25.96,
       "state": {
         "phase": "overtime",
-        "management_confidence": 33.9,
+        "management_confidence": 33.7,
         "recommended_action": "trim",
         "components": {
           "validity": 62.7,
@@ -56181,14 +56180,14 @@
       "closed": false,
       "pulse": "43d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "43\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 37.2,
+      "management_confidence": 37.0,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 194.35,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 37.2,
+        "management_confidence": 37.0,
         "recommended_action": "wait",
         "components": {
           "validity": 36.0,
@@ -56872,14 +56871,14 @@
       "closed": true,
       "pulse": "closed \u00b7 stopped out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u6b62\u635f\u79bb\u573a",
-      "management_confidence": 24.7,
+      "management_confidence": 24.4,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 324.54,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 24.7,
+        "management_confidence": 24.4,
         "recommended_action": "hold",
         "components": {
           "validity": 27.8,
@@ -58009,14 +58008,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 32.4,
+      "management_confidence": 32.2,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 37.58,
       "state": {
         "phase": "overtime",
-        "management_confidence": 32.4,
+        "management_confidence": 32.2,
         "recommended_action": "trim",
         "components": {
           "validity": 39.5,
@@ -58470,14 +58469,14 @@
       "closed": false,
       "pulse": "3d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "3\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 67.0,
+      "management_confidence": 66.8,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 101.59,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 67.0,
+        "management_confidence": 66.8,
         "recommended_action": "wait",
         "components": {
           "validity": 99.9,
@@ -61400,14 +61399,14 @@
       "closed": false,
       "pulse": "36d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "36\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 39.0,
+      "management_confidence": 38.9,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 55.77,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 39.0,
+        "management_confidence": 38.9,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -63118,14 +63117,14 @@
       "closed": false,
       "pulse": "43d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "43\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 32.9,
+      "management_confidence": 32.8,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 91.97,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 32.9,
+        "management_confidence": 32.8,
         "recommended_action": "hold",
         "components": {
           "validity": 76.1,
@@ -63349,14 +63348,14 @@
       "closed": false,
       "pulse": "22d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "22\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 51.7,
+      "management_confidence": 50.9,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 22.67,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 51.7,
+        "management_confidence": 50.9,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -65232,14 +65231,14 @@
       "closed": false,
       "pulse": "10d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "10\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 59.3,
+      "management_confidence": 58.8,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 38.12,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 59.3,
+        "management_confidence": 58.8,
         "recommended_action": "wait",
         "components": {
           "validity": 80.4,
@@ -65793,14 +65792,14 @@
       "closed": false,
       "pulse": "17d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "17\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 53.4,
+      "management_confidence": 52.5,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 72.59,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 53.4,
+        "management_confidence": 52.5,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -66030,14 +66029,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 27.4,
+      "management_confidence": 26.9,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 81.85,
       "state": {
         "phase": "overtime",
-        "management_confidence": 27.4,
+        "management_confidence": 26.9,
         "recommended_action": "trim",
         "components": {
           "validity": 25.6,
@@ -67714,14 +67713,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 30.2,
+      "management_confidence": 29.6,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 22.13,
       "state": {
         "phase": "overtime",
-        "management_confidence": 30.2,
+        "management_confidence": 29.6,
         "recommended_action": "trim",
         "components": {
           "validity": 33.9,
@@ -68173,14 +68172,14 @@
       "closed": false,
       "pulse": "29d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "29\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 40.7,
+      "management_confidence": 40.3,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 30.49,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 40.7,
+        "management_confidence": 40.3,
         "recommended_action": "wait",
         "components": {
           "validity": 45.5,
@@ -70270,14 +70269,14 @@
       "closed": false,
       "pulse": "29d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "29\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 33.4,
+      "management_confidence": 32.7,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 198.06,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 33.4,
+        "management_confidence": 32.7,
         "recommended_action": "hold",
         "components": {
           "validity": 68.0,
@@ -71053,14 +71052,14 @@
       "closed": true,
       "pulse": "closed \u00b7 hit first target",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u8fbe\u5230\u9996\u4e2a\u76ee\u6807",
-      "management_confidence": 83.3,
+      "management_confidence": 82.9,
       "recommended_action": "trail",
       "management_status": "available",
       "management_error": null,
       "last_price": 11.51,
       "state": {
         "phase": "at_t2",
-        "management_confidence": 83.3,
+        "management_confidence": 82.9,
         "recommended_action": "trail",
         "components": {
           "validity": 100.0,
@@ -71280,14 +71279,14 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 32.4,
+      "management_confidence": 32.0,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 44.37,
       "state": {
         "phase": "overtime",
-        "management_confidence": 32.4,
+        "management_confidence": 32.0,
         "recommended_action": "trim",
         "components": {
           "validity": 54.3,
@@ -73060,14 +73059,14 @@
       "closed": false,
       "pulse": "12d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "12\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 49.6,
+      "management_confidence": 48.7,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 263.26,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 49.6,
+        "management_confidence": 48.7,
         "recommended_action": "hold",
         "components": {
           "validity": 78.2,
@@ -73527,14 +73526,14 @@
       "closed": false,
       "pulse": "15d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "15\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 39.8,
+      "management_confidence": 37.5,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 172.33,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 39.8,
+        "management_confidence": 37.5,
         "recommended_action": "hold",
         "components": {
           "validity": 41.6,
@@ -76409,14 +76408,14 @@
       "closed": false,
       "pulse": "11d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "11\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 69.6,
+      "management_confidence": 69.3,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 71.08,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 69.6,
+        "management_confidence": 69.3,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -76646,14 +76645,14 @@
       "closed": false,
       "pulse": "3d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "3\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 66.6,
+      "management_confidence": 66.4,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 49.92,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 66.6,
+        "management_confidence": 66.4,
         "recommended_action": "wait",
         "components": {
           "validity": 100.0,
@@ -77789,14 +77788,14 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 35.8,
+      "management_confidence": 35.5,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 660.53,
       "state": {
         "phase": "overtime",
-        "management_confidence": 35.8,
+        "management_confidence": 35.5,
         "recommended_action": "trim",
         "components": {
           "validity": 57.7,
@@ -78248,14 +78247,14 @@
       "closed": false,
       "pulse": "15d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "15\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 34.1,
+      "management_confidence": 32.2,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 61.26,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 34.1,
+        "management_confidence": 32.2,
         "recommended_action": "hold",
         "components": {
           "validity": 21.6,
@@ -78579,7 +78578,7 @@
       "closed": true,
       "pulse": "closed \u00b7 hit first target",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u8fbe\u5230\u9996\u4e2a\u76ee\u6807",
-      "management_confidence": 47.6,
+      "management_confidence": 47.4,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -78594,7 +78593,7 @@
       },
       "state": {
         "phase": "at_t1",
-        "management_confidence": 47.6,
+        "management_confidence": 47.4,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -78824,14 +78823,14 @@
       "closed": false,
       "pulse": "3d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "3\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 66.9,
+      "management_confidence": 66.7,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 175.85,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 66.9,
+        "management_confidence": 66.7,
         "recommended_action": "wait",
         "components": {
           "validity": 99.8,
@@ -79501,14 +79500,14 @@
       "closed": false,
       "pulse": "15d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "15\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 54.7,
+      "management_confidence": 54.2,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 11.51,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 54.7,
+        "management_confidence": 54.2,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -80512,14 +80511,14 @@
       "closed": false,
       "pulse": "3d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "3\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 66.6,
+      "management_confidence": 66.4,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 47.37,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 66.6,
+        "management_confidence": 66.4,
         "recommended_action": "wait",
         "components": {
           "validity": 100.0,
@@ -81738,14 +81737,14 @@
       "closed": false,
       "pulse": "43d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "43\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 43.1,
+      "management_confidence": 42.8,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 151.79,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 43.1,
+        "management_confidence": 42.8,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -82996,14 +82995,14 @@
       "closed": false,
       "pulse": "22d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "22\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 48.8,
+      "management_confidence": 48.3,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 27.45,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 48.8,
+        "management_confidence": 48.3,
         "recommended_action": "wait",
         "components": {
           "validity": 70.6,
@@ -83233,14 +83232,14 @@
       "closed": false,
       "pulse": "17d \u00b7 triggered \u00b7 on track",
       "pulse_zh": "17\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u6309\u8ba1\u5212\u63a8\u8fdb",
-      "management_confidence": 63.6,
+      "management_confidence": 63.1,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 35.39,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 63.6,
+        "management_confidence": 63.1,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -85218,14 +85217,14 @@
       "closed": false,
       "pulse": "11d \u00b7 triggered \u00b7 on track",
       "pulse_zh": "11\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u6309\u8ba1\u5212\u63a8\u8fdb",
-      "management_confidence": 68.2,
+      "management_confidence": 68.1,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 288.76,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 68.2,
+        "management_confidence": 68.1,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -85458,14 +85457,14 @@
       "closed": false,
       "pulse": "29d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "29\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 52.4,
+      "management_confidence": 52.2,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 116.88,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 52.4,
+        "management_confidence": 52.2,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -85689,14 +85688,14 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 26.7,
+      "management_confidence": 25.8,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 1243.11,
       "state": {
         "phase": "overtime",
-        "management_confidence": 26.7,
+        "management_confidence": 25.8,
         "recommended_action": "trim",
         "components": {
           "validity": 25.5,
@@ -85916,14 +85915,14 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 36.8,
+      "management_confidence": 36.4,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 18.83,
       "state": {
         "phase": "overtime",
-        "management_confidence": 36.8,
+        "management_confidence": 36.4,
         "recommended_action": "trim",
         "components": {
           "validity": 61.0,
@@ -86460,14 +86459,14 @@
       "closed": false,
       "pulse": "22d \u00b7 triggered \u00b7 on track",
       "pulse_zh": "22\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u6309\u8ba1\u5212\u63a8\u8fdb",
-      "management_confidence": 61.7,
+      "management_confidence": 61.5,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 371.82,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 61.7,
+        "management_confidence": 61.5,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -88081,14 +88080,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 38.7,
+      "management_confidence": 38.5,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 112.08,
       "state": {
         "phase": "overtime",
-        "management_confidence": 38.7,
+        "management_confidence": 38.5,
         "recommended_action": "trim",
         "components": {
           "validity": 63.0,
@@ -89008,14 +89007,14 @@
       "closed": false,
       "pulse": "29d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "29\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 42.2,
+      "management_confidence": 41.5,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 58.24,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 42.2,
+        "management_confidence": 41.5,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -90484,14 +90483,14 @@
       "closed": false,
       "pulse": "9d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "9\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 63.8,
+      "management_confidence": 63.4,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 52.75,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 63.8,
+        "management_confidence": 63.4,
         "recommended_action": "wait",
         "components": {
           "validity": 95.6,
@@ -91746,14 +91745,14 @@
       "closed": false,
       "pulse": "43d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "43\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 47.8,
+      "management_confidence": 48.0,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 428.09,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 47.8,
+        "management_confidence": 48.0,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -93180,14 +93179,14 @@
       "closed": false,
       "pulse": "15d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "15\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 61.6,
+      "management_confidence": 61.2,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 375.27,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 61.6,
+        "management_confidence": 61.2,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -93417,14 +93416,14 @@
       "closed": false,
       "pulse": "9d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "9\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 64.3,
+      "management_confidence": 63.9,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 13.97,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 64.3,
+        "management_confidence": 63.9,
         "recommended_action": "wait",
         "components": {
           "validity": 98.2,
@@ -93882,14 +93881,14 @@
       "closed": true,
       "pulse": "closed \u00b7 hit first target",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u8fbe\u5230\u9996\u4e2a\u76ee\u6807",
-      "management_confidence": 61.6,
+      "management_confidence": 61.4,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 172.62,
       "state": {
         "phase": "between_t1_t2",
-        "management_confidence": 61.6,
+        "management_confidence": 61.4,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -94803,14 +94802,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 33.0,
+      "management_confidence": 32.8,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 34.98,
       "state": {
         "phase": "overtime",
-        "management_confidence": 33.0,
+        "management_confidence": 32.8,
         "recommended_action": "trim",
         "components": {
           "validity": 43.7,
@@ -96174,14 +96173,14 @@
       "closed": true,
       "pulse": "closed \u00b7 hit first target",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u8fbe\u5230\u9996\u4e2a\u76ee\u6807",
-      "management_confidence": 75.2,
+      "management_confidence": 74.6,
       "recommended_action": "trail",
       "management_status": "available",
       "management_error": null,
       "last_price": 358.42,
       "state": {
         "phase": "at_t2",
-        "management_confidence": 75.2,
+        "management_confidence": 74.6,
         "recommended_action": "trail",
         "components": {
           "validity": 100.0,
@@ -96636,14 +96635,14 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 29.1,
+      "management_confidence": 29.2,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 119.64,
       "state": {
         "phase": "overtime",
-        "management_confidence": 29.1,
+        "management_confidence": 29.2,
         "recommended_action": "trim",
         "components": {
           "validity": 40.5,
@@ -96863,14 +96862,14 @@
       "closed": false,
       "pulse": "9d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "9\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 70.0,
+      "management_confidence": 69.9,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 75.29,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 70.0,
+        "management_confidence": 69.9,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -97421,14 +97420,14 @@
       "closed": false,
       "pulse": "11d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "11\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 51.2,
+      "management_confidence": 50.7,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 40.62,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 51.2,
+        "management_confidence": 50.7,
         "recommended_action": "hold",
         "components": {
           "validity": 82.1,
@@ -98695,14 +98694,14 @@
       "closed": false,
       "pulse": "29d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "29\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 28.8,
+      "management_confidence": 28.0,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 41.77,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 28.8,
+        "management_confidence": 28.0,
         "recommended_action": "hold",
         "components": {
           "validity": 48.0,
@@ -98928,14 +98927,14 @@
       "closed": false,
       "pulse": "9d \u00b7 triggered \u00b7 on track",
       "pulse_zh": "9\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u6309\u8ba1\u5212\u63a8\u8fdb",
-      "management_confidence": 73.4,
+      "management_confidence": 73.3,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 10.72,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 73.4,
+        "management_confidence": 73.3,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -99165,14 +99164,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 32.1,
+      "management_confidence": 31.9,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 23.8,
       "state": {
         "phase": "overtime",
-        "management_confidence": 32.1,
+        "management_confidence": 31.9,
         "recommended_action": "trim",
         "components": {
           "validity": 34.8,
@@ -99623,14 +99622,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 33.7,
+      "management_confidence": 33.4,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 462.77,
       "state": {
         "phase": "overtime",
-        "management_confidence": 33.7,
+        "management_confidence": 33.4,
         "recommended_action": "trim",
         "components": {
           "validity": 47.6,
@@ -99853,14 +99852,14 @@
       "closed": false,
       "pulse": "10d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "10\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 63.1,
+      "management_confidence": 62.6,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 38.94,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 63.1,
+        "management_confidence": 62.6,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -100317,14 +100316,14 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 22.2,
+      "management_confidence": 21.9,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 140.09,
       "state": {
         "phase": "overtime",
-        "management_confidence": 22.2,
+        "management_confidence": 21.9,
         "recommended_action": "trim",
         "components": {
           "validity": 9.4,
@@ -101563,14 +101562,14 @@
       "closed": false,
       "pulse": "11d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "11\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 37.6,
+      "management_confidence": 36.9,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 57.27,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 37.6,
+        "management_confidence": 36.9,
         "recommended_action": "wait",
         "components": {
           "validity": 3.4,
@@ -103517,14 +103516,14 @@
       "closed": true,
       "pulse": "closed \u00b7 stopped out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u6b62\u635f\u79bb\u573a",
-      "management_confidence": 65.9,
+      "management_confidence": 66.3,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 54.22,
       "state": {
         "phase": "between_t1_t2",
-        "management_confidence": 65.9,
+        "management_confidence": 66.3,
         "recommended_action": "hold",
         "components": {
           "validity": 60.1,
@@ -104450,14 +104449,14 @@
       "closed": false,
       "pulse": "12d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "12\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 52.0,
+      "management_confidence": 51.3,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 37.85,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 52.0,
+        "management_confidence": 51.3,
         "recommended_action": "hold",
         "components": {
           "validity": 89.1,
@@ -105609,14 +105608,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 36.7,
+      "management_confidence": 36.3,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 17.01,
       "state": {
         "phase": "overtime",
-        "management_confidence": 36.7,
+        "management_confidence": 36.3,
         "recommended_action": "trim",
         "components": {
           "validity": 49.2,
@@ -106980,14 +106979,14 @@
       "closed": false,
       "pulse": "12d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "12\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 56.0,
+      "management_confidence": 55.8,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 328.53,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 56.0,
+        "management_confidence": 55.8,
         "recommended_action": "wait",
         "components": {
           "validity": 75.8,
@@ -113166,14 +113165,14 @@
       "closed": false,
       "pulse": "9d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "9\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 66.9,
+      "management_confidence": 66.8,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 185.1,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 66.9,
+        "management_confidence": 66.8,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -113640,14 +113639,14 @@
       "closed": false,
       "pulse": "15d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "15\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 63.5,
+      "management_confidence": 63.4,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 193.33,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 63.5,
+        "management_confidence": 63.4,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -118349,14 +118348,14 @@
       "closed": false,
       "pulse": "17d \u00b7 triggered \u00b7 on track",
       "pulse_zh": "17\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u6309\u8ba1\u5212\u63a8\u8fdb",
-      "management_confidence": 72.2,
+      "management_confidence": 71.8,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 142.83,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 72.2,
+        "management_confidence": 71.8,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -119608,14 +119607,14 @@
       "closed": false,
       "pulse": "3d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "3\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 66.7,
+      "management_confidence": 66.5,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 129.48,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 66.7,
+        "management_confidence": 66.5,
         "recommended_action": "wait",
         "components": {
           "validity": 99.9,
@@ -121077,14 +121076,14 @@
       "closed": false,
       "pulse": "17d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "17\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 55.5,
+      "management_confidence": 54.9,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 37.2,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 55.5,
+        "management_confidence": 54.9,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -121675,14 +121674,14 @@
       "closed": false,
       "pulse": "9d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "9\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 65.9,
+      "management_confidence": 65.6,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 77.43,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 65.9,
+        "management_confidence": 65.6,
         "recommended_action": "wait",
         "components": {
           "validity": 100.0,
@@ -124118,14 +124117,14 @@
       "closed": false,
       "pulse": "12d \u00b7 triggered \u00b7 advancing cleanly",
       "pulse_zh": "12\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u987a\u5229\u63a8\u8fdb",
-      "management_confidence": 76.9,
+      "management_confidence": 76.8,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 41.26,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 76.9,
+        "management_confidence": 76.8,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -124828,14 +124827,14 @@
       "closed": false,
       "pulse": "3d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "3\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 67.0,
+      "management_confidence": 66.8,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 42.6,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 67.0,
+        "management_confidence": 66.8,
         "recommended_action": "wait",
         "components": {
           "validity": 100.0,
@@ -127916,14 +127915,14 @@
       "closed": false,
       "pulse": "9d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "9\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 58.7,
+      "management_confidence": 58.1,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 204.2,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 58.7,
+        "management_confidence": 58.1,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -128627,14 +128626,14 @@
       "closed": false,
       "pulse": "10d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "10\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 52.8,
+      "management_confidence": 52.3,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 157.06,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 52.8,
+        "management_confidence": 52.3,
         "recommended_action": "wait",
         "components": {
           "validity": 57.1,
@@ -129644,14 +129643,14 @@
       "closed": false,
       "pulse": "9d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "9\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 39.6,
+      "management_confidence": 38.2,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 8.49,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 39.6,
+        "management_confidence": 38.2,
         "recommended_action": "hold",
         "components": {
           "validity": 17.7,
@@ -130580,14 +130579,14 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 35.2,
+      "management_confidence": 34.9,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 237.04,
       "state": {
         "phase": "overtime",
-        "management_confidence": 35.2,
+        "management_confidence": 34.9,
         "recommended_action": "trim",
         "components": {
           "validity": 49.6,
@@ -131283,14 +131282,14 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 36.0,
+      "management_confidence": 35.8,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 82.55,
       "state": {
         "phase": "overtime",
-        "management_confidence": 36.0,
+        "management_confidence": 35.8,
         "recommended_action": "trim",
         "components": {
           "validity": 49.7,
@@ -132065,14 +132064,14 @@
       "closed": false,
       "pulse": "9d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "9\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 44.2,
+      "management_confidence": 43.0,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 32.11,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 44.2,
+        "management_confidence": 43.0,
         "recommended_action": "hold",
         "components": {
           "validity": 36.9,
@@ -134244,14 +134243,14 @@
       "closed": false,
       "pulse": "11d \u00b7 triggered \u00b7 on track",
       "pulse_zh": "11\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u6309\u8ba1\u5212\u63a8\u8fdb",
-      "management_confidence": 70.2,
+      "management_confidence": 70.1,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 84.97,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 70.2,
+        "management_confidence": 70.1,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -134484,14 +134483,14 @@
       "closed": false,
       "pulse": "9d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "9\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 64.9,
+      "management_confidence": 64.5,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 20.31,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 64.9,
+        "management_confidence": 64.5,
         "recommended_action": "wait",
         "components": {
           "validity": 100.0,
@@ -134721,14 +134720,14 @@
       "closed": true,
       "pulse": "closed \u00b7 stopped out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u6b62\u635f\u79bb\u573a",
-      "management_confidence": 69.9,
+      "management_confidence": 69.8,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 48.4,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 69.9,
+        "management_confidence": 69.8,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -136613,14 +136612,14 @@
       "closed": false,
       "pulse": "3d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "3\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 56.8,
+      "management_confidence": 56.6,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 5.06,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 56.8,
+        "management_confidence": 56.6,
         "recommended_action": "wait",
         "components": {
           "validity": 64.1,
@@ -137287,14 +137286,14 @@
       "closed": false,
       "pulse": "11d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "11\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 62.5,
+      "management_confidence": 62.0,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 82.82,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 62.5,
+        "management_confidence": 62.0,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -137972,14 +137971,14 @@
       "closed": false,
       "pulse": "10d \u00b7 triggered \u00b7 on track",
       "pulse_zh": "10\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u6309\u8ba1\u5212\u63a8\u8fdb",
-      "management_confidence": 73.6,
+      "management_confidence": 73.5,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 101.21,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 73.6,
+        "management_confidence": 73.5,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -139312,14 +139311,14 @@
       "closed": false,
       "pulse": "3d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "3\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 66.9,
+      "management_confidence": 66.7,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 22.37,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 66.9,
+        "management_confidence": 66.7,
         "recommended_action": "wait",
         "components": {
           "validity": 100.0,
@@ -140301,14 +140300,14 @@
       "closed": false,
       "pulse": "17d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "17\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 54.1,
+      "management_confidence": 53.6,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 136.96,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 54.1,
+        "management_confidence": 53.6,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -141214,14 +141213,14 @@
       "closed": false,
       "pulse": "43d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "43\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 49.4,
+      "management_confidence": 49.2,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 4.44,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 49.4,
+        "management_confidence": 49.2,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -141445,14 +141444,14 @@
       "closed": false,
       "pulse": "3d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "3\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 66.9,
+      "management_confidence": 66.7,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 529.01,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 66.9,
+        "management_confidence": 66.7,
         "recommended_action": "wait",
         "components": {
           "validity": 100.0,
@@ -142119,14 +142118,14 @@
       "closed": true,
       "pulse": "closed \u00b7 hit first target",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u8fbe\u5230\u9996\u4e2a\u76ee\u6807",
-      "management_confidence": 85.1,
+      "management_confidence": 85.0,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 5.97,
       "state": {
         "phase": "between_t1_t2",
-        "management_confidence": 85.1,
+        "management_confidence": 85.0,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -143821,14 +143820,14 @@
       "closed": false,
       "pulse": "3d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "3\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 65.8,
+      "management_confidence": 65.6,
       "recommended_action": "wait",
       "management_status": "available",
       "management_error": null,
       "last_price": 3.91,
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 65.8,
+        "management_confidence": 65.6,
         "recommended_action": "wait",
         "components": {
           "validity": 97.1,
@@ -145170,14 +145169,14 @@
       "closed": false,
       "pulse": "9d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "9\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 56.0,
+      "management_confidence": 55.4,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 10.95,
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 56.0,
+        "management_confidence": 55.4,
         "recommended_action": "hold",
         "components": {
           "validity": 92.7,
@@ -146436,14 +146435,14 @@
       "closed": true,
       "pulse": "closed \u00b7 hit first target",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u8fbe\u5230\u9996\u4e2a\u76ee\u6807",
-      "management_confidence": 44.8,
+      "management_confidence": 44.7,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 16.01,
       "state": {
         "phase": "between_t1_t2",
-        "management_confidence": 44.8,
+        "management_confidence": 44.7,
         "recommended_action": "trim",
         "components": {
           "validity": 100.0,
@@ -146738,14 +146737,14 @@
       "closed": true,
       "pulse": "closed \u00b7 hit first target",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u8fbe\u5230\u9996\u4e2a\u76ee\u6807",
-      "management_confidence": 87.1,
+      "management_confidence": 86.9,
       "recommended_action": "hold",
       "management_status": "available",
       "management_error": null,
       "last_price": 200.97,
       "state": {
         "phase": "between_t1_t2",
-        "management_confidence": 87.1,
+        "management_confidence": 86.9,
         "recommended_action": "hold",
         "components": {
           "validity": 100.0,
@@ -150279,14 +150278,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 20.7,
+      "management_confidence": 20.6,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 2911.6201,
       "state": {
         "phase": "overtime",
-        "management_confidence": 20.7,
+        "management_confidence": 20.6,
         "recommended_action": "trim",
         "components": {
           "validity": 18.5,
@@ -150863,14 +150862,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 21.2,
+      "management_confidence": 21.0,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 160.31,
       "state": {
         "phase": "overtime",
-        "management_confidence": 21.2,
+        "management_confidence": 21.0,
         "recommended_action": "trim",
         "components": {
           "validity": 20.3,
@@ -151311,14 +151310,14 @@
       "closed": true,
       "pulse": "closed \u00b7 stopped out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u6b62\u635f\u79bb\u573a",
-      "management_confidence": 22.3,
+      "management_confidence": 22.1,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 69.29,
       "state": {
         "phase": "overtime",
-        "management_confidence": 22.3,
+        "management_confidence": 22.1,
         "recommended_action": "trim",
         "components": {
           "validity": 24.0,
@@ -153425,14 +153424,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 30.5,
+      "management_confidence": 30.2,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 112.49,
       "state": {
         "phase": "overtime",
-        "management_confidence": 30.5,
+        "management_confidence": 30.2,
         "recommended_action": "trim",
         "components": {
           "validity": 49.0,
@@ -153893,14 +153892,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 30.7,
+      "management_confidence": 30.6,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 82.55,
       "state": {
         "phase": "overtime",
-        "management_confidence": 30.7,
+        "management_confidence": 30.6,
         "recommended_action": "trim",
         "components": {
           "validity": 51.2,
@@ -155257,14 +155256,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 29.7,
+      "management_confidence": 29.5,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 70.2,
       "state": {
         "phase": "overtime",
-        "management_confidence": 29.7,
+        "management_confidence": 29.5,
         "recommended_action": "trim",
         "components": {
           "validity": 47.0,
@@ -155569,14 +155568,14 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 75.2,
+      "management_confidence": 74.8,
       "recommended_action": "trail",
       "management_status": "available",
       "management_error": null,
       "last_price": 27.15,
       "state": {
         "phase": "at_t2",
-        "management_confidence": 75.2,
+        "management_confidence": 74.8,
         "recommended_action": "trail",
         "components": {
           "validity": 100.0,
@@ -159095,14 +159094,14 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 26.4,
+      "management_confidence": 26.2,
       "recommended_action": "trim",
       "management_status": "available",
       "management_error": null,
       "last_price": 93.25,
       "state": {
         "phase": "overtime",
-        "management_confidence": 26.4,
+        "management_confidence": 26.2,
         "recommended_action": "trim",
         "components": {
           "validity": 35.6,

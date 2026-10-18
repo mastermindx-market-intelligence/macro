@@ -75,7 +75,20 @@
     savedActiveId: '',
     savedRefusal: '',
     savedStoreError: false,
-    pinnedRequest: null
+    pinnedRequest: null,
+    // FIF PF-3/PF-4: the dataset mode the health header named ('golden',
+    // 'production' or '' when the answer never arrived), and the entity the
+    // current health request was issued for (race guard + no duplicate
+    // fetches for one selection).
+    datasetMode: '',
+    healthRequestedFor: '',
+    // FIF PF r1 (R1): every health request ISSUED increments healthSeq and
+    // remembers its own seq; healthAnswer holds the accepted answer — the one
+    // whose seq is still current AND whose entity is the selected company —
+    // so the compare chain waits for the SELECTED issuer's answer even after
+    // a company switch, and an older answer can never overwrite a newer one.
+    healthSeq: 0,
+    healthAnswer: null
   };
 
   var ui = {};
@@ -1183,6 +1196,11 @@
     }
     renderCompany();
     if (state.sourceMode === 'receipt') ensureReceiptForCompany();
+    // PF-3: the per-issuer generation rides the health answer, so a company
+    // change re-fetches health for the new selection (the X2-s one-fetch rule
+    // still holds per view; loadHealth drops a redundant request for the
+    // issuer it already covers).
+    loadHealth();
     ensureFinancialData();
   }
 
@@ -1203,12 +1221,29 @@
     state.health = health && typeof health === 'object' ? health : { status: 'unavailable', clocks: {} };
     renderRunMeta();
     setAsofControlsFromState();
+    // PF-3: a compare chain that parked waiting for the first health answer
+    // (no clock can be built without it) is re-driven here with the real
+    // clocks and generation — never from empty values.
+    if (state.tab === 'compare' && state.financial && state.financial.awaitingHealth) {
+      ensureFinancialData();
+    }
   }
 
   function loadHealth() {
+    var target = company();
+    var entityId = target && target.entity_id ? String(target.entity_id) : '';
+    // One health answer per selected issuer: a request already in flight for
+    // exactly this entity is not repeated (X2-s — one fetch carries both the
+    // clocks and the generation).
+    if (entityId && state.healthRequestedFor === entityId) return Promise.resolve();
+    state.healthRequestedFor = entityId;
+    // PF r1 (R1): this request's sequence token — only an answer whose seq is
+    // still the newest ISSUED one may touch the desk.
+    var seq = state.healthSeq + 1;
+    state.healthSeq = seq;
     return withAuth({ Accept: 'application/json' })
       .then(function (headers) {
-        return fetch(HEALTH_URL, {
+        return fetch(entityId ? HEALTH_URL + '?entity_id=' + encodeURIComponent(entityId) : HEALTH_URL, {
           headers: headers,
           credentials: 'same-origin',
           cache: 'no-store'
@@ -1219,17 +1254,46 @@
         // X2-s: the newer-generation signal rides the SAME health fetch —
         // names/ids only (app/forensics.py health headers), never a second
         // request. Annotated onto the client-side copy, not the wire contract.
+        // PF-3: the generation is stored with the entity it belongs to, and
+        // the dataset mode header rides the same answer into state.
+        // PF r1 (R2): the names-only dataset pointer rides the same answer.
         var generation = {
           id: String(response.headers.get('X-FIF-Dataset-Generation-Id') || ''),
-          admitted_at: String(response.headers.get('X-FIF-Dataset-Admitted-At') || '')
+          admitted_at: String(response.headers.get('X-FIF-Dataset-Admitted-At') || ''),
+          entity_id: entityId
         };
+        var mode = String(response.headers.get('X-FIF-Financial-Dataset-Mode') || '');
+        var pointer = String(response.headers.get('X-FIF-Dataset-Pointer') || '');
         return response.json().then(function (payload) {
           if (generation.id) payload.generation = generation;
-          return payload;
+          return { payload: payload, mode: mode, entityId: entityId, pointer: pointer };
         });
       })
-      .then(applyHealth)
+      .then(function (answer) {
+        // PF r1 (R1) race guard: an answer is current only when its seq is
+        // still the newest issued one AND its entity is the selected company.
+        // Anything older is dropped whole — it must not become the desk's
+        // clocks, generation or pointer, even when its entity matches.
+        var current = company();
+        var currentId = current && current.entity_id ? String(current.entity_id) : '';
+        if (seq !== state.healthSeq) return;
+        if (answer.entityId && currentId !== answer.entityId) return;
+        state.healthAnswer = { entity_id: answer.entityId, seq: seq, ok: true, pointer: answer.pointer };
+        state.datasetMode = answer.mode;
+        applyHealth(answer.payload);
+      })
       .catch(function () {
+        var current = company();
+        var currentId = current && current.entity_id ? String(current.entity_id) : '';
+        if (seq !== state.healthSeq) return;
+        if (entityId && currentId !== entityId) return;
+        // PF r1 (R2/R5): a failed health fetch is an availability fact, never
+        // "not published": record the failed answer for the current seq only,
+        // reset the mode and clear the fetch lock so the same issuer can be
+        // retried; the honest 503 copy follows from the failed answer.
+        state.healthAnswer = { entity_id: entityId, seq: seq, ok: false, pointer: '' };
+        state.datasetMode = '';
+        state.healthRequestedFor = '';
         applyHealth({ status: 'unavailable', clocks: {} });
       });
   }
@@ -1799,13 +1863,89 @@
 
   // ── Cutoff + revisions panel (§3, R4) ───────────────────────────────────
   // One as-of line drives both PIT clocks; a picked day expands to
-  // {date}T23:59:59Z on both, and Latest passes the health clocks through.
+  // {date}T23:59:59Z on both, and Latest resolves a real cutoff below.
+
+  // The health generation for the company currently selected — null when the
+  // answer named no generation or belongs to another issuer (PF-3: pointers
+  // are per issuer, so a foreign generation is never this desk's cutoff).
+  function selectedGeneration() {
+    var health = state.health || {};
+    var generation = objectValue(health.generation);
+    var target = company();
+    if (!generation || !generation.id) return null;
+    // PF r2 (m2): an absent identifier on either side is no match — two
+    // empty strings never make another issuer's generation this desk's.
+    if (!target || !target.entity_id || !generation.entity_id) return null;
+    if (String(generation.entity_id) !== String(target.entity_id)) return null;
+    return generation;
+  }
+
+  // PF-3 — the Latest cutoff. recorded_at is the LATEST instant among the
+  // present values of {clocks.composed_state_at, the selected issuer's
+  // generation admitted_at (production mode only), clocks.broad_source_at};
+  // instants are compared parsed and the winner's ORIGINAL string is emitted.
+  // source_snapshot_at is broad_source_at when present, else recorded_at. An
+  // empty result means no lawful cutoff exists and the honest no-clocks copy
+  // shows. Shared by policyClocks (Latest branch) and reResolveSavedView.
+  // PF r1 (R6): an UNPARSEABLE value counts as absent — including
+  // broad_source_at in the source_snapshot_at seat, which then falls back to
+  // recorded_at. Instants compare at FULL precision (fractional seconds are
+  // parsed here beyond Date.parse's milliseconds); on an exact tie the
+  // preference order is the generation admitted_at, then
+  // composed_state_at, then broad_source_at.
+  function parseInstantParts(value) {
+    if (typeof value !== 'string') return null;
+    var match = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?(Z|[+-]\d{2}:?\d{2})?$/.exec(value);
+    if (!match) return null;
+    var base = Date.parse(
+      match[1] + '-' + match[2] + '-' + match[3] + 'T' +
+      match[4] + ':' + match[5] + ':' + match[6] + (match[8] || 'Z')
+    );
+    if (!Number.isFinite(base)) return null;
+    var fraction = match[7] || '';
+    while (fraction.length < 9) fraction += '0';
+    return { ms: base, fraction: fraction };
+  }
+
+  function instantAfter(candidate, winner) {
+    if (candidate.ms !== winner.ms) return candidate.ms > winner.ms;
+    return candidate.fraction > winner.fraction;
+  }
+
+  function latestCutoffs() {
+    var clocks = (state.health && state.health.clocks) || {};
+    var generation = state.datasetMode === 'production' ? selectedGeneration() : null;
+    // Tie preference (R6) is the iteration order: admitted_at first, then
+    // composed_state_at, then broad_source_at; only a strictly later instant
+    // replaces the winner.
+    var candidates = [
+      generation && generation.admitted_at ? String(generation.admitted_at) : '',
+      clocks.composed_state_at ? String(clocks.composed_state_at) : '',
+      clocks.broad_source_at ? String(clocks.broad_source_at) : ''
+    ];
+    var winner = '';
+    var winnerParts = null;
+    candidates.forEach(function (value) {
+      if (!value) return;
+      var parts = parseInstantParts(value);
+      if (!parts) return;
+      if (winnerParts && !instantAfter(parts, winnerParts)) return;
+      winner = value;
+      winnerParts = parts;
+    });
+    if (!winner) return { source_snapshot_at: '', recorded_at: '' };
+    var broadParts = clocks.broad_source_at ? parseInstantParts(String(clocks.broad_source_at)) : null;
+    return {
+      source_snapshot_at: broadParts ? String(clocks.broad_source_at) : winner,
+      recorded_at: winner
+    };
+  }
+
   function policyClocks() {
     if (state.asOfDate) {
       return { source_snapshot_at: state.asOfDate + 'T23:59:59Z', recorded_at: state.asOfDate + 'T23:59:59Z' };
     }
-    var clocks = (state.health && state.health.clocks) || {};
-    return { source_snapshot_at: clocks.broad_source_at || '', recorded_at: clocks.composed_state_at || '' };
+    return latestCutoffs();
   }
 
   function queryMetricIds() {
@@ -1816,6 +1956,15 @@
       if (METRIC_ID_BY_KEY[metric.key]) ids.push(METRIC_ID_BY_KEY[metric.key]);
     });
     return ids;
+  }
+
+  // PF-1: the period identity the server's admission uses — a mirror of
+  // period_semantic_key (financial_intelligence_packet.py) for the
+  // {kind: 'duration', start, end, label} objects this page sends: the fiscal
+  // fields ride at their wire defaults (none/unknown), so the key is exactly
+  // kind|start|end. Two columns with this same key are ONE period to the API.
+  function statementPeriodKey(column) {
+    return ['duration', String(column.start), String(column.end), 0, 0, 'unknown', 0, 0].join('|');
   }
 
   // Periods on the wire carry exactly {kind, start, end, label}. A state
@@ -1872,7 +2021,17 @@
         if (!response.ok) {
           var failure = new Error('Financial request failed');
           failure.status = response.status;
-          throw failure;
+          // PF-2: attach the server's parsed JSON detail string so the panel
+          // can tell admission refusals apart — best-effort: a body that is
+          // not JSON leaves detail empty, and parsing never throws a second
+          // error. The detail drives copy choice only; it is never rendered.
+          return response.text().then(function (text) {
+            try {
+              var parsed = JSON.parse(text);
+              if (parsed && typeof parsed.detail === 'string') failure.detail = parsed.detail;
+            } catch (_parseError) { /* a non-JSON body carries no detail */ }
+            throw failure;
+          }, function () { throw failure; });
         }
         // A38: the adapter-byte equality header is verified against the raw
         // body before anything parses; a missing or mismatched digest is
@@ -1928,6 +2087,12 @@
     if (state.tab !== 'compare') return;
     var target = company();
     if (!target) return;
+    // PF r2 (M1): every re-evaluation supersedes any compare chain still in
+    // flight, so an early answer below (earlier day, no records, health
+    // failure, …) is never overwritten by the reply to a request the desk no
+    // longer stands behind.
+    var token = state.financialToken + 1;
+    state.financialToken = token;
     // X2-s: a restored PINNED view re-POSTs its stored request bytes verbatim
     // on every leg — the latest-known leg too is the STORED bytes with only
     // policy.selection switched to latest_known_as_of, so a pinned view saved
@@ -1940,6 +2105,64 @@
       renderRevisions();
       return;
     }
+    // PF-3 / PF r1 (R1): the cutoff policy reads the health answer FOR THE
+    // SELECTED ISSUER, and only the answer that is still CURRENT — its seq is
+    // the newest issued one, exactly the acceptance rule that recorded it. A
+    // compare chain that arrives before that answer — including right after
+    // a company switch, or a re-select that re-issued health after a failure,
+    // while the previous answer is still on the desk — parks in loading and
+    // is re-driven by applyHealth; a cutoff is never built from another
+    // issuer's clocks or a superseded answer.
+    var answer = state.healthAnswer;
+    if (!answer ||
+        String(answer.entity_id || '') !== String(target.entity_id || '') ||
+        answer.seq !== state.healthSeq) {
+      state.financial = { phase: 'loading', awaitingHealth: true };
+      renderRevisions();
+      return;
+    }
+    // PF r1 (R2): a failed health fetch is an availability fact in ANY mode —
+    // the honest 503 copy with its Retry button, never a guess and never a
+    // query.
+    if (!answer.ok) {
+      state.financial = { phase: 'error', healthRetry: true };
+      renderRevisions();
+      return;
+    }
+    // PF-4 / PF r1 (R2): in production mode the names-only pointer header
+    // tells the three cases apart. 'none': the store was built and this
+    // issuer genuinely has no published records — no query can be honest.
+    // 'admitted' with a generation for this issuer: proceed as before.
+    // Anything else — a missing pointer header, 'unavailable' (the store is
+    // down or damaged), or 'admitted' without a generation — is a temporary
+    // availability failure, not "not published": the 503 copy with Retry.
+    var generation = state.datasetMode === 'production' ? selectedGeneration() : null;
+    if (state.datasetMode === 'production') {
+      if (answer.pointer === 'none') {
+        state.financial = { phase: 'no-records' };
+        renderRevisions();
+        return;
+      }
+      if (answer.pointer !== 'admitted' || !generation) {
+        state.financial = { phase: 'error', healthRetry: true };
+        renderRevisions();
+        return;
+      }
+    }
+    // PF-4: a picked day whose end-of-day cutoff precedes the generation's
+    // admission cannot be served by this store (the API's own floor answers
+    // 503); the page says so instead of sending a query that cannot succeed.
+    // This fact is knowable from the day alone, so it precedes the period
+    // check — a state without period starts must not mask it.
+    if (state.asOfDate && generation) {
+      var dayEnd = Date.parse(state.asOfDate + 'T23:59:59Z');
+      var admitted = Date.parse(generation.admitted_at);
+      if (Number.isFinite(dayEnd) && Number.isFinite(admitted) && dayEnd < admitted) {
+        state.financial = { phase: 'earlier', admittedAt: String(generation.admitted_at) };
+        renderRevisions();
+        return;
+      }
+    }
     if (!latestBody.periods.length) {
       state.financial = { phase: 'no-periods' };
       renderRevisions();
@@ -1950,8 +2173,6 @@
       renderRevisions();
       return;
     }
-    var token = state.financialToken + 1;
-    state.financialToken = token;
     // X2-s r1: the exported body is the pinned bytes while the pinned view is
     // active, otherwise the DESK's own selection (buildQueryBody() with no
     // argument) — never the forced latest_known_as_of leg above.
@@ -1989,7 +2210,13 @@
         showLoadError(error);
         return;
       }
-      state.financial = { phase: 'error', errorStatus: error && error.status };
+      state.financial = {
+        phase: 'error',
+        errorStatus: error && error.status,
+        // PF-2: the server's detail string (when the body was JSON) drives
+        // the copy choice; it is never rendered.
+        errorDetail: (error && typeof error.detail === 'string') ? error.detail : ''
+      };
       renderRevisions();
     });
   }
@@ -2039,12 +2266,51 @@
         pair('Loading revisions…', '正在载入重述对照…') + '</div>';
       return;
     }
-    if (financial.phase === 'no-entity' || financial.phase === 'no-clocks' ||
-        (financial.phase === 'error' && financial.errorStatus === 400)) {
+    if (financial.phase === 'no-entity' ||
+        (financial.phase === 'error' && financial.errorStatus === 400 &&
+         financial.errorDetail === 'unknown entity')) {
       host.innerHTML = emptyState(
         'Issuer identity unavailable', '发行人标识不可用',
         'The desk cannot query this issuer yet, so no vintage is shown. Nothing is guessed from the ticker.',
         '暂无法查询该发行人，因此不显示任何版本；不会从股票代码推测发行人标识。', '—'
+      );
+      return;
+    }
+    // PF-2: any other 400 is a refusal for this company and date, not an
+    // identity failure — the copy says what happened and nothing raw leaks.
+    if (financial.phase === 'error' && financial.errorStatus === 400) {
+      host.innerHTML = emptyState(
+        'This view could not be evaluated', '无法评估此视图',
+        'The request for this company and date was refused, so nothing is shown. Nothing is guessed.',
+        '该公司与日期的请求被拒绝，因此不显示任何内容。我们不做猜测。', '—'
+      );
+      return;
+    }
+    // PF-2: no recorded cutoff is a build-time fact, not an identity failure.
+    if (financial.phase === 'no-clocks') {
+      host.innerHTML = emptyState(
+        'No recorded cutoff yet', '尚无记录截止时点',
+        'The desk has no recorded build time to read from yet, so no vintage is shown. Check back after the next build.',
+        '本页尚无可读取的记录构建时间，因此不显示任何版本。请在下次构建后再查看。', '—'
+      );
+      return;
+    }
+    // PF-4: production mode with no published generation for this issuer.
+    if (financial.phase === 'no-records') {
+      host.innerHTML = emptyState(
+        'No filing records published yet', '尚未发布申报记录',
+        'We have not published filing records for this company yet, so no vintage is shown.',
+        '我们尚未发布该公司的申报记录，因此不显示任何版本。', '—'
+      );
+      return;
+    }
+    // PF-4: a picked day earlier than the issuer's last publication.
+    if (financial.phase === 'earlier') {
+      var publishedDay = formatDate(financial.admittedAt || '');
+      host.innerHTML = emptyState(
+        'Earlier dates not available', '无更早日期',
+        'This company\'s filing records were last published on ' + publishedDay + '. Pick that day or later, or use Latest.',
+        '该公司的申报记录最近一次发布于' + publishedDay + '。请选择该日或之后的日期，或使用“最新”。', '—'
       );
       return;
     }
@@ -2054,6 +2320,16 @@
         'The state does not carry a period start date for this issuer, so no cutoff query can be built.',
         '状态数据中没有该发行人的期间起始日，因此无法构建截止日查询。', '—'
       );
+      return;
+    }
+    // PF r2 (m3): a failed health check is not the revisions service, so its
+    // copy names no service; a failed compare chain keeps the revisions copy.
+    if (financial.phase === 'error' && financial.healthRetry) {
+      host.innerHTML = emptyState(
+        'Data temporarily unavailable', '数据暂不可用',
+        'The desk could not confirm which filing records are available right now. Try again in a moment.',
+        '本页暂时无法确认可用的申报记录，请稍后再试。', '↺'
+      ) + '<div class="ff-revisions-retry"><button type="button" data-financial-retry="1">' + pair('Retry', '重试') + '</button></div>';
       return;
     }
     if (financial.phase === 'error') {
@@ -2105,6 +2381,20 @@
     var disabled = !state.asOfDate && !clocksKnown;
     ui.asofLatest.disabled = disabled;
     ui.asofInput.disabled = disabled;
+    // PF-4: in production mode with a known generation for the selected
+    // issuer, no day before the last publication can be served, so the
+    // picker's min is that day. It clears when the company changes or the
+    // generation is unknown (or the mode is golden/absent).
+    var generation = state.datasetMode === 'production' ? selectedGeneration() : null;
+    // PF r2 (n1): the minimum is the admission's UTC day, the same day the
+    // 'earlier' check measures against ({day}T23:59:59Z), whatever offset the
+    // header carried.
+    var admittedMs = generation && generation.admitted_at ? Date.parse(generation.admitted_at) : NaN;
+    if (Number.isFinite(admittedMs)) {
+      ui.asofInput.setAttribute('min', new Date(admittedMs).toISOString().slice(0, 10));
+    } else {
+      ui.asofInput.removeAttribute('min');
+    }
   }
 
   // ── Statement tree (§3.5 statements POST, spec row 6) ───────────────────
@@ -2159,9 +2449,21 @@
       state.statements = { phase: statements.length ? 'ready' : 'empty', statements: statements };
       state.statementCells = [];
       var columns = [];
+      // PF-1: every statement repeats its comparative periods, so columns are
+      // de-duplicated by the server's own period identity before they are
+      // stored — exactly the semantic key the query admission uses
+      // (period_semantic_key: for the {kind, start, end, label} objects this
+      // page sends, kind/start/end with the fiscal fields at their wire
+      // defaults). The FIRST column seen for a key wins, label included, and
+      // first-seen order is kept; without this the revisions request repeats
+      // a period and the API refuses it as a duplicate.
+      var seenPeriods = {};
       statements.forEach(function (statement) {
         (Array.isArray(statement.columns) ? statement.columns : []).forEach(function (column) {
           if (objectValue(column) && column.start && column.end) {
+            var key = statementPeriodKey(column);
+            if (seenPeriods[key]) return;
+            seenPeriods[key] = true;
             columns.push({ label: column.label, start: column.start, end: column.end });
           }
         });
@@ -2699,12 +3001,15 @@
   // The newer-generation signal: the view was saved against one production
   // dataset generation and health now names a different one (headers read on
   // the SAME health fetch P2 already makes; never ffprods_… at glance).
+  // PF-3: generations are per issuer — a health generation that belongs to
+  // another issuer never marks this view stale.
   function savedGenerationStale() {
     var view = savedActiveView();
     if (!view || !view.pinned) return null;
     var against = view.saved_against || {};
     var generation = (state.health && state.health.generation) || {};
     if (!against.generation_id || !generation.id) return null;
+    if (generation.entity_id && String(generation.entity_id) !== String(view.request.entity_id || '')) return null;
     if (against.generation_id === generation.id) return null;
     return { view: view, generation: generation };
   }
@@ -2712,11 +3017,15 @@
   function reResolveSavedView() {
     var stale = savedGenerationStale();
     if (!stale || !savedBriefcase) return { ok: false, reason: 'stale' };
-    var clocks = (state.health && state.health.clocks) || {};
-    if (!clocks.broad_source_at || !clocks.composed_state_at) return { ok: false, reason: 'clocks' };
+    // PF-3: the re-resolved cutoff comes from the SAME helper the Latest
+    // policy uses — recorded_at is the latest of the present values, so a
+    // desk whose composed_state_at is absent but whose generation and
+    // broad_source_at are known re-resolves instead of refusing as 'clocks'.
+    var cutoffs = latestCutoffs();
+    if (!cutoffs.recorded_at || !cutoffs.source_snapshot_at) return { ok: false, reason: 'clocks' };
     var request = JSON.parse(JSON.stringify(stale.view.request));
-    request.policy.source_snapshot_at = clocks.broad_source_at;
-    request.policy.recorded_at = clocks.composed_state_at;
+    request.policy.source_snapshot_at = cutoffs.source_snapshot_at;
+    request.policy.recorded_at = cutoffs.recorded_at;
     var result = savedBriefcase.update(stale.view.id, {
       request: request,
       pinned: false,
@@ -5205,6 +5514,17 @@
     }
     ui.workspace.addEventListener('click', function (event) {
       if (!event.target.closest('[data-financial-retry]')) return;
+      // PF r1 (R2): the 503 copy shown because of HEALTH retries the health
+      // fetch itself — the chain resumes from applyHealth once the answer
+      // lands. Without healthRetry the button behaves exactly as before.
+      if (state.financial && state.financial.healthRetry) {
+        state.healthRequestedFor = '';
+        state.healthAnswer = null;
+        state.financial = { phase: 'loading', awaitingHealth: true };
+        renderRevisions();
+        loadHealth();
+        return;
+      }
       state.financial = { phase: 'idle' };
       ensureFinancialData();
     });
@@ -5381,7 +5701,20 @@
       activePinnedRequest: activePinnedRequest,
       savedSavePhase: savedSavePhase,
       savedGenerationStale: savedGenerationStale,
-      exportQueryBody: exportQueryBody
+      exportQueryBody: exportQueryBody,
+      // PF-1..PF-4 seams (same opt-in contract as above): the cutoff helper,
+      // the health fetch and the financial chain, for the dependency-free
+      // Node contract suite. Production never sets this sentinel.
+      policyClocks: policyClocks,
+      latestCutoffs: latestCutoffs,
+      selectedGeneration: selectedGeneration,
+      setCompany: setCompany,
+      loadHealth: loadHealth,
+      ensureFinancialData: ensureFinancialData,
+      ensureStatements: ensureStatements,
+      financialPost: financialPost,
+      renderRevisions: renderRevisions,
+      setAsofControlsFromState: setAsofControlsFromState
     };
   } else if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init, { once: true });

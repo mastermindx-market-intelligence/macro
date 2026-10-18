@@ -1,9 +1,9 @@
 {
-  "as_of": "2026-10-17",
+  "as_of": "2026-10-18",
   "coverage": {
-    "end": "2026-10-17",
-    "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W42; 14 week(s) have events so far; chronicle event store begins 2013-03-14; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-07-18"
+    "end": "2026-10-18",
+    "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W42; 13 week(s) have events so far; chronicle event store begins 2013-03-14; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-07-19"
   },
   "iso_week": "2026-W42",
   "schema": "chronicle.rollup.weekly/v1",
@@ -676,6 +676,16 @@
           "theme": null,
           "top_events": [
             {
+              "date": "2026-07-24",
+              "id": "cev-research_vault-8d6e3ee6806a",
+              "kind": "report",
+              "source": "research_vault",
+              "source_ref": "marketdesk-jtzjieuwmz6-7f06bb",
+              "tickers": [],
+              "title": "J.P. Morgan: JPM International Market Intell | Morning Briefing",
+              "weight_hint": 3
+            },
+            {
               "date": "2026-07-20",
               "id": "cev-research_vault-b4ff102eff0a",
               "kind": "report",
@@ -713,17 +723,6 @@
         }
       ],
       "iso_week": "2026-W30"
-    },
-    {
-      "clusters": [
-        {
-          "n_events": 2,
-          "source": "earnings",
-          "theme": "earnings",
-          "top_events": []
-        }
-      ],
-      "iso_week": "2026-W29"
     }
   ]
 }
