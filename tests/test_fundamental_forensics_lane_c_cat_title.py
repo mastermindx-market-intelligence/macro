@@ -95,7 +95,7 @@ def _cat_year_header(*, units: str = "(Dollars in millions)", years: str = "<td>
 def test_lane_c_cat_10k_unit_band_between_banner_and_years_reconstructs() -> None:
     parsed = parse_displayed_primary_table(toc() + _cat_year_header(), title=TITLE)
     assert parsed["columns_iso"] == ["2025-12-31", "2024-12-31"]
-    assert parsed["columns_source"] == "composed_year_row"
+    assert parsed["columns_source"] == "composed_title_year_row"
     assert [row["label"] for row in parsed["rows"]] == ["Assets"]
     assert [fact["fact_id"] for fact in parsed["rows"][0]["value_facts"]] == ["cat-2025", "cat-2024"]
 
@@ -147,7 +147,68 @@ def test_lane_c_cat_annual_income_cashflow_unit_variants(annual_kind: str, unit:
     """
     parsed = parse_displayed_primary_table(html, title=annual_kind)
     assert parsed["columns_iso"] == ["2025-12-31", "2024-12-31", "2023-12-31"]
-    assert parsed["columns_source"] == "composed_year_row"
+    assert parsed["columns_source"] == "composed_title_year_row"
     assert [f["fact_id"] for f in parsed["rows"][0]["value_facts"]] == [
         "cat-annual-25", "cat-annual-24", "cat-annual-23"
     ]
+
+
+def test_lane_c_comma_title_beside_an_empty_display_fact_is_not_a_heading() -> None:
+    # The fact's display text is empty, so the title cell is the row's only
+    # nonblank text; the row still carries a numeric fact and cannot re-arm.
+    heading = (f"<td>{TITLE},</td>"
+               '<td><ix:nonFraction name="us-gaap:Assets" contextRef="c2025" '
+               'id="bad-empty-fact" unitRef="usd"></ix:nonFraction></td>')
+    with pytest.raises(StatementGraphError, match=r"^displayed statement table is absent"):
+        parse_displayed_primary_table(toc() + statement(heading), title=TITLE)
+
+
+def test_lane_c_double_comma_title_does_not_rearm() -> None:
+    # Exactly one terminal comma is the observed CAT variant; stripping every
+    # trailing comma would admit other punctuation runs.
+    with pytest.raises(StatementGraphError, match=r"^displayed statement table is absent"):
+        parse_displayed_primary_table(toc() + statement(f"<td>{TITLE},,</td>"), title=TITLE)
+
+
+def test_lane_c_two_consecutive_unit_bands_refuse() -> None:
+    # Only one exact unit band may sit between the title banner and the years.
+    html = toc() + f"""
+    <table>
+      <tr><td colspan="3">{TITLE},</td></tr>
+      <tr><td colspan="3">(Dollars in millions)</td></tr>
+      <tr><td colspan="3">(Dollars in millions)</td></tr>
+      <tr><td> </td><td>2025</td><td>2024</td></tr>
+      <tr>
+        <td>Assets</td>
+        <td><ix:nonFraction name="us-gaap:Assets" contextRef="c2025" id="cat-2b-25" unitRef="usd">200</ix:nonFraction></td>
+        <td><ix:nonFraction name="us-gaap:Assets" contextRef="c2024" id="cat-2b-24" unitRef="usd">180</ix:nonFraction></td>
+      </tr>
+    </table>
+    """
+    with pytest.raises(StatementGraphError, match=r"^displayed statement columns are absent"):
+        parse_displayed_primary_table(html, title=TITLE)
+
+
+@pytest.mark.parametrize("unit_band", ["(In millions)", "(Dollars in millions, except ratios)"])
+def test_lane_c_unit_band_is_an_exact_list_not_a_millions_substring(unit_band: str) -> None:
+    with pytest.raises(StatementGraphError, match=r"^displayed statement columns are absent"):
+        parse_displayed_primary_table(toc() + _cat_year_header(units=unit_band), title=TITLE)
+
+
+def test_lane_c_snow_banner_without_unit_band_keeps_year_row_source() -> None:
+    # The unit-band skip is what marks the CAT title-banner composition; a
+    # banner directly over the years keeps the existing SNOW source label.
+    html = toc() + f"""
+    <table>
+      <tr><td colspan="3">{TITLE},</td></tr>
+      <tr><td> </td><td>2025</td><td>2024</td></tr>
+      <tr>
+        <td>Assets</td>
+        <td><ix:nonFraction name="us-gaap:Assets" contextRef="c2025" id="cat-nb-25" unitRef="usd">200</ix:nonFraction></td>
+        <td><ix:nonFraction name="us-gaap:Assets" contextRef="c2024" id="cat-nb-24" unitRef="usd">180</ix:nonFraction></td>
+      </tr>
+    </table>
+    """
+    parsed = parse_displayed_primary_table(html, title=TITLE)
+    assert parsed["columns_iso"] == ["2025-12-31", "2024-12-31"]
+    assert parsed["columns_source"] == "composed_year_row"

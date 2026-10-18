@@ -562,7 +562,7 @@ def _month_day_pairs_from_text(text: str) -> list[tuple[int, int]]:
 
 def _compose_year_row_header(
     rows: list[list[dict[str, Any]]],
-) -> tuple[list[str], frozenset[int]] | None:
+) -> tuple[list[str], frozenset[int], str] | None:
     """Compose year-only header columns from a month-day banner over a year row.
 
     Fiscal-year statements (the SNOW shape) print the period as
@@ -573,7 +573,9 @@ def _compose_year_row_header(
     facts. An ambiguous banner (two distinct month-days) or a year row that is
     not purely years (fewer than two, or any other non-empty cell besides "$")
     returns None so the caller keeps its existing refusal. Returns the composed
-    ISO dates and the consumed row indices.
+    ISO dates, the consumed row indices, and the composition source:
+    ``"composed_title_year_row"`` when the CAT title banner reached its year row
+    across one exact unit band, otherwise ``"composed_year_row"``.
     """
     first_fact_row = next(
         (index for index, cells in enumerate(rows) if any(cell["facts"] for cell in cells)),
@@ -630,7 +632,8 @@ def _compose_year_row_header(
         consumed = {index, year_row}
         if skip_units:
             consumed.add(index + 1)
-        return composed, frozenset(consumed)
+        source = "composed_title_year_row" if skip_units else "composed_year_row"
+        return composed, frozenset(consumed), source
     return None
 
 
@@ -1021,8 +1024,9 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
     as written, or a list of candidates tried in order. Columns come from a
     header row printing two or more full dates; when no row does, a month-day
     banner over a bare-year row (the fiscal-year SNOW shape) composes the
-    columns and the output carries ``"columns_source": "composed_year_row"``
-    (absent on the full-date path).
+    columns and the output carries ``"columns_source": "composed_year_row"``;
+    the CAT title banner composed across one exact unit band carries
+    ``"composed_title_year_row"`` (absent on the full-date path).
     """
     title_label = title if isinstance(title, str) else ", ".join(str(item) for item in title)
     if not title_label.strip():
@@ -1033,7 +1037,7 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
     parser._finalize_grid()
     if not parser.rows:
         raise StatementGraphError(f"displayed statement table is absent: {title_label}")
-    composed: tuple[list[str], frozenset[int]] | None = None
+    composed: tuple[list[str], frozenset[int], str] | None = None
     if not any(
         len(_iso_dates_from_text(" ".join(cell["text"] for cell in cells))) >= 2
         for cells in parser.rows
@@ -1095,7 +1099,7 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
             )
     output: dict[str, Any] = {"columns_iso": header_dates, "rows": display_rows}
     if composed is not None:
-        output["columns_source"] = "composed_year_row"
+        output["columns_source"] = composed[2]
     return output
 
 
