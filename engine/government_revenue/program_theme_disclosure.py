@@ -145,6 +145,9 @@ _THEME_CASES={
   '失效条件：已审查参与关系改变、已获资金积压未转化，或披露的成本／进度变化削弱利润或现金。核实下一期Marine积压分类及执行证据，不把全部分部金额归于Virginia。')}
 
 _FACT_LABELS={
+ 'fleet_rms_sales':('sales','销售额'),'fleet_rms_sales_prior':('sales','销售额'),
+ 'fleet_rms_operating_profit':('operating profit','营业利润'),'fleet_rms_operating_profit_prior':('operating profit','营业利润'),
+ 'fleet_rms_margin':('margin','利润率'),'fleet_rms_margin_prior':('margin','利润率'),
  'issuer_space_gem63xl_unfavorable_eac':('unfavorable estimated completion-cost adjustment','不利完工成本估计调整'),
  'issuer_space_segment_sales':('sales','销售额'),'issuer_space_segment_sales_prior':('sales','销售额'),
  'issuer_space_segment_operating_profit':('operating profit','营业利润'),'issuer_space_segment_operating_profit_prior':('operating profit','营业利润'),
@@ -185,6 +188,23 @@ leave the ordinary conditional story intact.
    comparison=(comparison[0]+' The separately reported GEM63XL adjustment concerns estimated completion costs; its amount does not establish cash paid or HALO\'s financial effect.',comparison[1]+' 另行报告的GEM63XL调整涉及预计完工成本；该金额不能确认已支付现金或HALO的财务影响。')
  return comparison
 
+def _fleet_reported_comparison(resolved):
+ """A complete same-document segment comparison, never fleet allocation."""
+ prefix='evt_cik0000936468_2026q2_results:fleet_rms_'
+ selected=[node for rail,kind,node,_ in resolved if rail=='economics' and kind=='defense_economics' and str(node.get('fact_id','')).startswith(prefix)]
+ expected={metric+suffix:('2025Q2' if suffix else '2026Q2','percent' if metric=='margin' else 'USD_million') for metric in ('sales','operating_profit','margin') for suffix in ('','_prior')}
+ facts={node['fact_id'][len(prefix):]:node for node in selected}
+ if len(selected)!=6 or set(facts)!=set(expected):return None
+ if len({node.get('owner_ref') for node in selected})!=1 or not all(isinstance(node.get('owner_ref'),str) and node['owner_ref'] for node in selected):return None
+ for metric,(period,unit) in expected.items():
+  node=facts[metric]
+  if node.get('period')!=period or node.get('unit')!=unit or node.get('accounting_basis')!='issuer_reported_segment:Rotary and Mission Systems:reported':return None
+  if isinstance(node.get('value'),bool) or not isinstance(node.get('value'),(int,float)) or not math.isfinite(node['value']):return None
+ if not (facts['sales']['value']>facts['sales_prior']['value'] and facts['operating_profit']['value']>0>facts['operating_profit_prior']['value'] and facts['margin']['value']>0>facts['margin_prior']['value']):return None
+ return (
+  'In the cited LMT Rotary and Mission Systems quarter, sales were higher and the segment moved from an operating loss to an operating profit versus the prior-year quarter. The prior loss base makes percentage profit growth an unsuitable comparison. This broader segment comparison does not establish F-100 revenue, recurring margin recovery, program workshare, cash generation or shareholder capture. Agreement advancement and a reviewed contract/contractor path remain necessary before any fleet-specific attribution.',
+  '所引LMT Rotary and Mission Systems季度销售额高于上年同期，分部由营业亏损转为营业利润。上年亏损基数使利润增长百分比不适合作为比较。这一较广泛分部的比较不能确认F-100收入、持续利润率恢复、项目份额、现金生成或股东获益。在作任何舰队特定归属判断前，仍须确认协议推进以及经过审查的合同与承包商路径。')
+
 def _theme_economic_story(theme_id,resolved):
  """Only successful CURRENT resolved references ground these conditional texts."""
  anchors=[(rail,kind,node) for rail,kind,node,_ in resolved]
@@ -204,6 +224,9 @@ def _theme_economic_story(theme_id,resolved):
  story=_THEME_CASES[theme_id]
  if theme_id=='space':
   comparison=_space_reported_comparison(resolved)
+  if comparison:return comparison+story[2:]
+ if theme_id=='fleet_sustainment_upgrades':
+  comparison=_fleet_reported_comparison(resolved)
   if comparison:return comparison+story[2:]
  return story
 
