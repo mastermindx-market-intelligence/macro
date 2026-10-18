@@ -2418,6 +2418,10 @@ app.include_router(prophet_observations_router)
 from app.prophet_daily_brief import router as prophet_daily_brief_router  # noqa: E402
 app.include_router(prophet_daily_brief_router)
 
+# Current research attention reuses the paid site-full owner boundary.
+from app.catalyst_opportunity import router as catalyst_opportunity_router  # noqa: E402
+app.include_router(catalyst_opportunity_router)
+
 # Capital Structure observed filing-state desk.  This is an authenticated
 # artifact-serving boundary: it reads the verified projection only and does not
 # calculate financing terms, capacity, runway, or probability in the API tier.
