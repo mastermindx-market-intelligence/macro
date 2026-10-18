@@ -27,9 +27,10 @@ waves:
     title: "One existing-owner producer-to-Risk-Radar vertical, proof and publication"
     status: in_progress
 next_action: >
-  Complete the genuine CI repairs on PR 9548, observe the repaired exact-head
-  checks, merge only on concluded applicable checks, and verify the served Macro
-  Risk Radar study through the existing render/publication lane.
+  Publish the reconciled single-file shared-CI manifest merge on existing PR
+  9548 after targeted tests, re-arm native merge-on-green, consume exact-head
+  checks, then verify post-merge render/VPS publication and customer-path Risk
+  Radar Fear & Greed disclosures.
 landmines:
   - "The legacy machine-consumed dial and existing regime/risk/trade authority stay unchanged."
   - "VIX acceleration is not VVIX. Absolute VIX threshold and liquidity-shock classifier kills remain binding."
@@ -174,3 +175,33 @@ and repair its actual applicable checks, merge when concluded successful,
 reuse a covering render and the normal VPS updater, then verify the served
 Macro/native disclosures. Preserve any exact pending effect. Update MAS-283
 only to the evidence-supported state. **MISSION_COMPLETE: false.**
+
+
+## October 18 2026 - Current-base integration and conflict custody
+
+The repaired original candidate 58cce8ed and all three successive
+controller-integrated heads e08dc4ea, 69c5b16f, e38a85cc passed applicable
+exact-head full CI. The merge sweeper subsequently refused the latest head
+because main changed check definitions and GitHub reported a real conflict.
+This is a merge-content conflict, not a demonstrated feature regression.
+
+The only conflicting file between e38a85ccf88e2eb387eb3a86edd2863036ef27ed
+and main 084ac334a2bf4beb76bd22b5bf7d37a8eb93e051 was
+.github/ci/legacy-jobs.yml. Two exclusive-job paths blocks contained
+independent additions for the Fear/Greed producers and new Intelligence
+Workspace imports. Both sets are required. The attended maintainer removed
+merge-on-green, verified merge-blocked remained, fetched exact refs and
+fast-forwarded the SAME registered branch/workspace to the controller head.
+The ordinary no-commit merge is now conflict-free, retaining both import sets
+without weakening any check or editing a Fear/Greed model.
+
+All 12 checked core feature assets remain unchanged by the integration.
+The scoped staged diff check passes. The whole-repository staged diff check
+found two inherited whitespace lines in unrelated site/theme_tree.html; that
+main-owned page is not changed here. The focused test verdict must be known
+before publishing the source merge. The standard native controller remains the
+merge authority. After a verified push, clear the conflict marker and re-arm
+merge-on-green, then consume exact-head CI and the covering normal render
+and VPS publication, and verify the served native customer path.
+
+MISSION_COMPLETE: false.
