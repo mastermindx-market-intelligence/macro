@@ -186,3 +186,40 @@ def test_market_concentration_graceful(monkeypatch, tmp_path):
     from lib import config
     monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
     assert bs.market_concentration() == {}
+
+
+
+def test_market_concentration_exposes_source_session_and_honest_universe(monkeypatch, tmp_path):
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    observed = pd.DataFrame(
+        {
+            "n_members": [490, 501],
+            "adv": [250, 270],
+            "dec": [240, 230],
+            "pct_above_50": [50.0, 54.0],
+            "pct_above_200": [61.0, 62.0],
+            "nh": [10, 12],
+            "nl": [9, 7],
+        },
+        index=pd.DatetimeIndex(["2026-10-14", "2026-10-15"]),
+    )
+    monkeypatch.setattr(bs.pd, "read_parquet", lambda _path: observed)
+    value = bs.market_concentration("us")
+    assert value["source_as_of"] == "2026-10-15"
+    assert value["source_universe"] == "sp500_current_constituents"
+    assert value["adv"] == 270
+    assert value["directional"] is False
+
+
+def test_market_concentration_absent_or_invalid_source_session_is_unmeasured(monkeypatch, tmp_path):
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    bad = pd.DataFrame(
+        {"adv": [9], "dec": [2], "pct_above_50": [70]},
+        index=["not-an-observation-date"],
+    )
+    monkeypatch.setattr(bs.pd, "read_parquet", lambda _path: bad)
+    assert bs.market_concentration("us") == {}
