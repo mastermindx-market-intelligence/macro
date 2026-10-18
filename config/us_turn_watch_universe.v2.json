@@ -1996,5 +1996,25 @@
     "ZS",
     "ZTS",
     "ZWS"
+  ],
+  "exclusions": [
+    {
+      "ticker": "BTC-USD",
+      "reason": "skip_suffix",
+      "matched": "-USD",
+      "note": "Crypto pair - not a single-name equity; trades 24/7."
+    },
+    {
+      "ticker": "ETH-USD",
+      "reason": "skip_suffix",
+      "matched": "-USD",
+      "note": "Crypto pair - not a single-name equity; trades 24/7."
+    },
+    {
+      "ticker": "SOL-USD",
+      "reason": "skip_suffix",
+      "matched": "-USD",
+      "note": "Crypto pair - not a single-name equity; trades 24/7."
+    }
   ]
 }
