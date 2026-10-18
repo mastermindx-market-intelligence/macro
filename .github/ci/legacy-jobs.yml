@@ -29012,6 +29012,8 @@ jobs:
       - tests/test_tiingo_archive.py
       - tests/test_tiingo_views.py
       - tests/test_tiingo_reader.py
+      - tests/__init__.py
+      - tests/test_sector_allocation_tiingo.py
       - tests/test_tiingo_history.py
       - tests/test_tiingo_research_query.py
       - tests/test_tiingo_boats_tape.py
