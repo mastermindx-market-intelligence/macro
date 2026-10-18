@@ -198,5 +198,57 @@
     "No correction of historical accepted rows",
     "No Prophet B4/Plan/current trade authority or customer effect",
     "No engine/Prophet nightly successful publication"
-  ]
+  ],
+  "deep_price_input_sample": {
+    "source_commit": "4f52d22596545cbd67b5143e188baf5660237024",
+    "store": "data/stocks/<ticker>.parquet",
+    "method": "Read-only git show + pandas on six implicated committed source files; not the live in-progress runner.",
+    "last_index_by_ticker": {
+      "AMZN": "2026-10-14",
+      "EQIX": "2026-10-14",
+      "GOOGL": "2026-10-14",
+      "HST": "2026-10-14",
+      "KMI": "2026-10-14",
+      "MU": "2026-10-14"
+    },
+    "explanation": "Each sampled committed deep store tip is October 14, two sessions behind the expected Oct16. The signal builder's 'asof 2026-10-05' is the 3D bucket label and MUST NOT be equated to the deep OHLC last session; signal_date and confirmed_date are separately defined knowability clocks.",
+    "source_coverage_limit": "Only six implicated tickers; no universe-wide or real nightly runner store completeness claim."
+  },
+  "in_memory_candidate_comparison": {
+    "purpose": "Pure dynamic source-string variant evaluation, no repo file, worker, original workspace, branch, signal store, or publication mutation. Proposed semantics remain subject to real source owner admission and historical contract adjudication.",
+    "source_commit": "4f52d22596545cbd67b5143e188baf5660237024",
+    "original_fragment_occurrences": {
+      "changed_condition": 1,
+      "reason_refinement_body": 1
+    },
+    "minimal_atomic": {
+      "only_existing_changed_check": "quality or reason",
+      "on_permitted_refinement": "When new.reason is not null, replace reason and exact new.reasons as a unit; remove old reasons key when new has no list. Preserve all other source behavior and keep schema validator active.",
+      "outcomes": [
+        "primary_to_single PASS",
+        "primary_to_multi PASS",
+        "secondary_changed valid but unchanged/stale",
+        "secondary_removed valid but unchanged/stale",
+        "frozen_history PASS/PRESERVED",
+        "legacy_secondary_added valid but missing/stale"
+      ],
+      "first_published_stamp_preserved_all_cases": true,
+      "risk": "Solves the exact seven validation mismatch class without adding secondary-account-only historical refinements, but may preserve stale exhaustive explanations on first-match unchanged rows."
+    },
+    "optional_extended_refinement": {
+      "changed_check": "quality or reason or reasons",
+      "on_permitted_refinement": "Atomic primary and secondary update under existing FRESH_DAYS; preserve frozen history and first-publication identity.",
+      "outcomes": [
+        "primary_to_single PASS",
+        "primary_to_multi PASS",
+        "secondary_changed PASS",
+        "secondary_removed PASS",
+        "frozen_history PASS/PRESERVED",
+        "legacy_secondary_added PASS"
+      ],
+      "first_published_stamp_preserved_all_cases": true,
+      "risk": "Broadens the historical refinement condition to secondary explanations; original source owner must adjudicate whether that is authorized point-in-time revision or requires a typed correction record."
+    },
+    "do_not_claim": "Neither variant is installed or executed in production; these are deterministic in-memory candidate simulations and not an independent code review."
+  }
 }
