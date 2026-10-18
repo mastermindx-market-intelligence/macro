@@ -3361,6 +3361,9 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
                 f"story {sid} is no longer in the desk snapshot; it may have "
                 f"aged out since the page loaded")
 
+        if story.get("purpose") == "research":
+            return _intel_refuse("research_only", "Research source reports cannot enter the publication outbox.")
+
         draft = next(
             (row for row in (story.get("drafts") or [])
              if isinstance(row, dict) and str(row.get("id") or "") == did),

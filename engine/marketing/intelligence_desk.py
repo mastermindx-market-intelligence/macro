@@ -633,6 +633,85 @@ def _merge_packets(old: dict | None, new: dict, *, now: datetime | None = None,
     return merged
 
 
+def build_research_packet(item: dict, *, now: datetime) -> dict:
+    """An attributed source report, isolated from editorial/publication policy."""
+    required = ("id", "feed_id", "source_item_id", "source_revision", "headline", "url")
+    if any(not isinstance(item.get(k), str) or not item[k] for k in required):
+        raise ValueError("invalid research source item")
+    published = _parse_iso(item.get("published_at"))
+    updated = _parse_iso(item.get("source_updated_at"))
+    packet = {
+        "schema": PACKET_SCHEMA, "id": item["id"], "purpose": "research",
+        "stage": "reported", "status": "reported", "source_count": 1,
+        "headline": item["headline"], "brief": item.get("summary", ""),
+        "url": item["url"], "canonical_url": item.get("canonical_url", ""),
+        "feed_id": item["feed_id"], "source_item_id": item["source_item_id"],
+        "source_revision": item["source_revision"],
+        "published_at": _iso(published) if published else "",
+        "source_updated_at": _iso(updated) if updated else "",
+        "provider_indexed_at": item.get("provider_indexed_at", ""),
+        "publisher_country": item.get("publisher_country", ""),
+        "timestamp_quality": item.get("timestamp_quality", "published" if published else "unknown"),
+        "first_seen": _iso(now), "updated_at": _iso(now),
+        "accepted_revision_at": _iso(now),
+        "source_name": item.get("source_name", ""),
+        "source_type": item.get("source_type", "official"),
+        "category": item.get("category", "economy"),
+        "language": item.get("language", "en"),
+        "coverage_regions": item.get("coverage_regions", []),
+        "attribution": item.get("attribution", ""),
+        "source_use_url": item.get("source_use_url", ""),
+        "content_use": item.get("content_use", "attributed_headline_link"),
+        "drafts": [], "content_routes": [], "market": None, "tickers": [],
+        "context": {"evidence": "Source report", "pace": "New"},
+        "evidence": [{"name": item.get("source_name", ""), "url": item["url"],
+                      "headline": item["headline"], "published_at": _iso(published) if published else "",
+                      "source_item_id": item["source_item_id"], "source_revision": item["source_revision"]}],
+        "timeline": [{"kind": "first_report", "at": _iso(now), "source_name": item.get("source_name", "")}],
+    }
+    return packet
+
+
+def _merge_research_packet(old: dict | None, new: dict, *, now: datetime,
+                           timeline_max: int) -> dict:
+    if old and (old.get("purpose") != "research" or old.get("feed_id") != new.get("feed_id")
+                or old.get("source_item_id") != new.get("source_item_id")):
+        raise ValueError("research identity collision")
+    if old and old.get("source_revision") == new.get("source_revision"):
+        return dict(old)
+    if old:
+        previous_time = _parse_iso(old.get("source_updated_at"))
+        incoming_time = _parse_iso(new.get("source_updated_at"))
+        if previous_time and incoming_time and incoming_time < previous_time:
+            return dict(old)  # an explicitly superseded source version is reconciled
+        if previous_time and incoming_time and incoming_time == previous_time:
+            raise ValueError("ambiguous source revision order")
+    merged = dict(new)
+    if old:
+        merged["first_seen"] = old.get("first_seen") or new["first_seen"]
+        # Revisions are historical versions of ONE source, never corroboration.
+        history = [{"revision": old.get("source_revision"), "headline": old.get("headline"),
+                    "accepted_at": old.get("accepted_revision_at"), "url": old.get("url")}]
+        merged["revision_history"] = (history + list(old.get("revision_history") or []))[:12]
+        merged["status"] = "amended"
+        merged["timeline"] = ([{"kind": "amendment", "at": _iso(now),
+                                "source_name": new.get("source_name", "")}]
+                              + list(old.get("timeline") or []))[:max(1, timeline_max)]
+    merged.update(purpose="research", stage="reported", drafts=[], content_routes=[],
+                  market=None, source_count=1, accepted_revision_at=_iso(now), updated_at=_iso(now))
+    return merged
+
+
+def _accepted_source_revision(packet: dict) -> str:
+    if packet.get("source_revision"):
+        return str(packet["source_revision"])
+    # Only source reporting, not LLM/context/export clocks, advances intake age.
+    evidence = [{k: row.get(k) for k in ("event_id", "url", "headline", "published_at")}
+                for row in packet.get("evidence") or [] if isinstance(row, dict)]
+    basis = [packet.get("headline"), packet.get("published_at"), evidence]
+    return hashlib.sha256(json.dumps(basis, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+
+
 def _public_packet(packet: dict) -> dict:
     return {key: value for key, value in packet.items() if not key.startswith("_")}
 
@@ -736,7 +815,12 @@ class IntelligenceStore:
         self.db.execute(
             "CREATE INDEX IF NOT EXISTS stories_updated_idx ON stories(updated_at DESC)"
         )
+        self.db.execute("CREATE TABLE IF NOT EXISTS desk_metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
         self.db.commit()
+
+    def set_source_health(self, rows: list[dict]) -> None:
+        with self.db:
+            self.db.execute("INSERT INTO desk_metadata(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", ("source_health", json.dumps(rows, ensure_ascii=False)))
 
     def close(self) -> None:
         self.db.close()
@@ -760,10 +844,18 @@ class IntelligenceStore:
                         old = json.loads(row[0])
                     except (TypeError, ValueError):
                         old = None
-                merged = _merge_packets(
-                    old, packet, now=now, timeline_max=timeline_max
-                )
-                merged["updated_at"] = _iso(now)
+                if packet.get("purpose") == "research":
+                    merged = _merge_research_packet(old, packet, now=now, timeline_max=timeline_max)
+                else:
+                    if old and old.get("purpose") == "research":
+                        raise ValueError("editorial/research identity collision")
+                    merged = _merge_packets(old, packet, now=now, timeline_max=timeline_max)
+                    merged["updated_at"] = _iso(now)
+                    changed = not old or _accepted_source_revision(old) != _accepted_source_revision(merged)
+                    merged["accepted_revision_at"] = _iso(now) if changed else old.get("accepted_revision_at", "")
+                if old == merged:
+                    count += 1  # accepted idempotently; preserve every source clock
+                    continue
                 self.db.execute(
                     """
                     INSERT INTO stories(story_id, first_seen, updated_at, packet_json)
@@ -776,7 +868,7 @@ class IntelligenceStore:
                     (
                         sid,
                         str(merged.get("first_seen") or _iso(now)),
-                        _iso(now),
+                        str(merged.get("updated_at") or _iso(now)),
                         json.dumps(merged, ensure_ascii=False, separators=(",", ":")),
                     ),
                 )
@@ -802,7 +894,7 @@ class IntelligenceStore:
     def snapshot(self, *, now: datetime, active_h: float = 48.0,
                  max_items: int = 80, pace_cfg: dict | None = None,
                  market_stale_min: float = DEFAULT_MARKET_STALE_MIN,
-                 confirmed_max: int = 0) -> dict:
+                 confirmed_max: int = 0, research_max: int = 0) -> dict:
         now = _utc(now)
         pace = _pace_cfg(pace_cfg)
         cutoff = _iso(now - timedelta(hours=max(1.0, active_h)))
@@ -851,7 +943,15 @@ class IntelligenceStore:
             key=lambda p: str(p.get("updated_at") or ""),
             reverse=True,
         ))
-        stories = ordered[:max(1, max_items)]
+        cap = max(1, min(1000, max_items))
+        if research_max > 0:
+            research = sorted((p for p in ordered if p.get("purpose") == "research"),
+                              key=lambda p: str(p.get("accepted_revision_at") or ""), reverse=True)
+            reserved = research[:min(research_max, cap)]
+            chosen = {p["id"] for p in reserved}
+            stories = reserved + [p for p in ordered if p["id"] not in chosen][:cap - len(reserved)]
+        else:
+            stories = ordered[:cap]
 
         source_keys: set[str] = set()
         confirmed = 0
@@ -871,14 +971,17 @@ class IntelligenceStore:
                         source_keys.add(key)
 
         newest = max(
-            (_parse_iso(p.get("updated_at")) for p in stories),
+            (_parse_iso(p.get("accepted_revision_at")) for p in stories),
             default=None,
             key=lambda value: value or datetime.min.replace(tzinfo=timezone.utc),
         )
         state = "quiet"
         if newest and (_utc(now) - newest) <= timedelta(minutes=15):
             state = "live"
+        health_row = self.db.execute("SELECT value FROM desk_metadata WHERE key='source_health'").fetchone()
+        source_health = json.loads(health_row[0]) if health_row else []
         return {
+            "source_health": source_health,
             "schema": DESK_SCHEMA,
             "updated_at": _iso(now),
             "health": {
@@ -886,7 +989,10 @@ class IntelligenceStore:
                 "active_stories": len(stories),
                 "confirmed": confirmed,
                 "draft_ready": draft_ready,
-                "sources_online": len(source_keys),
+                "sources_present": len(source_keys),
+                "freshness_basis": "accepted_source_revision",
+                "last_accepted_revision_at": _iso(newest) if newest else "",
+                "last_source_published_at": max((str(p.get("published_at") or "") for p in stories), default=""),
             },
             "stories": stories,
         }
@@ -974,6 +1080,8 @@ def _store_cycle(db_target: Path, packets: list[dict], *, now: datetime,
             packets, now=now,
             timeline_max=int(cfg.get("timeline_max", DEFAULT_TIMELINE_MAX)),
         )
+        if isinstance(cfg.get("source_health"), list):
+            store.set_source_health(cfg["source_health"])
         store.prune(
             now=now,
             retention_h=float(cfg.get("retention_h", 72.0)),
@@ -988,6 +1096,7 @@ def _store_cycle(db_target: Path, packets: list[dict], *, now: datetime,
                 cfg.get("market_stale_min", DEFAULT_MARKET_STALE_MIN)
             ),
             confirmed_max=int(cfg.get("snapshot_confirmed_max", 0) or 0),
+            research_max=int(cfg.get("snapshot_research_max", 0) or 0),
         )
     finally:
         try:

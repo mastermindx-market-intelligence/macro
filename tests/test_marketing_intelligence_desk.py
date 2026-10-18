@@ -226,28 +226,15 @@ def test_press_tick_emits_story_packets_even_in_outbound_dry_mode(tmp_path):
     assert packet["drafts"], "the rail copy should become a review candidate"
 
 
-def test_news_page_consumes_story_contract_and_keeps_review_gate_visible():
+def test_news_page_consumes_story_contract_without_publication_actions():
+    client = (ROOT / "templates" / "news_desk.js").read_text(encoding="utf-8")
     template = (ROOT / "templates" / "news.html.j2").read_text(encoding="utf-8")
-    assert "'live/intelligence.json'" in template
-    assert "intelligence.desk/v1" in template
-    assert "Source receipts" in template and "来源依据" in template
-    assert "Outbound posting is separate and remains review-gated." in template
-    assert "navigator.clipboard.writeText" in template
-    # Live payload fields never become HTML.
-    block = template.split("// ---- INTELLIGENCE DESK")[1].split(
-        "// ---- LIVE WIRE"
-    )[0]
-    assert ".innerHTML" not in block
-    assert "textContent" in block
-    # Review N11: the V2 producer-side field spellings the client reads. A
-    # producer rename would otherwise ship an empty timeline/context group with
-    # this suite green — the payload contract and the template must drift
-    # TOGETHER or fail here.
-    for field in ("timeline", "label_en", "label_zh", "engine_context",
-                  "line_en", "line_zh", "as_of", "headline_zh", "brief_zh"):
-        assert field in block, f"desk client no longer reads `{field}`"
-    assert "Attention cooling" in template and "关注降温" in template
-
+    assert "news_desk.js" in template
+    assert "intelligence.desk/v1" in client
+    assert "Source evidence" in client and "来源依据" in client
+    assert "navigator.clipboard.writeText" in client
+    assert ".innerHTML" not in client
+    assert "intelligence/approve" not in client
 
 def test_content_studio_receives_the_live_review_queue_without_a_nightly_plan(tmp_path):
     from admin import marketing

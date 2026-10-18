@@ -2542,7 +2542,7 @@ fi
 # restart. Keep the engine/marketing pattern broad because every submodule import
 # executes that package's non-inert __init__ first, and the press pipeline reaches
 # multiple modules lazily according to the source/item path.
-if [ "$PRESS_UNIT_UPDATED" -eq 1 ] || echo "$CHANGED" | grep -qE '^(app/deploy/marketing-press-feeds\.service|scripts/marketing_fastlane_daemon\.py|engine/news_translate\.py|engine/marketing/.*\.py|engine/(codex_provider|llm_auth)\.py|engine/codex_lane/runner\.py|lib/(ai_costs|config)\.py)$'; then
+if [ "$PRESS_UNIT_UPDATED" -eq 1 ] || echo "$CHANGED" | grep -qE '^(app/deploy/marketing-press-feeds\.service|scripts/marketing_fastlane_daemon\.py|engine/(news_translate|news_rss|gdelt_client)\.py|engine/marketing/.*\.py|engine/(codex_provider|llm_auth)\.py|engine/codex_lane/runner\.py|lib/(ai_costs|config)\.py)$'; then
 	if systemctl is-active --quiet marketing-press-feeds; then
 		systemctl restart marketing-press-feeds
 	fi

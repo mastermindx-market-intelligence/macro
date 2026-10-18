@@ -1,0 +1,84 @@
+{
+  "scope": "isolated live collector proof, not production",
+  "result": {
+    "enabled": true,
+    "due": 8,
+    "accepted": true,
+    "revisions": 36
+  },
+  "elapsed_seconds": 5.602,
+  "story_count": 36,
+  "sources": [
+    {
+      "id": "fed_press",
+      "status": "observed",
+      "last_error": "",
+      "last_fetch_success_at": "2026-10-18T08:24:58.584720+00:00",
+      "last_accepted_at": "2026-10-18T08:24:58.584720+00:00"
+    },
+    {
+      "id": "fed_speeches",
+      "status": "observed",
+      "last_error": "",
+      "last_fetch_success_at": "2026-10-18T08:24:58.584720+00:00",
+      "last_accepted_at": "2026-10-18T08:24:58.584720+00:00"
+    },
+    {
+      "id": "ecb_press",
+      "status": "observed",
+      "last_error": "",
+      "last_fetch_success_at": "2026-10-18T08:24:58.584720+00:00",
+      "last_accepted_at": ""
+    },
+    {
+      "id": "uk_world",
+      "status": "observed",
+      "last_error": "",
+      "last_fetch_success_at": "2026-10-18T08:24:58.584720+00:00",
+      "last_accepted_at": "2026-10-18T08:24:58.584720+00:00"
+    },
+    {
+      "id": "uk_defence",
+      "status": "observed",
+      "last_error": "",
+      "last_fetch_success_at": "2026-10-18T08:24:58.584720+00:00",
+      "last_accepted_at": "2026-10-18T08:24:58.584720+00:00"
+    },
+    {
+      "id": "uk_treasury",
+      "status": "observed",
+      "last_error": "",
+      "last_fetch_success_at": "2026-10-18T08:24:58.584720+00:00",
+      "last_accepted_at": "2026-10-18T08:24:58.584720+00:00"
+    },
+    {
+      "id": "uk_trade",
+      "status": "observed",
+      "last_error": "",
+      "last_fetch_success_at": "2026-10-18T08:24:58.584720+00:00",
+      "last_accepted_at": ""
+    },
+    {
+      "id": "bbc_world",
+      "status": "held",
+      "last_error": "",
+      "last_fetch_success_at": "",
+      "last_accepted_at": ""
+    },
+    {
+      "id": "gdelt_world",
+      "status": "degraded",
+      "last_error": "OSError",
+      "last_fetch_success_at": "",
+      "last_accepted_at": ""
+    },
+    {
+      "id": "gdelt_economy",
+      "status": "unknown",
+      "last_error": "",
+      "last_fetch_success_at": "",
+      "last_accepted_at": ""
+    }
+  ],
+  "content_included": false
+}

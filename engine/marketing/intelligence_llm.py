@@ -507,7 +507,8 @@ def eligible_packets(packets: Iterable[dict], *, max_per_tick: int) -> list[dict
     """
     rows = [
         p for p in (packets or [])
-        if isinstance(p, dict) and str(p.get("stage") or "") in ELIGIBLE_STAGES
+        if isinstance(p, dict) and p.get("purpose") != "research"
+        and str(p.get("stage") or "") in ELIGIBLE_STAGES
         and _clean(p.get("headline"), 320)
     ]
     # Two STABLE sorts rather than one composite key: the secondary pass runs

@@ -1,0 +1,13 @@
+{
+  "scope": "loopback HTTP; production router; fixture identity dependency; not production latency",
+  "checked_at": "2026-10-18T08:23:45.891128+00:00",
+  "unauthenticated_status": 401,
+  "first_frame_ms": 2.31,
+  "cache_control": "private, no-store",
+  "buffering": "no",
+  "atomic_amendment_to_wire_ms": 1003.11,
+  "atomic_removal_to_wire_ms": 1002.97,
+  "reconnect_full_snapshot": true,
+  "result": "passed",
+  "server_stopped": true
+}

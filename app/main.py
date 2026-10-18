@@ -2506,6 +2506,11 @@ app.state.company_disclosure_reader = PrivateDisclosureReader(
 from app.ticker_news import router as ticker_news_router  # noqa: E402
 app.include_router(ticker_news_router)
 
+# Aggregate news desk delivery reuses the existing IntelligenceStore export and
+# the incumbent cookie/Bearer access policy; source ingestion stays with its owner.
+from app.news_desk import router as news_desk_router  # noqa: E402
+app.include_router(news_desk_router)
+
 # Bounded localhost projection of ONE regular-session quote for the static
 # stock dossiers.  Market-data authority stays with the Terminal Quote Plane —
 # this owns no store, socket, scheduler, or vendor credential, and it may only

@@ -508,6 +508,79 @@ def _log_reply_tick(result: dict, now: datetime, *, dry_run: bool) -> None:
 # Single press tick (PRESS-FEEDS B1)
 # ─────────────────────────────────────────────────────────────────────────────
 
+def _run_research_rss_tick(*, state: dict, press_cfg: dict, now: datetime) -> dict:
+    """Accept research first; only accepted source revisions advance validators.
+
+    Uses the SAME press-state document and IntelligenceStore. No outbox, draft,
+    marketing corpus, seen ledger or destructive stream-spool participation.
+    """
+    from engine.news_rss import poll_research_feeds
+    from engine.marketing.intelligence_desk import build_research_packet, update_intelligence_desk
+
+    config = press_cfg.get("research_rss") or {}
+    if not config.get("enabled"):
+        return {"enabled": False}
+    specs = config.get("feeds") or []
+    applied = state.setdefault("research_rss", {})
+    outcomes = poll_research_feeds(specs, applied, now=now)
+    if not outcomes:
+        return {"enabled": True, "due": 0}
+    packets, proposals = [], {}
+    for result in outcomes:
+        fid = result["feed_id"]
+        entry = applied.setdefault(fid, {})
+        entry["last_attempt_at"] = result["observed_at"]
+        entry["last_error"] = result["error"]
+        entry["failures"] = entry.get("failures", 0) + 1 if result["error"] else 0
+        if result["error"]:
+            continue
+        entry["last_fetch_success_at"] = result["observed_at"]
+        if result["status"] == 304:
+            continue  # fetch success, never evidence of a new report
+        versions = dict(entry.get("latest_applied_revision_by_item") or {})
+        changed = []
+        for item in result["items"]:
+            if versions.get(item["id"]) != item["source_revision"]:
+                packets.append(build_research_packet(item, now=now))
+                changed.append(item)
+            versions[item["id"]] = item["source_revision"]
+        proposals[fid] = {"applied_etag": result["etag"],
+                          "applied_last_modified": result["last_modified"],
+                          "latest_applied_revision_by_item": dict(list(versions.items())[-600:]),
+                          "last_applied_at": now.isoformat() if changed else entry.get("last_applied_at", "")}
+    # Persist observed attempts independently of acceptance. A failure cannot
+    # restore spend/network history, but it must leave applied validators alone.
+    _save_press_state(state)
+    health = []
+    for spec in specs:
+        entry = dict(applied.get(spec["id"], {}))
+        entry.update(proposals.get(spec["id"], {}))
+        health.append({"id": spec["id"], "publisher": spec["publisher"],
+                       "enabled": bool(spec.get("enabled")),
+                       "status": "held" if not spec.get("enabled") else "degraded" if entry.get("last_error") else "observed" if entry.get("last_fetch_success_at") else "unknown",
+                       "coverage_regions": spec.get("coverage_regions", []),
+                       "language": spec.get("language", "en"),
+                       "poll_seconds": spec.get("poll_seconds", 120),
+                       "last_attempt_at": entry.get("last_attempt_at", ""),
+                       "last_fetch_success_at": entry.get("last_fetch_success_at", ""),
+                       "last_accepted_at": entry.get("last_applied_at", ""),
+                       "last_error": entry.get("last_error", ""),
+                       "hold_reason": spec.get("hold_reason", "")})
+    desk_cfg = dict((press_cfg.get("wire") or {}).get("intelligence") or {})
+    desk_cfg["source_health"] = health
+    try:
+        update_intelligence_desk(packets, root=ROOT, now=now, cfg=desk_cfg)
+    except Exception:
+        # SQLite might already be committed if atomic export failed. Leave
+        # validators unapplied and replay the same revisions idempotently.
+        logger.exception("[research-news] acceptance/export failed; validators retained")
+        return {"enabled": True, "due": len(outcomes), "accepted": False}
+    for fid, proposal in proposals.items():
+        applied[fid].update(proposal)
+    _save_press_state(state)
+    return {"enabled": True, "due": len(outcomes), "accepted": True, "revisions": len(packets)}
+
+
 def _run_press_tick(*, dry_run: bool) -> dict:
     """Run one press-lane tick: poll wire RSS + press providers, then process.
 
@@ -532,6 +605,12 @@ def _run_press_tick(*, dry_run: bool) -> dict:
     # Persisted daemon-local state (cursors, ETags, spend, flagship counter, seen).
     state = _load_press_state()
     seen = _load_press_seen()
+
+    if not dry_run:
+        try:
+            _run_research_rss_tick(state=state, press_cfg=press_cfg, now=now)
+        except Exception:
+            logger.exception("[research-news] intake failed; continuing incumbent press tick")
 
     # M2: emission is only allowed when the outbox kill-switch is on AND not
     # dry-run. This controls WRITES to the social outbox, not intelligence reads.

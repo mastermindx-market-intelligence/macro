@@ -1,4 +1,9 @@
-"""Render smoke tests for the 2026 Markets-News revamp (news.html.j2).
+"""Render and inherited consequence-contract tests for the News cockpit.
+
+The current design uses a read-stable feed and a story workspace. Legacy
+consequence semantics and rendering safety remain acceptance requirements.
+
+Historical test intent:
 
 The page is a hero-led, importance-ranked, aged single feed (build_site builds the
 unified `news_feed`; the template renders it). These tests pin the SHIPPED design's
@@ -120,56 +125,22 @@ def _render_empty() -> str:
 def test_full_vm_renders_without_exception():
     html = _render_full()
     assert len(html) > 1000
-    assert "What matters now" in html
+    assert "News intelligence" in html
 
 
 def test_empty_vm_renders_without_exception():
     html = _render_empty()
     assert len(html) > 500
-    assert "What matters now" in html          # header always renders
+    assert "News intelligence" in html          # header always renders
     assert "quiet" in html.lower()             # empty-feed state
 
 
-def test_hero_lead_story_renders():
-    html = _render_full()
-    assert "nx-lead" in html
-    assert "RTX beats Q2" in html              # top-ranked story leads the hero
-    assert "Top story" in html or "头条" in html
 
 
-def test_the_impact_ring_is_gone_and_stays_gone():
-    """The ring set an 8px uppercase label inside a circular overflow:hidden clip.
-
-    It fits at 8px and clips the moment a browser enforces a minimum font size —
-    measured on the live page, from 12px at the 60px ring and from 10px at the 50px
-    mobile ring, which is what the operator saw ("IMPAC" with the T cut off). Type
-    that small is not under our control, so the fix is that no text lives inside a
-    circular clip here at all; the list's order carries the ranking and the
-    diagnostics drawer keeps the receipt. Re-adding the ring re-opens the defect.
-    """
-    html = _render_full()
-    assert "nx-impact" not in html
-    assert "font-size:8px" not in html, "sub-9px type is not under design control"
-    # the lead still leads, and still wraps rather than overflowing on a narrow screen
-    assert "nx-lead-title" in html
-    assert ".nx-lead-title{ overflow-wrap:anywhere; }" in html
 
 
-def test_feed_renders_ranked_story_cards():
-    html = _render_full()
-    assert html.count("nx-story") >= 5         # one row per feed item
-    # No per-row score badge: a number beside every headline is the system talking
-    # about itself, and the list is already in rank order (the masthead says so).
-    assert "nx-rankdot" not in html
 
 
-def test_lane_and_search_data_attributes_present():
-    """The lane filter + search read data-lane / data-search — the previously-dead
-    data-search attribute is now wired."""
-    html = _render_full()
-    assert 'data-lane="fed"' in html and 'data-lane="companies"' in html
-    assert "data-search=" in html
-    assert 'id="nxSeg"' in html and 'id="nxSearch"' in html
 
 
 def _css_rule(html: str, selector: str) -> str:
@@ -178,80 +149,18 @@ def _css_rule(html: str, selector: str) -> str:
     return "\n".join(matches)
 
 
-def test_legacy_headline_feed_and_live_wire_are_tier2_depth_not_resting_streams():
-    html = _render_full()
-    start = html.index('<details class="nx-depth" id="nxControls">')
-    end = html.index('</details>', start)
-    depth = html[start:end]
-    assert 'Full news tape' in depth
-    assert 'id="nxFeedControls"' in depth
-    assert 'id="nxWire"' in depth
-    assert 'id="nxFeed"' in depth
-    assert html.index('id="nxIntel"') < start
-    assert "disclosure.open=true" in html
-    assert "search.focus()" in html
 
 
-def test_attention_map_is_visual_and_mobile_queue_is_demoted():
-    html = _render_full()
-    assert 'class="nx-attention"' in html
-    assert 'class="nx-heat-bar"' in html
-    assert "--share:" in html
-    assert "Attention map" in html
-    assert ".nx-movers{ display:none; }" in html
-    assert ".nx-attention-items{ display:flex;" in html
 
 
-def test_mobile_triage_has_early_access_and_explicit_recovery():
-    html = _render_full()
-    assert 'id="nxTriageJump"' in html
-    assert 'href="#nxControls"' in html
-    assert '.nx-triage-jump{ display:none;' in html
-    assert '.nx-triage-jump{ display:inline-flex; }' in html
-    assert 'id="nxControls"' in html
-    assert 'id="nxClear"' in html
-    assert 'id="nxIntelCount"' in html
-    assert 'id="nxIntelClear"' in html
-    assert "clearBtn.addEventListener('click'" in html
-    assert "intelClear.addEventListener('click'" in html
 
 
-def test_mobile_triage_standalone_controls_meet_product_floor():
-    html = _render_full()
-    for selector in (
-        '.nx-triage-jump', '.seg-btn', '.nx-search input', '.nx-clear',
-        '.nx-more', '.nxi-filter', '.nxi-clear', '.nxi-showmore',
-    ):
-        rule = _css_rule(html, selector)
-        match = re.search(r"min-height:\s*(\d+)px", rule)
-        assert match and int(match.group(1)) >= 40, (selector, rule)
 
 
-def test_mobile_triage_reports_result_count_and_reset_state():
-    html = _render_full()
-    assert "shown+' of '+stories.length+' shown'" in html
-    assert "'显示 '+shown+' / '+stories.length+' 条'" in html
-    assert "clearBtn.hidden" in html
-    assert "shown.length+' of '+filtered.length+' shown'" in html
-    assert "'显示 '+shown.length+' / '+filtered.length+' 条'" in html
-    assert "resultCountEl" in html
-    assert "intelClear.hidden" in html
-    assert "No stories match this filter" in html
-    assert "Clear the filter to return to all active stories." in html
-    assert "aria-pressed" in html
-    assert 'id="nxSeg" role="tablist"' not in html
-    assert 'aria-label="<span' not in html
 
 
-def test_mobile_triage_does_not_restyle_live_wire_panel():
-    html = _render_full()
-    assert '.nxw{ margin:0 0 18px; border-radius:var(--nx-radius); overflow:hidden;' in html
 
 
-def test_release_board_renders():
-    html = _render_full()
-    assert "Nonfarm Payrolls" in html
-    assert "147" in html
 
 
 def test_calendar_renders_catalysts_and_strip():
@@ -260,11 +169,6 @@ def test_calendar_renders_catalysts_and_strip():
     assert "Jobless claims" in html or "初请失业金" in html
 
 
-def test_diagnostics_collapsed_and_relocated():
-    """Reject log + calibration live in ONE collapsed drawer, not as prominent boards."""
-    html = _render_full()
-    assert '<details class="nx-diag">' in html        # a collapsed <details> drawer
-    assert "Newsroom diagnostics" in html or "新闻室诊断" in html
 
 
 # --------------------------------------------------------------------------- #
@@ -295,40 +199,17 @@ def test_importance_reasons_and_internal_slugs_never_render():
     assert "stock_pick_roundup" not in html
 
 
-def test_a_story_carries_exactly_one_label():
-    """Was: the AI chip renders only for a real ai_importance (a Jinja Undefined guard).
-
-    The chip itself is gone. A headline used to carry theme + event + direction +
-    "✦ AI" + up to five tickers — five to nine coloured objects each — which is what
-    made the list unreadable. One theme label survives on the row; the rest is source
-    and time. The Undefined bug it guarded cannot recur because the branch is gone,
-    and this pins that: a real ai_importance must still not produce a chip.
-    """
-    html = _render_full()
-    assert "nx-chip ai" not in html
-    vm = _full_vm()
-    vm["news_feed"][0]["ai_importance"] = 92.0
-    html2 = _env().get_template("news.html.j2").render(**vm)
-    assert "nx-chip ai" not in html2
-    # exactly one theme label inside each story row (the lead and the also-big
-    # column carry their own, so count per row rather than over the whole page)
-    rows = re.findall(r'<article class="nx-story.*?</article>', html2, re.S)
-    assert rows, "no story rows rendered"
-    for row in rows:
-        assert row.count('class="nx-chip th-') == 1, "a story row grew a second label"
-        for gone in ("nx-chip evt", "nx-chip ai", "dir-up", "dir-down", "dir-mixed"):
-            assert gone not in row, f"{gone} came back to the row"
 
 
 def test_bilingual_spans_present():
     html = _render_full()
     assert 'class="l-en"' in html and 'class="l-zh"' in html
-    assert "当下要闻" in html                    # zh title span emitted
+    assert "新闻情报" in html                    # zh title span emitted
 
 
 def test_disclaimer_renders():
     html = _render_full()
-    assert "display-only" in html.lower()
+    assert "informational purposes" in html.lower()
 
 
 def test_consequence_section_is_single_column_not_nx_cols():
@@ -337,10 +218,8 @@ def test_consequence_section_is_single_column_not_nx_cols():
     assert 'class="nx-consequence" id="nxConsequence"' in html
     assert 'class="nx-cols" id="nxConsequence"' not in html
     # The releases board may still use nx-cols; only this section left that grid.
-    assert "#nxConsequence{ margin-top:26px; }" in html
-    assert "#nxConsequence .nx-rel-grid{ grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }" in html
-    assert "html[data-theme=\"light\"] #nxConsequence .nx-rel{" in html
-    assert "var(--card-shadow)" in html and "var(--popover-shadow)" in html
+    assert 'id="ndImpact"' in html
+    assert '.nd-dialog .nx-rel-grid' in html
     # No <main> wrapper inside the consequence section.
     start = html.index('id="nxConsequence"')
     end = html.index("</section>", start)
@@ -728,7 +607,7 @@ def test_schema_violating_artifact_degrades_not_raises(case_id, overrides):
     vm.update(overrides)
     html = _env().get_template("news.html.j2").render(**vm)
     assert len(html) > 500
-    assert "What matters now" in html          # page structure intact
+    assert "News intelligence" in html          # page structure intact
 
 
 def test_string_cards_release_board_shows_no_release_section():
@@ -760,7 +639,7 @@ def test_build_site_render_call_shape_no_duplicate_kwarg():
         financial_news=None, news_feed=_full_vm()["news_feed"],
     )
     assert len(html) > 1000
-    assert "nx-story" in html
+    assert 'class="nd-row"' in html
 
 
 def test_naive_duplicate_macro_news_kwarg_raises_typeerror():
@@ -775,190 +654,33 @@ def test_naive_duplicate_macro_news_kwarg_raises_typeerror():
 
 # Session D collision integration: locale/search/gated-state defects recovered
 # from the frozen Web Chat UIUX lane and composed into the canonical #7591 carrier.
-def test_news_search_indexes_displayed_chinese_title_and_escapes_it():
-    vm = _full_vm()
-    vm["news_feed"][0]["title_zh"] = '芯片需求 "验证" <test>'
-    html = _env().get_template("news.html.j2").render(**vm)
-    index = re.search(r'<article[^>]*data-search="([^"]*)"', html, re.S).group(1)
-    assert "芯片需求" in index
-    assert "&lt;test&gt;" in index and "<test>" not in index
-
-
-def test_news_locale_events_use_document_and_controls_have_localizable_names():
-    html = _render_full()
-    src = (ROOT / "templates" / "news.html.j2").read_text(encoding="utf-8")
-    assert "window.addEventListener('langchange'" not in src
-    for fn in ("stamps", "setPh", "apply", "repaint"):
-        assert "document.addEventListener('langchange', " + fn in src
-    assert 'id="nxSeg" role="group"' in html
-    assert 'data-label-zh="按主题筛选新闻"' in html
-    assert 'data-label-zh="搜索新闻"' in html
-    assert 'id="nxIntelToolbar" role="group"' in html
-    assert 'data-label-zh="筛选事件"' in html
-
-
-def test_news_intelligence_language_repaint_preserves_expanded_state():
-    src = (ROOT / "templates" / "news.html.j2").read_text(encoding="utf-8")
-    marker = "document.addEventListener('langchange',function(){"
-    block = src[src.index(marker):src.index("document.addEventListener('visibilitychange'", src.index(marker))]
-    assert "showDesk(" not in block
-    assert "render();" in block
-    assert "expanded=false" not in block
-
-
-def test_news_gated_panels_honor_hidden_state_and_guest_copy_is_truthful():
-    html = _render_full()
-    assert "#nxIntel[hidden]" in html and "#nxIntel [hidden]" in html
-    assert "#nxWire[hidden]" in html and "#nxWire [hidden]" in html
-    assert 'display:none!important' in html
-    assert 'Your session has ended' not in html
-    assert 'Sign in to read live headlines.' in html
-    assert 'Sign in to read developing stories and their sources.' in html
-    assert 'Live story graph' not in html
-    assert 'Ranked story stream' in html
-    assert 'Developing + confirmed' in html
 
 
 
 
-def test_news_intelligence_resting_rows_are_scan_first_and_depth_moves_to_brief():
-    src = (ROOT / "templates" / "news.html.j2").read_text(encoding="utf-8")
-    row = src.split("function storyCard(story,rank){", 1)[1].split("function render(){", 1)[0]
-    drawer = src.split("function openDrawer(story,trigger,keepFocus){", 1)[1].split(
-        "function storyCard(story,rank){", 1
-    )[0]
-    assert "body.brief" not in row
-    assert "why_it_matters" not in row
-    assert "body.brief" in drawer
-    assert "why_it_matters" in drawer
-    assert "Source receipts" in drawer and "来源依据" in drawer
-    assert "timelineGroup(story)" in drawer
-    assert "factsGroup(story,false)" in drawer
 
 
-def test_news_story_brief_survives_live_payload_refresh_when_story_still_exists():
-    src = (ROOT / "templates" / "news.html.j2").read_text(encoding="utf-8")
-    block = src.split("function showDesk(payload){", 1)[1].split(
-        "function stateCopy(kind){", 1
-    )[0]
-    assert "selectedId" in block
-    assert "data-story-id" in src
-    assert "stories.find(function(story)" in block
-    assert "openDrawer(fresh,null,true)" in block
-    assert "closeDrawer(false)" in block
 
 
-def test_news_priority_queue_and_story_brief_controls_localize_accessible_names():
-    html = _render_full()
-    assert 'id="nxPriorityQueue"' in html
-    assert 'data-label-zh="优先队列"' in html
-    assert "'nxPriorityQueue'" in html
-    assert 'data-label-zh="关闭事件简报"' in html
 
 
-def test_news_story_tickers_strip_optional_dollar_before_display_and_linking():
-    src = (ROOT / "templates" / "news.html.j2").read_text(encoding="utf-8")
-    assert src.count(r"replace(/^\$/,'')") >= 2
 
 
-def test_news_mobile_ranked_rows_pin_grid_items_to_readable_columns():
-    html = _render_full()
-    assert ".nxi-rank{ grid-column:1; grid-row:1; }" in html
-    assert ".nxi-row-copy{ grid-column:2; grid-row:1; }" in html
-    assert ".nxi-row-status{ grid-column:2; grid-row:2;" in html
-    assert ".nxi-row-context{ grid-column:2; grid-row:3; }" in html
 
 
-def test_news_story_brief_suppresses_global_brain_launcher_while_open():
-    html = _render_full()
-    assert "body.nxi-drawer-open #mmb-launch" in html
-    assert "body.nxi-drawer-open #mmb-boot" in html
-    assert "pointer-events:none!important" in html
-    assert "visibility:hidden!important" in html
 
 
-def test_news_story_brief_does_not_repeat_owned_data_heading():
-    src = (ROOT / "templates" / "news.html.j2").read_text(encoding="utf-8")
-    drawer = src.split("function openDrawer(story,trigger,keepFocus){", 1)[1].split(
-        "function storyCard(story,rank){", 1
-    )[0]
-    assert "factsGroup(story,false)" in drawer
-    assert "var owned=section(tx('From our own data','我们的数据'));" in drawer
-    assert "function factsGroup(story,withHeading)" in src
 
 
-def test_news_story_brief_has_accessible_modal_and_focus_recovery_contract():
-    html = _render_full()
-    assert 'id="nxIntelDrawer"' in html
-    assert 'role="dialog"' in html and 'aria-modal="true"' in html
-    assert 'aria-labelledby="nxIntelDrawerTitle"' in html
-    assert 'id="nxIntelClose"' in html
-    assert 'data-label-zh="关闭事件简报"' in html
-    assert "if(e.key==='Escape')" in html
-    assert "lastTrigger.focus()" in html
-    assert "body.nxi-drawer-open" in html
-    assert "@media(max-width:560px)" in html
-    assert ".nxi-drawer{ inset:0; width:100vw; max-width:100vw; min-width:0; box-sizing:border-box; border-left:0; }" in html
 
 
-def test_news_header_is_compact_and_no_long_description_rests_above_fold():
-    html = _render_full()
-    head = html.split('<header class="nx-head">', 1)[1].split("</header>", 1)[0]
-    assert "News Intelligence" in head
-    assert "What matters now" in head
-    assert 'class="nx-sub"' not in head
-    assert "importance-ranked, fresh, and de-noised" not in head
 
-def test_news_document_language_switch_preserves_filter_and_refreshes_dynamic_ui():
-    import json
-    import shutil
-    import subprocess
 
-    node = shutil.which("node")
-    if not node:
-        pytest.skip("Node is needed for the source-owned DOM interaction contract")
-    src = (ROOT / "templates" / "news.html.j2").read_text(encoding="utf-8")
-    start = src.index("(function(){", src.index("{% block body_scripts %}"))
-    script = src[start:src.index("  // ---- INTELLIGENCE DESK", start)] + "})();"
-    harness = r'''
-const assert=require('assert');
-class E {
- constructor(attrs={}) {this.attrs=attrs;this.handlers={};this.classes=new Set();this.style={};this.textContent='';this.value='';this.placeholder='';this.hidden=false;}
- getAttribute(k){return this.attrs[k]??null;} setAttribute(k,v){this.attrs[k]=String(v);}
- addEventListener(k,fn){(this.handlers[k]??=[]).push(fn);}
- emit(k,e={}){for(const fn of this.handlers[k]||[])fn.call(this,e);}
- get classList(){return {add:x=>this.classes.add(x),remove:x=>this.classes.delete(x),toggle:(x,v)=>v?this.classes.add(x):this.classes.delete(x),contains:x=>this.classes.has(x)};}
- focus(){document.activeElement=this;}
-}
-const stamp=new E({'data-ts':new Date(Date.now()-3600000).toISOString()});
-const stories=Array.from({length:30},(_,i)=>new E({'data-lane':i<5?'fed':'markets','data-search':'headline '+i+' 芯片'}));
-const buttons=['all','markets','macro','fed','companies'].map(x=>new E({'data-lane':x}));
-const seg=new E({'data-label-en':'Filter news by topic','data-label-zh':'按主题筛选新闻'}); seg.querySelectorAll=()=>buttons;
-buttons.forEach(b=>{b.closest=()=>b;b.click=()=>seg.emit('click',{target:b});});
-const search=new E({'data-ph-en':'Search headlines, tickers…','data-ph-zh':'搜索标题、代码…','data-label-en':'Search news','data-label-zh':'搜索新闻'});
-const count=new E(),empty=new E(),more=new E(),clear=new E();
-const feed=new E(); feed.querySelectorAll=()=>stories;
-const root=new E({'data-lang':'en'});
-global.document=new E(); document.documentElement=root;
-const intelToolbar=new E({'data-label-en':'Filter stories','data-label-zh':'筛选事件'});
-const ids={nxFeed:feed,nxSeg:seg,nxSearch:search,nxCount:count,nxEmpty:empty,nxMore:more,nxClear:clear,nxIntelToolbar:intelToolbar};
-document.getElementById=id=>ids[id]||null; document.querySelectorAll=q=>q.startsWith('.rel-time')?[stamp]:[];
-global.window=new E();
-'''
-    checks = r'''
-assert.equal(count.textContent,'24 of 30 shown');
-search.value='芯片'; search.emit('input'); assert.equal(count.textContent,'30 of 30 shown');
-buttons[3].click();
-assert.equal(buttons[3].getAttribute('aria-pressed'),'true'); assert.equal(search.value,'芯片');
-root.setAttribute('data-lang','zh'); document.emit('langchange');
-assert.equal(search.placeholder,'搜索标题、代码…'); assert.equal(search.getAttribute('aria-label'),'搜索新闻');
-assert.equal(seg.getAttribute('aria-label'),'按主题筛选新闻'); assert.equal(intelToolbar.getAttribute('aria-label'),'筛选事件');
-assert.ok(stamp.textContent.includes('小时前')); assert.equal(search.value,'芯片'); assert.equal(buttons[3].getAttribute('aria-pressed'),'true');
-console.log(JSON.stringify({passed:true}));
-'''
-    result = subprocess.run([node, "-e", harness + "\n" + script + "\n" + checks], capture_output=True, text=True, timeout=15)
-    assert result.returncode == 0, result.stdout + result.stderr
-    assert json.loads(result.stdout)["passed"]
+
+
+
+
+
 
 
 # --------------------------------------------------------------------------- #
@@ -1317,3 +1039,58 @@ def test_consequence_honest_empty_all_families_fixture_in_en_and_zh():
     for slug in ("earnings_call", "macro_release", "regime_flip", "risk_band",
                  "research_vault", "prophet_ledger"):
         assert slug not in section, f"raw family slug leaked: {slug!r}"
+
+
+
+def test_current_cockpit_controls_and_preserved_depth_have_real_destinations():
+    html = _render_full()
+    for identity in ("newsDesk", "ndFeedPanel", "ndDetail", "ndFilters", "ndCalendar", "ndImpact", "ndWorkspace"):
+        assert f'id="{identity}"' in html
+    assert 'href="calendar.html"' not in html
+    assert 'data-open-panel="ndCalendar"' in html
+    assert 'data-open-panel="ndImpact"' in html
+    assert 'aria-controls="ndFeedPanel"' in html
+    assert 'id="ndSavedStoriesMobile"' in html
+
+
+def test_seed_is_script_safe_and_server_rows_escape_source_text():
+    import json
+    vm = _empty_vm()
+    vm["news_feed"] = [_feed_item('<img src=x onerror=alert(1)> </script>')]
+    vm["news_feed"][0]["url"] = "javascript:alert(1)"
+    html = _env().get_template("news.html.j2").render(**vm)
+    seed = re.search(r'<script type="application/json" id="ndSeed">(.*?)</script>', html, re.S).group(1)
+    assert json.loads(seed)["stories"][0]["title"].startswith("<img")
+    assert "<img src=x" not in html
+    assert 'href="javascript:alert(1)"' not in html
+    assert "\\u003c/script\\u003e" in seed
+
+
+def test_source_rows_have_no_six_item_cap_and_progressive_fallback_is_bounded():
+    vm = _empty_vm()
+    vm["news_feed"] = [_feed_item(f"Report {i}") for i in range(50)]
+    html = _env().get_template("news.html.j2").render(**vm)
+    feed = html.split('id="ndFeed">')[1].split('</ol>')[0]
+    assert feed.count('class="nd-row"') == 30
+    assert 'id="ndMore"' in html
+
+
+def test_release_numbers_require_a_declared_unit():
+    vm = _full_vm()
+    html = _env().get_template("news.html.j2").render(**vm)
+    calendar = html.split('id="ndCalendar"')[1].split('</dialog>')[0]
+    assert "Nonfarm Payrolls" in calendar
+    assert "147000.0" not in calendar
+    vm["macro_releases"]["cards"][0]["unit"] = "persons"
+    html = _env().get_template("news.html.j2").render(**vm)
+    assert "147000.0 persons" in html
+
+
+def test_page_width_and_mobile_dialog_are_scoped_to_news():
+    css = (ROOT / "templates/news_desk.css").read_text()
+    assert "body:has(.news-desk)" in css
+    assert "grid-template-columns:174px minmax(400px,1fr)" in css
+    assert '.nd-detail[data-open="true"]' in css
+    assert "prefers-reduced-motion" in css
+    assert '.nd-dialog [hidden]{display:none!important}' in css
+    assert not re.search(r'\.site-nav\s*\{', css)
