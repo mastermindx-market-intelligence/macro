@@ -472,3 +472,10 @@ def test_hero_never_mints_a_date_when_no_source_asof_is_available():
     # Client hydration is allowed to fill an unknown date, but never to
     # overwrite the server-pinned market session with a different cache vintage.
     assert "ao.textContent.trim()==='—'" in html
+
+
+def test_intraday_panel_never_claims_the_unqualified_fixed_minute_horizons():
+    html = _render_page(_board())
+    assert "Interval = change between two verified observations" in html
+    assert "not a fixed 5/15/30/60-minute return or a forecast" in html
+    assert 'id="si-intraday"' in html
