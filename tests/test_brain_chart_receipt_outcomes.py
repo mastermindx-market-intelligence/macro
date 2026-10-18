@@ -69,6 +69,7 @@ def test_cancelled_is_not_described_as_generic_rejection_or_undo():
 @pytest.mark.parametrize("error", [
     "indicator_application_failed", "chart_context_application_failed",
     "chart_range_application_failed", "command_cancel_receipt_failed",
+    "chart_context_receipt_failed",
 ])
 def test_application_or_receipt_failure_preserves_uncertainty(error):
     out = receipt(False, error)

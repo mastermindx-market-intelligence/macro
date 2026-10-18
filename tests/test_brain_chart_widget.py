@@ -3,10 +3,13 @@
 These exercise the actual widget and host callback boundary. They do not establish
 production authentication, model selection, market data or chart pixel execution.
 """
+import json
 from pathlib import Path
+from urllib.parse import urlparse
 
 import pytest
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import expect, sync_playwright
+from tests.test_brain_visuals_browser import sample
 
 ROOT = Path(__file__).resolve().parents[1]
 RUN = "a" * 32
@@ -21,7 +24,7 @@ window.emitBrain = function (event) {
   window.streamController.enqueue(new TextEncoder().encode('data: ' + JSON.stringify(event) + '\n\n'));
 };
 window.MM_BRAIN_CFG = {
-  anchor: 'top', api: '', symbol: function () { return 'NVDA'; },
+  anchor: 'top', api: '', principal: null, symbol: function () { return 'NVDA'; },
   onCommand: function (event) { window.chartCalls.push(event); },
   onAnnotate: function (event) { window.chartCalls.push(event); },
   onChartStop: function (request) {
@@ -48,7 +51,8 @@ window.fetch = function (input, options) {
         window.emitBrain({type: 'command', v: 2, op: 'chart.set_tf', args: {tf: 'W'}, batch_id: 'old_batch', seq: 0});
         window.emitBrain({type: 'annotate', symbol: 'NVDA', annotations: []});
         window.emitBrain({type: 'delta', text: 'Recovered answer with its original evidence.'});
-        window.emitBrain({type: 'done', citations: []});
+        if (window.recoveryVisual) window.emitBrain(window.recoveryVisual);
+        window.emitBrain({type: 'done', citations: [], charts: window.recoveryVisual ? [window.recoveryVisual] : []});
         controller.close();
       }
     }});
@@ -77,8 +81,10 @@ def page():
         page = context.new_page()
 
         def route(request):
-            if request.request.url.endswith("/mm_brain.js"):
-                request.fulfill(path=str(ROOT / "templates/mm_brain.js"), content_type="application/javascript")
+            asset = urlparse(request.request.url).path.lstrip("/")
+            if asset in ("mm_brain.js", "mm_brain_visuals.js", "mm_brain_visuals.css"):
+                request.fulfill(path=str(ROOT / "templates" / asset),
+                                content_type="text/css" if asset.endswith(".css") else "application/javascript")
             else:
                 request.fulfill(body='<html data-theme="dark" data-lang="en"><head></head><body><script src="/mm_brain.js"></script></body></html>', content_type="text/html")
 
@@ -91,6 +97,7 @@ def page():
 
 
 def send(page):
+    page.evaluate("window.streamController = null")
     page.locator("#mmb-ta").fill(QUESTION)
     page.locator("#mmb-send").click()
     page.wait_for_function("Boolean(window.streamController)")
@@ -133,7 +140,7 @@ def test_late_buffered_chart_event_cannot_mutate_after_stop(page):
 
 
 def test_cold_recovery_restores_answer_without_replaying_chart_actions(page):
-    page.evaluate("([id, q]) => sessionStorage.setItem('mm.brain.run', JSON.stringify({id, q, cursor: 0, ts: Date.now()}))", [RUN, QUESTION])
+    page.evaluate("([id, q]) => sessionStorage.setItem('mm.brain.run.v2:guest', JSON.stringify({id, q, cursor: 0, ts: Date.now()}))", [RUN, QUESTION])
     page.reload()
     open_widget(page)
     page.get_by_text("Recovered answer with its original evidence.", exact=True).wait_for()
@@ -149,3 +156,71 @@ def test_completion_wins_a_stop_race_without_cancelling_or_marking_the_answer(pa
     page.locator("#mmb-send").click()
     assert page.evaluate("window.cancelRequests") == []
     assert page.locator(".mmb-stopped").count() == 0
+
+
+def test_mixed_completed_answer_keeps_visual_and_allows_a_fresh_chart_turn(page):
+    wire = sample(identity="mixed-completed")
+    send(page)
+    emit(page, command())
+    emit(page, {"type": "delta", "text": "The chart change has a separate receipt. This is an illustrative comparison."})
+    emit(page, wire)
+    emit(page, {"type": "done", "citations": [], "charts": [wire]})
+    expect(page.locator(".mmb-v")).to_have_count(1)
+    expect(page.locator(".mmb-v-plot svg")).to_be_visible()
+    emit(page, command("late_after_done"))
+    page.wait_for_timeout(80)
+    assert [c["batch_id"] for c in page.evaluate("window.chartCalls")] == ["this_turn"]
+    page.evaluate("window.streamController.close()")
+    page.wait_for_function("!document.querySelector('#mmb-send').classList.contains('mmb-stop')")
+    send(page)
+    emit(page, command("fresh_turn"))
+    page.wait_for_function("window.chartCalls.length === 2")
+    emit(page, {"type": "delta", "text": "A fresh chart request."})
+    emit(page, {"type": "done", "citations": []})
+    expect(page.locator(".mmb-v")).to_have_count(1)
+    assert [c["batch_id"] for c in page.evaluate("window.chartCalls")] == ["this_turn", "fresh_turn"]
+    assert page.evaluate("window.chartStops") == []
+
+
+def test_mixed_stop_preserves_chart_effect_note_and_next_turn_still_works(page):
+    wire = sample(identity="mixed-interrupted")
+    send(page)
+    emit(page, command())
+    emit(page, {"type": "delta", "text": "The analysis is still in progress."})
+    emit(page, wire)
+    expect(page.locator(".mmb-v")).to_have_count(1)
+    page.locator("#mmb-send").click()
+    expect(page.locator(".mmb-v")).to_have_count(0)
+    assert "already applied" in page.locator("#mmb-scroll").inner_text()
+    page.evaluate("events => events.forEach(window.emitBrain)", [
+        command("late_after_stop"), {"type": "done", "charts": [wire]},
+    ])
+    page.wait_for_timeout(80)
+    expect(page.locator(".mmb-v")).to_have_count(0)
+    assert [c["batch_id"] for c in page.evaluate("window.chartCalls")] == ["this_turn"]
+    send(page)
+    emit(page, command("fresh_after_stop"))
+    page.wait_for_function("window.chartCalls.length === 2")
+    emit(page, {"type": "delta", "text": "The next request is independent."})
+    emit(page, {"type": "done", "citations": []})
+    assert [c["batch_id"] for c in page.evaluate("window.chartCalls")] == ["this_turn", "fresh_after_stop"]
+    assert page.evaluate("window.chartStops") == [{"scope": "received_batches", "batch_ids": ["this_turn"]}]
+
+
+def test_cold_recovery_keeps_visual_without_actions_then_accepts_fresh_turn(page):
+    wire = sample(identity="mixed-cold-recovery")
+    page.context.add_init_script("window.recoveryVisual = " + json.dumps(wire) + ";")
+    page.evaluate("([id, q]) => sessionStorage.setItem('mm.brain.run.v2:guest', JSON.stringify({id, q, cursor: 0, ts: Date.now()}))", [RUN, QUESTION])
+    page.reload()
+    open_widget(page)
+    page.get_by_text("Recovered answer with its original evidence.", exact=True).wait_for()
+    expect(page.locator(".mmb-v")).to_have_count(1)
+    assert page.evaluate("window.chartCalls") == []
+    assert "not replayed" in page.locator("#mmb-scroll").inner_text()
+    send(page)
+    emit(page, command("fresh_after_recovery"))
+    page.wait_for_function("window.chartCalls.length === 1")
+    emit(page, {"type": "delta", "text": "Only this fresh request reaches the chart."})
+    emit(page, {"type": "done", "citations": []})
+    expect(page.locator(".mmb-v")).to_have_count(1)
+    assert [c["batch_id"] for c in page.evaluate("window.chartCalls")] == ["fresh_after_recovery"]

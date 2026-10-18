@@ -35,6 +35,51 @@
   var API = (CFG.api || '').replace(/\/$/, '');
   var DOC = document;
 
+  /* Optional native presentation assets come from THIS widget's origin, including
+     when Terminal embeds it. No model URL, CDN or executable markup is accepted. */
+  var visualAssetBase = new URL('./', (DOC.currentScript && DOC.currentScript.src) || DOC.baseURI).href;
+  var visualScriptVersion = '1d23a300';
+  var visualStyleVersion = 'e0d06dcb';
+  var visualAssetPromise = null;
+  function loadVisualAssets() {
+    if (visualAssetPromise) return visualAssetPromise;
+    visualAssetPromise = new Promise(function (resolve, reject) {
+      var link = DOC.createElement('link'); link.rel = 'stylesheet';
+      link.href = visualAssetBase + 'mm_brain_visuals.css?v=' + visualStyleVersion;
+      var script = DOC.createElement('script'); script.async = true; script.charset = 'utf-8';
+      script.src = visualAssetBase + 'mm_brain_visuals.js?v=' + visualScriptVersion;
+      var styleReady = false, scriptReady = false;
+      function ready() { if (styleReady && scriptReady && window.MMBrainVisuals) resolve(window.MMBrainVisuals); }
+      link.onload = function () { styleReady = true; ready(); };
+      script.onload = function () { scriptReady = true; if (!window.MMBrainVisuals) reject(new Error('visual module unavailable')); else ready(); };
+      link.onerror = script.onerror = function () { reject(new Error('visual assets unavailable')); };
+      DOC.head.appendChild(link); DOC.head.appendChild(script);
+    });
+    return visualAssetPromise;
+  }
+  function clearVisuals(host) {
+    if (!host) return;
+    host._visualEpoch = (host._visualEpoch || 0) + 1;
+    if (window.MMBrainVisuals) window.MMBrainVisuals.clear(host);
+    host.querySelectorAll('[data-pending-visual]').forEach(function (e) { e.remove(); });
+  }
+  function mountNativeVisual(host, wire) {
+    if (!wire || !/^[a-f0-9]{24}$/.test(wire.visual_id || '')) return;
+    var bubble = host.closest('.mmb-bub');
+    host = (bubble && bubble.querySelector('.mmb-visuals')) || host;
+    if (host.querySelector('[data-visual-id="' + wire.visual_id + '"],[data-pending-visual="' + wire.visual_id + '"]')) return;
+    var epochHost = bubble || host, epoch = epochHost._visualEpoch || 0;
+    var pending = el('p', 'mmb-meta'); pending.dataset.pendingVisual = wire.visual_id;
+    pending.textContent = L('Preparing visual…', '正在准备图解…'); host.appendChild(pending);
+    loadVisualAssets().then(function (renderer) {
+      if (!pending.isConnected || epoch !== (epochHost._visualEpoch || 0)) return;
+      pending.remove();
+      if (!renderer.mount(host, wire)) { var note = el('p', 'mmb-meta'); note.textContent = L('Visual unavailable: invalid or unsupported data.', '图解不可用：数据无效或暂不支持。'); host.appendChild(note); }
+      stickAfter();
+    }).catch(function () { if (pending.isConnected) pending.textContent = L('Visual could not load. Your text answer is still available.', '图解加载失败，文字回答仍可查看。'); });
+  }
+
+
   function captureCompanySourceSpan() {
     try { return (typeof CFG.getCompanySourceSpan === 'function') ? CFG.getCompanySourceSpan() : null; }
     catch (e) { return null; }
@@ -947,7 +992,7 @@
     read_theme_asymmetry: 'theme', read_theme_options_witness: 'theme', read_theme_clinical: 'theme',
     get_market_events: 'notes', search_research: 'notes', context_search: 'notes',
     context_open: 'notes', read_artifact: 'notes', read_special_situations: 'notes',
-    render_inline_chart: 'chart', annotate_chart: 'chart', chart_digest: 'chart',
+    render_inline_visual: 'chart', render_inline_chart: 'chart', annotate_chart: 'chart', chart_digest: 'chart',
     read_chart_state: 'chart', measure_line: 'chart', set_chart_symbol: 'chart',
     set_chart_timeframe: 'chart', toggle_chart_indicator: 'chart', run_chart_detection: 'chart',
     emit_chart_command: 'chart',
@@ -1816,6 +1861,7 @@
 
   /* ── mount: shell first (so the reply never waits on a fetch), then the live draw ── */
   function mountChart(host, j) {
+    if (j && j.visual) { mountNativeVisual(host, j); return; }
     var ticker = String(j.ticker || '').toUpperCase().slice(0, 12);
     var tf = String(j.timeframe || 'DAILY').toLowerCase();
     var box = el('div', 'mmb-cx');
@@ -2116,7 +2162,8 @@
         d.messages.forEach(function (m) {
           var ms = 0; try { ms = m.created_at ? new Date(m.created_at).getTime() : 0; } catch (e) {}
           if (ms) { var dk = new Date(ms).toDateString(); if (dk !== lastDay) { addDaySep(ms); lastDay = dk; } }
-          appendMsg(m.role, m.content, ms || undefined);
+          var restored = appendMsg(m.role, m.content, ms || undefined);
+          if (m.role === 'assistant' && Array.isArray(m.visuals)) m.visuals.slice(0, 4).forEach(function (v) { if (v && v.visual) mountChart(restored.querySelector('.mmb-charts') || restored, v); });
         });
         markLastAssistant(); pinned = true; scroll.scrollTop = scroll.scrollHeight;
         ta.value = ''; autosize(); syncSend(); updateCounter(); restoreDraft();
@@ -2131,7 +2178,7 @@
   }
 
   /* ── messages ── */
-  function clearMsgs() { scroll.textContent = ''; renderEmpty(); pinned = true; hideJump(); }
+  function clearMsgs() { clearVisuals(scroll); scroll.textContent = ''; renderEmpty(); pinned = true; hideJump(); }
   /* Relative timestamp (11px muted). now/2m/1h/Yesterday/date. */
   function relTime(ms) {
     var d = ms ? new Date(ms) : new Date(), now = Date.now(), diff = Math.floor((now - d.getTime()) / 1000);
@@ -2193,6 +2240,7 @@
       var orb = el('span', 'mmb-orbmark'); orb.innerHTML = '<svg viewBox="0 0 24 24"><path d="' + ORB_PATH + '"/></svg>'; b.appendChild(orb);
       var charts = el('div', 'mmb-charts'); b.appendChild(charts);
       var txt = el('div', 'mmb-txt'); if (content) renderMdInto(txt, content); b.appendChild(txt);
+      b.appendChild(el('div', 'mmb-visuals'));  /* answer first; same chart dispatcher */
       b._raw = content || '';
       b.appendChild(buildActions(b, ts));
     }
@@ -2597,7 +2645,7 @@
     /* A chart event no longer means "paste this picture": the widget draws the symbol
        itself from the published daily bars and keeps j.svg only as the fallback, so an
        older gateway (svg, no ticker) still renders exactly as before. */
-    else if (j.type === 'chart' && (j.ticker || j.svg)) {
+    else if (j.type === 'chart' && !T.doneSeen && (j.ticker || j.svg || j.visual)) {
       ensureBub(T);
       mountChart(T.bub.querySelector('.mmb-charts') || T.bub, j);
       stickAfter();
@@ -2617,7 +2665,7 @@
        mid-sentence and the retry needing a clean sheet (empty text = wipe only). Nothing
        to do with retractTurn(), which is the user taking their own prompt back. */
     else if (j.type === 'retract') {
-      ensureBub(T); thinkCollapse(T.tl, T.bub);
+      ensureBub(T); clearVisuals(T.bub); thinkCollapse(T.tl, T.bub);
       var rt = j.text == null ? '' : String(j.text);
       T.stream.reset(rt); T.bub._raw = rt; T.sawDelta = !!rt;
       if (!T.sawDelta) T.stream.startCaret();   /* wiped for a retry — the writer is back */
@@ -2645,6 +2693,8 @@
        still applies it exactly the same gated way. */
     if (j && j.context_receipt) handleContextReceipt(j.context_receipt);
     ensureBub(T); thinkTeardown(T.tl);
+    if (j && (j.filtered || j.degraded)) clearVisuals(T.bub);
+    else if (j && Array.isArray(j.charts)) j.charts.slice(0, 4).forEach(function (v) { if (v && v.visual) mountChart(T.bub.querySelector('.mmb-charts') || T.bub, v); });
     T.stream.finalize(function () {
       if (j && j.citations && j.citations.length) addCites(T.bub, j.citations);
       if (T.suggestions && T.suggestions.length) addSuggest(T.bub, T.suggestions);
@@ -2756,7 +2806,8 @@
         if (q && !(prev && prev.role === 'user' && String(prev.content || '').indexOf(q) === 0)) { failTurn(T, ''); return; }
         clearRun(); T.doneSeen = true;
         ensureBub(T); thinkTeardown(T.tl);
-        T.bub._raw = last.content; T.stream.push(last.content);
+        T.bub._raw = last.content; T.stream.reset(last.content);
+        if (Array.isArray(last.visuals)) last.visuals.slice(0, 4).forEach(function (v) { if (v && v.visual) mountChart(T.bub.querySelector('.mmb-charts') || T.bub, v); });
         T.stream.finalize(function () { bumpTime(T.bub); stickAfter(); });
         endTurn(T); loadThreads(); announceDone();
       })
@@ -2841,7 +2892,7 @@
     if (!streaming) return;
     var a = activeStream;
     if (a && a.doneSeen) { endTurn(a); return; } // completion already won this race
-    if (a) a.stopped = true;
+    if (a) { a.stopped = true; if (a.bub) clearVisuals(a.bub); }
     var chartStop = null;
     if (a && a.chartHanded && a.chartBatches.length && typeof CFG.onChartStop === 'function') {
       try {
@@ -2888,6 +2939,7 @@
   function retractTurn(T) {
     if (!T || T.retracted) return;
     T.retracted = true;
+    if (T.bub) clearVisuals(T.bub);
     retractedAt = Date.now();
     if (T.stream) { try { T.stream.cancel(); } catch (e) {} }   /* drop the caret + any pending rAF */
     thinkTeardown(T.tl);                                        /* belt and braces: never leak the 1s clock */

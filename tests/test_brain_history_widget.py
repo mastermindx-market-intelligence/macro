@@ -395,7 +395,9 @@ def test_mobile_history_and_answer_controls_are_reachable(page, width, lang, tex
         for control in controls.all():
             control.click(trial=True)
             box=control.bounding_box()
-            assert box and box['width']>=44 and box['height']>=44
+            # Chromium can return 43.99999237060547 for a 44px CSS target.
+            # Preserve the accessibility threshold, allowing only subpixel float noise.
+            assert box and round(box['width'],4)>=44 and round(box['height'],4)>=44
             assert box['x']>=0 and box['x']+box['width']<=width
             assert control.evaluate('(node)=>{const b=node.getBoundingClientRect();const hit=document.elementFromPoint(b.x+b.width/2,b.y+b.height/2);return node===hit||node.contains(hit);}')
             control.focus()

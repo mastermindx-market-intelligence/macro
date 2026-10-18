@@ -420,3 +420,28 @@ Remaining release work: current-main joins preserving #8005 → #8014; enroll th
 
 
 Final local compiler qualification: `npx --no-install next typegen` succeeded, followed by `npx --no-install tsc --noEmit --incremental false` with exit 0 and no diagnostics after the optional callback cleanup guard was corrected. This is a source compiler result before the current-main join, not a production build or deployment receipt.
+
+### Joined chart continuation and native rich answers — 2026-10-18
+
+The original Macro #8005 dependency is merged at a89c4e22c6b87e1ff4d36c87d179fe9a6b688b5b. This normal pending merge on original #8014 composes local 78eb48e49a85901870892848548dac6f6704f79e with the immutable, published rich-answer source f0ef27cb14a88a386cdc4267d43069066185c132 from original #9447. Neither original operation nor carrier was replaced. The rich worktree itself was not edited by this integration.
+
+The gateway retains the model-visible chart result and doctrine refresh, pending applied-ACK continuation, and the closed native visual compiler. Visual source binding now uses the processed model result, never raw command arguments; matching applied receipts replace the corresponding observation before the next model round. The two integration regressions failed before that correction and pass after it. A chart_context_receipt_failed result is explicitly covered as unconfirmed, not as proof that no effect happened.
+
+The shared widget combines provisional rich blocks with reply-scoped chart Stop, completion-wins handling, inert recovered commands and a working next turn. Its eight actual-source Playwright cases pass. Fixture closure uses the real guest principal and v2 recovery key, closes a normally completed stream, and queues the stopped late-event burst at the actual reader boundary. This repairs stale fixtures without changing provider cancellation or persistence policy: stopping the live follower does not abort the provider pump, and a later manually opened canonical history entry can contain its completed answer.
+
+Executed joined proof:
+- Brain selection: 1,380 passed initially; two failures were the sparse checkout's absent canonical security_master reference. Materializing the six existing index-owned reference files closed those same two cases (2 passed), with product source unchanged.
+- Browser/history/visual/doctrine/wiring selection: 169 passed initially, four widget fixture failures. The corrected eight-case widget owner passed 8/8, closing all four failures and retaining completion-wins, cold recovery and next-turn coverage.
+- Asset/P0 receipt selection: 161 passed initially, three receipt closure failures. The canonical HK/CA browser rerun followed by those three exact checks passed 3/3. Chromium 151.0.7922.34 used the committed frozen browser-data directory; the fixture digest remains 91a8f743c1d99973888f5a63ff0032bc5faedd3e04991dfd48999996b2a5a762. The earlier misconfigured recipe, its primary receipts and changed images were preserved separately; historical manifest data and screenshot bindings were not restamped.
+- Actual staged-diff P0 closure passed against the original PR's main base a89c4e22c6b87e1ff4d36c87d179fe9a6b688b5b, with 3,681 changed paths accounted for.
+- Existing canonical copy_asset emission and node syntax checks pass. Source hashes remain gateway 3e8b83ecf0e9eb4117ebb8f9ee4cd12d047f576354381b800d04565109bc6526, emitted widget 8c0dd5d51b70d2272df445c407661e5317dfe0d8def61b7eebe62c564fcbe138, and theme 276a0d1e789b2f90d4d64eb2441d855f4db32cbe2ae2b5baa2b771cefae1bdd1.
+
+The incumbent unrun-brain-gateway CI owner now enrolls chart continuation, receipt outcomes, native-evidence boundary, pane context, price-window and presentation tests, plus the actual widget browser suite. Existing doctrine ownership is retained. No parallel CI catalog or skipped guard is introduced.
+
+The original #7151 independent-review waiver, comment 5826034970, remains scoped to this AI × Terminal program and necessary backend. Original #9447 retains its two accepted Fabric reviews. Neither disposition waives hosted CI, release admission or live acceptance.
+
+Release state remains NOT_RELEASED / MISSION_COMPLETE false. Rich f0 hosted CI 39109687000 has an actual failing semantic aggregate: one exact-base inherited reference-integrity failure plus two unexecuted follow-on proofs, and authority_self_excuse_refused because the candidate changes CI authority paths. Three October Sector migration packets arrived from main without approved RIG receipt coverage. The latest checked main 400d1a006006423af11252e83f55db0a8b8ec683 still has those unchanged packets. Original Sector owner #7646 must supply a truthful published reference/receipt repair; no historical Sector approval is being reused for the new design.
+
+Terminal #757 is separately published at 9f3d254697f8daeaae5d67a0b0df841fc8fe5535 with its normal master join, production build, source-bound captures and 12,443 hosted unit tests passing. Its four newly flagged inline bilingual controls are being moved to the existing recognized bilingual helper pattern before final hosted qualification. This Macro commit is not proof of that later Terminal repair.
+
+Next: conclude hosted checks on the published original sources, adopt legitimate gate repairs through their existing owners, perform admitted paired deployment with the established helpers, verify served identities and assets, then repeat ordinary-model chart reads/actions/ACKs and rich answers, Stop and cold signed-in history, and desktop/mobile Paper comparison. No root deployment or production acceptance is claimed here.
