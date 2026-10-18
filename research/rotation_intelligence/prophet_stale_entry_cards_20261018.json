@@ -1,0 +1,127 @@
+{
+  "schema": "mastermind.rotation_intelligence.prophet_stale_entry_static_receipt.v1",
+  "operation": "rotation-intelligence-architecture-20261012",
+  "original_carrier": "https://github.com/mastermindx-market-intelligence/macro/pull/9035",
+  "observed_at_utc": "2026-10-18T04:48:00Z",
+  "scope": "Immutable source-built artifact and template route only; not a served, authenticated, refreshed, or B4-admitted consumer result. No producer/source/writer/workspace/browser/runtime mutation.",
+  "source": {
+    "macro_merge_commit": "4f52d22596545cbd67b5143e188baf5660237024",
+    "source_review": "https://github.com/mastermindx-market-intelligence/macro/pull/9566#issuecomment-6245649165",
+    "page_path": "site/us_stocks.html",
+    "page_git_blob": "6aea2dd572130e5a56e9a3517eda8faf1c7f4bdc",
+    "page_sha256": "3bbf7e28d011ce8ba4808f1e126edee9cbb5714e32aa8e15fc7a500f8d259c88",
+    "page_bytes": 745554,
+    "board_path": "site/factordata/us_standouts.json",
+    "board_git_blob": "6b0246b6aca2dabd9a2308e1500f877428862cf8",
+    "card_template": {
+      "path": "templates/_us_board_cards.html.j2",
+      "git_blob": "aecdcbf3e87dcdabd2613b5551d091a76b84c6af",
+      "verb_mapping_lines": [
+        91,
+        99
+      ]
+    },
+    "shared_card_template": {
+      "path": "templates/_prophet_card.html.j2",
+      "git_blob": "2f2c2fe8b7e5d63ac271a89e12c699ac0da2a2f7",
+      "no_read_record_only_switch_lines": [
+        585,
+        625
+      ]
+    }
+  },
+  "board_receipt": {
+    "as_of": "2026-10-14",
+    "gate_go": false,
+    "panel_price_majority_through": "2026-10-07",
+    "price_sessions_behind": 7,
+    "price_delayed": true,
+    "panel_members_at_expected_completed_session": 198,
+    "panel_members_total": 3064,
+    "source_roster_members": 3069,
+    "source_roster_russell_members": 1356
+  },
+  "shell_receipt": {
+    "panel_id": "us-standouts",
+    "data_board_asof": "2026-10-14",
+    "data_board_delayed": "1",
+    "data_prophet_src": "today",
+    "stale_banner_present": true,
+    "stale_banner_warns_live_quote": true
+  },
+  "current_static_card_placements": [
+    {
+      "section": "us-today-grid",
+      "ticker": "ETSY",
+      "card_css": [
+        "pvcard",
+        "pv-has-setup",
+        "pv-buy",
+        "pv-featured"
+      ],
+      "verb_en": "Buy",
+      "entry_conditions_en": "Partial entry — half size now",
+      "entry_read_vintage": "2026-10-13",
+      "quote_time": "Not supplied"
+    },
+    {
+      "section": "us-cand-grid",
+      "ticker": "ETSY",
+      "card_css": [
+        "pvcard",
+        "pv-has-setup",
+        "pv-buy",
+        "pv-featured"
+      ],
+      "verb_en": "Buy",
+      "entry_conditions_en": "Partial entry — half size now",
+      "entry_read_vintage": "2026-10-13",
+      "quote_time": "Not supplied"
+    },
+    {
+      "section": "us-cand-grid",
+      "ticker": "RSG",
+      "card_css": [
+        "pvcard",
+        "pv-has-setup",
+        "pv-near"
+      ],
+      "verb_en": "Near",
+      "entry_conditions_en": "Buy soon — on confirmation",
+      "entry_read_vintage": "2026-10-13",
+      "quote_time": "Not supplied"
+    },
+    {
+      "section": "us-cand-grid",
+      "ticker": "ENSG",
+      "card_css": [
+        "pvcard",
+        "pv-has-setup",
+        "pv-buy",
+        "pv-triage"
+      ],
+      "verb_en": "Buy",
+      "entry_conditions_en": "Buy zone — entry open now",
+      "entry_read_vintage": "2026-10-13",
+      "quote_time": "Not supplied"
+    }
+  ],
+  "demonstrated_defect": "The newer coherent source-built page discloses global staleness and preserves dated per-card warnings, yet visually presents unconditional bullish Buy/half-size-now/open-now chips while board gate_go=false and current native exact B4/Plan authority is not established. The global notice does not change the verb rendered from legacy entry_signal status.",
+  "source_route": "_us_board_cards.html.j2 lines91-99 maps raw entry_signal.status buy_now/partial to verb=buy; it sends verb to pv.pv_card without a gate_go/B4 input in this mapped stanza. Shared macro lines585-625 supports record_only and opt-in no-read, but ordinary board calls do not opt in. Separate scripts/build_site.py lines4994-5008 also explicitly preserve display-tier legacy Buy/Near mapping for plan rows. Do not conflate these layers.",
+  "required_owner_action": "Incumbent Prophet/shared-card/B4 owner must decide and implement a truthful as-issued historical-vs-current action representation, preserving real original source assessment, per-name/board clocks, neutral/typed unavailable current entry when B4 facts missing, and free/premium/EN/ZH parity; avoid stale live Buy inference and avoid converting old histories to fake Wait/Buy.",
+  "acceptance_predicates": [
+    "Without a fresh qualified current strategy/B4 verdict and valid native episode relation, a delayed or gate-false source must not represent any old buy_now/partial legacy signal as a fresh actionable BUY, size, or open-now claim.",
+    "Historical source entries remain inspectable under explicit as-issued vintage, with original raw labels preserved only as historical claims, not current authority.",
+    "The current board and per-security clocks, quote availability, risk/liquidity/basis/gap unknowns, and exact Plan relation are surfaced without inferred refresh or backdated issuance.",
+    "Exactly the same authority semantics render in public shell, tier-protected payload, EN/ZH and mobile; normal real builder then authenticated served/refresh/history tests establish real delivery.",
+    "Do not modify the shared macro or move #9495 Draft source onto main without its original custody, independent review, affected CI and ordinary release."
+  ],
+  "limitations": [
+    "No live browser or authenticated user session",
+    "No change in producer, ranking, source, price, B4, Plan or alert lifecycle",
+    "Cannot conclude a valid entry did not exist on the historical entry-read date",
+    "Does not supersede accepted #9566 compact source release",
+    "Does not prove actual latest served production page has changed",
+    "No model-selected trade or customer recommendation"
+  ]
+}
