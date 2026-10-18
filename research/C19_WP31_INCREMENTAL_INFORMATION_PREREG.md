@@ -272,3 +272,102 @@ config-file admission route; `scripts/check_trial_registration.py` scans only th
 
 *None.* Each amendment is dated, states its reason, applies only to episodes whose release
 time follows the amendment's merge, and never edits text above this heading.
+
+*(The line above records the state at registration. Amendments A1–A4 below were adopted
+together on 2026-10-18, before any eligible release, and without reading any label `Y(e)`,
+any arm output, or any post-registration release of a universe issuer.)*
+
+### A1 (2026-10-18) — K rights: an allow-list over both consumed rows
+
+*Operationalizes §4 K-backed: "`rights_class` not blocked".*
+
+**Reason.** §4 does not name the vocabulary. The K producer writes no license label today
+(`collectors/equity_revisions.py` writes `UNKNOWN`), and the engine reads a missing label
+as `UNKNOWN` (`SOURCE_USE_RIGHTS_UNKNOWN`): a labelled absence, not a block. A deny-list
+built from the K surface's blocked vocabulary fails open on a label nobody anticipated.
+
+**Rule.** The A1 group consumes two rows: the `average` row and the `year_ago` row. Each
+row's label is read with a missing or empty value as `UNKNOWN`, stripped and upper-cased.
+If the two labels agree, that label is the group's `rights_class`. If they disagree, the
+group's `rights_class` is `MIXED:<a>,<b>` (sorted). The group is not blocked only when
+its `rights_class` is in the allow-list `{UNKNOWN}`. Every other value is blocked, and
+the episode is not K-backed. That covers the K surface's blocked and display-only
+vocabulary, any unrecognized label, and every `MIXED:` value.
+
+**Scope.** `DEC:ITP-R1-COMPLETE-DEGRADED-2026-10-07` is scoped to the R1 study and does
+not bind this rule. Admitting a new label to the allow-list is a further amendment.
+
+### A2 (2026-10-18) — `t_rel` from the EDGAR submissions clock
+
+*Operationalizes §1 "EDGAR acceptance timestamp (converted to UTC)" and §2 rule 1.*
+
+**Reason.** The episode source carries the EDGAR submissions-JSON `acceptanceDateTime`.
+On non-universe filers, it was compared with each filing's SGML header
+`<ACCEPTANCE-DATETIME>`, which is America/New_York local time. The JSON value reads
+later than true UTC by the New York offset: 4 hours under EDT, 5 under EST. The checked
+filings were MSFT `0001193125-26-323632` and `0001193125-26-191457`, and JPM
+`0001628280-26-065582` and `0001628280-26-048078`. For example, MSFT's header reads
+`20260729160453` (16:04:53 EDT, which is 20:04:53Z), while its JSON reads
+`2026-07-30T00:04:53Z`.
+
+Read literally, the JSON value moves `t_rel` later. A release filed during the regular
+session would then sit after that session's close, and that close would become `C(e)`.
+The release would leak into its own cutoff.
+
+**Rule.** Let `J` be the stored value, parsed as UTC. Let `o = −utcoffset_ET(J)` and
+`U = J − o`. `U` is `t_rel` only when `−utcoffset_ET(U) = o`. Otherwise the clock is
+unresolvable: this happens in the hour around a daylight-saving change. A missing or
+unparseable value is also unresolvable. A filing with an unresolvable clock mints no
+episode, and it is handled as a dropped filing under A3.
+
+Pins:
+
+| `J` | Result |
+|---|---|
+| `2026-07-30T00:04:53Z` | `2026-07-29T20:04:53Z` (EDT) |
+| `2026-01-29T02:04:38Z` | `2026-01-28T21:04:38Z` (EST) |
+| `2026-03-08T09:00:00Z` | unresolvable |
+| `2026-11-01T08:00:00Z` | unresolvable |
+
+**A0 history.** Arm A0's prior-filing acceptance times are read uncorrected. Uncorrected,
+they read 4–5 hours later than true UTC. The `<= C(e)` test can therefore only exclude a
+filing that was in fact available, never admit one that was not. The error is conservative.
+
+**Upstream.** `collectors/edgar_earnings_8k.py` labels the submissions value "UTC" and
+stores it unconverted. That is recorded as an open gap. This amendment corrects the clock
+in the evaluator and does not depend on the collector. A change that makes the collector
+store true UTC must remove this correction in the same change. Applied twice, the
+correction would move `t_rel` 4–5 hours early.
+
+### A3 (2026-10-18) — the episode is defined by the first release filing, or not at all
+
+*Operationalizes §1 "defined by the first SEC filing".*
+
+**Reason.** The episode source drops some Item 2.02 8-K rows for `(issuer, q)` before an
+episode is minted: a row without an Exhibit 99.1 attachment, or a row whose clock A2
+cannot resolve. If such a row was the first filing, the kept filing is a later one.
+Using the kept filing would shift `t_rel` and `C(e)` past the actual first release.
+
+**Rule.** Take every dropped Item 2.02 8-K row with the same `(issuer, q)` as an
+episode's kept filing. Skip a row with the same accession as the kept filing. If any
+remaining row was accepted at or before the kept filing, or has no resolvable clock,
+then the episode is `NOT_EVALUABLE(earlier_release_filing_dropped)`. Its `t_rel` is never
+shifted to the dropped row. An episode already `EXPOSED`, or already `NOT_EVALUABLE` for
+another reason, keeps that status. A later dropped row changes nothing.
+
+**Limits.** A quarter whose only rows are dropped mints no episode, so it appears in no
+count. A row the source cannot attribute to a fiscal quarter (no `report_date`) cannot be
+matched to an episode.
+
+### A4 (2026-10-18) — the `+0.10` comparison is exact
+
+*Operationalizes §5 "Useful effect" and the verdict table.*
+
+**Reason.** Hit counts are integers, so `Δ = d / n` exactly. A floating-point subtraction
+can land just below a boundary the hit counts reach exactly. For example, 24/40 against
+20/40 gives `Δ = 4/40 = +0.10`, but `0.6 − 0.5` evaluates to `0.0999…`. That would report
+`NULL` where the table says `PASS_FOR_REVIEW` candidate.
+
+**Rule.** The verdict compares the exact rational `(hits(A2) − hits(A2[−K])) / n` with
+`1/10`. The floating-point `Δ` is printed for display. The bootstrap interval is compared
+with 0 only, as before. Every read prints the exact `Δ` as `d/n` beside the float.

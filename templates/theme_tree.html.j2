@@ -178,6 +178,15 @@ html[data-theme="light"] .tt-lookup{background:var(--panel);box-shadow:var(--car
 .tt-ticker-match + .tt-ticker-match{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
 .tt-ticker-market{display:block;margin:0 0 6px;font-size:12px;font-weight:700;color:var(--muted)}
 .tt-detail-sec + .tt-detail-sec{margin-top:10px}
+.tt-ticker-profile{margin:12px 0 0;padding:10px 12px 10px;border-radius:var(--r-ctl,8px);background:var(--panel);border:1px solid var(--line);box-shadow:inset 0 1px 0 var(--line)}
+html[data-theme="light"] .tt-ticker-profile{background:var(--panel);box-shadow:none}
+.tt-ticker-profile-title{font-size:12.5px;font-weight:800;margin:0 0 6px}
+.tt-ticker-profile dl{display:grid;grid-template-columns:max-content 1fr;column-gap:12px;row-gap:5px;margin:0;font-size:12.5px;line-height:1.45}
+.tt-ticker-profile dt{color:var(--muted)}
+.tt-ticker-profile dd{margin:0;color:var(--text);min-width:0;overflow-wrap:anywhere}
+.tt-ticker-profile dd.tt-ticker-profile-reason{color:var(--muted);font-style:italic}
+.tt-ticker-profile-note{margin:8px 0 0;font-size:11.5px;color:var(--muted)}
+@media (max-width:560px){.tt-ticker-profile dl{grid-template-columns:1fr;row-gap:1px}.tt-ticker-profile dd{margin-bottom:5px}}
 </style>
 </head>
 <body>
@@ -543,6 +552,7 @@ html[data-theme="light"] .tt-lookup{background:var(--panel);box-shadow:var(--car
   var records=(data&&data.records)||{};
   var abstainers=(data&&data.abstainers)||{};
   var names=(data&&data.basket_names)||[];
+  var cells=data&&data.axis_cells;
   var MARKET={us:['US','美股'],cn:['China A-shares','A股'],hk:['Hong Kong','港股'],intl:['International','国际'],ca:['Canada','加拿大']};
   var bySymbol={};
   // Exact symbol, plus for non-US listings the code without its exchange
@@ -602,6 +612,33 @@ html[data-theme="light"] .tt-lookup{background:var(--panel);box-shadow:var(--car
     entries.forEach(function(a){var li=el('li');bi(li,abstentionText(a.code,a.basket,'en'),abstentionText(a.code,a.basket,'zh'));ul.appendChild(li);});
     return ul;
   }
+  // U4: six-axis company profile. Each record carries indices into the
+  // shared axis_cells table; non-available cells print their typed reason.
+  var AXIS={sic_industry:['Industry','行业'],geography:['Listing','上市地'],macro_sensitivity:['Macro sensitivity','宏观敏感度'],business_model:['Business model','商业模式'],lifecycle:['Status','状态'],value_chain:['Value chain','价值链位置']};
+  var REASON={unknown:['Not recorded yet','暂无记录'],unavailable:['Source not available on this build','本次构建无此数据源'],stale:['Out of date','数据过期'],not_applicable:['Not tracked for this market','该市场暂不跟踪'],rights_blocked:['Not shown (licence)','因授权不显示']};
+  // value_chain is a theme axis: for any company it is not_applicable by subject kind, not by market.
+  var REASON_AXIS={value_chain:{not_applicable:['Describes themes, not single companies','描述主题，不适用于单个公司']}};
+  function profile(refs){
+    var box=el('section','tt-ticker-profile');
+    bi(box.appendChild(el('h3','tt-ticker-profile-title')),'Company profile','公司概况');
+    var dl=box.appendChild(el('dl'));
+    refs.forEach(function(i){
+      var c=cells[i];if(!c||!AXIS[c.axis])return;
+      bi(dl.appendChild(el('dt')),AXIS[c.axis][0],AXIS[c.axis][1]);
+      var dd=dl.appendChild(el('dd'));
+      if(c.status==='available'&&c.label_en){
+        var a=el('span','l-en');a.textContent=c.label_en;
+        var b=el('span','l-zh');b.textContent=c.label_zh||c.label_en;
+        if(!c.label_zh||c.label_zh===c.label_en)b.setAttribute('lang','en');
+        dd.appendChild(a);dd.appendChild(b);
+      }else{
+        var r=(REASON_AXIS[c.axis]||{})[c.status]||REASON[c.status]||REASON.unknown;
+        dd.className='tt-ticker-profile-reason';bi(dd,r[0],r[1]);
+      }
+    });
+    bi(box.appendChild(el('p','tt-ticker-profile-note')),'Context only — not a rating','仅供参考，非评级');
+    return box;
+  }
   function match(key){
     var sec=el('section','tt-ticker-match');
     var mk=key.slice(0,key.indexOf(':'));var m=MARKET[mk]||[mk,mk];
@@ -613,6 +650,7 @@ html[data-theme="light"] .tt-lookup{background:var(--panel);box-shadow:var(--car
       sec.appendChild(ul);
       if(rec.micro==='micro_not_wired')sec.appendChild(line('tt-ticker-micro','Micro-theme: not yet linked for this basket','细分主题：该篮子尚未关联'));
       if(rec.abstentions&&rec.abstentions.length)sec.appendChild(abstList(rec.abstentions));
+      if(Array.isArray(rec.axes)&&Array.isArray(cells))sec.appendChild(profile(rec.axes));
       return sec;
     }
     var a=abstainers[key];
