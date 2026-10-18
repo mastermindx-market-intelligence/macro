@@ -1,15 +1,163 @@
+---
+workstream: "WS:PROPHET-US-ENTRY-TIMING"
+session: "sol/web-rotation-intelligence-architecture-20261012"
+model: "sol"
+ended_because: "blocked"
+mission: "Continue the original Chairman defensive-rotation, Sector Intelligence, Prophet and Risk Radar Meta-CEO mission through incumbent source, entry-authority, Plan, UI, history and alert-delivery owners."
+state_before: "Original research PR9035 head8f53d4981389a0bfecb9d8dd9eb9637221563b00; DIA PR9518 Draft at c46a92cad704357dfa2dba0f219fff80965a56e0; Russell PR9484 already merged. The complete product mission was not accepted."
+changed:
+  -
+    path: "config.yml"
+    what: "Released already-reviewed DIA-only Yahoo roster inclusion by ordinary squash of PR9518; no new ticker collector or cash-index substitution."
+  -
+    path: "tests/test_rotation_early_context.py"
+    what: "Released the existing CI-safe ratio-registry/config regression with the same reviewed blob; did not redo accepted tests."
+  -
+    path: "research/ROTATION_DOW_RATIO_PRICE_SOURCE_2026-10-16.md"
+    what: "Released the existing source/evidence record as part of the same three-file PR9518 squash."
+  -
+    path: "agentos/handoffs/ROTATION-INTELLIGENCE-META-CEO-2026-10-17-HANDOFF.md"
+    what: "Preserve the original mission and effects, replace superseded Draft status, add current milestone and schema-valid handoff frontmatter."
+  -
+    path: "agentos/handoffs/ROTATION-INTELLIGENCE-META-CEO-2026-10-12.md"
+    what: "Add required schema metadata to the original historical handoff while retaining its full10364-character body verbatim."
+prs:
+  - 9035
+  - 9518
+  - 9484
+  - 9495
+verified:
+  -
+    claim: "PR9518 exact reviewed head merged ordinarily; all three landed blobs equal the reviewed candidate and observed main."
+    command: "GitHub get_pr_info(9518), merge_pull_request(expected_head_sha=c46a92cad704357dfa2dba0f219fff80965a56e0, merge_method=squash); git merge-base --is-ancestor 9f9e71a8943e9436bfc68acb961b56166fb61d79 origin/main; git rev-parse REF:PATH"
+    result: "MERGED 2026-10-17T23:37:57Z as9f9e71a8943e9436bfc68acb961b56166fb61d79; ancestry rc0 at main05b006fe91f3a99cef777d89e721650a77e1de6f; all three blobs equal. Canonical release receipt6243368898."
+  -
+    claim: "Every applicable exact-head check was terminal and passed; inactive pilot failure was classified by existing authority, without bypass."
+    command: "GitHub commits/c46a92cad704357dfa2dba0f219fff80965a56e0/check-runs; branches/main; rulesets including parents; rulesets/21813020; read scripts/merge_on_green.py::is_non_binding_check and .github/workflows/ci-authority.yml"
+    result: "27 raw records:22 success,4 conditional skips,1 intentionally nonbinding inactive-pilot failure; active main and all12 packs/ci-gate/fences pass. Main classic enforcement off, sole ruleset evaluate, required GitHub approvals0. Independent substantive review PASS retained as COMMENT review5560645720, not self-APPROVE."
+  -
+    claim: "Current-main composition preserved the already qualified release evidence."
+    command: "git merge-tree --write-tree c46a92cad704357dfa2dba0f219fff80965a56e0 94cdfd6f72d15b5b7491476a23960c52ff3e4d5b; exact owned/dependency-path diff; git status --porcelain=v1"
+    result: "rc0; tree50f8ad7ebac2ce66aa566e510576485bdf337f3e; relevant dependency/authority paths unchanged; original DIA workspace clean at c46. No source rehome, redundant test run or ancestry-only push."
+  -
+    claim: "No post-release natural daily run was visible in the bounded production lookup."
+    command: "gh run list --repo mastermindx-market-intelligence/macro --workflow daily.yml --limit 6 --json databaseId,name,headSha,event,status,conclusion,createdAt,updatedAt,url"
+    result: "Observation around2026-10-17T23:45Z: latest run39027917710 was a pre-merge manual dispatch, terminal FAILURE20:50:43Z; latest applicable scheduled38987623960 predates releases and failed;38990665394 was guard-only success. No new scheduled run carrying releases observed."
+  -
+    claim: "PR9495 original source and held Plan residue remain unchanged."
+    command: "GitHub get_pr_info(9495); git -C ORIGINAL_SSD_WORKSPACE rev-parse HEAD; git status --porcelain=v1; exact branch match in git worktree list --porcelain"
+    result: "Draft0661c53d2af2b3995163aef08e3b8ba285fc4e39; only untracked tests/test_prophet_plan_review_integration.py. This is source-state evidence, not writer/lease clearance."
+  -
+    claim: "A CSS-include-only change on9495 cannot establish restoration of the original compact renderer."
+    command: "git rev-parse be96793128be54447c6dc2e58b4def68cd6ce46a^; git show REF:templates/dashboard.html.j2; git show REF:templates/_us_board_cards.html.j2; git rev-parse REF:templates/_prophet_card.html.j2"
+    result: "Pre9260 parent9dd870a1b424eabb7da9199e9b6e485565a9a4e6; shared compact macro blob2f2c2fe8b7e5d63ac271a89e12c699ac0da2a2f7 unchanged.9495 board caller switched pv.pv_card to po.opportunity_card and its CSS contains separate setup/study behavior. Native read rc0."
+  -
+    claim: "The draft consumer still derives Buy labels from legacy signals, without a native current B4 input."
+    command: "GitHub fetch_file engine/prophet_opportunity_presentation.py and templates/_us_board_cards.html.j2 at0661c53d2af2b3995163aef08e3b8ba285fc4e39"
+    result: "Presenter blobce74a9eefb2155f61c60e8c948e42d460ed14e0b maps buy_now/partial to Buy; assessment_asof/strategy/horizon None. Ticker Plan relation is related_security. Parent source/architecture return6243396155 was read back identical."
+  -
+    claim: "Original Executive read access recovered but does not provide an admitted incumbent continuation target."
+    command: "Mastermind Executive V3 session_targets({}); executive_fabric(view=roots,limit=30); executive_state({})"
+    result: "23:46Z: session_targets ok=true,data=[]; Fabric reports ceo_submit_armed=false and unjoined enumeration; installed state has500h-old active-build input. These are bounded installed observations, not proof of global writer absence."
+  -
+    claim: "The later committed production baseline still fails current-price freshness even though the board now includes Russell source members."
+    command: "git show ca0700187e17fa73f459e83ce688b5c838cd316e:PATH; pandas.read_parquet(BytesIO(...)); JSON source-clock read; git log -1 COMMIT -- PATH; gh run list --workflow daily.yml --limit 3"
+    result: "DIA through October 14; QQQ October 16; Russell breadth October 13. Board blob147edbca74fef91cbe0123f22275d6f5321e7418 as_of October 14 and gate_go=false; emit20:16:50Z; source roster complete with1356 Russell members, but price-panel majority October 7,198/3063 at October 16,7 sessions behind. No new natural scheduled run in the follow-up. Canonical return6243511974."
+unverified:
+  -
+    claim: "Natural production cache handoff, complete price coverage, fresh DIA/QQQ ratio and downstream Prophet adoption."
+    what_would_verify: "A naturally admitted daily run carrying #9484/#9518, qualified cache SAVE plus actual exact-key restore hit, completed-session coverage/basis/availability and exact published Prophet per-security/panel clocks."
+  -
+    claim: "Current native candidate-to-strategy/B4-to-exact Plan-to-authenticated consumer and as-issued history/alert delivery."
+    what_would_verify: "Original owners supply qualified same-read B3/B4 geometry/basis/gates and exact episode/Plan/generation joins, followed by authorized authenticated render and real opt-in transport receipts."
+  -
+    claim: "Original compact Prophet cards restored in production."
+    what_would_verify: "Incumbent9495 admitted source restoration compared to pre9260 reference across desktop/mobile,EN/ZH,light/dark; ordinary reviewed release; deployed render and authorized production browser readback."
+  -
+    claim: "Predictive accuracy or model-selected trades."
+    what_would_verify: "Existing D06/track-record owner admits a point-in-time prospective controlled evaluation and retains canonical decisions/outcomes; October rotation is not an untouched holdout."
+unresolved:
+  - "Original Plan child prophet-plan-review-component-build-01a11e89-20261015-01 /34412 remains LOST/UNKNOWN; directory_owner_or_mode collection refusal with retry_authorized:false. Preserve original untracked five-red baseline test."
+  - "Current source-writer/live-lease/pending-effect qualification for shared9495/8444 remains required; empty Executive addressable projection is not a custody transfer."
+  - "Original Chrome consent unanswered; Paper UPSTREAM_SCHEMA_UNREVIEWED; no alternate carrier or repeated denied mutation."
+  - "QLedger GH001 prevents normal publication;9450 local preflight still lacks actual collect/Asia caller bindings and is not the lossless native8756 cutover.9452 is the unselected alternative."
+  - "Source-map original child and daily-brief9369 lost review remain unresolved on original carriers."
+next_actions:
+  - "Consume original9518 release receipt6243368898 and treat9518/9484 source releases as DO_NOT_REDO. At the next real normal-run boundary inspect daily.yml run source, cache qualification SAVE and exact-key restore hit, coverage and Prophet generation; do not dispatch or replay."
+  - "Current assigned receiver: consume9495 return6243396155, qualify the actual original writer/lease/pending effects on unchanged carrier, then prepare the smallest compact restoration using pre9260 parent9dd870a1b424eabb7da9199e9b6e485565a9a4e6. Preserve richer source at0661; do not whole-file overwrite or start a competing branch."
+  - "Integrate existing7018-byte truthful-copy patch6230950977 through the admitted9495 owner. Reuse its49 checks and synthetic compositions; only changed bindings need new relevant verification. Original Plan effect stays excluded."
+  - "Through incumbent native B4 owner, bind the existing same-read B3 verified_pair to genuine strategy geometry, adjustment/corporate-action basis and deterministic risk/liquidity/gap facts. Then qualify exact episode/Plan and current UI assertions; no display-side entry authority."
+  - "Consume incumbent QLedger9450/8756 recovery evidence without repeating prior caller audits or altering held data. Existing7022/7976/9428 owners retain native rotation visibility, EOD clock and risk-context work; actual denied effects remain on original targets."
+  - "Finish authorized production visual/history/alert verification only after their exact gates qualify, reusing accepted B03 and TurnWatch evidence unless changed behavior invalidates it."
+do_not_redo:
+  - "PR9484 already merged at426ad5d1f593aa3cde031a768d4dd97b547faadb with120 affected tests; verify natural use, never recreate source."
+  - "PR9518 already merged at9f9e71a8943e9436bfc68acb961b56166fb61d79. Independent source review, inactive-pilot adjudication, unchanged208-pass/1-skip/2-xfail evidence, dependency-closure proof, conflict-free integration and three-file postmerge blob checks are complete."
+  - "Basket fallback9511 merged;151/151 source replay and18 recency tests already accepted."
+  - "Refusal-copy/fixture patch1e740b50273553665cfa5e0d8cd9e93635eb989703ff789c9e007f780dfaf7cc already qualified with49 checks. Do not retry failed sparse-helper Fabric task or repeat parent fixture repair."
+  - "October11 B03 paging/filter/exact relation/signout/Return EN and settled ZH accepted. October16 TurnWatch378 sourceevent/receipt pairs fully dispositioned:18 event relations and360 typed suppressions. Do not reclassify them as missed winners."
+  - "Native B3 verified_pair and read_plan_candidate_source already exist; earlier parallel relation proposal superseded."
+  - "October16 Risk Envelope already has usable MIXED_ROTATION. Prior risk-ordering defect is not automatically current."
+  - "Original alert-turn red test/shadow0-to-4, Finviz366 ahead-of-close/572 uncomparable census, candidate archives/forensics and QLedger collect/Asia caller findings are retained; do not rerun without a material invalidator."
+  - "Do not recreate, reset, release, chmod, retry or replace original held workspaces/workers/effects; no new collector, ranker, B4, history ledger, publisher, alert transport or control plane."
+  - "Latest committed artifact baseline at ca0700187e17fa73f459e83ce688b5c838cd316e and receipt6243511974 is complete. Refresh at a real new natural-run/generation boundary, not by repeatedly rereading unchanged source files."
+danger_areas:
+  - "Source merge is not scheduled adoption, production deployment, current entry permission, predictive accuracy or user delivery. A cache step success is not evidence of a restore hit."
+  - "Current quotes, legacy partial/Buy signals, Featured membership, same-ticker Plans and source-emission time cannot replace native exact-episode entry authority and source clocks."
+  - "9495 now calls the richer renderer; merely removing the old CSS include can both fail compact restoration and remove setup styles. Preserve original compact macro and qualify actual call sites."
+  - "Actual STARTed/UNKNOWN/refused effects remain target-bound even under the new assignment. Stale historical ownership alone does not block unrelated safe work, and source-clean/empty-projection alone does not clear live custody."
+  - "Original handoff8f53d498 lacked YAML frontmatter and failed scoped agentos validation; this continuation repairs format without granting authority or editing generated Agent OS views."
+  - "Use protected procedure pin Mastermind@ee0f0d9ba71d76dbc8144f56f3566a1f9dc70a71 for this continuation; prior2cc4942e136ad4fb544fd5c72ab1856608a5dac1 remains historical provenance."
+  - "Earlier missing-Russell and249/1758 panel descriptions were superseded by the20:16:50Z board: source-roster inclusion improved but majority prices are October7 in a different3063-member panel. Source complete does not mean completed-session price integrity."
+---
+
 # Meta-CEO rotation / Prophet recovery — canonical successor handoff
 **Checkpoint date:** 2026-10-17 (UTC)  
 **Mission:** Chairman's October defensive-rotation failure review and end-to-end Mastermind/Prophet rehabilitation.  
 **Original research operation:** rotation-intelligence-architecture-20261012.  
 **Original research carrier:** Macro draft PR #9035, branch sol/web-rotation-intelligence-architecture-20261012.  
-**Authority:** Chairman commission; protected Mastermind Skillpack procedure pin 2cc4942e136ad4fb544fd5c72ab1856608a5dac1 (bootstrap major 1 / Skillpack 1.0.1); recover any newly required constraints from the *same* verified protected source.  
-**Classification:** CHECKPOINTED_CONTINUATION — the user explicitly requested a fresh-session handoff. **The complete product mission is NOT accepted or delivered.** Do not present the document's publication as a product fix.
+**Authority:** Current Chairman continuation; protected Mastermind Skillpack procedure pin **ee0f0d9ba71d76dbc8144f56f3566a1f9dc70a71** (bootstrap major 1 / Skillpack 1.0.1). Prior checkpoint pin 2cc4942e136ad4fb544fd5c72ab1856608a5dac1 remains historical provenance. No protected law or execution gate was changed.  
+**Classification:** MATERIAL_SOURCE_MILESTONE / CONTINUATION_WITH_SCOPED_BLOCKERS. **PR #9518 is merged; #9484 was already merged. The complete product mission is NOT accepted or delivered.** This knowledge record does not grant execution, source-custody, deployment or retry authority.
+
+## Current material milestone — 2026-10-17 release; 2026-10-18 00:07 UTC continuation
+
+**#9518 ordinary source release is complete.** Expected-head squash of reviewed `c46a92cad704357dfa2dba0f219fff80965a56e0` merged as **`9f9e71a8943e9436bfc68acb961b56166fb61d79` at 23:37:57 UTC**. Independent substantive review, applicable exact-head CI, conflict-free current-main composition, merge readback and three-file landed-blob equality are verified. Canonical detailed receipt: https://github.com/mastermindx-market-intelligence/macro/pull/9518#issuecomment-6243368898 . Review is COMMENT 5560645720, not a self-APPROVE or another GitHub account's approval. Actual required GitHub approvals were zero; no binding failing check was bypassed.
+
+The 27 raw checks comprised 22 success, four conditional skips and one intentionally failed inactive pilot context. Existing merge authority explicitly treats that pilot context as nonbinding for main; active main authority and all twelve packs/ci-gate/fences passed. Classic main enforcement was off and the sole ruleset was evaluate-only. These observations do not redefine future requirements; refresh only at a real new release boundary.
+
+**#9484 stays merged, DO_NOT_REDO.** No naturally scheduled daily run carrying the releases appeared in the bounded lookup around 23:45 UTC. Old manual39027917710 is now FAILURE and predates these releases. Existing applicable scheduled38987623960 remains the earlier GH001/cancelled-engine run;38990665394 is the wrong-season ET-guard-only success. A green guard job is not a successful engine generation.
+
+**Prophet incumbent #9495 now has an exact-source restoration and authority return:** https://github.com/mastermindx-market-intelligence/macro/pull/9495#issuecomment-6243396155 . It reconciles compact-card direction6243149802 with unchanged Draft0661c53d2af2b3995163aef08e3b8ba285fc4e39. Pre-#9260 parent is9dd870a1b424eabb7da9199e9b6e485565a9a4e6. Shared compact macro blob2f2c2fe8b7e5d63ac271a89e12c699ac0da2a2f7 is intact, but this draft switches the board caller to po.opportunity_card. Therefore deleting the old CSS include alone cannot prove restoration and may remove retained setup styles. Restore through this incumbent, preserve richer source at its immutable commit, and avoid whole-file overlays across shared9495/8444 custody.
+
+The current presenter blobce74a9eefb2155f61c60e8c948e42d460ed14e0b still maps legacy buy_now/partial to Buy while assessment_asof/strategy/horizon are absent; its related-security Plan list is not exact-episode entry authority. Compact visual acceptance does not resolve that substantive contract. Current Buy needs qualified native B4; missing authority remains unavailable; retain actual dated historical signals separately.
+
+Original #9495 SSD workspace is unchanged: /Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/prophet-opportunity-system-20261015-5ba805642dd9aece ; exact branch claude/ssd-prophet-opportunity-system-20261015-5ba805642dd9aece; only the existing untracked tests/test_prophet_plan_review_integration.py remains. Source cleanliness does not transfer custody. Executive read access recovered at23:46Z, but session_targets returned no addressable target, Fabric reported ceo_submit_armed=false, and its active-build projection was500h old/unjoined. No current incumbent ACK, replacement worker, mutation or global writer-absence claim follows.
+
+## Later committed production baseline — source membership is not freshness
+
+Canonical new read-only return: https://github.com/mastermindx-market-intelligence/macro/pull/9484#issuecomment-6243511974 . Pinned main **ca0700187e17fa73f459e83ce688b5c838cd316e**; exact native Git/parquet/JSON reads, no collector or replay.
+
+| Artifact | Git blob | Source clock |
+| --- | --- | --- |
+| data/yahoo/DIA.parquet | f7af4159a8fd6b513abbcc73ade546630c470f3a | Last row October14 |
+| data/yahoo/QQQ.parquet | 2b5c1a98a318f0deb950a61528d19bd51985bfd0 | Last row October16 |
+| data/russell_breadth/breadth.parquet | 3422c84d26fed6fcfd94be0e4e6dcb0c8c3c8d0d | Last row October13, n_members1863 on that older row |
+| data/run_status.json | 9e278ee4df406d0dde347c3a1f1b1cc543c3719e | last_run October16 11:28:56Z; Russell last_date October14, checked October15 |
+| site/factordata/us_standouts.json | 147edbca74fef91cbe0123f22275d6f5321e7418 | Board as_of October14, gate_go=false; emit October17 20:16:50Z |
+
+The later board source roster now reports **complete=true, missing=[], Russell members1356, total source members3068**. The earlier assertion that the current board is missing Russell is superseded. This still does not prove the >=80% same-run completed-close integrity floor.
+
+Its own price-panel receipt is **198/3063 members at October16**, maximum October16, **majority October7**, **seven sessions behind** expected October16, mixed_vintage=true, delayed=true. Board universe1585, source roster3068, panel3063 and Russell membership are different denominators. Do not infer Russell close coverage from their ratio or portray the older249/1758 observation as the latest panel.
+
+Emit pair/generation **f880b79ac90e409bab5e385563a6bc0f**, writer build_stock_library, w3c_source.available_at20:32:43.236748Z. Board last-touch commit97ec6f2bb3ffe23b5aca4bebde5b6910c200fcfa was a site re-render at21:47:42Z. W3c lineage availability is not native B4 permission or authenticated customer delivery. DIA/Russell last-touch commit9fd048df0ebf4399e9c12926809c5ca66931a373; QQQ e154878495a1fa03adea96b973f0b0ea0f6d381d; run_status b0b562ae64ba84384cb89366686d2fbca3598f82. The differently dated status/data artifacts do not certify a coherent same-run cache handoff.
+
+A follow-up daily lookup after this changed-artifact observation still showed no new scheduled run. Do not dispatch a substitute or infer no intermediate effects. The next proof remains exact natural-run source, qualified cache SAVE and actual exact-key restore hit, coverage and downstream generation.
 
 ## Successor's immediate, concrete first action
-1. Read this file and the current original research plan in research/ROTATION_INTELLIGENCE_META_CEO_ARCHITECTURE_2026-10-12.md, then retrieve the *current* immutable head and checks of https://github.com/mastermindx-market-intelligence/macro/pull/9518. Its **last verified** head is c46a92cad704357dfa2dba0f219fff80965a56e0, with the DIA source-maintenance fix, CI-safe regression, no conflict with joined main, 21 passed, four skipped, **one red ci-authority/codex/merge-queue-pilot from an inactive-base context**, zero pending. **It remains Draft/unmerged.** Determine through the actual required-check/review authority whether this inactive-context result is release-blocking; do not disable, bypass or fabricate the check. Obtain the required independent review and guarded merge via the original PR owner if authorized.
-2. When qualified, verify the *next normal* Yahoo source generation actually includes a completed-session DIA ETF close with its native availability/basis, and that the pre-registered DIA/QQQ pair evaluates using matched source sessions. **No on-demand market-data collection, manual daily.yml replay, or price restamp is authorized by this handoff.**
-3. Advance the distinct critical path: original Prophet R6 source-to-B4-to-render and QLedger/price-source health. Target an authenticated current **candidate -> strategy/B4 entry status -> exact Plan -> first published -> served -> alert receipt** proof. Use existing owners; never create a parallel entry ranker, history ledger, subscriber plane, or source publisher.
+
+1. Consume release receipt6243368898 and **do not redo #9518 or #9484 source release**. At the next real natural-run boundary inspect exact daily source revision, qualified same-run cache SAVE and actual exact-key restore hit, >=80% Russell completed-session close coverage, DIA native price/basis/availability, matched DIA/QQQ sessions and downstream Prophet panel/per-security dates. No manual market collection, daily replay or restamp.
+2. Current assigned receiver: consume9495 return6243396155 and the ready refusal-copy/fixture patch6230950977; qualify actual writer/live-lease/pending effects on the original carrier, then prepare the minimal original-card restoration. Do not wait solely on an archived author, and do not use the empty/stale Executive projection as source admission.
+3. Preserve the original LOST/UNKNOWN Plan child and denied collection. Repair native B4 facts through its incumbent owner, using the already-built same-read B3 and source-origin reader; then prove exact episode-to-Plan-to-authenticated display-to-as-issued history-to-real alert receipt. Source, UI, history and delivery remain separate acceptance stages.
+4. Advance only unaffected incumbent work while source/data/browser gates remain scoped: QLedger9450/8756, Alert7022, Finviz7976 and Risk9428 keep their originals. Do not redo accepted audits or replace refused effects.
 
 ## Chairman's end-state (DONE_WHEN)
 - Recognize macro regime and distinguish defensive rotation / AI hardware and semiconductor unwinds from a systemwide liquidity crisis; retain independent measured-state, hazard and capital-policy authority.
@@ -20,7 +168,7 @@
 
 ## Verified evidence — current sources and product
 - Backend was not blind. October 16 Risk Envelope source blob 276d37a0811af68ddbcbe401aae81ad474aa6276 now has source session 2026-10-16 with rotation_context.usable=true / MIXED_ROTATION, **whereas** its headline consumer remains generic. Actual two-session early context: XLP +1.813%, SMH -4.418%, ratio +6.519%, shape receiver-up/donor-down, first availability UNKNOWN. Not measured money transfer, not entry/forecast.
-- The source-built US Prophet board on latest observed Oct 17 (Git blob 3b766387b21d4c0b4195824f5cb9b93fbe36ff35) remains as_of 2026-10-14, emitted 2026-10-17 03:58:30 UTC, source prices two completed sessions behind expected Oct16, gate_go=false, missing Russell breadth cohort. Actual public HTTP 200 /us_stocks.html was dated Oct14, data-board-delayed=1, yet still showed two green Buy cards **GEHC and ENSG**. GEHC card also warned its healthcare basket was crowded/stretched and sector stance was reduce; old GEHC entry_signal.partial's half-size prose is NOT proof of current B4 permission. Exact UI owner issue comment: https://github.com/mastermindx-market-intelligence/macro/issues/6817#issuecomment-6204874562 . Avoid using current wall-clock as source-asof.
+- At the initial October17 checkpoint, the source-built US Prophet board (Git blob 3b766387b21d4c0b4195824f5cb9b93fbe36ff35) remains as_of 2026-10-14, emitted 2026-10-17 03:58:30 UTC, source prices two completed sessions behind expected Oct16, gate_go=false, missing Russell breadth cohort. Actual public HTTP 200 /us_stocks.html was dated Oct14, data-board-delayed=1, yet still showed two green Buy cards **GEHC and ENSG**. GEHC card also warned its healthcare basket was crowded/stretched and sector stance was reduce; old GEHC entry_signal.partial's half-size prose is NOT proof of current B4 permission. Exact UI owner issue comment: https://github.com/mastermindx-market-intelligence/macro/issues/6817#issuecomment-6204874562 . Avoid using current wall-clock as source-asof.
 - Prophet F3 is still missing at engine/us_prophet_fusion.py; retained Oct8 chip loader only mapped WMT/COST to Retail and none of ABBV/KO/WM/MCK to a favorable theme chip. This is evidence for discovery/coverage gaps, not proof no ontology membership.
 - Named-stock forensic limits: retained WMT was rejected by an old counter-trend/no-200DMA reclaim gate; COST entered raw candidate pool Sep30 but was not Featured and later became extended, with a same-ticker open Plan association that does NOT prove exact episode/current entry/publication; ABBV qualified as a candidate Oct8 but unfeatured; KO was rejected as an aged entry; WM had raw-gate refusal and missing theme context in archived rows; MCK was a positive healthcare comparison. Original full source-to-delivery proof remains incomplete. Earlier Plan source-row linkage local proposal was **superseded** by current native source_origin/read_plan_candidate_source on main; do not resurrect it.
 - Existing Alert Center is losing native rotation-turn visibility: 1,391 retained events, 75 confirmed turns; 36 source-native confirmed turns within the Oct9 30-day window, none in the 60-item Alert Center due rotation_turn_up/down types falling to Other/context. A real red test in the original isolated workspace plus read-only shadow 0-to-4 top-60 were returned to original PR #7022 comment https://github.com/mastermindx-market-intelligence/macro/pull/7022#issuecomment-6184375741 . Product Now cap is NOT a historical record.
@@ -32,8 +180,8 @@
 - https://github.com/mastermindx-market-intelligence/macro/pull/9484 — Russell completed-close integrity + qualified same-run pre-push cache handoff. GitHub reports **MERGED 2026-10-17 13:13:25 UTC**, source head 6e57dd8d33f9609f2b07fead27044e16ba934098, merge commit 426ad5d1f593aa3… . Included fail-closed >=80% completed-session Russell closes, cold-start seed not certifying freshness, canonical cache preservation, exact engine run-key only, source/run-status-clock fenced collection cache save before late market Git push. **120 local affected tests passed** in the exact final handoff phase. Do not re-open a separate local patch merely because its Draft description once said HOLD. Next is **natural-run cache restore and customer-source freshness proof**; merge alone does not demonstrate it works in Actions.
 - https://github.com/mastermindx-market-intelligence/macro/pull/9511 — basket constituent fallback recency already merged. A source replay recovered 151/151 members where stale stocks source had hidden fresher Yahoo observations; 18 native recency tests passed. DO_NOT_REDO unless behavior/evidence changes.
 
-**Published but still Draft (not accepted):**
-- https://github.com/mastermindx-market-intelligence/macro/pull/9518 — existing Yahoo data-source config adds **DIA** (not cash Dow ^DJI) as the sole semantic config change; existing register shows DIA/QQQ preregistered but DIA was omitted from Yahoo roster, causing Oct15 DIA numerator last close Oct14 vs QQQ Oct15. First source commit 1461065bc767e151f1138a3bf467b2d8a2aced74; test-specific repair 0a62102051639…; current published head **c46a92cad704357dfa2dba0f219fff80965a56e0** (same original managed workspace, clean). Test initially caused CI import closure expansion/yfinance ModuleNotFoundError and contract-delta failure. This was corrected by consuming the already-owned ratio-lens registry + lib.config instead of importing network Yahoo and study scripts. **208 passed, 1 skipped, 2 expected failures**, plus CI dependency-closure self-test PASSED after ~293 seconds. GitHub at this checkpoint shows **21 pass / 4 skipped / 1 red inactive merge-queue-pilot context / 0 pending**. Exact-head source review and guarded merge/natural DIA fetch are outstanding. Do not lower ratio-lens CI dependencies or copy a parallel ticker whitelist.
+**Additional merged source release, 23:37:57 UTC:**
+- https://github.com/mastermindx-market-intelligence/macro/pull/9518 — DIA-only Yahoo roster repair and CI-safe registry regression from exact c46a92cad704357dfa2dba0f219fff80965a56e0, now merged as9f9e71a8943e9436bfc68acb961b56166fb61d79. The earlier yfinance import-closure / contract-delta failure was repaired before this continuation; existing **208 passed,1 skipped,2 expected failures** and ~293-second dependency-closure PASS were retained, not rerun. All applicable hosted checks passed. Do not lower dependencies or add a parallel whitelist. Original first source1461065bc767e151f1138a3bf467b2d8a2aced74 and test repair0a62102051639 remain historical provenance. Native completed-session DIA collection and ratio use remain unproven.
 
 **Overlapping active scope — do not publish competing local source:**
 - Original Grey Deer risk-response https://github.com/mastermindx-market-intelligence/macro/pull/9428 owns engine/neuralweb/rotation_risk_context.py + tests and other risk-response surfaces. Older isolated local candidate commit 7e2d876488526ecc6889f6608e94bb95ef0ec207 added quantified pair explanation with 136 tests passed / 2 expected failures, and was validated against the actual Oct16 Risk Envelope to produce an EN 1,779-char bounded explanation. It was returned as review-only evidence to original owner, **NOT pushed as a second PR**. The owner source changed since; do not blind cherry-pick. #9428 currently Draft, head ecde407c57d1bbf… at earlier checkpoint, refresh before write.
@@ -44,7 +192,7 @@
 
 ## Effects / blockers / capability and custody
 - All modifications in the DIA lane used managed original workspace /Volumes/Mastermind 2/agent-workspaces/macro/web/rotation-dow-benchmark-coverage-20261016-sol (branch sol/web-rotation-dow-benchmark-coverage-20261016-sol), source GitHub PR #9518. At handoff, clean Git, original remote SHA c46a92cad704357dfa2dba0f219fff80965a56e0. Do not re-push blindly; reconcile original target before any update.
-- Protected Macro main changed continuously; last observed snapshot 83daf2b783ba218c4beed3850b2fc34cc5d139e7. It may already be newer on takeover. Never use old main SHA as a merge target by assumption.
+- Macro main changes continuously. The earlier snapshot83daf2b783ba218c4beed3850b2fc34cc5d139e7 is historical; current production-artifact read is pinned to ca0700187e17fa73f459e83ce688b5c838cd316e. Never assume an old main SHA or historical protection state is current release authority.
 - Historical ChatGPT1 Studio Direct typed Git precheck refusal was NOT_APPLIED; original installation #1333 found missing closed repositoryWorkspaces profile and schema/installed-manifest mismatch. Do not bypass old denial through an alternate identity/transport. Different managed source Git publication in an authorized local workspace has independent positive receipts; do not conflate capabilities.
 - Fabric independent-worker route was not admitted under the earlier eligible host state. Do not claim active child/daemon or invent native session/root IDs. Reassess actual qualification if an independent review is now critical, using existing authorized access only.
 - Last known project R5 static Rotation Decision Desk prototype is an **offline reference**, with 21 exact archived source-event rows and original row hash 9f59fe1ec340b136c49462c04c55139229024c2b6b9d3274dca94061d9709a84; it was browser-smoke-tested desktop/mobile but NOT Paper or live site. No history event means a delivered personalized recommendation merely because it appears in this prototype.
@@ -52,13 +200,33 @@
 - **No open uncertain effect in this checkpoint's own writing lane** is claimed until commit/readback are verified. This handoff is a continuity document, NOT a worker or schedule.
 
 ## Release acceptance / required proof, in order
-1. PR #9518 exact-head approved review, actual required checks, guarded merge, natural completed-session DIA ETF source and ratio pair qualification. PR #9484 *already merged*: verify its natural Actions source/generation, not another source patch.
+1. PR #9518 source release and exact landed bytes are verified; PR #9484 was already merged. Verify natural Actions cache handoff, completed-session DIA/Russell coverage and matched ratio/Prophet generation. Do not rerun either source release.
 2. QLedger accepted-main publication/push and normal engine generation with no GH001/identity conflict, all large/medium/small/Russell/deep source coverage and honest panel-majority/per-security clock, valid adjustment basis. A green ET-gate-only workflow is not an actual engine pass.
 3. Prophet's sector/theme early opportunity discovery -> canonical candidate episode -> existing strategy/B4 actual ENTRY_OPEN/WAIT/RAN/UNAVAILABLE -> exact Plan relationship. Never use aggregate freshness, legacy entry_signal.partial, a theme chip or Risk Radar headline as permission to buy, sell or size.
 4. Shared free/premium US Prophet card and authenticated browser: stale or missing B4 must never present a solid fresh Buy; maintain historic signal and sector-vs-stock explanation, EN/ZH, keyboard/mobile, no current quote laundering old entry, no regression of HK/China/Canada.
 5. Risk/rotation warning and Now/Explore/History: source dated, classified, filtered-out historical alerts recoverable; existing opt-in email/Discord receipts verified separately. A provider enqueue or UI card is not a read receipt. Predictive alpha requires point-in-time chronological prospective validation and controls.
 
-## Handoff command for the new ChatGPT session
-"Continue the SAME original Chairman Mastermind defensive-rotation / Prophet Meta-CEO mission from Macro PR #9035's newest Agent OS handoff dated 2026-10-17. First reconcile **PR #9518 current exact-head CI/review** and the **already merged PR #9484's natural-run production proof**. Preserve the original writer/workspace and no-deduplication boundaries. Then execute the next safe non-overlapping consumer vertical for Prophet candidate-to-B4-to-authenticated display. Don't re-run accepted forensics, fork owners, or invent a trade/notification receipt. Refresh only changed source facts and keep progressing unless a real gate blocks the affected lane."
+## Newly consumed incumbent evidence — preserve and reuse
 
-**Final mission state:** CHECKPOINTED_CONTINUATION by explicit Chairman fresh-chat request; all other scoped product milestones continue to remain OPEN. The successor should start the first action above immediately, without requiring the Chairman to repeat this history.
+- #6817 current programme return6230825588 (native root01a14838-b9e0-755c-8c94-92aa4f1db0c5) supplements original root01a11e89-b35d-7a81-9404-5fce2c6170cb / checkpoint6107291350. Accepted October11 B03 paging/filter/exact relation/signout/Return EN and settled ZH remain DO_NOT_REDO.
+- October16 TurnWatch378 sourceevent/receipt pairs were fully dispositioned:18 event relations (17 OBSERVED,1 OPENED) and360 typed suppressions (265 ACTIVE_EPISODE_DIFFERENT_ANCHOR,95 IDENTITY_UNRESOLVED). No unmatched or ambiguous row. Suppressed names are not automatically missed winners.
+- Native B1 peg55783ad4caa784d61e6824982acf373898f255783338cfbdac894bddfd7e2ea3 binds1086 ACTIVE episodes,14244 events,63641 suppressions. Original clocks not recorded in this observation; current identity only.
+- Plan intake:71 admitted,40 duplicates,4 reorigination blocks,27 eligible,27 source-validation failures,0 new Plans. Total648 Plans/626 active/242 open do not imply new origination. The earlier13:44 programme source panel had249/1758 securities onOct16 with modalOct14; this historical denominator is superseded by the later committed baseline below.
+- Ready #9495 patch6230950977 is7018 bytes, SHA2561e740b50273553665cfa5e0d8cd9e93635eb989703ff789c9e007f780dfaf7cc: “No entry plan was created.” / “未生成入场计划。” in engine and both template maps, plus real production presenter binding in the test fixture.49 checks and two synthetic native-template compositions accepted, no live/browser proof. The original copy task returnedrc0; separate fixture attempt remainsrc78 FABRIC_SPARSE_HELPER_BLOB_MISMATCH before mint/no branch. Parent completed and released only its own qualification workspace. Do not retry or repeat that completed work.
+- Native same-read B3 verified_pair already exists. read_plan_candidate_source composes exact source-origin/row receipts but current_action_status remainsUNAVAILABLE. B4 owner read has no availability verdict and geometry/corporate-action/risk/liquidity/gap facts remainUNKNOWN. Fresh quote alone cannot grantENTRY_OPEN; no injected caller owner-gate facts.
+- #7772 RQ1 source composition at2c198dd2cdcf359729dd9ec07f8a1e74f5b888d9 is not outcome proof. #7762 D06 remains NOTADMITTED on PIT rights/clocks, independent controls, economic margins and power. No October rotation holdout or predictive promotion.
+
+## Exact original effect boundaries
+
+- Original Plan child prophet-plan-review-component-build-01a11e89-20261015-01 /34412 remains LOST/UNKNOWN. Original collection refused directory_owner_or_mode with retry_authorized:false at Z/plan-review-original-collection-1230/read-response.000; no original artifact. No retry/chmod/elevation/alternate path/host/transport/replacement. Preserve untracked tests/test_prophet_plan_review_integration.py with five expected baseline reds, excluded from PR9495.
+- Original source-map child UNKNOWN; no substitute packet. Dailybrief9369 lost review63200/CI timeout unresolved; earlier sparse-file proof is resolved and should not be redone.
+- Chrome extension consent requested once and unanswered. Paper mutation refused UPSTREAM_SCHEMA_UNREVIEWED; read evidence does not permit mutation retry or pin/transport substitution. Cross-chat permission unanswered; no native-session send claimed.
+- Shared #8444 pre-START integration refusal6029541334 and recoveryreceiver5989411645 remain original evidence. Do not turn historical author references into a blanket stop on unaffected work, and do not retry an actual refused/uncertain effect under a new name.
+- New parent consultation was native principal architecture/source-review judgment only, accepted and stopped. It was not Fabric leaf work. No new paid worker, daemon, schedule, source lease or active background watcher was created in this continuation.
+- Actual current QLedger9450 remains Draft aabe2778e6998ec72545f6a8d6932e40de78e444;9452 Draft d6f441ad852a8cdcf920952cde46b24eb97f5472 is unselected;8756 Draft818e0504af4f1186650df51e11f6e936d2f0af7c remains held. Third Asia caller finding6234083021 supplements already-consumed daily collect finding6232982748; old real effects are preserved at8756, not replayed. Early refusal still cannot cure oversized accepted history.
+
+## Handoff command for the next continuation
+
+“Continue the SAME original Chairman rotation / Sector Intelligence / Prophet / Risk Radar Meta-CEO mission from PR9035's current October17 handoff. #9518 is merged at9f9e71a8943e9436bfc68acb961b56166fb61d79; #9484 was already merged. Do not redo either. First consume naturally occurring postmerge daily cache/price/Prophet evidence if present, and advance incumbent9495 compact restoration from return6243396155 while preserving exact source custody and all Plan/browser/Paper effects. Keep current B4 authority, exact Plan relation, authenticated display, historical recommendations and actual opt-in alert delivery distinct. Advance safe independent owner work; do not invent a trade, prediction, deployment or customer receipt.”
+
+**Final mission state:** source milestone verified; original product mission remains OPEN with scoped source/data/browser/effect blockers. This handoff is durable knowledge, not an execution admission or a completed product.
