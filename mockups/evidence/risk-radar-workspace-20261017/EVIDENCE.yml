@@ -1,0 +1,9 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/risk_radar_workspace.css
+  - site/risk_radar_workspace.css
+  - templates/risk_radar_workspace.js
+  - site/risk_radar_workspace.js
+  - templates/_risk_radar_workspace.html.j2
+  - templates/dashboard.html.j2
+manifest: mockups/evidence/risk-radar-workspace-20261017/manifest.json

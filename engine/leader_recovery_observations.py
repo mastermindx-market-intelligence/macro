@@ -76,8 +76,10 @@ def _capture(ticker: str, day: str, descriptor: dict, known_at: str) -> dict:
 def merge_recovery_observations(previous: pd.DataFrame, updated: pd.DataFrame,
                                 rows: list[dict], *, as_of: date,
                                 observed_at: str, enabled: bool) -> pd.DataFrame:
-    """Preserve earlier snapshots and optionally capture today's first descriptor.
+    """Preserve earlier snapshots and optionally capture the first descriptor at its cut.
 
+    ``as_of`` is the descriptors' own cut, which may lag the newest native history
+    date; a lagged cut seals that session's existing native row, never a new one.
     Called only by the incumbent nightly state_history writer. Reconstructive
     reruns can still change ordinary fields; captured observations remain exact.
     Both input frames and the input descriptors are non-mutated.
@@ -108,13 +110,16 @@ def merge_recovery_observations(previous: pd.DataFrame, updated: pd.DataFrame,
         day=cut.date().isoformat()
         if stamp.tz_convert('America/New_York').date().isoformat()<day:raise ValueError('observation_backdated_before_source')
         known_at=stamp.tz_convert('UTC').isoformat()
+        lagged=bool(keys) and day<max(k[0] for k in keys)
         seen=set()
         for row in rows:
             ticker=row['ticker']
             if ticker in seen:raise ValueError('duplicate_descriptor_identity')
             seen.add(ticker);key=(day,ticker)
             if key in retained:continue
-            if key not in index:raise ValueError('descriptor_without_native_history_row')
+            if key not in index:
+                if lagged:continue  # no native row on that earlier session to seal onto
+                raise ValueError('descriptor_without_native_history_row')
             descriptor=(row.get('display_chips') or {}).get('leader_recovery') or {}
             if descriptor.get('schema')!='leader_recovery.v1':continue
             new[index[key]].update(_capture(ticker,day,descriptor,known_at))

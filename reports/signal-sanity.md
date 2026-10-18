@@ -1,18 +1,14 @@
-# Signal sanity — 2026-10-14
+# Signal sanity — 2026-10-17
 
-**✅ OK** · 0 failure(s), 1 warning(s)
+**✅ OK** · 0 failure(s), 0 warning(s)
 
 | board | as_of | records | coverage | status |
 |---|---|---:|---:|---|
-| standouts (engine buy-board) | 2026-10-08 | 107 | 107 | ⚠️ warn |
-| briefing (Phase-5 priority queue) | 2026-10-14 | 25 | 25 | ok |
-| radar (divergence radar) | 2026-10-14 | 252 | 252 | ok |
-| altdata (alt-data desk) | 2026-10-14 | 30 | 30 | ok |
-| news (news flow) | 2026-10-14 | 1197 | 1116 | ok |
-| intel_hub (5-desk command) | 2026-10-14 | 30 | 30 | ok |
-
-## Warnings
-
-- standouts: as_of 2026-10-08 is 6d old (> 5d)
+| standouts (engine buy-board) | 2026-10-14 | 101 | 101 | ok |
+| briefing (Phase-5 priority queue) | 2026-10-17 | 25 | 25 | ok |
+| radar (divergence radar) | 2026-10-17 | 215 | 215 | ok |
+| altdata (alt-data desk) | 2026-10-17 | 30 | 30 | ok |
+| news (news flow) | 2026-10-17 | 1193 | 1067 | ok |
+| intel_hub (5-desk command) | 2026-10-17 | 30 | 30 | ok |
 
 _Invariants: coverage floor · score-column degeneracy · content-freeze (as_of advanced but values identical) · staleness · distribution drift. Ground-truth-free — see engine/signal_sanity.py._

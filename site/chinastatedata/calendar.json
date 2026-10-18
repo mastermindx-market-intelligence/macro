@@ -1,45 +1,9 @@
 {
   "schema": "china_calendar.v1",
-  "asof": "2026-10-14",
-  "generated_at_utc": "2026-10-14T15:55:47.685238+00:00",
+  "asof": "2026-10-16",
+  "generated_at_utc": "2026-10-16T12:15:34.309977+00:00",
   "horizon_days": 45,
   "entries": [
-    {
-      "date": "2026-10-14",
-      "window_end": null,
-      "etype": "US_CPI",
-      "label_en": "US CPI",
-      "label_zh": "美国 CPI",
-      "region": "hk",
-      "impact": "high",
-      "source_class": "static",
-      "source": "engine.hk_event_calendar",
-      "approx": false
-    },
-    {
-      "date": "2026-10-15",
-      "window_end": null,
-      "etype": "MLF",
-      "label_en": "MLF operation (PBoC)",
-      "label_zh": "MLF 操作（央行中期借贷便利）",
-      "region": "cn",
-      "impact": "medium",
-      "source_class": "rule",
-      "source": "engine.china_event_calendar",
-      "approx": true
-    },
-    {
-      "date": "2026-10-15",
-      "window_end": null,
-      "etype": "omo_outright_repo_tender",
-      "label_en": "PBoC outright reverse repo tender — 6个月, RMB 700bn, matures 2027-04-15",
-      "label_zh": "央行买断式逆回购操作：6个月，7,000亿元，到期 2027-04-15",
-      "region": "cn",
-      "impact": "medium",
-      "source_class": "feed",
-      "source": "china_omo.operations",
-      "approx": false
-    },
     {
       "date": "2026-10-16",
       "window_end": null,
@@ -411,9 +375,22 @@
       "source_class": "static",
       "source": "engine.hk_event_calendar",
       "approx": true
+    },
+    {
+      "date": "2026-11-30",
+      "window_end": null,
+      "etype": "PMI",
+      "label_en": "NBS PMI (mfg + non-mfg)",
+      "label_zh": "国家统计局 PMI（制造业＋非制造业）",
+      "region": "cn",
+      "impact": "high",
+      "source_class": "rule",
+      "source": "engine.china_event_calendar",
+      "approx": false
     }
   ],
   "data_gaps": [
+    "china_omo store holds no announced operation inside the horizon (the tape is present; the PBoC simply has nothing pending)",
     "china_earnings store holds no reporting month inside the horizon"
   ],
   "authority": {

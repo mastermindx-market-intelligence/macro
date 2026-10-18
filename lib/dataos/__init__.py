@@ -136,6 +136,14 @@ from lib.dataos.quality import (
     check_uniqueness,
     check_validity_ohlc,
     emit_annotations,
+    AgreementState,
+    InspectionOutcome,
+    DiscrepancyCause,
+    AgreementTolerance,
+    SourceSemantics,
+    AgreementInspection,
+    inspect_agreement,
+    agreement_findings,
 )
 from lib.dataos.read_contract import (
     READ_CONTRACT_VERSION,
@@ -157,6 +165,11 @@ from lib.dataos.read_contract import (
     resolve_revisions,
     select_generation,
     selected_input_sha256s,
+    Disposition,
+    SourceSegment,
+    MemberDisposition,
+    CoverageResult,
+    account_coverage,
 )
 from lib.dataos.registry import (
     ACTION_FIELD_CONVENTIONS,
@@ -211,6 +224,9 @@ __all__ = [
     "CurrentEvidence", "RetainedOutput", "ReadResult", "eligible_rows",
     "resolve_revisions", "select_generation", "reconstruct", "current", "replay",
     "selected_input_sha256s",
+    # fixed-population coverage account on the read contract (C02)
+    "Disposition", "SourceSegment", "MemberDisposition", "CoverageResult",
+    "account_coverage",
     # price (§D4)
     "PriceError", "AdjustmentBasis", "PriceField", "Session", "VenueScope",
     "canonical_column", "parse_column", "AMBIGUOUS_NAMES", "is_ambiguous",
@@ -264,4 +280,7 @@ __all__ = [
     "check_uniqueness", "check_validity_ohlc", "check_freshness",
     "check_completeness", "check_referential", "check_temporal_integrity",
     "emit_annotations",
+    # source-agreement inspector: two sources, one bar, a named cause (C03)
+    "AgreementState", "InspectionOutcome", "DiscrepancyCause", "AgreementTolerance",
+    "SourceSemantics", "AgreementInspection", "inspect_agreement", "agreement_findings",
 ]
