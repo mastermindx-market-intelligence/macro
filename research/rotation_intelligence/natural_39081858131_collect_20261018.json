@@ -215,7 +215,10 @@
         971,
         985
       ],
-      "lines": []
+      "lines": [
+        "2026-10-18T00:24:04.7189050Z 2026-10-17 17:24:04,718 collectors.breadth WARNING russell_breadth: 235 ticker(s) with mixed adjustment basis in the closes cache (split seam) — re-pulling full window: ['ACDC', 'ACH', 'ACRS', 'ADCT', 'AGEN', 'AGIO', 'AGL', 'AIRS', 'ALEC', 'ALMS', 'ALOY', 'ALT']",
+        "2026-10-18T00:24:21.3099960Z 2026-10-17 17:24:21,309 collectors.breadth WARNING russell_breadth: seam re-pull returned no data for ['AVBP', 'COGT', 'ENTA', 'EU', 'FJET', 'GALT', 'KRRO', 'NCMI', 'RARE', 'VISN'] — kept as-is, retried next run"
+      ]
     },
     {
       "decoded_log_lines": [
