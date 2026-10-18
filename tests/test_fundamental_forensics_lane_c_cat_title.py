@@ -189,7 +189,7 @@ def test_lane_c_two_consecutive_unit_bands_refuse() -> None:
         parse_displayed_primary_table(html, title=TITLE)
 
 
-@pytest.mark.parametrize("unit_band", ["(In millions)", "(Dollars in millions, except ratios)"])
+@pytest.mark.parametrize("unit_band", ["(In millions)", "(Dollars in millions, except ratios)", "(dollars in millions)"])
 def test_lane_c_unit_band_is_an_exact_list_not_a_millions_substring(unit_band: str) -> None:
     with pytest.raises(StatementGraphError, match=r"^displayed statement columns are absent"):
         parse_displayed_primary_table(toc() + _cat_year_header(units=unit_band), title=TITLE)
