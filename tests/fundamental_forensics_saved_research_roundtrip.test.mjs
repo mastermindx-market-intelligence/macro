@@ -2022,13 +2022,141 @@ test('T-R3-3-race: a view unpinned in another tab mid-flight gets no stale diges
     'the stored digest is still the one the other tab left');
 });
 
-test('T-R3-3-control: with no edit in another tab the same resolve backfills the verified digest', async () => {
-  const { drive, row } = await restoredPinnedSettledDrive();
+test('T-R3-3-control-pinned: with no edit in another tab a pinned resolve writes nothing', async () => {
+  // MINOR-3 polarity (main's): a pinned view keeps the digest it was saved
+  // with; the resolve path never rewrites it, even with a verified digest.
+  const { drive } = restoredPinnedDrive();
+  const beforeResolve = drive.storage.getItem(STORE_KEY);
+  await untilFinancialSettled(drive.api);
+  assert.equal(drive.api.state.financial.phase, 'ready', 'the pinned fetch settled');
   assert.equal(drive.api.state.savedRefusal, '', 'no refusal is active');
+  assert.equal(drive.api.state.financial.responseSha256, RECORDED_SHA, 'the fetch verified its digest');
+  assert.equal(drive.storage.getItem(STORE_KEY), beforeResolve, 'the pinned row bytes are unchanged');
+});
+
+test('T-R3-3-control-latest: with no edit in another tab a latest resolve backfills the verified digest', async () => {
+  const container = fixtureContainer('saved_latest.json');
+  const row = container.saved_views[0];
+  assert.equal(row.saved_against.response_sha256, null, 'the latest fixture carries no digest yet');
+  const drive = harness();
+  drive.storage.setItem(STORE_KEY, JSON.stringify(container));
+  drive.api.initSavedBriefcase();
+  assert.equal(drive.api.restoreSavedView(row.id).ok, true, 'the latest fixture view restores');
+  drive.api.setTab('compare', false);
+  await untilFinancialSettled(drive.api);
+  assert.equal(drive.api.state.financial.phase, 'ready', 'the latest fetch settled');
+  assert.equal(drive.api.state.savedRefusal, '', 'no refusal is active');
+  assert.equal(drive.api.state.financial.responseSha256, RECORDED_SHA);
   const stored = JSON.parse(drive.storage.getItem(STORE_KEY)).saved_views[0];
   assert.equal(stored.saved_against.response_sha256, RECORDED_SHA,
-    'the still-pinned view whose bytes equal the capture records the verified digest');
-  assert.equal(drive.api.state.financial.responseSha256, RECORDED_SHA);
+    'the latest view records the verified digest of the answer it was served');
+});
+
+test('T-R3-3-race-request: a pinned request re-cut in another tab mid-flight refuses and gets no backfill', async () => {
+  const container = fixtureContainer('saved_pinned.json');
+  const row = container.saved_views[0];
+  const drive = harness();
+  drive.storage.setItem(STORE_KEY, JSON.stringify(container));
+  drive.api.initSavedBriefcase();
+  assert.equal(drive.api.restoreSavedView(row.id).ok, true, 'the pinned restore starts the fetch');
+  // Tab B keeps the view pinned but changes its request content while this
+  // tab's fetch of the OLD bytes is in flight.
+  const tabB = freshBriefcase(drive.storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const edited = JSON.parse(JSON.stringify(row.request));
+  edited.metric_ids = edited.metric_ids.slice(1);
+  const updated = tabB.update(row.id, { request: edited });
+  assert.equal(updated.ok, true, updated.reason || 'tab B re-cuts the pinned request');
+  assert.equal(updated.view.pinned, true, 'the view stays pinned');
+  const afterEdit = drive.storage.getItem(STORE_KEY);
+  await untilFinancialSettled(drive.api);
+  assert.equal(drive.api.state.savedRefusal, 'changed', 'the resolve path refuses the re-cut view');
+  assert.equal(drive.api.activePinnedRequest(), null, 'no stale pinned bytes are served');
+  assert.equal(drive.storage.getItem(STORE_KEY), afterEdit, 'the edited row bytes are unchanged');
+});
+
+// ── X2-b+c r3 R3-1 (repair): a pin flip re-runs the emitter's ref gate ──────
+
+test('T-R3-1-unpin-dedup: an unpin that collapses two refs to one identity refuses and the row is unchanged', () => {
+  const base = fixtureContainer('saved_pinned.json').saved_views[0];
+  const { store } = r3Store();
+  // Pinned, the two refs differ by version_ref (their accessions); latest
+  // drops version_ref, so both project to one follow_head identity.
+  const saved = store.save(Object.assign({}, base, {
+    evidence_refs: [
+      { accession: '0000320193-25-000073', occurrence_id: 'rawfact_shared', source_span: [1, 2] },
+      { accession: '0000320193-24-000123', occurrence_id: 'rawfact_shared', source_span: [3, 4] }
+    ]
+  }));
+  assert.equal(saved.ok, true, saved.reason || 'the pinned view with two versions saves');
+  assert.equal(saved.view.pinned, true);
+  const before = JSON.stringify(store.load(saved.view.id).view);
+  const refused = store.update(saved.view.id, { pinned: false });
+  sameJson(refused, { ok: false, reason: 'duplicate_reference', path: '$.evidence_refs[1]' });
+  assert.equal(JSON.stringify(store.load(saved.view.id).view), before, 'the stored row is unchanged');
+});
+
+test('T-R3-1-pin-control: a pin that surfaces a control character as version_ref refuses and the row is unchanged', () => {
+  const base = fixtureContainer('saved_latest.json').saved_views[0];
+  const { store } = r3Store();
+  // Latest, object_id is the occurrence and the accession is never projected.
+  const saved = store.save(Object.assign({}, base, {
+    evidence_refs: [{ accession: 'A' + CTRL, occurrence_id: 'rawfact_ok', source_span: [0, 1] }]
+  }));
+  assert.equal(saved.ok, true, saved.reason || 'the latest view saves');
+  assert.equal(saved.view.pinned, false);
+  const before = JSON.stringify(store.load(saved.view.id).view);
+  const refused = store.update(saved.view.id, { pinned: true });
+  sameJson(refused, { ok: false, reason: 'invalid_control', path: '$.evidence_refs[0].version_ref' });
+  assert.equal(JSON.stringify(store.load(saved.view.id).view), before, 'the stored row is unchanged');
+});
+
+// ── X2-b+c r3 MINOR-4 (repair): the Export control agrees with the body ────
+
+test('T-R3-MINOR4-button: a saved-view refusal disables Export and names the view as the cause', async () => {
+  // Control: no refusal, the same health render leaves Export enabled.
+  {
+    const { drive } = await restoredPinnedSettledDrive();
+    drive.api.applyHealth(drive.api.state.health);
+    assert.equal(drive.api.state.savedRefusal, '');
+    assert.equal(drive.api.ui.exportBtn.disabled, false, 'the control leaves Export enabled');
+    assert.notEqual(drive.api.ui.exportBtn.getAttribute('data-tip-en'), 'Export unavailable for this view.');
+  }
+  {
+    const { drive, row } = await restoredPinnedSettledDrive();
+    const tabB = freshBriefcase(drive.storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+    assert.equal(tabB.update(row.id, { pinned: false }).ok, true, 'tab B unpins the view');
+    drive.api.applyHealth(drive.api.state.health);
+    assert.equal(drive.api.state.savedRefusal, 'changed', 'the render notices the edit');
+    assert.equal(drive.api.ui.exportBtn.disabled, true, 'Export is disabled under the refusal');
+    assert.equal(drive.api.ui.exportBtn.getAttribute('data-tip-en'), 'Export unavailable for this view.');
+    assert.equal(drive.api.ui.exportBtn.getAttribute('data-tip-zh'), '此视图暂不支持导出。');
+    assert.equal(drive.api.ui.exportWrap.getAttribute('data-tip-en'), 'Export unavailable for this view.',
+      'the wrapper carries the same tip for hover');
+  }
+});
+
+// ── PF-3 re-resolve: a pinned view behind a newer generation re-resolves to
+// latest, and the resolve that follows backfills the new answer's digest ────
+
+test('T-R3-reresolve: re-resolving a stale pinned view stores latest cutoffs, the new generation and the served digest', async () => {
+  const { drive, row } = await restoredPinnedSettledDrive();
+  const newer = { id: 'ffprods_' + 'e5f6a7b8'.repeat(8), admitted_at: '2026-10-11T04:00:00Z' };
+  drive.api.state.health.generation = newer;
+  assert.ok(drive.api.savedGenerationStale(), 'the view is behind the newer generation');
+  const result = drive.api.reResolveSavedView();
+  assert.equal(result.ok, true, result.reason || 'the re-resolve updates the view');
+  await untilFinancialSettled(drive.api);
+  assert.equal(drive.api.state.financial.phase, 'ready', 'the re-resolved fetch settled');
+  assert.equal(drive.api.state.savedRefusal, '', 'the re-resolved view is active, not refused');
+  assert.equal(drive.api.state.pinnedRequest, null, 'no pinned bytes are served after the re-resolve');
+  const stored = JSON.parse(drive.storage.getItem(STORE_KEY)).saved_views[0];
+  assert.equal(stored.id, row.id);
+  assert.equal(stored.pinned, false);
+  assert.equal(stored.saved_against.generation_id, newer.id);
+  assert.equal(stored.saved_against.admitted_at, newer.admitted_at);
+  assert.equal(stored.saved_against.response_sha256, RECORDED_SHA,
+    'the latest view records the digest of the answer the re-resolve served');
+  assert.equal(drive.api.savedGenerationStale(), null, 'no stale chip after the re-resolve');
 });
 
 // ── X2-b+c r3 R3-4: the reconcile compare uses the store's own notion of
