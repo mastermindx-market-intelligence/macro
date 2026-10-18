@@ -315,6 +315,171 @@ def _build_tree(
     }
 
 
+# Basket node prefix -> published page directory under site/. Only house-owned
+# basket families are listed; anything else renders as plain text (no link).
+_BASKET_FAMILIES = {
+    "basket:baskets:": ("basket", "US", "美股"),
+    "basket:baskets_china:": ("basket_china", "China A-shares", "A股"),
+    "basket:baskets_hk:": ("basket_hk", "Hong Kong", "港股"),
+    "basket:baskets_intl:": ("basket_intl", "International", "国际"),
+    "basket:baskets_canada:": ("basket_canada", "Canada", "加拿大"),
+}
+_MAX_CHAINS = 4
+
+
+def _basket_family(src_id: str) -> tuple[str, str, str, str] | None:
+    """``(page_dir, slug, market_en, market_zh)`` for a house basket id."""
+    for prefix, (page_dir, market_en, market_zh) in _BASKET_FAMILIES.items():
+        if src_id.startswith(prefix):
+            return page_dir, src_id[len(prefix):], market_en, market_zh
+    return None
+
+
+def _basket_href(src_id: str, site_dir: Path) -> str | None:
+    family = _basket_family(src_id)
+    if family is None:
+        return None
+    page_dir, slug = family[0], family[1]
+    if slug and "/" not in slug and (site_dir / page_dir / f"{slug}.html").is_file():
+        return f"{page_dir}/{slug}.html"
+    return None
+
+
+def _build_details(
+    envelopes: list[dict],
+    name_index: dict[str, dict],
+    nodes: pd.DataFrame,
+    edges: pd.DataFrame,
+    site_dir: Path,
+) -> dict[str, dict]:
+    """Per micro-theme detail for the click card (U2).
+
+    Parent chains and branch breadth come from the hierarchy-breadth
+    envelopes; watch-instead instruments come from the rights-gated proxy
+    reader. Display-only: names, ids, links and counts of themes — never a
+    weight, share, score or rank. A missing value stays a typed state
+    (``proxy_state``), never a zero.
+    """
+    from engine.theme_graph import micro_rs_proxy_display as mrp  # noqa: PLC0415
+
+    by_id = {env["subject_id"]: env for env in envelopes}
+    proxies = {
+        env["subject_id"]: env
+        for env in mrp.micro_rs_proxy_table(nodes=nodes, edges=edges)
+    }
+    basket_names: dict[str, tuple[str, str]] = {}
+    if "kind" in nodes.columns:
+        for row in nodes[nodes["kind"] == "basket"].to_dict("records"):
+            nid = row.get("node_id")
+            if isinstance(nid, str):
+                en = row.get("name_en") if isinstance(row.get("name_en"), str) else None
+                zh = row.get("name_zh") if isinstance(row.get("name_zh"), str) else None
+                basket_names[nid] = (en or nid, zh or en or nid)
+
+    def _ref(node_id: str) -> dict:
+        info = name_index.get(node_id, {})
+        en = info.get("name_en") or node_id
+        return {
+            "node_id": node_id,
+            "name_en": en,
+            "name_zh": info.get("name_zh") or en,
+            "tier": info.get("tier") or by_id.get(node_id, {}).get("value", {}).get("tier"),
+        }
+
+    def _chains(micro_id: str) -> list[list[dict]]:
+        out: list[list[dict]] = []
+
+        def walk(cur: str, path: list[str]) -> None:
+            if len(out) >= _MAX_CHAINS:
+                return
+            env = by_id.get(cur)
+            parents = []
+            if env and env.get("status") == "available":
+                parents = [
+                    p for p in env["value"]["parents"]
+                    if by_id.get(p, {}).get("status") == "available" and p not in path
+                ]
+            if not parents:
+                if len(path) > 1:
+                    out.append([_ref(n) for n in reversed(path[1:])])
+                return
+            for parent in parents:
+                walk(parent, path + [parent])
+
+        walk(micro_id, [micro_id])
+        return out
+
+    details: dict[str, dict] = {}
+    for env in envelopes:
+        if env.get("status") != "available" or env["value"]["tier"] != "micro_theme":
+            continue
+        micro_id = env["subject_id"]
+        chains = _chains(micro_id)
+        breadth = []
+        seen_themes: set[str] = set()
+        for chain in chains:
+            for ref in chain:
+                if ref["tier"] == "theme" and ref["node_id"] not in seen_themes:
+                    seen_themes.add(ref["node_id"])
+                    theme_env = by_id.get(ref["node_id"], {})
+                    breadth.append({
+                        "theme": ref,
+                        "micro_count": theme_env.get("value", {}).get(
+                            "descendant_micro_theme_count"),
+                    })
+        proxy_env = proxies.get(micro_id)
+        instruments: list[dict] = []
+        if proxy_env is None or proxy_env.get("status") != "available":
+            proxy_state = "unknown"
+        else:
+            seen_src: set[str] = set()
+            for inst in proxy_env["value"]["proxy_instruments"]:
+                src = inst["src_id"]
+                if src in seen_src:
+                    continue
+                seen_src.add(src)
+                en, zh = basket_names.get(src, (src, src))
+                family = _basket_family(src)
+                instruments.append({
+                    "name_en": en,
+                    "name_zh": zh,
+                    "market_en": family[2] if family else "",
+                    "market_zh": family[3] if family else "",
+                    "href": _basket_href(src, site_dir),
+                })
+            instruments.sort(key=lambda i: (i["market_en"], i["name_en"].lower()))
+            proxy_state = "available" if instruments else "none"
+        details[micro_id] = {
+            **_ref(micro_id),
+            "chains": chains,
+            "breadth": breadth,
+            "proxy_state": proxy_state,
+            "instruments": instruments,
+        }
+    return details
+
+
+def _details_json(envelopes, name_index, nodes, edges, site_dir: Path) -> str:
+    """Serialize the U2 card data, or ``""`` when it cannot be shown safely.
+
+    The forbidden-key walk runs over the whole payload; any hit (or any
+    reader failure) drops the card data and the page falls back to the U1
+    hover tip instead of shipping a value-shaped field.
+    """
+    from engine.theme_graph import hierarchy_breadth_display as hb  # noqa: PLC0415
+
+    try:
+        details = _build_details(envelopes, name_index, nodes, edges, site_dir)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("theme_tree: detail card data unavailable: %s", exc)
+        return ""
+    if hb.validate_no_forbidden_keys(details):
+        log.warning("theme_tree: detail card data refused by forbidden-key walk")
+        return ""
+    # ``</`` cannot appear inside the inline JSON script element.
+    return json.dumps(details, ensure_ascii=False, sort_keys=True).replace("</", "<\\/")
+
+
 def compose(
     root: Path,
     *,
@@ -349,6 +514,9 @@ def compose(
     envelopes = hb.hierarchy_breadth_table(nodes=nodes, edges=edges)
     name_index = _node_name_index(nodes)
     tree = _build_tree(envelopes, name_index)
+    tree["details_json"] = _details_json(
+        envelopes, name_index, nodes, edges, Path(root) / "site"
+    )
 
     meta_path = Path(root) / "data" / "theme_graph" / "_meta.json"
     as_of = "" if injected else _as_of_date(meta_path)
