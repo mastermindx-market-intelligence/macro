@@ -3284,7 +3284,7 @@ function renderInternals(){
 }
 
 function boot(){
-  // Preserve the server-validated snapshot date: client baskets can hydrate from
+  // Preserve the server-pinned snapshot date: client baskets can hydrate from
   // a different cache generation, and their as_of must never advance the hero.
   const ao=document.getElementById('asof');
   if(ao && (!ao.textContent || ao.textContent.trim()==='—')){
