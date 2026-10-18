@@ -1,10 +1,10 @@
 /* Native answer illustrations: extend the host's Chart/Table/Text/Disclosure/State
    families, not a second theme. All presentation stays in this governed asset. */
-#mmb-root .mmb-v{box-sizing:border-box;min-width:0;max-width:100%;margin:22px 0;padding:20px 0 12px;color:var(--mmb-text);font-family:var(--mmb-font,var(--font-ui));border-top:1px solid var(--mmb-line);font-size:14px;line-height:1.55;overflow-wrap:anywhere}
+#mmb-root .mmb-v{box-sizing:border-box;min-width:0;max-width:100%;margin:26px 0;padding:24px 0 12px;color:var(--mmb-text);font-family:var(--mmb-font,var(--font-ui));border-top:1px solid var(--mmb-line);font-size:14px;line-height:1.55;overflow-wrap:anywhere}
 #mmb-root .mmb-v *{box-sizing:border-box;min-width:0}
-#mmb-root .mmb-v-title{margin:0;font-size:16px;font-weight:650;letter-spacing:-.015em;line-height:1.4;color:var(--mmb-hi)}
+#mmb-root .mmb-v-title{margin:0;font-size:18px;font-weight:650;letter-spacing:-.015em;line-height:1.4;color:var(--mmb-hi)}
 #mmb-root .mmb-v-subtitle{margin:5px 0 0;font-size:13px;color:var(--mmb-muted)}
-#mmb-root .mmb-v-basis{margin:9px 0 18px;font-size:11px;line-height:1.45;color:var(--mmb-muted)}
+#mmb-root .mmb-v-basis{margin:9px 0 18px;font-size:12px;line-height:1.45;color:var(--mmb-muted)}
 #mmb-root .mmb-v-plot{width:100%;max-width:100%;min-height:260px;overflow:hidden}
 #mmb-root .mmb-v-plot svg{display:block;max-width:100%;font-family:var(--mmb-font,var(--font-ui));overflow:visible}
 #mmb-root .mmb-v-grid{stroke:var(--mmb-line);stroke-width:1;stroke-dasharray:2 4}
@@ -24,11 +24,11 @@
 #mmb-root .mmb-v-area{fill-opacity:.1;stroke:none}
 #mmb-root .mmb-v-ring{fill:none}
 #mmb-root .mmb-v-legend{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 18px;margin:4px 0 18px}
-#mmb-root .mmb-v-legend-item{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--mmb-text);font:inherit;font-size:12px;padding:4px;min-height:32px;cursor:pointer;text-align:left;max-width:100%}
+#mmb-root .mmb-v-legend-item{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--mmb-text);font:inherit;font-size:12px;padding:4px;min-height:44px;cursor:pointer;text-align:left;max-width:100%}
 #mmb-root .mmb-v-legend-item[aria-pressed=false]{opacity:.45;text-decoration:line-through}
 #mmb-root .mmb-v-swatch{font-size:18px;flex:0 0 14px}
 #mmb-root .mmb-v-table-wrap{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;margin:12px 0;border-radius:var(--r-ctl,8px)}
-#mmb-root .mmb-v-table{width:100%;border-collapse:collapse;text-align:left;font-size:13px;line-height:1.5}
+#mmb-root .mmb-v-table{width:100%;border-collapse:collapse;text-align:left;font-size:14px;line-height:1.55}
 #mmb-root .mmb-v-table th,#mmb-root .mmb-v-table td{padding:11px 12px;border-bottom:1px solid var(--mmb-line);vertical-align:top;min-width:86px;max-width:300px;overflow-wrap:anywhere}
 #mmb-root .mmb-v-table th:first-child,#mmb-root .mmb-v-table td:first-child{padding-left:0}
 #mmb-root .mmb-v-table th{font-weight:550;color:var(--mmb-hi)}
@@ -53,8 +53,8 @@
 #mmb-root .mmb-v-flow .mmb-v-label:after{content:' →';color:var(--mmb-muted)}
 #mmb-root .mmb-v-takeaway{margin:18px 0 12px;font-size:14px;color:var(--mmb-hi)}
 #mmb-root .mmb-v-details{margin-top:12px;font-size:12px;color:var(--mmb-muted)}
-#mmb-root .mmb-v-details summary{cursor:pointer;min-height:36px;line-height:36px;width:fit-content;max-width:100%}
-#mmb-root .mmb-v-export{border:1px solid var(--mmb-line);border-radius:var(--r-ctl,8px);padding:8px 12px;min-height:36px;margin-top:12px;background:transparent;color:var(--mmb-text);font:inherit;cursor:pointer}
+#mmb-root .mmb-v-details summary{cursor:pointer;min-height:44px;line-height:44px;width:fit-content;max-width:100%}
+#mmb-root .mmb-v-export{border:1px solid var(--mmb-line);border-radius:var(--r-ctl,8px);padding:8px 12px;min-height:44px;margin-top:12px;background:transparent;color:var(--mmb-text);font:inherit;cursor:pointer}
 #mmb-root .mmb-v :is(button,summary,[tabindex]):focus-visible{outline:2px solid var(--mmb-info);outline-offset:3px}
 #mmb-root .mmb-v-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 /* Light is a paper inset with separation by shadow rather than luminous depth. */
