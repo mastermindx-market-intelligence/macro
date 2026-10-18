@@ -232,7 +232,8 @@ jobs:
             push_backoff
           done
           push_lost
-          echo "::warning::could not push options intelligence brief after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal)"
+          echo "::error title=options intelligence brief NOT pushed::could not push options intelligence brief after $PUSH_ATTEMPT attempts ($PUSH_STOP)"
+          exit 1
 
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
