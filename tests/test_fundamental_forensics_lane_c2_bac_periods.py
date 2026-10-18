@@ -139,6 +139,42 @@ def test_glued_single_date_cell_is_not_two_columns() -> None:
         parse_displayed_primary_table(html, title=BS_TITLE)
 
 
+def test_glued_second_header_row_with_different_dates_does_not_apply() -> None:
+    # A later glued row with different dates must not be swallowed; the table
+    # keeps the same refusal it reached before the glued composer applied.
+    html = f"""
+    <html><body>
+    <table>
+      <tr><td colspan="5">{BS_TITLE}</td></tr>
+      <tr><td></td><td colspan="2">June 302025</td><td colspan="2">December 312024</td></tr>
+      <tr><td></td><td colspan="2">March 312025</td><td colspan="2">December 312023</td></tr>
+      <tr><td>(Dollars in millions)</td></tr>
+      <tr><td>Assets</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>Cash and due from banks</td><td>$</td><td>{_ix("c2025", "c2-gd-25")}</td><td>$</td><td>{_ix("c2024", "c2-gd-24")}</td></tr>
+    </table>
+    </body></html>
+    """
+    with pytest.raises(StatementGraphError, match=_COLUMNS_ABSENT):
+        parse_displayed_primary_table(html, title=BS_TITLE)
+
+
+def test_glued_two_identical_header_rows_still_reconstruct() -> None:
+    html = f"""
+    <html><body>
+    <table>
+      <tr><td colspan="5">{BS_TITLE}</td></tr>
+      <tr><td></td><td colspan="2">June 302025</td><td colspan="2">December 312024</td></tr>
+      <tr><td></td><td colspan="2">June 302025</td><td colspan="2">December 312024</td></tr>
+      <tr><td>(Dollars in millions)</td></tr>
+      <tr><td>Assets</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>Cash and due from banks</td><td>$</td><td>{_ix("c2025", "c2-gi-25")}</td><td>$</td><td>{_ix("c2024", "c2-gi-24")}</td></tr>
+    </table>
+    </body></html>
+    """
+    parsed = parse_displayed_primary_table(html, title=BS_TITLE)
+    assert parsed["columns_iso"] == ["2025-06-30", "2024-12-31"]
+
+
 # --- Lane C2 shape 2/3: N-months-ended duration groups over a year row ---
 
 
@@ -212,6 +248,23 @@ def test_grouped_cash_flow_with_blank_row_reconstructs() -> None:
         {"kind": "duration", "start": "2024-01-01", "end": "2024-06-30"},
     ]
     assert [f["fact_id"] for f in parsed["rows"][1]["value_facts"]] == ["c2-cf-25", "c2-cf-24"]
+
+
+def test_grouped_two_unit_bands_between_banner_and_years_do_not_apply() -> None:
+    html = f"""
+    <html><body>
+    <table>
+      <tr><td colspan="4">{CF_TITLE}</td></tr>
+      <tr><td></td><td colspan="3">Six Months Ended June 30</td></tr>
+      <tr><td colspan="4">(Dollars in millions)</td></tr>
+      <tr><td colspan="4">(Millions of dollars)</td></tr>
+      <tr><td>(Dollars in millions)</td><td>2025</td><td></td><td>2024</td></tr>
+      <tr><td>Net income</td><td>{_ix("h6m25", "c2-2u-25", name="us-gaap:NetIncomeLoss")}</td><td></td><td>{_ix("h6m24", "c2-2u-24", name="us-gaap:NetIncomeLoss")}</td></tr>
+    </table>
+    </body></html>
+    """
+    with pytest.raises(StatementGraphError, match=_COLUMNS_ABSENT):
+        parse_displayed_primary_table(html, title=CF_TITLE)
 
 
 def test_grouped_unit_band_row_between_banner_and_years_composes() -> None:
@@ -337,17 +390,47 @@ def test_grouped_banner_keeps_the_single_banner_composer_priority() -> None:
 
 
 _ROLE = "http://synthetic.example/role/Income"
+_LABEL_PERIOD_START = "http://www.xbrl.org/2003/role/periodStartLabel"
+_LABEL_PERIOD_END = "http://www.xbrl.org/2003/role/periodEndLabel"
+_CF_ROLE = "http://synthetic.example/role/CashFlow"
 
 
-def _linkbases(role: str) -> dict[str, bytes]:
+def _linkbases(
+    role: str,
+    *,
+    presentation_arcs: list[tuple[str, str, str | None]] | None = None,
+) -> dict[str, bytes]:
+    if presentation_arcs is None:
+        presentation_arcs = [("root", "line", None)]
+    _known_loc_hrefs = {
+        "root": "syn.htm#us-gaap_RevenuesAbstract",
+        "line": "syn.htm#us-gaap_Revenues",
+        "cashroot": "syn.htm#us-gaap_StatementOfCashFlowsAbstract",
+        "cashline": "syn.htm#us-gaap_CashCashEquivalentsAtCarryingValue",
+    }
+    loc_labels: set[str] = set()
+    loc_hrefs = dict(_known_loc_hrefs)
+    for frm, to, _pref in presentation_arcs:
+        loc_labels.add(frm)
+        loc_labels.add(to)
+    for label in loc_labels:
+        loc_hrefs.setdefault(label, f"syn.htm#{label.replace(':', '_')}")
+    arcs_xml = "".join(
+        f'<link:presentationArc xlink:type="arc" xlink:from="{frm}" xlink:to="{to}" order="{i}"'
+        + (f' preferredLabel="{pref}"' if pref else "")
+        + "/>"
+        for i, (frm, to, pref) in enumerate(presentation_arcs, start=1)
+    )
+    locs_xml = "".join(
+        f'<link:loc xlink:label="{label}" xlink:href="{loc_hrefs[label]}"/>'
+        for label in sorted(loc_labels)
+    )
     presentation = (
         '<?xml version="1.0" encoding="UTF-8"?>'
         '<link:linkbase xmlns:link="http://www.xbrl.org/2003/linkbase"'
         ' xmlns:xlink="http://www.w3.org/1999/xlink">'
         f'<link:presentationLink xlink:role="{role}">'
-        '<link:loc xlink:label="root" xlink:href="syn.htm#us-gaap_RevenuesAbstract"/>'
-        '<link:loc xlink:label="line" xlink:href="syn.htm#us-gaap_Revenues"/>'
-        '<link:presentationArc xlink:type="arc" xlink:from="root" xlink:to="line" order="1"/>'
+        f"{locs_xml}{arcs_xml}"
         "</link:presentationLink></link:linkbase>"
     ).encode("utf-8")
     empty = (
@@ -392,7 +475,16 @@ def _fact(fid: str, context: str, *, name: str = "us-gaap:Revenues", value: str 
 _REGISTRY = types.SimpleNamespace(contracts=None)
 
 
-def _reconstruct(html: str, facts: list[dict], contexts: list[dict], *, statement_type: str = "income_statement", role: str = _ROLE, title: str = INCOME_TITLE) -> dict:
+def _reconstruct(
+    html: str,
+    facts: list[dict],
+    contexts: list[dict],
+    *,
+    statement_type: str = "income_statement",
+    role: str = _ROLE,
+    title: str = INCOME_TITLE,
+    presentation_arcs: list[tuple[str, str, str | None]] | None = None,
+) -> dict:
     manifest = {
         "primary_document": "syn.htm",
         "members": [
@@ -408,7 +500,10 @@ def _reconstruct(html: str, facts: list[dict], contexts: list[dict], *, statemen
             statement_type: {"role_uri": role, "title": title, "title_search": title}
         },
     }
-    members = {"syn.htm": html.encode("utf-8"), **_linkbases(role)}
+    members = {
+        "syn.htm": html.encode("utf-8"),
+        **_linkbases(role, presentation_arcs=presentation_arcs),
+    }
     package = GoldenFilingPackage(manifest=manifest, members=members)
     parsed_instance = {
         "facts": facts,
@@ -573,6 +668,189 @@ def test_r7_six_month_fact_under_a_dated_three_month_column_refuses() -> None:
         _fact("c2f-six24", "h6m24"),
     ]
     with pytest.raises(StatementGraphError, match=_R7_PREFIX + r"0: "):
+        _reconstruct(html, facts, contexts)
+
+
+def _annual_cf_year_ended_html(*, extra_row: str) -> str:
+    return f"""
+    <html><body>
+    <table>
+      <tr><td colspan="4">{CF_TITLE}</td></tr>
+      <tr><td>Year Ended December 31,</td><td colspan="3"></td></tr>
+      <tr><td></td><td>2025</td><td></td><td>2024</td></tr>
+      <tr><td>Net income</td><td>{_ix("y25", "c2k-ni25", name="us-gaap:NetIncomeLoss")}</td><td></td><td>{_ix("y24", "c2k-ni24", name="us-gaap:NetIncomeLoss")}</td></tr>
+      {extra_row}
+    </table>
+    </body></html>
+    """
+
+
+_ANNUAL_CF_CONTEXTS = [
+    _duration("y25", "2025-01-01", "2025-12-31"),
+    _duration("y24", "2024-01-01", "2024-12-31"),
+]
+
+
+def _annual_cf_net_income_facts() -> list[dict]:
+    return [
+        _fact("c2k-ni25", "y25", name="us-gaap:NetIncomeLoss"),
+        _fact("c2k-ni24", "y24", name="us-gaap:NetIncomeLoss"),
+    ]
+
+
+def _cash_presentation_arcs(*, preferred: str | None) -> list[tuple[str, str, str | None]]:
+    return [
+        ("cashroot", "cashline", preferred),
+    ]
+
+
+@pytest.mark.parametrize(
+    "presentation_arcs",
+    [
+        _cash_presentation_arcs(preferred=None),
+        _cash_presentation_arcs(preferred=_LABEL_PERIOD_END),
+    ],
+)
+def test_r7_prior_year_end_instant_under_current_year_column_refuses(
+    presentation_arcs: list[tuple[str, str, str | None]],
+) -> None:
+    html = _annual_cf_year_ended_html(
+        extra_row=(
+            "<tr><td>Cash at end of year</td><td>"
+            + _ix(
+                "prior",
+                "c2k-ce",
+                name="us-gaap:CashCashEquivalentsAtCarryingValue",
+                value="555",
+            )
+            + "</td><td>-</td><td></td></tr>"
+        ),
+    )
+    contexts = _ANNUAL_CF_CONTEXTS + [_instant("prior", "2024-12-31")]
+    facts = _annual_cf_net_income_facts() + [
+        _fact(
+            "c2k-ce",
+            "prior",
+            name="us-gaap:CashCashEquivalentsAtCarryingValue",
+            value="555",
+        ),
+    ]
+    with pytest.raises(StatementGraphError, match=_R7_PREFIX):
+        _reconstruct(
+            html,
+            facts,
+            contexts,
+            statement_type="cash_flow",
+            title=CF_TITLE,
+            role=_CF_ROLE,
+            presentation_arcs=presentation_arcs,
+        )
+
+
+def test_r7_beginning_cash_with_period_start_label_reconstructs() -> None:
+    html = _annual_cf_year_ended_html(
+        extra_row=(
+            "<tr><td>Cash at beginning of year</td><td>"
+            + _ix(
+                "b25",
+                "c2k-b25",
+                name="us-gaap:CashCashEquivalentsAtCarryingValue",
+                value="10",
+            )
+            + "</td><td></td><td>"
+            + _ix(
+                "b24",
+                "c2k-b24",
+                name="us-gaap:CashCashEquivalentsAtCarryingValue",
+                value="9",
+            )
+            + "</td></tr>"
+        ),
+    )
+    contexts = _ANNUAL_CF_CONTEXTS + [
+        _instant("b25", "2024-12-31"),
+        _instant("b24", "2023-12-31"),
+    ]
+    facts = _annual_cf_net_income_facts() + [
+        _fact("c2k-b25", "b25", name="us-gaap:CashCashEquivalentsAtCarryingValue", value="10"),
+        _fact("c2k-b24", "b24", name="us-gaap:CashCashEquivalentsAtCarryingValue", value="9"),
+    ]
+    result = _reconstruct(
+        html,
+        facts,
+        contexts,
+        statement_type="cash_flow",
+        title=CF_TITLE,
+        role=_CF_ROLE,
+        presentation_arcs=_cash_presentation_arcs(preferred=_LABEL_PERIOD_START),
+    )
+    cash_row = result["rows"][-1]
+    assert cash_row["cells"][0]["value"] == "10"
+    assert cash_row["cells"][1]["value"] == "9"
+
+
+def test_r7_beginning_cash_with_wrong_end_instant_under_current_year_refuses() -> None:
+    html = _annual_cf_year_ended_html(
+        extra_row=(
+            "<tr><td>Cash at beginning of year</td><td>"
+            + _ix(
+                "bad",
+                "c2k-bad",
+                name="us-gaap:CashCashEquivalentsAtCarryingValue",
+                value="10",
+            )
+            + "</td><td></td><td>"
+            + _ix(
+                "b24",
+                "c2k-b24",
+                name="us-gaap:CashCashEquivalentsAtCarryingValue",
+                value="9",
+            )
+            + "</td></tr>"
+        ),
+    )
+    contexts = _ANNUAL_CF_CONTEXTS + [
+        _instant("bad", "2025-12-31"),
+        _instant("b24", "2023-12-31"),
+    ]
+    facts = _annual_cf_net_income_facts() + [
+        _fact("c2k-bad", "bad", name="us-gaap:CashCashEquivalentsAtCarryingValue", value="10"),
+        _fact("c2k-b24", "b24", name="us-gaap:CashCashEquivalentsAtCarryingValue", value="9"),
+    ]
+    with pytest.raises(StatementGraphError, match=_R7_PREFIX):
+        _reconstruct(
+            html,
+            facts,
+            contexts,
+            statement_type="cash_flow",
+            title=CF_TITLE,
+            role=_CF_ROLE,
+            presentation_arcs=_cash_presentation_arcs(preferred=_LABEL_PERIOD_START),
+        )
+
+
+def test_r7_assets_instant_under_wrong_income_column_refuses() -> None:
+    html = f"""
+    <html><body>
+    <table>
+      <tr><td colspan="3">{INCOME_TITLE}</td></tr>
+      <tr><td>Line</td><td>December 31, 2025</td><td>December 31, 2024</td></tr>
+      <tr><td>Revenues</td><td>{_ix("y25", "c2k-r25")}</td><td>{_ix("y24", "c2k-r24")}</td></tr>
+      <tr><td>Assets</td><td>{_ix("ast", "c2k-ast", name="us-gaap:Assets", value="500")}</td><td></td></tr>
+    </table>
+    </body></html>
+    """
+    contexts = [
+        _duration("y25", "2025-01-01", "2025-12-31"),
+        _duration("y24", "2024-01-01", "2024-12-31"),
+        _instant("ast", "2024-12-31"),
+    ]
+    facts = [
+        _fact("c2k-r25", "y25"),
+        _fact("c2k-r24", "y24"),
+        _fact("c2k-ast", "ast", name="us-gaap:Assets", value="500"),
+    ]
+    with pytest.raises(StatementGraphError, match=_R7_PREFIX):
         _reconstruct(html, facts, contexts)
 
 
