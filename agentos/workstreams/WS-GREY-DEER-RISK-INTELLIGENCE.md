@@ -461,16 +461,21 @@ next_action: >
   writer 9447 have intersecting source paths; preserve their actual pending effects.
   Use the completed Copilot source diagnosis before a custody-qualified repair;
   require an installed changed path and a useful authenticated answer, not only tests.
-  Original SPY/T12 identity is frozen once. Before feature joins or fitting, declare
-  the sample-use/feasibility contract, scored origins, maturity/warmup, common support,
-  dependence, chronological evaluation and counted trials. Preserve the severe control
-  shortfalls and current FRED-purpose UNKNOWN/HOLD; no sample mutation, source swap,
-  trial registration or activation of existing T13/T14/T19 drafts follows from identity.
+  Original SPY/T12 identity is frozen once. A separately reviewed metadata-only contract
+  and source were committed at9102e6954db1 before one October18 run. Its2138 window
+  records preserve null labels,1901 unknown dates and39 horizon intersections. Supported
+  pairs9/2/0 across4/2/0 events refuse the21-session matched lane and admit no model.
+  Before feature joins or fitting, qualify exact calendar/outcomes, source purpose and
+  availability, dependence, chronological evaluation, common-support baselines and trials.
+  Preserve severe control shortfalls and FRED-purpose UNKNOWN/HOLD; no sample mutation,
+  source swap, trial registration or activation of existing T13/T14/T19 drafts occurred.
   Mastermind1567 source is merged; the October17 runtime observation still had October9 code.
   The exact wrapper/helper review found298 deployment-eligible paths outside rollback scope
-  and health-result/transaction-order weaknesses. Read portfolio.forward_evaluation and
-  the actual service definition next; qualify actual transport, the complete current-master
-  bundle and rollback/activation transaction before the canonical production decision.
+  and health-result/transaction-order weaknesses. The forward_evaluation review confirms
+  marker-ownership, failed-activation, retained-output and baseline-completeness gaps.
+  Read its actual registry/package, service/health/caller locks and settlement reader next;
+  qualify transport, bounded repairs, complete current-master bundle and rollback/activation
+  transaction before the canonical production decision.
   Autonomous production deployment remains prohibited; 1507 repository differences
   are not a transfer count or live book/prompt/ledger parity. Existing publisher8132,
   measured-pullback8721,9428 refusal boundaries and QLedger/nightly owners remain intact.

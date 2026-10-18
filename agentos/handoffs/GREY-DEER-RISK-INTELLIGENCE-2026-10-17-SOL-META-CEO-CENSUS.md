@@ -182,7 +182,8 @@ unresolved:
 - >-
   Original SPY/T12 identity is resolved, but confirmatory support is not. The only 21-session matched event has no
   draft-warmup-eligible positive origin; severe missing/immature controls and horizon dependence are retained.
-  FRED model-purpose UNKNOWN/HOLD and sample-use/feasibility admission remain outstanding; drafts unactivated.
+  The separately committed metadata diagnostic now refuses21-session matched support and admits no model.
+  FRED model-purpose UNKNOWN/HOLD, exact labels/calendar and evaluation admission remain outstanding; drafts unactivated.
 - >-
   The future-date source repair is merged but absent from the observed runtime. Qualify the full exact-master
   release, deployment helper chain and rollback/activation before the reserved production decision and live parity.
@@ -205,13 +206,14 @@ next_actions:
   private evidence requirements, supported general market prose and scoped contradictions. Require installed behavior
   and one useful authenticated original-question answer. Do not overwrite9447 or9548 paths.
 - >-
-  Freeze a separately declared T13 sample-use/feasibility contract before scored-origin projection or feature joins.
-  Preserve the original failed support, exact sample and unspent trial budgets. Resolve the concrete retained-acquisition
-  and model-purpose basis; no permissive label, substitute source or historical author is a waiver.
+  Preserve the committed T13 metadata contract and one result:2138 unscored window records, supportedpairs9/2/0
+  and21-session refusal. Before feature joins or scoring, qualify exact calendar/outcomes, source-purpose/availability,
+  chronological evaluation and power/utility. Preserve original failed support and unspent trial budgets.
 - >-
   The exact1567 wrapper/helper review is complete and found298 deployment-eligible paths outside rollback scope,
-  plus health-result and transaction-order weaknesses. Read portfolio.forward_evaluation and the actual service
-  definition next. Qualify the complete current-master bundle before the reserved production decision.
+  plus health-result and transaction-order weaknesses. Forward_evaluation now adds marker-ownership,
+  failed-activation and baseline-integrity defects. Read the actual registry/package, service/health/caller locks
+  and settlement reader next. Qualify the complete current-master bundle before the reserved production decision.
   Preserve prior source acceptance and never call brain/macro_risk.risk_state() as a read because its dwell path writes.
 - >-
   Continue original-owner publisher/consumer work on per-component clocks, freshness and expiry. Inspect the first
@@ -300,3 +302,11 @@ Protected Mastermind advanced to e77631490e5bddca7d40c8cf039ae7763ce17b99. The c
 At 01:36Z the owned successor was normally fast-forwarded to Macro62a3f9ad070c7583687aef8c30d53fd1764c6aab after confirming no intervening programme or instruction-path changes. The interrupted overview target was then written successfully through the same authorized file capability. The reconciliation receipt is live_delivery_20261017/continuation_workspace_acquire.json; copied bytes and the enclosing source checkpoint still require their own verification. This is continuation of the original native operation, not a second workstream or release claim.
 
 The completed release-script addendum identifies298 deployment-eligible paths outside the named rollback snapshot and a rollback-health reporting weakness. No deployment or source repair followed. The next scientific phase is a separately frozen sample-use feasibility map derived only from immutable T12 metadata, preserving known control/warmup failures and refusing feature/fitting admission. It must not regenerate samples, recompute labels or spend a trial budget.
+
+## October18 frozen metadata result and source checkpoint
+
+The evidence/freeze commit9102e6954db145b92dd3d1c32e113405104ce212 contains38 changed files, including hash-verified browser captures, accepted source landing, original sample/receipt, exact portable Copilot counterexample and independently reviewed admission contract/source. Root verified committed bytes, then executed the metadata diagnostic once at02:07:24.626119Z: exit0,1,248,719 output bytes,SHA25691a45bc0f4ecb650db01bdeb5e9ec6834a09249ed4057d5a5d54a4d5cd6841e5. It preserves2138 unscored window records,1901 unknown dates and39 horizon intersections; supportedpairs9/2/0 across4/2/0 events. The21-session matched lane refuses; all fitting/source-purpose holds remain. Result and execution receipt are separate from the unchanged freeze.
+
+Current AgentOS validation passed1868 records with0 errors and162 existing warnings. The portable Git-reader Copilot diagnostic reproduced the exact10,691-byte counterexample; no provider rerun. All37 transferred artifacts matched source hashes; four release-review publication links and one FRED-note trailing blank line were mechanically normalized, preserving findings. The source checkpoint still requires its own pushed-head hosted checks and normal landing.
+
+The release dependency review now identifies unowned-marker deletion, failed pending-to-active rollback, retained-output and legacy-baseline gaps. Next actual registry/package, service/health/caller locks and settlement-reader dependencies remain bounded qualification work. No release command, policy, book, ledger or production effect was executed. Source acceptance1567 is preserved; full-release acceptance is withheld.
