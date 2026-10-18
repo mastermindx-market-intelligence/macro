@@ -1,3 +1,60 @@
+---
+workstream: WS:MASTERMIND-AI-FLAGSHIP
+session: claude/cmx-a2c-stream-command-ack-20260925
+model: sol
+ended_because: blocked
+mission: >
+  Complete the original AI x Terminal chart-reading, indicator and drawing command
+  continuation with exact target receipts, scoped queued-action cancellation and
+  source-aware rich answers in the existing shared Brain chat.
+state_before: >
+  This file preserves the September 26 continuation and subsequent dated updates.
+  Before this metadata repair, the original branch was clean and published at
+  c4a938afc201df797146bb685cc0c7f1977312fd, joining the accepted rich-answer source
+  and current-main history. Hosted fences rejected this handoff's absent YAML
+  frontmatter; the canonical parent workstream and discovery were held in PR7151.
+changed:
+  - path: agentos/handoffs/CMX-COPILOT-FEATURE-CONTINUATION-2026-09-26.md
+    what: Add required continuation metadata while preserving the entire historical body.
+  - path: agentos/workstreams/WS-MASTERMIND-AI-FLAGSHIP.md
+    what: Carry the same canonical parent record with exact source provenance and conservative schema normalization; preserve all unrelated holds.
+  - path: agentos/discoveries/DSC-BRAIN-FINANCIAL-SCENARIO-REFUSAL.md
+    what: Carry the original unchanged historical discovery required by the workstream join.
+  - path: tests/test_ci_pack.py
+    what: Record the measured cost of the existing Brain job's added regressions and fund only the five weight-seconds beyond the prior index-template ceiling.
+verified:
+  - claim: The original source carrier was clean at the published joined head before this metadata repair.
+    command: git rev-parse HEAD; git status --short
+    result: c4a938afc201df797146bb685cc0c7f1977312fd; no working-tree entries.
+  - claim: The carried source records match the original parent Git blobs before the documented workstream-only normalization.
+    command: git show 8f82f28675f0bed1bab6522f9602a5099ac6161e:path | git hash-object --stdin
+    result: Workstream 65b8d1634e034eca42dd8aeb8f846d13de3a4319; unchanged discovery 1253af2e321da21cbc5e26ba67435a16d24a11da.
+unverified:
+  - claim: The repaired candidate has concluded all applicable hosted release checks.
+    what_would_verify: Fresh exact-head fences, contract-delta, semantic packs and aggregate release admission after publication.
+  - claim: Both features are deployed and accepted on the actual customer path.
+    what_would_verify: Admitted paired releases, served revision and asset identities, real model-selected chart actions and rich visuals, Stop and inert history, and desktop/mobile inspection against Paper.
+unresolved:
+  - Macro release admission still depends on authentic repair of the inherited October Sector reference-integrity records; no approval receipt is fabricated here.
+  - The current hosted candidate must finish its applicable gates after this repair; local proofs and preserved historical evidence do not establish release.
+  - The original rich-source publication effect is now reconciled by the 11:18 PR9447 checkpoint; the Paper typography and mobile-history repair is continuing on that same attended source operation and still requires integrated qualification.
+next_actions:
+  - Validate this exact canonical record closure and the unchanged full AgentOS store, then qualify the measured CI budget repair.
+  - Publish the repair on the same original PR8014 branch and consume fresh exact-head hosted outcomes.
+  - Reconcile actual release dependencies and the original rich-source owner; retain the existing parent and unrelated child holds.
+  - Deploy only admitted revisions through existing release owners and complete the paired real-model, chart, Stop, history and Paper acceptance journey.
+do_not_redo:
+  - Preserve original operations, workspaces, branches, PRs and pending histories; do not replace the canonical parent or mint an alternate carrier.
+  - Retain the scoped Chairman review waiver and prior rich reviews at their actual scopes; do not turn them into CI, deployment or unrelated design approval.
+  - Preserve the canonical P0 capture and historical receipts; do not restamp evidence or recapture unchanged inputs merely to alter hashes.
+  - Preserve completed implementation and qualified tests recorded in the dated body, including the exact-result visual-source binding repair.
+danger_areas:
+  - Effects require the same chart origin, revision, pane, symbol and interval; an unconfirmed receipt cannot become visual data or advance chart authority.
+  - Scoped Stop cancels received queued actions while preserving applied changes; cold history must never replay chart effects.
+  - Inherited CI failures and source checkouts are not release permission or proof of the assets actually served to customers.
+prs: [7151, 8014, 9447]
+---
+
 # Copilot feature continuation — scoped queue Stop host prepared; widget consumer held
 
 FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION (publication/readback required)

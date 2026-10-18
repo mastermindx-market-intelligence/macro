@@ -5006,7 +5006,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_808),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
@@ -5706,6 +5706,27 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Narrowing either job without a complete closure audit would discard
     coverage, while padding counts beyond the exact measured entrants
     would hide the next change. No selector or runtime source is edited.
+
+    2026-10-18 (PR #8014, joined AI x Terminal and native rich answers):
+    the existing unrun-brain-gateway job retains its selector and every prior
+    suite while adding the registered chart-context/receipt/presentation and
+    native-visual/browser regressions. Its deterministic weight rises 61 -> 90;
+    it is the only job whose weight changes. The selected job sets are unchanged.
+    Hosted contract-delta run 39122785381 / job 117661607889 measured head
+    c4a938afc201df797146bb685cc0c7f1977312fd against base
+    f3fefce7e893755dcec18cbfe06f421c2c4d2db8:
+
+        templates/index.html          136 -> 136 jobs, 5,779 -> 5,808 weight
+        scripts/build_free_content.py 134 -> 134 jobs, 5,566 -> 5,595 weight
+        engine/prophet/plan_book.py   129 -> 129 jobs, 5,528 -> 5,557 weight
+
+    All three remain at ten packs, with no newly selected job. Fund only the
+    five weight-seconds beyond the previous 5,803 index-template ceiling, to
+    the exact observed 5,808. Preserve both other weight limits, every job-count
+    limit, all test coverage, selectors and the ten-pack limit. These are planning
+    weights, not measured execution timings. Narrowing the shared Brain job
+    without its complete dependency audit would discard conservative coverage;
+    no assertion or semantic release rule is weakened to excuse a failing test.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
