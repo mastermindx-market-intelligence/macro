@@ -97,6 +97,20 @@ class Projection(unittest.TestCase):
             with self.subTest(bad=bad):
                 x=fixtures()[0]['BIL'];self.data['BIL']=replace(x,rows=x.rows[:-1]+(dict(x.rows[-1],close_tradj=bad),))
                 self.assertRaisesRegex(Refused,'INVALID_ADJUSTED_CLOSE',self.invoke)
+    def test_unreferenced_row_digest_refused(self):
+        """A valid SHA string is not proof it belongs to the supplied source."""
+        x=self.data['BIL']
+        bad=dict(x.rows[-1],source_sha256='c'*64)
+        self.data['BIL']=replace(x,rows=x.rows[:-1]+(bad,))
+        self.assertRaisesRegex(Refused,'ROW_SOURCE_NOT_REFERENCED',self.invoke)
+    def test_row_capture_day_must_match_original_receipt(self):
+        """Changing an entire apparent capture date cannot forge provenance."""
+        x=self.data['BIL']
+        bad=tuple(dict(row,source_observed_at_utc='2026-10-13T18:00:00+00:00',
+                       adjustment_asof_utc='2026-10-13T18:00:00+00:00')
+                  for row in x.rows)
+        self.data['BIL']=replace(x,rows=bad)
+        self.assertRaisesRegex(Refused,'ROW_CAPTURE_DAY_NOT_REFERENCED',self.invoke)
     def test_source_capture_clock_future_refused(self):
         x=self.data['BIL'];self.data['BIL']=replace(x,rows=x.rows[:-1]+(dict(x.rows[-1],source_observed_at_utc='2026-11-01T14:00:00+00:00',adjustment_asof_utc='2026-11-01T14:00:00+00:00'),))
         self.assertRaisesRegex(Refused,'SOURCE_AFTER_CAPTURE_CUTOFF',self.invoke)
