@@ -77,6 +77,11 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import os
+import errno
+import stat
+import threading
+from contextlib import contextmanager
 import hashlib
 import json
 import subprocess
@@ -3253,6 +3258,99 @@ def _reference_json(path: Path) -> tuple[dict, str]:
     return value, hashlib.sha256(raw).hexdigest()
 
 
+# Scoped reentrancy bookkeeping only; fcntl/OS owns exclusion. This is not
+# source authority, a durable lock registry, lease, retry queue or daemon.
+_reference_writer_local = threading.local()
+
+
+def _writer_path(out_dir: Path) -> str:
+    return os.path.abspath(os.fspath(out_dir))
+
+
+def _assert_reference_writer_target(out_dir: Path) -> None:
+    """Detect directory substitution inside our currently held writer scope."""
+    token = getattr(_reference_writer_local, "active", {}).get(_writer_path(out_dir))
+    if token is None or token[0] != os.getpid():
+        return  # Pure read-only legacy guard calls are allowed outside writers.
+    _pid, fd, device, inode = token
+    try:
+        now = os.stat(out_dir, follow_symlinks=False)
+        held = os.fstat(fd)
+    except OSError as exc:
+        raise IdentityError("reference writer target changed or unavailable") from exc
+    if (not stat.S_ISDIR(now.st_mode) or
+            (now.st_dev, now.st_ino) != (device, inode) or
+            (held.st_dev, held.st_ino) != (device, inode)):
+        raise IdentityError("reference writer target changed during transaction")
+
+
+@contextmanager
+def _reference_writer_scope(out_dir: Path):
+    """One nonblocking, cooperative POSIX directory lock for all local writers.
+
+    Manual build and the ENTIRE nightly snapshot/build/rollback hold this same
+    scope. Nested calls in the same process/thread reuse its descriptor; other
+    processes/threads refuse immediately. No lockfile or new data schema.
+    This requires a local filesystem with working flock semantics. It does not
+    coordinate Git pushes, unrelated hosts, old code, or non-cooperating actors.
+    Creating an initial empty output directory is not generation publication.
+    """
+    try:
+        import fcntl
+    except ImportError as exc:
+        raise IdentityError("reference writer locking unsupported on this host") from exc
+    out_dir = Path(out_dir)
+    key = _writer_path(out_dir)
+    active = getattr(_reference_writer_local, "active", None)
+    if active is None:
+        active = {}
+        _reference_writer_local.active = active
+    previous = active.get(key)
+    owner_pid = os.getpid()
+    if previous is not None and previous[0] == owner_pid:
+        _assert_reference_writer_target(out_dir)
+        yield
+        return
+    fd = None
+    acquired = False
+    try:
+        if out_dir.is_symlink():
+            raise IdentityError("reference writer target is a symlink")
+        out_dir.mkdir(parents=True, exist_ok=True)
+        fd = os.open(out_dir, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+                     | getattr(os, "O_NOFOLLOW", 0))
+        held = os.fstat(fd)
+        if not stat.S_ISDIR(held.st_mode):
+            raise IdentityError("reference writer target is not a directory")
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError as exc:
+            if exc.errno in (errno.EACCES, errno.EAGAIN):
+                raise IdentityError("reference writer busy; no files changed") from exc
+            raise IdentityError("reference writer locking unavailable") from exc
+        acquired = True
+        active[key] = (owner_pid, fd, held.st_dev, held.st_ino)
+        _assert_reference_writer_target(out_dir)
+        yield
+    except OSError as exc:
+        if acquired:
+            raise  # Preserve the original builder/rollback exception contract.
+        raise IdentityError("reference writer target unavailable") from exc
+    finally:
+        try:
+            if acquired:
+                if previous is None:
+                    active.pop(key, None)
+                else:
+                    active[key] = previous
+                # A forked child must never unlock the parent's open description.
+                if os.getpid() == owner_pid:
+                    fcntl.flock(fd, fcntl.LOCK_UN)
+        finally:
+            if fd is not None:
+                os.close(fd)
+
+
 def _assert_no_unpreserved_native_generation(out_dir: Path) -> None:
     """Fail closed before legacy builder rewrites any native identity history.
 
@@ -3263,6 +3361,7 @@ def _assert_no_unpreserved_native_generation(out_dir: Path) -> None:
     rebuild. The only lawful remedy is a separate source-owner writer that
     retains and validates the complete native context. This is not that writer.
     """
+    _assert_reference_writer_target(out_dir)
     receipt_path = out_dir / RECEIPT_NAME
     if not receipt_path.exists():
         return
@@ -4172,6 +4271,22 @@ def _validate_spy_option_root_retention(evidence: dict | None, alias_rows: list[
 
 
 def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = False,
+          reference_evidence_path: Path | None = None,
+          direct_registrant_inputs: tuple[dict, ...] | list[dict] = (),
+          spy_option_root_input: dict | None = None) -> dict:
+    """Preserve the existing API; serialize all actual local writer effects."""
+    kwargs = dict(dry_run=dry_run, allow_missing_evidence=allow_missing_evidence,
+                  reference_evidence_path=reference_evidence_path,
+                  direct_registrant_inputs=direct_registrant_inputs,
+                  spy_option_root_input=spy_option_root_input)
+    if dry_run:
+        return _build_reference_unlocked(out_dir, **kwargs)
+    with _reference_writer_scope(out_dir):
+        return _build_reference_unlocked(out_dir, **kwargs)
+
+
+def _build_reference_unlocked(out_dir: Path, dry_run: bool = False,
+          allow_missing_evidence: bool = False,
           reference_evidence_path: Path | None = None,
           direct_registrant_inputs: tuple[dict, ...] | list[dict] = (),
           spy_option_root_input: dict | None = None) -> dict:
@@ -5098,6 +5213,17 @@ def _restore_artifacts(out_dir: Path, before: dict[str, bytes | None],
 
 
 def run_nightly_refresh(out_dir: Path) -> int:
+    """Keep one writer lock across old snapshot, build, rollback and cleanup."""
+    try:
+        with _reference_writer_scope(out_dir):
+            return _run_nightly_reference_unlocked(out_dir)
+    except IdentityError as exc:
+        print("::error title=security-master-writer-refusal::"
+              f"{exc} — nightly did not acquire a valid writer transaction", flush=True)
+        return 0
+
+
+def _run_nightly_reference_unlocked(out_dir: Path) -> int:
     """The ``daily.yml`` collect-job seam (spec §7).  Fail-closed refresh laws:
 
       (a) a missing/unreadable identity input -> REFUSE, keep last-good artifacts,
