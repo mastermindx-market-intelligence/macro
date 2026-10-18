@@ -7,11 +7,12 @@ hypercube order. Deterministic. No network. No implicit now. No LLM.
 """
 from __future__ import annotations
 
+import calendar
 import hashlib
 import json
 import re
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation
 from html.parser import HTMLParser
 from pathlib import Path
@@ -105,6 +106,34 @@ _MONTH_DAY_RE = re.compile(
     re.I,
 )
 _YEAR_CELL_RE = re.compile(r"^\d{4}$")
+_FULL_MONTH_TOKEN = (
+    "January|February|March|April|May|June|July|August|September|October|November|December"
+)
+# BAC consolidated headers print the numeric day glued to the year ("June 302025")
+# with no space or comma. This is a whole-header-cell grammar only: narrative or
+# body text never passes it, cells at or below the first fact row are never
+# consulted, the day must be valid for that month (February 29 only in a leap
+# year) and the year is 1990..2100.
+_GLUED_DATE_CELL_RE = re.compile(
+    r"^(" + _FULL_MONTH_TOKEN + r") (\d{1,2})(\d{4})$", re.IGNORECASE
+)
+_GLUED_YEAR_MIN = 1990
+_GLUED_YEAR_MAX = 2100
+# BAC income/cash-flow column groups ("Three Months Ended June 30") each own
+# their own duration; composing one shared end-date row would erase the 3m/6m
+# distinction, so these never route through _compose_year_row_header.
+_GROUP_BANNER_RE = re.compile(
+    r"^(three|six|nine|twelve) months ended (" + _FULL_MONTH_TOKEN + r") (\d{1,2})$",
+    re.IGNORECASE,
+)
+_GROUP_BANNER_MONTHS = {"three": 3, "six": 6, "nine": 9, "twelve": 12}
+_STATEMENT_UNIT_BANDS = (
+    "(Dollars in millions)",
+    "(Dollars in millions except per share data)",
+    "(Millions of dollars)",
+)
+_BARE_MONTH_DAY_RE = re.compile(r"^(" + _FULL_MONTH_TOKEN + r")\.? (\d{1,2})$", re.IGNORECASE)
+_R7_DISAGREEMENT = "displayed cell period disagrees with its column"
 _MONTHS = {
     "january": 1,
     "february": 2,
@@ -607,11 +636,8 @@ def _compose_year_row_header(
             and not any(cell["facts"] for cell in year_cells)
             # The other observed CAT annual headings use the same one-row
             # position for different, but exact, statement-unit labels.
-            and units in (
-                ["(Dollars in millions)"],
-                ["(Dollars in millions except per share data)"],
-                ["(Millions of dollars)"],
-            )
+            and len(units) == 1
+            and units[0] in _STATEMENT_UNIT_BANDS
         )
         if skip_units:
             year_row += 1
@@ -635,6 +661,197 @@ def _compose_year_row_header(
         source = "composed_title_year_row" if skip_units else "composed_year_row"
         return composed, frozenset(consumed), source
     return None
+
+
+def _first_fact_row(rows: list[list[dict[str, Any]]]) -> int | None:
+    return next(
+        (index for index, cells in enumerate(rows) if any(cell["facts"] for cell in cells)),
+        None,
+    )
+
+
+def _glued_header_cell_date(text: str) -> str | None:
+    """ISO date for a whole header cell like ``June 302025`` (day glued to the year)."""
+    match = _GLUED_DATE_CELL_RE.match(text.strip())
+    if match is None:
+        return None
+    month = _MONTHS[match.group(1).lower()]
+    day = int(match.group(2))
+    year = int(match.group(3))
+    if not _GLUED_YEAR_MIN <= year <= _GLUED_YEAR_MAX:
+        return None
+    if not 1 <= day <= calendar.monthrange(year, month)[1]:
+        return None
+    return f"{year:04d}-{month:02d}-{day:02d}"
+
+
+def _glued_header_columns(
+    rows: list[list[dict[str, Any]]],
+) -> tuple[list[str], frozenset[int]] | None:
+    """Direct glued-date header columns (the BAC consolidated balance-sheet shape).
+
+    A row above the first fact row carrying two or more glued date cells is the
+    dated header; a rowspan carry repeats the same texts one row down, so every
+    such row is header chrome and consumed. Returns the ISO dates in cell order
+    plus the consumed row indices, or None when no row qualifies.
+    """
+    first_fact = _first_fact_row(rows)
+    header_limit = first_fact if first_fact is not None else len(rows)
+    dates: list[str] = []
+    consumed: set[int] = set()
+    for index in range(header_limit):
+        cells = rows[index]
+        if any(cell["facts"] for cell in cells):
+            continue
+        row_dates = [
+            iso
+            for cell in cells
+            if (iso := _glued_header_cell_date(str(cell["text"]))) is not None
+        ]
+        if len(row_dates) < 2:
+            continue
+        if not dates:
+            dates = row_dates
+        consumed.add(index)
+    if not dates:
+        return None
+    return dates, frozenset(consumed)
+
+
+def _is_bare_month_day_row(cells: list[dict[str, Any]]) -> bool:
+    """A factless header row whose only text cells are bare month-day phrases."""
+    texts = [str(cell["text"]).strip() for cell in cells if str(cell["text"]).strip()]
+    if not texts:
+        return False
+    return all(_BARE_MONTH_DAY_RE.match(text) for text in texts)
+
+
+def _shift_month_back(year: int, month: int, back: int) -> tuple[int, int]:
+    index = month - back
+    while index < 1:
+        index += 12
+        year -= 1
+    return year, index
+
+
+def _compose_grouped_duration_year_row(
+    rows: list[list[dict[str, Any]]],
+) -> tuple[list[dict[str, Any]], frozenset[int], list[int]] | None:
+    """Composed duration columns from N-months-ended group banners over a year row.
+
+    The BAC consolidated income/cash-flow shape prints one banner per duration
+    ("Three Months Ended June 30", "Six Months Ended June 30") with the years
+    in a row beneath it; each group owns its own duration and end date, so a
+    single composed end-date row would erase the 3m/6m distinction. Fully blank
+    rows (and one exact statement unit band) may sit between a banner and its
+    year row. Raises a typed refusal when a group's span does not cover an
+    exact contiguous run of year cells, or when years within a group are not
+    strictly descending; returns None when the header is not this shape.
+    Returns the composed column periods, the consumed row indices, and the
+    year count per group.
+    """
+    first_fact = _first_fact_row(rows)
+    header_limit = first_fact if first_fact is not None else len(rows)
+    banner_row: int | None = None
+    groups: list[dict[str, Any]] = []
+    for index in range(header_limit):
+        cells = rows[index]
+        if any(cell["facts"] for cell in cells):
+            continue
+        row_groups: list[dict[str, Any]] = []
+        other_text = False
+        for column, cell in enumerate(cells):
+            text = str(cell["text"]).strip()
+            if not text:
+                continue
+            match = _GROUP_BANNER_RE.match(text)
+            if match is None:
+                other_text = True
+                break
+            row_groups.append(
+                {
+                    "column": column,
+                    "colspan": int(cell.get("colspan") or 1),
+                    "months": _GROUP_BANNER_MONTHS[match.group(1).lower()],
+                    "month": _MONTHS[match.group(2).lower()],
+                    "day": int(match.group(3)),
+                }
+            )
+        if row_groups and not other_text:
+            banner_row = index
+            groups = row_groups
+            break
+    if banner_row is None or not groups:
+        return None
+    year_row: int | None = None
+    consumed: set[int] = {banner_row}
+    for index in range(banner_row + 1, header_limit):
+        cells = rows[index]
+        if any(cell["facts"] for cell in cells):
+            break
+        texts = [str(cell["text"]).strip() for cell in cells]
+        nonempty = [text for text in texts if text]
+        if not nonempty:
+            consumed.add(index)
+            continue
+        if len(nonempty) == 1 and nonempty[0] in _STATEMENT_UNIT_BANDS:
+            consumed.add(index)
+            continue
+        year_row = index
+        break
+    if year_row is None:
+        return None
+    consumed.add(year_row)
+    year_cells: list[tuple[int, int, int]] = []
+    for column, cell in enumerate(rows[year_row]):
+        text = str(cell["text"]).strip()
+        if not text or text == "$":
+            continue
+        if _YEAR_CELL_RE.match(text):
+            year_cells.append((column, int(cell.get("colspan") or 1), int(text)))
+    if len(year_cells) < 2:
+        return None
+    spans = [(group["column"], group["column"] + group["colspan"]) for group in groups]
+    for low, high in spans:
+        for column, cell in enumerate(rows[year_row]):
+            text = str(cell["text"]).strip()
+            if not text or text == "$":
+                continue
+            if low <= column < high and not _YEAR_CELL_RE.match(text):
+                raise _layout_unsupported(
+                    "grouped duration banner does not cover an exact contiguous run of year cells"
+                )
+    per_group: list[list[int]] = [[] for _ in groups]
+    for start, colspan, year in year_cells:
+        covers = [
+            group_index
+            for group_index, (low, high) in enumerate(spans)
+            if low <= start and start + colspan <= high
+        ]
+        if len(covers) != 1:
+            raise _layout_unsupported(
+                "grouped duration banner does not cover an exact contiguous run of year cells"
+            )
+        per_group[covers[0]].append(year)
+    for years in per_group:
+        if not years or years != sorted(years, reverse=True) or len(set(years)) != len(years):
+            raise _layout_unsupported("grouped duration years are not strictly descending")
+    columns_periods: list[dict[str, Any]] = []
+    for group, years in zip(groups, per_group):
+        for year in years:
+            if group["day"] > calendar.monthrange(year, group["month"])[1]:
+                return None
+            start_year, start_month = _shift_month_back(
+                year, group["month"], group["months"] - 1
+            )
+            columns_periods.append(
+                {
+                    "kind": "duration",
+                    "start": f"{start_year:04d}-{start_month:02d}-01",
+                    "end": f"{year:04d}-{group['month']:02d}-{group['day']:02d}",
+                }
+            )
+    return columns_periods, frozenset(consumed), [len(years) for years in per_group]
 
 
 def _is_ix_numeric(tag: str) -> bool:
@@ -1026,7 +1243,11 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
     banner over a bare-year row (the fiscal-year SNOW shape) composes the
     columns and the output carries ``"columns_source": "composed_year_row"``;
     the CAT title banner composed across one exact unit band carries
-    ``"composed_title_year_row"`` (absent on the full-date path).
+    ``"composed_title_year_row"``. The BAC duration groups ("Three Months Ended
+    June 30" over a year row) carry ``"composed_grouped_duration_year_row"``
+    plus each column's own period under ``"columns_periods"``; a glued-date
+    header row ("June 302025") composes plain dated columns like the full-date
+    path (both absent on the full-date path).
     """
     title_label = title if isinstance(title, str) else ", ".join(str(item) for item in title)
     if not title_label.strip():
@@ -1038,16 +1259,39 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
     if not parser.rows:
         raise StatementGraphError(f"displayed statement table is absent: {title_label}")
     composed: tuple[list[str], frozenset[int], str] | None = None
+    grouped: tuple[list[dict[str, Any]], frozenset[int], list[int]] | None = None
+    glued: tuple[list[str], frozenset[int]] | None = None
     if not any(
         len(_iso_dates_from_text(" ".join(cell["text"] for cell in cells))) >= 2
         for cells in parser.rows
     ):
         composed = _compose_year_row_header(parser.rows)
-    consumed = composed[1] if composed is not None else frozenset()
+        if composed is None:
+            grouped = _compose_grouped_duration_year_row(parser.rows)
+        if composed is None and grouped is None:
+            glued = _glued_header_columns(parser.rows)
+    if composed is not None:
+        consumed = composed[1]
+    elif grouped is not None:
+        consumed = grouped[1]
+    elif glued is not None:
+        consumed = glued[1]
+    else:
+        consumed = frozenset()
+    first_fact_row = _first_fact_row(parser.rows)
+    fact_row_limit = first_fact_row if first_fact_row is not None else len(parser.rows)
     header_dates: list[str] = []
     display_rows: list[dict[str, Any]] = []
     for index, cells in enumerate(parser.rows):
         if index in consumed:
+            continue
+        if (
+            glued is not None
+            and index < fact_row_limit
+            and not any(cell["facts"] for cell in cells)
+            and _is_bare_month_day_row(cells)
+        ):
+            # A bare "December 31" banner fragment above a glued-date header.
             continue
         joined = " ".join(cell["text"] for cell in cells)
         dates = _iso_dates_from_text(joined)
@@ -1086,6 +1330,21 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
         )
     if composed is not None:
         header_dates = composed[0]
+    if glued is not None:
+        header_dates = glued[0]
+    if grouped is not None:
+        header_dates = [spec["end"] for spec in grouped[0]]
+        years_per_group = grouped[2]
+        fact_columns = max(
+            (len(spec["value_facts"]) for spec in display_rows), default=0
+        )
+        if fact_columns > 0 and (
+            len(set(years_per_group)) != 1
+            or years_per_group[0] * len(years_per_group) != fact_columns
+        ):
+            raise _layout_unsupported(
+                "grouped duration groups do not match the displayed fact columns"
+            )
     if len(header_dates) < 2:
         raise StatementGraphError(f"displayed statement columns are absent: {title_label}")
     # Values bind to columns by position, so a row carrying more values than the
@@ -1100,6 +1359,9 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
     output: dict[str, Any] = {"columns_iso": header_dates, "rows": display_rows}
     if composed is not None:
         output["columns_source"] = composed[2]
+    if grouped is not None:
+        output["columns_source"] = "composed_grouped_duration_year_row"
+        output["columns_periods"] = grouped[0]
     return output
 
 
@@ -1144,6 +1406,7 @@ def _period_for_displayed_column(
     displayed_rows: list[dict[str, Any]],
     facts_by_id: Mapping[str, dict[str, Any]],
     contexts: Mapping[str, dict[str, Any]],
+    require_start: str | None = None,
 ) -> dict[str, Any] | None:
     """Bind one displayed column from same-column facts of the preferred period kind."""
     for spec in displayed_rows:
@@ -1162,6 +1425,8 @@ def _period_for_displayed_column(
         if prefer_kind == "instant" and period.get("instant_date") == iso:
             return period
         if prefer_kind == "duration" and period.get("end_date") == iso and period.get("start_date"):
+            if require_start is not None and period.get("start_date") != require_start:
+                continue
             return period
     return None
 
@@ -1173,8 +1438,39 @@ def _columns_from_display(
     displayed_rows: list[dict[str, Any]],
     facts_by_id: Mapping[str, dict[str, Any]],
     contexts: dict[str, dict[str, Any]],
+    explicit_periods: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
-    """Columns are the dates printed on the captured table, bound to complete filing periods."""
+    """Columns are the dates printed on the captured table, bound to complete filing periods.
+
+    ``explicit_periods`` (the grouped-duration composition) carries each
+    column's own start and end from the display; every such column must still
+    bind to a same-column filing context with exactly that period.
+    """
+    if explicit_periods is not None:
+        if len(explicit_periods) < 2:
+            raise StatementGraphError("displayed statement columns are absent")
+        columns: list[dict[str, Any]] = []
+        seen: set[tuple[str, str | None, str]] = set()
+        for index, spec in enumerate(explicit_periods):
+            iso = str(spec["end"])
+            start = str(spec["start"])
+            period = _period_for_displayed_column(
+                index=index,
+                iso=iso,
+                prefer_kind="duration",
+                displayed_rows=displayed_rows,
+                facts_by_id=facts_by_id,
+                contexts=contexts,
+                require_start=start,
+            )
+            if period is None or period.get("start_date") != start:
+                raise StatementGraphError("displayed duration column is not bound to the filing period")
+            identity: tuple[str, str | None, str] = ("duration", start, iso)
+            if identity in seen:
+                raise StatementGraphError("displayed statement columns collapse distinct filing periods")
+            seen.add(identity)
+            columns.append({"kind": "duration", "start": start, "end": iso, "label": iso})
+        return columns
     if len(iso_dates) < 2:
         raise StatementGraphError("displayed statement columns are absent")
     prefer_kind = "instant" if statement_type == "balance_sheet" else "duration"
@@ -1204,6 +1500,140 @@ def _columns_from_display(
             raise StatementGraphError("displayed statement columns collapse distinct filing periods")
         seen.add(identity)
     return columns
+
+
+def _period_label(period: Mapping[str, Any]) -> str:
+    if str(period.get("kind") or "") == "instant":
+        return f"instant {period.get('instant_date')}"
+    return f"duration {period.get('start_date')}..{period.get('end_date')}"
+
+
+def _column_label(column: Mapping[str, Any]) -> str:
+    if str(column.get("kind") or "") == "instant":
+        return f"instant {column.get('end')}"
+    return f"duration {column.get('start')}..{column.get('end')}"
+
+
+def _duration_days(start: str | None, end: str | None) -> int | None:
+    if not start or not end:
+        return None
+    try:
+        return (date.fromisoformat(end) - date.fromisoformat(start)).days
+    except ValueError:
+        return None
+
+
+def _cell_period_disagreement(
+    index: int,
+    label: str,
+    fact: Mapping[str, Any],
+    period: Mapping[str, Any],
+    column: Mapping[str, Any],
+    detail: str,
+) -> StatementGraphError:
+    return StatementGraphError(
+        f"{_R7_DISAGREEMENT} {index}: row {label!r} fact {fact.get('fact_id')} "
+        f"context {_period_label(period)} vs column {_column_label(column)}: {detail}"
+    )
+
+
+# Cash-flow cash positions are tagged as instants: the balance at the column's
+# end date, or at the day before its start (the canonical beginning-of-period
+# instant). Those two instants agree with a duration column; none other does.
+_R7_LENGTH_TOLERANCE_DAYS = 7
+
+
+def _enforce_cell_period_agreement(
+    *,
+    columns: list[dict[str, Any]],
+    displayed_rows: list[dict[str, Any]],
+    facts_by_id: Mapping[str, dict[str, Any]],
+    contexts: Mapping[str, dict[str, Any]],
+    exact_starts: bool,
+) -> None:
+    """R7: a displayed numeric cell never sits in a column its context contradicts.
+
+    Every value cell with a resolvable inline-XBRL context must agree with its
+    dated column: kind, end date, and — for grouped columns that print their
+    own duration — the exact start; annual/quarterly columns bound without a
+    printed start accept any context within 7 days of the column's own period
+    length. A cell without a context (chrome, subtotals rendered without ix
+    tags) is left as today. A contradiction refuses; a cell is never
+    reassigned, reordered or dropped.
+    """
+    for spec in displayed_rows:
+        label = str(spec.get("label") or "")
+        for index, html_fact in enumerate(spec.get("value_facts") or []):
+            if index >= len(columns):
+                break
+            column = columns[index]
+            parsed = facts_by_id.get(str(html_fact.get("fact_id") or ""))
+            if parsed is None:
+                continue
+            context = contexts.get(str(parsed.get("context_ref") or ""))
+            if context is None:
+                continue
+            period = context.get("period") or {}
+            kind = str(period.get("kind") or "")
+            if str(column.get("kind") or "") == "instant":
+                if kind != "instant":
+                    raise _cell_period_disagreement(
+                        index, label, parsed, period, column, "period kind disagrees"
+                    )
+                if period.get("instant_date") != column.get("end"):
+                    raise _cell_period_disagreement(
+                        index, label, parsed, period, column, "instant date is not the column end"
+                    )
+                continue
+            if kind == "instant":
+                start = column.get("start")
+                day_before_start = None
+                if start:
+                    try:
+                        day_before_start = (date.fromisoformat(str(start)) - timedelta(days=1)).isoformat()
+                    except ValueError:
+                        day_before_start = None
+                if period.get("instant_date") not in (column.get("end"), day_before_start):
+                    raise _cell_period_disagreement(
+                        index,
+                        label,
+                        parsed,
+                        period,
+                        column,
+                        "cash position instant is not the column end or the day before the column start",
+                    )
+                continue
+            if kind != "duration":
+                continue
+            if period.get("end_date") != column.get("end"):
+                raise _cell_period_disagreement(
+                    index, label, parsed, period, column, "duration end is not the column end"
+                )
+            if exact_starts:
+                if period.get("start_date") != column.get("start"):
+                    raise _cell_period_disagreement(
+                        index, label, parsed, period, column, "duration start is not the grouped column start"
+                    )
+                continue
+            length = _duration_days(
+                str(period.get("start_date") or ""), str(period.get("end_date") or "")
+            )
+            column_length = _duration_days(
+                str(column.get("start") or ""), str(column.get("end") or "")
+            )
+            if (
+                length is None
+                or column_length is None
+                or abs(length - column_length) > _R7_LENGTH_TOLERANCE_DAYS
+            ):
+                raise _cell_period_disagreement(
+                    index,
+                    label,
+                    parsed,
+                    period,
+                    column,
+                    "duration length is outside the statement period semantics",
+                )
 
 
 def _values_agree(left: str, right: str) -> bool:
@@ -1529,6 +1959,14 @@ def reconstruct_statement(
         displayed_rows=displayed["rows"],
         facts_by_id=facts_by_id,
         contexts=contexts,
+        explicit_periods=displayed.get("columns_periods"),
+    )
+    _enforce_cell_period_agreement(
+        columns=columns,
+        displayed_rows=displayed["rows"],
+        facts_by_id=facts_by_id,
+        contexts=contexts,
+        exact_starts=displayed.get("columns_periods") is not None,
     )
     out_rows: list[dict[str, Any]] = []
     for spec in displayed["rows"]:
