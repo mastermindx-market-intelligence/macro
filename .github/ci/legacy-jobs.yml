@@ -37,6 +37,8 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "engine/government_revenue/public_agreement.py"
+      - "engine/company_intelligence/rms_segment_profile.py"
       - "app/__init__.py"
       - "app/account_actions.py"
       - "app/account_prefs.py"
@@ -21738,7 +21740,7 @@ jobs:
       - name: Canonical market owner and point-in-time joint producer
         run: python -m pytest tests/test_defense_market_context.py tests/test_defense_market_producer_integration.py -q
       - name: Six-theme official source and reviewed disclosure contracts
-        run: python -m pytest tests/defense_o2_source_contracts/test_budget_allocation_context.py tests/defense_o2_source_contracts/test_nato_policy_extension.py tests/defense_o2_source_contracts/test_program_theme_context.py tests/defense_o2_source_contracts/test_program_theme_disclosure.py tests/defense_o2_source_contracts/test_program_theme_reviewed_builder.py tests/defense_o2_source_contracts/test_program_theme_owner_bridge.py tests/defense_o2_source_contracts/test_t0_reviewed_loader.py tests/defense_o2_source_contracts/test_program_theme_runtime_wiring.py tests/test_theme_economic_interpretation.py tests/defense_o2_source_contracts/test_theme_same_generation.py tests/defense_o2_source_contracts/test_program_dossier_owner_validation.py tests/test_government_program_public_capacity.py tests/test_government_program_capacity_ui.py tests/test_government_program_oversight.py tests/test_government_program_oversight_ui.py tests/test_government_program_army_source_boundary.py tests/test_government_program_curator_clock_advance.py tests/test_government_program_public_agreement.py tests/defense_o2_source_contracts/test_public_agreement_payload.py -q
+        run: python -m pytest tests/defense_o2_source_contracts/test_budget_allocation_context.py tests/defense_o2_source_contracts/test_nato_policy_extension.py tests/defense_o2_source_contracts/test_program_theme_context.py tests/defense_o2_source_contracts/test_program_theme_disclosure.py tests/defense_o2_source_contracts/test_program_theme_reviewed_builder.py tests/defense_o2_source_contracts/test_program_theme_owner_bridge.py tests/defense_o2_source_contracts/test_t0_reviewed_loader.py tests/defense_o2_source_contracts/test_program_theme_runtime_wiring.py tests/test_theme_economic_interpretation.py tests/defense_o2_source_contracts/test_theme_same_generation.py tests/defense_o2_source_contracts/test_program_dossier_owner_validation.py tests/test_government_program_public_capacity.py tests/test_government_program_capacity_ui.py tests/test_government_program_oversight.py tests/test_government_program_oversight_ui.py tests/test_government_program_army_source_boundary.py tests/test_government_program_curator_clock_advance.py tests/test_government_program_public_agreement.py tests/defense_o2_source_contracts/test_public_agreement_payload.py tests/defense_o2_source_contracts/test_fleet_rms_disclosure.py -q
       - name: Ownership and foreign listing source-context journeys
         run: python -m pytest tests/test_government_revenue_archetype_context.py tests/test_government_revenue_archetype_ui.py tests/test_government_revenue_identity_subject_journey.py tests/test_government_revenue_identity_context_clock.py -q
       - name: Government Revenue HTML packaging preserves content and runtime
