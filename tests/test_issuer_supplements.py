@@ -163,3 +163,16 @@ def test_rms_preserves_first_capture_and_refuses_workspace_period_or_projected_s
 def test_rms_null_receipt_is_a_qualified_refusal():
     from engine.company_intelligence.rms_segment_profile import receipt_value
     with pytest.raises(ValueError):receipt_value(None,"fleet_rms_margin_prior")
+
+
+def test_rms_subsecond_retrieval_never_becomes_visible_before_actual_capture(tmp_path):
+    captured="2026-10-16T04:14:04.500000Z"
+    supplement=rms_held(observed_at=captured,source_available_at=captured)
+    assert supplement["source"]["source_clock"]=={
+        "observed_at":"2026-10-16T04:14:05Z","available_at":"2026-10-16T04:14:05Z"}
+    from engine.government_revenue.defense_economics_producer import build_defense_economics_payload
+    rows=[append_issuer_supplements(make_workspace("LMT"),[supplement])]
+    rows.extend(make_workspace(t) for t in ("RTX","NOC","LHX"))
+    write_workspace_generation(tmp_path/"data/company_intelligence",{row["event_id"]:row for row in rows})
+    result=build_defense_economics_payload(tmp_path,generated_at="2026-10-18T01:00:00Z",as_of="2026-10-16T04:14:04.900000Z")
+    assert all("fleet_rms_" not in fact["fact_id"] for profile in result["profiles"] for fact in profile["axes"]["economics"]["facts"])

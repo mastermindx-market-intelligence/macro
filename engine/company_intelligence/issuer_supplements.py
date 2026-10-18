@@ -13,7 +13,7 @@ from engine.company_intelligence.documents import SourceDocument,text_span,verif
 from engine.company_intelligence.contracts import canonical_json_bytes
 from engine.company_intelligence.documents import FilingKey
 from engine.earnings_release.receipts import receipt_for_char_span,replay_receipt
-from engine.company_intelligence.event_workspace import validate_event_workspace,_strip_private
+from engine.company_intelligence.event_workspace import validate_event_workspace,_strip_private,_ceil_second
 
 
 def _instant(value):
@@ -75,6 +75,9 @@ def build_issuer_supplement(*,kind,body,url,filing,event_id,period,observed_at,s
         if _instant(filing.get('acceptance_datetime'))!=_instant('2026-07-23T10:30:57Z') or observed<_instant(filing['acceptance_datetime']):
             raise ValueError('RMS_native_filing_acceptance_mismatch')
         if available!=observed:raise ValueError('RMS_changed_byte_version_requires_actual_retrieval_clock')
+        # SourceDocument serializes whole seconds. Reuse the native conservative
+        # boundary rather than expose this observation before its real capture.
+        observed=available=_ceil_second(observed)
         native=FilingKey(cik=filing['cik'],accession=filing['accession'])
         parser_id=native.accession
     else:raise ValueError('supplement_profile_unsupported')
