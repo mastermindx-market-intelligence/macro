@@ -1,0 +1,76 @@
+# Leadership Rotation — V3 candidate statistics and P0 qualification design
+
+**Dated:** 2026-10-18 (UTC) · **State: RESEARCH CANDIDATE / NOT PREREGISTERED / NOT POWERED / NOT A READ PERMIT.**
+Owner: WS:LEADERSHIP-ROTATION-INTELLIGENCE (LR-W6). This file is a *candidate for an independently reviewed*, subsequently dated \`research/LEADERSHIP_ROTATION_PREREG_V3.md\`. It is not that document; no freeze or content-addressed protocol approval is asserted. No real-data P1/P2/P3 run may consume it as authority.
+
+## 0. Binding inherited evidence and unresolved nomenclature
+
+- V1 blob \`9d1313e0fc0c5c9720dc1aeb16c9ebf273d70abe\`, V2 blob \`1fcd151cfc4cdeb321789feb50d3fbb127cce056\`, V2.1 blob \`8f48509b65c70f7f3786402cba9b21940a907e83\` remain byte-frozen. P1 development is contaminated and P2 reconstructed is falsification-only. P3 prospective is the only support path.
+- **T12R accepted**: 42/42 size rows SIZED, M=400 under V2 §3. It established *size for that old harness*, not power or permission for changed statistics. T13R: all H1/H2/H3 NOT_EXECUTABLE. H1's A2 is *A1 delayed five sessions by construction*; its null delay quantile is exactly 5, 4,200 H1 synthetic evaluations passed zero. In eligible G2 δ≤4%, N≤40: H2 best 1/100, H3 0/100. Further old-protocol seeds cannot rescue those numbers.
+- Agent OS \`DEC:LEADERSHIP-ROTATION-P1-WITHHELD-UNTIL-STATISTICS-REREGISTERED\` explicitly chooses a dated V3 with new size **and** power *before* any P1 look. V2.1 §0 earlier reserved the V3 name specifically for a size-falsifier branch; T12R's size falsifier did not trigger. The new decision governs the *follow-on program direction*, but a future V3 must state this nomenclature/supersession explicitly before it is frozen. Do not silently rewrite V2.1.
+- Reader \`scripts/leadership_rotation_run.py\` is conservatively sealed by draft #9598. Neither this candidate nor a green source check unlocks it. The old look ledger has no accepted real-data entry; P1/P2/P3 reads remain **zero according to the recorded owner evidence**, not a newly observed live audit.
+
+## 1. Invariants that a V3 cannot change to manufacture success
+
+Seven sector/broadening context pairs, two family groups, arm definitions A0–B7/C3 and their *past-only* inputs remain fixed. No sector-cycle/positioning/options/news/LLM data in the research features. The source pair is always directional (numerator receiver, denominator donor). The adjusted-close ratio is \`R_t=log(P_receiver,t)-log(P_donor,t)\`; the origin is after close \`t\` at \`t+1\`, with future-only \`Y20=R_{o+20}-R_o\`. Price availability, corporate-action basis and NYSE pair calendars must be recorded. Unmeasured ≠ missing price ≠ zero ≠ loss.
+
+Preserve practical margins: H1 **at least 5 NYSE sessions earlier** and **at least 25% less** alarm burden against suppressed A0; H2 **+0.50 log-ratio points** (=+0.0050 log units); H3 **+0.25 log-ratio points** (=+0.0025). Familywise one-sided α=.025, Holm over six group×hypothesis hypotheses; no shrinking the family to gain significance. One-event/one-attempt matching, phase horizon [T,T+40], raw versus suppressed A0, within-pair 20-session merge, shared-shock ±10-session single-linkage clusters, 21-session mean stationary bootstrap (2,000 replicates), censored/late/repeat classifications, group-separated verdicts and C2 absolute-leg strata remain.
+
+All V3 statistics here are **proposed new claims**; none may inherit the old V2/T12R size result or H1's old p-value. Any dataset exposure, retuning, comparator selection based on \`Y20\`, or result-driven alternative generator edit voids the proposed confirmatory experiment.
+
+## 2. H1 candidate — detect real transitions earlier than an *independent* arm
+
+**Old structural impossibility:** A1 versus A2 is effectively comparing an alarm with a five-session lagged version of itself. That test has no room to reject a null quantile equal to its own margin.
+
+**Candidate estimand H1-V3:** compare A1 with incumbent already-frozen **B2** trailing-63-session momentum crossing (not A2). Use the same zig-zag onsets (amplitude .08 log units, min 40-session up-phase) solely as retrospective *evaluation* labels, never prospective inputs. For each qualifying onset \`T\` and each arm, take the first kept \`MATCHED\` alarm under existing \`leadership_rotation_episodes.classify_alarms\`. Set \`d_arm(T)=t-T\` if matched in [T,T+40], else **41** (right-censored miss penalty). Report the per-group common-onset statistic
+
+\`D_H1 = mean_T[d_B2(T)-d_A1(T)]\` measured in NYSE sessions, **including every missed onset** in both denominators.
+
+The \`D_H1 >= 5\` practical hurdle is not automatically true: B2 can beat A1, both can miss, and delays vary independently. Retain H1's other arm-comparison safety clauses:
+- A1 detection rate no more than 5 percentage points below B2; A1 unmatched-alarm burden per pair-year no more than B2 +0.5.
+- Against suppressed A0, A1 reduces *unmatched-alarm burden* by ≥25%, and detects no more than 10 pp fewer qualifying onsets. Print A0 raw daily-alarm burden separately.
+- All late, repeated, false-start, superseded and censored episodes count under the existing first-match precedence; do not cherry-pick the events both arms found.
+
+The **statistic is a detection/efficiency contrast**, not a tradable excess-return forecast. P3 may support only that narrower statement. A1/A2 5-session delay, A0 raw stream and B2 relative delay remain separate descriptive diagnostics; no one retroactively relabels V1's invalid H1 as supported.
+
+**Falsifiers:** zero qualifying onsets = NOT_EXECUTABLE; a synthesized matched-only median that ignores misses = INVALID; a constant +5 across all paths or an exact-null quantile mechanically equal to the margin requires design review, not rerunning seeds. Require independent synthetic examples where D_H1 is positive, negative and zero. Null: path-matched G1 no-rotation surrogate at σ/ρ/honest-N determined from *formation-only* information; p-values are fixed from a separately seeded null bank, and Holm still binds.
+
+## 3. H2 candidate — positive future-only advantage against risk-set comparators
+
+Old \`mean(Y20 after A1)-max(mean(Y20 after all B1 days),mean(Y20 after B2))\` was undersized for the positive-control regime at the fixed +.0050 economic margin; the unconditional B1 calendar exposure and B2's differing alarm opportunities are not equivalent samples. This is a question of **estimand**, not evidence that the margin should be weakened.
+
+**Candidate H2-V3 test:** at each A1 onset \`t\`, construct a *past-only* matching risk set on the same registered pair and NYSE quarter, with trailing 63-day **pre-t volatility quintile** and available 252-session warm-up. Select one **B1 comparison origin without an active A1 state** from that risk set, at least 20 sessions apart from \`t\` (to avoid the same forward window), by smallest absolute prior information-date distance; deterministic earliest-date and lexical pair-ID tie breaks. If none exists, emit UNMATCHED/UNMEASURED and keep the originating A1 attempt in coverage/attrition denominators. B2's already-frozen raw onset path is computed separately. No comparator chosen for a known future \`Y20\`, and no post-t volatility matching.
+
+The proposed pair/group statistic is the *higher* of B1-matched and B2 genuine standalone baseline means subtracted from A1's mean \`Y20\`, with full future-only outcome states, separate honest-N, and the baseline reselected in every bootstrap replicate. Compare **+0.0050** log units; preserve the A1 false-start-rate ceiling (no >5 pp worse than B2), cost-of-confirmation, carry, all-event coverage ≥80%, and ≥20 honest-N clusters. An unmatched control is **not** silently dropped or assigned zero; if baseline coverage cannot meet the registered threshold, H2 is SOURCE_LIMITED or NOT_EXECUTABLE, never a pass.
+
+**Confounders to report:** non-overlap reduction, quarter/vol matching imbalance, fast regime transitions, B1 look-ahead avoidance, pair universe composition and the alternative of a strong unconditional reference. P0 G2 paths must first show meaningful power at δ≤4%, N≤40 under this *fixed* rule; a good in-sample number does not qualify it.
+
+## 4. H3 candidate — distinguish two-leg transfer from a common rising tide
+
+Old A1 pair-return versus B3 receiver-only residual \`Y20\` had no detectable positive effect under G2's mostly single-ratio drift. A two-leg transfer hypothesis demands a **joint receiver/donor design**, not a relabeling of one ratio as migration.
+
+**Candidate effect modifier, known at t:** \`donor_weak_t := (log(P_donor,t/P_SPY,t) - log(P_donor,t-20/P_SPY,t-20)) < 0\`. Equal price basis and both-leg source timestamps required. C2 both-up/both-down/mixed classifications remain printed, and missing donor/receiver bars are SOURCE_INVALID or UNMEASURED, not donor_weak=false.
+
+For each predeclared donor_weak stratum, compare the subsequent **future-only SPY-beta-residualized 20-session pair return** \`Y20^res\` between original A1 onset events and independent frozen B3 receiver-only entries, matched on the receiver's trailing 20-day SPY-relative-momentum sign, quarter and volatility quintile (formation-only). Then evaluate the **difference in uplift by donor-weakness**:
+
+\`D_H3 = [mean(Y20^res|A1, weak)-mean(Y20^res|B3, weak)] - [mean(Y20^res|A1, not_weak)-mean(Y20^res|B3, not_weak)]\`.
+
+Margin remains **+0.0025 log units**, with clustering and Holm. If any of the four cells has no measured/matured support or the matched reference is absent, it is NOT_EXECUTABLE (not an extrapolated zero). This asks a **new effect-modification question**: does pair structure improve subsequent relative movement *specifically when a donor was already weak?* It is still observational, not proof of capital flows or causality.
+
+**Necessary negative control:** a common-factor/both-up generator with equal aggregate ratio drift but no distinct donor weakness must *not* appear powered for the two-leg-specific claim. **Positive control:** a separate predeclared synthetic G3 two-leg regime where receiver residual strengthens and donor residual weakens during the planted 40–120-session interval; total ratio-drift magnitude is held within the existing δ grid. Evaluate with the same statistic and code as the null; do not generate a special friendly forecast signal. G3 is a candidate generator until independently specified and approved; no synthetic generator shows that real investor flows occurred.
+
+## 5. P0 pre-registration sequence and acceptance gates
+
+1. **Design review before frozen implementation:** decide whether the new H1 delay with miss censoring, H2's matched opportunity sets, and H3's interaction are the right scientific questions. Resolve V2.1's V3-name reservation explicitly. Fix exactly one version of match windows, admissible group/date strata, null construction, censoring and role labels; preserve all old amendments.
+2. **Freeze a real \`PREREG_V3.md\`:** dated, distinct Git blob SHA, source/harness code fingerprints and schedule cut-off *before* any P1/P2/P3 access. Rebuild P0 against its **exact** code fingerprint. Do not edit it in place after release; changes require a new dated amendment.
+3. **Size (G1 δ=0):** all original V2 §3 cells {0,1,2,3,4,48}, every 7-row group×hypothesis plus family_any matrix, M≥400 OK sims per cell, H1 null-reference bank K≥1000 *independent of test paths*, α=.025, and **both** Wilson-lower ≤α and point ≤α+2√(α(1−α)/M). Print every row, failure count, per-arm burden/delay and C2 strata. No partial or failed sim imputation; fail closed if one row missing/size-violating.
+4. **Power:** original G2 δ={1,2,4,8}% per 20 sessions, σ=.7%, ρ=.5, N={20,40,80}, M≥100 per cell; H1/H2 **and** G3 two-leg H3 separately, with a matched common-factor/both-up **negative control** and an independent seed pool. Preserve the V2 ≥50% pass-rate bar in at least one δ≤4%, N≤40 eligible cell for the *specific* hypothesis/group, with Wilson intervals. Report both groups and all no-power regions; if any proposed hypothesis lacks the qualifying effect-design signal, mark it NOT_EXECUTABLE. No alpha adjustment or economic-margin relaxation after a failed run.
+5. **Consumer/admission:** no engine/Prophet/sector surface treats synthetic P0 as live investment intelligence. P1 = DEVELOPMENT only; P2 cannot SUPPORTED; P3's formation date resets to the first session after V3 *actual* merge, and only P3 may support prediction after registered maturity, independent review and all existing custody acts.
+6. **Exactly-once look accounting before first real read:** a look must be exclusively and durably reserved against canonical committed ledger *before* loading any P1/P2/P3 prices. Exercise crash before/after reservation, two competing readers, stale commit, uncommitted append, duplicate request, budget exhaustion, and ambiguous effect. A changed harness with a merely append-after-run ledger is not admitted. The current #9598 read embargo is correct until this exists.
+7. **Natural-time user acceptance:** verify that the first real nightly's naturally issued \`early_context\` and measured-source clocks compare with the harness without treating a replay, reconstructed observation, partial breadth or a CI fixture as natural issuance. Preserve signing/auth/rights requirements and the T25 operator-human readback.
+
+## 6. Research-only implementation slice and proof
+
+The bounded companion \`scripts/leadership_rotation_v3_candidate.py\` (when present) must call the accepted \`leadership_rotation_episodes\` merge/classify/metrics functions rather than introducing an event/identity engine. It can implement only the **H1 detection contrast on caller-supplied synthetic phases/alarms**; it may not import the price store, load market data, evaluate H2/H3, generate P1 files or be imported by production scoring. Companion tests must show: independent comparator yields positive/negative/zero timing advantages, two misses cannot become a pass, one alarm cannot match two onsets, window/late/repeat distinctions remain incumbent, and no qualifying onset is NOT_EXECUTABLE. These are mechanics checks, **not** P0 size/power outcomes.
+
+**Exit remains closed:** \`PREDICTIVE_CAPABILITY_QUALIFIED=NO\`, \`V3_PREREGISTERED=NO\`, \`V3_SIZED=NO\`, \`V3_POWERED=NO\`, \`P1_READS=0 (last accepted evidence)\`. This candidate is not a way around GitHub's unrelated RIG hard gate, the native QLedger data-publish defect, held Fabric review, or the M2 access refusal.
