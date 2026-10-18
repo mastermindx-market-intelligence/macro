@@ -9,6 +9,11 @@ import pytest
 import collectors.tiingo_archive as a
 from lib.dataos.tiingo_reader import TiingoViewRefusal, read_research_view
 from scripts.tiingo_materialize import materialize_one
+from tests import test_sector_allocation_tiingo as rotation_source_test_module
+
+# Register the additive source-contract tests with the existing Data OS CI pack.
+# This reuses its reader/test owner; no new runner or source authority.
+TestSectorAllocationProjection = rotation_source_test_module.Projection
 
 
 @pytest.fixture
@@ -232,3 +237,4 @@ def test_reader_cannot_consume_external_symlinked_manifest(view):
     manifest.symlink_to(external)
     with pytest.raises(TiingoViewRefusal, match="path"):
         read_research_view(source, day, digest, root=root, check_mount=False)
+
