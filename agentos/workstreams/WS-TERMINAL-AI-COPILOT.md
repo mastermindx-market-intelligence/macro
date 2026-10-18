@@ -60,6 +60,10 @@ The historical September 26 handoff retains its original Sol CEO identity, block
 
 ## Current release checks
 
-Terminal #1048 publishes d731e1e4cf85a753bdf00f44819ffb848343ba36; its fresh normal CI run is 39127614959. Macro #9601 is receiving the paired send-time preparation, actual shared-widget receipt repairs, and current main through 3554b5f80def6fc34e8935b90b24510c382d61d3. The latest handoff checkpoint records exact tests and capture hashes.
+Terminal #1048 publishes ed133405d9e592f6daa89ec66a0175fcd579fe85. Normal CI run 39128978177 has passed all 12,547 unit tests, route/type checks, language checks and its serial browser shard; responsive browser shards remain in progress at the latest handoff checkpoint.
 
-The chart-related failures in the previous full runs have bounded repairs and passing focused checks. Macro additionally inherits the three Sector Central migration-packet RIG failures, already tracked by incumbent issue #7646. That reference-review dependency must resolve through its actual design authority before Macro's failed gate can clear. This workstream remains active; the release and ordinary-model production acceptance are still outstanding.
+The paired Macro #9601 checkpoint extends ba0e620c253785e67ae4450aac2b1265341e9f47, joined to main 14453492b3d29e6e9156a5db13f29fd1676ae26a, with the provider-prompt refresh repair found by the final ordinary-showcase source review. Four regression cases failed before that repair and pass afterward; the broader affected selection passes all 712 tests, and the source-wide claims checker passes. A new normal hosted run must qualify the updated head.
+
+Macro also inherits the three Sector Central migration-packet RIG failures, tracked by incumbent issue #7646 and reproduced in run 39128230055 on both the candidate and its exact base. Its changes to canonical CI authority paths make the semantic gate's inherited-failure self-excuse refusal binding. The incumbent reference-review/design-authority dependency must resolve legitimately.
+
+The pair remains unarmed. Current main Macro cannot supply the exact command targets required by this Terminal candidate; deploying the frontend alone would break existing AI chart actions. Complete both release qualifications before coordinated activation of the gateway, shared widget and Terminal. The workstream remains active, and ordinary-model production acceptance is outstanding.

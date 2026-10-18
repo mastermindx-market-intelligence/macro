@@ -427,3 +427,129 @@ def test_thinking_limit_after_applied_plan_preserves_receipts_without_redispatch
     done = next(event for event in events if event.get("type") == "done")
     assert done["degraded"] is False
     assert done["usage"]["output_tokens"] == 4020
+
+
+def _publish_native_momentum_context(chart, *, revision=7):
+    """Complete the existing chart's own compact module projection."""
+    chart["session"]["capabilities"]["native_study_context"] = {
+        "schema": "chart.native_study_context.v1", "status": "complete",
+        "omitted_modules": [], "modules": [
+            {"id": "rsix/eng", "suite": "rsix", "module": "eng", "enabled": True},
+        ],
+    }
+    gw.put_chart_state(USER, "terminal", chart["session"], origin_id=chart["origin"],
+                       context_revision=revision)
+
+
+@pytest.mark.parametrize("transport", ["chat", "stream", "stream_create_fallback"])
+def test_chart_reread_refreshes_actual_provider_prompt_and_reuses_unchanged_cache(
+        chart, monkeypatch, transport):
+    from tests.test_brain_gateway import _CaptureClient, _MockResponse, _assert_cached
+
+    # The indicator is already configured at revision 7. Its deferred compact
+    # projection arrives before read_chart_state; that is no configuration edit.
+    chart["session"]["indicators"].append({"name": "rsix", "params": {"eng.on": True}})
+    gw.put_chart_state(USER, "terminal", chart["session"], origin_id=chart["origin"],
+                       context_revision=7)
+
+    class ContextClient(_CaptureClient):
+        def _scripted(self):
+            if self._i == 0:
+                _publish_native_momentum_context(chart)
+            elif self._i == 2:
+                # A human context change before the third read must remove stale
+                # context-only lessons from the provider's next request.
+                gw.put_chart_state(USER, "terminal", chart["session"],
+                                   origin_id=chart["origin"], context_revision=8)
+            return super()._scripted()
+
+    client = ContextClient([
+        _MockResponse([block("read_chart_state", {}, f"read-{index}")], "tool_use")
+        for index in range(3)
+    ])
+    if transport == "stream_create_fallback":
+        client.stream = None
+    monkeypatch.setattr(gw, "_build_lane_providers",
+                        lambda *a, **kw: [{"client": client, "model": "deepseek-chat"}])
+    message = "Showcase a complete technical drawing analysis"
+    if transport == "chat":
+        gw.chat(message, USER, lane="fast", context=context(chart), root=chart["root"])
+    else:
+        list(gw.chat_stream(message, USER, lane="fast",
+                            context=context(chart), root=chart["root"]))
+
+    calls = client.stream_kwargs if transport == "stream" else client.create_kwargs
+    assert len(calls) == 4
+    prompts = [call["system"][0]["text"] for call in calls]
+    assert "NATIVE MOMENTUM" not in prompts[0]
+    assert "NATIVE MOMENTUM" in prompts[1]
+    assert prompts[1] == prompts[2]
+    assert "NATIVE MOMENTUM" not in prompts[3]
+    assert prompts[0] == prompts[3]
+    assert calls[0]["system"] is not calls[1]["system"]
+    assert calls[1]["system"] is calls[2]["system"]
+    assert calls[2]["system"] is not calls[3]["system"]
+    assert all(prompt.count("TECHNICIAN DOCTRINE") == 1 for prompt in prompts)
+    for call in calls:
+        _assert_cached(call)
+        assert call["tools"] is calls[0]["tools"]
+
+
+def test_applied_indicator_successor_refreshes_stream_provider_guidance_before_reread(
+        chart, monkeypatch):
+    from tests.test_brain_gateway import _CaptureClient, _MockResponse, _assert_cached
+
+    message = "Showcase a complete technical drawing analysis"
+    previous_doctrine = gw._doctrine_block_for(
+        "terminal", message, user_id=USER, origin_id=chart["origin"], context_revision=7)
+    native_indicator = {"name": "rsix", "params": {"eng.on": True}}
+    client = _CaptureClient([
+        _MockResponse([block("emit_chart_command", {
+            "op": "chart.set_indicators", "args": {
+                "mode": "patch", "indicators": [native_indicator],
+                "show": ["suite:rsix/eng"],
+            },
+        }, "native-enable")], "tool_use"),
+        _MockResponse([block("read_chart_state", {}, "native-reread")], "tool_use"),
+        _MockResponse([block("emit_chart_plan", {
+            "commands": composition("native-guidance"),
+        }, "native-plan")], "tool_use"),
+    ])
+    monkeypatch.setattr(gw, "_build_lane_providers",
+                        lambda *a, **kw: [{"client": client, "model": "deepseek-chat"}])
+    events = []
+    for raw in gw.chat_stream(message, USER, lane="fast",
+                              context=context(chart), root=chart["root"]):
+        if not raw.startswith("data: "):
+            continue
+        event = json.loads(raw[6:])
+        events.append(event)
+        if event.get("type") != "command" or event.get("v") != 2:
+            continue
+        successor = None
+        if event["op"] == "chart.set_indicators":
+            chart["session"]["indicators"].append(copy.deepcopy(native_indicator))
+            _publish_native_momentum_context(chart)
+            successor = {**event["target"], "context_revision": 8}
+        acknowledge(chart, event, successor=successor)
+
+    calls = client.stream_kwargs
+    assert client.create_kwargs == []
+    assert len(calls) == 4
+    prompts = [call["system"][0]["text"] for call in calls]
+    assert "NATIVE MOMENTUM" not in prompts[0]
+    assert all("NATIVE MOMENTUM" in prompt for prompt in prompts[1:])
+    assert all(prompt.count("TECHNICIAN DOCTRINE") == 1 for prompt in prompts)
+    assert calls[0]["system"] is not calls[1]["system"]
+    assert calls[1]["system"] is calls[2]["system"] is calls[3]["system"]
+    current_doctrine = gw._doctrine_block_for(
+        "terminal", message, user_id=USER, origin_id=chart["origin"], context_revision=8)
+    assert prompts[0].replace(previous_doctrine, "", 1) == prompts[1].replace(
+        current_doctrine, "", 1)
+    for call in calls:
+        _assert_cached(call)
+        assert call["tools"] is calls[0]["tools"]
+    wires = [event for event in events if event.get("type") == "command"]
+    assert len(wires) == 5
+    assert wires[0]["target"]["context_revision"] == 7
+    assert all(wire["target"]["context_revision"] == 8 for wire in wires[1:])

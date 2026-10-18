@@ -8717,10 +8717,12 @@ def _deepseek_extra_params(model: str, deepseek_thinking: str | None) -> dict:
 
 
 def _cache_control_system(system_prompt: str) -> list[dict]:
-    """The system prompt as a single cached text block. The prompt is byte-identical for
-    every round of a turn, so an ephemeral breakpoint turns rounds 2..n into cache reads
-    (probed: 1.56s → 0.75s over the OAuth pool; DeepSeek's compat endpoint accepts the
-    list form + cache_control)."""
+    """The current system prompt as one cached text block.
+
+    Reuse this block while the prompt is unchanged. A chart-doctrine refresh creates
+    a new block at the same ephemeral breakpoint; prior provider inputs stay intact.
+    DeepSeek's compat endpoint also accepts the list form + cache_control.
+    """
     return [{"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}]
 
 
@@ -9345,7 +9347,7 @@ def _run_brain_loop(
         return {**_effort_thinking_params(m, effort, thinking_mode),
                 **_deepseek_extra_params(m, deepseek_thinking)}
 
-    # Cached prompt surfaces — built ONCE, reused by every round (see _cache_control_*).
+    # Tools stay fixed for the turn; refresh the cached system only when chart doctrine changes.
     system_param = _cache_control_system(system_prompt)
     tools_param = _cache_control_tools(tool_schemas)
 
@@ -9431,9 +9433,11 @@ def _run_brain_loop(
             model_result = _model_visible_tool_result(tool_name, result)
             if tool_name == "read_chart_state":
                 next_doctrine = _doctrine_block_for(safe_page, message, chart_state=result)
-                system_prompt = _replace_chart_doctrine(
-                    system_prompt, chart_doctrine_block, next_doctrine)
-                chart_doctrine_block = next_doctrine
+                if next_doctrine != chart_doctrine_block:
+                    system_prompt = _replace_chart_doctrine(
+                        system_prompt, chart_doctrine_block, next_doctrine)
+                    chart_doctrine_block = next_doctrine
+                    system_param = _cache_control_system(system_prompt)
 
             # Collect annotate_chart payloads for the response
             if tool_name == "annotate_chart" and result.get("client_executed"):
@@ -10310,7 +10314,7 @@ def _run_brain_loop_stream(
         return {**_effort_thinking_params(m, effort, thinking_mode),
                 **_deepseek_extra_params(m, deepseek_thinking)}
 
-    # Cached prompt surfaces — built ONCE, reused by every round (see _cache_control_*).
+    # Tools stay fixed for the turn; refresh the cached system only when chart doctrine changes.
     system_param = _cache_control_system(system_prompt)
     tools_param = _cache_control_tools(tool_schemas)
 
@@ -10538,9 +10542,11 @@ def _run_brain_loop_stream(
             model_result = _model_visible_tool_result(tool_name, result)
             if tool_name == "read_chart_state":
                 next_doctrine = _doctrine_block_for(safe_page, message, chart_state=result)
-                system_prompt = _replace_chart_doctrine(
-                    system_prompt, chart_doctrine_block, next_doctrine)
-                chart_doctrine_block = next_doctrine
+                if next_doctrine != chart_doctrine_block:
+                    system_prompt = _replace_chart_doctrine(
+                        system_prompt, chart_doctrine_block, next_doctrine)
+                    chart_doctrine_block = next_doctrine
+                    system_param = _cache_control_system(system_prompt)
 
             if tool_name == "annotate_chart" and result.get("client_executed"):
                 annotations.append(result)
@@ -10627,9 +10633,11 @@ def _run_brain_loop_stream(
             next_doctrine = _doctrine_block_for(
                 safe_page, message, user_id=user_id, origin_id=chart_origin_id,
                 context_revision=chart_context_revision)
-            system_prompt = _replace_chart_doctrine(
-                system_prompt, chart_doctrine_block, next_doctrine)
-            chart_doctrine_block = next_doctrine
+            if next_doctrine != chart_doctrine_block:
+                system_prompt = _replace_chart_doctrine(
+                    system_prompt, chart_doctrine_block, next_doctrine)
+                chart_doctrine_block = next_doctrine
+                system_param = _cache_control_system(system_prompt)
 
         _timing_round(timing, _round_model_ms, _round_tools)
         tool_call_count += 1
