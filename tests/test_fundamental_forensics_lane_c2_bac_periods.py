@@ -1113,6 +1113,34 @@ def test_r7_single_unshifted_row_of_a_twice_presented_concept_reconstructs() -> 
     ]
 
 
+def test_r7_two_rows_selecting_the_same_start_occurrence_refuse() -> None:
+    # Ending cash presented before beginning cash: the "beginning" label picks
+    # the start occurrence and the shifted "end of year" row's ordinal picks it
+    # again. Counts match, but both rows cannot carry the start role, so the
+    # shifted prior year-end instant must not pass as the 2025 balance.
+    with pytest.raises(StatementGraphError, match=_R7_PREFIX + r"0: .*period anchor"):
+        _reconstruct_annual_cash(
+            _BEGIN_ROW + _SHIFTED_END_ROW,
+            _annual_cash_facts("c2n-b25", "c2n-b24", "c2n-e24"),
+            [
+                ("cashroot", "cashend", _LABEL_PERIOD_END),
+                ("cashroot", "cashbeg", _LABEL_PERIOD_START),
+            ],
+        )
+
+
+def test_r7_shifted_end_row_displayed_before_beginning_row_refuses() -> None:
+    # Standard presentation order, but the shifted "end of year" row comes
+    # first: its ordinal picks the start occurrence and the "beginning" label
+    # picks it again, so neither row may anchor at the day before the start.
+    with pytest.raises(StatementGraphError, match=_R7_PREFIX + r"0: .*period anchor"):
+        _reconstruct_annual_cash(
+            _SHIFTED_END_ROW + _BEGIN_ROW,
+            _annual_cash_facts("c2n-b25", "c2n-b24", "c2n-e24"),
+            _CASH_TWICE_ARCS,
+        )
+
+
 def test_r7_beginning_cash_with_negated_period_start_label_reconstructs() -> None:
     result = _reconstruct_annual_cash(
         _BEGIN_ROW + _END_ROW,

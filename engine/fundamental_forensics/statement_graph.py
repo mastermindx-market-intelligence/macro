@@ -2012,12 +2012,21 @@ def reconstruct_statement(
         occurrences = by_concept.get(concept) or []
         presentation_row = _select_presentation_row(spec, occurrences, ordinal)
         row_presentation.append(presentation_row)
+    selected_occurrences: dict[str, list[int]] = {}
+    for concept, presentation_row in zip(row_concepts, row_presentation, strict=True):
+        if presentation_row is not None:
+            selected_occurrences.setdefault(concept, []).append(id(presentation_row))
+    for concept, presentation_row in zip(row_concepts, row_presentation, strict=True):
         role = presentation_row.get("preferred_label_role") if presentation_row else None
         # R7 trusts a row's period role only when the concept is displayed
-        # exactly as many times as it is presented. An extra or missing
-        # displayed row has no defined occurrence, so it anchors at the
-        # column end like a role-less row.
-        if displayed_counts[concept] != len(occurrences):
+        # exactly as many times as it is presented and each displayed row
+        # selects a different occurrence. An extra or missing displayed row
+        # has no defined occurrence, and two rows selecting the same one
+        # cannot both carry its role, so they anchor at the column end like
+        # role-less rows.
+        occurrences = by_concept.get(concept) or []
+        selected = selected_occurrences.get(concept, [])
+        if displayed_counts[concept] != len(occurrences) or len(set(selected)) != len(selected):
             role = None
         row_preferred_label_roles.append(role)
     _enforce_cell_period_agreement(
