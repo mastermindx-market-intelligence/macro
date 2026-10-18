@@ -13694,6 +13694,7 @@ jobs:
       - engine/theme_graph/__init__.py
       - engine/theme_graph/capability.py
       - engine/theme_graph/identity.py
+      - engine/theme_graph/micro_rs_proxy_display.py
       - engine/theme_graph/identity_resolution.py
       - engine/theme_graph/local_sources.py
       - engine/theme_graph/materialize.py
@@ -22793,6 +22794,7 @@ jobs:
       - "engine/theme_fingerprint.py"
       - "engine/theme_graph/__init__.py"
       - "engine/theme_graph/identity.py"
+      - "engine/theme_graph/micro_rs_proxy_display.py"
       - "engine/theme_graph/identity_resolution.py"
       - "engine/theme_graph/ontology.py"
       - "engine/theme_graph/probation.py"
@@ -23659,6 +23661,7 @@ jobs:
       - "engine/security_state.py"
       - "engine/theme_graph/__init__.py"
       - "engine/theme_graph/identity.py"
+      - "engine/theme_graph/micro_rs_proxy_display.py"
       - "engine/theme_graph/rights.py"
       - "engine/theme_graph/rights_use.py"
       - "lib/dataos/identity.py"
@@ -26190,6 +26193,9 @@ jobs:
       # walks through engine.theme_graph.identity via the build_site hook.
       - "templates/theme_tree.html.j2"
       - "engine/theme_graph/identity.py"
+      - "engine/theme_graph/micro_rs_proxy_display.py"
+      - "engine/theme_graph/rights.py"
+      - "tests/test_theme_tree_detail_card.py"
       - "tests/test_state_of_themes.py"
       - "tests/test_subsector_confluence.py"
       - "tests/test_subsector_rotation.py"
@@ -26215,7 +26221,7 @@ jobs:
       - name: subsector rotation family — turn engine, state machine, alerts, scan, confluence
         run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py tests/test_energy_economic_change_non_regression.py -q
       - name: themes heatmap + Theme Tracker page (full suite; portfolio-ctx keeps its subset)
-        run: python -m pytest tests/test_themes_heatmap.py tests/test_principal_receipt_ambiguity.py tests/test_state_of_themes.py tests/test_build_theme_tree_page.py -q
+        run: python -m pytest tests/test_themes_heatmap.py tests/test_principal_receipt_ambiguity.py tests/test_state_of_themes.py tests/test_build_theme_tree_page.py tests/test_theme_tree_detail_card.py -q
 
   ohlc-basis-coherence:
     # The breadth OHLC caches must share ONE yfinance adjustment basis across
