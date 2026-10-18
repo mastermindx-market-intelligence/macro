@@ -430,6 +430,8 @@ def test_overview_hero_discloses_exact_source_generation():
     # A static/anonymous shell must disclose the actual last validated source date,
     # even before client JS or premium data authorization can hydrate.
     assert '<span id="asof">2026-09-14</span>' in html
+    assert 'Snapshot session: 2026-09-14.' in html
+    assert '“Today” on this board refers to that session' in html
     assert f'data-si-baskets-sha256="{"a" * 64}"' in html
     assert f'data-si-action-board-sha256="{"b" * 64}"' in html
 
@@ -469,6 +471,7 @@ def test_hero_asof_is_bound_on_the_context_rich_render_too():
 def test_hero_never_mints_a_date_when_no_source_asof_is_available():
     html = _render_page(_board())
     assert '<span id="asof">—</span>' in html
+    assert 'Source session unverified.' in html
     # Client hydration is allowed to fill an unknown date, but never to
     # overwrite the server-pinned market session with a different cache vintage.
     assert "ao.textContent.trim()==='—'" in html
