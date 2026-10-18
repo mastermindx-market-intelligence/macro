@@ -3219,6 +3219,18 @@ html[data-theme="light"] .ff-revisions-table tr.is-restated td:last-child {
   line-height: 1.5;
 }
 .ff-statement-block { margin-top: 14px; }
+.ff-statement-block--withheld {
+  padding: 14px 16px;
+  border: 1px dashed var(--ff-border-strong);
+  border-radius: var(--ff-radius-sm);
+  background: var(--ff-soft);
+}
+.ff-statement-block--withheld .ff-statement-withheld-copy {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
 .ff-statement-block h3 {
   margin: 0 0 8px;
   font-size: 13px;

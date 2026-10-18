@@ -91,7 +91,28 @@ function harness() {
   return { api, nodes, documentObject };
 }
 
+// Refusal entries use the kernel's R-B2 shape (statement_graph.reconstruct_primary_statements):
+// identity fields, empty columns/rows, row_count 0, and refusal carrying the code only.
+const RAW_ROLE_URI = 'http://filer.example/role/RawConsolidatedBalanceSheet';
+const RAW_TITLE = 'RAW FILER TITLE 0000070858';
+const STRAY_MESSAGE = 'kernel diagnostic detail text';
+
+function refusalEntry(statement_type, code, { nullIdentity = false } = {}) {
+  return {
+    statement_type,
+    role_uri: nullIdentity ? null : RAW_ROLE_URI,
+    title: nullIdentity ? null : RAW_TITLE,
+    columns: [],
+    row_count: 0,
+    rows: [],
+    refusal: { code },
+  };
+}
+
 function mixedStatements() {
+  const withheld = refusalEntry('balance_sheet', 'displayed_columns_absent');
+  // Defensive: generation bytes never carry a message, and the desk must not render one if it appears.
+  withheld.refusal.message = STRAY_MESSAGE;
   return [
     {
       statement_type: 'income_statement',
@@ -103,22 +124,20 @@ function mixedStatements() {
         cells: [{ quality_state: 'available', value: '100' }],
       }],
     },
-    {
-      statement_type: 'balance_sheet',
-      refusal: { code: 'displayed_columns_absent' },
-      columns: [],
-      rows: [],
-    },
+    withheld,
   ];
 }
 
 function allRefusedStatements() {
-  return ['income_statement', 'balance_sheet', 'cash_flow'].map((statement_type) => ({
-    statement_type,
-    refusal: { code: 'displayed_table_absent' },
-    columns: [],
-    rows: [],
-  }));
+  return [
+    refusalEntry('income_statement', 'statement_role_not_consolidated', { nullIdentity: true }),
+    refusalEntry('balance_sheet', 'displayed_columns_absent'),
+    refusalEntry('cash_flow', 'displayed_columns_absent'),
+  ];
+}
+
+function titleAttributes(html) {
+  return [...html.matchAll(/\btitle\s*=\s*("([^"]*)"|'([^']*)')/g)].map((match) => match[2] ?? match[3] ?? '');
 }
 
 test('mixed accession renders one withheld block with EN copy and ZH under zh', () => {
@@ -143,22 +162,32 @@ test('all-refused accession renders notice and normalized table', () => {
   assert.match(html, /Period \/ filed/);
 });
 
-test('refusal code message and slug never appear in rendered HTML', () => {
-  const { api, nodes } = harness();
-  api.state.statements = { phase: 'ready', statements: mixedStatements() };
-  api.renderStatementTree();
-  const html = nodes['ff-statements'].innerHTML;
-  for (const token of [
-    'displayed_columns_absent',
-    'displayed_table_absent',
-    'displayed_layout_unsupported',
-    'statement_role_not_consolidated',
-    'A35-W1',
-  ]) {
-    assert.equal(html.includes(token), false, 'leaked ' + token);
-  }
-  assert.equal(nodes['ff-statements'].getAttribute('title'), null);
-});
+for (const [name, statements] of [['mixed', mixedStatements], ['all-refused', allRefusedStatements]]) {
+  test(`refusal code, message, slug and raw identity never appear in rendered HTML (${name})`, () => {
+    const { api, nodes } = harness();
+    api.state.statements = { phase: 'ready', statements: statements() };
+    api.renderStatementTree();
+    const html = nodes['ff-statements'].innerHTML;
+    for (const token of [
+      'displayed_columns_absent',
+      'displayed_table_absent',
+      'displayed_layout_unsupported',
+      'statement_role_not_consolidated',
+      'A35-W1',
+      RAW_ROLE_URI,
+      RAW_TITLE,
+      STRAY_MESSAGE,
+    ]) {
+      assert.equal(html.includes(token), false, 'leaked ' + token);
+    }
+    assert.equal(nodes['ff-statements'].getAttribute('title'), null);
+    for (const value of titleAttributes(html)) {
+      for (const fragment of ['rebuild this statement', 'rebuild this filing', '逐行重建', 'displayed_', 'statement_role_']) {
+        assert.equal(value.includes(fragment), false, 'title attribute carries ' + fragment);
+      }
+    }
+  });
+}
 
 test('A35-W1 resolves through PEER_EXCLUSIONS in both languages', () => {
   const { api } = harness();

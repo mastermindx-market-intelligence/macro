@@ -3231,9 +3231,6 @@ html[data-theme="light"] .ff-revisions-table tr.is-restated td:last-child {
   font-size: 12.5px;
   line-height: 1.55;
 }
-html[data-theme="light"] .ff-statement-block--withheld {
-  box-shadow: var(--ff-shadow);
-}
 .ff-statement-block h3 {
   margin: 0 0 8px;
   font-size: 13px;
