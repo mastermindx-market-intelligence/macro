@@ -6,7 +6,7 @@
     "repository": "mastermindx-market-intelligence/macro",
     "commit": "1d20bdebb10b30e1924cfcf18c689440c2059d7c",
     "tree": "81587d77e5e6e0e72b55f203331f0f504f7fdc92",
-    "captured_at": "2026-10-18T00:00:00Z",
+    "captured_at": "2026-10-18T11:56:35+00:00",
     "store": "data/reference/security_master.parquet",
     "store_blob_sha1": "452fe313fa8d1904539128edbc8fb2fdd7d861d1",
     "membership_basis": "issuer rows where country=='US' and issuer_state=='RESOLVED'; outcome-independent",
@@ -15,7 +15,723 @@
       "selection_era": "anticipation-v1-2026-08-08",
       "commit": "c3eed6fcc15ae89799fe28454634c9d075897717",
       "tickers_sha256": "9f9daa60db10bce3edc65a8d4b8e02e79ee327c962bec46d2973d32791752282",
-      "population_count": 697
+      "population_count": 697,
+      "transition": {
+        "retained_count": 520,
+        "added_count": 1408,
+        "removed_count": 177,
+        "removed": [
+          {
+            "ticker": "AAXJ",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "ANGPY",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "ARQT",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "ASHR",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "BBIO",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "BEKE",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "BILI",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "BIRK",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "BITB",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "BLCO",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "BRUN",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "BZ",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "BZFD",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "CABA",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "CBZ",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "CNTM",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "CODI",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "CQQQ",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "CSHR",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "CTRA",
+            "reason": "ISSUER_NOT_RESOLVED_IN_CANONICAL_REFERENCE"
+          },
+          {
+            "ticker": "CVR",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "DBA",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "DBC",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "DCO",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "DXYZ",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EA",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "ECH",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EDU",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EEM",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EFA",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EIDO",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EMB",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EMLC",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EPOL",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EUFN",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EWA",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EWC",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EWD",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EWG",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EWH",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EWI",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EWJ",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EWL",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EWN",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EWP",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EWQ",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EWS",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EWT",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EWU",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EWW",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EWY",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EWZ",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "EZA",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "FI",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "FIP",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "FISV",
+            "reason": "ISSUER_NOT_RESOLVED_IN_CANONICAL_REFERENCE"
+          },
+          {
+            "ticker": "FLL",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "FMBM",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "FPX",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "FSV",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "FTAI",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "FWONK",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "FXI",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "GDS",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "GDX",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "GDXJ",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "GIL",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "GLD",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "GOLD",
+            "reason": "ISSUER_NOT_RESOLVED_IN_CANONICAL_REFERENCE"
+          },
+          {
+            "ticker": "GRAB",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "GSG",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "GSK",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "GXC",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "HSBC",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "HTGC",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "HYG",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "IBB",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "IEF",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "IGV",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "IHG",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "IJH",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "ILF",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "IMPUY",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "INDA",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "INTA",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "IPO",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "ITB",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "IWD",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "IWF",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "IWM",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "KBE",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "KBWB",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "KRE",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "KRRO",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "KWEB",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "LAZR",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "LILA",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "LPLA",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "LQD",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "LVMUY",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "MAGS",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "MCHI",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "MKL",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "MNSO",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "MTUM",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "NAVN",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "NCDL",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "OIH",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "ONCY",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "ONON",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "PCVX",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "PCY",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "PMPEX",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "PTA",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "PWP",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "QFIN",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "QQQ",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "QUAL",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "RGI",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "RHHBY",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "RSP",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "RSPC",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "RSPD",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "RSPF",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "RSPG",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "RSPH",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "RSPM",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "RSPR",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "RSPS",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "RSPT",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "RSPU",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "SE",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "SG",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "SGP",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "SIL",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "SMH",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "SOXX",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "SPHB",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "SPLV",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "SPY",
+            "reason": "ISSUER_NOT_RESOLVED_IN_CANONICAL_REFERENCE"
+          },
+          {
+            "ticker": "SSNC",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "SSP",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "TAN",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "TCBI",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "TCOM",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "TIGR",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "TIP",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "TLT",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "TPH",
+            "reason": "ISSUER_NOT_RESOLVED_IN_CANONICAL_REFERENCE"
+          },
+          {
+            "ticker": "TRLV",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "TUR",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "USMV",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "VGK",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "VIPS",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "VPL",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "VWOB",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "VXUS",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "WB",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "WDS",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "XBI",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "XHB",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "XLB",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "XLC",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "XLE",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "XLF",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "XLI",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "XLK",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "XLP",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "XLRE",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "XLU",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "XLV",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "XLY",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "XME",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "XOP",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "XRT",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "YUMC",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          },
+          {
+            "ticker": "ZTO",
+            "reason": "NOT_IN_CANONICAL_ISSUER_REFERENCE"
+          }
+        ],
+        "note": "Prospective selection-era change only; frozen v1 membership, RS history and existing episode identities are not rewritten."
+      }
     }
   },
   "filters": {
@@ -38,11 +754,15 @@
   "population_count": 1928,
   "tickers_sha256": "6f84a4798dd45c34b361469a958c553ef13a4feb6a2f24c456b22e053b08269a",
   "snapshot": {
-    "data_session": "2026-10-19",
-    "graded_min_bars_200": null,
-    "graded_min_bars_260": null,
-    "graded_200_at_data_session": null,
-    "note": "Selection-era source state reconstructed from canonical outcome-independent US membership roster."
+    "data_session": "2026-10-14",
+    "graded_min_bars_200": 1845,
+    "graded_min_bars_260": 1841,
+    "graded_200_at_data_session": 1077,
+    "price_inventory_sha256": "5eabed98d325a2e0bf58800cd29d53dae7c1e88f07d82fe2d64b067d8b202503",
+    "source_commit": "e19053d7e5c7cca07646ef9b3328ad029e2619fa",
+    "source_store": "data/yahoo",
+    "missing_store_count": 70,
+    "note": "Observed pre-activation source floor from immutable committed prices; not a completed v2 session. Missing stores and stale majority still fail source qualification."
   },
   "membership_proof": {
     "WM": {
@@ -59,7 +779,7 @@
       "mic": "XNYS",
       "issuer_state": "RESOLVED"
     },
-    "note": "WM and KO are RESOLVED US issuers with valid NYSE listings."
+    "note": "Examples from the complete canonical roster; WM and KO were not selection criteria."
   },
   "freshness": {
     "reference": "lib.nyse_calendar.expected_last_session",
@@ -1999,22 +2719,23 @@
   ],
   "exclusions": [
     {
-      "ticker": "BTC-USD",
-      "reason": "skip_suffix",
-      "matched": "-USD",
-      "note": "Crypto pair - not a single-name equity; trades 24/7."
+      "ticker": "BF.B",
+      "reason": "skip_chars",
+      "matched": ".",
+      "note": "Canonical US issuer excluded by the inherited ticker punctuation rule; no market evaluation is implied."
     },
     {
-      "ticker": "ETH-USD",
-      "reason": "skip_suffix",
-      "matched": "-USD",
-      "note": "Crypto pair - not a single-name equity; trades 24/7."
+      "ticker": "BRK.B",
+      "reason": "skip_chars",
+      "matched": ".",
+      "note": "Canonical US issuer excluded by the inherited ticker punctuation rule; no market evaluation is implied."
     },
     {
-      "ticker": "SOL-USD",
-      "reason": "skip_suffix",
-      "matched": "-USD",
-      "note": "Crypto pair - not a single-name equity; trades 24/7."
+      "ticker": "MOG.A",
+      "reason": "skip_chars",
+      "matched": ".",
+      "note": "Canonical US issuer excluded by the inherited ticker punctuation rule; no market evaluation is implied."
     }
-  ]
+  ],
+  "activation_not_before_session": "2026-10-19"
 }

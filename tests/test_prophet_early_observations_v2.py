@@ -89,6 +89,15 @@ def seed_with_universe(tmp_path, *, tickers=("AMZN",), session="2026-10-08",
                 "beyond_cap": [{"ticker": r["ticker"]} for r in rows[40:]],
                 "coverage": {"triggered": len(rows), "deck": min(40, len(rows)),
                              "beyond_cap": max(0, len(rows) - 40)}}
+    version = 2 if session >= "2026-10-19" else 1
+    manifest = json.loads((_repo_v2_universe() if version == 2 else _repo_v1_universe()).read_text())
+    artifact["selection_era"] = manifest["selection_era"]
+    contract = {key: manifest[key] for key in
+                ("universe_id", "selection_era", "population_count", "tickers_sha256")}
+    contract.update({"schema": "us_turn_watch.source_contract.v1", "pass": True,
+                     "selected_count": manifest["population_count"], "universe_limit": None,
+                     "missing_store_count": 0, "modal_session": session, "freshness_ok": True})
+    artifact["coverage"]["source_contract"] = contract
     path = write_candidate_episode_input(artifact, rows, data)
     from engine.us_turn_watch import write_artifact
     write_artifact(artifact, tmp_path / "site")
@@ -131,7 +140,7 @@ def test_source_coverage_state_constants_are_pinned(api):
 def test_load_observations_accepts_an_active_universe_contract(api, tmp_path):
     """The loader accepts an explicit active-universe contract for era-aware coverage."""
     source, spine, _, _ = seed_with_universe(tmp_path, tickers=("AMZN",), session="2026-10-08")
-    contract = json.loads(_repo_v2_universe().read_text())
+    contract = json.loads(_repo_v1_universe().read_text())
     projection = api.load_observations(
         source, spine=spine, reference_session="2026-10-08",
         public_artifact_path=tmp_path / "site/turn_watch/turn_watch.json",
@@ -156,7 +165,7 @@ def test_load_observations_without_universe_is_typed_unavailable(api, tmp_path):
 def test_universe_coverage_publication_mismatch_fails_closed(api, tmp_path, monkeypatch):
     """A publication proof hash mismatch is reported as UNAVAILABLE — not silently 'ok'."""
     source, spine, _, _ = seed_with_universe(tmp_path, tickers=("AMZN",), session="2026-10-08")
-    contract = json.loads(_repo_v2_universe().read_text())
+    contract = json.loads(_repo_v1_universe().read_text())
     contract["tickers_sha256"] = "0" * 64
     projection = api.load_observations(
         source, spine=spine, reference_session="2026-10-08",
@@ -172,56 +181,34 @@ def test_universe_coverage_publication_mismatch_fails_closed(api, tmp_path, monk
 
 
 def test_ko_against_v1_universe_is_in_universe_no_recorded_trigger(api, tmp_path):
-    """KO is in v1 (697 names).  Querying KO with no row in the observation set
-    is IN_UNIVERSE_NO_RECORDED_TRIGGER — NOT a fabricated failed evaluation."""
-    # Seed AMZN only — no KO observation row.
-    source, spine, _, _ = seed_with_universe(tmp_path, tickers=("AMZN",), session="2026-10-08")
-    contract = json.loads(_REPO_V1_PATH.read_text())
-    projection = api.load_observations(
-        source, spine=spine, reference_session="2026-10-08",
+    source, spine, _, _ = seed_with_universe(tmp_path)
+    projection = api.load_observations(source, spine=spine, reference_session="2026-10-08",
         public_artifact_path=tmp_path / "site/turn_watch/turn_watch.json",
-        active_universe=contract,
-    )
+        active_universe=json.loads(_repo_v1_universe().read_text()))
     page = api.query_observations(projection, ticker="KO")
-    assert page["counts"]["matched"] == 1
-    row = page["rows"][0]
-    assert row["ticker"] == "KO"
-    assert row["source_coverage_state"] == api.SOURCE_COVERAGE_IN_UNIVERSE_NO_RECORDED_TRIGGER
-    assert row["source_coverage_reason"] == "TICKER_IN_UNIVERSE_BUT_ABSENT_FROM_OBSERVATIONS"
-    # An absent row is never a fabricated failed evaluation.
-    assert row["episode_relation"]["state"] in ("EPISODE_JOIN_UNAVAILABLE", "IDENTITY_UNRESOLVED")
+    assert page["counts"]["matched"] == 0 and page["rows"] == []
+    assert page["subject_coverage"] == {"ticker": "KO",
+        "state": api.SOURCE_COVERAGE_IN_UNIVERSE_NO_RECORDED_TRIGGER, "reason": None}
 
 
 def test_wm_against_v1_universe_is_not_in_universe(api, tmp_path):
-    """WM is in v2 only.  Against v1 it is NOT_IN_UNIVERSE."""
-    source, spine, _, _ = seed_with_universe(tmp_path, tickers=("AMZN",), session="2026-10-08")
-    contract = json.loads(_REPO_V1_PATH.read_text())
-    projection = api.load_observations(
-        source, spine=spine, reference_session="2026-10-08",
+    source, spine, _, _ = seed_with_universe(tmp_path)
+    projection = api.load_observations(source, spine=spine, reference_session="2026-10-08",
         public_artifact_path=tmp_path / "site/turn_watch/turn_watch.json",
-        active_universe=contract,
-    )
+        active_universe=json.loads(_repo_v1_universe().read_text()))
     page = api.query_observations(projection, ticker="WM")
-    row = page["rows"][0]
-    assert row["ticker"] == "WM"
-    assert row["source_coverage_state"] == api.SOURCE_COVERAGE_NOT_IN_UNIVERSE
-    assert row["source_coverage_reason"] == "TICKER_NOT_IN_ACTIVE_UNIVERSE"
+    assert page["rows"] == [] and page["counts"]["matched"] == 0
+    assert page["subject_coverage"]["state"] == api.SOURCE_COVERAGE_NOT_IN_UNIVERSE
 
 
 def test_wm_against_v2_universe_is_in_universe_no_recorded_trigger(api, tmp_path):
-    """WM is in v2.  When no observation row exists for WM, it is the typed
-    IN_UNIVERSE_NO_RECORDED_TRIGGER — not NOT_IN_UNIVERSE and not UNAVAILABLE."""
-    source, spine, _, _ = seed_with_universe(tmp_path, tickers=("AMZN",), session="2026-10-08")
-    contract = json.loads(_repo_v2_universe().read_text())
-    projection = api.load_observations(
-        source, spine=spine, reference_session="2026-10-08",
+    source, spine, _, _ = seed_with_universe(tmp_path, session="2026-10-19")
+    projection = api.load_observations(source, spine=spine, reference_session="2026-10-19",
         public_artifact_path=tmp_path / "site/turn_watch/turn_watch.json",
-        active_universe=contract,
-    )
+        active_universe=json.loads(_repo_v2_universe().read_text()))
     page = api.query_observations(projection, ticker="WM")
-    row = page["rows"][0]
-    assert row["ticker"] == "WM"
-    assert row["source_coverage_state"] == api.SOURCE_COVERAGE_IN_UNIVERSE_NO_RECORDED_TRIGGER
+    assert page["rows"] == [] and page["counts"]["matched"] == 0
+    assert page["subject_coverage"]["state"] == api.SOURCE_COVERAGE_IN_UNIVERSE_NO_RECORDED_TRIGGER
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -232,7 +219,7 @@ def test_wm_against_v2_universe_is_in_universe_no_recorded_trigger(api, tmp_path
 def test_row_payload_carries_source_timing_context(api, tmp_path):
     """The new per-row timing context is surfaced verbatim, never substituted for fresh."""
     source, spine, _, _ = seed_with_universe(tmp_path, tickers=("AMZN",), session="2026-10-08")
-    contract = json.loads(_repo_v2_universe().read_text())
+    contract = json.loads(_repo_v1_universe().read_text())
     projection = api.load_observations(
         source, spine=spine, reference_session="2026-10-08",
         public_artifact_path=tmp_path / "site/turn_watch/turn_watch.json",
@@ -254,7 +241,7 @@ def test_row_payload_carries_source_timing_context(api, tmp_path):
 def test_stale_row_asof_cannot_inherit_fresh_root_clock(api, tmp_path):
     """A prior-session observation row carries its OWN asof — never the query reference."""
     source, spine, _, _ = seed_with_universe(tmp_path, tickers=("AMZN",), session="2026-10-06")
-    contract = json.loads(_repo_v2_universe().read_text())
+    contract = json.loads(_repo_v1_universe().read_text())
     projection = api.load_observations(
         source, spine=spine, reference_session="2026-10-08",
         public_artifact_path=tmp_path / "site/turn_watch/turn_watch.json",
@@ -270,7 +257,7 @@ def test_stale_row_asof_cannot_inherit_fresh_root_clock(api, tmp_path):
 def test_future_session_source_is_rejected(api, tmp_path):
     """A source dated AFTER the query reference never becomes the current session."""
     source, spine, _, _ = seed_with_universe(tmp_path, tickers=("AMZN",), session="2026-10-15")
-    contract = json.loads(_repo_v2_universe().read_text())
+    contract = json.loads(_repo_v1_universe().read_text())
     projection = api.load_observations(
         source, spine=spine, reference_session="2026-10-08",
         public_artifact_path=tmp_path / "site/turn_watch/turn_watch.json",
@@ -288,7 +275,7 @@ def test_future_session_source_is_rejected(api, tmp_path):
 def test_authority_remains_all_false_for_every_row(api, tmp_path):
     """The literal B1 IDs and BUY/ALERT/ENTRY authority stay FALSE on the extended rows."""
     source, spine, _, _ = seed_with_universe(tmp_path, tickers=("AMZN",), session="2026-10-08")
-    contract = json.loads(_repo_v2_universe().read_text())
+    contract = json.loads(_repo_v1_universe().read_text())
     projection = api.load_observations(
         source, spine=spine, reference_session="2026-10-08",
         public_artifact_path=tmp_path / "site/turn_watch/turn_watch.json",
@@ -310,7 +297,7 @@ def test_auth_before_read_still_required(api, tmp_path):
 def test_snapshot_invalidation_still_pins_pagination(api, tmp_path):
     """A changed receipt invalidates pagination even when the row shape is identical."""
     source, spine, rows, artifact = seed_with_universe(tmp_path, tickers=("AMZN",), session="2026-10-08")
-    contract = json.loads(_repo_v2_universe().read_text())
+    contract = json.loads(_repo_v1_universe().read_text())
     first = api.load_observations(
         source, spine=spine, reference_session="2026-10-08",
         public_artifact_path=tmp_path / "site/turn_watch/turn_watch.json",
@@ -338,7 +325,7 @@ def test_latest_corrupt_sidecar_fails_closed(api, tmp_path):
     doc = json.loads(source.read_text())
     doc["rows"] = [{"ticker": "FORGED"}]
     source.write_text(json.dumps(doc))
-    contract = json.loads(_repo_v2_universe().read_text())
+    contract = json.loads(_repo_v1_universe().read_text())
     projection = api.load_observations(
         source, spine=spine, reference_session="2026-10-08",
         public_artifact_path=tmp_path / "site/turn_watch/turn_watch.json",
@@ -349,25 +336,14 @@ def test_latest_corrupt_sidecar_fails_closed(api, tmp_path):
 
 
 def test_public_partition_mismatch_marks_unavailable(api, tmp_path):
-    """A receipt mismatch between source and public partition is UNAVAILABLE, not silent.
-
-    The active universe coverage is independent: the universe contract's own
-    membership digest is its proof — it stays VERIFIED even when the source
-    partition (the sidecar public artifact) is tampered with.
-    """
-    source, spine, _, _ = seed_with_universe(tmp_path, tickers=("AMZN",), session="2026-10-08")
-    contract = json.loads(_repo_v2_universe().read_text())
+    """Manifest integrity alone cannot certify the source artifact's membership."""
+    source, spine, _, _ = seed_with_universe(tmp_path)
     (tmp_path / "site/turn_watch/turn_watch.json").write_text("{}")
-    projection = api.load_observations(
-        source, spine=spine, reference_session="2026-10-08",
+    projection = api.load_observations(source, spine=spine, reference_session="2026-10-08",
         public_artifact_path=tmp_path / "site/turn_watch/turn_watch.json",
-        active_universe=contract,
-    )
+        active_universe=json.loads(_repo_v1_universe().read_text()))
     assert projection["coverage"]["state"] == api.SOURCE_COVERAGE_UNAVAILABLE
-    # Universe coverage is verified by the contract's own ticker digest, not by
-    # the public partition; a tampered partition is a SOURCE_ARTIFACT_RECEIPT_MISMATCH
-    # at the source level, not a universe-level failure.
-    assert projection["universe_coverage"]["state"] == api.SOURCE_COVERAGE_VERIFIED
+    assert projection["universe_coverage"]["state"] == api.SOURCE_COVERAGE_UNAVAILABLE
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -390,8 +366,8 @@ def test_app_observations_loads_active_universe_from_engine(monkeypatch, tmp_pat
         return real_load(p, **kw)
     monkeypatch.setattr(epo, "load_observations", fake_load)
     monkeypatch.setattr(app_obs, "_read_active_universe",
-                        lambda root: json.loads(_repo_v2_universe().read_text()))
+                        lambda root, source_session: json.loads(_repo_v1_universe().read_text()))
     app_obs.read_current_observations()
     assert captured["reference_session"] == "2026-10-08"
     assert captured["active_universe"] is not None
-    assert captured["active_universe"]["selection_era"] == "anticipation-v2-2026-10-19"
+    assert captured["active_universe"]["selection_era"] == "anticipation-v1-2026-08-08"

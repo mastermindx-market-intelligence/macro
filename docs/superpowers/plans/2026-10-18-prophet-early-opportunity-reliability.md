@@ -43,3 +43,34 @@ Allowed paths: engine/prophet_early_observations.py; app/prophet_observations.py
 ## Review focus
 
 Definition-clock mismatch; future or stale per-name bars hidden by a current majority; selection change colliding with immutable ordinary source keys; missing identity mistaken for no opportunity; consumer turning a research WATCH into buy/alert authority. Every one requires a negative regression, not just a WM/KO happy-path test.
+
+## Resumed delivery integration — 2026-10-18
+
+Custody was reconciled at the preserved e19053d7 backend and c3dd159e Terminal
+carriers. The original inaccessible Fabric assignment remains terminal; it was
+not retried. The predecessor's blocked checkpoint write was not replayed.
+
+The paid read-only review of e19053d7 found two delivery dependencies beyond
+the original patch: incidental legacy callers of the shared universe helper
+must keep their v1 ruler, and the canonical v2 roster contains 70 names without
+committed Yahoo stores. The existing Yahoo backfill/refresh owner already owns
+the required schema, dual price bases, bounded retries, budgets and publication.
+Its planner therefore also consumes the immutable v2 roster. This extends the
+source integration to scripts/backfill_yahoo_universe.py and its existing tests,
+plus exact CI registration; it introduces no new store writer, raw-directory
+universe, direct production data/history mutation, or change to the held sidecar
+and B1 intake. Its existing --refresh-all mode continues to maintain the files.
+Parked failures remain parked and are disclosed, never treated as evaluations.
+
+The v2 source floor is measured from immutable committed price blobs using the
+unchanged native close loader. Membership still derives exclusively from the
+bound canonical issuer roster. Source completeness stays fail-closed. The
+prospective contract does not claim that a future completed session exists.
+
+B03 observation rows remain genuine source events; exact ticker coverage is
+additive subject_coverage outside rows. Membership requires the same hashed
+public artifact and its existing source_contract. Missing per-stock dates stay
+unknown. The additive payload changes snapshot identity once at deployment;
+in-flight old snapshot requests receive the existing 409 fence and must reread.
+Historical source event IDs, B1 relations, v1 publication bytes and authority
+flags remain governed by their existing owners.

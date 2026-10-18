@@ -7266,6 +7266,12 @@ jobs:
       - "templates/_us_early_observations_client.js"
       - "tests/test_prophet_early_observations.py"
       - "tests/test_prophet_observations_api.py"
+      - "tests/test_prophet_early_observations_v2.py"
+      - "tests/test_prophet_wmko_delivery_contract.py"
+      - "tests/test_us_turn_watch_v2.py"
+      - "config/us_turn_watch_universe.v2.json"
+      - "config/us_turn_watch_universe.v1.json"
+      - "engine/us_turn_watch.py"
       - "tests/test_prophet_observations_browser.py"
       - "engine/us_candidate_episode.py"
       - "engine/us_candidate_episode_intake.py"
@@ -7324,7 +7330,10 @@ jobs:
       # B03 shares the existing authenticated Prophet read projection owner.
       # Keep conservative transitive inference, with no duplicate broad job.
       - name: Prophet lossless observations — source integrity, exact identity and private delivery
-        run: python -m pytest tests/test_prophet_early_observations.py tests/test_prophet_observations_api.py -q
+        run: >-
+          python -m pytest tests/test_prophet_early_observations.py tests/test_prophet_observations_api.py
+          tests/test_prophet_early_observations_v2.py tests/test_prophet_wmko_delivery_contract.py
+          tests/test_us_turn_watch_v2.py -q
       - name: Prophet per-object change — native identity, separate clocks and unavailable comparisons
         run: python -m pytest tests/test_prophet_object_change.py -q
       - name: Prophet native DailyBrief — source binding, B1 reconciliation and private API

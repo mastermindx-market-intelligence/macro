@@ -1017,3 +1017,67 @@ def test_refresh_all_transport_failure_counts_the_request_not_current_data(tree,
     assert report["refresh_attempted"] == 2 and report["refresh_unattempted"] == 0
     assert report["refreshed"] == report["refresh_current_returned"] == 0
     assert report["attempted"] == 0, "legacy processed-row counter retains its meaning"
+
+
+def _prophet_roster(tree, names=("KO", "WM"), *, tampered=False):
+    from hashlib import sha256
+    manifest = json.loads((REPO / "config/us_turn_watch_universe.v2.json").read_text())
+    tickers = sorted(names)
+    manifest.update(tickers=tickers, population_count=len(tickers),
+                    tickers_sha256=sha256(("\n".join(tickers) + "\n").encode()).hexdigest())
+    manifest["snapshot"] = {"graded_min_bars_200": len(tickers), "graded_min_bars_260": len(tickers)}
+    if tampered:
+        manifest["tickers_sha256"] = "0" * 64
+    target = tree / "config/us_turn_watch_universe.v2.json"
+    target.parent.mkdir(exist_ok=True)
+    target.write_text(json.dumps(manifest))
+
+
+def test_prospective_prophet_roster_joins_existing_backfill_queue(tree):
+    _prophet_roster(tree)
+    _write_hub(tree, command=["AMZN"])
+    queue, census = bf.needed_queue({})
+    assert queue == [("AMZN", 1), ("KO", 1), ("WM", 1)]
+    assert census["prophet_v2_universe"] == 2
+    assert census["prophet_v2_missing"] == 2
+    assert census["prophet_v2_parked"] == 0
+
+
+def test_prophet_roster_preserves_existing_store_and_parked_boundaries(tree):
+    _prophet_roster(tree, ("KO", "SAFE", "WM"))
+    (tree / "data/yahoo/KO.parquet").write_bytes(b"presence-only queue fixture")
+    queue, census = bf.needed_queue({"parked": {"SAFE": {"reason": "fetch_failed"}}})
+    assert queue == [("WM", 1)]
+    assert census["prophet_v2_missing"] == 2
+    assert census["prophet_v2_parked"] == 1
+
+
+def test_unverified_prophet_manifest_cannot_expand_the_queue(tree):
+    _prophet_roster(tree, tampered=True)
+    queue, census = bf.needed_queue({})
+    assert queue == []
+    assert census["prophet_v2_universe"] == 0
+
+
+def test_prophet_member_uses_existing_writer_and_backfill_provenance(tree, monkeypatch):
+    _prophet_roster(tree, ("WM",))
+    _stub_download(monkeypatch, {"*": _yf_response({"WM": _bars(300)})})
+    report = bf.run(cap=1, batch_size=1, sleep_s=0)
+    assert report["written"] == 1
+    assert (tree / "data/yahoo/WM.parquet").exists()
+    state = bf.load_state()
+    assert state["done"]["WM"]["backfilled"]
+    assert state["done"]["WM"]["rows"] == 300
+    # Creation remains visible to the incumbent scan-tier exclusion owner.
+    assert "WM" in state["done"]
+
+
+def test_prophet_roster_dry_run_is_a_plan_without_network_or_writes(tree, monkeypatch):
+    _prophet_roster(tree)
+    def forbidden(*args, **kwargs):
+        raise AssertionError("dry run must not fetch or write")
+    monkeypatch.setattr(bf, "download_batch", forbidden)
+    monkeypatch.setattr(bf, "save_state", forbidden)
+    report = bf.run(cap=1, dry_run=True)
+    assert report["planned"] == 1 and report["remaining"] == 2
+    assert list((tree / "data/yahoo").iterdir()) == []

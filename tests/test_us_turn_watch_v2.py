@@ -60,74 +60,7 @@ def _write_v2_contract(target_root: Path, *, overrides: dict | None = None,
     return out
 
 
-def _restore_v2_contract_from_disk() -> None:
-    """Re-write the on-disk v2 from a canonical in-repo source payload.
 
-    The repo config file is the canonical source. We rebuild it from the
-    in-repo committed bytes (an in-test snapshot) rather than reading
-    disk after a prior test may have corrupted it.
-    """
-    import pandas as pd
-    import subprocess
-
-    blob = subprocess.run(
-        ["git", "cat-file", "blob", "452fe313fa8d1904539128edbc8fb2fdd7d861d1"],
-        cwd=str(_REPO),
-        capture_output=True, check=True,
-    ).stdout
-    df = pd.read_parquet(__import__("io").BytesIO(blob))
-    df_us = df[(df["country"] == "US") & (df["issuer_state"] == "RESOLVED")].copy()
-    df_us["ticker"] = df_us["listing_key"].str.split("-").str[-1]
-    skip_prefixes = ("_",)
-    skip_chars = (".", "=", "^")
-    skip_suffixes = ("-USD", "-EUR", "-GBP", "_X", "_F")
-    filt = sorted({
-        t for t in df_us["ticker"]
-        if not t.startswith(skip_prefixes)
-        and not t.endswith(skip_suffixes)
-        and not any(c in t for c in skip_chars)
-    })
-    digest = hashlib.sha256(("\n".join(filt) + "\n").encode("utf-8")).hexdigest()
-    wm = df_us[df_us["ticker"] == "WM"].iloc[0]
-    ko = df_us[df_us["ticker"] == "KO"].iloc[0]
-    doc = {
-        "schema": "us_turn_watch_universe.v2",
-        "universe_id": f"us-turn-watch:anticipation-v2-2026-10-19:{digest[:12]}",
-        "selection_era": "anticipation-v2-2026-10-19",
-        "source": {
-            "repository": "mastermindx-market-intelligence/macro",
-            "commit": "1d20bdebb10b30e1924cfcf18c689440c2059d7c",
-            "tree": "81587d77e5e6e0e72b55f203331f0f504f7fdc92",
-            "captured_at": "2026-10-18T00:00:00Z",
-            "store": "data/reference/security_master.parquet",
-            "store_blob_sha1": "452fe313fa8d1904539128edbc8fb2fdd7d861d1",
-            "membership_basis": "issuer rows where country=='US' and issuer_state=='RESOLVED'; outcome-independent",
-            "v1_reference": {
-                "schema": "us_turn_watch_universe.v1",
-                "selection_era": "anticipation-v1-2026-08-08",
-                "commit": "c3eed6fcc15ae89799fe28454634c9d075897717",
-                "tickers_sha256": _V1_DIGEST,
-                "population_count": 697,
-            },
-        },
-        "filters": {"skip_prefixes": ["_"], "skip_chars": [".", "=", "^"],
-                    "skip_suffixes": ["-USD", "-EUR", "-GBP", "_X", "_F"]},
-        "population_count": len(filt),
-        "tickers_sha256": digest,
-        "snapshot": {"data_session": "2026-10-19", "graded_min_bars_200": None,
-                     "graded_min_bars_260": None, "graded_200_at_data_session": None,
-                     "note": "Selection-era source state reconstructed from canonical outcome-independent US membership roster."},
-        "membership_proof": {
-            "WM": {k: str(wm[k]) for k in ["security_id", "ticker", "listing_key", "mic", "issuer_state"]},
-            "KO": {k: str(ko[k]) for k in ["security_id", "ticker", "listing_key", "mic", "issuer_state"]},
-            "note": "WM and KO are RESOLVED US issuers with valid NYSE listings.",
-        },
-        "freshness": {"reference": "lib.nyse_calendar.expected_last_session",
-                      "max_completed_session_lag": 0, "strict_majority_required": True,
-                      "benchmark_must_reach_modal": True},
-        "tickers": filt,
-    }
-    _V2_PATH.write_text(json.dumps(doc, indent=2), encoding="utf-8")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -147,8 +80,8 @@ def test_v1_frozen_contract_is_byte_stable():
     """v1 contract stays byte-identical; its selection_era is NEVER replaced by v2."""
     raw = _V1_PATH.read_bytes()
     digest = hashlib.sha256(raw).hexdigest()
-    # The contract content is identity-stable across reads; the SHA never differs.
-    assert digest == hashlib.sha256(_V1_PATH.read_bytes()).hexdigest()
+    # Whole-file SHA from frozen base 047ab5a950e59f4bdca180129a4dd84086a6d064.
+    assert digest == "645dc6274aaa7606734d6f9f77168425fea21556737996ef0664b2c9a122e4eb"
     payload = json.loads(raw)
     assert payload["schema"] == "us_turn_watch_universe.v1"
     assert payload["selection_era"] == "anticipation-v1-2026-08-08"
@@ -230,43 +163,26 @@ def test_v2_contract_carries_full_source_receipt():
 
 
 def test_v2_tampered_tickers_sha_fails_closed(tmp_path, capsys):
-    # Write the contract into tmp_path/config/ so the loader (which resolves
-    # ``data_root.parent/config``) reads it from the isolated tmp_path location.
     _write_v2_contract(tmp_path, overrides={"tickers_sha256": "0" * 64})
-    try:
-        assert TW.universe_contract_v2(tmp_path / "data") is None
-        assert "ticker digest mismatch" in capsys.readouterr().out
-    finally:
-        _restore_v2_contract_from_disk()
+    assert TW.universe_contract_v2(tmp_path / "data") is None
+    assert "ticker digest mismatch" in capsys.readouterr().out
 
 
 def test_v2_wrong_schema_fails_closed(tmp_path, capsys):
     _write_v2_contract(tmp_path, overrides={"schema": "us_turn_watch_universe.bogus"})
-    try:
-        assert TW.universe_contract_v2(tmp_path / "data") is None
-        assert "contract shape/era invalid" in capsys.readouterr().out
-    finally:
-        _restore_v2_contract_from_disk()
+    assert TW.universe_contract_v2(tmp_path / "data") is None
+    assert "contract shape/era invalid" in capsys.readouterr().out
 
 
 def test_v2_wrong_era_fails_closed(tmp_path, capsys):
-    _write_v2_contract(tmp_path, overrides={"selection_era": "anticipation-v1-2026-08-08"})
-    try:
-        assert TW.universe_contract_v2(tmp_path / "data") is None
-        assert "contract shape/era invalid" in capsys.readouterr().out
-    finally:
-        _restore_v2_contract_from_disk()
+    _write_v2_contract(tmp_path, overrides={"selection_era": TW.SELECTION_ERA})
+    assert TW.universe_contract_v2(tmp_path / "data") is None
+    assert "contract shape/era invalid" in capsys.readouterr().out
 
 
-def test_v2_missing_contract_returns_none_and_warns(capsys):
-    """A missing v2 file is NOT an exception — the loader says so and returns None."""
-    saved = _V2_PATH.read_bytes()
-    _V2_PATH.unlink()
-    try:
-        assert TW.universe_contract_v2(_REPO / "data") is None
-        assert "contract unavailable" in capsys.readouterr().out
-    finally:
-        _V2_PATH.write_bytes(saved)
+def test_v2_missing_contract_returns_none_and_warns(tmp_path, capsys):
+    assert TW.universe_contract_v2(tmp_path / "data") is None
+    assert "contract unavailable" in capsys.readouterr().out
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -293,16 +209,10 @@ def test_active_selection_era_returns_v2_after_activation_date(monkeypatch):
     assert TW.active_selection_era(_REPO / "data") == TW.SELECTION_ERA_V2
 
 
-def test_active_selection_era_returns_none_when_v2_required_but_missing(monkeypatch, capsys):
-    monkeypatch.setattr(TW, "_completed_session",
-                        lambda now_utc=None: pd.Timestamp("2026-10-23").date())
-    saved = _V2_PATH.read_bytes()
-    _V2_PATH.unlink()
-    try:
-        assert TW.active_selection_era(_REPO / "data") is None
-        assert "v2 contract required" in capsys.readouterr().out
-    finally:
-        _V2_PATH.write_bytes(saved)
+def test_active_selection_era_returns_none_when_v2_required_but_missing(monkeypatch, tmp_path, capsys):
+    monkeypatch.setattr(TW, "_completed_session", lambda now_utc=None: pd.Timestamp("2026-10-23").date())
+    assert TW.active_selection_era(tmp_path / "data") is None
+    assert "v2 contract required" in capsys.readouterr().out
 
 
 def test_active_selection_era_returns_none_when_v2_required_but_tampered(monkeypatch, tmp_path, capsys):
@@ -378,6 +288,7 @@ def test_v2_universe_does_not_enumerate_raw_price_directory(monkeypatch, tmp_pat
         "schema": "us_turn_watch_universe.v2",
         "selection_era": TW.SELECTION_ERA_V2,
         "population_count": len(tickers),
+        "snapshot": {"graded_min_bars_200": len(tickers), "graded_min_bars_260": len(tickers)},
         "tickers_sha256": digest,
         "tickers": tickers,
         "filters": {"skip_prefixes": ["_"], "skip_chars": [".", "=", "^"],
@@ -392,10 +303,10 @@ def test_v2_universe_does_not_enumerate_raw_price_directory(monkeypatch, tmp_pat
     out.write_text(json.dumps(doc), encoding="utf-8")
     # Add a price file whose stem is in the contract to make sure the contract is honoured.
     (yahoo / "A.parquet").write_bytes(b"")
-    assert TW.universe(fake_root) == ["A", "B"]
+    assert TW.universe(fake_root, selected_contract=TW.universe_contract_for_active(fake_root)) == ["A", "B"]
     # A price file whose stem is NOT in the contract must NOT widen the universe.
-    assert "NOT_IN_V2" not in TW.universe(fake_root)
-    assert "ALSO_NOT_IN_V2" not in TW.universe(fake_root)
+    assert "NOT_IN_V2" not in TW.universe(fake_root, selected_contract=TW.universe_contract_for_active(fake_root))
+    assert "ALSO_NOT_IN_V2" not in TW.universe(fake_root, selected_contract=TW.universe_contract_for_active(fake_root))
 
 
 def test_source_contract_status_discloses_active_selection_era(monkeypatch, tmp_path):
@@ -412,6 +323,7 @@ def test_source_contract_status_discloses_active_selection_era(monkeypatch, tmp_
     status = TW.source_contract_status(
         tmp_path / "data", members=[], closes={}, missing_store=[],
         benchmark=None, min_bars=TW.MIN_BARS,
+        selected_contract=TW.universe_contract_for_active(tmp_path / "data"),
     )
     assert status["selection_era"] == TW.SELECTION_ERA_V2
     assert status["pass"] is False
@@ -448,3 +360,21 @@ def test_build_turn_watch_script_is_not_touched_by_v2_work():
     assert "us_turn_watch_universe.v2" not in src
     assert "anticipation-v2" not in src
     assert "anticipation-v2-2026-10-19" not in src
+
+@pytest.mark.parametrize("floor", [None, 0, True, 1929, "1845"])
+def test_v2_unmeasured_or_invalid_grading_floor_fails_closed(tmp_path, floor):
+    _write_v2_contract(tmp_path, overrides={"snapshot": {"graded_min_bars_200": floor}})
+    assert TW.universe_contract_v2(tmp_path / "data") is None
+
+
+def test_v2_transition_and_actual_exclusions_are_disclosed():
+    old = json.loads(_V1_PATH.read_text())
+    new = json.loads(_V2_PATH.read_text())
+    transition = new["source"]["v1_reference"]["transition"]
+    removed = sorted(set(old["tickers"]) - set(new["tickers"]))
+    assert [row["ticker"] for row in transition["removed"]] == removed
+    assert transition["removed_count"] == len(removed) == 177
+    assert transition["retained_count"] + transition["added_count"] == len(new["tickers"])
+    assert [row["ticker"] for row in new["exclusions"]] == ["BF.B", "BRK.B", "MOG.A"]
+    assert all(row["reason"] == "skip_chars" for row in new["exclusions"])
+    assert new["snapshot"]["data_session"] < new["activation_not_before_session"]

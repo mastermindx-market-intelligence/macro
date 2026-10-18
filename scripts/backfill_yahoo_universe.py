@@ -61,13 +61,13 @@ KNOWN COUPLINGS THIS LANE CREATES (read before raising the cap)
 ---------------------------------------------------------------
 1. ``scripts/run_us_scan_tier.py`` treats "has a data/yahoo parquet" as a proxy for
    "is in the curated roster" and EXCLUDES those names from the scan tier. That
-   proxy stops holding the moment this lane runs: a parquet now means "the hub
-   ledger mentioned it". Measured 2026-08-08, a fully drained queue would otherwise
+   proxy stops holding the moment this lane runs: a parquet now means "a declared consumer
+   requested its price history". Measured 2026-08-08, a fully drained queue would otherwise
    newly exclude 4,601 names from the scan tier (6,217 queued minus the 2,840
    already covered by data/stocks + the four breadth constituent lists). RESOLVED
    in the same PR: ``curated_universe`` now subtracts the names this lane created,
    reading ``state["done"]`` from ``data/yahoo_backfill_state.json``. That makes
-   ``done`` a CONSUMED CONTRACT, not just provenance — its keys are ledger tickers
+   ``done`` a CONSUMED CONTRACT, not just provenance — its keys are declared consumer tickers
    and its ``backfilled`` date is set once, on creation, and never moved by a
    refresh.
 2. Nothing else MAINTAINS a backfilled parquet, which is why this lane has a
@@ -118,7 +118,7 @@ will enforce when it lands.
 
 INCREMENTAL AND RESUMABLE
 -------------------------
-The needed set is recomputed from DISK every run (ledger ∪ hub universe MINUS
+The needed set is recomputed from DISK every run (ledger ∪ hub ∪ declared Prophet roster MINUS
 the parquets that exist), so resumption is correct even if the state file is
 deleted — the state file adds attempt counts, park decisions and provenance, not
 correctness. Per-run work is bounded twice: ``--cap`` tickers and ``--budget-s``
@@ -330,15 +330,23 @@ def vendor_symbol(ticker: str) -> str:
     return ticker
 
 
+def prophet_consumer_universe(data_dir: Path | None = None) -> set[str]:
+    """Prewarm the declared prospective roster through the incumbent Yahoo owner."""
+    from engine.us_turn_watch import universe_contract_v2  # noqa: PLC0415
+
+    contract = universe_contract_v2(data_dir or config.data_dir())
+    return set(contract["tickers"]) if contract is not None else set()
+
+
 def needed_queue(state: dict, today: date | None = None, recent_days: int = 90,
                  data_dir: Path | None = None,
                  site_dir: Path | None = None) -> tuple[list[tuple[str, int]], dict]:
     """The ordered work queue plus a census of how it was derived.
 
-    Needed = (ledger tickers ∪ hub.json universe) MINUS tickers that already have
+    Needed = (ledger tickers ∪ hub.json universe ∪ declared Prophet v2 roster) MINUS tickers that already have
     a parquet. Priority buckets, in order:
 
-      1. the current hub surface (command / emerging / discovery)
+      1. the current hub surface and prospective Prophet consumer roster
       2. anything the ledger saw within ``recent_days``
       3. the rest of the ledger
 
@@ -350,11 +358,12 @@ def needed_queue(state: dict, today: date | None = None, recent_days: int = 90,
     today = today or datetime.now(timezone.utc).date()
     last_seen = ledger_last_seen(data_dir)
     current, hub_every = hub_universe(site_dir)
+    prophet = prophet_consumer_universe(data_dir)
     have = stored_tickers(data_dir)
     parked = state.get("parked") or {}
     pending = state.get("pending") or {}
 
-    universe = set(last_seen) | hub_every
+    universe = set(last_seen) | hub_every | prophet
     missing = {t for t in universe if t not in have}
     unsupported = sorted(t for t in missing if not addressable(t))
     workable = sorted(t for t in missing if addressable(t))
@@ -362,7 +371,7 @@ def needed_queue(state: dict, today: date | None = None, recent_days: int = 90,
     cutoff = (today - timedelta(days=recent_days)).isoformat()
     buckets: dict[str, int] = {}
     for t in workable:
-        if t in current:
+        if t in current or t in prophet:
             buckets[t] = 1
         elif last_seen.get(t, "") >= cutoff:
             buckets[t] = 2
@@ -373,6 +382,9 @@ def needed_queue(state: dict, today: date | None = None, recent_days: int = 90,
     queue.sort(key=lambda tb: (tb[1], int((pending.get(tb[0]) or {}).get("attempts", 0)), tb[0]))
 
     census = {
+        "prophet_v2_universe": len(prophet),
+        "prophet_v2_missing": len(prophet & missing),
+        "prophet_v2_parked": len(prophet & missing & set(parked)),
         "ledger_tickers": len(last_seen),
         "hub_universe": len(hub_every),
         "hub_current_surface": len(current),
