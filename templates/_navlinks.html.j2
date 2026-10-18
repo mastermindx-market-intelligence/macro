@@ -342,7 +342,13 @@
      the single nav include every built page reaches — so live.js patches any
      .nb-px[data-sym] / .nb-chg[data-sym] across the whole site. No-ops cleanly
      when neither a Worker URL nor a snapshot URL is configured. #}
-  <script src="{{ NP }}logo_config.js"{% if nav_defer_enhancements | default(false) %} defer fetchpriority="low"{% endif %}></script>
+  {# This browser-safe logo token is materialized at deploy time in site.served.
+     Its static Git placeholder has DIFFERENT bytes. The optimizer rightly
+     preserves authored non-?v queries, so this explicit runtime query avoids
+     a false Git content hash and Caddy's one-year immutable ?v asset policy.
+     Preserve nav_defer_enhancements: the logo stays in its original ordering
+     relative to stock-logos.js, with the same low-priority mode on opt-in. #}
+  <script src="{{ NP }}logo_config.js?runtime-config"{% if nav_defer_enhancements | default(false) %} defer fetchpriority="low"{% endif %}></script>
   <script src="{{ NP }}stock-logos.js"{% if nav_defer_enhancements | default(false) %} defer fetchpriority="low"{% endif %}></script>
   <script src="{{ NP }}live_config.js"{% if nav_defer_enhancements | default(false) %} defer fetchpriority="low"{% endif %}></script>
   <script src="{{ NP }}live.js"{% if nav_defer_enhancements | default(false) %} defer fetchpriority="low"{% endif %}></script>
