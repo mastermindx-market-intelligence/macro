@@ -2588,17 +2588,32 @@ jobs:
     if: ${{ false }}
     gate: code
     scope: exclusive
-    # C19 WP31: incremental-information evaluator gates, arms/statistics, label-blind sources and the injected-I/O runner (offline).
+    # C19 WP31: incremental-information evaluator gates, arms/statistics, label-blind sources, the injected-I/O runner,
+    # the production adapters and the seat evaluator CLI (offline; every adapter is injected in tests).
     timeout-minutes: 10
     paths:
       - "tests/test_c19_wp31_gates.py"
       - "tests/test_c19_wp31_stats.py"
       - "tests/test_c19_wp31_sources.py"
       - "tests/test_c19_wp31_runner.py"
+      - "tests/test_c19_wp31_production.py"
       - "scripts/c19_wp31_gates.py"
       - "scripts/c19_wp31_stats.py"
       - "scripts/c19_wp31_sources.py"
       - "scripts/c19_wp31_runner.py"
+      - "scripts/c19_wp31_production.py"
+      - "scripts/c19_wp31_evaluate.py"
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/edgar_8k.py"
+      - "collectors/edgar_earnings_8k.py"
+      - "collectors/edgar_forensics.py"
+      - "collectors/fundamental_forensics_acquisition.py"
+      - "collectors/fundamental_forensics_companyfacts.py"
+      - "collectors/sec_document_spine.py"
+      - "collectors/sec_request_pacer.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
       - "config/earnings_story_promotion.yml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/sparse_worktree.json"
@@ -2657,6 +2672,7 @@ jobs:
       - "engine/trial_ledger.py"
       - "engine/validation.py"
       - "lib/__init__.py"
+      - "lib/cn_calendar.py"
       - "lib/config.py"
       - "lib/dataos/__init__.py"
       - "lib/dataos/identity.py"
@@ -2667,13 +2683,22 @@ jobs:
       - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
+      - "lib/delisted_symbols.py"
       - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
       - "lib/nyse_calendar.py"
       - "lib/pages.py"
+      - "lib/stooq.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "research/C19_WP31_INCREMENTAL_INFORMATION_PREREG.md"
       - "scripts/__init__.py"
       - "scripts/publish_company_intelligence_r2.py"
+      - "scripts/query_k3e_expectation_surface.py"
       - "scripts/refresh_event_workspaces.py"
       - "scripts/worktree_sparse.py"
       - "tests/__init__.py"
@@ -2686,7 +2711,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml requests
       - name: c19-wp31-incremental-information
-        run: python -m pytest tests/test_c19_wp31_gates.py tests/test_c19_wp31_stats.py tests/test_c19_wp31_sources.py tests/test_c19_wp31_runner.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_c19_wp31_gates.py tests/test_c19_wp31_stats.py tests/test_c19_wp31_sources.py tests/test_c19_wp31_runner.py tests/test_c19_wp31_production.py -q -p no:cacheprovider
 
   inline-js:
     if: ${{ false }}
