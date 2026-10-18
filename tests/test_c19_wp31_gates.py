@@ -256,7 +256,13 @@ def _ledger_lines(ledger: TrialLedger) -> list[dict]:
     return [json.loads(l) for l in text.splitlines() if l.strip()]
 
 
-def test_register_writes_one_declared_budget_row_with_identifiers(tmp_ledger):
+@pytest.fixture
+def full_tree(monkeypatch):
+    # Pin a materialized tree so these tests never depend on the checkout's own sparseness.
+    monkeypatch.setattr(worktree_sparse, "missing_dirs", lambda root=None: [])
+
+
+def test_register_writes_one_declared_budget_row_with_identifiers(full_tree, tmp_ledger):
     receipt = gates.register(tmp_ledger)
     assert receipt["gate"] == "REG"
     rows = _ledger_lines(tmp_ledger)
@@ -270,7 +276,7 @@ def test_register_writes_one_declared_budget_row_with_identifiers(tmp_ledger):
     assert row["reason"] == gates.registration_reason()
 
 
-def test_register_is_idempotent_no_second_row(tmp_ledger):
+def test_register_is_idempotent_no_second_row(full_tree, tmp_ledger):
     gates.register(tmp_ledger)
     before = Path(tmp_ledger.path).read_bytes()
     receipt = gates.register(tmp_ledger)

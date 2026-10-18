@@ -401,7 +401,8 @@ def enumerate_episodes(rows: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]
         if issuer not in UNIVERSE:
             continue
         form = str(row.get("form") or "").strip()
-        if form not in ("8-K", "8-K/A"):
+        # prereg §2 names "Form 8-K"; an 8-K/A amendment is not the first release.
+        if form != "8-K":
             continue
         if not _has_item_202(row.get("items")):
             continue

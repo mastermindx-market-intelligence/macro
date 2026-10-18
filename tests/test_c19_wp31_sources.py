@@ -192,6 +192,17 @@ def test_enumerate_drops_missing_item_202() -> None:
         assert sources.enumerate_episodes(rows) == [], items
 
 
+def test_enumerate_drops_amended_and_other_forms() -> None:
+    # prereg §2: the release is a Form 8-K; amendments and other forms never qualify.
+    for form in ("8-K/A", "8-K12B", "6-K", "10-Q", " 8-k ", ""):
+        rows = [_eightk("AAPL", "0000000000-26-000109",
+                        "2026-10-29T20:05:00.000Z", "2026-10-29", form=form)]
+        assert sources.enumerate_episodes(rows) == [], form
+    rows = [_eightk("AAPL", "0000000000-26-000109",
+                    "2026-10-29T20:05:00.000Z", "2026-10-29", form=" 8-K ")]
+    assert len(sources.enumerate_episodes(rows)) == 1
+
+
 def test_enumerate_drops_missing_exhibit_991() -> None:
     without_key = [_eightk("AAPL", "0000000000-26-000103",
                            "2026-10-29T20:05:00.000Z", "2026-10-29",

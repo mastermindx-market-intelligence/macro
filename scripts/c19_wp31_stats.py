@@ -35,9 +35,18 @@ import numpy as np
 #: An arm's output: (sign, None) when it emits, (None, "<abstain reason>") when not.
 Emission = tuple[int | None, str | None]
 
-#: prereg §4 K-backed: "rights_class not blocked". The blocked class set is a module
-#: constant (spec "Arms"); a missing/unknown class fails closed to ABSTAIN.
-BLOCKED_RIGHTS = frozenset({"blocked", "restricted", "unknown", None})
+#: prereg §4 K-backed: "rights_class not blocked". "Blocked" is the K surface's own
+#: rights vocabulary (engine/k3e_expectation_surface.py BLOCKED_RIGHTS |
+#: DISPLAY_ONLY_RIGHTS) plus RESTRICTED, compared upper-cased; a missing class reads
+#: as UNKNOWN exactly as the engine reads it. UNKNOWN is a labeled absence
+#: (SOURCE_USE_RIGHTS_UNKNOWN), not a block. Pinned to the engine sets by test.
+BLOCKED_RIGHTS = frozenset({"RIGHTS_BLOCKED", "UNLICENSED", "PROHIBITED", "BLOCKED",
+                            "DISPLAY_ONLY", "RESTRICTED"})
+
+
+def rights_blocked(rights_class: Any) -> bool:
+    """True when a K rights_class is in the blocked vocabulary (None -> UNKNOWN)."""
+    return str(rights_class or "UNKNOWN").strip().upper() in BLOCKED_RIGHTS
 
 #: prereg §4 arm table. "A2-K" is A2[-K], "A2-S" is A2[-S].
 ARMS = ("A0", "A1", "A2", "A2-K", "A2-S")
@@ -201,7 +210,7 @@ def k_backed(ep: Mapping[str, Any]) -> bool:
         return False
     if k.get("identity_status") != "CHECKED":
         return False
-    if k.get("rights_class") in BLOCKED_RIGHTS:
+    if rights_blocked(k.get("rights_class")):
         return False
     if k.get("attempt_status") != "success":
         return False

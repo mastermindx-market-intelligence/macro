@@ -84,7 +84,6 @@ def test_constants_match_prereg():
     assert st.HEDGE == {"AAPL": "XLK", "HOMEBUILDERS": "XHB"}
     assert st.COST_PER_EPISODE == pytest.approx(0.0040)
     assert isinstance(st.BLOCKED_RIGHTS, frozenset)
-    assert {"blocked", "restricted", "unknown", None} == set(st.BLOCKED_RIGHTS)
     assert issubclass(st.AblationError, RuntimeError)
     assert st.Emission == tuple[int | None, str | None]
 
@@ -139,15 +138,29 @@ def test_k_backed_stale_by_one_second():
 @pytest.mark.parametrize("field,value", [
     ("expectation_state", "STALE"),
     ("identity_status", "UNCHECKED"),
+    ("rights_class", "RIGHTS_BLOCKED"),
+    ("rights_class", "DISPLAY_ONLY"),
     ("rights_class", "blocked"),
     ("rights_class", "restricted"),
-    ("rights_class", "unknown"),
-    ("rights_class", None),
+    ("rights_class", " unlicensed "),
     ("attempt_status", "error"),
     ("attempt_status", None),
 ])
 def test_k_backed_false_on_each_gate(field, value):
     assert st.k_backed(episode(k={field: value})) is False
+
+
+def test_blocked_rights_is_the_k_surface_vocabulary():
+    # The gate must speak the engine's labels; a case-mismatched private set fails open.
+    from engine.k3e_expectation_surface import BLOCKED_RIGHTS, DISPLAY_ONLY_RIGHTS
+    assert st.BLOCKED_RIGHTS == frozenset(BLOCKED_RIGHTS | DISPLAY_ONLY_RIGHTS | {"RESTRICTED"})
+
+
+@pytest.mark.parametrize("value", ["UNKNOWN", "unknown", None, "", "public"])
+def test_k_backed_true_on_unknown_or_unblocked_rights(value):
+    # UNKNOWN is the producer's labeled absence (engine: SOURCE_USE_RIGHTS_UNKNOWN), not a block.
+    assert st.rights_blocked(value) is False
+    assert st.k_backed(episode(k={"rights_class": value})) is True
 
 
 def test_k_backed_false_when_a1_abstains():
