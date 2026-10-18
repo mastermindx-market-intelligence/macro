@@ -407,6 +407,9 @@ def _linkbases(
         "line": "syn.htm#us-gaap_Revenues",
         "cashroot": "syn.htm#us-gaap_StatementOfCashFlowsAbstract",
         "cashline": "syn.htm#us-gaap_CashCashEquivalentsAtCarryingValue",
+        # Two locators on one concept: a cash flow presents cash twice.
+        "cashbeg": "syn.htm#us-gaap_CashCashEquivalentsAtCarryingValue",
+        "cashend": "syn.htm#us-gaap_CashCashEquivalentsAtCarryingValue",
     }
     loc_labels: set[str] = set()
     loc_hrefs = dict(_known_loc_hrefs)
@@ -854,9 +857,9 @@ def test_r7_assets_instant_under_wrong_income_column_refuses() -> None:
         _reconstruct(html, facts, contexts)
 
 
-def test_r7_cash_position_instants_agree_with_their_duration_columns() -> None:
-    # The canonical cash-flow positions: an instant at the column end (ending
-    # cash) and at the day before the column start (beginning cash) agree.
+def _cash_position_case(
+    beginning_label: str, ending_label: str
+) -> tuple[str, list[dict], list[dict]]:
     html = f"""
     <html><body>
     <table>
@@ -865,8 +868,8 @@ def test_r7_cash_position_instants_agree_with_their_duration_columns() -> None:
       <tr><td></td><td></td><td></td><td></td></tr>
       <tr><td>(Dollars in millions)</td><td>2025</td><td></td><td>2024</td></tr>
       <tr><td>Net income</td><td>{_ix("h6m25", "c2p-ni25", name="us-gaap:NetIncomeLoss")}</td><td></td><td>{_ix("h6m24", "c2p-ni24", name="us-gaap:NetIncomeLoss")}</td></tr>
-      <tr><td>Cash and cash equivalents at beginning of period</td><td>{_ix("b2024", "c2p-b25", name="us-gaap:CashCashEquivalentsAtCarryingValue")}</td><td></td><td>{_ix("b2023", "c2p-b24", name="us-gaap:CashCashEquivalentsAtCarryingValue")}</td></tr>
-      <tr><td>Cash and cash equivalents at end of period</td><td>{_ix("e2025", "c2p-e25", name="us-gaap:CashCashEquivalentsAtCarryingValue")}</td><td></td><td>{_ix("e2024", "c2p-e24", name="us-gaap:CashCashEquivalentsAtCarryingValue")}</td></tr>
+      <tr><td>{beginning_label}</td><td>{_ix("b2024", "c2p-b25", name="us-gaap:CashCashEquivalentsAtCarryingValue")}</td><td></td><td>{_ix("b2023", "c2p-b24", name="us-gaap:CashCashEquivalentsAtCarryingValue")}</td></tr>
+      <tr><td>{ending_label}</td><td>{_ix("e2025", "c2p-e25", name="us-gaap:CashCashEquivalentsAtCarryingValue")}</td><td></td><td>{_ix("e2024", "c2p-e24", name="us-gaap:CashCashEquivalentsAtCarryingValue")}</td></tr>
     </table>
     </body></html>
     """
@@ -886,16 +889,94 @@ def test_r7_cash_position_instants_agree_with_their_duration_columns() -> None:
         _fact("c2p-e25", "e2025", name="us-gaap:CashCashEquivalentsAtCarryingValue"),
         _fact("c2p-e24", "e2024", name="us-gaap:CashCashEquivalentsAtCarryingValue"),
     ]
+    return html, facts, contexts
+
+
+_CASH_TWICE_ARCS = [
+    ("cashroot", "cashbeg", _LABEL_PERIOD_START),
+    ("cashroot", "cashend", _LABEL_PERIOD_END),
+]
+
+
+def test_r7_cash_position_instants_agree_with_their_duration_columns() -> None:
+    # The canonical cash-flow positions: an instant at the column end (ending
+    # cash) and at the day before the column start (beginning cash) agree. The
+    # beginning row carries its periodStartLabel role, as real filings do.
+    html, facts, contexts = _cash_position_case(
+        "Cash and cash equivalents at beginning of period",
+        "Cash and cash equivalents at end of period",
+    )
     result = _reconstruct(
         html,
         facts,
         contexts,
         statement_type="cash_flow",
         title=CF_TITLE,
-        role="http://synthetic.example/role/CashFlow",
+        role=_CF_ROLE,
+        presentation_arcs=_CASH_TWICE_ARCS,
     )
     assert [c["start"] for c in result["columns"]] == ["2025-01-01", "2024-01-01"]
     assert result["row_count"] == 3
+    assert [row["preferred_label_role"] for row in result["rows"][1:]] == [
+        _LABEL_PERIOD_START,
+        _LABEL_PERIOD_END,
+    ]
+
+
+def test_r7_beginning_cash_without_a_start_role_refuses() -> None:
+    # The anchor follows the presentation role, never the label: a beginning
+    # balance whose row carries no periodStartLabel is held to the column end.
+    html, facts, contexts = _cash_position_case(
+        "Cash and cash equivalents at beginning of period",
+        "Cash and cash equivalents at end of period",
+    )
+    with pytest.raises(StatementGraphError, match=_R7_PREFIX + r"0: .*period anchor"):
+        _reconstruct(
+            html,
+            facts,
+            contexts,
+            statement_type="cash_flow",
+            title=CF_TITLE,
+            role=_CF_ROLE,
+        )
+
+
+def test_r7_concept_presented_twice_maps_rows_to_occurrences_in_order() -> None:
+    # Labels that name neither "beginning" nor "ending": the k-th displayed
+    # row of the concept takes the k-th presentation occurrence's role.
+    html, facts, contexts = _cash_position_case("Cash, opening", "Cash, closing")
+    result = _reconstruct(
+        html,
+        facts,
+        contexts,
+        statement_type="cash_flow",
+        title=CF_TITLE,
+        role=_CF_ROLE,
+        presentation_arcs=_CASH_TWICE_ARCS,
+    )
+    opening, closing = result["rows"][1], result["rows"][2]
+    assert opening["preferred_label_role"] == _LABEL_PERIOD_START
+    assert closing["preferred_label_role"] == _LABEL_PERIOD_END
+    assert [cell["value"] for cell in closing["cells"]] == ["100", "100"]
+
+
+def test_r7_closing_cash_under_a_start_role_refuses() -> None:
+    # Presentation order reversed: the second displayed row now carries the
+    # start role, so its column-end instants no longer sit at its anchor.
+    html, facts, contexts = _cash_position_case("Cash, opening", "Cash, closing")
+    with pytest.raises(StatementGraphError, match=_R7_PREFIX):
+        _reconstruct(
+            html,
+            facts,
+            contexts,
+            statement_type="cash_flow",
+            title=CF_TITLE,
+            role=_CF_ROLE,
+            presentation_arcs=[
+                ("cashroot", "cashend", _LABEL_PERIOD_END),
+                ("cashroot", "cashbeg", _LABEL_PERIOD_START),
+            ],
+        )
 
 
 def test_r7_dimensioned_fact_with_agreeing_period_stays() -> None:

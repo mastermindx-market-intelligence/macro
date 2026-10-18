@@ -1607,25 +1607,12 @@ def _enforce_cell_period_agreement(
                         day_before_start = None
                 instant_date = period.get("instant_date")
                 column_end = column.get("end")
-                label_lower = label.lower()
-                period_end_in_label = (
-                    "at end of" in label_lower
-                    or "end of period" in label_lower
-                    or "end of year" in label_lower
-                )
-                period_start_row = (
-                    "beginning" in label_lower
-                    or "at january 1" in label_lower
-                    or (
-                        preferred_role == LABEL_PERIOD_START
-                        and not period_end_in_label
-                    )
-                )
-                if period_start_row:
-                    if "beginning" in label_lower or "at january 1" in label_lower:
-                        if instant_date == day_before_start:
-                            continue
-                    elif instant_date in (day_before_start, column_end):
+                # The anchor follows the row's presentation label role only: a
+                # periodStartLabel row anchors to the day before the column
+                # start, every other row (periodEndLabel, any other role or
+                # none) to the column end. Labels are never read here.
+                if preferred_role == LABEL_PERIOD_START:
+                    if instant_date == day_before_start:
                         continue
                 elif instant_date == column_end:
                     continue
@@ -1734,6 +1721,7 @@ def _presentation_occurrences(presentation: list[dict[str, Any]]) -> dict[str, l
 def _select_presentation_row(
     spec: Mapping[str, Any],
     occurrences: list[dict[str, Any]],
+    ordinal: int = 0,
 ) -> dict[str, Any] | None:
     if not occurrences:
         return None
@@ -1748,6 +1736,11 @@ def _select_presentation_row(
         end = [row for row in occurrences if row.get("preferred_label_role") == LABEL_PERIOD_END]
         if end:
             return end[0]
+    # A concept presented more than once (a cash flow's beginning and ending
+    # cash) maps its k-th displayed row to its k-th presentation occurrence,
+    # so the ending row carries the ending role rather than the first one.
+    if ordinal < len(occurrences):
+        return occurrences[ordinal]
     return occurrences[0]
 
 
@@ -1997,13 +1990,16 @@ def reconstruct_statement(
     )
     row_presentation: list[dict[str, Any] | None] = []
     row_preferred_label_roles: list[str | None] = []
+    concept_seen: dict[str, int] = {}
     for spec in displayed["rows"]:
         value_facts = spec["value_facts"]
         concept = ""
         if value_facts:
             names = sorted({_prefixed_from_html_name(item.get("name")) for item in value_facts})
             concept = names[0]
-        presentation_row = _select_presentation_row(spec, by_concept.get(concept) or [])
+        ordinal = concept_seen.get(concept, 0)
+        concept_seen[concept] = ordinal + 1
+        presentation_row = _select_presentation_row(spec, by_concept.get(concept) or [], ordinal)
         row_presentation.append(presentation_row)
         row_preferred_label_roles.append(
             presentation_row.get("preferred_label_role") if presentation_row else None
