@@ -334,6 +334,7 @@ _BRAIN_TOOLS = frozenset({
     "run_chart_detection",
     # Chart Mastermind v2 (CMX W2): terminal page only
     "emit_chart_command",   # typed v2 command envelope (draw/scene/ai ops)
+    "emit_chart_plan",      # bounded drawings-only composition, same queue and receipts
     "chart_digest",         # deterministic structural digest (Eyes)
     "measure_line",         # server-side pre-draw trendline fit checker
     "read_chart_state",     # read the live chart session (capabilities/drawings)
@@ -385,6 +386,7 @@ _BRAIN_ONLY_TOOLS = frozenset({
     "run_chart_detection",
     # Chart Mastermind v2 (CMX W2)
     "emit_chart_command",
+    "emit_chart_plan",
     "chart_digest",
     "measure_line",
     "read_chart_state",
@@ -401,6 +403,7 @@ _CHART_COMMAND_TOOLS = frozenset({
     "toggle_chart_indicator",
     "run_chart_detection",
     "emit_chart_command",   # CMX W2 — typed v2 envelope, same SSE channel
+    "emit_chart_plan",
 })
 
 # ---------------------------------------------------------------------------
@@ -638,8 +641,26 @@ _CHART_DETECTION_ALLOWLIST = frozenset({"trendlines", "fib", "sr", "mtfa", "clea
 # Brain-gateway-specific tool schemas
 # ---------------------------------------------------------------------------
 
+_CHART_DRAWING_ARGS_HELP = (
+    "Points are {t: epoch seconds, p: positive raw price}. "
+    "draw.tool: {kind,points:[...],style?,text?,fibonacci?}; use exact kind, point counts, "
+    "anchor_roles and style_fields from read_chart_state capabilities.drawing_tools. "
+    "All anchor times must be loaded chart bars. Style fields are color,width,dash,opacity,fill_color,fill_opacity,font_size "
+    "only when advertised. Text is required for text/note/callout labels. For fib/fibtrend, "
+    "fibonacci:{levels?:[ratio],reverse?:boolean,labels?:'ratio'|'price'|'both'}; "
+    "fibtrend takes move start, move end, retracement end and uses raw-price arithmetic. "
+    "Native paths, channels, pitchforks, harmonic/Elliott annotations and measurements are one managed drawing each. "
+    "Pattern annotations express an interpretation, not detection or validated odds. "
+    "Legacy geometry: draw.trendline/draw.ray/draw.fib:{p1,p2}; draw.hline:{p,at?,text?}; "
+    "draw.zone:{p_lo,p_hi,t1?,t2?}; draw.channel:{u1,u2,l1,l2}; draw.path:{points:[...]}; "
+    "draw.label:{p1,text}; draw.marker:{p1,text?}; draw.risk_box:{entry,stop,target?,t1?,t2?}. "
+    "Legacy style is {color?,width?,kind?:'solid'|'dashed'|'dotted'}. "
+    "Choose complementary geometry grounded in the current chart; do not invent pivots to fill a tool checklist."
+)
+
+
 def _chart_command_tool_schemas() -> list[dict]:
-    """Return the 4 chart-command client-executed tool schemas (W6b, terminal page only)."""
+    """Chart execution and read schemas, exposed only on the Terminal page."""
     return [
         {
             "name": "set_chart_symbol",
@@ -730,6 +751,7 @@ def _chart_command_tool_schemas() -> list[dict]:
             "name": "emit_chart_command",
             "description": (
                 "CLIENT-EXECUTED: draw on or configure the user's chart with a typed command. "
+                "For several related drawings use emit_chart_plan; use this tool for a focused edit or indicator configuration. "
                 "Use this to mark levels, trendlines, zones, fibs, paths, labels, risk boxes, or to "
                 "set symbol/timeframe/indicators/range on the Terminal chart. The stroke appears on "
                 "the user's live chart. Server emits a 'command' SSE event; no filesystem/network "
@@ -747,18 +769,19 @@ def _chart_command_tool_schemas() -> list[dict]:
                     },
                     "id": {
                         "type": "string",
-                        "description": "Object id, namespaced ai_* (e.g. 'ai_tl_1'). Required for draw.* ops you may later update/clear.",
+                        "description": "Required for every draw.* operation: unique ai_* logical drawing id (e.g. 'ai_tl_1'). Reusing it updates the whole construction.",
                     },
                     "args": {
                         "type": "object",
-                        "description": (
-                            "Op arguments. Points are {t: <epoch seconds>, p: <price>}. "
-                            "draw.trendline: {p1, p2, extend?, text?}. draw.hline: {p}. "
-                            "draw.zone: {p_lo, p_hi, t1?, t2?}. chart.set_symbol: {symbol}. chart.set_tf: {tf}. "
+                        "description": _CHART_DRAWING_ARGS_HELP + (
+                            " Configuration: chart.set_symbol:{symbol}; chart.set_tf:{tf}; chart.set_range:{from,to}. "
                             "chart.set_indicators defaults to replacement: {indicators:[{name,params?}]}. "
                             "For a supported non-destructive edit use {mode:'patch',indicators:[{name,params?}],remove?:[name]}; "
                             "unmentioned studies/settings survive. Use patch ONLY when read_chart_state capabilities.indicator_edit "
                             "advertises it. Native parameter keys and typed values come from capabilities.native_parameters; "
+                            "When indicator_edit.visibility advertises it, show:[name] reveals an attached study and hide:[name] hides it "
+                            "without losing settings. Enable a study with indicators:[{name,params?}] plus show:[name]; "
+                            "visibility-only patches use indicators:[]. Unmentioned visibility stays unchanged. "
                             "remove names only on explicit user intent. ai.clear with {ids:[ai_id,...]} removes only named AI "
                             "objects when capabilities.ai_drawing_edit.clear_ids is true; an absent id rejects the entire request. "
                             "ai.clear without ids clears all AI annotations on the active symbol, never human drawings. "
@@ -771,6 +794,33 @@ def _chart_command_tool_schemas() -> list[dict]:
                     },
                 },
                 "required": ["op"],
+            },
+        },
+        {
+            "name": "emit_chart_plan",
+            "description": (
+                "CLIENT-EXECUTED: apply a coherent multi-tool technical drawing plan to the current chart. "
+                "For comprehensive chart analysis or a full capability showcase, compose several complementary constructions "
+                "in this one call after reading the chart and grounding its pivots/levels. "
+                "A plan accepts 1-24 draw.* commands, shares one exact chart target, and returns every drawing's application receipt. "
+                "It uses the existing chart queue; it is ordered but not atomic. Configure requested indicators/timeframe in a "
+                "preceding tool round, await the applied successor, then reread before drawing. "
+                "Never mix chart.* settings, clear or undo into a drawing plan. Only use when capabilities.drawing_plan is advertised."
+            ),
+            "input_schema": {
+                "type": "object", "additionalProperties": False,
+                "properties": {
+                    "title": {"type": "string", "maxLength": 140, "description": "Short name for the analysis."},
+                    "commands": {"type": "array", "minItems": 1, "maxItems": 24,
+                        "description": "Complementary drawings in the order they should appear. Unique ids within this plan.",
+                        "items": {"type": "object", "additionalProperties": False,
+                            "properties": {
+                                "op": {"type": "string", "enum": [op for op in _CHART_V2_OPS if op.startswith("draw.")]},
+                                "id": {"type": "string", "pattern": "^ai_[A-Za-z0-9_-]{1,40}$"},
+                                "args": {"type": "object", "description": _CHART_DRAWING_ARGS_HELP},
+                                "caption": {"type": "string", "maxLength": 140, "description": "What this construction shows and why it matters."},
+                            }, "required": ["op", "id", "args"]}},
+                }, "required": ["commands"],
             },
         },
         {
@@ -2954,7 +3004,7 @@ def _flat_command(
 _CHART_V2_OPS = (
     "chart.set_symbol", "chart.set_tf", "chart.set_indicators", "chart.set_range",
     "draw.trendline", "draw.ray", "draw.hline", "draw.zone", "draw.channel",
-    "draw.fib", "draw.path", "draw.label", "draw.marker", "draw.risk_box",
+    "draw.fib", "draw.path", "draw.label", "draw.marker", "draw.risk_box", "draw.tool",
     "scene.begin", "scene.end", "ai.clear", "ai.undo",
 )
 _CHART_V2_OPS_SET = frozenset(_CHART_V2_OPS)
@@ -3044,6 +3094,8 @@ def _tool_chart_command(params: dict) -> dict:
         return {"error": f"unknown op {op!r}; allowed: {list(_CHART_V2_OPS)}"}
 
     obj_id = params.get("id")
+    if op.startswith("draw.") and obj_id is None:
+        return {"error": "every drawing requires an ai_* id"}
     if obj_id is not None:
         if not isinstance(obj_id, str) or not _AI_ID_RE.match(obj_id):
             return {"error": "id must match ^ai_[A-Za-z0-9_-]{1,40}$"}
@@ -3062,6 +3114,13 @@ def _tool_chart_command(params: dict) -> dict:
             return {"error": "indicator mode must be replace or patch"}
         if edit_mode != "patch" and "remove" in args:
             return {"error": "indicator removals require patch mode"}
+        for key in ("show", "hide"):
+            if key in args and (not isinstance(args[key], list) or len(args[key]) > 64
+                    or any(not isinstance(name, str) or not name or len(name) > 128 for name in args[key])
+                    or len(set(args[key])) != len(args[key])):
+                return {"error": "bad_indicator_visibility"}
+        if set(args.get("show", [])) & set(args.get("hide", [])):
+            return {"error": "conflicting_indicator_visibility"}
     if op == "ai.clear" and isinstance(args, dict) and "ids" in args:
         ids = args["ids"]
         if (not isinstance(ids, list) or not 1 <= len(ids) <= 60
@@ -3110,6 +3169,156 @@ def validate_v2_batch(ops: list) -> str | None:
     return None
 
 
+def _native_drawing_capability_error(args: object, capabilities: object) -> str | None:
+    """Qualify a native drawing against the receiver's existing registry projection.
+
+    This is admission, not another drawing catalog or a claim of analytical validity.
+    The receiver rechecks semantic anchors against its actual loaded bars at execution.
+    """
+    manifest = capabilities.get("drawing_tools") if isinstance(capabilities, dict) else None
+    if (not isinstance(manifest, dict) or manifest.get("schema") != "chart.drawing_tools.v1"
+            or manifest.get("op") != "draw.tool" or manifest.get("coordinate_domain") != "price"):
+        return "native_drawing_tools_not_supported"
+    if not isinstance(args, dict) or set(args) - {"kind", "points", "style", "text", "fibonacci"}:
+        return "unknown_drawing_argument"
+    catalog = manifest.get("tools")
+    kind = args.get("kind")
+    contract = next((row for row in catalog[:64] if isinstance(row, dict) and row.get("kind") == kind), None) if isinstance(catalog, list) else None
+    if not isinstance(kind, str) or not isinstance(contract, dict):
+        return "unsupported_drawing_tool"
+    lo, hi = contract.get("min_points"), contract.get("max_points")
+    points = args.get("points")
+    if (not isinstance(lo, int) or isinstance(lo, bool) or not isinstance(hi, int) or isinstance(hi, bool)
+            or not 1 <= lo <= hi <= 64 or not isinstance(points, list) or not lo <= len(points) <= hi):
+        return "bad_drawing_point_count"
+    if any(_validate_point(point) or not 631152000 <= point["t"] <= 4102444800 for point in points):
+        return "bad_drawing_anchor"
+    if len({(point["t"], point["p"]) for point in points}) != len(points):
+        return "duplicate_drawing_anchor"
+    if contract.get("chronological") is True and any(points[i]["t"] <= points[i - 1]["t"] for i in range(1, len(points))):
+        return "drawing_anchor_order_invalid"
+    if contract.get("nonzero_price_legs") is True and any(points[i]["p"] == points[i - 1]["p"] for i in range(1, len(points))):
+        return "degenerate_pattern_leg"
+    style = args.get("style", {})
+    allowed = contract.get("style_fields")
+    if not isinstance(style, dict) or not isinstance(allowed, list) or any(key not in allowed for key in style):
+        return "unsupported_drawing_style"
+    bounds = {"width": (0, 12), "opacity": (0, 1), "fill_opacity": (0, 1), "font_size": (8, 48)}
+    for key, value in style.items():
+        if key in {"color", "fill_color"}:
+            if not isinstance(value, str) or not re.fullmatch(r"(?:var\(--[a-z0-9-]+\)|#[0-9a-fA-F]{6})", value):
+                return "bad_drawing_style"
+        elif key == "dash":
+            if value not in ("solid", "dashed", "dotted"):
+                return "bad_drawing_style"
+        elif key in bounds:
+            minimum, maximum = bounds[key]
+            if not _num_ok(value) or not minimum <= value <= maximum or (key == "width" and value == 0):
+                return "bad_drawing_style"
+        else:
+            return "unsupported_drawing_style"
+    text = args.get("text")
+    if "text" in args and (not isinstance(text, str) or len(text) > _CAPTION_MAX):
+        return "bad_drawing_text"
+    if contract.get("text") == "required" and (not isinstance(text, str) or not re.sub(r"[\x00-\x1f\x7f]", " ", text).strip()):
+        return "drawing_text_required"
+    if contract.get("text") == "unsupported" and "text" in args:
+        return "unsupported_drawing_text"
+    if "fibonacci" in args:
+        fib = args["fibonacci"]
+        if kind not in {"fib", "fibtrend"} or not isinstance(fib, dict):
+            return "unsupported_fibonacci_settings"
+        if (set(fib) - {"levels", "reverse", "labels"}
+                or ("reverse" in fib and not isinstance(fib["reverse"], bool))
+                or ("labels" in fib and fib["labels"] not in ("ratio", "price", "both"))):
+            return "bad_fibonacci_settings"
+        if "levels" in fib:
+            levels = fib["levels"]
+            if (not isinstance(levels, list) or not 1 <= len(levels) <= 24
+                    or any(not _num_ok(value) or not -100 <= value <= 100 or round(value, 6) != value for value in levels)
+                    or len(set(levels)) != len(levels)):
+                return "bad_fibonacci_levels"
+    return None
+
+
+def _drawing_plan_shape_error(command: dict) -> str | None:
+    """Complete legacy geometry preflight for a plan, before any child is emitted."""
+    op, args = command.get("op"), command.get("args")
+    if not isinstance(op, str) or not op.startswith("draw.") or op not in _CHART_V2_OPS_SET:
+        return "drawing plans accept draw.* operations only"
+    if not isinstance(command.get("id"), str) or not _AI_ID_RE.fullmatch(command["id"]):
+        return "every drawing needs a unique ai_* id"
+    if not isinstance(args, dict):
+        return "drawing args must be an object"
+    def point(value):
+        return _validate_point(value) or (None if 631152000 <= value["t"] <= 4102444800 else "time must be epoch seconds within 1990-2100")
+    if op in {"draw.trendline", "draw.ray", "draw.fib"}:
+        return point(args.get("p1")) or point(args.get("p2"))
+    if op == "draw.channel":
+        return next((error for key in ("u1", "u2", "l1", "l2") if (error := point(args.get(key)))), None)
+    if op == "draw.hline":
+        return None if _num_ok(args.get("p")) and args["p"] > 0 else "hline requires a positive p"
+    if op == "draw.zone":
+        return None if all(_num_ok(args.get(key)) and args[key] > 0 for key in ("p_lo", "p_hi")) else "zone requires positive p_lo and p_hi"
+    if op == "draw.path":
+        points = args.get("points")
+        if not isinstance(points, list) or not 2 <= len(points) <= 64:
+            return "path requires 2-64 points"
+        return next((error for item in points if (error := point(item))), None)
+    if op in {"draw.label", "draw.marker"}:
+        error = point(args.get("p1", {"t": args.get("t"), "p": args.get("p")}))
+        if error:
+            return error
+        if op == "draw.label" and (not isinstance(args.get("text"), str) or not args["text"].strip()):
+            return "label text is required"
+    if op == "draw.risk_box" and not all(_num_ok(args.get(key)) and args[key] > 0 for key in ("entry", "stop")):
+        return "risk box requires explicit positive entry and stop"
+    return None
+
+
+def _chart_plan_receipt(receipts: list[dict]) -> dict:
+    """One ordered model result; a child can never overwrite a sibling's receipt."""
+    counts = {"accepted": 0, "rejected": 0, "cancelled": 0, "unverified": 0}
+    for receipt in receipts:
+        outcome = receipt.get("command_outcome")
+        counts[outcome if outcome in counts else "unverified"] += 1
+    total = len(receipts)
+    status = ("accepted" if total and counts["accepted"] == total else
+              "partial" if counts["accepted"] else "unverified" if counts["unverified"] else
+              "cancelled" if total and counts["cancelled"] == total else "rejected")
+    # Repeating a full observed inventory for every child can bury the receipts in
+    # a huge tool result. Keep each outcome/identity and one explicitly qualified last view.
+    children = [{"index": index, **{key: value for key, value in receipt.items() if key not in {"observed_state", "note"}}}
+                for index, receipt in enumerate(receipts)]
+    last_state = next((receipt["observed_state"] for receipt in reversed(receipts) if isinstance(receipt.get("observed_state"), dict)), None)
+    return {"schema": "chart.drawing_plan_receipt.v1", "plan_status": status,
+            "counts": counts, "total": total,
+            "commands": children,
+            "last_observed_state": last_state, "state_basis": "last_received_view_not_atomic_plan_snapshot",
+            "automatic_retry_allowed": False,
+            "note": "Ordered per-drawing results, not an atomic transaction. Accepted verifies client application, not rendered pixels or analytical correctness. Cancellation leaves already-applied drawings in place; never recreate cancelled or uncertain drawings automatically."}
+
+
+def _prepare_chart_command_wires(
+    result: dict, user_id: str, origin_id: str, context_revision: int | None,
+    batch_id: str, first_seq: int,
+) -> tuple[list[dict], dict | None]:
+    """Freeze one exact target and reserve the remaining reply budget before emission."""
+    children = result.get("commands") if result.get("type") == "command_plan" else [result]
+    if not isinstance(children, list) or not children or any(not isinstance(child, dict) for child in children):
+        return [], {"error": "invalid_drawing_plan", "emitted": 0, "effect_state": "not_applied"}
+    if first_seq + len(children) > _BATCH_OP_CAP:
+        return [], {"error": "chart_batch_capacity_exceeded", "available_commands": max(0, _BATCH_OP_CAP - first_seq),
+                    "emitted": 0, "effect_state": "not_applied"}
+    target = _chart_command_target_for_result(user_id, origin_id, context_revision, children[0])
+    if any(_chart_command_requires_target(child) for child in children) and target is None:
+        return [], {"error": "command_target_unavailable", "emitted": 0, "effect_state": "not_applied",
+                    "automatic_retry_allowed": False,
+                    "note": "The exact chart changed or is unavailable. Do not refresh the target, broaden the edit, or use an untargeted fallback."}
+    return [_flat_command(child, batch_id=batch_id, seq=first_seq + index, target=target)
+            for index, child in enumerate(children)], None
+
+
 # ---------------------------------------------------------------------------
 # CMX W2 — ChartSession store (in-process, TTL, thread-safe; masterplan §2.2)
 # ---------------------------------------------------------------------------
@@ -3125,6 +3334,8 @@ _CHART_ACK_HISTORY_CAP = 64
 _CHART_ACK_ERROR_MAX = 120
 _CHART_ACK_WAIT_SECONDS = 2.0
 _CHART_ACK_POLL_SECONDS = 0.05
+_CHART_ACK_PLAN_MAX_SECONDS = 20.0
+_CHART_DRAWING_PACE_SECONDS = 0.65  # receiver conductorState.PACE_MS; bounded normal-motion budget
 _chart_state_store: dict[tuple[str, str, str], dict] = {}
 _chart_state_lock = threading.Lock()
 
@@ -3565,6 +3776,12 @@ def _verified_chart_command_receipt(
     Receipt delivery is not evidence of successful application or rendered pixels.
     Keep the existing command_status vocabulary; command_outcome refines its meaning.
     """
+    if str(wire.get("op", "")).startswith("draw.") and ack.get("id") != wire.get("id"):
+        out = _unverified_chart_command_receipt(wire, "ack_drawing_id_mismatch")
+        out.update({"observed_context_revision": record.get("context_revision"),
+                    "observed_state": _compact_chart_state_for_receipt(record),
+                    "ack": {"ok": ack.get("ok") is True, "id": ack.get("id")}})
+        return out
     ok = ack.get("ok") is True
     compact_ack: dict[str, Any] = {"ok": ok}
     error = ack.get("error") if isinstance(ack.get("error"), str) else ""
@@ -3632,6 +3849,13 @@ def _verified_chart_command_receipt(
     return out
 
 
+def _chart_ack_wait_budget(command_count: int) -> float:
+    baseline = max(0.0, float(_CHART_ACK_WAIT_SECONDS))
+    if baseline == 0 or command_count <= 1:
+        return baseline
+    return min(_CHART_ACK_PLAN_MAX_SECONDS, baseline + min(command_count, _BATCH_OP_CAP) * _CHART_DRAWING_PACE_SECONDS)
+
+
 def _wait_for_chart_command_acks(
     user_id: str,
     origin_id: str,
@@ -3652,7 +3876,7 @@ def _wait_for_chart_command_acks(
 
     keys = [(str(wire.get("batch_id") or ""), wire.get("seq")) for wire in wires]
     found: dict[tuple[str, int], tuple[dict, dict]] = {}
-    deadline = time.monotonic() + max(0.0, float(_CHART_ACK_WAIT_SECONDS))
+    deadline = time.monotonic() + _chart_ack_wait_budget(len(wires))
     last_record: dict | None = None
 
     while True:
@@ -5643,7 +5867,7 @@ def _dispatch_brain_tool(
         if tool_name == "annotate_chart":
             if chart_client == "terminal":
                 return {"error": "legacy_annotation_not_targeted",
-                        "note": "Use emit_chart_command for each requested mark; the existing host binds its exact target and receipt."}
+                        "note": "Use emit_chart_plan for complementary drawings or emit_chart_command for a focused edit; the host binds the exact target and every receipt."}
             return _tool_annotate_chart(tool_params)
         # Finance tool suite (W6d)
         if tool_name == "get_fundamentals":
@@ -5798,8 +6022,8 @@ def _dispatch_brain_tool(
             elif tool_name == "set_chart_timeframe":
                 params = {"op": "chart.set_tf", "args": {"tf": legacy["tf"]}}
             else:
-                patch = {"mode": "patch", "indicators": [{"name": legacy["indicator"]}]} if legacy["on"] else {
-                    "mode": "patch", "remove": [legacy["indicator"]]}
+                patch = {"mode": "patch", "indicators": [{"name": legacy["indicator"]}], "show": [legacy["indicator"]]} if legacy["on"] else {
+                    "mode": "patch", "indicators": [], "remove": [legacy["indicator"]]}
                 params = {"op": "chart.set_indicators", "args": patch}
             return _dispatch_brain_tool(
                 "emit_chart_command", params, root, terminal_data_dir, terminal_hub_url,
@@ -5809,8 +6033,63 @@ def _dispatch_brain_tool(
             return {"error": "legacy_detection_not_targeted",
                     "note": "Read the exact native chart observations; use targeted emit_chart_command for requested supported geometry."}
         # Chart Mastermind v2 (CMX W2)
+        if tool_name == "emit_chart_plan":
+            if set(tool_params) - {"commands", "title"}:
+                return {"error": "unknown_drawing_plan_argument", "emitted": 0}
+            if "title" in tool_params and (not isinstance(tool_params["title"], str) or len(tool_params["title"]) > _CAPTION_MAX):
+                return {"error": "bad_drawing_plan_title", "emitted": 0}
+            children = tool_params.get("commands")
+            error = validate_v2_batch(children)
+            if error or not children:
+                return {"error": error or "drawing plan must contain 1-24 commands", "emitted": 0}
+            ids: set[str] = set()
+            for index, child in enumerate(children):
+                if set(child) - {"op", "id", "args", "caption"}:
+                    return {"error": "unknown_drawing_command_argument", "index": index, "emitted": 0}
+                error = _drawing_plan_shape_error(child)
+                if error or child["id"] in ids:
+                    return {"error": error or "duplicate_drawing_id", "index": index, "emitted": 0}
+                ids.add(child["id"])
+            state = _tool_read_chart_state(user_id, chart_client, origin_id=chart_origin_id, context_revision=chart_context_revision)
+            session = state.get("session")
+            capabilities = session.get("capabilities") if isinstance(session, dict) else None
+            plan = capabilities.get("drawing_plan") if isinstance(capabilities, dict) else None
+            if (state.get("connected") is not True or not isinstance(plan, dict)
+                    or plan.get("schema") != "chart.drawing_plan.v1" or plan.get("operations") != "draw_only"):
+                return {"error": "drawing_plan_not_supported", "emitted": 0}
+            results = []
+            for index, child in enumerate(children):
+                result = _dispatch_brain_tool("emit_chart_command", child, root, terminal_data_dir, terminal_hub_url,
+                    user_id=user_id, internals_ok=internals_ok, chart_client=chart_client,
+                    chart_origin_id=chart_origin_id, chart_context_revision=chart_context_revision)
+                if not result.get("client_executed"):
+                    return {"error": result.get("error", "drawing_plan_invalid"), "index": index, "emitted": 0}
+                results.append(result)
+            return {"client_executed": True, "v": 2, "type": "command_plan", "commands": results,
+                    "note": "Validated drawing plan; no chart action has been emitted or applied yet."}
         if tool_name == "emit_chart_command":
             args = tool_params.get("args")
+            if tool_params.get("op") == "draw.tool":
+                state = _tool_read_chart_state(user_id, chart_client, origin_id=chart_origin_id, context_revision=chart_context_revision)
+                session = state.get("session")
+                capabilities = session.get("capabilities") if isinstance(session, dict) else None
+                error = _native_drawing_capability_error(args, capabilities)
+                if state.get("connected") is not True or error:
+                    return {"error": error or "native_drawing_context_unavailable"}
+            if (tool_params.get("op") == "chart.set_indicators" and isinstance(args, dict)
+                    and any(key in args for key in ("show", "hide"))):
+                state = _tool_read_chart_state(user_id, chart_client, origin_id=chart_origin_id, context_revision=chart_context_revision)
+                session = state.get("session")
+                caps = session.get("capabilities") if isinstance(session, dict) else None
+                edit = caps.get("indicator_edit") if isinstance(caps, dict) else None
+                visibility = session.get("indicator_visibility") if isinstance(session, dict) else None
+                if (state.get("connected") is not True or not isinstance(edit, dict)
+                        or not isinstance(edit.get("visibility"), list)
+                        or any(key not in edit["visibility"] for key in ("show", "hide") if key in args)
+                        or not isinstance(visibility, dict) or visibility.get("schema") != "chart.indicator_visibility.v1"
+                        or not isinstance(visibility.get("hidden"), list)):
+                    return {"error": "indicator_visibility_not_supported",
+                            "note": "The chart cannot verify study visibility. Do not claim that enabling it made it visible."}
             if tool_params.get("op") == "ai.clear" and isinstance(args, dict) and "ids" in args:
                 state = _tool_read_chart_state(
                     user_id, chart_client, origin_id=chart_origin_id,
@@ -6336,8 +6615,8 @@ def _append_evidence_coverage_disclosure(answer: str, receipt: dict, *, lang: st
 _CHART_COMMAND_SYSTEM_DIRECTIVE = """
 CHART CONTROL (Terminal only):
 You can drive the user's chart with client-side DISPLAY ACTIONS: set_chart_symbol,
-set_chart_timeframe, toggle_chart_indicator, and emit_chart_command
-(for drawing trendlines, levels, zones, labels — the user watches it appear). Use them when
+set_chart_timeframe, toggle_chart_indicator, emit_chart_command and emit_chart_plan
+(native multi-tool constructions, indicators and focused chart edits). Use them when
 the user asks to show, switch, mark, or draw something on the chart (e.g. "show NVDA weekly
 with RSI", "mark support & resistance"). These are DISPLAY ACTIONS ONLY — they never
 constitute a buy/sell/hold recommendation and perform no server-side action.
@@ -6352,6 +6631,12 @@ READING THE CHART BEFORE YOU DRAW:
 - For indicator edits, prefer chart.set_indicators with mode:"patch" when indicator_edit
   advertises patch support. It preserves unrelated studies/settings; remove names only when asked.
   A client without patch support must not receive that payload as a silent full replacement.
+- Enable means attach AND show: use indicators:[{name,params?}] plus show:[name] when visibility
+  is advertised. A study already attached may be hidden. Check session.indicator_visibility.
+  To hide without removing settings use hide:[name] with indicators:[]; do not equate hidden with absent.
+  Native modules use the exact suite:<suite>/<module> visibility key, after their <module>.on
+  setting is enabled. Use the advertised keys and parents: a hidden parent must also be named
+  in show. Preserve sibling visibility choices; effective_hidden reports inherited hiding.
 - Configuration is not observation: attached native modules and defaults do not supply numerical
   readings, warmup, unlocked status or predictive edge. Use native mechanics for the actual module.
 - Every chart effect requires the server-authored exact target and a receiver advertising
@@ -6367,14 +6652,39 @@ READING THE CHART BEFORE YOU DRAW:
 - ai.undo affects AI drawings only, not indicator settings; never promise broader undo.
 - Every drawing caption is one short plain sentence — what it shows, no jargon.
 
+COMPOSE A COMPLETE ANALYSIS:
+- When asked for an advanced analysis, multiple drawings or a showcase of your abilities, use
+  emit_chart_plan after orientation and any requested indicator edits. A single Fibonacci or level
+  does not satisfy that broad request. Build a coherent composition, ordinarily 4-8 complementary
+  drawings across at least three useful families when the evidence supports them: structure/channel,
+  pivot-based Fibonacci or pitchfork, meaningful region, measurement, annotated path/count and scenario.
+  Choose a readable subset; never scatter every tool or invent pivots to meet a numeric quota.
+- Prefer draw.tool for native channels, pitchforks, Fibonacci extensions, harmonic/Elliott annotations,
+  measurements and arrows/notes. The exact available kinds, semantic anchor roles/counts and styles
+  come from capabilities.drawing_tools, not remembered tool names. Oscillator coordinates are not
+  prices; drawing a line on price is not evidence of oscillator divergence. Pattern labels are
+  interpretations unless their rules and actual pivots are checked; never invent confidence scores.
+- Every native anchor timestamp must exist in the loaded chart. Use exact observed times and prices
+  for observed pivots; projected scenario levels must be identified as conditional geometry. Fibonacci
+  extensions use move-start A, move-end B, retracement-end C, with level = C + (B-A)*ratio in raw prices.
+- A drawing plan contains draw.* only, at most 24 commands for the entire reply and 60 live AI elements
+  per symbol. Settings and dependent drawing plans belong in different rounds. Reuse an existing
+  exact AI command id to revise its complete construction; human drawings remain untouched.
+- Read every child receipt in the plan result. Report applied constructions and any partial failure,
+  cancellation or missing evidence accurately. Do not declare the whole plan done from the last child.
+- For a comprehensive analysis, explain the main structure, confirming/conflicting indicator evidence,
+  a conditional trigger, invalidation and next obstacle. Distinguish observation from interpretation.
+  Mention the expandable AI layer beneath the upper-left study list when users need to inspect,
+  hide or delete drawings. Do the requested work before offering follow-up analysis.
+
 DRAW ON THE USER'S CHART, DON'T SEND A PICTURE:
 - The user is already looking at a live chart, so marking it up beats handing them a static
   image of one. Levels, trendlines, zones, S/R, targets → targeted emit_chart_command.
 - Do NOT call render_inline_chart in the Terminal unless the user explicitly asks for a
   picture/image/snapshot, or asks about a symbol OTHER than the one on screen (a second
   chart in the reply is the only way to show that one).
-- Say what you drew in one plain line ("marked the 178 shelf and the June trendline"); the
-  drawing IS the answer's visual, so don't also describe it at length.
+- For a focused annotation, a short confirmation is enough. For advanced analysis, explain how the
+  drawings fit together and what would confirm or invalidate the interpretation, using actual receipts.
 """
 
 
@@ -8709,28 +9019,19 @@ def _run_brain_loop(
             if tool_name == "annotate_chart" and result.get("client_executed"):
                 annotations.append(result)
 
-            # Collect chart-command payloads (W6b). v2 wire identity is host-owned.
-            # Non-stream chat cannot receive a client ACK before the HTTP response carrying
-            # this command exists, so the model must see an explicit unverified receipt.
+            # Every plan expands onto the same host batch and exact target as single commands.
+            # Nonstream results remain unverified until the HTTP response reaches the client.
             if tool_name in _CHART_COMMAND_TOOLS and result.get("client_executed"):
                 if result.get("v") == 2:
-                    target = _chart_command_target_for_result(
-                        user_id, chart_origin_id, chart_context_revision, result)
-                    if _chart_command_requires_target(result) and target is None:
-                        model_result = {
-                            "error": "command_target_unavailable",
-                            "note": (
-                                "The exact chart target changed or was unavailable before emission. "
-                                "Do not retry as a destructive replacement or broad clear."
-                            ),
-                        }
+                    wires, error = _prepare_chart_command_wires(
+                        result, user_id, chart_origin_id, chart_context_revision, command_batch_id, command_seq)
+                    if error is not None:
+                        model_result = error
                     else:
-                        wire = _flat_command(
-                            result, batch_id=command_batch_id, seq=command_seq, target=target)
-                        command_seq += 1
-                        commands.append(wire)
-                        model_result = _unverified_chart_command_receipt(
-                            wire, "nonstream_client_not_yet_received")
+                        command_seq += len(wires)
+                        commands.extend(wires)
+                        receipts = [_unverified_chart_command_receipt(wire, "nonstream_client_not_yet_received") for wire in wires]
+                        model_result = _chart_plan_receipt(receipts) if result.get("type") == "command_plan" else receipts[0]
                 else:
                     commands.append(_flat_command(result))
 
@@ -8884,6 +9185,7 @@ _TOOL_LABELS: dict[str, tuple[str, str]] = {
     "set_chart_timeframe":    ("Adjusting the timeframe",       "调整周期"),
     "toggle_chart_indicator": ("Updating indicators",           "更新指标"),
     "emit_chart_command":     ("Drawing on your chart",         "在图表上标注"),
+    "emit_chart_plan":        ("Building your chart analysis",   "绘制图表分析"),
     "context_search":         ("Searching the research library", "检索研究库"),
     "context_open":           ("Opening research notes",        "查阅研究笔记"),
     # inherited ask_brain read tools (spine / kernel / factor / theme families)
@@ -9774,7 +10076,8 @@ def _run_brain_loop_stream(
             _tools_ms_by_id.get(str(getattr(b, "id", "")),
                                 {"name": str(getattr(b, "name", "")), "ms": 0})
             for b in tool_blocks)
-        pending_v2_receipts: list[tuple[int, dict]] = []
+        pending_v2_receipts: list[tuple[int, int, dict]] = []
+        pending_plan_results: set[int] = set()
         for block, result in zip(tool_blocks, round_results):
             tool_name = block.name
             tool_id = block.id
@@ -9791,31 +10094,27 @@ def _run_brain_loop_stream(
                 # Emit annotate event immediately
                 yield f"data: {json.dumps({'type': 'annotate', 'symbol': result.get('symbol', ''), 'annotations': result.get('annotations', [])})}\n\n"
 
-            # Chart-command bus (W6b): emit every command before waiting for ACKs so
-            # the Terminal can execute the whole round. The collective wait below has
-            # one bounded deadline regardless of how many v2 commands the round carries.
+            # Emit every child before one collective ACK wait. The existing queue keeps
+            # order/cancellation; every child retains its tool result index and receipt slot.
             if tool_name in _CHART_COMMAND_TOOLS and result.get("client_executed"):
-                wire: dict | None = None
+                wires = []
                 if result.get("v") == 2:
-                    target = _chart_command_target_for_result(
-                        user_id, chart_origin_id, chart_context_revision, result)
-                    if _chart_command_requires_target(result) and target is None:
-                        model_result = {
-                            "error": "command_target_unavailable",
-                            "note": (
-                                "The exact chart target changed or was unavailable before emission. "
-                                "Do not retry as a destructive replacement or broad clear."
-                            ),
-                        }
+                    wires, error = _prepare_chart_command_wires(
+                        result, user_id, chart_origin_id, chart_context_revision, command_batch_id, command_seq)
+                    if error is not None:
+                        model_result = error
                     else:
-                        wire = _flat_command(
-                            result, batch_id=command_batch_id, seq=command_seq, target=target)
-                        command_seq += 1
-                        pending_v2_receipts.append((len(tool_results), wire))
-                        model_result = _unverified_chart_command_receipt(wire, "ack_pending")
+                        command_seq += len(wires)
+                        is_plan = result.get("type") == "command_plan"
+                        if is_plan:
+                            pending_plan_results.add(len(tool_results))
+                        for child_index, wire in enumerate(wires):
+                            pending_v2_receipts.append((len(tool_results), child_index, wire))
+                        receipts = [_unverified_chart_command_receipt(wire, "ack_pending") for wire in wires]
+                        model_result = _chart_plan_receipt(receipts) if is_plan else receipts[0]
                 else:
-                    wire = _flat_command(result)
-                if wire is not None:
+                    wires = [_flat_command(result)]
+                for wire in wires:
                     yield f"data: {json.dumps(wire)}\n\n"
 
             # Inline chart (W6c): emit 'chart' SSE event when svg is non-empty
@@ -9847,17 +10146,25 @@ def _run_brain_loop_stream(
                 user_id,
                 chart_origin_id,
                 chart_context_revision,
-                [wire for _, wire in pending_v2_receipts],
+                [wire for _, _, wire in pending_v2_receipts],
             )
-            for (tool_result_index, wire), receipt in zip(pending_v2_receipts, verified):
-                tool_results[tool_result_index]["content"] = json.dumps(
-                    _json_safe(receipt), default=str)
+            grouped_receipts: dict[int, list[dict]] = {}
+            for (tool_result_index, child_index, wire), receipt in zip(pending_v2_receipts, verified):
+                slots = grouped_receipts.setdefault(tool_result_index, [])
+                # The waiter preserves wire order. Indexing is explicit so one child
+                # cannot silently overwrite the result for the whole drawing plan.
+                if child_index != len(slots):
+                    raise RuntimeError("chart plan receipt ordering violated")
+                slots.append(receipt)
                 successor = _read_chart_command_target(receipt.get("continuation_target"))
                 predecessor = _read_chart_command_target(wire.get("target"))
                 if (successor is not None and predecessor is not None
                         and predecessor["origin_id"] == chart_origin_id == successor["origin_id"]
                         and predecessor["context_revision"] == chart_context_revision):
                     chart_context_revision = successor["context_revision"]
+            for tool_result_index, receipts in grouped_receipts.items():
+                model_receipt = _chart_plan_receipt(receipts) if tool_result_index in pending_plan_results else receipts[0]
+                tool_results[tool_result_index]["content"] = json.dumps(_json_safe(model_receipt), default=str)
             # Only a command-correlated applied successor can advance this turn.
             # Rejected/unknown ACKs and intervening human edits retain the old target;
             # the next server snapshot and execution-side equality check fail closed.

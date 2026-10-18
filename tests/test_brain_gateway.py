@@ -4504,6 +4504,8 @@ def test_v2_command_accepts_all_ops():
         "draw.label": {"id": "ai_h", "args": {"point": {"t": 1, "p": 10.0}}, "caption": "hi"},
         "draw.marker": {"id": "ai_i", "args": {"point": {"t": 1, "p": 10.0}}},
         "draw.risk_box": {"id": "ai_j", "args": {"entry": 10.0, "stop": 9.0, "target": 12.0}},
+        "draw.tool": {"id": "ai_k", "args": {"kind": "fibtrend", "points": [
+            {"t": 1721606400, "p": 100}, {"t": 1721692800, "p": 120}, {"t": 1721779200, "p": 110}]}},
         "scene.begin": {"args": {"title": "Plan"}},
         "scene.end": {},
         "ai.clear": {},
@@ -4946,7 +4948,8 @@ def test_v2_ack_wait_uses_one_collective_deadline_for_full_batch():
 
     assert len(receipts) == 24
     assert all(row["reason"] == "ack_timeout" for row in receipts)
-    assert 2.0 <= clock[0] < 2.051
+    # One bounded wait includes the receiver's normal drawing pace, never 24 serial waits.
+    assert 17.6 <= clock[0] < 17.651
 
 
 def test_v2_nonstream_model_result_is_deferred_not_executed(tmp_path):

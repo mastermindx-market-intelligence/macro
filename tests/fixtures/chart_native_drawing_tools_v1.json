@@ -1,0 +1,1112 @@
+{
+  "schema": "chart.drawing_tools.v1",
+  "op": "draw.tool",
+  "coordinate_domain": "price",
+  "anchor_space": "data",
+  "timestamp": "epoch_seconds_exact_loaded_bar",
+  "points": "explicit_semantic_anchors_no_invented_gesture_handles",
+  "projection": "all_observation_times_must_be_loaded_on_exact_target",
+  "fibonacci": {
+    "kinds": [
+      "fib",
+      "fibtrend"
+    ],
+    "basis": "raw_price_arithmetic_even_on_log_display",
+    "fields": [
+      "levels",
+      "reverse",
+      "labels"
+    ],
+    "max_levels": 24,
+    "ratio_range": [
+      -100,
+      100
+    ]
+  },
+  "tools": [
+    {
+      "kind": "trendline",
+      "label": "Trend Line",
+      "family": "line",
+      "min_points": 2,
+      "max_points": 2,
+      "anchor_roles": [
+        "anchor_1",
+        "anchor_2"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "ray",
+      "label": "Ray",
+      "family": "line",
+      "min_points": 2,
+      "max_points": 2,
+      "anchor_roles": [
+        "anchor_1",
+        "anchor_2"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "extendedline",
+      "label": "Extended Line",
+      "family": "line",
+      "min_points": 2,
+      "max_points": 2,
+      "anchor_roles": [
+        "anchor_1",
+        "anchor_2"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "infoline",
+      "label": "Info Line",
+      "family": "line",
+      "min_points": 2,
+      "max_points": 2,
+      "anchor_roles": [
+        "anchor_1",
+        "anchor_2"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "loaded_bar_measurement"
+    },
+    {
+      "kind": "hline",
+      "label": "Horizontal Line",
+      "family": "axis",
+      "min_points": 1,
+      "max_points": 1,
+      "anchor_roles": [
+        "anchor_1"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "optional_label",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "horizontalray",
+      "label": "Horizontal Ray",
+      "family": "axis",
+      "min_points": 1,
+      "max_points": 1,
+      "anchor_roles": [
+        "anchor_1"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "vline",
+      "label": "Vertical Line",
+      "family": "axis",
+      "min_points": 1,
+      "max_points": 1,
+      "anchor_roles": [
+        "anchor_1"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "crossline",
+      "label": "Cross Line",
+      "family": "axis",
+      "min_points": 1,
+      "max_points": 1,
+      "anchor_roles": [
+        "anchor_1"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "channel",
+      "label": "Parallel Line",
+      "family": "channel",
+      "min_points": 3,
+      "max_points": 3,
+      "anchor_roles": [
+        "baseline_start",
+        "baseline_end",
+        "parallel_offset"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "disjointchannel",
+      "label": "Disjoint Channel",
+      "family": "channel",
+      "min_points": 4,
+      "max_points": 4,
+      "anchor_roles": [
+        "upper_start",
+        "upper_end",
+        "lower_start",
+        "lower_end"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "pitchfork",
+      "label": "Pitchfork",
+      "family": "pitchfork",
+      "min_points": 3,
+      "max_points": 3,
+      "anchor_roles": [
+        "origin_pivot",
+        "second_pivot",
+        "third_pivot"
+      ],
+      "chronological": true,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "modifiedschiffpitchfork",
+      "label": "Modified Schiff Pitchfork",
+      "family": "pitchfork",
+      "min_points": 3,
+      "max_points": 3,
+      "anchor_roles": [
+        "origin_pivot",
+        "second_pivot",
+        "third_pivot"
+      ],
+      "chronological": true,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "fib",
+      "label": "Fibonacci Retracement",
+      "family": "fib",
+      "min_points": 2,
+      "max_points": 2,
+      "anchor_roles": [
+        "zero_level",
+        "one_level"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "fibtrend",
+      "label": "Fibonacci Trend",
+      "family": "fib-extension",
+      "min_points": 3,
+      "max_points": 3,
+      "anchor_roles": [
+        "move_start",
+        "move_end",
+        "retracement_end"
+      ],
+      "chronological": true,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "fibchannel",
+      "label": "Fib Channel",
+      "family": "fib-grid",
+      "min_points": 3,
+      "max_points": 3,
+      "anchor_roles": [
+        "baseline_start",
+        "baseline_end",
+        "offset_anchor"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "fibspeedresistancefan",
+      "label": "Fib Speed Resistance Fan",
+      "family": "fan",
+      "min_points": 2,
+      "max_points": 2,
+      "anchor_roles": [
+        "anchor_1",
+        "anchor_2"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "pitchfan",
+      "label": "Pitchfan",
+      "family": "fan",
+      "min_points": 3,
+      "max_points": 3,
+      "anchor_roles": [
+        "origin",
+        "first_boundary",
+        "second_boundary"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "xabcd",
+      "label": "XABCD Pattern",
+      "family": "pattern",
+      "min_points": 5,
+      "max_points": 5,
+      "anchor_roles": [
+        "X",
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "chronological": true,
+      "nonzero_price_legs": true,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "interpretive_annotation_not_detection"
+    },
+    {
+      "kind": "cypher",
+      "label": "Cypher Pattern",
+      "family": "pattern",
+      "min_points": 5,
+      "max_points": 5,
+      "anchor_roles": [
+        "X",
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "chronological": true,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "interpretive_annotation_not_detection"
+    },
+    {
+      "kind": "abcd",
+      "label": "ABCD Pattern",
+      "family": "pattern",
+      "min_points": 4,
+      "max_points": 4,
+      "anchor_roles": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "chronological": true,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "interpretive_annotation_not_detection"
+    },
+    {
+      "kind": "headandshoulders",
+      "label": "Head and Shoulders",
+      "family": "pattern",
+      "min_points": 7,
+      "max_points": 7,
+      "anchor_roles": [
+        "anchor_1",
+        "anchor_2",
+        "anchor_3",
+        "anchor_4",
+        "anchor_5",
+        "anchor_6",
+        "anchor_7"
+      ],
+      "chronological": true,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "interpretive_annotation_not_detection"
+    },
+    {
+      "kind": "trianglepattern",
+      "label": "Triangle Pattern",
+      "family": "pattern",
+      "min_points": 4,
+      "max_points": 4,
+      "anchor_roles": [
+        "anchor_1",
+        "anchor_2",
+        "anchor_3",
+        "anchor_4"
+      ],
+      "chronological": true,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "interpretive_annotation_not_detection"
+    },
+    {
+      "kind": "threedrives",
+      "label": "Three Drives Pattern",
+      "family": "pattern",
+      "min_points": 7,
+      "max_points": 7,
+      "anchor_roles": [
+        "anchor_1",
+        "anchor_2",
+        "anchor_3",
+        "anchor_4",
+        "anchor_5",
+        "anchor_6",
+        "anchor_7"
+      ],
+      "chronological": true,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "interpretive_annotation_not_detection"
+    },
+    {
+      "kind": "elliottimpulse",
+      "label": "Elliott Impulse Wave",
+      "family": "pattern",
+      "min_points": 6,
+      "max_points": 6,
+      "anchor_roles": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "chronological": true,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "interpretive_annotation_not_detection"
+    },
+    {
+      "kind": "elliottcorrection",
+      "label": "Elliott Correction Wave",
+      "family": "pattern",
+      "min_points": 4,
+      "max_points": 4,
+      "anchor_roles": [
+        "0",
+        "A",
+        "B",
+        "C"
+      ],
+      "chronological": true,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "interpretive_annotation_not_detection"
+    },
+    {
+      "kind": "elliotttriangle",
+      "label": "Elliott Triangle Wave",
+      "family": "pattern",
+      "min_points": 6,
+      "max_points": 6,
+      "anchor_roles": [
+        "0",
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "chronological": true,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "interpretive_annotation_not_detection"
+    },
+    {
+      "kind": "pricerange",
+      "label": "Price Range",
+      "family": "range",
+      "min_points": 2,
+      "max_points": 2,
+      "anchor_roles": [
+        "anchor_1",
+        "anchor_2"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "loaded_bar_measurement"
+    },
+    {
+      "kind": "daterange",
+      "label": "Date Range",
+      "family": "range",
+      "min_points": 2,
+      "max_points": 2,
+      "anchor_roles": [
+        "anchor_1",
+        "anchor_2"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "loaded_bar_measurement"
+    },
+    {
+      "kind": "dateandpricerange",
+      "label": "Date and Price Range",
+      "family": "range",
+      "min_points": 2,
+      "max_points": 2,
+      "anchor_roles": [
+        "anchor_1",
+        "anchor_2"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "loaded_bar_measurement"
+    },
+    {
+      "kind": "measure",
+      "label": "Measure",
+      "family": "range",
+      "min_points": 2,
+      "max_points": 2,
+      "anchor_roles": [
+        "anchor_1",
+        "anchor_2"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "loaded_bar_measurement"
+    },
+    {
+      "kind": "path",
+      "label": "Path",
+      "family": "freehand",
+      "min_points": 2,
+      "max_points": 64,
+      "anchor_roles": [
+        "ordered_vertices"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "polyline",
+      "label": "Polyline",
+      "family": "freehand",
+      "min_points": 2,
+      "max_points": 64,
+      "anchor_roles": [
+        "ordered_vertices"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "rect",
+      "label": "Rectangle",
+      "family": "shape",
+      "min_points": 2,
+      "max_points": 2,
+      "anchor_roles": [
+        "anchor_1",
+        "anchor_2"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "triangle",
+      "label": "Triangle",
+      "family": "shape",
+      "min_points": 3,
+      "max_points": 3,
+      "anchor_roles": [
+        "anchor_1",
+        "anchor_2",
+        "anchor_3"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "arrow",
+      "label": "Arrow",
+      "family": "arrow",
+      "min_points": 2,
+      "max_points": 2,
+      "anchor_roles": [
+        "anchor_1",
+        "anchor_2"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "arrowmarker",
+      "label": "Arrow Marker",
+      "family": "mark",
+      "min_points": 1,
+      "max_points": 1,
+      "anchor_roles": [
+        "anchor_1"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "arrowmarkleft",
+      "label": "Arrow Mark Left",
+      "family": "mark",
+      "min_points": 1,
+      "max_points": 1,
+      "anchor_roles": [
+        "anchor_1"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "arrowmarkright",
+      "label": "Arrow Mark Right",
+      "family": "mark",
+      "min_points": 1,
+      "max_points": 1,
+      "anchor_roles": [
+        "anchor_1"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "arrowmarktop",
+      "label": "Arrow Mark Top",
+      "family": "mark",
+      "min_points": 1,
+      "max_points": 1,
+      "anchor_roles": [
+        "anchor_1"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "arrowmarkbottom",
+      "label": "Arrow Mark Bottom",
+      "family": "mark",
+      "min_points": 1,
+      "max_points": 1,
+      "anchor_roles": [
+        "anchor_1"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "flagmark",
+      "label": "Flag Mark",
+      "family": "mark",
+      "min_points": 1,
+      "max_points": 1,
+      "anchor_roles": [
+        "anchor_1"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "text",
+      "label": "Text",
+      "family": "annotation",
+      "min_points": 1,
+      "max_points": 1,
+      "anchor_roles": [
+        "anchor_1"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "font_size"
+      ],
+      "text": "required",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "note",
+      "label": "Note",
+      "family": "annotation",
+      "min_points": 1,
+      "max_points": 1,
+      "anchor_roles": [
+        "anchor_1"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity",
+        "font_size"
+      ],
+      "text": "required",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "callout",
+      "label": "Callout",
+      "family": "annotation",
+      "min_points": 2,
+      "max_points": 2,
+      "anchor_roles": [
+        "subject",
+        "text_position"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity",
+        "font_size"
+      ],
+      "text": "required",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "pricelabel",
+      "label": "Price Label",
+      "family": "annotation",
+      "min_points": 1,
+      "max_points": 1,
+      "anchor_roles": [
+        "anchor_1"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity",
+        "font_size"
+      ],
+      "text": "unsupported",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "pricenote",
+      "label": "Price Note",
+      "family": "annotation",
+      "min_points": 1,
+      "max_points": 1,
+      "anchor_roles": [
+        "anchor_1"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity",
+        "font_size"
+      ],
+      "text": "required",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "signpost",
+      "label": "Signpost",
+      "family": "annotation",
+      "min_points": 1,
+      "max_points": 1,
+      "anchor_roles": [
+        "anchor_1"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity",
+        "font_size"
+      ],
+      "text": "required",
+      "semantics": "geometric_annotation"
+    },
+    {
+      "kind": "comment",
+      "label": "Comment",
+      "family": "annotation",
+      "min_points": 1,
+      "max_points": 1,
+      "anchor_roles": [
+        "anchor_1"
+      ],
+      "chronological": false,
+      "nonzero_price_legs": false,
+      "style_fields": [
+        "color",
+        "width",
+        "dash",
+        "opacity",
+        "fill_color",
+        "fill_opacity",
+        "font_size"
+      ],
+      "text": "required",
+      "semantics": "geometric_annotation"
+    }
+  ]
+}
