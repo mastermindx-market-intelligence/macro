@@ -48,6 +48,18 @@ After the 21 local contract cases, a twenty-second test was added **inside the s
 
 The local isolated environment lacks the installed native Data OS/pyarrow producer stack. Its pytest alias-collected suite showed **22 collected**, **21 passing**, one **deliberately deselected native integration case**, and **17 passing subtests**. Source/test syntax compiled locally. **Do not claim 22/22 until the exact-head hosted Data OS CI pack runs this new test successfully.** This case is the first end-to-end native integration rather than another structural fixture.
 
+## Latest R6 source lineage revision (after the original test receipt)
+
+Following the original **21 local hermetic tests** and the hosted native Data OS source-to-consumer **791-pass suite**, a source review found additional ways that a fabricated native-shaped `TiingoResearchHistory` could overstate original receipt lineage. The real native producer already authenticates its original receipts; the **additive consumer now independently enforces three bounded invariants**:
+
+1. The selected row's `source_sha256` must be **one of the named original partition digests**; matching the 64-character SHA-256 syntax alone is insufficient.
+2. The row's `source_observed_at_utc` capture calendar date must match an original capture date **for that exact digest**, not an unrelated receipt day.
+3. The row's EOD `market_date` must not be **after the original source capture date**, matching the original native reader's future-market-date refusal.
+
+Three new negative test cases accompany those guards. The suite now has **25 authored methods**: the prior 22 (including a hosted prior-head native producer→consumer fixture) plus these three. Tests were added before their individual guards. The most recent source/test blobs are `9829a1e0f617fb25098407ad4bb8d76f2e2537c1` and `0c0215475ef792b6292793fe204b2c4faebbb5cc`, read back at the source head `4ad8e7fcba93d01e04ee326f0d95ca265786b349`. **The new 25-case source head has not yet earned its own green hosted CI; the old 791-pass result is not copied forward.** The shared Data OS CI manifest retains the two specifically required test-trigger paths.
+
+This improvement is source correctness, not a claim that a public dataclass is proof of authentic receipts; only the incumbent reader verifies the original materialized source bytes and applicable rights. The adapter still refuses to grant PIT/rank/gate/size/trade permissions, and prior tool-refused private source reads were not rerouted.
+
 ## Honest delivery boundary
 
 The Chairman has assigned the current receiver to drive source-readiness work directly; that does not manufacture machine-readable vendor rights or reverse a previous platform-denied private source-inspection action. The first authentic Data OS read, full private payload/revision/session check, exact BIL gap, historical PIT status, and registered empirical baseline remain **unqualified**. The original Fabric worker run remains EFFECT_UNKNOWN on its own carrier; no replay/duplicate is justified. No native P1/P2/P3, Trial/Vault, live provider fetch, trading model, production release, or alternate source authority was invoked.
