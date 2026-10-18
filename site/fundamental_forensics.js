@@ -3307,6 +3307,8 @@
   function runExport() {
     if (!ui.exportBtn || ui.exportBtn.disabled) return;
     var body = exportQueryBody();
+    // X2-b+c r3: a saved-view refusal yields no body — never POST "null".
+    if (!body) return;
     withAuth({ 'Content-Type': 'application/json', Accept: XLSX_MEDIA_TYPE })
       .then(function (headers) {
         return fetch(FINANCIAL_QUERY_XLSX_URL, {
@@ -5802,6 +5804,7 @@
       savedSavePhase: savedSavePhase,
       savedGenerationStale: savedGenerationStale,
       exportQueryBody: exportQueryBody,
+      runExport: runExport,
       // PF-1..PF-4 seams (same opt-in contract as above): the cutoff helper,
       // the health fetch and the financial chain, for the dependency-free
       // Node contract suite. Production never sets this sentinel.

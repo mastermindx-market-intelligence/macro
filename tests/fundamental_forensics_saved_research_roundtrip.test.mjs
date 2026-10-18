@@ -1974,6 +1974,33 @@ test('T-R3-3-export: exportQueryBody returns null while a saved-view refusal is 
   }
 });
 
+test('T-R3-3-export-click: an export click under a saved-view refusal sends no workbook request', async () => {
+  const xlsxCalls = (drive) => drive.fetchCalls.filter((call) => call.url.indexOf('/financial/query.xlsx') >= 0);
+  // Control: with no refusal the same click does POST the ready body.
+  {
+    const { drive } = await restoredPinnedSettledDrive();
+    assert.equal(drive.api.state.savedRefusal, '');
+    drive.api.runExport();
+    await new Promise((resolve) => setImmediate(resolve));
+    const calls = xlsxCalls(drive);
+    assert.equal(calls.length, 1, 'the control click posts once');
+    assert.notEqual(calls[0].body, 'null', 'the control body is a real query body');
+  }
+  // changed / missing / store refusals: no workbook request at all.
+  for (const make of [
+    (drive, row) => freshBriefcase(drive.storage, 0).create({ now: () => '2026-10-12T00:00:00Z' }).update(row.id, { pinned: false }),
+    (drive, row) => freshBriefcase(drive.storage, 0).create({ now: () => '2026-10-12T00:00:00Z' }).remove(row.id),
+    (drive) => drive.storage.setItem(STORE_KEY, '{"contract":'),
+  ]) {
+    const { drive, row } = await restoredPinnedSettledDrive();
+    make(drive, row);
+    drive.api.runExport();
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.notEqual(drive.api.state.savedRefusal, '', 'the click itself notices the refusal');
+    assert.equal(xlsxCalls(drive).length, 0, 'no workbook request under the refusal');
+  }
+});
+
 test('T-R3-3-race: a view unpinned in another tab mid-flight gets no stale digest backfill', async () => {
   const container = fixtureContainer('saved_pinned.json');
   const row = container.saved_views[0];
