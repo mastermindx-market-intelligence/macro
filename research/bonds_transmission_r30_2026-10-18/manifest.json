@@ -1,6 +1,6 @@
 {
-  "schema": "mastermind.design_handoff.bonds_transmission.r30",
-  "operation_id": "bonds-transmission-r30-20261018-sol-001",
+  "schema": "mastermind.design_handoff.bonds_transmission.r31",
+  "operation_id": "bonds-transmission-r31-20261018",
   "status": "design_complete",
   "paper_file_id": "01M2WGNCX9475G79JRKJTCM08P",
   "owned_pages": [
@@ -10,7 +10,7 @@
   "excluded_pages": [
     "p-1F-0"
   ],
-  "procedure_pin": "mastermindx-market-intelligence/Mastermind@e77631490e5bddca7d40c8cf039ae7763ce17b99",
+  "procedure_pin": "mastermindx-market-intelligence/Mastermind@0d51da5463a18a251905ec0ef5a580ccdb0b3546",
   "source_pin": "mastermindx-market-intelligence/macro@62a3f9ad070c7583687aef8c30d53fd1764c6aab",
   "predecessor": "Macro #8147; R26 #8326 source milestone, production/model claims not inherited",
   "carrier": "mastermind_paper accepted schema 1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db",
@@ -159,6 +159,20 @@
       "body": "6895-1",
       "name": "R30 · START · Transmission Journey & Build Map",
       "type": "navigation_index"
+    },
+    "depth": {
+      "id": "6B6Q-1",
+      "page": "p-1H-0",
+      "name": "R31 · S06 Structure & Financing · Deep Tools",
+      "body": "6B6S-1",
+      "type": "implementation_specimen"
+    },
+    "continuity": {
+      "id": "6C1S-1",
+      "page": "p-1E-0",
+      "name": "R31 · S07 Flow Evidence & Case Continuity",
+      "body": "6C21-1",
+      "type": "implementation_specimen"
     }
   },
   "tokens_unchanged": "cfd3d65c",
@@ -169,28 +183,37 @@
     "backend_implemented": false,
     "live_market_data": false,
     "monitor_activated": false,
-    "forecast_validated": false
+    "forecast_validated": false,
+    "canonical_case_and_alert_owners_identified": true,
+    "bond_case_payload_extensions_implemented": false,
+    "compound_monitor_implemented": false
   },
   "pending": [
-    "Resolve exact runtime data and canonical case/monitor bindings",
-    "Implement and validate interactions/accessibility",
-    "Qualify point-in-time empirical models before percentages"
+    "Extend the existing Investigation admission/resolver path for bond evidence and retained scenarios",
+    "Extend the existing Alerts schema/evaluator/dry-run/receipt path for the complete compound rule",
+    "Bind qualified source observations, legal cash schedules and curve sensitivities",
+    "Implement and verify accessible interactions",
+    "Qualify point-in-time empirical models before likelihood percentages"
   ],
   "reuse_owners": [
     "macro_context.decision_workspaces.v1",
     "world_state.rates_credit",
     "world_state.fx_dollar",
     "world_state.cross_asset_flows",
-    "capital-structure-intelligence"
+    "capital-structure-intelligence",
+    "Terminal Investigation v2",
+    "Terminal Alerts"
   ],
-  "completed_at": "2026-10-18T03:43:42Z",
+  "completed_at": "2026-10-18T05:33:59.794Z",
   "counts": {
     "routes": 8,
-    "interactions": 12,
-    "atlases": 5,
+    "interactions": 15,
+    "atlases": 7,
     "responsive": 4,
+    "embedded_responsive": 3,
+    "responsive_references_total": 7,
     "indexes": 2,
-    "current_artboards": 19,
+    "current_artboards": 21,
     "archived_artboards": 28
   },
   "archive": {
@@ -274,6 +297,14 @@
     "mobile_zh": [
       3630,
       700
+    ],
+    "depth": [
+      0,
+      6300
+    ],
+    "continuity": [
+      1560,
+      6300
     ]
   },
   "interactions": [
@@ -281,85 +312,106 @@
       "I01",
       "Value tooltip",
       "662W-1",
-      "Hover / focus / tap a value",
-      "Unit, baseline, source clock and provenance."
+      "Hover, keyboard focus or tap a value/information icon.",
+      "Missing is not zero. Build time cannot replace the observation clock. Focus and Esc dismissal restore the invoking value; color is accompanied by text."
     ],
     [
       "I02",
-      "Calculation popover",
+      "Calculation + curve shape",
       "663U-1",
-      "Inspect a derived result",
-      "Reproduce the formula; invalid inputs clear output."
+      "Calculation icon, duration result or scenario price effect.",
+      "1 bp converts to 0.0001. Invalid input clears the calculated output and identifies the field. All-in corporate yield cannot be combined with a separate spread shock. Mathematical sensitivity is never labeled expected return."
     ],
     [
       "I03",
-      "Evidence drawer",
+      "Mechanism evidence drawer",
       "6644-1",
-      "Select a mechanism / funding check",
-      "Observed support, missing evidence and invalidators."
+      "Select a mechanism, inspect evidence, funding conditions or overlapping inputs.",
+      "Growth, substitution, safety demand and funding squeeze remain distinct. A Treasury price response does not fill a missing buyer-allocation link. Dashed edges carry no flow volume or causal proof."
     ],
     [
       "I04",
-      "Monitor composer",
+      "Case monitor composer",
       "665W-1",
-      "Monitor / use this path",
-      "Explicit basket, clock, expiry and state precedence."
+      "Monitor this view/case, Use this path or Manage monitors.",
+      "Fresh valid invalidation outranks confirmation. Unknown critical evidence blocks confirmation. The fifth eligible close is evaluated before expiry. Pauses do not extend the window silently. Late data cannot silently reopen or backdate a terminal outcome. Duplicate saves have one canonical effect."
     ],
     [
       "I05",
-      "Financing schedule",
+      "Financing + cash timing",
       "66AY-1",
-      "Open financing window",
-      "Legal obligor, restriction, maturity and roll-forward."
+      "Open financing schedule/window or inspect issuer obligations.",
+      "Cash minus current debt is not labeled a funding gap or runway. Current classification is not an exact maturity calendar. Fixed debt reprices at contractual reset/refinance, not automatically with every market spread change."
     ],
     [
       "I06",
       "FX hedge inspector",
       "669F-1",
-      "Buyer selector / edit hedge",
-      "Current annualized cost, direction and roll sensitivity."
+      "Buyer selector, edit hedge assumptions or FX hedge inspector.",
+      "5.10% minus current annualized rolling-3M hedge cost 3.60% equals 1.50%. The 5 bp difference against a 1.55% JGB is not presented as a robust winner. Future roll costs remain open, and quotation inversion cannot reverse the economics accidentally."
     ],
     [
       "I07",
-      "CDS conventions",
+      "CDS quote conventions",
       "66DX-1",
-      "Inspect a CDS value / contract",
-      "Exact entity, tier, tenor, clause, quote and coverage."
+      "CDS value, quote details or contract inspector.",
+      "CDS spread is not a real-world default probability. A price move cannot stand in for a filing-confirmed refinancing event. No synthetic CDS path enters observed-support scoring."
     ],
     [
       "I08",
-      "Issuer funding",
+      "Issuer currency funding",
       "66CC-1",
-      "Switch to issuer currency view",
-      "Same borrower, tenor and base currency."
+      "Issuer funding view switch.",
+      "The manual USD/EUR/JPY example is illustrative. Absent direct basis or swap terms remains unavailable. CNH basis or a generic funding proxy does not substitute for direct market-wide USD cross-currency basis."
     ],
     [
       "I09",
-      "Episode filter",
+      "Episode filters",
       "67NJ-1",
-      "Filter / contrary cases / method",
-      "Match only on information known at the cutoff."
+      "Filter episodes, match mechanism, include contrary cases or inspect selection method.",
+      "No future outcome, revised later feature or chosen success label leaks into matching. Date-only vintage metadata cannot imply intraday knowability. Zero eligible matches is distinct from no loaded history."
     ],
     [
       "I10",
-      "Catalyst calendar",
+      "Catalyst/check calendar",
       "67OU-1",
-      "Next check / auctions / catalysts",
-      "Date certainty and the hypothesis each check tests."
+      "View catalysts, auction/new-issue calendar, next check or attach a check.",
+      "Unknown dates stay unknown. Net issuance arithmetic and settlement timing do not establish which investor supplied the capital. Opening a check preserves the case and returns to its prior route."
     ],
     [
       "I11",
       "Model evidence",
       "67QO-1",
-      "Likelihood status / model evidence",
-      "Target, version, calibration and abstention evidence."
+      "Likelihood status or Model evidence.",
+      "No LLM-authored probability. A probability trained for one event or horizon cannot be transferred to an arbitrary user monitor. Sliders are sensitivities and cannot silently become likelihood estimates."
     ],
     [
       "I12",
       "Outcome fingerprint",
       "67RX-1",
-      "Record view, then reveal outcome",
-      "Common horizons, preserved units and full cohorts."
+      "Record the decision, then Reveal outcome; choose single episode or cohort distribution.",
+      "Later outcomes cannot alter the frozen hypothesis or matching features. Missing horizons remain blank. Overlapping episodes are not counted as independent trials."
+    ],
+    [
+      "I13",
+      "Market structure",
+      "6B78-1",
+      "Curve Inspect structure; Transmission price evidence",
+      "Prior-only sample volatility8bp; confirmation distance−.25, invalidation+1.5. Do not count correlated price features as independent evidence."
+    ],
+    [
+      "I14",
+      "Buyer flows",
+      "6C2T-1",
+      "Capital Inspect buyer flows / Funding pipes; Transmission substitution evidence",
+      "Both assets have positive net purchases. No funding-origin arrow inferred from price or aggregate holdings. Quarterlies cannot confirm daily switches."
+    ],
+    [
+      "I15",
+      "Save + compare",
+      "6CEV-1",
+      "Save analysis; Saved cases Review changed evidence / Review saved contents",
+      "Question saved does not mean scenario retained. Exact read failure never falls through to latest. Original operation receipt controls uncertainty; conflict preserves draft."
     ]
   ],
   "shared_design_reuse": [
@@ -418,90 +470,708 @@
     }
   ],
   "validation": {
-    "at": "2026-10-18T03:43:42Z",
-    "paper_file": "01M2WGNCX9475G79JRKJTCM08P",
-    "new_artboards": 19,
-    "product_routes": 8,
-    "core_interactions": 12,
-    "specification_atlases": 5,
-    "responsive_references": 4,
-    "start_guides": 2,
-    "archived_originals": 28,
-    "native_effects_observed": 163,
-    "unknown_effects": 0,
-    "scope_target_audit_pass": true,
-    "global_token_hash": "cfd3d65c",
-    "forex_mutated": false,
-    "all_current_board_positions_read_back": true,
-    "archive_identity_inventory_verified": true,
-    "visual_review": "Native screenshots reviewed during authoring; targeted final readback after substantive layout and semantic corrections.",
+    "schema": "mastermind.design_validation.bonds_transmission.r31",
+    "at": "2026-10-18T05:33:59.794Z",
+    "status": "design_and_reference_handoff_validated",
+    "native": {
+      "mutations": 96,
+      "applied_response_observed": 96,
+      "working_indicators_finished": true,
+      "global_token_hash": "cfd3d65c",
+      "tokens_changed": false,
+      "jsx_exports": 21,
+      "unique_exported_nodes": 3893,
+      "duplicate_node_ids": 0,
+      "missing_named_node_references": 0,
+      "undefined_theme_variables": 0,
+      "owned_page_root_inventory_verified": true,
+      "all_current_root_positions_verified": true,
+      "new_boards": 2,
+      "product_routes": 8,
+      "core_interactions": 15,
+      "specification_atlases": 7,
+      "standalone_responsive_boards": 4,
+      "embedded_responsive_specimens": 3,
+      "indexes": 2,
+      "archived_predecessors": 28,
+      "archive_action_this_pass": false
+    },
+    "visual": {
+      "reviewed_nodes": [
+        "6B78-1",
+        "6BMD-1",
+        "6BRC-1",
+        "6BZN-1",
+        "6C2T-1",
+        "6CZY-1",
+        "6CEV-1",
+        "6CLB-1",
+        "6E47-1",
+        "6E28-1",
+        "63S3-1",
+        "670P-1",
+        "6EHQ-1",
+        "6B6Q-1",
+        "6C1S-1"
+      ],
+      "method": "Native Paper screenshots during authoring and targeted review after consequential corrections; final exports read back after two short copy corrections.",
+      "corrections": [
+        "Aligned prior 2Y curve value with the structure fixture",
+        "Corrected save review label/value assignments after readback",
+        "Replaced permanent saved toast with a retained-revision card",
+        "Resolved undefined dark warning variable using an existing token",
+        "Moved three own mobile specimens out of an unexpected foreign container and verified the restored foreign navigation children",
+        "Shortened internal market-structure caption and limited draft preservation copy to the current session"
+      ],
+      "runtime_accessibility_tested": false
+    },
     "arithmetic": [
       {
-        "name": "Treasury -25 bp",
-        "computed": 1.97,
-        "expected": 1.97,
+        "name": "Reported annual principal total USD bn",
+        "actual": 35.551,
+        "expected": 35.551,
         "pass": true
       },
       {
-        "name": "Treasury +25 bp",
-        "computed": -1.9300000000000002,
-        "expected": -1.93,
+        "name": "Prior-only daily sample volatility bp",
+        "actual": 8.000000000000002,
+        "expected": 8,
         "pass": true
       },
       {
-        "name": "Treasury -8 bp",
-        "computed": 0.6260479999999999,
-        "expected": 0.626048,
+        "name": "Confirmation normalized distance",
+        "actual": -0.25,
+        "expected": -0.25,
         "pass": true
       },
       {
-        "name": "Corporate net",
-        "computed": -1.44,
-        "expected": -1.44,
-        "pass": true
-      },
-      {
-        "name": "2s10s",
-        "computed": 41.99999999999999,
-        "expected": 42,
-        "pass": true
-      },
-      {
-        "name": "Hedged yield",
-        "computed": 1.4999999999999996,
+        "name": "Invalidation normalized distance",
+        "actual": 1.5,
         "expected": 1.5,
         "pass": true
       },
       {
-        "name": "Relative comparison",
-        "computed": -5.000000000000004,
-        "expected": -5,
+        "name": "2s10s current bp",
+        "actual": 42,
+        "expected": 42,
         "pass": true
       },
       {
-        "name": "Net supply",
-        "computed": 55,
-        "expected": 55,
+        "name": "2s10s change bp",
+        "actual": 4,
+        "expected": 4,
         "pass": true
       },
       {
-        "name": "Interest shock",
-        "computed": 10000000,
-        "expected": 10000000,
+        "name": "5s30s current bp",
+        "actual": 48,
+        "expected": 48,
+        "pass": true
+      },
+      {
+        "name": "5s30s change bp",
+        "actual": 3,
+        "expected": 3,
+        "pass": true
+      },
+      {
+        "name": "Long-minus-short 5D pp",
+        "actual": 0.8999999999999999,
+        "expected": 0.9,
+        "pass": true
+      },
+      {
+        "name": "Long-minus-short 20D pp",
+        "actual": -1.2999999999999998,
+        "expected": -1.3,
+        "pass": true
+      },
+      {
+        "name": "Key-rate duration sum",
+        "actual": 7.8,
+        "expected": 7.8,
+        "pass": true
+      },
+      {
+        "name": "Curve shape price percent",
+        "actual": -0.276,
+        "expected": -0.276,
+        "pass": true
+      },
+      {
+        "name": "Parallel +5bp first-order percent",
+        "actual": -0.39,
+        "expected": -0.39,
+        "pass": true
+      },
+      {
+        "name": "Parallel -8bp first-order percent",
+        "actual": 0.624,
+        "expected": 0.624,
+        "pass": true
+      },
+      {
+        "name": "Parallel -8bp with R30 convexity percent",
+        "actual": 0.6260479999999999,
+        "expected": 0.626048,
+        "pass": true
+      },
+      {
+        "name": "Treasuries holding reconciliation residual",
+        "actual": 0,
+        "expected": 0,
+        "pass": true
+      },
+      {
+        "name": "AI credit holding reconciliation residual",
+        "actual": 0,
+        "expected": 0,
+        "pass": true
+      },
+      {
+        "name": "Combined holdings change",
+        "actual": 2,
+        "expected": 2,
+        "pass": true
+      },
+      {
+        "name": "Combined net purchases",
+        "actual": 3,
+        "expected": 3,
+        "pass": true
+      },
+      {
+        "name": "Usable opening cash",
+        "actual": 2100,
+        "expected": 2100,
+        "pass": true
+      },
+      {
+        "name": "Base final cash",
+        "actual": -190,
+        "expected": -190,
+        "pass": true
+      },
+      {
+        "name": "Minimum financing for payments",
+        "actual": 190,
+        "expected": 190,
+        "pass": true
+      },
+      {
+        "name": "Minimum financing for buffer",
+        "actual": 490,
+        "expected": 490,
+        "pass": true
+      },
+      {
+        "name": "Eligible net facility USD m",
+        "actual": 900,
+        "expected": 900,
+        "pass": true
+      },
+      {
+        "name": "Cash after pre-cutoff draw",
+        "actual": 710,
+        "expected": 710,
+        "pass": true
+      },
+      {
+        "name": "Buffer headroom",
+        "actual": 410,
+        "expected": 410,
+        "pass": true
+      },
+      {
+        "name": "Delayed receipt ending cash",
+        "actual": 510,
+        "expected": 510,
+        "pass": true
+      },
+      {
+        "name": "Delayed receipt headroom",
+        "actual": 210,
+        "expected": 210,
+        "pass": true
+      },
+      {
+        "name": "Late draw pre-cutoff funding deficit",
+        "actual": 190,
+        "expected": 190,
         "pass": true
       }
     ],
-    "jsx_exports": 19,
-    "working_indicators_finished": true,
+    "analytical_adversarial_review": {
+      "adviser": "native decision_judgment, bounded review only",
+      "issues_closed": [
+        "Curve-basis compatibility",
+        "Net versus gross transaction interpretation",
+        "Late financing versus timely payment",
+        "Net usable draw proceeds and explicit synthetic costs",
+        "Reported CoreWeave versus synthetic Parent A",
+        "Partial-save receipt and reopening semantics",
+        "No compound-alert substitution"
+      ],
+      "production_executed": false
+    },
+    "scope": {
+      "owned_pages": [
+        "p-1H-0",
+        "p-1E-0"
+      ],
+      "protected_forex_page": "p-1F-0",
+      "protected_forex_page_mutated": false,
+      "intended_forex_changes": false,
+      "reconciled_incidents": 1,
+      "incident": {
+        "discoveredAt": "2026-10-18T05:09:34.274Z",
+        "cause": "Returned responsive container ID later resolved to a foreign navigation node; exact allocator/concurrency cause unproven.",
+        "initialObservedContainer": "6E67-1",
+        "audit": [
+          {
+            "id": "6C21-1",
+            "result": []
+          },
+          {
+            "id": "6E63-1",
+            "result": [
+              {
+                "file": {
+                  "id": "01M2WGNCX9475G79JRKJTCM08P",
+                  "name": "MASTERMIND PAGES"
+                },
+                "contentHash": {
+                  "tokens": "cfd3d65c"
+                }
+              },
+              {
+                "id": "6E63-1",
+                "name": "nav:today",
+                "component": "Frame",
+                "width": 65,
+                "height": 47,
+                "worldX": null,
+                "worldY": null,
+                "x": null,
+                "y": null,
+                "isVisible": true,
+                "isLocked": false,
+                "parentId": "6E62-1",
+                "childIds": [
+                  "6E64-1",
+                  "6E66-1"
+                ],
+                "childCount": 2,
+                "artboardId": "6DT9-1",
+                "textContent": null
+              }
+            ]
+          },
+          {
+            "id": "6E28-1",
+            "result": []
+          },
+          {
+            "id": "6E47-1",
+            "result": [
+              {
+                "file": {
+                  "id": "01M2WGNCX9475G79JRKJTCM08P",
+                  "name": "MASTERMIND PAGES"
+                },
+                "contentHash": {
+                  "tokens": "cfd3d65c"
+                }
+              },
+              {
+                "id": "6E47-1",
+                "name": "I05 Late financing state",
+                "component": "Frame",
+                "width": null,
+                "height": null,
+                "worldX": null,
+                "worldY": null,
+                "x": null,
+                "y": null,
+                "isVisible": true,
+                "isLocked": false,
+                "parentId": "6BEJ-1",
+                "childIds": [
+                  "6E48-1",
+                  "6E49-1",
+                  "6E4A-1",
+                  "6E4C-1",
+                  "6E4F-1",
+                  "6E4I-1",
+                  "6E4J-1",
+                  "6E4L-1"
+                ],
+                "childCount": 8,
+                "artboardId": "6B6Q-1",
+                "textContent": null
+              }
+            ]
+          },
+          {
+            "id": "6E4N-1",
+            "result": []
+          },
+          {
+            "id": "6DT9-1",
+            "result": []
+          },
+          {
+            "id": "6E6G-1",
+            "result": []
+          },
+          {
+            "id": "6E7X-1",
+            "result": []
+          },
+          {
+            "id": "6E8U-1",
+            "result": []
+          }
+        ],
+        "ownPhoneIds": [
+          "6E6G-1",
+          "6E7X-1",
+          "6E8U-1"
+        ],
+        "repairedAt": "2026-10-18T05:10:54.472Z",
+        "repair": "Moved the three authenticated own R31 phone roots to owned S07 body 6C21-1; foreign nav retains original children 6E68-1 and 6E6A-1.",
+        "foreignPage": "p-N-1",
+        "foreignBoard": "6DT9-1",
+        "effects": "Three insertions transiently attached own specimens to the foreign nav; no foreign text/styles changed. Original R31 responsive wrapper was absent and its returned IDs resolved to foreign nav nodes."
+      },
+      "foreign_final_tree": [
+        {
+          "file": {
+            "id": "01M2WGNCX9475G79JRKJTCM08P",
+            "name": "MASTERMIND PAGES"
+          },
+          "contentHash": {
+            "tokens": "cfd3d65c"
+          }
+        },
+        {
+          "summary": "Frame \"nav:explore\" (6E67-1) 65×47\n  SVG \"SVG\" (6E68-1) 18×18\n    SVGVisualElement \"Path\" (6E69-1) ?×?\n  Text \"Explore\" (6E6A-1) ?×? \"Explore\"",
+          "nodeId": "6E67-1",
+          "depth": 3
+        }
+      ],
+      "qualification": "There was a transient attachment of three own specimens to a Forex reference nav on p-N-1. It was repaired. Do not describe this pass as having zero transient out-of-scope attachments."
+    },
+    "positions": {
+      "bonds": {
+        "key": "bonds",
+        "id": "63GL-1",
+        "page": "p-1H-0",
+        "name": "R30 · 01 Bonds Desk · Light EN",
+        "width": 1440,
+        "x": 0,
+        "y": 700
+      },
+      "curve": {
+        "key": "curve",
+        "id": "63S3-1",
+        "page": "p-1H-0",
+        "name": "R30 · 02 Curve & Duration · Light EN",
+        "width": 1440,
+        "x": 1560,
+        "y": 700
+      },
+      "credit": {
+        "key": "credit",
+        "id": "63YS-1",
+        "page": "p-1H-0",
+        "name": "R30 · 03 Issuer & Credit Case · Light EN",
+        "width": 1440,
+        "x": 0,
+        "y": 2350
+      },
+      "capital": {
+        "key": "capital",
+        "id": "648A-1",
+        "page": "p-1H-0",
+        "name": "R30 · 04 Capital Competition · Light EN",
+        "width": 1440,
+        "x": 1560,
+        "y": 2350
+      },
+      "transmission": {
+        "key": "transmission",
+        "id": "64G1-1",
+        "page": "p-1E-0",
+        "name": "R30 · 05 Transmission Desk · Light EN",
+        "width": 1440,
+        "x": 0,
+        "y": 700
+      },
+      "scenario": {
+        "key": "scenario",
+        "id": "64PQ-1",
+        "page": "p-1E-0",
+        "name": "R30 · 06 Case Workspace · Scenarios · EN",
+        "width": 1440,
+        "x": 1560,
+        "y": 700
+      },
+      "replay": {
+        "key": "replay",
+        "id": "64WP-1",
+        "page": "p-1E-0",
+        "name": "R30 · 07 Case Workspace · Replay · EN",
+        "width": 1440,
+        "x": 0,
+        "y": 2350
+      },
+      "overlays": {
+        "key": "overlays",
+        "id": "65YV-1",
+        "page": "p-1E-0",
+        "name": "R30 · S01 Overlays & Interaction Scorecards",
+        "width": 1440,
+        "x": 0,
+        "y": 4100
+      },
+      "tools": {
+        "key": "tools",
+        "id": "6693-1",
+        "page": "p-1H-0",
+        "name": "R30 · S02 Advanced Tools & Scorecards",
+        "width": 1440,
+        "x": 0,
+        "y": 4100
+      },
+      "mobile_bonds": {
+        "key": "mobile_bonds",
+        "id": "66FJ-1",
+        "page": "p-1H-0",
+        "name": "R30 · M01 Bonds Desk · Mobile Light EN",
+        "width": 390,
+        "x": 3150,
+        "y": 700
+      },
+      "mobile_transmission": {
+        "key": "mobile_transmission",
+        "id": "66HU-1",
+        "page": "p-1E-0",
+        "name": "R30 · M02 Transmission · Mobile Light EN",
+        "width": 390,
+        "x": 3150,
+        "y": 700
+      },
+      "mobile_zh": {
+        "key": "mobile_zh",
+        "id": "66MZ-1",
+        "page": "p-1E-0",
+        "name": "R30 · M03 Evidence Sheet · Mobile Dark ZH",
+        "width": 390,
+        "x": 3630,
+        "y": 700
+      },
+      "saved": {
+        "key": "saved",
+        "id": "670P-1",
+        "page": "p-1E-0",
+        "name": "R30 · 08 Saved Cases & Change Review · EN",
+        "width": 1440,
+        "x": 1560,
+        "y": 2350
+      },
+      "tablet": {
+        "key": "tablet",
+        "id": "676M-1",
+        "page": "p-1H-0",
+        "name": "R30 · T01 Capital Comparison · Tablet Light EN",
+        "width": 768,
+        "x": 3150,
+        "y": 2150
+      },
+      "states": {
+        "key": "states",
+        "id": "67EA-1",
+        "page": "p-1E-0",
+        "name": "R30 · S03 State Specimens & Monitor Logic",
+        "width": 1440,
+        "x": 1560,
+        "y": 4100
+      },
+      "research_tools": {
+        "key": "research_tools",
+        "id": "67N6-1",
+        "page": "p-1E-0",
+        "name": "R30 · S04 Research Tools & Scorecards",
+        "width": 1440,
+        "x": 0,
+        "y": 6300
+      },
+      "implementation": {
+        "key": "implementation",
+        "id": "67ZC-1",
+        "page": "p-1H-0",
+        "name": "R30 · S05 Implementation Map & Data Contract",
+        "width": 1440,
+        "x": 1560,
+        "y": 4100
+      },
+      "start_bonds": {
+        "key": "start_bonds",
+        "id": "6885-1",
+        "page": "p-1H-0",
+        "name": "R30 · START · Bonds Journey & Build References",
+        "width": 1440,
+        "x": 0,
+        "y": 0
+      },
+      "start_transmission": {
+        "key": "start_transmission",
+        "id": "6894-1",
+        "page": "p-1E-0",
+        "name": "R30 · START · Transmission Journey & Build Map",
+        "width": 1440,
+        "x": 0,
+        "y": 0
+      },
+      "depth": {
+        "key": "depth",
+        "id": "6B6Q-1",
+        "page": "p-1H-0",
+        "name": "R31 · S06 Structure & Financing · Deep Tools",
+        "width": 1440,
+        "x": 0,
+        "y": 6300
+      },
+      "continuity": {
+        "key": "continuity",
+        "id": "6C1S-1",
+        "page": "p-1E-0",
+        "name": "R31 · S07 Flow Evidence & Case Continuity",
+        "width": 1440,
+        "x": 1560,
+        "y": 6300
+      }
+    },
     "not_performed": [
-      "Production implementation",
-      "Live data binding",
-      "Notification activation",
-      "Historical backtest",
-      "Forecast calibration",
+      "Production component implementation",
+      "Database or schema mutation",
+      "Runtime API invocation",
+      "Live market-data binding",
+      "Monitor or notification activation",
       "End-to-end browser interaction tests",
       "Runtime accessibility testing",
+      "Historical backtest",
+      "Forecast calibration",
+      "Trading",
       "Deployment"
     ]
+  },
+  "revision": "R30 + R31",
+  "source_pins": {
+    "macro": "mastermindx-market-intelligence/macro@4f52d22596545cbd67b5143e188baf5660237024",
+    "terminal": "mastermindx-market-intelligence/mastermind-terminal@d6515f47232538161af8d3d4c27064165eda40fe",
+    "r30_projection": "mastermindx-market-intelligence/macro@62a3f9ad070c7583687aef8c30d53fd1764c6aab"
+  },
+  "r31_nodes": {
+    "depthHeader": "6B6W-1",
+    "structureRow": "6B74-1",
+    "structureCol": "6B75-1",
+    "structureScore": "6B76-1",
+    "structureTool": "6B78-1",
+    "structureVerdict": "6B7N-1",
+    "structureMetrics": "6B7U-1",
+    "structureChart": "6B88-1",
+    "structureHorizons": "6B91-1",
+    "structureParticipation": "6BC6-1",
+    "structureActions": "6BCN-1",
+    "structureScoreCard": "6BCX-1",
+    "retestPanel": "6BDP-1",
+    "technicalUnavailable": "6BE8-1",
+    "fundingRow": "6BEH-1",
+    "fundingCol": "6BEI-1",
+    "fundingScore": "6BEJ-1",
+    "fundingReported": "6BMD-1",
+    "fundingSummary": "6BMX-1",
+    "maturityChart": "6BNE-1",
+    "fundingNext": "6BOE-1",
+    "fundingScoreCard": "6BOU-1",
+    "cashTool": "6BRC-1",
+    "cashSummary": "6BSD-1",
+    "cashChart": "6BSW-1",
+    "cashActions": "6BTP-1",
+    "drawInspector": "6BUK-1",
+    "fundingUnavailable": "6BVT-1",
+    "shapeRow": "6BZJ-1",
+    "shapeCol": "6BZK-1",
+    "shapeScore": "6C16-1",
+    "shapeTool": "6BZN-1",
+    "shapeInputs": "6C01-1",
+    "shapeResult": "6C0Z-1",
+    "continuityBody": "6C21-1",
+    "continuityHeader": "6C23-1",
+    "flowRow": "6C2B-1",
+    "flowCol": "6C2C-1",
+    "flowScore": "6C2D-1",
+    "flowTool": "6C2T-1",
+    "flowTable": "6C5S-1",
+    "flowTreasury": "6C6I-1",
+    "flowCredit": "6C6U-1",
+    "flowFinding": "6C76-1",
+    "flowActions": "6C7K-1",
+    "flowScoreCard": "6C87-1",
+    "caseRow": "6CE5-1",
+    "caseCol": "6CE6-1",
+    "caseScore": "6CE7-1",
+    "caseTool": "6CEV-1",
+    "caseSaveContents": "6CFA-1",
+    "casePartialNotice": "6CG2-1",
+    "casePartialActions": "6CGG-1",
+    "caseScoreCard": "6CGM-1",
+    "caseCompare": "6CLB-1",
+    "compareTable": "6CLK-1",
+    "compareRate": "6CLR-1",
+    "compareBreadth": "6CLZ-1",
+    "compareFunding": "6CM5-1",
+    "compareActions": "6CMB-1",
+    "saveReadUnavailable": "6CML-1",
+    "structureEntry": "6CSY-1",
+    "shapeEntry": "6CTD-1",
+    "pipesTool": "6CZY-1",
+    "pipesChart": "6D0D-1",
+    "pipesConditions": "6D1J-1",
+    "pipesAction": "6D31-1",
+    "pipesScore": "6D36-1",
+    "savedRevisionCard": "6D3R-1",
+    "curveUpdatedSvg": "6D7D-1",
+    "evidenceRelatedTools": "6DBB-1",
+    "inventory13": "6DBH-1",
+    "inventory14": "6DC4-1",
+    "inventory15": "6DCL-1",
+    "cashEvents": "6E28-1",
+    "lateFunding": "6E47-1",
+    "revisionConflict": "6E4N-1",
+    "mobileStructure": "6E6G-1",
+    "mobileSave": "6E7X-1",
+    "mobileCashZh": "6E8U-1",
+    "questionSaved": "6EHS-1",
+    "ownerBindings": "6EI3-1",
+    "responsiveScore": "6EIO-1",
+    "flowBasisFootnote": "6EJ4-1",
+    "responsiveSection": "6EHM-1",
+    "responsiveRow": "6EHQ-1"
+  },
+  "r30_record": {
+    "commit": "0ff079356ec41d8a64307885bcb771a441297ceb",
+    "baseline_validation_file": "validation.json",
+    "native_effects_file": "native_effects.json",
+    "mutations_observed": 163
+  },
+  "r31_record": {
+    "validation_file": "r31/validation.json",
+    "native_effects_file": "r31/native_effects.json",
+    "binding_file": "r31/source_bindings.json",
+    "mutations_observed": 96,
+    "reconciled_foreign_attachment_incidents": 1
   }
 }

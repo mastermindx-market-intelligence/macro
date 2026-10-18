@@ -22,7 +22,7 @@
   },
   {
     "id": "I02",
-    "name": "Calculation popover",
+    "name": "Calculation + curve shape",
     "routes": [
       "02",
       "06"
@@ -33,7 +33,13 @@
     "dependencies": "Verified calculation owner plus instrument/benchmark identity and sensitivity date. Inputs are user assumptions unless a qualified source is explicitly bound.",
     "states": "Valid, invalid numeric input, absent sensitivity, incomparable benchmark, approximation warning.",
     "effect": "Local scenario state; persistence only through an explicit save.",
-    "acceptance": "1 bp converts to 0.0001. Invalid input clears the calculated output and identifies the field. All-in corporate yield cannot be combined with a separate spread shock. Mathematical sensitivity is never labeled expected return."
+    "acceptance": "1 bp converts to 0.0001. Invalid input clears the calculated output and identifies the field. All-in corporate yield cannot be combined with a separate spread shock. Mathematical sensitivity is never labeled expected return.",
+    "extension_nodes": [
+      "6BZN-1"
+    ],
+    "r31_behavior": "Shape mode uses a compatible complete key-rate vector. Keep parallel, first-order shape and instrument repricing distinct. Return −0.276% for the declared four-node fixture.",
+    "r31_acceptance": "Bind curve/bump/interpolation/cutoff; missing or mismatched vectors block shape. A scalar convexity term is not a full curve-twist repricer.",
+    "reference": "r31/implementation.md#i02--curve-shape-extension"
   },
   {
     "id": "I03",
@@ -52,7 +58,11 @@
     "dependencies": "Existing rates/credit and cross-asset projections plus approved observations; explicit analytical interpretation and hypothesis identity. No new state engine is introduced by the view.",
     "states": "Partly supported, contested, missing link, source stale, no evidence.",
     "effect": "Read-only interpretation; Add to scenario carries the hypothesis into route 06.",
-    "acceptance": "Growth, substitution, safety demand and funding squeeze remain distinct. A Treasury price response does not fill a missing buyer-allocation link. Dashed edges carry no flow volume or causal proof."
+    "acceptance": "Growth, substitution, safety demand and funding squeeze remain distinct. A Treasury price response does not fill a missing buyer-allocation link. Dashed edges carry no flow volume or causal proof.",
+    "extension_nodes": [
+      "6DBB-1"
+    ],
+    "r31_behavior": "Price structure opens I13; buyer flows opens I14. Preserve the same hypothesis and observation cutoff."
   },
   {
     "id": "I04",
@@ -68,14 +78,16 @@
     "node": "665W-1",
     "entry": "Monitor this view/case, Use this path or Manage monitors.",
     "behavior": "Inherit the case revision and show all confirmation conditions, explicit invalidators, source freshness/alignment policy, session expiry and delivery mode before saving. A composer preview explains unresolved data. Canonical persistence and activation are different outcomes.",
-    "dependencies": "Existing canonical monitor/save/notification owner must be resolved in implementation. Qualified clocked evidence and a versioned rule definition are required for activation; a display-only projection cannot arm a qualified live monitor.",
+    "dependencies": "Existing Terminal Alerts and Investigation v2 owners located at terminal d6515f47232538161af8d3d4c27064165eda40fe. Current Alerts admission does not accept arbitrary yield + credit + funding AND conditions; extend the existing schema/evaluator/dry-run/receipt path before activation.",
     "states": "Draft, saving, saved, effect uncertain, save failed, waiting, data paused, confirmed while watching, invalidated, expired, window closed.",
     "effect": "A user-directed configuration save through the canonical owner. This design task activated no monitor or notification.",
-    "acceptance": "Fresh valid invalidation outranks confirmation. Unknown critical evidence blocks confirmation. The fifth eligible close is evaluated before expiry. Pauses do not extend the window silently. Late data cannot silently reopen or backdate a terminal outcome. Duplicate saves have one canonical effect."
+    "acceptance": "Fresh valid invalidation outranks confirmation. Unknown critical evidence blocks confirmation. The fifth eligible close is evaluated before expiry. Pauses do not extend the window silently. Late data cannot silently reopen or backdate a terminal outcome. Duplicate saves have one canonical effect.",
+    "current_capability": "unavailable_for_compound_bond_rule",
+    "r31_acceptance": "No activation or equivalent claim from split independent alerts; preserve the complete authored rule and show the unsupported state."
   },
   {
     "id": "I05",
-    "name": "Financing schedule",
+    "name": "Financing + cash timing",
     "routes": [
       "03",
       "06"
@@ -86,7 +98,18 @@
     "dependencies": "Dated issuer filings and an instrument/obligation-level schedule. Existing capital_structure.event.v1 may supply relevant filing facts but is not a complete bond-maturity or covenant feed.",
     "states": "Reported snapshot, mapped schedule, missing maturity date, restricted cash, amended financing, stale roll-forward.",
     "effect": "Read-only inspection; an explicit manual assumption belongs to the scenario revision.",
-    "acceptance": "Cash minus current debt is not labeled a funding gap or runway. Current classification is not an exact maturity calendar. Fixed debt reprices at contractual reset/refinance, not automatically with every market spread change."
+    "acceptance": "Cash minus current debt is not labeled a funding gap or runway. Current classification is not an exact maturity calendar. Fixed debt reprices at contractual reset/refinance, not automatically with every market spread change.",
+    "extension_nodes": [
+      "6BMD-1",
+      "6BRC-1",
+      "6E28-1",
+      "6BUK-1",
+      "6BVT-1",
+      "6E47-1"
+    ],
+    "r31_behavior": "Keep CoreWeave's dated annual reported obligations separate from the synthetic Parent A exact-date scenario. Compute payment financing and selected-buffer financing separately; preserve legal usability and payment cutoffs.",
+    "r31_acceptance": "Base payment gap190, buffer gap490; eligible pre-cutoff net draw900 gives cash710/headroom410. Delay receipt200 gives510/210. Post-cutoff draw preserves190 cutoff deficit.",
+    "reference": "r31/implementation.md#i05--financing-and-cash-timing"
   },
   {
     "id": "I06",
@@ -193,5 +216,63 @@
     "states": "Hidden, revealed, incomplete horizon, revised history, no qualified cohort.",
     "effect": "Local reveal/record state, persisted only through explicit case actions.",
     "acceptance": "Later outcomes cannot alter the frozen hypothesis or matching features. Missing horizons remain blank. Overlapping episodes are not counted as independent trials."
+  },
+  {
+    "id": "I13",
+    "name": "Market structure",
+    "routes": [
+      "02",
+      "05",
+      "06"
+    ],
+    "node": "6B78-1",
+    "entry": "Curve Inspect structure; Transmission price evidence",
+    "behavior": "One chart, three horizon returns and curve participation. Distinguish rebound from reversal; preserve fixed close-based levels and signed volatility distance.",
+    "dependencies": "Aligned typed series, 21 matching prior closes, source/availability clocks, return basis, adjustment method and frozen authored rule.",
+    "states": "Mixed structure, provisional intraday, close break, retest pending/holds, invalidated, zero variance, insufficient history, incompatible or stale series.",
+    "effect": "Local scenario draft only; save via I15 and monitor via existing I04 admission.",
+    "acceptance": "Prior-only sample volatility8bp; confirmation distance−.25, invalidation+1.5. Do not count correlated price features as independent evidence.",
+    "reference": "r31/implementation.md#i13--market-structure"
+  },
+  {
+    "id": "I14",
+    "name": "Buyer flows",
+    "routes": [
+      "04",
+      "05",
+      "06"
+    ],
+    "node": "6C2T-1",
+    "alternate_node": "6CZY-1",
+    "entry": "Capital Inspect buyer flows / Funding pipes; Transmission substitution evidence",
+    "behavior": "Reconcile market-value positions into sourced transactions, revaluation, FX and other changes; inspect financing-demand and cash-supply channels.",
+    "dependencies": "Matched holder/asset/currency/period and source clocks; transaction provenance; zero/missing semantics; repo conventions and coverage.",
+    "states": "Reconciled, residual estimated, unexplained residual, unmatched period, slow release, missing transactions, mechanism only.",
+    "effect": "Read-only interpretation or addition to local case draft; retention follows I15.",
+    "acceptance": "Both assets have positive net purchases. No funding-origin arrow inferred from price or aggregate holdings. Quarterlies cannot confirm daily switches.",
+    "reference": "r31/implementation.md#i14--buyer-flows-and-funding-pipes"
+  },
+  {
+    "id": "I15",
+    "name": "Save + compare",
+    "routes": [
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08"
+    ],
+    "node": "6CEV-1",
+    "alternate_node": "6CLB-1",
+    "entry": "Save analysis; Saved cases Review changed evidence / Review saved contents",
+    "behavior": "Review admitted contents before saving; preserve explicit partial-success language, immutable saved revision versus latest, operation receipts and conflict recovery.",
+    "dependencies": "Existing Terminal Investigation v2. Bond evidence/scenario admission and exact resolvers require extension; selected supported subject references must pass the owner.",
+    "states": "Question-only capability, full-save unavailable, question saved, saved exact-read unavailable, operation uncertain, revision conflict, complete-case synthetic future state.",
+    "effect": "Only explicit admitted Investigation command. No unsupported payload hidden in text; no monitoring activation.",
+    "acceptance": "Question saved does not mean scenario retained. Exact read failure never falls through to latest. Original operation receipt controls uncertainty; conflict preserves draft.",
+    "reference": "r31/implementation.md#i15--retained-research-and-change-review"
   }
 ]

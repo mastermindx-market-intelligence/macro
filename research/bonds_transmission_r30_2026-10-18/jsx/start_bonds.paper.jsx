@@ -1,4 +1,4 @@
-/* R30 editable Paper reference. UI/data/effects are not wired.
+/* R30 + R31 editable Paper reference. UI/data/effects are not wired.
  * Page: https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1H-0
  * Artboard: 6885-1 — R30 · START · Bonds Journey & Build References
  * Use existing Mastermind tokens and runtime component owners.
@@ -10,7 +10,7 @@ export default function StartBondsReference() {
         <div id="6887-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '24px', justifyContent: 'space-between' }}>
           <div id="6888-1" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <div id="6889-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', lineHeight: '17px' }}>
-              MASTERMIND / R30
+              MASTERMIND / R30 + R31
             </div>
             <div id="688A-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '34px', fontWeight: 700, lineHeight: '48px' }}>
               Start with the decision
@@ -78,7 +78,7 @@ export default function StartBondsReference() {
                 BUILD REFERENCES
               </div>
               <div id="688Z-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 500, lineHeight: '20px' }}>
-                S02 Advanced tools · S05 Implementation map · M01 Mobile · T01 Tablet
+                S02 Tools · S05 Build map · S06 Structure + financing · Mobile + tablet
               </div>
             </div>
             <div id="6890-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>

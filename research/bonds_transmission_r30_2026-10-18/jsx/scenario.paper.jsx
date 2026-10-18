@@ -1,4 +1,4 @@
-/* R30 editable Paper reference. UI/data/effects are not wired.
+/* R30 + R31 editable Paper reference. UI/data/effects are not wired.
  * Page: https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1E-0
  * Artboard: 64PQ-1 — R30 · 06 Case Workspace · Scenarios · EN
  * Use existing Mastermind tokens and runtime component owners.
@@ -320,6 +320,11 @@ export default function ScenarioReference() {
                 <div id="64TW-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info)', borderColor: 'var(--mx-light-info)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
                   <div id="64TX-1" style={{ boxSizing: 'border-box', color: '#FFFFFF', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
                     Apply assumptions
+                  </div>
+                </div>
+                <div id="6CTD-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', justifyContent: 'center', minHeight: '40px', paddingBlock: '10px', paddingInline: '14px', width: '100%' }}>
+                  <div id="6CTE-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '19px', width: 'max-content' }}>
+                    Curve shape →
                   </div>
                 </div>
               </div>

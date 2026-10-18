@@ -1,4 +1,4 @@
-/* R30 editable Paper reference. UI/data/effects are not wired.
+/* R30 + R31 editable Paper reference. UI/data/effects are not wired.
  * Page: https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1H-0
  * Artboard: 6693-1 — R30 · S02 Advanced Tools & Scorecards
  * Use existing Mastermind tokens and runtime component owners.
@@ -81,7 +81,7 @@ export default function ToolsReference() {
               <div id="66BH-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '10px' }}>
                 <div id="66BI-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-warn-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
                   <div id="66BJ-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-warn)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
-                    Exact maturities need mapping
+                    Annual principal mapped; daily timing incomplete
                   </div>
                 </div>
                 <div id="66BK-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
@@ -103,7 +103,7 @@ export default function ToolsReference() {
               </div>
               <div id="66BQ-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info)', borderColor: 'var(--mx-light-info)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
                 <div id="66BR-1" style={{ boxSizing: 'border-box', color: '#FFFFFF', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                  Map maturities & commitments
+                  Open funding calendar
                 </div>
               </div>
             </div>

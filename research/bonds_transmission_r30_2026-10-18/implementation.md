@@ -1,4 +1,8 @@
-# R30 implementation and interaction contracts
+# R30 + R31 implementation contract
+
+**Current extension:** [R31 depth and continuity](r31/implementation.md), [exact owner bindings](r31/data_contract.md), and [action map](r31/action_map.json). R31 expands the inventory to I01–I15 and resolves the previously unknown Investigation/Alerts owners. Its capability and retention boundaries take precedence over the baseline descriptions below. Native specimens remain design references; no runtime activation is implied.
+
+## Accepted R30 baseline
 
 This document defines the behavior behind the native Paper specimens. It does not assert that the controls already run. Visual completion, API/data binding, effect acceptance and empirical model acceptance are tracked independently.
 

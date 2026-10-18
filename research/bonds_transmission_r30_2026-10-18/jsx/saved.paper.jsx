@@ -1,4 +1,4 @@
-/* R30 editable Paper reference. UI/data/effects are not wired.
+/* R30 + R31 editable Paper reference. UI/data/effects are not wired.
  * Page: https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1E-0
  * Artboard: 670P-1 — R30 · 08 Saved Cases & Change Review · EN
  * Use existing Mastermind tokens and runtime component owners.
@@ -454,30 +454,36 @@ export default function SavedReference() {
                   </div>
                 </div>
               </div>
-              <div id="676B-1" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '16px', padding: '20px', width: '340px' }}>
-                <div id="676C-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                  SAVED SUCCESSFULLY
+              <div id="6D3R-1" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '16px', padding: '24px', width: '340px' }}>
+                <div id="6D3S-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
+                  SAVED VIEW
                 </div>
-                <div id="676D-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-up)', fontFamily: 'system-ui, sans-serif', fontSize: '21px', fontWeight: 600, lineHeight: '30px' }}>
-                  Monitor saved
+                <div id="6D3T-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '20px', fontWeight: 700, lineHeight: '29px' }}>
+                  Keep the revision
                 </div>
-                <div id="676E-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '20px' }}>
-                  AI funding → Treasury continuation
-                </div>
-                <div id="676F-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px' }}>
-                  <div id="676G-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
-                    <div id="676H-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                      Undo
-                    </div>
+                <div id="6D3U-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '16px', justifyContent: 'space-between', minHeight: '32px' }}>
+                  <div id="6D3V-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '19px' }}>
+                    Question
                   </div>
-                  <div id="676I-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
-                    <div id="676J-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                      View monitor
-                    </div>
+                  <div id="6D3W-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
+                    AI funding → Treasuries
                   </div>
                 </div>
-                <div id="676K-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '17px' }}>
-                  Confirmation message specimen
+                <div id="6D3X-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '16px', justifyContent: 'space-between', minHeight: '32px' }}>
+                  <div id="6D3Y-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '19px' }}>
+                    Saved snapshot
+                  </div>
+                  <div id="6D3Z-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
+                    Revision 3 · illustrative
+                  </div>
+                </div>
+                <div id="6D40-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', justifyContent: 'center', minHeight: '40px', paddingBlock: '10px', paddingInline: '14px' }}>
+                  <div id="6D41-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '19px', width: 'max-content' }}>
+                    Review saved contents
+                  </div>
+                </div>
+                <div id="6D42-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '17px' }}>
+                  Check what was retained before reopening the case.
                 </div>
               </div>
             </div>

@@ -1,4 +1,4 @@
-/* R30 editable Paper reference. UI/data/effects are not wired.
+/* R30 + R31 editable Paper reference. UI/data/effects are not wired.
  * Page: https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1H-0
  * Artboard: 67ZC-1 — R30 · S05 Implementation Map & Data Contract
  * Use existing Mastermind tokens and runtime component owners.
@@ -16,12 +16,12 @@ export default function ImplementationReference() {
               Build the complete journey
             </div>
             <div id="67ZI-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '20px' }}>
-              Eight routes and twelve tools share one case. Visual coverage and runtime readiness stay separate.
+              Eight routes and fifteen tools share one investigation. Runtime and model qualification remain separate.
             </div>
           </div>
           <div id="67ZJ-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel2)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
             <div id="67ZK-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', display: 'flex', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
-              R30 · design specification
+              R30 + R31 · design specification
             </div>
           </div>
         </div>
@@ -75,7 +75,7 @@ export default function ImplementationReference() {
               Separate policy, term premium and sensitivity.
             </div>
             <div id="680J-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '620px' }}>
-              I02 Calculation · I10 Auction
+              I02 Shape + calculation · I13 Structure · I10 Auction
             </div>
           </div>
           <div id="680K-1" style={{ alignItems: 'start', borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '12px', paddingBlock: '13px' }}>
@@ -103,7 +103,7 @@ export default function ImplementationReference() {
               Compare the same buyer’s eligible alternatives.
             </div>
             <div id="680T-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '620px' }}>
-              I06 Hedge · I08 Funding · 05 Case
+              I06 Hedge · I08 Funding · I14 Buyer flows
             </div>
           </div>
           <div id="680U-1" style={{ alignItems: 'start', borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '12px', paddingBlock: '13px' }}>
@@ -131,7 +131,7 @@ export default function ImplementationReference() {
               Change assumptions; retain confirmation and failure.
             </div>
             <div id="6813-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '620px' }}>
-              I02 Calculation · I04 Monitor
+              I02 Curve shape · I05 Cash timing · I04 Monitor
             </div>
           </div>
           <div id="6814-1" style={{ alignItems: 'start', borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '12px', paddingBlock: '13px' }}>
@@ -159,7 +159,7 @@ export default function ImplementationReference() {
               Review changed evidence and the next decision.
             </div>
             <div id="681D-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '620px' }}>
-              Reopen case · I04 Monitor · I10 Check
+              I15 Save + compare · I04 Monitor · I10 Check
             </div>
           </div>
           <div id="681E-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '17px' }}>
@@ -173,7 +173,7 @@ export default function ImplementationReference() {
             </div>
             <div id="681J-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-up-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
               <div id="681K-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-up)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
-                I01–I12 visual + behavior coverage
+                I01–I15 visual + behavior coverage
               </div>
             </div>
           </div>
@@ -359,6 +359,48 @@ export default function ImplementationReference() {
               Common horizons, preserved units and full cohorts.
             </div>
           </div>
+          <div id="6DBH-1" style={{ alignItems: 'center', borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '16px', paddingBlock: '12px' }}>
+            <div id="6DBI-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '48px' }}>
+              I13
+            </div>
+            <div id="6DBJ-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '192px' }}>
+              Market structure
+            </div>
+            <div id="6DBK-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '365px' }}>
+              Curve / price evidence
+            </div>
+            <div id="6DBL-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '677px' }}>
+              Horizon conflict, fixed levels, volatility distance and close rules.
+            </div>
+          </div>
+          <div id="6DC4-1" style={{ alignItems: 'center', borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '16px', paddingBlock: '12px' }}>
+            <div id="6DC5-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '48px' }}>
+              I14
+            </div>
+            <div id="6DC6-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '192px' }}>
+              Buyer flows
+            </div>
+            <div id="6DC7-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '365px' }}>
+              Capital / substitution evidence
+            </div>
+            <div id="6DC8-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '677px' }}>
+              Transactions versus revaluation; funding channels and source clocks.
+            </div>
+          </div>
+          <div id="6DCL-1" style={{ alignItems: 'center', borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '16px', paddingBlock: '12px' }}>
+            <div id="6DCM-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '48px' }}>
+              I15
+            </div>
+            <div id="6DCN-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '192px' }}>
+              Save + compare
+            </div>
+            <div id="6DCO-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '365px' }}>
+              Save / review changed evidence
+            </div>
+            <div id="6DCP-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '677px' }}>
+              Canonical revision, partial retention, conflict and uncertain effects.
+            </div>
+          </div>
           <div id="683E-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '17px' }}>
             Desktop uses focusable popovers or drawers. Mobile uses accessible sheets. Close, Esc and Back restore the invoking control.
           </div>
@@ -491,12 +533,12 @@ export default function ImplementationReference() {
                 </div>
                 <div id="685E-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel2)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
                   <div id="685F-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
-                    Runtime pending
+                    Owners identified
                   </div>
                 </div>
               </div>
               <div id="685G-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px' }}>
-                Resolve the existing canonical owner; no parallel case or notification store.
+                Reuse Terminal Investigation v2 and Alerts. Bond evidence, scenario retention and combined conditions require owner extensions.
               </div>
             </div>
           </div>
@@ -515,7 +557,7 @@ export default function ImplementationReference() {
               </div>
             </div>
             <div id="685O-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '835px' }}>
-              Eight routes, twelve tools, failure states, mobile and tablet.
+              Eight routes, fifteen tools, advanced states and responsive references.
             </div>
           </div>
           <div id="685P-1" style={{ alignItems: 'center', borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '18px', paddingBlock: '13px' }}>
@@ -541,7 +583,7 @@ export default function ImplementationReference() {
               </div>
             </div>
             <div id="685Y-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '835px' }}>
-              Bind existing owners, real data, interactions and accessible component behavior.
+              Investigation and Alerts owners located; bond payload and condition extensions still required.
             </div>
           </div>
           <div id="685Z-1" style={{ alignItems: 'center', borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '18px', paddingBlock: '13px' }}>

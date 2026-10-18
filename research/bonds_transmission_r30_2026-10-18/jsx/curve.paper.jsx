@@ -1,4 +1,4 @@
-/* R30 editable Paper reference. UI/data/effects are not wired.
+/* R30 + R31 editable Paper reference. UI/data/effects are not wired.
  * Page: https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1H-0
  * Artboard: 63S3-1 — R30 · 02 Curve & Duration · Light EN
  * Use existing Mastermind tokens and runtime component owners.
@@ -277,53 +277,53 @@ export default function CurveReference() {
                     </div>
                   </div>
                 </div>
-                <svg width="690" height="244" viewBox="0 0 690 244" xmlns="http://www.w3.org/2000/svg" id="63VP-1" style={{ display: 'inline-block', flexShrink: '0' }}>
-                  <line x1="40" y1="185.5" x2="645" y2="185.5" stroke="var(--mx-light-line)" strokeDasharray="3 5" />
-                  <text x="0" y="189.5" fontSize="11" fill="var(--mx-light-muted)">
+                <svg width="692" height="238" viewBox="0 0 692 238" xmlns="http://www.w3.org/2000/svg" id="6D7D-1" style={{ display: 'inline-block', flexShrink: '0' }}>
+                  <line x1="40" y1="188" x2="624" y2="188" stroke="#C9CCD1" strokeDasharray="3 6" />
+                  <text x="0" y="192" fontSize="11" fontFamily="Inter" fill="#5D6B7E">
                     4.5%
                   </text>
-                  <line x1="40" y1="118" x2="645" y2="118" stroke="var(--mx-light-line)" strokeDasharray="3 5" />
-                  <text x="0" y="122" fontSize="11" fill="var(--mx-light-muted)">
+                  <line x1="40" y1="120.5" x2="624" y2="120.5" stroke="#C9CCD1" strokeDasharray="3 6" />
+                  <text x="0" y="124.5" fontSize="11" fontFamily="Inter" fill="#5D6B7E">
                     5.0%
                   </text>
-                  <line x1="40" y1="50.5" x2="645" y2="50.5" stroke="var(--mx-light-line)" strokeDasharray="3 5" />
-                  <text x="0" y="54.5" fontSize="11" fill="var(--mx-light-muted)">
+                  <line x1="40" y1="53" x2="624" y2="53" stroke="#C9CCD1" strokeDasharray="3 6" />
+                  <text x="0" y="57" fontSize="11" fontFamily="Inter" fill="#5D6B7E">
                     5.5%
                   </text>
-                  <polyline points="45,131.5 151,142.3 258,155.8 365,126.1 472,93.7 625,61.3" fill="none" stroke="var(--mx-light-muted)" strokeWidth="2.6" strokeDasharray="5 5" />
-                  <circle cx="45" cy="131.5" r="3.5" fill="var(--mx-light-muted)" />
-                  <circle cx="151" cy="142.3" r="3.5" fill="var(--mx-light-muted)" />
-                  <circle cx="258" cy="155.8" r="3.5" fill="var(--mx-light-muted)" />
-                  <circle cx="365" cy="126.1" r="3.5" fill="var(--mx-light-muted)" />
-                  <circle cx="472" cy="93.7" r="3.5" fill="var(--mx-light-muted)" />
-                  <circle cx="625" cy="61.3" r="3.5" fill="var(--mx-light-muted)" />
-                  <polyline points="45,131.5 151,145 258,161.2 365,135.55 472,104.5 625,70.75" fill="none" stroke="var(--mx-light-info)" strokeWidth="2.6" />
-                  <circle cx="45" cy="131.5" r="3.5" fill="var(--mx-light-info)" />
-                  <circle cx="151" cy="145" r="3.5" fill="var(--mx-light-info)" />
-                  <circle cx="258" cy="161.2" r="3.5" fill="var(--mx-light-info)" />
-                  <circle cx="365" cy="135.55" r="3.5" fill="var(--mx-light-info)" />
-                  <circle cx="472" cy="104.5" r="3.5" fill="var(--mx-light-info)" />
-                  <circle cx="625" cy="70.75" r="3.5" fill="var(--mx-light-info)" />
-                  <text x="37" y="231" fontSize="11" fill="var(--mx-light-muted)">
+                  <polyline points="45,132.65 149,144.8 253,147.5 357,132.65 461,96.2 565,71.9" fill="none" stroke="#5D6B7E" strokeWidth="2.5" strokeDasharray="5 5" />
+                  <circle cx="45" cy="132.65" r="3.5" fill="#5D6B7E" />
+                  <circle cx="149" cy="144.8" r="3.5" fill="#5D6B7E" />
+                  <circle cx="253" cy="147.5" r="3.5" fill="#5D6B7E" />
+                  <circle cx="357" cy="132.65" r="3.5" fill="#5D6B7E" />
+                  <circle cx="461" cy="96.2" r="3.5" fill="#5D6B7E" />
+                  <circle cx="565" cy="71.9" r="3.5" fill="#5D6B7E" />
+                  <polyline points="45,134 149,147.5 253,163.7 357,138.05 461,107 565,73.25" fill="none" stroke="#285FFF" strokeWidth="2.5" />
+                  <circle cx="45" cy="134" r="3.5" fill="#285FFF" />
+                  <circle cx="149" cy="147.5" r="3.5" fill="#285FFF" />
+                  <circle cx="253" cy="163.7" r="3.5" fill="#285FFF" />
+                  <circle cx="357" cy="138.05" r="3.5" fill="#285FFF" />
+                  <circle cx="461" cy="107" r="3.5" fill="#285FFF" />
+                  <circle cx="565" cy="73.25" r="3.5" fill="#285FFF" />
+                  <text x="45" y="233" fontSize="11" textAnchor="middle" fontFamily="Inter" fill="#5D6B7E">
                     3M
                   </text>
-                  <text x="143" y="231" fontSize="11" fill="var(--mx-light-muted)">
+                  <text x="149" y="233" fontSize="11" textAnchor="middle" fontFamily="Inter" fill="#5D6B7E">
                     1Y
                   </text>
-                  <text x="250" y="231" fontSize="11" fill="var(--mx-light-muted)">
+                  <text x="253" y="233" fontSize="11" textAnchor="middle" fontFamily="Inter" fill="#5D6B7E">
                     2Y
                   </text>
-                  <text x="357" y="231" fontSize="11" fill="var(--mx-light-muted)">
+                  <text x="357" y="233" fontSize="11" textAnchor="middle" fontFamily="Inter" fill="#5D6B7E">
                     5Y
                   </text>
-                  <text x="464" y="231" fontSize="11" fill="var(--mx-light-muted)">
+                  <text x="461" y="233" fontSize="11" textAnchor="middle" fontFamily="Inter" fill="#5D6B7E">
                     10Y
                   </text>
-                  <text x="617" y="231" fontSize="11" fill="var(--mx-light-muted)">
+                  <text x="565" y="233" fontSize="11" textAnchor="middle" fontFamily="Inter" fill="#5D6B7E">
                     30Y
                   </text>
-                  <rect x="481" y="90.5" width="68" height="26" rx="6" fill="var(--mx-light-info-soft)" />
-                  <text x="491" y="108.5" fontSize="12" fontWeight="600" fill="var(--mx-light-info)">
+                  <rect x="477" y="105" width="66" height="27" rx="5" fill="#EAF2FC" />
+                  <text x="487" y="123" fontSize="12" fontFamily="Inter" fill="#285FFF">
                     5.10%
                   </text>
                 </svg>
@@ -499,7 +499,14 @@ export default function CurveReference() {
                       Invalidate
                     </div>
                     <div id="63YH-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px' }}>
-                      Reclaim 5.22% with rising premium.
+                      Close above 5.22%.
+                    </div>
+                  </div>
+                </div>
+                <div id="6CSY-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px' }}>
+                  <div id="6CSZ-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', justifyContent: 'center', minHeight: '40px', paddingBlock: '10px', paddingInline: '14px' }}>
+                    <div id="6CT0-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '19px', width: 'max-content' }}>
+                      Inspect structure →
                     </div>
                   </div>
                 </div>

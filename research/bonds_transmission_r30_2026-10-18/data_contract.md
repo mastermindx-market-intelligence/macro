@@ -1,4 +1,8 @@
-# R30 data, evidence and model contract
+# R30 + R31 data and model contract
+
+**Current binding update:** [R31 source-bound data contract](r31/data_contract.md) and [machine-readable owner map](r31/source_bindings.json). Terminal Investigation v2 and Alerts are now identified. Bond evidence/scenario admission and the compound rule still require extensions to those existing owners. The baseline unresolved-owner wording below is retained as the R30 historical record, not the current finding.
+
+## Accepted R30 baseline
 
 ## Authority and scope
 
