@@ -2383,6 +2383,15 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
      client-rendered 4-lane themes-only board (renderActBoard, removed). #grader is retained:
      its self-grader scorecard JS reads D.grader independently of the board. ══ #}
   <section class="rvx-sec rvx-reveal" id="actnow-section" style="animation-delay:.05s">
+    {# Keep time-relative action verbs tied to their BAKED session, even when an
+       old static page remains served or a gated client asset cannot hydrate. #}
+    <p class="rvx-sec-sub si-lane-foot" id="si-action-asof-note">
+      {% if source_as_of is defined and source_as_of %}
+      {{ t('Snapshot session: ' ~ source_as_of ~ '. “Today” on this board refers to that session, not the current clock. Check freshness before acting.', '快照交易日：' ~ source_as_of ~ '。本页“今日”仅指该交易日，并非当前时刻；行动前请核验数据时效。') }}
+      {% else %}
+      {{ t('Source session unverified. Treat all action rows as historical context, not current calls.', '源数据交易日尚未核验。所有操作列表仅供历史参考，并非当前操作建议。') }}
+      {% endif %}
+    </p>
     {% if action_board %}{% include "_us_act_now_board.html.j2" %}{% else %}<p class="rvx-sec-sub muted">{{ t('Refreshing the action board — check back after tonight’s close.', '正在刷新操作板 — 今晚收盘后再查看。') }}</p>{% endif %}
     <div class="rvx-sec-sub si-lane-foot">{{ t('Lanes are the only gated, graded calls on this page — everything below is context, measured nightly.', '操作清单是本页唯一的门控与自评分判断 — 下方内容均为背景信息，每晚计算。') }}
       {# the funnel it drills into is the #confluence view on this page now, not a page away #}
