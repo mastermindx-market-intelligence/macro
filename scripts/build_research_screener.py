@@ -102,12 +102,17 @@ def render_html(root: Path, payload: dict[str, Any]) -> str:
     )
     env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip)
     tpl = env.get_template("research_screener.html.j2")
-    # Logo configuration is a public browser token materialized by the VPS at
-    # deployment, not the different Git placeholder hashed by make_optimizer.
-    # Only this page opts into the shared nav's explicit revalidated URL;
-    # default nav output (including Chat's generated header) is unchanged.
-    return tpl.render(payload=payload, as_of=payload.get("as_of"),
-                      nav_runtime_logo_config=True)
+    # This public logo token is materialized by the VPS at deploy time, so its
+    # Git placeholder hash is NOT the served asset identity.  Change the URL
+    # for this single Research Screener page *before* the normal optimizer adds
+    # content hashes.  The shared nav remains untouched: it is a construction
+    # input pinned by stock-dashboard P0B browser-evidence receipts.
+    html = tpl.render(payload=payload, as_of=payload.get("as_of"))
+    original = '<script src="logo_config.js"></script>'
+    if html.count(original) != 1:
+        raise ValueError("research_screener: expected exactly one shared logo config asset")
+    return html.replace(original,
+                        '<script src="logo_config.js?runtime-config"></script>', 1)
 
 
 def _ensure_yaml_importable() -> None:

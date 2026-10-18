@@ -89,10 +89,11 @@ def test_vps_runtime_logo_asset_never_gets_git_placeholder_hash() -> None:
     URL is cached immutable for one year by the actual public edge.
     """
     nav = (Path(__file__).resolve().parents[1] / "templates" / "_navlinks.html.j2").read_text()
-    assert ('<script src="{{ NP }}logo_config.js'
-            '{% if nav_runtime_logo_config | default(false) %}?runtime-config{% endif %}"'
-            '{% if nav_defer_enhancements | default(false) or nav_runtime_logo_config | default(false) %} defer{% endif %}'
-            '{% if nav_defer_enhancements | default(false) %} fetchpriority="low"{% endif %}></script>') in nav
+    # The P0B browser receipts pin the shared nav.  An unrelated public
+    # Research Screener URL must never modify their construction input.
+    assert ('<script src="{{ NP }}logo_config.js"'
+            '{% if nav_defer_enhancements | default(false) %} defer fetchpriority="low"{% endif %}></script>') in nav
+    assert 'nav_runtime_logo_config' not in nav
     for runtime_tag in (
         '<script src="logo_config.js?runtime-config"></script>',
         '<script src="logo_config.js?runtime-config" defer fetchpriority="low"></script>',
