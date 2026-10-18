@@ -1,0 +1,126 @@
+{
+  "schema": "gmi.independent_source_review/v1",
+  "reviewer": "/root/pure_reader_builder",
+  "review_scope": "New C01 observation module and test only; prior reader repair excluded",
+  "verdict": "CHANGES_REQUIRED",
+  "review_method": "Full source and test read, contract/API comparison, source-derived control-flow counterexamples; no application execution",
+  "source_lines_read": 813,
+  "test_lines_read": 813,
+  "review_inputs": [
+    {
+      "role": "source",
+      "path": "lanes/relationship_observations_v1/relationship_observations.py",
+      "byte_length": 42432,
+      "sha256": "4239285b177d2947173404f96f1672394b6f246e70ea4a82885e25ca8990196b"
+    },
+    {
+      "role": "tests",
+      "path": "lanes/relationship_observations_v1/test_company_relationship_observations.py",
+      "byte_length": 43659,
+      "sha256": "80acae7aadcecec3214fe86d77c99da841d2544629d35380ec11b5d9cc94d67e"
+    },
+    {
+      "role": "applied_decision",
+      "path": "lanes/pro003_control/DEC-GMI-ECONOMIC-RELATIONSHIP-OBSERVATION-MATERIALIZATION.md",
+      "byte_length": 12462,
+      "sha256": "f362b947460477b808d9aa50f7b6557cc9b738af9280da0ef014da6901fcd091"
+    },
+    {
+      "role": "storage_adjudication",
+      "path": "lanes/NATIVE_OBSERVATION_STORAGE_ADJUDICATION.md",
+      "byte_length": 45586,
+      "sha256": "e4966d1e38fe0c5cc495982b74600ab77860fdf0d807db1129d70638bba67543"
+    },
+    {
+      "role": "first_retained_judgment",
+      "path": "lanes/retained_micron_semantic_addendum_v1/first_reader_judgment.json",
+      "byte_length": 6032,
+      "sha256": "3a9ce686a0593f9731c89ef63c20afb92dce810681aa3d0039bd72ce0f4d6408"
+    },
+    {
+      "role": "principal_retained_judgment",
+      "path": "lanes/RETAINED_MICRON_PRINCIPAL_INDEPENDENT_JUDGMENT.json",
+      "byte_length": 3732,
+      "sha256": "96c5a97fd64a3c4330bba160310e5ade8babb211fd61d567fc5b119346837d9a"
+    }
+  ],
+  "report": {
+    "path": "lanes/relationship_observations_review_v1/REVIEW.md",
+    "byte_length": 18677,
+    "sha256": "6d2e452fadff42bbf3b25928bbed8795fb5bc3a6e32c1f58f494f1df360ed51c"
+  },
+  "findings": [
+    {
+      "id": "OBS-V1-001",
+      "severity": "P2",
+      "status": "ACCEPTED_FOR_CORRECTION",
+      "source": "relationship_observations.py",
+      "lines": [
+        780,
+        801
+      ],
+      "title": "Unchanged fresh refusal bypasses sealed-result comparison",
+      "witness": "Unchanged current request; sealed positive; actual inspector refusal; early non-INSPECTABLE return precedes unchanged comparison",
+      "observed_by_source": "ABSTAINED/FRESH_REQUEST_ABSTAINED, complete actual refusal, no provenance",
+      "required": "REFUSED/INSPECTION_REPLAY_MISMATCH, complete actual refusal, no provenance"
+    },
+    {
+      "id": "OBS-V1-002",
+      "severity": "P2",
+      "status": "ACCEPTED_FOR_CORRECTION",
+      "source": "test_company_relationship_observations.py",
+      "lines": [
+        724,
+        737
+      ],
+      "title": "Fresh child acquisition-import predicate omits actual collectors root",
+      "witness": "Literal predicate permits collectors and collectors.sec_document_spine; exact tests and pytest also unblocked",
+      "required": "Actual acquisition/test roots plus import-resolution guard-positive controls; preserve zero unexpected events"
+    },
+    {
+      "id": "OBS-V1-003",
+      "severity": "P2",
+      "status": "ACCEPTED_FOR_CORRECTION",
+      "source": "relationship_observations.py",
+      "lines": [
+        662,
+        677
+      ],
+      "title": "Final put exception followed by absence loses effect-unknown state",
+      "witness": "Final conditional put raises; exact readback returns None; discarded cause yields ordinary MANIFEST_NOT_AVAILABLE_AT_READBACK refusal",
+      "required": "Preserve modifying cause; any nonmatching final readback after exception remains EFFECT_UNKNOWN; exact matching bytes reconcile"
+    }
+  ],
+  "execution": {
+    "application_imports": "NOT_RUN",
+    "pytest": "NOT_RUN",
+    "native_store": "NOT_RUN",
+    "private_retained_source_capture": "NOT_RUN",
+    "git": "NOT_RUN",
+    "hosted_ci": "NOT_RUN"
+  },
+  "incumbent_contracts": [
+    {
+      "path": "engine/research_vault/r2_store.py",
+      "git_ref": "4d736c55adb630a4a8eb11b261e31acd0f6dc48b",
+      "sha256": "7ba42eb8f74c034413997707a35156e67342fb9a30ca2b80dde0f11d1dc7e2bd",
+      "basis": "Previously fully inspected storage adjudication; signatures reused without store execution"
+    },
+    {
+      "path": "engine/research_intelligence/store.py",
+      "git_ref": "4d736c55adb630a4a8eb11b261e31acd0f6dc48b",
+      "sha256": "e06c21ac60f8ebbb07153bcc8fad3a9616d303b34ef931f6d8ab8b3cba844e33",
+      "basis": "Previously inspected immutable-create uncertainty precedent; domain producer not adopted"
+    }
+  ],
+  "authority": {
+    "source_custody_authenticated": false,
+    "review_authorship_authenticated": false,
+    "review_independence_authenticated": false,
+    "publisher_permissions_established": false,
+    "canonical_identity_established": false,
+    "product_acceptance": false,
+    "predictive_eligibility": false
+  },
+  "next": "Separate hash-bound v2 correction/delta review; root-owned native validation and integration"
+}

@@ -162,6 +162,37 @@ def test_receipts_floor_comes_from_the_desk():
     assert cfg["desks"]["research_desk"]["min_anchored_receipts"] == 4
 
 
+@pytest.mark.parametrize("values", [(14, 14.46), (14.46, 14)])
+def test_repeated_receipt_cannot_spend_a_nearby_unused_source_value(values):
+    slot = F.slot(facts=F.facts(first_party_values=values, third_party_values=()),
+                  min_anchored_receipts=2)
+    draft = F.draft("The plan lasted 14 days; still 14 days; again 14 days.", fold=False)
+    result = V.check_receipts(draft, slot, F.config())
+    assert result["ok"] is False
+    assert result["metrics"]["values"] == [14.0]
+    assert V.check_our_value(draft, slot, F.config())["metrics"]["receipts"] == 1
+
+
+def test_receipt_rounding_selects_one_stable_nearest_anchor():
+    slot = F.slot(facts=F.facts(first_party_values=(13.55, 13.6), third_party_values=()),
+                  min_anchored_receipts=2)
+    draft = F.draft("The paper plan fell 13.6%; its result was minus 13.6%.", fold=False)
+    result = V.check_receipts(draft, slot, F.config())
+    assert result["ok"] is False
+    assert result["metrics"]["values"] == [13.6]
+
+
+def test_nearby_distinct_receipts_and_honest_rounding_still_count():
+    slot = F.slot(facts=F.facts(first_party_values=(14, 14.46), third_party_values=()),
+                  min_anchored_receipts=2)
+    draft = F.draft("The plan lasted 14 days; the separate index rose 14.46%.", fold=False)
+    assert V.check_receipts(draft, slot, F.config())["metrics"]["receipts"] == 2
+    slot["facts"] = [{"id": "paper", "tier": "first_party", "values": [13.55],
+                      "text": "The paper plan result was minus 13.55%."}]
+    draft = F.draft("The paper plan fell 13.6%.", fold=False)
+    assert V.check_receipts(draft, slot, F.config())["metrics"]["values"] == [13.55]
+
+
 def test_our_value_is_always_printed_into_the_report():
     report = V.validate(F.draft(_OURS), F.slot(), F.config(), root=_REPO)
     assert report["our_value_share"] is not None
@@ -523,6 +554,94 @@ def test_a_public_first_party_link_passes():
     assert row["metrics"]["internal_links"] == 1
 
 
+@pytest.mark.parametrize("href", [
+    "/stocks/TTWO.html", "https://www.mastermind-x.com/stocks/TTWO.html",
+])
+def test_dossier_link_requires_the_planners_exact_stock_path(href):
+    d = F.draft(f'<a href="{href}">company dossier</a>', fold=False)
+    admitted = F.slot(allowed_links=["https://www.mastermind-x.com/stocks/TTWO.html"])
+    assert V.check_link_allowlist(d, admitted, F.config())["ok"] is True
+    assert V.check_link_allowlist(d, F.slot(allowed_links=[]), F.config())["ok"] is False
+
+
+@pytest.mark.parametrize("href", [
+    "/stocks/MISSING.html", "/stocks/index.html", "/stocks/../radar.html",
+    "/stocks/%2e%2e/radar.html", "/stocks/TTWO.html?redirect=/radar.html",
+    "/stocks//TTWO.html", "/stocks/TTWO.html#fragment",
+    "/research/../stocks/MISSING.html", "/research/%2e%2e/stocks/MISSING.html",
+    "https://www.mastermind-x.com//stocks/TTWO.html",
+    "/research/&#46;&#46;/stocks/MISSING.html",
+])
+def test_unplanned_or_malformed_dossier_links_fail(href):
+    d = F.draft(f'<a href="{href}">company dossier</a>', fold=False)
+    slot = F.slot(allowed_links=["https://www.mastermind-x.com/stocks/TTWO.html"])
+    row = V.check_link_allowlist(d, slot, F.config())
+    assert row["ok"] is False
+    assert row["metrics"]["offenders"] == [href]
+
+
+@pytest.mark.parametrize("link", [
+    "<a href='/stocks/MISSING.html'>company dossier</a>",
+    "<a href=/stocks/MISSING.html>company dossier</a>",
+])
+def test_dossier_gate_checks_single_quoted_and_unquoted_links(link):
+    d = F.draft(link, fold=False)
+    slot = F.slot(allowed_links=["https://www.mastermind-x.com/stocks/TTWO.html"])
+    row = V.check_link_allowlist(d, slot, F.config())
+    assert row["ok"] is False
+    assert row["metrics"]["offenders"] == ["/stocks/MISSING.html"]
+
+
+@pytest.mark.parametrize("href", [
+    "//www.mastermind-x.com/stocks/MISSING.html",
+    "HTTPS://WWW.MASTERMIND-X.COM/stocks/MISSING.html",
+    "https://user@www.mastermind-x.com/stocks/MISSING.html",
+    "//www.mastermind-x.com/stocks/TTWO.html",
+    "HTTPS://WWW.MASTERMIND-X.COM/stocks/TTWO.html",
+    "https://user@www.mastermind-x.com/stocks/TTWO.html",
+    r"https://www.mastermind-x.com\stocks\MISSING.html",
+    "https:////www.mastermind-x.com/stocks/MISSING.html",
+    r"https://www.mastermind-x.com\stocks\TTWO.html",
+    "https:////www.mastermind-x.com/stocks/TTWO.html",
+])
+def test_same_site_stock_url_variants_cannot_escape_as_external(href):
+    d = F.draft(f'<a href="{href}">company dossier</a>', fold=False)
+    slot = F.slot(allowed_links=["https://www.mastermind-x.com/stocks/TTWO.html"])
+    row = V.check_link_allowlist(d, slot, F.config())
+    assert row["ok"] is False
+    assert row["metrics"]["internal_links"] == 1
+    assert row["metrics"]["offenders"] == [href]
+
+
+@pytest.mark.parametrize("block_class", ["press-footer", "press-byline"])
+@pytest.mark.parametrize("ticker, expected", [("MISSING", False), ("TTWO", True)])
+def test_dossier_gate_checks_links_in_rendered_footer_and_byline(block_class, ticker, expected):
+    d = F.draft("A paragraph.", fold=False)
+    d["body_html"] += (
+        f'<p class="{block_class}"><a href="/stocks/{ticker}.html">'
+        'company dossier</a></p>'
+    )
+    slot = F.slot(allowed_links=["https://www.mastermind-x.com/stocks/TTWO.html"])
+    row = V.check_link_allowlist(d, slot, F.config())
+    assert V.check_footer(d, slot, F.config())["ok"] is True
+    assert V.check_byline(d, slot, F.config())["ok"] is True
+    assert row["ok"] is expected
+    assert row["metrics"]["internal_links"] == 1
+
+
+def test_a_public_ticker_dossier_link_passes():
+    d = F.draft("A paragraph.", fold=False)
+    d["body_html"] += (
+        '<p>See <a href="https://www.mastermind-x.com/stocks/TTWO.html">'
+        'the company dossier</a>.</p>'
+    )
+    row = V.check_link_allowlist(d, F.slot(allowed_links=[
+        "https://www.mastermind-x.com/stocks/TTWO.html",
+    ]), F.config())
+    assert row["ok"] is True
+    assert row["metrics"]["internal_links"] == 1
+
+
 def test_an_external_link_is_not_subject_to_the_allowlist():
     """The allowlist is about OUR estate. An external source is the thing the
     piece is citing."""
@@ -701,6 +820,44 @@ def test_self_similarity_does_not_compare_a_draft_to_its_own_staged_record(tmp_p
     assert row["metrics"]["peers"] == 0
 
 
+def test_self_similarity_rejects_new_copy_that_invalidates_a_shorter_staged_block(tmp_path):
+    """A long candidate cannot bury an existing short paragraph below the gate."""
+    root = F.fixture_root(tmp_path)
+    prior = F.FILLER_PARAGRAPHS[0]
+    path = root / "data/press/staging/prior.json"
+    path.write_text(json.dumps({
+        "id": "press-prior", "status": "passed", "slug": "prior",
+        "draft": {"body_html": f"<p>{prior}</p>"},
+    }), encoding="utf-8")
+    before = path.read_bytes()
+    # One long block used to dilute the shared passage; the prior article's
+    # short block would fail only after this candidate had already been saved.
+    padding = " ".join(f"distinctword{i}" for i in range(300))
+    candidate = F.draft(prior + " " + padding, fold=False, byline=False, footer=False)
+    row = V.check_self_similarity(candidate, F.slot(), F.config(), root=root)
+    assert row["ok"] is False
+    assert row["metrics"]["worst_slug"] == "staged:prior"
+    assert path.read_bytes() == before
+
+
+@pytest.mark.parametrize("shared_kind", ["footer", "spoofed_footer", "quotation"])
+def test_reverse_staged_similarity_excludes_required_furniture_and_quotes(tmp_path, shared_kind):
+    root = F.fixture_root(tmp_path)
+    shared = (F.config()["validators"]["footer_required_text"]
+              if shared_kind == "footer" else F.FILLER_PARAGRAPHS[0])
+    furniture = f'<p class="press-footer">{shared}</p>'
+    quoted = f'<p>"{shared}"</p>'
+    prior_body = furniture if shared_kind != "quotation" else quoted
+    (root / "data/press/staging/prior.json").write_text(json.dumps({
+        "id": "press-prior", "status": "passed", "slug": "prior",
+        "draft": {"body_html": prior_body},
+    }), encoding="utf-8")
+    candidate = F.draft(F.REWRITTEN_PARAGRAPH, fold=False, byline=False, footer=False)
+    candidate["body_html"] += furniture if shared_kind != "quotation" else quoted
+    row = V.check_self_similarity(candidate, F.slot(), F.config(), root=root)
+    assert row["ok"] is (shared_kind != "spoofed_footer"), row["detail"]
+
+
 def test_self_similarity_ignores_posts_outside_the_window(tmp_path):
     root = tmp_path / "repo"
     blog = root / "content" / "seo" / "blog"
@@ -725,7 +882,7 @@ def test_self_similarity_ignores_posts_outside_the_window(tmp_path):
 def test_validate_records_every_check_pass_or_fail():
     report = V.validate(F.draft(_OURS), F.slot(), F.config(), root=_REPO)
     assert [c["name"] for c in report["checks"]] == list(V.CHECK_NAMES)
-    assert len(V.CHECK_NAMES) == 17
+    assert len(V.CHECK_NAMES) == 18
 
 
 def test_a_crashing_check_reads_as_a_failure_not_a_pass(monkeypatch):
@@ -750,3 +907,57 @@ def test_a_fully_compliant_draft_passes_the_whole_suite():
     report = V.validate(d, F.slot(), F.config(), root=_REPO)
     assert report["ok"] is True, report["failed"]
     assert report["our_value_share"] >= F.config()["validators"]["our_value_min"]
+
+
+@pytest.mark.parametrize('furniture', ['press-byline', 'press-footer'])
+@pytest.mark.parametrize('extra', [False, True])
+def test_furniture_class_cannot_hide_unanchored_advice(furniture, extra):
+    draft = F.draft('A measured account.', byline=extra, footer=extra)
+    draft['body_html'] += f'<p class="{furniture}">You should buy at $999999. The backdrop is guaranteed.</p>'
+    assert V.check_fact_anchor(draft, F.slot(), F.config())['ok'] is False
+    assert V.check_advice_lexicon(draft, F.slot(), F.config())['ok'] is False
+    assert V.check_banned_lexicon(draft, F.slot(), F.config())['ok'] is False
+
+
+@pytest.mark.parametrize('tail', ['<strong> $999999</strong>', ' You should buy now.'])
+def test_genuine_footer_with_extra_prose_is_still_scored(tail):
+    draft = F.draft('A measured account.')
+    draft['body_html'] = draft['body_html'].replace(F.FOOTER_HTML, F.FOOTER_HTML.replace('</p>', tail + '</p>'))
+    check = V.check_fact_anchor if '$' in tail else V.check_advice_lexicon
+    assert check(draft, F.slot(), F.config())['ok'] is False
+
+
+@pytest.mark.parametrize('source,draft,expected', [
+    ('$750 million', '$750 billion', False),
+    ('$750 million', '750 trillion dollars', False),
+    ('$750 million', '$750 million', True),
+    ('$750 million', '750, expressed in millions of dollars', True),
+    ('$750 million', '750, expressed in billions of dollars', False),
+    ('$750 million', '750,000,000 dollars', True),
+    ('$750 million', '$750', False),
+    ('$750m', '$0.75bn', True),
+    ('$750M', '$750B', False),
+    ('$750 million', '$0.7504 billion', False),
+    ('$750.4 million', '$750 million', True),
+    ('Gamma is 26.8bn', 'Gamma is 26.8tn', False),
+    ('Gamma is 26.8bn', 'Gamma is 26.8 billion', True),
+    ('The score is 56', 'The score is 56 billion', False),
+    ('The rate is 3.14%', 'The rate is 3.1%', True),
+    ('The spread is 25bps', 'The spread is 25bps', True),
+])
+def test_financial_quantity_scale_cannot_be_invented(source, draft, expected):
+    value = V.extract_numbers(source)[0].value
+    slot = F.slot(facts=[{'id': 'quantity', 'tier': 'third_party', 'ref': 'official_feed:test',
+                         'text': source, 'values': [str(value)]}])
+    row = V.check_fact_anchor(F.draft(draft, fold=False), slot, F.config())
+    assert row['ok'] is expected, row
+
+
+@pytest.mark.parametrize('source', ['$1,000 expressed in millions',
+                                     '$1,000, expressed in millions',
+                                     '$1,000 EXPRESSED IN millions'])
+def test_explicit_magnitude_phrase_does_not_require_comma(source):
+    slot = F.slot(facts=[{'id':'amount','tier':'third_party','ref':'official_feed:test',
+                         'text':source,'values':['1000']}])
+    assert V.check_fact_anchor(F.draft('$1,000 million',fold=False),slot,F.config())['ok'] is True
+    assert V.check_fact_anchor(F.draft('$1,000',fold=False),slot,F.config())['ok'] is False

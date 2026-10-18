@@ -69,6 +69,12 @@ cl_markets() {
 cl_gex() {
   brun gex_board    "GEX magnets board (build_gex_board)"        scripts.build_gex_board
   brun vol_regime   "index vol-regime (build_vol_regime)"        scripts.build_vol_regime
+  # Grey Deer pullback prospective lane: issue tonight's SPY rows, then grade the
+  # matured ones. Reads data/massive_stock_day (restored before the band) and
+  # appends only to data/grey_deer_pullback/. Writer and grader each refuse
+  # unless COLLECT_LANE=nightly and their daily.yml:engine identity pins match
+  # (step env). Never fatal: every problem is a ::warning and rc stays 0.
+  brun grey_deer_pullback "Grey Deer pullback prospective issue+grade (grey_deer_pullback_nightly)" scripts.grey_deer_pullback_nightly
   # build_market_structure MOVED OUT of this band to just BEFORE build_site
   # (OEU M-FIX). It ran here, i.e. AFTER build_site had already rendered
   # market_structure.html from build_site.py's MSP block — so the page
@@ -116,8 +122,13 @@ cl_baskets() {
   # ::warning): the plane is display-tier with all six authority booleans
   # false, so a contract breach must not take the collect lane down. CI runs
   # the same guard with --strict.
+  # Bind the actual checkout immediately before this producer, in this cluster only.
+  THEME_GRAPH_WITNESS_DIR=$(python -c 'from scripts.build_theme_graph import start_nightly_witness; print(start_nightly_witness())')
+  export THEME_GRAPH_WITNESS_ID="$(python -c 'import os, sys; print(os.path.basename(sys.argv[1]))' "$THEME_GRAPH_WITNESS_DIR")"
   brun theme_graph "theme graph nightly materialization (build_theme_graph)" scripts.build_theme_graph
   brun theme_graph_guard "theme graph contract guard (check_theme_graph_contracts)" scripts.check_theme_graph_contracts
+  # Capture now: an unrelated cluster can still exhaust the later wait barrier.
+  python -c 'import sys; from scripts.build_theme_graph import finish_nightly_witness; finish_nightly_witness(*sys.argv[1:])' "$THEME_GRAPH_WITNESS_DIR" "$ART" || echo "::warning::theme graph witness capture unavailable (non-fatal)"
   brun subsector_conf "subsector confluence desk + double-gated funnel (build_subsector_confluence)" scripts.build_subsector_confluence
   brun subsector_conf_ndx "nasdaq-100 subsector confluence desk (build_subsector_confluence --nasdaq)" scripts.build_subsector_confluence --nasdaq
   brun subsector_conf_rut "russell-2000 subsector confluence desk (build_subsector_confluence --russell)" scripts.build_subsector_confluence --russell
@@ -246,7 +257,7 @@ wait
 # check_builder_failstreaks, which globs *.rc and so catches a >=2-night
 # streak regardless of ORDER) — but a FIRST failure still passed silently,
 # with no log and no step-summary line for the TXI W1 chain tracker.
-ORDER="commodities commodities_gold_premium_audit spr forex bonds crossasset transmission transmission_chains discovery gex_board vol_regime market_structure event_windows darkpool options_flow flow_desk options_skew options_ivspread options_dislocation options_screener options_entry intraday_flow baskets baskets_snapshot theme_graph theme_graph_guard subsector_conf subsector_conf_ndx subsector_conf_rut cohort_metrics basket_washout rotation_events rebalance_pulse methodology nasdaq_internals seasonality reports research_vault cycle sectorcyc countrycyc markets measurement sync_gauge policy_intent policy_watch special index_changes cycle_pattern_live cycle_pattern_state cycle_pattern_imce_prospective stock_seasonality stock_seasonality_page biopharma_seasonality seasonality_shadow program_watch stage_analysis stage_analysis_page top_maturation winner_health_page"
+ORDER="commodities commodities_gold_premium_audit spr forex bonds crossasset transmission transmission_chains discovery gex_board vol_regime grey_deer_pullback market_structure event_windows darkpool options_flow flow_desk options_skew options_ivspread options_dislocation options_screener options_entry intraday_flow baskets baskets_snapshot theme_graph theme_graph_guard subsector_conf subsector_conf_ndx subsector_conf_rut cohort_metrics basket_washout rotation_events rebalance_pulse methodology nasdaq_internals seasonality reports research_vault cycle sectorcyc countrycyc markets measurement sync_gauge policy_intent policy_watch special index_changes cycle_pattern_live cycle_pattern_state cycle_pattern_imce_prospective stock_seasonality stock_seasonality_page biopharma_seasonality seasonality_shadow program_watch stage_analysis stage_analysis_page top_maturation winner_health_page"
 echo "### ⏱ parallel band — per-builder wall-time" >> "$GITHUB_STEP_SUMMARY"
 for slug in $ORDER; do
   [ -f "$ART/$slug.log" ] || continue

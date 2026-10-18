@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import ast
+from copy import deepcopy
 import errno
 import importlib.util
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -25,6 +27,8 @@ from scripts.ci_scope_dependencies import suite_dependency_closure
 from scripts.run_ci_pack import (
     curated_exclusive_closure_findings,
     inferred_as_if_not_exclusive,
+    packing_probe_breaches,
+    packing_probe_measurements,
 )
 import yaml
 
@@ -73,6 +77,109 @@ def _closure_of(source: str) -> SimpleNamespace:
         ROOT / "engine" / "_ci_scope_probe.py", ast.parse(source)
     )
     return SimpleNamespace(ambiguities=tuple(sorted(findings)))
+
+
+def _manifest_scope_reader(manifest: Path):
+    """Lazily snapshot one immutable test manifest; never share mutable results.
+
+    This is test setup only, scoped to one reader in one pytest process. The
+    production planner and synthetic/mutating planner tests keep recomputing.
+    A new reader (including a new pytest invocation) reads the source afresh.
+    Exceptions propagate; a failed derivation never becomes an empty snapshot.
+    """
+    snapshot = None
+
+    def read():
+        nonlocal snapshot
+        if snapshot is None:
+            snapshot = PACK.infer_job_scopes(PACK.load_legacy_jobs(manifest))
+        return deepcopy(snapshot)
+
+    return read
+
+
+@pytest.fixture(scope="module")
+def _real_manifest_scope_reader():
+    # Construction is deliberately lazy: function-level environment isolation
+    # must run before the first real derivation, not after a module fixture.
+    return _manifest_scope_reader(MANIFEST)
+
+
+@pytest.fixture
+def real_manifest_scopes(_real_manifest_scope_reader, _isolate_pack_runner_planner_env):
+    # Every opted-in assertion receives its own list, LegacyJobs and nested
+    # definition dictionaries. It cannot poison another test's scope snapshot.
+    return _real_manifest_scope_reader()
+
+
+def _scope_reader_probe_manifest(tmp_path: Path, job_id: str) -> Path:
+    manifest = tmp_path / "scope-reader.yml"
+    manifest.write_text(yaml.safe_dump({"jobs": {job_id: {
+        "if": PACK.DISABLED_IF,
+        "runs-on": "ubuntu-latest",
+        "steps": [{"name": "scope reader fixture", "run": "echo fixture"}],
+    }}}), encoding="utf-8")
+    return manifest
+
+
+def test_manifest_scope_reader_is_lazy_and_derives_once(tmp_path, monkeypatch):
+    monkeypatch.setattr(AUDIT, "ROOT", tmp_path)
+    monkeypatch.setattr(DEPS, "ROOT", tmp_path)
+    manifest = _scope_reader_probe_manifest(tmp_path, "fixture")
+    actual_inference = PACK.infer_job_scopes
+    calls = []
+
+    def measured(jobs):
+        result = actual_inference(jobs)
+        calls.append(result)
+        return result
+
+    monkeypatch.setattr(PACK, "infer_job_scopes", measured)
+    reader = _manifest_scope_reader(manifest)
+    assert calls == [], "module fixture construction must not infer before env isolation"
+    first, second = reader(), reader()
+    assert len(calls) == 1
+    assert first == second
+    assert [job.job_id for job in first[0]] == ["fixture"]
+
+
+def test_manifest_scope_reader_returns_deeply_isolated_jobs(tmp_path, monkeypatch):
+    monkeypatch.setattr(AUDIT, "ROOT", tmp_path)
+    monkeypatch.setattr(DEPS, "ROOT", tmp_path)
+    reader = _manifest_scope_reader(_scope_reader_probe_manifest(tmp_path, "fixture"))
+    first, second = reader(), reader()
+    assert first == second
+    assert first[0] is not second[0]
+    assert first[0][0] is not second[0][0]
+    assert first[0][0].definition is not second[0][0].definition
+    first[0][0].definition["steps"][0]["run"] = "echo poisoned"
+    first[0].clear()
+    assert reader() == second
+    assert second[0][0].definition["steps"][0]["run"] == "echo fixture"
+
+
+def test_new_manifest_scope_reader_reads_changed_source(tmp_path, monkeypatch):
+    monkeypatch.setattr(AUDIT, "ROOT", tmp_path)
+    monkeypatch.setattr(DEPS, "ROOT", tmp_path)
+    manifest = _scope_reader_probe_manifest(tmp_path, "before")
+    original = _manifest_scope_reader(manifest)
+    assert original()[0][0].job_id == "before"
+    _scope_reader_probe_manifest(tmp_path, "after")
+    fresh = _manifest_scope_reader(manifest)
+    assert fresh()[0][0].job_id == "after"
+    assert original()[0][0].job_id == "before"
+
+
+def test_manifest_scope_reader_propagates_invalid_source(tmp_path, monkeypatch):
+    monkeypatch.setattr(AUDIT, "ROOT", tmp_path)
+    monkeypatch.setattr(DEPS, "ROOT", tmp_path)
+    manifest = _scope_reader_probe_manifest(tmp_path, "fixture")
+    manifest.write_text("jobs: [broken", encoding="utf-8")
+    reader = _manifest_scope_reader(manifest)
+    with pytest.raises(PACK.ManifestError):
+        reader()
+    _scope_reader_probe_manifest(tmp_path, "repaired")
+    assert reader()[0][0].job_id == "repaired"
 
 
 def test_all_legacy_jobs_are_disabled_and_packable() -> None:
@@ -729,7 +836,7 @@ def test_safe_manifest_job_delta_reads_the_exact_base_commit(
     ) is None
 
 
-def test_selection_fails_safe_toward_running_everything() -> None:
+def test_selection_fails_safe_toward_running_everything(real_manifest_scopes) -> None:
     """Unknown changed-sets and global invalidators still widen; unowned paths do not.
 
     A wasted runner-minute is cheap; a false green on a control-plane file is
@@ -737,7 +844,7 @@ def test_selection_fails_safe_toward_running_everything() -> None:
     rather than merely unowned. An unowned path used to be a third widener and
     that was the speed hole: one hook file ran all 185 jobs (PR #5488).
     """
-    jobs, summary = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, summary = real_manifest_scopes
     scoped = [job for job in jobs if job.paths]
     assert len(scoped) >= 25, summary
 
@@ -799,9 +906,9 @@ def test_every_declared_scope_in_the_real_manifest_is_covered() -> None:
     PACK.load_legacy_jobs(MANIFEST)  # raises ManifestError on any gap
 
 
-def test_real_manifest_has_non_vacuous_derived_scopes() -> None:
+def test_real_manifest_has_non_vacuous_derived_scopes(real_manifest_scopes) -> None:
     """The mechanism shipped with 0/179 owners; the 180-job manifest must stay live."""
-    jobs, summary = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, summary = real_manifest_scopes
     scoped = {job.job_id: set(job.paths) for job in jobs if job.paths}
     assert len(scoped) >= 25, summary
     assert "unrun-government-revenue-candidate-projection" in scoped
@@ -849,7 +956,7 @@ def _declared_scan_dirs(rel: str) -> tuple[str, ...]:
     raise AssertionError(f"{rel} no longer declares SCAN_DIRS at module level")
 
 
-def test_whole_tree_glob_job_owns_every_scanned_code_root() -> None:
+def test_whole_tree_glob_job_owns_every_scanned_code_root(real_manifest_scopes) -> None:
     """A tree scan cannot be narrowed to the scanner suite's import closure.
 
     `all-exports-resolve` AST-walks every `*.py` under eight directories, so a
@@ -870,7 +977,7 @@ def test_whole_tree_glob_job_owns_every_scanned_code_root() -> None:
     """
     scan_dirs = _declared_scan_dirs("tests/test_all_exports_resolve.py")
     assert len(scan_dirs) >= 8, scan_dirs
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     export_guard = next(job for job in jobs if job.job_id == "all-exports-resolve")
     surface = export_guard.paths + export_guard.fallback_paths
     missing = [f"{root}/**" for root in scan_dirs if f"{root}/**" not in surface]
@@ -975,6 +1082,27 @@ def test_resolve_changed_files_prefers_planner_json(
     monkeypatch.setattr(PACK, "changed_files", lambda base: ["from-git.py"])
     assert PACK.resolve_changed_files("abc123") == ["from-git.py"]
     assert PACK.resolve_changed_files(None) is None
+
+
+def test_p0b_closure_accepts_null_on_exactly_the_events_that_publish_it() -> None:
+    """The p0b closure gate's `null` allow-list is the planner's own table.
+
+    Every main proof publishes `null` (a full-suite plan has no list), and so
+    does the base replay for its base-as-main child. #7237 refused `null`
+    outright, which redded every main ci.yml proof. The fix accepts it on
+    those events and nowhere else. If the planner gains a main-role event,
+    this fails until the gate's set follows.
+    """
+    from scripts import check_p0b_receipt_closure as P0B
+
+    main_role_events = {
+        event for role, event in PACK.SUPPORTED_PLAN_ROLE_EVENTS if role == "main"
+    }
+    source = Path(PACK.__file__).read_text(encoding="utf-8")
+    assert '"GITHUB_EVENT_NAME": "base_replay"' in source
+    assert 'base_changed_files.write_text("null\\n"' in source
+    assert P0B.NO_DIFF_SUBJECT_EVENTS == main_role_events | {"base_replay"}
+    assert "pull_request" not in P0B.NO_DIFF_SUBJECT_EVENTS
 
 
 # ─── The 2026-08-14 E2BIG transport regression (run 31775693780) ──────────────
@@ -1293,7 +1421,7 @@ def test_a_code_suffix_must_end_a_filename_not_merely_appear_in_one() -> None:
     assert any("code traversal" in item for item in code.ambiguities)
 
 
-def test_derived_scopes_are_startable_by_the_ci_workflow() -> None:
+def test_derived_scopes_are_startable_by_the_ci_workflow(real_manifest_scopes) -> None:
     """A job owner is useless when its dependency edit cannot start ci.yml.
 
     BOTH tiers are audited. #5586 split the PROVENANCE of a claim out of
@@ -1307,7 +1435,7 @@ def test_derived_scopes_are_startable_by_the_ci_workflow() -> None:
     dropping `ops/**` from ci.yml's triggers opens 448 gaps that the
     `paths`-only form still reports as zero.
     """
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     on = _yaml(WORKFLOW).get("on") or _yaml(WORKFLOW).get(True)
     triggers = tuple(on["pull_request"]["paths"])
     gaps: list[tuple[str, str]] = []
@@ -1365,9 +1493,9 @@ def test_startability_accepts_only_provable_narrowings_of_a_trigger() -> None:
         assert not PACK.scope_pattern_is_startable(uncovered, triggers), uncovered
 
 
-def test_representative_narrow_diffs_skip_at_least_one_quarter_of_jobs() -> None:
+def test_representative_narrow_diffs_skip_at_least_one_quarter_of_jobs(real_manifest_scopes) -> None:
     """The conservative first tranche must still deliver material speed."""
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     cases = {
         "govrev": [
             "research/GOVERNMENT_REVENUE_FORESIGHT_HANDOFF_2026-08-09.md",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
@@ -1392,14 +1520,14 @@ def test_representative_narrow_diffs_skip_at_least_one_quarter_of_jobs() -> None
     assert any(job.job_id == "free-content-estate" for job in content)
 
 
-def test_a_named_suite_edit_does_not_select_peer_pytest_jobs() -> None:
+def test_a_named_suite_edit_does_not_select_peer_pytest_jobs(real_manifest_scopes) -> None:
     """PR #5550 shape: one prophet test file used to mint 133/187 jobs and 12 packs.
 
     unrun-market-plumbing names tests/test_prophet_w1_intake_repair.py. marketing-engine
     and engine-render-guards do not. After exclude_peer_test_ownership they must not
     run for this diff, and the matrix must not be the full twelve.
     """
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     changed = ["tests/test_prophet_w1_intake_repair.py"]
     selected, reason = PACK.select_jobs(jobs, changed)
     ids = {job.job_id for job in selected}
@@ -1413,7 +1541,7 @@ def test_a_named_suite_edit_does_not_select_peer_pytest_jobs() -> None:
     assert len(nonempty) < 12, nonempty
 
 
-def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate() -> None:
+def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate(real_manifest_scopes) -> None:
     """D5's hermetic real-reader chain suite must run before a PR can merge.
 
     A path-only owner is insufficient: the selected ``gate: code`` job must
@@ -1433,14 +1561,14 @@ def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate() -> N
         "Python 3.12 job; keep those dependencies on this owning job's install line"
     )
 
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     code_jobs = [job for job in jobs if job.gate == "code"]
     selected, reason = PACK.select_jobs(code_jobs, [suite])
     assert "prophet-lab" in {job.job_id for job in selected}, reason
     assert "unowned path" not in reason, reason
 
 
-def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> None:
+def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate(real_manifest_scopes) -> None:
     """P0B's hermetic first-frame contract must run in the merge gate.
 
     The generated-page population receipt remains data-dependent and belongs
@@ -1495,7 +1623,7 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> N
     assert data_suite in data_runs
     assert code_suite not in data_runs
 
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     code_jobs = [job for job in jobs if job.gate == "code"]
     for changed in (
         [code_suite],
@@ -1512,7 +1640,7 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> N
         assert "unowned path" not in reason, reason
 
 
-def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
+def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate(real_manifest_scopes) -> None:
     """BC-2 ran only on the data gate, so nothing graded a claim before merge.
 
     Every job that executed the checker was ``gate: data``, and ci.yml packs only
@@ -1553,7 +1681,7 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
     assert f"python3 {checker}" in data_runs, "the data gate keeps the full scan"
     assert not any("--scope" in run for run in data_runs)
 
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     code_jobs = [job for job in jobs if job.gate == "code"]
     for changed, owners in (
         (["templates/dashboard.html.j2"], {"validated-claims-source"}),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
@@ -1578,7 +1706,7 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
             changed, reason)
 
 
-def test_unscoped_hook_diff_does_not_pull_the_full_suite() -> None:
+def test_unscoped_hook_diff_does_not_pull_the_full_suite(real_manifest_scopes) -> None:
     """PR #5488 shape: `.claude/hooks/gh_quota_guard.py` used to mint 187/187 jobs.
 
     CI_SCOPE_MODE is already active in ci.yml unless the repo var is exactly
@@ -1586,7 +1714,7 @@ def test_unscoped_hook_diff_does_not_pull_the_full_suite() -> None:
     full-suite invalidator. After this PR the hook is owned by unrun-dark-guards
     and an unowned sibling still does not widen.
     """
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     selected, reason = PACK.select_jobs(
         jobs, [".claude/hooks/gh_quota_guard.py"]  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     )
@@ -1602,15 +1730,15 @@ def test_unscoped_hook_diff_does_not_pull_the_full_suite() -> None:
 
 
 @pytest.mark.parametrize("graph", ["config/dag.yml", "config/synapse.yml"])  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-def test_graph_metadata_is_a_global_invalidator(graph: str) -> None:
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+def test_graph_metadata_is_a_global_invalidator(graph: str, real_manifest_scopes) -> None:
+    jobs, _ = real_manifest_scopes
     selected, reason = PACK.select_jobs(jobs, [graph])
     assert len(selected) == len(jobs)
     assert "global invalidator" in reason
 
 
-def test_passive_markdown_stays_scoped_and_unknown_root_does_not_widen() -> None:
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+def test_passive_markdown_stays_scoped_and_unknown_root_does_not_widen(real_manifest_scopes) -> None:
+    jobs, _ = real_manifest_scopes
     docs, _ = PACK.select_jobs(jobs, ["research/UNOWNED_HANDOFF.md"])
     code, reason = PACK.select_jobs(jobs, ["brand_new_root/unowned_runtime.xyz"])
     assert len(docs) < len(jobs)
@@ -1841,6 +1969,124 @@ def test_inventory_preserves_omitted_tracked_existence_but_never_fakes_content(
         )
         with pytest.raises(DEPS.ScopeMaterializationError, match="omitted.py"):
             DEPS.suite_dependency_closure("site/omitted.py")
+
+
+# A legacy-jobs `run:` block whose full-line comment holds ONE apostrophe, beside
+# the same block with that comment line removed. The apostrophe used to be an
+# unclosed quote to shlex, so the whole block was "unparseable" and the job lost
+# its inferred closure (DSC:CI-RUN-BLOCK-COMMENT-QUOTE-BLINDS-CLOSURE-INFERENCE).
+# Exactly one per block: a second apostrophe pairs with the first into a valid
+# shlex quote and the case then proves nothing, which the positive control in
+# the test below refuses.
+_COMMENT_QUOTE_RUN_BLOCKS = (
+    pytest.param(
+        "# the planner's token names the tested tree\n"
+        "python3 -m pytest {target}\n",
+        "python3 -m pytest {target}\n",
+        id="top-level-comment",
+    ),
+    pytest.param(
+        "if true; then\n"
+        "  # it's indented, and still a full-line comment\n"
+        "  python3 -m pytest {target}\n"
+        "fi\n",
+        "if true; then\n  python3 -m pytest {target}\nfi\n",
+        id="indented-comment",
+    ),
+)
+_UNPARSEABLE_RUN_BLOCK = ("unparseable pytest invocation: No closing quotation",)
+
+
+def _single_run_step_job(run: str) -> object:
+    return PACK.LegacyJob(
+        job_id="run-block-comment-quote",
+        definition={"runs-on": "ubuntu-latest", "steps": [{"run": run}]},
+        ordinal=0,
+        weight=1,
+    )
+
+
+@pytest.mark.parametrize(("commented", "comment_free"), _COMMENT_QUOTE_RUN_BLOCKS)
+def test_full_line_comment_apostrophe_resolves_the_comment_free_targets(
+    commented: str, comment_free: str
+) -> None:
+    suite = "tests/test_ci_trigger_closure.py"
+    # Positive control: the fixture must still break a whole-block shlex, or
+    # it no longer reproduces the defect and pins nothing.
+    with pytest.raises(ValueError, match="No closing quotation"):
+        shlex.split(commented.format(target=suite), comments=False, posix=True)
+
+    for target, expected in (
+        (suite, ()),
+        ("tests", ("directory pytest target 'tests'",)),
+    ):
+        assert DEPS.pytest_invocation_ambiguities(commented.format(target=target)) == expected
+        assert DEPS.pytest_invocation_ambiguities(comment_free.format(target=target)) == expected
+
+    # The loss was the job's whole inferred closure, so pin that too: the
+    # commented job must derive exactly the comment-free job's scope.
+    [commented_job], _ = PACK.infer_job_scopes(
+        [_single_run_step_job(commented.format(target=suite))]
+    )
+    [comment_free_job], _ = PACK.infer_job_scopes(
+        [_single_run_step_job(comment_free.format(target=suite))]
+    )
+    assert suite in comment_free_job.paths, "the control job must derive a closure"
+    assert (commented_job.paths, commented_job.fallback_paths) == (
+        comment_free_job.paths,
+        comment_free_job.fallback_paths,
+    )
+
+
+def test_run_block_quote_outside_a_full_line_comment_still_fails_closed() -> None:
+    # On a command line an apostrophe is a real shell quote.
+    assert (
+        DEPS.pytest_invocation_ambiguities(
+            "echo it's done\npython3 -m pytest tests/test_ci_trigger_closure.py"
+        )
+        == _UNPARSEABLE_RUN_BLOCK
+    )
+    # A trailing inline comment is deliberately left in place: only a line whose
+    # first non-blank character is `#` is dropped, so this stays ambiguous.
+    assert (
+        DEPS.pytest_invocation_ambiguities(
+            "python3 -m pytest tests/test_ci_trigger_closure.py  # the planner's token"
+        )
+        == _UNPARSEABLE_RUN_BLOCK
+    )
+
+
+def test_a_comment_that_names_pytest_is_not_the_invocation() -> None:
+    """The first ``pytest`` word used to be taken from prose.
+
+    self-mod-fence's agent-os step opens with a comment saying the pytest suite
+    skips itself "when agentos/ is outside a sparse cone". Read as argv, that
+    made ``agentos/`` a directory target, so the job stayed unscoped.
+    """
+    run = (
+        "# the pytest suite skips itself\n"
+        "# when agentos/ is outside a sparse cone\n"
+        "python3 -m pytest tests/test_ci_trigger_closure.py\n"
+    )
+    # Positive control: whole-block tokens meet the comment's `pytest` first.
+    tokens = shlex.split(run, comments=False, posix=True)
+    assert tokens.index("pytest") < tokens.index("agentos/")
+    assert DEPS.pytest_invocation_ambiguities(run) == ()
+
+
+def test_comment_stripping_keeps_a_mid_word_hash_expansion_whole() -> None:
+    """``${VAR#pattern}`` is one bash word, never the start of a comment.
+
+    ``shlex.split(..., comments=True)`` would cut it to ``${PYTEST_TARGET`` and
+    drop the rest of the line, hiding the ``tests`` directory target after it.
+    """
+    assert DEPS.pytest_invocation_ambiguities(
+        "# strip the planner's ./ prefix\n"
+        "python3 -m pytest ${PYTEST_TARGET#./} tests"
+    ) == (
+        "directory pytest target 'tests'",
+        "dynamic pytest target '${PYTEST_TARGET#./}'",
+    )
 
 
 def test_invalid_inventory_enters_the_existing_full_suite_planner_fallback(
@@ -3578,7 +3824,7 @@ def test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs() -> None:
         "ceiling is account-wide and this key cannot raise it"
     )
     assert pack["if"] == (
-        "always() && needs.ci-plan.result == 'success' && "
+        "!cancelled() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && "
         "(github.event.pull_request.head.repo.full_name != github.repository || "
         "vars.CI_EXECUTION_ROUTE != 'pc' || needs.trusted-ci.result == 'success')"
@@ -4038,6 +4284,34 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # R2 original-intent context producer: the ten Agent OS knowledge suites
+    # share their measured 43-file import/read closure plus the Agent OS corpus.
+    # Source/fence execution remains in the existing self-mod job.
+    "agentos-knowledge-contracts",
+    # F04 real-Git acquisition reads three deploy scripts. Its dedicated job
+    # preserves the broader self-heal owner without widening unrelated probes.
+    "deploy-git-history",
+    # PR #7861: Options matrix source/session/retention checks are hermetic.
+    # The exclusive manifest scope retains both suites, their concrete import
+    # closure, config.yml fallback and the retention-fixture wildcard. This
+    # removes only the filesystem probes' unrelated opaque fallback scopes;
+    # the code gate, closure audit and packing ceilings remain unchanged.
+    "options-matrix-code",
+    "push-retry-policy",
+    # 2026-10-14 LR T17: the measured-group-read suite is pure-synthetic; the
+    # exclusive scope is its measured literal closure (no fallback smear).
+    "leadership-measured-read",
+    # Paper International: retain the measured ITR closure, dropping opaque fallback.
+    "itr-turn-rotation",
+    # 2026-10-05 GMI #8455: remove transmission's opaque code fallback.
+    # Preserve its concrete imports and dynamic corpus/asset/data inputs.
+    # All packing ceilings, commands, data gate and weights remain unchanged.
+    "transmission-chains",
+    "quant-q01-arbfree-surface",  # Q01 quant assessment: suite imports importlib/subprocess; AST-derived closure
+    "nw-lobe-unfreeze",
+    "quant-q06-sparse-cal",  # Q06 quant assessment: suite imports importlib/subprocess; AST-derived closure
+    "china-search-universe",
+    "quant-q02-american-exercise",  # Q02 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # 2026-09-25: the CI control plane's own contracts (this suite included), moved
     # off workflow-yaml, which was `gate: data` and never ran on a PR. Exclusive
     # because its suites read most of the repository: inferred, the job would add
@@ -4045,6 +4319,7 @@ CURATED_EXCLUSIVE = {
     # plus the files they read. The cover-their-own-import-closure test and
     # check_ci_trigger_closure.py (both run in this job) keep that list honest.
     "ci-control-plane-contracts",
+    "live-flow-recovery-guards",
     # 2026-09-23 B-HEAL-CI-PACK-CEILING-2 (main integration-baseline red on
     # this file's own packing-ceiling probe: templates/index.html 132 jobs /
     # 5,810 weight > 5,800; the two code probes over their job ceilings too).
@@ -4078,10 +4353,17 @@ CURATED_EXCLUSIVE = {
     # closure is empty (stdlib only): the scope is the suite + the registration
     # store + the prose registration, nothing else.
     "prophet-us-b4-prereg-registration",
+    "earnings-economic-dossier",
+    # 2026-09-30: CDV-1 Task 2 owns truthful private PG acquisition currentness.
+    "earnings-economic-source-selection",
     # 2026-09-24 GMI Mining M1 integration T01' (R-MIN-02/R-MIN-26). `mining-economic-dossier`
     # is gate-code pure (synthetic casebook + validator + typed route_unbound harness), so its
     # curated scope is exactly the Mining files it names.
     "mining-economic-dossier",
+    "quant-q08-cov-shrinkage",  # Q08 quant assessment: suite imports importlib/subprocess; AST-derived closure
+    # 2026-09-24 Healthcare D1 T02: gate:code home for the qualified FDA
+    # observation and frozen supply probes; T01 probes remain intentionally red.
+    "healthcare-fda-supply",
     # 2026-09-22 UD-B2 W4B (#7712). `markets-regime-strip` is the gate:code
     # home for tests/test_markets_regime_strip.py — its thematic neighbours
     # (engine-render-guards, unrun-picks-boards) are `gate: data`, which the
@@ -4137,6 +4419,7 @@ CURATED_EXCLUSIVE = {
     # public documents test_public_pages_fetch_nothing_under_paid_prefixes
     # actually reads; the other two probes are unmoved.
     "regwall-boundary",
+    "quant-q11-episode-duration",  # Q11 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # 2026-08-19 wave 5. #6027 moved #5984's three dossier suites into
     # conviction-profile — the right call, because their #6023 home
     # (unrun-publish-ops) is `gate: data`, which ci.yml never plans, so they
@@ -4151,10 +4434,13 @@ CURATED_EXCLUSIVE = {
     "unrun-government-revenue-grader",
     "biocatalyst-worker",
     "biocatalyst-serving",
+    "quant-q13-rn-tail-density",  # Q13 quant assessment: suite imports importlib/subprocess; AST-derived closure
     "flow-surface",
     "biocatalyst-history",
+    "quant-q14-horizon-vrp",  # Q14 quant assessment: suite imports importlib/subprocess; AST-derived closure
     "unrun-subsector-themes",
     "inline-js",
+    "quant-q15-noise-robust-rv",  # Q15 quant assessment: suite imports importlib/subprocess; AST-derived closure
     "unrun-picks-boards",
     "intelligence-registry",
     # 2026-08-14 wave 2: the manifest grew 180→193 jobs and the new fallback
@@ -4195,6 +4481,7 @@ CURATED_EXCLUSIVE = {
     # (site/flow_desk.json, site/options.html). This test is the check that
     # catches it; a sparse local run of it is not evidence that it passes.
     "options-estate-guards",
+    "quant-q18-async-session-cov",  # Q18 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # 2026-08-15 wave 4. The two jobs the #5754 re-base below deferred. Both had
     # NO owned tier at all — every inferred pattern was opaque fallback — after
     # scripts/build_china_library.py gained engine/china_intel_interest.py, whose
@@ -4214,6 +4501,7 @@ CURATED_EXCLUSIVE = {
     # test and enumeration would drop them silently.
     "cn-standout-audit",
     "coiled-mtf-anchor-era",
+    "quant-q19-first-passage-ambiguity",  # Q19 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # 2026-08-20 main-red-repair. serving-observability (#6115, Sentry arm for
     # the macro-api serving tier) shipped with no scope at all. Its own subject
     # (_release()'s `subprocess.run(["git", ...])` for the deployed SHA) is an
@@ -4231,6 +4519,7 @@ CURATED_EXCLUSIVE = {
     # source: its true subject is the frozen fixture plus the two template
     # files its own header comment already documents as the only reads.
     "govrev-company-bridge",
+    "quant-q20-spa-challenger",  # Q20 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # #6117 (records(dislocation): P0-A1 price-blind candidate harvest) shipped
     # its own `scope: exclusive` declaration pre-curated — registered here so
     # this file's pin does not drift from the manifest (no fix required, the
@@ -4294,6 +4583,19 @@ CURATED_EXCLUSIVE = {
     # for templates/index.html (133 > 132). Curate the stated owner boundary;
     # do not fund that unrelated match by raising the packing ceiling.
     "research-vault-source-lineage",
+    # 2026-09-24 GMI INDUSTRIALS first vertical T01 (PR #7924, R-IND-02).
+    # `industrials-result-cash` is the gate:code home for the synthetic
+    # result-to-cash corpus, helper harness, and delivery-input validator.
+    # One exclusive gate:code job for the whole Industrials program; every
+    # later task (T02+) appends its suite to `paths:` and the run line (never
+    # a second job). The suite imports three engine modules directly
+    # (documents, financial_dossier, earnings_narrative.private_publication)
+    # and reads the corpus. TWO non-stdlib transitive needs, both carried by the
+    # job's install line: pyyaml (engine.earnings_narrative.promotion -> yaml) and
+    # requests (scripts.refresh_event_workspaces:77 imports
+    # engine.neuralweb.company_intelligence_reader, whose module scope imports
+    # requests at :21). A T02+ suite appended to this job must keep BOTH.
+    "industrials-result-cash",
     # 2026-09-23 gate:data -> PR-gate follow-up to #7712. `dashboard-render-contract`
     # is the gate:code home for the five suites that only gate:data lanes
     # (unrun-picks-boards, engine-render-guards) ran, so the #7503 pins in
@@ -4313,6 +4615,228 @@ CURATED_EXCLUSIVE = {
     # (site/**, data/**) onto them — files that cannot move either verdict.
     "validated-claims-source",
     "validated-claims-contract",
+    # 2026-10-03 Terminal599 OA-1C canonical-history repair (#8342 follow-up):
+    # the options-alpha candidate feed composer is a code-plane artifact
+    # (engine/options_alpha_candidate_feed.py + every schema it validates
+    # against + the formation policy v2 JSON + the architecture / OA-1C
+    # DECs), not a flow-surface data artefact. The composer was previously
+    # registered on the gate:data flow-surface job; that lane's broader
+    # site/templates/data ownership was reaching the test path through
+    # opaque-fallback inference, and a future edit to a flow-surface file
+    # could select this suite without the right behavioural checks running.
+    # The exclusive declaration pins the exact transitive closure of the
+    # composer (campaign engine + signal episode + ledger lane + session
+    # digest + lib helpers + OPTIONS_SIGNAL_CAMPAIGN_V2_PREREG the test
+    # reaches through dynamic importlib loads); widening is always the
+    # safe direction.
+    "options-alpha-candidate-feed",
+    # 2026-10-03 PR #8350: options-signal-campaign-v2 is the gate:code owner
+    # of tests/test_options_signal_campaign_effective_view.py. scope:
+    # exclusive replaces inference, so the declared job must be pinned here
+    # or the curated-set contract rejects the manifest.
+    "options-signal-campaign-v2",
+    # Pure International browser helpers have a closed source/test dependency
+    # set; unrelated page changes must not select their Node-only PR check.
+    "international-workspace-pure-js",
+    # Numerical records reuse the performance owner's measured import closure.
+    "international-workspace-foundation",
+    # Actual macro template/controller with explicit supplied-frame browser fixture.
+    "international-workspace-browser",
+    # 2026-10-05 GMI #8455 (lane gmi_a_packing_r1): regime-outlook-mapping's
+    # reader import (world_state -> theme_state_generation_reader ->
+    # theme_graph/thematic_state -> scripts/build_thematic_state.py) was an
+    # opaque code fallback, so every ordinary code PR selected it. The exact
+    # closure is now declared; packing ceilings remain unchanged.
+    "regime-outlook-mapping",
+    # 2026-10-07 PB-D event-quality implementation (#8576): one gate:code
+    # job owns all four PB-D suites. Its exclusive declaration covers the
+    # measured 50-path import/read closure; packing ceilings stay unchanged.
+    "pb-d-event-quality",
+    # 2026-10-07 Package N #8454: Terminal per-ticker news qbus correctness kernel.
+    # gate:code home for the twenty-two ticker-news/qbus suites; scope: exclusive
+    # so inference does not smear the measured import closure across ordinary code
+    # PRs. paths: are the job's suite import closure; the cover-their-own-import-
+    # closure test keeps that list honest as the tree moves.
+    "ticker-news-qbus",
+    # 2026-10-07 RS source delivery: retain the reviewed source-owner inventory.
+    # Exact inventory only; scope audits and packing ceilings remain unchanged.
+    "entry-radar-rs-pullback-calendar",
+    # PR #9199: actual-file identity reader; keep equality and closure gates intact.
+    "entry-radar-identity-snapshot",
+    # 2026-10-07 RS source delivery: Register the reviewed native-reference owner and its complete declared read closure.
+    # Exact inventory only; scope audits and packing ceilings remain unchanged.
+    "dataos-prospective-reference",
+    # 2026-10-13 Data OS completion acceptance suites (A02/A03/R01) - closure measured
+    # against main's own inference; seat applies the legacy-jobs.yml half.
+    "dataos-acceptance",
+    "ratio-lens",
+    # 2026-10-09 PR #8667: file and pinned-source relationship inspection.
+    # Register the reviewed 68-path owner; closure audits and ceilings stay fixed.
+    "company-relationship-candidates",
+    # WP02 source-diagnostic research kernel: exact inputs and shared pytest imports.
+    # Preserve closure audits, packing limits and incumbent owner declarations.
+    "gmi-source-diagnostic-kernel",
+    # Reviewed template-root curation; preserve other opaque domains and ceilings.
+    "integrated-answer-v0",
+    # 2026-10-11 PR #8758: bounded Data OS readers and canonical Lab access.
+    # Register the reviewed 42-path owner; closure audits and ceilings stay fixed.
+    "dataos-web-workspace",
+    # 2026-10-13 Data OS completion verification suites (Q01/Q02/Q03/F01/A01) - closure
+    # measured against main's own inference; seat applies the legacy-jobs.yml half.
+    "dataos-verification",
+    # 2026-10-12 PR #8873: news-impact Phase 0 contract freeze. Owner closure is
+    # company_intelligence/** plus earnings_narrative/contracts.py; ceilings stay fixed.
+    "news-impact-contracts",
+    # 2026-10-11 #8805: the Information-to-Price receipt suites (SRC-A1, PIT
+    # conformance, R4 V2 admission, EVAL-1 partition clock, EVAL-1 challenger
+    # identity) leave unrun-factor-research, whose opaque engine/** and
+    # collectors/** fallback smeared them onto templates/index.html and pushed
+    # that probe to 5,802 (main) / 5,805 (this head) against its 5,800 ceiling.
+    # Register the reviewed 18-path owner; closure audits and ceilings stay fixed.
+    "information-to-price-eval-receipts",
+    # 2026-10-11 lineage wave (#8802): leader-radar-unit gained the lineage
+    # descriptor step (+3 weight) while still an opaque always-on selector:
+    # inference smeared the builder's jinja loader (templates/**), the
+    # integration suite's data/site roots and the lineage suite's AST import
+    # scan (engine/**, scripts/**) onto it, so two packing probes breached on
+    # the PR's merge ref (templates/index.html 5,806 > 5,800, where main was
+    # already over at 5,802; scripts/build_free_content.py 5,603 > 5,600).
+    # paths: = the measured 43-path import/read closure + the rendered
+    # template and its include chain. Measured on the merged FULL checkout:
+    # index.html 5,806 -> 5,781, build_free_content 5,603 -> 5,578, plan_book
+    # 5,563 -> 5,538; the fallback tier drops to (); ceilings unchanged. Derive
+    # the closure against a FULL checkout: the two site/ JSON literals are
+    # invisible on a sparse tree, exactly as the options-estate-guards note warns.
+    "leader-radar-unit",
+    # The private runtime boundary has a closed helper/unit/updater/test scope.
+    "company-intelligence-private-runtime",
+    # 2026-10-11 SNI E0/M0 (#8837): the Alibaba/Tencent coverage-profile suite
+    # reads only its own config/contracts trees; its 3-path owner is the whole
+    # closure (closure findings 0, gated-unrun 0), so no inference fallback.
+    "single-name-coverage-profiles",
+    # 2026-10-12 Crypto Intelligence R2 (#8901, T23 pre-review BLOCKER B1): the
+    # nine vector/BTC behavior suites leave `unrun-vector-dsr`, whose `gate: data`
+    # made them DARK on every pull request (ci.yml plans `--gate code`;
+    # DSC:A-DATA-GATED-JOB-IS-DARK-ON-EVERY-PULL-REQUEST), and whose inferred
+    # weight 35 -> 54 pushed the packing probes over their ceilings on #8901's
+    # merge ref (index.html 5,801 > 5,800; build_free_content 5,602 > 5,600).
+    # paths: = the measured 360-path import/read closure of the nine suites
+    # (collectors, config, engine incl. btc_*, lib, scripts incl. build_vector /
+    # backfill_crypto / check_crypto_shelves, templates/crypto.html.j2, the three
+    # site/ literals check_contract_delta surfaced). Measured on the merge ref:
+    # probes return to base exactly (index.html 5,782, build_free_content 5,585,
+    # plan_book 5,545); closure findings (); ceilings stay fixed — the #8805 shape.
+    "crypto-vector-r2-organs",
+    # 2026-10-13 cx-int engine: crypto-assistant-context. The crypto
+    # assistant-context contract's import closure is the whole Mastermind
+    # chat stack (context compiler, brain gateway, market packet, native
+    # facts). It runs alone under scope: exclusive with that measured
+    # closure instead of widening crypto-vector-r2-organs onto every
+    # chat-stack change; closure findings stay empty and the probes keep their
+    # base readings.
+    "crypto-assistant-context",
+    # 2026-10-12 Taxonomy V2 L05-L11: gmi-classification-axes. The geography
+    # reader names scripts/build_security_master.py by path (its subprocess
+    # call and parquet traversal join the closure) and the registry imports
+    # axis modules by computed name. Both smeared the job onto the
+    # build_free_content / plan_book packing probes. scope: exclusive pins it
+    # to its measured closure, so it must be listed here.
+    "gmi-classification-axes",
+    # GovRev dependency changes must not select GR3 on unrelated page templates.
+    "group-linked-outsiders",
+    "govrev-program-ontology",
+    # 2026-10-12 FIF kernel guards (seat ruling, candidate y): the class-A
+    # Financial Intelligence Fabric suites moved off the data-health lanes.
+    # Inference would union ~139 fallback roots (the app/ TestClient suites
+    # import app.main) and breach all three PACKING_PROBES; scope: exclusive
+    # pins the job to the FIF globs plus its measured static/runtime closure.
+    "fif-kernel-guards",
+    # 2026-10-12 SNI S2 event response (#8893): the runner's `git` subprocess
+    # calls and the language test's rglob are opaque, so inference widened
+    # the fallback to engine/** and the plan_book packing probe selected the
+    # job (130 > 129). scope: exclusive pins it to its measured closure.
+    "sni-s2-event-response",
+    # 2026-10-13 SNI INT1: the shared inference/seal library, evaluation
+    # ledger, US stress set and draft-prereg loaders import through sys.path
+    # inserts. scope: exclusive pins the job to their measured closure so the
+    # research/ fallback roots never reach the packing probes.
+    "sni-shared-and-drafts",
+    # 2026-10-13 SNI INT1: the cross-cutting guard suite (matrix, equivalence,
+    # invariants, quarantine fence, run-seal repro, SCHK, A20, US stress) loads
+    # through the same sys.path inserts; pinned to its measured closure.
+    "sni-program-guards",
+    # 2026-10-13 SNI INT1: the public-exposure scan reads publish surfaces as
+    # TEXT (closure-marked data). Unpinned, those literal script names pulled
+    # build_site.py's 757-file import closure into the job and every packing
+    # probe selected it (templates/index.html 5815 > 5800). It declares its
+    # scanned surfaces instead and pins them in its own test.
+    "sni-public-exposure-scan",
+    # 2026-10-13 SNI INT2: the acceptance-evidence suite (A03/A04/A07/A10/A12,
+    # copy guard, A33, A36, A39, P03 ULP, register consistency) imports the
+    # acceptance/, residual/, event_response/ and us_stress/ modules through
+    # sys.path inserts; pinned to its measured closure like sni-program-guards.
+    "sni-acceptance-evidence",
+    # 2026-10-13 Grey Deer W3 (#8938): the stage-1 pullback runner suite reads
+    # its own research tree, lib.nyse_calendar and the trial ledger. scope:
+    # exclusive pins it to that measured closure (57 paths once W4 added the
+    # stage-1b suites), so inference never unions the research/ fallback roots
+    # onto the packing probes.
+    "grey-deer-pullback-stage1",
+    # 2026-10-13 Grey Deer W5 (#9128): the pullback forward-lane suites import
+    # the frozen stage-1 runner, whose lazy risk_radar closure made inference
+    # select the job on the plan_book (130 > 129) and build_free_content
+    # (135 > 134 jobs, 5,604 > 5,600 s) probes. scope: exclusive pins it to its
+    # measured 63-path closure; closure findings (); ceilings stay fixed.
+    "grey-deer-pullback-forward",
+    # 2026-10-13 FIF X2-n saved-research notifications (seat R3): the three
+    # hermetic suites reach engine.fundamental_forensics and the research-vault
+    # store, so inference unioned the whole-tree fallback roots and selected the
+    # job on the PACKING_PROBES (check_contract_delta: 3 introduced findings).
+    # scope: exclusive pins it to its derived import closure.
+    "fif-saved-research-notifications",
+    # 2026-10-13 Grey Deer GD-4C: the stdlib-only PBOC liquidity classifier.
+    # As a step in china-native-collectors it moved templates/index.html to
+    # 5,816 > 5,800; its own exclusive job keeps the import closure only.
+    "grey-deer-pboc-liquidity",
+    # 2026-10-13 main packing-probe heal: Node harness subprocesses, a git
+    # subprocess and filesystem traversals rooted at templates/, scripts/,
+    # engine/, data/ and site/ widened inference for these two lanes to those
+    # whole roots, so both selected on all three PACKING_PROBES without
+    # importing or naming a probe file (CI measured
+    # scripts/build_free_content.py at 5604 > 5600 on main). scope: exclusive
+    # pins each to its measured static closure plus its fixture globs.
+    "research-price-panel",
+    "washout-turn-organ",
+    # 2026-10-14: rotation AST/render fallback curation; retain full static
+    # closure plus observed runtime inputs. Assertions and probe limits stay fixed.
+    "leadership-rotation-contract",
+    "lr-rotation-evidence-modes",
+    # 2026-10-14 RIC E0 (#9282): the M0/X0 retrospective-runner suites reach
+    # the release-forecast stack, whose collector and neuralweb imports made
+    # inference select the job on the build_free_content probe (135 > 134
+    # jobs, check_contract_delta: 1 introduced). scope: exclusive pins it to
+    # its declared static import closure; ceilings stay fixed.
+    "ric-e0-retrospective-runners",
+    # 2026-10-14 LR T11-T14 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): the prereg
+    # study harness suites are hermetic (synthetic arrays + tmp git fixtures);
+    # scope: exclusive pins the job to its measured suite_dependency_closure.
+    "leadership-rotation-science",
+    # 2026-10-14 LEADERSHIP-ROTATION T20 (LR-CHAL-T20R): the integrated counter-case suite reads
+    #  scripts/build_sector_central.py via ast and the T18 panel template, so inference smeared it onto
+    #  scripts/build_free_content.py (135 > 134). Register the reviewed 199-path owner (rates_command_basis.py added after #9317 widened the closure); closure audits and ceilings stay fixed.
+    "leadership-rotation-countercases",
+    # 2026-10-17 C19 WP22: the DHI traversal suite's app/engine imports made
+    # inference select it, at the fallback tier only, on the index-template
+    # (137 > 136 jobs) and build_free_content (135 > 134) packing probes;
+    # check_contract_delta: 2 introduced. scope: exclusive pins it to its
+    # declared static import closure plus ancestor inits; ceilings stay fixed.
+    "c19-wp22-dhi-traversal",
+    # 2026-10-17 C19 WP31: the incremental-information evaluator's engine/lib
+    # imports made inference select it on the same index-template (137 > 136)
+    # and build_free_content (135 > 134) packing probes; check_contract_delta:
+    # 2 introduced. scope: exclusive pins it to its declared static import
+    # closure plus ancestor inits; ceilings stay fixed.
+    "c19-wp31-incremental-information",
 }
 
 
@@ -4473,6 +4997,19 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
             if was and not now and was[1] != "fallback":
                 owned_losses.append(f"{job_id} lost {probe} (tier={was[1]})")
     assert not owned_losses, owned_losses
+
+
+# The packing probes and their ceilings: (changed path, max selected jobs, max
+# selected weight-seconds), plus one pack ceiling for every probe. The history of
+# each number is the docstring of the test below. scripts/check_contract_delta.py
+# reads both names with ast.literal_eval, so keep them plain module-level literals.
+PACKING_PROBES = (
+    ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_600),
+)
+# Twelve packs per shape was the pre-curation measurement.
+PACKING_PROBE_MAX_PACKS = 10
 
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
@@ -5007,25 +5544,180 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     the drift surfaces after merge, on integration-baseline.yml. That lane
     runs this file on every source push to main and every 4 hours, and
     merge-on-green pauses ordinary merges while it is red.
+
+    PR #8322 round 2 (2026-10-03): ``live-flow-recovery-guards`` (w1,
+    ``gate: code``, 12 declared paths) joins the manifest with ordinary
+    ``paths:`` inference — NOT ``scope: exclusive``, per the META-CEO
+    ruling for this round ("Ordinary paths inference, not scope:exclusive
+    until closure verified"). Its declared subject (engine/live_flow.py,
+    engine/session_digest.py, lib/{__init__,config.py,nyse_calendar.py},
+    scripts/live_flow_poller.py + build_flow_archive.py + build_flow_surface.py,
+    tests/test_flow_archive.py + test_live_flow_recovery.py + test_live_flow_tiering.py,
+    ops/LIVE_FLOW_RUNBOOK.md) touches NONE of the three probes directly,
+    but ordinary inference widens its fallback tier to the directory globs
+    the declared files live under (engine/**, scripts/**, templates/**).
+    Re-measured, full manifest, inference on, before this entry:
+
+        templates/index.html          134 -> 135 jobs, 5,800 weight (AT)
+        scripts/build_free_content.py 132 -> 133 jobs, 5,585 weight
+        engine/prophet/plan_book.py   127 -> 128 jobs, 5,534 weight
+
+    JOB ceilings re-based to measurement + 1 (135 / 133 / 128) per the
+    standing rule. The decision recorded here follows the wave-9 re-frame
+    exactly: the job enters all three on its OWN inferred FALLBACK tier
+    (templates/**, scripts/**, engine/**), so it is a curation candidate
+    — its closure is small (one production source, one new test file,
+    three path helpers; closure-coverage audit: zero misses) and ``scope:
+    exclusive`` would cover it cleanly. The ruling pins that to round 3,
+    not this round; this entry funds the headroom so the PR lands green,
+    and the curation follow-on is named live-flow-recovery-guards-scope
+    (must run before the next entrant). WEIGHT and PACK ceilings stay
+    unmoved (5,800 / 5,600 / 5,600 and 10 packs): weights are 5,800 /
+    5,585 / 5,534, packs are 10 / 10 / 10, and templates/index.html sits
+    AT its 5,800 weight bound — the next weight delta is the same kind
+    of decision this entry makes.
+
+    2026-09-27: that drift now reds its own PR. The measurement and the
+    verdict moved to scripts/run_ci_pack.py (packing_probe_measurements,
+    packing_probe_breaches) and the ceilings to PACKING_PROBES above, so
+    this test and ci.yml's contract-delta job share one copy. contract-delta
+    runs on every PR, whatever it touches. It measures the probes on the
+    PR's tested merge and on that merge's base, and reds when the PR takes
+    a probe over its ceiling, or further over a ceiling the base already
+    breaches. The case the #8033 review measured is now caught before
+    merge: a suite edited to read templates/index.html puts a job on this
+    probe (134 -> 135) without selecting ci-control-plane-contracts.
+    Nothing was re-measured and no ceiling moved. integration-baseline.yml
+    still runs this file on main.
+
+    PR #8596 (2026-10-07): ``integrated-answer-v0`` (w4, ``gate: code``,
+    Package I v0 composer, default-off) joins the manifest with ordinary
+    ``paths:`` inference. Its one suite imports app.integrated_answer,
+    app.forensics and tests.test_company_theme_exposure; the declared
+    closure is 628 owned paths, none of them a probe, plus the whole-tree
+    fallback smear (admin/**, app/**, collectors/**, config/**, ...). It
+    rides all three probes on that FALLBACK tier only, +1 job / +4..7
+    weight each. Re-measured, full manifest, inference on, on the PR's
+    merge with main 96261883bee:
+
+        templates/index.html          134 -> 135 jobs, 5,673 weight
+        scripts/build_free_content.py 132 -> 133 jobs, 5,419 weight
+        engine/prophet/plan_book.py   127 -> 128 jobs, 5,379 weight
+
+    JOB ceilings re-based to measurement (135 / 133 / 128), the #8322
+    shape: the entrant is a fallback-tier smear, so by the standing rule
+    it is a curation candidate, and this entry funds the headroom so the
+    default-off composer lands green. The curation follow-on is named
+    integrated-answer-v0-scope (a ``scope: exclusive`` declaration must
+    cover the 628-path closure, which is why it has none here). WEIGHT and
+    PACK ceilings stay unmoved (5,800 / 5,600 / 5,600 and 10 packs):
+    weights are 5,673 / 5,419 / 5,379, packs are 10 / 10 / 9. All three
+    job bounds are full again, so the next entrant needs a decision
+    recorded here, not a reflexive bump.
+
+    PR #8656 (2026-10-08): the entire M0D v2 suite now runs in the existing
+    CODE job ``research-price-panel``, including its static source/deployment
+    contracts. Its bash harnesses run temporary helper copies and its v1-store
+    scans use temporary roots. The selector conservatively attaches the
+    module-wide engine/scripts path-literal roots to those subprocess and
+    unpatterned rglob calls. The job therefore enters plan_book.py and
+    build_free_content.py on engine/** and scripts/** FALLBACK claims, not
+    because those two modules are directly read or exercised by M0D.
+
+    Preserve the whole-file command and ordinary inference while funding this
+    measured coverage cost, following the #8322/#8596 decisions above. Hosted
+    contract-delta run 37857396564 / job 113584769049 measured head 1384a72307a
+    on tested merge 742e4cbfce2 against base 7e6ce338a9f8:
+
+        templates/index.html          135 -> 135 jobs, 5,725 -> 5,729 weight
+        scripts/build_free_content.py 133 -> 134 jobs, 5,480 -> 5,524 weight
+        engine/prophet/plan_book.py   128 -> 129 jobs, 5,440 -> 5,484 weight
+
+    All three stay at 10 packs. research-price-panel is the sole newly
+    selected job on the two changed probes. JOB ceilings move only to the
+    exact measurements (135 / 134 / 129), with no padding. All WEIGHT and
+    PACK ceilings remain 5,800 / 5,600 / 5,600 and 10; the template job ceiling
+    also stays 135. No suite, DATA registration, assertion, or selector is
+    removed or weakened to reduce selection.
+
+    Scope-curation follow-on: research-price-panel-m0d-scope. Before any
+    ``scope: exclusive`` declaration, audit the complete original-plus-M0D
+    job closure and retain every source, fixture, deployment, and registration
+    owner. A M0D-only path list cannot safely replace that whole-job closure.
+    The fallback claims remain conservative until that audit; these two
+    count changes do not assert direct ownership of the probe modules.
+
+    2026-10-11 (#8805, EVAL-1 partition clock receipt): the fifth
+    Information-to-Price receipt suite registered in unrun-factor-research
+    took templates/index.html from 5,802 (already over the ceiling; main run
+    38139442230 failed this test) to 5,805. The five ITP steps now live in the
+    exclusive information-to-price-eval-receipts job with their measured
+    closure, so the probe reads 5,793 (head) against 5,805 before
+    the move. No ceiling moves; no suite, registration, assertion or selector
+    is removed or weakened.
+
+    2026-10-13 (SNI INT1, ``sni-public-exposure-scan``): the WEIGHT ceiling
+    on templates/index.html is RATCHETED 5,800 -> 5,803. This is the
+    decision the 2026-09-24 entry said the next entrant would need. The
+    job is already ``scope: exclusive`` with no fallback tier. It enters
+    this probe on its OWN declared subject: it reads templates/** as text
+    to prove that no public template serves, renders or links SNI
+    material, and its test_ci_job_declares_every_scanned_surface reds if
+    that path is dropped. That is the wave-7 ratchet case, not a smear to
+    curate. Its weight is the estimator floor for a one-suite job (two
+    run steps + one tests/ path = 4). Hosted contract-delta run
+    38379913058 / job 115237474626, base 70de9c667b80:
+
+        templates/index.html          134 -> 135 jobs, 5,799 -> 5,803 weight
+        scripts/build_free_content.py 134 -> 134 jobs, 5,602 -> 5,602 weight
+        engine/prophet/plan_book.py   129 -> 129 jobs, 5,562 -> 5,562 weight
+
+    sni-public-exposure-scan is the only newly selected job, and only on
+    the template probe. The ceiling moves to the exact measurement, with
+    no padding. Job ceilings (135 / 134 / 129), the other two weight
+    ceilings (5,600 / 5,600) and the 10-pack ceiling are unchanged.
+    Alternatives rejected:
+    - dropping templates/** from the job would leave template edits
+      unguarded;
+    - folding the suite into an existing template-riding job still adds
+      +2 (5,801);
+    - an OBSERVED_COMMAND_SECONDS entry below the estimator would
+      understate a job that installs packages.
+    In the same run, build_free_content was already at 5,602 against its
+    5,600 ceiling on the base. That was reported as inherited, not
+    introduced, and is left for a separate heal.
+
+    2026-10-14 (Market Memory UI integration with Leadership Rotation):
+    hosted run 38530236436 on merge 2d524d3e1 of b3f9739 into
+    703477f0 reproduced two JOB-only breaches. Full inference on current
+    main union 44cc567d1edf (base 05bcc762fb16; all 313 jobs retained)
+    measures 136 / 134 / 130 jobs and 5,678 / 5,475 / 5,441 weight,
+    with ten packs for every probe. The two genuine main entrants are
+    lr-rotation-evidence-modes on templates/index.html (its imported
+    sector-cycle suites conservatively own templates/**), and
+    leadership-rotation-contract on plan_book.py (engine/** fallback).
+    Each weighs four; neither selects build_free_content.py.
+
+    Fund only those measured counts: 135 -> 136 and 129 -> 130.
+    Keep every suite and conservative dependency claim, the build-script
+    count ceiling 134, all weight ceilings, and the ten-pack limit.
+    Narrowing either job without a complete closure audit would discard
+    coverage, while padding counts beyond the exact measured entrants
+    would hide the next change. No selector or runtime source is edited.
     """
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
-    for probe, max_jobs, max_weight in (
-        ("templates/index.html", 134, 5_800),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-        ("scripts/build_free_content.py", 132, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-        ("engine/prophet/plan_book.py", 127, 5_600),
-    ):
-        selected, reason = PACK.select_jobs(jobs, [probe])
-        weight = sum(job.weight for job in selected)
-        assert len(selected) <= max_jobs, (probe, len(selected), reason)
-        assert weight <= max_weight, (probe, weight, reason)
-        # Runners are what the incident actually spends: build_plan derives the
-        # pack count from the SELECTED weight, so the weight cut above is a
-        # runner cut. Twelve packs per shape was the pre-curation measurement.
-        packs = max(1, min(12, -(-weight // PACK.PACK_TARGET_SECONDS)))
-        assert packs <= 10, (probe, packs, weight, reason)
+    rows = packing_probe_measurements(
+        MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
+    )
+    breaches = packing_probe_breaches(rows)
+    assert not breaches, [
+        (breach, row["reason"])
+        for breach in breaches
+        for row in rows
+        if row["probe"] == breach[0]
+    ]
 
 
-def test_deliberately_unscoped_gates_stay_always_on() -> None:
+def test_deliberately_unscoped_gates_stay_always_on(real_manifest_scopes) -> None:
     """The wave-8 entrants are always-on BY DESIGN — pin both directions.
 
     Each of these gates carries a header comment documenting deliberate
@@ -5038,7 +5730,7 @@ def test_deliberately_unscoped_gates_stay_always_on() -> None:
     on an ordinary user-facing PR. Both now red here, with the probe named.
     """
     jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
-    scoped_jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    scoped_jobs, _ = real_manifest_scopes
     # Measured membership at wave 8 (main a8075391fa89): each gate pinned on
     # the probes that are its SUBJECT. design-governance is a user-facing
     # diff ratchet, so it rides the template and site-builder probes but has
@@ -5076,6 +5768,29 @@ def test_deliberately_unscoped_gates_stay_always_on() -> None:
             if job_id not in selected_names[probe]:
                 problems.append(f"{job_id}: no longer selected for {probe}")
     assert not problems, problems
+
+
+def test_evidence_corpus_edits_select_design_governance(real_manifest_scopes) -> None:
+    """An evidence-only PR must run the receipt-corpus gate (2026-10-02, #8278).
+
+    ``test_committed_evidence_corpus_has_zero_findings`` discovers EVERY committed
+    ``EVIDENCE.yml`` under mockups/evidence + mockups/refs at RUNTIME, so the
+    static closure inference never owned those trees: PR #8278 (evidence-only)
+    planned ``1/168 jobs … did not widen`` and merged a malformed receipt that
+    reddened main. The job now declares the two trees as an additive floor
+    (unioned with inference — NOT ``scope: exclusive``). Pin both directions.
+    """
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
+    job = jobs["design-governance"]
+    assert not job.exclusive, "design-governance must stay non-exclusive (floor, not ceiling)"
+    assert set(job.paths) >= {"mockups/evidence/**", "mockups/refs/**"}, job.paths
+    assert len(job.paths) == 9, job.paths  # 2 corpora globs + the 7 files the steps name (loader coverage audit)
+    scoped_jobs, _ = real_manifest_scopes
+    for probe in ("mockups/evidence/sanctions-map-event-mark/EVIDENCE.yml",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+                  "mockups/refs/onboarding/EVIDENCE.yml",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+                  "mockups/evidence/some-capture/manifest.json"):  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+        sel, reason = PACK.select_jobs(scoped_jobs, [probe])
+        assert "design-governance" in {j.job_id for j in sel}, (probe, reason)
 
 
 def test_inline_js_owns_the_rendered_tree_it_lints() -> None:
@@ -5269,6 +5984,27 @@ def test_ci_python_is_pinned_to_a_released_parser_runtime() -> None:
 # ---------------------------------------------------------------------------
 
 DATA_HEALTH_WORKFLOW = ROOT / ".github" / "workflows" / "data-health.yml"
+
+
+def test_prophet_chronology_suites_run_in_the_code_gate() -> None:
+    """A green PR must execute the clock/correction suites, not defer them to data-health."""
+    suites = (
+        "tests/test_prophet_plan_chronology_audit.py",  # ci-trigger-closure: data — suite name inspected in the manifest
+        "tests/test_prophet_integrity.py",  # ci-trigger-closure: data — suite name inspected in the manifest
+    )
+    jobs = PACK.load_legacy_jobs(MANIFEST, gate="code")
+    owners = [
+        job for job in jobs
+        if any(
+            all(suite in str(step.get("run", "")).split() for suite in suites)
+            for step in job.definition["steps"]
+        )
+    ]
+    assert len(owners) == 1, "clock/correction suites need one code-gated owner"
+    scopes, _ = PACK.infer_job_scopes(owners)
+    for changed in (*suites, "scripts/audit_prophet_plan_chronology.py"):  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+        selected, reason = PACK.select_jobs(scopes, [changed])
+        assert [job.job_id for job in selected] == [owners[0].job_id], (changed, reason)
 
 
 def test_gate_filter_selects_only_matching_jobs(tmp_path: Path) -> None:
@@ -5806,3 +6542,842 @@ def test_markets_fresh_render_byte_match_is_code_gated_and_runs_exactly_once() -
         if selector in cmds or node in cmds:
             duplicates.append(name)
     assert not duplicates, sorted(duplicates)
+
+
+@pytest.mark.parametrize("probe", [row[0] for row in PACKING_PROBES])
+def test_transmission_scope_does_not_match_unrelated_packing_probe(probe: str) -> None:
+    """GMI's reader import must not restore transmission's opaque code fallback."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST)
+               if job.job_id == "transmission-chains")
+    assert job.exclusive
+    selected, _ = PACK.select_jobs([job], [probe])
+    assert not selected, f"transmission does not read packing probe {probe}"
+
+
+@pytest.mark.parametrize("owned_path", [
+    "engine/transmission_chains.py",  # ci-trigger-closure: data — selector label, never opened
+    "engine/neuralweb/world_state.py",  # ci-trigger-closure: data — selector label, never opened
+    "engine/neuralweb/theme_state_generation_reader.py",  # ci-trigger-closure: data — selector label, never opened
+    "scripts/build_transmission.py",  # ci-trigger-closure: data — selector label, never opened
+    "tests/test_transmission_chains_nw.py",  # ci-trigger-closure: data — selector label, never opened
+    "tests/fixtures/transmission/new_case.json",  # ci-trigger-closure: data — selector label, never opened
+    "knowledge/transmission/new_chain.yaml",  # ci-trigger-closure: data — selector label, never opened
+    "knowledge/transmission/proposed/new_chain.yaml",  # ci-trigger-closure: data — selector label, never opened
+    "knowledge/transmission/killed/new_chain.yaml",  # ci-trigger-closure: data — selector label, never opened
+    "data/yahoo/NEW_SERIES.parquet",  # ci-trigger-closure: data — selector label, never opened
+    "data/transmission/chain_calibration.json",  # ci-trigger-closure: data — selector label, never opened
+    "site/stockdata/NEW_SYMBOL.json",  # ci-trigger-closure: data — selector label, never opened
+    "site/assets/css/0123abcd.css",  # ci-trigger-closure: data — selector label, never opened
+    "templates/transmission.html.j2",  # ci-trigger-closure: data — selector label, never opened
+    "templates/_navlinks.html.j2",  # ci-trigger-closure: data — selector label, never opened
+    "templates/_future_fragment.html.j2",  # ci-trigger-closure: data — selector label, never opened
+    "config.yml",  # ci-trigger-closure: data — selector label, never opened
+])
+def test_transmission_scope_retains_static_and_future_dynamic_inputs(owned_path: str) -> None:
+    """Future corpus/asset/series members remain selected; no frozen-file loophole."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST)
+               if job.job_id == "transmission-chains")
+    selected, _ = PACK.select_jobs([job], [owned_path])
+    assert [job.job_id for job in selected] == ["transmission-chains"]
+
+
+def test_price_ladder_deterministic_contract_is_owned_by_existing_code_gate(tmp_path: Path) -> None:
+    """Production ladder source AND test-only edits run the deterministic suite."""
+    manifest = _yaml(MANIFEST)
+    owner = manifest["jobs"]["price-basis-census"]
+    suite = "tests/test_price_ladder.py"  # ci-trigger-closure: data — suite NAME for planner/argv checks
+    assert owner["gate"] == "code"
+    assert {"pytest", "pandas", "numpy", "pyarrow"} <= _job_pip_packages(owner)
+    runs = [str(step.get("run") or "") for step in owner["steps"]]
+    pytest_runs = [command for command in runs if " -m pytest " in command]
+    assert len(pytest_runs) == 1
+    assert shlex.split(pytest_runs[0]) == [
+        "python", "-m", "pytest", "tests/test_price_basis_graders.py", suite, "-q",
+        "--deselect", suite + "::test_real_store_cfg_diverges_from_the_cache_by_a_dividend",
+        "--deselect", suite + "::test_real_store_control_non_payers_agree_across_sources",
+        "--deselect", suite + "::test_real_store_ladder_prefers_adjusted_for_a_cached_name",
+    ]
+    assert _job_pip_packages(manifest["jobs"]["dataos-foundation"]) == {"pytest", "pyyaml"}
+    owner_manifest = tmp_path / "price-basis-owner.yml"
+    owner_manifest.write_text(yaml.safe_dump({"jobs": {"price-basis-census": owner}}))
+    jobs, scope_reason = PACK.infer_job_scopes(PACK.load_legacy_jobs(owner_manifest, gate="code"))
+    assert len(jobs) == 1 and jobs[0].is_scoped, scope_reason
+    for changed in (["engine/price_ladder.py"], [suite]):  # ci-trigger-closure: data — synthetic diff
+        selected, reason = PACK.select_jobs(jobs, changed)
+        assert [job.job_id for job in selected] == ["price-basis-census"], reason
+        assert "unowned path" not in reason, reason
+    selected, reason = PACK.select_jobs(jobs, ["tests/test_dataos_price.py"])  # ci-trigger-closure: data — synthetic diff
+    assert not selected, reason
+
+
+# ---------------------------------------------------------------------------
+# W15-F-AIC lane — REPORT-ONLY ancestor-init census for curated-exclusive jobs.
+#
+# Importing a module executes every ancestor package's ``__init__.py``, but the
+# closure the curator audits is literal paths: a non-declared ``__init__.py``
+# is exactly the silent scope gap the curated tier exists to prevent. These
+# tests pin the pure census function and the ``--ancestor-init-census`` report
+# flag. Building the manifest, inits, and paths under ``tmp_path`` keeps the
+# suite hermetic from HEAD's manifest and any other branch's history. The
+# isolation mechanism is EXPLICIT, not the location of ``tmp_path``: the
+# pure-function tests pass ``repo_root=tmp_path`` directly, and the CLI test
+# runs its subprocess with ``GIT_CEILING_DIRECTORIES`` set to the fixture's
+# PARENT so the git discovery inside ``_find_repo_root`` cannot chdir up out
+# of the fixture tree (git never excludes the cwd itself, only the dirs it
+# would chdir up into). Without that ceiling, a ``--basetemp`` placed inside
+# a checkout makes the census resolve against the enclosing checkout and
+# silently print ``pairs=0`` instead of the fixture's pairs.
+# ---------------------------------------------------------------------------
+
+
+def _aic_manifest(tmp_path: Path, *, job_id: str, paths: list[str]) -> Path:
+    """Write a one-job legacy manifest declaring ``paths`` literally."""
+    workflow = tmp_path / "legacy.yml"
+    workflow.write_text(
+        yaml.safe_dump(
+            {
+                "jobs": {
+                    job_id: {
+                        "if": PACK.DISABLED_IF,
+                        "runs-on": "ubuntu-latest",
+                        "scope": "exclusive",
+                        "paths": list(paths),
+                        "steps": [
+                            {
+                                "name": "ancestor-init fixture",
+                                "run": "echo fixture",
+                            }
+                        ],
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    return workflow
+
+
+def _aic_optional_init(directory: Path, *, body: bytes = b"") -> None:
+    """Materialise ``__init__.py`` in ``directory`` with ``len(body)`` bytes."""
+    directory.mkdir(parents=True, exist_ok=True)
+    (directory / "__init__.py").write_bytes(body)
+
+
+def _aic_load(workflow: Path) -> list[PACK.LegacyJob]:
+    jobs = PACK.load_legacy_jobs(workflow)
+    assert len(jobs) == 1 and jobs[0].exclusive, [j.job_id for j in jobs]
+    return jobs
+
+
+def test_ancestor_init_census_two_inits_with_right_bytes(tmp_path: Path) -> None:
+    """(a) two inits neither declared — exactly two findings, right bytes."""
+    workflow = _aic_manifest(
+        tmp_path, job_id="c-a", paths=["pkg/sub/mod.py"]
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package pkg\n")
+    _aic_optional_init(tmp_path / "pkg" / "sub", body=b"")
+    jobs = _aic_load(workflow)
+
+    findings = PACK.ancestor_init_census(jobs, repo_root=tmp_path)
+
+    assert len(findings) == 2, findings
+    by_init = {f.init_path: f for f in findings}
+    assert by_init["pkg/__init__.py"].init_bytes == 14
+    assert by_init["pkg/sub/__init__.py"].init_bytes == 0
+    assert {f.job for f in findings} == {"c-a"}
+    assert {f.declared_path for f in findings} == {"pkg/sub/mod.py"}
+
+
+def test_ancestor_init_census_both_inits_declared_literally(tmp_path: Path) -> None:
+    """(b) both inits declared literally ⇒ 0 findings."""
+    workflow = _aic_manifest(
+        tmp_path,
+        job_id="c-b",
+        paths=[
+            "pkg/sub/mod.py",
+            "pkg/__init__.py",
+            "pkg/sub/__init__.py",
+        ],
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package\n")
+    _aic_optional_init(tmp_path / "pkg" / "sub", body=b"")
+    jobs = _aic_load(workflow)
+
+    assert PACK.ancestor_init_census(jobs, repo_root=tmp_path) == ()
+
+
+def test_ancestor_init_census_declared_glob_covers_inits(tmp_path: Path) -> None:
+    """(c) a glob covering both inits ⇒ 0 findings."""
+    workflow = _aic_manifest(
+        tmp_path,
+        job_id="c-c",
+        paths=["pkg/**"],
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package\n")
+    _aic_optional_init(tmp_path / "pkg" / "sub", body=b"")
+    jobs = _aic_load(workflow)
+
+    assert PACK.ancestor_init_census(jobs, repo_root=tmp_path) == ()
+
+
+def test_ancestor_init_census_allowlist_suppresses_both_inits(
+    tmp_path: Path,
+) -> None:
+    """(d) both inits in the allow-list ⇒ 0 findings."""
+    workflow = _aic_manifest(
+        tmp_path, job_id="c-d", paths=["pkg/sub/mod.py"]
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package\n")
+    _aic_optional_init(tmp_path / "pkg" / "sub", body=b"")
+    jobs = _aic_load(workflow)
+
+    findings = PACK.ancestor_init_census(
+        jobs,
+        repo_root=tmp_path,
+        allowlist=frozenset({"pkg/__init__.py", "pkg/sub/__init__.py"}),
+    )
+
+    assert findings == ()
+
+
+def test_ancestor_init_census_namespace_subinit_omitted(tmp_path: Path) -> None:
+    """(e) ``pkg/sub/__init__.py`` absent (namespace) ⇒ only the ``pkg`` finding."""
+    workflow = _aic_manifest(
+        tmp_path, job_id="c-e", paths=["pkg/sub/mod.py"]
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package\n")
+    # NOTE: pkg/sub/__init__.py is intentionally NOT created.
+    jobs = _aic_load(workflow)
+
+    findings = PACK.ancestor_init_census(jobs, repo_root=tmp_path)
+
+    assert len(findings) == 1, findings
+    assert findings[0].init_path == "pkg/__init__.py"
+    assert findings[0].init_bytes > 0
+
+
+def test_ancestor_init_census_glob_only_declaration_emits_nothing(
+    tmp_path: Path,
+) -> None:
+    """(f) a glob-only declared path list contributes no findings."""
+    workflow = _aic_manifest(
+        tmp_path,
+        job_id="c-f",
+        paths=["pkg/**", "pkg/sub/**"],
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package\n")
+    _aic_optional_init(tmp_path / "pkg" / "sub", body=b"")
+    jobs = _aic_load(workflow)
+
+    assert PACK.ancestor_init_census(jobs, repo_root=tmp_path) == ()
+
+
+def test_ancestor_init_census_ignores_non_exclusive_jobs(tmp_path: Path) -> None:
+    """(g) a non-exclusive job is ignored even if its paths leave inits undeclared."""
+    workflow = tmp_path / "legacy.yml"
+    workflow.write_text(
+        yaml.safe_dump(
+            {
+                "jobs": {
+                    "not-curated": {
+                        "if": PACK.DISABLED_IF,
+                        "runs-on": "ubuntu-latest",
+                        "paths": ["pkg/sub/mod.py"],
+                        "steps": [
+                            {
+                                "name": "non-exclusive fixture",
+                                "run": "echo fixture",
+                            }
+                        ],
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package\n")
+    _aic_optional_init(tmp_path / "pkg" / "sub", body=b"")
+    jobs = PACK.load_legacy_jobs(workflow)
+    assert len(jobs) == 1 and not jobs[0].exclusive
+
+    assert PACK.ancestor_init_census(jobs, repo_root=tmp_path) == ()
+
+
+def test_ancestor_init_census_dedupes_per_job_init(tmp_path: Path) -> None:
+    """(h) two declared files under ``pkg/`` ⇒ one ``pkg/__init__.py`` finding.
+
+    Dedupe keeps the lex first ``declared_path``: ``pkg/a.py`` (over ``pkg/b.py``).
+    """
+    workflow = _aic_manifest(
+        tmp_path,
+        job_id="c-h",
+        paths=["pkg/b.py", "pkg/a.py", "pkg/sub/mod.py"],
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package\n")
+    _aic_optional_init(tmp_path / "pkg" / "sub", body=b"")
+    jobs = _aic_load(workflow)
+
+    findings = PACK.ancestor_init_census(jobs, repo_root=tmp_path)
+
+    by_init: dict[str, PACK.AncestorInitFinding] = {}
+    for finding in findings:
+        # (job, init_path) uniqueness ⇒ each init_path appears once per job.
+        assert finding.init_path not in by_init, finding
+        by_init[finding.init_path] = finding
+    assert set(by_init) == {"pkg/__init__.py", "pkg/sub/__init__.py"}
+    assert by_init["pkg/__init__.py"].declared_path == "pkg/a.py"
+    assert by_init["pkg/sub/__init__.py"].declared_path == "pkg/sub/mod.py"
+
+
+def test_ancestor_init_census_glob_entry_ancestors_not_walked(tmp_path: Path) -> None:
+    """(j) a glob whose OWN ancestors are not covered by it emits nothing.
+
+    ``tests/test_x_*.py`` sits under ``tests/``, and ``tests/__init__.py`` is
+    neither declared literally nor matched by the glob. Only the rule that
+    lexical ancestors of GLOB entries are not walked keeps this at zero
+    findings — dropping the ``if _has_glob(declared): continue`` guard
+    (mutant m2) walks ``test_x_*.py`` upward, finds the uncovered init, and
+    turns this test RED.
+    """
+    workflow = _aic_manifest(tmp_path, job_id="c-j", paths=["tests/test_x_*.py"])
+    _aic_optional_init(tmp_path / "tests", body=b"# tests package\n")
+    jobs = _aic_load(workflow)
+
+    assert PACK.ancestor_init_census(jobs, repo_root=tmp_path) == ()
+
+
+def test_ancestor_init_census_glob_covered_init_suppresses_literal(
+    tmp_path: Path,
+) -> None:
+    """(k) literal path + covering glob ⇒ 0 findings for both ancestors.
+
+    ``pkg/**`` matches ``pkg/__init__.py`` and ``pkg/sub/__init__.py`` (verified
+    against ``_glob_to_regex``: ``**`` crosses ``/``), so the ancestors walked
+    from the literal ``pkg/sub/mod.py`` are suppressed by the glob-coverage
+    check. Dropping ``if _matches_any(job.paths, init_path): continue``
+    (mutant m3) emits both pairs and turns this test RED. The glob entry itself
+    is still never walked — (j) pins that half.
+    """
+    workflow = _aic_manifest(
+        tmp_path, job_id="c-k", paths=["pkg/sub/mod.py", "pkg/**"]
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package\n")
+    _aic_optional_init(tmp_path / "pkg" / "sub", body=b"")
+    jobs = _aic_load(workflow)
+
+    assert PACK.ancestor_init_census(jobs, repo_root=tmp_path) == ()
+
+
+def test_ancestor_init_census_findings_sorted_by_job_then_init(
+    tmp_path: Path,
+) -> None:
+    """(l) return order is sorted by ``(job, init_path)``, not discovery order.
+
+    Two jobs, two inits each, and the manifest lists ``z-job`` FIRST, so raw
+    discovery would emit ``z-job`` findings before ``a-job`` ones. The census
+    contract is the sorted tuple: reversing the return (mutant m6) puts
+    ``z-job`` first and turns the exact-order assertion RED; dropping the sort
+    altogether does the same.
+    """
+    workflow = tmp_path / "legacy.yml"
+    job_block = {
+        "if": PACK.DISABLED_IF,
+        "runs-on": "ubuntu-latest",
+        "scope": "exclusive",
+        "steps": [{"name": "ancestor-init fixture", "run": "echo fixture"}],
+    }
+    workflow.write_text(
+        yaml.safe_dump(
+            {
+                "jobs": {
+                    "z-job": {**job_block, "paths": ["zsub/deep/mod.py"]},
+                    "a-job": {**job_block, "paths": ["asub/deep/mod.py"]},
+                }
+            },
+            sort_keys=False,
+        ),
+        encoding="utf-8",
+    )
+    _aic_optional_init(tmp_path / "zsub", body=b"# z\n")
+    _aic_optional_init(tmp_path / "zsub" / "deep", body=b"")
+    _aic_optional_init(tmp_path / "asub", body=b"# a\n")
+    _aic_optional_init(tmp_path / "asub" / "deep", body=b"")
+    jobs = PACK.load_legacy_jobs(workflow)
+    assert [j.job_id for j in jobs] == ["z-job", "a-job"], "discovery order"
+
+    findings = PACK.ancestor_init_census(jobs, repo_root=tmp_path)
+
+    order = [(f.job, f.init_path) for f in findings]
+    assert order == [
+        ("a-job", "asub/__init__.py"),
+        ("a-job", "asub/deep/__init__.py"),
+        ("z-job", "zsub/__init__.py"),
+        ("z-job", "zsub/deep/__init__.py"),
+    ], order
+    assert {f.declared_path for f in findings} == {
+        "zsub/deep/mod.py",
+        "asub/deep/mod.py",
+    }
+
+
+def test_ancestor_init_census_cli_flag_prints_summary_line(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """(i) ``--ancestor-init-census`` on a tmp manifest exits 0 with summary line.
+
+    ``GIT_CEILING_DIRECTORIES`` pins git discovery to the fixture tree, so the
+    assertion holds whether pytest's ``--basetemp`` sits outside any checkout or
+    inside this repository's worktree.
+    """
+    workflow = _aic_manifest(
+        tmp_path, job_id="cli-fixture", paths=["pkg/sub/mod.py"]
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package pkg\n")
+    _aic_optional_init(tmp_path / "pkg" / "sub", body=b"# sub\n")
+    script = ROOT / "scripts" / "run_ci_pack.py"
+    # The ceiling must name the PARENT of the fixture dir: observed with git
+    # 2.43.0, ``GIT_CEILING_DIRECTORIES=<cwd itself>`` still discovered the
+    # enclosing checkout (rc=0, the cwd is never excluded), while
+    # ``GIT_CEILING_DIRECTORIES=<cwd's parent>`` stopped the walk-up with
+    # ``fatal: not a git repository`` (rc=128). Blocked discovery makes
+    # ``_find_repo_root`` fall back to ``workflow.parent`` == ``tmp_path``,
+    # so the fixture census prints ``pairs=2`` under any ``--basetemp``.
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--workflow",
+            str(workflow),
+            "--ancestor-init-census",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+        cwd=str(tmp_path),
+        env={**os.environ, "GIT_CEILING_DIRECTORIES": str(tmp_path.resolve().parent)},
+    )
+    assert proc.returncode == 0, (proc.stdout, proc.stderr)
+    out_lines = proc.stdout.strip().splitlines()
+    summary = out_lines[0]
+    assert summary.startswith("ANCESTOR_INIT_CENSUS pairs=2 jobs=1/1 "), summary
+    rest = summary[len("ANCESTOR_INIT_CENSUS "):]
+    parts = dict(
+        token.split("=", 1) for token in rest.split() if "=" in token
+    )
+    assert parts["pairs"] == "2"
+    assert parts["jobs"] == "1/1"
+    assert parts["nonempty_pairs"] == "2"
+    assert parts["distinct_inits"] == "2"
+    init_lines = out_lines[1:]
+    assert len(init_lines) == 2, init_lines
+    parsed = [tuple(line.split()) for line in init_lines]
+    assert parsed == [
+        ("pkg/__init__.py", "bytes=14", "jobs=1"),
+        ("pkg/sub/__init__.py", "bytes=6", "jobs=1"),
+    ], parsed
+
+
+def test_ancestor_init_census_honours_gate_flag(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """(o) the census honours ``--gate`` through the load choke point.
+
+    ``--gate`` defaults to ``None`` (whole manifest), so the published
+    census is unchanged; when present the census must filter exactly like
+    every other mode does — ``load_legacy_jobs(path, gate=...)`` is the
+    single choke point. A fixture with one ``code`` job (three ancestor
+    inits) and one ``data`` job (two ancestor inits) prints five pairs
+    whole-manifest, three under ``--gate code`` (only ``csub/`` rows), two
+    under ``--gate data`` (only ``dsub/`` rows). Before the census passed
+    ``args.gate`` every invocation printed the same five pairs (OBSERVED).
+
+    ``GIT_CEILING_DIRECTORIES`` pins ``_find_repo_root`` to the fixture
+    tree, same ceiling the CLI summary test documents.
+    """
+    workflow = tmp_path / "legacy.yml"
+    job_block = {
+        "if": PACK.DISABLED_IF,
+        "runs-on": "ubuntu-latest",
+        "scope": "exclusive",
+        "steps": [{"name": "ancestor-init fixture", "run": "echo fixture"}],
+    }
+    workflow.write_text(
+        yaml.safe_dump(
+            {
+                "jobs": {
+                    "code-job": {
+                        **job_block,
+                        "gate": "code",
+                        "paths": ["csub/deep/mod.py", "csub/other/mod.py"],
+                    },
+                    "data-job": {
+                        **job_block,
+                        "gate": "data",
+                        "paths": ["dsub/deep/mod.py"],
+                    },
+                }
+            },
+            sort_keys=False,
+        ),
+        encoding="utf-8",
+    )
+    _aic_optional_init(tmp_path / "csub", body=b"# csub\n")
+    _aic_optional_init(tmp_path / "csub" / "deep", body=b"")
+    _aic_optional_init(tmp_path / "csub" / "other", body=b"")
+    _aic_optional_init(tmp_path / "dsub", body=b"# dsub\n")
+    _aic_optional_init(tmp_path / "dsub" / "deep", body=b"")
+    monkeypatch.setenv(
+        "GIT_CEILING_DIRECTORIES", str(tmp_path.resolve().parent)
+    )
+
+    def _census(gate_args: list[str]) -> str:
+        args = PACK.parse_args(
+            [
+                "--workflow",
+                str(workflow),
+                "--ancestor-init-census",
+                *gate_args,
+            ]
+        )
+        assert PACK._run_ancestor_init_census(args) == 0
+        return capsys.readouterr().out
+
+    whole = _census([])
+    code = _census(["--gate", "code"])
+    data = _census(["--gate", "data"])
+
+    assert whole.splitlines()[0].startswith("ANCESTOR_INIT_CENSUS pairs=5 "), whole
+    assert "jobs=2/2" in whole.splitlines()[0], whole
+    assert code.splitlines()[0].startswith("ANCESTOR_INIT_CENSUS pairs=3 "), code
+    assert "jobs=1/1" in code.splitlines()[0], code
+    assert data.splitlines()[0].startswith("ANCESTOR_INIT_CENSUS pairs=2 "), data
+    assert "jobs=1/1" in data.splitlines()[0], data
+    assert "csub/" in code and "dsub/" not in code, code
+    assert "dsub/" in data and "csub/" not in data, data
+    assert {line.split()[0] for line in code.splitlines()[1:]} == {
+        "csub/__init__.py",
+        "csub/deep/__init__.py",
+        "csub/other/__init__.py",
+    }, code
+    assert whole != code and code != data and whole != data
+
+
+@pytest.mark.parametrize(
+    "other_flag,other_value",
+    [
+        pytest.param("--execute", None, id="--execute"),
+        pytest.param("--validate-only", None, id="--validate-only"),
+        pytest.param("--plan-only", None, id="--plan-only"),
+        pytest.param("--plan-json", "/nonexistent/plan.json", id="--plan-json"),
+        pytest.param("--emit-plan-json", "-", id="--emit-plan-json"),
+        pytest.param("--emit-plan-json", "", id="--emit-plan-json-empty"),
+        pytest.param("--emit-changed-files", "/nonexistent/x.json", id="--emit-changed-files"),
+        pytest.param("--emit-changed-files", "", id="--emit-changed-files-empty"),
+        pytest.param("--changed-files-file", "/nonexistent/x.json", id="--changed-files-file"),
+        pytest.param("--expect-plan-sha", "0" * 40, id="--expect-plan-sha"),
+        pytest.param("--emit-semantic-fragment", "x", id="--emit-semantic-fragment"),
+        pytest.param("--emit-timing-observations", "x", id="--emit-timing-observations"),
+        pytest.param("--github-output", "/nonexistent/out", id="--github-output"),
+        pytest.param("--changed-from", "0" * 40, id="--changed-from"),
+        pytest.param("--changed-from", "", id="--changed-from-empty"),
+    ],
+)
+def test_ancestor_init_census_refuses_ambiguous_modes(
+    other_flag: str, other_value: "str | None", capsys: pytest.CaptureFixture[str]
+) -> None:
+    """(n) the census is terminal: pairing it with another mode exits 2 at parse.
+
+    Before this refusal ``--ancestor-init-census`` silently WON the dispatch
+    in ``main`` (observed rc=0 with the paired flag ignored). ``parse_args``
+    must now reject the combination the same way it rejects
+    ``--execute``/``--validate-only`` — a usage error, exit code 2.
+
+    ``--plan-json`` (``type=Path, default=None``) and ``--emit-plan-json``
+    (``default=None``) are the remaining silent-win class: they are NOT
+    ``store_true``, so a plain truthiness loop misses them and the valueless
+    tokens cannot be passed bare — the pair is (flag, value) and the refusal
+    keys on ``is not None``. Seven more ``default=None`` flags join that class.
+    The empty-value pins kill a truthiness mutant (``""`` is falsy); an empty
+    ``--plan-json``/``--github-output`` could not — both are ``type=Path``.
+
+    rc 2 alone does not say WHICH refusal fired — any later ``parser.error``
+    would do. The exact message is part of the contract (a renamed string is
+    a silent UX break), so stderr is captured (``capsys``, as the rest of
+    this suite uses) and asserted as well.
+    """
+    argv = ["--workflow", str(MANIFEST), "--ancestor-init-census", other_flag]
+    if other_value is not None:
+        argv.append(other_value)
+    with pytest.raises(SystemExit) as excinfo:
+        PACK.parse_args(argv)
+    assert excinfo.value.code == 2
+    captured = capsys.readouterr()
+    assert (
+        "--ancestor-init-census is a terminal report-only mode" in captured.err
+    ), captured.err
+
+
+# ---------------------------------------------------------------------------
+# W15-F-FVE lane — RATCHET on the ancestor-init blind spot (ceiling, not fix).
+#
+# #9315 shipped the report-only census; the lane that measured it found the
+# blind spot on main at seed 9b4bd85aa4f0a5c56bb0f025954aa743a2fe8c68: 340
+# ``(job, ancestor __init__.py)`` rows across 106 of 112 curated-exclusive
+# jobs, 136 of those rows (42 jobs) pointing at a SUBSTANTIVE init — one
+# whose module body has a statement beyond a leading docstring and
+# ``from __future__`` imports, i.e. code CPython actually executes on every
+# import under that package while no job's ``paths:`` selects it. Fixing the
+# closure is deferred (full ancestor expansion breaches the packing-probe
+# ceilings), so these constants make the blind spot NON-GROWABLE meanwhile:
+# a new exclusive declaration whose tracked ancestor ``__init__.py`` stays
+# undeclared pushes the measured rows over the ceiling and REDs here. The
+# comparison is ``<=`` on purpose — shrinking the blind spot stays green.
+#
+# Determinism: ``ancestor_init_census`` resolves existence with ``stat()``
+# on the WORKING TREE (scripts/run_ci_pack.py:1822-1830), and a job checkout
+# may be partial, so the ceiling counts are computed from the TRACKED
+# inventory (``git ls-tree -r --name-only HEAD``) through the census module's
+# own lexical mapping helpers (``_ancestor_init_paths``/``_has_glob``/
+# ``_matches_any``/``ANCESTOR_INIT_ALLOWLIST``) — never from what happens to
+# be materialised. The shipped function is still called and pinned as the
+# cross-check: its rows must be a subset of the tracked mapping on any tree
+# (an init can be tracked-but-absent from a sparse checkout; a clean checkout
+# has no untracked package inits to invent extra rows).
+# ---------------------------------------------------------------------------
+
+# Lane W15-F-FVE measured 340 / 136 at seed 9b4bd85 (its sparse checkout's
+# census printed the identical 340 because it excludes only data/, site/,
+# mockups/, verify_shots/). Main moved before this landed, so the seat
+# re-measured with the same tracked-inventory walk at main 3a316a30
+# (2026-10-14) and the ceilings pin THAT measurement:
+#   total rows       = 344 across 107/113 exclusive jobs
+#   substantive rows = 138 across 43/113 exclusive jobs
+_ANCESTOR_INIT_CENSUS_CEILING = 344
+_ANCESTOR_INIT_SUBSTANTIVE_CEILING = 138
+
+_ANCESTOR_INIT_CENSUS_CLI = (
+    "python3 scripts/run_ci_pack.py --workflow .github/ci/legacy-jobs.yml "
+    "--ancestor-init-census"
+)
+
+
+def _aic_tracked_paths(root: Path = ROOT) -> frozenset[str]:
+    """Paths tracked at HEAD — stable under any sparse/partial checkout.
+
+    The owning job ``ci-control-plane-contracts`` runs a bare
+    ``actions/checkout@v4`` (.github/ci/legacy-jobs.yml:8142) with no
+    ``sparse-checkout`` or ``filter`` option, so HEAD's tree and blobs are
+    fetched whole and these git reads need no network in CI either.
+    ``-z`` is used because it gives NUL-terminated, unquoted names
+    regardless of ``core.quotePath``: with plain ``--name-only`` a
+    non-ASCII or control-character path is emitted octal-escaped inside
+    double quotes, so such an init would silently drop out of the
+    inventory and the ratchet would fail open.
+    """
+    result = subprocess.run(
+        ["git", "ls-tree", "-r", "-z", "--name-only", "HEAD"],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return frozenset(p for p in result.stdout.split("\0") if p)
+
+
+def test_aic_tracked_paths_keeps_non_ascii_paths(tmp_path: Path) -> None:
+    """A non-ASCII or control-character tracked path survives ``core.quotePath`` escaping.
+
+    Git's default ``core.quotePath=true`` makes a plain
+    ``ls-tree -r --name-only`` print such paths octal-escaped inside
+    double quotes (non-ASCII bytes become ``\\NNN`` octal sequences; a
+    TAB becomes the C-style ``\\t``); the
+    escaped line then never equals the real init row, so the census
+    inventory would silently lose it (fail open). The quoting is pinned
+    repo-locally so this test discriminates on every host regardless of
+    any global git config.
+    """
+    target = tmp_path / "pkg" / "na\u00efve"
+    target.mkdir(parents=True)
+    (target / "__init__.py").write_text("", encoding="utf-8")
+    tab_target = tmp_path / "tab\there"
+    tab_target.mkdir(parents=True)
+    (tab_target / "y.py").write_text("", encoding="utf-8")
+
+    def git(*args: str) -> None:
+        subprocess.run(
+            # -c core.hooksPath= isolates the scratch repo from any
+            # global hook configuration; a hostile global hook that
+            # exit(1)s on commit would otherwise fail this test
+            # without involving _aic_tracked_paths.
+            ["git", "-c", "core.hooksPath=", *args],
+            cwd=tmp_path,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+
+    git("init", "-q")
+    git("add", "pkg/na\u00efve/__init__.py", "tab\there/y.py")
+    git("config", "core.quotePath", "true")
+    git(
+        "-c", "user.name=t",
+        "-c", "user.email=t@example.invalid",
+        "-c", "commit.gpgsign=false",
+        "commit", "-qm", "x",
+    )
+    tracked = _aic_tracked_paths(tmp_path)
+    assert "pkg/na\u00efve/__init__.py" in tracked
+    assert "tab\there/y.py" in tracked
+
+    # Pin the precondition the test discriminates on: a plain (non -z)
+    # ls-tree with the repo-local `core.quotePath true` setting must
+    # emit the escaped, double-quoted form, never the raw path;
+    # otherwise the test would silently stop discriminating.
+    plain = subprocess.run(
+        ["git", "-c", "core.hooksPath=", "ls-tree", "-r", "--name-only", "HEAD"],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    plain_lines = plain.stdout.splitlines()
+    assert '"pkg/na\\303\\257ve/__init__.py"' in plain_lines
+    assert '"tab\\there/y.py"' in plain_lines
+    assert "pkg/na\u00efve/__init__.py" not in plain_lines
+
+
+def _aic_rows_from_tracked_inventory(
+    jobs: list[PACK.LegacyJob], tracked_paths: frozenset[str]
+) -> list[tuple[str, str, str]]:
+    """``ancestor_init_census``'s declared-path -> ancestor-init mapping,
+    with existence resolved from the tracked inventory instead of the working
+    tree. Same walk, same three suppressions (literal declaration, glob match,
+    allowlist), same per-``(job, init)`` dedupe keeping the lexicographically
+    first declared path (scripts/run_ci_pack.py:1806-1838) — built from the
+    module's own helpers so the mapping cannot drift from the shipped census.
+    """
+    rows: dict[tuple[str, str], tuple[str, str, str]] = {}
+    for job in jobs:
+        if not job.exclusive:
+            continue
+        declared_set = frozenset(job.paths)
+        for declared in job.paths:
+            if PACK._has_glob(declared):
+                continue
+            for rel_dir in PACK._ancestor_init_paths(declared):
+                init_path = f"{rel_dir}/__init__.py"
+                if init_path in declared_set:
+                    continue
+                if PACK._matches_any(job.paths, init_path):
+                    continue
+                if init_path in PACK.ANCESTOR_INIT_ALLOWLIST:
+                    continue
+                if init_path not in tracked_paths:
+                    continue
+                key = (job.job_id, init_path)
+                if key not in rows or declared < rows[key][1]:
+                    rows[key] = (job.job_id, declared, init_path)
+    return sorted(rows.values(), key=lambda row: (row[0], row[2]))
+
+
+def _aic_init_is_substantive(source: str) -> bool:
+    """True if the module body holds any statement beyond a leading
+    docstring and ``from __future__`` imports — the W15-F-FVE definition that
+    measured 136 substantive rows at 9b4bd85 and 138 at 3a316a30. Such an
+    init runs real code on every import of its package, which is exactly
+    what an undeclared path hides. Unparseable source counts as substantive:
+    the ratchet fails closed.
+    """
+    try:
+        body = list(ast.parse(source).body)
+    except SyntaxError:
+        return True
+    if (
+        body
+        and isinstance(body[0], ast.Expr)
+        and isinstance(body[0].value, ast.Constant)
+        and isinstance(body[0].value.value, str)
+    ):
+        body = body[1:]
+    for stmt in body:
+        if isinstance(stmt, ast.ImportFrom) and stmt.module == "__future__":
+            continue
+        return True
+    return False
+
+
+def _aic_ceiling_failure(
+    kind: str, measured: int, ceiling: int, rows: list[tuple[str, str, str]]
+) -> str:
+    over_jobs = sorted({job for job, _declared, _init in rows})
+    return (
+        f"ancestor-init blind spot GREW: {kind} rows measured {measured} "
+        f"against ceiling {ceiling} (main 3a316a30) — "
+        f"{measured - ceiling} over. Remedy: declare the ancestor "
+        "`__init__.py` in that job's `paths:` so the change that executes it "
+        "selects the job. List every row with "
+        f"`{_ANCESTOR_INIT_CENSUS_CLI}`; jobs currently covered: "
+        f"{len(over_jobs)} ({', '.join(over_jobs[:8])} ...)"
+    )
+
+
+def test_ancestor_init_census_does_not_grow() -> None:
+    """Ratchet: the undeclared-ancestor-init blind spot may not grow.
+
+    Closes the 2026-10-14 measurement at main 3a316a30 (344 rows / 107
+    jobs, 138 substantive / 43 jobs) behind two ``<=`` ceilings. Counts
+    come from HEAD's tracked inventory, so the verdict is identical in a
+    full CI checkout and in a sparse session tree.
+    """
+    # The CLI's own two calls (_run_ancestor_init_census,
+    # scripts/run_ci_pack.py:4800 and :4802; ``gate`` defaults to None,
+    # i.e. the whole manifest, which is what this call loads):
+    #   jobs = load_legacy_jobs(args.workflow, gate=args.gate)
+    #   findings = ancestor_init_census(jobs, repo_root=repo_root)
+    jobs = PACK.load_legacy_jobs(MANIFEST)
+    tracked_paths = _aic_tracked_paths()
+    rows = _aic_rows_from_tracked_inventory(jobs, tracked_paths)
+
+    # Cross-check against the shipped census function itself: every row it
+    # emits from the working tree must exist in the tracked mapping too.
+    census = PACK.ancestor_init_census(jobs, repo_root=ROOT)
+    tracked_keys = {(job, init) for job, _declared, init in rows}
+    census_keys = {(f.job, f.init_path) for f in census}
+    assert census_keys, (
+        "ancestor_init_census returned no rows — the cross-check "
+        "would be vacuous"
+    )
+    assert census_keys <= tracked_keys, (
+        "ancestor_init_census emitted working-tree rows absent from the "
+        f"tracked mapping: {sorted(census_keys - tracked_keys)}"
+    )
+
+    substantive_cache: dict[str, bool] = {}
+
+    def _substantive(init_path: str) -> bool:
+        if init_path not in substantive_cache:
+            blob = subprocess.run(
+                ["git", "show", f"HEAD:{init_path}"],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout
+            substantive_cache[init_path] = _aic_init_is_substantive(blob)
+        return substantive_cache[init_path]
+
+    substantive_rows = [row for row in rows if _substantive(row[2])]
+
+    assert len(rows) <= _ANCESTOR_INIT_CENSUS_CEILING, _aic_ceiling_failure(
+        "total", len(rows), _ANCESTOR_INIT_CENSUS_CEILING, rows
+    )
+    assert len(substantive_rows) <= _ANCESTOR_INIT_SUBSTANTIVE_CEILING, (
+        _aic_ceiling_failure(
+            "substantive",
+            len(substantive_rows),
+            _ANCESTOR_INIT_SUBSTANTIVE_CEILING,
+            substantive_rows,
+        )
+    )

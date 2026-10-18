@@ -14,7 +14,9 @@ import pytest
 
 from marketdesk_extractor import db, trickle
 from marketdesk_extractor.config import Config
-from marketdesk_extractor.marketdesk import DownloadCapExhausted
+from marketdesk_extractor.marketdesk import (
+    DownloadCapExhausted, MarketDeskClient, MarketDeskError, TransientHTTPError,
+)
 from marketdesk_extractor.schemas import Status
 
 NOW = datetime(2026, 7, 27, 12, 0, 0, tzinfo=timezone.utc)  # Monday 08:00 ET
@@ -570,3 +572,190 @@ def test_a_healthy_account_is_never_recycled(tmp_path, monkeypatch):
     )
     trickle._recycle_dead_sessions(cfg, states)
     assert calls == []
+
+
+# ---------------------------------------------------------------------------
+# Production post-recovery regression: transient server/TLS failure must NEVER
+# be mistaken for an unsupported PDF, nor burn a second request in the tick.
+# ---------------------------------------------------------------------------
+def test_blob_request_pre_tls_disconnect_is_typed_transient(tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+
+    class NeverConnectedRequest:
+        def __init__(self):
+            self.calls = 0
+
+        def get(self, _url, **_kwargs):
+            self.calls += 1
+            raise RuntimeError(
+                "APIRequestContext.get: Client network socket disconnected "
+                "before secure TLS connection was established"
+            )
+
+    class Context:
+        request = NeverConnectedRequest()
+
+    client = MarketDeskClient(Context(), cfg)
+    with pytest.raises(TransientHTTPError, match="before TLS establishment"):
+        client.download_blob("known_valid_report")
+    assert Context.request.calls == 1, "do not replay uncertain vendor GET effects"
+
+
+def test_blob_request_http_503_is_transient_not_unsupported(tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+
+    class ServerError:
+        status = 503
+        ok = False
+
+    class Request:
+        calls = 0
+
+        def get(self, _url, **_kwargs):
+            self.calls += 1
+            return ServerError()
+
+    class Context:
+        request = Request()
+
+    with pytest.raises(TransientHTTPError, match="503"):
+        MarketDeskClient(Context(), cfg).download_blob("known_valid_report")
+    assert Context.request.calls == 1
+
+
+def test_blob_request_unknown_post_handshake_failure_is_not_retried(
+    tmp_path, monkeypatch
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+
+    class AmbiguousRequest:
+        calls = 0
+
+        def get(self, _url, **_kwargs):
+            self.calls += 1
+            raise RuntimeError("stream socket broke after headers")
+
+    class Context:
+        request = AmbiguousRequest()
+
+    with pytest.raises(RuntimeError, match="after headers"):
+        MarketDeskClient(Context(), cfg).download_blob("unknown_effect")
+    assert Context.request.calls == 1
+
+
+def test_transient_503_requeues_with_five_minute_account_backoff(
+    tmp_path, monkeypatch
+):
+    """No permanent SKIPPED_UNSUPPORTED or FAILED on server 503; after one
+    attempt the account waits five minutes while preserving its source row.
+    It also spends a pacing token without a confirmed-download ledger entry.
+    """
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed(conn, "first", published_at=NOW - timedelta(minutes=1))
+    _seed(conn, "second", published_at=NOW - timedelta(minutes=2))
+
+    class OneTransient(FakeClient):
+        def download_blob(self, blob_id):
+            self.downloaded.append(blob_id)
+            if len(self.downloaded) == 1:
+                raise TransientHTTPError("blob first -> 503")
+            return b"%PDF-1.4\n" + blob_id.encode() + b"\n%%EOF\n"
+
+    _patch_sessions(monkeypatch, client_cls=OneTransient)
+    states = [trickle.AccountState(profile=p) for p in cfg.profiles]
+    trickle._open_sessions(cfg, states)
+    try:
+        first = trickle.run_tick(cfg, conn, states, NOW, dry_run=False)
+        assert first.transient_errors == 1
+        assert first.unsupported == first.errors == first.downloaded_new == 0
+        assert states[0].client.downloaded == ["first"]
+        assert states[0].transient_retry_after == NOW + timedelta(minutes=5)
+        assert db.get_by_blob_id(conn, "first")["status"] == Status.DISCOVERED.value
+        assert db.trailing_24h_count(conn, states[0].name, NOW) == 0
+        assert "transient_errors=1" in first.summary()
+
+        second = trickle.run_tick(
+            cfg, conn, states, NOW + timedelta(minutes=4), dry_run=False
+        )
+        assert second.downloaded_new == second.transient_errors == 0
+        assert states[0].client.downloaded == ["first"]
+        assert trickle.plan_account(
+            cfg, conn, states[0], NOW + timedelta(minutes=4)
+        ).next_blob_id is None
+
+        recovered = trickle.run_tick(
+            cfg, conn, states, NOW + timedelta(minutes=6),
+            dry_run=False, per_tick_cap=1
+        )
+        assert recovered.downloaded_new == 1
+        assert db.get_by_blob_id(conn, "first")["status"] == Status.COMPLETE.value
+        assert db.trailing_24h_count(
+            conn, states[0].name, NOW + timedelta(minutes=6)
+        ) == 1
+        assert states[0].client.downloaded == ["first", "first"]
+    finally:
+        trickle._close_sessions(states);conn.close()
+
+
+def test_transient_one_account_does_not_pause_other_authorized_account(
+    tmp_path, monkeypatch
+):
+    cfg = _cfg(
+        tmp_path, monkeypatch,
+        profiles=f"first:{tmp_path / 'p1'},second:{tmp_path / 'p2'}",
+    )
+    conn = db.connect(cfg.database_url);db.init_db(conn)
+    _seed(conn, "high_priority", published_at=NOW - timedelta(minutes=1))
+
+    class DownClient(FakeClient):
+        def download_blob(self, blob_id):
+            self.downloaded.append(blob_id)
+            raise TransientHTTPError("blob high_priority -> 502")
+
+    first_state, second_state = [
+        trickle.AccountState(profile=p, authed=True)
+        for p in cfg.profiles
+    ]
+    first_state.client = DownClient(object(), cfg)
+    second_state.client = FakeClient(object(), cfg)
+    first_state.tokens = second_state.tokens = float(cfg.trickle_burst)
+    first_state.last_refill = second_state.last_refill = NOW
+    try:
+        tick = trickle.run_tick(
+            cfg, conn, [first_state, second_state], NOW, dry_run=False
+        )
+        assert tick.transient_errors == 1
+        assert tick.downloaded_new == 1
+        assert first_state.transient_retry_after == NOW + timedelta(minutes=5)
+        assert second_state.transient_retry_after is None
+        assert db.get_by_blob_id(conn, "high_priority")["status"] == Status.COMPLETE.value
+        assert db.trailing_24h_count(conn, second_state.name, NOW) == 1
+        assert db.trailing_24h_count(conn, first_state.name, NOW) == 0
+    finally:
+        conn.close()
+
+
+def test_permanent_non_pdf_still_skipped_without_retry(tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url);db.init_db(conn)
+    _seed(conn, "unsupported", published_at=NOW - timedelta(minutes=1))
+
+    class UnsupportedClient(FakeClient):
+        def download_blob(self, blob_id):
+            self.downloaded.append(blob_id)
+            raise MarketDeskError("blob unsupported: not a PDF")
+
+    _patch_sessions(monkeypatch, client_cls=UnsupportedClient)
+    state = trickle.AccountState(profile=cfg.profiles[0])
+    trickle._open_sessions(cfg, [state])
+    try:
+        tick = trickle.run_tick(cfg, conn, [state], NOW, dry_run=False)
+        assert tick.unsupported == 1
+        assert tick.transient_errors == 0
+        assert state.transient_retry_after is None
+        assert db.get_by_blob_id(conn, "unsupported")["status"] == (
+            Status.SKIPPED_UNSUPPORTED.value
+        )
+    finally:
+        trickle._close_sessions([state]);conn.close()

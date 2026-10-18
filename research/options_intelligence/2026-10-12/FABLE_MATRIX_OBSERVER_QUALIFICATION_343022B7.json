@@ -1,0 +1,519 @@
+{
+  "schema": "fable.matrix_merged_observer_qualification.v1",
+  "root": "01a10340-ddc1-7e41-9b42-9c8543c28c3d",
+  "accepted_scope": "Merged diagnostic source and one read-only all-12-root baseline observation; natural-session and older/newer acceptance remain pending.",
+  "pr": 8884,
+  "merge": "343022b7a074223a571f66986a5c92c5141ccfb3",
+  "merged_at": "2026-10-12T16:55:37Z",
+  "tested_head": "76129c2d6b1405506591947bf709292414d833e5",
+  "ci": {
+    "run": 38278294891,
+    "conclusion": "SUCCESS",
+    "packs_passed": 12,
+    "ci_gate": "SUCCESS",
+    "completed_at": "2026-10-12T16:55:02Z",
+    "fences_run": 38278295251,
+    "fences": "SUCCESS"
+  },
+  "controller": {
+    "run": 38280709837,
+    "source": "c619799fbe920b1a109b78160addfe2031043e69",
+    "current_proof_at": "2026-10-12T16:55:33.5921915Z",
+    "merge_notice_at": "2026-10-12T16:55:38.4512968Z",
+    "log": "controller-38280709837-pr8884-merge-20261012.log",
+    "log_sha256": "e1d563ccf549bd5920aab884f9304854c7d863e923f384102f93c14a1423f567"
+  },
+  "source_qualification_before_execution": {
+    "path": "pr8884-merged-source-qualification-343022b7-20261012.json",
+    "bytes": 2431,
+    "sha256": "19c914b6e18996bb0a6931aef482020afd9ca599c4378b636e320cebbeceb0fe",
+    "value": {
+      "at": "2026-10-12T17:18:23.945238+00:00",
+      "merge": "343022b7a074223a571f66986a5c92c5141ccfb3",
+      "merge_parent": "c619799fbe920b1a109b78160addfe2031043e69",
+      "tested_head": "76129c2d6b1405506591947bf709292414d833e5",
+      "reviewed": "188ae9cd68d8a8eb5c43dfdb7d3e327de633b499",
+      "current_main": "802895d4e29b64d165bba1eafc41ce89028abbe9",
+      "merge_ancestor_of_main": true,
+      "files": {
+        "scripts/observe_options_matrix_publication.py": {
+          "sha256": "de4f8c5081ba2094bacb6bc45bc11956cc691ccf9aebda07fd7d634ee8dac341",
+          "bytes": 25744,
+          "equal_reviewed_and_tested_head": true
+        },
+        "scripts/qualify_options_matrix_older_snapshot.py": {
+          "sha256": "028f41011be1a00e019eeaf05050e69383258b271ca10d3605f79bbedefff3b4",
+          "bytes": 27643,
+          "equal_reviewed_and_tested_head": true
+        },
+        "tests/test_observe_options_matrix_publication.py": {
+          "sha256": "2c626654b3a2bb1ce413166dee9e36b37e9ac98e9d88ca433b66be1c823d5c59",
+          "bytes": 25943,
+          "equal_reviewed_and_tested_head": true
+        },
+        "tests/test_qualify_options_matrix_older_snapshot.py": {
+          "sha256": "84bb73f353e15a70d089c321642c9769fbc27efb73948cd9af53dc748d394073",
+          "bytes": 22427,
+          "equal_reviewed_and_tested_head": true
+        }
+      },
+      "manifest_sha256": "afcea9e96cc8637ac30cef80f05577f19e5500050792233ca7448c65b420c782",
+      "manifest_equal_tested_head": true,
+      "only_manifest_job_changed_from_merge_parent": [
+        "options-matrix-code"
+      ],
+      "merged_main_runtime_differences_from_deployed": {
+        "engine/options_structure.py": {
+          "deployed_sha256": "9e2781bc8cf80c14c56e89995c15f85575ca29a5f7f613317e64fbde0deba14a",
+          "merged_sha256": "14941971b43c425fee4ad79f05ef026521e80843885161d405d0bf19f3f6dc3b"
+        }
+      },
+      "runtime_install_policy": "Preserve deployed6361 runtime, not merge newer main producer files. Diagnostic uses --repo existing deployed root and validates its12-file inventory/plist before and after. Only two diagnostic files are installed.",
+      "parent_preparation_correction": "Initial local source comparison incorrectly required all merged-main runtime bytes to equal deployed inventory, failed before any remote execution on engine/options_structure.py. Correct gate is preservation of installed runtime; script has not run.",
+      "qualification_script_sha256": "67ef58ef72ed28f6f141013e20aa12d8647d0ba410130fd135e4bc6957a1f77b",
+      "qualification_script_not_yet_run": true
+    }
+  },
+  "observer_qualification_after_execution": {
+    "path": "m1-merged-observer-qualification-343022b7a074.json",
+    "bytes": 16790,
+    "sha256": "7a05a22637b87ebbcaea7f2cc62a31df748b71e5c46f038e5641b52efbfd9ce3",
+    "value": {
+      "at": "2026-10-12T17:18:57.094917+00:00",
+      "diagnostic_merge": "343022b7a074223a571f66986a5c92c5141ccfb3",
+      "runtime_head": "6361f5e0e071dfc050c503e225afe8a4897f0e8d",
+      "plist_unchanged": true,
+      "runtime_files_unchanged": true,
+      "proof_directory": "/Users/chriswong/optionsmatrix-acceptance-343022b7a074",
+      "exit_code": 0,
+      "scripts": {
+        "observe_options_matrix_publication.py": "de4f8c5081ba2094bacb6bc45bc11956cc691ccf9aebda07fd7d634ee8dac341",
+        "qualify_options_matrix_older_snapshot.py": "028f41011be1a00e019eeaf05050e69383258b271ca10d3605f79bbedefff3b4"
+      },
+      "production_writes": false,
+      "natural_invocation_verified": false,
+      "receipt_sha256": "7dfeb51a7cfcc1953e59dc55d07bce084a3d6738095650d8776eebd9dc61da4d",
+      "observation": {
+        "schema": "options_structure.matrix_observation/v1",
+        "observed_at": "2026-10-12T17:18:49.442897+00:00",
+        "roots": {
+          "SPY": {
+            "root": "SPY",
+            "sha256": "b735aa83b3f3be484b022a412df971e65f3a533c2a947af4d29478edf0d48191",
+            "byte_length": 676186,
+            "session": "2026-10-08",
+            "version_ref": "sha256:b735aa83b3f3be484b022a412df971e65f3a533c2a947af4d29478edf0d48191:bytes:676186:session:2026-10-08",
+            "key": "options_structure/matrix/history/SPY/b735aa83b3f3be484b022a412df971e65f3a533c2a947af4d29478edf0d48191.json",
+            "cells": 2898,
+            "spot": 773.93,
+            "observed_sides": 5796,
+            "observed_side_token_set_digest": "dabb30386b8317ead8d0c74ee25020b560ad094e8e5893eb6825724bc2b11352",
+            "observed_side_token_set_encoding": "options_structure.matrix_observed_side_token_set/v1",
+            "source_clocks": {
+              "session": "2026-10-08",
+              "eod": "2026-10-08",
+              "greeks": "2026-10-08",
+              "oi_publication": "2026-10-08",
+              "previous_oi_publication": "2026-10-02",
+              "latest_oi_publication": "2026-10-09",
+              "unusual_history_window_start": "2026-08-18",
+              "unusual_history_window_end": "2026-10-01",
+              "unusual_history_sessions_available": 30,
+              "unusual_history_sessions_seen": 30
+            },
+            "local_head_history_remote_head_history_equal": true
+          },
+          "QQQ": {
+            "root": "QQQ",
+            "sha256": "ed6d9b1e58d7a42ba3299e679bdecd5b7ffeb8d37ff551c2223854b6a712a007",
+            "byte_length": 638946,
+            "session": "2026-10-08",
+            "version_ref": "sha256:ed6d9b1e58d7a42ba3299e679bdecd5b7ffeb8d37ff551c2223854b6a712a007:bytes:638946:session:2026-10-08",
+            "key": "options_structure/matrix/history/QQQ/ed6d9b1e58d7a42ba3299e679bdecd5b7ffeb8d37ff551c2223854b6a712a007.json",
+            "cells": 2774,
+            "spot": 747.58,
+            "observed_sides": 5548,
+            "observed_side_token_set_digest": "05216b16867fd6e88d464cc21120ed1d00f496a145800007feb036d51741a44f",
+            "observed_side_token_set_encoding": "options_structure.matrix_observed_side_token_set/v1",
+            "source_clocks": {
+              "session": "2026-10-08",
+              "eod": "2026-10-08",
+              "greeks": "2026-10-08",
+              "oi_publication": "2026-10-08",
+              "previous_oi_publication": "2026-10-02",
+              "latest_oi_publication": "2026-10-09",
+              "unusual_history_window_start": "2026-08-18",
+              "unusual_history_window_end": "2026-10-01",
+              "unusual_history_sessions_available": 30,
+              "unusual_history_sessions_seen": 30
+            },
+            "local_head_history_remote_head_history_equal": true
+          },
+          "IWM": {
+            "root": "IWM",
+            "sha256": "3049c6a50f741c2ee5840566ff389a485cefbe36f21f6ed8f97a9f1210785cda",
+            "byte_length": 333242,
+            "session": "2026-10-08",
+            "version_ref": "sha256:3049c6a50f741c2ee5840566ff389a485cefbe36f21f6ed8f97a9f1210785cda:bytes:333242:session:2026-10-08",
+            "key": "options_structure/matrix/history/IWM/3049c6a50f741c2ee5840566ff389a485cefbe36f21f6ed8f97a9f1210785cda.json",
+            "cells": 1489,
+            "spot": 277.57,
+            "observed_sides": 2978,
+            "observed_side_token_set_digest": "ab99eb59b261af2ee8fdf481a6ce0ae8384e21e6ee077bc8e983956b80d1c5f3",
+            "observed_side_token_set_encoding": "options_structure.matrix_observed_side_token_set/v1",
+            "source_clocks": {
+              "session": "2026-10-08",
+              "eod": "2026-10-08",
+              "greeks": "2026-10-08",
+              "oi_publication": "2026-10-08",
+              "previous_oi_publication": "2026-10-02",
+              "latest_oi_publication": "2026-10-09",
+              "unusual_history_window_start": "2026-08-18",
+              "unusual_history_window_end": "2026-10-01",
+              "unusual_history_sessions_available": 30,
+              "unusual_history_sessions_seen": 30
+            },
+            "local_head_history_remote_head_history_equal": true
+          },
+          "NVDA": {
+            "root": "NVDA",
+            "sha256": "6b073386119a52d00872ca9a3f14c30c39dd3ce28ee8162bcab031853c105d9d",
+            "byte_length": 97128,
+            "session": "2026-10-08",
+            "version_ref": "sha256:6b073386119a52d00872ca9a3f14c30c39dd3ce28ee8162bcab031853c105d9d:bytes:97128:session:2026-10-08",
+            "key": "options_structure/matrix/history/NVDA/6b073386119a52d00872ca9a3f14c30c39dd3ce28ee8162bcab031853c105d9d.json",
+            "cells": 368,
+            "spot": 230.48,
+            "observed_sides": 736,
+            "observed_side_token_set_digest": "165646f20cce242c75ced1d856823930ebe66e9ca634bb8d3ed626268e2e57d3",
+            "observed_side_token_set_encoding": "options_structure.matrix_observed_side_token_set/v1",
+            "source_clocks": {
+              "session": "2026-10-08",
+              "eod": "2026-10-08",
+              "greeks": "2026-10-08",
+              "oi_publication": "2026-10-08",
+              "previous_oi_publication": "2026-10-02",
+              "latest_oi_publication": "2026-10-09",
+              "unusual_history_window_start": "2026-08-18",
+              "unusual_history_window_end": "2026-10-01",
+              "unusual_history_sessions_available": 30,
+              "unusual_history_sessions_seen": 30
+            },
+            "local_head_history_remote_head_history_equal": true
+          },
+          "TSLA": {
+            "root": "TSLA",
+            "sha256": "0f4108a3815a8afc96bcb8dd145fab99d66e6bbaf4145d1391439c5f0867b1dc",
+            "byte_length": 131291,
+            "session": "2026-10-08",
+            "version_ref": "sha256:0f4108a3815a8afc96bcb8dd145fab99d66e6bbaf4145d1391439c5f0867b1dc:bytes:131291:session:2026-10-08",
+            "key": "options_structure/matrix/history/TSLA/0f4108a3815a8afc96bcb8dd145fab99d66e6bbaf4145d1391439c5f0867b1dc.json",
+            "cells": 507,
+            "spot": 375.0,
+            "observed_sides": 1014,
+            "observed_side_token_set_digest": "0efcc01e1d35d0846be28f56fa1efde9b2e27b749dc2d502723005f613966ede",
+            "observed_side_token_set_encoding": "options_structure.matrix_observed_side_token_set/v1",
+            "source_clocks": {
+              "session": "2026-10-08",
+              "eod": "2026-10-08",
+              "greeks": "2026-10-08",
+              "oi_publication": "2026-10-08",
+              "previous_oi_publication": "2026-10-02",
+              "latest_oi_publication": "2026-10-09",
+              "unusual_history_window_start": "2026-08-18",
+              "unusual_history_window_end": "2026-10-01",
+              "unusual_history_sessions_available": 30,
+              "unusual_history_sessions_seen": 30
+            },
+            "local_head_history_remote_head_history_equal": true
+          },
+          "AAPL": {
+            "root": "AAPL",
+            "sha256": "2a1687d3c102241fbdcc900648829fcadee77790ab013dc60decb957122f35f3",
+            "byte_length": 112759,
+            "session": "2026-10-08",
+            "version_ref": "sha256:2a1687d3c102241fbdcc900648829fcadee77790ab013dc60decb957122f35f3:bytes:112759:session:2026-10-08",
+            "key": "options_structure/matrix/history/AAPL/2a1687d3c102241fbdcc900648829fcadee77790ab013dc60decb957122f35f3.json",
+            "cells": 453,
+            "spot": 340.42,
+            "observed_sides": 906,
+            "observed_side_token_set_digest": "2adb71790ec963411b6a072d2ab31fb76fd5ca1a4905b6635d4a9fc1fe853149",
+            "observed_side_token_set_encoding": "options_structure.matrix_observed_side_token_set/v1",
+            "source_clocks": {
+              "session": "2026-10-08",
+              "eod": "2026-10-08",
+              "greeks": "2026-10-08",
+              "oi_publication": "2026-10-08",
+              "previous_oi_publication": "2026-10-02",
+              "latest_oi_publication": "2026-10-09",
+              "unusual_history_window_start": "2026-08-18",
+              "unusual_history_window_end": "2026-10-01",
+              "unusual_history_sessions_available": 30,
+              "unusual_history_sessions_seen": 30
+            },
+            "local_head_history_remote_head_history_equal": true
+          },
+          "MSFT": {
+            "root": "MSFT",
+            "sha256": "d6f57dd551a11d997c7b1850acdcf618943aa77cdbb8ce5290949bc144c1d3ba",
+            "byte_length": 158714,
+            "session": "2026-10-08",
+            "version_ref": "sha256:d6f57dd551a11d997c7b1850acdcf618943aa77cdbb8ce5290949bc144c1d3ba:bytes:158714:session:2026-10-08",
+            "key": "options_structure/matrix/history/MSFT/d6f57dd551a11d997c7b1850acdcf618943aa77cdbb8ce5290949bc144c1d3ba.json",
+            "cells": 646,
+            "spot": 522.61,
+            "observed_sides": 1292,
+            "observed_side_token_set_digest": "1800a25ff6c40743829a0c25db98a04d38008dd75802889964a7238761f676f4",
+            "observed_side_token_set_encoding": "options_structure.matrix_observed_side_token_set/v1",
+            "source_clocks": {
+              "session": "2026-10-08",
+              "eod": "2026-10-08",
+              "greeks": "2026-10-08",
+              "oi_publication": "2026-10-08",
+              "previous_oi_publication": "2026-10-02",
+              "latest_oi_publication": "2026-10-09",
+              "unusual_history_window_start": "2026-08-18",
+              "unusual_history_window_end": "2026-10-01",
+              "unusual_history_sessions_available": 30,
+              "unusual_history_sessions_seen": 30
+            },
+            "local_head_history_remote_head_history_equal": true
+          },
+          "META": {
+            "root": "META",
+            "sha256": "113af46fc98b064e1f0f0837fd323b9cdd5f239d127711c3c2f9deb1b5ef248e",
+            "byte_length": 213391,
+            "session": "2026-10-08",
+            "version_ref": "sha256:113af46fc98b064e1f0f0837fd323b9cdd5f239d127711c3c2f9deb1b5ef248e:bytes:213391:session:2026-10-08",
+            "key": "options_structure/matrix/history/META/113af46fc98b064e1f0f0837fd323b9cdd5f239d127711c3c2f9deb1b5ef248e.json",
+            "cells": 860,
+            "spot": 720.89,
+            "observed_sides": 1720,
+            "observed_side_token_set_digest": "ecc692f8f5eb037cf1441a46bb7f5d299b738a31bece6c18356234137dcda75a",
+            "observed_side_token_set_encoding": "options_structure.matrix_observed_side_token_set/v1",
+            "source_clocks": {
+              "session": "2026-10-08",
+              "eod": "2026-10-08",
+              "greeks": "2026-10-08",
+              "oi_publication": "2026-10-08",
+              "previous_oi_publication": "2026-10-02",
+              "latest_oi_publication": "2026-10-09",
+              "unusual_history_window_start": "2026-08-18",
+              "unusual_history_window_end": "2026-10-01",
+              "unusual_history_sessions_available": 30,
+              "unusual_history_sessions_seen": 30
+            },
+            "local_head_history_remote_head_history_equal": true
+          },
+          "AMD": {
+            "root": "AMD",
+            "sha256": "ae4887f7206d07b01e631e8cacaf6ee78af77dfdebddbcdbff5d15bb18ac1d64",
+            "byte_length": 193317,
+            "session": "2026-10-08",
+            "version_ref": "sha256:ae4887f7206d07b01e631e8cacaf6ee78af77dfdebddbcdbff5d15bb18ac1d64:bytes:193317:session:2026-10-08",
+            "key": "options_structure/matrix/history/AMD/ae4887f7206d07b01e631e8cacaf6ee78af77dfdebddbcdbff5d15bb18ac1d64.json",
+            "cells": 838,
+            "spot": 620.68,
+            "observed_sides": 1676,
+            "observed_side_token_set_digest": "c6c511dba69b81e1aa307a6265059f8906633191726c00dc34c9bd93f61ae748",
+            "observed_side_token_set_encoding": "options_structure.matrix_observed_side_token_set/v1",
+            "source_clocks": {
+              "session": "2026-10-08",
+              "eod": "2026-10-08",
+              "greeks": "2026-10-08",
+              "oi_publication": "2026-10-08",
+              "previous_oi_publication": "2026-10-02",
+              "latest_oi_publication": "2026-10-09",
+              "unusual_history_window_start": "2026-08-18",
+              "unusual_history_window_end": "2026-10-01",
+              "unusual_history_sessions_available": 30,
+              "unusual_history_sessions_seen": 30
+            },
+            "local_head_history_remote_head_history_equal": true
+          },
+          "GOOGL": {
+            "root": "GOOGL",
+            "sha256": "ad2d5ea8c7941d1e7b2e024aa6e75c036cfa071db8e99fc550d7b27fa3db51af",
+            "byte_length": 119371,
+            "session": "2026-10-08",
+            "version_ref": "sha256:ad2d5ea8c7941d1e7b2e024aa6e75c036cfa071db8e99fc550d7b27fa3db51af:bytes:119371:session:2026-10-08",
+            "key": "options_structure/matrix/history/GOOGL/ad2d5ea8c7941d1e7b2e024aa6e75c036cfa071db8e99fc550d7b27fa3db51af.json",
+            "cells": 479,
+            "spot": 348.29,
+            "observed_sides": 958,
+            "observed_side_token_set_digest": "413cf1ed0b62ac3805b1a86f47203453e24051c8f75c7191d967900daeee4ad6",
+            "observed_side_token_set_encoding": "options_structure.matrix_observed_side_token_set/v1",
+            "source_clocks": {
+              "session": "2026-10-08",
+              "eod": "2026-10-08",
+              "greeks": "2026-10-08",
+              "oi_publication": "2026-10-08",
+              "previous_oi_publication": "2026-10-02",
+              "latest_oi_publication": "2026-10-09",
+              "unusual_history_window_start": "2026-08-18",
+              "unusual_history_window_end": "2026-10-01",
+              "unusual_history_sessions_available": 30,
+              "unusual_history_sessions_seen": 30
+            },
+            "local_head_history_remote_head_history_equal": true
+          },
+          "MU": {
+            "root": "MU",
+            "sha256": "e0f9b3c9f62473c1035179b06b82a5cbdba8d00c5d9ba5c27ee2c71cbc523dd3",
+            "byte_length": 230222,
+            "session": "2026-10-08",
+            "version_ref": "sha256:e0f9b3c9f62473c1035179b06b82a5cbdba8d00c5d9ba5c27ee2c71cbc523dd3:bytes:230222:session:2026-10-08",
+            "key": "options_structure/matrix/history/MU/e0f9b3c9f62473c1035179b06b82a5cbdba8d00c5d9ba5c27ee2c71cbc523dd3.json",
+            "cells": 924,
+            "spot": 1035.84,
+            "observed_sides": 1848,
+            "observed_side_token_set_digest": "e7eb170aa1a31242e6ae8c1d6f0a44a7ef17a2dfb8fd47ddb3836689d10e608e",
+            "observed_side_token_set_encoding": "options_structure.matrix_observed_side_token_set/v1",
+            "source_clocks": {
+              "session": "2026-10-08",
+              "eod": "2026-10-08",
+              "greeks": "2026-10-08",
+              "oi_publication": "2026-10-08",
+              "previous_oi_publication": "2026-10-02",
+              "latest_oi_publication": "2026-10-09",
+              "unusual_history_window_start": "2026-08-18",
+              "unusual_history_window_end": "2026-10-01",
+              "unusual_history_sessions_available": 30,
+              "unusual_history_sessions_seen": 30
+            },
+            "local_head_history_remote_head_history_equal": true
+          },
+          "ARM": {
+            "root": "ARM",
+            "sha256": "e0e4a79a7b3ca0663dde81aa10da19794165263c55a74839d9826e706e0b079e",
+            "byte_length": 60150,
+            "session": "2026-10-08",
+            "version_ref": "sha256:e0e4a79a7b3ca0663dde81aa10da19794165263c55a74839d9826e706e0b079e:bytes:60150:session:2026-10-08",
+            "key": "options_structure/matrix/history/ARM/e0e4a79a7b3ca0663dde81aa10da19794165263c55a74839d9826e706e0b079e.json",
+            "cells": 227,
+            "spot": 275.29,
+            "observed_sides": 454,
+            "observed_side_token_set_digest": "dd70df1eefbeb73b994b672097181bf60c2c6b0605f0ade88685061e89346b7a",
+            "observed_side_token_set_encoding": "options_structure.matrix_observed_side_token_set/v1",
+            "source_clocks": {
+              "session": "2026-10-08",
+              "eod": "2026-10-08",
+              "greeks": "2026-10-08",
+              "oi_publication": "2026-10-08",
+              "previous_oi_publication": "2026-10-02",
+              "latest_oi_publication": "2026-10-09",
+              "unusual_history_window_start": "2026-08-18",
+              "unusual_history_window_end": "2026-10-01",
+              "unusual_history_sessions_available": 30,
+              "unusual_history_sessions_seen": 30
+            },
+            "local_head_history_remote_head_history_equal": true
+          }
+        },
+        "failures": {},
+        "issues": [],
+        "session": "2026-10-08",
+        "complete": true,
+        "advancing": false,
+        "repeated_source_date": false,
+        "stable": true,
+        "natural_invocation_verified": false,
+        "natural_session_count": null,
+        "mutable_writes": false,
+        "prior_session": null,
+        "receipt_written": true,
+        "observed_side_token_set_encoding": "options_structure.matrix_observed_side_token_set/v1"
+      }
+    }
+  },
+  "natural_invocation_baseline": {
+    "path": "m1-matrix-natural-invocation-baseline-20261012T1725.json",
+    "bytes": 1116,
+    "sha256": "b8eed8de0655e6e81030e965d9536cc2ea9b46d0a3f2ea7d2955105d9a889ea7",
+    "value": {
+      "at": "2026-10-12T17:24:11.674562+00:00",
+      "local_clock": "2026-10-12T10:24:11.674686-07:00",
+      "label": "com.macro.optionsmatrix",
+      "schedule": [
+        {
+          "Weekday": 1,
+          "Hour": 16,
+          "Minute": 0
+        },
+        {
+          "Weekday": 2,
+          "Hour": 16,
+          "Minute": 0
+        },
+        {
+          "Weekday": 3,
+          "Hour": 16,
+          "Minute": 0
+        },
+        {
+          "Weekday": 4,
+          "Hour": 16,
+          "Minute": 0
+        },
+        {
+          "Weekday": 5,
+          "Hour": 16,
+          "Minute": 0
+        }
+      ],
+      "working_directory": "/Users/chriswong/optionsmatrix-ops-wt",
+      "plist_sha256": "05c53d4dcc4f91a3b70f2b692f9880ec62f2f12ebd600ab15c4001b3068fafdb",
+      "launchd": {
+        "state": "not running",
+        "program": "/Users/chriswong/optionsmatrix-ops-wt/ops/launchd/run_with_env.sh",
+        "runs": "0",
+        "last exit code": "(never exited)"
+      },
+      "logs": {
+        "StandardOutPath": {
+          "path": "/tmp/optionsmatrix.stdout.log",
+          "exists": false
+        },
+        "StandardErrorPath": {
+          "path": "/tmp/optionsmatrix.stderr.log",
+          "exists": false
+        }
+      },
+      "natural_sessions_accepted": 0,
+      "read_only": true
+    }
+  },
+  "temporal_interpretation": "The source receipt predates the one completed observer invocation. Its not-yet-run fields describe preparation only; the later observer receipt establishes execution and acceptance. Do not replay the installer.",
+  "heartbeat": {
+    "id": "fable-matrix-scheduled-session-acceptance",
+    "status": "ACTIVE",
+    "rrule": "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=17;BYMINUTE=0",
+    "timezone": "America/Vancouver",
+    "target_thread_id": "01a10340-ddc1-7e41-9b42-9c8543c28c3d",
+    "restoration_verified": true
+  },
+  "remaining_acceptance": {
+    "required_natural_sessions": 2,
+    "accepted_natural_sessions": 0,
+    "distinct_advancing_source_sessions_required": true,
+    "natural_weekday_1600_job_and_log_provenance_required": true,
+    "genuine_older_newer_withholding_accepted": false,
+    "sunday_manual_publication_counts": 0,
+    "flow_counts": 0
+  },
+  "canonical_return": "https://github.com/mastermindx-market-intelligence/macro/pull/8884#issuecomment-6129204619",
+  "preservation": [
+    "Deployed runtime 6361f5e0e071dfc050c503e225afe8a4897f0e8d and its 12-file inventory/plist unchanged.",
+    "Only two diagnostics installed outside live producer; no publisher invocation, producer reinstall, launchd reload or production-data write.",
+    "One-use conditional-create test is complete and must not repeat.",
+    "Flow recovery and September 28 quarantine remain accepted and unchanged.",
+    "Terminal 723 custody and full-program acceptance are independent."
+  ],
+  "record_authoring": {
+    "method": "Parent synthesis from original verified receipts after terminal Fabric delivery failure. No failed-worker artifact imported.",
+    "failed_worker": "fable-matrix-observer-records-20261012",
+    "worker_rc": 65,
+    "worker_stdout_sha256": "0d0df2b264fd17c2417693de4c4bf1bb0d3d1c05bfe4273b3f0dfe3634601b04",
+    "artifact_export": "REFUSED at qualification; not retried; worker not accepted"
+  }
+}

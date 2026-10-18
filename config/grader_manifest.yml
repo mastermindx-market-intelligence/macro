@@ -32,13 +32,19 @@ files:
 
     '
 - path: engine/qledger_falsifier.py
-  sha256: 3306d374655bc8a2c2f5311c7718ddcb5e96bb3610aebefc8112dabe9e24975f
+  sha256: b13aaa95bf2fa7c39172eb9aca3893b99ed5f837802d2d11069b184eeb24bd59
   role: falsifier
   notes: 'Falsifier auto-evaluation: evaluates qledger claims whose check_by has arrived
     and appends FALSIFIER_TRIPPED / CONFIRMED / UNVERIFIABLE rows to data/qledger/falsifier_evaluations.jsonl
     (append-only, capped). 2026-07-16 hash update ratifies the #2598 COLLECT_LANE=nightly
     write gate (single-writer hardening, write-site only): replay vs the frozen claims
     corpus yields identical evaluations; grading semantics unchanged.
+    2026-10-09 registration accepts the reader-only compatibility seam under the
+    current user-delegated rotation/risk implementation (PR #8693). Root reviewed
+    a frozen synthetic OLD/NEW replay: 12 cases, 29 rows per version, identical
+    outcomes, tape bytes and summaries. Evaluation math and write gate unchanged.
+    This is synthetic compatibility evidence, not historical performance proof.
+    Scoped acceptance and evidence hashes: research/QLEDGER_CONTINUITY_IMPLEMENTATION_2026-10-09.md.
 
     '
 - path: scripts/sample_qledger_placebo.py

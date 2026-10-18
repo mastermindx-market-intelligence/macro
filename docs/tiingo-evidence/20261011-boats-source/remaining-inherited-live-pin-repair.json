@@ -1,0 +1,142 @@
+{
+  "drifted_live_pins": [
+    {
+      "path": "engine/fundamental_forensics/attested_history_store.py",
+      "old_line_count": 444,
+      "old_sha256": "42e00f067801fbb329a1a3a5a331289bcbd3a0d3dd4f8b83af296ae28355b969",
+      "current_line_count": 446,
+      "current_sha256": "7a28128493357f16187bfd3748d34ce783fdbb9b5f28f96c48a37c37e738a6ec"
+    },
+    {
+      "path": "engine/research_vault/ingest.py",
+      "old_line_count": 1231,
+      "old_sha256": "181dd5516aaf4d09e59b0ef68e6bfd47af3cf99a0c764d2034e92b644e59627e",
+      "current_line_count": 1461,
+      "current_sha256": "ae2ee2aad7da7f360bac05c05b6484356b6f98ded49d417f61e70e5f2b414491"
+    },
+    {
+      "path": "engine/research_vault/r2_store.py",
+      "old_line_count": 1081,
+      "old_sha256": "fcb6a840e0c399632b53027925a39c4a36ce37265757689f8a4b893ed23aee6c",
+      "current_line_count": 1119,
+      "current_sha256": "7ba42eb8f74c034413997707a35156e67342fb9a30ca2b80dde0f11d1dc7e2bd"
+    },
+    {
+      "path": "scripts/build_options_hub_nightly.py",
+      "old_line_count": 1519,
+      "old_sha256": "cf32c3e6a83ef0a3a1b2894eb7a5f7d337f67da50a65f24822fd12d17e5feafb",
+      "current_line_count": 1574,
+      "current_sha256": "985ed03ddcac793b020a7af67350c0a5044ab496dd93dd3ce65fc6a304b740c5"
+    },
+    {
+      "path": "scripts/build_stock_library.py",
+      "old_line_count": 7103,
+      "old_sha256": "a68bef17bfa93a953b6b6d95d30e22c5e636dc7d9832a2ffa2495929fd43d870",
+      "current_line_count": 7127,
+      "current_sha256": "483fb7a29c8b68aff292b72ea3860fc87f9966bd6f0e3ea0c29c78fcb6bea2fd"
+    },
+    {
+      "path": "scripts/live_flow_poller.py",
+      "old_line_count": 3652,
+      "old_sha256": "5e1cb8498805c415e1149c24083771ded1acf83a8671baafbed9dd619ff956a1",
+      "current_line_count": 4223,
+      "current_sha256": "074699c4cd2bf9c3793758a30a514d871f1626b7463ae88666f6fa5b5ad2b45a"
+    },
+    {
+      "path": "scripts/ops_train_flow_score.py",
+      "old_line_count": 1332,
+      "old_sha256": "c53a4b6239836899c81461e7c76c6abe2e418a000e5fbddb863b998873814ab4",
+      "current_line_count": 1498,
+      "current_sha256": "a174315ab9917f9733a995843452c5cd7590f3b3a9c74e5c8b40f794e9e3469e"
+    },
+    {
+      "path": "templates/theme.js",
+      "old_line_count": 6101,
+      "old_sha256": "d08efe725ef9050bcecf3c55621238efd6a93441b059392572a822d443e7d504",
+      "current_line_count": 6103,
+      "current_sha256": "df579ac567bba69f57b77db61b321999a6e1fbe07e9843631f199bb581cb9daf"
+    }
+  ],
+  "displaced_anchors": [
+    {
+      "path": "engine/research_vault/ingest.py",
+      "old_line": 59,
+      "fingerprint": "INBOX_PREFIX = \"research_inbox/\"",
+      "matches": [
+        61
+      ]
+    },
+    {
+      "path": "engine/research_vault/ingest.py",
+      "old_line": 61,
+      "fingerprint": "PROCESSED_PREFIX = \"research_inbox/_processed/\"",
+      "matches": [
+        63
+      ]
+    },
+    {
+      "path": "engine/research_vault/ingest.py",
+      "old_line": 62,
+      "fingerprint": "VAULT_PREFIX = \"research_vault/\"",
+      "matches": [
+        64
+      ]
+    },
+    {
+      "path": "engine/research_vault/ingest.py",
+      "old_line": 63,
+      "fingerprint": "CORPUS_KEY = \"research_vault/corpus.sqlite\"",
+      "matches": [
+        65
+      ]
+    },
+    {
+      "path": "engine/research_vault/ingest.py",
+      "old_line": 149,
+      "fingerprint": "def _receipt_key(item_id: str) -> str:",
+      "matches": [
+        151
+      ]
+    },
+    {
+      "path": "scripts/live_flow_poller.py",
+      "old_line": 2089,
+      "fingerprint": "R2_PREFIX + f\"events/{candidate}.jsonl\",",
+      "matches": [
+        2519
+      ]
+    },
+    {
+      "path": "scripts/live_flow_poller.py",
+      "old_line": 2171,
+      "fingerprint": "kw: dict = {\"Bucket\": bucket, \"Prefix\": R2_PREFIX + \"archive/\"}",
+      "matches": [
+        2601
+      ]
+    },
+    {
+      "path": "scripts/live_flow_poller.py",
+      "old_line": 3490,
+      "fingerprint": "_upload_r2(s3, bucket, feed_path, R2_PREFIX + \"feed_current.json\")",
+      "matches": [
+        4061
+      ]
+    },
+    {
+      "path": "scripts/live_flow_poller.py",
+      "old_line": 3492,
+      "fingerprint": "_upload_r2(s3, bucket, meta_path, R2_PREFIX + \"meta.json\")",
+      "matches": [
+        4063
+      ]
+    },
+    {
+      "path": "scripts/ops_train_flow_score.py",
+      "old_line": 1259,
+      "fingerprint": "enabled_env = r2_cfg.get(\"enabled_env\", \"R2_ENDPOINT\")",
+      "matches": [
+        1424
+      ]
+    }
+  ]
+}

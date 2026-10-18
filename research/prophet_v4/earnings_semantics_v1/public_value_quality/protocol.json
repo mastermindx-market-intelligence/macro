@@ -1,0 +1,65 @@
+{
+  "additional_descriptive_contrasts": [
+    "BM1_OP4-BM1_OP1",
+    "BM4_OP4-BM4_OP1",
+    "BM4_OP4-BM1_OP4"
+  ],
+  "arms": [
+    "BM1_OP1",
+    "BM1_OP4",
+    "BM4_OP1",
+    "BM4_OP4"
+  ],
+  "created_at": "2026-10-01T02:41:52.398758+00:00",
+  "data_url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/32_Portfolios_ME_BEME_OP_2x4x4_CSV.zip",
+  "falsifiers": [
+    "All 32 label tuples unique and complete.",
+    "All 758 monthly return rows present and finite.",
+    "The same size weights and same month support in every arm.",
+    "Permuting columns does not change the answer.",
+    "Synthetic additive valuation/profitability returns yield exactly zero interaction.",
+    "Chronology, weights and raw source vintage retained."
+  ],
+  "fixed_eras": [
+    [
+      "1963-07",
+      "1989-12"
+    ],
+    [
+      "1990-01",
+      "2009-12"
+    ],
+    [
+      "2010-01",
+      "2026-08"
+    ]
+  ],
+  "primary_contrast": "(BM4_OP4-BM4_OP1)-(BM1_OP4-BM1_OP1)",
+  "primary_estimand": "12 times arithmetic mean paired monthly interaction; descriptive, not alpha or CAGR spread",
+  "qualifiers": [
+    "Returns gross before costs, fees, stock turnover and capacity.",
+    "Source OP measure is not operating-margin growth or gross profit/assets.",
+    "Revised CIZ public research vintage, not historical system ingestion.",
+    "Neither high book-to-market nor high profitability is adopted as a stock ranking or risk policy.",
+    "No re-sorting after results, no threshold tuning, no factor regression selected after outcomes.",
+    "Do not read native H1/Cycle/Gate E outcomes.",
+    "Book-to-market is an accounting-price characteristic, not intrinsic-value proof."
+  ],
+  "question": "Does profitability separate returns equally across low and high book-to-market groups when size weights are matched?",
+  "sample": [
+    "1963-07",
+    "2026-08"
+  ],
+  "schema": "prophet.public_value_quality_interaction/v1",
+  "size_weighting": "0.5 Small + 0.5 Big in every compared cell each month",
+  "source_method_url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/32_ports_me_beme_op.html",
+  "source_returns_read_before_protocol": false,
+  "table": "first monthly value-weighted return table only",
+  "uncertainty": {
+    "coverage_claim": "exploratory 95 percent interval only",
+    "kind": "paired calendar-month moving-block percentile interval",
+    "months_per_block": 12,
+    "resamples": 4000,
+    "seed": 20260930
+  }
+}

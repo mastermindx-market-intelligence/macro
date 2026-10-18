@@ -110,7 +110,25 @@ _DEFAULTS = {
     "excerpt_max": 400,
     "timeout": 15,
     "model": "claude-opus-4-8",
+    # MO-PAID-023_FIX_R3 D1 — bound the SDK call: whitehouse-sentinel.yml gives
+    # the job 10 minutes (`:28`), but the SDK default is 600s with 2 retries —
+    # a single stalled rung eats the whole cycle. llm_auth._client_tuning_kwargs
+    # consumes `client_timeout_s` (float) and `client_max_retries` (int); both
+    # keys here keep the per-rung wall clock inside the 10-min budget.
+    "client_timeout_s": 15,
+    "client_max_retries": 0,
 }
+
+# MO-PAID-023_FIX_R3 D4 — cap repeated billing of a permanently-broken item.
+# max_age_days × hourly cycles ≈ 96 calls over 4 days for one stuck item. The
+# upstream model can't ever serve it (a 401 cascade never recovers on its own),
+# so the desk would keep hammering `site/uk_policy.json` as `model_unavailable`
+# forever. After MODEL_ATTEMPT_CAP failures we mark the item seen with
+# `model_unavailable=True, model_attempts=N` so the next hourly cycle skips
+# it (new_items filters out seen IDs) and the served chip stays the truthful
+# "unavailable". A successful evaluate does NOT reset the counter — the item
+# is now seen with its stance (R5) and stops cycling regardless.
+MODEL_ATTEMPT_CAP = 3
 
 
 # --------------------------------------------------------------------------- #
@@ -436,7 +454,29 @@ Reply with strict JSON only:
 def _call_model(item: dict, excerpt: str, cfg: dict, call=None) -> dict:
     """Runs the model call (or the injected `call` stub) and returns a raw dict.
     Never raises — any failure returns an empty dict, which evaluate() treats as
-    model_unavailable (stance stays None; no fabricated routine)."""
+    model_unavailable (stance stays None; no fabricated routine).
+
+    MO-PAID-023_FIX_R1: the real model path now goes through engine.llm_auth
+    (build_providers + make_call) — the SAME waterfall engine.whitehouse_brain
+    uses — so a 401 on the first provider is marked cold and the call falls
+    through to the next rung (e.g. DEEPSEEK_API_KEY after ANTHROPIC_API_KEY).
+    The bespoke urllib call to one Anthropic-compatible endpoint is gone; the
+    only bespoke urllib calls left in this module are the GOV.UK fetch helpers
+    (SEARCH_URL / CONTENT_URL_BASE / FALLBACK_ATOM_URL) which are unrelated.
+    llm_auth is imported LAZILY here so the minimal-deps `A-F02-W2-4` CI job
+    (which installs only pytest/pyyaml/jinja2) can still import this module
+    and run the gate-off test without anthropic on disk.
+
+    MO-PAID-023_FIX_R3 D3: a missing-provider build (no SDK on the runner, no
+    credentials, or both) and a reply that lacks the JSON block BOTH used to
+    fall through silently — `{}` from this function then hit `not raw` in
+    evaluate() and surfaced as `model_unavailable` with no breadcrumb. We now
+    emit a WARNING naming the cause BEFORE returning {} so the sentinel log
+    tells an operator why the desk is dark instead of looking like a silent
+    state. Plain `log.warning` (NOT `::warning` annotation — the GitHub
+    annotation hook at tests/test_gh_annotation_line_start.py requires a bare
+    print, and a logger prefixes with `WARNING ` which GitHub silently drops).
+    """
     prompt = _PROMPT_TEMPLATE.format(
         title=item.get("title", ""), excerpt=excerpt,
         sum_en=cfg.get("summary_max_en", 150), sum_zh=cfg.get("summary_max_zh", 70),
@@ -444,48 +484,95 @@ def _call_model(item: dict, excerpt: str, cfg: dict, call=None) -> dict:
     try:
         if call is not None:
             raw = call(prompt)
-        else:
-            prov = _provider(cfg)
-            if prov is None:
-                return {}
-            raw = _call_anthropic_like(prov, prompt, cfg)
-        if isinstance(raw, dict):
-            return raw
-        text = str(raw or "")
+            if isinstance(raw, dict):
+                return raw
+            text = str(raw or "")
+            m = re.search(r"\{.*\}", text, re.S)
+            return json.loads(m.group(0)) if m else {}
+        # Real waterfall path. Lazy import keeps anthropic out of the minimal-deps
+        # import surface (see R2 in MO-PAID-023_FIX_R1).
+        from engine import llm_auth
+
+        providers = llm_auth.build_providers(
+            cfg,
+            opus_model=cfg.get("model", _DEFAULTS["model"]),
+            deepseek_model="deepseek-v4-pro",
+        )
+        if not providers:
+            # MO-PAID-023_FIX_R3 D3 — name the likely cause before returning {}.
+            # build_providers() returns [] when no credential env-var is set,
+            # the anthropic SDK is missing, or no oauth pool key is authorized
+            # for this lane. The operator needs at least the category.
+            try:
+                import anthropic as _an_sdk  # noqa: F401, PLC0415
+                _sdk_state = "installed"
+            except Exception:
+                _sdk_state = "missing"
+            creds_present = sum(
+                bool(__import__("os").environ.get(v))
+                for v in ("CLAUDE_CODE_OAUTH_TOKEN", "ANTHROPIC_API_KEY", "DEEPSEEK_API_KEY")
+            )
+            log.warning(
+                "uk_policy: build_providers() returned [] "
+                "(sdk=%s, credentials_present=%d/3) — skipping model call",
+                _sdk_state, creds_present,
+            )
+            return {}
+
+        max_tokens = int(cfg.get("max_tokens", 600))
+
+        def _do_call(client, model):
+            # MUST NOT catch exceptions — make_call catches them and routes
+            # 401/rate_limit to the next rung.
+            #
+            # MO-PAID-023_FIX_R3 D5 — return the 3-tuple (text, reason, resp)
+            # the way engine/whitehouse_brain._do_call does, so make_call can
+            # capture `resp.usage` into the AI cost ledger (a paid call that
+            # never lands a ledger row understates the desk's spend).
+            # stop_reason="refusal" returns None with a typed reason (don't
+            # bill the empty text as a success); stop_reason="max_tokens"
+            # returns the partial text and labels the reason "truncated" so
+            # downstream readers can see the cap was hit.
+            resp = client.messages.create(
+                model=model,
+                max_tokens=max_tokens,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            sr = getattr(resp, "stop_reason", None)
+            if sr == "refusal":
+                return None, "stop_refusal", resp
+            text = "".join(
+                b.text for b in resp.content if getattr(b, "type", "") == "text"
+            )
+            if not text:
+                return None, "empty_reply", resp
+            return text, ("truncated" if sr == "max_tokens" else None), resp
+
+        text, reason, used = llm_auth.make_call(
+            providers, _do_call, context="uk_policy_brain"
+        )
+        if not text:
+            log.warning("uk_policy model call failed (%s)", reason or "no_text")
+            return {}
+        if used and used != providers[0]["name"]:
+            log.info("uk_policy served_by:%s", used)
+        # Parse the text exactly as before: re.search r"\{.*\}" then json.loads.
         m = re.search(r"\{.*\}", text, re.S)
-        return json.loads(m.group(0)) if m else {}
+        if not m:
+            # MO-PAID-023_FIX_R3 D3 — a non-empty reply with no JSON block
+            # used to fall through silently. Log the provider label and the
+            # first 80 chars so an operator can see whether the model went
+            # off-contract (preamble / markdown wrapper / wrong schema).
+            log.warning(
+                "uk_policy: model reply from '%s' carried no JSON block; "
+                "first 80 chars: %.80s",
+                used or "?", text,
+            )
+            return {}
+        return json.loads(m.group(0))
     except Exception as e:  # noqa: BLE001
-        log.debug("uk_policy model call failed (%s)", e)
+        log.warning("uk_policy model call failed (%s)", e)
         return {}
-
-
-def _call_anthropic_like(prov: tuple[str, str, str], prompt: str, cfg: dict) -> str:
-    """Minimal HTTP call to an Anthropic-compatible endpoint. Degrades to '' on
-    any failure — the caller treats an unparseable/empty result as no summary."""
-    import urllib.request
-
-    name, cred, model = prov
-    try:
-        if name == "deepseek":
-            url = "https://api.deepseek.com/anthropic/v1/messages"
-        else:
-            url = "https://api.anthropic.com/v1/messages"
-        headers = {"content-type": "application/json", "x-api-key": cred, "anthropic-version": "2023-06-01"}
-        if name == "oauth":
-            headers = {"content-type": "application/json", "authorization": f"Bearer {cred}",
-                       "anthropic-beta": "oauth-2025-04-20", "anthropic-version": "2023-06-01"}
-        payload = json.dumps({
-            "model": model, "max_tokens": 600,
-            "messages": [{"role": "user", "content": prompt}],
-        }).encode()
-        req = urllib.request.Request(url, data=payload, headers=headers, method="POST")
-        with urllib.request.urlopen(req, timeout=cfg.get("timeout", 15)) as r:
-            data = json.loads(r.read())
-        parts = data.get("content") or []
-        return "".join(p.get("text", "") for p in parts if isinstance(p, dict))
-    except Exception as e:  # noqa: BLE001
-        log.debug("uk_policy llm http call failed (%s)", e)
-        return ""
 
 
 def _base_record(item: dict, cfg: dict | None = None) -> dict:
@@ -513,6 +600,12 @@ def _base_record(item: dict, cfg: dict | None = None) -> dict:
         "age_days": round(age_days, 2),
         "stance": None,
         "model_unavailable": False,
+        # MO-PAID-023_FIX_R3 D4 — number of model calls already attempted on
+        # this item. Persisted on the record so run() can decide whether to
+        # STOP re-calling after MODEL_ATTEMPT_CAP failures (the saved JSON
+        # keeps the honest count — only the seen-side `model_attempts` kwarg
+        # is what freezes the item in `new_items()`).
+        "model_attempts": 0,
         "summary_en": None, "summary_zh": None,
         "watch_en": None, "watch_zh": None,
         "excerpt": excerpt,
@@ -521,14 +614,23 @@ def _base_record(item: dict, cfg: dict | None = None) -> dict:
     }
 
 
-def evaluate(item: dict, cfg: dict | None = None, root=None, call=None) -> dict:
-    """Engine facts + model restate/classify, clamped in code. Never raises."""
+def evaluate(item: dict, cfg: dict | None = None, root=None, call=None,
+             previous_attempts: int = 0) -> dict:
+    """Engine facts + model restate/classify, clamped in code. Never raises.
+
+    MO-PAID-023_FIX_R3 D4: `previous_attempts` is the count already persisted
+    in state["seen"][item["id"]].model_attempts for this item. On a failed
+    call we record `previous_attempts + 1`; on success the count stays at 0
+    (R5 — success resets nothing because the item is then seen with its
+    stance, so new_items() will skip it regardless).
+    """
     cfg = cfg or _cfg()
     record = _base_record(item, cfg)
     excerpt = record["excerpt"]
     raw = _call_model(item, excerpt, cfg, call=call)
     if not raw:
         record["model_unavailable"] = True
+        record["model_attempts"] = int(previous_attempts) + 1
         record["provider_label"] = provider_label(cfg)
         return record
     record["stance"] = _norm_stance(raw.get("stance"))
@@ -537,6 +639,10 @@ def evaluate(item: dict, cfg: dict | None = None, root=None, call=None) -> dict:
     record["watch_en"] = _sanitize_field(raw.get("watch_en"), excerpt)
     record["watch_zh"] = _sanitize_field(raw.get("watch_zh"), excerpt)
     record["provider_label"] = provider_label(cfg)
+    # successful evaluate: counter stays at previous_attempts on the record
+    # (the cycle is data-side irrelevant once stance is set; mark_seen does
+    # not persist model_attempts on a success path).
+    record["model_attempts"] = int(previous_attempts)
     return record
 
 
@@ -630,7 +736,18 @@ def run(persist: bool = True, root=None, force: bool = False, call=None) -> dict
             item["body_text"] = fetch_body(item["url"]) or item.get("title", "")
         if not item.get("doc_version"):
             item["doc_version"] = fetch_version(item["url"])
-        record = evaluate(item, cfg, root, call=call)
+        # MO-PAID-023_FIX_R3 D4 — read the running attempt count for this item
+        # from a separate `state["attempts"]` dict (NOT from state["seen"] —
+        # seen is reserved for the mark_seen contract, and writing a partial
+        # seen entry would filter the item out of new_items() before the cap
+        # is reached). The attempts dict is monotonic across cycles; only the
+        # cap-hit cycle writes the count into state["seen"] via mark_seen.
+        attempts_map = state.setdefault("attempts", {})
+        try:
+            previous_attempts = int(attempts_map.get(item["id"], 0) or 0)
+        except Exception:  # noqa: BLE001
+            previous_attempts = 0
+        record = evaluate(item, cfg, root, call=call, previous_attempts=previous_attempts)
         stale_after = cfg.get("stale_after_days", 3.0)
         if record.get("stance") is None:
             record["state"] = _typed_state("model_unavailable")
@@ -638,9 +755,52 @@ def run(persist: bool = True, root=None, force: bool = False, call=None) -> dict
             record["state"] = _typed_state(
                 "stale" if record.get("age_days", 0.0) > stale_after else "ok"
             )
-        mark_seen(state, item)
+        # MO-PAID-023_FIX_R1 S4 — only mark the item SEEN when evaluate produced a
+        # stance (i.e. the model call succeeded). A model_unavailable item stays
+        # UNSEEN so the next cycle retries it instead of relabelling the cached
+        # failure. The model_unavailable record is still persisted (R5) so the
+        # page continues to show the honest state.
+        #
+        # MO-PAID-023_FIX_R3 D4 — but a permanently-broken item would loop
+        # forever under S4 (4 days × 24 cycles ≈ 96 paid calls on the same
+        # 401 cascade). Once the persisted model_attempts reaches
+        # MODEL_ATTEMPT_CAP we mark the item seen with model_unavailable=True
+        # so new_items() skips it from then on and the served chip stays the
+        # truthful "unavailable" until the operator rotates credentials. A
+        # successful evaluate does NOT reset the counter (R5 — the item is
+        # then seen with its stance and stops cycling regardless).
+        attempts_now = int(record.get("model_attempts", 0) or 0)
+        if record.get("stance") is not None:
+            mark_seen(state, item)
+            # Mirror the running counter into seen for the success path too,
+            # so an operator inspecting state["seen"][id]["model_attempts"]
+            # can still see how many failures preceded the recovery (R5:
+            # "the counter is not reset" — the value is preserved verbatim).
+            if attempts_now > 0:
+                state["seen"][item["id"]]["model_attempts"] = attempts_now
+            if persist:
+                save_processed(root, state)
+        elif attempts_now >= MODEL_ATTEMPT_CAP:
+            mark_seen(
+                state, item,
+                model_unavailable=True,
+                model_attempts=attempts_now,
+            )
+            if persist:
+                save_processed(root, state)
+            log.warning(
+                "uk_policy: item %s reached model_attempts=%d (>= %d); "
+                "stopping re-calls until credentials are rotated",
+                item["id"], attempts_now, MODEL_ATTEMPT_CAP,
+            )
+        else:
+            # Pre-cap failed cycle — persist the running counter so the next
+            # cycle can resume from the right value. The item itself stays
+            # UNSEEN so new_items() keeps including it.
+            attempts_map[item["id"]] = attempts_now
+            if persist:
+                save_processed(root, state)
         if persist:
-            save_processed(root, state)
             _persist(record, root)
         _log_verdict(record)
         return record

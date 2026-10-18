@@ -126,6 +126,19 @@ public:
     - /finance_intelligence.html
     - /finance_intelligence.css
     - /finance_intelligence.js
+    # Consumer Cyclical PLNT synthetic display card (Wave-10 Build B): one
+    # static shell over the committed synthetic fixture, mounted through
+    # display_packet — no read-model payload, no live data. The route is held
+    # COMMENTED here, not entered, because the boundary guard lands entries in
+    # pairs: test_site_access_boundary.py:80 compares the Caddy @reg_asset
+    # token list byte-for-byte against this parsed exact list, and the same
+    # file's test_public_policy_targets_exist requires every exact entry to
+    # exist committed under site/. Both paired files (app/deploy/Caddyfile,
+    # site/consumer_cyclical_plnt.html) sit outside the Build-B carrier, and
+    # the page already reaches anonymous readers via the Caddyfile's *.html
+    # document wildcard. Uncomment ONLY together with the Caddyfile token and
+    # the render lane's first committed bake of the page.
+    # - /consumer_cyclical_plnt.html
     # Tier-preview shells, promoted from free_registered to ANONYMOUS-public
     # (SEO_SUPERCHARGE_MASTERPLAN §A1/W1a). The pages themselves are preview
     # SHELLS: honest totals + methodology + a small newest-first preview slice +
@@ -259,6 +272,11 @@ public:
     # logic only; every analytical payload remains behind the authenticated API.
     - /market_memory.css
     - /market_memory.js
+    # UI-only OAuth intent and retained workbench assets load before code exchange.
+    # Saved packets, comparison results and source quotes remain API-authenticated.
+    - /market_memory_intent.js
+    - /market_memory_retained.js
+    - /market_memory_retained.css
     # Shared navigation layout + animated ticker search. Presentation only; the
     # protected stock libraries it reads remain behind the registration wall.
     - /navigation-refresh.css
@@ -282,6 +300,9 @@ public:
     - /tablesort.js
     - /charts.js
     - /risk_state_live.js
+    # Public presentation code only. The live/risk_envelope.json payload remains
+    # separately registration/tier-gated; do not open the market-data feed.
+    - /risk_envelope_live.js
     - /china_risk_state_live.js
     - /release_publications_live.js
     - /heatmap.js

@@ -1,0 +1,94 @@
+..........FFFFF.F...............................................         [100%]
+=================================== FAILURES ===================================
+_____________ test_sourcing_rule_credits_first_party_numbers_only ______________
+
+    def test_sourcing_rule_credits_first_party_numbers_only():
+        system, _user = W.build_prompt(F.slot(), F.config())
+        flat = _flat(system)
+        # The gate as check_our_value runs it: sentences anchored to a
+        # [first_party] fact.  [third_party] numbers must still anchor (fact_anchor
+        # pools every fact) but they earn no share credit.
+>       assert "tagged [first_party]" in flat
+E       assert 'tagged [first_party]' in 'YOU ARE: The Brief, the daily market desk of Mastermind News. THE JOB: one of the day\'s most attention-worthy market...hem. "slug": lowercase-hyphen, derived from the title, NO date prefix. "body_html": the HTML fragment described above.'
+
+tests/test_press_writer.py:155: AssertionError
+_______________ test_stated_share_floor_is_the_configured_floor ________________
+
+    def test_stated_share_floor_is_the_configured_floor():
+        """The prompt quotes validators.our_value_min, it does not hardcode 40."""
+        cfg = F.config()
+        cfg.setdefault("validators", {})["our_value_min"] = 0.375
+        system, _user = W.build_prompt(F.slot(), cfg)
+>       assert "At least 37.5% of the piece" in _flat(system)
+E       assert 'At least 37.5% of the piece' in 'YOU ARE: The Brief, the daily market desk of Mastermind News. THE JOB: one of the day\'s most attention-worthy market...hem. "slug": lowercase-hyphen, derived from the title, NO date prefix. "body_html": the HTML fragment described above.'
+E        +  where 'YOU ARE: The Brief, the daily market desk of Mastermind News. THE JOB: one of the day\'s most attention-worthy market...hem. "slug": lowercase-hyphen, derived from the title, NO date prefix. "body_html": the HTML fragment described above.' = _flat('YOU ARE: The Brief, the daily market desk of Mastermind News.\nTHE JOB: one of the day\'s most attention-worthy marke...      lowercase-hyphen, derived from the title, NO date prefix.\n  "body_html":   the HTML fragment described above.\n')
+
+tests/test_press_writer.py:174: AssertionError
+________________ test_banned_language_lists_every_enforced_term ________________
+
+    def test_banned_language_lists_every_enforced_term():
+        """Every term the deterministic gate can reject is in the contract —
+        including the one that actually rejected a draft while absent from it."""
+        from engine.press import validators as V
+    
+        system, _user = W.build_prompt(F.slot(), F.config())
+        flat = _flat(system)
+        vocab, subs, word_boundary, cheese_subs, cheese_words = V._copywriter_lexicons()
+        cfg_tells = F.config()["validators"]["ai_tell_phrases"]
+        enforced = (*subs, *cheese_subs, *cfg_tells,
+                    *vocab, *word_boundary, *cheese_words)
+        missing = [t for t in enforced if t not in flat]
+>       assert not missing, f"enforced bans missing from the prompt: {missing}"
+E       AssertionError: enforced bans missing from the prompt: ['signal stack', 'accountability layer', 'honest model', 'receipt book', 'growth score', 'inflation score', '(read:', 'positioning in', 'implications for', 'the backdrop', 'cross-check', 'front-end', 'on my screen', 'on the screen', 'back on the board', 'made the board', 'gets graded', 'graded publicly', "read's up top", 'read is up top', 'diamond hands', 'paper hands', 'to the moon', 'let that sink in', 'checks notes', 'narrator:', 'plot twist', 'hold my beer', "chef's kiss", 'well, that happened', "i'll wait.", 'poc', 'avwap', 'vwap', 'ichimoku', 'rsi', 'buy now', 'macd', "can't lose", 'bollinger', 'stonks', 'apes', 'fam', 'ser', 'wagmi', 'ngmi']
+E       assert not ['signal stack', 'accountability layer', 'honest model', 'receipt book', 'growth score', 'inflation score', ...]
+
+tests/test_press_writer.py:189: AssertionError
+________________ test_banned_vocabulary_is_rendered_not_sampled ________________
+
+    def test_banned_vocabulary_is_rendered_not_sampled():
+        system, _user = W.build_prompt(F.slot(), F.config())
+        flat = _flat(system)
+        # The hand-maintained sample bullets are gone; the rendered lists are the
+        # contract, so the terms the sample omitted are stated too.
+>       assert "Forbidden as jargon" not in flat
+E       assert 'Forbidden as jargon' not in 'YOU ARE: Th...ribed above.'
+E         
+E         'Forbidden as jargon' is contained here:
+E           ything. - Forbidden as jargon: study/indicator names (RSI, MACD, VWAP, Bollinger, stochastic, Ichimoku, point of control, value area, volume profile), the words "regime", "narrative", "vertical", "goldilocks", "de-rating", "validated", "guaranteed". - Forbidden as machine tells: "delve", "it's important to note", "it's worth noting", "in conclusion", "game-changer", "a testament to", "in the realm of", "navigate the complexities", "underscores the importance", "in today's fast-paced landscape", "in the ever-evolving landscape". Never o...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/test_press_writer.py:198: AssertionError
+__________ test_custom_configured_banned_phrase_reaches_the_contract ___________
+
+    def test_custom_configured_banned_phrase_reaches_the_contract():
+        cfg = F.config()
+        cfg["validators"]["ai_tell_phrases"] = (
+            list(cfg["validators"]["ai_tell_phrases"]) + ["session chatter"])
+        cfg["validators"]["ai_tell_not_only_but_also_budget"] = 3
+        system, _user = W.build_prompt(F.slot(), cfg)
+        flat = _flat(system)
+>       assert '"session chatter"' in flat
+E       assert '"session chatter"' in 'YOU ARE: The Brief, the daily market desk of Mastermind News. THE JOB: one of the day\'s most attention-worthy market...hem. "slug": lowercase-hyphen, derived from the title, NO date prefix. "body_html": the HTML fragment described above.'
+
+tests/test_press_writer.py:215: AssertionError
+___________ test_banned_language_rides_in_the_trusted_system_prompt ____________
+
+    def test_banned_language_rides_in_the_trusted_system_prompt():
+        """The banned list is OUR law, so it belongs above the evidence fence —
+        in the system prompt, never mixed into the untrusted data block."""
+        system, user = W.build_prompt(F.slot(), F.config())
+>       assert "BANNED LANGUAGE" in system
+E       assert 'BANNED LANGUAGE' in 'YOU ARE: The Brief, the daily market desk of Mastermind News.\nTHE JOB: one of the day\'s most attention-worthy marke...      lowercase-hyphen, derived from the title, NO date prefix.\n  "body_html":   the HTML fragment described above.\n'
+
+tests/test_press_writer.py:251: AssertionError
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_press_writer.py::test_sourcing_rule_credits_first_party_numbers_only
+FAILED tests/test_press_writer.py::test_stated_share_floor_is_the_configured_floor
+FAILED tests/test_press_writer.py::test_banned_language_lists_every_enforced_term
+FAILED tests/test_press_writer.py::test_banned_vocabulary_is_rendered_not_sampled
+FAILED tests/test_press_writer.py::test_custom_configured_banned_phrase_reaches_the_contract
+FAILED tests/test_press_writer.py::test_banned_language_rides_in_the_trusted_system_prompt
+6 failed, 58 passed in 3.96s
