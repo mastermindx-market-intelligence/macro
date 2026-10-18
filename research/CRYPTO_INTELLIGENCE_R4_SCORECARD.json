@@ -1,0 +1,178 @@
+{
+  "schema": "crypto.r4.implementation_scorecard/v1",
+  "title": "Crypto Intelligence R4",
+  "source_base": "62a3f9ad070c7583687aef8c30d53fd1764c6aab",
+  "paper": "NOT_APPLIED — direct connector schema mismatch; connection binding required",
+  "production": "Existing routes remain in place; candidate replacement build",
+  "interactions": [
+    {
+      "id": "R4-01",
+      "interaction": "Task navigation",
+      "behavior": "URL hash, keyboard, browser back",
+      "states": "Current, unknown route",
+      "data": "Current source",
+      "ui": "Implemented",
+      "integration": "Candidate only",
+      "design": "Defined; Paper pending",
+      "verification": "Browser pending",
+      "production": "Not deployed"
+    },
+    {
+      "id": "R4-02",
+      "interaction": "Price chart",
+      "behavior": "30D / 90D, server-rendered fallback",
+      "states": "Ready, missing, gap, conflicting source",
+      "data": "Published price series",
+      "ui": "Implemented",
+      "integration": "Candidate only",
+      "design": "Defined; Paper pending",
+      "verification": "Projection cases passed; browser pending",
+      "production": "Not deployed"
+    },
+    {
+      "id": "R4-03",
+      "interaction": "Evidence drawer",
+      "behavior": "Click, tap, close, Escape, restored focus",
+      "states": "Observed, partial, stale, insufficient",
+      "data": "Published evidence families",
+      "ui": "Implemented",
+      "integration": "Candidate only",
+      "design": "Defined; Paper pending",
+      "verification": "Projection cases passed; browser pending",
+      "production": "Not deployed"
+    },
+    {
+      "id": "R4-04",
+      "interaction": "LENS tooltip",
+      "behavior": "Hover, focus, tap, source receipt",
+      "states": "Observed, unavailable",
+      "data": "Existing LENS owner",
+      "ui": "Implemented",
+      "integration": "Shared LENS; browser pending",
+      "design": "Defined; Paper pending",
+      "verification": "Browser pending",
+      "production": "Not deployed"
+    },
+    {
+      "id": "R4-05",
+      "interaction": "Market discovery",
+      "behavior": "Search, filter, sort, reset; URL state",
+      "states": "Results, empty, limited coverage",
+      "data": "ETH / SOL intelligence only",
+      "ui": "Implemented",
+      "integration": "Candidate only",
+      "design": "Defined; Paper pending",
+      "verification": "Browser pending",
+      "production": "Not deployed"
+    },
+    {
+      "id": "R4-06",
+      "interaction": "Asset detail",
+      "behavior": "Row opens detail; context retained",
+      "states": "Supported, partial, unavailable",
+      "data": "Existing asset states",
+      "ui": "Implemented",
+      "integration": "Candidate only",
+      "design": "Defined; Paper pending",
+      "verification": "Projection cases passed; browser pending",
+      "production": "Not deployed"
+    },
+    {
+      "id": "R4-07",
+      "interaction": "Scenario comparison",
+      "behavior": "7D / 30D; conditions, expiry, invalidation",
+      "states": "Conditional, price condition met, expired, insufficient",
+      "data": "Dated close ranges; demand incomplete",
+      "ui": "Implemented",
+      "integration": "Candidate only",
+      "design": "Defined; Paper pending",
+      "verification": "Projection cases passed; browser pending",
+      "production": "Not deployed"
+    },
+    {
+      "id": "R4-08",
+      "interaction": "Saved snapshots",
+      "behavior": "Save, restore, remove; frozen conditions; this device only",
+      "states": "Unsaved, saved, storage failure",
+      "data": "Local device only",
+      "ui": "Implemented",
+      "integration": "Candidate only",
+      "design": "Defined; Paper pending",
+      "verification": "Browser pending",
+      "production": "Not deployed"
+    },
+    {
+      "id": "R4-09",
+      "interaction": "Alert composer",
+      "behavior": "Condition, cadence, expiry, rearm, delivery result",
+      "states": "Draft, invalid, saved, failure, rearmed",
+      "data": "Existing Alert Center integration needed",
+      "ui": "Designed",
+      "integration": "Not connected",
+      "design": "Defined; Paper pending",
+      "verification": "Browser pending",
+      "production": "Not deployed"
+    },
+    {
+      "id": "R4-10",
+      "interaction": "Historical evaluation",
+      "behavior": "Open from scenario; retain horizon and cutoff",
+      "states": "Insufficient, qualified results, counterexamples",
+      "data": "Not statistically qualified",
+      "ui": "Honest empty state built",
+      "integration": "Research gate",
+      "design": "Defined; Paper pending",
+      "verification": "Browser pending",
+      "production": "Not deployed"
+    },
+    {
+      "id": "R4-11",
+      "interaction": "Model tools",
+      "behavior": "Read canonical model with exact scope/date",
+      "states": "Valid, integrity failed, missing",
+      "data": "btc.decision/v1",
+      "ui": "Implemented",
+      "integration": "Candidate only",
+      "design": "Defined; Paper pending",
+      "verification": "Projection cases passed; browser pending",
+      "production": "Not deployed"
+    },
+    {
+      "id": "R4-12",
+      "interaction": "Theme, language, mobile",
+      "behavior": "Shared settings; 1440 / 390; keyboard and touch",
+      "states": "Dark / light × EN / ZH",
+      "data": "House tokens and source labels",
+      "ui": "Implemented",
+      "integration": "Verification pending",
+      "design": "Defined; Paper pending",
+      "verification": "Browser pending",
+      "production": "Not deployed"
+    }
+  ],
+  "review_url": "https://crypto-intelligence-r4-review-20261018.mastermindx3.chatgpt.site",
+  "verification_summary": "31 focused projection tests passed. JavaScript and source build checks apply only to source correctness. Browser acceptance blocked at ChatGPT sign-in; Paper not applied.",
+  "delivery_state": "Candidate source and owner-private review build; not accepted for production replacement",
+  "required_visual_matrix": {
+    "views": [
+      "Overview",
+      "Bitcoin",
+      "Markets",
+      "Scenarios"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "languages": [
+      "EN",
+      "ZH"
+    ],
+    "widths": [
+      1440,
+      390
+    ],
+    "status": "Not yet observed",
+    "reason": "Browser requires the owner to sign in to the private review Site"
+  }
+}

@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Crypto R4 — implementation scorecard</title><link rel="stylesheet" href="theme.css"><link rel="stylesheet" href="crypto_intelligence_r4.css"></head>
+<body class="crypto-r4"><main class="cri"><header class="cri-top"><div><div class="cri-kicker">MASTERMIND / BUILD REVIEW</div><h1>Crypto R4 scorecard</h1></div><a href="crypto-r4.html">Open the experience →</a></header>
+<div class="cri-heading"><div><h2>Behavior, not screenshots.</h2><p>Design, data, implementation, integration and production proof are tracked separately.</p></div></div>
+<div class="cri-warning">{{ scorecard.paper }}</div><p class="cri-note">{{ scorecard.production }}</p>
+{% for item in scorecard.interactions %}
+<section class="cri-section cri-panel"><div class="cri-section-head"><div><div class="cri-kicker">{{ item.id }}</div><h2>{{ item.interaction }}</h2><p>{{ item.behavior }}</p></div></div><div class="cri-table-wrap"><table class="cri-table"><thead><tr><th>Design</th><th>Data</th><th>UI</th><th>Integration</th><th>Verification</th><th>Production</th></tr></thead><tbody><tr><td>{{ item.design }}</td><td>{{ item.data }}</td><td>{{ item.ui }}</td><td>{{ item.integration }}</td><td>{{ item.verification }}</td><td>{{ item.production }}</td></tr></tbody></table></div><p class="cri-note">Required states: {{ item.states }}</p></section>
+{% endfor %}
+<footer class="cri-footer"><span>Source base: {{ scorecard.source_base }}</span><a href="crypto-r4.html#scenarios">Inspect the scenario flow →</a></footer>
+</main></body></html>
