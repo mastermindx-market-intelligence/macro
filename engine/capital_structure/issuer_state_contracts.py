@@ -49,7 +49,9 @@ from .projection import (
 # ---------------------------------------------------------------------------
 
 STATE_SCHEMA = "capital_structure.state.v2"
-STATE_CONTRACT_VERSION = "capital-structure-state-contracts/2.2.0"
+#: 2.1.0 = I1 economic terms, 2.2.0 = X0 transaction observations, 2.3.0 = I2
+#: variable/reset/contingent terms (SPEC_I2 §1); every minor is purely additive.
+STATE_CONTRACT_VERSION = "capital-structure-state-contracts/2.3.0"
 STATE_SCHEMA_FILE = "capital_structure_state.v2.schema.json"
 STATE_SCHEMA_PATH = Path(__file__).resolve().parents[2] / "contracts" / STATE_SCHEMA_FILE
 
@@ -227,7 +229,9 @@ ROUTE_KINDS = (
     "other",
 )
 ROUTE_STATUSES = ("eligible", "conditional", "ineligible", "unknown")
-SETTLEMENTS = ("cash", "cashless", "net_share", "pre_funded", "unknown")
+#: ``physical`` (I2, SPEC_I2 §1.2) is valid only for a ``conversion`` action on an
+#: instrument carrying an admitted ``settlement_branches`` term.
+SETTLEMENTS = ("cash", "cashless", "net_share", "pre_funded", "unknown", "physical")
 INSTRUMENT_KINDS = (
     "common",
     "warrant",
@@ -272,6 +276,16 @@ ECONOMIC_TERM_NAMES = (
     "notice_days",  # days
     "expiry",  # date_value
     "resale_registered_shares",  # shares, basis potentially_resalable_existing
+    # I2 (SPEC_I2 §1.3): variable, reset and contingent terms, appended in spec order.
+    "price_reset",  # structure: ResetSchedule
+    "conversion_condition",  # structure: ConversionCondition
+    "settlement_branches",  # structure: SettlementBranches
+    "anti_dilution",  # structure: AntiDilution
+    "accrual_terms",  # structure: Accrual
+    "exchange_cap_shares",  # shares, basis scenario_incremental_issuance
+    "shares_issued_under_instrument",  # shares, basis issued_and_outstanding
+    "shareholder_approval_obtained",  # flag
+    "accrued_amount_outstanding",  # usd, dated as of the stated accrual date
 )
 ECONOMIC_TERM_STATUSES = ("admitted", "contradicted", "unknown")
 #: Only these origins may attach a term: model prose never mints one (A09, L120, L444).
@@ -289,8 +303,15 @@ ECONOMIC_TERM_UNITS: dict[str, tuple[str, str | None]] = {
     "beneficial_ownership_cap": ("percent", None),
     "notice_days": ("days", None),
     "resale_registered_shares": ("shares", "potentially_resalable_existing"),
+    "exchange_cap_shares": ("shares", "scenario_incremental_issuance"),
+    "shares_issued_under_instrument": ("shares", "issued_and_outstanding"),
+    "accrued_amount_outstanding": ("usd", None),
 }
-ECONOMIC_TERM_FLAG_NAMES = ("cash_exercise_permitted", "cashless_exercise_permitted")
+ECONOMIC_TERM_FLAG_NAMES = (
+    "cash_exercise_permitted",
+    "cashless_exercise_permitted",
+    "shareholder_approval_obtained",
+)
 ECONOMIC_TERM_DATE_NAMES = ("expiry",)
 #: Price and ratio terms must be dated when admitted (A19 split staleness needs it).
 ECONOMIC_TERM_EFFECTIVE_NAMES = (
@@ -298,6 +319,63 @@ ECONOMIC_TERM_EFFECTIVE_NAMES = (
     "conversion_price",
     "prefunded_residual_price",
     "shares_per_instrument",
+    # I2 (SPEC_I2 §1.3): an accrued figure is only a fact as of the date it is
+    # stated as of, so it is dated exactly like a price.
+    "accrued_amount_outstanding",
+)
+
+# ---------------------------------------------------------------------------
+# I2 structured-term vocabularies (SPEC_I2 §1.3, §1.5)
+# ---------------------------------------------------------------------------
+
+#: The five names that carry a structure and nothing else.  Each enters only as
+#: ``adjudicated_gold`` (SPEC_I2 §0 item 8): model prose never mints a term.
+ECONOMIC_TERM_STRUCTURE_NAMES = (
+    "price_reset",
+    "conversion_condition",
+    "settlement_branches",
+    "anti_dilution",
+    "accrual_terms",
+)
+#: Price terms that may ALSO carry a :class:`PriceFormula` (SPEC_I2 §1.3).
+ECONOMIC_TERM_PRICE_FORMULA_NAMES = ("exercise_price", "conversion_price")
+ROUNDING_MODES = ("half_up", "down", "up")
+PRICE_COMPONENT_SOURCES = ("fixed", "market")
+PRICE_MEASURES = ("closing_price", "daily_vwap")
+PRICE_AGGREGATIONS = (
+    "single_day",
+    "lowest_daily",
+    "average_daily",
+    "average_of_lowest",
+    "period_vwap",
+)
+PRICE_WINDOW_ENDS = ("including_pricing_date", "preceding_pricing_date")
+PRICE_COMBINES = ("single", "lesser", "greater")
+FLOOR_BASES = ("stated", "none_in_complete_agreement", "not_established")
+BELOW_FLOOR_RULES = ("floor_applies", "floor_applies_with_cash_make_whole")
+RESET_RULES = ("set_to_market", "set_to_lesser_of_current_and_market")
+SHARE_ADJUSTMENTS = ("none", "preserve_aggregate_exercise_price")
+PRICE_TERM_NAMES = ("exercise_price", "conversion_price")
+CONDITION_COMPARISONS = ("at_or_above", "at_or_below")
+CONDITION_THRESHOLD_KINDS = ("price", "percent_of_conversion_price")
+SETTLEMENT_BRANCH_NAMES = ("physical", "cash", "net_share")
+BRANCH_ELECTED_BY = ("issuer", "holder", "automatic")
+ANTI_DILUTION_METHODS = (
+    "full_ratchet",
+    "weighted_average_broad",
+    "weighted_average_narrow",
+    "none_in_complete_agreement",
+)
+ACCRUAL_DAY_COUNTS = ("actual_365", "actual_360", "thirty_360")
+ACCRUAL_COMPOUNDING = ("simple", "periodic")
+#: ``kind`` discriminator of every top-level structure a term may carry.
+STRUCTURE_KINDS = (
+    "price_formula",
+    "reset_schedule",
+    "conversion_condition",
+    "settlement_branches",
+    "anti_dilution",
+    "accrual",
 )
 
 #: What one retained-filing transaction observation may say (C0 2.2.0, X0).
@@ -1782,6 +1860,10 @@ class EconomicTerm:
     interpretation_version: str
     available_at: str
     effective_at: str | None = None
+    #: I2 (SPEC_I2 §1.4): the structured reading of a variable, reset or
+    #: contingent term.  Appended last and dropped by ``as_record()`` when
+    #: ``None``, so a pre-I2 term serialises byte-identically.
+    structure: Any = None
 
     def __post_init__(self) -> None:
         _identifier(self.term_id, "economic_term.term_id")
@@ -1847,9 +1929,611 @@ class EconomicTerm:
             raise ContractViolation(f"{label}.date_value: an admitted expiry carries its date")
         if admitted and self.name in ECONOMIC_TERM_EFFECTIVE_NAMES:
             _require(self.effective_at is not None, f"{label}.effective_at: an admitted price or ratio term is dated")
+        self._validate_structure(label, admitted)
+
+    def _validate_structure(self, label: str, admitted: bool) -> None:
+        """SPEC_I2 §1.4: the structure must match the name, and only when admitted."""
+        structure = self.structure
+        if structure is None:
+            _require(
+                self.name not in ECONOMIC_TERM_STRUCTURE_NAMES or not admitted,
+                f"{label}.structure: an admitted {self.name!r} term carries its structure",
+            )
+            return
+        _require(
+            type(structure).__name__ in _STRUCTURE_CLASS_NAMES,
+            f"{label}.structure: a structured term type is required, got {type(structure).__name__!r}",
+        )
+        _require(admitted, f"{label}.structure: only an admitted term carries a structure")
+        expected = ECONOMIC_TERM_STRUCTURE_TYPES.get(self.name)
+        _require(
+            expected is not None,
+            f"{label}.structure: {self.name!r} carries no structure",
+        )
+        _require(
+            type(structure).__name__ == expected,
+            f"{label}.structure: {self.name!r} carries a {expected}, got {type(structure).__name__}",
+        )
+        if self.name in ECONOMIC_TERM_STRUCTURE_NAMES:
+            _require(self.value is None, f"{label}.value: {self.name!r} carries no quantity")
+            _require(self.flag is None, f"{label}.flag: {self.name!r} carries no flag")
+        elif isinstance(structure, PriceFormula):
+            market = any(component.source == "market" for component in structure.components)
+            _require(
+                not market or self.value is None or self.value.status != "known",
+                f"{label}.value: a market price formula is not a fact until the pricing date, "
+                "so the price term carries no known value",
+            )
+
+    def as_record(self) -> dict[str, Any]:
+        record = _plain(self)
+        if record["structure"] is None:
+            # SPEC_I2 §1.4 / §0 item 2: pre-I2 records and digests stay byte-identical.
+            del record["structure"]
+        return record
+
+
+# ---------------------------------------------------------------------------
+# I2 structured terms (SPEC_I2 §1.5)
+# ---------------------------------------------------------------------------
+
+
+def _int(value: Any, field_name: str, *, minimum: int | None = None, maximum: int | None = None) -> int:
+    """An exact integer: a float, a Decimal or a numeric string is refused (§0 item 3)."""
+    _require(
+        isinstance(value, int) and not isinstance(value, bool),
+        f"{field_name}: an exact integer is required, got {type(value).__name__} {value!r}",
+    )
+    if minimum is not None:
+        _require(value >= minimum, f"{field_name}: must be at least {minimum}, got {value!r}")
+    if maximum is not None:
+        _require(value <= maximum, f"{field_name}: must be at most {maximum}, got {value!r}")
+    return value
+
+
+def _boolean(value: Any, field_name: str) -> bool:
+    _require(isinstance(value, bool), f"{field_name}: a boolean is required, got {value!r}")
+    return value
+
+
+def _closed_mapping(value: Any, allowed: Sequence[str], field_name: str) -> dict[str, Any]:
+    _require(isinstance(value, Mapping), f"{field_name}: a mapping is required, got {type(value).__name__}")
+    body = dict(value)
+    unexpected = sorted(str(key) for key in body if key not in allowed)
+    _require(not unexpected, f"{field_name}: unexpected keys {unexpected}")
+    return body
+
+
+def _evidence_from_record(value: Any, field_name: str) -> tuple[EvidenceRef, ...]:
+    if value is None:
+        return ()
+    out = []
+    for index, item in enumerate(_tuple(value, field_name)):
+        _require(isinstance(item, EvidenceRef) or isinstance(item, Mapping), f"{field_name}[{index}]: an evidence record is required")
+        out.append(item if isinstance(item, EvidenceRef) else EvidenceRef(**_closed_mapping(item, ("manifest_id", "span_id", "text_sha256"), f"{field_name}[{index}]")))
+    return tuple(out)
+
+
+def _provenance_from_record(value: Any, field_name: str) -> Provenance | None:
+    if value is None:
+        return None
+    if isinstance(value, Provenance):
+        return value
+    body = _closed_mapping(
+        value, ("input_family", "generation_id", "evidence", "available_at"), field_name
+    )
+    return Provenance(
+        input_family=body.get("input_family"),
+        generation_id=body.get("generation_id"),
+        evidence=_evidence_from_record(body.get("evidence"), f"{field_name}.evidence"),
+        available_at=body.get("available_at"),
+    )
+
+
+_QUANTITY_FIELDS = ("unit", "status", "value", "share_basis", "security_class_id", "applicability", "provenance", "note")
+
+
+def _quantity_from_record(value: Any, unit: str, field_name: str) -> Quantity:
+    """A :class:`Quantity` of exactly ``unit``, built from an instance or its record."""
+    if isinstance(value, Quantity):
+        _require(value.unit == unit, f"{field_name}: a {unit} quantity is required, got unit {value.unit!r}")
+        return value
+    body = _closed_mapping(value, _QUANTITY_FIELDS, field_name)
+    return Quantity(
+        unit=body.get("unit", unit),
+        status=body.get("status", "unknown"),
+        value=body.get("value"),
+        share_basis=body.get("share_basis"),
+        security_class_id=body.get("security_class_id"),
+        applicability=body.get("applicability"),
+        provenance=_provenance_from_record(body.get("provenance"), f"{field_name}.provenance"),
+        note=body.get("note"),
+    )
+
+
+def _optional_quantity_from_record(value: Any, unit: str, field_name: str) -> Quantity | None:
+    return None if value is None else _quantity_from_record(value, unit, field_name)
+
+
+def _known_quantity(quantity: Quantity | None, field_name: str) -> str:
+    """The exact decimal string of a quantity that must state a known value."""
+    _require(quantity is not None, f"{field_name}: a quantity is required")
+    _require(
+        quantity.status == "known" and quantity.value is not None,
+        f"{field_name}: a known value is required, got status {quantity.status!r}",
+    )
+    return quantity.value
+
+
+def _optional(value: Any, reader: Any, field_name: str) -> Any:
+    return None if value is None else reader(value, field_name)
+
+
+@dataclass(frozen=True)
+class Rounding:
+    """Explicit decimal rounding of a computed price (SPEC_I2 §1.5)."""
+
+    places: int
+    mode: str
+
+    def __post_init__(self) -> None:
+        _int(self.places, "rounding.places", minimum=0, maximum=8)
+        _member(self.mode, ROUNDING_MODES, "rounding.mode")
+
+    @classmethod
+    def from_record(cls, record: Any) -> "Rounding":
+        body = _closed_mapping(record, ("places", "mode"), "rounding")
+        return cls(places=body.get("places"), mode=body.get("mode"))
 
     def as_record(self) -> dict[str, Any]:
         return _plain(self)
+
+
+@dataclass(frozen=True)
+class PriceComponent:
+    """One fixed or market-derived price input (SPEC_I2 §1.5)."""
+
+    kind: str
+    source: str
+    fixed_price: Quantity | None = None
+    measure: str | None = None
+    aggregation: str | None = None
+    lookback_days: int | None = None
+    lowest_count: int | None = None
+    percent_of_measure: Quantity | None = None
+    window_end: str | None = None
+
+    def __post_init__(self) -> None:
+        _require(self.kind == "price_component", f"price_component.kind: 'price_component' required, got {self.kind!r}")
+        _member(self.source, PRICE_COMPONENT_SOURCES, "price_component.source")
+        market = self.source == "market"
+        if market:
+            _require(self.fixed_price is None, "price_component.fixed_price: a market component carries no fixed price")
+            _member(self.measure, PRICE_MEASURES, "price_component.measure")
+            _member(self.aggregation, PRICE_AGGREGATIONS, "price_component.aggregation")
+            _int(self.lookback_days, "price_component.lookback_days", minimum=1)
+            if self.aggregation == "single_day":
+                _require(self.lookback_days == 1, "price_component.lookback_days: single_day reads exactly one point")
+            if self.aggregation == "average_of_lowest":
+                _int(self.lowest_count, "price_component.lowest_count", minimum=1, maximum=self.lookback_days)
+            else:
+                _require(self.lowest_count is None, "price_component.lowest_count: only average_of_lowest carries it")
+            _require(
+                isinstance(self.percent_of_measure, Quantity) and self.percent_of_measure.unit == "percent",
+                "price_component.percent_of_measure: a percent Quantity is required",
+            )
+            _member(self.window_end, PRICE_WINDOW_ENDS, "price_component.window_end")
+        else:
+            _require(
+                isinstance(self.fixed_price, Quantity) and self.fixed_price.unit == "usd",
+                "price_component.fixed_price: a usd Quantity is required for a fixed component",
+            )
+            for name in ("measure", "aggregation", "window_end"):
+                _require(getattr(self, name) is None, f"price_component.{name}: a fixed component carries none")
+            _require(self.lookback_days is None, "price_component.lookback_days: a fixed component carries none")
+            _require(self.lowest_count is None, "price_component.lowest_count: a fixed component carries none")
+            _require(self.percent_of_measure is None, "price_component.percent_of_measure: a fixed component carries none")
+
+    @classmethod
+    def from_record(cls, record: Any) -> "PriceComponent":
+        body = _closed_mapping(
+            record,
+            ("kind", "source", "fixed_price", "measure", "aggregation", "lookback_days",
+             "lowest_count", "percent_of_measure", "window_end"),
+            "price_component",
+        )
+        return cls(
+            kind=body.get("kind"),
+            source=body.get("source"),
+            fixed_price=_optional_quantity_from_record(body.get("fixed_price"), "usd", "price_component.fixed_price"),
+            measure=body.get("measure"),
+            aggregation=body.get("aggregation"),
+            lookback_days=body.get("lookback_days"),
+            lowest_count=body.get("lowest_count"),
+            percent_of_measure=_optional_quantity_from_record(
+                body.get("percent_of_measure"), "percent", "price_component.percent_of_measure"
+            ),
+            window_end=body.get("window_end"),
+        )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class PriceFormula:
+    """A conversion or exercise price composed of fixed and market components.
+
+    ``floor_basis`` is the whole point of the type: a floating price with no
+    floor is ``none_in_complete_agreement`` (unbounded by contract) and an
+    unestablished one is ``not_established`` (unknown).  Neither is ever read as
+    a finite maximum (SPEC_I2 §0 item 4, masterplan L231).
+    """
+
+    kind: str
+    combine: str
+    components: tuple[PriceComponent, ...]
+    floor_basis: str
+    floor: Quantity | None = None
+    below_floor: str | None = None
+    ceiling: Quantity | None = None
+    rounding: Rounding | None = None
+
+    def __post_init__(self) -> None:
+        _require(self.kind == "price_formula", f"price_formula.kind: 'price_formula' required, got {self.kind!r}")
+        _member(self.combine, PRICE_COMBINES, "price_formula.combine")
+        object.__setattr__(self, "components", _tuple(self.components, "price_formula.components"))
+        for item in self.components:
+            _require(isinstance(item, PriceComponent), "price_formula.components: PriceComponent required")
+        if self.combine == "single":
+            _require(len(self.components) == 1, "price_formula.components: 'single' combines exactly one component")
+        else:
+            _require(len(self.components) >= 2, f"price_formula.components: {self.combine!r} combines at least two")
+        if all(component.source == "fixed" for component in self.components):
+            # A fixed price with a cap or floor is still one fixed component.
+            _require(self.combine == "single", "price_formula.combine: an all-fixed formula is 'single'")
+        _member(self.floor_basis, FLOOR_BASES, "price_formula.floor_basis")
+        stated = self.floor_basis == "stated"
+        if stated:
+            _require(
+                isinstance(self.floor, Quantity) and self.floor.unit == "usd",
+                "price_formula.floor: a stated floor is a usd Quantity",
+            )
+            _member(self.below_floor, BELOW_FLOOR_RULES, "price_formula.below_floor")
+        else:
+            _require(self.floor is None, "price_formula.floor: only a stated floor carries an amount")
+            _require(self.below_floor is None, "price_formula.below_floor: only a stated floor names what happens below it")
+        if self.ceiling is not None:
+            _require(isinstance(self.ceiling, Quantity) and self.ceiling.unit == "usd", "price_formula.ceiling: a usd Quantity is required")
+        if self.rounding is not None:
+            _require(isinstance(self.rounding, Rounding), "price_formula.rounding: Rounding required")
+
+    @property
+    def has_market_component(self) -> bool:
+        return any(component.source == "market" for component in self.components)
+
+    @classmethod
+    def from_record(cls, record: Any) -> "PriceFormula":
+        body = _closed_mapping(
+            record,
+            ("kind", "combine", "components", "floor_basis", "floor", "below_floor", "ceiling", "rounding"),
+            "price_formula",
+        )
+        rounding = body.get("rounding")
+        return cls(
+            kind=body.get("kind"),
+            combine=body.get("combine"),
+            components=tuple(PriceComponent.from_record(item) for item in _tuple(body.get("components"), "price_formula.components")),
+            floor_basis=body.get("floor_basis"),
+            floor=_optional_quantity_from_record(body.get("floor"), "usd", "price_formula.floor"),
+            below_floor=body.get("below_floor"),
+            ceiling=_optional_quantity_from_record(body.get("ceiling"), "usd", "price_formula.ceiling"),
+            rounding=None if rounding is None else (rounding if isinstance(rounding, Rounding) else Rounding.from_record(rounding)),
+        )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class ResetEvent:
+    """One dated reset of an exercise or conversion price (SPEC_I2 §1.5)."""
+
+    reset_date: str
+    rule: str
+    market: PriceComponent
+    floor: Quantity | None = None
+    share_adjustment: str = "none"
+
+    def __post_init__(self) -> None:
+        _date(self.reset_date, "reset_event.reset_date")
+        _member(self.rule, RESET_RULES, "reset_event.rule")
+        _require(isinstance(self.market, PriceComponent), "reset_event.market: PriceComponent required")
+        _require(self.market.source == "market", "reset_event.market: a reset reads a market measure")
+        if self.floor is not None:
+            _require(isinstance(self.floor, Quantity) and self.floor.unit == "usd", "reset_event.floor: a usd Quantity is required")
+        _member(self.share_adjustment, SHARE_ADJUSTMENTS, "reset_event.share_adjustment")
+
+    @classmethod
+    def from_record(cls, record: Any) -> "ResetEvent":
+        body = _closed_mapping(
+            record, ("reset_date", "rule", "market", "floor", "share_adjustment"), "reset_event"
+        )
+        market = body.get("market")
+        return cls(
+            reset_date=body.get("reset_date"),
+            rule=body.get("rule"),
+            market=market if isinstance(market, PriceComponent) else PriceComponent.from_record(market),
+            floor=_optional_quantity_from_record(body.get("floor"), "usd", "reset_event.floor"),
+            share_adjustment=body.get("share_adjustment", "none"),
+        )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class ResetSchedule:
+    """The dated reset events of one price term, strictly ascending."""
+
+    kind: str
+    applies_to: str
+    events: tuple[ResetEvent, ...]
+
+    def __post_init__(self) -> None:
+        _require(self.kind == "reset_schedule", f"reset_schedule.kind: 'reset_schedule' required, got {self.kind!r}")
+        _member(self.applies_to, PRICE_TERM_NAMES, "reset_schedule.applies_to")
+        object.__setattr__(self, "events", _tuple(self.events, "reset_schedule.events"))
+        _require(len(self.events) >= 1, "reset_schedule.events: at least one reset event")
+        previous = None
+        for event in self.events:
+            _require(isinstance(event, ResetEvent), "reset_schedule.events: ResetEvent required")
+            _require(
+                previous is None or event.reset_date > previous,
+                "reset_schedule.events: reset_date must strictly ascend",
+            )
+            previous = event.reset_date
+
+    @classmethod
+    def from_record(cls, record: Any) -> "ResetSchedule":
+        body = _closed_mapping(record, ("kind", "applies_to", "events"), "reset_schedule")
+        return cls(
+            kind=body.get("kind"),
+            applies_to=body.get("applies_to"),
+            events=tuple(ResetEvent.from_record(item) for item in _tuple(body.get("events"), "reset_schedule.events")),
+        )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class ConversionCondition:
+    """A trading-day condition on conversion (SPEC_I2 §1.5)."""
+
+    kind: str
+    required_days: int
+    window_days: int
+    comparison: str
+    threshold_kind: str
+    threshold: Quantity
+    measure: str
+    window_end: str
+
+    def __post_init__(self) -> None:
+        _require(self.kind == "conversion_condition", f"conversion_condition.kind: 'conversion_condition' required, got {self.kind!r}")
+        _int(self.required_days, "conversion_condition.required_days", minimum=1)
+        _int(self.window_days, "conversion_condition.window_days", minimum=1)
+        _require(
+            self.required_days <= self.window_days,
+            f"conversion_condition: required_days {self.required_days} exceeds window_days {self.window_days}",
+        )
+        _member(self.comparison, CONDITION_COMPARISONS, "conversion_condition.comparison")
+        _member(self.threshold_kind, CONDITION_THRESHOLD_KINDS, "conversion_condition.threshold_kind")
+        unit = "usd" if self.threshold_kind == "price" else "percent"
+        _require(
+            isinstance(self.threshold, Quantity) and self.threshold.unit == unit,
+            f"conversion_condition.threshold: a {unit} Quantity is required",
+        )
+        _member(self.measure, PRICE_MEASURES, "conversion_condition.measure")
+        _member(self.window_end, PRICE_WINDOW_ENDS, "conversion_condition.window_end")
+
+    @classmethod
+    def from_record(cls, record: Any) -> "ConversionCondition":
+        body = _closed_mapping(
+            record,
+            ("kind", "required_days", "window_days", "comparison", "threshold_kind", "threshold",
+             "measure", "window_end"),
+            "conversion_condition",
+        )
+        threshold_kind = body.get("threshold_kind")
+        unit = "usd" if threshold_kind == "price" else "percent"
+        return cls(
+            kind=body.get("kind"),
+            required_days=body.get("required_days"),
+            window_days=body.get("window_days"),
+            comparison=body.get("comparison"),
+            threshold_kind=threshold_kind,
+            threshold=_quantity_from_record(body.get("threshold"), unit, "conversion_condition.threshold"),
+            measure=body.get("measure"),
+            window_end=body.get("window_end"),
+        )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class SettlementBranches:
+    """The exclusive settlement branches a holder or issuer may elect.
+
+    The branches are alternatives and are never summed (SPEC_I2 §0 item 5).
+    """
+
+    kind: str
+    branches: tuple[str, ...]
+    elected_by: str
+
+    def __post_init__(self) -> None:
+        _require(self.kind == "settlement_branches", f"settlement_branches.kind: 'settlement_branches' required, got {self.kind!r}")
+        object.__setattr__(self, "branches", _tuple(self.branches, "settlement_branches.branches"))
+        _require(len(self.branches) >= 1, "settlement_branches.branches: at least one branch")
+        for branch in self.branches:
+            _member(branch, SETTLEMENT_BRANCH_NAMES, "settlement_branches.branches")
+        _unique(list(self.branches), "settlement_branches.branches")
+        _member(self.elected_by, BRANCH_ELECTED_BY, "settlement_branches.elected_by")
+        if self.elected_by == "automatic":
+            _require(len(self.branches) == 1, "settlement_branches.branches: an automatic election has exactly one branch")
+
+    @classmethod
+    def from_record(cls, record: Any) -> "SettlementBranches":
+        body = _closed_mapping(record, ("kind", "branches", "elected_by"), "settlement_branches")
+        return cls(
+            kind=body.get("kind"),
+            branches=tuple(_tuple(body.get("branches"), "settlement_branches.branches")),
+            elected_by=body.get("elected_by"),
+        )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class AntiDilution:
+    """A price-protection adjustment (SPEC_I2 §1.5)."""
+
+    kind: str
+    applies_to: str
+    method: str
+    price_rounding: Rounding | None = None
+    share_adjustment: str = "none"
+
+    def __post_init__(self) -> None:
+        _require(self.kind == "anti_dilution", f"anti_dilution.kind: 'anti_dilution' required, got {self.kind!r}")
+        _member(self.applies_to, PRICE_TERM_NAMES, "anti_dilution.applies_to")
+        _member(self.method, ANTI_DILUTION_METHODS, "anti_dilution.method")
+        if self.price_rounding is not None:
+            _require(isinstance(self.price_rounding, Rounding), "anti_dilution.price_rounding: Rounding required")
+        _member(self.share_adjustment, SHARE_ADJUSTMENTS, "anti_dilution.share_adjustment")
+
+    @classmethod
+    def from_record(cls, record: Any) -> "AntiDilution":
+        body = _closed_mapping(
+            record, ("kind", "applies_to", "method", "price_rounding", "share_adjustment"), "anti_dilution"
+        )
+        rounding = body.get("price_rounding")
+        return cls(
+            kind=body.get("kind"),
+            applies_to=body.get("applies_to"),
+            method=body.get("method"),
+            price_rounding=None if rounding is None else (rounding if isinstance(rounding, Rounding) else Rounding.from_record(rounding)),
+            share_adjustment=body.get("share_adjustment", "none"),
+        )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class Accrual:
+    """Dividend or interest accrual into the claim (SPEC_I2 §1.5).
+
+    ``thirty_360`` is the 30/360 bond basis (ISDA 2006 §4.16(f)): D1 = 31
+    becomes 30; D2 = 31 becomes 30 when D1 is 30 or 31.
+    """
+
+    kind: str
+    annual_rate: Quantity
+    day_count: str
+    compounding: str
+    accrual_start: str
+    converts_with_principal: bool
+    period_months: int | None = None
+
+    def __post_init__(self) -> None:
+        _require(self.kind == "accrual", f"accrual.kind: 'accrual' required, got {self.kind!r}")
+        _require(
+            isinstance(self.annual_rate, Quantity) and self.annual_rate.unit == "percent",
+            "accrual.annual_rate: a percent Quantity is required",
+        )
+        _member(self.day_count, ACCRUAL_DAY_COUNTS, "accrual.day_count")
+        _member(self.compounding, ACCRUAL_COMPOUNDING, "accrual.compounding")
+        _date(self.accrual_start, "accrual.accrual_start")
+        _boolean(self.converts_with_principal, "accrual.converts_with_principal")
+        if self.compounding == "periodic":
+            _int(self.period_months, "accrual.period_months", minimum=1)
+        else:
+            _require(self.period_months is None, "accrual.period_months: only periodic accrual carries a period")
+
+    @classmethod
+    def from_record(cls, record: Any) -> "Accrual":
+        body = _closed_mapping(
+            record,
+            ("kind", "annual_rate", "day_count", "compounding", "period_months", "accrual_start",
+             "converts_with_principal"),
+            "accrual",
+        )
+        return cls(
+            kind=body.get("kind"),
+            annual_rate=_quantity_from_record(body.get("annual_rate"), "percent", "accrual.annual_rate"),
+            day_count=body.get("day_count"),
+            compounding=body.get("compounding"),
+            accrual_start=body.get("accrual_start"),
+            converts_with_principal=body.get("converts_with_principal"),
+            period_months=body.get("period_months"),
+        )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+#: Class name of every structure a term may carry, and the ``kind`` each writes.
+_STRUCTURE_CLASS_NAMES = frozenset(
+    {"PriceFormula", "ResetSchedule", "ConversionCondition", "SettlementBranches", "AntiDilution", "Accrual"}
+)
+#: SPEC_I2 §1.3: which structure each structured term name carries.
+ECONOMIC_TERM_STRUCTURE_TYPES: Mapping[str, str] = {
+    "price_reset": "ResetSchedule",
+    "conversion_condition": "ConversionCondition",
+    "settlement_branches": "SettlementBranches",
+    "anti_dilution": "AntiDilution",
+    "accrual_terms": "Accrual",
+    "exercise_price": "PriceFormula",
+    "conversion_price": "PriceFormula",
+}
+#: ``kind`` discriminator to structure type, for record parsing.
+STRUCTURE_TYPES_BY_KIND: Mapping[str, Any] = {
+    "price_formula": PriceFormula,
+    "reset_schedule": ResetSchedule,
+    "conversion_condition": ConversionCondition,
+    "settlement_branches": SettlementBranches,
+    "anti_dilution": AntiDilution,
+    "accrual": Accrual,
+}
+
+
+#: Union of the closed key sets, used only to reject a misspelled key early.
+_STRUCTURE_RECORD_KEYS = frozenset(
+    {
+        "kind", "combine", "components", "floor_basis", "floor", "below_floor", "ceiling", "rounding",
+        "source", "fixed_price", "measure", "aggregation", "lookback_days", "lowest_count",
+        "percent_of_measure", "window_end", "places", "mode", "applies_to", "events", "reset_date",
+        "rule", "market", "share_adjustment", "required_days", "window_days", "comparison",
+        "threshold_kind", "threshold", "branches", "elected_by", "method", "price_rounding",
+        "annual_rate", "day_count", "compounding", "period_months", "accrual_start",
+        "converts_with_principal",
+    }
+)
+
+
+def structure_from_record(record: Any, field_name: str = "economic_term.structure") -> Any:
+    """Parse one structured-term record into its frozen type, keyed on ``kind``."""
+    if isinstance(record, tuple(STRUCTURE_TYPES_BY_KIND.values())):
+        return record
+    body = _closed_mapping(record, tuple(_STRUCTURE_RECORD_KEYS), field_name)
+    kind = body.get("kind")
+    _require(kind in STRUCTURE_TYPES_BY_KIND, f"{field_name}.kind: {kind!r} is not a structured term kind")
+    return STRUCTURE_TYPES_BY_KIND[kind].from_record(body)
 
 
 @dataclass(frozen=True)
@@ -2099,7 +2783,12 @@ def validate_state_record(kind: str, record: Mapping[str, Any], schema_path: Pat
 
 
 __all__ = [
+    "ACCRUAL_COMPOUNDING",
+    "ACCRUAL_DAY_COUNTS",
+    "ANTI_DILUTION_METHODS",
     "AUTHORITY",
+    "Accrual",
+    "AntiDilution",
     "ActionSelection",
     "Assumption",
     "BINDING_ORIGINS",
@@ -2111,16 +2800,25 @@ __all__ = [
     "CapacityEnvelope",
     "CapitalInputs",
     "CapitalState",
+    "BRANCH_ELECTED_BY",
+    "BELOW_FLOOR_RULES",
     "CashEffect",
     "CommitmentInputs",
     "Constraint",
+    "CONDITION_COMPARISONS",
+    "CONDITION_THRESHOLD_KINDS",
     "ContractViolation",
+    "ConversionCondition",
     "CorporateActionBasis",
     "CorporateActionInputs",
     "ECONOMIC_TERM_NAMES",
+    "ECONOMIC_TERM_PRICE_FORMULA_NAMES",
+    "ECONOMIC_TERM_STRUCTURE_NAMES",
+    "ECONOMIC_TERM_STRUCTURE_TYPES",
     "ECONOMIC_TERM_STATUSES",
     "EconomicTerm",
     "EvidenceRef",
+    "FLOOR_BASES",
     "FORBIDDEN_PROPERTY_PATTERN",
     "FamilyProvenance",
     "FamilyState",
@@ -2137,19 +2835,36 @@ __all__ = [
     "Instrument",
     "InstrumentSet",
     "PROJECTION_COMPATIBILITY",
+    "PRICE_AGGREGATIONS",
+    "PRICE_COMBINES",
+    "PRICE_COMPONENT_SOURCES",
+    "PRICE_MEASURES",
+    "PRICE_TERM_NAMES",
+    "PRICE_WINDOW_ENDS",
     "PriceAssumption",
+    "PriceComponent",
+    "PriceFormula",
     "Provenance",
     "Quantity",
     "REALIZED_CASH_KINDS",
     "RECORD_SCHEMAS",
     "REPORTING_BASES",
     "REQUIRED_FUNDING_ASSUMPTIONS",
+    "RESET_RULES",
+    "ROUNDING_MODES",
+    "ResetEvent",
+    "ResetSchedule",
     "Resolution",
     "ResolutionInputs",
     "RouteBound",
     "RulePack",
     "RuleRef",
+    "SHARE_ADJUSTMENTS",
     "SHARE_BASES",
+    "SETTLEMENT_BRANCH_NAMES",
+    "STRUCTURE_KINDS",
+    "STRUCTURE_TYPES_BY_KIND",
+    "SettlementBranches",
     "STATE_CONTRACT_VERSION",
     "STATE_FAMILIES",
     "STATE_SCHEMA",
@@ -2168,6 +2883,7 @@ __all__ = [
     "UnknownResolution",
     "WitnessAllocation",
     "load_state_schema",
+    "structure_from_record",
     "projection_compatibility",
     "sha256_of",
     "stable_id",

@@ -4666,6 +4666,9 @@ CURATED_EXCLUSIVE = {
     # 2026-10-07 RS source delivery: Register the reviewed native-reference owner and its complete declared read closure.
     # Exact inventory only; scope audits and packing ceilings remain unchanged.
     "dataos-prospective-reference",
+    # 2026-10-13 Data OS completion acceptance suites (A02/A03/R01) - closure measured
+    # against main's own inference; seat applies the legacy-jobs.yml half.
+    "dataos-acceptance",
     "ratio-lens",
     # 2026-10-09 PR #8667: file and pinned-source relationship inspection.
     # Register the reviewed 68-path owner; closure audits and ceilings stay fixed.
@@ -4736,6 +4739,9 @@ CURATED_EXCLUSIVE = {
     # build_free_content / plan_book packing probes. scope: exclusive pins it
     # to its measured closure, so it must be listed here.
     "gmi-classification-axes",
+    # GovRev dependency changes must not select GR3 on unrelated page templates.
+    "group-linked-outsiders",
+    "govrev-program-ontology",
     # 2026-10-12 FIF kernel guards (seat ruling, candidate y): the class-A
     # Financial Intelligence Fabric suites moved off the data-health lanes.
     # Inference would union ~139 fallback roots (the app/ TestClient suites

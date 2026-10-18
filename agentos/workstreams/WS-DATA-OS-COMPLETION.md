@@ -37,6 +37,7 @@ decisions:
   - DEC:DATAOS-D00-SEMANTIC-DECISIONS
   - DEC:DATAOS-D00-A1-VENUE-CLOCK-UNITS-SCOPE
   - DEC:DATAOS-VIEW-CONTRACT-SIDECAR-IS-A-NIGHTLY-EMITTER
+  - DEC:DATAOS-D00-D3-ABSENT-VS-UNRESOLVED
 waves:
   - id: d00-freeze
     title: Freeze the six semantic decisions (D00)
@@ -55,24 +56,27 @@ waves:
   - id: consumers
     title: Retained views, D00.A1 venue clock + declared units, price-ladder opt-in canonical read, coverage, agreement inspector, view-contract sidecar emitter, Terminal / DataWorkspace / basket reads, support matrix (P05, P06, C01-C04, U01-U04, M01)
     status: in_progress
-    pr: [9179, 9184]
+    pr: [9179, 9184, 9185, 9188, 9210, 9218, 9220, 9226, 9234, 9236, 9237, 9241, 9539]
     depends_on: [identity-time, math-registry-rights]
   - id: verification-acceptance
     title: Independent oracle, adversarial access, matched workload, end-to-end journey, corrections, recovery, source review, install and cycle plans (Q01-Q03, F01, A01-A03, R01-R03)
-    status: todo
+    status: in_progress
+    pr: [9273, 9275]
     depends_on: [consumers]
   - id: c00-closeout
     title: Live verification on the served product, second nightly cycle, acceptance matrix closeout (C00)
     status: todo
     depends_on: [verification-acceptance]
 next_action: >-
-  Hand-merge wire-2 #9185 (exact head 69443b58c1ec, exports the P05 + P06 names) on concluded
-  green and prove the landing; consume the second main ci.yml baseline 38486134436 (a
-  descendant of 0d6e05ec49f2; never dispatch another over a live run); consume the rest of the consumer-wave
-  orchestrator return (C01-C03, U03-U04, M01): judge each DRAFT PR by artifact, one watcher
-  per PR, hand-merge at the exact head, verify every landing against freshly fetched
-  origin/main; commission C04 (nightly sidecar emitter) after C01 lands, then commission
-  verification + acceptance (ORCH-4) and run the seat-owned R01-R03 / C00 closeout.
+  Consume the ONE watcher per open DRAFT PR and hand-merge each at its exact concluded-green head
+  (U04 #9241, C04 #9226, M01 #9237, verification #9273, acceptance #9275; the second of
+  #9273/#9275 to merge needs update-branch because both add a legacy-jobs.yml job), proving each
+  landing against freshly fetched origin/main; then dispatch ONE main ci.yml baseline over a clear
+  field (never over a live run) to clear the CI-authority heads (#9241, #9226) and prove C04's
+  daily.yml edit; wire-5 exports (read_view, the U04 and M01 names) from the seat after U04/M01
+  land; R02 installed/selected/consumed receipts after R01 + A02 + M01; R03 is the first nightly
+  that commits data/stocks/_view_contract.json (never dispatch daily.yml); then the final C00
+  closeout matrix in a records PR.
 landmines:
   - "WS:TIINGO-DATA-OS owns lib/dataos/tiingo_*.py, collectors/tiingo_archive.py, scripts/tiingo_*, docs/tiingo-evidence/ and the twenty PROPOSED Tiingo registry rows; this workstream never touches them."
   - "lib/dataos/__init__.py has exactly one writer per wave (the identity+time orchestrator in wave 1; the seat from the wave-2 wiring #9168 on); parallel export wiring collides on the shared export list."

@@ -22,7 +22,7 @@ waves:
   - id: release
     title: Publish and qualify model selection and live two-host delivery
     status: awaiting_ci
-next_action: Inspect the new exact-head CI on original Macro PR9447 and the refreshed Terminal PR1010; resolve genuine failures, then use existing release/deployment paths and verify real model-selected visuals plus authenticated saved-history recovery on both hosts.
+next_action: Finish the preserved Macro PR9447 merge after the repaired receipt suites passed 136 checks, publish its exact head and qualify the applicable main release checks. Terminal PR1010 is already merged; verify actual deployment ancestry before any deploy, then prove model-selected visuals and authenticated saved-history recovery on both hosts.
 artifacts:
   - docs/superpowers/specs/2026-10-15-mastermind-ai-illustrations.md
   - docs/superpowers/plans/2026-10-15-mastermind-ai-illustrations.md

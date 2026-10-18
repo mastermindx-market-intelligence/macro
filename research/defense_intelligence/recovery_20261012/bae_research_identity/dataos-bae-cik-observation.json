@@ -1,0 +1,20 @@
+{
+  "url": "https://www.sec.gov/files/company_tickers.json",
+  "representation": "existing_owner_observation_extract",
+  "observed_at": "2026-10-13T07:54:08.066798+00:00",
+  "source_path": "data/symbol_directory/cik_map/2026-10-05.parquet",
+  "source_sha256": "5b817069fbee57a6616095e58b3b2ba759f55eb3f1cbf866fc62e0f0f55230b9",
+  "snapshot": "2026-10-05",
+  "records": [
+    {
+      "ticker": "BAESY",
+      "cik": 895564,
+      "title": "BAE SYSTEMS PLC /FI/"
+    }
+  ],
+  "limits": {
+    "observation_only": true,
+    "no_global_listing_id": true,
+    "no_historical_membership": true
+  }
+}

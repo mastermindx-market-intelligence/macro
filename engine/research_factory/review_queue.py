@@ -475,6 +475,7 @@ def _extract_come_back_on(transitions_jsonl: list[dict], candidate_id: str) -> s
 
 def build_queue(
     rf_dir: Path | None = None,
+    *, trusted_codegen_artifacts: tuple = (), synthetic_commission=None,
 ) -> list[dict]:
     """Build the cross-domain review queue.
 
@@ -489,6 +490,13 @@ def build_queue(
         "authority": "display_only".  Queue is ordered by category bin then
         created_at (RF-16 — never by a numeric score).
     """
+    # Explicit owner attachment only. Default path performs no diagnostic I/O.
+    if type(trusted_codegen_artifacts) is not tuple:
+        raise ValueError("immutable diagnostic bindings required")
+    diagnostics = ()
+    if trusted_codegen_artifacts:
+        from engine.research_codegen.bridge import load_diagnostics, public_diagnostic
+        diagnostics = load_diagnostics(trusted_codegen_artifacts, commission=synthetic_commission)
     _dir = Path(rf_dir) if rf_dir else DEFAULT_RF_DIR
     candidates_path = _dir / "candidates.jsonl"
     transitions_path = _dir / "transitions.jsonl"
@@ -596,6 +604,9 @@ def build_queue(
         }
         packets.append(packet)
 
+    for diagnostic in diagnostics:
+        packets.append(diagnostic_review_packet(public_diagnostic(diagnostic)))
+
     # Order: category bins then created_at (RF-16 — never by numeric score)
     packets.sort(
         key=lambda p: (
@@ -605,3 +616,124 @@ def build_queue(
     )
 
     return packets
+
+
+def diagnostic_review_packet(public: dict, *, engineering_evidence=None) -> dict:
+    """Closed compiled display attachment; never a canonical candidate row."""
+    from engine.research_codegen.bridge import validate_public_projection
+    public = validate_public_projection(public)
+    packet = {
+        "schema": "research_factory.review_packet.v1", "authority": "display_only",
+        "is_research_diagnostic": True, "diagnostic_id": public["diagnostic_id"],
+        "candidate_id": public["candidate_id"], "created_at": public["created_at"],
+        "current_status": "unregistered_synthetic_diagnostic", "candidate_type": None,
+        "domain": "research_engineering", "allowed_decisions": [],
+        "frozen_gate_metrics": public["aggregates"], "diagnostic": public,
+        "note": "Synthetic engineering only; no candidate lifecycle or promotion authority. "
+                "Equal-date 25-session single-entry adverse excursion, including four post-exit sessions. "
+                "INFERENCE_UNQUALIFIED / NO_QUALIFIED_PROCEDURE.",
+    }
+    if engineering_evidence is not None:
+        packet["engineering_evidence"] = _diagnostic_engineering_evidence(
+            public, engineering_evidence)
+    return packet
+
+
+def _diagnostic_engineering_evidence(public, evidence):
+    """Copy a closed, bounded fixture-owner projection for advisory inspection.
+
+    Digests correlate receipts; they do not authenticate a caller or prove that
+    any control ran. Only synthetic engineering evidence is admitted here.
+    Real boundary and resource acceptance require their separate actual owner.
+    No raw commands, output, paths, labels or free-form errors are copied.
+    """
+    import re
+
+    def require(ok):
+        if not ok:
+            raise ValueError("INVALID_DIAGNOSTIC_ENGINEERING_EVIDENCE")
+
+    def closed(value, names):
+        require(type(value) is dict and len(value) == len(names)
+                and all(type(key) is str for key in value)
+                and set(value) == set(names))
+
+    def sha(value):
+        return (type(value) is str and len(value) == 64
+                and re.fullmatch(r"[0-9a-f]{64}", value) is not None)
+
+    def identifier(value):
+        return (type(value) is str and 1 <= len(value) <= 128
+                and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", value) is not None)
+
+    closed(evidence, ("schema", "identity", "accounting", "attempts", "controls"))
+    require(type(evidence["schema"]) is str
+            and evidence["schema"] == "research_codegen.engineering_evidence.v1")
+    identity_keys = ("diagnostic_id", "original_root_id", "candidate_id", "source_sha256",
+                     "config_sha256", "protocol_sha256", "input_policy_sha256",
+                     "runtime_sha256", "evaluator_sha256", "artifact_sha256")
+    identity = evidence["identity"]
+    closed(identity, identity_keys)
+    for key in identity_keys:
+        require((sha(identity[key]) if key.endswith("sha256") else identifier(identity[key]))
+                and identity[key] == public[key])
+    accounting = evidence["accounting"]
+    closed(accounting, ("expected_generation_sha256", "trial_readback_sha256",
+                        "durable_observation_sha256"))
+    require(all(sha(value) for value in accounting.values()))
+    rows = evidence["attempts"]
+    require(type(rows) is list and len(rows) <= 4096)
+    attempts, seen = [], set()
+    attempt_keys = ("operation_id", "plan_sha256", "input_sha256", "output_sha256",
+                    "output_bytes", "state", "workload_confirmed", "workload_returncode",
+                    "execution_uncertain", "reconciliation_required", "cleanup_confirmed")
+    states = ("PLANNED", "CREATE_UNCERTAIN", "CLEANED_SUCCESS", "CLEANED_FAILURE",
+              "CLEANUP_UNCERTAIN")
+    for row in rows:
+        closed(row, attempt_keys)
+        require(identifier(row["operation_id"]) and row["operation_id"] not in seen)
+        seen.add(row["operation_id"])
+        require(sha(row["plan_sha256"]) and sha(row["input_sha256"]))
+        require(row["output_sha256"] is None or sha(row["output_sha256"]))
+        require(type(row["output_bytes"]) is int and 0 <= row["output_bytes"] <= 65536)
+        require(row["output_sha256"] is not None or row["output_bytes"] == 0)
+        require(type(row["state"]) is str and row["state"] in states)
+        require(all(type(row[key]) is bool for key in ("workload_confirmed",
+            "execution_uncertain", "reconciliation_required", "cleanup_confirmed")))
+        code = row["workload_returncode"]
+        require(code is None or type(code) is int and -255 <= code <= 255)
+        require(not row["workload_confirmed"] or code is not None)
+        if row["state"] == "CLEANED_SUCCESS":
+            require(row["workload_confirmed"] and code == 0 and row["cleanup_confirmed"]
+                    and not row["execution_uncertain"] and not row["reconciliation_required"])
+        elif row["state"] == "CLEANED_FAILURE":
+            require(row["cleanup_confirmed"] and not row["workload_confirmed"])
+        elif row["state"] in ("CREATE_UNCERTAIN", "CLEANUP_UNCERTAIN"):
+            require(not row["cleanup_confirmed"] and row["reconciliation_required"])
+        else:
+            require(not row["workload_confirmed"] and code is None
+                    and row["output_bytes"] == 0 and row["output_sha256"] is None
+                    and not row["cleanup_confirmed"])
+        attempts.append(dict(row))
+    controls = evidence["controls"]
+    expected_controls = ("accounting_declaration", "prefix_schedule", "output_contract",
+                         "physical_boundary", "resource_overload")
+    require(type(controls) is list and len(controls) == len(expected_controls))
+    copied_controls = []
+    for row, expected in zip(controls, expected_controls):
+        closed(row, ("id", "status", "evidence_sha256"))
+        require(type(row["id"]) is str and row["id"] == expected)
+        require(type(row["status"]) is str
+                and row["status"] in ("MATCHED_EXPECTATION", "DID_NOT_MATCH", "NOT_RUN"))
+        if row["status"] == "NOT_RUN":
+            require(row["evidence_sha256"] is None)
+        else:
+            require(sha(row["evidence_sha256"]))
+        if expected in ("physical_boundary", "resource_overload"):
+            require(row["status"] == "NOT_RUN")
+        copied_controls.append(dict(row))
+    return {"schema": evidence["schema"], "identity": dict(identity),
+            "accounting": dict(accounting), "attempts": attempts,
+            "controls": copied_controls, "authority": "display_only",
+            "scope": "SYNTHETIC_ENGINEERING_ONLY", "physical_acceptance": False,
+            "scientific_acceptance": "UNQUALIFIED"}
