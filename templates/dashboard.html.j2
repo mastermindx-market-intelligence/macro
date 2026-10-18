@@ -9145,7 +9145,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     </div>
     {# Release Radar + RR modals live here — outside any sx-tray so they persist in DOM #}
   {% if mode != 'stocks' %}
-  <style id="rr-css">
+  {# The legacy RR card is offscreen in Macro grid mode. The external asset
+     stays render-blocking/preloaded on desktop; phones load it asynchronously.
+     This source <style> remains immediate in unoptimized development pages. #}
+  <style id="rr-css" data-mmx-mobile-async>
   /* ---- Release Radar MRI-R39: minimalist card + 5-tab modal ---- */
   /* 4px-base spacing scale; tabular-nums for all figures */
   #release-radar{padding:16px 20px 18px}

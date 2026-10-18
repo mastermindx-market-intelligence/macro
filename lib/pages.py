@@ -273,6 +273,8 @@ def optimize_assets_text(text: str, hash_for: Callable[[str], Optional[str]]) ->
 # change. Tiny blocks stay inline (a request isn't worth a few hundred bytes).
 _STYLE_BLOCK_RE = re.compile(r"<style\b([^>]*)>(.*?)</style>", re.IGNORECASE | re.DOTALL)
 _MEDIA_ATTR_RE = re.compile(r'\bmedia\s*=\s*"([^"]*)"', re.IGNORECASE)
+# Explicit opt-in: mobile-only deferred CSS; desktop remains render-blocking.
+_MOBILE_ASYNC_CSS_ATTR_RE = re.compile(r'(?<![\w-])data-mmx-mobile-async(?=[\s=>]|$)', re.IGNORECASE)
 _SVG_TAG_RE = re.compile(r"<svg\b|</svg\s*>", re.IGNORECASE)
 
 
@@ -373,6 +375,30 @@ def preload_css_text(text: str, imports_for: Callable[[str], list[str]]) -> str:
     # each stylesheet preload from the real linked/imported URL, by bare path,
     # so a cache-busting sweep moves the pair together. Only as=style preloads
     # are eligible; image/font/script hints remain untouched.
+    # A mobile-only async sheet gets a MEDIA-MATCHED desktop preload. Rebuild
+    # any old unqualified hint when optimizing an already-rendered page.
+    # If the same URL has a blocking consumer, retain its ordinary preload.
+    nonblocking_paths: set[str] = set()
+    blocking_paths: set[str] = set()
+    mobile_media_by_path: dict[str, str] = {}
+    for lm in _LINK_TAG_RE.finditer(text):
+        tag = lm.group(0)
+        rel_m, href_m = _REL_ATTR_RE.search(tag), _HREF_ATTR_RE.search(tag)
+        if not rel_m or not href_m or "stylesheet" not in rel_m.group(1).lower().split():
+            continue
+        href = href_m.group(1)
+        if not _is_local_asset(href):
+            continue
+        bare = href.split("?", 1)[0].split("#", 1)[0]
+        if _MOBILE_ASYNC_CSS_ATTR_RE.search(tag):
+            nonblocking_paths.add(bare)
+            media_m = _MEDIA_ATTR_RE.search(tag)
+            if media_m:
+                mobile_media_by_path[bare] = media_m.group(1)
+        else:
+            blocking_paths.add(bare)
+    deferred_only = nonblocking_paths - blocking_paths
+
     desired_by_path: dict[str, str] = {}
     for lm in _LINK_TAG_RE.finditer(text):
         tag = lm.group(0)
@@ -402,7 +428,14 @@ def preload_css_text(text: str, imports_for: Callable[[str], list[str]]) -> str:
         ):
             return tag
         href = href_m.group(1)
-        desired = desired_by_path.get(href.split("?", 1)[0].split("#", 1)[0])
+        bare = href.split("?", 1)[0].split("#", 1)[0]
+        if bare in deferred_only:
+            media_m = _MEDIA_ATTR_RE.search(tag)
+            if (href == desired_by_path.get(bare) and media_m
+                    and media_m.group(1) == mobile_media_by_path.get(bare)):
+                return tag  # already a matching media-qualified preload
+            return ""  # stale/unqualified hint: rebuild with new media and hash
+        desired = desired_by_path.get(bare)
         if not desired or desired == href:
             return tag
         return tag[:href_m.start(1)] + desired + tag[href_m.end(1):]
@@ -434,6 +467,8 @@ def preload_css_text(text: str, imports_for: Callable[[str], list[str]]) -> str:
             continue
         if "stylesheet" not in rels or not _is_local_asset(href):
             continue
+        if _MOBILE_ASYNC_CSS_ATTR_RE.search(tag) and href.split("?", 1)[0].split("#", 1)[0] in blocking_paths:
+            continue  # the ordinary blocking link owns the unconditional hint
         in_head = lm.start() < head_close
         if in_head:
             head_sheets.add(href)
@@ -504,6 +539,13 @@ def externalize_css_text(
         href = make_href(css, counter[0], media)
         if not href:
             return m.group(0)  # left inline
+        if _MOBILE_ASYNC_CSS_ATTR_RE.search(attrs) and media is None:
+            # Source <style> stays normal for unoptimized/dev builds. Desktop
+            # retains its matching render-blocking link and early preload;
+            # on phones the sheet loads asynchronously and then applies to all.
+            mobile_media = "screen and (min-width: 769px), print"
+            return (f'<link rel="stylesheet" media="{mobile_media}" '
+                    f'onload="this.media=\'all\'" data-mmx-mobile-async href="{href}">')
         media_attr = f' media="{media}"' if media else ""
         return f'<link rel="stylesheet"{media_attr} href="{href}">'
 
