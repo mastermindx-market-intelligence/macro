@@ -609,3 +609,23 @@ R18/R19/PR7129, and eventual production proof/acceptance. Preserve the existing 
 not mark Ready, merge, broaden pilots or deploy from this checkpoint. The older statements that the
 R38 browser scenarios were unexecuted, Research Screener was stale, or receipt dependency closure was
 pending are historical and superseded by this section for those specific lanes only.
+
+## 2026-10-18 — Shared Shell production recommission
+
+Current Chairman instruction: build the shared shell as a persistent web app using Terminal infrastructure, integrate the existing Macro HTML/Jinja pages in its content area, preserve gradual later native conversion, and install the reviewed beta at beta.mastermind-x.com. The Chairman grants full orchestration/Fabric authority and describes the Paper studies as incomplete design references. This advances the historical design-only stop into source implementation and beta delivery; it does not waive exact review, identity, source-custody or deploy-owner gates.
+
+Canonical current build contract: research/market_os/SHARED_SHELL_WEBAPP_PRODUCTION_PLAN_2026-10-18.md. Machine-readable Paper reference evidence: research/market_os/shared_shell_paper_reference_census_2026-10-18.json. Continue original root market-os-shared-shell-design-20260924-sol-001, current attended parent shared-shell-production-20261018-c1, Macro #7949 and Terminal #859.
+
+Source custody: original Macro shared-shell-r27 was clean at1b895236dfec4f20e0a62812a7c9c4c6d2db901c and fast-forwarded to published9b54c2d7f1f19a7371a7ee2102fb706f46e1b7ac. Current Macro main pin4f52d22596545cbd67b5143e188baf5660237024 has12 semantic/generated receipt conflicts with this carrier. Paid Fabric leaf shared-shell-macro-join-20261018-c1-r1 owns an isolated merge candidate; the original remains the parent adoption carrier. Original Terminal investor-shell-native-20261008-c1 was clean at2e7cf6663733e1394b5f3e389dde4f1cd341bf40; current masterd6515f47232538161af8d3d4c27064165eda40fe merged without conflicts asf1f2cc79c5961d84117d686caf87e5f41a9e9d79 and was pushed to the same PR859 branch. This is source publication, not CI/merge/deploy acceptance.
+
+Paper: eleven connected files were inspected, including every supplied page. Current investor candidate is MASTERMIND PAGES p-18-0 (61GR-0/61LF-0/61MY-0); OS p-F-0 is now a MOVED notice, and current executive Atelier navigation is a distinct product IA. Paper reads work. Writes are held by a real catalog qualification mismatch (accepted_for_write=false); zero mutations attempted and no alternate carrier bypass. The complete source design/build work continues independently.
+
+Read-only production facts: beta DNS did not resolve from the connected host and live Caddy has no beta block. terminal.service and caddy.service are active; Terminal live marker3e6e9591d21b849227de3633b4322d7d3b0d3b37 / BUILD_ID build-TfctsWXpff2fKS. Preserve Macro site.served and the separately published live data. Deploy remains owned by the source-managed incumbent release tools; never worktree-rsync to production.
+
+Fabric return adjudication: shared-shell-route-audit-20261018-c1-r1 reached terminal rc0 with a retained report but is NOT ACCEPTED as a complete route census. Its assertion that no separate registry exists is false: parent verified data/product_experience/page_registry.json at the exact audited commit, schema mastermind.page_registry.v1,331 rows, generated2026-09-04. Sparse omission is not absence. Use the existing registry generator/overrides, refresh it, and derive a shell projection. Other report claims remain investigation leads.
+
+Next executable frontier: consume/adjudicate the Macro merge candidate; build the derived route projection, native AppShell host and opt-in Macro document bridge; verify representative hard routes, then complete the estate. Implement reviewed beta DNS/service/release configuration and real user-journey/rollback proof. No deployment, full route coverage or product acceptance is claimed by this checkpoint.
+
+### Same-turn worker boundary correction
+
+Macro join leaf shared-shell-macro-join-20261018-c1-r1 stopped before worker execution with FABRIC_SPARSE_HELPER_BLOB_MISMATCH (rc78) in the selected host donor helper. No source merge, candidate, worker START or user-data effect is claimed. The parent retains the already-owned original worktree and will perform the join there; no helper or qualification configuration is altered. New independently scoped artifact leaf shared-shell-contracts-20261018-c1-r1 produces only pure TypeScript route/message contracts, with no repository mint. Detailed task plan: research/market_os/SHARED_SHELL_WEBAPP_IMPLEMENTATION_2026-10-18.md.

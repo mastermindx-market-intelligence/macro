@@ -271,3 +271,7 @@ identity, news, company-event, signal, risk, or forecast authority into that pro
 those domain owners remain independent and are composed through governed contracts.
 A later semantic-map amendment may introduce a dedicated flagship product program, but
 that registry change is not required to continue the bounded Market OS sequence.
+
+## Shared Shell production commission — 2026-10-18
+
+The Chairman commissioned the persistent Shared Shell web app, current Macro HTML/Jinja integration and beta.mastermind-x.com installation under the existing root market-os-shared-shell-design-20260924-sol-001. Macro #7949 and Terminal #859 remain the carriers. The current build/acceptance contract is research/market_os/SHARED_SHELL_WEBAPP_PRODUCTION_PLAN_2026-10-18.md; current custody, worker adjudication and exact next frontier are in agentos/handoffs/MARKET-OS-SHARED-SHELL-2026-09-24.md. This shell commission does not reopen the accepted A1A/A1B account-state matrices or transfer their state owners. It advances prior shell design-only scope into implementation and reviewed beta delivery.
