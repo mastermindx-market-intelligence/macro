@@ -212,3 +212,36 @@ replay of the exact four cache blocks passed seven HTTP cases: current hashes
 immutable, integer/unknown/unversioned keys short, protected-route stub no-store.
 The ephemeral server was stopped. This is not deployment or production auth;
 `cache-compatibility-result.json` records the exact source and public asset hashes.
+
+## Original combined rehearsal qualified — source remains held
+
+The exact original staged merge was preserved byte-for-byte in local commit
+`2b58a5025695c09702df3850d6cf785d0266b97c`, not reset/replaced. Successive
+local joins now contain settled #7193 `00eca5c4` and live #8144 `83b540a8`.
+Final local integration is `ef873ccfedd1330d0e883736baa4ac2eab40bcd9`, tree
+`ca6f166d2c8906baa486ad05a4feae2332d74f81`. It is NOT a published release.
+
+The composed runtime/source tree passed 432 Python tests and 168 JavaScript tests
+on each renderer copy. Two actual composition defects were resolved without
+dropping parent behavior: the API restart trigger retains all 516 parent-matched
+paths, and the Caddy union retains newer callback assets and private HK gating.
+The inherited watchstore cache failure was repaired on the original live carrier.
+
+A final dependency audit found six existing jobs whose declared paths did not
+cover the combined imports. Only those path lists were widened (753 exact paths);
+job identities, commands, requirements and gates are unchanged. Both canonical
+CI scope/import-closure checks now pass. No new CI job, blanket scope, skip or
+workflow was introduced. The exact unapplied patch and qualification hashes are
+retained beside `integrated-rehearsal-result.json`; the patch is evidence, not an
+authorization to modify another branch.
+
+The three previously reported PCE failures were not code defects: the sparse
+checkout omitted the exact committed governed-defect JSON. It is restored from
+the final index, not synthesized; all 82 VPS tests pass. Each git merge reapplies
+the original sparse profile, so test inputs are restored after the last merge.
+
+Settled hosted CI is still held by the actual Sector Central RIG/reference
+approval gap. The existing owner was notified on #9592 and original parent #7646.
+Original Fabric audit recovery stays on Mastermind #1391, with its exact run held.
+No source merge, production deployment, fresh independent approval or natural
+market-session/authenticated HK proof follows from this successful rehearsal.

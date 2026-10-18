@@ -110,8 +110,19 @@
       "path": "cache-compatibility-result.json",
       "bytes": 1372,
       "sha256": "2f9afd21028f461f0e2f765127c78f5a9832364351194a16f563781022dc967e"
+    },
+    {
+      "path": "integration-ci-scope.patch",
+      "bytes": 34928,
+      "sha256": "bd3e0bccffeb3879090a255a1e47ff5d20718c670b3353dc0d6ae5750fb0cbba"
+    },
+    {
+      "path": "integrated-rehearsal-result.json",
+      "bytes": 8787,
+      "sha256": "bf010cacacd92accbeda061aeba655ce85c77b54e6f2aaff6ffe4cd6feed2b19"
     }
   ],
   "prior_evidence_commit": "32e2c7a2c7c93796cdc48d3235ba4da504c15d74",
-  "verification_reuse": "R1 two-poll/daily-source proof remains applicable: subsequent changes are overlay ownership/focus/label handling and old-HTML label cleanup. Fresh 168-test JS suites on template and served mirrors plus 40 page-gate tests pass. Actual public-dashboard local-code overlay and old-HTML replays qualify the changed paths. No production deployment or authentication is claimed."
+  "verification_reuse": "R1 two-poll/daily-source proof remains applicable: subsequent changes are overlay ownership/focus/label handling and old-HTML label cleanup. Fresh 168-test JS suites on template and served mirrors plus 40 page-gate tests pass. Actual public-dashboard local-code overlay and old-HTML replays qualify the changed paths. No production deployment or authentication is claimed.",
+  "integration_receipt": "integrated-rehearsal-result.json"
 }
