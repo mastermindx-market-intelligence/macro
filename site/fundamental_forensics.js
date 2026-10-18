@@ -1272,28 +1272,50 @@
       .then(function (answer) {
         // PF r1 (R1) race guard: an answer is current only when its seq is
         // still the newest issued one AND its entity is the selected company.
+        // PFM r1 (item 1): the entity comparison is strict — an empty entity
+        // id on either side is never a match, so an answer issued before any
+        // company was selected cannot land once a company is.
         // Anything older is dropped whole — it must not become the desk's
         // clocks, generation or pointer, even when its entity matches.
         var current = company();
         var currentId = current && current.entity_id ? String(current.entity_id) : '';
         if (seq !== state.healthSeq) return;
-        if (answer.entityId && currentId !== answer.entityId) return;
+        if (String(currentId || '') !== String(answer.entityId || '')) return;
         state.healthAnswer = { entity_id: answer.entityId, seq: seq, ok: true, pointer: answer.pointer };
         state.datasetMode = answer.mode;
         applyHealth(answer.payload);
       })
-      .catch(function () {
+      .catch(function (error) {
         var current = company();
         var currentId = current && current.entity_id ? String(current.entity_id) : '';
         if (seq !== state.healthSeq) return;
-        if (entityId && currentId !== entityId) return;
+        // PFM r1 (item 1): the same strict comparison — an empty entity id
+        // is no match. An answer issued before any company was selected
+        // cannot be recorded once a company is.
+        if (String(currentId || '') !== String(entityId || '')) return;
         // PF r1 (R2/R5): a failed health fetch is an availability fact, never
         // "not published": record the failed answer for the current seq only,
         // reset the mode and clear the fetch lock so the same issuer can be
         // retried; the honest 503 copy follows from the failed answer.
-        state.healthAnswer = { entity_id: entityId, seq: seq, ok: false, pointer: '' };
+        // PFM r1 (item 3): a 401 or 403 is an access answer, not an outage —
+        // route the desk through the SAME access handling the financial
+        // chain already uses for those statuses (showLoadError) and record
+        // the status on the failed answer; every other failure (no status,
+        // 5xx, network) keeps the 503 copy and Retry unchanged.
+        var access = error && (error.status === 401 || error.status === 403);
+        state.healthAnswer = {
+          entity_id: entityId,
+          seq: seq,
+          ok: false,
+          status: error && error.status,
+          pointer: ''
+        };
         state.datasetMode = '';
         state.healthRequestedFor = '';
+        if (access) {
+          showLoadError(error);
+          return;
+        }
         applyHealth({ status: 'unavailable', clocks: {} });
       });
   }
@@ -2125,6 +2147,15 @@
     // the honest 503 copy with its Retry button, never a guess and never a
     // query.
     if (!answer.ok) {
+      // PFM r1 (item 3): an access failure (401/403) is NOT an outage — the
+      // desk was already routed through showLoadError in the health catch,
+      // so the revisions panel must not show either 503 copy and no
+      // financial query may be issued for an unauthenticated or unentitled
+      // reader. The financial chain's 401/403 catch above already follows
+      // this same shape.
+      if (answer.status === 401 || answer.status === 403) {
+        return;
+      }
       state.financial = { phase: 'error', healthRetry: true };
       renderRevisions();
       return;
@@ -5516,17 +5547,16 @@
       if (!event.target.closest('[data-financial-retry]')) return;
       // PF r1 (R2): the 503 copy shown because of HEALTH retries the health
       // fetch itself — the chain resumes from applyHealth once the answer
-      // lands. Without healthRetry the button behaves exactly as before.
-      if (state.financial && state.financial.healthRetry) {
-        state.healthRequestedFor = '';
-        state.healthAnswer = null;
-        state.financial = { phase: 'loading', awaitingHealth: true };
-        renderRevisions();
-        loadHealth();
-        return;
-      }
-      state.financial = { phase: 'idle' };
-      ensureFinancialData();
+      // lands. PFM r1 (item 4): the compare-chain Retry does the same —
+      // refreshing health first — so a failure caused by a superseded
+      // generation can recover when the store now serves a newer one.
+      // Both branches keep their original copy; only the click handler
+      // changes.
+      state.healthRequestedFor = '';
+      state.healthAnswer = null;
+      state.financial = { phase: 'loading', awaitingHealth: true };
+      renderRevisions();
+      loadHealth();
     });
 
     ui.currentPeriod.addEventListener('change', function () {
