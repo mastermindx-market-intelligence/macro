@@ -1,0 +1,90 @@
+{
+  "schema": "mastermind.design_handoff.bonds_transmission.r30",
+  "operation_id": "bonds-transmission-r30-20261018-sol-001",
+  "status": "in_progress",
+  "paper_file_id": "01M2WGNCX9475G79JRKJTCM08P",
+  "owned_pages": [
+    "p-1H-0",
+    "p-1E-0"
+  ],
+  "excluded_pages": [
+    "p-1F-0"
+  ],
+  "procedure_pin": "mastermindx-market-intelligence/Mastermind@e77631490e5bddca7d40c8cf039ae7763ce17b99",
+  "source_pin": "mastermindx-market-intelligence/macro@62a3f9ad070c7583687aef8c30d53fd1764c6aab",
+  "predecessor": "Macro #8147; R26 #8326 source milestone, production/model claims not inherited",
+  "carrier": "mastermind_paper accepted schema 1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db",
+  "boards": {
+    "bonds": {
+      "id": "63GL-1",
+      "page": "p-1H-0",
+      "shell": "63GM-1",
+      "sidebar": "63GN-1",
+      "topbar": "63GP-1",
+      "body": "63GQ-1"
+    },
+    "curve": {
+      "id": "63S3-1",
+      "page": "p-1H-0",
+      "topbar": "63TU-1",
+      "body": "63TV-1",
+      "name": "02 Curve & Duration · Light EN"
+    },
+    "credit": {
+      "id": "63YS-1",
+      "page": "p-1H-0",
+      "topbar": "640J-1",
+      "body": "640K-1",
+      "name": "03 Issuer & Credit Case · Light EN"
+    },
+    "capital": {
+      "id": "648A-1",
+      "page": "p-1H-0",
+      "topbar": "64A1-1",
+      "body": "64A2-1",
+      "name": "04 Capital Competition · Light EN"
+    },
+    "transmission": {
+      "id": "64G1-1",
+      "page": "p-1E-0",
+      "topbar": "64HS-1",
+      "body": "64HT-1",
+      "name": "05 Transmission Desk · Light EN"
+    },
+    "scenario": {
+      "id": "64PQ-1",
+      "page": "p-1E-0",
+      "topbar": "64RH-1",
+      "body": "64RI-1",
+      "name": "06 Case Workspace · Scenarios · EN"
+    },
+    "replay": {
+      "id": "64WP-1",
+      "page": "p-1E-0",
+      "topbar": "64YG-1",
+      "body": "64YH-1",
+      "name": "07 Case Workspace · Replay · EN"
+    }
+  },
+  "tokens_unchanged": "cfd3d65c",
+  "claims": {
+    "paper_design_applied": true,
+    "backend_implemented": false,
+    "live_market_data": false,
+    "forecast_validated": false
+  },
+  "pending": [
+    "Interaction and tool specimens",
+    "Responsive/theme/state specimens",
+    "Complete implementation scorecards",
+    "Preserve legacy boards in archive",
+    "Final visual and navigation review"
+  ],
+  "reuse_owners": [
+    "macro_context.decision_workspaces.v1",
+    "world_state.rates_credit",
+    "world_state.fx_dollar",
+    "world_state.cross_asset_flows",
+    "capital-structure-intelligence"
+  ]
+}
