@@ -439,51 +439,54 @@ waves:
     depends_on: [GD-PB-W4-S1B-RUN]
   - id: GD-RR-CENSUS-20261017
     title: Meta-CEO source and all-date exposure census, recorded-version reconstruction and continuation revision
-    status: awaiting_ci
+    status: done
     pr: 9515
-    # Prior 126c9 failed shared weekly-brief tests; existing #9517 repair integrated at 15bdaec7351d,90 relevant tests pass. Enclosing head needs native gates.
-    # Authenticated incumbent Radar dates/null disclosures captured; one Copilot market question failed after 175s with only a portfolio caveat.
-    # #9517 source review accepted within scope; exact probability qualification remains incomplete; existing covering render and live acceptance pending.
-    # T13 metadata read complete: H2 absent 348/1321 origins; source-purpose and actual Massive/T12 sample unadmitted; zero fits/trials.
-    # Consumer source-function comparison complete; Mastermind PR1567 implements the future-date fix, reviewed head 1e6a8a23fac1, 184 native tests pass.
-    # Mastermind #1567 merged b08223680180 after successful native queue; fetched master and both owned blobs verified. Runtime remains Oct9; full archive qualification/production decision and live parity remain open.
-    # Protocol ea26bc964314 frozen before outcomes; code 4a06cd4a6b32; 36 ETFs / 8486 reference sessions / 305496 rows.
-    # Descriptive acceptance only, zero fits/promotions. W5 production proof remains absent; existing failed studies and writer/refusal fences preserved.
+    # Normal squash eaf418862bdd,2026-10-17T14:01:10Z; reviewed head646cc093,all 12 packs and active native gates green.
+    # Separate main fetch9b464c9d:51owned blobs exact; shared CI owned job semantically identical. Source landing accepted.
+    # 36ETFs/8486sessions/305496rows, original prereg/outcome ancestry and failed studies preserved; zero new fits/promotions.
+    # Existing9517 workspace is delivered and independently accepted at bounded desktop scope; exact forecast qualifiers still missing.
+    # Copilot failed one real question; five finalization and six classifier controls reproduce the caveat-only mechanism. No source repair.
+    # Original Massive SPY identity and one T12 sample frozen; controls10/18,3/21,1/24 and warmup/immaturity failures retained.
+    # Retained FRED model purposes remain UNKNOWN/HOLD; T13/T14/T19 drafts and budgets unchanged.
+    # Mastermind1567 source is separately merged; full standard release qualification, production decision and live parity remain open.
     depends_on: [GD-PB-W7, GD-PB-W8]
 next_action: >
   Read research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md section 0A
-  and RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md. Complete the isolated
-  GD-RR-CENSUS-20261017 carrier in PR 9515 through normal source gates; read
-  agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md,
-  then inspect live_delivery_20261017/README.md and the source/release preflight.
-  Existing #9517 repaired shared weekly-brief tests; its main source is integrated
-  at 15bdaec7351d and 90 relevant local tests pass. Finish enclosing-head native gates.
-  Preserve #9517 release custody; verify the newly served workspace after its
-  covering render. Trace the captured Copilot failure through the existing response
-  record and gateway before a custody-qualified repair. Mastermind PR1567
-  merged as b08223680180 with native queue and fetched-blob proof. Its source repair
-  is not installed: the healthy observed runtime remains at October 9 source.
-  Canonical strategic state prohibits autonomous production deployment. Qualify
-  the exact full archive, 1507-file repository delta and rollback/activation contract
-  before its required production decision and changed-path runtime/parity proof.
-  The completed implementation is not a new task; source merge is not live delivery.
-  The 36-ETF census covers 8486 reference sessions and 305496 exposure/date rows;
-  it is retrospective descriptive evidence, zero new fits and zero promotions.
-  At source pin 3ab3382af892, W5 forward_log is absent and BACKFILL_ASOF/CLOCK
-  refusals remain. Require genuine natural issuance and clean workflow receipts
-  before PRODUCTION_PROOF; never backfill foresight or rerun frozen stage-1/1b.
-  Existing GD-3 and GD-UI-RADAR-1 accepted proofs remain DO_NOT_REDO; stage-1 null,
-  stage-1b 0/12 and GD1C BLOCKED_NO_PROMOTION remain evidence. T13/T14/T19 are
-  unactivated drafts; independent episode information and future observation time
-  still limit promotion. #8721 is live; #9428 has explicit refused commit/CSS/findings
-  writes; #8132 remains the original held publisher; #9440 and #9457 keep their
-  scopes. QLedger/nightly publication repair remains with its existing owners.
-  No proxy carrier, second publisher or alternate episode store. Preserve Envelope
-  rank/gate/size/execute false, Prophet raw rank and Portfolio numerical policy.
-  Paper writes require actual catalog qualification. Authentication and bounded
-  incumbent Radar disclosure proof are now verified; new workspace delivery, exact
-  source-to-paint clocks, expiry, current Terminal and useful Copilot answers remain
-  open. Whole programme not finally accepted.
+  and the cumulative GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS handoff.
+  Macro PR 9515 is merged and its source landing verified; never push that closed branch.
+  Continue the native evidence operation risk-radar-meta-ceo-evidence-20261017-01a14837
+  through normal source gates. The delivered 9517 desktop workspace has accepted
+  bounded proof under live_delivery_20261017/delivered_workspace; preserve exact
+  probability qualifiers as an open defect. Current workspace writer 9548 and gateway
+  writer 9447 have intersecting source paths; preserve their actual pending effects.
+  Use the completed Copilot source diagnosis before a custody-qualified repair;
+  require an installed changed path and a useful authenticated answer, not only tests.
+  Original SPY/T12 identity is frozen once. A separately reviewed metadata-only contract
+  and source were committed at9102e6954db1 before one October18 run. Its2138 window
+  records preserve null labels,1901 unknown dates and39 horizon intersections. Supported
+  pairs9/2/0 across4/2/0 events refuse the21-session matched lane and admit no model.
+  Before feature joins or fitting, qualify exact calendar/outcomes, source purpose and
+  availability, dependence, chronological evaluation, common-support baselines and trials.
+  Preserve severe control shortfalls and FRED-purpose UNKNOWN/HOLD; no sample mutation,
+  source swap, trial registration or activation of existing T13/T14/T19 drafts occurred.
+  Mastermind1567 source is merged; the October17 runtime observation still had October9 code.
+  The exact wrapper/helper review found298 deployment-eligible paths outside rollback scope
+  and health-result/transaction-order weaknesses. The forward_evaluation review confirms
+  marker-ownership, failed-activation, retained-output and baseline-completeness gaps.
+  Read its actual registry/package, service/health/caller locks and settlement reader next;
+  qualify transport, bounded repairs, complete current-master bundle and rollback/activation
+  transaction before the canonical production decision.
+  Autonomous production deployment remains prohibited; 1507 repository differences
+  are not a transfer count or live book/prompt/ledger parity. Existing publisher8132,
+  measured-pullback8721,9428 refusal boundaries and QLedger/nightly owners remain intact.
+  Require genuine natural W5 issuance; never backfill foresight. Do not rerun accepted
+  GD3 natural four-clock proof or frozen stage1/stage1b. Keep all failed/rejected claims.
+  Authentication is resolved; all-state warning freshness/expiry, current Terminal,
+  granular recovery/action usefulness and empirical superiority remain open.
+  Preserve Envelope rank/gate/size/execute false and Portfolio/Prophet numerical policy.
+  Paper writes still require actual catalog qualification. Whole programme remains active
+  and not finally accepted.
+
 ---
 
 # Grey Deer Risk Intelligence & Capital Protection
