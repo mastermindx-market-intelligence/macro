@@ -1889,9 +1889,9 @@
       "n_new": 0,
       "n_graded_ok": 0,
       "n_scored_this_run": 0,
-      "elapsed_sec": 7.4,
-      "last_date": "2026-10-17",
-      "checked_at": "2026-10-17T18:30:03.478176+00:00"
+      "elapsed_sec": 7.0,
+      "last_date": "2026-10-18",
+      "checked_at": "2026-10-18T06:45:49.512144+00:00"
     },
     "cboe_cor_vol": {
       "source": "cboe_cor_vol",
