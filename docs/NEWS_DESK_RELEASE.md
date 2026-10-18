@@ -1,7 +1,7 @@
 # News desk release record
 
-Mission: `news-cockpit-rebuild-20261018-astra-01`  
-Protected law pin: `ebe2de8f0d94310241362874ec9262ba572a63d2`  
+Mission: `news-cockpit-rebuild-20261018-astra-01`
+Protected law pin: `ebe2de8f0d94310241362874ec9262ba572a63d2`
 Original Macro base: `a1fe765f08975c786ae74119dce1f04859502105`
 
 ## Status

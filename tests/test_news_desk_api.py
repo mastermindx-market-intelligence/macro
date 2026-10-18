@@ -220,4 +220,3 @@ def test_atomic_replace_during_read_never_caches_old_bytes_under_new_identity(mo
     monkeypatch.setattr(desk, "_load_snapshot_file", replace_after_read)
     assert desk._read_snapshot()["stories"]
     assert desk._read_snapshot()["stories"] == []
-

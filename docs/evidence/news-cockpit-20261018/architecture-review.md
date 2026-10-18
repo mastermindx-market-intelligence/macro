@@ -1,8 +1,8 @@
 # Macro News Intelligence: architecture and acceptance review
 
-**Review date:** 2026-10-18  
-**Reviewer:** `/root/news_architecture_adjudicator`  
-**Mission:** `news-cockpit-rebuild-20261018-astra-01`  
+**Review date:** 2026-10-18
+**Reviewer:** `/root/news_architecture_adjudicator`
+**Mission:** `news-cockpit-rebuild-20261018-astra-01`
 **Implementation and release owner:** `/root`
 
 ## Decision

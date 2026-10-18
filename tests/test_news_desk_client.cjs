@@ -84,4 +84,3 @@ test("indexing and publisher amendments never invent publication time",()=>{
  const amended=row({published_at:"2026-09-01T00:00:00Z",source_updated_at:"2026-10-18T11:30:00Z"});
  assert.equal(amended.clock,"updated");assert.equal(desk.filterRows([amended],filter(),{},now).length,1);
 });
-

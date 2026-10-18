@@ -30,7 +30,10 @@ waves:
     title: Continuity — this workstream, dated handoffs, seat memory, P4 frontier refresh
     status: in_progress
     next_action: >
-      Merge the 2026-10-18 option (a) handoff (acceptance failure, S3 fix); then refresh
+      Land the 2026-10-18 S3-install-refused handoff (PR 1609 merged, step 4 refused once on the
+      historical prejob link, S3-prime commissioned) from branch
+      claude/ssd-exec-ecosystem-agentos-c5-873aabd3 — the option (a) handoff landed in macro PR 9594;
+      then refresh
       WS:EXECUTIVE-AUTONOMY-V1-CLOSURE P4 with the installed 08d78873 facts (S2 installed 04:08Z, not
       accepted, not armed, control plane DARK since 07:10:53Z; the 91c1cac5 supersede_unstarted_v1
       acceptance bound to JOB-003 is superseded by descriptor 6594613b…) in a follow-up PR.
@@ -39,7 +42,26 @@ waves:
     status: in_progress
     depends_on: [A0]
     next_action: >
-      2026-10-18 07:2xZ (seat 873aabd3, Chairman's option (a) RAN): finite host publication and
+      2026-10-18 13:5xZ (seat 873aabd3): PR 1609 MERGED 12:39:00Z after three reviews by one
+      read-only Opus reviewer (HOLD, HOLD, MERGE, MERGE after the D8 identity-guard repair) —
+      S3 = master 954842ae. S3 staged on the host (clone Mastermind-954842ae, inert assets
+      5cd12476…, root-only install-inputs 378c3bae…); runbook step 4 (maintenance supersede-prejob
+      of 08d78873 under successor 954842ae, with the S3 tool, before install.sh) RAN ONCE and was
+      REFUSED `interrupted acceptance receipt schema drifted` with nothing written. Root cause
+      confirmed read-only — the terminal carry walk (prior_carry_material → validate_carry_receipt
+      → validate_prior_carry_binding, line 294 at 954842ae) re-validates every historical
+      supersede link; for 738581ef (interrupted_prejob_sha 0123ad5a, Oct 11) prejob_evidence meets
+      the LEGACY six-key protected-group receipt, while PR 1609 Part B demands the eight-key shape
+      on every link. The S2 module accepts 0123ad5a with the sealed digest 3fe6d621… and refuses
+      08d78873; S3 is the mirror image; the digest hashes receipt bytes only. Remedy = S3-prime,
+      a reviewed Mastermind fix commissioned 13:4xZ to the same child session local_f20294a5 (by
+      message, never re-spawned) — historical=True only at the line-294 call admitting a CLOSED
+      two-generation set, candidate paths strict, every other check unchanged, tests a–d, test-only
+      REVIEWED_FILES pin refresh. install.sh NOT run for 954842ae and never will be; a second
+      identical step 4 is banned; host control plane still DARK. Then — review by the PR 1609
+      reviewer, merge, re-clone/re-stage S3-prime, step 4 ONCE, install.sh, status + disarm on
+      CONFIG_DRIFT, ask the Chairman ONCE for one new readiness canary.
+      HISTORY (2026-10-18 07:2xZ, option (a) RAN): finite host publication and
       finite-control-stage DONE (control.json 5ed3857d… now carries fabric_attended_probe; the stage
       needed the release's own disarm rebind autonomy-ea0086af6ee4 first because install.sh never
       re-binds the receipt); stop-readside DONE; Gate B receipt 42e1ac39… (06:55:45Z); the ONE further
@@ -143,25 +165,31 @@ landmines:
   - Acceptance and arm both require a readiness receipt with at least 30 minutes of margin; a canary passed at the top of an install chain is spent if acceptance cannot run within that window.
   - Python tests at the pin need the repo root on sys.path and the macro checkout's tests/ package off it (python -P), or tests.test_executive_ceo_ingress resolves into macro.
   - Agent OS records are not liveness — the P4 "PICKED_UP by chat 01a1230a" claim is historical; the S' acceptance path is driven by the current seat after the human rotation, unless a live START is observed first.
+  - S3 = 954842ae cannot be installed — PR 1609 Part B made prejob_evidence demand the eight-key protected-group receipt on EVERY supersede_prejob link, and the terminal carry walk re-validates the historical 738581ef → 0123ad5a link whose Oct 11 receipt is the legacy six-key generation; the supersede prepare for any successor refuses `interrupted acceptance receipt schema drifted` until S3-prime (historical two-generation admission at the line-294 call only) is installed. Never weaken the tool on the host, never edit receipts or bundles, never run install.sh before the supersede bundle exists.
 do_not_redo:
   - The 2026-10-17 Phase A census (ledger §1 and §5) — reuse until an installed SHA, installed config or runtime DB fact changes.
   - The install of 91c1cac5 and the acceptance receipt for 25c4b792.
   - Mastermind PRs 1283, 1560, 1543, 1534/1537, 1544, 1527, 1509, 1558 and the R2 master plan §17 (accepted work enumerated in the ledger §4).
   - The 213-test transport run at a552a5e5 (plan §6) until the transport source changes.
-  - Mastermind PR 1591 (merged, reviewed once, verdict MERGE) and PR 1598 (merged 2026-10-18 05:20:00Z) — never re-review, re-merge, re-enqueue or add commits.
+  - Mastermind PR 1591 (merged, reviewed once, verdict MERGE), PR 1598 (merged 2026-10-18 05:20:00Z) and PR 1609 (merged 2026-10-18 12:39:00Z, three reviews, final MERGE) — never re-review, re-merge, re-enqueue or add commits.
+  - The S3 staging for 954842ae (clone, assets, install-inputs) and the ONE step-4 supersede attempt (refused) plus its root-cause diagnosis — never repeat step 4 for 954842ae; S3-prime is the written remedy.
   - The 2026-10-18 option (a) host chain — finite host publication, finite-control-stage (marker 06:22:37Z), disarm transaction autonomy-ea0086af6ee4, Gate B receipt 42e1ac39…, the 06:57:19Z canary, the single S2 acceptance run and its root-cause diagnosis, the 07:10:53Z service stop, the arming review's FINAL HOLD verdict for S2.
 next_action: >
-  Lane R: S2 = 08d78873 is INSTALLED, acceptance FAILED 2026-10-18 07:0xZ on the S2 Control boot
-  defect, the host control plane is DARK since 07:10:53Z, the arm is HELD by the independent review
-  and the Chairman's one further canary is SPENT. Next, in order — (1) the S3 fix PR from child
-  session local_f20294a5 (verify the diff and tests, ONE read-only Opus review against auditor gaps
-  1 and 2, merge through the queue, record the new master sha); (2) clone S3, assets, install-inputs,
-  install.sh in plain mode, autonomy-control.sh status and disarm on CONFIG_DRIFT; (3) ask the
-  Chairman ONCE to authorize one new readiness canary for S3 acceptance and arm (Gate B first,
-  canary, acceptance within 28 minutes, arm) or to hold S3 installed-unaccepted; (4) on his word,
-  acceptance.sh, arming review refresh, arm in the gap-5 order, Phase F H1–H8. Meanwhile, with no
-  host mutation: land this record, refresh the autonomy P4 frontier, Lane A inputs (publication
-  owner still unnamed).
+  Lane R: S3 = 954842ae is MERGED (PR 1609, 2026-10-18 12:39:00Z) but NOT installable — the
+  maintenance supersede for it refused once on the historical 738581ef → 0123ad5a legacy receipt
+  (PR 1609 Part B strict shape applied to every link), so install.sh has not run; S2 = 08d78873
+  stays installed, unaccepted and unbootable, the host control plane DARK since 07:10:53Z, the arm
+  HELD by the independent review, the Chairman's one further canary SPENT. Next, in order — (1) the
+  S3-prime fix PR from child session local_f20294a5 (commissioned 13:4xZ by message; verify the
+  diff against the frozen spec and tests a–d, ONE read-only review by the PR 1609 reviewer, merge
+  through the queue, record the new master sha); (2) clone S3-prime, assets, install-inputs, step 4
+  ONCE with --successor-sha S3-prime, install.sh in plain mode, autonomy-control.sh status and
+  disarm on CONFIG_DRIFT, ps quiescence; (3) ask the Chairman ONCE to authorize one new readiness
+  canary for S3-prime acceptance and arm (Gate B first, canary via the renew route, acceptance within
+  28 minutes with the new maintenance descriptor digest, arm) or to hold S3-prime
+  installed-unaccepted; (4) on his word, acceptance.sh, arming review refresh, arm in the gap-5
+  order, Phase F H1–H8. Meanwhile, with no host mutation: land this record, refresh the autonomy P4
+  frontier, Lane A inputs (publication owner still unnamed).
 ---
 
 ## Context

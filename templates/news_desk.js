@@ -507,4 +507,3 @@
   }
   return {normalize:normalize,combine:combine,tokens:tokens,matchesTerms:matchesTerms,filterRows:filterRows,difference:difference,age:age,validSnapshot:validSnapshot,safeURL:safeURL,defaults:DEFAULT_FILTERS,mount:mount};
 });
-
