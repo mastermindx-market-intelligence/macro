@@ -20364,6 +20364,8 @@ jobs:
       - "scripts/compile_capital_structure_events.py"
       - "tests/test_dod_budget_live.py"
       - "tests/test_fms_notifications.py"
+      - "tests/test_fms_persist.py"
+      - "scripts/ci/fms_persist.py"
       - ".github/workflows/fms-acquire.yml"
       - ".github/workflows/government-revenue-live.yml"
       - "tests/test_fms_ui.py"
@@ -20734,7 +20736,7 @@ jobs:
       # HTML) land in tests/test_fms_ui.py -- the packet-2 consumer/
       # publication half (ninth mode tab, entitled routes, JS inspector).
       - name: FMS congressional-notification rail law suite (D6-B1)
-        run: python -m pytest tests/test_fms_notifications.py tests/test_fms_ui.py -q
+        run: python -m pytest tests/test_fms_notifications.py tests/test_fms_ui.py tests/test_fms_persist.py -q
       - name: SBIR committed consumer, entitlement and evidence integrity
         run: python -m pytest tests/test_government_revenue_sbir_consumer.py tests/test_sbir_source_schemas.py -q
       - uses: actions/setup-node@v4
