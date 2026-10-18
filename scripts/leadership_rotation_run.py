@@ -39,6 +39,7 @@ __all__ = [
     "evaluate_family",
     "SizeGateNotPassed",
     "P1StatisticsNotQualified",
+    "P1UnrecordedLookRefused",
     "assert_p1_statistics_qualified",
     "assert_size_gate_passed",
     "count_prior_looks",
@@ -1457,6 +1458,18 @@ _SIZE_GATE_ROW_NAMES: Tuple[str, ...] = (
 _SIZE_GATE_SCHEMA = "leadership_rotation.size_gate.v1"
 
 
+class P1UnrecordedLookRefused(RuntimeError):
+    """A real-data look cannot run without its mandatory look-ledger effect."""
+
+    reason = "P1_UNRECORDED_LOOK_REFUSED"
+
+    def __init__(self) -> None:
+        super().__init__(
+            "P1_UNRECORDED_LOOK_REFUSED: every P1 read consumes the registered "
+            "look budget and must be recorded; use P0 for unrecorded synthetic work"
+        )
+
+
 class P1StatisticsNotQualified(RuntimeError):
     """LR-W6: V2 size alone cannot authorize the first real-data P1 look."""
 
@@ -1824,6 +1837,11 @@ def run_p1(
 
     import hashlib
 
+    # This is not a dry-run switch: a P1 read of real data consumes a look.
+    # The old --no-record option could silently spend an unlogged look.
+    if record is not True:
+        raise P1UnrecordedLookRefused()
+
     st.assert_protocol_landed(repo, head=commit)
     st.assert_prereg_landed(
         repo, head=commit, path=st.PREREG_V2_1_PATH, blob_sha=st.PREREG_V2_1_BLOB_SHA
@@ -2107,18 +2125,13 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     p1.add_argument("--repo", required=True)
     p1.add_argument("--commit", default="HEAD")
     p1.add_argument("--out")
-    p1.add_argument(
-        "--no-record",
-        action="store_true",
-        help="do not append this read to the look ledger (still counted as a look)",
-    )
     args = parser.parse_args(argv)
     if args.cmd == "controls":
         results = falsifier_controls()
         print(json.dumps(_json_sanitize(results), indent=2))
         return 0 if all(r["passed"] for r in results.values()) else 1
     if args.cmd == "p1":
-        run_p1(args.repo, commit=args.commit, out=args.out, record=not args.no_record)
+        run_p1(args.repo, commit=args.commit, out=args.out)
         return 0
     parser.print_help()
     return 2
