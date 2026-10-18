@@ -22214,6 +22214,7 @@ jobs:
     paths:
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
+      - "scripts/build_turn_watch.py"
       # Connected Research Factory import closure (PR9463).
       - engine/research_codegen/__init__.py
       - engine/research_codegen/accounting_contract.py
