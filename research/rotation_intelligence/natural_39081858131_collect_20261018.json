@@ -680,5 +680,111 @@
       "Opt-in email/Discord customer delivery",
       "Full 3064-name price coverage"
     ]
+  },
+  "b1_failure_forensics": {
+    "evidence_date_utc": "2026-10-18",
+    "scope": "Read-only exact GitHub Actions job output, immutable original HEAD generation, two immutable October16 source sidecars, pinned canonical source algorithms. No B1 ledger writer, command, retry, historical alias/rewrite, or new observation/episode.",
+    "daily_run_id": 39081858131,
+    "job": {
+      "name": "us_prophet_ledgers",
+      "job_id": 117618491585,
+      "runner": "mac-builder-light",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at_utc": "2026-10-18T08:12:30Z",
+      "completed_at_utc": "2026-10-18T08:18:25Z",
+      "actual_checkout_sha": "047ab5a950e59f4bdca180129a4dd84086a6d064",
+      "checkout_log_utc": "2026-10-18T08:12:40.001514Z",
+      "git_pull_at_utc": "2026-10-18T08:12:40.999753Z",
+      "git_pull": "Already up to date",
+      "step8": {
+        "name": "Prophet B1 — reconcile canonical candidate episodes (immutable generation + atomic HEAD)",
+        "conclusion": "failure",
+        "exception": "engine.us_candidate_episode.EpisodeContractError: ordinary source key reused with different committed bytes",
+        "exception_log_utc": "2026-10-18T08:16:12.671235Z",
+        "source": "scripts/reconcile_us_candidate_episodes.py line411 -> engine.us_candidate_episode.reconcile_observations line903 -> _assert_ordinary_source_retry_matches line843",
+        "exact_failed_source_key": "NOT_LOGGED; no literal ticker/security identity inferred"
+      },
+      "step13": {
+        "name": "commit prophet ledger artifacts",
+        "conclusion": "success",
+        "commit_sha_prefix": "c84a7c3fae",
+        "push_at_utc": "2026-10-18T08:18:14.497926Z",
+        "push": "original main 047ab5a950..c84a7c3fae succeeded on attempt 1; 4 files changed 349 insertions/18 deletions",
+        "authority": "Other Prophet ledger stages only; DOES NOT imply B1 accepted or that events/HEAD advanced"
+      },
+      "other_stages": "Doors, full population grades, W3 measurement, miss audit completed; W3 refused same-stamp revisions. No new Plan, trade, B1 episode event, delivery or alpha inferred."
+    },
+    "original_committed_B1": {
+      "canonical_HEAD_blob": "610cd1c8ec3035eef06d630ffe0392ec70ebb025",
+      "generation_id": "peg:55783ad4caa784d61e6824982acf373898f255783338cfbdac894bddfd7e2ea3",
+      "events": 14244,
+      "suppressions": 63641,
+      "accepted_nightly_receipt_blob": "973640758698cbf28669e99a1339520a6e2a3b9f",
+      "accepted_recorded_at_utc": "2026-10-17T08:22:53Z",
+      "accepted_turnwatch_source_rows": 378,
+      "accepted_mapped_events": 18,
+      "accepted_suppressions": 360,
+      "old_accepted_input_sha256": "5f8be5b320ce6d8123f11d11cc940e051298539819b038cfb4eff5fb06",
+      "old_accepted_content_sha256": "61ee56f229b9e3cdb76e100e2695e93be483a6917ae80e04027b54e513ad3a4f",
+      "old_public_artifact_sha256": "761722ccfb54dd0539fdc881479a2f519eb5fd6a6ceebad0f9eb6103dfaa96db"
+    },
+    "new_forward_input": {
+      "path": "data/us_prophet_rank/episode_inputs/turn_watch/2026-10-16.json",
+      "blob": "a97dec620a760ee30713ba18208df39ae4edc5a4",
+      "raw_sha256": "6b9a740d86bb1aa8446ed287d4ae1d0eede97fb93ff2b63bf34e9bf3ed5ca90f",
+      "new_content_sha256": "509cf2289d436c1e7d7b37bed9c3de09cf1814b8a288478a49314178d47a0c47",
+      "new_public_artifact_sha256": "3ea8356b170e41fdb2e2c158eb4cfd4af021e9707b0b5bda027702d5cf44823e",
+      "rows": 378,
+      "data_session": "2026-10-16",
+      "known_at": "2026-10-16T20:00:00Z",
+      "old_source_ref": "40a886aca7eac07a6d98555efcd3a7d42b53e5e2",
+      "new_source_ref": "047ab5a950e59f4bdca180129a4dd84086a6d064",
+      "exact_row_arrays_equal": true,
+      "changed_top_level_keys": [
+        "content_sha256",
+        "source_artifact_sha256"
+      ],
+      "unchanged_top_level_keys": [
+        "anchor_era",
+        "data_session",
+        "known_at",
+        "rows",
+        "schema",
+        "selection_era",
+        "trigger_registry"
+      ],
+      "already_committed_source_keys": 378,
+      "ordinary_events_matching_keys": 18,
+      "ordinary_events_changed_receipt": 18,
+      "existing_suppressions_matching_keys": 360,
+      "existing_suppressions_changed_receipt": 360,
+      "event_types": {
+        "OBSERVED": 17,
+        "OPENED": 1
+      },
+      "suppression_types": {
+        "ACTIVE_EPISODE_DIFFERENT_ANCHOR": 265,
+        "IDENTITY_UNRESOLVED": 95
+      }
+    },
+    "source_contract": {
+      "intake_blob": "1e622e8a74810c5b46b164e8cb537f4611b81499",
+      "reconciler_blob": "f023722a8f908a5e3367c17a8e13bf797cbbb06f",
+      "episode_blob": "c2821b4d95e0f116a4bb9db16acdf41c819ce038",
+      "identity": "source_system, source_schema, source_event_id; TurnWatch source_event_id=sha256(canonical JSON {data_session,row}). Identical row arrays therefore exactly identical source_event_id for each of378 rows.",
+      "legacy_receipt": "Per-observation source_receipt copies whole-document content_sha256; on forward republication the top-level new source_artifact hash changes the content SHA despite exact same source rows.",
+      "immutable_retry": "For a committed event with the same ordinary source key, _assert_ordinary_source_retry_matches requires canonical exact event bytes, including source_receipt. A changed whole-document receipt invalidates the retry and fails closed.",
+      "first_failed_specific_key": "UNKNOWN: Python exception does not print offending key and other source families are also loaded. Proven all18 TurnWatch event keys are incompatible ordinary retries independently of which input the loop hits first.",
+      "architecture": "Preserve immutable v1 event/suppression keys, event receipts, source-provenance and original no-duplicate constraints. Native incumbent B1 forward contract must separate immutable observation evidence from changing publication-container receipts with explicitly versioned compatibility, no alias or overwrite. Changed source container with same row may legitimately remain typed unavailable until admitted. Do not replay, rewrite, relabel or count as new signal/episode."
+    },
+    "original_owner": "Prophet root #6817 and original incumbent B1 source writer under decisions 6244379784 / 6245010068, exact current effect constraints preserved.",
+    "acceptance_next": "Incumbent owner chooses lawful forward identity/receipt representation, implements it with source admission and independent regression: 378 identical observations with two container digests,18 events+360 suppressions retained once, no duplicate/new episodes, original v1 immutable unchanged; then one normal scheduled B1 job/HEAD generation+exact downstream reader proof.",
+    "not_proven": [
+      "Which particular first source key triggered the exception (not printed)",
+      "Forward B1 episode admission or new ledger generation",
+      "Historical correction rights or migration accepted",
+      "Native B4 trading permissions, authenticated history, alerts or prediction"
+    ]
   }
 }
