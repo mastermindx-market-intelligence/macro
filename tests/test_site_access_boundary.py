@@ -767,3 +767,21 @@ def test_macro_suite_shell_assets_are_public_but_the_snapshot_payload_is_not():
     assert not any(p.startswith("/macrodata") for p in POLICY["public"]["exact"])
     assert not any(p.startswith("/macro_suite") and p.endswith("*")
                    for p in _caddy_public_exclusions()), "no wildcard may ride along"
+
+
+def test_watchstore_versioned_cache_preserves_legacy_integer_urls():
+    """Fix the hashed public UI path without freezing old hand-stamped clients."""
+    assert "/watchstore.js" in _caddy_path_list("public_versioned")
+    assert "/watchstore.js" not in _caddy_path_list("watchlist_shell_versioned")
+    legacy = re.search(r"@watchstore_legacy_versioned\s*\{(.*?)^\s*\}", CADDY, re.S | re.M)
+    current = re.search(r"@public_versioned\s*\{(.*?)^\s*\}", CADDY, re.S | re.M)
+    assert legacy and current
+    assert _caddy_path_list("watchstore_legacy_versioned") == ["/watchstore.js"]
+    # Conservative classification: ambiguous all-digit hashes retain the short
+    # TTL rather than reclassifying a previously hand-authored integer URL.
+    predicate = "({query.v}.matches('^[0-9a-f]{8}$') && {query.v}.matches('[a-f]'))"
+    assert "expression {path} != '/watchstore.js' || " + predicate in current.group(1)
+    assert "expression !" + predicate in legacy.group(1)
+    assert 'header @watchstore_legacy_versioned Cache-Control "public, max-age=300, must-revalidate"' in CADDY
+    assert "/watchstore.js" in POLICY["public"]["exact"]
+    assert "/live/hk_heatmap.json" not in _caddy_path_list("public_versioned")

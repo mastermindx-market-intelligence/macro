@@ -11,7 +11,10 @@
     "javascript_passed": 168,
     "ci_scope_checks_passed": 2,
     "inherited_pytest_cleanup_warning": true,
-    "heatmap_page_gate_passed": 40
+    "heatmap_page_gate_passed": 40,
+    "cache_access_passed": 27,
+    "cache_http_cases_passed": 7,
+    "full_caddy_adaptation": "PASS"
   },
   "sources": [
     {
@@ -57,6 +60,14 @@
     {
       "path": "tests/test_market_heatmap.py",
       "sha256": "9a042fbec04af11538c98b974aaf9864058edaf76231e0ac683b082f5a669c85"
+    },
+    {
+      "path": "app/deploy/Caddyfile",
+      "sha256": "b2645236ddcab3f5547171c02d36d4e7989314335a8ffebd5161c5a78d59aca7"
+    },
+    {
+      "path": "tests/test_site_access_boundary.py",
+      "sha256": "7a6d602235129c51cc75bb115c9a5e792bb2ec9a3448fb042187c1ac9000e72b"
     }
   ],
   "artifacts": [
@@ -94,6 +105,11 @@
       "path": "legacy-html-result.json",
       "bytes": 640,
       "sha256": "579ec04b1cbc75ab57a4cbecd677cae1a5fd46fcdf636e4fdfc04326f2502dd2"
+    },
+    {
+      "path": "cache-compatibility-result.json",
+      "bytes": 1372,
+      "sha256": "2f9afd21028f461f0e2f765127c78f5a9832364351194a16f563781022dc967e"
     }
   ],
   "prior_evidence_commit": "32e2c7a2c7c93796cdc48d3235ba4da504c15d74",

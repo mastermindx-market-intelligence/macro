@@ -191,3 +191,24 @@ Central migration packets lack approved RIG receipt references. The failed gate
 remains binding. No heatmap code, required check, or another source owner was
 changed to bypass it. The exact job is 117636268236; source-owner reconciliation
 and independent exact-head review remain separate next actions.
+
+## Release integration cache compatibility repair
+
+The inherited full site-access guard identified `/watchstore.js?v=03277dd8`
+as content-hash stamped while the existing Caddy hand-stamp group assigned it
+the wrong short-only profile. This is repaired in the already-owned Caddy source,
+not by changing watchstore bytes, auth, the test, or another production service.
+The original cache-owner finding is #6033 comment 6249140741.
+
+The content-hash path joins the existing immutable public asset matcher. A narrow
+condition leaves old integer keys, unknown strings and ambiguous all-digit keys
+at 300 seconds; unversioned requests retain their existing short TTL. No private
+asset is added to a public matcher. All unrelated asset policies are unchanged.
+
+The new regression failed before repair. Twenty-seven complete site-access
+tests pass on the original live candidate with exact committed fixtures. Full
+Caddyfile adaptation passed with installed Caddy 2.11.4. A loopback-only Caddy
+replay of the exact four cache blocks passed seven HTTP cases: current hashes
+immutable, integer/unknown/unversioned keys short, protected-route stub no-store.
+The ephemeral server was stopped. This is not deployment or production auth;
+`cache-compatibility-result.json` records the exact source and public asset hashes.

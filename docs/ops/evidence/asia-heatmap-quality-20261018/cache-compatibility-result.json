@@ -1,0 +1,44 @@
+{
+  "scope": "Local Caddy 2.11.4 HTTP replay of exact candidate cache matchers. Private-route response is an explicit QA stub, not production authentication. No deployment.",
+  "caddyfile_sha256": "b2645236ddcab3f5547171c02d36d4e7989314335a8ffebd5161c5a78d59aca7",
+  "watchstore_sha256": "03277dd8e496a1e1b3b7309e3f426018bc575f30b88b2187ab29a000529836b4",
+  "checks": [
+    {
+      "path": "/watchstore.js?v=03277dd8",
+      "status": 200,
+      "cache_control": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/watchstore.js?v=deadbeef",
+      "status": 200,
+      "cache_control": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/watchstore.js?v=14",
+      "status": 200,
+      "cache_control": "public, max-age=300, must-revalidate"
+    },
+    {
+      "path": "/watchstore.js?v=20261018",
+      "status": 200,
+      "cache_control": "public, max-age=300, must-revalidate"
+    },
+    {
+      "path": "/watchstore.js?v=old-release",
+      "status": 200,
+      "cache_control": "public, max-age=300, must-revalidate"
+    },
+    {
+      "path": "/watchstore.js",
+      "status": 200,
+      "cache_control": "public, max-age=300, must-revalidate"
+    },
+    {
+      "path": "/live/hk_heatmap.json?v=deadbeef",
+      "status": 401,
+      "cache_control": "private, no-store"
+    }
+  ],
+  "completed": true,
+  "test_server_stopped": true
+}
