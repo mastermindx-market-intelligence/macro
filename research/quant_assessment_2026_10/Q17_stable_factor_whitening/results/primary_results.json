@@ -1,0 +1,106 @@
+{
+ "attrition": {
+  "fallback_or_missing_inc": 0,
+  "fallback_or_missing_stb": 0,
+  "possible_pairs": 22,
+  "test_months": 23,
+  "valid_pairs": 22
+ },
+ "descriptive": {
+  "identity_transform_drift": 0.0,
+  "inc_amplification_median": 1.9533440698115054,
+  "inc_insample_offdiag_excess_median": -0.0020525371662996547,
+  "inc_partial_presented_complete_total": 12457,
+  "inc_raw_min_eig_median": 0.26208520378764255,
+  "m5_inc_output_rel_change_median": 0.04411320710058751,
+  "m5_inc_unstable_months": 0,
+  "m5_stb_output_rel_change_median": 0.0381797800020266,
+  "m5_stb_unstable_months": 0,
+  "restatement_max_abs_diff": 8.881784197001252e-15,
+  "stb_amplification_median": 1.9340541180865003,
+  "stb_floor_binding_months": 0,
+  "stb_insample_offdiag_excess_median": -0.005674586631376752,
+  "stb_partial_presented_complete_total": 0,
+  "stb_shrinkage_median": 0.02279164607017605,
+  "stb_unstable_months": 0
+ },
+ "first_date": "2023-09-29",
+ "guardrails": {
+  "condition_2_m1": true,
+  "condition_3_coverage": true,
+  "coverage_inc_mean": 1.0,
+  "coverage_stb_mean": 1.0,
+  "m1_diff_ci95": [
+   0.004287032655444768,
+   0.009363775520557695
+  ],
+  "m1_excess_diff_mean_stb_minus_inc": 0.0075254980492031045,
+  "m1_excess_inc_mean": -0.007270045956113006,
+  "m1_excess_stb_mean": 0.00025545209309009773
+ },
+ "honest_n": {
+  "block_len": 3,
+  "non_overlapping_blocks": 7,
+  "reps": 2000,
+  "seed": 17,
+  "test_pairs": 22
+ },
+ "incumbent_stdout_lines": 5,
+ "inputs_sha256": {
+  "collectors/edgar.py": "d6e3be060fc7ade17e31551795f25806ac414fe5ec7988c31039acc9c7dbba7c",
+  "collectors/edgar_eps.py": "b1c7e02997ee41184994df618178eccd1179abcfa156ed8c118f5aadfb8efb50",
+  "config.yml": "b8963682e5f2fe209cee1a604f19e51bbce232992d75c0b26c60a615600a310f",
+  "data/breadth/_closes_cache.parquet": "ad37acc0a0d4881f7f3f777c247d3b68d6e395ec351cddd90684aa5862e27ae3",
+  "data/breadth/constituents.parquet": "ecdd7e77ac36198b45c4ff6b854e7a46281bd3504d82540853f29c09a1f64aaf",
+  "data/edgar/eps_quarterly.parquet": "0330aa2e6f7518abdcad1e3ad063558480adaae6d6bbe6c6475efda6a307be9a",
+  "data/edgar/fundamentals_panel.parquet": "9af85734e4e3ca64500aba8c61e3b5a7080e15f9912beba150e1bafd8b8bebc4",
+  "data/midcap_breadth/_closes_cache.parquet": "5b7d0ab221fe9c04ea24401fe94a45e2caf6eda9ced250a538c743378c5db920",
+  "data/midcap_breadth/constituents.parquet": "0527370c62ee9a805228873bbaecd8bf8e33d86c18f28877a36b07fe70f2af5f",
+  "data/smallcap_breadth/_closes_cache.parquet": "eb40492c9f7dbb8a1ffc3ef353fcee281515630122abbe180223118d225c9135",
+  "data/smallcap_breadth/constituents.parquet": "c7461d5d2931ad0b746cd99206f63dd46a13d260c965ffa7c81029cab27ffd2e",
+  "data/yahoo/SPY.parquet": "6c785d556c22e20f85f89f55597b10469f0fc4c40a577b8efb04bc11964a3152",
+  "engine/equity_factors.py": "084745c4a6d5e42a01a04a49407a98300bf1cbbacc229aaceb51913a5ebcd681",
+  "engine/factor_orthogonal.py": "c0662c0aee92a337ba94ed98d03fb1a7c6d5ffe18f077711a692b6a084701f23",
+  "engine/factor_stable_whitening.py": "499f71fe3e6cd0e16296db648278324923756f3042821b6925a0822927a6dbd3",
+  "engine/sue.py": "26ca53977e87ac00bef6593c6fd520802604f98bef55c41740467f63f081974c",
+  "lib/closes_panel.py": "70bc2c1bb6a15dc677e88c12ee78b1c492afb2bbf75846860cf9d13fc6518496",
+  "lib/store.py": "f69c9171babfb4453c10c9edab9b2b206ef86abd2e328637fcae61569753b61d"
+ },
+ "last_date": "2026-09-30",
+ "legset": [
+  "value",
+  "quality",
+  "investment",
+  "payout",
+  "low_beta",
+  "accruals",
+  "sue"
+ ],
+ "n_dates": 37,
+ "n_test_months": 23,
+ "n_train": 14,
+ "p": 7,
+ "prereg_amendment_sha256": "bd5133975f703b9c9d37f0eb98df0fd2ce40a7df2046a1a5b2e4961bc21077a8",
+ "prereg_sha256": "51c58c377f7b12aa4df00076ab44d3f2906eaae71ae97e5a4be122bb67bc6fb0",
+ "primary": {
+  "R_ci95": [
+   0.7246933180264049,
+   0.8956892660205292
+  ],
+  "R_mean_drift_ratio": 0.8089162959742016,
+  "condition_1_drift": false,
+  "mean_drift_inc": 0.029791028515880936,
+  "mean_drift_stb": 0.024098448440328223,
+  "median_pair_ratio": 0.861156675454932
+ },
+ "runtime_seconds": 215.4,
+ "test_dates": [
+  "2024-11-29",
+  "2026-09-30"
+ ],
+ "train_dates": [
+  "2023-09-29",
+  "2024-10-31"
+ ],
+ "verdict": "REJECT"
+}

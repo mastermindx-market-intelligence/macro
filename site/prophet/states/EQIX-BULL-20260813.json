@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "EQIX-BULL-20260813",
-  "asof": "2026-09-28",
+  "asof": "2026-10-17",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 31.1,
-  "raw_confidence": 31.9,
-  "delta_vs_base": -28.9,
+  "management_confidence": 21.6,
+  "raw_confidence": 20.2,
+  "delta_vs_base": -38.4,
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 26.5,
+    "validity": 16.0,
     "progress": 0.0,
-    "pace": 28.7,
+    "pace": 3.3,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 32.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.374,
+    "dist_to_stop_r": 0.258,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 102.2,
-    "p1": -0.4175,
-    "p2": -0.2088,
+    "horizon_pct_used": 144.4,
+    "p1": -0.4949,
+    "p2": -0.2475,
     "p3": null,
-    "move_r": -0.626,
+    "move_r": -0.742,
     "mfe_r": 0.227,
-    "mae_r": -0.716
+    "mae_r": -0.742
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Window Elapsed \u2014 Awaiting Close",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 23.809985351562545,
-  "_mae": -75.08002929687495,
+  "_mae": -77.89997558593745,
   "_max_p1": 0.15127536040892373,
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 46,
-  "tau": 1.0222
+  "days_elapsed": 65,
+  "tau": 1.4444
 }

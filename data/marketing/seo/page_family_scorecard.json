@@ -1,21 +1,21 @@
 {
   "schema": "gsc_scorecard.v1",
-  "as_of": "2026-09-27",
+  "as_of": "2026-10-11",
   "window": {
-    "start": "2026-08-31",
-    "end": "2026-09-27"
+    "start": "2026-09-14",
+    "end": "2026-10-11"
   },
   "families": {
     "core": {
       "clicks": 4,
-      "impressions": 187,
-      "ctr": 0.0214,
-      "avg_position": 15.9,
+      "impressions": 190,
+      "ctr": 0.0211,
+      "avg_position": 16.02,
       "top_pages": [
         {
           "page": "https://www.mastermind-x.com/",
           "clicks": 4,
-          "impressions": 46
+          "impressions": 49
         },
         {
           "page": "https://mastermind-x.com/baskets_china.html",
@@ -43,7 +43,7 @@
   "brand_split": {
     "brand": {
       "clicks": 1,
-      "impressions": 23
+      "impressions": 26
     },
     "non_brand": {
       "clicks": 3,

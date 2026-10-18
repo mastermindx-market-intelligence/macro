@@ -9,7 +9,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Mapping, Protocol
 
@@ -30,7 +32,7 @@ from .query import (
     QueryValidationError,
     UnsupportedMetricError,
 )
-from .raw_ledger import canonical_json
+from .raw_ledger import canonical_json, parse_utc
 
 # ---------------------------------------------------------------------------
 # Admission bounds
@@ -49,10 +51,28 @@ MAX_CELLS = _MAX_CELLS
 
 _REQUEST_SCHEMA = "fundamental_forensics.financial_query_request/v1"
 _RESPONSE_SCHEMA = "fundamental_forensics.financial_query_response/v1"
+_LINEAGE_DISCLOSURE_SCHEMA = "fundamental_forensics.financial_query_lineage/v1"
 _LAWFUL_GOLDEN_DELIVERY_KIND = "committed_golden_fixture"
 _LAWFUL_GOLDEN_DELIVERY_KEYS = frozenset(
     {"kind", "attested", "production_issuer_service"}
 )
+# FIF D3: the production corpus carries its own exact delivery object. It is
+# fail-closed exactly like the golden one — extra keys, missing keys, wrong
+# kind, non-boolean flags, a malformed generation id, or an unsupported
+# capture basis are unavailable. attested=true requires a D2 attestation
+# admission reference, which does not exist yet, so it is unlawful today.
+_LAWFUL_PRODUCTION_DELIVERY_KIND = "production_issuer_dataset"
+_LAWFUL_PRODUCTION_DELIVERY_KEYS = frozenset(
+    {
+        "kind",
+        "attested",
+        "production_issuer_service",
+        "dataset_generation_id",
+        "capture_basis",
+    }
+)
+_LAWFUL_PRODUCTION_DELIVERY_GENERATION_ID_RE = re.compile(r"\Affprods_[a-f0-9]{64}\Z")
+_LAWFUL_PRODUCTION_CAPTURE_BASES = frozenset({"reconstruction"})
 _VALID_POLICIES = frozenset(p.value for p in BitemporalPolicy)
 _REQUIRED_ROOT_FIELDS = frozenset({"schema", "entity_id", "policy", "metric_ids", "periods"})
 _REQUIRED_POLICY_FIELDS = frozenset({"selection", "source_snapshot_at", "recorded_at"})
@@ -111,13 +131,81 @@ def _canonical_query_delivery(
     }
 
 
+def _canonical_production_query_delivery(
+    delivery: Mapping[str, Any],
+) -> dict[str, Any]:
+    """FIF D3 production delivery is fail-closed and exactly keyed.
+
+    The only lawful object is kind=production_issuer_dataset with
+    attested=false, production_issuer_service=true, an ``ffprods_<64hex>``
+    generation id, and capture_basis="reconstruction" (A13: a corpus fetched
+    today without historic capture evidence is a reconstruction; an attested
+    delivery would additionally require a D2 admission reference, which does
+    not exist yet, so attested=true is unavailable here).
+    """
+    if not isinstance(delivery, Mapping) or isinstance(delivery, (str, bytes, bytearray)):
+        raise FinancialQueryUnavailableError()
+    try:
+        keys = set(delivery)
+    except TypeError:
+        raise FinancialQueryUnavailableError() from None
+    if keys != _LAWFUL_PRODUCTION_DELIVERY_KEYS:
+        raise FinancialQueryUnavailableError()
+    try:
+        kind = delivery["kind"]
+        attested = delivery["attested"]
+        production = delivery["production_issuer_service"]
+        generation_id = delivery["dataset_generation_id"]
+        capture_basis = delivery["capture_basis"]
+    except (KeyError, TypeError):
+        raise FinancialQueryUnavailableError() from None
+    if kind != _LAWFUL_PRODUCTION_DELIVERY_KIND:
+        raise FinancialQueryUnavailableError()
+    if type(attested) is not bool or attested is not False:
+        raise FinancialQueryUnavailableError()
+    if type(production) is not bool or production is not True:
+        raise FinancialQueryUnavailableError()
+    if not isinstance(generation_id, str) or not _LAWFUL_PRODUCTION_DELIVERY_GENERATION_ID_RE.fullmatch(generation_id):
+        raise FinancialQueryUnavailableError()
+    if capture_basis not in _LAWFUL_PRODUCTION_CAPTURE_BASES:
+        raise FinancialQueryUnavailableError()
+    return {
+        "kind": _LAWFUL_PRODUCTION_DELIVERY_KIND,
+        "attested": False,
+        "production_issuer_service": True,
+        "dataset_generation_id": generation_id,
+        "capture_basis": "reconstruction",
+    }
+
+
+def canonical_financial_delivery(
+    delivery: Mapping[str, Any] | None,
+) -> dict[str, Any] | None:
+    """Admit the exact golden or the exact production delivery object.
+
+    Absent stays absent (the lawful FIP1/golden form). Anything else is
+    unavailable. This dispatcher is shared by the query, revisions, and
+    statement adapters so every surface enforces one delivery law.
+    """
+    if delivery is None:
+        return None
+    golden_keys = _LAWFUL_GOLDEN_DELIVERY_KEYS
+    try:
+        keys = frozenset(delivery)
+    except TypeError:
+        raise FinancialQueryUnavailableError() from None
+    if keys == golden_keys:
+        return _canonical_query_delivery(delivery)
+    return _canonical_production_query_delivery(delivery)
+
+
 @dataclass(frozen=True)
 class FinancialQueryDataset:
     """Everything a query run needs; opened only after admission.
 
     ``delivery`` is absent on FIP1. A non-null value must be the exact
-    FIF-3A3 golden-fixture object; execute_financial_query fail-closes
-    anything else as unavailable.
+    FIF-3A3 golden-fixture object or the exact FIF D3 production object;
+    execute_financial_query fail-closes anything else as unavailable.
     """
 
     binding: CanonicalEntityBinding
@@ -125,6 +213,47 @@ class FinancialQueryDataset:
     filing_metadata: Any
     registry: Any
     delivery: Mapping[str, Any] | None = None
+    # FIF-3A4 cross-filing lineage evidence. Empty is the FIF-3A3/FIP1
+    # contract and keeps every accepted response hash byte-identical. A
+    # non-empty bundle must be accepted positive immutable confirmations only;
+    # the kernel fail-closes anything else as unavailable.
+    lineage_evidence: Any = ()
+    # FIF D3 (A12): the dataset's own admission clock. When set, a request
+    # whose ``recorded_at`` precedes it must not see this dataset's bytes —
+    # serving current-retained bytes into a then-known view is exactly the
+    # bitemporal leak the acceptance matrix forbids. Absent keeps the
+    # golden/FIP1 behavior byte-identical.
+    dataset_admitted_at: Any = None
+
+
+def enforce_dataset_admission_floor(policy: Any, dataset: Any) -> None:
+    """A12: ``recorded_at`` before the dataset's ``admitted_at`` excludes it.
+
+    The provider protocol carries no policy, so the dataset carries its own
+    admission clock and the transport adapter enforces the floor before the
+    kernel is constructed. The admitted ``QueryPolicy`` object itself is never
+    re-stamped, clamped, or defaulted. A dataset without the clock (every
+    golden/FIP1 dataset) is unaffected.
+    """
+    admitted_at = getattr(dataset, "dataset_admitted_at", None)
+    if admitted_at is None:
+        return
+    if not isinstance(admitted_at, datetime):
+        raise FinancialQueryUnavailableError()
+    recorded_at = getattr(policy, "recorded_at", None)
+    if isinstance(recorded_at, datetime):
+        recorded = recorded_at
+        if recorded.tzinfo is None:  # pragma: no cover - QueryPolicy normalizes
+            raise FinancialQueryUnavailableError()
+    else:
+        try:
+            recorded = parse_utc(recorded_at, field_name="recorded_at")
+        except Exception:  # noqa: BLE001 - an unparseable cutoff is never "now"
+            raise FinancialQueryUnavailableError() from None
+        if recorded is None:
+            raise FinancialQueryUnavailableError()
+    if recorded < admitted_at:
+        raise FinancialQueryUnavailableError()
 
 
 class FinancialQueryAdmissionError(Exception):
@@ -508,7 +637,10 @@ def execute_financial_query(*, body: bytes, provider: FinancialQueryProvider) ->
     # is unavailable, not a successful query of another issuer's matrix.
     dataset = provider.resolve(entity_id)
     binding = _validate_supplied_dataset(entity_id, dataset)
-    delivery = _canonical_query_delivery(dataset.delivery)
+    # A12: the dataset's own admission clock gates the system view. The
+    # policy object itself passes through to the kernel untouched.
+    enforce_dataset_admission_floor(policy, dataset)
+    delivery = canonical_financial_delivery(dataset.delivery)
 
     # Phase 3: kernel query. Metric support is cutoff-visible governance,
     # never live catalog membership.
@@ -524,6 +656,7 @@ def execute_financial_query(*, body: bytes, provider: FinancialQueryProvider) ->
                 max_periods=_MAX_PERIODS,
                 max_cells=_MAX_CELLS,
             ),
+            lineage_evidence=getattr(dataset, "lineage_evidence", ()) or (),
         )
         matrix = engine.query_matrix(
             tickers=[binding.ticker],
@@ -569,9 +702,28 @@ def execute_financial_query(*, body: bytes, provider: FinancialQueryProvider) ->
         },
         "receipt": matrix.to_dict(),
     }
-    delivery = _canonical_query_delivery(dataset.delivery)
-    if delivery is not None:
-        envelope["delivery"] = delivery
+    production_delivery = canonical_financial_delivery(dataset.delivery)
+    if production_delivery is not None:
+        envelope["delivery"] = production_delivery
+
+    # FIF-3A4: disclose the cross-filing lineage this answer actually stands
+    # on, so "which filing supports this number" is answerable from the
+    # receipt itself. Absent evidence emits nothing, so every accepted
+    # FIF-3A3/FIP1 response stays byte-identical. This never enters
+    # ``receipt`` and therefore never perturbs ``query_hash``.
+    applied = engine.applied_lineage_evidence(matrix)
+    if applied:
+        envelope["lineage"] = {
+            "schema": _LINEAGE_DISCLOSURE_SCHEMA,
+            "relation": "xbrl_confirmation",
+            "is_reported_revision": False,
+            "note": (
+                "A later filing repeated this exact fact. Confirmation links "
+                "source vintages; it is not an amendment, recast, restatement "
+                "or correction."
+            ),
+            "confirmations": [item.to_dict() for item in applied],
+        }
 
     response_body = canonical_json(envelope).encode("utf-8")
 
@@ -594,6 +746,8 @@ __all__ = [
     "UnavailableFinancialQueryProvider",
     "admit_financial_request",
     "admit_request_bytes",
+    "canonical_financial_delivery",
+    "enforce_dataset_admission_floor",
     "execute_financial_query",
     "fip1_fixture_dataset",
     "validate_supplied_dataset",

@@ -1098,3 +1098,375 @@ def test_canonical_earnings_event_currently_resolves() -> None:
     assert _Q3_ACCESSION not in accessions
     assert workspace.get("event_id") == _Q3_EVENT_ID
     assert payload.get("is_context_only") is True
+
+
+# ---------------------------------------------------------------------------
+# FIF D3: issuer-level production binding (A14) + provider-supplied delivery
+# ---------------------------------------------------------------------------
+
+from engine.fundamental_forensics import production_datasets as PDS  # noqa: E402
+from engine.fundamental_forensics.financial_intelligence_packet import EntityInput  # noqa: E402
+from engine.fundamental_forensics.ixbrl_raw_ledger import (  # noqa: E402
+    GOLDEN_AAPL_QUERY_ACCESSIONS,
+    parse_and_convert_golden_packages,
+)
+from engine.fundamental_forensics.production_provider import (  # noqa: E402
+    ProductionFinancialStatementProvider,
+)
+from engine.fundamental_forensics.query_service import CanonicalEntityBinding  # noqa: E402
+from engine.fundamental_forensics.statement_service import (  # noqa: E402
+    bind_production_issuer_identity,
+)
+from lib.dataos.identity import IdentityError  # noqa: E402
+from engine.fundamental_forensics.query_service import FinancialQueryUnavailableError  # noqa: E402
+
+_D3_ADMITTED = datetime(2026, 10, 1, tzinfo=timezone.utc)
+
+# Two share classes under one ISS id and one registrant CIK (the GOOGL shape).
+_TWO_CLASS_SECURITIES = [
+    {
+        "security_id": "SEC:US-XNAS-AAPL",
+        "issuer_id": "ISS:US-XNAS-AAPL",
+        "issuer_state": "ACTIVE",
+        "listing_key": "US-XNAS-AAPL",
+        "issuer_cik": "320193",
+    },
+    {
+        "security_id": "SEC:US-XNAS-AAPL-B",
+        "issuer_id": "ISS:US-XNAS-AAPL",
+        "issuer_state": "ACTIVE",
+        "listing_key": "US-XNAS-AAPL-B",
+        "issuer_cik": "320193",
+    },
+]
+_TWO_CLASS_MASTER = IssuerMaster.from_records(_TWO_CLASS_SECURITIES)
+_AAPL_METADATA = {"cik": "0000320193", "legal_name": "Apple Inc."}
+
+
+def _production_statement_provider() -> ProductionFinancialStatementProvider:
+    packages = [
+        load_golden_aapl_package(ROOT, accession=accession)
+        for accession in GOLDEN_AAPL_QUERY_ACCESSIONS
+    ]
+    ledger, filing_metadata, _report = parse_and_convert_golden_packages(packages)
+    material = PDS.ProductionDatasetMaterial(
+        binding=CanonicalEntityBinding(
+            entity_id="ISS:US-XNAS-AAPL",
+            cik="0000320193",
+            ticker="AAPL",
+            source_entity_id="0000320193",
+        ),
+        entity=EntityInput(
+            entity_id="ISS:US-XNAS-AAPL",
+            cik="0000320193",
+            ticker="AAPL",
+            name="Apple Inc.",
+            identity_basis="sec-cik",
+            source_entity_id="0000320193",
+        ),
+        ledger=ledger,
+        filing_metadata=filing_metadata,
+        registry_payload=PDS.snapshot_core_registry_payload(ROOT),
+        admitted_at=_D3_ADMITTED,
+        source_recorded_at_floor=datetime(2026, 8, 1, tzinfo=timezone.utc),
+        packages=tuple(packages),
+        security_id="SEC:US-XNAS-AAPL",
+        listing_key="US-XNAS-AAPL",
+    )
+    store = PDS.InMemoryStrictConditionalStore()
+    PDS.publish_production_dataset(store, material)
+    return ProductionFinancialStatementProvider(store)
+
+
+def test_multi_class_issuer_binds_once_via_cik() -> None:
+    # The golden single-security rule refuses the two-class issuer today...
+    with pytest.raises(FinancialQueryAdmissionError) as golden_refusal:
+        bind_canonical_identity(
+            "ISS:US-XNAS-AAPL",
+            issuer_master=_TWO_CLASS_MASTER,
+            issuer_metadata=_AAPL_METADATA,
+        )
+    assert golden_refusal.value.status_code == 400
+
+    # ...while the production binding binds ONCE, through the registrant CIK.
+    binding = bind_production_issuer_identity(
+        "ISS:US-XNAS-AAPL",
+        issuer_master=_TWO_CLASS_MASTER,
+        issuer_metadata=_AAPL_METADATA,
+        security_id="SEC:US-XNAS-AAPL",
+        listing_key="US-XNAS-AAPL",
+    )
+    assert binding["cik"] == "0000320193"
+    assert binding["security_id"] == "SEC:US-XNAS-AAPL"
+    assert binding["listing_key"] == "US-XNAS-AAPL"
+    assert binding["entity_id"] == "ISS:US-XNAS-AAPL"
+
+    # End to end: exactly one production dataset, one entity block, facts
+    # keyed by the registrant CIK, no double-counted issuer.
+    result = _execute(
+        issuer_master=_TWO_CLASS_MASTER,
+        issuer_metadata=_AAPL_METADATA,
+        provider=_production_statement_provider(),
+    )
+    entity = result.envelope["entity"]
+    assert entity["cik"] == "0000320193"
+    assert entity["security_id"] == "SEC:US-XNAS-AAPL"
+    assert entity["entity_id"] == "ISS:US-XNAS-AAPL"
+    stored = next(
+        member
+        for member in result.envelope["package"]["members"]
+        if member["state"] == "stored"
+    )
+    assert stored["content_sha256"]
+
+
+def test_conflicting_cik_observations_refused() -> None:
+    conflicting = IssuerMaster.from_records(
+        _TWO_CLASS_SECURITIES
+        + [
+            {
+                "security_id": "SEC:US-XNAS-AAPL-C",
+                "issuer_id": "ISS:US-XNAS-AAPL",
+                "issuer_state": "ACTIVE",
+                "listing_key": "US-XNAS-AAPL-C",
+                "issuer_cik": "1652044",
+            },
+        ]
+    )
+    # The identity owner refuses to guess; the refusal maps to typed
+    # unavailability, never a picked CIK and never a 400.
+    with pytest.raises(IdentityError):
+        conflicting.cik_of_issuer("ISS:US-XNAS-AAPL")
+    with pytest.raises(FinancialQueryUnavailableError):
+        bind_production_issuer_identity(
+            "ISS:US-XNAS-AAPL",
+            issuer_master=conflicting,
+            issuer_metadata=_AAPL_METADATA,
+            security_id="SEC:US-XNAS-AAPL",
+            listing_key="US-XNAS-AAPL",
+        )
+    provider = _production_statement_provider()
+    # FIF P1 (F5): the request path binds from the generation manifest only —
+    # it never consults a live IssuerMaster, so even an identity owner that
+    # now disagrees with the admitted binding cannot move the served
+    # identity. Reconciling drift is the acquisition lane's job (re-publish).
+    binding = provider.bind_issuer(
+        ROOT,
+        "ISS:US-XNAS-AAPL",
+        issuer_master=conflicting,
+        issuer_metadata=_AAPL_METADATA,
+    )
+    assert binding["cik"] == "0000320193"
+    assert binding["security_id"] == "SEC:US-XNAS-AAPL"
+    assert binding["listing_key"] == "US-XNAS-AAPL"
+
+
+def test_statement_delivery_reflects_provider_not_hardcode() -> None:
+    # Golden AAPL: byte-identical golden statement response (frozen pre-D3
+    # baseline captured on the untouched tree at 5267c66846e).
+    fixture = json.loads(
+        (
+            ROOT
+            / "tests"
+            / "fixtures"
+            / "fundamental_forensics"
+            / "issuer_master_adversarial_duplicate_mint.json"
+        ).read_text(encoding="utf-8")
+    )
+    golden = _execute(
+        issuer_master=IssuerMaster.from_records(fixture["securities"]),
+        issuer_metadata=fixture["issuer_metadata"],
+        provider=GoldenAaplStatementProvider(ROOT),
+    )
+    assert (
+        golden.sha256 == "25e5562e81cb80bd42d0feb544c212c4471e11736601aaee418a60981a457184"
+    )
+    assert golden.envelope["delivery"] == {
+        "kind": "committed_golden_fixture",
+        "attested": False,
+        "production_issuer_service": False,
+    }
+
+    # Production package: the provider-supplied exact production object.
+    production = _execute(
+        issuer_master=_TWO_CLASS_MASTER,
+        issuer_metadata=_AAPL_METADATA,
+        provider=_production_statement_provider(),
+    )
+    assert production.envelope["delivery"]["kind"] == "production_issuer_dataset"
+    assert production.envelope["delivery"]["attested"] is False
+    assert production.envelope["delivery"]["production_issuer_service"] is True
+    assert production.envelope["delivery"]["capture_basis"] == "reconstruction"
+    assert PDS.GENERATION_ID_RE.fullmatch(
+        production.envelope["delivery"]["dataset_generation_id"]
+    )
+    # An unlawful provider-supplied delivery is unavailable, never served.
+    from engine.fundamental_forensics.production_provider import ProductionFilingPackage
+
+    inner = _production_statement_provider()
+
+    class _TamperingProvider:
+        issuer_level_binding = True
+
+        def bind_issuer(self, repo_root, entity_id, *, issuer_master=None, issuer_metadata=None):
+            return inner.bind_issuer(
+                repo_root, entity_id, issuer_master=issuer_master, issuer_metadata=issuer_metadata
+            )
+
+        def resolve(self, entity_id, accession):
+            package = inner.resolve(entity_id, accession)
+            return ProductionFilingPackage(
+                manifest=package.manifest,
+                members=package.members,
+                delivery={"kind": "production_issuer_dataset", "attested": True},
+                statement_trees=package.statement_trees,
+            )
+
+    with pytest.raises(FinancialQueryUnavailableError):
+        _execute(
+            issuer_master=_TWO_CLASS_MASTER,
+            issuer_metadata=_AAPL_METADATA,
+            provider=_TamperingProvider(),
+        )
+
+
+# ---------------------------------------------------------------------------
+# FIF P1: precomputed statement trees on the production path (F1 remainder)
+# ---------------------------------------------------------------------------
+
+
+def test_precomputed_trees_equal_golden_reconstruction() -> None:
+    """Publication precomputes exactly what the demonstration path reconstructs."""
+    result = _execute(provider=_production_statement_provider())
+    package = load_golden_aapl_package(ROOT, accession=_GOLDEN_ACCESSION)
+    direct = reconstruct_primary_statements(
+        package=package, registry=load_core_registry(ROOT)
+    )
+    assert result.envelope["statements"] == direct["statements"]
+    assert result.envelope["coverage"] == {
+        "parsed_document_kind": direct["parsed_document_kind"],
+        "fact_count": direct["fact_count"],
+        "context_count": direct["context_count"],
+    }
+
+
+def test_production_package_without_trees_never_parses(monkeypatch) -> None:
+    """A production package missing its trees is unavailable — never a parse."""
+    from engine.fundamental_forensics.production_provider import ProductionFilingPackage
+
+    inner = _production_statement_provider()
+    package = inner.resolve(_GOLDEN_ENTITY, _GOLDEN_ACCESSION)
+
+    def _forbidden(*_args, **_kwargs):
+        raise AssertionError("a tree-less production package must never be parsed")
+
+    import collectors.sec_filing_parser as parser_module
+    import engine.fundamental_forensics.statement_graph as statement_graph_module
+
+    monkeypatch.setattr(parser_module, "parse_sec_filing_document", _forbidden)
+    monkeypatch.setattr(statement_graph_module, "parse_sec_filing_document", _forbidden)
+
+    stripped = ProductionFilingPackage(
+        manifest=package.manifest,
+        members=package.members,
+        delivery=package.delivery,
+    )
+    assert stripped.statement_trees is None
+
+    class _TreelessProvider:
+        issuer_level_binding = True
+
+        def bind_issuer(self, repo_root, entity_id, *, issuer_master=None, issuer_metadata=None):
+            return inner.bind_issuer(
+                repo_root, entity_id, issuer_master=issuer_master, issuer_metadata=issuer_metadata
+            )
+
+        def resolve(self, entity_id, accession):
+            return stripped
+
+    with pytest.raises(FinancialQueryUnavailableError):
+        _execute(provider=_TreelessProvider())
+
+
+# ---------------------------------------------------------------------------
+# FIF P1-b (I3): canonical decimal-text cell values — boundary pin, not a
+# conversion. The served value is the parser's canonical text or an explicit
+# null; any other type is the file's typed unavailability with nothing leaked.
+# ---------------------------------------------------------------------------
+
+
+def _all_cells(envelope: dict) -> list:
+    return [
+        cell
+        for statement in envelope["statements"]
+        for row in statement["rows"]
+        for cell in row["cells"]
+    ]
+
+
+def _forged_tree_package(tree: dict) -> GoldenFilingPackage:
+    """The golden package carrying a forged precomputed statement tree."""
+    base = load_golden_aapl_package(ROOT)
+    package = GoldenFilingPackage.__new__(GoldenFilingPackage)
+    object.__setattr__(package, "manifest", base.manifest)
+    object.__setattr__(package, "members", base.members)
+    object.__setattr__(package, "statement_trees", tree)
+    return package
+
+
+class _ForgedTreeProvider(GoldenAaplStatementProvider):
+    def __init__(self, tree: dict) -> None:
+        super().__init__(ROOT)
+        self._tree = tree
+
+    def resolve(self, entity_id: str, accession: str) -> GoldenFilingPackage:
+        super().resolve(entity_id, accession)  # keeps the golden admission gates
+        return _forged_tree_package(self._tree)
+
+
+def test_statement_cell_values_are_canonical_decimal_text_or_none() -> None:
+    result = _execute()
+    envelope = json.loads(result.body)
+    cells = _all_cells(envelope)
+    assert cells
+    assert all(cell["value"] is None or isinstance(cell["value"], str) for cell in cells)
+    assert any(isinstance(cell["value"], str) for cell in cells)
+
+
+def test_statement_cell_numeric_value_is_refused_as_typed_unavailability() -> None:
+    import copy
+
+    tree = reconstruct_primary_statements(
+        package=load_golden_aapl_package(ROOT), registry=load_core_registry(ROOT)
+    )
+    forged = copy.deepcopy(tree)
+    cell = _all_cells(forged)[0]
+    cell["value"] = 78000000  # int — a producer contract break, not text to convert
+
+    with pytest.raises(FinancialQueryUnavailableError) as excinfo:
+        _execute(provider=_ForgedTreeProvider(forged))
+    assert excinfo.value.args == ()  # the generic unavailability detail, nothing leakable
+
+    float_forged = copy.deepcopy(tree)
+    _all_cells(float_forged)[0]["value"] = 78000000.0
+    with pytest.raises(FinancialQueryUnavailableError):
+        _execute(provider=_ForgedTreeProvider(float_forged))
+
+
+def test_statement_cell_exponent_text_passes_through_unchanged() -> None:
+    import copy
+
+    tree = reconstruct_primary_statements(
+        package=load_golden_aapl_package(ROOT), registry=load_core_registry(ROOT)
+    )
+    forged = copy.deepcopy(tree)
+    sales = next(
+        cell
+        for cell in _all_cells(forged)
+        if cell["value"] not in (None, "") and isinstance(cell["value"], str)
+    )
+    sales["value"] = "1E+2"  # non-canonical exponent TEXT still passes byte-identically
+
+    result = _execute(provider=_ForgedTreeProvider(forged))
+    envelope = json.loads(result.body)
+    assert any(cell["value"] == "1E+2" for cell in _all_cells(envelope))

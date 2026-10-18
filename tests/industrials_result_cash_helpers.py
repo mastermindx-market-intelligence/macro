@@ -52,8 +52,10 @@ FIXTURE_NAMES = frozenset(path.stem for path in FIXTURE_DIR.glob("*.json"))
 # makes it gradeable: ``test_every_plan_named_requirement_anchor_exists`` in the
 # dependency-binding suite resolves every row by AST, so deleting or renaming an
 # anchor reds the exclusive ``industrials-result-cash`` CI job instead of
-# silently reducing coverage.  Both files named below are already in that job's
-# ``paths:`` and on its run line, so this needs no ``.github/ci/**`` edit.
+# silently reducing coverage.  All THREE files named below are in that job's
+# ``paths:`` and on its run line; ``test_industrials_financial_dossier.py`` was
+# added there in the same change that created it, because a suite a guard depends
+# on but CI never selects is a guard that cannot fail.
 #
 # ADDING A ROW IS A CLAIM.  A row asserts that the named test discriminates the
 # requirement's compliant case from its violating one -- not merely that some
@@ -61,6 +63,7 @@ FIXTURE_NAMES = frozenset(path.stem for path in FIXTURE_DIR.glob("*.json"))
 # not started yet do not belong here: their absence is the honest signal.
 _T01_SUITE = "tests/test_industrials_dependency_binding.py"
 _T04_SUITE = "tests/test_industrials_result_cash.py"
+_T06_SUITE = "tests/test_industrials_financial_dossier.py"
 
 PLAN_REQUIREMENT_ANCHORS: Mapping[str, tuple[str, str]] = {
     # T01 — synthetic corpus, helper harness, delivery-input validator.
@@ -80,6 +83,24 @@ PLAN_REQUIREMENT_ANCHORS: Mapping[str, tuple[str, str]] = {
     "IND-D15": (_T04_SUITE, "test_ind_d15"),
     "IND-D16": (_T04_SUITE, "test_ind_d16"),
     "IND-R208": (_T04_SUITE, "test_ind_r208"),
+    # T06 — financial dossier.  Six of the nine T06 obligations, each anchored on
+    # recovered ORIGINAL wording (r1 blob 40fd1e3783102c28fe748fe35b927484d4f3dddb,
+    # r2 blob 9c98e106b954d0a48610afad418de2a9eeb1e58b, W12 blob
+    # b343cbd7bc1f52cfc6fbb5e18ab8d9e9f9392f6c) rather than on a ruling or on landed
+    # code.  IND-D03, IND-D22 and IND-R213 stay absent on purpose: their seams are
+    # not merged.
+    #
+    # IND-D23 and IND-R215 anchor on the result-to-cash rows, where their
+    # compliant/violating pairs were first measured.  The dossier-level tests that
+    # also cover them carry their own names and claim no second anchor: a
+    # requirement has one anchor, and pointing it at the newer test would trade
+    # unit coverage for page coverage instead of adding it.
+    "IND-D23": (_T06_SUITE, "test_ind_d23"),
+    "IND-R201": (_T06_SUITE, "test_ind_r201"),
+    "IND-R214": (_T06_SUITE, "test_ind_r214"),
+    "IND-R215": (_T06_SUITE, "test_ind_r215"),
+    "IND-R218": (_T06_SUITE, "test_ind_r218"),
+    "IND-SF04": (_T06_SUITE, "test_ind_sf04"),
 }
 _COMPARISON_PURPOSES = frozenset(
     {"same_period", "year_over_year", "final_vs_preview", "segment_bridge", "rollforward"}

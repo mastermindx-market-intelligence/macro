@@ -15,9 +15,16 @@ The identity law is EXACT and is the only thing the module does:
     require aliases.resolve(VENDOR, current_symbol, decision_date) == security_id  # else NoLink.round_trip_mismatch
 
 The continuation is rendered against the Terminal app at
-``TERMINAL_ANALYSIS_URL``. The href carries ONLY ``symbol``, ``page``, ``mo_chain``,
-``mo_channel``, ``mo_asof``, ``mo_security_id`` — the routing authority is
-``symbol`` (the verified current alias). No source text, no receipts, no JSON.
+``TERMINAL_ANALYSIS_URL``. The href carries ONLY ``symbol``, ``page``, ``mo_from``,
+``mo_chain``, ``mo_channel``, ``mo_asof``, ``mo_security`` — the routing authority
+is ``symbol`` (the verified current alias). No source text, no receipts, no JSON.
+The ``mo_*`` keys are the recorded MarketOntology context vocabulary
+(research/market_intelligence_productization/MARKET_ONTOLOGY_MO_J1_JOINED_RESEARCH_JOURNEY_2026-09-25.md
+§5): ``mo_security`` is the opaque hint key (never ``mo_security_id``), and
+``mo_from`` is the closed origin enum — this publisher lives on transmission.html,
+so it emits ``mo_from=transmission``; the Terminal helper admits that value only
+once its enum is widened, and until then rejects the context exactly as it
+rejected the ``mo_from``-less href before (CEO A ruling, macro#6819, 2026-10-02).
 
 ``enrich_display_chains`` is the page-adapter projection: it walks the
 display-subset chains (from engine.transmission_publish.derive_display_subset),
@@ -45,10 +52,29 @@ from lib.dataos.identity import VendorAliasTable
 
 CONTINUATION_VENDOR = "store"
 TERMINAL_ANALYSIS_URL = "https://app.mastermind-x.com/analysis"
+# Closed-enum origin value for the recorded ``mo_from`` key: this publisher is
+# the transmission page, never the ontology explorer. One value, never derived
+# from a caller URL.
+CONTINUATION_ORIGIN = "transmission"
 
 _ALLOWED_QUERY_KEYS = frozenset({
-    "symbol", "page", "mo_chain", "mo_channel", "mo_asof", "mo_security_id",
+    "symbol", "page", "mo_from", "mo_chain", "mo_channel", "mo_asof", "mo_security",
 })
+
+
+def chain_decision_date(value: object) -> date | None:
+    """Read only the chain owner's strict calendar date, without substitution.
+
+    Terminal admits YYYY-MM-DD for mo_asof. Python also accepts compact/week
+    dates, so require an exact round trip rather than normalizing owner input.
+    """
+    if not isinstance(value, str) or len(value) != 10:
+        return None
+    try:
+        parsed = date.fromisoformat(value)
+    except ValueError:
+        return None
+    return parsed if parsed.isoformat() == value else None
 
 
 # ── result types ────────────────────────────────────────────────────────────
@@ -92,19 +118,29 @@ def _build_href(
     channel_id: str,
     chain_asof: str,
 ) -> str:
-    """Build the Terminal href with the EXACT six keys (urlencoded).
+    """Build the Terminal href with the EXACT seven keys (urlencoded).
 
     ``symbol`` is the routing authority — it must match the verified current
-    alias. ``mo_security_id`` is an opaque navigation hint, never an alternate
-    key."""
+    alias. ``mo_security`` is an opaque navigation hint, never an alternate
+    key; ``mo_from`` is the fixed origin ``CONTINUATION_ORIGIN``."""
     parts = [
         ("symbol", symbol),
         ("page", "intelligence"),
+        ("mo_from", CONTINUATION_ORIGIN),
         ("mo_chain", chain_id),
         ("mo_channel", channel_id),
         ("mo_asof", chain_asof),
-        ("mo_security_id", security_id),
+        ("mo_security", security_id),
     ]
+    keys = frozenset(k for k, _ in parts)
+    if keys != _ALLOWED_QUERY_KEYS:
+        # The allowlist is a live invariant, not documentation: a key added to
+        # the href without widening the recorded contract fails here, not at
+        # the Terminal helper (which silently ignores unknown mo_* keys).
+        raise RuntimeError(
+            f"continuation href keys {sorted(keys)} != recorded allowlist "
+            f"{sorted(_ALLOWED_QUERY_KEYS)}"
+        )
     qs = "&".join(f"{quote(k, safe='')}={quote(v, safe='')}" for k, v in parts)
     return f"{TERMINAL_ANALYSIS_URL}?{qs}"
 
@@ -199,7 +235,7 @@ def _project_channel(
     channel_id: str,
     chan: dict,
     aliases: VendorAliasTable | None,
-    decision_date: date,
+    decision_date: date | None,
     chain_asof: str,
 ) -> dict:
     """Project one blast channel to its ``companies`` block."""
@@ -262,7 +298,7 @@ def _project_channel(
 def enrich_display_chains(
     chains: dict,
     aliases: VendorAliasTable | None,
-    decision_date: date,
+    decision_date: date | None,
 ) -> dict:
     """Walk the display-subset and add a ``companies`` block per non-dormant chain.
 
@@ -296,6 +332,12 @@ def enrich_display_chains(
     chain_asof = ""
     if isinstance(chains.get("asof"), str):
         chain_asof = chains["asof"]
+    snapshot_date = chain_decision_date(chain_asof)
+    if snapshot_date is None or snapshot_date != decision_date:
+        # Missing/malformed source time cannot borrow the page's render date.
+        # Keep the owner-backed membership, but use the existing unavailable
+        # projection so no misleading identity/context link can be emitted.
+        aliases = None
 
     projected: list[dict] = []
     for chain in out_chains_in:

@@ -128,6 +128,9 @@ log "[3/5] systemd units + private Market Memory state"
 # The unit's Market Memory bind is deliberately non-optional and read-only.
 # Provision it before installation so a fresh host fails closed without making
 # the first service start impossible.
+# Ticker News reader state exists even while its operator-armed writer is absent.
+# This lets macro-api bind the path read-only from its very first start.
+install -d -m 0700 /var/lib/macro-ticker-news
 install -d -m 0700 /var/lib/macro-market-memory
 install -d -m 0700 /var/lib/macro-market-memory/public
 install -d -m 0700 /var/lib/macro-market-memory/public/trusted-v1
@@ -152,6 +155,14 @@ fi
 # but no credential or service-writable profile may exist until macro-api has
 # restarted into its deny namespace.
 bash "$APP_DIR/app/deploy/market-memory-options-prereqs.sh" --identity-only
+# BEGIN COMPANY_INTELLIGENCE_PRIVATE_ROOTS
+# Empty directories only: GMI owns publication and current-generation admission.
+if ! "$VENV/bin/python" "$APP_DIR/app/deploy/company-intelligence-private-roots.py"; then
+  echo "api-setup.sh: private Company Intelligence provisioning failed; refusing API readiness" >&2
+  exit 1
+fi
+# END COMPANY_INTELLIGENCE_PRIVATE_ROOTS
+
 REVIEWED_UNIT_NAMES=(
   macro-api.service
   macro-market-memory-source.service macro-market-memory-source.timer

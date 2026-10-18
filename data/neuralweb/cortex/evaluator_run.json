@@ -1,11 +1,11 @@
 {
-  "as_of": "2026-09-28",
+  "as_of": "2026-10-16",
   "evaluator_version": "W7b-PR3",
   "dry_run": false,
   "n_due": 2,
   "results": [
     {
-      "id": "cortex-2026-08-31-in-low-volatility-regimes-negative-10-d-3ac05c",
+      "id": "cortex-2026-09-18-in-low-volatility-regimes-negative-10-d-acd5d5",
       "claim_shape": "conditional_regime",
       "verdict": "insufficient-n",
       "n": 0,
@@ -32,25 +32,30 @@
       "note": null
     },
     {
-      "id": "cortex-2026-08-31-in-high-volatility-regimes-extended-dwe-235ca3",
-      "claim_shape": "entry_quality",
+      "id": "cortex-2026-09-18-when-the-confirmed-us-quad-is-contradict-9274dc",
+      "claim_shape": "lead_lag",
       "verdict": "insufficient-n",
       "n": 0,
       "metric_value": null,
       "detail": {
         "metric_space": "absolute",
+        "query_axes_applied": [
+          "symbol"
+        ],
+        "declares_feature": false,
         "total_spine_rows": 0,
         "pre_reg_dropped": 0,
         "post_reg_n": 0,
-        "note": "insufficient post-registration signals (0 < 25)",
+        "note": "No post-registration graded rows found. All data predates registration \u2014 anti-mining law enforced.",
         "evaluator_version": "W7b-PR3"
       },
       "gate": {
         "metric": "hit_rate",
-        "threshold": 0.55,
+        "threshold": 0.6,
         "min_n": 25,
-        "horizon_d": 21,
-        "direction_expected": -1
+        "horizon_d": 7,
+        "direction_expected": 1,
+        "clamped_from": 20
       },
       "note": null
     }

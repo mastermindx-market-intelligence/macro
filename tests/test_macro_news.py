@@ -1021,6 +1021,28 @@ def _isolate_gdelt(monkeypatch, tmp_path):
     return gc
 
 
+def _pin_wall_clock(monkeypatch, iso="2026-09-18T18:00:00+00:00"):
+    """Freeze macro_news's wall clock on the fixture day.
+
+    macro_headlines() ages every headline against `datetime.now` before it keeps
+    it (news_common.display_age_ok: 5-14 calendar days by source tier), but these
+    fixtures are stamped 2026-09-18. On the real clock they age out of the board
+    as the calendar moves, so an end-to-end `n_kept` assertion passes only while
+    the fixture is young — the two below went red at 2026-09-28T12:00Z, ten days
+    after the fixture stamp, with no code change. Same idiom and failure class as
+    tests/test_theme_state_owner_adapter.py
+    (DSC:LEGACY-THEMATIC-COMPOSE-AGES-FIXTURES-ON-THE-WALL-CLOCK)."""
+    import datetime as dt
+    instant = dt.datetime.fromisoformat(iso)
+
+    class Clock(dt.datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return instant if tz else instant.replace(tzinfo=None)
+
+    monkeypatch.setattr(mn, "datetime", Clock)
+
+
 _CFG = {"window_days": 2, "max_records": 50, "cache_ttl_hours": 12}
 
 
@@ -1347,6 +1369,7 @@ def test_fidelity_provider_response_reaches_the_macro_news_result(monkeypatch, t
     # are exercised by their own tests
     monkeypatch.setattr(mn, "_cfg", lambda: dict(
         _CFG, enabled=True, use_official_feeds=False, use_news_feeds=False))
+    _pin_wall_clock(monkeypatch)
 
     out = mn.macro_headlines(date(2026, 9, 18))
 
@@ -1371,6 +1394,7 @@ def test_dark_global_wire_stays_visible_when_the_rss_legs_are_healthy(monkeypatc
          "seendate": "2026-09-18T12:00:00+00:00"}], None))
     monkeypatch.setattr(mn, "_fetch_news_feeds", lambda cfg, today=None: ([], None))
     monkeypatch.setattr(mn, "_cfg", lambda: dict(_CFG, enabled=True))
+    _pin_wall_clock(monkeypatch)
 
     out = mn.macro_headlines(date(2026, 9, 18))
 

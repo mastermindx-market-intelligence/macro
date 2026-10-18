@@ -535,8 +535,8 @@ html[data-theme="light"] .cm-cos-list{background:transparent}
       {{ flowline({'rising':'up','falling':'down','stable':'flat'}.get(S.rates.direction,'flat'), 'rates') }}
       <div class="ch-facts">
         <div class="chf"><div class="chf-l">{{ t('10-year rate', '10年利率') }}</div><div class="chf-v">{{ '%.2f'|format(S.rates.nominal_10y) if S.rates.nominal_10y is not none else '—' }}%</div><div class="chf-m">{{ t('what the market charges', '市场定价') }}</div></div>
-        <div class="chf"><div class="chf-l">{{ t('Yield curve', '收益率曲线') }}</div><div class="chf-v">{{ '%+.2f'|format(S.rates.curve_2s10s) if S.rates.curve_2s10s is not none else '—' }}</div><div class="chf-m">{{ t('inverted — short above long', '倒挂——短端高于长端') if S.rates.curve_2s10s is not none and S.rates.curve_2s10s < 0 else t('upward-sloping — normal', '向上倾斜——正常') }}</div></div>
-        <div class="chf"><div class="chf-l">{{ t('Fed stance', '美联储立场') }}</div><div class="chf-v">{{ t({'restrictive':'Tight','accommodative':'Easy','neutral':'Neutral'}.get(S.rates.regime, S.rates.regime|capitalize), {'restrictive':'偏紧','accommodative':'宽松','neutral':'中性'}.get(S.rates.regime, S.rates.regime)) }}</div><div class="chf-m">{{ t({'rising':'and pressing harder','falling':'and easing off','stable':'and holding'}.get(S.rates.direction,''), {'rising':'且仍在收紧','falling':'且正在放松','stable':'且保持不变'}.get(S.rates.direction,'')) }}</div></div>
+        <div class="chf"><div class="chf-l">{{ t('Yield curve', '收益率曲线') }}</div><div class="chf-v">{{ '%+.2f'|format(S.rates.curve_2s10s) if S.rates.curve_2s10s is not none else '—' }}</div><div class="chf-m">{% if S.rates.curve_2s10s is none %}{{ t('read being updated', '读数更新中') }}{% elif S.rates.curve_2s10s < 0 %}{{ t('inverted — short above long', '倒挂——短端高于长端') }}{% else %}{{ t('upward-sloping — normal', '向上倾斜——正常') }}{% endif %}</div></div>
+        <div class="chf"><div class="chf-l">{{ t('Fed stance', '美联储立场') }}</div><div class="chf-v">{% if S.rates.regime is none %}—{% else %}{{ t({'restrictive':'Tight','accommodative':'Easy','neutral':'Neutral'}.get(S.rates.regime, S.rates.regime|capitalize), {'restrictive':'偏紧','accommodative':'宽松','neutral':'中性'}.get(S.rates.regime, S.rates.regime)) }}{% endif %}</div><div class="chf-m">{{ t({'rising':'and pressing harder','falling':'and easing off','stable':'and holding'}.get(S.rates.direction,''), {'rising':'且仍在收紧','falling':'且正在放松','stable':'且保持不变'}.get(S.rates.direction,'')) }}</div></div>
       </div>
       {% if yc and yc.recession %}
       <div class="ch-extra"><span class="ch-dots">{% for i in range(4) %}<i class="{{ 'on' if i < yc.recession.n_flags }}"></i>{% endfor %}</span>{{ t((yc.recession.n_flags|string) ~ ' of 4 recession warning signs lit', '4项衰退预警中亮起' ~ yc.recession.n_flags ~ '项') }}</div>
@@ -557,8 +557,8 @@ html[data-theme="light"] .cm-cos-list{background:transparent}
       {{ flowline({'re-accelerating':'up','cooling':'down','steady':'flat'}.get(S.inflation.direction,'flat'), 'infl') }}
       <div class="ch-facts">
         <div class="chf"><div class="chf-l">{{ t('Core CPI', '核心CPI') }}</div><div class="chf-v">{{ '%.1f'|format(S.inflation.core_cpi_yoy) if S.inflation.core_cpi_yoy is not none else '—' }}%</div><div class="chf-m">{{ t('the headline cousin', '常见口径') }}</div></div>
-        <div class="chf"><div class="chf-l">{{ t('Direction', '方向') }}</div><div class="chf-v">{{ t({'re-accelerating':'Heating','cooling':'Cooling','steady':'Steady'}.get(S.inflation.direction, S.inflation.direction|capitalize), {'re-accelerating':'升温','cooling':'降温','steady':'平稳'}.get(S.inflation.direction, S.inflation.direction)) }}</div><div class="chf-m">{{ t('trend over recent months', '近几个月趋势') }}</div></div>
-        <div class="chf"><div class="chf-l">{{ t('Expectations', '通胀预期') }}</div><div class="chf-v">{{ t({'anchored':'Anchored','drifting up':'Drifting up','drifting down':'Drifting down'}.get(S.expectations.anchoring, S.expectations.anchoring|capitalize), {'anchored':'锚定','drifting up':'上行脱锚','drifting down':'下移'}.get(S.expectations.anchoring, S.expectations.anchoring)) }}</div><div class="chf-m">{{ t('what markets price long-run', '市场的长期定价') }}</div></div>
+        <div class="chf"><div class="chf-l">{{ t('Direction', '方向') }}</div><div class="chf-v">{% if S.inflation.direction is none %}—{% else %}{{ t({'re-accelerating':'Heating','cooling':'Cooling','steady':'Steady'}.get(S.inflation.direction, S.inflation.direction|capitalize), {'re-accelerating':'升温','cooling':'降温','steady':'平稳'}.get(S.inflation.direction, S.inflation.direction)) }}{% endif %}</div><div class="chf-m">{{ t('trend over recent months', '近几个月趋势') }}</div></div>
+        <div class="chf"><div class="chf-l">{{ t('Expectations', '通胀预期') }}</div><div class="chf-v">{% if S.expectations.anchoring is none %}—{% else %}{{ t({'anchored':'Anchored','drifting up':'Drifting up','drifting down':'Drifting down'}.get(S.expectations.anchoring, S.expectations.anchoring|capitalize), {'anchored':'锚定','drifting up':'上行脱锚','drifting down':'下移'}.get(S.expectations.anchoring, S.expectations.anchoring)) }}{% endif %}</div><div class="chf-m">{{ t('what markets price long-run', '市场的长期定价') }}</div></div>
       </div>
       {% if tx.inflation_decomposition and tx.inflation_decomposition.shelter_yoy is not none %}
       <div class="ch-extra">{{ t('The sticky part: housing costs still running', '最具粘性的部分：住房成本仍达') }} <b>{{ '%.1f'|format(tx.inflation_decomposition.shelter_yoy) }}%</b>{{ t(' — rents adjust slowly.', '——租金调整缓慢。') }}</div>
@@ -714,7 +714,11 @@ html[data-theme="light"] .cm-cos-list{background:transparent}
     {% for flag, chan in ch.blast.items() %}{% if (chan.n or 0) > wide_ch.n %}{% set wide_ch.flag = flag %}{% set wide_ch.label = chan.label %}{% set wide_ch.n = chan.n or 0 %}{% set wide_ch.un = chan.unevaluable or 0 %}{% endif %}{% endfor %}
     <div class="cm-row" style="--accent:{{ '#e07a2f' if st=='propagating' else ('var(--red)' if st=='expressed' else 'var(--amber)') }}">
       <span class="cm-dot {{ st }} live" aria-hidden="true"></span>
-      <div class="cm-main">
+      {# chain landing anchor — the `transmission` return target in the A/B context contract
+         (mastermind.market-ontology-context/v1): `#tx-chain-<mo_chain>`, chain id verbatim.
+         Carried by the row's content column so the row's own tag stays byte-identical to
+         main (its inline accent is inherited debt the forward-only ratchet would bill). #}
+      <div class="cm-main" id="tx-chain-{{ ch.id }}">
         <div class="cm-name">{{ b(ch.label) }}</div>
         <div class="cm-hops" aria-label="{{ conf }} of {{ nh }} links confirmed">
           {% for h in ch.hops %}
@@ -905,7 +909,7 @@ html[data-theme="light"] .cm-cos-list{background:transparent}
             <div class="recg {{ 'flag-on' if 'ntfs' in RC.flags else '' }}"><div class="rgl">{{ t('Near-term fwd spread','近端远期利差') }}</div><div class="rgv">{{ '%+.2f'|format(RC.ntfs) if RC.ntfs is not none else '—' }}</div></div>
             <div class="recg {{ 'flag-on' if 'probit' in RC.flags else '' }}"><div class="rgl">{{ t('NY Fed 10y-3m probit','纽约联储10年-3月概率') }}</div><div class="rgv">{{ RC.nyfed_prob|int if RC.nyfed_prob is not none else '—' }}%</div></div>
             <div class="recg {{ 'flag-on' if 'uninversion' in RC.flags else '' }}"><div class="rgl">{{ t('Un-inversion alarm','重新变陡警报') }}</div><div class="rgv">{{ t('YES','是') if RC.uninversion else t('no','否') }}</div></div>
-            <div class="recg {{ 'flag-on' if 'tp_adj' in RC.flags else '' }}"><div class="rgl">{{ t('TP-adjusted 2s10s','期限溢价调整2-10年') }}</div><div class="rgv">{{ '%+.2f'|format(RC.tp_adj_curve) if RC.tp_adj_curve is not none else '—' }}</div></div>
+            <div class="recg {{ 'flag-on' if 'tp_adj' in RC.flags else '' }}"><div class="rgl">{{ t('Legacy TP10 heuristic','旧版TP10启发式') }}</div><div class="rgv">{{ '%+.2f'|format(RC.tp_adj_curve) if RC.tp_adj_curve is not none else '—' }}</div></div>
           </div>
           {% if RC.policy_stance %}{% set PS = RC.policy_stance %}<div class="flag {{ 'warn' if PS.stance=='restrictive' else 'ok' if PS.stance=='accommodative' else 'info' }}" style="display:block;margin:2px 0 6px">{{ t('Policy stance','政策立场') }}: <b>{{ '%.2f'|format(PS.fed_funds) }}%</b> {{ t('funds vs','基金 vs') }} ~{{ '%.1f'|format(PS.neutral_anchor) }}% = {{ t(PS.stance, {'restrictive':'偏紧','accommodative':'宽松','neutral':'中性'}.get(PS.stance, PS.stance)) }} ({{ '%+.2f'|format(PS.gap_pp) }}pp)</div>{% endif %}
           <p class="note" style="font-size:11.5px;margin-top:4px">{{ b(RC.lead_time_note) }}{% if RC.policy_stance %} {{ b(RC.policy_stance.note) }}{% endif %}</p>

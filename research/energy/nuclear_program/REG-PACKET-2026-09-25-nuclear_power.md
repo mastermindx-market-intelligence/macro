@@ -8,6 +8,8 @@ Prepared 2026-09-25 by the Energy seat (session 8955bbc3), operation `gmi-energy
 - The copy decisions below are recorded as seat ruling R-ENE-23. They land with the round-3 records.
 - **Re-verified 2026-09-28** at #7870 head `a0d7b054ff23` and #8002 head `3c775ea592a6` (§1b). Two carrier obligations were added (§3b). The status is unchanged: PREPARED, not dispatched.
 - **Dry-run 2026-09-28** (§1c). The packet was applied in a scratch tree at #7870 `a0d7b054ff23` plus #8002 `3c775ea592a6`, and every gate it names passed. The dry-run corrected two facts in this packet: the definition-version import in §3, and the curated block count in §3b.2 (seven, not six). The registration needs nothing from #7870 except RULING 8's widening (§4.6).
+- **The ENERGY directive, 2026-09-29** (`rulings/R-ENE-2026-09-29-energy-directive.md`, R-ENE-41 to R-ENE-43). The carrier opens only after #7870 is released and source custody permits, and ONE writer executes it. §5b adds R-ENE-42 (the cutoff readers), the `$defs/when` alignment and two proofs. The status is unchanged: PREPARED, not dispatched.
+- **#7870 moved to `f12db8bff1d1`, 2026-09-29** (`rulings/R-ENE-2026-09-29-f12d-return.md`, R-ENE-44 to R-ENE-46). #8002 still composes and passes there. §5c records the delta. The status is unchanged: PREPARED, not dispatched.
 
 ## 1. Facts this packet rests on
 
@@ -253,5 +255,41 @@ def test_4_5_registry_import_does_not_import_the_owner_bundle_with_positive_cont
 - **Browser proof.** Crops for dark and light × EN and ZH × 1440 and 390 are posted in the PR body. The mount renders the three plain-word chips. The `uranium_miners` basket page renders no mount.
 - `tests/test_deploy_update_self_heal.py` is green, including the appended `MUST_RESTART` row (§3b.1). The curated-exclusive closure audit reports zero MISS (§3b.2).
 - The carrier's own Opus READ_ONLY review returns PASS before the PR leaves DRAFT.
-- **Plain language.** The shell's Limitations line prints wire tokens verbatim in EN and ZH. For nuclear it reads, for example, `milestone_predicate_unavailable · slice_scope_unowned · target_windows_judged_at:2026-09-20 · witness_cohort_excluded:2`. That is the shell's reviewed design (T10 BLOCKING-2), and semiconductor tokens render the same way. Energy asked the owner whether a token-to-plain-words map is planned (#7870 comment 5866433049, item 6) and offered a bilingual table for its own 20 tokens. Until the owner answers, the carrier does not edit `theme-research.js`, and the PR body names the raw tokens as a known gap next to the browser crops.
+- **Plain language.** The shell's Limitations line prints wire tokens verbatim in EN and ZH. For nuclear it reads, for example, `milestone_predicate_unavailable · slice_scope_unowned · target_windows_judged_at:2026-09-20 · witness_cohort_excluded:2`. That is the shell's reviewed design (T10 BLOCKING-2), and semiconductor tokens render the same way. Energy asked the owner whether a token-to-plain-words map is planned (#7870 comment 5866433049, item 6) and offered a bilingual table for its own 20 tokens. Until the owner answers, the carrier does not edit `theme-research.js`, and the PR body names the raw tokens as a known gap next to the browser crops. (Answered 2026-09-29 in #7870 comment 5894500015, item 6: see §5c.)
 - The live rung stays behind the VPS pull-cron hold (`# MMX-DISK-TRIAGE-HOLD`, #6902). That hold is an EXACT_HUMAN_GATE and the seat never lifts it.
+
+## 5b. Added by the ENERGY directive, 2026-09-29 (R-ENE-41 to R-ENE-43)
+
+The same one writer carries these in the same carrier, after the reconciliation onto #7870's accepted base.
+- **R-ENE-42, the cutoff readers.** Nuclear uses `recorded_cutoff` as a clock only in `system_replay`, and `source_cutoff` only in `source_history` and `system_replay`. Outside those modes the clocks stay data-derived, as with no cutoff. Every supplied cutoff is still validated in every mode. The six test obligations are in `rulings/R-ENE-2026-09-29-energy-directive.md`. They include P3's rows and R-ENE-43's rows, and they keep R-ENE-40's replay test and malformed-cutoff test unchanged.
+- **The response-date grammar.** Nuclear's `$defs/when` matches the grammar the accepted base admits, the same grammar the validation uses. The alignment test is named in the same ruling.
+- **Two further proofs**, besides §5:
+  - *Unavailable and revoked.* The nuclear query and evidence routes answer the shell's typed unavailable and revoked states, never false, zero, stale or partial research. They carry the same private headers as §5's served proof, and the receipt is raw.
+  - *Update and restart propagation.* After an update, the served route runs the new nuclear bytes. This is proven by a response that only the new bytes produce, not by the `MUST_RESTART` row alone. The live rung of this proof waits on the #6902 hold, like every live rung here.
+- The production credential boundary (Task 10) and Power-Demand (R-ENE-16) stay outside this carrier. A green on this carrier is not nuclear acceptance.
+
+## 5c. Added 2026-09-29 at #7870 `f12db8bff1d1` (R-ENE-44 to R-ENE-46)
+
+The same one writer carries these after the reconciliation. Sol's #7870 comment 5895067178 approves one more extraction on #7870 before its release, so the writer re-reads every item against the accepted base first. The ruling is `rulings/R-ENE-2026-09-29-f12d-return.md`.
+
+- **§3b.1 shrinks.**
+  - `f12db8bff1d1` already carries `identity` in the `engine/theme_graph/(…)` group, so that edit is dropped.
+  - The `engine/market_ontology/(…)` group now starts `(__init__|exposure_map|semiconductor_owner_bundle|…`. Insert `nuclear_owner_bundle|nuclear_theme_research|` after `exposure_map|`.
+  - The dry-run at `f12db8bff1d1` applies the other 7 of the 9 edits unchanged.
+- **§3's registry import follows the accepted binding.**
+  - §3 adds a module-level nuclear import to `theme_research_registry.py`. The extraction removes the registry's module-level semiconductor import, so the writer copies the accepted base's binding for the semiconductor entry instead.
+  - Importing the shell and the registry must leave `nuclear_theme_research` unloaded.
+  - If that module is then loaded only lazily, it gets a `MUST_RESTART` row beside `nuclear_owner_bundle`.
+- **Nuclear's imports are re-pointed.** The 11 names from `semiconductor_theme_research` and `PRIVATE_ASSERTIONS_UNBOUND` move to what the kernel exports. Names that stay vertical become nuclear's own. The list is in R-ENE-45.
+- **R-ENE-46.**
+  - A forward target whose `business_valid_to` does not parse is withheld under `undatable_excluded`, never fatal. The contract admits `2026-13-45` and `2026-02-30` there.
+  - An identity whose `mapping_learned_at` does not parse is withheld, as the base withholds it.
+  - The four test obligations are in the ruling.
+- **Two proofs grow.**
+  - *Scoped evidence* includes a round trip. A corpus minted the way the canonical-id law says goes from query, to `evidence_refs`, to an evidence POST through the registered route.
+  - *The malformed-cutoff pins* name `ResearchRefusal` and `cutoff_unreadable`, if the accepted base keeps D3. `ResearchRefusal` subclasses `ValueError`, so today's `pytest.raises(ValueError)` cannot tell a lawful refusal from an escaping crash.
+- **No cutoff validation of nuclear's own** while the accepted base refuses malformed cutoffs in every mode (R-ENE-45, D3).
+- **The Limitations tokens (§5, Plain language).**
+  - The owner answered item 6 in 5894500015: a two-tier map, with a shell-owned base for the four shared tokens and a per-mount extension. It is ruled, not built, and not on #7870.
+  - This carrier still renders raw tokens and names them as a known gap.
+  - When the map lands, nuclear must label every token of its own, because the map refuses an unlabelled vertical token.
