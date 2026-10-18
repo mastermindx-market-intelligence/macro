@@ -1926,6 +1926,12 @@ jobs:
         run: |
           python -m engine.credit_momentum \
             || echo "::warning::credit_momentum engine failed (non-fatal)"
+      - name: CCW issuer credit-equity comparison (non-fatal)
+        timeout-minutes: 3
+        # Reuses CCW matched changes; no network or new risk-score authority.
+        run: |
+          python -m engine.credit_dislocation \
+            || echo "::warning::credit_dislocation source unavailable (non-fatal)"
       - name: timings band — commit (W2)
         run: python3 scripts/nightly_timings.py mark --band commit || echo "::warning::timings band mark failed (non-fatal)"
       - name: commit tail data

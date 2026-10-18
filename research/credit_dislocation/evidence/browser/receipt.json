@@ -1,0 +1,74 @@
+{
+  "scope": "actual CDI template/component acceptance",
+  "deployed": false,
+  "browser": "installed Playwright Chromium",
+  "console_errors": [],
+  "cases": [
+    {
+      "viewport": [
+        1440,
+        1100
+      ],
+      "lang": "en",
+      "theme": "light",
+      "search": true,
+      "filters": true,
+      "keyboard": true,
+      "lazy_bonds_once": true,
+      "no_page_overflow": true,
+      "screenshot": "cdi-1440-en-light.png",
+      "screenshot_sha256": "5d330fb033c67d44338e56a9948dd8dc25e18cd0926fd520557736f4f396c2db"
+    },
+    {
+      "viewport": [
+        1440,
+        1100
+      ],
+      "lang": "en",
+      "theme": "dark",
+      "search": true,
+      "filters": true,
+      "keyboard": true,
+      "lazy_bonds_once": true,
+      "no_page_overflow": true,
+      "screenshot": "cdi-1440-en-dark.png",
+      "screenshot_sha256": "66e2e80d7c74c96f4dcd39a684f3786da0bb02756641daa81899e31c2f1fd439"
+    },
+    {
+      "viewport": [
+        768,
+        1050
+      ],
+      "lang": "zh",
+      "theme": "light",
+      "search": true,
+      "filters": true,
+      "keyboard": true,
+      "lazy_bonds_once": true,
+      "no_page_overflow": true,
+      "screenshot": "cdi-768-zh-light.png",
+      "screenshot_sha256": "15a39d5dc8e80006f28d361f2d7d25169b7df5664c92d7834d06d7c47024d747"
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "lang": "zh",
+      "theme": "dark",
+      "search": true,
+      "filters": true,
+      "keyboard": true,
+      "lazy_bonds_once": true,
+      "no_page_overflow": true,
+      "screenshot": "cdi-390-zh-dark.png",
+      "screenshot_sha256": "b1aaea8b557fc4ec428d8045d204e3d01c931667459ce5680bd42f80b14a4592"
+    },
+    {
+      "native_source_as_of": "2026-09-08",
+      "native_status": "stale",
+      "native_issuer_count": 18,
+      "scope": "local source binding, not current market or deployment proof"
+    }
+  ]
+}

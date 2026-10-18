@@ -588,7 +588,32 @@ def _pv_and_deriv_matrix(
     return pv, dpv, pv - dirty_price
 
 
+# A date-extended holdings panel may contain hundreds of thousands of rows.
+# Each bond is independent: bound the cash-flow matrix without changing pricing.
+YTM_BLOCK_ROWS = 4096
+
+
 def _ytm_solve(
+    dirty_price: np.ndarray,
+    coupon_pct: np.ndarray,
+    tenor_yrs: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Preserve the established scalar result while bounding matrix allocations."""
+    arrays = [np.asarray(value, dtype=float) for value in (dirty_price, coupon_pct, tenor_yrs)]
+    if any(array.ndim != 1 for array in arrays) or len({len(array) for array in arrays}) != 1:
+        raise ValueError("YTM inputs must be equally sized one-dimensional arrays")
+    n = len(arrays[0])
+    if n <= YTM_BLOCK_ROWS:
+        return _ytm_solve_block(*arrays)
+    yields = np.full(n, np.nan)
+    flags = np.full(n, 2, dtype=int)
+    for start in range(0, n, YTM_BLOCK_ROWS):
+        end = min(start + YTM_BLOCK_ROWS, n)
+        yields[start:end], flags[start:end] = _ytm_solve_block(*(array[start:end] for array in arrays))
+    return yields, flags
+
+
+def _ytm_solve_block(
     dirty_price: np.ndarray,
     coupon_pct: np.ndarray,
     tenor_yrs: np.ndarray,

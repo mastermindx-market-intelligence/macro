@@ -1985,6 +1985,10 @@ def main() -> int:
         log.warning("corp_credit vm build failed (%s); using empty accruing state", e)
         cc_vm = build_corp_credit_vm(data_root=None)
 
+    # CDI reads a prebuilt CCW artifact; no pricing or collection in render.
+    from engine.credit_dislocation_view import load_view, compact_context
+    cdi = load_view(config.data_dir(), as_of=datetime.now(timezone.utc).date())
+
     from engine.i18n import tr, td
     env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
     env.globals.update(tr=tr, td=td)
@@ -1998,7 +2002,7 @@ def main() -> int:
         fed_path=fed_path, treasury_supply=treasury_supply, usd_link=usd_link,
         intl=intl, compass=compass, xasset=xasset, xasset_vm=xasset_vm,
         timeline=timeline, timeline_days=acfg["timeline_days"], n_alerts=len(recent),
-        cc_vm=cc_vm, glance=_glance(vm), key_levels=_key_levels(f, vm),
+        cc_vm=cc_vm, cdi=cdi, glance=_glance(vm), key_levels=_key_levels(f, vm),
         hero=_hero_pack(vm, as_of_disp, (vm.get("health") or {}).get("phase_key")),
         changed=_changed_rows(timeline), watching=_watching(vm),
         div_card=divergence_card_state(
@@ -2087,6 +2091,7 @@ def main() -> int:
     # CCW-W4: add corporate_credit block to bond_health.json (additive, machine-readable)
     try:
         snap["corporate_credit"] = _build_corp_credit_bond_health(cc_vm)
+        snap["corporate_credit"]["dislocation"] = compact_context(cdi)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("corp_credit bond_health block failed (%s)", e)
 

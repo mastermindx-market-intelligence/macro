@@ -15928,7 +15928,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: CCW-W2 g-spread engine tests
-        run: python -m pytest tests/test_corp_credit.py -v
+        run: python -m pytest tests/test_corp_credit.py tests/test_corp_credit_bounded_solver.py -v
 
   ccw-w3-credit-momentum:
     if: ${{ false }}
@@ -15991,7 +15991,7 @@ jobs:
         # plotly: test file imports scripts.build_bonds, which imports plotly.graph_objects
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly
       - name: CCW-W4 credit desk vm tests
-        run: python -m pytest tests/test_bonds_corp_credit_vm.py tests/test_bonds_divergence_gate.py tests/test_bonds_glance_copy.py tests/test_bonds_explanation_view.py -v
+        run: python -m pytest tests/test_bonds_corp_credit_vm.py tests/test_bonds_divergence_gate.py tests/test_bonds_glance_copy.py tests/test_bonds_explanation_view.py tests/test_credit_dislocation.py tests/test_credit_dislocation_view.py tests/test_credit_dislocation_wiring.py -v
     # T10 moved to unrun-macro-panels (gate: data). That job already installs
     # pandas/numpy/pyarrow/jinja2/plotly; T10's verdict can flip on a nightly
     # data commit, so it must not live on this gate: code job.
@@ -16004,6 +16004,12 @@ jobs:
       - "scripts/build_bonds.py"
       - "templates/bonds.html.j2"
       - "lib/macro_suite_view.py"
+      - "engine/credit_dislocation.py"
+      - "engine/credit_dislocation_view.py"
+      - "templates/_credit_dislocation.html.j2"
+      - "tests/test_credit_dislocation.py"
+      - "tests/test_credit_dislocation_view.py"
+      - "tests/test_credit_dislocation_wiring.py"
       - "templates/_curve_panel.html.j2"
       - "templates/_macro_suite_shell.html.j2"
 

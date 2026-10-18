@@ -1188,6 +1188,7 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
   </div>
   {% endif %}
 
+  {% if cdi is not defined %}
   {# 8. STOCKS VS BONDS — fail-closed stale-date gate (§3) #}
   <div class="card cs-card {% if div_card.state == 'delayed' %}cc-delayed cs-neutral{% else %}cs-neutral{% endif %}" data-card="stocks-vs-bonds">
     <h2>{{ t('Stocks vs their bonds', '股票与其债券') }}</h2>
@@ -1226,6 +1227,8 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
     {% endif %}
   </div>
 
+  {% endif %}
+
   {# 9. FOOTER NOTE #}
   <div class="cc-foot-note">
     <span class="l-en">Prices are fund-reported estimates · covers bonds inside major index funds only · daily prices start 14 Jul 2026</span><span class="l-zh">价格为基金披露估值 · 仅覆盖主要指数基金持仓债券 · 日度价格自2026年7月14日起</span>
@@ -1233,6 +1236,7 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
 {% endif %}
 {% endif %}
 {# END CCW-W4 corporate credit desk #}
+{% include "_credit_dislocation.html.j2" %}
 
   <!-- ===================== STRESS + CROSS-ASSET ===================== -->
   <div class="sec-head">{{ t('Stress & funding · the stock-bond hedge', '压力与资金状况 · 股债对冲') }}</div>

@@ -1,6 +1,6 @@
 # Credit Dislocation Intelligence - implementation masterplan
 
-Status: commissioned, implementation starting. This plan does not claim deployment, live CDS access, calibrated forecasts or subscriber data rights.
+Status: first issuer-comparison backend, Bonds component and pipeline wiring implemented locally and preserved in draft PR #9590. See [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for observed tests and remaining gates. No deployment, live CDS access, calibrated forecasts or subscriber data rights are claimed.
 
 Owner: existing Corporate Credit Watch (CCW), Macro repository. Operation: `web-ccw-dislocation-20261018-sol001`.
 Chairman commission: create and publish the full masterplan, then implement research, infrastructure, backend, Paper design, frontend and total integration across subsequent useful phases.
