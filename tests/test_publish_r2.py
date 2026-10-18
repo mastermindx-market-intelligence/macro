@@ -8,11 +8,15 @@ import json
 import os
 import subprocess
 import sys
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
 
-from scripts.publish_r2 import _data_dir_syncable, _manifest_doc, _manifest_ok, main
+from lib.nyse_calendar import expected_last_session, last_session_on_or_before
+from scripts.publish_r2 import (
+    _data_dir_syncable, _manifest_doc, _manifest_ok, _massive_publish_tip_ok, main,
+)
 
 
 _ROOT = Path(__file__).resolve().parents[1]
@@ -421,9 +425,16 @@ def _wire_fake_store(tmp_path, monkeypatch, s3, d, n_data_files=140):
     (base / "eod" / "SPY").mkdir(parents=True)
     for i in range(n_data_files):
         (base / "eod" / "SPY" / f"{2000 + i}.parquet").write_bytes(b"x" * 64)
-    (base / "_manifest.json").write_text(json.dumps(
-        {"store": d, "n_roots": 1, "per_root": {"SPY": {"n_years": n_data_files}},
-         "updated_at": "2026-07-30T05:00:00+00:00"}))
+    source_day = expected_last_session(datetime.now(timezone.utc)).isoformat()
+    source = {"store": d, "n_roots": 1,
+              "per_root": {"SPY": {"n_years": n_data_files}},
+              "latest_date": source_day,
+              "updated_at": "2026-07-30T05:00:00+00:00"}
+    if d == "massive_stock_day":
+        # Synthetic SPY anchor must be explicit: other data-dir stores have
+        # different original collector schemas and must not inherit this law.
+        source["anchor"] = {"ticker": "SPY", "last": source_day}
+    (base / "_manifest.json").write_text(json.dumps(source))
     monkeypatch.setattr(config, "ROOT", tmp_path)
     monkeypatch.setattr(config, "load",
                         lambda: {"storage": {"site_dir": "site", "data_dir": "data"}})
@@ -478,7 +489,10 @@ def test_shrink_guard_is_no_longer_vacuous_for_data_dirs(tmp_path, monkeypatch):
                          "files": ["x.parquet"]}).encode()
     s3 = _FakeS3(objects={key: remote})
     pr2, _ = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day", n_data_files=140)
-    assert pr2.publish(["massive_stock_day"]) == 0
+    assert pr2.publish(["massive_stock_day"]) == 1
+    # An existing manifest WITHOUT original source clock now refuses before any
+    # upload; this is stricter than the old post-upload shrink-only protection.
+    assert s3.uploaded == []
     # 140 << 5000 * 0.5 — blocked. Before the fix the delta pass had already replaced
     # the remote doc with the collector's (no `count`) by the time _remote_manifest read
     # it, so the guard saw "no usable remote manifest" and waved the shrink through.
@@ -1070,5 +1084,569 @@ def test_symlinked_store_under_the_min_files_floor_is_still_refused(tmp_path, mo
     pr2, base = _symlinked_store(tmp_path, monkeypatch, s3, n_years=10)
     monkeypatch.setenv("THETADATA_STORE", str(base))
     assert pr2.publish(["thetadata_eod"]) == 0
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
+
+# --- Monotonic and session-fresh R2 Massive publication ----------------------
+# A newer publisher timestamp cannot certify an old source: 2026-10-14 public
+# R2 embedded the EXACT October 7 Git collector manifest, despite new Parquet
+# object Last-Modified values. Publication must gate BEFORE the delta uploads.
+def _tip(date_str: str) -> dict:
+    return {"store": "massive_stock_day", "latest_date": date_str,
+            "anchor": {"ticker": "SPY", "last": date_str}}
+
+
+def _remote_tip(date_str: str) -> dict:
+    return {"dir": "massive_stock_day", "count": 140,
+            "files": ["AAPL.parquet"], "store": _tip(date_str)}
+
+
+def test_massive_publisher_refuses_stale_full_snapshot_even_if_no_remote_manifest():
+    # Oct 14 completed; Oct 7 is many NYSE sessions behind. A publisher must
+    # not upload stale full-store Parquets to an empty or unknown target.
+    now = datetime(2026, 10, 14, 22, 0, tzinfo=timezone.utc)
+    ok, reason = _massive_publish_tip_ok(_tip("2026-10-07"), None, now=now)
+    assert ok is False and "STALE" in reason
+
+
+def test_massive_publisher_refuses_remote_source_clock_regression_within_grace():
+    # Oct 13 local tip is only one completed session behind at Oct 14 close,
+    # but publishing it would regress a remote snapshot already at Oct 14.
+    now = datetime(2026, 10, 14, 22, 0, tzinfo=timezone.utc)
+    ok, reason = _massive_publish_tip_ok(
+        _tip("2026-10-13"), _remote_tip("2026-10-14"), now=now)
+    assert ok is False and "REGRESSION" in reason
+
+
+def test_massive_publisher_admits_fresh_monotonic_source_within_nightly_grace():
+    now = datetime(2026, 10, 14, 22, 0, tzinfo=timezone.utc)
+    ok, reason = _massive_publish_tip_ok(
+        _tip("2026-10-13"), _remote_tip("2026-10-12"), now=now)
+    assert ok is True and reason == "source tip admitted"
+
+
+def test_massive_publisher_refuses_unreadable_or_invalid_manifest_clock():
+    now = datetime(2026, 10, 14, 22, 0, tzinfo=timezone.utc)
+    for raw in [None, {}, {"store": "massive_stock_day"},
+                _tip("2026-02-30"), _tip("20261013"), _tip("2026-10-15")]:
+        ok, _ = _massive_publish_tip_ok(raw, None, now=now)
+        assert ok is False
+    ok, reason = _massive_publish_tip_ok(
+        _tip("2026-10-14"), {"dir": "massive_stock_day", "count": 21711},
+        now=now)
+    assert ok is False and "UNVERIFIED" in reason
+
+
+def test_massive_publisher_bootstrap_requires_current_source_and_no_remote():
+    now = datetime(2026, 10, 14, 22, 0, tzinfo=timezone.utc)
+    ok, _ = _massive_publish_tip_ok(_tip("2026-10-14"), None, now=now)
+    assert ok is True
+
+
+def test_massive_publisher_rejects_stale_local_files_before_any_upload(tmp_path, monkeypatch):
+    from scripts import publish_r2 as pr2
+    s3 = _FakeS3()
+    _pr2, base = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day")
+    manifest = json.loads((base / "_manifest.json").read_text())
+    manifest["latest_date"] = "2026-10-07"
+    (base / "_manifest.json").write_text(json.dumps(manifest))
+    rc = pr2.publish(["massive_stock_day"])
+    assert rc == 1
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
+
+
+def test_massive_publisher_rejects_remote_newer_before_any_upload(tmp_path, monkeypatch):
+    from scripts import publish_r2 as pr2
+    # Construct a remote newer than the local snapshot without having to fetch
+    # vendor rows; source dates are mock metadata only.
+    today = expected_last_session(datetime.now(timezone.utc))
+    earlier = last_session_on_or_before(today - timedelta(days=1))
+    remote = json.dumps(_remote_tip(today.isoformat())).encode()
+    s3 = _FakeS3(objects={"massive_stock_day/_manifest.json": remote})
+    _pr2, base = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day")
+    local = json.loads((base / "_manifest.json").read_text())
+    local["latest_date"] = earlier.isoformat()
+    (base / "_manifest.json").write_text(json.dumps(local))
+    rc = pr2.publish(["massive_stock_day"])
+    assert rc == 1
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
+
+def test_massive_publisher_never_bypasses_stale_snapshot_with_force_manifest(tmp_path, monkeypatch):
+    import scripts.publish_r2 as pr2
+    s3 = _FakeS3()
+    _pr2, base = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day")
+    local = json.loads((base / "_manifest.json").read_text())
+    local["latest_date"] = "2026-10-07"
+    (base / "_manifest.json").write_text(json.dumps(local))
+    assert pr2.publish(["massive_stock_day"], force_manifest=True) == 1
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
+
+
+def test_massive_publisher_rechecks_remote_clock_before_last_manifest_put(tmp_path, monkeypatch):
+    import scripts.publish_r2 as pr2
+    today = expected_last_session(datetime.now(timezone.utc))
+    yesterday = last_session_on_or_before(today - timedelta(days=1))
+    path = "massive_stock_day/_manifest.json"
+
+    class AdvancingS3(_FakeS3):
+        def upload_file(self, *a, **kw):
+            super().upload_file(*a, **kw)
+            self.objects[path] = json.dumps(_remote_tip((today + timedelta(days=1)).isoformat())).encode()
+
+    s3 = AdvancingS3(objects={path: json.dumps(_remote_tip(yesterday.isoformat())).encode()})
+    _pr2, base = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day")
+    assert pr2.publish(["massive_stock_day"], workers=1) == 1
+    # A later publisher advanced the remote source during our file delta. Our
+    # original manifest can never roll its descriptor back to yesterday.
+    assert s3.uploaded
+    assert s3.manifest_puts == []
+    assert json.loads(s3.objects[path])["store"]["latest_date"] != yesterday.isoformat()
+
+
+def test_massive_publisher_does_not_upload_without_readable_existing_remote_manifest(
+    tmp_path, monkeypatch,
+):
+    import scripts.publish_r2 as pr2
+    s3 = _FakeS3()
+    _pr2, _ = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day")
+    # Listing sees objects, but the original remote manifest GET fails. This
+    # must be a hard refusal, not a first-publish bootstrap.
+    monkeypatch.setattr(pr2, "_remote_etags",
+                        lambda *a, **kw: {"massive_stock_day/AAPL.parquet": ("deadbeef", 60000)})
+    assert pr2.publish(["massive_stock_day"]) == 1
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
+
+def test_massive_publisher_uses_existing_audit_grace_config(tmp_path, monkeypatch):
+    import lib.config as config
+    import scripts.publish_r2 as pr2
+    from datetime import timedelta
+    s3 = _FakeS3()
+    _pr2, base = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day")
+    completed = expected_last_session(datetime.now(timezone.utc))
+    previous = last_session_on_or_before(completed - timedelta(days=1))
+    source = json.loads((base / "_manifest.json").read_text())
+    source["latest_date"] = previous.isoformat()
+    (base / "_manifest.json").write_text(json.dumps(source))
+    monkeypatch.setattr(config, "load", lambda: {
+        "storage": {"site_dir": "site", "data_dir": "data"},
+        "r2_data_plane": {"massive_tip_max_missing_sessions": 0},
+    })
+    assert pr2.publish(["massive_stock_day"]) == 1
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
+
+
+def test_massive_publisher_refuses_invalid_grace_config():
+    now = datetime(2026, 10, 14, 22, 0, tzinfo=timezone.utc)
+    for invalid in [-1, True, 1.0]:
+        ok, reason = _massive_publish_tip_ok(
+            _tip("2026-10-14"), None, now=now,
+            max_missing_sessions=invalid,
+        )
+        assert ok is False and "configured" in reason
+
+def test_massive_publisher_refuses_a_boolean_configuration_budget(tmp_path, monkeypatch):
+    import lib.config as config
+    import scripts.publish_r2 as pr2
+    s3 = _FakeS3()
+    _pr2, _ = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day")
+    monkeypatch.setattr(config, "load", lambda: {
+        "storage": {"site_dir": "site", "data_dir": "data"},
+        "r2_data_plane": {"massive_tip_max_missing_sessions": True},
+    })
+    assert pr2.publish(["massive_stock_day"]) == 1
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
+
+
+# R2 source revision parity: advancing a calendar date alone is not enough.
+# Reprocessing an already-covered NYSE session can produce a newer corrected
+# source revision; an older local snapshot must never replace it on R2.
+def test_massive_publisher_refuses_older_same_session_revision():
+    now = datetime(2026, 10, 15, 4, 52, tzinfo=timezone.utc)
+    local = {**_tip("2026-10-14"),
+             "updated_at": "2026-10-14T21:00:00+00:00"}
+    remote = _remote_tip("2026-10-14")
+    remote["store"]["updated_at"] = "2026-10-15T01:00:00+00:00"
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is False
+    assert "REVISION_REGRESSION" in reason
+
+
+def test_massive_publisher_refuses_unverifiable_same_session_revision():
+    now = datetime(2026, 10, 15, 4, 52, tzinfo=timezone.utc)
+    local = _tip("2026-10-14")
+    remote = _remote_tip("2026-10-14")
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is False
+    assert "REVISION_UNVERIFIED" in reason
+    local["updated_at"] = "2026-10-14T21:00:00"  # no UTC offset
+    remote["store"]["updated_at"] = "2026-10-15T01:00:00+00:00"
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is False
+    assert "REVISION_UNVERIFIED" in reason
+
+
+def test_massive_publisher_allows_newer_same_session_revision():
+    now = datetime(2026, 10, 15, 4, 52, tzinfo=timezone.utc)
+    local = {**_tip("2026-10-14"),
+             "updated_at": "2026-10-15T02:00:00+00:00"}
+    remote = _remote_tip("2026-10-14")
+    remote["store"]["updated_at"] = "2026-10-15T01:00:00+00:00"
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is True
+    assert reason == "source tip admitted"
+
+
+def test_massive_publisher_blocks_older_same_session_before_any_data_upload(
+    tmp_path, monkeypatch,
+):
+    # A same-session historical correction in R2 must not be replaced by an
+    # earlier collector run, even if the source latest_date is unchanged.
+    import scripts.publish_r2 as pr2
+    now = datetime.now(timezone.utc)
+    session = expected_last_session(now).isoformat()
+    local_update = (now - timedelta(hours=2)).isoformat()
+    remote_update = (now - timedelta(hours=1)).isoformat()
+    remote = _remote_tip(session)
+    remote["store"]["updated_at"] = remote_update
+    s3 = _FakeS3(objects={
+        "massive_stock_day/_manifest.json": json.dumps(remote).encode(),
+    })
+    _pr2, base = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day")
+    local = json.loads((base / "_manifest.json").read_text())
+    local.update(latest_date=session, updated_at=local_update)
+    (base / "_manifest.json").write_text(json.dumps(local))
+    assert pr2.publish(["massive_stock_day"], workers=1) == 1
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
+
+
+def test_massive_publisher_blocks_same_session_remote_revision_race_before_put(
+    tmp_path, monkeypatch,
+):
+    # Remote advances to a later revision of the SAME NYSE day during file
+    # uploads. The manifest PUT must be withheld, even though the byte upload
+    # itself cannot be atomically rolled back by this existing publisher.
+    import scripts.publish_r2 as pr2
+    now = datetime.now(timezone.utc)
+    session = expected_last_session(now)
+    prior = last_session_on_or_before(session - timedelta(days=1))
+    local_update = (now - timedelta(hours=2)).isoformat()
+    newer_remote_update = (now - timedelta(hours=1)).isoformat()
+    key = "massive_stock_day/_manifest.json"
+    newer = _remote_tip(session.isoformat())
+    newer["store"]["updated_at"] = newer_remote_update
+
+    class CorrectedMidUpload(_FakeS3):
+        def upload_file(self, *args, **kwargs):
+            super().upload_file(*args, **kwargs)
+            self.objects[key] = json.dumps(newer).encode()
+
+    s3 = CorrectedMidUpload(objects={
+        key: json.dumps(_remote_tip(prior.isoformat())).encode(),
+    })
+    _pr2, base = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day")
+    local = json.loads((base / "_manifest.json").read_text())
+    local.update(latest_date=session.isoformat(), updated_at=local_update)
+    (base / "_manifest.json").write_text(json.dumps(local))
+
+    assert pr2.publish(["massive_stock_day"], workers=1) == 1
+    assert s3.uploaded  # a non-atomic file PUT was attempted
+    assert s3.manifest_puts == []  # newer revision descriptor is preserved
+
+
+# --- Daily source semantic, revision and anchor falsifiers -------------------
+def test_massive_publisher_refuses_non_session_sunday_tip():
+    now = datetime(2026, 10, 20, 14, 0, tzinfo=timezone.utc)
+    ok, reason = _massive_publish_tip_ok(_tip("2026-10-18"), None, now=now)
+    assert ok is False
+    assert "SOURCE_NON_SESSION" in reason
+
+
+def test_massive_publisher_refuses_future_local_revision_clock():
+    now = datetime(2026, 10, 15, 5, 20, tzinfo=timezone.utc)
+    local = {**_tip("2026-10-14"), "updated_at": "2099-01-01T00:00:00+00:00"}
+    remote = _remote_tip("2026-10-14")
+    remote["store"]["updated_at"] = "2026-10-14T22:00:00+00:00"
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is False
+    assert "SOURCE_REVISION_FUTURE" in reason
+
+
+def test_massive_publisher_refuses_future_revision_even_without_remote():
+    now = datetime(2026, 10, 15, 5, 20, tzinfo=timezone.utc)
+    local = {**_tip("2026-10-14"), "updated_at": "2099-01-01T00:00:00+00:00"}
+    ok, reason = _massive_publish_tip_ok(local, None, now=now)
+    assert ok is False
+    assert "SOURCE_REVISION_FUTURE" in reason
+
+
+def test_massive_publisher_refuses_claimed_latest_without_real_price_anchor():
+    now = datetime(2026, 10, 15, 5, 20, tzinfo=timezone.utc)
+    local = {**_tip("2026-10-14"), "updated_at": "2026-10-15T02:00:00+00:00"}
+    local["anchor"]["last"] = "2026-10-09"
+    remote = _remote_tip("2026-10-13")
+    remote["store"]["updated_at"] = "2026-10-15T01:00:00+00:00"
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is False
+    assert "SOURCE_ANCHOR_MISMATCH" in reason
+
+
+def test_massive_publisher_refuses_missing_original_price_anchor():
+    now = datetime(2026, 10, 15, 5, 20, tzinfo=timezone.utc)
+    local = _tip("2026-10-14")
+    local.pop("anchor")
+    ok, reason = _massive_publish_tip_ok(local, None, now=now)
+    assert ok is False
+    assert "SOURCE_ANCHOR_UNVERIFIED" in reason
+
+
+def test_massive_publisher_refuses_remote_manifest_with_bad_original_anchor():
+    now = datetime(2026, 10, 15, 5, 20, tzinfo=timezone.utc)
+    local = {**_tip("2026-10-14"), "updated_at": "2026-10-15T02:00:00+00:00"}
+    remote = _remote_tip("2026-10-13")
+    remote["store"]["anchor"]["last"] = "2026-10-09"
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is False
+    assert "REMOTE_ANCHOR_MISMATCH" in reason
+
+
+def test_massive_publisher_accepts_current_source_and_anchor_with_valid_revision():
+    now = datetime(2026, 10, 15, 5, 20, tzinfo=timezone.utc)
+    local = {**_tip("2026-10-14"), "updated_at": "2026-10-15T02:00:00+00:00"}
+    remote = _remote_tip("2026-10-13")
+    remote["store"]["updated_at"] = "2026-10-15T01:00:00+00:00"
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is True
+    assert reason == "source tip admitted"
+
+
+def test_massive_publisher_allows_normal_nyse_session_before_holiday():
+    now = datetime(2026, 11, 30, 14, 0, tzinfo=timezone.utc)
+    local = _tip("2026-11-27")  # shortened NYSE Black Friday session
+    ok, reason = _massive_publish_tip_ok(local, None, now=now)
+    assert ok is True
+    assert reason == "source tip admitted"
+
+
+def test_massive_publisher_refuses_false_processed_tip_before_any_file_upload(
+    tmp_path, monkeypatch,
+):
+    # Collector can mark raw.empty weekday as processed without writing a bar.
+    # The original SPY Parquet anchor must block uploads in that scenario.
+    import scripts.publish_r2 as pr2
+    s3 = _FakeS3()
+    _pr2, base = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day")
+    original = json.loads((base / "_manifest.json").read_text())
+    original["anchor"]["last"] = "2026-10-09"
+    (base / "_manifest.json").write_text(json.dumps(original))
+    assert pr2.publish(["massive_stock_day"], workers=1) == 1
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
+
+
+def test_massive_publisher_refuses_unsupported_remote_anchor_before_upload(
+    tmp_path, monkeypatch,
+):
+    import scripts.publish_r2 as pr2
+    now = datetime.now(timezone.utc)
+    session = expected_last_session(now)
+    remote = _remote_tip(session.isoformat())
+    remote["store"]["anchor"]["last"] = "2026-10-09"
+    key = "massive_stock_day/_manifest.json"
+    s3 = _FakeS3(objects={key: json.dumps(remote).encode()})
+    _pr2, base = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day")
+    local = json.loads((base / "_manifest.json").read_text())
+    local["latest_date"] = session.isoformat()
+    local["updated_at"] = (now - timedelta(minutes=2)).isoformat()
+    (base / "_manifest.json").write_text(json.dumps(local))
+    assert pr2.publish(["massive_stock_day"], workers=1) == 1
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
+
+
+
+# The Massive collector's price-derived anchor is specifically SPY, not merely
+# any symbol with the claimed last date. No publisher or coverage clock is a
+# substitute for the canonical original SPY anchor identity.
+@pytest.mark.parametrize("anchor_ticker", ["AAPL", None])
+def test_massive_publisher_refuses_bad_local_anchor_ticker(anchor_ticker):
+    now = datetime(2026, 10, 15, 17, 0, tzinfo=timezone.utc)
+    local = _tip("2026-10-14")
+    local["updated_at"] = "2026-10-15T02:00:00+00:00"
+    if anchor_ticker is None:
+        local["anchor"].pop("ticker")
+    else:
+        local["anchor"]["ticker"] = anchor_ticker
+    remote = _remote_tip("2026-10-13")
+    remote["store"]["updated_at"] = "2026-10-15T01:00:00+00:00"
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is False
+    assert "SOURCE_ANCHOR_MISMATCH" in reason
+
+
+@pytest.mark.parametrize("anchor_ticker", ["NVDA", None])
+def test_massive_publisher_refuses_bad_remote_anchor_ticker(anchor_ticker):
+    now = datetime(2026, 10, 15, 17, 0, tzinfo=timezone.utc)
+    local = _tip("2026-10-14")
+    local["updated_at"] = "2026-10-15T02:00:00+00:00"
+    remote = _remote_tip("2026-10-13")
+    remote["store"]["updated_at"] = "2026-10-15T01:00:00+00:00"
+    if anchor_ticker is None:
+        remote["store"]["anchor"].pop("ticker")
+    else:
+        remote["store"]["anchor"]["ticker"] = anchor_ticker
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is False
+    assert "REMOTE_ANCHOR_MISMATCH" in reason
+
+
+def test_massive_publisher_refuses_wrong_spy_ticker_before_file_upload(tmp_path, monkeypatch):
+    import scripts.publish_r2 as pr2
+    s3 = _FakeS3()
+    _pr2, base = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day")
+    local = json.loads((base / "_manifest.json").read_text())
+    local["anchor"]["ticker"] = "AAPL"
+    (base / "_manifest.json").write_text(json.dumps(local))
+    assert pr2.publish(["massive_stock_day"], workers=1) == 1
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
+
+
+
+# A later source session cannot defeat a remote original *revision* clock.
+# The incumbent collector always stamps updated_at; this rule is triggered
+# only when the remote already carries a comparable original UTC revision.
+def test_massive_publisher_refuses_newer_day_missing_original_collector_revision():
+    now = datetime(2026, 10, 15, 17, 0, tzinfo=timezone.utc)
+    local = _tip("2026-10-14")  # later NYSE session, but no source revision clock
+    remote = _remote_tip("2026-10-13")
+    remote["store"]["updated_at"] = "2026-10-15T01:00:00+00:00"
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is False
+    assert "SOURCE_REVISION_UNVERIFIED" in reason
+
+
+def test_massive_publisher_refuses_newer_day_older_collector_revision():
+    now = datetime(2026, 10, 15, 17, 0, tzinfo=timezone.utc)
+    local = {**_tip("2026-10-14"), "updated_at": "2026-10-14T22:00:00Z"}
+    remote = _remote_tip("2026-10-13")
+    remote["store"]["updated_at"] = "2026-10-15T01:00:00+00:00"
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is False
+    assert "SOURCE_REVISION_REGRESSION" in reason
+
+
+def test_massive_publisher_allows_newer_day_and_newer_original_revision():
+    now = datetime(2026, 10, 15, 17, 0, tzinfo=timezone.utc)
+    local = {**_tip("2026-10-14"), "updated_at": "2026-10-15T02:00:00+00:00"}
+    remote = _remote_tip("2026-10-13")
+    remote["store"]["updated_at"] = "2026-10-15T01:00:00+00:00"
+    assert _massive_publish_tip_ok(local, remote, now=now) == (True, "source tip admitted")
+
+
+def test_massive_publisher_blocks_unclocked_newer_day_before_any_file_upload(
+    tmp_path, monkeypatch,
+):
+    import scripts.publish_r2 as pr2
+    now = datetime.now(timezone.utc)
+    session = expected_last_session(now)
+    prior = last_session_on_or_before(session - timedelta(days=1))
+    remote = _remote_tip(prior.isoformat())
+    remote["store"]["updated_at"] = (now - timedelta(hours=2)).isoformat()
+    s3 = _FakeS3(objects={"massive_stock_day/_manifest.json": json.dumps(remote).encode()})
+    _pr2, base = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day")
+    local = json.loads((base / "_manifest.json").read_text())
+    local.pop("updated_at")
+    (base / "_manifest.json").write_text(json.dumps(local))
+    assert pr2.publish(["massive_stock_day"], workers=1) == 1
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
+
+
+
+# Original SPY price anchor contains historical coverage, not merely a tip day.
+# A newer collector timestamp cannot justify publishing fewer original rows
+# over the existing R2 source generation. These are synthetic manifests only.
+def _history_tip(day, rows, first="2021-07-06", updated="2026-10-16T01:00:00+00:00"):
+    tip = _tip(day)
+    tip["updated_at"] = updated
+    if rows is not None:
+        tip["anchor"]["n_rows"] = rows
+    if first is not None:
+        tip["anchor"]["first"] = first
+    return tip
+
+
+def _history_remote(day, rows, first="2021-07-06",
+                    updated="2026-10-15T01:00:00+00:00"):
+    out = _remote_tip(day)
+    out["store"] = _history_tip(day, rows, first, updated)
+    return out
+
+
+def test_massive_publisher_refuses_same_day_spy_history_shrink():
+    now = datetime(2026, 10, 16, 9, 0, tzinfo=timezone.utc)
+    ok, reason = _massive_publish_tip_ok(
+        _history_tip("2026-10-14", 1226),
+        _history_remote("2026-10-14", 1326), now=now)
+    assert ok is False
+    assert "SOURCE_ANCHOR_HISTORY_REGRESSION" in reason
+
+
+def test_massive_publisher_refuses_newer_day_but_shrinking_spy_history():
+    now = datetime(2026, 10, 16, 9, 0, tzinfo=timezone.utc)
+    ok, reason = _massive_publish_tip_ok(
+        _history_tip("2026-10-14", 1000),
+        _history_remote("2026-10-13", 1325), now=now)
+    assert ok is False
+    assert "SOURCE_ANCHOR_HISTORY_REGRESSION" in reason
+
+
+def test_massive_publisher_refuses_missing_local_rows_when_remote_has_original_count():
+    now = datetime(2026, 10, 16, 9, 0, tzinfo=timezone.utc)
+    ok, reason = _massive_publish_tip_ok(
+        _history_tip("2026-10-14", None),
+        _history_remote("2026-10-13", 1325), now=now)
+    assert ok is False
+    assert "SOURCE_ANCHOR_HISTORY_UNVERIFIED" in reason
+
+
+def test_massive_publisher_refuses_receding_first_spy_price_date():
+    now = datetime(2026, 10, 16, 9, 0, tzinfo=timezone.utc)
+    ok, reason = _massive_publish_tip_ok(
+        _history_tip("2026-10-14", 1326, first="2022-01-03"),
+        _history_remote("2026-10-13", 1325), now=now)
+    assert ok is False
+    assert "SOURCE_ANCHOR_HISTORY_REGRESSION" in reason
+
+
+def test_massive_publisher_admits_genuine_extended_spy_history():
+    now = datetime(2026, 10, 16, 9, 0, tzinfo=timezone.utc)
+    assert _massive_publish_tip_ok(
+        _history_tip("2026-10-14", 1326),
+        _history_remote("2026-10-13", 1325), now=now) == (True, "source tip admitted")
+
+
+def test_massive_publisher_refuses_spy_history_shrink_before_any_fake_s3_upload(
+    tmp_path, monkeypatch,
+):
+    import scripts.publish_r2 as pr2
+    now = datetime.now(timezone.utc)
+    tip_day = expected_last_session(now).isoformat()
+    remote = _history_remote(tip_day, 1326,
+                             updated=(now - timedelta(hours=2)).isoformat())
+    s3 = _FakeS3(objects={"massive_stock_day/_manifest.json": json.dumps(remote).encode()})
+    _pr2, base = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day")
+    local = json.loads((base / "_manifest.json").read_text())
+    local["updated_at"] = (now - timedelta(hours=1)).isoformat()
+    local["anchor"].update(first="2021-07-06", n_rows=1000)
+    (base / "_manifest.json").write_text(json.dumps(local))
+    assert pr2.publish(["massive_stock_day"], workers=1) == 1
     assert s3.uploaded == []
     assert s3.manifest_puts == []

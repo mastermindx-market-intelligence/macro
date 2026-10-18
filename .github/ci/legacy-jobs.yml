@@ -4480,6 +4480,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "scripts/audit_r2.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
@@ -6738,6 +6739,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "scripts/audit_r2.py"
       - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
@@ -20350,6 +20352,7 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "scripts/audit_r2.py"
       - "tests/fixtures/government_program_ontology/builders.py"
       - "tests/test_government_program_public_capacity.py"
       - "tests/test_government_program_capacity_ui.py"
@@ -31425,6 +31428,7 @@ jobs:
     # the nightly engine shell). No data/** fallback.
     scope: exclusive
     paths:
+      - "scripts/audit_r2.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/us_cash_calendar.py"
@@ -31592,6 +31596,7 @@ jobs:
     # read or run; an unlisted closure file is an uncovered path. No
     # tests/** catch-all.
     paths:
+      - "scripts/audit_r2.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/pages.py"
       - "lib/exchange_holidays.py"
