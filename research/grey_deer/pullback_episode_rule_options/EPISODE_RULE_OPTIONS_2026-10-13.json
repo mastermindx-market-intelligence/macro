@@ -1,0 +1,5394 @@
+{
+  "as_of": "2026-10-13",
+  "candidates": [
+    {
+      "computable": true,
+      "family": "frozen_gap_no_window_merge",
+      "id": "C1",
+      "justification": "v1.1 names a cluster with the gap rule and then merges clusters whose dependence buffers overlap. The buffer exists so origins near an event are not treated as independent evidence. Overlap of two buffers is not a reason to call the clusters one spell. Dropping the window merge keeps the buffer available for a later deletion rule and lets the gap rule name the episode. The reason is the two-step structure of the frozen rule. It is not a skill result, and it is not the floor column.",
+      "title": "Frozen gap, no window merge"
+    },
+    {
+      "computable": true,
+      "family": "quiet_reset",
+      "id": "C2",
+      "justification": "v1.1 lets the label horizon set the gap, so a longer outcome window is also a longer chain. The frozen rule already contains a dependence scale that is not the label horizon: the 21-session pre-window. A quiet-reset at 21, on each horizon's own event dates, with no window merge, uses that scale at every horizon. The union's event-date occupancy is why a gap as short as the label horizon chains sessions. A v1.2 preregistration has to disclose that this density was seen. 21 is taken from the pre-window constant. It is not taken from the rows that clear the floor.",
+      "q": 21,
+      "title": "Quiet-reset at Q=21, no window merge, same Q at every horizon"
+    },
+    {
+      "computable": false,
+      "family": "breadth",
+      "id": "C3",
+      "justification": "The panel event date is any session on which at least one name has Y=1. That union is what fills the date axis. A spell that is supposed to be shared needs a second name on the session. m=2 is that minimum confirmation. It is a property of a common-move question. This memo has no episode count for it: the artifacts do not store per-date breadth. A preregistration that wants a breadth rule has to keep those counts and must not choose m by which value clears the floor on this sample.",
+      "title": "Breadth threshold m=2, after per-date counts are retained"
+    }
+  ],
+  "disclosure": "this rule was chosen after observing v1.1 event-date density (not skill)",
+  "episode_pre": 21,
+  "family": "binary",
+  "floor_warning": "Choosing a rule because it meets the 10-episode / 10-month floor on this consumed sample is p-hacking the power floor.",
+  "horizons": [
+    {
+      "balanced_cross_section": true,
+      "checks": {
+        "gap_menu_windows_equal_frozen": true,
+        "pre0_equals_no_window_merge": true,
+        "quiet_q_eq_h_equals_no_window_merge": true,
+        "quiet_q_eq_reach_equals_frozen": null
+      },
+      "collapse": {
+        "boundaries": [
+          {
+            "event_free_sessions": 11,
+            "gap": 12,
+            "left_last": 317,
+            "reglued": true,
+            "right_first": 329
+          },
+          {
+            "event_free_sessions": 18,
+            "gap": 19,
+            "left_last": 335,
+            "reglued": true,
+            "right_first": 354
+          },
+          {
+            "event_free_sessions": 26,
+            "gap": 27,
+            "left_last": 366,
+            "reglued": false,
+            "right_first": 393
+          },
+          {
+            "event_free_sessions": 9,
+            "gap": 10,
+            "left_last": 407,
+            "reglued": true,
+            "right_first": 417
+          },
+          {
+            "event_free_sessions": 27,
+            "gap": 28,
+            "left_last": 427,
+            "reglued": false,
+            "right_first": 455
+          },
+          {
+            "event_free_sessions": 93,
+            "gap": 94,
+            "left_last": 458,
+            "reglued": false,
+            "right_first": 552
+          },
+          {
+            "event_free_sessions": 10,
+            "gap": 11,
+            "left_last": 563,
+            "reglued": true,
+            "right_first": 574
+          },
+          {
+            "event_free_sessions": 6,
+            "gap": 7,
+            "left_last": 580,
+            "reglued": true,
+            "right_first": 587
+          },
+          {
+            "event_free_sessions": 27,
+            "gap": 28,
+            "left_last": 587,
+            "reglued": false,
+            "right_first": 615
+          },
+          {
+            "event_free_sessions": 8,
+            "gap": 9,
+            "left_last": 615,
+            "reglued": true,
+            "right_first": 624
+          },
+          {
+            "event_free_sessions": 59,
+            "gap": 60,
+            "left_last": 633,
+            "reglued": false,
+            "right_first": 693
+          },
+          {
+            "event_free_sessions": 59,
+            "gap": 60,
+            "left_last": 697,
+            "reglued": false,
+            "right_first": 757
+          },
+          {
+            "event_free_sessions": 17,
+            "gap": 18,
+            "left_last": 773,
+            "reglued": true,
+            "right_first": 791
+          },
+          {
+            "event_free_sessions": 48,
+            "gap": 49,
+            "left_last": 794,
+            "reglued": false,
+            "right_first": 843
+          },
+          {
+            "event_free_sessions": 20,
+            "gap": 21,
+            "left_last": 844,
+            "reglued": true,
+            "right_first": 865
+          },
+          {
+            "event_free_sessions": 15,
+            "gap": 16,
+            "left_last": 875,
+            "reglued": true,
+            "right_first": 891
+          },
+          {
+            "event_free_sessions": 16,
+            "gap": 17,
+            "left_last": 892,
+            "reglued": true,
+            "right_first": 909
+          },
+          {
+            "event_free_sessions": 10,
+            "gap": 11,
+            "left_last": 922,
+            "reglued": true,
+            "right_first": 933
+          },
+          {
+            "event_free_sessions": 17,
+            "gap": 18,
+            "left_last": 949,
+            "reglued": true,
+            "right_first": 967
+          },
+          {
+            "event_free_sessions": 50,
+            "gap": 51,
+            "left_last": 967,
+            "reglued": false,
+            "right_first": 1018
+          },
+          {
+            "event_free_sessions": 75,
+            "gap": 76,
+            "left_last": 1018,
+            "reglued": false,
+            "right_first": 1094
+          },
+          {
+            "event_free_sessions": 16,
+            "gap": 17,
+            "left_last": 1097,
+            "reglued": true,
+            "right_first": 1114
+          },
+          {
+            "event_free_sessions": 30,
+            "gap": 31,
+            "left_last": 1115,
+            "reglued": false,
+            "right_first": 1146
+          },
+          {
+            "event_free_sessions": 17,
+            "gap": 18,
+            "left_last": 1149,
+            "reglued": true,
+            "right_first": 1167
+          },
+          {
+            "event_free_sessions": 9,
+            "gap": 10,
+            "left_last": 1168,
+            "reglued": true,
+            "right_first": 1178
+          },
+          {
+            "event_free_sessions": 16,
+            "gap": 17,
+            "left_last": 1193,
+            "reglued": true,
+            "right_first": 1210
+          },
+          {
+            "event_free_sessions": 5,
+            "gap": 6,
+            "left_last": 1245,
+            "reglued": true,
+            "right_first": 1251
+          },
+          {
+            "event_free_sessions": 6,
+            "gap": 7,
+            "left_last": 1251,
+            "reglued": true,
+            "right_first": 1258
+          },
+          {
+            "event_free_sessions": 14,
+            "gap": 15,
+            "left_last": 1268,
+            "reglued": true,
+            "right_first": 1283
+          },
+          {
+            "event_free_sessions": 18,
+            "gap": 19,
+            "left_last": 1284,
+            "reglued": true,
+            "right_first": 1303
+          }
+        ],
+        "clusters": [
+          {
+            "episode": 0,
+            "first": 315,
+            "index": 0,
+            "last": 317,
+            "n_dates": 3,
+            "window": [
+              294,
+              322
+            ]
+          },
+          {
+            "episode": 0,
+            "first": 329,
+            "index": 1,
+            "last": 335,
+            "n_dates": 7,
+            "window": [
+              308,
+              340
+            ]
+          },
+          {
+            "episode": 0,
+            "first": 354,
+            "index": 2,
+            "last": 366,
+            "n_dates": 9,
+            "window": [
+              333,
+              371
+            ]
+          },
+          {
+            "episode": 1,
+            "first": 393,
+            "index": 3,
+            "last": 407,
+            "n_dates": 9,
+            "window": [
+              372,
+              412
+            ]
+          },
+          {
+            "episode": 1,
+            "first": 417,
+            "index": 4,
+            "last": 427,
+            "n_dates": 10,
+            "window": [
+              396,
+              432
+            ]
+          },
+          {
+            "episode": 2,
+            "first": 455,
+            "index": 5,
+            "last": 458,
+            "n_dates": 4,
+            "window": [
+              434,
+              463
+            ]
+          },
+          {
+            "episode": 3,
+            "first": 552,
+            "index": 6,
+            "last": 563,
+            "n_dates": 12,
+            "window": [
+              531,
+              568
+            ]
+          },
+          {
+            "episode": 3,
+            "first": 574,
+            "index": 7,
+            "last": 580,
+            "n_dates": 6,
+            "window": [
+              553,
+              585
+            ]
+          },
+          {
+            "episode": 3,
+            "first": 587,
+            "index": 8,
+            "last": 587,
+            "n_dates": 1,
+            "window": [
+              566,
+              592
+            ]
+          },
+          {
+            "episode": 4,
+            "first": 615,
+            "index": 9,
+            "last": 615,
+            "n_dates": 1,
+            "window": [
+              594,
+              620
+            ]
+          },
+          {
+            "episode": 4,
+            "first": 624,
+            "index": 10,
+            "last": 633,
+            "n_dates": 4,
+            "window": [
+              603,
+              638
+            ]
+          },
+          {
+            "episode": 5,
+            "first": 693,
+            "index": 11,
+            "last": 697,
+            "n_dates": 4,
+            "window": [
+              672,
+              702
+            ]
+          },
+          {
+            "episode": 6,
+            "first": 757,
+            "index": 12,
+            "last": 773,
+            "n_dates": 12,
+            "window": [
+              736,
+              778
+            ]
+          },
+          {
+            "episode": 6,
+            "first": 791,
+            "index": 13,
+            "last": 794,
+            "n_dates": 3,
+            "window": [
+              770,
+              799
+            ]
+          },
+          {
+            "episode": 7,
+            "first": 843,
+            "index": 14,
+            "last": 844,
+            "n_dates": 2,
+            "window": [
+              822,
+              849
+            ]
+          },
+          {
+            "episode": 7,
+            "first": 865,
+            "index": 15,
+            "last": 875,
+            "n_dates": 7,
+            "window": [
+              844,
+              880
+            ]
+          },
+          {
+            "episode": 7,
+            "first": 891,
+            "index": 16,
+            "last": 892,
+            "n_dates": 2,
+            "window": [
+              870,
+              897
+            ]
+          },
+          {
+            "episode": 7,
+            "first": 909,
+            "index": 17,
+            "last": 922,
+            "n_dates": 12,
+            "window": [
+              888,
+              927
+            ]
+          },
+          {
+            "episode": 7,
+            "first": 933,
+            "index": 18,
+            "last": 949,
+            "n_dates": 12,
+            "window": [
+              912,
+              954
+            ]
+          },
+          {
+            "episode": 7,
+            "first": 967,
+            "index": 19,
+            "last": 967,
+            "n_dates": 1,
+            "window": [
+              946,
+              972
+            ]
+          },
+          {
+            "episode": 8,
+            "first": 1018,
+            "index": 20,
+            "last": 1018,
+            "n_dates": 1,
+            "window": [
+              997,
+              1023
+            ]
+          },
+          {
+            "episode": 9,
+            "first": 1094,
+            "index": 21,
+            "last": 1097,
+            "n_dates": 4,
+            "window": [
+              1073,
+              1102
+            ]
+          },
+          {
+            "episode": 9,
+            "first": 1114,
+            "index": 22,
+            "last": 1115,
+            "n_dates": 2,
+            "window": [
+              1093,
+              1120
+            ]
+          },
+          {
+            "episode": 10,
+            "first": 1146,
+            "index": 23,
+            "last": 1149,
+            "n_dates": 4,
+            "window": [
+              1125,
+              1154
+            ]
+          },
+          {
+            "episode": 10,
+            "first": 1167,
+            "index": 24,
+            "last": 1168,
+            "n_dates": 2,
+            "window": [
+              1146,
+              1173
+            ]
+          },
+          {
+            "episode": 10,
+            "first": 1178,
+            "index": 25,
+            "last": 1193,
+            "n_dates": 8,
+            "window": [
+              1157,
+              1198
+            ]
+          },
+          {
+            "episode": 10,
+            "first": 1210,
+            "index": 26,
+            "last": 1245,
+            "n_dates": 20,
+            "window": [
+              1189,
+              1250
+            ]
+          },
+          {
+            "episode": 10,
+            "first": 1251,
+            "index": 27,
+            "last": 1251,
+            "n_dates": 1,
+            "window": [
+              1230,
+              1256
+            ]
+          },
+          {
+            "episode": 10,
+            "first": 1258,
+            "index": 28,
+            "last": 1268,
+            "n_dates": 8,
+            "window": [
+              1237,
+              1273
+            ]
+          },
+          {
+            "episode": 10,
+            "first": 1283,
+            "index": 29,
+            "last": 1284,
+            "n_dates": 2,
+            "window": [
+              1262,
+              1289
+            ]
+          },
+          {
+            "episode": 10,
+            "first": 1303,
+            "index": 30,
+            "last": 1305,
+            "n_dates": 2,
+            "window": [
+              1282,
+              1310
+            ]
+          }
+        ],
+        "clusters_absorbed_by_window": 20,
+        "dates_absorbed_by_gap": 144,
+        "gap_share_of_reduction": {
+          "denominator": 164,
+          "numerator": 144,
+          "text": "0.878049"
+        },
+        "merge_reach": 26,
+        "n_boundaries": 30,
+        "n_boundaries_reglued": 20,
+        "n_clusters": 31,
+        "n_episodes": 11,
+        "n_event_dates": 175,
+        "n_gaps_gt_h": 30,
+        "n_gaps_gt_reach": 10,
+        "reduction_dates_to_episodes": 164,
+        "surviving_boundary_gaps": [
+          27,
+          28,
+          94,
+          28,
+          60,
+          60,
+          49,
+          51,
+          76,
+          31
+        ],
+        "window_share_of_reduction": {
+          "denominator": 164,
+          "numerator": 20,
+          "text": "0.121951"
+        }
+      },
+      "date_axis_occupancy": {
+        "denominator": 1000,
+        "numerator": 175,
+        "text": "0.175000"
+      },
+      "event_dates_over_origins": {
+        "denominator": 14000,
+        "numerator": 175,
+        "text": "0.012500"
+      },
+      "event_month_first": "2022-10",
+      "event_month_last": "2026-09",
+      "event_month_list": [
+        "2022-10",
+        "2022-11",
+        "2022-12",
+        "2023-01",
+        "2023-02",
+        "2023-03",
+        "2023-04",
+        "2023-05",
+        "2023-09",
+        "2023-10",
+        "2023-11",
+        "2023-12",
+        "2024-01",
+        "2024-04",
+        "2024-07",
+        "2024-08",
+        "2024-11",
+        "2024-12",
+        "2025-01",
+        "2025-02",
+        "2025-03",
+        "2025-04",
+        "2025-05",
+        "2025-07",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03",
+        "2026-04",
+        "2026-05",
+        "2026-06",
+        "2026-07",
+        "2026-08",
+        "2026-09"
+      ],
+      "event_months": 35,
+      "event_months_match_list": true,
+      "events_match_event_dates": true,
+      "frozen_windows": [
+        [
+          294,
+          371
+        ],
+        [
+          372,
+          432
+        ],
+        [
+          434,
+          463
+        ],
+        [
+          531,
+          592
+        ],
+        [
+          594,
+          638
+        ],
+        [
+          672,
+          702
+        ],
+        [
+          736,
+          799
+        ],
+        [
+          822,
+          972
+        ],
+        [
+          997,
+          1023
+        ],
+        [
+          1073,
+          1120
+        ],
+        [
+          1125,
+          1310
+        ]
+      ],
+      "gap_histogram": {
+        "bins": [
+          {
+            "label": "0",
+            "n": 0
+          },
+          {
+            "label": "1",
+            "n": 112
+          },
+          {
+            "label": "2",
+            "n": 15
+          },
+          {
+            "label": "3",
+            "n": 6
+          },
+          {
+            "label": "4-5",
+            "n": 11
+          },
+          {
+            "label": "6-10",
+            "n": 6
+          },
+          {
+            "label": "11-21",
+            "n": 14
+          },
+          {
+            "label": "22-42",
+            "n": 4
+          },
+          {
+            "label": "43-63",
+            "n": 4
+          },
+          {
+            "label": "64+",
+            "n": 2
+          }
+        ],
+        "max": 94,
+        "median": "1",
+        "min": 1,
+        "n_gaps": 174
+      },
+      "h": 5,
+      "implied_sessions": 1000,
+      "longest_quiet_stretch": {
+        "left_event_index": 458,
+        "max_event_free_sessions": 93,
+        "max_gap": 94,
+        "right_event_index": 552
+      },
+      "mean_tickers_per_event_date": {
+        "denominator": 175,
+        "numerator": 405,
+        "text": "2.314286"
+      },
+      "n_event_dates": 175,
+      "n_tickers": 14,
+      "origins_rows": 14000,
+      "per_ticker_episodes": {
+        "DIA": 2,
+        "IWM": 8,
+        "QQQ": 10,
+        "XLB": 10,
+        "XLC": 6,
+        "XLE": 11,
+        "XLF": 5,
+        "XLI": 4,
+        "XLK": 10,
+        "XLP": 2,
+        "XLRE": 8,
+        "XLU": 7,
+        "XLV": 2,
+        "XLY": 8
+      },
+      "rules": {
+        "frozen_gap_no_window_merge": {
+          "clusters": 31,
+          "episodes": 31,
+          "event_months": 35,
+          "event_spans": [
+            [
+              315,
+              317
+            ],
+            [
+              329,
+              335
+            ],
+            [
+              354,
+              366
+            ],
+            [
+              393,
+              407
+            ],
+            [
+              417,
+              427
+            ],
+            [
+              455,
+              458
+            ],
+            [
+              552,
+              563
+            ],
+            [
+              574,
+              580
+            ],
+            [
+              587,
+              587
+            ],
+            [
+              615,
+              615
+            ],
+            [
+              624,
+              633
+            ],
+            [
+              693,
+              697
+            ],
+            [
+              757,
+              773
+            ],
+            [
+              791,
+              794
+            ],
+            [
+              843,
+              844
+            ],
+            [
+              865,
+              875
+            ],
+            [
+              891,
+              892
+            ],
+            [
+              909,
+              922
+            ],
+            [
+              933,
+              949
+            ],
+            [
+              967,
+              967
+            ],
+            [
+              1018,
+              1018
+            ],
+            [
+              1094,
+              1097
+            ],
+            [
+              1114,
+              1115
+            ],
+            [
+              1146,
+              1149
+            ],
+            [
+              1167,
+              1168
+            ],
+            [
+              1178,
+              1193
+            ],
+            [
+              1210,
+              1245
+            ],
+            [
+              1251,
+              1251
+            ],
+            [
+              1258,
+              1268
+            ],
+            [
+              1283,
+              1284
+            ],
+            [
+              1303,
+              1305
+            ]
+          ],
+          "family": "frozen_gap_no_window_merge",
+          "floor_met": true,
+          "gap": 5,
+          "label": "no window merge",
+          "windows": null
+        },
+        "gap_with_frozen_window": [
+          {
+            "clusters": 63,
+            "episodes": 11,
+            "event_months": 35,
+            "event_spans": [
+              [
+                315,
+                366
+              ],
+              [
+                393,
+                427
+              ],
+              [
+                455,
+                458
+              ],
+              [
+                552,
+                587
+              ],
+              [
+                615,
+                633
+              ],
+              [
+                693,
+                697
+              ],
+              [
+                757,
+                794
+              ],
+              [
+                843,
+                967
+              ],
+              [
+                1018,
+                1018
+              ],
+              [
+                1094,
+                1115
+              ],
+              [
+                1146,
+                1305
+              ]
+            ],
+            "family": "gap_with_frozen_window",
+            "floor_met": true,
+            "gap": 1,
+            "label": "g=1",
+            "post": 5,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                371
+              ],
+              [
+                372,
+                432
+              ],
+              [
+                434,
+                463
+              ],
+              [
+                531,
+                592
+              ],
+              [
+                594,
+                638
+              ],
+              [
+                672,
+                702
+              ],
+              [
+                736,
+                799
+              ],
+              [
+                822,
+                972
+              ],
+              [
+                997,
+                1023
+              ],
+              [
+                1073,
+                1120
+              ],
+              [
+                1125,
+                1310
+              ]
+            ]
+          },
+          {
+            "clusters": 48,
+            "episodes": 11,
+            "event_months": 35,
+            "event_spans": [
+              [
+                315,
+                366
+              ],
+              [
+                393,
+                427
+              ],
+              [
+                455,
+                458
+              ],
+              [
+                552,
+                587
+              ],
+              [
+                615,
+                633
+              ],
+              [
+                693,
+                697
+              ],
+              [
+                757,
+                794
+              ],
+              [
+                843,
+                967
+              ],
+              [
+                1018,
+                1018
+              ],
+              [
+                1094,
+                1115
+              ],
+              [
+                1146,
+                1305
+              ]
+            ],
+            "family": "gap_with_frozen_window",
+            "floor_met": true,
+            "gap": 2,
+            "label": "g=2",
+            "post": 5,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                371
+              ],
+              [
+                372,
+                432
+              ],
+              [
+                434,
+                463
+              ],
+              [
+                531,
+                592
+              ],
+              [
+                594,
+                638
+              ],
+              [
+                672,
+                702
+              ],
+              [
+                736,
+                799
+              ],
+              [
+                822,
+                972
+              ],
+              [
+                997,
+                1023
+              ],
+              [
+                1073,
+                1120
+              ],
+              [
+                1125,
+                1310
+              ]
+            ]
+          },
+          {
+            "clusters": 42,
+            "episodes": 11,
+            "event_months": 35,
+            "event_spans": [
+              [
+                315,
+                366
+              ],
+              [
+                393,
+                427
+              ],
+              [
+                455,
+                458
+              ],
+              [
+                552,
+                587
+              ],
+              [
+                615,
+                633
+              ],
+              [
+                693,
+                697
+              ],
+              [
+                757,
+                794
+              ],
+              [
+                843,
+                967
+              ],
+              [
+                1018,
+                1018
+              ],
+              [
+                1094,
+                1115
+              ],
+              [
+                1146,
+                1305
+              ]
+            ],
+            "family": "gap_with_frozen_window",
+            "floor_met": true,
+            "gap": 3,
+            "label": "g=3",
+            "post": 5,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                371
+              ],
+              [
+                372,
+                432
+              ],
+              [
+                434,
+                463
+              ],
+              [
+                531,
+                592
+              ],
+              [
+                594,
+                638
+              ],
+              [
+                672,
+                702
+              ],
+              [
+                736,
+                799
+              ],
+              [
+                822,
+                972
+              ],
+              [
+                997,
+                1023
+              ],
+              [
+                1073,
+                1120
+              ],
+              [
+                1125,
+                1310
+              ]
+            ]
+          },
+          {
+            "clusters": 31,
+            "episodes": 11,
+            "event_months": 35,
+            "event_spans": [
+              [
+                315,
+                366
+              ],
+              [
+                393,
+                427
+              ],
+              [
+                455,
+                458
+              ],
+              [
+                552,
+                587
+              ],
+              [
+                615,
+                633
+              ],
+              [
+                693,
+                697
+              ],
+              [
+                757,
+                794
+              ],
+              [
+                843,
+                967
+              ],
+              [
+                1018,
+                1018
+              ],
+              [
+                1094,
+                1115
+              ],
+              [
+                1146,
+                1305
+              ]
+            ],
+            "family": "gap_with_frozen_window",
+            "floor_met": true,
+            "gap": 5,
+            "label": "g=5",
+            "post": 5,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                371
+              ],
+              [
+                372,
+                432
+              ],
+              [
+                434,
+                463
+              ],
+              [
+                531,
+                592
+              ],
+              [
+                594,
+                638
+              ],
+              [
+                672,
+                702
+              ],
+              [
+                736,
+                799
+              ],
+              [
+                822,
+                972
+              ],
+              [
+                997,
+                1023
+              ],
+              [
+                1073,
+                1120
+              ],
+              [
+                1125,
+                1310
+              ]
+            ]
+          },
+          {
+            "clusters": 25,
+            "episodes": 11,
+            "event_months": 35,
+            "event_spans": [
+              [
+                315,
+                366
+              ],
+              [
+                393,
+                427
+              ],
+              [
+                455,
+                458
+              ],
+              [
+                552,
+                587
+              ],
+              [
+                615,
+                633
+              ],
+              [
+                693,
+                697
+              ],
+              [
+                757,
+                794
+              ],
+              [
+                843,
+                967
+              ],
+              [
+                1018,
+                1018
+              ],
+              [
+                1094,
+                1115
+              ],
+              [
+                1146,
+                1305
+              ]
+            ],
+            "family": "gap_with_frozen_window",
+            "floor_met": true,
+            "gap": 10,
+            "label": "g=10",
+            "post": 5,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                371
+              ],
+              [
+                372,
+                432
+              ],
+              [
+                434,
+                463
+              ],
+              [
+                531,
+                592
+              ],
+              [
+                594,
+                638
+              ],
+              [
+                672,
+                702
+              ],
+              [
+                736,
+                799
+              ],
+              [
+                822,
+                972
+              ],
+              [
+                997,
+                1023
+              ],
+              [
+                1073,
+                1120
+              ],
+              [
+                1125,
+                1310
+              ]
+            ]
+          },
+          {
+            "clusters": 11,
+            "episodes": 11,
+            "event_months": 35,
+            "event_spans": [
+              [
+                315,
+                366
+              ],
+              [
+                393,
+                427
+              ],
+              [
+                455,
+                458
+              ],
+              [
+                552,
+                587
+              ],
+              [
+                615,
+                633
+              ],
+              [
+                693,
+                697
+              ],
+              [
+                757,
+                794
+              ],
+              [
+                843,
+                967
+              ],
+              [
+                1018,
+                1018
+              ],
+              [
+                1094,
+                1115
+              ],
+              [
+                1146,
+                1305
+              ]
+            ],
+            "family": "gap_with_frozen_window",
+            "floor_met": true,
+            "gap": 21,
+            "label": "g=21",
+            "post": 5,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                371
+              ],
+              [
+                372,
+                432
+              ],
+              [
+                434,
+                463
+              ],
+              [
+                531,
+                592
+              ],
+              [
+                594,
+                638
+              ],
+              [
+                672,
+                702
+              ],
+              [
+                736,
+                799
+              ],
+              [
+                822,
+                972
+              ],
+              [
+                997,
+                1023
+              ],
+              [
+                1073,
+                1120
+              ],
+              [
+                1125,
+                1310
+              ]
+            ]
+          }
+        ],
+        "quiet_reset": [
+          {
+            "clusters": 31,
+            "episodes": 31,
+            "event_months": 35,
+            "event_spans": [
+              [
+                315,
+                317
+              ],
+              [
+                329,
+                335
+              ],
+              [
+                354,
+                366
+              ],
+              [
+                393,
+                407
+              ],
+              [
+                417,
+                427
+              ],
+              [
+                455,
+                458
+              ],
+              [
+                552,
+                563
+              ],
+              [
+                574,
+                580
+              ],
+              [
+                587,
+                587
+              ],
+              [
+                615,
+                615
+              ],
+              [
+                624,
+                633
+              ],
+              [
+                693,
+                697
+              ],
+              [
+                757,
+                773
+              ],
+              [
+                791,
+                794
+              ],
+              [
+                843,
+                844
+              ],
+              [
+                865,
+                875
+              ],
+              [
+                891,
+                892
+              ],
+              [
+                909,
+                922
+              ],
+              [
+                933,
+                949
+              ],
+              [
+                967,
+                967
+              ],
+              [
+                1018,
+                1018
+              ],
+              [
+                1094,
+                1097
+              ],
+              [
+                1114,
+                1115
+              ],
+              [
+                1146,
+                1149
+              ],
+              [
+                1167,
+                1168
+              ],
+              [
+                1178,
+                1193
+              ],
+              [
+                1210,
+                1245
+              ],
+              [
+                1251,
+                1251
+              ],
+              [
+                1258,
+                1268
+              ],
+              [
+                1283,
+                1284
+              ],
+              [
+                1303,
+                1305
+              ]
+            ],
+            "family": "quiet_reset",
+            "floor_met": true,
+            "label": "Q=5",
+            "q": 5,
+            "same_episodes_as_no_window_merge": true,
+            "same_partition_as_frozen": false,
+            "windows": null
+          },
+          {
+            "clusters": 25,
+            "episodes": 25,
+            "event_months": 35,
+            "event_spans": [
+              [
+                315,
+                317
+              ],
+              [
+                329,
+                335
+              ],
+              [
+                354,
+                366
+              ],
+              [
+                393,
+                427
+              ],
+              [
+                455,
+                458
+              ],
+              [
+                552,
+                563
+              ],
+              [
+                574,
+                587
+              ],
+              [
+                615,
+                633
+              ],
+              [
+                693,
+                697
+              ],
+              [
+                757,
+                773
+              ],
+              [
+                791,
+                794
+              ],
+              [
+                843,
+                844
+              ],
+              [
+                865,
+                875
+              ],
+              [
+                891,
+                892
+              ],
+              [
+                909,
+                922
+              ],
+              [
+                933,
+                949
+              ],
+              [
+                967,
+                967
+              ],
+              [
+                1018,
+                1018
+              ],
+              [
+                1094,
+                1097
+              ],
+              [
+                1114,
+                1115
+              ],
+              [
+                1146,
+                1149
+              ],
+              [
+                1167,
+                1193
+              ],
+              [
+                1210,
+                1268
+              ],
+              [
+                1283,
+                1284
+              ],
+              [
+                1303,
+                1305
+              ]
+            ],
+            "family": "quiet_reset",
+            "floor_met": true,
+            "label": "Q=10",
+            "q": 10,
+            "same_episodes_as_no_window_merge": false,
+            "same_partition_as_frozen": false,
+            "windows": null
+          },
+          {
+            "clusters": 11,
+            "episodes": 11,
+            "event_months": 35,
+            "event_spans": [
+              [
+                315,
+                366
+              ],
+              [
+                393,
+                427
+              ],
+              [
+                455,
+                458
+              ],
+              [
+                552,
+                587
+              ],
+              [
+                615,
+                633
+              ],
+              [
+                693,
+                697
+              ],
+              [
+                757,
+                794
+              ],
+              [
+                843,
+                967
+              ],
+              [
+                1018,
+                1018
+              ],
+              [
+                1094,
+                1115
+              ],
+              [
+                1146,
+                1305
+              ]
+            ],
+            "family": "quiet_reset",
+            "floor_met": true,
+            "label": "Q=21",
+            "q": 21,
+            "same_episodes_as_no_window_merge": false,
+            "same_partition_as_frozen": true,
+            "windows": null
+          },
+          {
+            "clusters": 7,
+            "episodes": 7,
+            "event_months": 35,
+            "event_spans": [
+              [
+                315,
+                458
+              ],
+              [
+                552,
+                633
+              ],
+              [
+                693,
+                697
+              ],
+              [
+                757,
+                794
+              ],
+              [
+                843,
+                967
+              ],
+              [
+                1018,
+                1018
+              ],
+              [
+                1094,
+                1305
+              ]
+            ],
+            "family": "quiet_reset",
+            "floor_met": false,
+            "label": "Q=42",
+            "q": 42,
+            "same_episodes_as_no_window_merge": false,
+            "same_partition_as_frozen": false,
+            "windows": null
+          }
+        ],
+        "window_pre": [
+          {
+            "clusters": 31,
+            "episodes": 31,
+            "event_months": 35,
+            "event_spans": [
+              [
+                315,
+                317
+              ],
+              [
+                329,
+                335
+              ],
+              [
+                354,
+                366
+              ],
+              [
+                393,
+                407
+              ],
+              [
+                417,
+                427
+              ],
+              [
+                455,
+                458
+              ],
+              [
+                552,
+                563
+              ],
+              [
+                574,
+                580
+              ],
+              [
+                587,
+                587
+              ],
+              [
+                615,
+                615
+              ],
+              [
+                624,
+                633
+              ],
+              [
+                693,
+                697
+              ],
+              [
+                757,
+                773
+              ],
+              [
+                791,
+                794
+              ],
+              [
+                843,
+                844
+              ],
+              [
+                865,
+                875
+              ],
+              [
+                891,
+                892
+              ],
+              [
+                909,
+                922
+              ],
+              [
+                933,
+                949
+              ],
+              [
+                967,
+                967
+              ],
+              [
+                1018,
+                1018
+              ],
+              [
+                1094,
+                1097
+              ],
+              [
+                1114,
+                1115
+              ],
+              [
+                1146,
+                1149
+              ],
+              [
+                1167,
+                1168
+              ],
+              [
+                1178,
+                1193
+              ],
+              [
+                1210,
+                1245
+              ],
+              [
+                1251,
+                1251
+              ],
+              [
+                1258,
+                1268
+              ],
+              [
+                1283,
+                1284
+              ],
+              [
+                1303,
+                1305
+              ]
+            ],
+            "family": "window_pre",
+            "floor_met": true,
+            "gap": 5,
+            "label": "pre=0",
+            "post": 5,
+            "pre": 0,
+            "same_windows_as_frozen": false,
+            "windows": [
+              [
+                315,
+                322
+              ],
+              [
+                329,
+                340
+              ],
+              [
+                354,
+                371
+              ],
+              [
+                393,
+                412
+              ],
+              [
+                417,
+                432
+              ],
+              [
+                455,
+                463
+              ],
+              [
+                552,
+                568
+              ],
+              [
+                574,
+                585
+              ],
+              [
+                587,
+                592
+              ],
+              [
+                615,
+                620
+              ],
+              [
+                624,
+                638
+              ],
+              [
+                693,
+                702
+              ],
+              [
+                757,
+                778
+              ],
+              [
+                791,
+                799
+              ],
+              [
+                843,
+                849
+              ],
+              [
+                865,
+                880
+              ],
+              [
+                891,
+                897
+              ],
+              [
+                909,
+                927
+              ],
+              [
+                933,
+                954
+              ],
+              [
+                967,
+                972
+              ],
+              [
+                1018,
+                1023
+              ],
+              [
+                1094,
+                1102
+              ],
+              [
+                1114,
+                1120
+              ],
+              [
+                1146,
+                1154
+              ],
+              [
+                1167,
+                1173
+              ],
+              [
+                1178,
+                1198
+              ],
+              [
+                1210,
+                1250
+              ],
+              [
+                1251,
+                1256
+              ],
+              [
+                1258,
+                1273
+              ],
+              [
+                1283,
+                1289
+              ],
+              [
+                1303,
+                1310
+              ]
+            ]
+          },
+          {
+            "clusters": 31,
+            "episodes": 25,
+            "event_months": 35,
+            "event_spans": [
+              [
+                315,
+                317
+              ],
+              [
+                329,
+                335
+              ],
+              [
+                354,
+                366
+              ],
+              [
+                393,
+                427
+              ],
+              [
+                455,
+                458
+              ],
+              [
+                552,
+                563
+              ],
+              [
+                574,
+                587
+              ],
+              [
+                615,
+                633
+              ],
+              [
+                693,
+                697
+              ],
+              [
+                757,
+                773
+              ],
+              [
+                791,
+                794
+              ],
+              [
+                843,
+                844
+              ],
+              [
+                865,
+                875
+              ],
+              [
+                891,
+                892
+              ],
+              [
+                909,
+                922
+              ],
+              [
+                933,
+                949
+              ],
+              [
+                967,
+                967
+              ],
+              [
+                1018,
+                1018
+              ],
+              [
+                1094,
+                1097
+              ],
+              [
+                1114,
+                1115
+              ],
+              [
+                1146,
+                1149
+              ],
+              [
+                1167,
+                1193
+              ],
+              [
+                1210,
+                1268
+              ],
+              [
+                1283,
+                1284
+              ],
+              [
+                1303,
+                1305
+              ]
+            ],
+            "family": "window_pre",
+            "floor_met": true,
+            "gap": 5,
+            "label": "pre=5",
+            "post": 5,
+            "pre": 5,
+            "same_windows_as_frozen": false,
+            "windows": [
+              [
+                310,
+                322
+              ],
+              [
+                324,
+                340
+              ],
+              [
+                349,
+                371
+              ],
+              [
+                388,
+                432
+              ],
+              [
+                450,
+                463
+              ],
+              [
+                547,
+                568
+              ],
+              [
+                569,
+                592
+              ],
+              [
+                610,
+                638
+              ],
+              [
+                688,
+                702
+              ],
+              [
+                752,
+                778
+              ],
+              [
+                786,
+                799
+              ],
+              [
+                838,
+                849
+              ],
+              [
+                860,
+                880
+              ],
+              [
+                886,
+                897
+              ],
+              [
+                904,
+                927
+              ],
+              [
+                928,
+                954
+              ],
+              [
+                962,
+                972
+              ],
+              [
+                1013,
+                1023
+              ],
+              [
+                1089,
+                1102
+              ],
+              [
+                1109,
+                1120
+              ],
+              [
+                1141,
+                1154
+              ],
+              [
+                1162,
+                1198
+              ],
+              [
+                1205,
+                1273
+              ],
+              [
+                1278,
+                1289
+              ],
+              [
+                1298,
+                1310
+              ]
+            ]
+          },
+          {
+            "clusters": 31,
+            "episodes": 21,
+            "event_months": 35,
+            "event_spans": [
+              [
+                315,
+                335
+              ],
+              [
+                354,
+                366
+              ],
+              [
+                393,
+                427
+              ],
+              [
+                455,
+                458
+              ],
+              [
+                552,
+                587
+              ],
+              [
+                615,
+                633
+              ],
+              [
+                693,
+                697
+              ],
+              [
+                757,
+                773
+              ],
+              [
+                791,
+                794
+              ],
+              [
+                843,
+                844
+              ],
+              [
+                865,
+                875
+              ],
+              [
+                891,
+                892
+              ],
+              [
+                909,
+                949
+              ],
+              [
+                967,
+                967
+              ],
+              [
+                1018,
+                1018
+              ],
+              [
+                1094,
+                1097
+              ],
+              [
+                1114,
+                1115
+              ],
+              [
+                1146,
+                1149
+              ],
+              [
+                1167,
+                1193
+              ],
+              [
+                1210,
+                1284
+              ],
+              [
+                1303,
+                1305
+              ]
+            ],
+            "family": "window_pre",
+            "floor_met": true,
+            "gap": 5,
+            "label": "pre=10",
+            "post": 5,
+            "pre": 10,
+            "same_windows_as_frozen": false,
+            "windows": [
+              [
+                305,
+                340
+              ],
+              [
+                344,
+                371
+              ],
+              [
+                383,
+                432
+              ],
+              [
+                445,
+                463
+              ],
+              [
+                542,
+                592
+              ],
+              [
+                605,
+                638
+              ],
+              [
+                683,
+                702
+              ],
+              [
+                747,
+                778
+              ],
+              [
+                781,
+                799
+              ],
+              [
+                833,
+                849
+              ],
+              [
+                855,
+                880
+              ],
+              [
+                881,
+                897
+              ],
+              [
+                899,
+                954
+              ],
+              [
+                957,
+                972
+              ],
+              [
+                1008,
+                1023
+              ],
+              [
+                1084,
+                1102
+              ],
+              [
+                1104,
+                1120
+              ],
+              [
+                1136,
+                1154
+              ],
+              [
+                1157,
+                1198
+              ],
+              [
+                1200,
+                1289
+              ],
+              [
+                1293,
+                1310
+              ]
+            ]
+          },
+          {
+            "clusters": 31,
+            "episodes": 11,
+            "event_months": 35,
+            "event_spans": [
+              [
+                315,
+                366
+              ],
+              [
+                393,
+                427
+              ],
+              [
+                455,
+                458
+              ],
+              [
+                552,
+                587
+              ],
+              [
+                615,
+                633
+              ],
+              [
+                693,
+                697
+              ],
+              [
+                757,
+                794
+              ],
+              [
+                843,
+                967
+              ],
+              [
+                1018,
+                1018
+              ],
+              [
+                1094,
+                1115
+              ],
+              [
+                1146,
+                1305
+              ]
+            ],
+            "family": "window_pre",
+            "floor_met": true,
+            "gap": 5,
+            "label": "pre=21",
+            "post": 5,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                371
+              ],
+              [
+                372,
+                432
+              ],
+              [
+                434,
+                463
+              ],
+              [
+                531,
+                592
+              ],
+              [
+                594,
+                638
+              ],
+              [
+                672,
+                702
+              ],
+              [
+                736,
+                799
+              ],
+              [
+                822,
+                972
+              ],
+              [
+                997,
+                1023
+              ],
+              [
+                1073,
+                1120
+              ],
+              [
+                1125,
+                1310
+              ]
+            ]
+          }
+        ]
+      },
+      "spy": {
+        "clusters": 4,
+        "episodes": 4,
+        "event_months": 5,
+        "events": 11,
+        "floor_met": false,
+        "origins": 1001
+      },
+      "stored_clusters": 31,
+      "stored_episodes": 11,
+      "stored_events": 175,
+      "stored_windows_match": true,
+      "sum_per_ticker_episodes": 93,
+      "ticker_events": 405
+    },
+    {
+      "balanced_cross_section": true,
+      "checks": {
+        "gap_menu_windows_equal_frozen": true,
+        "pre0_equals_no_window_merge": true,
+        "quiet_q_eq_h_equals_no_window_merge": true,
+        "quiet_q_eq_reach_equals_frozen": null
+      },
+      "collapse": {
+        "boundaries": [
+          {
+            "event_free_sessions": 19,
+            "gap": 20,
+            "left_last": 370,
+            "reglued": true,
+            "right_first": 390
+          },
+          {
+            "event_free_sessions": 18,
+            "gap": 19,
+            "left_last": 427,
+            "reglued": true,
+            "right_first": 446
+          },
+          {
+            "event_free_sessions": 15,
+            "gap": 16,
+            "left_last": 468,
+            "reglued": true,
+            "right_first": 484
+          },
+          {
+            "event_free_sessions": 28,
+            "gap": 29,
+            "left_last": 485,
+            "reglued": true,
+            "right_first": 514
+          },
+          {
+            "event_free_sessions": 20,
+            "gap": 21,
+            "left_last": 526,
+            "reglued": true,
+            "right_first": 547
+          },
+          {
+            "event_free_sessions": 27,
+            "gap": 28,
+            "left_last": 587,
+            "reglued": true,
+            "right_first": 615
+          },
+          {
+            "event_free_sessions": 51,
+            "gap": 52,
+            "left_last": 635,
+            "reglued": false,
+            "right_first": 687
+          },
+          {
+            "event_free_sessions": 22,
+            "gap": 23,
+            "left_last": 697,
+            "reglued": true,
+            "right_first": 720
+          },
+          {
+            "event_free_sessions": 22,
+            "gap": 23,
+            "left_last": 731,
+            "reglued": true,
+            "right_first": 754
+          },
+          {
+            "event_free_sessions": 11,
+            "gap": 12,
+            "left_last": 773,
+            "reglued": true,
+            "right_first": 785
+          },
+          {
+            "event_free_sessions": 33,
+            "gap": 34,
+            "left_last": 795,
+            "reglued": false,
+            "right_first": 829
+          },
+          {
+            "event_free_sessions": 12,
+            "gap": 13,
+            "left_last": 875,
+            "reglued": true,
+            "right_first": 888
+          },
+          {
+            "event_free_sessions": 47,
+            "gap": 48,
+            "left_last": 967,
+            "reglued": false,
+            "right_first": 1015
+          },
+          {
+            "event_free_sessions": 30,
+            "gap": 31,
+            "left_last": 1020,
+            "reglued": true,
+            "right_first": 1051
+          },
+          {
+            "event_free_sessions": 10,
+            "gap": 11,
+            "left_last": 1051,
+            "reglued": true,
+            "right_first": 1062
+          },
+          {
+            "event_free_sessions": 14,
+            "gap": 15,
+            "left_last": 1065,
+            "reglued": true,
+            "right_first": 1080
+          },
+          {
+            "event_free_sessions": 14,
+            "gap": 15,
+            "left_last": 1115,
+            "reglued": true,
+            "right_first": 1130
+          },
+          {
+            "event_free_sessions": 14,
+            "gap": 15,
+            "left_last": 1194,
+            "reglued": true,
+            "right_first": 1209
+          },
+          {
+            "event_free_sessions": 11,
+            "gap": 12,
+            "left_last": 1270,
+            "reglued": true,
+            "right_first": 1282
+          }
+        ],
+        "clusters": [
+          {
+            "episode": 0,
+            "first": 315,
+            "index": 0,
+            "last": 370,
+            "n_dates": 34,
+            "window": [
+              294,
+              380
+            ]
+          },
+          {
+            "episode": 0,
+            "first": 390,
+            "index": 1,
+            "last": 427,
+            "n_dates": 31,
+            "window": [
+              369,
+              437
+            ]
+          },
+          {
+            "episode": 0,
+            "first": 446,
+            "index": 2,
+            "last": 468,
+            "n_dates": 16,
+            "window": [
+              425,
+              478
+            ]
+          },
+          {
+            "episode": 0,
+            "first": 484,
+            "index": 3,
+            "last": 485,
+            "n_dates": 2,
+            "window": [
+              463,
+              495
+            ]
+          },
+          {
+            "episode": 0,
+            "first": 514,
+            "index": 4,
+            "last": 526,
+            "n_dates": 11,
+            "window": [
+              493,
+              536
+            ]
+          },
+          {
+            "episode": 0,
+            "first": 547,
+            "index": 5,
+            "last": 587,
+            "n_dates": 32,
+            "window": [
+              526,
+              597
+            ]
+          },
+          {
+            "episode": 0,
+            "first": 615,
+            "index": 6,
+            "last": 635,
+            "n_dates": 12,
+            "window": [
+              594,
+              645
+            ]
+          },
+          {
+            "episode": 1,
+            "first": 687,
+            "index": 7,
+            "last": 697,
+            "n_dates": 11,
+            "window": [
+              666,
+              707
+            ]
+          },
+          {
+            "episode": 1,
+            "first": 720,
+            "index": 8,
+            "last": 731,
+            "n_dates": 4,
+            "window": [
+              699,
+              741
+            ]
+          },
+          {
+            "episode": 1,
+            "first": 754,
+            "index": 9,
+            "last": 773,
+            "n_dates": 20,
+            "window": [
+              733,
+              783
+            ]
+          },
+          {
+            "episode": 1,
+            "first": 785,
+            "index": 10,
+            "last": 795,
+            "n_dates": 11,
+            "window": [
+              764,
+              805
+            ]
+          },
+          {
+            "episode": 2,
+            "first": 829,
+            "index": 11,
+            "last": 875,
+            "n_dates": 27,
+            "window": [
+              808,
+              885
+            ]
+          },
+          {
+            "episode": 2,
+            "first": 888,
+            "index": 12,
+            "last": 967,
+            "n_dates": 45,
+            "window": [
+              867,
+              977
+            ]
+          },
+          {
+            "episode": 3,
+            "first": 1015,
+            "index": 13,
+            "last": 1020,
+            "n_dates": 5,
+            "window": [
+              994,
+              1030
+            ]
+          },
+          {
+            "episode": 3,
+            "first": 1051,
+            "index": 14,
+            "last": 1051,
+            "n_dates": 1,
+            "window": [
+              1030,
+              1061
+            ]
+          },
+          {
+            "episode": 3,
+            "first": 1062,
+            "index": 15,
+            "last": 1065,
+            "n_dates": 3,
+            "window": [
+              1041,
+              1075
+            ]
+          },
+          {
+            "episode": 3,
+            "first": 1080,
+            "index": 16,
+            "last": 1115,
+            "n_dates": 20,
+            "window": [
+              1059,
+              1125
+            ]
+          },
+          {
+            "episode": 3,
+            "first": 1130,
+            "index": 17,
+            "last": 1194,
+            "n_dates": 47,
+            "window": [
+              1109,
+              1204
+            ]
+          },
+          {
+            "episode": 3,
+            "first": 1209,
+            "index": 18,
+            "last": 1270,
+            "n_dates": 47,
+            "window": [
+              1188,
+              1280
+            ]
+          },
+          {
+            "episode": 3,
+            "first": 1282,
+            "index": 19,
+            "last": 1305,
+            "n_dates": 16,
+            "window": [
+              1261,
+              1315
+            ]
+          }
+        ],
+        "clusters_absorbed_by_window": 16,
+        "dates_absorbed_by_gap": 375,
+        "gap_share_of_reduction": {
+          "denominator": 391,
+          "numerator": 375,
+          "text": "0.959079"
+        },
+        "merge_reach": 31,
+        "n_boundaries": 19,
+        "n_boundaries_reglued": 16,
+        "n_clusters": 20,
+        "n_episodes": 4,
+        "n_event_dates": 395,
+        "n_gaps_gt_h": 19,
+        "n_gaps_gt_reach": 3,
+        "reduction_dates_to_episodes": 391,
+        "surviving_boundary_gaps": [
+          52,
+          34,
+          48
+        ],
+        "window_share_of_reduction": {
+          "denominator": 391,
+          "numerator": 16,
+          "text": "0.040921"
+        }
+      },
+      "date_axis_occupancy": {
+        "denominator": 995,
+        "numerator": 395,
+        "text": "0.396985"
+      },
+      "event_dates_over_origins": {
+        "denominator": 13930,
+        "numerator": 395,
+        "text": "0.028356"
+      },
+      "event_month_first": "2022-10",
+      "event_month_last": "2026-09",
+      "event_month_list": [
+        "2022-10",
+        "2022-11",
+        "2022-12",
+        "2023-01",
+        "2023-02",
+        "2023-03",
+        "2023-04",
+        "2023-05",
+        "2023-06",
+        "2023-07",
+        "2023-08",
+        "2023-09",
+        "2023-10",
+        "2023-11",
+        "2023-12",
+        "2024-01",
+        "2024-03",
+        "2024-04",
+        "2024-05",
+        "2024-07",
+        "2024-08",
+        "2024-09",
+        "2024-10",
+        "2024-11",
+        "2024-12",
+        "2025-01",
+        "2025-02",
+        "2025-03",
+        "2025-04",
+        "2025-05",
+        "2025-07",
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03",
+        "2026-04",
+        "2026-05",
+        "2026-06",
+        "2026-07",
+        "2026-08",
+        "2026-09"
+      ],
+      "event_months": 44,
+      "event_months_match_list": true,
+      "events_match_event_dates": true,
+      "frozen_windows": [
+        [
+          294,
+          645
+        ],
+        [
+          666,
+          805
+        ],
+        [
+          808,
+          977
+        ],
+        [
+          994,
+          1315
+        ]
+      ],
+      "gap_histogram": {
+        "bins": [
+          {
+            "label": "0",
+            "n": 0
+          },
+          {
+            "label": "1",
+            "n": 328
+          },
+          {
+            "label": "2",
+            "n": 15
+          },
+          {
+            "label": "3",
+            "n": 5
+          },
+          {
+            "label": "4-5",
+            "n": 10
+          },
+          {
+            "label": "6-10",
+            "n": 17
+          },
+          {
+            "label": "11-21",
+            "n": 11
+          },
+          {
+            "label": "22-42",
+            "n": 6
+          },
+          {
+            "label": "43-63",
+            "n": 2
+          },
+          {
+            "label": "64+",
+            "n": 0
+          }
+        ],
+        "max": 52,
+        "median": "1",
+        "min": 1,
+        "n_gaps": 394
+      },
+      "h": 10,
+      "implied_sessions": 995,
+      "longest_quiet_stretch": {
+        "left_event_index": 635,
+        "max_event_free_sessions": 51,
+        "max_gap": 52,
+        "right_event_index": 687
+      },
+      "mean_tickers_per_event_date": {
+        "denominator": 395,
+        "numerator": 1168,
+        "text": "2.956962"
+      },
+      "n_event_dates": 395,
+      "n_tickers": 14,
+      "origins_rows": 13930,
+      "per_ticker_episodes": {
+        "DIA": 5,
+        "IWM": 12,
+        "QQQ": 10,
+        "XLB": 13,
+        "XLC": 9,
+        "XLE": 12,
+        "XLF": 9,
+        "XLI": 7,
+        "XLK": 7,
+        "XLP": 5,
+        "XLRE": 10,
+        "XLU": 12,
+        "XLV": 7,
+        "XLY": 8
+      },
+      "rules": {
+        "frozen_gap_no_window_merge": {
+          "clusters": 20,
+          "episodes": 20,
+          "event_months": 44,
+          "event_spans": [
+            [
+              315,
+              370
+            ],
+            [
+              390,
+              427
+            ],
+            [
+              446,
+              468
+            ],
+            [
+              484,
+              485
+            ],
+            [
+              514,
+              526
+            ],
+            [
+              547,
+              587
+            ],
+            [
+              615,
+              635
+            ],
+            [
+              687,
+              697
+            ],
+            [
+              720,
+              731
+            ],
+            [
+              754,
+              773
+            ],
+            [
+              785,
+              795
+            ],
+            [
+              829,
+              875
+            ],
+            [
+              888,
+              967
+            ],
+            [
+              1015,
+              1020
+            ],
+            [
+              1051,
+              1051
+            ],
+            [
+              1062,
+              1065
+            ],
+            [
+              1080,
+              1115
+            ],
+            [
+              1130,
+              1194
+            ],
+            [
+              1209,
+              1270
+            ],
+            [
+              1282,
+              1305
+            ]
+          ],
+          "family": "frozen_gap_no_window_merge",
+          "floor_met": true,
+          "gap": 10,
+          "label": "no window merge",
+          "windows": null
+        },
+        "gap_with_frozen_window": [
+          {
+            "clusters": 67,
+            "episodes": 4,
+            "event_months": 44,
+            "event_spans": [
+              [
+                315,
+                635
+              ],
+              [
+                687,
+                795
+              ],
+              [
+                829,
+                967
+              ],
+              [
+                1015,
+                1305
+              ]
+            ],
+            "family": "gap_with_frozen_window",
+            "floor_met": false,
+            "gap": 1,
+            "label": "g=1",
+            "post": 10,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                645
+              ],
+              [
+                666,
+                805
+              ],
+              [
+                808,
+                977
+              ],
+              [
+                994,
+                1315
+              ]
+            ]
+          },
+          {
+            "clusters": 52,
+            "episodes": 4,
+            "event_months": 44,
+            "event_spans": [
+              [
+                315,
+                635
+              ],
+              [
+                687,
+                795
+              ],
+              [
+                829,
+                967
+              ],
+              [
+                1015,
+                1305
+              ]
+            ],
+            "family": "gap_with_frozen_window",
+            "floor_met": false,
+            "gap": 2,
+            "label": "g=2",
+            "post": 10,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                645
+              ],
+              [
+                666,
+                805
+              ],
+              [
+                808,
+                977
+              ],
+              [
+                994,
+                1315
+              ]
+            ]
+          },
+          {
+            "clusters": 47,
+            "episodes": 4,
+            "event_months": 44,
+            "event_spans": [
+              [
+                315,
+                635
+              ],
+              [
+                687,
+                795
+              ],
+              [
+                829,
+                967
+              ],
+              [
+                1015,
+                1305
+              ]
+            ],
+            "family": "gap_with_frozen_window",
+            "floor_met": false,
+            "gap": 3,
+            "label": "g=3",
+            "post": 10,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                645
+              ],
+              [
+                666,
+                805
+              ],
+              [
+                808,
+                977
+              ],
+              [
+                994,
+                1315
+              ]
+            ]
+          },
+          {
+            "clusters": 37,
+            "episodes": 4,
+            "event_months": 44,
+            "event_spans": [
+              [
+                315,
+                635
+              ],
+              [
+                687,
+                795
+              ],
+              [
+                829,
+                967
+              ],
+              [
+                1015,
+                1305
+              ]
+            ],
+            "family": "gap_with_frozen_window",
+            "floor_met": false,
+            "gap": 5,
+            "label": "g=5",
+            "post": 10,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                645
+              ],
+              [
+                666,
+                805
+              ],
+              [
+                808,
+                977
+              ],
+              [
+                994,
+                1315
+              ]
+            ]
+          },
+          {
+            "clusters": 20,
+            "episodes": 4,
+            "event_months": 44,
+            "event_spans": [
+              [
+                315,
+                635
+              ],
+              [
+                687,
+                795
+              ],
+              [
+                829,
+                967
+              ],
+              [
+                1015,
+                1305
+              ]
+            ],
+            "family": "gap_with_frozen_window",
+            "floor_met": false,
+            "gap": 10,
+            "label": "g=10",
+            "post": 10,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                645
+              ],
+              [
+                666,
+                805
+              ],
+              [
+                808,
+                977
+              ],
+              [
+                994,
+                1315
+              ]
+            ]
+          },
+          {
+            "clusters": 9,
+            "episodes": 4,
+            "event_months": 44,
+            "event_spans": [
+              [
+                315,
+                635
+              ],
+              [
+                687,
+                795
+              ],
+              [
+                829,
+                967
+              ],
+              [
+                1015,
+                1305
+              ]
+            ],
+            "family": "gap_with_frozen_window",
+            "floor_met": false,
+            "gap": 21,
+            "label": "g=21",
+            "post": 10,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                645
+              ],
+              [
+                666,
+                805
+              ],
+              [
+                808,
+                977
+              ],
+              [
+                994,
+                1315
+              ]
+            ]
+          }
+        ],
+        "quiet_reset": [
+          {
+            "clusters": 37,
+            "episodes": 37,
+            "event_months": 44,
+            "event_spans": [
+              [
+                315,
+                317
+              ],
+              [
+                326,
+                335
+              ],
+              [
+                345,
+                370
+              ],
+              [
+                390,
+                427
+              ],
+              [
+                446,
+                458
+              ],
+              [
+                465,
+                468
+              ],
+              [
+                484,
+                485
+              ],
+              [
+                514,
+                526
+              ],
+              [
+                547,
+                581
+              ],
+              [
+                587,
+                587
+              ],
+              [
+                615,
+                615
+              ],
+              [
+                623,
+                635
+              ],
+              [
+                687,
+                697
+              ],
+              [
+                720,
+                722
+              ],
+              [
+                731,
+                731
+              ],
+              [
+                754,
+                773
+              ],
+              [
+                785,
+                795
+              ],
+              [
+                829,
+                832
+              ],
+              [
+                842,
+                844
+              ],
+              [
+                852,
+                875
+              ],
+              [
+                888,
+                892
+              ],
+              [
+                902,
+                922
+              ],
+              [
+                931,
+                949
+              ],
+              [
+                958,
+                967
+              ],
+              [
+                1015,
+                1020
+              ],
+              [
+                1051,
+                1051
+              ],
+              [
+                1062,
+                1065
+              ],
+              [
+                1080,
+                1097
+              ],
+              [
+                1104,
+                1106
+              ],
+              [
+                1112,
+                1115
+              ],
+              [
+                1130,
+                1133
+              ],
+              [
+                1142,
+                1155
+              ],
+              [
+                1162,
+                1194
+              ],
+              [
+                1209,
+                1245
+              ],
+              [
+                1251,
+                1251
+              ],
+              [
+                1257,
+                1270
+              ],
+              [
+                1282,
+                1305
+              ]
+            ],
+            "family": "quiet_reset",
+            "floor_met": true,
+            "label": "Q=5",
+            "q": 5,
+            "same_episodes_as_no_window_merge": false,
+            "same_partition_as_frozen": false,
+            "windows": null
+          },
+          {
+            "clusters": 20,
+            "episodes": 20,
+            "event_months": 44,
+            "event_spans": [
+              [
+                315,
+                370
+              ],
+              [
+                390,
+                427
+              ],
+              [
+                446,
+                468
+              ],
+              [
+                484,
+                485
+              ],
+              [
+                514,
+                526
+              ],
+              [
+                547,
+                587
+              ],
+              [
+                615,
+                635
+              ],
+              [
+                687,
+                697
+              ],
+              [
+                720,
+                731
+              ],
+              [
+                754,
+                773
+              ],
+              [
+                785,
+                795
+              ],
+              [
+                829,
+                875
+              ],
+              [
+                888,
+                967
+              ],
+              [
+                1015,
+                1020
+              ],
+              [
+                1051,
+                1051
+              ],
+              [
+                1062,
+                1065
+              ],
+              [
+                1080,
+                1115
+              ],
+              [
+                1130,
+                1194
+              ],
+              [
+                1209,
+                1270
+              ],
+              [
+                1282,
+                1305
+              ]
+            ],
+            "family": "quiet_reset",
+            "floor_met": true,
+            "label": "Q=10",
+            "q": 10,
+            "same_episodes_as_no_window_merge": true,
+            "same_partition_as_frozen": false,
+            "windows": null
+          },
+          {
+            "clusters": 9,
+            "episodes": 9,
+            "event_months": 44,
+            "event_spans": [
+              [
+                315,
+                485
+              ],
+              [
+                514,
+                587
+              ],
+              [
+                615,
+                635
+              ],
+              [
+                687,
+                697
+              ],
+              [
+                720,
+                731
+              ],
+              [
+                754,
+                795
+              ],
+              [
+                829,
+                967
+              ],
+              [
+                1015,
+                1020
+              ],
+              [
+                1051,
+                1305
+              ]
+            ],
+            "family": "quiet_reset",
+            "floor_met": false,
+            "label": "Q=21",
+            "q": 21,
+            "same_episodes_as_no_window_merge": false,
+            "same_partition_as_frozen": false,
+            "windows": null
+          },
+          {
+            "clusters": 3,
+            "episodes": 3,
+            "event_months": 44,
+            "event_spans": [
+              [
+                315,
+                635
+              ],
+              [
+                687,
+                967
+              ],
+              [
+                1015,
+                1305
+              ]
+            ],
+            "family": "quiet_reset",
+            "floor_met": false,
+            "label": "Q=42",
+            "q": 42,
+            "same_episodes_as_no_window_merge": false,
+            "same_partition_as_frozen": false,
+            "windows": null
+          }
+        ],
+        "window_pre": [
+          {
+            "clusters": 20,
+            "episodes": 20,
+            "event_months": 44,
+            "event_spans": [
+              [
+                315,
+                370
+              ],
+              [
+                390,
+                427
+              ],
+              [
+                446,
+                468
+              ],
+              [
+                484,
+                485
+              ],
+              [
+                514,
+                526
+              ],
+              [
+                547,
+                587
+              ],
+              [
+                615,
+                635
+              ],
+              [
+                687,
+                697
+              ],
+              [
+                720,
+                731
+              ],
+              [
+                754,
+                773
+              ],
+              [
+                785,
+                795
+              ],
+              [
+                829,
+                875
+              ],
+              [
+                888,
+                967
+              ],
+              [
+                1015,
+                1020
+              ],
+              [
+                1051,
+                1051
+              ],
+              [
+                1062,
+                1065
+              ],
+              [
+                1080,
+                1115
+              ],
+              [
+                1130,
+                1194
+              ],
+              [
+                1209,
+                1270
+              ],
+              [
+                1282,
+                1305
+              ]
+            ],
+            "family": "window_pre",
+            "floor_met": true,
+            "gap": 10,
+            "label": "pre=0",
+            "post": 10,
+            "pre": 0,
+            "same_windows_as_frozen": false,
+            "windows": [
+              [
+                315,
+                380
+              ],
+              [
+                390,
+                437
+              ],
+              [
+                446,
+                478
+              ],
+              [
+                484,
+                495
+              ],
+              [
+                514,
+                536
+              ],
+              [
+                547,
+                597
+              ],
+              [
+                615,
+                645
+              ],
+              [
+                687,
+                707
+              ],
+              [
+                720,
+                741
+              ],
+              [
+                754,
+                783
+              ],
+              [
+                785,
+                805
+              ],
+              [
+                829,
+                885
+              ],
+              [
+                888,
+                977
+              ],
+              [
+                1015,
+                1030
+              ],
+              [
+                1051,
+                1061
+              ],
+              [
+                1062,
+                1075
+              ],
+              [
+                1080,
+                1125
+              ],
+              [
+                1130,
+                1204
+              ],
+              [
+                1209,
+                1280
+              ],
+              [
+                1282,
+                1315
+              ]
+            ]
+          },
+          {
+            "clusters": 20,
+            "episodes": 13,
+            "event_months": 44,
+            "event_spans": [
+              [
+                315,
+                370
+              ],
+              [
+                390,
+                427
+              ],
+              [
+                446,
+                468
+              ],
+              [
+                484,
+                485
+              ],
+              [
+                514,
+                526
+              ],
+              [
+                547,
+                587
+              ],
+              [
+                615,
+                635
+              ],
+              [
+                687,
+                697
+              ],
+              [
+                720,
+                731
+              ],
+              [
+                754,
+                795
+              ],
+              [
+                829,
+                967
+              ],
+              [
+                1015,
+                1020
+              ],
+              [
+                1051,
+                1305
+              ]
+            ],
+            "family": "window_pre",
+            "floor_met": true,
+            "gap": 10,
+            "label": "pre=5",
+            "post": 10,
+            "pre": 5,
+            "same_windows_as_frozen": false,
+            "windows": [
+              [
+                310,
+                380
+              ],
+              [
+                385,
+                437
+              ],
+              [
+                441,
+                478
+              ],
+              [
+                479,
+                495
+              ],
+              [
+                509,
+                536
+              ],
+              [
+                542,
+                597
+              ],
+              [
+                610,
+                645
+              ],
+              [
+                682,
+                707
+              ],
+              [
+                715,
+                741
+              ],
+              [
+                749,
+                805
+              ],
+              [
+                824,
+                977
+              ],
+              [
+                1010,
+                1030
+              ],
+              [
+                1046,
+                1315
+              ]
+            ]
+          },
+          {
+            "clusters": 20,
+            "episodes": 10,
+            "event_months": 44,
+            "event_spans": [
+              [
+                315,
+                485
+              ],
+              [
+                514,
+                526
+              ],
+              [
+                547,
+                587
+              ],
+              [
+                615,
+                635
+              ],
+              [
+                687,
+                697
+              ],
+              [
+                720,
+                731
+              ],
+              [
+                754,
+                795
+              ],
+              [
+                829,
+                967
+              ],
+              [
+                1015,
+                1020
+              ],
+              [
+                1051,
+                1305
+              ]
+            ],
+            "family": "window_pre",
+            "floor_met": true,
+            "gap": 10,
+            "label": "pre=10",
+            "post": 10,
+            "pre": 10,
+            "same_windows_as_frozen": false,
+            "windows": [
+              [
+                305,
+                495
+              ],
+              [
+                504,
+                536
+              ],
+              [
+                537,
+                597
+              ],
+              [
+                605,
+                645
+              ],
+              [
+                677,
+                707
+              ],
+              [
+                710,
+                741
+              ],
+              [
+                744,
+                805
+              ],
+              [
+                819,
+                977
+              ],
+              [
+                1005,
+                1030
+              ],
+              [
+                1041,
+                1315
+              ]
+            ]
+          },
+          {
+            "clusters": 20,
+            "episodes": 4,
+            "event_months": 44,
+            "event_spans": [
+              [
+                315,
+                635
+              ],
+              [
+                687,
+                795
+              ],
+              [
+                829,
+                967
+              ],
+              [
+                1015,
+                1305
+              ]
+            ],
+            "family": "window_pre",
+            "floor_met": false,
+            "gap": 10,
+            "label": "pre=21",
+            "post": 10,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                645
+              ],
+              [
+                666,
+                805
+              ],
+              [
+                808,
+                977
+              ],
+              [
+                994,
+                1315
+              ]
+            ]
+          }
+        ]
+      },
+      "spy": {
+        "clusters": 8,
+        "episodes": 6,
+        "event_months": 9,
+        "events": 36,
+        "floor_met": false,
+        "origins": 996
+      },
+      "stored_clusters": 20,
+      "stored_episodes": 4,
+      "stored_events": 395,
+      "stored_windows_match": true,
+      "sum_per_ticker_episodes": 126,
+      "ticker_events": 1168
+    },
+    {
+      "balanced_cross_section": true,
+      "checks": {
+        "gap_menu_windows_equal_frozen": true,
+        "pre0_equals_no_window_merge": true,
+        "quiet_q_eq_h_equals_no_window_merge": true,
+        "quiet_q_eq_reach_equals_frozen": true
+      },
+      "collapse": {
+        "boundaries": [
+          {
+            "event_free_sessions": 22,
+            "gap": 23,
+            "left_last": 485,
+            "reglued": true,
+            "right_first": 508
+          },
+          {
+            "event_free_sessions": 27,
+            "gap": 28,
+            "left_last": 587,
+            "reglued": true,
+            "right_first": 615
+          },
+          {
+            "event_free_sessions": 37,
+            "gap": 38,
+            "left_last": 635,
+            "reglued": true,
+            "right_first": 673
+          },
+          {
+            "event_free_sessions": 34,
+            "gap": 35,
+            "left_last": 967,
+            "reglued": true,
+            "right_first": 1002
+          }
+        ],
+        "clusters": [
+          {
+            "episode": 0,
+            "first": 315,
+            "index": 0,
+            "last": 485,
+            "n_dates": 129,
+            "window": [
+              294,
+              506
+            ]
+          },
+          {
+            "episode": 0,
+            "first": 508,
+            "index": 1,
+            "last": 587,
+            "n_dates": 65,
+            "window": [
+              487,
+              608
+            ]
+          },
+          {
+            "episode": 0,
+            "first": 615,
+            "index": 2,
+            "last": 635,
+            "n_dates": 20,
+            "window": [
+              594,
+              656
+            ]
+          },
+          {
+            "episode": 0,
+            "first": 673,
+            "index": 3,
+            "last": 967,
+            "n_dates": 194,
+            "window": [
+              652,
+              988
+            ]
+          },
+          {
+            "episode": 0,
+            "first": 1002,
+            "index": 4,
+            "last": 1298,
+            "n_dates": 217,
+            "window": [
+              981,
+              1319
+            ]
+          }
+        ],
+        "clusters_absorbed_by_window": 4,
+        "dates_absorbed_by_gap": 620,
+        "gap_share_of_reduction": {
+          "denominator": 624,
+          "numerator": 620,
+          "text": "0.993590"
+        },
+        "merge_reach": 42,
+        "n_boundaries": 4,
+        "n_boundaries_reglued": 4,
+        "n_clusters": 5,
+        "n_episodes": 1,
+        "n_event_dates": 625,
+        "n_gaps_gt_h": 4,
+        "n_gaps_gt_reach": 0,
+        "reduction_dates_to_episodes": 624,
+        "surviving_boundary_gaps": [],
+        "window_share_of_reduction": {
+          "denominator": 624,
+          "numerator": 4,
+          "text": "0.006410"
+        }
+      },
+      "date_axis_occupancy": {
+        "denominator": 984,
+        "numerator": 625,
+        "text": "0.635163"
+      },
+      "event_dates_over_origins": {
+        "denominator": 13776,
+        "numerator": 625,
+        "text": "0.045369"
+      },
+      "event_month_first": "2022-10",
+      "event_month_last": "2026-09",
+      "event_month_list": [
+        "2022-10",
+        "2022-11",
+        "2022-12",
+        "2023-01",
+        "2023-02",
+        "2023-03",
+        "2023-04",
+        "2023-05",
+        "2023-06",
+        "2023-07",
+        "2023-08",
+        "2023-09",
+        "2023-10",
+        "2023-11",
+        "2023-12",
+        "2024-01",
+        "2024-03",
+        "2024-04",
+        "2024-05",
+        "2024-06",
+        "2024-07",
+        "2024-08",
+        "2024-09",
+        "2024-10",
+        "2024-11",
+        "2024-12",
+        "2025-01",
+        "2025-02",
+        "2025-03",
+        "2025-04",
+        "2025-05",
+        "2025-07",
+        "2025-08",
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03",
+        "2026-04",
+        "2026-05",
+        "2026-06",
+        "2026-07",
+        "2026-08",
+        "2026-09"
+      ],
+      "event_months": 46,
+      "event_months_match_list": true,
+      "events_match_event_dates": true,
+      "frozen_windows": [
+        [
+          294,
+          1319
+        ]
+      ],
+      "gap_histogram": {
+        "bins": [
+          {
+            "label": "0",
+            "n": 0
+          },
+          {
+            "label": "1",
+            "n": 572
+          },
+          {
+            "label": "2",
+            "n": 17
+          },
+          {
+            "label": "3",
+            "n": 4
+          },
+          {
+            "label": "4-5",
+            "n": 7
+          },
+          {
+            "label": "6-10",
+            "n": 9
+          },
+          {
+            "label": "11-21",
+            "n": 11
+          },
+          {
+            "label": "22-42",
+            "n": 4
+          },
+          {
+            "label": "43-63",
+            "n": 0
+          },
+          {
+            "label": "64+",
+            "n": 0
+          }
+        ],
+        "max": 38,
+        "median": "1",
+        "min": 1,
+        "n_gaps": 624
+      },
+      "h": 21,
+      "implied_sessions": 984,
+      "longest_quiet_stretch": {
+        "left_event_index": 635,
+        "max_event_free_sessions": 37,
+        "max_gap": 38,
+        "right_event_index": 673
+      },
+      "mean_tickers_per_event_date": {
+        "denominator": 625,
+        "numerator": 2726,
+        "text": "4.361600"
+      },
+      "n_event_dates": 625,
+      "n_tickers": 14,
+      "origins_rows": 13776,
+      "per_ticker_episodes": {
+        "DIA": 9,
+        "IWM": 9,
+        "QQQ": 7,
+        "XLB": 8,
+        "XLC": 8,
+        "XLE": 7,
+        "XLF": 8,
+        "XLI": 8,
+        "XLK": 7,
+        "XLP": 7,
+        "XLRE": 9,
+        "XLU": 10,
+        "XLV": 9,
+        "XLY": 8
+      },
+      "rules": {
+        "frozen_gap_no_window_merge": {
+          "clusters": 5,
+          "episodes": 5,
+          "event_months": 46,
+          "event_spans": [
+            [
+              315,
+              485
+            ],
+            [
+              508,
+              587
+            ],
+            [
+              615,
+              635
+            ],
+            [
+              673,
+              967
+            ],
+            [
+              1002,
+              1298
+            ]
+          ],
+          "family": "frozen_gap_no_window_merge",
+          "floor_met": false,
+          "gap": 21,
+          "label": "no window merge",
+          "windows": null
+        },
+        "gap_with_frozen_window": [
+          {
+            "clusters": 53,
+            "episodes": 1,
+            "event_months": 46,
+            "event_spans": [
+              [
+                315,
+                1298
+              ]
+            ],
+            "family": "gap_with_frozen_window",
+            "floor_met": false,
+            "gap": 1,
+            "label": "g=1",
+            "post": 21,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                1319
+              ]
+            ]
+          },
+          {
+            "clusters": 36,
+            "episodes": 1,
+            "event_months": 46,
+            "event_spans": [
+              [
+                315,
+                1298
+              ]
+            ],
+            "family": "gap_with_frozen_window",
+            "floor_met": false,
+            "gap": 2,
+            "label": "g=2",
+            "post": 21,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                1319
+              ]
+            ]
+          },
+          {
+            "clusters": 32,
+            "episodes": 1,
+            "event_months": 46,
+            "event_spans": [
+              [
+                315,
+                1298
+              ]
+            ],
+            "family": "gap_with_frozen_window",
+            "floor_met": false,
+            "gap": 3,
+            "label": "g=3",
+            "post": 21,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                1319
+              ]
+            ]
+          },
+          {
+            "clusters": 25,
+            "episodes": 1,
+            "event_months": 46,
+            "event_spans": [
+              [
+                315,
+                1298
+              ]
+            ],
+            "family": "gap_with_frozen_window",
+            "floor_met": false,
+            "gap": 5,
+            "label": "g=5",
+            "post": 21,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                1319
+              ]
+            ]
+          },
+          {
+            "clusters": 16,
+            "episodes": 1,
+            "event_months": 46,
+            "event_spans": [
+              [
+                315,
+                1298
+              ]
+            ],
+            "family": "gap_with_frozen_window",
+            "floor_met": false,
+            "gap": 10,
+            "label": "g=10",
+            "post": 21,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                1319
+              ]
+            ]
+          },
+          {
+            "clusters": 5,
+            "episodes": 1,
+            "event_months": 46,
+            "event_spans": [
+              [
+                315,
+                1298
+              ]
+            ],
+            "family": "gap_with_frozen_window",
+            "floor_met": false,
+            "gap": 21,
+            "label": "g=21",
+            "post": 21,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                1319
+              ]
+            ]
+          }
+        ],
+        "quiet_reset": [
+          {
+            "clusters": 25,
+            "episodes": 25,
+            "event_months": 46,
+            "event_spans": [
+              [
+                315,
+                370
+              ],
+              [
+                381,
+                427
+              ],
+              [
+                439,
+                468
+              ],
+              [
+                484,
+                485
+              ],
+              [
+                508,
+                526
+              ],
+              [
+                537,
+                581
+              ],
+              [
+                587,
+                587
+              ],
+              [
+                615,
+                635
+              ],
+              [
+                673,
+                697
+              ],
+              [
+                705,
+                708
+              ],
+              [
+                719,
+                724
+              ],
+              [
+                730,
+                734
+              ],
+              [
+                747,
+                773
+              ],
+              [
+                780,
+                795
+              ],
+              [
+                804,
+                804
+              ],
+              [
+                818,
+                834
+              ],
+              [
+                842,
+                875
+              ],
+              [
+                887,
+                967
+              ],
+              [
+                1002,
+                1008
+              ],
+              [
+                1015,
+                1020
+              ],
+              [
+                1037,
+                1038
+              ],
+              [
+                1051,
+                1097
+              ],
+              [
+                1104,
+                1106
+              ],
+              [
+                1112,
+                1115
+              ],
+              [
+                1130,
+                1298
+              ]
+            ],
+            "family": "quiet_reset",
+            "floor_met": true,
+            "label": "Q=5",
+            "q": 5,
+            "same_episodes_as_no_window_merge": false,
+            "same_partition_as_frozen": false,
+            "windows": null
+          },
+          {
+            "clusters": 16,
+            "episodes": 16,
+            "event_months": 46,
+            "event_spans": [
+              [
+                315,
+                370
+              ],
+              [
+                381,
+                427
+              ],
+              [
+                439,
+                468
+              ],
+              [
+                484,
+                485
+              ],
+              [
+                508,
+                526
+              ],
+              [
+                537,
+                587
+              ],
+              [
+                615,
+                635
+              ],
+              [
+                673,
+                708
+              ],
+              [
+                719,
+                734
+              ],
+              [
+                747,
+                804
+              ],
+              [
+                818,
+                875
+              ],
+              [
+                887,
+                967
+              ],
+              [
+                1002,
+                1020
+              ],
+              [
+                1037,
+                1038
+              ],
+              [
+                1051,
+                1115
+              ],
+              [
+                1130,
+                1298
+              ]
+            ],
+            "family": "quiet_reset",
+            "floor_met": true,
+            "label": "Q=10",
+            "q": 10,
+            "same_episodes_as_no_window_merge": false,
+            "same_partition_as_frozen": false,
+            "windows": null
+          },
+          {
+            "clusters": 5,
+            "episodes": 5,
+            "event_months": 46,
+            "event_spans": [
+              [
+                315,
+                485
+              ],
+              [
+                508,
+                587
+              ],
+              [
+                615,
+                635
+              ],
+              [
+                673,
+                967
+              ],
+              [
+                1002,
+                1298
+              ]
+            ],
+            "family": "quiet_reset",
+            "floor_met": false,
+            "label": "Q=21",
+            "q": 21,
+            "same_episodes_as_no_window_merge": true,
+            "same_partition_as_frozen": false,
+            "windows": null
+          },
+          {
+            "clusters": 1,
+            "episodes": 1,
+            "event_months": 46,
+            "event_spans": [
+              [
+                315,
+                1298
+              ]
+            ],
+            "family": "quiet_reset",
+            "floor_met": false,
+            "label": "Q=42",
+            "q": 42,
+            "same_episodes_as_no_window_merge": false,
+            "same_partition_as_frozen": true,
+            "windows": null
+          }
+        ],
+        "window_pre": [
+          {
+            "clusters": 5,
+            "episodes": 5,
+            "event_months": 46,
+            "event_spans": [
+              [
+                315,
+                485
+              ],
+              [
+                508,
+                587
+              ],
+              [
+                615,
+                635
+              ],
+              [
+                673,
+                967
+              ],
+              [
+                1002,
+                1298
+              ]
+            ],
+            "family": "window_pre",
+            "floor_met": false,
+            "gap": 21,
+            "label": "pre=0",
+            "post": 21,
+            "pre": 0,
+            "same_windows_as_frozen": false,
+            "windows": [
+              [
+                315,
+                506
+              ],
+              [
+                508,
+                608
+              ],
+              [
+                615,
+                656
+              ],
+              [
+                673,
+                988
+              ],
+              [
+                1002,
+                1319
+              ]
+            ]
+          },
+          {
+            "clusters": 5,
+            "episodes": 4,
+            "event_months": 46,
+            "event_spans": [
+              [
+                315,
+                587
+              ],
+              [
+                615,
+                635
+              ],
+              [
+                673,
+                967
+              ],
+              [
+                1002,
+                1298
+              ]
+            ],
+            "family": "window_pre",
+            "floor_met": false,
+            "gap": 21,
+            "label": "pre=5",
+            "post": 21,
+            "pre": 5,
+            "same_windows_as_frozen": false,
+            "windows": [
+              [
+                310,
+                608
+              ],
+              [
+                610,
+                656
+              ],
+              [
+                668,
+                988
+              ],
+              [
+                997,
+                1319
+              ]
+            ]
+          },
+          {
+            "clusters": 5,
+            "episodes": 3,
+            "event_months": 46,
+            "event_spans": [
+              [
+                315,
+                635
+              ],
+              [
+                673,
+                967
+              ],
+              [
+                1002,
+                1298
+              ]
+            ],
+            "family": "window_pre",
+            "floor_met": false,
+            "gap": 21,
+            "label": "pre=10",
+            "post": 21,
+            "pre": 10,
+            "same_windows_as_frozen": false,
+            "windows": [
+              [
+                305,
+                656
+              ],
+              [
+                663,
+                988
+              ],
+              [
+                992,
+                1319
+              ]
+            ]
+          },
+          {
+            "clusters": 5,
+            "episodes": 1,
+            "event_months": 46,
+            "event_spans": [
+              [
+                315,
+                1298
+              ]
+            ],
+            "family": "window_pre",
+            "floor_met": false,
+            "gap": 21,
+            "label": "pre=21",
+            "post": 21,
+            "pre": 21,
+            "same_windows_as_frozen": true,
+            "windows": [
+              [
+                294,
+                1319
+              ]
+            ]
+          }
+        ]
+      },
+      "spy": {
+        "clusters": 9,
+        "episodes": 7,
+        "event_months": 16,
+        "events": 117,
+        "floor_met": false,
+        "origins": 985
+      },
+      "stored_clusters": 5,
+      "stored_episodes": 1,
+      "stored_events": 625,
+      "stored_windows_match": true,
+      "sum_per_ticker_episodes": 114,
+      "ticker_events": 2726
+    }
+  ],
+  "memo_status": "design_options_not_a_prereg_freeze",
+  "not_computable": [
+    {
+      "id": "breadth",
+      "name": "Breadth threshold",
+      "needs": "The per-session count of names with Y=1 on the comparison-set date axis, or the per-name event dates that would produce it. The committed union records only that the count was at least one. The ticker-event total is a sum across sessions, not a per-date histogram.",
+      "rule": "A session is a panel event date only when at least m names have Y=1 on that session. A predeclared gap and window then run on the dates that survive."
+    },
+    {
+      "id": "common_shock",
+      "name": "Per-ticker episodes with a common-shock correction",
+      "needs": "Per-name event dates or per-name episode windows. The artifact stores the per-name episode count only, so overlap across names cannot be recovered.",
+      "rule": "Count episodes on each name, then treat episodes that overlap in time as one common shock. Honest-N is the number of common shocks, not the sum of the per-name counts."
+    },
+    {
+      "id": "sector",
+      "name": "Sector-stratified episodes",
+      "needs": "Per-name event dates. The sector labels of these ETFs can be named without data. The dates cannot. A group union cannot be rebuilt from the panel-wide union or from per-name counts.",
+      "rule": "Form the union of event dates inside a predeclared grouping of names, then run the episode rule inside each group."
+    }
+  ],
+  "power_floor": {
+    "min_episodes": 10,
+    "min_months": 10
+  },
+  "reproduction": [
+    {
+      "committed_clusters": 31,
+      "committed_episodes": 11,
+      "events_match": true,
+      "h": 5,
+      "months_match": true,
+      "reproduced_clusters": 31,
+      "reproduced_episodes": 11,
+      "stored_clusters": 31,
+      "stored_episodes": 11,
+      "windows_match": true
+    },
+    {
+      "committed_clusters": 20,
+      "committed_episodes": 4,
+      "events_match": true,
+      "h": 10,
+      "months_match": true,
+      "reproduced_clusters": 20,
+      "reproduced_episodes": 4,
+      "stored_clusters": 20,
+      "stored_episodes": 4,
+      "windows_match": true
+    },
+    {
+      "committed_clusters": 5,
+      "committed_episodes": 1,
+      "events_match": true,
+      "h": 21,
+      "months_match": true,
+      "reproduced_clusters": 5,
+      "reproduced_episodes": 1,
+      "stored_clusters": 5,
+      "stored_episodes": 1,
+      "windows_match": true
+    }
+  ],
+  "rules_meeting_floor_on_every_horizon": [
+    "Q=5",
+    "Q=10"
+  ],
+  "schema": "grey_deer_pullback_episode_rule_options/v1",
+  "sources": {
+    "stage1_fields": "episodes[h].binary.honest_n origins, events, clusters, episodes, event_months",
+    "stage1_path": "research/grey_deer/PULLBACK_STAGE1_RESULTS_2026-10-11.json",
+    "stage1_sha256": "33043d65e60f0fd5f6ab38acf08cf5b9f1c138d8706149b4a3504e27a099391f",
+    "stage1b_fields": "episodes[h].binary event_dates, clusters, episode_windows, per_ticker_episodes, ticker_events, origins, events, event_months, event_month_list",
+    "stage1b_path": "research/grey_deer/pullback_stage1b/PULLBACK_STAGE1B_RESULTS.json",
+    "stage1b_sha256": "0cd9b0ae0d426eda7be3ef07162cb2c279bfcd56f50f2b3694dfab715bef606d"
+  }
+}

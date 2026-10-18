@@ -336,9 +336,16 @@ def test_panel_introduces_no_raw_hex_colour():
 
 
 def test_state_ink_uses_the_text_grade_token_with_a_fallback():
-    """--ink-* is the text-grade form; raw --up is fill-grade and fails contrast."""
-    src = (TMPL / "_theme_tape.html.j2").read_text()
-    assert "var(--ink-up,var(--up))" in src.replace(" ", "")
+    """--ink-* is the text-grade form; raw --up is fill-grade and fails contrast.
+
+    F01 O27 L5+L6 swapped the live-chip ink from --ink-up/--up to --ink-ok/--ok
+    on the .tt-v.is-live and .tt-gist .tt-gf.is-live rules: a freshness or
+    provenance chip is health/danger, not price direction, so the status plane
+    is its home and --ink-up (which flips under 红涨绿跌) was wrong. The
+    text-grade-with-fallback shape is unchanged.
+    """
+    src = (TMPL / "_theme_tape.html.j2").read_text().replace(" ", "")
+    assert "var(--ink-ok,var(--ok))" in src
 
 
 def _panel_css() -> str:

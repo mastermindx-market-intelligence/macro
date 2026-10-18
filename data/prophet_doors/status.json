@@ -1,47 +1,33 @@
 {
-  "appended": 1,
-  "asof": "2026-09-25",
+  "appended": 0,
+  "asof": "2026-10-14",
   "candidates": {
     "R": 3,
-    "T": 20,
-    "W": 4
+    "T": 13,
+    "W": 9
   },
   "deduped": {
     "R": 3,
-    "T": 19,
-    "W": 4
+    "T": 13,
+    "W": 9
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-09-26",
-      "consulted": true,
-      "n_keys": 27,
-      "n_themes": 18,
-      "ok": true,
-      "reason": null,
-      "source": "site/basketdata/foresight_cascade.json"
+      "consulted": false
     },
     "ignition": {
       "coil_min_sessions": 293,
-      "consulted": true,
-      "null_reasons": {
-        "ohlcv_absent": 3
-      },
+      "consulted": false,
+      "null_reasons": {},
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
-      "themes_read": {
-        "Nanotechnology": {
-          "theme_thrust_frac": 0.1176,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        }
-      },
+      "themes_read": {},
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 34,
-      "tickers_read": 37
+      "tickers_ok": 0,
+      "tickers_read": 0
     },
     "keys": [
       "relay_count_3d",
@@ -59,21 +45,10 @@
       "theme_thrust_reason"
     ],
     "relay": {
-      "consulted": true,
-      "high_lookback": 63,
-      "members_indexed": 129,
-      "n_covered": 0,
-      "reason": null,
-      "window_sessions": 21
+      "consulted": false
     },
     "turnover": {
-      "consulted": true,
-      "last_session": "2026-09-25",
-      "n_tickers": 1547,
-      "ok": true,
-      "reason": null,
-      "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
-      "window_max": 60
+      "consulted": false
     }
   },
   "feature_source_w": {
@@ -102,52 +77,50 @@
   },
   "flag_tickers": {
     "R": [],
-    "T": [
-      "DHR"
-    ],
+    "T": [],
     "W": []
   },
-  "n_universe": 1492,
+  "n_universe": 1491,
   "overflow": {
     "R": 0,
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-26 11:06:58",
-  "runtime_s": 123.4,
+  "run_utc": "2026-10-17 20:45:12",
+  "runtime_s": 101.7,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
-    "asof": "2026-09-25",
-    "n_members": 129,
+    "asof": "2026-10-14",
+    "n_members": 115,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 4.214,
+        "emerging_score": 3.343,
         "rank": 1,
-        "theme": "Semiconductors"
+        "theme": "Social Media"
       },
       {
-        "emerging_score": 2.367,
+        "emerging_score": 2.761,
         "rank": 2,
-        "theme": "Quantum Computing"
+        "theme": "Healthy Food & Nutrition"
       },
       {
-        "emerging_score": 2.084,
+        "emerging_score": 2.358,
         "rank": 3,
-        "theme": "Space Tech"
+        "theme": "Consumer Goods"
       },
       {
-        "emerging_score": 1.559,
+        "emerging_score": 2.18,
         "rank": 4,
-        "theme": "Industrial Automation"
+        "theme": "E-commerce"
       },
       {
-        "emerging_score": 1.55,
+        "emerging_score": 2.107,
         "rank": 5,
-        "theme": "Nanotechnology"
+        "theme": "Biometrics"
       }
     ]
   },
@@ -156,19 +129,19 @@
       "2B",
       "3B"
     ],
-    "aligned": 4,
-    "asof_max": "2026-09-25",
+    "aligned": 9,
+    "asof_max": "2026-10-14",
     "asof_mismatch": 0,
-    "asof_run": "2026-09-25",
-    "evaluated": 713,
-    "fresh": 4,
+    "asof_run": "2026-10-14",
+    "evaluated": 712,
+    "fresh": 10,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 22.1,
-    "skipped": 4,
+    "runtime_s": 21.0,
+    "skipped": 5,
     "source": "baskets/membership.json",
-    "state_turn": 67,
+    "state_turn": 60,
     "universe_n": 717
   }
 }

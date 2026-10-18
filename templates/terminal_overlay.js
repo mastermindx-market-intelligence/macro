@@ -53,8 +53,6 @@
   var SHELL_READY_FALLBACK_MS = 7000;
   var FRAME_LOAD_FALLBACK_MS = 6000;
   var REPEAT_FRAME_LOAD_FALLBACK_MS = 2500;
-  // Lifecycle v3: rotate the immutable bundle only after the live checkout advances.
-  var HARD_LAUNCH_FALLBACK_MS = 9000;
   var CLOSE_ANIMATION_MS = 300;
   var HISTORY_STATE_KEY = '__mdxTerminalOverlay';
 
@@ -174,7 +172,13 @@
         '.mmto-stage{clip-path:none!important;transform:none!important;transition:none!important}',
         '#mm-terminal-overlay.is-open .mmto-stage{clip-path:none!important;transform:none!important;opacity:1!important}',
         '#mm-terminal-overlay.is-closing .mmto-stage{clip-path:none!important;transform:none!important;opacity:0!important}',
-        '.mmto-frame{transform:none!important;transition:none!important}',
+        /* WebKit may grow a width:100% iframe to its horizontally scrollable chart contents,
+           giving the embedded Terminal a wider viewport than the phone. Constrain the
+           iframe with min/max width while keeping its own scrolling functional. */
+        /* EdgeOne immutable-cache rekey (2026-10-12): the first versioned URL
+           was fetched before its bundle reached origin. The browser-proven clamp
+           is unchanged; preserve a fresh content hash for correct delivery. */
+        '.mmto-frame{width:1px;min-width:100%;max-width:100%;transform:none!important;transition:none!important}',
         '#mm-terminal-overlay.is-open .mmto-frame{opacity:1!important}',
         '.mmto-toast{top:max(8px,env(safe-area-inset-top));font-size:11.5px;padding-right:10px}',
         '.mmto-loader-title{font-size:13px}.mmto-loader-sub{max-width:290px;line-height:1.45}',
@@ -532,7 +536,7 @@
     }, SHELL_READY_FALLBACK_MS);
   }
 
-  function scheduleFrameLoadFallback(frame, delay) {
+  function scheduleFrameLoadFallback(frame) {
     clearTimeout(state.frameLoadFallbackTimer);
     state.frameLoadFallbackTimer = setTimeout(function () {
       state.frameLoadFallbackTimer = 0;
@@ -541,9 +545,7 @@
       // fail-open path for WebKit restores where the document paints but its
       // cross-origin ready message never reaches the parent.
       markReady({ path: state.path, symbol: state.symbol, state: 'frame-load-fallback' });
-    }, delay == null
-      ? (state.completedLaunches ? REPEAT_FRAME_LOAD_FALLBACK_MS : FRAME_LOAD_FALLBACK_MS)
-      : delay);
+    }, state.completedLaunches ? REPEAT_FRAME_LOAD_FALLBACK_MS : FRAME_LOAD_FALLBACK_MS);
   }
 
   function shouldRemountFrame() {
@@ -602,10 +604,10 @@
     if (!state.booted) {
       state.booted = true;
       beginLoading(root);
-      // The load handler shortens this guard once WebKit confirms a document
-      // load. Until then, never allow a failed iframe navigation to strand the
-      // user behind an infinite branded splash.
-      scheduleFrameLoadFallback(frame, HARD_LAUNCH_FALLBACK_MS);
+      // Until a document loads or Terminal signals readiness, keep the loader
+      // and its slow-load recovery actions visible. Elapsed time alone cannot
+      // prove that the frame painted; revealing it could hide both actions
+      // behind a blank frame. The load handler owns the post-load fallback.
       return;
     }
 

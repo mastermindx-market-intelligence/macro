@@ -1,0 +1,18 @@
+--- a/engine/btc_impulse_radar.py
++++ b/engine/btc_impulse_radar.py
+@@ -192,6 +192,15 @@
+         if sig_df is None or sig_df.empty:
+             return pd.DataFrame()
+         df = sig_df.copy(); df.index = pd.to_datetime(df.index); df = df.sort_index()
++        close = df["close"]
++        if pd.api.types.is_bool_dtype(close) or close.dtype == object:
++            if pd.api.types.is_bool_dtype(close):
++                close = pd.Series(np.nan, index=close.index, dtype="float64")
++            else:
++                close = close.mask(close.map(lambda v: isinstance(v, (bool, np.bool_))))
++                close = pd.to_numeric(close, errors="coerce")
++            # True must not become a one-dollar close. Float columns are untouched.
++            df["close"] = close.where(np.isfinite(close) & (close > 0))
+         p5 = df["close"] / df["close"].shift(5) - 1.0
+         out = ({k: pd.Series(pd.NA, index=df.index, dtype="boolean") for k in ("d2", "d3", "u1")}
+                if preserve_unknown else {})

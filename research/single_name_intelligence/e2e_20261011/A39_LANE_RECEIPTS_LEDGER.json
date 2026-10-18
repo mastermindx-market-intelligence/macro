@@ -1,0 +1,2403 @@
+{
+  "schema_version": "1",
+  "captured_at": "2026-10-13T09:33Z",
+  "source": "Seat capture at 2026-10-13T09:33Z of the lane launcher per-run receipts (run log, native-terminal.json, usage.json) and each lane's own final stdout line of the form LANE: STATUS sha. Host labels in the rows are ubuntu0, ubuntu1, ubuntu2, and ubuntu3 as recorded by the launcher. This file is an SNI-local draft contract that consumes those owner-supplied receipt values.",
+  "ladder": [
+    "ACK",
+    "QUEUED",
+    "START",
+    "RUNNING",
+    "DELIVERED",
+    "CI",
+    "MERGED",
+    "PRODUCTION_PROOF",
+    "ACCEPTANCE"
+  ],
+  "rung_rules": [
+    {
+      "id": "never_started",
+      "when": "rc in {75, 76}",
+      "rung_reached": "NOT_STARTED",
+      "highest_ladder_rung": "QUEUED if reserved_at is present, else ACK",
+      "note": "Launcher refused or failed before the remote CLI started. The lane never started. START and every later rung stay unclaimed even if launched_at or native_started is present."
+    },
+    {
+      "id": "at_least_start",
+      "when": "launched_at is present and native_started is true",
+      "floor": "START",
+      "note": "This is a floor, not a skip to DELIVERED. Rule never_started still wins for rc 75/76."
+    },
+    {
+      "id": "running_or_unknown",
+      "when": "rc is empty and done_at is empty",
+      "rung_reached": "RUNNING_OR_UNKNOWN_AT_CAPTURE",
+      "note": "Capture ended with no DONE event. This is never DELIVERED."
+    },
+    {
+      "id": "delivered",
+      "when": "rc is 0 and output_complete is true and a parseable final line is present (lane, status, lane_head)",
+      "rung_reached": "DELIVERED"
+    },
+    {
+      "id": "exited_no_result",
+      "when": "rc is 0 and no parseable final line is present",
+      "rung_reached": "EXITED_NO_RESULT",
+      "note": "This is never DELIVERED."
+    },
+    {
+      "id": "exited_nonzero",
+      "when": "rc is 1",
+      "rung_reached": "EXITED_NONZERO"
+    },
+    {
+      "id": "int1_annotation",
+      "when": "int1_commit is non-empty",
+      "annotation": "integrated_into: INT1 (PR 9120, unmerged at capture)",
+      "note": "The rung stays DELIVERED. Integration into an unmerged PR is not CI, MERGED, PRODUCTION_PROOF, or ACCEPTANCE."
+    },
+    {
+      "id": "capture_ceiling",
+      "when": "always in this ledger",
+      "forbids": [
+        "CI",
+        "MERGED",
+        "PRODUCTION_PROOF",
+        "ACCEPTANCE"
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "run_id": "sni-a1-20261012",
+      "host": "ubuntu0",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T04:34Z",
+      "lease_ok_at": "2026-10-12T04:34Z",
+      "launched_at": "2026-10-12T04:34Z",
+      "done_at": "2026-10-12T04:47Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 839163,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a1r1-20261012",
+      "host": "ubuntu1",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T05:15Z",
+      "lease_ok_at": "2026-10-12T05:15Z",
+      "launched_at": "2026-10-12T05:15Z",
+      "done_at": "2026-10-12T05:24Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 631542,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a1r2-20261013T0336Z",
+      "host": "ubuntu1",
+      "model": null,
+      "reserved_at": "2026-10-13T03:38Z",
+      "lease_ok_at": "2026-10-13T03:38Z",
+      "launched_at": "2026-10-13T03:38Z",
+      "done_at": null,
+      "rc": null,
+      "native_started": null,
+      "output_complete": null,
+      "usage_total_tokens": null,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "RUNNING_OR_UNKNOWN_AT_CAPTURE",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a2-20261012",
+      "host": "ubuntu1",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T04:35Z",
+      "lease_ok_at": "2026-10-12T04:35Z",
+      "launched_at": "2026-10-12T04:36Z",
+      "done_at": "2026-10-12T04:51Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 943340,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a20-1013a",
+      "host": "ubuntu0",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T07:20Z",
+      "lease_ok_at": "2026-10-13T07:20Z",
+      "launched_at": "2026-10-13T07:21Z",
+      "done_at": "2026-10-13T07:35Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 2188554,
+      "lane": "A20",
+      "status": "PASS",
+      "lane_head": "6f575adae3873b8becc874adf046ecee5ec94481",
+      "int1_commit": "8334e401eb2c6993dc2099441c1e3ef1b4b3ddbf",
+      "lane_claim": "PASS",
+      "rung_reached": "DELIVERED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        },
+        {
+          "rung": "DELIVERED",
+          "field": "lane_head"
+        }
+      ],
+      "integrated_into": "INT1 (PR 9120, unmerged at capture)"
+    },
+    {
+      "run_id": "sni-a2r1-20261012",
+      "host": "ubuntu0",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T05:15Z",
+      "lease_ok_at": "2026-10-12T05:15Z",
+      "launched_at": "2026-10-12T05:15Z",
+      "done_at": "2026-10-12T05:35Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 1361207,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a2r2-20261013T0336Z",
+      "host": "ubuntu3",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T03:38Z",
+      "lease_ok_at": "2026-10-13T03:38Z",
+      "launched_at": "2026-10-13T03:38Z",
+      "done_at": "2026-10-13T03:51Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 1325331,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a3-20261012",
+      "host": "ubuntu2",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T04:35Z",
+      "lease_ok_at": "2026-10-12T04:36Z",
+      "launched_at": "2026-10-12T04:36Z",
+      "done_at": "2026-10-12T04:53Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 1218686,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a3r1-20261013T0215Z",
+      "host": "ubuntu0",
+      "model": null,
+      "reserved_at": "2026-10-13T02:14Z",
+      "lease_ok_at": null,
+      "launched_at": null,
+      "done_at": null,
+      "rc": null,
+      "native_started": null,
+      "output_complete": null,
+      "usage_total_tokens": null,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "RUNNING_OR_UNKNOWN_AT_CAPTURE",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a3r1-20261013T0230Z",
+      "host": "ubuntu0",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T02:16Z",
+      "lease_ok_at": "2026-10-13T02:16Z",
+      "launched_at": "2026-10-13T02:17Z",
+      "done_at": "2026-10-13T02:30Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 1224779,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a4-20261012-r2",
+      "host": "ubuntu0",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T04:37Z",
+      "lease_ok_at": "2026-10-12T04:37Z",
+      "launched_at": "2026-10-12T04:37Z",
+      "done_at": "2026-10-12T04:55Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 1130808,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a4-20261012",
+      "host": "ubuntu3",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T04:35Z",
+      "lease_ok_at": "2026-10-12T04:36Z",
+      "launched_at": "2026-10-12T04:36Z",
+      "done_at": "2026-10-12T04:36Z",
+      "rc": 75,
+      "native_started": false,
+      "output_complete": true,
+      "usage_total_tokens": null,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "NOT_STARTED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a4r1-20261012",
+      "host": "ubuntu2",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T05:19Z",
+      "lease_ok_at": "2026-10-12T05:19Z",
+      "launched_at": "2026-10-12T05:20Z",
+      "done_at": "2026-10-12T05:20Z",
+      "rc": 75,
+      "native_started": false,
+      "output_complete": true,
+      "usage_total_tokens": null,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "NOT_STARTED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a4r1b-20261012",
+      "host": "ubuntu2",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T05:21Z",
+      "lease_ok_at": "2026-10-12T05:21Z",
+      "launched_at": "2026-10-12T05:21Z",
+      "done_at": "2026-10-12T05:35Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 1157518,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a4r2-20261013",
+      "host": "ubuntu2",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T04:41Z",
+      "lease_ok_at": "2026-10-13T04:41Z",
+      "launched_at": "2026-10-13T04:41Z",
+      "done_at": "2026-10-13T05:00Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 1860913,
+      "lane": "A4R2",
+      "status": "PASS",
+      "lane_head": "55e5487b227a275a2dc413e69a12822cc99121c5",
+      "int1_commit": null,
+      "lane_claim": "PASS",
+      "rung_reached": "DELIVERED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        },
+        {
+          "rung": "DELIVERED",
+          "field": "lane_head"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a4v-1013a",
+      "host": "ubuntu3",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T06:07Z",
+      "lease_ok_at": "2026-10-13T06:07Z",
+      "launched_at": "2026-10-13T06:07Z",
+      "done_at": "2026-10-13T06:20Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 1346900,
+      "lane": "A4V",
+      "status": "PASS",
+      "lane_head": "cd0be1f6ec85ae46b32bb55ddab70e9c28b0c813",
+      "int1_commit": "97d7f25f6e42e67e30a3d3051e63fb4e61aedf79",
+      "lane_claim": "PASS",
+      "rung_reached": "DELIVERED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        },
+        {
+          "rung": "DELIVERED",
+          "field": "lane_head"
+        }
+      ],
+      "integrated_into": "INT1 (PR 9120, unmerged at capture)"
+    },
+    {
+      "run_id": "sni-a4x-1013a",
+      "host": "ubuntu2",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T06:07Z",
+      "lease_ok_at": "2026-10-13T06:07Z",
+      "launched_at": "2026-10-13T06:07Z",
+      "done_at": "2026-10-13T06:17Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 973854,
+      "lane": "A4X",
+      "status": "PASS",
+      "lane_head": "8261e0569338038ac91c8d69b190b020a7a76905",
+      "int1_commit": "2e5d616afb7a0b36cb036c8a548811922a6fa70b",
+      "lane_claim": "PASS",
+      "rung_reached": "DELIVERED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        },
+        {
+          "rung": "DELIVERED",
+          "field": "lane_head"
+        }
+      ],
+      "integrated_into": "INT1 (PR 9120, unmerged at capture)"
+    },
+    {
+      "run_id": "sni-a5-20261012",
+      "host": "ubuntu0",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T04:36Z",
+      "lease_ok_at": "2026-10-12T04:36Z",
+      "launched_at": "2026-10-12T04:36Z",
+      "done_at": "2026-10-12T04:58Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 2268417,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a5r1-1013a",
+      "host": "ubuntu0",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T06:07Z",
+      "lease_ok_at": "2026-10-13T06:07Z",
+      "launched_at": "2026-10-13T06:07Z",
+      "done_at": "2026-10-13T06:07Z",
+      "rc": 75,
+      "native_started": false,
+      "output_complete": true,
+      "usage_total_tokens": null,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "NOT_STARTED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a5r1-1013b",
+      "host": "ubuntu3",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T06:08Z",
+      "lease_ok_at": "2026-10-13T06:08Z",
+      "launched_at": "2026-10-13T06:08Z",
+      "done_at": "2026-10-13T06:08Z",
+      "rc": 75,
+      "native_started": false,
+      "output_complete": true,
+      "usage_total_tokens": null,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "NOT_STARTED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a5r1-1013c",
+      "host": "ubuntu1",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T06:10Z",
+      "lease_ok_at": "2026-10-13T06:10Z",
+      "launched_at": "2026-10-13T06:10Z",
+      "done_at": "2026-10-13T06:10Z",
+      "rc": 75,
+      "native_started": false,
+      "output_complete": true,
+      "usage_total_tokens": null,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "NOT_STARTED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a5r1-1013d",
+      "host": "ubuntu2",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T06:19Z",
+      "lease_ok_at": "2026-10-13T06:19Z",
+      "launched_at": "2026-10-13T06:19Z",
+      "done_at": "2026-10-13T06:30Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 1825295,
+      "lane": "A5R1",
+      "status": "PASS",
+      "lane_head": "c98b1d4dea942b3071e674e57431aeeeb3f4abc1",
+      "int1_commit": "dadd3fcd69d51766eb3716a3efa1d26849ea1490",
+      "lane_claim": "PASS",
+      "rung_reached": "DELIVERED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        },
+        {
+          "rung": "DELIVERED",
+          "field": "lane_head"
+        }
+      ],
+      "integrated_into": "INT1 (PR 9120, unmerged at capture)"
+    },
+    {
+      "run_id": "sni-a6-20261012-r2",
+      "host": "ubuntu0",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T05:09Z",
+      "lease_ok_at": "2026-10-12T05:09Z",
+      "launched_at": "2026-10-12T05:09Z",
+      "done_at": "2026-10-12T05:33Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 1704793,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a6-20261012",
+      "host": "ubuntu3",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T05:01Z",
+      "lease_ok_at": "2026-10-12T05:01Z",
+      "launched_at": "2026-10-12T05:01Z",
+      "done_at": "2026-10-12T05:06Z",
+      "rc": 76,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": null,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "NOT_STARTED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a7-20261012",
+      "host": "ubuntu2",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T05:01Z",
+      "lease_ok_at": "2026-10-12T05:01Z",
+      "launched_at": "2026-10-12T05:01Z",
+      "done_at": "2026-10-12T05:21Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 1354796,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a8-20261013T0302Z",
+      "host": "ubuntu0",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T03:02Z",
+      "lease_ok_at": "2026-10-13T03:02Z",
+      "launched_at": "2026-10-13T03:02Z",
+      "done_at": "2026-10-13T03:20Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 2142022,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-a8r1-20261013",
+      "host": "ubuntu1",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T04:53Z",
+      "lease_ok_at": "2026-10-13T04:53Z",
+      "launched_at": "2026-10-13T04:53Z",
+      "done_at": "2026-10-13T05:00Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 1019344,
+      "lane": "A8R1",
+      "status": "PASS",
+      "lane_head": "ab55abd68a631ca2c4961c0513f1704aeac5a334",
+      "int1_commit": null,
+      "lane_claim": "PASS",
+      "rung_reached": "DELIVERED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        },
+        {
+          "rung": "DELIVERED",
+          "field": "lane_head"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-b1-20261012",
+      "host": "ubuntu1",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T04:36Z",
+      "lease_ok_at": "2026-10-12T04:36Z",
+      "launched_at": "2026-10-12T04:36Z",
+      "done_at": "2026-10-12T04:47Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 712607,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-b2-20261012",
+      "host": "ubuntu2",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T04:36Z",
+      "lease_ok_at": "2026-10-12T04:36Z",
+      "launched_at": "2026-10-12T04:36Z",
+      "done_at": "2026-10-12T04:47Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 540653,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-b3-20261012-r2",
+      "host": "ubuntu1",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T04:37Z",
+      "lease_ok_at": "2026-10-12T04:37Z",
+      "launched_at": "2026-10-12T04:37Z",
+      "done_at": "2026-10-12T04:48Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 1141762,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-b3-20261012",
+      "host": "ubuntu3",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T04:36Z",
+      "lease_ok_at": "2026-10-12T04:36Z",
+      "launched_at": "2026-10-12T04:36Z",
+      "done_at": "2026-10-12T04:36Z",
+      "rc": 75,
+      "native_started": false,
+      "output_complete": true,
+      "usage_total_tokens": null,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "NOT_STARTED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-b4-20261012",
+      "host": "ubuntu0",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T04:36Z",
+      "lease_ok_at": "2026-10-12T04:36Z",
+      "launched_at": "2026-10-12T04:36Z",
+      "done_at": "2026-10-12T04:52Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 1028702,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-b4r1-20261013",
+      "host": "ubuntu0",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T04:45Z",
+      "lease_ok_at": "2026-10-13T04:45Z",
+      "launched_at": "2026-10-13T04:45Z",
+      "done_at": "2026-10-13T05:01Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 1767275,
+      "lane": "B4R1",
+      "status": "PASS",
+      "lane_head": "7de60464d993782a7b432df557ad47f074ec667f",
+      "int1_commit": null,
+      "lane_claim": "PASS",
+      "rung_reached": "DELIVERED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        },
+        {
+          "rung": "DELIVERED",
+          "field": "lane_head"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-doc-1013a",
+      "host": "ubuntu1",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T06:34Z",
+      "lease_ok_at": "2026-10-13T06:34Z",
+      "launched_at": "2026-10-13T06:34Z",
+      "done_at": "2026-10-13T06:53Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 2546466,
+      "lane": "DOC",
+      "status": "PASS",
+      "lane_head": "74d95af9906ac04dbb04487c887e272be53f4bc4",
+      "int1_commit": "33235514d19be52a00a018e683023b2de8cd2120",
+      "lane_claim": "PASS",
+      "rung_reached": "DELIVERED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        },
+        {
+          "rung": "DELIVERED",
+          "field": "lane_head"
+        }
+      ],
+      "integrated_into": "INT1 (PR 9120, unmerged at capture)"
+    },
+    {
+      "run_id": "sni-eq-1013a",
+      "host": "ubuntu0",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T06:07Z",
+      "lease_ok_at": "2026-10-13T06:07Z",
+      "launched_at": "2026-10-13T06:07Z",
+      "done_at": "2026-10-13T06:07Z",
+      "rc": 75,
+      "native_started": false,
+      "output_complete": true,
+      "usage_total_tokens": null,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "NOT_STARTED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-eq-1013b",
+      "host": "ubuntu2",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T06:08Z",
+      "lease_ok_at": "2026-10-13T06:08Z",
+      "launched_at": "2026-10-13T06:08Z",
+      "done_at": "2026-10-13T06:24Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 2919714,
+      "lane": "EQ",
+      "status": "PASS",
+      "lane_head": "dc76cb88d72c85cea812ad04b9d6e41512721754",
+      "int1_commit": "00291933daed3f75f1124bb58d496867bee68d12",
+      "lane_claim": "PASS",
+      "rung_reached": "DELIVERED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        },
+        {
+          "rung": "DELIVERED",
+          "field": "lane_head"
+        }
+      ],
+      "integrated_into": "INT1 (PR 9120, unmerged at capture)"
+    },
+    {
+      "run_id": "sni-inv-1013a",
+      "host": "ubuntu1",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T06:07Z",
+      "lease_ok_at": "2026-10-13T06:07Z",
+      "launched_at": "2026-10-13T06:07Z",
+      "done_at": "2026-10-13T06:25Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 2988953,
+      "lane": "INV",
+      "status": "PASS",
+      "lane_head": "5e7064127f5ba2eb2bdfbaa5c783978f6244a1d5",
+      "int1_commit": "a534abec77cce7e64a991f913598a2a3e2c0d2e5",
+      "lane_claim": "PASS",
+      "rung_reached": "DELIVERED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        },
+        {
+          "rung": "DELIVERED",
+          "field": "lane_head"
+        }
+      ],
+      "integrated_into": "INT1 (PR 9120, unmerged at capture)"
+    },
+    {
+      "run_id": "sni-pub-1013a",
+      "host": "ubuntu1",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T06:34Z",
+      "lease_ok_at": "2026-10-13T06:34Z",
+      "launched_at": "2026-10-13T06:34Z",
+      "done_at": "2026-10-13T06:47Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 1416135,
+      "lane": "PUB",
+      "status": "PASS",
+      "lane_head": "0c14e88d64ef2f560bbc634c4d06b8bf7c8900f1",
+      "int1_commit": "d843c9d30ab564bbe2d6f548d3d571ddff62220b",
+      "lane_claim": "PASS",
+      "rung_reached": "DELIVERED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        },
+        {
+          "rung": "DELIVERED",
+          "field": "lane_head"
+        }
+      ],
+      "integrated_into": "INT1 (PR 9120, unmerged at capture)"
+    },
+    {
+      "run_id": "sni-qf-1013a",
+      "host": "ubuntu0",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T06:33Z",
+      "lease_ok_at": "2026-10-13T06:33Z",
+      "launched_at": "2026-10-13T06:34Z",
+      "done_at": "2026-10-13T07:04Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 6090856,
+      "lane": "QF",
+      "status": "PASS",
+      "lane_head": "269247811dca797a5616472a45f0867c556fb213",
+      "int1_commit": "59e26380271d0fdaaa81522b904146eedac648f1",
+      "lane_claim": "PASS",
+      "rung_reached": "DELIVERED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        },
+        {
+          "rung": "DELIVERED",
+          "field": "lane_head"
+        }
+      ],
+      "integrated_into": "INT1 (PR 9120, unmerged at capture)"
+    },
+    {
+      "run_id": "sni-repro-1013a",
+      "host": "ubuntu3",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T06:34Z",
+      "lease_ok_at": "2026-10-13T06:34Z",
+      "launched_at": "2026-10-13T06:34Z",
+      "done_at": "2026-10-13T06:54Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 3496064,
+      "lane": "REPRO",
+      "status": "PASS",
+      "lane_head": "f7be8e6593098211782e14dcf1586fb843f03308",
+      "int1_commit": "d89ff8d474af9321581eb178390788459d392b55",
+      "lane_claim": "PASS",
+      "rung_reached": "DELIVERED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        },
+        {
+          "rung": "DELIVERED",
+          "field": "lane_head"
+        }
+      ],
+      "integrated_into": "INT1 (PR 9120, unmerged at capture)"
+    },
+    {
+      "run_id": "sni-rpr-1013a",
+      "host": "ubuntu3",
+      "model": null,
+      "reserved_at": "2026-10-13T07:02Z",
+      "lease_ok_at": "2026-10-13T07:02Z",
+      "launched_at": null,
+      "done_at": null,
+      "rc": null,
+      "native_started": null,
+      "output_complete": null,
+      "usage_total_tokens": null,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "RUNNING_OR_UNKNOWN_AT_CAPTURE",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-rpr-1013b",
+      "host": "ubuntu2",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T07:04Z",
+      "lease_ok_at": "2026-10-13T07:04Z",
+      "launched_at": "2026-10-13T07:04Z",
+      "done_at": "2026-10-13T07:04Z",
+      "rc": 75,
+      "native_started": false,
+      "output_complete": true,
+      "usage_total_tokens": null,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "NOT_STARTED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-rpr-1013c",
+      "host": "ubuntu0",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T07:05Z",
+      "lease_ok_at": "2026-10-13T07:05Z",
+      "launched_at": "2026-10-13T07:05Z",
+      "done_at": "2026-10-13T07:05Z",
+      "rc": 75,
+      "native_started": false,
+      "output_complete": true,
+      "usage_total_tokens": null,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "NOT_STARTED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-rpr-1013d",
+      "host": "ubuntu1",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T07:06Z",
+      "lease_ok_at": "2026-10-13T07:06Z",
+      "launched_at": "2026-10-13T07:06Z",
+      "done_at": "2026-10-13T07:29Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 2354446,
+      "lane": "RPR",
+      "status": "PASS",
+      "lane_head": "560c331766c9e8444a0473fb79e78ad7abc99488",
+      "int1_commit": "d149bff07420e50626c996d11ba2173748ec9789",
+      "lane_claim": "PASS",
+      "rung_reached": "DELIVERED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        },
+        {
+          "rung": "DELIVERED",
+          "field": "lane_head"
+        }
+      ],
+      "integrated_into": "INT1 (PR 9120, unmerged at capture)"
+    },
+    {
+      "run_id": "sni-s0d-20261013T0302Z",
+      "host": "ubuntu3",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T03:02Z",
+      "lease_ok_at": "2026-10-13T03:02Z",
+      "launched_at": "2026-10-13T03:02Z",
+      "done_at": "2026-10-13T03:17Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 1879470,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-s0dr1-20261013",
+      "host": "ubuntu3",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T04:49Z",
+      "lease_ok_at": "2026-10-13T04:49Z",
+      "launched_at": "2026-10-13T04:49Z",
+      "done_at": "2026-10-13T05:01Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 1307791,
+      "lane": "S0DR1",
+      "status": "PASS",
+      "lane_head": "d8111b1e4b51891b000cdd1e115e40adfe4c6fe2",
+      "int1_commit": null,
+      "lane_claim": "PASS",
+      "rung_reached": "DELIVERED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        },
+        {
+          "rung": "DELIVERED",
+          "field": "lane_head"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-s1h1-20261012",
+      "host": "ubuntu0",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T05:48Z",
+      "lease_ok_at": "2026-10-12T05:48Z",
+      "launched_at": "2026-10-12T05:49Z",
+      "done_at": "2026-10-12T06:17Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 5924709,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-s1h2-20261013T0336Z",
+      "host": "ubuntu0",
+      "model": null,
+      "reserved_at": "2026-10-13T03:38Z",
+      "lease_ok_at": "2026-10-13T03:38Z",
+      "launched_at": "2026-10-13T03:38Z",
+      "done_at": null,
+      "rc": null,
+      "native_started": null,
+      "output_complete": null,
+      "usage_total_tokens": null,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "RUNNING_OR_UNKNOWN_AT_CAPTURE",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-s1h3-20261013",
+      "host": "ubuntu2",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T04:58Z",
+      "lease_ok_at": "2026-10-13T04:58Z",
+      "launched_at": "2026-10-13T04:58Z",
+      "done_at": "2026-10-13T05:03Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 1092645,
+      "lane": "S1H3",
+      "status": "PASS",
+      "lane_head": "0383b7cb584f314f6555de3abf00826233f119ad",
+      "int1_commit": null,
+      "lane_claim": "PASS",
+      "rung_reached": "DELIVERED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        },
+        {
+          "rung": "DELIVERED",
+          "field": "lane_head"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-s2h1-20261012",
+      "host": "ubuntu1",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T05:29Z",
+      "lease_ok_at": "2026-10-12T05:29Z",
+      "launched_at": "2026-10-12T05:29Z",
+      "done_at": "2026-10-12T05:29Z",
+      "rc": 75,
+      "native_started": false,
+      "output_complete": true,
+      "usage_total_tokens": null,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "NOT_STARTED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-s2h1b-20261012",
+      "host": "ubuntu2",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T05:30Z",
+      "lease_ok_at": "2026-10-12T05:30Z",
+      "launched_at": "2026-10-12T05:30Z",
+      "done_at": "2026-10-12T06:04Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 6771812,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-schk-1013a",
+      "host": "ubuntu2",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T07:12Z",
+      "lease_ok_at": "2026-10-13T07:12Z",
+      "launched_at": "2026-10-13T07:12Z",
+      "done_at": "2026-10-13T07:29Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 2985416,
+      "lane": "SCHK",
+      "status": "PASS",
+      "lane_head": "e5480e1274cf4cd872dd86ba6777721675fbfc73",
+      "int1_commit": "519444d349bd13d1eac6168bc79ef1f3612143c9",
+      "lane_claim": "PASS",
+      "rung_reached": "DELIVERED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        },
+        {
+          "rung": "DELIVERED",
+          "field": "lane_head"
+        }
+      ],
+      "integrated_into": "INT1 (PR 9120, unmerged at capture)"
+    },
+    {
+      "run_id": "sni-x1-20261012-r2",
+      "host": "ubuntu1",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T05:09Z",
+      "lease_ok_at": "2026-10-12T05:09Z",
+      "launched_at": "2026-10-12T05:09Z",
+      "done_at": "2026-10-12T05:27Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 2996332,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-x1-20261012",
+      "host": "ubuntu3",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T05:01Z",
+      "lease_ok_at": "2026-10-12T05:01Z",
+      "launched_at": "2026-10-12T05:01Z",
+      "done_at": "2026-10-12T05:06Z",
+      "rc": 76,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": null,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "NOT_STARTED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-x2-20261012",
+      "host": "ubuntu2",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T05:01Z",
+      "lease_ok_at": "2026-10-12T05:01Z",
+      "launched_at": "2026-10-12T05:01Z",
+      "done_at": "2026-10-12T05:21Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 2474479,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-x3-20261012",
+      "host": "ubuntu1",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-12T05:53Z",
+      "lease_ok_at": "2026-10-12T05:53Z",
+      "launched_at": "2026-10-12T05:53Z",
+      "done_at": "2026-10-12T06:08Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 1658358,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-x4-20261013T0335Z",
+      "host": "ubuntu1",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T02:51Z",
+      "lease_ok_at": "2026-10-13T02:51Z",
+      "launched_at": "2026-10-13T02:51Z",
+      "done_at": "2026-10-13T03:16Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 3359308,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NO_RESULT",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-x5-20261013T0335Z",
+      "host": "ubuntu2",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T02:51Z",
+      "lease_ok_at": "2026-10-13T02:51Z",
+      "launched_at": "2026-10-13T02:51Z",
+      "done_at": "2026-10-13T03:10Z",
+      "rc": 1,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": null,
+      "lane": null,
+      "status": null,
+      "lane_head": null,
+      "int1_commit": null,
+      "lane_claim": null,
+      "rung_reached": "EXITED_NONZERO",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        }
+      ],
+      "integrated_into": null
+    },
+    {
+      "run_id": "sni-x6-1013a",
+      "host": "ubuntu2",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T06:34Z",
+      "lease_ok_at": "2026-10-13T06:34Z",
+      "launched_at": "2026-10-13T06:34Z",
+      "done_at": "2026-10-13T06:52Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 3435017,
+      "lane": "X6",
+      "status": "PASS",
+      "lane_head": "fb400ddd0c3dcff0f3b189d1bfb67f0e44b44443",
+      "int1_commit": "6a70fa4ab378a06aebe08924d24fffb8aaa9020b",
+      "lane_claim": "PASS",
+      "rung_reached": "DELIVERED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        },
+        {
+          "rung": "DELIVERED",
+          "field": "lane_head"
+        }
+      ],
+      "integrated_into": "INT1 (PR 9120, unmerged at capture)"
+    },
+    {
+      "run_id": "sni-x6r-1013a",
+      "host": "ubuntu1",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T07:00Z",
+      "lease_ok_at": "2026-10-13T07:00Z",
+      "launched_at": "2026-10-13T07:00Z",
+      "done_at": "2026-10-13T07:13Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 4048676,
+      "lane": "X6R",
+      "status": "PASS",
+      "lane_head": "0766da45017a8ffc34b0d97227ed42e558e363bd",
+      "int1_commit": "edb06011c0a91517314d9f2a7541baace2d8951c",
+      "lane_claim": "PASS",
+      "rung_reached": "DELIVERED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        },
+        {
+          "rung": "DELIVERED",
+          "field": "lane_head"
+        }
+      ],
+      "integrated_into": "INT1 (PR 9120, unmerged at capture)"
+    },
+    {
+      "run_id": "sni-xrep-1013a",
+      "host": "ubuntu2",
+      "model": "grok-4.6",
+      "reserved_at": "2026-10-13T06:52Z",
+      "lease_ok_at": "2026-10-13T06:52Z",
+      "launched_at": "2026-10-13T06:52Z",
+      "done_at": "2026-10-13T07:03Z",
+      "rc": 0,
+      "native_started": true,
+      "output_complete": true,
+      "usage_total_tokens": 3131076,
+      "lane": "XREP",
+      "status": "PASS",
+      "lane_head": "d5db8fccd08d52859b8c181725b5e9eb5cce0849",
+      "int1_commit": "1fd7e88085cc09d55969eea87a1d9b2b4a2ff332",
+      "lane_claim": "PASS",
+      "rung_reached": "DELIVERED",
+      "rung_evidence": [
+        {
+          "rung": "ACK",
+          "field": "run_id"
+        },
+        {
+          "rung": "QUEUED",
+          "field": "reserved_at"
+        },
+        {
+          "rung": "START",
+          "field": "launched_at"
+        },
+        {
+          "rung": "RUNNING",
+          "field": "native_started"
+        },
+        {
+          "rung": "DELIVERED",
+          "field": "lane_head"
+        }
+      ],
+      "integrated_into": "INT1 (PR 9120, unmerged at capture)"
+    }
+  ],
+  "integration_gaps": [
+    {
+      "short_sha": "12eade4b",
+      "subject": "S2 v1.1 reprint",
+      "note": "Cherry-picked into INT1 (PR 9120, unmerged at capture). The seat holds no local launcher receipt. No run row is fabricated for this commit."
+    },
+    {
+      "short_sha": "5f09242e",
+      "subject": "S2 v1.1 repair X2-01..08, A7-F1/F2/F5",
+      "note": "Cherry-picked into INT1 (PR 9120, unmerged at capture). The seat holds no local launcher receipt. No run row is fabricated for this commit."
+    }
+  ],
+  "summary": {
+    "rows": 61,
+    "by_rung": {
+      "ACK": 0,
+      "QUEUED": 0,
+      "START": 0,
+      "RUNNING": 0,
+      "NOT_STARTED": 12,
+      "RUNNING_OR_UNKNOWN_AT_CAPTURE": 4,
+      "EXITED_NO_RESULT": 24,
+      "EXITED_NONZERO": 1,
+      "DELIVERED": 20,
+      "CI": 0,
+      "MERGED": 0,
+      "PRODUCTION_PROOF": 0,
+      "ACCEPTANCE": 0
+    },
+    "by_host": {
+      "ubuntu0": 17,
+      "ubuntu1": 16,
+      "ubuntu2": 17,
+      "ubuntu3": 11
+    },
+    "by_rc": {
+      "0": 44,
+      "1": 1,
+      "75": 10,
+      "76": 2,
+      "empty": 4
+    },
+    "int1_integrated": 15
+  },
+  "bounds": [
+    "Orchestrator-native work is not covered.",
+    "Lanes launched by other seats are not covered.",
+    "Launcher receipts captured at 2026-10-13T09:33Z are the only source.",
+    "Rows past DELIVERED need the PR merge receipts, which come later.",
+    "INT1 PR 9120 was open with CI running at capture and was not merged.",
+    "INT1 cherry-pick shas will not exist on main after a squash merge.",
+    "A lane_claim of PASS or PARTIAL is the lane's own printed claim, not program closeout.",
+    "No row in this ledger is at CI, MERGED, PRODUCTION_PROOF, or ACCEPTANCE.",
+    "This draft consumes owner-supplied receipt values. It does not mint issuer or security identifiers.",
+    "This module does not feed a ranker, gate, sizer, escalation, or trade path."
+  ],
+  "rank_authority": false,
+  "gate_authority": false,
+  "size_authority": false,
+  "signal_authority": false,
+  "escalation_authority": false,
+  "trade_authority": false
+}

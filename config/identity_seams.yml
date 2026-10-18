@@ -406,3 +406,12 @@ declared_divergences:
     detail: >-
       china_ths_concepts/china_analyst silently map legacy 430047 -> '430047.BJ';
       lib/dataos/identity RAISES IdentityError rather than mint from a legacy alias.
+
+# Prospective native reference extension (2026-10-07): the existing Data OS writer
+# admits only MU/SPY/QQQ/SMH reference probes, never a collection/scientific cohort.
+# `polygon` requires source known_at plus exact tuple/evidence seals. This clock is
+# NOT Radar read availability: candidate use also needs the existing input bundle's
+# actual native snapshot read receipt by cutoff. No new ledger or revision selector.
+# ARCX is an ISO 10383 US segment under XNYS; P->ARCX is scoped to reference probes.
+# ETF issuer/lifecycle remain unknown, and ETF identities remain GMI-ineligible on
+# both first mint and stored-row reuse. Existing FI/FISV identity law is unchanged.

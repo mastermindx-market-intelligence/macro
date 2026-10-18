@@ -594,6 +594,8 @@ def _compute_weekly_delta(
     # Group by theme_id, find latest + prior records
     by_theme: dict[str, list[dict]] = defaultdict(list)
     for rec in history:
+        if type(rec) is not dict or rec.get("schema") != "neuralweb.theme_phase_history.v1":
+            continue
         by_theme[rec.get("theme_id", "")].append(rec)
 
     for theme_id, recs in by_theme.items():

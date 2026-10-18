@@ -1,0 +1,137 @@
+name: research vault read-only census
+
+# Manual operator proof lane for Research Vault identity + retrieval health.
+#
+# This workflow is intentionally separate from research-ingest.yml. The ingest
+# workflow owns publication and salvage-push; dispatching it merely to observe
+# the live vault would create a write effect and can cancel an in-flight hourly
+# ingest through that workflow's concurrency group.
+#
+# This lane:
+#   * has no schedule;
+#   * has contents: read only;
+#   * never invokes ingest_research or any publisher;
+#   * uses a separate non-cancelling concurrency group;
+#   * reads only the canonical private Research Vault through the existing store;
+#   * writes only one bounded runner-temp JSON receipt + GitHub artifact.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: research-vault-readonly-census
+  cancel-in-progress: false
+
+jobs:
+  census:
+    if: github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, macstudio-light]
+    timeout-minutes: 20
+    env:
+      # The shared bucket name is included only so the F1 private-store factory
+      # can reject an accidental bucket alias. Generic endpoint/key/secret values
+      # are deliberately absent from this read-only lane.
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+      R2_RESEARCH_ENDPOINT: ${{ secrets.R2_RESEARCH_ENDPOINT }}
+      R2_RESEARCH_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}
+      R2_RESEARCH_SECRET_ACCESS_KEY: ${{ secrets.R2_RESEARCH_SECRET_ACCESS_KEY }}
+      R2_RESEARCH_BUCKET: ${{ secrets.R2_RESEARCH_BUCKET }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fail closed on private R2 configuration
+        run: |
+          set -euo pipefail
+          /opt/homebrew/bin/python3.12 - <<'PY'
+          import os
+          import sys
+
+          required = (
+              "R2_BUCKET",
+              "R2_RESEARCH_ENDPOINT",
+              "R2_RESEARCH_ACCESS_KEY_ID",
+              "R2_RESEARCH_SECRET_ACCESS_KEY",
+              "R2_RESEARCH_BUCKET",
+          )
+          missing = [
+              name for name in required
+              if not (os.environ.get(name) or "").strip()
+          ]
+          if missing:
+              print(
+                  "::error title=research-vault-census-config::missing required "
+                  "private R2 configuration name(s): " + ", ".join(missing),
+                  flush=True,
+              )
+              sys.exit(2)
+          if os.environ["R2_RESEARCH_BUCKET"].strip() == os.environ["R2_BUCKET"].strip():
+              print(
+                  "::error title=research-vault-census-config::"
+                  "research bucket aliases shared/public bucket",
+                  flush=True,
+              )
+              sys.exit(2)
+          print(
+              "research-vault-census: private R2 configuration names present; "
+              "bucket anti-alias passed",
+              flush=True,
+          )
+          PY
+
+      - name: Python 3.12 isolated read runtime
+        run: |
+          set -euo pipefail
+          VENV="$RUNNER_TEMP/research-vault-census-venv"
+          /opt/homebrew/bin/python3.12 -m venv "$VENV"
+          echo "$VENV/bin" >> "$GITHUB_PATH"
+          "$VENV/bin/pip" install --quiet boto3
+
+      - name: Read canonical Research Vault census
+        env:
+          RECEIPT_PATH: ${{ runner.temp }}/research-vault-census.json
+        run: |
+          set -euo pipefail
+          python -m scripts.research_vault_census --json "$RECEIPT_PATH"
+
+      - name: Assert bounded redacted census receipt
+        env:
+          RECEIPT_PATH: ${{ runner.temp }}/research-vault-census.json
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path(os.environ["RECEIPT_PATH"])
+          raw = path.read_bytes()
+          assert len(raw) <= 8 * 1024 * 1024, "census receipt exceeded operator bound"
+          receipt = json.loads(raw)
+          assert receipt["schema"] == "research_vault.census.v1"
+          assert "body_health" in receipt["corpus"]
+          # The census may contain document ids needed for recovery, but never
+          # report/PDF body text, credentials, object bytes, or bucket names.
+          health = receipt["corpus"]["body_health"]
+          assert health["schema"] == "research_vault.corpus_health.v1"
+          forbidden = {"body", "pdf_bytes", "credentials", "bucket", "endpoint"}
+          assert forbidden.isdisjoint(health), "private payload field leaked into health receipt"
+          print(
+              "catalog=", receipt["catalog"]["id_count"],
+              "corpus=", receipt["corpus"]["id_count"],
+              "usable_bodies=", health["body_nonempty_rows"],
+              "bodyless_repair=", health[
+                  "catalog_rows_with_corpus_row_but_no_usable_body_needing_repair_count"
+              ],
+          )
+          PY
+
+      - name: Upload read-only census receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-vault-census-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/research-vault-census.json
+          if-no-files-found: error
+          retention-days: 90

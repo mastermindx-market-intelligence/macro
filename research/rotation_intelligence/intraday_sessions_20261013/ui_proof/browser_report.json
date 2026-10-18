@@ -1,0 +1,521 @@
+{
+  "browser": "chromium",
+  "proof_kind": "actual_candidate_jinja_page_synthetic_pulse_no_production",
+  "template_sha256": "733d59a85c0d3390cf4dd2c6d0b60a4415a01ce33f17ff52b9e9bdaa18a10802",
+  "cases": [
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "language": "en",
+      "geometry": {
+        "viewport": 1440,
+        "page": 1440,
+        "panel": 1120,
+        "scroll": 1118
+      },
+      "text_contrast": [
+        {
+          "class": "H2",
+          "color": "rgb(200, 208, 220)",
+          "ratio": 11.41771587896029
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "rgb(224, 100, 100)",
+          "ratio": 5.219170386726632
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "rgb(224, 100, 100)",
+          "ratio": 5.219170386726632
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "rgb(69, 184, 115)",
+          "ratio": 7.061707171416122
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "rgb(69, 184, 115)",
+          "ratio": 7.061707171416122
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-foot",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        }
+      ],
+      "new_view_ready": true,
+      "keyboard_details": true,
+      "unchanged_refresh_preserves_node": true,
+      "denied_focus_has_landing": true,
+      "focus_and_open_preserved": true,
+      "denied_hides_numbers": true,
+      "stale_hides_numbers": true,
+      "show_all_without_refetch": true,
+      "expansion_survives_repaint": true,
+      "page_errors": [],
+      "console_errors": [
+        "subsector_rotation render failed: TypeError: Cannot read properties of undefined (reading 'filter')\n    at drawMap (http://rotation.test/subsector_rotation.js:511:23)\n    at drawMapCard (http://rotation.test/subsector_rotation.js:506:5)\n    at render (http://rotation.test/subsector_rotation.js:427:5)\n    at http://rotation.test/subsector_rotation.js:294:42",
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "failed_requests": [],
+      "stubbed_paths": [
+        "cloud.umami.is/script.js",
+        "rotation.test/cycle.css",
+        "rotation.test/fonts/Inter-400.woff2",
+        "rotation.test/fonts/Inter-600.woff2",
+        "rotation.test/fonts/Inter-700.woff2",
+        "rotation.test/fonts/Inter-800.woff2",
+        "rotation.test/live_config.js",
+        "rotation.test/mm_charts.js"
+      ],
+      "pulse_requests": 5,
+      "denied_text": "Sign in with access to view these observations.",
+      "stale_text": "Group\nDay\nInterval\nvs SPY\nAI semiconductors\nObservation is no longer current.\nHealth care\nObservation is no longer current."
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "language": "en",
+      "geometry": {
+        "viewport": 1440,
+        "page": 1440,
+        "panel": 1120,
+        "scroll": 1118
+      },
+      "text_contrast": [
+        {
+          "class": "H2",
+          "color": "rgb(46, 57, 80)",
+          "ratio": 11.55587898887883
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "color(srgb 0.710745 0.246588 0.26102)",
+          "ratio": 20.955944586168698
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "color(srgb 0.710745 0.246588 0.26102)",
+          "ratio": 20.955944586168698
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)",
+          "ratio": 20.951329771313556
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)",
+          "ratio": 20.951329771313556
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-foot",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        }
+      ],
+      "new_view_ready": true,
+      "keyboard_details": true,
+      "unchanged_refresh_preserves_node": true,
+      "denied_focus_has_landing": true,
+      "focus_and_open_preserved": true,
+      "denied_hides_numbers": true,
+      "stale_hides_numbers": true,
+      "show_all_without_refetch": true,
+      "expansion_survives_repaint": true,
+      "page_errors": [],
+      "console_errors": [
+        "subsector_rotation render failed: TypeError: Cannot read properties of undefined (reading 'filter')\n    at drawMap (http://rotation.test/subsector_rotation.js:511:23)\n    at drawMapCard (http://rotation.test/subsector_rotation.js:506:5)\n    at render (http://rotation.test/subsector_rotation.js:427:5)\n    at http://rotation.test/subsector_rotation.js:294:42",
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "failed_requests": [],
+      "stubbed_paths": [
+        "cloud.umami.is/script.js",
+        "rotation.test/cycle.css",
+        "rotation.test/fonts/Inter-400.woff2",
+        "rotation.test/fonts/Inter-600.woff2",
+        "rotation.test/fonts/Inter-700.woff2",
+        "rotation.test/fonts/Inter-800.woff2",
+        "rotation.test/live_config.js",
+        "rotation.test/mm_charts.js"
+      ],
+      "pulse_requests": 5,
+      "denied_text": "Sign in with access to view these observations.",
+      "stale_text": "Group\nDay\nInterval\nvs SPY\nAI semiconductors\nObservation is no longer current.\nHealth care\nObservation is no longer current."
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "language": "en",
+      "geometry": {
+        "viewport": 390,
+        "page": 390,
+        "panel": 354,
+        "scroll": 352
+      },
+      "text_contrast": [
+        {
+          "class": "H2",
+          "color": "rgb(200, 208, 220)",
+          "ratio": 11.41771587896029
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "rgb(224, 100, 100)",
+          "ratio": 5.219170386726632
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "rgb(224, 100, 100)",
+          "ratio": 5.219170386726632
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "rgb(69, 184, 115)",
+          "ratio": 7.061707171416122
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "rgb(69, 184, 115)",
+          "ratio": 7.061707171416122
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-foot",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        }
+      ],
+      "new_view_ready": true,
+      "keyboard_details": true,
+      "unchanged_refresh_preserves_node": true,
+      "denied_focus_has_landing": true,
+      "focus_and_open_preserved": true,
+      "denied_hides_numbers": true,
+      "stale_hides_numbers": true,
+      "show_all_without_refetch": true,
+      "expansion_survives_repaint": true,
+      "page_errors": [],
+      "console_errors": [
+        "subsector_rotation render failed: TypeError: Cannot read properties of undefined (reading 'filter')\n    at drawMap (http://rotation.test/subsector_rotation.js:511:23)\n    at drawMapCard (http://rotation.test/subsector_rotation.js:506:5)\n    at render (http://rotation.test/subsector_rotation.js:427:5)\n    at http://rotation.test/subsector_rotation.js:294:42",
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "failed_requests": [],
+      "stubbed_paths": [
+        "cloud.umami.is/script.js",
+        "rotation.test/cycle.css",
+        "rotation.test/fonts/Inter-400.woff2",
+        "rotation.test/fonts/Inter-600.woff2",
+        "rotation.test/fonts/Inter-700.woff2",
+        "rotation.test/fonts/Inter-800.woff2",
+        "rotation.test/live_config.js",
+        "rotation.test/mm_charts.js"
+      ],
+      "pulse_requests": 5,
+      "denied_text": "Sign in with access to view these observations.",
+      "stale_text": "Group\nDay\nInterval\nvs SPY\nAI semiconductors\nObservation is no longer current.\nHealth care\nObservation is no longer current."
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "language": "zh",
+      "geometry": {
+        "viewport": 390,
+        "page": 390,
+        "panel": 354,
+        "scroll": 352
+      },
+      "text_contrast": [
+        {
+          "class": "H2",
+          "color": "rgb(46, 57, 80)",
+          "ratio": 11.55587898887883
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "color(srgb 0.143922 0.459373 0.325882)",
+          "ratio": 20.951329771313556
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "color(srgb 0.143922 0.459373 0.325882)",
+          "ratio": 20.951329771313556
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)",
+          "ratio": 20.955944586168698
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)",
+          "ratio": 20.955944586168698
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-foot",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        }
+      ],
+      "new_view_ready": true,
+      "keyboard_details": true,
+      "unchanged_refresh_preserves_node": true,
+      "denied_focus_has_landing": true,
+      "focus_and_open_preserved": true,
+      "denied_hides_numbers": true,
+      "stale_hides_numbers": true,
+      "show_all_without_refetch": true,
+      "expansion_survives_repaint": true,
+      "page_errors": [],
+      "console_errors": [
+        "subsector_rotation render failed: TypeError: Cannot read properties of undefined (reading 'filter')\n    at drawMap (http://rotation.test/subsector_rotation.js:511:23)\n    at drawMapCard (http://rotation.test/subsector_rotation.js:506:5)\n    at render (http://rotation.test/subsector_rotation.js:427:5)\n    at http://rotation.test/subsector_rotation.js:294:42",
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "failed_requests": [],
+      "stubbed_paths": [
+        "cloud.umami.is/script.js",
+        "rotation.test/cycle.css",
+        "rotation.test/fonts/Inter-400.woff2",
+        "rotation.test/fonts/Inter-600.woff2",
+        "rotation.test/fonts/Inter-700.woff2",
+        "rotation.test/fonts/Inter-800.woff2",
+        "rotation.test/live_config.js",
+        "rotation.test/mm_charts.js"
+      ],
+      "pulse_requests": 5,
+      "denied_text": "请使用有权限的账户登录查看。",
+      "stale_text": "组别\n全天\n区间\n相对SPY\nAI半导体\n观测已过期。\n医疗保健\n观测已过期。"
+    }
+  ],
+  "screenshots": {
+    "1440-dark-en-page.png": "0cc1860ae46b4e64c323c38e32a3a2a4ef13cc92d7abc283f1ab4d84fb114103",
+    "1440-dark-en-panel.png": "3584047e200380c2a7173f697179ca6debda9a7a0182278d728729e36588d1cb",
+    "1440-light-en-page.png": "dce24e11f39cc86232dbd27f22325456e2ff4aca0047a0ca100cf08af62140ee",
+    "1440-light-en-panel.png": "466e934c9e703baea87c62bfb7aa4061173f3e041a5b2030668cbd4bb215fef1",
+    "390-dark-en-page.png": "3af5d7006b7b6953aa0ed796500c1bd2e6eff550470c38fd035326f69e178d28",
+    "390-dark-en-panel.png": "7b7e3094819e22ef89aa2e43507752e4f548882fa69294cb37474cf6b566b64d",
+    "390-light-zh-page.png": "c25404e96ee204e54761d1824d609860406ed47536631fa3e069f4a8ac66a493",
+    "390-light-zh-panel.png": "557f2fdbbeac7d7f67c0eadaa97ae4ff59c5eecbd1124c3903531cb0ea5d4dcf"
+  }
+}

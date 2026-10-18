@@ -43,6 +43,8 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from scripts import ci_scope_dependencies as DEPS  # noqa: E402
+
 CHECKER = ROOT / "scripts" / "check_ci_trigger_closure.py"
 CI = ROOT / ".github" / "workflows" / "ci.yml"
 MANIFEST = ROOT / ".github" / "ci" / "legacy-jobs.yml"
@@ -175,6 +177,41 @@ def test_a_path_that_is_not_in_the_tree_is_never_a_subject(fixture_reads) -> Non
 def test_reads_carry_provenance(fixture_reads) -> None:
     """A finding must say WHERE, or verifying one costs a grep per finding."""
     assert "line" in fixture_reads["engine/market_state.py"]  # ci-trigger-closure: data — existence-only selftest subject, declared in ci-control-plane-contracts paths; imports not followed
+
+
+def test_selector_analysis_reuses_one_module_ast_walk(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Planner scope analysis parses/walks one immutable file only once.
+
+    Scope inference calls several analyzers over the same syntax tree. Re-running
+    ``ast.walk`` in each analyzer is semantically redundant and was the measured
+    ci-plan hot path; the shared node tuple must remain the sole full-module walk.
+    """
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "engine").mkdir()
+    (tmp_path / "tests" / "test_owner.py").write_text(
+        "import engine.core\n", encoding="utf-8"
+    )
+    (tmp_path / "engine" / "core.py").write_text("VALUE = 1\n", encoding="utf-8")
+
+    monkeypatch.setattr(DEPS, "ROOT", tmp_path)
+    DEPS._selector_file_analysis.cache_clear()
+    original_walk = DEPS.ast.walk
+    module_walks = 0
+
+    def counting_walk(node: ast.AST):
+        nonlocal module_walks
+        if isinstance(node, ast.Module):
+            module_walks += 1
+        return original_walk(node)
+
+    monkeypatch.setattr(DEPS.ast, "walk", counting_walk)
+    reads, ambiguities = DEPS._selector_file_analysis("tests/test_owner.py")
+
+    assert reads == ("engine/core.py",)
+    assert ambiguities == ()
+    assert module_walks == 1
 
 
 # ── 3. the incident shape ────────────────────────────────────────────────────

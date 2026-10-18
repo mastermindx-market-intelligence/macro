@@ -1,18 +1,18 @@
 {
   "schema": "market_structure_context.v1",
-  "asof": "2026-09-25",
-  "built_at": "2026-09-26T05:44:08.679694+00:00",
+  "asof": "2026-10-16",
+  "built_at": "2026-10-17T15:39:21.656974+00:00",
   "is_context_only": true,
   "display_only": true,
   "gamma": {
     "regime": "long",
-    "net_gex_bn": 67.656514,
-    "net_gex_pctile": 80.4,
-    "gamma_flip": 7671.127946,
-    "spot": 7743.4102,
-    "dist_to_flip_pct": 0.933468,
-    "days_in_regime": 7,
-    "days_in_regime_observed": 6,
+    "net_gex_bn": 71.537007,
+    "net_gex_pctile": 77.6,
+    "gamma_flip": 7740.445123,
+    "spot": 7805.45,
+    "dist_to_flip_pct": 0.832814,
+    "days_in_regime": 10,
+    "days_in_regime_observed": 8,
     "series_start": "2026-06-15",
     "history": [
       {
@@ -406,30 +406,110 @@
         "regime": "long",
         "flip": 7671.127946,
         "spot": 7743.4102
+      },
+      {
+        "date": "2026-09-28",
+        "net_gex_bn": 11.397656,
+        "regime": "long",
+        "flip": 7670.436658,
+        "spot": 7683.6899
+      },
+      {
+        "date": "2026-09-29",
+        "net_gex_bn": 0.553038,
+        "regime": "long",
+        "flip": 7670.207799,
+        "spot": 7670.8398
+      },
+      {
+        "date": "2026-09-30",
+        "net_gex_bn": -7.246814,
+        "regime": "short",
+        "flip": 7660.602243,
+        "spot": 7651.54
+      },
+      {
+        "date": "2026-10-01",
+        "net_gex_bn": 3.252434,
+        "regime": "long",
+        "flip": 7662.092996,
+        "spot": 7666.4502
+      },
+      {
+        "date": "2026-10-02",
+        "net_gex_bn": 50.136114,
+        "regime": "long",
+        "flip": 7659.028261,
+        "spot": 7722.7202
+      },
+      {
+        "date": "2026-10-05",
+        "net_gex_bn": 86.482766,
+        "regime": "long",
+        "flip": 7674.514849,
+        "spot": 7773.9502
+      },
+      {
+        "date": "2026-10-06",
+        "net_gex_bn": 122.132541,
+        "regime": "long",
+        "flip": 7682.580461,
+        "spot": 7818.9302
+      },
+      {
+        "date": "2026-10-07",
+        "net_gex_bn": 91.989045,
+        "regime": "long",
+        "flip": 7708.15967,
+        "spot": 7801.77
+      },
+      {
+        "date": "2026-10-08",
+        "net_gex_bn": 51.679244,
+        "regime": "long",
+        "flip": 7715.054046,
+        "spot": 7765.3599
+      },
+      {
+        "date": "2026-10-09",
+        "net_gex_bn": 99.882296,
+        "regime": "long",
+        "flip": 7719.338378,
+        "spot": 7811.54
+      },
+      {
+        "date": "2026-10-14",
+        "net_gex_bn": 71.537007,
+        "regime": "long",
+        "flip": 7740.445123,
+        "spot": 7805.45
       }
     ],
     "coverage": {
-      "last_obs": "2026-09-25",
-      "expected_last_session": "2026-09-25",
-      "sessions_behind": 0,
+      "last_obs": "2026-10-14",
+      "expected_last_session": "2026-10-16",
+      "sessions_behind": 2,
       "window_sessions": 20,
       "missing_recent": [
-        "2026-09-01",
-        "2026-09-02",
-        "2026-09-24"
+        "2026-09-24",
+        "2026-10-12",
+        "2026-10-13",
+        "2026-10-15",
+        "2026-10-16"
       ],
       "missing_in_regime": [
-        "2026-09-24"
+        "2026-10-12",
+        "2026-10-13"
       ],
       "complete": false
     }
   },
   "systematic": {
     "vc": {
-      "alloc_bn": 269.165851,
-      "alloc_frac": 0.89722,
-      "flow_1d_bn": -0.733822,
-      "flow_5d_bn": -2.059689,
+      "alloc_bn": 271.076225,
+      "alloc_frac": 0.903587,
+      "flow_1d_bn": -5.735148,
+      "flow_5d_bn": -4.718323,
       "state": "cutting",
       "flow_window_n": 5,
       "aum_bn": 300.0,
@@ -437,137 +517,17 @@
       "series_start": "1927-12-30"
     },
     "cta": {
-      "score": 0.792313,
-      "z": -0.253456,
-      "flow_1d": 0.091666,
-      "flow_5d": 0.049501,
-      "state": "adding",
+      "score": 0.359578,
+      "z": -0.957484,
+      "flow_1d": -0.273431,
+      "flow_5d": -0.722259,
+      "state": "cutting",
       "flow_window_n": 5,
-      "cta_near_flat": true
+      "cta_near_flat": false
     },
-    "agreement": "split",
+    "agreement": "aligned_cutting",
     "flow_window_n": 5,
     "history": [
-      {
-        "date": "2024-09-27",
-        "vc_alloc_bn": 188.449817,
-        "vc_flow_bn": 0.292642,
-        "cta_score": 1.136056,
-        "cta_flow": -0.014126,
-        "spx_close": 5738.169922
-      },
-      {
-        "date": "2024-09-30",
-        "vc_alloc_bn": 188.328957,
-        "vc_flow_bn": -0.12086,
-        "cta_score": 1.152361,
-        "cta_flow": 0.016306,
-        "spx_close": 5762.47998
-      },
-      {
-        "date": "2024-10-01",
-        "vc_alloc_bn": 187.276268,
-        "vc_flow_bn": -1.052689,
-        "cta_score": 1.049718,
-        "cta_flow": -0.102644,
-        "spx_close": 5708.75
-      },
-      {
-        "date": "2024-10-02",
-        "vc_alloc_bn": 187.570655,
-        "vc_flow_bn": 0.294387,
-        "cta_score": 1.267469,
-        "cta_flow": 0.217752,
-        "spx_close": 5709.540039
-      },
-      {
-        "date": "2024-10-03",
-        "vc_alloc_bn": 187.864584,
-        "vc_flow_bn": 0.293929,
-        "cta_score": 1.373075,
-        "cta_flow": 0.105606,
-        "spx_close": 5699.939941
-      },
-      {
-        "date": "2024-10-04",
-        "vc_alloc_bn": 186.817432,
-        "vc_flow_bn": -1.047152,
-        "cta_score": 1.692484,
-        "cta_flow": 0.319409,
-        "spx_close": 5751.069824
-      },
-      {
-        "date": "2024-10-07",
-        "vc_alloc_bn": 185.370544,
-        "vc_flow_bn": -1.446888,
-        "cta_score": 1.487355,
-        "cta_flow": -0.20513,
-        "spx_close": 5695.939941
-      },
-      {
-        "date": "2024-10-08",
-        "vc_alloc_bn": 185.511174,
-        "vc_flow_bn": 0.14063,
-        "cta_score": 1.692251,
-        "cta_flow": 0.204896,
-        "spx_close": 5751.129883
-      },
-      {
-        "date": "2024-10-09",
-        "vc_alloc_bn": 186.113144,
-        "vc_flow_bn": 0.60197,
-        "cta_score": 1.742238,
-        "cta_flow": 0.049987,
-        "spx_close": 5792.040039
-      },
-      {
-        "date": "2024-10-10",
-        "vc_alloc_bn": 186.364225,
-        "vc_flow_bn": 0.251081,
-        "cta_score": 1.57273,
-        "cta_flow": -0.169509,
-        "spx_close": 5780.049805
-      },
-      {
-        "date": "2024-10-11",
-        "vc_alloc_bn": 186.003113,
-        "vc_flow_bn": -0.361112,
-        "cta_score": 1.746225,
-        "cta_flow": 0.173495,
-        "spx_close": 5815.029785
-      },
-      {
-        "date": "2024-10-14",
-        "vc_alloc_bn": 185.759409,
-        "vc_flow_bn": -0.243704,
-        "cta_score": 1.993015,
-        "cta_flow": 0.24679,
-        "spx_close": 5859.850098
-      },
-      {
-        "date": "2024-10-15",
-        "vc_alloc_bn": 187.84621,
-        "vc_flow_bn": 2.086801,
-        "cta_score": 1.910019,
-        "cta_flow": -0.082996,
-        "spx_close": 5815.259766
-      },
-      {
-        "date": "2024-10-16",
-        "vc_alloc_bn": 188.717583,
-        "vc_flow_bn": 0.871373,
-        "cta_score": 2.011965,
-        "cta_flow": 0.101946,
-        "spx_close": 5842.470215
-      },
-      {
-        "date": "2024-10-17",
-        "vc_alloc_bn": 189.680925,
-        "vc_flow_bn": 0.963342,
-        "cta_score": 1.914711,
-        "cta_flow": -0.097254,
-        "spx_close": 5841.470215
-      },
       {
         "date": "2024-10-18",
         "vc_alloc_bn": 191.028233,
@@ -4447,111 +4407,179 @@
         "cta_score": 0.792313,
         "cta_flow": 0.091666,
         "spx_close": 7743.410156
+      },
+      {
+        "date": "2026-09-28",
+        "vc_alloc_bn": 271.436769,
+        "vc_flow_bn": 2.270918,
+        "cta_score": 0.67376,
+        "cta_flow": -0.118552,
+        "spx_close": 7683.689941
+      },
+      {
+        "date": "2026-09-29",
+        "vc_alloc_bn": 273.738022,
+        "vc_flow_bn": 2.301253,
+        "cta_score": 0.601712,
+        "cta_flow": -0.072048,
+        "spx_close": 7670.839844
+      },
+      {
+        "date": "2026-09-30",
+        "vc_alloc_bn": 273.647745,
+        "vc_flow_bn": -0.090277,
+        "cta_score": 0.57175,
+        "cta_flow": -0.029962,
+        "spx_close": 7651.540039
+      },
+      {
+        "date": "2026-10-01",
+        "vc_alloc_bn": 273.544473,
+        "vc_flow_bn": -0.103272,
+        "cta_score": 0.595071,
+        "cta_flow": 0.023321,
+        "spx_close": 7666.450195
+      },
+      {
+        "date": "2026-10-02",
+        "vc_alloc_bn": 273.482972,
+        "vc_flow_bn": -0.061501,
+        "cta_score": 0.713632,
+        "cta_flow": 0.118561,
+        "spx_close": 7722.720215
+      },
+      {
+        "date": "2026-10-05",
+        "vc_alloc_bn": 272.888238,
+        "vc_flow_bn": -0.594734,
+        "cta_score": 0.929669,
+        "cta_flow": 0.216037,
+        "spx_close": 7773.950195
+      },
+      {
+        "date": "2026-10-06",
+        "vc_alloc_bn": 272.245039,
+        "vc_flow_bn": -0.643198,
+        "cta_score": 1.113857,
+        "cta_flow": 0.184188,
+        "spx_close": 7818.930176
+      },
+      {
+        "date": "2026-10-07",
+        "vc_alloc_bn": 274.435106,
+        "vc_flow_bn": 2.190066,
+        "cta_score": 1.06174,
+        "cta_flow": -0.052117,
+        "spx_close": 7801.77002
+      },
+      {
+        "date": "2026-10-08",
+        "vc_alloc_bn": 273.852811,
+        "vc_flow_bn": -0.582294,
+        "cta_score": 1.125818,
+        "cta_flow": 0.064078,
+        "spx_close": 7765.359863
+      },
+      {
+        "date": "2026-10-09",
+        "vc_alloc_bn": 275.794548,
+        "vc_flow_bn": 1.941737,
+        "cta_score": 1.081837,
+        "cta_flow": -0.043981,
+        "spx_close": 7811.540039
+      },
+      {
+        "date": "2026-10-12",
+        "vc_alloc_bn": 276.197727,
+        "vc_flow_bn": 0.40318,
+        "cta_score": 1.123651,
+        "cta_flow": 0.041814,
+        "spx_close": 7807.240234
+      },
+      {
+        "date": "2026-10-13",
+        "vc_alloc_bn": 276.675989,
+        "vc_flow_bn": 0.478261,
+        "cta_score": 1.03653,
+        "cta_flow": -0.087121,
+        "spx_close": 7805.450195
+      },
+      {
+        "date": "2026-10-14",
+        "vc_alloc_bn": 271.984074,
+        "vc_flow_bn": -4.691915,
+        "cta_score": 0.649311,
+        "cta_flow": -0.38722,
+        "spx_close": 7718.939941
+      },
+      {
+        "date": "2026-10-15",
+        "vc_alloc_bn": 276.811372,
+        "vc_flow_bn": 4.827298,
+        "cta_score": 0.63301,
+        "cta_flow": -0.016301,
+        "spx_close": 7744.060059
+      },
+      {
+        "date": "2026-10-16",
+        "vc_alloc_bn": 271.076225,
+        "vc_flow_bn": -5.735148,
+        "cta_score": 0.359578,
+        "cta_flow": -0.273431,
+        "spx_close": 7659.439941
       }
     ]
   },
   "vol": {
-    "rv21": 0.105657,
-    "rv63": 0.111455,
+    "rv21": 0.099622,
+    "rv63": 0.11067,
     "rv_cross_state": "calm",
     "vix_curve": [
       {
         "tenor": "M1",
-        "settle": 17.5046,
-        "dte": 26
+        "settle": 17.6542,
+        "dte": 7
       },
       {
         "tenor": "M2",
-        "settle": 18.3843,
-        "dte": 54
+        "settle": 18.0772,
+        "dte": 35
       },
       {
         "tenor": "M3",
-        "settle": 18.7539,
-        "dte": 82
+        "settle": 18.3989,
+        "dte": 63
       },
       {
         "tenor": "M4",
-        "settle": 19.5362,
-        "dte": 117
+        "settle": 19.2322,
+        "dte": 98
       },
       {
         "tenor": "M5",
-        "settle": 19.9996,
-        "dte": 145
+        "settle": 19.675,
+        "dte": 126
       },
       {
         "tenor": "M6",
-        "settle": 20.2394,
-        "dte": 173
+        "settle": 19.8417,
+        "dte": 154
       }
     ],
-    "vix_curve_slope": 2.7348,
+    "vix_curve_slope": 2.1875,
     "series_start_curve": "2026-04-16"
   },
   "dispersion": {
-    "cor1m": 8.01,
-    "cor1m_regime": "dispersion",
-    "cor1m_1y_delta": -5.46,
-    "cor1m_pctile_2y": 11.3,
+    "cor1m": 9.02,
+    "cor1m_regime": "normal",
+    "cor1m_1y_delta": -4.99,
+    "cor1m_pctile_2y": 21.2,
     "cor1m_pctile_lo": 20,
     "cor1m_pctile_hi": 80,
     "cor1m_available": true,
-    "cor3m": 10.32,
-    "dspx": 35.49,
+    "cor3m": 12.8,
+    "dspx": 36.77,
     "history": [
-      {
-        "date": "2024-09-27",
-        "cor1m": 12.36
-      },
-      {
-        "date": "2024-09-30",
-        "cor1m": 10.92
-      },
-      {
-        "date": "2024-10-01",
-        "cor1m": 14.68
-      },
-      {
-        "date": "2024-10-02",
-        "cor1m": 13.85
-      },
-      {
-        "date": "2024-10-03",
-        "cor1m": 14.55
-      },
-      {
-        "date": "2024-10-04",
-        "cor1m": 11.24
-      },
-      {
-        "date": "2024-10-07",
-        "cor1m": 20.45
-      },
-      {
-        "date": "2024-10-08",
-        "cor1m": 18.61
-      },
-      {
-        "date": "2024-10-09",
-        "cor1m": 17.6
-      },
-      {
-        "date": "2024-10-10",
-        "cor1m": 16.92
-      },
-      {
-        "date": "2024-10-11",
-        "cor1m": 16.96
-      },
-      {
-        "date": "2024-10-14",
-        "cor1m": 16.65
-      },
-      {
-        "date": "2024-10-15",
-        "cor1m": 17.34
-      },
       {
         "date": "2024-10-16",
         "cor1m": 15.77
@@ -6499,24 +6527,76 @@
       {
         "date": "2026-09-25",
         "cor1m": 8.01
+      },
+      {
+        "date": "2026-09-28",
+        "cor1m": 9.03
+      },
+      {
+        "date": "2026-09-29",
+        "cor1m": 9.28
+      },
+      {
+        "date": "2026-09-30",
+        "cor1m": 9.09
+      },
+      {
+        "date": "2026-10-01",
+        "cor1m": 9.6
+      },
+      {
+        "date": "2026-10-02",
+        "cor1m": 8.05
+      },
+      {
+        "date": "2026-10-05",
+        "cor1m": 8.51
+      },
+      {
+        "date": "2026-10-06",
+        "cor1m": 8.33
+      },
+      {
+        "date": "2026-10-07",
+        "cor1m": 8.01
+      },
+      {
+        "date": "2026-10-08",
+        "cor1m": 7.58
+      },
+      {
+        "date": "2026-10-09",
+        "cor1m": 6.93
+      },
+      {
+        "date": "2026-10-12",
+        "cor1m": 7.57
+      },
+      {
+        "date": "2026-10-13",
+        "cor1m": 7.57
+      },
+      {
+        "date": "2026-10-14",
+        "cor1m": 9.02
       }
     ]
   },
   "week_map": {
-    "week_start": "2026-09-28",
-    "week_end": "2026-10-02",
-    "locked_close": 7743.41,
-    "locked_at": "2026-09-25T00:00:00",
-    "band_1sigma_lo": 7613.8,
-    "band_1sigma_hi": 7873.03,
-    "band_2sigma_lo": 7484.18,
-    "band_2sigma_hi": 8002.64,
-    "gamma_flip": 7671.127946,
-    "implied_weekly_pct": 1.67,
+    "week_start": "2026-10-19",
+    "week_end": "2026-10-23",
+    "locked_close": 7659.44,
+    "locked_at": "2026-10-16T00:00:00",
+    "band_1sigma_lo": 7524.58,
+    "band_1sigma_hi": 7794.3,
+    "band_2sigma_lo": 7389.71,
+    "band_2sigma_hi": 7929.17,
+    "gamma_flip": 7740.445123,
+    "implied_weekly_pct": 1.76,
     "source": "spx_iv30_scaled_5d"
   },
   "state_changes": {
-    "vs_asof": "2026-09-24",
+    "vs_asof": "2026-10-15",
     "items": [
       {
         "key": "vc_state",
@@ -6528,23 +6608,23 @@
       },
       {
         "key": "agreement",
-        "from": "aligned_adding",
-        "to": "split",
-        "note_en": "Systematic agreement: Aligned adding → Split",
-        "note_zh": "系统化机构一致性：一致加仓 → 分歧",
+        "from": "split",
+        "to": "aligned_cutting",
+        "note_en": "Systematic agreement: Split → Aligned cutting",
+        "note_zh": "系统化机构一致性：分歧 → 一致减仓",
         "display_only": true
       }
     ]
   },
   "prev_state": {
-    "as_of": "2026-09-24",
+    "as_of": "2026-10-15",
     "state": {
       "gamma_regime": "long",
       "vc_state": "adding",
-      "cta_state": "adding",
-      "agreement": "aligned_adding",
+      "cta_state": "cutting",
+      "agreement": "split",
       "rv_cross_state": "calm",
-      "cor1m_regime": "dispersion"
+      "cor1m_regime": "normal"
     }
   }
 }

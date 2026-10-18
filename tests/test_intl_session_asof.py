@@ -54,3 +54,7 @@ def test_conviction_profile_and_b2_use_session_asof():
     assert "asof=_b2_asof" in window
     assert "_b2_asof = _session_asof" in text
     assert '_b2_asof = (alpha or {}).get("as_of")' not in text
+    # Published board: the same session anchor must reach rank_setups/as_of,
+    # otherwise intl_setups.json goes back to an ungradeable null freshness stamp.
+    assert 'rank_setups(cand, as_of=_session_asof' in text
+    assert 'rank_setups(cand, as_of=(alpha or {}).get("as_of")' not in text
