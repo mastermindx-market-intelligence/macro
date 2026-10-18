@@ -2390,8 +2390,16 @@ def _fear_greed_view() -> dict | None:
         site_dir = config.ROOT / config.load()["storage"]["site_dir"]
         p = site_dir / "basketdata" / "fear_greed.json"
         if p.exists():
-            return json.loads(p.read_text())
-        # fallback: compute live (slower but always correct)
+            cached = json.loads(p.read_text())
+            # A pre-upgrade artifact must not hide the new display indefinitely.
+            # Computation remains with the same owner; this view publishes nothing.
+            from lib import nyse_calendar
+            intelligence = cached.get("intelligence") if isinstance(cached, dict) else None
+            if (isinstance(intelligence, dict)
+                    and intelligence.get("schema") == "mastermind.fear_greed_intelligence.v1"
+                    and intelligence.get("expected_session") == nyse_calendar.expected_last_session().isoformat()):
+                return cached
+        # fallback: first run or schema upgrade, via the existing engine owner
         from engine.fear_greed import compute_fear_greed
         return compute_fear_greed()
     except Exception as e:  # noqa: BLE001 — additive, never fatal

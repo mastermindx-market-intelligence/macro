@@ -1,0 +1,1087 @@
+{
+  "schema": "mastermind.fear_greed_intelligence.v1",
+  "as_of": "2026-10-14",
+  "expected_session": "2026-10-16",
+  "age_sessions": 2,
+  "score": 46.9,
+  "label_en": "Balanced",
+  "label_zh": "均衡",
+  "status": "delayed",
+  "coverage": {
+    "available": 4,
+    "total": 6,
+    "minimum": 4,
+    "requires": [
+      "momentum",
+      "volatility"
+    ]
+  },
+  "families": [
+    {
+      "key": "momentum",
+      "name_en": "Momentum",
+      "name_zh": "动量",
+      "score": 19.2,
+      "members": [
+        "momentum"
+      ],
+      "weight": 0.25,
+      "contribution": -7.7
+    },
+    {
+      "key": "participation",
+      "name_en": "Participation",
+      "name_zh": "参与度",
+      "score": 68.6,
+      "members": [
+        "strength",
+        "breadth"
+      ],
+      "weight": 0.25,
+      "contribution": 4.65
+    },
+    {
+      "key": "credit",
+      "name_en": "Credit",
+      "name_zh": "信用",
+      "score": null,
+      "members": [
+        "credit"
+      ],
+      "weight": null,
+      "contribution": null
+    },
+    {
+      "key": "haven",
+      "name_en": "Safe havens",
+      "name_zh": "避险",
+      "score": 74.0,
+      "members": [
+        "haven"
+      ],
+      "weight": 0.25,
+      "contribution": 6.0
+    },
+    {
+      "key": "options",
+      "name_en": "Options",
+      "name_zh": "期权",
+      "score": null,
+      "members": [
+        "options"
+      ],
+      "weight": null,
+      "contribution": null
+    },
+    {
+      "key": "volatility",
+      "name_en": "Volatility",
+      "name_zh": "波动率",
+      "score": 26.0,
+      "members": [
+        "volatility"
+      ],
+      "weight": 0.25,
+      "contribution": -6.0
+    }
+  ],
+  "components": [
+    {
+      "key": "momentum",
+      "family": "momentum",
+      "name_en": "Market momentum",
+      "name_zh": "市场动量",
+      "value": 2.791,
+      "score": 19.2,
+      "status": "fresh",
+      "unit": "%",
+      "as_of": "2026-10-14",
+      "observations": 7865,
+      "formula": "100 * (SPY / SMA125(SPY) - 1)",
+      "source": "yahoo/SPY",
+      "cnn_proxy": true,
+      "orientation": "higher=greed"
+    },
+    {
+      "key": "strength",
+      "family": "participation",
+      "name_en": "New-high participation",
+      "name_zh": "新高参与度",
+      "value": 0.615,
+      "score": 40.5,
+      "status": "fresh",
+      "unit": "ratio",
+      "as_of": "2026-10-14",
+      "observations": 15010,
+      "formula": "new highs / (new highs + new lows)",
+      "source": "breadth/breadth:nh,nl",
+      "cnn_proxy": true,
+      "orientation": "higher=greed"
+    },
+    {
+      "key": "breadth",
+      "family": "participation",
+      "name_en": "Advancing-stock breadth",
+      "name_zh": "上涨家数广度",
+      "value": 44.264,
+      "score": 96.6,
+      "status": "fresh",
+      "unit": "oscillator",
+      "as_of": "2026-10-14",
+      "observations": 14824,
+      "formula": "EMA19(RANA) - EMA39(RANA); RANA=1000*(adv-dec)/(adv+dec)",
+      "source": "breadth/breadth:adv,dec",
+      "cnn_proxy": true,
+      "orientation": "higher=greed"
+    },
+    {
+      "key": "credit",
+      "family": "credit",
+      "name_en": "Credit risk appetite",
+      "name_zh": "信用风险偏好",
+      "value": 3.16,
+      "score": null,
+      "status": "stale",
+      "unit": "percent",
+      "as_of": "2026-10-13",
+      "observations": 7494,
+      "formula": "ICE BofA US HY option-adjusted spread; inverted rank",
+      "source": "fred/BAMLH0A0HYM2:hy_oas",
+      "cnn_proxy": true,
+      "orientation": "lower=greed"
+    },
+    {
+      "key": "haven",
+      "family": "haven",
+      "name_en": "Stocks versus Treasuries",
+      "name_zh": "股票对比国债",
+      "value": 4.383,
+      "score": 74.0,
+      "status": "fresh",
+      "unit": "percentage points",
+      "as_of": "2026-10-14",
+      "observations": 6032,
+      "formula": "100 * (SPY / SPY[-20] - TLT / TLT[-20])",
+      "source": "yahoo/SPY,yahoo/TLT",
+      "cnn_proxy": true,
+      "orientation": "higher=greed"
+    },
+    {
+      "key": "options",
+      "family": "options",
+      "name_en": "ETF-chain put/call proxy",
+      "name_zh": "ETF 期权链看跌看涨代理",
+      "value": 1.114,
+      "score": null,
+      "status": "stale",
+      "unit": "ratio",
+      "as_of": "2026-10-09",
+      "observations": 33,
+      "formula": "SMA5(SPY+QQQ+IWM delayed-chain put volume / call volume); inverted rank",
+      "source": "cboe/putcall:equity_pc_ratio (ETF-chain proxy, not official equity ratio)",
+      "cnn_proxy": true,
+      "orientation": "lower=greed"
+    },
+    {
+      "key": "volatility",
+      "family": "volatility",
+      "name_en": "Volatility premium",
+      "name_zh": "波动率溢价",
+      "value": 8.961,
+      "score": 26.0,
+      "status": "fresh",
+      "unit": "%",
+      "as_of": "2026-10-14",
+      "observations": 9019,
+      "formula": "100 * (VIX / SMA50(VIX) - 1); inverted rank",
+      "source": "yahoo/_VIX",
+      "cnn_proxy": true,
+      "orientation": "lower=greed"
+    }
+  ],
+  "dynamics": {
+    "schema": "mastermind.vix_dynamics.v1",
+    "as_of": "2026-10-16",
+    "expected_session": "2026-10-16",
+    "status": "fresh",
+    "phase": "stress_accelerating",
+    "label_en": "Risk is rising faster",
+    "label_zh": "风险加速上升",
+    "velocity_unit": "log-percent per session",
+    "acceleration_unit": "log-percent per session squared",
+    "vix": 19.99,
+    "velocity": 7.4554,
+    "acceleration": 5.9872,
+    "level_percentile": 81.2,
+    "velocity_percentile": 98.2,
+    "acceleration_percentile": 99.0,
+    "mature": true,
+    "up_sessions": 1,
+    "down_sessions": 0,
+    "term_ratio": 0.9751,
+    "front_ratio": 1.0065,
+    "term_change_5d": 0.14,
+    "curve_as_of": "2026-10-16",
+    "vvix": null,
+    "vvix_change_5d_pct": null,
+    "vvix_percentile": null,
+    "vvix_as_of": "2026-10-14",
+    "vvix_status": "stale",
+    "history": [
+      {
+        "date": "2026-07-24",
+        "vix": 18.58,
+        "velocity": 1.7037,
+        "acceleration": -1.1738,
+        "phase": "stress_decelerating"
+      },
+      {
+        "date": "2026-07-27",
+        "vix": 18.67,
+        "velocity": 1.2969,
+        "acceleration": -0.4068,
+        "phase": "stress_decelerating"
+      },
+      {
+        "date": "2026-07-28",
+        "vix": 18.21,
+        "velocity": 0.033,
+        "acceleration": -1.2639,
+        "phase": "stress_decelerating"
+      },
+      {
+        "date": "2026-07-29",
+        "vix": 20.66,
+        "velocity": 4.2296,
+        "acceleration": 4.1966,
+        "phase": "stress_accelerating"
+      },
+      {
+        "date": "2026-07-30",
+        "vix": 17.09,
+        "velocity": -3.5038,
+        "acceleration": -7.7334,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-07-31",
+        "vix": 15.99,
+        "velocity": -4.5535,
+        "acceleration": -1.0497,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-08-03",
+        "vix": 15.86,
+        "velocity": -3.3078,
+        "acceleration": 1.2457,
+        "phase": "relief_decelerating"
+      },
+      {
+        "date": "2026-08-04",
+        "vix": 16.5,
+        "velocity": -0.8865,
+        "acceleration": 2.4213,
+        "phase": "relief_decelerating"
+      },
+      {
+        "date": "2026-08-05",
+        "vix": 15.81,
+        "velocity": -2.0149,
+        "acceleration": -1.1284,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-08-06",
+        "vix": 15.15,
+        "velocity": -2.7647,
+        "acceleration": -0.7498,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-08-07",
+        "vix": 14.9,
+        "velocity": -2.3978,
+        "acceleration": 0.3669,
+        "phase": "relief_decelerating"
+      },
+      {
+        "date": "2026-08-10",
+        "vix": 15.46,
+        "velocity": -0.3687,
+        "acceleration": 2.0291,
+        "phase": "relief_decelerating"
+      },
+      {
+        "date": "2026-08-11",
+        "vix": 15.28,
+        "velocity": -0.6362,
+        "acceleration": -0.2675,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-08-12",
+        "vix": 14.55,
+        "velocity": -2.0559,
+        "acceleration": -1.4197,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-08-13",
+        "vix": 14.63,
+        "velocity": -1.1878,
+        "acceleration": 0.8681,
+        "phase": "relief_decelerating"
+      },
+      {
+        "date": "2026-08-14",
+        "vix": 14.25,
+        "velocity": -1.6691,
+        "acceleration": -0.4813,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-08-17",
+        "vix": 15.19,
+        "velocity": 1.0166,
+        "acceleration": 2.6857,
+        "phase": "stress_accelerating"
+      },
+      {
+        "date": "2026-08-18",
+        "vix": 15.84,
+        "velocity": 2.0744,
+        "acceleration": 1.0578,
+        "phase": "stress_accelerating"
+      },
+      {
+        "date": "2026-08-19",
+        "vix": 14.89,
+        "velocity": -0.6787,
+        "acceleration": -2.7531,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-08-20",
+        "vix": 16.01,
+        "velocity": 1.965,
+        "acceleration": 2.6437,
+        "phase": "stress_accelerating"
+      },
+      {
+        "date": "2026-08-21",
+        "vix": 15.13,
+        "velocity": -0.5745,
+        "acceleration": -2.5395,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-08-24",
+        "vix": 15.85,
+        "velocity": 1.1667,
+        "acceleration": 1.7412,
+        "phase": "stress_accelerating"
+      },
+      {
+        "date": "2026-08-25",
+        "vix": 15.45,
+        "velocity": -0.0742,
+        "acceleration": -1.2409,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-08-26",
+        "vix": 15.21,
+        "velocity": -0.5713,
+        "acceleration": -0.4971,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-08-27",
+        "vix": 14.51,
+        "velocity": -1.9514,
+        "acceleration": -1.3801,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-08-28",
+        "vix": 14.43,
+        "velocity": -1.4852,
+        "acceleration": 0.4662,
+        "phase": "relief_decelerating"
+      },
+      {
+        "date": "2026-08-31",
+        "vix": 14.92,
+        "velocity": 0.123,
+        "acceleration": 1.6082,
+        "phase": "stress_accelerating"
+      },
+      {
+        "date": "2026-09-01",
+        "vix": 16.34,
+        "velocity": 3.1124,
+        "acceleration": 2.9895,
+        "phase": "stress_accelerating"
+      },
+      {
+        "date": "2026-09-02",
+        "vix": 15.2,
+        "velocity": -0.3357,
+        "acceleration": -3.4482,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-09-03",
+        "vix": 14.32,
+        "velocity": -2.2118,
+        "acceleration": -1.876,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-09-04",
+        "vix": 14.53,
+        "velocity": -0.9892,
+        "acceleration": 1.2225,
+        "phase": "relief_decelerating"
+      },
+      {
+        "date": "2026-09-08",
+        "vix": 15.72,
+        "velocity": 1.9645,
+        "acceleration": 2.9537,
+        "phase": "stress_accelerating"
+      },
+      {
+        "date": "2026-09-09",
+        "vix": 16.46,
+        "velocity": 2.8429,
+        "acceleration": 0.8785,
+        "phase": "stress_accelerating"
+      },
+      {
+        "date": "2026-09-10",
+        "vix": 17.84,
+        "velocity": 4.579,
+        "acceleration": 1.736,
+        "phase": "stress_accelerating"
+      },
+      {
+        "date": "2026-09-11",
+        "vix": 15.84,
+        "velocity": -0.9108,
+        "acceleration": -5.4898,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-09-14",
+        "vix": 17.1,
+        "velocity": 1.9441,
+        "acceleration": 2.855,
+        "phase": "stress_accelerating"
+      },
+      {
+        "date": "2026-09-15",
+        "vix": 17.2,
+        "velocity": 1.4904,
+        "acceleration": -0.4537,
+        "phase": "stress_decelerating"
+      },
+      {
+        "date": "2026-09-16",
+        "vix": 17.71,
+        "velocity": 1.9676,
+        "acceleration": 0.4772,
+        "phase": "stress_accelerating"
+      },
+      {
+        "date": "2026-09-17",
+        "vix": 15.44,
+        "velocity": -3.2605,
+        "acceleration": -5.2281,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-09-18",
+        "vix": 14.81,
+        "velocity": -3.5623,
+        "acceleration": -0.3018,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-09-21",
+        "vix": 14.87,
+        "velocity": -2.2401,
+        "acceleration": 1.3222,
+        "phase": "relief_decelerating"
+      },
+      {
+        "date": "2026-09-22",
+        "vix": 14.21,
+        "velocity": -3.0067,
+        "acceleration": -0.7666,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-09-23",
+        "vix": 15.18,
+        "velocity": 0.1966,
+        "acceleration": 3.2033,
+        "phase": "stress_accelerating"
+      },
+      {
+        "date": "2026-09-24",
+        "vix": 15.67,
+        "velocity": 1.19,
+        "acceleration": 0.9934,
+        "phase": "stress_accelerating"
+      },
+      {
+        "date": "2026-09-25",
+        "vix": 14.87,
+        "velocity": -0.9534,
+        "acceleration": -2.1434,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-09-28",
+        "vix": 16.07,
+        "velocity": 1.9514,
+        "acceleration": 2.9047,
+        "phase": "stress_accelerating"
+      },
+      {
+        "date": "2026-09-29",
+        "vix": 16.04,
+        "velocity": 1.2386,
+        "acceleration": -0.7127,
+        "phase": "stress_decelerating"
+      },
+      {
+        "date": "2026-09-30",
+        "vix": 16.34,
+        "velocity": 1.4434,
+        "acceleration": 0.2048,
+        "phase": "stress_accelerating"
+      },
+      {
+        "date": "2026-10-01",
+        "vix": 16.39,
+        "velocity": 1.0641,
+        "acceleration": -0.3793,
+        "phase": "stress_decelerating"
+      },
+      {
+        "date": "2026-10-02",
+        "vix": 15.31,
+        "velocity": -1.5628,
+        "acceleration": -2.6269,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-10-05",
+        "vix": 15.52,
+        "velocity": -0.5877,
+        "acceleration": 0.975,
+        "phase": "relief_decelerating"
+      },
+      {
+        "date": "2026-10-06",
+        "vix": 15.01,
+        "velocity": -1.5056,
+        "acceleration": -0.9179,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-10-07",
+        "vix": 15.08,
+        "velocity": -0.8486,
+        "acceleration": 0.6569,
+        "phase": "relief_decelerating"
+      },
+      {
+        "date": "2026-10-08",
+        "vix": 15.41,
+        "velocity": 0.1558,
+        "acceleration": 1.0045,
+        "phase": "stress_accelerating"
+      },
+      {
+        "date": "2026-10-09",
+        "vix": 14.84,
+        "velocity": -1.1525,
+        "acceleration": -1.3083,
+        "phase": "relief_accelerating"
+      },
+      {
+        "date": "2026-10-12",
+        "vix": 15.21,
+        "velocity": 0.0526,
+        "acceleration": 1.2051,
+        "phase": "stress_accelerating"
+      },
+      {
+        "date": "2026-10-13",
+        "vix": 15.27,
+        "velocity": 0.1663,
+        "acceleration": 0.1137,
+        "phase": "stress_accelerating"
+      },
+      {
+        "date": "2026-10-14",
+        "vix": 16.87,
+        "velocity": 3.4324,
+        "acceleration": 3.2661,
+        "phase": "stress_accelerating"
+      },
+      {
+        "date": "2026-10-15",
+        "vix": 16.46,
+        "velocity": 1.4682,
+        "acceleration": -1.9643,
+        "phase": "stress_decelerating"
+      },
+      {
+        "date": "2026-10-16",
+        "vix": 19.99,
+        "velocity": 7.4554,
+        "acceleration": 5.9872,
+        "phase": "stress_accelerating"
+      }
+    ],
+    "change_1d_pct": 21.446,
+    "change_1d_points": 3.53,
+    "change_5d_pct": 34.704,
+    "change_5d_points": 5.15,
+    "change_20d_pct": 34.976,
+    "change_20d_points": 5.18
+  },
+  "pivot": {
+    "state": "shock_watch",
+    "label_en": "Sharp volatility repricing",
+    "label_zh": "波动率显著重定价",
+    "checks": [
+      {
+        "key": "price",
+        "name_en": "Stocks",
+        "name_zh": "股价",
+        "change_5d": -15.32,
+        "improving": false,
+        "worsening": true
+      },
+      {
+        "key": "breadth",
+        "name_en": "Participation",
+        "name_zh": "参与度",
+        "change_5d": null,
+        "improving": null,
+        "worsening": null
+      },
+      {
+        "key": "credit",
+        "name_en": "Credit spreads",
+        "name_zh": "信用利差",
+        "change_5d": null,
+        "improving": null,
+        "worsening": null
+      },
+      {
+        "key": "curve",
+        "name_en": "Volatility curve",
+        "name_zh": "波动率曲线",
+        "change_5d": 0.14,
+        "improving": false,
+        "worsening": true
+      }
+    ],
+    "independent_available": 1,
+    "improving": 0,
+    "worsening": 1,
+    "required_for_broadening": 3,
+    "persistence_sessions": 1,
+    "forecast_validated": false,
+    "probability": null,
+    "stance_en": "Watch; do not treat this as a buy or sell signal.",
+    "stance_zh": "保持观察；勿将此视为买入或卖出信号。"
+  },
+  "disagreement": 24.5,
+  "warnings": [
+    "delayed_snapshot",
+    "incomplete_coverage"
+  ],
+  "change_1d": null,
+  "change_5d": null,
+  "change_20d": null,
+  "change_comparable": {
+    "change_1d": false,
+    "change_5d": false,
+    "change_20d": false
+  },
+  "history": [
+    {
+      "date": "2026-07-22",
+      "score": 62.1,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-07-23",
+      "score": 47.0,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-07-24",
+      "score": 52.5,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-07-27",
+      "score": 55.6,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-07-28",
+      "score": 57.0,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-07-29",
+      "score": 40.2,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-07-30",
+      "score": 48.1,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-07-31",
+      "score": 53.0,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-03",
+      "score": 71.5,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-04",
+      "score": 76.6,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-05",
+      "score": 74.2,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-06",
+      "score": 74.2,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-07",
+      "score": 80.9,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-10",
+      "score": 77.4,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-11",
+      "score": 75.9,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-12",
+      "score": 78.7,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-13",
+      "score": 83.4,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-14",
+      "score": 85.0,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-17",
+      "score": 72.3,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-18",
+      "score": 61.9,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-19",
+      "score": 70.0,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-20",
+      "score": 57.8,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-21",
+      "score": 67.7,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-24",
+      "score": 66.7,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-25",
+      "score": 66.9,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-26",
+      "score": 67.6,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-27",
+      "score": 65.5,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-28",
+      "score": 65.6,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-08-31",
+      "score": 54.2,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-01",
+      "score": 43.8,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-02",
+      "score": 53.8,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-03",
+      "score": 65.9,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-04",
+      "score": 53.1,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-08",
+      "score": 42.9,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-09",
+      "score": 38.0,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-10",
+      "score": 33.9,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-11",
+      "score": 46.0,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-14",
+      "score": 36.3,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-15",
+      "score": 29.6,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-16",
+      "score": 32.1,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-17",
+      "score": 45.0,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-18",
+      "score": 47.4,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-21",
+      "score": 54.1,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-22",
+      "score": 58.1,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-23",
+      "score": 49.8,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-24",
+      "score": 45.0,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-25",
+      "score": 46.2,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-28",
+      "score": 35.8,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-29",
+      "score": 34.9,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-09-30",
+      "score": 32.7,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-10-01",
+      "score": 31.2,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-10-02",
+      "score": 39.6,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-10-05",
+      "score": 45.4,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-10-06",
+      "score": 56.1,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-10-07",
+      "score": 45.1,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-10-08",
+      "score": 46.5,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-10-09",
+      "score": 50.8,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-10-12",
+      "score": 49.3,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-10-13",
+      "score": 49.0,
+      "families": 5,
+      "components": "momentum|strength|breadth|credit|haven|volatility"
+    },
+    {
+      "date": "2026-10-14",
+      "score": 46.9,
+      "families": 4,
+      "components": "momentum|strength|breadth|haven|volatility"
+    }
+  ],
+  "history_kind": "reconstructed_observation_history_not_point_in_time",
+  "forecast_validated": false,
+  "generated_utc": "2026-10-17T12:16:32.588980+00:00",
+  "method_en": "252-observation midranks within at most 504 sessions; six equal family votes. Correlated breadth measures share one vote. Missing observations are excluded, not neutral. At least four families including momentum and volatility are required.",
+  "method_zh": "最多504个交易日内252次有效观测的中位秩；六类等权投票。相关广度指标共用一票。缺失值排除而非记为中性。至少需要四类，且必须包含动量和波动率。"
+}
