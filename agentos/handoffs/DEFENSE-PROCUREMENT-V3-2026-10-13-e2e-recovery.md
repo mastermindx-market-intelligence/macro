@@ -28,8 +28,8 @@ verified:
     command: pytest recognition-owner guard and defense economics suites.
     result: 39 passed and 22 hostile subtests passed.
 unverified:
-  - claim: The Space and PAC-3 follow-up has concluded exact-head CI and protected release.
-    what_would_verify: Follow-up carrier head, complete binding checks and normal merge/release; PR9066 already merged.
+  - claim: Navigation and export follow-up PR9498 has concluded binding CI and installed acceptance.
+    what_would_verify: Exact bf821833 checks, normal release and actual signed-in deep-link/back/export verification.
   - claim: The whole investor workflow is independently accepted in production.
     what_would_verify: Real publisher generation, installed API/static identity, authenticated browser journeys and independent review.
   - claim: Research is activated and has predictive value.
@@ -42,9 +42,9 @@ danger_areas:
   - Preserve original PR7175 and Terminal PR778 custody and unresolved original Fabric effects.
   - Source checks and local fixtures do not prove installed entitlement or scientific efficacy.
 next_actions:
-  - Release committed Space and PAC-3 source1b99b50 with its current merged-generation proof and browser checks.
+  - Consume PR9498 exact-head CI and original independent behavior review; release and verify actual signed-in navigation and downloaded exports.
   - Keep draft PR9490 held for the original review return; directory_owner_or_mode refusal is not retry permission.
-  - After product source release, fresh-check and publish the bounded Space financial successor through the existing reviewed CAS path.
+  - Release the reviewed FMS persistence composition after PR9498; reuse unchanged browser and protocol review evidence.
   - Complete natural publisher, installed entitlement and independent acceptance; advance supported theme evidence in parallel.
 do_not_redo:
   - D6-C0 and the existing FMS daily schedule.
@@ -988,8 +988,15 @@ Source1b99b50 incorporates main3cae8c8 and the native generated HTML. Its full f
 
 Source478258 repairs production-observed FMS deep links, Back/Forward and source-access defects and restores export amount provenance. The full native proof and browser evidence are retained in `research/defense_intelligence/e2e_20261011/navigation_export_20261016/`. Source-byte verification, binding CI, normal release and the same real signed-in journey/downloads remain required. PR9496 remains frozen on e39 with its existing observer; the original held review returns are not duplicated.
 
-### October16 current navigation repair and release frontier
+### October16 installed Space release and FMS persistence composition
 
-PR9496 is merged at1c430 and its installed Space/PAC-3 bytes and real signed-in journey were verified. Financial5a publication completed with12 acknowledged writes and exact complete10-event readback; do not replay. Evidence remains on PR9499 under `current_main_product_20261015/release/` and `fms_persistence_proof_20261016/`.
+PR9496 merged at1c430d9 and its five qualified API/page/data artifacts were observed installed. Financial successor5a completed12 acknowledged conditional writes and complete10-event readback, with no unknown effect. The actual signed-in Space/PAC-3 and local saved-view journeys are retained in `current_main_product_20261015/release/`. Ten live mobile timing bounds leave the precise three-second target unverified. FMS persistence sourcee7a554 reuses the unchanged accepted protocol review, passes73 composition tests, CI closure and a fresh full105-case proof. PR9498 remains the next dependent release; original review returns and other acceptance obligations remain open.
+### Current delivery frontier — October17
 
-PR9498 sourcee4de35bdf5d707ff075758de8e1e3980db88a685 repairs the four independently reproduced navigation/export findings and the sole original CI failure.112 affected cases, the native full proof and targeted CUA observations pass; exact sealed evidence is in `navigation_export_20261016/review_repair/`. Normal CI/merge and installed signed-in downloads remain next. PR9499 must incorporate this repaired source before its own proof and release. All original uncertain/refused review returns remain on their original carriers. The prepared155mm next-stage condition is not yet adopted.
+PR9498 is pushed at1c9838d690ca491636b9b5b1e4ffbb2de7ff252d, composed with main05b006.129affectedUI/export/filter/FMS tests pass; actualCUA verifies filter clearing and browserBack restoration. The final native proof passes104with1conditional skip and the committed witness2cb647accepts the exact generation. Existing evidence: `navigation_export_20261016/review_repair/`. CI39081056907 is running under one verified foreground observer1407; consume that handle at the next useful boundary. Normalmerge and actualinstalledsigned-inCSV/JSON verification remain due. A fresh production acceptance tab1925924111 is available inChrome1.
+
+PR9499 composes that qualified source and the unchanged independently accepted FMS persistence protocol. OfficialState receipt selection and the reviewed Norway155mm next-stage condition passed193affectedtheme/builder/runtime/economics checks. Source links now select exactNorway26-82 andVirginia view identities;14Node cases exercise the shipped modules and nativefixtures. Its fresh native publication proof is retained at `fms_persistence_proof_20261016/`; committed verification, samePRpush, bindingCI, normalmerge and the installedNorway/Virginia journeys remain next. The existingFMS schedule/collector/publication owner remains in place.655ledgerrows and allsixinsufficientresearchverdicts remain.
+
+Dossier request sharing is excluded from this release and preserved at `codex/defense-dossier-review-held` sourcec287ee818ab14. The original review `defense-dossier-pending-auth-review-01a13300-a` has unknown remotecompletion; its observation path refused recovery. Preserve that run and refusal. Original publisher-history review `defense-publisher-history-review-01a13300-a`, PR9490, NASA/P2/Q3/capacity unknown carriers and scientific-admission/maturity obligations remain held. Do not rerun, reroute, remind or alter permissions. Financial5a complete10-event publication has12acknowledgedwrites and exactreadback; no replay. PR9496's installedSpace/PAC3 and actualVirginiaD5 observations remain historical accepted evidence.
+
+A currently valid receiver owns the next authorized delivery action after fresh PR/head, writer and effect checks; historical authors are not approvers. No peer messaging, replacement chats, duplicate observers or paused-schedule recreation. Pending CI blocks its release effect only. The product/wholeprogramme is not complete.

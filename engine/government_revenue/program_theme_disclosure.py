@@ -34,9 +34,13 @@ def _resolve(ref,rail,owners,reason_code=None):
  owner=owners[ref['owner_key']];p=owner.payload();node,ancestors=t._pointer(p,ref['pointer']);sources=[]
  if owner.owner_kind=='fms':
   case=next(a for a in reversed(ancestors) if isinstance(a,dict) and a.get('case_key')==ref['row_id'])
+  # DSCA-first; State primary receipt is admitted as an alternative. Federal
+  # Register-only observations and unknown surfaces are not primary receipts.
   primary=next((x for x in case['observations'] if x['source_surface']=='dsca' and x.get('response_sha256')),None)
+  if primary is None:primary=next((x for x in case['observations'] if x['source_surface']=='state' and x.get('response_sha256')),None)
   if primary is None:raise ValueError('fms_primary_receipt_missing')
-  url=_primary(primary['source_url'],{'www.dsca.mil'})
+  hosts={'www.dsca.mil'} if primary['source_surface']=='dsca' else {'www.state.gov'}
+  url=_primary(primary['source_url'],hosts)
   sources=[_source(ref['owner_key'],ref,node,case['capability_title'],url)]
   for item in sources:item.update(source_publication_date=case['clocks']['official_web_publication_date']['value'],house_known_at=primary['known_at'],documentary_class='congressional_notification',native_reason_code='congressional_notification_only')
   if rail=='funding_stage':return f"{case['capability_title']}: congressional notification with an estimated upper bound; later implementation is not observed. It does not prove an award or contracted revenue.",f"{case['capability_title']}：国会通知及估计上限；尚未观察到后续实施，不能证明合同授予或合同收入。",sources
@@ -338,7 +342,7 @@ def validate_public_theme_disclosure(payload):
  for row in payload['themes']:
   expected='SOURCE_CONTEXT_COMPLETE' if all(s=='supported' for s in row['rail_states'].values()) else 'EVIDENCE_INSUFFICIENT'
   if row['research_state']!=expected:raise ValueError('public_theme_state_invalid')
-  classes={'congressional_notification':('congressional_notification_only',{'www.dsca.mil'}),'alliance_policy':('policy_commitment_only',{'www.nato.int'}),'allocation_plan':('allocation_plan_only',{'comptroller.war.gov','comptroller.defense.gov'})}
+  classes={'congressional_notification':('congressional_notification_only',{'www.dsca.mil','www.state.gov'}),'alliance_policy':('policy_commitment_only',{'www.nato.int'}),'allocation_plan':('allocation_plan_only',{'comptroller.war.gov','comptroller.defense.gov'})}
   for source in row['sources']:
    cls=source['documentary_class']
    if cls is None:
