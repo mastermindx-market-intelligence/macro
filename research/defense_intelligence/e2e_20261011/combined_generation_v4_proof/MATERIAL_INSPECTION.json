@@ -1,0 +1,545 @@
+{
+  "schema": "defense.exact_generation_material_inspection.v1",
+  "observed_at": "2026-10-14T03:17:59.000609+00:00",
+  "source_head": "253df98603ac7f1f9944d92cb5efcab37fa9f5fb",
+  "build_receipt": "/Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/combined-investor-generation-v4/BUILD_RECEIPT.json",
+  "build_receipt_sha256": "665cabc0025ba41d05a71dd88fbeb7393bd187abc55e4c4c6e8ca9f7cfc26d52",
+  "built_not_proven": true,
+  "generated_at": "2026-10-14T03:12:45.197758+00:00",
+  "html_bytes": 189351,
+  "hashes": {
+    "financial": "b627a9d4bfc2bff2015666f46b32071d68e0f05d34a9bd8b343ce63d86752e0f",
+    "theme": "ea5297936ed0dd65bc790e70aafa09b30cd0242b7c996bccb98c777d3907af44",
+    "public_theme": "07b5292b1be8b07741287b5ce40268cc50b2d77abfe1aa68c2b323b04a660967",
+    "research": "c1fadf47fb8d90389b21b2df983d43bc5ed2229a6a29ea6608aef98aafa38b38",
+    "fms": "aaa65845056df2bd87ed3760288ec69720b647b2294b0f3c1af4e2b8c942e7df",
+    "sbir": "0c63afd3c65fe0ed883c9e31c15a2ce9909b97a965566c49bbf08010c91ee0ba",
+    "review": "6d00ae51d964cfae955647c3c526b78f0b2e3da0514f97eae0647869b660027b"
+  },
+  "served_pairs": {
+    "financial": {
+      "source_sha256": "b627a9d4bfc2bff2015666f46b32071d68e0f05d34a9bd8b343ce63d86752e0f",
+      "served_sha256": "b627a9d4bfc2bff2015666f46b32071d68e0f05d34a9bd8b343ce63d86752e0f",
+      "equal_bytes": true,
+      "equal_json": true
+    },
+    "theme": {
+      "source_sha256": "ea5297936ed0dd65bc790e70aafa09b30cd0242b7c996bccb98c777d3907af44",
+      "served_sha256": "ea5297936ed0dd65bc790e70aafa09b30cd0242b7c996bccb98c777d3907af44",
+      "equal_bytes": true,
+      "equal_json": true
+    },
+    "public_theme": {
+      "source_sha256": "07b5292b1be8b07741287b5ce40268cc50b2d77abfe1aa68c2b323b04a660967",
+      "served_sha256": "07b5292b1be8b07741287b5ce40268cc50b2d77abfe1aa68c2b323b04a660967",
+      "equal_bytes": true,
+      "equal_json": true
+    },
+    "research": {
+      "source_sha256": "c1fadf47fb8d90389b21b2df983d43bc5ed2229a6a29ea6608aef98aafa38b38",
+      "served_sha256": "c1fadf47fb8d90389b21b2df983d43bc5ed2229a6a29ea6608aef98aafa38b38",
+      "equal_bytes": true,
+      "equal_json": true
+    },
+    "fms": {
+      "source_sha256": "aaa65845056df2bd87ed3760288ec69720b647b2294b0f3c1af4e2b8c942e7df",
+      "served_sha256": "aaa65845056df2bd87ed3760288ec69720b647b2294b0f3c1af4e2b8c942e7df",
+      "equal_bytes": true,
+      "equal_json": true
+    },
+    "sbir": {
+      "source_sha256": "0c63afd3c65fe0ed883c9e31c15a2ce9909b97a965566c49bbf08010c91ee0ba",
+      "served_sha256": "0c63afd3c65fe0ed883c9e31c15a2ce9909b97a965566c49bbf08010c91ee0ba",
+      "equal_bytes": true,
+      "equal_json": true
+    }
+  },
+  "financial_axes": {
+    "LMT": {
+      "demand": {
+        "state": "stale",
+        "reason_code": "dated_award_presence_not_forward_demand",
+        "facts_n": 0
+      },
+      "economics": {
+        "state": "supported",
+        "reason_code": "reported_segment_context",
+        "facts_n": 21
+      },
+      "participation": {
+        "state": "stale",
+        "reason_code": "current_basket_market_participation",
+        "facts_n": 0
+      },
+      "recognition": {
+        "state": "stale",
+        "reason_code": "observed_raw_price_context",
+        "facts_n": 0
+      }
+    },
+    "RTX": {
+      "demand": {
+        "state": "stale",
+        "reason_code": "dated_award_presence_not_forward_demand",
+        "facts_n": 0
+      },
+      "economics": {
+        "state": "supported",
+        "reason_code": "reported_segment_context",
+        "facts_n": 16
+      },
+      "participation": {
+        "state": "stale",
+        "reason_code": "current_basket_market_participation",
+        "facts_n": 0
+      },
+      "recognition": {
+        "state": "stale",
+        "reason_code": "observed_raw_price_context",
+        "facts_n": 0
+      }
+    },
+    "NOC": {
+      "demand": {
+        "state": "stale",
+        "reason_code": "dated_award_presence_not_forward_demand",
+        "facts_n": 0
+      },
+      "economics": {
+        "state": "supported",
+        "reason_code": "reported_segment_context",
+        "facts_n": 20
+      },
+      "participation": {
+        "state": "stale",
+        "reason_code": "current_basket_market_participation",
+        "facts_n": 0
+      },
+      "recognition": {
+        "state": "stale",
+        "reason_code": "observed_raw_price_context",
+        "facts_n": 0
+      }
+    },
+    "LHX": {
+      "demand": {
+        "state": "stale",
+        "reason_code": "dated_award_presence_not_forward_demand",
+        "facts_n": 0
+      },
+      "economics": {
+        "state": "supported",
+        "reason_code": "reported_segment_context",
+        "facts_n": 31
+      },
+      "participation": {
+        "state": "stale",
+        "reason_code": "current_basket_market_participation",
+        "facts_n": 0
+      },
+      "recognition": {
+        "state": "stale",
+        "reason_code": "observed_raw_price_context",
+        "facts_n": 0
+      }
+    }
+  },
+  "theme_rails": {
+    "golden_dome": {
+      "contrary_case": {
+        "state": "source_unavailable",
+        "reason_code": "owner_reference_absent",
+        "references_n": 0
+      },
+      "economics": {
+        "state": "source_unavailable",
+        "reason_code": "owner_reference_absent",
+        "references_n": 0
+      },
+      "exposure": {
+        "state": "source_unavailable",
+        "reason_code": "owner_reference_absent",
+        "references_n": 0
+      },
+      "funding_stage": {
+        "state": "partial",
+        "reason_code": "allocation_plan_only",
+        "references_n": 1
+      },
+      "market_context": {
+        "state": "stale",
+        "reason_code": "shared_defense_basket_not_theme_portfolio",
+        "references_n": 1
+      },
+      "next_event": {
+        "state": "source_unavailable",
+        "reason_code": "owner_reference_absent",
+        "references_n": 0
+      }
+    },
+    "munitions_replenishment": {
+      "contrary_case": {
+        "state": "partial",
+        "reason_code": "reported_program_cost_maturation_charge",
+        "references_n": 1
+      },
+      "economics": {
+        "state": "partial",
+        "reason_code": "issuer_segment_context_no_program_allocation",
+        "references_n": 6
+      },
+      "exposure": {
+        "state": "source_unavailable",
+        "reason_code": "owner_reference_absent",
+        "references_n": 0
+      },
+      "funding_stage": {
+        "state": "partial",
+        "reason_code": "allocation_plan_only",
+        "references_n": 1
+      },
+      "market_context": {
+        "state": "stale",
+        "reason_code": "shared_defense_basket_not_theme_portfolio",
+        "references_n": 1
+      },
+      "next_event": {
+        "state": "source_unavailable",
+        "reason_code": "owner_reference_absent",
+        "references_n": 0
+      }
+    },
+    "space": {
+      "contrary_case": {
+        "state": "partial",
+        "reason_code": "reported_space_ownership_change",
+        "references_n": 2
+      },
+      "economics": {
+        "state": "partial",
+        "reason_code": "issuer_segment_context_no_program_allocation",
+        "references_n": 6
+      },
+      "exposure": {
+        "state": "source_unavailable",
+        "reason_code": "owner_reference_absent",
+        "references_n": 0
+      },
+      "funding_stage": {
+        "state": "source_unavailable",
+        "reason_code": "owner_reference_absent",
+        "references_n": 0
+      },
+      "market_context": {
+        "state": "stale",
+        "reason_code": "shared_defense_basket_not_theme_portfolio",
+        "references_n": 1
+      },
+      "next_event": {
+        "state": "source_unavailable",
+        "reason_code": "owner_reference_absent",
+        "references_n": 0
+      }
+    },
+    "nato_fms_demand": {
+      "contrary_case": {
+        "state": "source_unavailable",
+        "reason_code": "owner_reference_absent",
+        "references_n": 0
+      },
+      "economics": {
+        "state": "source_unavailable",
+        "reason_code": "owner_reference_absent",
+        "references_n": 0
+      },
+      "exposure": {
+        "state": "unreviewed",
+        "reason_code": "contractor_identity_not_reviewed",
+        "references_n": 1
+      },
+      "funding_stage": {
+        "state": "partial",
+        "reason_code": "mixed_documentary_context",
+        "references_n": 2
+      },
+      "market_context": {
+        "state": "stale",
+        "reason_code": "shared_defense_basket_not_theme_portfolio",
+        "references_n": 1
+      },
+      "next_event": {
+        "state": "partial",
+        "reason_code": "condition_not_scheduled_date",
+        "references_n": 1
+      }
+    },
+    "fleet_sustainment_upgrades": {
+      "contrary_case": {
+        "state": "source_unavailable",
+        "reason_code": "owner_reference_absent",
+        "references_n": 0
+      },
+      "economics": {
+        "state": "source_unavailable",
+        "reason_code": "owner_reference_absent",
+        "references_n": 0
+      },
+      "exposure": {
+        "state": "unreviewed",
+        "reason_code": "contractor_identity_not_reviewed",
+        "references_n": 1
+      },
+      "funding_stage": {
+        "state": "partial",
+        "reason_code": "congressional_notification_only",
+        "references_n": 1
+      },
+      "market_context": {
+        "state": "stale",
+        "reason_code": "shared_defense_basket_not_theme_portfolio",
+        "references_n": 1
+      },
+      "next_event": {
+        "state": "partial",
+        "reason_code": "condition_not_scheduled_date",
+        "references_n": 1
+      }
+    },
+    "shipbuilding": {
+      "contrary_case": {
+        "state": "partial",
+        "reason_code": "reported_unfunded_backlog_category",
+        "references_n": 1
+      },
+      "economics": {
+        "state": "partial",
+        "reason_code": "issuer_segment_context_no_program_allocation",
+        "references_n": 8
+      },
+      "exposure": {
+        "state": "supported",
+        "reason_code": "reviewed_program_participation",
+        "references_n": 2
+      },
+      "funding_stage": {
+        "state": "partial",
+        "reason_code": "allocation_plan_only",
+        "references_n": 1
+      },
+      "market_context": {
+        "state": "stale",
+        "reason_code": "shared_defense_basket_not_theme_portfolio",
+        "references_n": 1
+      },
+      "next_event": {
+        "state": "partial",
+        "reason_code": "reviewed_future_milestone_window",
+        "references_n": 1
+      }
+    }
+  },
+  "public_themes": {
+    "golden_dome": {
+      "overall_state": "EVIDENCE_INSUFFICIENT",
+      "rail_states": {
+        "contrary_case": "source_unavailable",
+        "economics": "source_unavailable",
+        "exposure": "source_unavailable",
+        "funding_stage": "partial",
+        "market_context": "stale",
+        "next_event": "source_unavailable"
+      },
+      "keys": [
+        "known_en",
+        "known_zh",
+        "missing_en",
+        "missing_zh",
+        "next_en",
+        "next_zh",
+        "rail_states",
+        "research_state",
+        "sources",
+        "theme_id"
+      ],
+      "research_state": "EVIDENCE_INSUFFICIENT"
+    },
+    "munitions_replenishment": {
+      "overall_state": "EVIDENCE_INSUFFICIENT",
+      "rail_states": {
+        "contrary_case": "partial",
+        "economics": "partial",
+        "exposure": "source_unavailable",
+        "funding_stage": "partial",
+        "market_context": "stale",
+        "next_event": "source_unavailable"
+      },
+      "keys": [
+        "known_en",
+        "known_zh",
+        "missing_en",
+        "missing_zh",
+        "next_en",
+        "next_zh",
+        "rail_states",
+        "research_state",
+        "sources",
+        "theme_id"
+      ],
+      "research_state": "EVIDENCE_INSUFFICIENT"
+    },
+    "space": {
+      "overall_state": "EVIDENCE_INSUFFICIENT",
+      "rail_states": {
+        "contrary_case": "partial",
+        "economics": "partial",
+        "exposure": "source_unavailable",
+        "funding_stage": "source_unavailable",
+        "market_context": "stale",
+        "next_event": "source_unavailable"
+      },
+      "keys": [
+        "known_en",
+        "known_zh",
+        "missing_en",
+        "missing_zh",
+        "next_en",
+        "next_zh",
+        "rail_states",
+        "research_state",
+        "sources",
+        "theme_id"
+      ],
+      "research_state": "EVIDENCE_INSUFFICIENT"
+    },
+    "nato_fms_demand": {
+      "overall_state": "EVIDENCE_INSUFFICIENT",
+      "rail_states": {
+        "contrary_case": "source_unavailable",
+        "economics": "source_unavailable",
+        "exposure": "unreviewed",
+        "funding_stage": "partial",
+        "market_context": "stale",
+        "next_event": "partial"
+      },
+      "keys": [
+        "known_en",
+        "known_zh",
+        "missing_en",
+        "missing_zh",
+        "next_en",
+        "next_zh",
+        "rail_states",
+        "research_state",
+        "sources",
+        "theme_id"
+      ],
+      "research_state": "EVIDENCE_INSUFFICIENT"
+    },
+    "fleet_sustainment_upgrades": {
+      "overall_state": "EVIDENCE_INSUFFICIENT",
+      "rail_states": {
+        "contrary_case": "source_unavailable",
+        "economics": "source_unavailable",
+        "exposure": "unreviewed",
+        "funding_stage": "partial",
+        "market_context": "stale",
+        "next_event": "partial"
+      },
+      "keys": [
+        "known_en",
+        "known_zh",
+        "missing_en",
+        "missing_zh",
+        "next_en",
+        "next_zh",
+        "rail_states",
+        "research_state",
+        "sources",
+        "theme_id"
+      ],
+      "research_state": "EVIDENCE_INSUFFICIENT"
+    },
+    "shipbuilding": {
+      "overall_state": "EVIDENCE_INSUFFICIENT",
+      "rail_states": {
+        "contrary_case": "partial",
+        "economics": "partial",
+        "exposure": "supported",
+        "funding_stage": "partial",
+        "market_context": "stale",
+        "next_event": "partial"
+      },
+      "keys": [
+        "known_en",
+        "known_zh",
+        "missing_en",
+        "missing_zh",
+        "next_en",
+        "next_zh",
+        "rail_states",
+        "research_state",
+        "sources",
+        "theme_id"
+      ],
+      "research_state": "EVIDENCE_INSUFFICIENT"
+    }
+  },
+  "review_reference_count": 43,
+  "changed_or_unqualified_selected_tokens": [],
+  "FMS": {
+    "cases": 68,
+    "all_notification_stage": true,
+    "Spain_contractors": 4,
+    "original_source_observed_at": "2026-08-26T09:37:21.528793+00:00",
+    "normalizer_correction_known_at": "2026-10-14T02:33:08.231760+00:00",
+    "original_observation_preserved": true,
+    "same_source_sha_and_receipt": true
+  },
+  "research": {
+    "state": "not_started",
+    "is_running": false,
+    "input_admission": {
+      "considered_n": 407,
+      "counts": {
+        "ceiling_change_out_of_family": 92,
+        "deobligation": 17,
+        "family_mismatch": 5,
+        "family_rail_mismatch": 144,
+        "late_discovery": 116,
+        "owner_admitted_input_shape": 33
+      },
+      "is_prospective_cohort": false
+    },
+    "issuance": {
+      "activation_refusals": [
+        "runtime_source_admission_missing",
+        "durable_before_entry_acknowledgement_missing"
+      ],
+      "append_count_this_generation": 0,
+      "issued_n": 0,
+      "line_count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "outcomes": {
+      "efficacy": null,
+      "evaluated_n": 0,
+      "state": "not_started"
+    }
+  },
+  "SBIR": {
+    "coverage": {
+      "full_sbir_corpus": false,
+      "is_complete": false,
+      "mapping_backlog_count": 0,
+      "observations_visible": 0,
+      "progression_pairs": 0
+    },
+    "forward_events_emitted": 0
+  },
+  "ledger": {
+    "lines": 642,
+    "sha256": "da1ed3014a967963165c56944846059d94099927aa8500d926429aaa3c7e0fd6",
+    "original_preserved": true
+  },
+  "scientific_or_installed_acceptance_claimed": false
+}

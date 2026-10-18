@@ -84,6 +84,27 @@ def test_caddy_public_boundary_matches_policy_exactly():
     assert _caddy_public_exclusions() == expected
 
 
+def test_market_memory_callback_assets_load_before_session_exchange():
+    """OAuth returns before its code becomes a session; UI-only assets must load."""
+    assets = {"/market_memory_intent.js", "/market_memory_retained.js",
+              "/market_memory_retained.css"}
+    assert assets <= set(POLICY["public"]["exact"])
+    assert assets <= _caddy_public_exclusions()
+    for matcher in ("reg_asset_err", "public_static", "public_versioned"):
+        block = re.search(rf"@{matcher}\s*\{{(.*?)^\s*\}}", CADDY, flags=re.S | re.M)
+        assert block, matcher
+        directive = "not path" if matcher == "reg_asset_err" else "path"
+        paths = {p for line in block.group(1).splitlines()
+                 if line.lstrip().startswith(directive + " ")
+                 for p in shlex.split(line.lstrip().removeprefix(directive).strip())}
+        assert assets <= paths, matcher
+        # Never make evidence responses public or cache them as UI assets.
+        assert not any(p.startswith("/api/market-memory") for p in paths)
+    for asset in assets:
+        assert (ROOT / "templates" / asset[1:]).read_bytes() == (SITE / asset[1:]).read_bytes()
+
+
+
 def test_macro_risk_overlay_script_public_but_signal_payload_remains_gated():
     """The public macro shell cannot parser-block on a registration-gated JS asset."""
     asset = "/risk_envelope_live.js"

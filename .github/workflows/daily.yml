@@ -154,7 +154,18 @@ jobs:
     # to a cold runner, so the cap must clear the COLD pace, not the warm one: 240m is
     # ~1.4x the observed 172m. The job still exits as soon as its steps finish; a
     # larger cap costs nothing on a healthy night and buys the commit on a slow one.
-    timeout-minutes: 240
+    # 2026-10-14: the 240m ceiling has now failed its cold-source premise.
+    # Real scheduled run 38495183073/job 115629246223 began at 01:20:35Z,
+    # reached "push market data" only at 05:14:27Z (elapsed 233m52s), and
+    # GitHub cancelled it at 05:25:36Z with the committed 5,927-file/1 GB
+    # market snapshot still unpublished. The hard 240m job window left just
+    # 6m08s at push entry, less than one PUSH_ALARM=420s attempt and without
+    # time for a fetch/rebase/retry. The 300m cap gives that exact observed
+    # entry point 66m08s for the EXISTING fail-closed publisher, without
+    # weakening collision checks, changing data or scheduling another job.
+    # This headroom is not proof of a successfully published future nightly;
+    # producer/runtime efficiency still needs separate evidence.
+    timeout-minutes: 300
     outputs:
       government_revenue_projection_needed: ${{ steps.pushdata.outputs.published }}
       # ── CAPITAL-STRUCTURE HANDOFF CONTRACT (2026-08-06 job split) ──────────
@@ -213,7 +224,10 @@ jobs:
           key: midcap-closes-${{ github.run_id }}
           restore-keys: midcap-closes-
       - name: restore Russell 2000 breadth close cache
-        uses: actions/cache@v4
+        # This is now restore-only: the qualified same-run cache is explicitly
+        # saved immediately after collection, so an unrelated late Git failure
+        # cannot suppress the cache post-step (Oct 16 GH001 reproduction).
+        uses: actions/cache/restore@v4
         with:
           path: data/russell_breadth/_closes_cache.parquet
           key: russell-closes-${{ github.run_id }}
@@ -381,7 +395,79 @@ jobs:
           # sam_gov_opportunities is excluded because government-revenue-live.yml
           # is its sole serialized ledger owner. Two workflows must never merge and
           # overwrite the same revision/document Parquets concurrently.
+          # Existing collector step exposes one run-local time fence; the source
+          # must have been evaluated in THIS execution, not merely earlier on
+          # the same completed market session.
+          echo "started_at=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
           python -m scripts.collect --exclude-group asia --exclude sam_gov_opportunities --skip-shadow-importance
+      - name: qualify Russell same-run cache handoff
+        # Do not treat a green collectors job, frozen partial cold cache, or a
+        # prior checked_at as proof of current source. Read the incumbent
+        # source status/NYSE owner, then publish a same-run cache ONLY if ready.
+        if: steps.collectors.outcome == 'success'
+        id: russell_cache_ready
+        continue-on-error: true  # this transport must not veto the market checkpoint
+        env:
+          RUSSELL_COLLECT_STARTED_AT: ${{ steps.collectors.outputs.started_at }}
+        run: |
+          python - <<'PY_RUSSELL_HANDOFF'
+          import json
+          import os
+          from datetime import datetime, time, timezone
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+          from lib.nyse_calendar import expected_last_session
+
+          expected = expected_last_session()
+          close_utc = datetime.combine(
+              expected, time(16), tzinfo=ZoneInfo("America/New_York")
+          ).astimezone(timezone.utc)
+          receipt = {}
+          try:
+              receipt = json.loads(Path("data/run_status.json").read_text())
+          except (OSError, ValueError, TypeError):
+              pass
+          source = ((receipt.get("sources") or {}).get("russell_breadth") or {})
+          def parse_utc(stamp):
+              if not isinstance(stamp, str):
+                  return None
+              try:
+                  instant = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+                  if instant.tzinfo is None:
+                      instant = instant.replace(tzinfo=timezone.utc)
+                  return instant.astimezone(timezone.utc)
+              except ValueError:
+                  return None
+
+          checked = parse_utc(source.get("checked_at"))
+          finished = parse_utc(receipt.get("last_run"))
+          started = parse_utc(os.environ.get("RUSSELL_COLLECT_STARTED_AT"))
+          now = datetime.now(timezone.utc)
+          cache = Path("data/russell_breadth/_closes_cache.parquet")
+          qualified = (
+              source.get("status") == "ok"
+              and source.get("last_date") == expected.isoformat()
+              and started is not None and finished is not None and checked is not None
+              and close_utc <= started <= finished <= checked <= now
+              and cache.is_file() and cache.stat().st_size > 0
+          )
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"qualified={'true' if qualified else 'false'}\n")
+          if qualified:
+              print("::notice title=Russell cache handoff::qualified completed-session source; ready for same-run save")
+          else:
+              print("::warning title=Russell cache handoff withheld::missing/unqualified current Russell source; engine remains exact-key-only")
+          PY_RUSSELL_HANDOFF
+      - name: save qualified Russell close cache before market git push
+        # The normal late Git push can fail independently (GH001/credentials).
+        # Keep the same-run producer→engine cache authoritative only when the
+        # original Russell collector actually qualified the current session.
+        if: steps.russell_cache_ready.outputs.qualified == 'true'
+        continue-on-error: true  # cache outage cannot hold collected market data
+        uses: actions/cache/save@v4
+        with:
+          path: data/russell_breadth/_closes_cache.parquet
+          key: russell-closes-${{ github.run_id }}
       - name: refresh Finviz themes snapshot (subsector-rotation feed; non-fatal)
         # The only network leg for the themes map + Subsector Rotation. Refreshes
         # data/themes_heatmap/perf_snapshot.json (stamped with asof) so the rotation
@@ -539,6 +625,15 @@ jobs:
         run: |
           python3 scripts/build_security_master.py --nightly \
             || echo "::warning::build_security_master.py --nightly exited non-zero (unexpected — the function itself always returns 0; see the traceback above)"
+      # C04 (DATA-OS-COMPLETION, DEC-DATAOS-VIEW-CONTRACT-SIDECAR-IS-A-NIGHTLY-EMITTER): describe the
+      # US store for the Terminal's U01 reader. Reads data/reference/{vendor_aliases,security_master}
+      # once + one os.scandir of data/stocks; byte-stable (no timestamp), so an unchanged store is a
+      # no-op. The file rides the existing `git add data/` collect commit below. Non-fatal by design.
+      - name: view contract sidecar — data/stocks/_view_contract.json (C04)
+        continue-on-error: true
+        run: |
+          python3 -m scripts.emit_view_contract \
+            || echo "::warning::emit_view_contract exited non-zero (non-fatal — previous sidecar remains)"
       # Marked AFTER the coherence tripwire above so the tripwire's runtime is not
       # billed to the market-commit-push band it is measuring.
       - name: timings band — market-commit-push (W2)
@@ -849,17 +944,19 @@ jobs:
           # sound input (#4600's restore-a-clean-ledger self-heal) but it is a
           # DIFFERENT ledger, so the receipt must describe whatever actually survived
           # rather than what the collectors wrote 20 minutes earlier.
-          if command -v shasum >/dev/null 2>&1; then
-            sha="$(shasum -a 256 "$ledger" | cut -d' ' -f1)"
-          else
-            sha="$(sha256sum "$ledger" | cut -d' ' -f1)"
-          fi
-          # JSONL, newline-terminated by contract (decode_source_ledger rejects a
-          # partial final line), so `wc -l` IS the row count.
-          rows="$(wc -l < "$ledger" | tr -d ' ')"
-          echo "sha256=$sha" >> "$GITHUB_OUTPUT"
-          echo "rows=$rows" >> "$GITHUB_OUTPUT"
-          echo "capital-structure handoff stamped: $rows rows, sha256 $sha"
+          #
+          # The ledger is SHARDED byte-exactly: $ledger is part 1 (never rewritten
+          # once sealed) and source_manifest.part-NNNN.jsonl continuation parts hold
+          # later rows, each under GitHub's 100 MiB blob limit -- the single file
+          # crossed it on 2026-09-27 and every nightly through 10-09 compiled a
+          # generation and lost it at push (GH001). The receipt therefore describes
+          # the LOGICAL ledger, the ordered concatenation of every part: `rows` is
+          # still its newline count and `sha256` still its digest (byte-for-byte the
+          # old shasum/wc receipt while no continuation part exists), and ONE script
+          # owns that arithmetic on both sides of the handoff. Appends to
+          # $GITHUB_OUTPUT itself; a part listing it cannot read stamps nothing, so
+          # the verify step refuses as "no ledger receipt".
+          python scripts/capital_structure_ledger_receipt.py stamp --root data/capital_structure
       - name: hand the capital-structure workspace to its own job
         continue-on-error: true
         # actions/upload-artifact v4.6.2 — the pin already used by the diagnostics
@@ -892,6 +989,7 @@ jobs:
             !data/capital_structure/source_objects
             !data/capital_structure/share_counts
             !data/capital_structure/*.tmp.parquet
+            !data/capital_structure/*.tmp.jsonl
           # An empty handoff is a real defect, not a quiet no-op: fail the upload so
           # the receipt is absent and the other job refuses to compile.
           if-no-files-found: error
@@ -955,7 +1053,7 @@ jobs:
       # still records the night in the grace window (elapsed ≈ cap → the warning fires).
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
-        run: bash scripts/ci/nightly_timings_finish.sh 240
+        run: bash scripts/ci/nightly_timings_finish.sh 300
 
   # ── CAPITAL-STRUCTURE LANE (its own job since 2026-08-06) ─────────────────
   # WHY ITS OWN JOB. This is an all-or-nothing SEC publication protocol. Its
@@ -1082,17 +1180,12 @@ jobs:
             echo "::error title=capital-structure-handoff::$ledger is absent after the artifact download."
             exit 1
           fi
-          if command -v shasum >/dev/null 2>&1; then
-            actual_sha="$(shasum -a 256 "$ledger" | cut -d' ' -f1)"
-          else
-            actual_sha="$(sha256sum "$ledger" | cut -d' ' -f1)"
-          fi
-          actual_rows="$(wc -l < "$ledger" | tr -d ' ')"
-          if [ "$actual_sha" != "$EXPECTED_SHA" ]; then
-            echo "::error title=capital-structure-handoff::ledger mismatch — collect stamped ${EXPECTED_ROWS} rows / ${EXPECTED_SHA}, this tree holds ${actual_rows} rows / ${actual_sha}. The likeliest cause is that the artifact did not land ON TOP of the checkout, leaving the last COMMITTED ledger in place; compiling that would reproduce yesterday byte-for-byte, commit nothing, and freeze the lane green."
-            exit 1
-          fi
-          echo "capital-structure handoff verified: $actual_rows rows, sha256 $actual_sha"
+          # The ledger is sharded byte-exactly across $ledger and its
+          # source_manifest.part-NNNN.jsonl continuation parts; the receipt covers
+          # their ordered concatenation, and the SAME script that stamped it in
+          # `collect` verifies it here, exiting 1 on a mismatch, a missing part, or a
+          # part listing it cannot read (DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY).
+          python scripts/capital_structure_ledger_receipt.py verify --root data/capital_structure --expect-sha256 "$EXPECTED_SHA" --expect-rows "$EXPECTED_ROWS"
       - name: timings band — capital-structure (W2)
         run: python3 scripts/nightly_timings.py mark --band capital-structure || echo "::warning::timings band mark failed (non-fatal)"
       - name: materialize authenticated capital-structure share counts (context-only)
@@ -1271,6 +1364,7 @@ jobs:
           name: capital-structure-ledger-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             data/capital_structure/source_manifest.jsonl
+            data/capital_structure/source_manifest.part-*.jsonl
             data/capital_structure/source_manifest.parquet
             data/capital_structure/telemetry.json
             data/capital_structure/ingestion_run.json
@@ -1407,6 +1501,7 @@ jobs:
     if: needs.collect.outputs.government_revenue_projection_needed == 'true'
     permissions:
       contents: write
+      actions: read
     uses: ./.github/workflows/government-revenue-live.yml
     with:
       projection_only: true
@@ -6396,6 +6491,7 @@ jobs:
           git add data/neuralweb/causal_feature_inventory.json 2>/dev/null || true
           git add data/neuralweb/causal_edges.jsonl data/neuralweb/causal_nulls.jsonl 2>/dev/null || true
           git add data/neuralweb/causal_mechanisms.jsonl 2>/dev/null || true
+          git add data/neuralweb/causal_filing_budget.jsonl 2>/dev/null || true  # M3 ISO-week filing budget (never trial_ledger.jsonl)
           git add data/neuralweb/causal_frontier.json data/neuralweb/causal_surprise_queue.jsonl 2>/dev/null || true
           git add data/neuralweb/causal_confluence_audit.json 2>/dev/null || true
           git add data/neuralweb/causal_lab_state.json site/neuralwebdata/causal_lab_state.json 2>/dev/null || true

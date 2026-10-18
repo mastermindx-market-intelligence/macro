@@ -138,6 +138,9 @@ jobs:
   publish:
     needs: acquire
     if: needs.acquire.outputs.publish_default == 'true'
+    permissions:
+      contents: write
+      actions: read
     uses: ./.github/workflows/government-revenue-live.yml
     with:
       projection_only: true

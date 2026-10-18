@@ -53,7 +53,7 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script src="macro_suite_boot.js?v=768a4342" defer></script>
-<link rel="stylesheet" href="theme.css?v=311f121e">
+<link rel="stylesheet" href="theme.css?v=2e861147">
 <link rel="stylesheet" href="macro_suite.css?v=8d30ac57">
 <link rel="stylesheet" href="macro_command.css?v=803860e3">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
@@ -236,6 +236,7 @@
             <div class="item-grid nav-mega-item-grid">
               <a class="mega-item nav-mega-item" href="foresight.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M4 24h40M24 4v40"/><path d="M7 25s7-11 17-11 17 11 17 11-7 11-17 11S7 25 7 25Z"/><circle class="soft-fill" cx="24" cy="25" r="5"/><path class="accent" d="M31 12 38 5M34 16h9M13 14 8 9"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Foresight</span><span class="l-zh">前瞻</span></span><span class="item-desc d"><span class="l-en">Themes before markets price them</span><span class="l-zh">市场定价前的主题</span></span></span></a>
               <a class="mega-item nav-mega-item" href="state_of_themes.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M8 11h30v23H8z"/><rect x="6" y="8" width="30" height="23" rx="2"/><rect x="12" y="15" width="30" height="23" rx="2"/><path class="accent" d="m17 31 5-6 5 3 8-9M31 19h4v4"/><circle class="soft-fill" cx="22" cy="25" r="2"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Theme Tracker</span><span class="l-zh">主题追踪</span></span><span class="item-desc d"><span class="l-en">What’s strengthening and fading now</span><span class="l-zh">正在增强与减弱的主题</span></span></span></a>
+              <a class="mega-item nav-mega-item" href="theme_tree.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M24 4v8M16 12h16M18 26h12M14 38h20"/><circle class="soft-fill" cx="24" cy="14" r="3"/><circle cx="14" cy="22" r="2.4"/><circle cx="34" cy="22" r="2.4"/><circle cx="10" cy="32" r="2.4"/><circle cx="38" cy="32" r="2.4"/><path class="accent" d="M22 17l-8 5M26 17l8 5M12 28l-2 4M36 28l2 4"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Theme Map</span><span class="l-zh">主题地图</span></span><span class="item-desc d"><span class="l-en">Every theme we track, category to micro-theme</span><span class="l-zh">所有追踪主题：从大类到细分</span></span></span></a>
               <a class="mega-item nav-mega-item" href="radar.html"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 39h36M9 7v32"/><path d="M10 32c7-1 10-6 15-8s8-1 13-10"/><path class="accent" d="M10 18c7 1 10 6 15 8s9 2 13 10"/><circle class="soft-fill" cx="25" cy="24" r="2.5"/><path d="M36 12h4v4M36 36h4v-4"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Divergence Radar</span><span class="l-zh">背离雷达</span></span><span class="item-desc d"><span class="l-en">Where price and reality split</span><span class="l-zh">价格与现实的分歧</span></span></span></a>
               <a class="mega-item nav-mega-item" href="stock_seasonality.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M10 14h32v28H10z"/><rect x="6" y="11" width="32" height="28" rx="3"/><path d="M6 19h32M15 7v8M29 7v8"/><path class="accent" d="m12 32 5-6 5 3 6-9 4 5"/><circle class="soft-fill" cx="28" cy="20" r="2.4"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Stock Seasonality</span><span class="l-zh">个股季节性</span></span><span class="item-desc d"><span class="l-en">Which calendar windows actually repeat</span><span class="l-zh">哪些日历窗口真的会重演</span></span></span></a>
               <a class="mega-item nav-mega-item" href="confluence_screener.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="6" y="8" width="36" height="28" rx="3"/><path class="ghost" d="M11 13h26v18H11z"/><path class="accent" d="m12 27 6-7 5 4 7-9 6 4"/><circle class="soft-fill" cx="30" cy="15" r="2.4"/><path d="M18 41h12M24 36v5"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Signal Board</span><span class="l-zh">信号看板</span></span><span class="item-desc d"><span class="l-en">Today’s strongest confirmed setups</span><span class="l-zh">今日最强确认信号</span></span></span></a>
@@ -412,7 +413,7 @@
   <div class="mq-context-state">
     <div class="mq-avail">
       <span class="mq-avail-label"><span class="l-en">Data we need today</span><span class="l-zh">今天需要的数据</span></span>
-      <strong class="mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></strong>
+      <strong class="mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></strong>
     </div>
     <dl class="mq-context-meta">
       <div><dt><span class="l-en">Coverage</span><span class="l-zh">覆盖率</span></dt><dd>100.0%</dd></div>
@@ -433,7 +434,7 @@
         <div><dt><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></dt>
              <dd><time>2026-10-08</time></dd></div>
         <div class="mq-nonclock"><dt><span class="l-en">Page built</span><span class="l-zh">页面生成</span></dt>
-             <dd><time>2026-10-14T04:50:23Z</time></dd></div>
+             <dd><time>2026-10-18T09:53:59Z</time></dd></div>
       </dl>
 
   </div>
@@ -454,8 +455,8 @@
       <tbody>
         <tr>
           <th scope="row"><span class="l-en">30-year fixed mortgage rate</span><span class="l-zh">30年期固定抵押贷款利率</span></th>
-          <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
-          <td><span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span></td>
+          <td><span class="mq-chip mq-tone-warn"><span class="l-en">Partial</span><span class="l-zh">部分具备</span></span></td>
+          <td><span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span></td>
           <td><time>2026-10-08</time></td>
         </tr>
         <tr>
@@ -515,7 +516,7 @@
         <p><span class="l-en">Confidence basis</span><span class="l-zh">置信度依据</span></p>
         <dl class="mq-confidence-grid">
           <div><dt><span class="l-en">Data coverage</span><span class="l-zh">数据覆盖</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
-          <div><dt><span class="l-en">Source health</span><span class="l-zh">数据源健康度</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
+          <div><dt><span class="l-en">Source health</span><span class="l-zh">数据源健康度</span></dt><dd><span class="l-en">Low</span><span class="l-zh">低</span></dd></div>
           <div><dt><span class="l-en">Revision risk</span><span class="l-zh">修订风险</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
           <div><dt><span class="l-en">Method stability</span><span class="l-zh">方法稳定性</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
           <div><dt><span class="l-en">Evidence breadth</span><span class="l-zh">证据广度</span></dt><dd><span class="l-en">Medium</span><span class="l-zh">中</span></dd></div>
@@ -539,7 +540,7 @@
         <p><span class="l-en">Confidence basis</span><span class="l-zh">置信度依据</span></p>
         <dl class="mq-confidence-grid">
           <div><dt><span class="l-en">Data coverage</span><span class="l-zh">数据覆盖</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
-          <div><dt><span class="l-en">Source health</span><span class="l-zh">数据源健康度</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
+          <div><dt><span class="l-en">Source health</span><span class="l-zh">数据源健康度</span></dt><dd><span class="l-en">Low</span><span class="l-zh">低</span></dd></div>
           <div><dt><span class="l-en">Revision risk</span><span class="l-zh">修订风险</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
           <div><dt><span class="l-en">Method stability</span><span class="l-zh">方法稳定性</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
           <div><dt><span class="l-en">Evidence breadth</span><span class="l-zh">证据广度</span></dt><dd><span class="l-en">Medium</span><span class="l-zh">中</span></dd></div>
@@ -563,7 +564,7 @@
         <p><span class="l-en">Confidence basis</span><span class="l-zh">置信度依据</span></p>
         <dl class="mq-confidence-grid">
           <div><dt><span class="l-en">Data coverage</span><span class="l-zh">数据覆盖</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
-          <div><dt><span class="l-en">Source health</span><span class="l-zh">数据源健康度</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
+          <div><dt><span class="l-en">Source health</span><span class="l-zh">数据源健康度</span></dt><dd><span class="l-en">Low</span><span class="l-zh">低</span></dd></div>
           <div><dt><span class="l-en">Revision risk</span><span class="l-zh">修订风险</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
           <div><dt><span class="l-en">Method stability</span><span class="l-zh">方法稳定性</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
           <div><dt><span class="l-en">Evidence breadth</span><span class="l-zh">证据广度</span></dt><dd><span class="l-en">Medium</span><span class="l-zh">中</span></dd></div>
@@ -669,6 +670,14 @@
 </details>
   </div>
   <ul class="mq-diag-list">
+    <li class="mq-diag mq-tone-warn">
+      <strong><span class="l-en">Required source not current</span><span class="l-zh">必需数据源并非最新</span></strong>
+      <span><span class="l-en">Degraded required components: 30-year fixed mortgage rate.</span><span class="l-zh">降级的必需分项：30年期固定抵押贷款利率。</span></span>
+    </li>
+    <li class="mq-diag mq-tone-warn">
+      <strong><span class="l-en">Optional legs degraded</span><span class="l-zh">可选分项已降级</span></strong>
+      <span><span class="l-en">Shown separately, and excluded from the page state: Mortgage rate.</span><span class="l-zh">单独呈现，且不计入本页状态：Mortgage rate。</span></span>
+    </li>
     <li class="mq-diag mq-tone-neutral">
       <strong><span class="l-en">Component histories not published</span><span class="l-zh">未发布分项历史序列</span></strong>
       <span><span class="l-en">Insufficient history</span><span class="l-zh">历史数据不足</span></span>
@@ -739,7 +748,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Thirty-year mortgage rate</span><span class="l-zh">三十年期房贷利率</span></span>
-        <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">7.40</span><span class="l-zh">7.40</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more restrictive financing</span><span class="l-zh">数值越高＝融资越紧</span></p>
@@ -794,7 +803,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Mortgage 30y rate change 13w</span><span class="l-zh">30年期房贷利率 13 周变化</span></span>
-        <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.91</span><span class="l-zh">0.91</span><span class="mq-metric-unit"><span class="l-en">Pct pts</span><span class="l-zh">百分点</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more restrictive financing</span><span class="l-zh">数值越高＝融资越紧</span></p>
@@ -1961,7 +1970,7 @@
       <article class="mq-source">
         <header>
           <strong><span class="l-en">30-year fixed mortgage rate (Freddie Mac PMMS, via FRED)</span><span class="l-zh">30年期固定抵押贷款利率（Freddie Mac PMMS，经FRED）</span></strong>
-          <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
+          <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
         </header>
         <dl class="mq-method-grid">
           <div><dt><span class="l-en">Provider</span><span class="l-zh">提供方</span></dt><dd>Freddie Mac / FRED</dd></div>
@@ -2379,11 +2388,11 @@
       <dl class="mq-clocks">
         <div class="mq-clock">
           <dt><span class="mq-clock-name"><span class="l-en">Build stamp</span><span class="l-zh">生成时间</span></span><span class="mq-clock-meaning"><span class="l-en">Producer generation time. Not an economic clock.</span><span class="l-zh">生产端生成时间，并非经济时钟。</span></span></dt>
-          <dd><time>2026-10-13T06:57:13Z</time></dd>
+          <dd><time>2026-10-18T03:44:43Z</time></dd>
         </div>
         <div class="mq-clock">
           <dt><span class="mq-clock-name"><span class="l-en">Page refreshed</span><span class="l-zh">页面更新于</span></span><span class="mq-clock-meaning"><span class="l-en">Static page render time. Not an economic clock.</span><span class="l-zh">静态页面渲染时间，并非经济时钟。</span></span></dt>
-          <dd><time>2026-10-14T04:50:23Z</time></dd>
+          <dd><time>2026-10-18T09:53:59Z</time></dd>
         </div>
       </dl>
     </section>
@@ -2393,11 +2402,11 @@
       <dl class="mq-method-grid">
         <div><dt><span class="l-en">Artifact path</span><span class="l-zh">产物路径</span></dt><dd><code>macrodata/workspaces/housing_real_estate/US/latest.json</code></dd></div>
         <div><dt><span class="l-en">Manifest path</span><span class="l-zh">清单路径</span></dt><dd><code>macrodata/workspaces/manifest.json</code></dd></div>
-        <div><dt><span class="l-en">Content hash</span><span class="l-zh">内容哈希</span></dt><dd><code class="mq-hash">e652d82cfd2df85cc0780a560e87152cad854101c3e27618e7399fd41e03d316</code></dd></div>
-        <div><dt><span class="l-en">Bytes</span><span class="l-zh">字节数</span></dt><dd>94843</dd></div>
-        <div><dt><span class="l-en">Generation id</span><span class="l-zh">产物代号</span></dt><dd><code>housing_real_estate-US-e652d82cfd2df85c</code></dd></div>
+        <div><dt><span class="l-en">Content hash</span><span class="l-zh">内容哈希</span></dt><dd><code class="mq-hash">3b916fdc69692c2ac92e4898f7facf48b5c63294fe5c05c64a823ba04e9dd6c0</code></dd></div>
+        <div><dt><span class="l-en">Bytes</span><span class="l-zh">字节数</span></dt><dd>95011</dd></div>
+        <div><dt><span class="l-en">Generation id</span><span class="l-zh">产物代号</span></dt><dd><code>housing_real_estate-US-3b916fdc69692c2a</code></dd></div>
         <div><dt><span class="l-en">Producer</span><span class="l-zh">生产者</span></dt><dd><code>engine.market_os.macro_workspaces.housing</code></dd></div>
-        <div><dt><span class="l-en">Producer code version</span><span class="l-zh">生产端代码版本</span></dt><dd><code>8847cfc6de330b36595e3793010e6599845adc2f</code></dd></div>
+        <div><dt><span class="l-en">Producer code version</span><span class="l-zh">生产端代码版本</span></dt><dd><code>5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa</code></dd></div>
         <div><dt><span class="l-en">Client contract</span><span class="l-zh">客户端契约</span></dt><dd><code>mastermind.macro_workspace_snapshot.v1@1.0.0</code></dd></div>
       </dl>
       <p class="mq-lineage-note"><span class="l-en">The page checked this artifact against the closed schema and recomputed its content hash before rendering. A mismatch renders a refusal page instead of a state.</span><span class="l-zh">本页在渲染前已按封闭 schema 校验该产物并重新计算其内容哈希。若不匹配，将呈现拒绝页面而非任何状态读数。</span></p>
@@ -2408,7 +2417,7 @@
 </aside>
 <div class="mq-scrim" id="mq-scrim" hidden></div>
 
-<script src="theme.js?v=80c7061d" defer></script>
+<script src="theme.js?v=46939917" defer></script>
 <script src="macro_suite.js?v=db187023" defer></script>
 <script src="macro_command.js?v=3ba50141" defer></script>
 </body>

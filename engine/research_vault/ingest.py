@@ -202,8 +202,19 @@ def _receipt_read_workers(store, concurrency: int) -> int:
         return 1
     try:  # deferred import: call-time only, so no module-load cycle
         from engine.research_vault.r2_store import R2Store
+        from engine.research_vault.producer_generation_writer import (
+            FencedProducerStore, ProducerGenerationSession,
+        )
     except Exception:  # noqa: BLE001 — cannot qualify: stay serial
         return 1
+    if type(store) is FencedProducerStore:
+        # This exact wrapper delegates reads to its one unchanged incumbent
+        # store; only writes are fenced. Do not lose qualified read concurrency
+        # merely by adopting the producer protocol, or qualify unknown wrappers.
+        if (type(store.generation_session) is not ProducerGenerationSession
+                or store.generation_session.store is not store._store):
+            return 1
+        store = store._store
     return min(concurrency, 4) if (type(store) is R2Store and
                            store._receipt_reads_thread_safe is True) else 1
 
@@ -294,6 +305,13 @@ def _ingest_one(store, conn, pdf_key: str, dry_run: bool = False) -> dict:
     ``status`` ∈ ingested | failed. On any exception the item is marked failed
     (logged) and the batch continues.
     """
+    if not dry_run:
+        try:
+            catalog_mod.ensure_generation_write_allowed(store)
+        except Exception as exc:
+            return {"status": "failed", "reason": "generation_writer_unqualified",
+                    "error": type(exc).__name__ + ": " + str(exc)}
+
     result = {"pdf_key": pdf_key, "status": "failed", "id": None, "needs_metadata": False,
               "title_source": "sidecar", "facts": {}}
     try:
@@ -1132,7 +1150,9 @@ def _corpus_row_count(corpus_path: str | Path) -> int:
 
 
 def run(store, corpus_path: str | Path, now: datetime | None = None,
-        dry_run: bool = False, checkpoint_every: int = CHECKPOINT_EVERY) -> dict:
+        dry_run: bool = False, checkpoint_every: int = CHECKPOINT_EVERY,
+        generation_identity: dict | None = None, generation_clock=None,
+        generation_evidence=None) -> dict:
     """Run one ingestion pass. Idempotent + never-raise-per-item.
 
     Restores the canonical corpus from the store (source of truth), lists new
@@ -1316,6 +1336,29 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
               flush=True)
         return summary
 
+    # Generation adoption is explicit and inert for legacy catalogs. The fence
+    # precedes every remote mutable write; an interrupted BUILDING remains owned
+    # by its original operation. This does not establish all-writer settlement.
+    generation_session = None
+    if generation_evidence is not None and (dry_run or generation_identity is None):
+        summary["error"] = "generation_evidence_requires_explicit_producer"
+        return summary
+    if not dry_run:
+        if generation_identity is None and "producer_generation" in cat:
+            summary["error"] = "generation_writer_unqualified"
+            return summary
+        if generation_identity is not None:
+            try:
+                from engine.research_vault.producer_generation_writer import (
+                    ProducerGenerationSession, FencedProducerStore)
+                generation_session = ProducerGenerationSession.begin(
+                    store, cat, generation_identity, now=now, evidence=generation_evidence)
+                store = FencedProducerStore(store, generation_session)
+            except Exception as exc:
+                summary["error"] = "generation_start_failed"
+                summary["generation_error"] = type(exc).__name__ + ": " + str(exc)
+                return summary
+
     conn = corpus_mod.open_db(corpus_path)
     pending_receipts: list = []  # (key, body) — flushed only after a publish
     try:
@@ -1427,8 +1470,15 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
             if (not dry_run and checkpoint_every > 0
                     and summary["ingested"] % checkpoint_every == 0):
                 conn.commit()
+                publication_kwargs = {}
+                if generation_session is not None:
+                    catalog_mod.prepare_publication(cat, now=now)
+                    prepared = generation_session.prepare_catalog(cat)
+                    generation_session.record_publication(
+                        corpus_path, pending_receipts, catalog_bytes=prepared)
+                    publication_kwargs["prepared_bytes"] = prepared
                 if publish_corpus(store, corpus_path):
-                    if catalog_mod.publish(store, cat, now=now).published:
+                    if catalog_mod.publish(store, cat, now=now, **publication_kwargs).published:
                         _flush_receipts(store, pending_receipts)
                 log.info("research_vault: checkpoint at %d ingested",
                          summary["ingested"])
@@ -1528,14 +1578,26 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
     # would permanently strand documents that never became visible (Defect 4).
     if not dry_run:
         _t = time.monotonic()
+        publication_kwargs = {}
+        if generation_session is not None:
+            catalog_mod.prepare_publication(cat, now=now)
+            prepared = generation_session.prepare_catalog(cat)
+            generation_session.record_publication(
+                corpus_path, pending_receipts, catalog_bytes=prepared)
+            publication_kwargs["prepared_bytes"] = prepared
         summary["corpus_published"] = publish_corpus(store, corpus_path)
+        timing_s["corpus_publish_s"] = time.monotonic() - _t
         summary["catalog_published"] = False
         if summary["corpus_published"]:
-            published = catalog_mod.publish(store, cat, now=now)
+            _catalog_t = time.monotonic()
+            published = catalog_mod.publish(store, cat, now=now, **publication_kwargs)
+            timing_s["catalog_publish_s"] = time.monotonic() - _catalog_t
             summary["catalog_bytes"] = published.data
             summary["catalog_published"] = published.published
             if published.published:
+                _receipt_t = time.monotonic()
                 _flush_receipts(store, pending_receipts)
+                timing_s["receipt_flush_s"] = time.monotonic() - _receipt_t
             else:
                 summary["error"] = "catalog_publish_failed"
         else:
@@ -1553,6 +1615,7 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
                   f"{summary['catalog_published']}) — those documents will "
                   f"re-ingest next run", flush=True)
             summary["receipts_unflushed"] = len(pending_receipts)
+            summary["error"] = summary.get("error") or "receipt_publish_failed"
         timing_s["publication_s"] = time.monotonic() - _t
 
     summary["timing_s"] = timing_s
@@ -1579,19 +1642,47 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
             log.warning("research_vault: fulltext pass failed: %s", e)
             summary["fulltext_aborted"] = "internal_error"
 
+    if generation_session is not None:
+        if (not summary.get("error") and not pending_receipts
+                and summary.get("corpus_published") and summary.get("catalog_published")
+                and summary.get("fulltext_aborted") in (None, "cap", "budget")):
+            try:
+                # COMPLETE records the exact closed census, including below95.
+                # The consumer independently rejects below95 and defaultsFalse.
+                completion_time = (generation_clock() if generation_clock is not None
+                                   else datetime.now(timezone.utc))
+                summary["catalog_bytes"] = generation_session.complete(cat, now=completion_time)
+                summary["generation_complete"] = True
+            except Exception as exc:
+                summary["error"] = "generation_completion_failed"
+                summary["generation_error"] = type(exc).__name__ + ": " + str(exc)
+        else:
+            summary["error"] = summary.get("error") or "generation_incomplete"
+        summary.setdefault("generation_complete", False)
+
     return summary
 
 
-def _flush_receipts(store, pending: list) -> None:
-    """Write+drain accumulated receipts (called only after a successful publish)."""
+def _flush_receipts(store, pending: list) -> bool:
+    """Drain only confirmed receipts; failed pending writes remain retryable."""
     while pending:
         key, body = pending[0]
-        store.put_bytes(key, body, "application/json")
+        try:
+            if not store.put_bytes(key, body, "application/json"):
+                return False
+        except Exception:
+            return False
         pending.pop(0)
+    return True
 
 
 def publish_corpus(store, corpus_path: str | Path) -> bool:
     """Publish corpus.sqlite bytes to the store at research_vault/corpus.sqlite."""
+    try:
+        catalog_mod.ensure_generation_write_allowed(store)
+    except Exception as exc:
+        log.warning("research_vault: corpus write context unavailable (%s)", exc)
+        return False
     p = Path(corpus_path)
     if not p.is_file():
         log.warning("research_vault: corpus missing at %s — not published", p)
