@@ -22202,6 +22202,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "scripts/build_turn_watch.py"
       # Connected Research Factory import closure (PR9463).
       - engine/research_codegen/__init__.py
       - engine/research_codegen/accounting_contract.py
