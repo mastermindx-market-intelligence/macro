@@ -32,6 +32,7 @@ _UNIVERSE = {
     **sources.UNIVERSE,
     "ZZWP": ("ZZCLUSTER", 12),  # FYE December -> 2026-10-29 anchors 2026Q3
     "ZZWQ": ("ZZCLUSTER", 12),
+    "ZWSX": ("ZZCLUSTER", 12),
 }
 _Q_ACCESSION = "0009999991-26-000900"
 
@@ -246,42 +247,76 @@ def test_runner_end_to_end_report_keys_present(monkeypatch, tmp_path) -> None:
         assert ep["k"]["abstain_reason"] == "k_inputs_unavailable"
 
 
-def test_runner_records_label_read_only_when_q_filing_exists(
+def test_runner_records_label_read_when_any_q_filing_matches(
         monkeypatch, tmp_path) -> None:
+    """Wave-3 spec §3: the evaluator label read is recorded whenever the facts
+    JSON holds at least one original-filing EPS context for the episode period
+    (one OR several matches).  Zero matches -> no record (no label value
+    exists to read).  The label itself still requires a single match, so the
+    two-match episode stays label=None / not evaluable.
+    """
     exposure = tmp_path / "exposure.jsonl"
     monkeypatch.setattr(sources, "UNIVERSE", _UNIVERSE)
+    # Two ORIGINAL accessions (10-Q + 10-Q — never amendments) whose max end
+    # == 2026-09-30 (the episode period end).  An ambiguous set is refused by
+    # the label reader — the label stays None — but the exposure ledger is
+    # still written: the facts JSON is in memory either way (prereg §6), so
+    # recording is the more conservative choice and needs no amendment.
+    two_match_facts = {"facts": {"us-gaap": {"EarningsPerShareDiluted": {
+        "units": {"USD/shares": [
+            {"start": "2026-07-01", "end": "2026-09-30", "val": 2.50,
+             "accn": _Q_ACCESSION, "form": "10-Q", "filed": "2026-10-30"},
+            {"start": "2026-07-01", "end": "2026-09-30", "val": 2.55,
+             "accn": "0009999991-26-000800", "form": "10-Q",
+             "filed": "2026-11-05"},
+            {"start": "2025-07-01", "end": "2025-09-30", "val": 2.00,
+             "accn": _Q_ACCESSION, "form": "10-Q", "filed": "2025-10-30"},
+        ]}}}},
+    }
     facts_by_issuer = {
-        "ZZWP": _facts(),        # carries the 2026Q3 filing -> q filing exists
+        "ZZWP": _facts(),        # one match: the 2026Q3 filing
         "ZZWQ": {"facts": {"us-gaap": {"EarningsPerShareDiluted": {
             "units": {"USD/shares": [
-                # a quarter that does NOT match the episode period end
+                # zero matches: a quarter that does NOT match the episode
+                # period end (2026-06-30 vs 2026-09-30).
                 {"start": "2026-04-01", "end": "2026-06-30", "val": 1.10,
                  "accn": "0009999992-26-000700", "form": "10-Q",
                  "filed": "2026-07-30"}]}}}},
         },
+        "ZWSX": two_match_facts,  # two matches for 2026Q3 -> recorded, label None
     }
     result = runner.run_evaluation(
         doc_bytes=PREREG_PATH.read_bytes(),
         is_ancestor_of_head=lambda sha: True,
         ledger_lines=_ledger_lines(),
         filing_rows=[_row(_Q_ACCESSION),
-                     _row("0009999992-26-000701", ticker="ZZWQ", cik=9999992)],
+                     _row("0009999992-26-000701", ticker="ZZWQ", cik=9999992),
+                     _row("0009999991-26-000801", ticker="ZWSX", cik=9999991)],
         fetch_index_headers=_index_headers(),
         k_inputs=lambda issuer, cutoff, period_end: None,
         companyfacts=lambda issuer: facts_by_issuer.get(issuer),
         submissions_pages=lambda issuer: (),
         exposure_path=exposure,
         now=_NOW,
-        resolve_ticker=_resolver(),
+        resolve_ticker=lambda ticker, *, asof: (
+            _Resolution("cik:0009999991") if ticker in {"ZZWP", "ZWSX"}
+            else _Resolution("cik:0009999992")
+        ),
         revisions_reader=_revisions_reader(qm1=[_rev("gen-ok")]),
     )
     rows = [json.loads(line) for line in exposure.read_text().splitlines()]
-    assert [row["issuer"] for row in rows] == ["ZZWP"]  # only where a q filing exists
-    assert rows[0]["reader"] == gates.EVALUATOR_READER
-    # no q filing -> label None, a0 still computed through the same function
+    recorded = sorted(row["issuer"] for row in rows)
+    # ZZWQ: zero matches -> no record; ZZWP + ZWSX: at least one -> recorded.
+    assert recorded == ["ZWSX", "ZZWP"]
+    assert {row["reader"] for row in rows} == {gates.EVALUATOR_READER}
+    # zero matches: label stays None and a0 still computed through the same function
     zzwq = next(ep for ep in result["episodes"] if ep["issuer"] == "ZZWQ")
     assert zzwq["label"] is None
     assert set(zzwq["a0"]) == {"sign", "period", "accession", "accepted_at"}
+    # two matches: label stays None (ambiguous set refused by the label reader)
+    zwsx = next(ep for ep in result["episodes"] if ep["issuer"] == "ZWSX")
+    assert zwsx["label"] is None
+    assert set(zwsx["a0"]) == {"sign", "period", "accession", "accepted_at"}
 
 
 def test_runner_pre_existing_read_exposes_episode(monkeypatch, tmp_path) -> None:
