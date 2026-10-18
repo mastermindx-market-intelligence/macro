@@ -332,6 +332,20 @@
   /* breathing room on wide desktops — content centered, never edge-to-edge */
   @media (min-width: 1100px) { body { padding: 26px max(40px, calc((100vw - 1500px) / 2)); } }
   body.page-macro { padding-top: 26px; }
+  /* On phone-size Macro, continuously repainting the animated Chat Brain rim
+     and orb costs significant idle main-thread time. Preserve the launcher,
+     focus ring, click/touch/keyboard handling, and desktop motion; only stop
+     its decorative infinite CSS animations on this page at mobile widths. */
+  @media (max-width: 768px) {
+    body.page-macro #mmb-boot, body.page-macro #mmb-launch,
+    body.page-macro #mmb-boot *, body.page-macro #mmb-launch *,
+    body.page-macro #mmb-boot::before, body.page-macro #mmb-boot::after,
+    body.page-macro #mmb-launch::before, body.page-macro #mmb-launch::after,
+    body.page-macro #mmb-boot *::before, body.page-macro #mmb-boot *::after,
+    body.page-macro #mmb-launch *::before, body.page-macro #mmb-launch *::after {
+      animation: none !important;
+    }
+  }
   a { text-decoration: none; }
   h1 { font-size: 20px; margin: 0 0 2px; }
   h2 { font-size: 15px; margin: 0 0 10px; color: var(--muted);
