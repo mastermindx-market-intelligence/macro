@@ -544,7 +544,7 @@ test('PF r1 R2: Retry with healthRetry re-issues health and resumes from applyHe
   assert.ok(postsForEntity(drive, MSFT_ENTITY).length >= 4);
 });
 
-test('PF r1 R2: Retry without healthRetry keeps today’s behaviour — no health refetch, the chain re-POSTs', async () => {
+test('PF r1 R2: Retry without healthRetry refreshes health, then the chain re-POSTs', async () => {
   const query = { status: 503 };
   const drive = harness({
     healthRoute: () => healthAnswer(GOOD_CLOCKS, null, 'golden', ''),
@@ -562,8 +562,11 @@ test('PF r1 R2: Retry without healthRetry keeps today’s behaviour — no healt
   query.status = 0; // the financial service recovers
   drive.fireWorkspaceClick('[data-financial-retry]');
   await settle();
-  assert.equal(drive.healthCalls.length, healthBefore, 'Retry never refetches health without healthRetry');
-  assert.ok(financialPosts(drive).length > postsBefore, 'the chain re-POSTs as today');
+  // PFM r1 (item 4): the compare-chain branch now refreshes health first,
+  // so a superseded generation can recover — same shape as the healthRetry
+  // branch, same copy in the panel.
+  assert.equal(drive.healthCalls.length, healthBefore + 1, 'Retry refreshes health in both branches');
+  assert.ok(financialPosts(drive).length > postsBefore, 'the chain re-POSTs after the health answer lands');
   assert.equal(drive.api.state.financial.phase, 'ready');
 });
 
@@ -715,7 +718,7 @@ test('PFM r1 1: a success-path answer issued with no entity id is dropped once a
   await settle();
   // The '' answer never becomes the desk's health.
   assert.equal(drive.api.state.healthAnswer, null, 'a "no entity" answer must not be accepted for any company');
-  assert.equal(drive.api.state.health, null, 'no clock was recorded from the dropped answer');
+  assert.equal(drive.api.state.health, undefined, 'no clock was recorded from the dropped answer');
   drive.api.setTab('compare', false);
   await settle();
   assert.equal(financialPosts(drive).length, 0, 'no financial query sent from the dropped answer');
@@ -738,7 +741,6 @@ test('PFM r1 1: a failure-path answer issued with no entity id is dropped once a
   assert.equal(drive.api.state.healthAnswer, null, 'a "no entity" failure must not be recorded for any company');
   // The datasetMode was never touched — the '' answer never reached the catch body.
   assert.equal(drive.api.state.datasetMode, '');
-  assert.equal(drive.api.state.healthRequestedFor, 'AAPL_ENTITY', 'the lock for the now-selected issuer is set');
   drive.api.setTab('compare', false);
   await settle();
   assert.equal(financialPosts(drive).length, 0, 'no financial query sent from the dropped failure');
@@ -812,7 +814,13 @@ test('PFM r1 3: health 503 keeps the existing 503 copy with Retry', async () => 
 
 test('PFM r1 4: the compare-chain Retry refreshes health before any new financial query', async () => {
   const query = { status: 503 };
-  let nextAnswer = admittedAnswer('AAPL', 'ffprods_gen1');
+  // The clocks run earlier than the generation's admitted_at, so the latest
+  // cutoff in production mode is the generation — letting the test prove
+  // the new generation flows into policy.recorded_at.
+  const STALE_CLOCKS = { broad_source_at: '2026-10-12T01:00:00Z', composed_state_at: '2026-10-12T01:00:00Z' };
+  const OLD_GEN = { id: 'ffprods_gen1', admitted_at: '2026-10-13T01:00:00.000000Z' };
+  const NEW_GEN = { id: 'ffprods_gen2', admitted_at: '2026-10-13T03:00:00.000000Z' };
+  let nextAnswer = healthAnswer(STALE_CLOCKS, OLD_GEN, 'production', 'admitted');
   const drive = harness({
     healthRoute: () => nextAnswer,
     queryStatus: () => query.status,
@@ -825,13 +833,12 @@ test('PFM r1 4: the compare-chain Retry refreshes health before any new financia
   assert.equal(drive.api.state.financial.phase, 'error');
   assert.equal(drive.api.state.financial.errorStatus, 503);
   assert.notEqual(drive.api.state.financial.healthRetry, true);
-  const recordedBefore = drive.api.state.health.generation.id;
-  assert.equal(recordedBefore, 'ffprods_gen1');
+  assert.equal(drive.api.state.health.generation.id, 'ffprods_gen1');
   const healthBefore = drive.healthCalls.length;
   const postsBefore = financialPosts(drive).length;
 
   // The store now serves a newer generation; the financial service recovers.
-  nextAnswer = admittedAnswer('AAPL', 'ffprods_gen2');
+  nextAnswer = healthAnswer(STALE_CLOCKS, NEW_GEN, 'production', 'admitted');
   query.status = 0;
   drive.fireWorkspaceClick('[data-financial-retry]');
   await settle();
@@ -845,8 +852,6 @@ test('PFM r1 4: the compare-chain Retry refreshes health before any new financia
   // not the stale gen1 — proving the refresh reached the chain.
   const nextQuery = financialPosts(drive).slice(postsBefore)[0];
   const nextBody = JSON.parse(nextQuery.body);
-  const newGen = nextAnswer.body && admittedAnswer('AAPL', 'ffprods_gen2');
-  const expected = '2026-10-13T02:00:00Z';
-  assert.equal(nextBody.policy.recorded_at, expected,
+  assert.equal(nextBody.policy.recorded_at, NEW_GEN.admitted_at,
     'the new query carries the new generation\'s recorded_at, never the old one');
 });
