@@ -175,12 +175,20 @@ def project_histories(histories: object, *, anchor_market_day: str,
                 value=row.get(field)
                 if type(value) is not str or not _SHA.fullmatch(value):
                     raise Refused(f'{symbol}:ROW_RECEIPT_INVALID')
-            if row['source_sha256'] not in declared_receipt_days:
+            # The incumbent reader accepts either an original raw-content hash
+            # or an exact receipt identity, and preserves that caller selector
+            # in source_partitions. Both remain bound to the original day.
+            matched_refs = {
+                identifier for identifier in (row['source_sha256'], row['source_receipt_id'])
+                if identifier in declared_receipt_days
+            }
+            if not matched_refs:
                 raise Refused(f'{symbol}:ROW_SOURCE_NOT_REFERENCED')
             observed=_utc(row.get('source_observed_at_utc'),f'{symbol}:ROW_CAPTURE_CLOCK')
             if observed>cutoff:
                 raise Refused(f'{symbol}:SOURCE_AFTER_CAPTURE_CUTOFF')
-            if observed.date().isoformat() not in declared_receipt_days[row['source_sha256']]:
+            if not any(observed.date().isoformat() in declared_receipt_days[identifier]
+                       for identifier in matched_refs):
                 raise Refused(f'{symbol}:ROW_CAPTURE_DAY_NOT_REFERENCED')
             # The original vendor snapshot cannot contain a later EOD market day.
             # This mirrors the incumbent history reader's future-date refusal.
@@ -217,6 +225,14 @@ def public_summary(projected: ResearchProjection) -> dict[str, Any]:
     """Safe provenance/coverage summary without any licensed close values."""
     if type(projected) is not ResearchProjection:
         raise Refused('PROJECTION_TYPE')
+    # Dataclass identity does not grant authority: reject constructed/replaced
+    # objects that claim more than the native retrospective projection provides.
+    if (projected.evidence_mode != 'RETROSPECTIVE_EXPLORATORY_NOT_PIT'
+            or projected.source_use != 'UNQUALIFIED'
+            or any(value is not False for value in (
+                projected.as_known_historically, projected.historical_pit_admitted,
+                projected.may_rank, projected.may_gate, projected.may_size, projected.may_trade))):
+        raise Refused('PROJECTION_AUTHORITY_CONFLICT')
     return dict(anchor_market_day=projected.anchor_market_day,
                 capture_cutoff_utc=projected.capture_cutoff_utc,
                 sessions=len(projected.session_days),

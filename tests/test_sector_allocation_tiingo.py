@@ -29,7 +29,9 @@ def fixtures():
                          close_raw=100+j+i/10,close_tradj=100+j+i/10,split_factor=1.0,dividend_cash=0.0))
         out[t]=TiingoResearchHistory(source="eod-bars",vendor_symbol=t,start_market_date=days[0],
                   end_market_date=ANCHOR,observed_before_utc=CUTOFF,rows=tuple(rows),
-                  source_partitions=(("2026-10-12",OTHER),),identical_overlap_dates=0)
+                  # The default fixture is selected by original raw-content hash.
+                  # Receipt-ID selection is exercised separately below.
+                  source_partitions=(("2026-10-12",SHA),),identical_overlap_dates=0)
     return out,days
 
 class Projection(unittest.TestCase):
@@ -56,6 +58,17 @@ class Projection(unittest.TestCase):
         self.assertNotIn('values',str(s))
         self.assertNotIn('close_tradj',str(s))
         self.assertFalse(s['historical_pit_admitted'])
+    def test_summary_cannot_promote_fabricated_projection_permissions(self):
+        projected=self.invoke()
+        for changes in ({'historical_pit_admitted':True},
+                        {'as_known_historically':True},
+                        {'source_use':'ADMITTED'},
+                        {'evidence_mode':'PIT_BACKTEST'},
+                        {'may_rank':True},{'may_gate':True},
+                        {'may_size':True},{'may_trade':True}):
+            with self.subTest(changes=changes):
+                self.assertRaisesRegex(Refused,'PROJECTION_AUTHORITY_CONFLICT',
+                                       public_summary,replace(projected,**changes))
     def test_missing_bil_refused(self):
         del self.data['BIL'];self.assertRaisesRegex(Refused,'EXACT_13',self.invoke)
     def test_unexpected_extra_symbol_refused(self):
@@ -90,7 +103,8 @@ class Projection(unittest.TestCase):
         self.assertRaisesRegex(Refused,'SESSION_COVERAGE',self.invoke)
     def test_adjustment_vintage_change_refused(self):
         x=self.data['BIL'];b=dict(x.rows[-1],adjustment_asof_utc='2026-10-16T18:00:00+00:00',source_observed_at_utc='2026-10-16T18:00:00+00:00')
-        self.data['BIL']=replace(x,rows=x.rows[:-1]+(b,))
+        self.data['BIL']=replace(x,rows=x.rows[:-1]+(b,),
+            source_partitions=(('2026-10-12',SHA),('2026-10-16',SHA)))
         self.assertRaisesRegex(Refused,'MIXED_ADJUSTMENT_VINTAGE',self.invoke)
     def test_bad_adjusted_price_refused(self):
         for bad in (None,0,-1,True,float('nan'),float('inf'),"100"):
@@ -119,6 +133,30 @@ class Projection(unittest.TestCase):
                    for row in x.rows)
         self.data['BIL']=replace(x,rows=rows,source_partitions=(('2026-09-29',SHA),))
         self.assertRaisesRegex(Refused,'MARKET_AFTER_CAPTURE',self.invoke)
+    def test_receipt_identity_reference_is_supported(self):
+        """Native history refs preserve the caller's raw-hash OR receipt-ID selector."""
+        self.data={symbol:replace(history,source_partitions=(('2026-10-12',OTHER),))
+                   for symbol,history in self.data.items()}
+        result=self.invoke()
+        self.assertEqual(result.series[0].receipt_refs,(('2026-10-12',OTHER),))
+        self.assertEqual(result.series[0].input_source_digests,(SHA,))
+        self.assertFalse(result.historical_pit_admitted or result.may_rank)
+    def test_receipt_identity_reference_requires_matching_capture_day(self):
+        x=self.data['BIL']
+        self.data['BIL']=replace(x,source_partitions=(('2026-10-13',OTHER),))
+        self.assertRaisesRegex(Refused,'ROW_CAPTURE_DAY_NOT_REFERENCED',self.invoke)
+    def test_neither_row_identifier_in_original_refs_is_refused(self):
+        x=self.data['BIL']
+        self.data['BIL']=replace(x,source_partitions=(('2026-10-12','c'*64),))
+        self.assertRaisesRegex(Refused,'ROW_SOURCE_NOT_REFERENCED',self.invoke)
+    def test_either_legitimate_selector_preserves_values_and_changes_provenance(self):
+        by_raw=self.invoke()
+        by_receipt=self.invoke({symbol:replace(history,
+             source_partitions=(('2026-10-12',OTHER),))
+             for symbol,history in self.data.items()})
+        self.assertEqual(tuple(s.values for s in by_raw.series),
+                         tuple(s.values for s in by_receipt.series))
+        self.assertNotEqual(by_raw.digest_sha256,by_receipt.digest_sha256)
     def test_source_capture_clock_future_refused(self):
         x=self.data['BIL'];self.data['BIL']=replace(x,rows=x.rows[:-1]+(dict(x.rows[-1],source_observed_at_utc='2026-11-01T14:00:00+00:00',adjustment_asof_utc='2026-11-01T14:00:00+00:00'),))
         self.assertRaisesRegex(Refused,'SOURCE_AFTER_CAPTURE_CUTOFF',self.invoke)
@@ -163,6 +201,7 @@ class Projection(unittest.TestCase):
             with patch.object(archive, 'EXTERNAL_MOUNT', base):
                 lake=archive.Archive(base/'tiingo', check_mount=False, free_floor=0)
                 result={}
+                receipt_result={}
                 for j,symbol in enumerate(INPUTS):
                     request=archive.request_path('eod-bars',symbol,{
                         'startDate':self.days[0], 'endDate':ANCHOR})
@@ -183,8 +222,18 @@ class Projection(unittest.TestCase):
                         (('2026-10-12',stored['raw_sha256']),),
                         self.days[0],ANCHOR,CUTOFF,root=lake.root,
                         check_mount=False,acknowledge_hindsight=True)
+                    receipt_result[symbol]=read_research_history('eod-bars',symbol,
+                        (('2026-10-12',archive.receipt_identity(matches[0])),),
+                        self.days[0],ANCHOR,CUTOFF,root=lake.root,
+                        check_mount=False,acknowledge_hindsight=True)
+                receipt_projection=project_histories(receipt_result,
+                    anchor_market_day=ANCHOR,capture_cutoff_utc=CUTOFF)
                 projection=project_histories(result,anchor_market_day=ANCHOR,
                                               capture_cutoff_utc=CUTOFF)
+                self.assertEqual(tuple(s.values for s in receipt_projection.series),
+                                 tuple(s.values for s in projection.series))
+                self.assertNotEqual(receipt_projection.digest_sha256,projection.digest_sha256)
+                self.assertFalse(receipt_projection.historical_pit_admitted)
                 self.assertEqual(len(projection.series),13)
                 self.assertEqual(len(projection.session_days),253)
                 self.assertFalse(projection.historical_pit_admitted)
