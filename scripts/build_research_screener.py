@@ -102,7 +102,12 @@ def render_html(root: Path, payload: dict[str, Any]) -> str:
     )
     env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip)
     tpl = env.get_template("research_screener.html.j2")
-    return tpl.render(payload=payload, as_of=payload.get("as_of"))
+    # Logo configuration is a public browser token materialized by the VPS at
+    # deployment, not the different Git placeholder hashed by make_optimizer.
+    # Only this page opts into the shared nav's explicit revalidated URL;
+    # default nav output (including Chat's generated header) is unchanged.
+    return tpl.render(payload=payload, as_of=payload.get("as_of"),
+                      nav_runtime_logo_config=True)
 
 
 def _ensure_yaml_importable() -> None:
