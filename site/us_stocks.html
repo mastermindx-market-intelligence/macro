@@ -1132,6 +1132,12 @@
     <style>
 #us-standouts :is(#us-today-grid, #us-cand-grid) .pv-ov {
   z-index: 5;
+  pointer-events: none;
+}
+#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-cau,
+#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-trg,
+#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-live:not([hidden]) {
+  pointer-events: auto;
 }
 </style>
     
