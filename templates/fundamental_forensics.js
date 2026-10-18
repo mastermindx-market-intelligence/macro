@@ -2231,6 +2231,10 @@
       };
       state.queryNodes = state.financial.latest;
       renderRevisions();
+      // X2-b+c r3 R3-3b: reconcile FIRST — a view another tab unpinned,
+      // changed or deleted while this tab's pinned fetch was in flight must
+      // be refused before the backfill can write anything against it.
+      reconcileSavedActive();
       backfillSavedAgainst();
       renderSavedUI();
     }).catch(function (error) {
@@ -2753,6 +2757,12 @@
       'This saved view is no longer on this device — it may have been deleted in another tab.',
       '此已存视图已不在本设备上——可能已在其他标签页中删除。'
     ],
+    // X2-b+c r2 MAJOR-1: an edit in another tab (unpinned, re-cut request)
+    // refuses the active view. Never re-derived here — the user reopens it.
+    unavailableChangedCopy: [
+      'This saved view was changed in another tab. Reopen it to continue.',
+      '此已保存视图已在另一个标签页中更改。请重新打开以继续。'
+    ],
     unavailableStoreCopy: [
       'Saved views on this device could not be read, so they are left untouched. Saving is paused here.',
       '无法读取本设备上的已存视图，因此保持原样不作改动。此处暂停保存。'
@@ -2879,6 +2889,7 @@
   // while the desk still matches the view's subject, policy and cutoff day.
   // Any manual navigation away makes the override inert by itself.
   function activePinnedRequest() {
+    if (state.pinnedRequest) reconcileSavedActive();
     var request = state.pinnedRequest;
     if (!request || typeof request !== 'object') return null;
     var target = company() || {};
@@ -2897,6 +2908,45 @@
     });
   }
 
+  // X2-b r2 MINOR-1 + X2-b+c r2 MAJOR-1, r3 R3-3/R3-4: another tab can
+  // delete or break the active view, CHANGE it (unpin it, re-cut its
+  // request), or break the whole store. The next read notices every one: the
+  // view turns into its own refusal ('store' for a read-only store, 'changed'
+  // for an edit), so the notice shows, no badge renders, no stale pinned
+  // bytes are served, Export returns no body while the refusal is active
+  // (exportQueryBody), and the resolve-path backfill writes nothing against a
+  // capture the store no longer matches.
+  function reconcileSavedActive() {
+    if (!savedBriefcase || !state.savedActiveId || state.savedRefusal) return;
+    if (savedBriefcase.readOnly()) {
+      state.savedRefusal = 'store';
+      state.pinnedRequest = null;
+      return;
+    }
+    var result = savedBriefcase.load(state.savedActiveId);
+    if (!result.ok) {
+      state.savedRefusal = result.reason;
+      state.pinnedRequest = null;
+      return;
+    }
+    // MAJOR-1 + r3 R3-4: compare what this tab is serving against what the
+    // store now holds — the loaded view's pinned flag, and its canonical
+    // request bytes measured with the briefcase's own canonicalJson (the
+    // same sorted-key, key-order-blind notion of equality the store and the
+    // manifest use; JSON.stringify would let a same-content request with
+    // reordered keys refuse). Any mismatch — pinned->latest, latest->pinned,
+    // a changed request — refuses as 'changed'; never silently re-derived.
+    var view = result.view;
+    var servingPinned = !!state.pinnedRequest;
+    var storedBytes = window.FifSavedBriefcase.canonicalJson(view.request);
+    var servingBytes = window.FifSavedBriefcase.canonicalJson(state.pinnedRequest);
+    if (view.pinned !== servingPinned ||
+      (servingPinned && storedBytes !== servingBytes)) {
+      state.savedRefusal = 'changed';
+      state.pinnedRequest = null;
+    }
+  }
+
   function savedActiveView() {
     // A refused restore (issuer or any load refusal) is never the active view:
     // no pinned badge, no newer-generation chip, no saved_against backfill from
@@ -2910,8 +2960,18 @@
   }
 
   function backfillSavedAgainst() {
+    // X2-b+c r3 R3-3b: reconcile before any write (the fetch-resolve path
+    // reconciles first too; this seam stays safe when driven directly), then
+    // write only when no refusal is active. MINOR-3 (repair): the polarity is
+    // main's — only a LATEST view (a fresh save or a re-resolve, which clears
+    // the digest) is backfilled; a pinned view keeps the digest it was saved
+    // with. The reconcile is what makes that safe: a view another tab pinned,
+    // unpinned, re-cut or deleted while this tab's fetch was in flight is
+    // refused first, so a digest from a fetch this desk no longer serves
+    // never lands in it.
+    reconcileSavedActive();
     var view = savedActiveView();
-    if (!view || view.pinned) return;
+    if (!view || view.pinned || state.pinnedRequest) return;
     var digest = state.financial && state.financial.responseSha256 || '';
     if (!digest || view.saved_against.response_sha256 === digest) return;
     savedBriefcase.update(view.id, {
@@ -2926,6 +2986,7 @@
   function savedNoticeHtml(kind) {
     var copy = kind === 'issuer' ? SAVED_COPY.unavailableIssuerCopy
       : kind === 'missing' ? SAVED_COPY.unavailableMissingCopy
+      : kind === 'changed' ? SAVED_COPY.unavailableChangedCopy
       : kind === 'store' ? SAVED_COPY.unavailableStoreCopy
       : SAVED_COPY.unavailableContractCopy;
     // Existing classes only: the notice is an icon span plus a title element
@@ -2964,6 +3025,7 @@
     // stay disabled and Rename/Delete stay hidden through attributes only,
     // and the notice names the paused store instead of a contract drift.
     var storeReadOnly = savedBriefcase.readOnly();
+    reconcileSavedActive();
     var phase = savedSavePhase();
     var name = nameInput && nameInput.value ? String(nameInput.value).trim() : '';
     if (saveBtn) {
@@ -3025,6 +3087,11 @@
         notice.innerHTML = '';
       }
     }
+    // X2-b+c r4 (MINOR-4): every path that sets or clears a saved-view
+    // refusal ends here — a refused restore, the resolve path, another tab's
+    // edit noticed on render — so Export re-reads the refusal on each of
+    // them instead of only on the next run-meta render.
+    refreshExportState();
   }
 
   // The newer-generation signal: the view was saved against one production
@@ -3163,6 +3230,13 @@
   var XLSX_MEDIA_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
   function exportQueryBody() {
+    // X2-b+c r3 R3-3a: while a saved-view refusal is active the desk still
+    // holds the stale pinned query body; Export must not re-POST it. The
+    // refusal copy already tells the reader to reopen the view, so Export
+    // gets no body at all, whatever the phase. The reconcile-on-read makes
+    // the guard hold even when the edit in the other tab is not yet noticed.
+    reconcileSavedActive();
+    if (state.savedRefusal) return null;
     if (state.financial && state.financial.queryBody && state.financial.phase === 'ready') {
       return state.financial.queryBody;
     }
@@ -3173,6 +3247,11 @@
     if (state.access === 'signin' || state.access === 'pending') return 'signin';
     if (state.access === 'upgrade') return 'upgrade';
     if (state.exportUnavailable) return 'unavailable';
+    // X2-b+c r3 MINOR-4 (repair): the button agrees with exportQueryBody — a
+    // saved-view refusal leaves Export with no body, so the control reads
+    // unavailable instead of offering a click that does nothing.
+    reconcileSavedActive();
+    if (state.savedRefusal) return 'unavailable';
     var target = company() || {};
     var body = buildQueryBody();
     var legal = !!target.entity_id && !!body.periods.length &&
@@ -3190,6 +3269,8 @@
         ? ['Export unavailable: this server does not offer workbook downloads yet.', '导出不可用：此服务器尚未提供工作簿下载。']
         : ['Export unavailable: the last download request failed. Reload to try again.', '导出不可用：上次下载请求失败，请重新载入后再试。'];
     }
+    // MINOR-4: the saved-view notice already names the cause and the action.
+    if (state.savedRefusal) return ['Export unavailable for this view.', '此视图暂不支持导出。'];
     var target = company() || {};
     var body = buildQueryBody();
     var en = [];
@@ -3236,6 +3317,8 @@
   function runExport() {
     if (!ui.exportBtn || ui.exportBtn.disabled) return;
     var body = exportQueryBody();
+    // X2-b+c r3: a saved-view refusal yields no body — never POST "null".
+    if (!body) return;
     withAuth({ 'Content-Type': 'application/json', Accept: XLSX_MEDIA_TYPE })
       .then(function (headers) {
         return fetch(FINANCIAL_QUERY_XLSX_URL, {
@@ -5727,9 +5810,11 @@
       buildSavedViewInput: buildSavedViewInput,
       backfillSavedAgainst: backfillSavedAgainst,
       activePinnedRequest: activePinnedRequest,
+      reconcileSavedActive: reconcileSavedActive,
       savedSavePhase: savedSavePhase,
       savedGenerationStale: savedGenerationStale,
       exportQueryBody: exportQueryBody,
+      runExport: runExport,
       // PF-1..PF-4 seams (same opt-in contract as above): the cutoff helper,
       // the health fetch and the financial chain, for the dependency-free
       // Node contract suite. Production never sets this sentinel.
