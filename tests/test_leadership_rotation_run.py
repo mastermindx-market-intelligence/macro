@@ -1463,3 +1463,99 @@ def test_unmatched_option_a_null_makes_h1_not_executable():
     gr["H1"]["null"] = {"status": "NOT_EXECUTABLE", "p_a": 1.0, "p_b": 1.0}
     for part in ("P1", "P2", "P3"):
         assert _group_verdicts(gr, part, holm, FAMILY_ORDER)["H1"] == "NOT_EXECUTABLE"
+
+
+
+# LR-W6 candidate H1 statistics: never a market-data read or a size/power verdict.
+def _v3_synthetic_phases():
+    from scripts import leadership_rotation_episodes as ep
+    return [
+        ep.UpPhase(T=10, P=60, rise=0.09, censored=False, qualifies=True),
+        ep.UpPhase(T=70, P=120, rise=0.10, censored=False, qualifies=True),
+    ]
+
+
+def test_v3_candidate_delay_is_not_mechanically_five_and_has_all_signs():
+    from scripts.leadership_rotation_v3_candidate import candidate_h1_synthetic_comparison as compare
+
+    phases = _v3_synthetic_phases()
+    early = [12, 73]
+    later = [24, 95]
+    pos = compare(phases, early, later, measured_sessions=150)
+    neg = compare(phases, later, early, measured_sessions=150)
+    tie = compare(phases, early, early, measured_sessions=150)
+
+    assert pos["scope"] == "P0_SYNTHETIC_ONLY"
+    assert pos["status"] == "DESCRIPTIVE"
+    assert pos["n_onsets"] == 2
+    assert pos["a1"]["onset_delays"] == [2, 3]
+    assert pos["b2"]["onset_delays"] == [14, 25]
+    assert pos["h1_delay_advantage_sessions"] == 17.0
+    assert neg["h1_delay_advantage_sessions"] == -17.0
+    assert tie["h1_delay_advantage_sessions"] == 0
+    assert pos["candidate_delay_margin_met_only"] is True
+    assert neg["candidate_delay_margin_met_only"] is False
+    assert not pos["v3_preregistered"]
+    assert not pos["size_or_power_proven"]
+
+
+def test_v3_candidate_misses_are_censored_not_dropped():
+    from scripts.leadership_rotation_v3_candidate import candidate_h1_synthetic_comparison as compare
+
+    phases = _v3_synthetic_phases()
+    both_miss = compare(phases, [], [], measured_sessions=150)
+    one_arm_misses = compare(phases, [12, 73], [], measured_sessions=150)
+    assert both_miss["a1"]["onset_delays"] == [41, 41]
+    assert both_miss["b2"]["onset_delays"] == [41, 41]
+    assert both_miss["h1_delay_advantage_sessions"] == 0.0
+    assert one_arm_misses["a1"]["n_missed"] == 0
+    assert one_arm_misses["b2"]["n_missed"] == 2
+    assert one_arm_misses["h1_delay_advantage_sessions"] == 38.5
+
+
+def test_v3_candidate_uses_first_match_and_original_late_burden():
+    from scripts import leadership_rotation_episodes as ep
+    from scripts.leadership_rotation_v3_candidate import candidate_h1_synthetic_comparison as compare
+
+    # Even in an artificial overlap, the incumbent matcher assigns the
+    # single kept B2 alarm to only one qualifying onset, never to both.
+    overlapping = [
+        ep.UpPhase(T=10, P=100, rise=.09, censored=False, qualifies=True),
+        ep.UpPhase(T=30, P=110, rise=.10, censored=False, qualifies=True),
+    ]
+    result = compare(overlapping, [], [36], measured_sessions=150)
+    assert result["b2"]["n_detected"] == 1
+    assert result["b2"]["n_missed"] == 1
+    assert result["b2"]["onset_delays"] == [26, 41]
+
+    # T11 R3 distinguishes a late non-match from a repeat; neither can
+    # silently count as an early detection or disappear from the burden.
+    one = [ep.UpPhase(T=10, P=95, rise=.09, censored=False, qualifies=True)]
+    late = compare(one, [11, 35], [61], measured_sessions=130)
+    assert late["a1"]["n_repeated"] == 1
+    assert late["b2"]["n_late"] == 1
+    assert late["b2"]["n_detected"] == 0
+    assert late["b2"]["onset_delays"] == [41]
+    assert late["a1"]["unmatched_alarm_burden_per_pair_year"] > 0
+
+
+def test_v3_candidate_abstains_without_events_and_rejects_bad_inputs():
+    from scripts import leadership_rotation_episodes as ep
+    from scripts.leadership_rotation_v3_candidate import candidate_h1_synthetic_comparison as compare
+
+    none = compare([], [1], [2], measured_sessions=50)
+    assert none["status"] == "NOT_EXECUTABLE"
+    assert none["reason"] == "NO_QUALIFYING_ONSETS"
+    assert none["h1_delay_advantage_sessions"] is None
+
+    phases = _v3_synthetic_phases()
+    with pytest.raises(ValueError, match="synthetic calendar"):
+        compare(phases, [True], [], measured_sessions=150)
+    with pytest.raises(ValueError, match="positive integer"):
+        compare(phases, [], [], measured_sessions=0)
+    dupes = [
+        ep.UpPhase(T=10, P=70, rise=.1, censored=False, qualifies=True),
+        ep.UpPhase(T=10, P=80, rise=.1, censored=False, qualifies=True),
+    ]
+    with pytest.raises(ValueError, match="unique"):
+        compare(dupes, [], [], measured_sessions=150)
