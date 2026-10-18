@@ -83,6 +83,7 @@ waves:
   - id: R4
     title: Usable conditional crypto suite and replacement candidate
     status: in_progress
+    pr: 9580
     next_action: >
       Apply the house-style Paper revision after exact connection identification,
       complete the four-view browser matrix, and integrate the accepted candidate
@@ -183,6 +184,7 @@ do_not_redo:
     GitHub branch/issue, Linear assignment, merged G7 code or another carrier as a
     runtime Job.
 artifacts:
+  - agentos/handoffs/CRYPTO-INTELLIGENCE-2026-10-18-r4-candidate.md
   - research/CRYPTO_INTELLIGENCE_R4_BUILD_PACKET.md
   - research/CRYPTO_INTELLIGENCE_R4_SCORECARD.json
   - agentos/decisions/DEC-CRYPTO-INTELLIGENCE-R4-20261018.md
