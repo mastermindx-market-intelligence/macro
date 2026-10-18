@@ -108,6 +108,12 @@ InaccessiblePaths=/var/lib/macro-market-memory/state
 InaccessiblePaths=/var/lib/macro-market-memory-options
 InaccessiblePaths=/etc/macro-market-memory-options
 InaccessiblePaths=-/etc/macro-market-memory.env
+# Company Intelligence provisioning runs before validation and restart. Metadata
+# and immutable artifacts are readable; retained source and publisher journals
+# stay outside the API namespace. Missing paths fail service startup closed.
+ReadOnlyPaths=/var/lib/macro-company-intelligence/state
+ReadOnlyPaths=/var/lib/macro-company-intelligence/artifacts
+InaccessiblePaths=/var/lib/macro-company-intelligence/publisher
 # Provider credentials belong only to macro-ticker-news.service.
 InaccessiblePaths=-/etc/macro-ticker-news.env
 

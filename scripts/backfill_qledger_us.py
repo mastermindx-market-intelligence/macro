@@ -37,13 +37,13 @@ Populates data/qledger/claims.jsonl from three source ledgers:
                direction=0 (salience-only / display-only) with extra flag
                ungradeable_soft=True; these are explicitly display-only claims
                and are reported in counts.n_rejected as soft-dark (they pass
-               register() with direction=0 and status=open, so they are not
+               qledger registration with direction=0 and status=open, so they are not
                technically rejected — they are recorded as salience-only per D4:
                "the fraction that goes dark under this constraint is itself
                logged and reported").
 
 All adapters are idempotent — stable claim_ids derived from source row ids let
-register() dedup freely.  Re-running the backfill is safe.
+register_batch() dedup against the durable claims ledger.  Re-running the backfill is safe.
 
 Usage:
   python -m scripts.backfill_qledger_us [--root PATH] [--desk altdata|radar|policy|all]
@@ -69,9 +69,11 @@ sys.path.insert(0, str(_ROOT))
 # Engine imports — must NOT import from the nightly runner or render layers.
 from engine.qledger import (
     HORIZON_UNIT_TRADING,
+    STATUS_GRADED,
+    STATUS_OPEN,
+    STATUS_REJECTED,
     TIMESTAMP_QUALITY,
     make_claim,
-    register,
     register_batch,
 )  # noqa: E402
 from engine.ai_desk import _close_series  # noqa: E402
@@ -83,6 +85,22 @@ from engine.altdata_ledger import (
 from lib import config  # noqa: E402
 
 log = logging.getLogger(__name__)
+
+
+def _require_complete_batch(rows: list[dict], expected: int, desk: str) -> None:
+    """An error slot is not a persisted claim; don't claim the batch succeeded."""
+    if (
+        not isinstance(rows, list)
+        or len(rows) != expected
+        or any(
+            not isinstance(row, dict)
+            or row.get("status") not in (STATUS_OPEN, STATUS_GRADED, STATUS_REJECTED)
+            for row in rows
+        )
+    ):
+        raise RuntimeError(f"qledger {desk} batch registration incomplete")
+
+
 
 # ---------------------------------------------------------------------------
 # Horizon constants
@@ -430,7 +448,8 @@ def backfill_altdata(root: Path, *, dry_run: bool = False) -> int:
                 all_claims.append(pclaim)
 
     if not dry_run:
-        register_batch(all_claims, root)
+        stored_rows = register_batch(all_claims, root)
+        _require_complete_batch(stored_rows, len(all_claims), "altdata")
         log.info("backfill_altdata: processed %d theses → %d claims (incl. placebos)",
                  registered, len(all_claims))
     else:
@@ -474,6 +493,7 @@ def backfill_radar(root: Path, *, dry_run: bool = False) -> int:
         return 0
 
     registered = 0
+    all_claims: list[dict] = []
     for row in snapshots:
         date_str = str(row.get("date") or "").strip()
         kind = str(row.get("kind") or "").strip()
@@ -511,11 +531,16 @@ def backfill_radar(root: Path, *, dry_run: bool = False) -> int:
         )
         claim["salt"] = salt
 
-        if not dry_run:
-            stored = register(claim, root)
-            log.debug("radar: %s|%s → claim_id=%s status=%s",
-                      date_str, subject, stored.get("claim_id"), stored.get("status"))
+        all_claims.append(claim)
         registered += 1
+
+    if not dry_run:
+        stored_rows = register_batch(all_claims, root)
+        _require_complete_batch(stored_rows, len(all_claims), "radar")
+        log.debug(
+            "radar: batch registered %d source rows → %d stored rows",
+            registered, len(stored_rows),
+        )
 
     log.info("backfill_radar: processed %d snapshots", registered)
     return registered
@@ -576,6 +601,7 @@ def backfill_policy(root: Path, *, dry_run: bool = False) -> int:
 
     registered = 0
     dark_count = 0
+    all_claims: list[dict] = []
     for thesis in theses:
         subject = str(thesis.get("subject") or "").strip()
         asof = str(thesis.get("state_asof") or "").strip()
@@ -624,11 +650,16 @@ def backfill_policy(root: Path, *, dry_run: bool = False) -> int:
         )
         claim["salt"] = source_id
 
-        if not dry_run:
-            stored = register(claim, root)
-            log.debug("policy: %s/%s → claim_id=%s direction=%d dark=%s",
-                      source_id, subject, stored.get("claim_id"), direction, is_dark)
+        all_claims.append(claim)
         registered += 1
+
+    if not dry_run:
+        stored_rows = register_batch(all_claims, root)
+        _require_complete_batch(stored_rows, len(all_claims), "policy")
+        log.debug(
+            "policy: batch registered %d source rows → %d stored rows",
+            registered, len(stored_rows),
+        )
 
     log.info("backfill_policy: processed %d theses (%d dark/salience-only)",
              registered, dark_count)

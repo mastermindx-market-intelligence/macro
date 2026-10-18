@@ -1,0 +1,253 @@
+{
+  "action_span": {
+    "claimed_quote": "NVIDIA Announces a $150 Billion Share Repurchase Authorization Increase.",
+    "span": {
+      "authority": "context_only",
+      "display_excerpt": "NVIDIA Announces a $150 Billion Share Repurchase Authorization Increase.",
+      "document_id": "doc_nvidia_pr_20260928",
+      "document_version": 1,
+      "locator": {
+        "kind": "text_span",
+        "segment_index": 0,
+        "span_end_byte": 72,
+        "span_start_byte": 0,
+        "sub_kind": "transcript_segment"
+      },
+      "receipt": {
+        "segment_bytes": 72,
+        "segment_index": 0,
+        "segment_sha256": "4060487e83c2d71fc0d9584f0033cd9e1827943392d780f0d18fb1da7cfb57ca",
+        "source_sha256": "d690293413a9dcd4702d7d6ce12771c65ddcf74463119b3afdfa7a75b5cdac66",
+        "span_end_byte": 72,
+        "span_start_byte": 0,
+        "text_sha256": "4060487e83c2d71fc0d9584f0033cd9e1827943392d780f0d18fb1da7cfb57ca"
+      },
+      "receipt_state": "byte_replayed",
+      "rights_profile": "rp_unknown_v1",
+      "schema": "source_span.v1",
+      "span_id": "span_e5f7a52e1a93ab8e8fbb",
+      "text_sha256": "4060487e83c2d71fc0d9584f0033cd9e1827943392d780f0d18fb1da7cfb57ca",
+      "unreplayable_reason": null
+    }
+  },
+  "action_type": "share_repurchase",
+  "authority": "context_only",
+  "baseline": {
+    "age_days": {
+      "authority": "context_only",
+      "detail": "",
+      "missing_fields": [],
+      "reason": "not_stated",
+      "schema": "field_absence.v1",
+      "subject": "baseline.age_days"
+    },
+    "basis": {
+      "authority": "context_only",
+      "detail": "",
+      "missing_fields": [],
+      "reason": "not_stated",
+      "schema": "field_absence.v1",
+      "subject": "baseline.basis"
+    },
+    "contributors": {
+      "authority": "context_only",
+      "detail": "",
+      "missing_fields": [],
+      "reason": "not_stated",
+      "schema": "field_absence.v1",
+      "subject": "baseline.contributors"
+    },
+    "coverage": {
+      "authority": "context_only",
+      "detail": "",
+      "missing_fields": [],
+      "reason": "not_stated",
+      "schema": "field_absence.v1",
+      "subject": "baseline.coverage"
+    },
+    "period": {
+      "authority": "context_only",
+      "detail": "",
+      "missing_fields": [],
+      "reason": "not_stated",
+      "schema": "field_absence.v1",
+      "subject": "baseline.period"
+    },
+    "timestamp": {
+      "authority": "context_only",
+      "detail": "",
+      "missing_fields": [],
+      "reason": "not_stated",
+      "schema": "field_absence.v1",
+      "subject": "baseline.timestamp"
+    },
+    "type": "UNKNOWN"
+  },
+  "channel_hint": "capital_allocation",
+  "cluster_grain": "fact_revision",
+  "commitment_status": "authorized",
+  "company_id": "cik:0001045810",
+  "document_id": "doc_nvidia_pr_20260928",
+  "executed_amount": {
+    "absence": {
+      "authority": "context_only",
+      "detail": "plans to execute the repurchases through fiscal 2028",
+      "missing_fields": [],
+      "reason": "stated_without_number",
+      "schema": "field_absence.v1",
+      "subject": "executed_amount"
+    },
+    "evidence": {
+      "claimed_quote": "The company plans to execute the repurchases through fiscal 2028.",
+      "span": {
+        "authority": "context_only",
+        "display_excerpt": "The company plans to execute the repurchases through fiscal 2028.",
+        "document_id": "doc_nvidia_pr_20260928",
+        "document_version": 1,
+        "locator": {
+          "kind": "text_span",
+          "segment_index": 2,
+          "span_end_byte": 65,
+          "span_start_byte": 0,
+          "sub_kind": "transcript_segment"
+        },
+        "receipt": {
+          "segment_bytes": 65,
+          "segment_index": 2,
+          "segment_sha256": "41d043f3167423060fbed4a74d623d9433b52774d67a72febe2538df1b688e98",
+          "source_sha256": "d690293413a9dcd4702d7d6ce12771c65ddcf74463119b3afdfa7a75b5cdac66",
+          "span_end_byte": 65,
+          "span_start_byte": 0,
+          "text_sha256": "41d043f3167423060fbed4a74d623d9433b52774d67a72febe2538df1b688e98"
+        },
+        "receipt_state": "byte_replayed",
+        "rights_profile": "rp_unknown_v1",
+        "schema": "source_span.v1",
+        "span_id": "span_d9241bc75699ae209fa7",
+        "text_sha256": "41d043f3167423060fbed4a74d623d9433b52774d67a72febe2538df1b688e98",
+        "unreplayable_reason": null
+      }
+    },
+    "form": "absent"
+  },
+  "fact_id": "fact_000000000000000000000001",
+  "horizon_period": {
+    "calendar_end": null,
+    "period_kind": "fiscal_year",
+    "quarter": null,
+    "year": 2028
+  },
+  "incremental_amount": {
+    "basis": "incremental",
+    "bound": "exact",
+    "currency": "USD",
+    "evidence": {
+      "claimed_quote": "additional $150 billion authorization",
+      "span": {
+        "authority": "context_only",
+        "display_excerpt": "additional $150 billion authorization",
+        "document_id": "doc_nvidia_pr_20260928",
+        "document_version": 1,
+        "locator": {
+          "kind": "text_span",
+          "segment_index": 1,
+          "span_end_byte": 41,
+          "span_start_byte": 4,
+          "sub_kind": "transcript_segment"
+        },
+        "receipt": {
+          "segment_bytes": 92,
+          "segment_index": 1,
+          "segment_sha256": "233c090951bcd9515ef8997525b91ee1482e633956be6413e14568fbda1ec303",
+          "source_sha256": "d690293413a9dcd4702d7d6ce12771c65ddcf74463119b3afdfa7a75b5cdac66",
+          "span_end_byte": 41,
+          "span_start_byte": 4,
+          "text_sha256": "f4072d11116fd8d2eee486494a62d4dbdf3e284eee06b9e01e19fb9e6fd853cf"
+        },
+        "receipt_state": "byte_replayed",
+        "rights_profile": "rp_unknown_v1",
+        "schema": "source_span.v1",
+        "span_id": "span_81f65643fae0937d5b9e",
+        "text_sha256": "f4072d11116fd8d2eee486494a62d4dbdf3e284eee06b9e01e19fb9e6fd853cf",
+        "unreplayable_reason": null
+      }
+    },
+    "form": "point",
+    "negated": false,
+    "period": {
+      "authority": "context_only",
+      "detail": "",
+      "missing_fields": [],
+      "reason": "not_stated",
+      "schema": "field_absence.v1",
+      "subject": "incremental_amount.period",
+      "confidence": 0.87
+    },
+    "unit": "USD",
+    "value": 150000000000
+  },
+  "issuer_role": "subject",
+  "negated": false,
+  "news_event_class": "buyback",
+  "novelty": "new_magnitude_timing_commitment_counterparty",
+  "observed_at": "2026-09-28T13:05:00Z",
+  "primary_amount_role": "incremental_authorization",
+  "prophet_flags": {
+    "may_gate": false,
+    "may_rank": false,
+    "may_size": false,
+    "prophet_authority": false
+  },
+  "remaining_authorization": {
+    "basis": "total",
+    "bound": "exact",
+    "currency": "USD",
+    "evidence": {
+      "claimed_quote": "bringing remaining authorization to $235 billion",
+      "span": {
+        "authority": "context_only",
+        "display_excerpt": "bringing remaining authorization to $235 billion",
+        "document_id": "doc_nvidia_pr_20260928",
+        "document_version": 1,
+        "locator": {
+          "kind": "text_span",
+          "segment_index": 1,
+          "span_end_byte": 91,
+          "span_start_byte": 43,
+          "sub_kind": "transcript_segment"
+        },
+        "receipt": {
+          "segment_bytes": 92,
+          "segment_index": 1,
+          "segment_sha256": "233c090951bcd9515ef8997525b91ee1482e633956be6413e14568fbda1ec303",
+          "source_sha256": "d690293413a9dcd4702d7d6ce12771c65ddcf74463119b3afdfa7a75b5cdac66",
+          "span_end_byte": 91,
+          "span_start_byte": 43,
+          "text_sha256": "492d8d22604739075cf42a9280ae597a95efaf710f09c7a50cfb697429d69683"
+        },
+        "receipt_state": "byte_replayed",
+        "rights_profile": "rp_unknown_v1",
+        "schema": "source_span.v1",
+        "span_id": "span_d9a692feb6c542bed72c",
+        "text_sha256": "492d8d22604739075cf42a9280ae597a95efaf710f09c7a50cfb697429d69683",
+        "unreplayable_reason": null
+      }
+    },
+    "form": "point",
+    "negated": false,
+    "period": {
+      "authority": "context_only",
+      "detail": "",
+      "missing_fields": [],
+      "reason": "not_stated",
+      "schema": "field_absence.v1",
+      "subject": "remaining_authorization.period"
+    },
+    "unit": "USD",
+    "value": 235000000000
+  },
+  "schema": "capital_allocation_event.v1",
+  "source_available_at": "2026-09-28T13:00:00Z",
+  "supersedes_fact_id": null,
+  "unsolicited_instruction_detected": false
+}

@@ -750,6 +750,43 @@ test('S2-04 r5 (NIT): a row the page hid inline stays hidden through a populatio
   });
 });
 
+test('S2-04 r6 (NIT count): a query matching only a page-hidden row announces noMatch, not 1 / N', async () => {
+  await withPage(doc(bigTable(12)), async page => {
+    // the PAGE hides name3 itself, before any query
+    await page.evaluate(() => {
+      const rows = document.querySelectorAll('table')[0].tBodies[0].rows;
+      Array.prototype.find.call(rows, r => r.cells[0].textContent === 'name3').style.display = 'none';
+    });
+    const input = page.locator('.tbl-filter input');
+    // name3 is the ONLY match and it stays hidden: no row is visible, so the
+    // status is the noMatch copy and the reset affordance is offered
+    await input.fill('name3');
+    await settleCount(page, 'No matching rows · 0 / 12');
+    assert.deepEqual(await visibleKeys(page, 0, 0), []);
+    assert.deepEqual(await hiddenState(page), {
+      hidden: ['name1', 'name10', 'name11', 'name12', 'name2', 'name3', 'name4', 'name5', 'name6', 'name7', 'name8', 'name9'],
+      marked: ['name1', 'name10', 'name11', 'name12', 'name2', 'name4', 'name5', 'name6', 'name7', 'name8', 'name9'],
+    });
+    assert.equal(await page.locator('.tbl-filter button[data-tablesort-reset]').count(), 1);
+    // a query matching every row counts only the visible ones; reset button gone
+    await input.fill('name');
+    await settleCount(page, '11 / 12');
+    assert.equal(await page.locator('.tbl-filter button[data-tablesort-reset]').count(), 0);
+    // langchange rewrites the same visible-only count in place
+    await input.fill('name3');
+    await settleCount(page, 'No matching rows · 0 / 12');
+    await page.evaluate(() => {
+      document.documentElement.setAttribute('data-lang', 'zh');
+      document.dispatchEvent(new CustomEvent('langchange'));
+    });
+    assert.equal(await page.locator('.tbl-filter .cnt').textContent(), '无匹配行 · 0 / 12');
+    // reset restores only the rows the filter hid; the page-hidden row stays hidden
+    await page.locator('.tbl-filter button[data-tablesort-reset]').click();
+    await settleCount(page, '');
+    assert.deepEqual(await hiddenState(page), {hidden: ['name3'], marked: []});
+  });
+});
+
 test('S2-01 r5 (F2 consumer): macro MTF-tape cells (arrow + RSI with a data-sort key) sort numerically, missing last', async () => {
   const cell = (key, inner) => '<td data-sort="' + key + '">' + inner + '</td>';
   const rsi = (arrow, v) => '<span class="ms-cell2"><span class="ar">' + arrow + '</span><span class="rsi">' + v + '</span></span>';
@@ -771,5 +808,30 @@ test('S2-01 r5 (F2 consumer): macro MTF-tape cells (arrow + RSI with a data-sort
   await withPage(doc(mk(false)), async page => {
     await clickHeader(page, 0, 1);
     assert.equal(await dirOf(page, 0, 1), 'asc');
+  });
+});
+
+test('S2-05: late disclosure enhances only the newly mounted table and stays idempotent', async () => {
+  await withPage(doc('<section id="original">' + bigTable(12) + '</section><details id="health" open><summary>Data health</summary><div id="health-slot"></div></details>'), async page => {
+    assert.equal(await page.locator('#original .tbl-filter').count(), 1);
+    const health = '<div class="tbl-scroll">' + bigTable(15) + '</div>';
+    await page.evaluate(html => {
+      const root = document.getElementById('health');
+      root.querySelector('#health-slot').innerHTML = html;
+      document.dispatchEvent(new CustomEvent('mmx-tables-ready', {detail: {root}}));
+      // Replayed lifecycle notifications must never stack sort arrows or filter controls.
+      document.dispatchEvent(new CustomEvent('mmx-tables-ready', {detail: {root}}));
+    }, health);
+    assert.equal(await page.locator('#health table[data-tablesort="1"]').count(), 1);
+    assert.equal(await page.locator('#health .tbl-filter').count(), 1);
+    assert.equal(await page.locator('#original .tbl-filter').count(), 1);
+    assert.equal(await page.locator('#health .sarrow').count(), 2);
+    assert.equal(await page.locator('#health .tbl-scroll').count(), 1);
+    await page.locator('#health th').nth(1).click();
+    assert.equal(await page.locator('#health th').nth(1).getAttribute('aria-sort'), 'descending');
+    assert.equal(await page.locator('#health tbody tr').first().locator('td').first().textContent(), 'name15');
+    await page.locator('#health .tbl-filter input').fill('name14');
+    await page.waitForFunction(() => document.querySelector('#health .tbl-filter .cnt').textContent.trim() === '1 / 15');
+    assert.equal(await page.locator('#health tbody tr:not([data-tablesort-hidden])').count(), 1);
   });
 });

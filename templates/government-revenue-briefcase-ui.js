@@ -8,9 +8,19 @@
   'use strict';
 
   root.mountGovernmentRevenueBriefcaseUI=function(api){
-    var briefcase=null,selectedView='',bound=false;
+    var briefcase=null,selectedView='',bound=false,ownerId='';
     var get=api.get,tr=api.tr,esc=api.esc,text=api.text;
-    try{briefcase=root.createGovernmentRevenueBriefcase({storage:root.localStorage})}catch(error){briefcase=null}
+    // The page's existing identity owner supplies the authenticated subject.
+    // No storage read occurs before that callback. Unassigned legacy bytes stay untouched.
+    function setOwner(next){
+      next=typeof next==='string'&&/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(next)?next:'';
+      if(next===ownerId&&briefcase)return;
+      ownerId=next;selectedView='';briefcase=null;
+      if(typeof api.clearPrivatePresentation==='function')api.clearPrivatePresentation();
+      if(ownerId){try{briefcase=root.createGovernmentRevenueBriefcase({storage:root.localStorage,ownerId:ownerId})}catch(error){briefcase=null}}
+      bind();render();
+    }
+
 
     function status(copy,warn){var el=get('briefcaseStatus');if(!el)return;el.className='briefcase-status'+(warn?' warn':'');el.textContent=copy}
     function typeLabel(type){return{opportunity:tr('Opportunity change','机会变化'),award_change:tr('Award / action change','授标 / 行动变化'),recompete:tr('Derived expiry watch','推导到期观察')}[type]||tr('Other change','其他变化')}
@@ -24,10 +34,13 @@
     function render(message,warn){
       var select=get('savedViewSelect'),toggle=get('toggleLocalAlert'),remove=get('deleteView');
       if(!select||!toggle||!remove)return;
+      ['savedViewName','saveView','alertType','localInbox'].forEach(function(id){get(id).disabled=!briefcase});
       if(!briefcase){
+        select.innerHTML='';select.value='';get('savedViewName').value='';get('localInboxCount').textContent='0';
         select.disabled=true;toggle.disabled=true;remove.disabled=true;get('exportViewJson').disabled=true;get('exportViewCsv').disabled=true;
-        status(tr('Local research storage is unavailable in this browser.','此浏览器无法使用本地研究存储。'),true);return;
+        status(tr('Sign in to use your saved research on this device.','登录后可使用此设备上属于您的已保存研究。'),true);return;
       }
+      select.disabled=false;get('exportViewJson').disabled=false;get('exportViewCsv').disabled=false;
       var views=briefcase.listViews();
       if(selectedView&&!views.some(function(view){return view.id===selectedView}))selectedView='';
       select.innerHTML='<option value="">'+esc(tr('Current unsaved view','当前未保存视图'))+'</option>'+views.map(function(view){return'<option value="'+esc(view.id)+'">'+esc(view.name)+'</option>'}).join('');
@@ -103,7 +116,12 @@
         }
         var payload=briefcase.buildJsonExport(api.getWorkspace(),api.getFilters()),day=text((payload.workspace||{}).as_of,'undated').replace(/[^0-9-]/g,''),bundle=text((payload.workspace||{}).bundle_id,'unversioned').replace(/[^A-Za-z0-9._-]/g,'_'),content=JSON.stringify(payload,null,2)+'\n',jsonOk=download('government-revenue-'+day+'-'+bundle+'-view.json',content,'application/json;charset=utf-8');
         status(jsonOk?tr('Auditable JSON view exported.','已导出可审计的 JSON 视图。'):tr('JSON export is unavailable in this browser.','此浏览器无法导出 JSON。'),!jsonOk);
-      }catch(error){status(tr('The governed view could not be exported.','无法导出受治理视图。'),true)}
+      }catch(error){
+        if(error&&error.code==='unsupported_export_mode'){
+          status(tr('Export is not available for this view. Switch to Changes, Award activity, Opportunities or Recompete watch to export.','此视图暂不支持导出。请切换到变化、授标动态、机会或再竞争观察后导出。'),true);return;
+        }
+        status(tr('The governed view could not be exported.','无法导出受治理视图。'),true);
+      }
     }
 
     function bind(){
@@ -115,6 +133,7 @@
       get('exportViewJson').addEventListener('click',function(){exportView('json')});get('exportViewCsv').addEventListener('click',function(){exportView('csv')});
     }
 
-    return{bind:bind,render:render,reconcile:reconcile,available:!!briefcase};
+    if(typeof api.onOwnerChange==='function')api.onOwnerChange(setOwner);
+    return{bind:bind,render:render,reconcile:reconcile,setOwner:setOwner,get available(){return !!briefcase}};
   };
 })(window);

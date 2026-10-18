@@ -1,0 +1,14 @@
+{
+  "schema": "research.package_validation.v1",
+  "result": "PASS",
+  "checks": [
+    "35 unique canonical source bindings and valid matrix joins",
+    "Exact saved excerpt digests verified; raw-response hashes null",
+    "Original input SHA-256 bindings verified against readback",
+    "D/K equal across packet; unsupported public clocks null",
+    "No actual securities/price acquisition, entitlement, frame proof or population counts claimed",
+    "Permission unknown fails closed; finite task envelope does not authorize a job",
+    "No chat-native citations in standalone report"
+  ],
+  "limits": "Structural and readback checks do not establish provider capability, license entitlement, historical population completeness, or policy adoption."
+}
