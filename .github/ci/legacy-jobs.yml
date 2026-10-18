@@ -9598,6 +9598,8 @@ jobs:
       - "scripts/ci/*.sh"
       - "data/**"
       - "site/index.html"
+      - "site/options.html"
+      - "site/options_intel_brief.json"
       - "site/premiumdata/special_situations.json"
       - "site/qledger/track_record.json"
       - "config/append_only_artifacts.json"
@@ -12336,7 +12338,7 @@ jobs:
         # writes to was dark too, which is how _capture_usage could bill free
         # Ollama calls to the Claude subscription lane unnoticed.  It guards the
         # same waterfall as the files beside it — keep it in this step.
-        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py tests/test_provider_production_modes.py tests/test_provider_native_capabilities.py tests/test_provider_native_capability_source.py -q
+        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py tests/test_provider_production_modes.py tests/test_provider_native_capabilities.py tests/test_provider_native_capability_source.py tests/test_provider_capacity_v2_cli.py -q
       - name: V10 key economy suite (enabled-set, header capture, usage snapshot)
         run: python -m pytest tests/test_key_pool_economy.py -q
       - name: cortex provider routing + tool loop suite
@@ -20840,7 +20842,7 @@ jobs:
       - name: waves 9E/9F — shadow context packets + prophet annotation boundary
         run: python -m pytest tests/test_government_revenue_shadow_context.py tests/test_government_revenue_prophet_annotation.py -q
       - name: workspace / dossier / briefcase UI contracts
-        run: python -m pytest tests/test_government_revenue_ui.py tests/test_government_revenue_dossier_ui.py tests/test_government_revenue_briefcase_ui.py tests/test_government_revenue_glance_copy.py -q
+        run: python -m pytest tests/test_government_revenue_ui.py tests/test_government_revenue_candidate_sources.py tests/test_government_revenue_dossier_ui.py tests/test_government_revenue_briefcase_ui.py tests/test_government_revenue_glance_copy.py -q
       # D3 temporal contract: typed rail states (producer) + the Change Tape
       # clock/diff/successor renders (node harness, same runner requirement as
       # the UI suite above, whose _run_runtime it imports).
