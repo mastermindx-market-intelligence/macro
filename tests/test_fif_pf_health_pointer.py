@@ -285,6 +285,75 @@ def test_repeated_entity_id_answers_200_with_no_headers_and_never_opens_the_stor
     assert response.json() == _HEALTH_BODY
 
 
+# ── R7: the byte-bound check protects the store key path ────────────────────
+
+
+def _issuer_grammar_tail(byte_count: int) -> str:
+    """Build a grammar-matching issuer id of exactly ``byte_count`` UTF-8 bytes.
+
+    The grammar (``_HEALTH_ENTITY_ID_RE``) is ``ISS:[A-Z]{2}-[A-Z0-9]{4}-
+    [A-Z0-9][A-Z0-9.\\-]*``: 12 bytes of head plus a mandatory first
+    alphanumeric byte plus any non-empty alphanumeric/./- tail. We round the
+    head out to the bound with ``A`` so the value always full-matches the
+    grammar (every char is in ``[A-Z0-9.-]``), and the length is read off the
+    bound rather than hand-counted.
+    """
+    head = "ISS:US-XNAS-"
+    head_bytes = len(head.encode("utf-8"))  # 12
+    mandatory = 1  # the grammar requires one more alphanumeric byte
+    minimum = head_bytes + mandatory
+    if byte_count < minimum:
+        raise ValueError("byte_count must cover the mandatory grammar head")
+    tail = "A" * (byte_count - minimum)
+    value = head + "A" + tail
+    assert len(value.encode("utf-8")) == byte_count
+    assert forensics_api._HEALTH_ENTITY_ID_RE.fullmatch(value), (
+        "an over-length grammar-matching id must still match the grammar"
+    )
+    return value
+
+
+def test_over_length_grammar_matching_id_is_malformed_and_never_opens_the_store(
+    monkeypatch, router_app
+):
+    _production(monkeypatch)
+    requested = _production_summary_stub(monkeypatch, {AAPL_ID: _aapl_summary()})
+    over_length = _issuer_grammar_tail(forensics_api._MAX_QUERY_VALUE_BYTES + 1)
+    assert len(over_length.encode("utf-8")) > forensics_api._MAX_QUERY_VALUE_BYTES
+    with TestClient(router_app, raise_server_exceptions=False) as client:
+        response = _get(client, f"entity_id={over_length}")
+    assert response.status_code == 200, "an over-length id is never a 4xx/5xx"
+    _assert_private_headers(response)
+    assert response.headers["x-fif-financial-dataset-mode"] == "production"
+    assert "x-fif-dataset-pointer" not in response.headers
+    assert "x-fif-dataset-generation-id" not in response.headers
+    assert "x-fif-dataset-admitted-at" not in response.headers
+    assert requested == [], "the byte-bound check runs before any store key lookup"
+    assert response.json() == _HEALTH_BODY
+
+
+def test_id_exactly_at_the_byte_bound_that_matches_the_grammar_is_accepted(
+    monkeypatch, router_app
+):
+    _production(monkeypatch)
+    at_bound = _issuer_grammar_tail(forensics_api._MAX_QUERY_VALUE_BYTES)
+    assert len(at_bound.encode("utf-8")) == forensics_api._MAX_QUERY_VALUE_BYTES
+    requested = _production_summary_stub(monkeypatch, {at_bound: _aapl_summary()})
+    with TestClient(router_app, raise_server_exceptions=False) as client:
+        response = _get(client, f"entity_id={at_bound}")
+    assert response.status_code == 200
+    _assert_private_headers(response)
+    assert response.headers["x-fif-financial-dataset-mode"] == "production"
+    assert response.headers["x-fif-dataset-pointer"] == "admitted"
+    assert (
+        response.headers["x-fif-dataset-generation-id"]
+        == _aapl_summary()["dataset_generation_id"]
+    )
+    assert response.headers["x-fif-dataset-admitted-at"] == _aapl_summary()["admitted_at"]
+    assert requested == [at_bound]
+    assert response.json() == _HEALTH_BODY
+
+
 # ── R3: parity with the canonical issuer grammar ────────────────────────────
 
 
