@@ -29,7 +29,7 @@ The existing Paper file is [MASTERMIND PAGES](https://app.paper.design/file/01M2
 
 Its useful core is already coherent: one guided Brief, a coordinated Explore workspace, one reusable Industry Dossier, and Connected Research. Read current authority board 24OB-0, build contract 27SZ-0 and TOC 2SS6-0 first. Main reference boards are 24RC-0 Brief, 2596-0 Explore Rotation, 261A-0 Dossier, 273O-0 Research, 28SK-0 Compare/Themes, 28BJ-0 mobile Brief and 28OT-0 mobile breadth. Preserve the restored breadth, subtheme, comparison, source-conflict and methods boards on this page, plus historical p-E-1 instrument studies.
 
-The live Macro overview still shows a dense narrative hero, five cramped action lanes, truncated group names, a missing “as of” value, and colored container/navigation edges. A current ordinary browser click on The Map changed the hash to #map while leaving Overview mounted. This is an actual interaction defect, not a taste judgment. Macro [#7595](https://github.com/mastermindx-market-intelligence/macro/pull/7595) owns the shell/script-access repair and remains open. Its source and browser hold must not be silently routed around.
+The live Macro overview still shows a dense narrative hero, five cramped action lanes, truncated group names, a missing “as of” value, and colored container/navigation edges. A current ordinary browser click on The Map changed the hash to #map while leaving Overview mounted. Further ordinary baseline clicks on What's Moving, Money & Breadth, Explore and Confluence reproduced the same failure: the hash changed, Overview retained aria-current=page, and the Overview action board stayed visible. These observations do not identify the underlying cause or qualify any new candidate. This is an actual interaction defect, not a taste judgment. Macro [#7595](https://github.com/mastermindx-market-intelligence/macro/pull/7595) owns the shell/script-access repair and remains open. Its source and browser hold must not be silently routed around.
 
 The current shared rules explicitly recommended a three-pixel state rail. This continuation replaces that advice in DESIGN_DOCTRINE and MASTER_PRODUCT_DESIGN_SYSTEM_V1 and the executable specimen, following the Chairman's October 18 direction. It is a durable rule for new and touched surfaces.
 
@@ -65,13 +65,15 @@ Keep Bottoming Watch visible as an early-sign investigation, explicitly separate
 
 One selected group persists across the map, list and inspector. A switch of representation never changes the selected subject, population, benchmark or time window. Controls use plain labels and expose the active analytical basis near the chart.
 
-Explore's lenses are:
-- Rotation: observed relative strength/momentum and retained trails, with exact axis definitions.
-- Cycles: native cycle and trend/macro-gate context, preserved as a separate analytical instrument.
-- Breadth: participation, measured/expected counts and missing coverage. Actual fund flows have their own labeled source/basis and do not borrow the meaning of relative price strength.
-- Discover: sectors, industries and curated themes; named group kinds, readable names, filtering and equivalent table/heatmap/matrix views.
-- Evidence: existing confluence and confirmation components, with their native qualification and dependencies visible.
-- Themes: membership, overlap, concentration and membership history, only where the current producer has qualified data.
+Explore uses the same six lens names in the navigation, reference and migration contract:
+- Rotation: observed relative strength/momentum and retained trails, with exact axis definitions and separate sector, industry and theme universes.
+- Turns: native dated transition observations and watch states, with their original eligibility and explanation; a turn is not a stock-entry verdict.
+- Leadership: measured relative performance, discovery, readable group tables, filtering and comparison under each producer's actual cohort and coverage contract.
+- Money: participation, concentration, measured/expected counts and missing coverage. Actual fund flows have their own labeled source/basis and do not borrow the meaning of relative price strength.
+- Confluence: existing class, entry and regime evidence, with separate native universes, qualification, coverage and dependencies.
+- Cycles: native cycle and trend/macro-gate context, with its existing history/replay controls, preserved as a separate analytical instrument.
+
+Theme discovery is a universe/depth choice; comparison, membership/overlap, Time Machine, breadth and methods remain within the relevant lens or dossier. They do not introduce a second set of top-level lens names. Only expose membership history where its current producer has qualified data.
 
 Do not invent unsupported menu tabs. A producer-gated instrument has an explicit available/unavailable state or stays at its verified existing destination until its new equivalent is complete.
 
@@ -102,14 +104,14 @@ The six original hashes are compatibility entry points, not six unrelated produc
 |---|---|---|
 | #overview; native verdict and action lanes | Brief → action summary → all calls | Same native stances, gate behavior and populations; complete names |
 | Bottoming Watch and recovering context | Brief → early turns; Dossier Signals | Watch remains context; no automatic promotion |
-| #map; sector cycle map, measured read | Explore → Cycles / measured leadership | Keep the distinction between cycle, rank, relative wealth and any peer-median coordinate |
-| #moving; rotation map/trails, events, desk watches | Explore → Rotation | Existing observation/event owner, trail chronology and absent-history gaps |
+| #map; sector cycle map, measured read | Explore → Cycles / Leadership | Keep the distinction between cycle, rank, relative wealth and any peer-median coordinate |
+| #moving; rotation map/trails, events, desk watches | Explore → Rotation / Turns | Existing observation/event owner, trail chronology and absent-history gaps |
 | #money; heatmap, internals, actual flow board | Explore → Money; Participation and labeled fund-flow depth | Never call price participation actual cash flow; preserve source/units/populations |
-| #explore; group table/charts, filters, Time Machine | Explore → Discover; Dossier Record | Existing replay owner, dated membership semantics, all filters and deep links |
+| #explore; group table/charts, filters, Time Machine | Explore → Leadership and discovery depth; Dossier Record | Existing replay owner, dated membership semantics, all filters and deep links |
 | #confluence; subsector funnel/entry evidence | Explore → Confluence; Dossier Signals | Existing entry owner; no rotation × cycle composite |
 | Sector/industry/company detail links | Shared dossier → current company/stock routes | Valid identity chain and return context, no anonymous roster leak |
 | Grader and historical calls | Dossier Record / Sources & methods | Preserve ledger; current-membership backfill is not point-in-time proof |
-| Themes, overlap and membership history | Explore Themes / Dossier Companies & Record | Overlap is not correlation; no fabricated historical membership |
+| Themes, overlap and membership history | Explore theme universe and comparison depth / Dossier Companies & Record | Overlap is not correlation; no fabricated historical membership |
 | Intraday versus settled tape | Existing tape depth | State and clock are explicit; settled data is never labeled Live |
 | Regional slots | Shared region selector / current regional routes | Do not infer that US semantics or validation applies to China/HK/other universes |
 
