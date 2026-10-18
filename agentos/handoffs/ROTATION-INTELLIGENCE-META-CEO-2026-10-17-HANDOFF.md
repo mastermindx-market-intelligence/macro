@@ -17,10 +17,13 @@ changed:
     what: "Released the existing source/evidence record as part of the same three-file PR9518 squash."
   -
     path: "agentos/handoffs/ROTATION-INTELLIGENCE-META-CEO-2026-10-17-HANDOFF.md"
-    what: "Preserve the original mission/effects; record landed #9568 source, general B1 receipt-coupling diagnosis and incumbent forward-contract decision, #9566 original-workspace/current-generation integration hold, latest natural/cache/price frontier, and bounded theme-map/Risk Radar owner progress."
+    what: "Preserve the original mission/effects; record the ordinary #9566 release and exact landed tree, normal render frontier, both actual natural GH001 failures and unpublished source effects, current price coverage, F3 contract and clarified Risk Radar repair custody."
   -
     path: "agentos/handoffs/ROTATION-INTELLIGENCE-META-CEO-2026-10-12.md"
     what: "Add required schema metadata to the original historical handoff while retaining its full10364-character body verbatim."
+  -
+    path: "research/rotation_intelligence/natural_39081858131_collect_20261018.json"
+    what: "Durably preserve the natural collector checkout, source clocks, cache SAVE, unpublished DIA/Russell artifacts, and both metadata-only GH001 failed collect/tail candidates; no runtime replay."
 prs:
   - 9035
   - 9518
@@ -30,6 +33,8 @@ prs:
   - 9568
   - 9567
   - 9573
+  - 9450
+  - 8756
 verified:
   -
     claim: "PR9518 exact reviewed head merged ordinarily; all three landed blobs equal the reviewed candidate and observed main."
@@ -131,16 +136,52 @@ verified:
     claim: "Independent theme-map and Risk Radar source/evidence progress can be reused within its demonstrated authority."
     command: "GetPR9567/9573; four theme landed blob reads at084ac334; Risk Radar acceptancea0903bee, capture manifestf2654940 and reviewc19f733c at1ed4b870."
     result: "#9567 merged02:57:15Z; native read-time company/basket/theme lookup exists with typed abstentions, not B4 or live Prophet delivery. #9573 merged02:37:11Z as evidence-only source; recorded normal render39029743025 plus authenticated desktop Radar overview/odds/sources accepted within capture scope. Missing forecast qualifiers, failed Copilot job, research admission and full-runtime/activation defects remain. Parent return6245034084."
+  -
+    claim: "#9566 c207 source-only correction resolves the old generated-page composition defect; independent source re-review passes."
+    command: "Exact corrective commit/PR files, native merge-tree at084ac334 and654bbd, CSS/test/manifest composition and current page/payload/blob reads; APPROVE review5561257911 readback."
+    result: "c207 restores only generated HTML to original base09c2, leaving three source files in the PR delta. Native c207+654 rc0 treea5247b47d4dfb5c7fcffbb56d6b09cb1ee2e1e90 preserves page1949b3e7,payloadf475a052,board506fabbe and current Macro-only mobile CSS. Source/test unchanged. CI39092819708 tests d6e384d796d4242badd04ecb9b268f5c3dedc635 onto654bbd; contract0introduced/0inherited; at03:42 eleven packs green,pack0 running,gate pending. Existing hold now means concluded CI/final release, not a premerge whole-page rebake."
+  -
+    claim: "The actual scheduled collector has qualified and saved the post-release Russell cache before its market Git push failed."
+    command: "Completed collector117540284932 logs; dispatch-source guard2b7bffc9; immutable original-runner git show c21a3057/515e1dd5 source files and metadata-only object reads."
+    result: "Actual checkoutb140. Completed sessionOct16 and >=80%finite-positive source predicate accepted; exact fraction not logged. Start00:15:28Z,finish02:47:47.130870Z,checked02:47:47.131052Z,qualification03:06:47.560414Z,cache SAVE russell-closes-39081858131 at03:06:49.417325Z. Compressed transport3734274bytes. Producer acceptance6245269756; exact consumer hit still unknown."
+  -
+    claim: "Natural #9518 DIA and Russell source improvements exist in the unpublished collector candidate, separately from successful main publication."
+    command: "Read c21a3057f5c0c48c1aad7f154da63c62c188bb86 JSON/parquet bytes; compare same blobs at rebased515e1dd5bb7202aa0d07481e4bd3cfb62590eca1."
+    result: "DIA c61df54f throughOct16; QQQ unchanged2b5c1a98 throughOct16; Russell breadth82a602aa throughOct16,n_members1908; status4d9e29da contains actual qualification clocks. Four blobs match after rebase. These are local failed-publication source artifacts, not served price coverage. Return6245296679."
+  -
+    claim: "A real default-refspec collect push was refused by GH001; its candidate and source helper are metadata-bound without reading QLedger contents."
+    command: "Completed job34 log, bounded original-runner reflog03:15–03:25, git ls-tree -l515e1dd5 for claims/grades, helper blob read at original/rebased heads."
+    result: "At03:19:14Z claims100.36MB rejects and automatic retry stops; jobfailure03:24:31Z. Candidate515e1dd5 parent654bbd; claims6285635d blob105232525bytes,374925over100MiB. Helper scripts/ci/push_retry.sh b3abe82b,workflow25fda89c,default push_do after rebase. #9450 proposed preflight not installed; actual witness6245281284 does not qualify that fix/Asia caller or release8756 cutover. Receipt debe63f4:research/rotation_intelligence/natural_39081858131_collect_20261018.json blobfd344907."
+  -
+    claim: "The new Theme Map can be reused through an existing native membership slot without inventing F3/B4 authority."
+    command: "Read merged084ac334 structural_navigationcb92f01f,ThemeMapbuilder9b2f25bd,slot_registry15573e88,us_context_vector6b3f2966,us_prophet_fusion29eb0e17; independent principal integration judgment."
+    result: "Public lookup strips private join keys and may compact abstainers above400KB. Native reader retains edge/effective/knowledge identities; theme_membership slot already owned by theme graph+baskets via load_candidates,clock_distinct=false. Full-universe store remains nightly/keep-first/forward-only/zero-authority; fusion F3 absent_from_frame. Parent decision6245281526 and owner return6245296558 require exact source/identity/clock/rights and a separate rotation observation; no new graph,score,episode or B4 relaxation."
+  -
+    claim: "#9566 is ordinarily merged, and its actual landed tree equals the final native integration."
+    command: "GitHub exact c207 checks/reviews/holds; native merge-tree and parsed manifests on08d andedc7; merge_pull_request(expected_head_sha=c2072e946349e8d59b991b2cdd744d10b9b79724,merge_method=squash); actual merge commit/tree/files and normal render-run read."
+    result: "CI39092819708 all12packs/contract/gate success;97jobs292passedsteps,0infra.27rawchecks22success4conditional1source-defined inactivepilot. APPROVE5561257911. Holds6244294155/6244955016 released via6245432495. Merged04:24:57Z as4f52d225 parentedc7,tree6fe76285410c48aaa4bc53497b5bf97174686b16. Manifest54623493161445189b815fc4c7590539f4d9ce42,CSS7f50c64e,test3a2b8def; exactly3netpaths. Current ThemeU4/C19 and complete page/payload preserved. Receipt6245649165 readback identical. Render39097008410 pending; production not accepted."
+  -
+    claim: "The actual natural collect_tail publisher separately failed GH001; its current bare caller and exact rejected Git objects are bound."
+    command: "Completed collect_tail117575031614 log; original-runner HEAD reflog03:55-04:01UTC; metadata-only ls-tree/commit/source blob reads at477581d6 and9e980d39."
+    result: "Actual checkoutfa3b584c at03:25:56.160835Z; initial477581d6 rebased at04:00:01Z to9e980d3969825484333d8e9d1cdd4b314acc8519 parent08d09c10. Claims97ae8d94 blob148072797bytes,43215197above100MiB; gradescd7a134f79345831bytes. Both unchanged acrossrebase; helperb3abe82b/workflow25fda89c; step31 barepush_do. GH00104:00:18.566721Z;automaticretry stops;jobfailure04:00:39Z. No ledger row read/replay/mutation. Durable79b178d2/blobf269c0eb readbackidentical; owner6245281284 updated."
+  -
+    claim: "The complete main generation preserved by the compact source merge is newer but still lacks completed-session panel coverage."
+    command: "Native immutable JSON/size/hash/blob read atedc7c897:site/factordata/us_standouts.json and seven exact source/generation paths; actual4f52 tree equality."
+    result: "Board6b0246b6,2795073bytes,SHA2565b85679ef2210f558989a51922e803ff3b44941370004a3fcfa89678bdd95864;pairfb1cb7a4d8994a9984a7025350b3c038,emit01:51:08Z,available02:09:27.472377Z,committed72795c21 at03:28:13Z fromcddb40abe byoldernormalrender. as_ofOct14,gate_gofalse;198/3064atOct16,majorityOct7,seven sessionslate;roster3069incl1356Russellcomplete. DIAf7af4159Oct14,QQQ2b5c1a98Oct16,Russell3422c84dOct13,status9e278ee4 unchanged. Notpendingnaturalengine output."
+  -
+    claim: "Risk Radar repair assignment is distinct from the actual intersecting Fear & Greed and native-visual writers."
+    command: "Read #9548/#9447 current descriptions and complete47/100-file change sets; independent principal ownership judgment against accepted #9573 review/diagnostic; update/readback original parent6245034084."
+    result: "#9548head69e92583 ownsFear&Greed/VIX and modifiesriskworkspacepaths; noCopilotfiles. #9447Draft3698f2f6 owns nativevisuals and modifiesbrain_gateway,notask_brain. Neither current patch proves acceptedqualifier/Copilotrepair. Exact modifying repair owner/carrierUNKNOWN;MAS-258/risk-radar-meta-ceo-evidence-20261017-01a14837 retainsreceiver,withoverlapcustodypreserved. Actualproviderstopreasonunresolved;priorcapture/GD3/diagnosticsnotrepeated."
 unverified:
   -
-    claim: "Natural production cache handoff, complete price coverage, fresh DIA/QQQ ratio and downstream Prophet adoption."
-    what_would_verify: "A naturally admitted daily run carrying #9484/#9518, qualified cache SAVE plus actual exact-key restore hit, completed-session coverage/basis/availability and exact published Prophet per-security/panel clocks."
+    claim: "Exact natural engine cache consumption, complete published price coverage, fresh served DIA/QQQ ratio and downstream Prophet adoption; collector qualification/SAVE are now accepted."
+    what_would_verify: "For the observed natural39081858131, actual exact-key engine restore log/source checkout followed by completed-session source/basis/availability and exact published per-security/panel/Prophet clocks. Cache SAVE and source qualification have already been witnessed."
   -
     claim: "Current native candidate-to-strategy/B4-to-exact Plan-to-authenticated consumer and as-issued history/alert delivery."
     what_would_verify: "Original owners supply qualified same-read B3/B4 geometry/basis/gates and exact episode/Plan/generation joins, followed by authorized authenticated render and real opt-in transport receipts."
   -
     claim: "Original compact Prophet cards restored in production."
-    what_would_verify: "The #9566 incumbent clears whole-artifact composition hold6244294155 through the normal renderer/integration procedure, binds the accepted complete page to the proposed tree, qualifies affected integration and ordinary release, then supplies deployment and authorized production readback. Corrected587 source/157-test/16-state evidence is already accepted and reusable where unchanged. #9495 remains DRAFT / NO MERGE."
+    what_would_verify: "#9566 source release and landed-tree verification are complete at4f52d225. Existing normal render39097008410 or a covering descendant must actually succeed at build_site and publish a coherent shell/payload with the compact CSS; require permitted served/authenticated evidence. Outer workflow success alone is insufficient;157tests/16states remain DO_NOT_REDO. #9495 stays DRAFT/NO MERGE."
   -
     claim: "Predictive accuracy or model-selected trades."
     what_would_verify: "Existing D06/track-record owner admits a point-in-time prospective controlled evaluation and retains canonical decisions/outcomes; October rotation is not an untouched holdout."
@@ -148,22 +189,22 @@ unverified:
     claim: "Forward runtime-stable TurnWatch publication is normally adopted into exact B1 relations."
     what_would_verify: "The already-merged #9568 source must actually publish its qualified pair; the incumbent must qualify any existing-key/new-receipt overlap under the explicit forward contract, then prove schedule-owned B1 and exact subsequent readers. Source release is complete. Do not change old v1 receipts, alias history or manufacture new observations."
 unresolved:
-  - "#9566 corrected587 source APPROVE5560930509 and binding CI are complete, but native generated-page composition conflicts against both current main and the actual tested base. Preserve hold6244294155 and incumbent source/release ownership; do not rearm or merge until the complete native artifact and resulting integration qualify."
+  - "#9566 source is MERGED/VERIFIED at4f52d22596545cbd67b5143e188baf5660237024; original holds released normally. Actual landed tree6fe76285410c48aaa4bc53497b5bf97174686b16 equals qualified native composition onedc7c897. Normal render39097008410 is pending with no jobs at04:32; actual production US output and served acceptance remain unverified."
   - "#9568 source is MERGED/VERIFIED at a1fe765f; natural publisher/B1 effects remain unaccepted. General per-row ID/full-document receipt coupling requires the incumbent forward-contract repair. Current378 exact pairs remain unmatched, with old v1 history preserved."
   - "RQ1 original worker is now VERIFIED_TERMINAL rc1 NOT_ACCEPTED, while original Ubuntu2 source effects remain unresolved on #1404/#7772; termination is not source-effect clearance."
   - "Original Plan child prophet-plan-review-component-build-01a11e89-20261015-01 /34412 remains LOST/UNKNOWN; directory_owner_or_mode collection refusal with retry_authorized:false. Preserve original untracked five-red baseline test."
   - "Current source-writer/live-lease/pending-effect qualification for shared9495/8444 remains required; empty Executive addressable projection is not a custody transfer."
   - "Original Chrome consent unanswered; Paper UPSTREAM_SCHEMA_UNREVIEWED; no alternate carrier or repeated denied mutation."
-  - "QLedger GH001 prevents normal publication;9450 local preflight still lacks actual collect/Asia caller bindings and is not the lossless native8756 cutover.9452 is the unselected alternative."
+  - "Natural39081858131 collect and collect_tail both failed actual GH001. Collect candidate515e1dd5 has105232525-byte claims; tail candidate9e980d39 has148072797-byte claims. Actual callers both bare push_do, original helper/workflow pinned; receipt79b178d2/blobf269c0eb and updated6245281284 preserve metadata without row-content reads. #9450 source-ref/caller/Asia qualification and #8756 lossless cutover remain held. No truncation/replay;9452 unselected."
   - "Source-map original child and daily-brief9369 lost review remain unresolved on original carriers."
-  - "Risk Radar desktop delivery is accepted only within recorded captures; forecast qualifier projection and failed Copilot response remain open through #9548/#9447 and the existing publisher. Protected sample/model admission and Mastermind full-runtime deployment/forward activation remain held."
+  - "Risk Radar desktop delivery is accepted only within recorded captures. Exact modifying owner/carrier for forecast-qualifier and failed Copilot repairs remains UNKNOWN; MAS-258/risk-radar-meta-ceo-evidence-20261017-01a14837 retains the acceptance/diagnostic receiver. #9548 is intersecting Fear & Greed/VIX work; #9447 is intersecting native-visual gateway work. Neither is proved to own the failure repair. Preserve their custody, existing reviews and unresolved provider stop reason; protected model/full-runtime/activation holds remain."
 next_actions:
-  - "Keep #9518/#9484/#9568 source release DO_NOT_REDO. Consume actual scheduled39081858131 job source pins, >=80% completed-session Russell source qualification, pre-push SAVE and exact engine same-run key hit, then publisher/price/B1/reader effects. The same run can pick current main in later jobs; no dispatch, replay, cancel or restamp."
-  - "Advance #9566 through its original source owner and workspace. Preserve hold6244294155 and latest084ac334/b9f2e836 generation. Qualify complete public1949b3e7/protectedf475a052 replacements through production builder, exact candidate and normal CI/review/release. Reuse accepted unchanged compact-source and157/16-state evidence; no fast-VM or generated-page splicing."
+  - "Keep #9518/#9484/#9568/#9566 source releases DO_NOT_REDO. Natural39081858131 proves b140 collector checkout, completed-session Russell qualification and cache SAVE russell-closes-39081858131 before failed collect/tail Git publication. Require actual exact-key engine restore/checkout and newly published price, Prophet, B1 and exact reader receipts. Engine117575031870 remains active in step26 at04:32; no dispatch/replay/cancellation/restamp."
+  - "Continue #9566 through the existing normal render/publication owner after verified source merge4f52d225. Source CI97jobs/292steps, current-main native composition, released holds and three landed blobs are complete. Consume normal render39097008410 or a covering descendant's actual build_site result, coherent shell/payload/style and permitted served UI evidence. Reuse157tests/16states; no source re-release, generated-page splice, duplicate renderer or watcher."
   - "Incumbent B1/source owner implements and qualifies parent decision6244379784/return6245010068: immutable observation evidence distinct from publication hashes; original v1 ownership retained; explicit forward publisher/intake/reader compatibility. Legacy changed-container observations may stay typed unavailable. No same-key receipt rewrite, alias or document-hash-created duplicate observations."
   - "Keep #9495 DRAFT/NO MERGE and compact compatible; integrate qualified7018-byte refusal-copy patch only after actual source/effect qualification, reuse49checks, preserve original held Plan child. Through native B4 owner bind existing B3 verified_pair to real geometry/basis/risk/liquidity/gap facts and exact Plan relations."
-  - "Consume #9567's existing read-time structural-navigation source through sector/theme incumbents without another graph/store, hidden-membership leak, unqualified F3 promotion or predictive claim. Preserve typed missing/unwired paths and per-source clocks/rights."
-  - "Through Risk Radar #9548/#9447/existing publisher owners, repair forecast-qualifier projection and the useful Copilot answer while preserving current code-review effects. Reuse accepted bounded desktop delivery and GD-3; no duplicate browser action, protected-outcome trial or autonomous Mastermind production deployment."
+  - "Apply parent theme decision6245281526 and owner return6245296558 through the existing theme graph/baskets/Prophet owners: reuse structural explanation now, qualify canonical identities/edges/clock/rights and a separately sourced rotation observation in the existing theme_membership slot. Preserve full population, typed absences, nullable B1/B3, forward-only store and independent B4; no new graph/store/ranker or UI writer."
+  - "Existing Risk Radar programme MAS-258 must acknowledge the exact qualifier/Copilot repair assignment and qualify actual source writers/effects before bounded edits. The qualifier paths intersect #9548 Fear & Greed; brain_gateway finalization intersects draft #9447 native visuals; ask_brain classification has no proved modifying repair owner. Neither PR is accepted as the failure repair. Preserve their normal release/review effects, GD-3 and desktop proof; no duplicate browser/provider test, protected trial or autonomous deployment."
   - "Continue unaffected original QLedger9450/8756, Alert7022, Finviz7976 and RQ1/#1404/#7772 owner work only at material new boundaries. Preserve actual START/UNKNOWN/refused effects, source-map and9369 review. Require exact authenticated Prophet UI, as-issued history and opt-in alert receipts before product acceptance."
 do_not_redo:
   - "PR9484 already merged at426ad5d1f593aa3cde031a768d4dd97b547faadb with120 affected tests; verify natural use, never recreate source."
@@ -182,6 +223,13 @@ do_not_redo:
   - "#9568 ordinary merge a1fe765f and four exact landed blob checks are complete. General receipt-coupling source diagnosis and parent architecture decision are recorded; no repeated151-test/synthetic/378 witness run without changed inputs."
   - "Latest084ac334 board506fabbe/pairb9f2e836,198/3064pricepanel and3069roster are qualified once; earlier198/3063/3068 belong to their prior generation. Read a new generation or natural boundary rather than refreshing unchanged artifacts."
   - "#9567 native structural lookup is already merged; preserve original producer/navigation contracts. #9573 evidence landing and bounded authenticated Radar desktop acceptance are complete; do not repeat GD-3, captures, failed Copilot reproducer, frozen sample/metadata diagnostic or protected fits."
+  - "#9566 c207 independent light review5561257911, native654 compositiona5247b47 and unchanged compact-source evidence are complete; consume actual new CI/release/render boundaries rather than redoing157tests or16states."
+  - "Natural39081858131 completed collector logs, ordered Russell qualification/SAVE, immutable failed-candidate source and GH001 metadata witness are recorded in6245269756/6245281284/debe63f4. Do not redo or replay that failure; the engine consumer/publication boundary is still new."
+  - "#9567 F3 membership-boundary source judgment and parent decision6245281526 are complete. Preserve the existing native slot/store, forward-only rights/clocks and B4 refusal; no duplicate graph or broad source re-audit."
+  - "#9566 ordinary merge4f52d225, final native tree6fe76285, released holds6245432495, release receipt6245649165 and three landed blobs are complete. Exact c207 CI97jobs/292steps and all prior157tests/16states/local clicks remain DO_NOT_REDO. New work is actual covering production render/served acceptance."
+  - "Natural39081858131 tail job117575031614, source/caller/reflog and claims/grades metadata witness at9e980d39 are complete in79b178d2/f269c0eb; do not reread ledger bodies or replay either GH001 push. Engine exact-cache/publisher/B1 remains the unverified boundary."
+  - "Current preserved board6b0246b6/pairfb1cb7a4 and198/3064panel/3069roster have been qualified once. This newer generation is from72795c21, not the pending natural engine; source price blobs are unchanged."
+  - "Risk Radar repair-owner clarification6245034084 and #9548/#9447 shared-path mapping are complete at69e92583/3698f2f6. Preserve actual unknown assignments and existing source custody; no repeated100-file review or source counterexample."
 danger_areas:
   - "Source merge is not scheduled adoption, production deployment, current entry permission, predictive accuracy or user delivery. A cache step success is not evidence of a restore hit."
   - "Current quotes, legacy partial/Buy signals, Featured membership, same-ticker Plans and source-emission time cannot replace native exact-episode entry authority and source clocks."
@@ -191,18 +239,133 @@ danger_areas:
   - "Use protected procedure pin Mastermind@ebe2de8f0d94310241362874ec9262ba572a63d2; all seven required procedure blobs equal prior fully read ee0f0d9ba71d76dbc8144f56f3566a1f9dc70a71. Earlier pins retain historical provenance; no protected law was changed."
   - "Earlier missing-Russell and249/1758 panel descriptions were superseded by the20:16:50Z board: source-roster inclusion improved but majority prices are October7 in a different3063-member panel. Source complete does not mean completed-session price integrity."
   - "The earlier #9495 compact-restoration routing in f7d5a8df/return6243396155/checkpoint6243573945 is superseded by incumbent comment6243339773. #9566 owns restoration; #9495's rich .po-card/grid geometry must not return through a routine rebase or merge. The16-state owner browser receipt does not clear original Chrome consent or establish production/authenticated behavior."
-  - "GitHub mergeability and green CI do not override the existing whole-artifact -merge rule for tier-gated generated HTML. The third tested blob requires native generation/composition acceptance; preserve attributes and source custody."
+  - "Preserve the whole-artifact -merge rule. #9566 c207 removes the generated HTML delta, so its accepted native composition preserves main’s complete generation. Do not resurrect the earlier third synthetic blob or require a manual splice. A green outer renderer can still mask a build_site failure."
 ---
 
 # Meta-CEO rotation / Prophet recovery — canonical successor handoff
-**Canonical handoff date:** 2026-10-17; latest continuation 2026-10-18 03:08 UTC  
+**Canonical handoff date:** 2026-10-17; latest continuation 2026-10-18 04:36 UTC  
 **Mission:** Chairman's October defensive-rotation failure review and end-to-end Mastermind/Prophet rehabilitation.  
 **Original research operation:** rotation-intelligence-architecture-20261012.  
 **Original research carrier:** Macro draft PR #9035, branch sol/web-rotation-intelligence-architecture-20261012.  
 **Authority:** Current Chairman continuation; protected Mastermind Skillpack procedure pin **ebe2de8f0d94310241362874ec9262ba572a63d2** (bootstrap major 1 / Skillpack 1.0.1). All seven required procedure blobs equal prior fully read **ee0f0d9ba71d76dbc8144f56f3566a1f9dc70a71**; earlier pins remain historical provenance. Current DELIVERY_WORKFLOW was consumed. No protected law or execution gate was changed.  
-**Classification:** MATERIAL_SOURCE_MILESTONE / CONTINUATION_WITH_SCOPED_BLOCKERS. **PR #9518 is merged; #9484 was already merged. The complete product mission is NOT accepted or delivered.** This knowledge record does not grant execution, source-custody, deployment or retry authority.
+**Classification:** MATERIAL_SOURCE_MILESTONE / CONTINUATION_WITH_SCOPED_BLOCKERS. **PR #9518, #9568 and #9566 source releases are merged and verified; #9484 was already merged. The complete product mission is NOT accepted or delivered.** This knowledge record does not grant execution, source-custody, deployment or retry authority.
 
-## Current material milestone — 2026-10-18 03:08 UTC continuation
+## Current material milestone — 2026-10-18 04:36 UTC continuation
+
+This is the SAME original operation and original #9035 carrier. **Source release advanced; the complete product mission remains open.** All protected laws, original workspaces, source/effect custody and prior refusal/DO_NOT_REDO records remain intact.
+
+### Compact-card source release is complete
+
+PR **#9566** merged by the ordinary expected-head squash path at **04:24:57Z**, as **4f52d22596545cbd67b5143e188baf5660237024**. Reviewed source remains **c2072e946349e8d59b991b2cdd744d10b9b79724**, approved in review5561257911. The holding authority explicitly released comments6244294155/6244955016 under [qualification6245432495](https://github.com/mastermindx-market-intelligence/macro/pull/9566#issuecomment-6245432495), removed merge-blocked, and used no admin or binding-check bypass.
+
+CI39092819708 concluded with all12packs, contract-delta and ci-gate successful. The gate finished03:43:28Z; semantic evidence is clear with **97 selected logical jobs /292 passed steps /0 infrastructure failures**. The27raw records comprise22successes,4expected conditional skips and the intentionally inactive nonbinding pilot failure. Active main authority and all actual obligations passed under unchanged source policy. Main protection is off and the sole ruleset is evaluate; neither an enforced queue nor a required GitHub approval was invented.
+
+The actual merge parent is **edc7c8976a50482cd52e13910b1b1ad188d113dd**. Native integration tree **6fe76285410c48aaa4bc53497b5bf97174686b16** exactly equals the actual landed tree, with only these intended source changes:
+
+| Path | Actual landed blob |
+|---|---|
+| .github/ci/legacy-jobs.yml | 54623493161445189b815fc4c7590539f4d9ce42 |
+| templates/_prophet_workspace.css.j2 | 7f50c64ed7856f72c016cdca37c11139cd765154 |
+| tests/test_us_prophet_original_card_layout.py | 3a2b8defa9ae35c033f32bf4810785c843489969 |
+
+Current main's complete page/payload/board and unrelated data/source are preserved. The intervening Theme U4 #9576 CI registrations and later C19 #9577 exclusive owner survive in the combined manifest. Parsed comparison against the earlier qualified integration finds no changed or removed existing job after the C19 addition; independent principal judgment found no new blocker. No accepted test/visual suite or unrelated healthy baseline was repeated.
+
+[Normal source-release and landed receipt6245649165](https://github.com/mastermindx-market-intelligence/macro/pull/9566#issuecomment-6245649165) was read back identical. **Source-release proof is now DO_NOT_REDO.** The next boundary is the existing [normal render39097008410](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39097008410), created04:25:00Z on the merge, pending with no jobs at04:32. Older render39092739745 is queued. No run was cancelled, retried, forced or duplicated by this continuation. Accept a naturally covering descendant if one replaces the pending run.
+
+Require actual scripts.build_site success, coherent final public shell/protected payload/approved CSS, normal publication and permitted served/user evidence. **run_py can continue after a builder error**, so an outer green run or watermark alone does not establish restoration. The original source/render owner retains acceptance responsibility. Original Chrome consent remains unanswered.
+
+### Both natural market-publisher failures are now exactly bound
+
+The accepted natural #9484 producer qualification and SAVE of **russell-closes-39081858131 at03:06:49.417325Z** remain valid. Its unpublished collector candidate has October16 DIA, QQQ and Russell breadth. Collector Git push failed GH001 at03:19:14Z on claims blob6285635d,105232525bytes; that source/caller witness is complete.
+
+The SAME schedule's collect_tail117575031614 separately failed at04:00:39Z. Actual checkout **fa3b584c80ed26db9ca01655c44c80da85d42ad8** is log-bound. Original commit477581d687b54c4086b47d9bb25a165ff39997c9 rebased at04:00:01Z to **9e980d3969825484333d8e9d1cdd4b314acc8519**, parent08d09c10. The original runner's bounded HEAD reflog has no intervening change before the04:00:18Z push rejection.
+
+| Tail object | Blob | Bytes |
+|---|---|---:|
+| data/qledger/claims.jsonl | 97ae8d94ecf0b9fefb2241e50a83fb50c332bdb4 | 148,072,797 |
+| data/qledger/grades.jsonl | cd7a134fb9fa73730747e289a846f8eef562fe5f | 79,345,831 |
+
+Claims exceed100MiB by **43,215,197bytes**. These are metadata-only reads; ledger contents were not read. Objects and helperb3abe82b/workflow25fda89c are unchanged across the tail rebase. Actual step31 uses push_retry_init("tail data") and bare push_do after the existing fetch/rebase/autostash gates. At04:00:18.566721Z GitHub returns GH001/141.21MB; the helper explicitly stops automatic retries and exits1. A separate15-minute Census action timeout is recorded without misattributing it as the cause of Git rejection.
+
+**Updated durable natural receipt:** [79b178d2 / natural_39081858131_collect_20261018.json](https://github.com/mastermindx-market-intelligence/macro/blob/79b178d2772688bb078b7f6f1c8d58aef5da8536/research/rotation_intelligence/natural_39081858131_collect_20261018.json), blob **f269c0eb69a9fe8a9c313bf0eddfc953a34b7c91**, read back identical. Existing #9450 receiver [6245281284](https://github.com/mastermindx-market-intelligence/macro/pull/9450#issuecomment-6245281284) now retains both witnesses. Earlier exact proposed/caller observations keep their own historical cuts.
+
+This does not qualify or release draft #9450's preflight/source-ref repair, #7193's Asia source, or #8756's lossless cutover. #9452 remains unselected. No recovery push, ledger truncation/exclusion, replay, source cleanup, ref mutation or replacement writer was performed.
+
+At04:32, engine117575031870 remains active in core step26 (started03:32:22Z); Prophet33/TurnWatch43 are pending. Its earlier cache restore step is successful, but **actual exact-key cache hit and actual engine checkout are still unverified**. Factor series/panel jobs succeeded; that is not Prophet or cache-consumption proof.
+
+### The newer committed board still fails price freshness
+
+The complete generation preserved by #9566 is board **6b0246b6aca2dabd9a2308e1500f877428862cf8**,2,795,073bytes, SHA-256 **5b85679ef2210f558989a51922e803ff3b44941370004a3fcfa89678bdd95864**. Pair **fb1cb7a4d8994a9984a7025350b3c038** was emitted01:51:08Z, its availability receipt is02:09:27.472377Z, and it was committed by older render72795c213a4d3b9ee2e525d3691d23992963a121 at03:28:13Z fromcddb40abe. It is not attributed to the pending natural engine.
+
+The board remains **as_of October14 / gate_go=false**. Price panel **198/3064** reachesOctober16; majority date isOctober7, seven completed sessions late, mixed vintage. The separate source roster3069 is complete and includes1356Russell members. Source inclusion does not replace positive completed-session price coverage.
+
+DIAf7af4159 remains throughOctober14, QQQ2b5c1a98 throughOctober16, Russell breadth3422c84d throughOctober13; run-status9e278ee4 and TURN WATCH7e798fdc remain unchanged from their earlier exact verified blobs. These are committed current-generation facts, distinct from the fresher unpublished collection candidate. No trade authority, new Plan or successful B1 adoption is inferred.
+
+### Risk Radar repair ownership is now accurately bounded
+
+The accepted #9573 desktop receipt and diagnostics stand. Parent [6245034084](https://github.com/mastermindx-market-intelligence/macro/pull/9573#issuecomment-6245034084) now explicitly distinguishes actual shared-path writers from an assigned repair owner:
+
+| Remaining defect | Source boundary | Current integration receiver / assignment |
+|---|---|---|
+| Forecast qualifier projection | _risk_radar_workspace.html.j2 and source/emitted risk_radar_workspace.js | #9548 at69e92583 is Fear & Greed/VIX work on intersecting paths. Exact qualifier-repair owner/carrier **UNKNOWN**. |
+| Negative-portfolio question classification | engine/neuralweb/ask_brain.py | Neither observed #9548 nor #9447 changes it. Exact repair owner/carrier **UNKNOWN**. |
+| Caveat-only finalization / contradiction-family scope | engine/neuralweb/brain_gateway.py | Draft #9447 at3698f2f6 is native charts/visual templates with overlapping gateway source. Exact failure-repair assignment **UNKNOWN**. |
+
+Existing Grey Deer/Risk Radar programme **MAS-258 / risk-radar-meta-ceo-evidence-20261017-01a14837** retains the defect/acceptance receiver and must qualify the actual modifying owner/effects. Preserve #9548's Fear & Greed release/study proof and #9447's native-visual custody/review. Neither current PR is accepted as the Radar failure repair. #8132 retains its warning-publisher scope. The provider's actual stop reason remains unresolved. No provider replay, duplicate browser, protected fit or broad review was done.
+
+### Original source, authority and delivery work remains open
+
+Continue the already accepted general B1 forward-contract decision6244379784/6245010068 through the incumbent publisher/intake/exact-reader owner; preserve immutable v1 receipt ownership and typed unavailable legacy republication. #9568 source release is complete, but actual natural publication and exact B1 relations remain unaccepted.
+
+The F3 theme contract6245281526/6245296558 remains current: reuse existing native structural company/basket/theme evidence and full-universe slot; qualify canonical identity, edges, real clocks/rights and a separately sourced rotation observation. #9576's additional classification-axis display does not establish native F3 observation authority or B4 entry facts. No second graph, scorer, store or historical backfill.
+
+Keep #9495 DRAFT/NO MERGE and compact compatible, the native B4/Plan boundary, original Plan/RQ1/source-map/review effects, Paper/Chrome conditions, #9450/#8756 and Alert7022/Finviz7976 source ownership intact. **No model-selected trade, predictive accuracy, new Plan, historical recommendation, complete deployment or customer alert delivery is claimed.**
+
+## Prior material milestone — 2026-10-18 03:46 UTC continuation (current frontier supersedes)
+
+This continues the same original operation and source owners. **The mission is open.** The original #9518/#9484/#9568 source releases remain complete and DO_NOT_REDO.
+
+### Compact-card source integration is resolved; new release proof is in flight
+
+The original #9566 owner returned **c2072e946349e8d59b991b2cdd744d10b9b79724** at03:13. It restores only the generated HTML to the PR-base blob09c2b4a2, removing that page from the PR delta. The remaining three changes are the approved CSS/test/CI registration. Parent native composition against654bbd is rc0, tree**a5247b47d4dfb5c7fcffbb56d6b09cb1ee2e1e90**, preserving main's complete page/payload/board and Macro-only mobile change. Independent source review **5561257911** is APPROVE; the PR description and holding comments now describe the actual source-only path. Historical587 whole-page composition is superseded.
+
+New CI **39092819708** tests merge**d6e384d796d4242badd04ecb9b268f5c3dedc635** onto654bbd. Contract-delta is0introduced/0inherited; at03:42 eleven packs pass and pack0 is still running, with ci-gate pending. Main baseline39092739746 passed. Keep merge-blocked until this head's applicable checks conclude and actual release/hold/main state qualifies. No failing check is waived; no new watcher or source writer was created.
+
+The existing templates trigger reaches scope=all → spine → scripts.build_site. **run_py can record a builder error and continue to an outer green run/watermark.** After source release require the actual build_site outcome, coherent generated shell/payload and compact stylesheet, normal publication and served/authorized user proof. Reuse unchanged157tests/16states/local clicks; original Chrome consent remains unanswered. [Source-only review](https://github.com/mastermindx-market-intelligence/macro/pull/9566#pullrequestreview-5561257911).
+
+### A real Russell cache producer handoff now exists; QLedger blocked market Git publication
+
+Natural scheduled **39081858131** actually checked outb140. Its completed collector verifies source=ok / October16 under the at-least80% finite-positive completed-session source guard. Empty Finviz membership was refused and the1971-name committed fallback retained. The exact passing fraction was not logged; neither950 historical close rows nor breadth n_members1908 substitutes for it.
+
+Clock evidence: collect start00:15:28Z, receipt finish02:47:47.130870Z, checked02:47:47.131052Z, qualified03:06:47.560414Z. Actions saved **russell-closes-39081858131 at03:06:49.417325Z**, before the attempted Git push. Transport3734274bytes is the compressed upload size, not a hashed cache-content identity.
+
+The retained source commitc21a3057 was read without changing any runtime source/refs. Its rebase witness**515e1dd5bb7202aa0d07481e4bd3cfb62590eca1** preserves:
+- DIA **c61df54f9a439ca2e007d18cdb5378e5743430a6**, throughOctober16;
+- QQQ unchanged**2b5c1a98a318f0deb950a61528d19bd51985bfd0**, throughOctober16;
+- Russell breadth **82a602aa5bf1afc6a19773b7ec1de6674b46f5fa**, October16 / n_members1908;
+- source status **4d9e29da9011c9de954156b1e2ca8e8f49214df4** with the clocks above.
+
+At03:19:14Z, GitHub refused **data/qledger/claims.jsonl**, blob**6285635d4a882b5c99ef5ce1897fd1809704db64**, **105232525bytes**, above100MiB. The helper stopped automatic retries. Metadata-only tree/ref/source reads bind the original default push_do caller and unchanged helperb3abe82b; no ledger content was read. This is a new actual collect witness for #9450, not adoption/qualification of its draft preflight or release of #8756's lossless cutover. Asia caller qualification remains distinct.
+
+Engine**117575031870** started03:26:59Z and its restore step succeeded03:27:43Z. Actual exact-key hit/checkout is still unproved. By03:44 its leader-source checkpoint77a51121 had published and core step26 was active; Prophet step33 and TurnWatch step43 were pending. Current main77a511 also includes separate older covering render72795c21/c357a4b; that render is not the pending nightly's refreshed source or the unmerged compact change.
+
+**Durable producer receipt:** [natural_39081858131_collect_20261018.json](https://github.com/mastermindx-market-intelligence/macro/blob/debe63f4aa561755832de20b34f4afee89a92928/research/rotation_intelligence/natural_39081858131_collect_20261018.json), blobfd3449076795d0d1c27c3c430899dba12203fa1d. Owner returns: [Russell6245269756](https://github.com/mastermindx-market-intelligence/macro/pull/9484#issuecomment-6245269756), [DIA6245296679](https://github.com/mastermindx-market-intelligence/macro/pull/9518#issuecomment-6245296679), [QLedger6245281284](https://github.com/mastermindx-market-intelligence/macro/pull/9450#issuecomment-6245281284). These source artifacts are unpublished by the failed collector push; no served freshness or trade authority is inferred.
+
+### Sector/theme integration now has a concrete incumbent contract
+
+Parent [decision6245281526](https://github.com/mastermindx-market-intelligence/macro/issues/6817#issuecomment-6245281526) and [theme-owner return6245296558](https://github.com/mastermindx-market-intelligence/macro/pull/9567#issuecomment-6245296558) accept reuse of #9567's structural company/basket/theme explanation. Its display lookup removes private join keys and can compact nonmembers above400KB; it is not a complete population or native evidence receipt.
+
+The existing **theme_membership** slot is owned by theme graph+baskets and read via **us_context_vector.load_candidates**. Canonical hierarchy_paths retains relationship IDs and effective/knowledge queries; the full-universe context store is nightly, keep-first, forward-only and zero-authority. Registry stamp_date clocks are not distinct. Fusion still reports F3 absent_from_frame.
+
+The existing owners must bind canonical security/company identity, exact relationship/source cuts, real clocks/rights, and a separately owned sector/basket/relay observation at the existing evidence boundary. Missing episode relations remain nullable. No new graph, ledger, path score, historical backfill, overlapping UI writer or B4 relaxation. B4 still needs actual stock-specific geometry, comparable basis/corporate actions, risk, liquidity, gap and other native facts.
+
+### All other original constraints remain live
+
+General B1 row-key/whole-document receipt coupling and accepted forward-contract decision6244379784/6245010068 remain with the incumbent. #9568 source release is complete; first real publisher/B1/exact-reader adoption is still unaccepted. Preserve v1 history and typed unavailable legacy republication.
+
+Keep #9495 Draft/held and compact compatible, original B4/Plan/Chrome/Paper/RQ1/source-map/9369 and QLedger effects intact. Reuse bounded Risk Radar desktop delivery9573 and all GD-3/research refusals; forecast qualifiers/Copilot repairs remain with #9548/#9447. Alert7022, Finviz7976 and original held workers remain on their carriers. No model-selected trades, predictive accuracy, new Plans, full deployment or customer delivery is claimed.
+
+## Prior material milestone — 2026-10-18 03:08 UTC continuation (current frontier supersedes)
 
 **The original product mission remains OPEN.** The current frontier below supersedes older pending-release, restoration-routing and current-generation statements while retaining their exact historical cuts, evidence and effects. The original operation, research carrier, workspaces and protected laws are unchanged.
 
@@ -366,11 +529,11 @@ A follow-up daily lookup after this changed-artifact observation still showed no
 
 ## Successor's immediate, concrete first action
 
-1. Keep #9518/#9484/#9568 source release DO_NOT_REDO. Consume actual scheduled39081858131 job source pins, >=80% completed-session Russell source qualification, pre-push SAVE and exact engine same-run key hit, then publisher/price/B1/reader effects. The same run can pick current main in later jobs; no dispatch, replay, cancel or restamp.
-2. Advance #9566 through its original source owner and workspace. Preserve hold6244294155 and latest084ac334/b9f2e836 generation. Qualify complete public1949b3e7/protectedf475a052 replacements through production builder, exact candidate and normal CI/review/release. Reuse accepted unchanged compact-source and157/16-state evidence; no fast-VM or generated-page splicing.
+1. Keep #9518/#9484/#9568 source release DO_NOT_REDO. Natural39081858131 now proves actual b140 collector checkout, completed-session Russell qualification and cache SAVE russell-closes-39081858131 before the GH001 failure. Do not redo those reads. Require actual exact-key engine restore hit/checkout and the resulting published price, Prophet, B1 and exact reader receipts; no dispatch, replay, cancellation or restamp.
+2. Continue #9566 at incumbent source-only c2072e946349e8d59b991b2cdd744d10b9b79724. Native composition is accepted against654bbd at treea5247b47; source review5561257911 passes. Conclude new-head CI39092819708, qualify final main/hold/policy state, release only the satisfied hold and use ordinary squash. Then consume a normal covering render's actual build_site result and coherent generated/served page evidence. Reuse157tests/16states; no generated-page splice or duplicate renderer.
 3. Incumbent B1/source owner implements and qualifies parent decision6244379784/return6245010068: immutable observation evidence distinct from publication hashes; original v1 ownership retained; explicit forward publisher/intake/reader compatibility. Legacy changed-container observations may stay typed unavailable. No same-key receipt rewrite, alias or document-hash-created duplicate observations.
 4. Keep #9495 DRAFT/NO MERGE and compact compatible; integrate qualified7018-byte refusal-copy patch only after actual source/effect qualification, reuse49checks, preserve original held Plan child. Through native B4 owner bind existing B3 verified_pair to real geometry/basis/risk/liquidity/gap facts and exact Plan relations.
-5. Consume #9567's existing read-time structural-navigation source through sector/theme incumbents without another graph/store, hidden-membership leak, unqualified F3 promotion or predictive claim. Preserve typed missing/unwired paths and per-source clocks/rights.
+5. Apply parent theme decision6245281526 and owner return6245296558 through the existing theme graph/baskets/Prophet owners: reuse structural explanation now, qualify canonical identities/edges/clock/rights and a separately sourced rotation observation in the existing theme_membership slot. Preserve full population, typed absences, nullable B1/B3, forward-only store and independent B4; no new graph/store/ranker or UI writer.
 6. Through Risk Radar #9548/#9447/existing publisher owners, repair forecast-qualifier projection and the useful Copilot answer while preserving current code-review effects. Reuse accepted bounded desktop delivery and GD-3; no duplicate browser action, protected-outcome trial or autonomous Mastermind production deployment.
 7. Continue unaffected original QLedger9450/8756, Alert7022, Finviz7976 and RQ1/#1404/#7772 owner work only at material new boundaries. Preserve actual START/UNKNOWN/refused effects, source-map and9369 review. Require exact authenticated Prophet UI, as-issued history and opt-in alert receipts before product acceptance.
 
@@ -442,4 +605,5 @@ A follow-up daily lookup after this changed-artifact observation still showed no
 
 ## Handoff command for the next continuation
 
-“Continue the SAME original Chairman rotation / Sector Intelligence / Prophet / Risk Radar Meta-CEO mission from #9035's current October17 handoff. #9518/#9484/#9568 are merged source and DO_NOT_REDO. Qualify natural39081858131's actual per-job source/cache/publisher/B1 evidence; its later jobs can adopt current main. Incumbent B1/source owner must resolve the general row-ID/document-receipt coupling under decision6244379784/return6245010068, preserving v1 history and nullable legacy joins. #9566 remains source-approved at587 but current084ac334/b9f2e836 whole-shell/payload integration is held6244294155; advance through the original owner and production renderer, preserving -merge and accepted unchanged proof. Keep #9495 DRAFT/NO MERGE and native B4/Plan custody. Reuse merged theme-map9567 and bounded authenticated Radar evidence9573; do not promote them to B4, forecasts or full product delivery. Preserve all original unknown/refused effects and DO_NOT_REDO records; no manual runtime replay, duplicate worker or autonomous reserved deployment. Advance independent safe work and persist the next material milestone.”
+“Continue the SAME original Chairman rotation / Sector Intelligence / Prophet / Risk Radar Meta-CEO mission from #9035's current October17 handoff. Source9518/9484/9568 are merged and DO_NOT_REDO. Natural39081858131 now proves collector checkout, Russell qualification and exact-key cache SAVE; the market push failed GH001 at105232525bytes. Preserve actual source515e1dd5, receiptdebe63f4 and incumbent9450/8756 custody; require engine exact hit/checkout and later price/publisher/B1/reader effects. #9566's incumbent source-only c207 resolves the old page conflict and has APPROVE5561257911; complete concluded new CI/final release, then the existing covering renderer’s actual build_site and coherent generated/served evidence. Preserve -merge, unchanged157tests/16states and original Chrome consent. Apply B1 forward-contract decision6244379784/6245010068 and F3 existing-slot decision6245281526 through incumbents. Keep9495 Draft/held, native B4/Plan source/effects, bounded Radar9573 acceptance and all original DO_NOT_REDO/refusals. Advance safe work and persist the next material milestone without false trading, prediction or full-delivery claims.”
+
