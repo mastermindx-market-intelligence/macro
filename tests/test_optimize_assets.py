@@ -109,6 +109,7 @@ def test_vps_runtime_logo_asset_never_gets_git_placeholder_hash() -> None:
     root = Path(__file__).resolve().parents[1]
     baked = bake_html(root, build_payload(root))
     assert baked.count('logo_config.js?runtime-config') == 1
+    assert '<script src="logo_config.js?runtime-config" defer></script>' in baked
     assert re.search(r'logo_config\.js\?v=[0-9a-f]{8}', baked) is None
 
 

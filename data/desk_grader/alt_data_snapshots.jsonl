@@ -5730,3 +5730,5 @@
 {"date":"2026-10-17","ticker":"MAIR","departed":true,"left_desk":"2026-10-17","last_rank":null,"last_score":18}
 {"date":"2026-10-17","ticker":"NFLX","departed":true,"left_desk":"2026-10-17","last_rank":null,"last_score":18}
 {"date":"2026-10-17","ticker":"PSKY","departed":true,"left_desk":"2026-10-17","last_rank":null,"last_score":17}
+{"date":"2026-10-17","ticker":"TENB","rank":30,"score":27,"lean":1,"broken":false}
+{"date":"2026-10-17","ticker":"ALB","rank":null,"score":18,"lean":1,"broken":true}

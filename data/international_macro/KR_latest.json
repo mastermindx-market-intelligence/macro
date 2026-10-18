@@ -8,7 +8,7 @@
   "scope_en": "Republic of Korea national economy; KOSPI is market context.",
   "scope_zh": "大韩民国全国经济；KOSPI仅作市场背景。",
   "asof": "2026-10-15",
-  "built": "2026-10-17 06:38 UTC",
+  "built": "2026-10-17 18:31 UTC",
   "regime": {
     "quad": "Q1",
     "name": "Goldilocks",
@@ -207,7 +207,7 @@
     "top_score": 37,
     "dominant_en": "Calm — no driver elevated",
     "dominant_zh": "平静 — 无驱动升高",
-    "h21": 0.381,
+    "h21": 0.399,
     "measure": ">=5% index pullback within h business days (measured on this market's own history)",
     "trajectory": {
       "intensity": 36.7,
@@ -218,8 +218,8 @@
       "phase": "receding",
       "reached_risk": true,
       "state_now": "calm",
-      "odds_now": 0.381,
-      "odds_peak": 0.381,
+      "odds_now": 0.399,
+      "odds_peak": 0.399,
       "odds_delta": 0.0,
       "spark": [
         54.8,

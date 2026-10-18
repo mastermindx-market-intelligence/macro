@@ -111,8 +111,10 @@ def render_html(root: Path, payload: dict[str, Any]) -> str:
     original = '<script src="logo_config.js"></script>'
     if html.count(original) != 1:
         raise ValueError("research_screener: expected exactly one shared logo config asset")
+    # The optimizer deliberately leaves authored non-hash queries untouched,
+    # including attributes: preserve the nonblocking mode explicitly here.
     return html.replace(original,
-                        '<script src="logo_config.js?runtime-config"></script>', 1)
+                        '<script src="logo_config.js?runtime-config" defer></script>', 1)
 
 
 def _ensure_yaml_importable() -> None:
