@@ -27,10 +27,10 @@ waves:
     title: "One existing-owner producer-to-Risk-Radar vertical, proof and publication"
     status: in_progress
 next_action: >
-  Publish the reconciled single-file shared-CI manifest merge on existing PR
-  9548 after targeted tests, re-arm native merge-on-green, consume exact-head
-  checks, then verify post-merge render/VPS publication and customer-path Risk
-  Radar Fear & Greed disclosures.
+  Finish the second one-file CI-manifest source conflict repair, verify affected
+  contract tests and publish on original PR 9548; re-arm the existing controller,
+  consume exact-head CI and native merge, then prove render/VPS and live Risk
+  Radar Fear and Greed disclosures.
 landmines:
   - "The legacy machine-consumed dial and existing regime/risk/trade authority stay unchanged."
   - "VIX acceleration is not VVIX. Absolute VIX threshold and liquidity-shock classifier kills remain binding."
@@ -205,3 +205,38 @@ merge-on-green, then consume exact-head CI and the covering normal render
 and VPS publication, and verify the served native customer path.
 
 MISSION_COMPLETE: false.
+
+
+## October 18 2026 10:30 UTC - repeated merge conflict and CI transport boundary
+
+Following the prior repair eb555e647b22, additional refreshed head
+69e925833031 and 96033575e777 passed full exact-head CI. Automatic main
+integration advanced the same PR to f28a75ecf08e6e8dda6ac0c1ec515a14bc78ff23
+with base parent 2001b5011f410947d423f5e75f2a2074d1e34155. All twelve
+packed CI jobs completed SUCCESS and the trusted authority and fences passed,
+but final CI gate failed in run 39099922927. Root cause observed from job
+117601131413: GitHub actions/download-artifact reported ECONNRESET while
+requesting a signed artifact URL. The final semantic proof correctly refused
+to count missing pack fragments as green. This is INFRASTRUCTURE_BLOCKED,
+not a demonstrated failing Fear/Greed test; do not waive or rewrite evidence,
+or replay the same CI run blindly. A genuinely new integrated source head
+will receive its own CI without additional manual retries.
+
+By October 18 10:30 UTC PR #9548 was OPEN, f28a75ec head, merge-on-green and
+merge-blocked both present; GitHub marked CONFLICTING. The latest main was
+b912fd97827cca925a7123aa2012e9765077f3f7. A read-only virtual merge
+identified only .github/ci/legacy-jobs.yml as conflicted. Its one hunk
+contained Fear/Greed engine and VIX importer paths on one side, and new
+Market Ontology package and BEA GVC imports on the other. These are compatible
+additions and must BOTH survive. The maintainer disarmed merge-on-green and
+verified the marker change on the exact f28a75ec head before source writes,
+fast-forwarded the same registered workspace and began a normal no-commit
+merge from main b912fd97. The real merge confirmed only this one conflict;
+the resolution retains both sets without changing any checks, feature
+thresholds, UI code, publisher or research outputs. A scoped manifest
+staged-diff check passed; targeted regression tests are pending.
+
+This is the existing carrier, not a new source workspace, replacement PR,
+worker or pipeline. Prior public customer site had no new FGI markup. Keep
+MISSION_COMPLETE=false until protected merge, covering existing render,
+VPS publication, and real served desktop/mobile proof.
