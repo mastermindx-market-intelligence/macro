@@ -1,17 +1,24 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-10-18T07:07:44.830001+00:00",
+  "produced_at": "2026-10-18T07:13:40.821656+00:00",
   "as_of": "2026-10-16",
   "status": "degraded",
-  "phase": "engine",
+  "phase": "final",
   "did_the_brain_run": {
-    "cortex_status": "fresh",
-    "tool_call_batches": 6,
-    "individual_tool_calls": 14,
+    "cortex_status": "degraded",
+    "tool_call_batches": 0,
+    "individual_tool_calls": 0,
     "context_stale": false,
-    "summary": "cortex ran (14 tool calls); memo as_of 2026-10-17T19:12:22+00:00"
+    "summary": "cortex degraded — model_unavailable"
   },
   "what_changed": [
+    {
+      "kind": "cortex_status_changed",
+      "id": "cortex",
+      "summary": "cortex status changed: fresh → degraded",
+      "severity": "warn",
+      "evidence_path": "data/neuralweb/health.json"
+    },
     {
       "kind": "lobe_row_count_changed",
       "id": "risk-radar-review-log",
@@ -395,6 +402,12 @@
   },
   "operator_attention": [
     {
+      "priority": 1,
+      "area": "cortex",
+      "summary": "cortex degraded — inspect data/neuralweb/cortex/memo.json and run_status",
+      "action_type": "ops_fix"
+    },
+    {
       "priority": 2,
       "area": "neuralweb-theme-options-witness",
       "summary": "lobe neuralweb-theme-options-witness is warn — age 439.13h vs SLA 168h",
@@ -682,7 +695,7 @@
   },
   "evidence_clock": {
     "available": true,
-    "as_of": "2026-10-17",
+    "as_of": "2026-10-18",
     "counts": {
       "overdue": 142,
       "due": 27,
@@ -692,14 +705,14 @@
       "blocked": 2,
       "not_ready": 0,
       "promotion_eligible": 0,
-      "accruing": 153,
+      "accruing": 155,
       "n_acknowledged": 0
     },
     "top_due": {
       "clock_id": "qledger:placebo",
       "due_at": "2026-06-22"
     },
-    "morning_line": "142 overdue, 27 due, 1 missing, 1 stale, 2 blocked, 153 accruing. Top due: qledger:placebo."
+    "morning_line": "142 overdue, 27 due, 1 missing, 1 stale, 2 blocked, 155 accruing. Top due: qledger:placebo."
   },
   "china_market_state": {
     "available": true,
