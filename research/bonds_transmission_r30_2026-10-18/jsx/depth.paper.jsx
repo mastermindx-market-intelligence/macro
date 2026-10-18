@@ -1359,6 +1359,43 @@ export default function DepthReference() {
             </div>
           </div>
         </div>
+        <div id="6JFT-0" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '18px', padding: '20px', width: '1360px' }}>
+          <div id="6JFU-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '16px', justifyContent: 'space-between' }}>
+            <div id="6JFV-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+              I02 / APPLIED SHAPE / AVAILABILITY
+            </div>
+          </div>
+          <div id="6JFW-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '24px', fontWeight: 700, lineHeight: '145%' }}>
+            Apply only the sensitivities you have
+          </div>
+          <div id="6JFX-0" style={{ boxSizing: 'border-box', display: 'flex', gap: '24px' }}>
+            <div id="6JFY-0" style={{ backgroundColor: 'var(--mx-light-panel2)', borderRadius: '12px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '18px', padding: '20px' }}>
+              <div id="6JFZ-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                TREASURY EXPOSURE
+              </div>
+              <div id="6JG0-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-down)', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '30px', fontWeight: 700, lineHeight: '145%' }}>
+                −0.28%
+              </div>
+              <div id="6JG1-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+                Matched four-node Treasury vector · first order
+              </div>
+            </div>
+            <div id="6JG2-0" style={{ backgroundColor: 'var(--mx-light-panel2)', borderRadius: '12px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '18px', padding: '20px' }}>
+              <div id="6JG3-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                CORPORATE EXPOSURE
+              </div>
+              <div id="6JG4-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '30px', fontWeight: 700, lineHeight: '145%' }}>
+                Unavailable
+              </div>
+              <div id="6JG5-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+                Load a compatible corporate key-rate vector.
+              </div>
+            </div>
+          </div>
+          <div id="6JG6-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+            Scalar corporate duration cannot price a curve twist. Undo restores the prior result and its draft entry. Applying parallel assumptions explicitly replaces the shape.
+          </div>
+        </div>
       </div>
     </div>
   );

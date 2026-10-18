@@ -16,12 +16,12 @@ export default function ImplementationReference() {
               Build the complete journey
             </div>
             <div id="67ZI-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '20px' }}>
-              Eight routes and fifteen tools share one investigation. R32 adds visible tool handoffs and conditional outlook review.
+              Eight routes and fifteen tools share one investigation. Native design and the offline interaction reference are ready to review.
             </div>
           </div>
           <div id="67ZJ-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel2)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
             <div id="67ZK-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', display: 'flex', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
-              R30–R32 · design specification
+              R32 · verified design reference
             </div>
           </div>
         </div>
@@ -131,7 +131,7 @@ export default function ImplementationReference() {
               Read the next test; compare explanations and stress assumptions.
             </div>
             <div id="6813-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '620px' }}>
-              I02 Curve shape · I05 Cash timing · I04 Monitor
+              I02 Curve shape · I05 Cash timing · I04 Conditions
             </div>
           </div>
           <div id="6814-1" style={{ alignItems: 'start', borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '12px', paddingBlock: '13px' }}>
@@ -159,7 +159,7 @@ export default function ImplementationReference() {
               Review changed evidence and the next decision.
             </div>
             <div id="681D-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '620px' }}>
-              I15 Save + compare · I04 Monitor · I10 Check
+              I15 Save + compare · I04 Conditions · I10 Check
             </div>
           </div>
           <div id="681E-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '17px' }}>
@@ -553,7 +553,7 @@ export default function ImplementationReference() {
             </div>
             <div id="685M-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-up-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
               <div id="685N-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-up)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
-                Specified + reviewed
+                Complete + reviewed
               </div>
             </div>
             <div id="685O-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '835px' }}>
@@ -562,28 +562,28 @@ export default function ImplementationReference() {
           </div>
           <div id="685P-1" style={{ alignItems: 'center', borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '18px', paddingBlock: '13px' }}>
             <div id="685Q-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '19px', width: '180px' }}>
-              Behavior contract
+              Offline interactions
             </div>
             <div id="685R-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-up-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
               <div id="685S-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-up)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
-                Specified
+                Verified reference
               </div>
             </div>
             <div id="685T-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '835px' }}>
-              Typed tool returns, source clocks, formulas, rule precedence, replay and exact revision recovery.
+              65 browser journeys and 39 analytical checks cover local drafts, calculations, replay and simulated receipt recovery.
             </div>
           </div>
           <div id="685U-1" style={{ alignItems: 'center', borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '18px', paddingBlock: '13px' }}>
             <div id="685V-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '19px', width: '180px' }}>
-              Runtime integration
+              Production connections
             </div>
             <div id="685W-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-warn-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
               <div id="685X-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-warn)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
-                Pending implementation
+                Owner integration required
               </div>
             </div>
             <div id="685Y-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '835px' }}>
-              Investigation and Alerts owners located; bond payload and condition extensions still required.
+              Bind qualified sources and extend existing Investigation / Alerts owners. No live saves or monitors run in the reference.
             </div>
           </div>
           <div id="685Z-1" style={{ alignItems: 'center', borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '18px', paddingBlock: '13px' }}>

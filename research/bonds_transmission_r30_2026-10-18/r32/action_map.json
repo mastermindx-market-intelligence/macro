@@ -1,0 +1,462 @@
+{
+  "schema": "mastermind.bonds_transmission.reference_action_map.r32",
+  "artifact": "r32/reference/index.html",
+  "controller": "r32/reference-app.js",
+  "scope": "Offline reference; native node and normalized-label bindings. Runtime forms and recovery actions are implemented in the controller. This does not register production routes or services.",
+  "routes": [
+    {
+      "route": "bonds",
+      "label": "Bonds desk",
+      "artboard": "63GL-1",
+      "body": "63GQ-1",
+      "page": "p-1H-0"
+    },
+    {
+      "route": "curve",
+      "label": "Curve & duration",
+      "artboard": "63S3-1",
+      "body": "63TV-1",
+      "page": "p-1H-0"
+    },
+    {
+      "route": "credit",
+      "label": "Credit & issuers",
+      "artboard": "63YS-1",
+      "body": "640K-1",
+      "page": "p-1H-0"
+    },
+    {
+      "route": "capital",
+      "label": "Capital competition",
+      "artboard": "648A-1",
+      "body": "64A2-1",
+      "page": "p-1H-0"
+    },
+    {
+      "route": "transmission",
+      "label": "Transmission",
+      "artboard": "64G1-1",
+      "body": "64HT-1",
+      "page": "p-1E-0"
+    },
+    {
+      "route": "scenario",
+      "label": "Outlook & scenarios",
+      "artboard": "64PQ-1",
+      "body": "64RI-1",
+      "page": "p-1E-0"
+    },
+    {
+      "route": "replay",
+      "label": "Compare episodes",
+      "artboard": "64WP-1",
+      "body": "64YH-1",
+      "page": "p-1E-0"
+    },
+    {
+      "route": "saved",
+      "label": "Saved cases",
+      "artboard": "670P-1",
+      "body": "672H-1",
+      "page": "p-1E-0"
+    }
+  ],
+  "core_tools": [
+    {
+      "id": "I01",
+      "label": "Value details",
+      "action": "value",
+      "contract": "interaction_contracts.json",
+      "scorecard": "r32/feature-scorecard.md"
+    },
+    {
+      "id": "I02",
+      "label": "Calculation & curve shape",
+      "action": "shape",
+      "contract": "interaction_contracts.json",
+      "scorecard": "r32/feature-scorecard.md"
+    },
+    {
+      "id": "I03",
+      "label": "Mechanism evidence",
+      "action": "evidence",
+      "contract": "interaction_contracts.json",
+      "scorecard": "r32/feature-scorecard.md"
+    },
+    {
+      "id": "I04",
+      "label": "Condition review",
+      "action": "conditions",
+      "contract": "interaction_contracts.json",
+      "scorecard": "r32/feature-scorecard.md"
+    },
+    {
+      "id": "I05",
+      "label": "Financing & cash timing",
+      "action": "financing",
+      "contract": "interaction_contracts.json",
+      "scorecard": "r32/feature-scorecard.md"
+    },
+    {
+      "id": "I06",
+      "label": "FX hedge inspector",
+      "action": "hedge",
+      "contract": "interaction_contracts.json",
+      "scorecard": "r32/feature-scorecard.md"
+    },
+    {
+      "id": "I07",
+      "label": "CDS conventions",
+      "action": "cds",
+      "contract": "interaction_contracts.json",
+      "scorecard": "r32/feature-scorecard.md"
+    },
+    {
+      "id": "I08",
+      "label": "Issuer funding",
+      "action": "issuer",
+      "contract": "interaction_contracts.json",
+      "scorecard": "r32/feature-scorecard.md"
+    },
+    {
+      "id": "I09",
+      "label": "Episode selection",
+      "action": "filters",
+      "contract": "interaction_contracts.json",
+      "scorecard": "r32/feature-scorecard.md"
+    },
+    {
+      "id": "I10",
+      "label": "Next checks",
+      "action": "calendar",
+      "contract": "interaction_contracts.json",
+      "scorecard": "r32/feature-scorecard.md"
+    },
+    {
+      "id": "I11",
+      "label": "Model evidence",
+      "action": "model",
+      "contract": "interaction_contracts.json",
+      "scorecard": "r32/feature-scorecard.md"
+    },
+    {
+      "id": "I12",
+      "label": "Outcome fingerprint",
+      "action": "outcome",
+      "contract": "interaction_contracts.json",
+      "scorecard": "r32/feature-scorecard.md"
+    },
+    {
+      "id": "I13",
+      "label": "Market structure",
+      "action": "structure",
+      "contract": "interaction_contracts.json",
+      "scorecard": "r32/feature-scorecard.md"
+    },
+    {
+      "id": "I14",
+      "label": "Buyer flows & funding",
+      "action": "flows",
+      "contract": "interaction_contracts.json",
+      "scorecard": "r32/feature-scorecard.md"
+    },
+    {
+      "id": "I15",
+      "label": "Draft, save & compare",
+      "action": "draft",
+      "contract": "interaction_contracts.json",
+      "scorecard": "r32/feature-scorecard.md"
+    }
+  ],
+  "native_node_actions": {
+    "63K2-1": "go-replay",
+    "63MW-1": "go-scenario",
+    "63N1-1": "evidence",
+    "63NQ-1": "pipes",
+    "63O0-1": "calendar",
+    "63V4-1": "unsupported",
+    "63V6-1": "unsupported",
+    "63VO-1": "shape",
+    "63X7-1": "model",
+    "63XI-1": "shape",
+    "63Y2-1": "go-scenario",
+    "6CT0-1": "structure",
+    "63YO-1": "calendar",
+    "641Z-1": "cds",
+    "6430-1": "cds",
+    "64OG-1": "financing",
+    "64OH-1": "sources",
+    "6450-1": "go-transmission",
+    "6457-1": "evidence",
+    "6465-1": "evidence",
+    "6467-1": "go-replay",
+    "64BB-1": "hedge",
+    "64BJ-1": "issuer",
+    "64BR-1": "hedge",
+    "64D7-1": "hedge",
+    "64EF-1": "flows",
+    "65YP-1": "calendar",
+    "65YR-1": "hedge",
+    "65YT-1": "pipes",
+    "64IY-1": "context",
+    "64M4-1": "evidence",
+    "64L2-1": "evidence",
+    "64L4-1": "go-scenario",
+    "64MC-1": "go-replay",
+    "64ME-1": "go-scenario",
+    "64ZM-1": "context",
+    "64ZQ-1": "filters",
+    "64ZS-1": "filters",
+    "651G-1": "filters",
+    "652F-1": "filters",
+    "65YD-1": "outcome",
+    "65YF-1": "filters",
+    "65YH-1": "model",
+    "674H-1": "go-scenario",
+    "674J-1": "compare",
+    "674Q-1": "conditions",
+    "6756-1": "compare",
+    "675F-1": "financing",
+    "675O-1": "hedge",
+    "6D41-1": "compare",
+    "673R-1": "compare",
+    "674W-1": "filters",
+    "6736-1": "context",
+    "6BOS-1": "cash",
+    "6BOQ-1": "sources",
+    "6BMU-1": "cash",
+    "6BMV-1": "missingCash",
+    "6BW1-1": "missingCash",
+    "6C7W-1": "hedge",
+    "6C7Y-1": "pipes",
+    "6C80-1": "apply-flows",
+    "6D34-1": "stress-path"
+  },
+  "native_label_actions": {
+    "Today": "go-bonds",
+    "Curve & duration": "go-curve",
+    "Credit & issuers": "go-credit",
+    "Capital competition": "go-capital",
+    "History": "go-replay",
+    "Transmission ↗": "go-transmission",
+    "Transmission": "go-transmission",
+    "Outlook & scenarios": "go-scenario",
+    "Compare episodes": "go-replay",
+    "Saved cases": "go-saved",
+    "← Bonds desk": "go-bonds",
+    "Open Bonds ↗": "go-bonds",
+    "← Transmission": "go-transmission",
+    "Inspect historical failures": "go-replay",
+    "Review conditions →": "conditions",
+    "Review conditions": "conditions",
+    "Review save options": "save",
+    "Open outlook →": "go-scenario",
+    "Credit & issuers →": "go-credit",
+    "Capital competition →": "go-capital",
+    "Follow the transmission →": "go-transmission",
+    "Build cash scenario": "cash",
+    "Cash calendar": "cash",
+    "Open financing schedule": "financing",
+    "Inspect conditions": "missingCash",
+    "Review missing inputs": "missingCash",
+    "Inspect buyer flows →": "flows",
+    "Inspect source": "sources",
+    "View source": "sources",
+    "Read source ↗": "sources",
+    "Source details": "sources",
+    "Model evidence": "model",
+    "Calculation ⓘ": "calculation",
+    "Price evidence": "structure",
+    "Buyer-flow evidence": "flows",
+    "Funding pipes": "pipes",
+    "Keep working": "close",
+    "Close ×": "close",
+    "Close": "close",
+    "Add to scenario": "apply-explanation",
+    "Add evidence to case": "apply-flows",
+    "Use these conditions": "apply-rule",
+    "Use this scenario": "apply-cash",
+    "Rule settings": "rule",
+    "Compare paths": "paths",
+    "Inspect shared inputs": "evidence",
+    "Use this outlook": "use-path",
+    "Review draft": "draft",
+    "Open Forex ↗": "forex-scope"
+  },
+  "specimen_bindings": {
+    "value": {
+      "board": "overlays",
+      "node": "662W-1",
+      "artboard": "65YV-1",
+      "page": "p-1E-0"
+    },
+    "calculation": {
+      "board": "overlays",
+      "node": "663U-1",
+      "artboard": "65YV-1",
+      "page": "p-1E-0"
+    },
+    "evidence": {
+      "board": "overlays",
+      "node": "6644-1",
+      "artboard": "65YV-1",
+      "page": "p-1E-0"
+    },
+    "conditions": {
+      "board": "overlays",
+      "node": "665W-1",
+      "artboard": "65YV-1",
+      "page": "p-1E-0"
+    },
+    "financing": {
+      "board": "depth",
+      "node": "6BMD-1",
+      "artboard": "6B6Q-1",
+      "page": "p-1H-0"
+    },
+    "cash": {
+      "board": "depth",
+      "node": "6BRC-1",
+      "artboard": "6B6Q-1",
+      "page": "p-1H-0"
+    },
+    "missingCash": {
+      "board": "depth",
+      "node": "6BVT-1",
+      "artboard": "6B6Q-1",
+      "page": "p-1H-0"
+    },
+    "hedge": {
+      "board": "tools",
+      "node": "669F-1",
+      "artboard": "6693-1",
+      "page": "p-1H-0"
+    },
+    "cds": {
+      "board": "tools",
+      "node": "66DX-1",
+      "artboard": "6693-1",
+      "page": "p-1H-0"
+    },
+    "issuer": {
+      "board": "tools",
+      "node": "66CC-1",
+      "artboard": "6693-1",
+      "page": "p-1H-0"
+    },
+    "filters": {
+      "board": "research_tools",
+      "node": "67NJ-1",
+      "artboard": "67N6-1",
+      "page": "p-1E-0"
+    },
+    "calendar": {
+      "board": "research_tools",
+      "node": "67OU-1",
+      "artboard": "67N6-1",
+      "page": "p-1E-0"
+    },
+    "model": {
+      "board": "research_tools",
+      "node": "67QO-1",
+      "artboard": "67N6-1",
+      "page": "p-1E-0"
+    },
+    "outcome": {
+      "board": "research_tools",
+      "node": "67RX-1",
+      "artboard": "67N6-1",
+      "page": "p-1E-0"
+    },
+    "structure": {
+      "board": "depth",
+      "node": "6B78-1",
+      "artboard": "6B6Q-1",
+      "page": "p-1H-0"
+    },
+    "flows": {
+      "board": "continuity",
+      "node": "6C2T-1",
+      "artboard": "6C1S-1",
+      "page": "p-1E-0"
+    },
+    "pipes": {
+      "board": "continuity",
+      "node": "6CZY-1",
+      "artboard": "6C1S-1",
+      "page": "p-1E-0"
+    },
+    "save": {
+      "board": "continuity",
+      "node": "6CEV-1",
+      "artboard": "6C1S-1",
+      "page": "p-1E-0"
+    },
+    "compare": {
+      "board": "continuity",
+      "node": "6CLB-1",
+      "artboard": "6C1S-1",
+      "page": "p-1E-0"
+    },
+    "readUnavailable": {
+      "board": "continuity",
+      "node": "6CML-1",
+      "artboard": "6C1S-1",
+      "page": "p-1E-0"
+    },
+    "conflict": {
+      "board": "continuity",
+      "node": "6E4N-1",
+      "artboard": "6C1S-1",
+      "page": "p-1E-0"
+    },
+    "paths": {
+      "board": "continuity",
+      "node": "6H4X-0",
+      "artboard": "6C1S-1",
+      "page": "p-1E-0"
+    },
+    "draft": {
+      "board": "continuity",
+      "node": "6H13-0",
+      "artboard": "6C1S-1",
+      "page": "p-1E-0"
+    },
+    "mismatch": {
+      "board": "continuity",
+      "node": "6H4O-0",
+      "artboard": "6C1S-1",
+      "page": "p-1E-0"
+    },
+    "eventReview": {
+      "board": "continuity",
+      "node": "6HBO-0",
+      "artboard": "6C1S-1",
+      "page": "p-1E-0"
+    }
+  },
+  "receiving_case": {
+    "route": "scenario",
+    "review_action": "draft",
+    "state": "typed in-memory additions",
+    "deduplication": "stable addition key",
+    "conflict": "validate before clearing tool draft",
+    "undo": "restore addition and its owned effective inputs"
+  },
+  "retention": {
+    "owner": "Terminal Investigation v2",
+    "reference": "question-only simulated receipts",
+    "production": "unsupported bond/scenario payloads require owner admission extension"
+  },
+  "monitoring": {
+    "owner": "Terminal Alerts",
+    "reference": "deterministic fixture preview only",
+    "production": "compound rule requires existing owner schema/evaluator/receipt extension"
+  },
+  "protected_forex_action": "forex-scope",
+  "notes": [
+    "Node identities refer to the current 21 inline JSX exports.",
+    "Unbound shared-shell controls open an explicit coverage explanation.",
+    "The fifteen families include child tools and state specimens; child tools do not add product routes."
+  ]
+}

@@ -18,7 +18,10 @@
     "dependencies": "A typed observation and lineage receipt; existing source date/gap fields where available. Raw values, revised releases, model estimates and synthetic fixtures remain distinguishable.",
     "states": "Current, delayed, stale, unavailable, loading, source error.",
     "effect": "Read-only inspection.",
-    "acceptance": "Missing is not zero. Build time cannot replace the observation clock. Focus and Esc dismissal restore the invoking value; color is accompanied by text."
+    "acceptance": "Missing is not zero. Build time cannot replace the observation clock. Focus and Esc dismissal restore the invoking value; color is accompanied by text.",
+    "offline_reference": "r32/reference/index.html",
+    "feature_scorecard": "r32/feature-scorecard.md",
+    "production_integration_status": "see existing-owner requirements; offline reference is not production integration"
   },
   {
     "id": "I02",
@@ -39,7 +42,11 @@
     ],
     "r31_behavior": "Shape mode uses a compatible complete key-rate vector. Keep parallel, first-order shape and instrument repricing distinct. Return −0.276% for the declared four-node fixture.",
     "r31_acceptance": "Bind curve/bump/interpolation/cutoff; missing or mismatched vectors block shape. A scalar convexity term is not a full curve-twist repricer.",
-    "reference": "r31/implementation.md#i02--curve-shape-extension"
+    "reference": "r31/implementation.md#i02--curve-shape-extension",
+    "r32_acceptance": "A Treasury shape vector does not price corporate exposure. Withhold corporate shape output without its compatible vector; Undo restores effective inputs and item state; parallel apply replaces the shape.",
+    "offline_reference": "r32/reference/index.html",
+    "feature_scorecard": "r32/feature-scorecard.md",
+    "production_integration_status": "see existing-owner requirements; offline reference is not production integration"
   },
   {
     "id": "I03",
@@ -54,7 +61,7 @@
     ],
     "node": "6644-1",
     "entry": "Select a mechanism, inspect evidence, funding conditions or overlapping inputs.",
-    "behavior": "Open the selected hypothesis with supporting observations, counterevidence, missing links, source lineage and the next independent check. The same observation may inform several hypotheses without becoming several independent confirmations. On mobile, expand one path and open its evidence sheet.",
+    "behavior": "Open the selected hypothesis with supporting observations, counterevidence, missing links, source lineage and the next discriminating check. The same observation may inform several hypotheses without becoming several independent confirmations. On mobile, expand one path and open its evidence sheet.",
     "dependencies": "Existing rates/credit and cross-asset projections plus approved observations; explicit analytical interpretation and hypothesis identity. No new state engine is introduced by the view.",
     "states": "Partly supported, contested, missing link, source stale, no evidence.",
     "effect": "Read-only interpretation; Add to scenario carries the hypothesis into route 06.",
@@ -66,7 +73,10 @@
     ],
     "r31_behavior": "Price structure opens I13; buyer flows opens I14. Preserve the same hypothesis and observation cutoff.",
     "r32_behavior": "Select an outlook locally; show its market test, discriminating evidence and next clock. Hypotheses are unranked/nonexclusive. Source groups do not establish independence; no support count or odds.",
-    "r32_acceptance": "A changed outlook revalidates attached rules. Trigger, later continuation and proposed cause remain separate."
+    "r32_acceptance": "A changed outlook revalidates attached rules. Trigger, later continuation and proposed cause remain separate.",
+    "offline_reference": "r32/reference/index.html",
+    "feature_scorecard": "r32/feature-scorecard.md",
+    "production_integration_status": "see existing-owner requirements; offline reference is not production integration"
   },
   {
     "id": "I04",
@@ -88,7 +98,11 @@
     "acceptance": "Fresh valid invalidation outranks confirmation. Unknown critical evidence blocks confirmation. The fifth eligible close is evaluated before expiry. Pauses do not extend the window silently. Late data cannot silently reopen or backdate a terminal outcome. Duplicate saves have one canonical effect.",
     "current_capability": "unavailable_for_compound_bond_rule",
     "r31_acceptance": "No activation or equivalent claim from split independent alerts; preserve the complete authored rule and show the unsupported state.",
-    "r32_behavior": "Current compound activation is visibly unavailable in the main composer. Keep working preserves the local draft. A matched event remains immutable when later continuation is challenged."
+    "r32_behavior": "Current compound activation is visibly unavailable in the main composer. Keep working preserves the local draft. A matched event remains immutable when later continuation is challenged.",
+    "r32_acceptance": "Retain the original authored rule on outcomes and use it in later/corrected reviews. Explicit null inputs remain unknown. Fresh hard invalidators win before peer aggregation. Earlier evidence cannot become a later continuation challenge.",
+    "offline_reference": "r32/reference/index.html",
+    "feature_scorecard": "r32/feature-scorecard.md",
+    "production_integration_status": "see existing-owner requirements; offline reference is not production integration"
   },
   {
     "id": "I05",
@@ -114,7 +128,10 @@
     ],
     "r31_behavior": "Keep CoreWeave's dated annual reported obligations separate from the synthetic Parent A exact-date scenario. Compute payment financing and selected-buffer financing separately; preserve legal usability and payment cutoffs.",
     "r31_acceptance": "Base payment gap190, buffer gap490; eligible pre-cutoff net draw900 gives cash710/headroom410. Delay receipt200 gives510/210. Post-cutoff draw preserves190 cutoff deficit.",
-    "reference": "r31/implementation.md#i05--financing-and-cash-timing"
+    "reference": "r31/implementation.md#i05--financing-and-cash-timing",
+    "offline_reference": "r32/reference/index.html",
+    "feature_scorecard": "r32/feature-scorecard.md",
+    "production_integration_status": "see existing-owner requirements; offline reference is not production integration"
   },
   {
     "id": "I06",
@@ -129,7 +146,10 @@
     "dependencies": "Exact forward/hedge quote, base instrument yield, quote clocks, day-count/annualization convention, costs and currency direction. The observed comparison pauses if a required quote is missing.",
     "states": "Observed quote, manual assumption, expired quote, missing basis/forward, excluded instrument, incompatible duration.",
     "effect": "Apply buyer perspective to the current case; save only on explicit action.",
-    "acceptance": "5.10% minus current annualized rolling-3M hedge cost 3.60% equals 1.50%. The 5 bp difference against a 1.55% JGB is not presented as a robust winner. Future roll costs remain open, and quotation inversion cannot reverse the economics accidentally."
+    "acceptance": "5.10% minus current annualized rolling-3M hedge cost 3.60% equals 1.50%. The 5 bp difference against a 1.55% JGB is not presented as a robust winner. Future roll costs remain open, and quotation inversion cannot reverse the economics accidentally.",
+    "offline_reference": "r32/reference/index.html",
+    "feature_scorecard": "r32/feature-scorecard.md",
+    "production_integration_status": "see existing-owner requirements; offline reference is not production integration"
   },
   {
     "id": "I07",
@@ -144,7 +164,10 @@
     "dependencies": "Licensed, correctly entitled instrument-level CDS observations and cash-bond metadata. A matching top-level CDS dataset was not established by the bounded local catalog search.",
     "states": "Current, stale, no quote, insufficient contributors, contract mismatch, incomparable cash instrument.",
     "effect": "Read-only quote inspection.",
-    "acceptance": "CDS spread is not a real-world default probability. A price move cannot stand in for a filing-confirmed refinancing event. No synthetic CDS path enters observed-support scoring."
+    "acceptance": "CDS spread is not a real-world default probability. A price move cannot stand in for a filing-confirmed refinancing event. No synthetic CDS path enters observed-support scoring.",
+    "offline_reference": "r32/reference/index.html",
+    "feature_scorecard": "r32/feature-scorecard.md",
+    "production_integration_status": "see existing-owner requirements; offline reference is not production integration"
   },
   {
     "id": "I08",
@@ -158,7 +181,10 @@
     "dependencies": "Borrower-specific new-issue terms, benchmark and spread, matched cross-currency swap terms, base currency, quote direction and same-time market inputs.",
     "states": "Manual scenario, observed quote, missing swap/basis, tenor mismatch, borrower mismatch, incomplete costs.",
     "effect": "Local comparison view; explicit save stores a case revision.",
-    "acceptance": "The manual USD/EUR/JPY example is illustrative. Absent direct basis or swap terms remains unavailable. CNH basis or a generic funding proxy does not substitute for direct market-wide USD cross-currency basis."
+    "acceptance": "The manual USD/EUR/JPY example is illustrative. Absent direct basis or swap terms remains unavailable. CNH basis or a generic funding proxy does not substitute for direct market-wide USD cross-currency basis.",
+    "offline_reference": "r32/reference/index.html",
+    "feature_scorecard": "r32/feature-scorecard.md",
+    "production_integration_status": "see existing-owner requirements; offline reference is not production integration"
   },
   {
     "id": "I09",
@@ -172,7 +198,10 @@
     "dependencies": "A versioned episode registry, eligible point-in-time features, data rights, release-clock admission and complete outcome windows for revealed analysis.",
     "states": "Matches, valid zero matches, unavailable history, partial coverage, reset.",
     "effect": "Read-only cohort selection; Save episode set persists explicit constraints through the canonical case owner.",
-    "acceptance": "No future outcome, revised later feature or chosen success label leaks into matching. Date-only vintage metadata cannot imply intraday knowability. Zero eligible matches is distinct from no loaded history."
+    "acceptance": "No future outcome, revised later feature or chosen success label leaks into matching. Date-only vintage metadata cannot imply intraday knowability. Zero eligible matches is distinct from no loaded history.",
+    "offline_reference": "r32/reference/index.html",
+    "feature_scorecard": "r32/feature-scorecard.md",
+    "production_integration_status": "see existing-owner requirements; offline reference is not production integration"
   },
   {
     "id": "I10",
@@ -191,7 +220,10 @@
     "dependencies": "Official issuance/auction/release calendars and issuer reporting/financing records with availability clocks. The shown schedule is a fixture, not a current event feed.",
     "states": "Scheduled, estimated, moved, cancelled, delayed, date unknown.",
     "effect": "User-directed case attachment; no external message or real calendar action is implied.",
-    "acceptance": "Unknown dates stay unknown. Net issuance arithmetic and settlement timing do not establish which investor supplied the capital. Opening a check preserves the case and returns to its prior route."
+    "acceptance": "Unknown dates stay unknown. Net issuance arithmetic and settlement timing do not establish which investor supplied the capital. Opening a check preserves the case and returns to its prior route.",
+    "offline_reference": "r32/reference/index.html",
+    "feature_scorecard": "r32/feature-scorecard.md",
+    "production_integration_status": "see existing-owner requirements; offline reference is not production integration"
   },
   {
     "id": "I11",
@@ -206,7 +238,10 @@
     "dependencies": "An existing approved model/evaluation owner and reproducible qualification receipts; no such new R30 evaluation was run in this task.",
     "states": "Unavailable, insufficient cohort, qualified model, incompatible requested target, drift/coverage abstention.",
     "effect": "Read-only qualification inspection.",
-    "acceptance": "No LLM-authored probability. A probability trained for one event or horizon cannot be transferred to an arbitrary user monitor. Sliders are sensitivities and cannot silently become likelihood estimates."
+    "acceptance": "No LLM-authored probability. A probability trained for one event or horizon cannot be transferred to an arbitrary user monitor. Sliders are sensitivities and cannot silently become likelihood estimates.",
+    "offline_reference": "r32/reference/index.html",
+    "feature_scorecard": "r32/feature-scorecard.md",
+    "production_integration_status": "see existing-owner requirements; offline reference is not production integration"
   },
   {
     "id": "I12",
@@ -220,7 +255,10 @@
     "dependencies": "Admitted episode histories and complete future windows. Current 1D/5D/20D values are explicitly synthetic interface fixtures, separate from documented historical research episodes.",
     "states": "Hidden, revealed, incomplete horizon, revised history, no qualified cohort.",
     "effect": "Local reveal/record state, persisted only through explicit case actions.",
-    "acceptance": "Later outcomes cannot alter the frozen hypothesis or matching features. Missing horizons remain blank. Overlapping episodes are not counted as independent trials."
+    "acceptance": "Later outcomes cannot alter the frozen hypothesis or matching features. Missing horizons remain blank. Overlapping episodes are not counted as independent trials.",
+    "offline_reference": "r32/reference/index.html",
+    "feature_scorecard": "r32/feature-scorecard.md",
+    "production_integration_status": "see existing-owner requirements; offline reference is not production integration"
   },
   {
     "id": "I13",
@@ -237,7 +275,10 @@
     "states": "Mixed structure, provisional intraday, close break, retest pending/holds, invalidated, zero variance, insufficient history, incompatible or stale series.",
     "effect": "Local scenario draft only; save via I15 and monitor via existing I04 admission.",
     "acceptance": "Prior-only sample volatility8bp; confirmation distance−.25, invalidation+1.5. Do not count correlated price features as independent evidence.",
-    "reference": "r31/implementation.md#i13--market-structure"
+    "reference": "r31/implementation.md#i13--market-structure",
+    "offline_reference": "r32/reference/index.html",
+    "feature_scorecard": "r32/feature-scorecard.md",
+    "production_integration_status": "see existing-owner requirements; offline reference is not production integration"
   },
   {
     "id": "I14",
@@ -255,7 +296,10 @@
     "states": "Reconciled, residual estimated, unexplained residual, unmatched period, slow release, missing transactions, mechanism only.",
     "effect": "Read-only interpretation or addition to local case draft; retention follows I15.",
     "acceptance": "Both assets have positive net purchases. No funding-origin arrow inferred from price or aggregate holdings. Quarterlies cannot confirm daily switches.",
-    "reference": "r31/implementation.md#i14--buyer-flows-and-funding-pipes"
+    "reference": "r31/implementation.md#i14--buyer-flows-and-funding-pipes",
+    "offline_reference": "r32/reference/index.html",
+    "feature_scorecard": "r32/feature-scorecard.md",
+    "production_integration_status": "see existing-owner requirements; offline reference is not production integration"
   },
   {
     "id": "I15",
@@ -283,6 +327,10 @@
       "6H13-0",
       "6H4O-0"
     ],
-    "r32_behavior": "Typed tool additions visibly enter the same local draft with source, relationship and observation period. Inspect, remove and undo preserve unrelated edits. Borrower/series/horizon/cutoff conflicts require review; no silent cross-entity attachment."
+    "r32_behavior": "Typed tool additions visibly enter the same local draft with source, relationship and observation period. Inspect, remove and undo preserve unrelated edits. Borrower/series/horizon/cutoff conflicts require review; no silent cross-entity attachment.",
+    "r32_acceptance": "Validate additions before clearing edited fields. Inspect inactive items using their retained payload. Conflicts preserve the custom question and next check; reopening is receipt-scoped. Main-page pending inputs and unapplied tool edits remain separate.",
+    "offline_reference": "r32/reference/index.html",
+    "feature_scorecard": "r32/feature-scorecard.md",
+    "production_integration_status": "see existing-owner requirements; offline reference is not production integration"
   }
 ]

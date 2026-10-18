@@ -1,1 +1,1708 @@
-{"operation_id":"bonds-transmission-r32-20261018","carrier":"native Mastermind Paper","effects":[{"operation_id":"bonds-transmission-r32-20261018-001","tool":"write_html","arguments":{"targetNodeId":"64UT-1","mode":"replace","html":"<div data-name=\"R32 selected outlook\" style=\"display:flex;flex-direction:column;gap:18px;background:var(--mx-light-panel);border:1px solid var(--mx-light-line);border-radius:12px;padding:20px;font-family:Inter;color:var(--mx-light-text);\"><div style=\"display:flex;align-items:center;gap:12px;justify-content:space-between;\"><div style=\"display:flex;flex-direction:column;gap:6px;\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">SELECTED OUTLOOK</div></div><div style=\"display:flex;align-items:center;white-space:nowrap;border-radius:999px;padding:5px 10px;background:var(--mx-light-warn-soft);color:var(--mx-light-ink-warn);font-size:12px;line-height:16px;font-weight:600;\">Watching</div><div data-name=\"Action Compare explanations\" style=\"display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--mx-light-line);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;\">Compare explanations</div></div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6GTF-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GTG-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GTH-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GTI-0","name":"SELECTED OUTLOOK","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GTJ-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GTK-0","name":"Watching","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GTL-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GTM-0","name":"Compare explanations","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-002","tool":"rename_nodes","arguments":{"updates":[{"nodeId":"6GTF-0","name":"R32 selected outlook"}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"6GTF-0","name":"R32 selected outlook"}]}]},{"operation_id":"bonds-transmission-r32-20261018-003","tool":"write_html","arguments":{"targetNodeId":"6GTF-0","mode":"insert-children","html":"<div style=\"display:flex;flex-direction:column;gap:6px;\"><div style=\"font-size:24px;line-height:1.45;font-weight:700;color:var(--mx-light-text);\">Rate relief persists</div><div style=\"font-size:14px;line-height:1.45;font-weight:400;color:var(--mx-light-muted);\">Treasuries may stay supported while credit remains selective.</div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6GTO-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GTP-0","name":"Rate relief persists","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GTQ-0","name":"Treasuries may stay …","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-004","tool":"write_html","arguments":{"targetNodeId":"6GTF-0","mode":"insert-children","html":"<div style=\"display:flex;align-items:center;gap:24px;padding:18px 0;border-top:1px solid var(--mx-light-line);border-bottom:1px solid var(--mx-light-line);align-items:flex-start;\"><div style=\"display:flex;flex-direction:column;gap:8px;flex:1;min-width:0;\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">RATE TEST</div><div style=\"display:flex;align-items:center;gap:12px;\"><div style=\"font-size:22px;line-height:1.45;font-weight:650;color:var(--mx-light-ink-warn);\">5.10%</div></div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-muted);\">Needs a close below 5.08%.</div></div><div style=\"display:flex;flex-direction:column;gap:8px;flex:1;min-width:0;\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">CREDIT TEST</div><div style=\"display:flex;align-items:center;gap:12px;\"><div style=\"font-size:22px;line-height:1.45;font-weight:650;color:var(--mx-light-ink-warn);\">+11 bp</div></div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-muted);\">Matched peer mean needs +15 bp.</div></div><div style=\"display:flex;flex-direction:column;gap:8px;flex:1;min-width:0;\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">FUNDING TEST</div><div style=\"display:flex;align-items:center;gap:12px;\"><div style=\"font-size:22px;line-height:1.45;font-weight:650;color:var(--mx-light-ink-up);\">Orderly</div></div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-muted);\">Must remain current and orderly.</div></div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6GTS-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GTT-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GTU-0","name":"RATE TEST","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GTV-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GTW-0","name":"5.10%","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GTX-0","name":"Needs a close below …","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GTY-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GTZ-0","name":"CREDIT TEST","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GU0-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GU1-0","name":"+11 bp","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GU2-0","name":"Matched peer mean ne…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GU3-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GU4-0","name":"FUNDING TEST","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GU5-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GU6-0","name":"Orderly","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GU7-0","name":"Must remain current …","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-005","tool":"write_html","arguments":{"targetNodeId":"6GTF-0","mode":"insert-children","html":"<div style=\"display:flex;align-items:center;gap:24px;justify-content:space-between;\"><div style=\"display:flex;flex-direction:column;gap:6px;flex:1;\"><div style=\"font-size:14px;line-height:1.45;font-weight:600;color:var(--mx-light-text);\">All three must hold within five eligible closes.</div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-ink-down);\">A close above 5.22% or funding stress ends the test.</div><div style=\"font-size:12px;line-height:1.45;font-weight:400;color:var(--mx-light-muted);\">A matched test does not establish the cause or guarantee continuation.</div></div><div data-name=\"Action Review conditions\" style=\"display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--mx-light-info);background:var(--mx-light-info);color:var(--mx-light-panel);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;\">Review conditions</div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6GU9-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUA-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUB-0","name":"All three must hold …","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUC-0","name":"A close above 5.22% …","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUD-0","name":"A matched test does …","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUE-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUF-0","name":"Review conditions","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-006","tool":"move_nodes","arguments":{"moves":[{"nodeId":"6GTF-0","parentId":"64RI-1","index":3}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"moves":[{"nodeId":"6GTF-0","parentId":"64RI-1","index":3}],"affectedParents":[{"parentId":"64RI-1","childIds":["64RW-1","64SB-1","64SK-1","6GTF-0","64SV-1","64WF-1"]}]}]},{"operation_id":"bonds-transmission-r32-20261018-007","tool":"write_html","arguments":{"targetNodeId":"64SK-1","mode":"replace","html":"<div style=\"display:flex;flex-direction:column;gap:12px;\"><div style=\"display:flex;align-items:center;gap:16px;justify-content:space-between;\"><div style=\"display:flex;align-items:center;gap:12px;\"><div data-name=\"Action AI funding → safe assets ▾\" style=\"display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--mx-light-line);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;\">AI funding → safe assets ▾</div><div style=\"display:flex;align-items:center;white-space:nowrap;border-radius:999px;padding:5px 10px;background:var(--mx-light-info-soft);color:var(--mx-light-info);font-size:12px;line-height:16px;font-weight:600;\">1–5 sessions</div><div style=\"display:flex;align-items:center;white-space:nowrap;border-radius:999px;padding:5px 10px;background:var(--mx-light-panel2);color:var(--mx-light-muted);font-size:12px;line-height:16px;font-weight:600;\">Local draft</div></div><div data-name=\"Action Review draft · 2\" style=\"display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--mx-light-line);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;\">Review draft · 2</div></div><div style=\"display:flex;align-items:center;gap:16px;padding:12px 16px;background:var(--mx-light-info-soft);border-radius:8px;\"><div style=\"font-size:12px;line-height:1.45;font-weight:600;color:var(--mx-light-info);\">Added to this draft</div><div style=\"font-size:13px;line-height:1.45;font-weight:500;color:var(--mx-light-text);\">Price conditions · Buyer-flow evidence</div><div style=\"font-size:13px;line-height:1.45;font-weight:600;color:var(--mx-light-info);\">Inspect →</div><div style=\"font-size:13px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);\">Undo last change</div></div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6GUI-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUJ-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUK-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUL-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUM-0","name":"AI funding → safe as…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUN-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUO-0","name":"1–5 sessions","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUP-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUQ-0","name":"Local draft","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUR-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUS-0","name":"Review draft · 2","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUT-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUU-0","name":"Added to this draft","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUV-0","name":"Price conditions · B…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUW-0","name":"Inspect →","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GUX-0","name":"Undo last change","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-008","tool":"set_text_content","arguments":{"updates":[{"nodeId":"63K4-1","textContent":"Review conditions"}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"63K4-1","textContent":"Review conditions"}]}]},{"operation_id":"bonds-transmission-r32-20261018-009","tool":"set_text_content","arguments":{"updates":[{"nodeId":"63UM-1","textContent":"Review save options"},{"nodeId":"63YQ-1","textContent":"Review conditions"}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"63UM-1","textContent":"Review save options"},{"nodeId":"63YQ-1","textContent":"Review conditions"}]}]},{"operation_id":"bonds-transmission-r32-20261018-010","tool":"set_text_content","arguments":{"updates":[{"nodeId":"641B-1","textContent":"Review conditions"}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"641B-1","textContent":"Review conditions"}]}]},{"operation_id":"bonds-transmission-r32-20261018-011","tool":"set_text_content","arguments":{"updates":[{"nodeId":"64AT-1","textContent":"Review save options"}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"64AT-1","textContent":"Review save options"}]}]},{"operation_id":"bonds-transmission-r32-20261018-012","tool":"set_text_content","arguments":{"updates":[{"nodeId":"64IK-1","textContent":"Review conditions"},{"nodeId":"64IQ-1","textContent":"Outlook & scenarios"},{"nodeId":"64KY-1","textContent":"NEXT DISCRIMINATING CHECK"},{"nodeId":"64LD-1","textContent":"Evidence group"},{"nodeId":"64ME-1","textContent":"Open outlook →"},{"nodeId":"64KR-1","textContent":"Growth repricing fits."}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"64IK-1","textContent":"Review conditions"},{"nodeId":"64IQ-1","textContent":"Outlook & scenarios"},{"nodeId":"64KY-1","textContent":"NEXT DISCRIMINATING CHECK"},{"nodeId":"64LD-1","textContent":"Evidence group"},{"nodeId":"64ME-1","textContent":"Open outlook →"},{"nodeId":"64KR-1","textContent":"Growth repricing fits."}]}]},{"operation_id":"bonds-transmission-r32-20261018-013","tool":"set_text_content","arguments":{"updates":[{"nodeId":"64SF-1","textContent":"Outlook & scenarios"},{"nodeId":"64S9-1","textContent":"Review save options"},{"nodeId":"64S4-1","textContent":"Follow the next test, challenge the explanation, and stress the exposure."},{"nodeId":"64WN-1","textContent":"Review conditions →"},{"nodeId":"64WH-1","textContent":"NEXT DISCRIMINATING CHECK"},{"nodeId":"64WI-1","textContent":"Check auction demand and new financing terms."},{"nodeId":"6GTM-0","textContent":"Compare paths"}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"64SF-1","textContent":"Outlook & scenarios"},{"nodeId":"64S9-1","textContent":"Review save options"},{"nodeId":"64S4-1","textContent":"Follow the next test, challenge the explanation, and stress the exposure."},{"nodeId":"64WN-1","textContent":"Review conditions →"},{"nodeId":"64WH-1","textContent":"NEXT DISCRIMINATING CHECK"},{"nodeId":"64WI-1","textContent":"Check auction demand and new financing terms."},{"nodeId":"6GTM-0","textContent":"Compare paths"}]}]},{"operation_id":"bonds-transmission-r32-20261018-014","tool":"set_text_content","arguments":{"updates":[{"nodeId":"64ZE-1","textContent":"Outlook & scenarios"},{"nodeId":"64Z8-1","textContent":"Review save options"},{"nodeId":"64ZU-1","textContent":"Open outlook →"}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"64ZE-1","textContent":"Outlook & scenarios"},{"nodeId":"64Z8-1","textContent":"Review save options"},{"nodeId":"64ZU-1","textContent":"Open outlook →"}]}]},{"operation_id":"bonds-transmission-r32-20261018-015","tool":"set_text_content","arguments":{"updates":[{"nodeId":"673E-1","textContent":"Outlook & scenarios"},{"nodeId":"6738-1","textContent":"Review conditions"},{"nodeId":"673R-1","textContent":"Baseline: revision 3 ▾"},{"nodeId":"673Y-1","textContent":"REVISION 3 → LATEST ELIGIBLE CLOSE"},{"nodeId":"674K-1","textContent":"Mean peer OAS remains below +15 bp."},{"nodeId":"674O-1","textContent":"More peers weakened. The basket spread threshold and rate test remain unmet."},{"nodeId":"674Q-1","textContent":"Inspect condition logic"},{"nodeId":"672Z-1","textContent":"Full-case preview · synthetic values"}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"673E-1","textContent":"Outlook & scenarios"},{"nodeId":"6738-1","textContent":"Review conditions"},{"nodeId":"673R-1","textContent":"Baseline: revision 3 ▾"},{"nodeId":"673Y-1","textContent":"REVISION 3 → LATEST ELIGIBLE CLOSE"},{"nodeId":"674K-1","textContent":"Mean peer OAS remains below +15 bp."},{"nodeId":"674O-1","textContent":"More peers weakened. The basket spread threshold and rate test remain unmet."},{"nodeId":"674Q-1","textContent":"Inspect condition logic"},{"nodeId":"672Z-1","textContent":"Full-case preview · synthetic values"}]}]},{"operation_id":"bonds-transmission-r32-20261018-016","tool":"set_text_content","arguments":{"updates":[{"nodeId":"66HS-1","textContent":"Conditions"}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"66HS-1","textContent":"Conditions"}]}]},{"operation_id":"bonds-transmission-r32-20261018-017","tool":"set_text_content","arguments":{"updates":[{"nodeId":"66K6-1","textContent":"Conditions"}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"66K6-1","textContent":"Conditions"}]}]},{"operation_id":"bonds-transmission-r32-20261018-018","tool":"rename_nodes","arguments":{"updates":[{"nodeId":"64L6-1","name":"Evidence groups and shared inputs"},{"nodeId":"6GUI-0","name":"R32 case draft context"}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"64L6-1","name":"Evidence groups and shared inputs"},{"nodeId":"6GUI-0","name":"R32 case draft context"}]}]},{"operation_id":"bonds-transmission-r32-20261018-019","tool":"set_text_content","arguments":{"updates":[{"nodeId":"665Y-1","textContent":"Review conditions"},{"nodeId":"6660-1","textContent":"Treasury / credit test · local draft"},{"nodeId":"6662-1","textContent":"MATCH RULE · ALL MUST HOLD"},{"nodeId":"666S-1","textContent":"After 5 eligible closes"},{"nodeId":"666V-1","textContent":"Not active"},{"nodeId":"666X-1","textContent":"ACTIVATION UNAVAILABLE"},{"nodeId":"666Y-1","textContent":"The full yield + credit + funding rule is not supported yet. Keep these conditions in your draft."},{"nodeId":"6671-1","textContent":"Keep working"},{"nodeId":"6673-1","textContent":"Activation unavailable"}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"665Y-1","textContent":"Review conditions"},{"nodeId":"6660-1","textContent":"Treasury / credit test · local draft"},{"nodeId":"6662-1","textContent":"MATCH RULE · ALL MUST HOLD"},{"nodeId":"666S-1","textContent":"After 5 eligible closes"},{"nodeId":"666V-1","textContent":"Not active"},{"nodeId":"666X-1","textContent":"ACTIVATION UNAVAILABLE"},{"nodeId":"666Y-1","textContent":"The full yield + credit + funding rule is not supported yet. Keep these conditions in your draft."},{"nodeId":"6671-1","textContent":"Keep working"},{"nodeId":"6673-1","textContent":"Activation unavailable"}]}]},{"operation_id":"bonds-transmission-r32-20261018-020","tool":"update_styles","arguments":{"updates":[{"nodeIds":["6672-1"],"styles":{"backgroundColor":"var(--mx-light-panel2)","borderColor":"var(--mx-light-line)","color":"var(--mx-light-muted)"}},{"nodeIds":["6673-1"],"styles":{"color":"var(--mx-light-muted)"}}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"6672-1"},{"nodeId":"6673-1"}]}]},{"operation_id":"bonds-transmission-r32-20261018-021","tool":"write_html","arguments":{"targetNodeId":"6C21-1","mode":"insert-children","html":"<div style=\"display:flex;flex-direction:column;gap:10px;padding-top:32px;border-top:1px solid var(--mx-light-line);\"><div style=\"display:flex;align-items:center;gap:16px;justify-content:space-between;\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">R32 / CASE HANDOFF</div><div style=\"display:flex;align-items:center;white-space:nowrap;border-radius:999px;padding:5px 10px;background:var(--mx-light-info-soft);color:var(--mx-light-info);font-size:12px;line-height:16px;font-weight:600;\">I15 extension</div></div><div style=\"font-size:26px;line-height:1.45;font-weight:700;color:var(--mx-light-text);\">See what the tools changed</div><div style=\"font-size:14px;line-height:1.45;font-weight:400;color:var(--mx-light-muted);\">One question, typed additions, and an honest retained result.</div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6GY5-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GY6-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GY7-0","name":"R32 / CASE HANDOFF","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GY8-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GY9-0","name":"I15 extension","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GYA-0","name":"See what the tools c…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GYB-0","name":"One question, typed …","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-022","tool":"write_html","arguments":{"targetNodeId":"6C21-1","mode":"insert-children","html":"<div style=\"display:flex;gap:24px;align-items:flex-start;\"><div style=\"display:flex;flex-direction:column;gap:20px;width:760px;flex-shrink:0;\"></div><div style=\"display:flex;flex-direction:column;gap:20px;flex:1;min-width:0;\"></div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6GZW-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GZX-0","name":"Rectangle","component":"Rectangle","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6GZY-0","name":"Rectangle","component":"Rectangle","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-023","tool":"write_html","arguments":{"targetNodeId":"6GZX-0","mode":"insert-children","html":"<div data-name=\"Draft review\" style=\"display:flex;flex-direction:column;gap:18px;background:var(--mx-light-panel);border:1px solid var(--mx-light-line);border-radius:12px;padding:20px;font-family:Inter;color:var(--mx-light-text);\"><div style=\"display:flex;align-items:center;gap:12px;justify-content:space-between;\"><div style=\"display:flex;flex-direction:column;gap:8px;\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">CASE DRAFT</div><div style=\"font-size:24px;line-height:1.45;font-weight:700;color:var(--mx-light-text);\">Review your additions</div></div><div data-name=\"Action ×\" style=\"display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--mx-light-line);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;\">×</div></div><div style=\"display:flex;align-items:center;gap:12px;\"><div style=\"display:flex;align-items:center;white-space:nowrap;border-radius:999px;padding:5px 10px;background:var(--mx-light-warn-soft);color:var(--mx-light-ink-warn);font-size:12px;line-height:16px;font-weight:600;\">Local only</div><div style=\"font-size:13px;line-height:1.45;font-weight:500;color:var(--mx-light-muted);\">AI funding → safe assets · 1–5 sessions</div></div></div>"},"state":"EFFECT_UNKNOWN","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"text":"Node \"Rectangle\" (Rectangle) cannot have children"}],"reconciliation":{"state":"EFFECT_NONE_CONFIRMED_BY_SAME_CARRIER_READBACK","reason":"Upstream rejected insertion into a Rectangle. Exact target remains an empty Rectangle under the original owned row.","target":{"id":"6GZX-0","name":"Rectangle","component":"Rectangle","width":760,"height":null,"worldX":null,"worldY":null,"x":null,"y":null,"isVisible":true,"isLocked":false,"parentId":"6GZW-0","childIds":[],"childCount":0,"artboardId":"6C1S-1","textContent":null}}},{"operation_id":"bonds-transmission-r32-20261018-024","tool":"write_html","arguments":{"targetNodeId":"6GZX-0","mode":"replace","html":"<div data-name=\"Draft review\" style=\"display:flex;flex-direction:column;gap:18px;background:var(--mx-light-panel);border:1px solid var(--mx-light-line);border-radius:12px;padding:20px;font-family:Inter;color:var(--mx-light-text);width:760px;flex-shrink:0;\"><div style=\"display:flex;align-items:center;gap:12px;justify-content:space-between;\"><div style=\"display:flex;flex-direction:column;gap:8px;\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">CASE DRAFT</div><div style=\"font-size:24px;line-height:1.45;font-weight:700;color:var(--mx-light-text);\">Review your additions</div></div><div data-name=\"Action ×\" style=\"display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--mx-light-line);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;\">×</div></div><div style=\"display:flex;align-items:center;gap:12px;\"><div style=\"display:flex;align-items:center;white-space:nowrap;border-radius:999px;padding:5px 10px;background:var(--mx-light-warn-soft);color:var(--mx-light-ink-warn);font-size:12px;line-height:16px;font-weight:600;\">Local only</div><div style=\"font-size:13px;line-height:1.45;font-weight:500;color:var(--mx-light-muted);\">AI funding → safe assets · 1–5 sessions</div></div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6H13-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H14-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H15-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H16-0","name":"CASE DRAFT","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H17-0","name":"Review your addition…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H18-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H19-0","name":"×","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H1A-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H1B-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H1C-0","name":"Local only","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H1D-0","name":"AI funding → safe as…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-025","tool":"write_html","arguments":{"targetNodeId":"6GZY-0","mode":"replace","html":"<div data-name=\"Draft handoff scorecard\" style=\"display:flex;flex-direction:column;gap:18px;background:var(--mx-light-panel);border:1px solid var(--mx-light-line);border-radius:12px;padding:20px;font-family:Inter;color:var(--mx-light-text);flex:1;min-width:0;\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">I15 / DRAFT HANDOFF / SCORECARD</div><div style=\"font-size:22px;line-height:1.45;font-weight:700;color:var(--mx-light-text);\">Applied means visible</div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6H1F-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H1G-0","name":"I15 / DRAFT HANDOFF …","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H1H-0","name":"Applied means visibl…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-026","tool":"write_html","arguments":{"targetNodeId":"6H13-0","mode":"insert-children","html":"<div style=\"display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:10px;background:var(--mx-light-panel2);\"><div style=\"display:flex;align-items:center;gap:12px;justify-content:space-between;\"><div style=\"font-size:16px;line-height:1.45;font-weight:650;color:var(--mx-light-text);\">Price conditions</div><div style=\"display:flex;align-items:center;white-space:nowrap;border-radius:999px;padding:5px 10px;background:var(--mx-light-info-soft);color:var(--mx-light-info);font-size:12px;line-height:16px;font-weight:600;\">Applied</div></div><div style=\"font-size:15px;line-height:1.45;font-weight:550;color:var(--mx-light-text);\">Close below 5.08% · end test above 5.22%</div><div style=\"font-size:12px;line-height:1.45;font-weight:400;color:var(--mx-light-muted);\">Market structure · synthetic NY close · same Treasury series</div><div style=\"display:flex;align-items:center;gap:10px;\"><div data-name=\"Action Inspect source\" style=\"display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--mx-light-line);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;\">Inspect source</div><div data-name=\"Action Remove\" style=\"display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--mx-light-line);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;\">Remove</div></div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6H26-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H27-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H28-0","name":"Price conditions","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H29-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H2A-0","name":"Applied","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H2B-0","name":"Close below 5.08% · …","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H2C-0","name":"Market structure · s…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H2D-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H2E-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H2F-0","name":"Inspect source","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H2G-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H2H-0","name":"Remove","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-027","tool":"write_html","arguments":{"targetNodeId":"6H13-0","mode":"insert-children","html":"<div style=\"display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:10px;background:var(--mx-light-panel2);\"><div style=\"display:flex;align-items:center;gap:12px;justify-content:space-between;\"><div style=\"font-size:16px;line-height:1.45;font-weight:650;color:var(--mx-light-text);\">Buyer-flow evidence</div><div style=\"display:flex;align-items:center;white-space:nowrap;border-radius:999px;padding:5px 10px;background:var(--mx-light-warn-soft);color:var(--mx-light-ink-warn);font-size:12px;line-height:16px;font-weight:600;\">Challenges rotation</div></div><div style=\"font-size:15px;line-height:1.45;font-weight:550;color:var(--mx-light-text);\">The matched buyer purchased both baskets.</div><div style=\"font-size:12px;line-height:1.45;font-weight:400;color:var(--mx-light-muted);\">Reporting-period evidence · does not satisfy a daily trigger</div><div style=\"display:flex;align-items:center;gap:10px;\"><div data-name=\"Action Inspect source\" style=\"display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--mx-light-line);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;\">Inspect source</div><div data-name=\"Action Remove\" style=\"display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--mx-light-line);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;\">Remove</div></div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6H2L-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H2M-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H2N-0","name":"Buyer-flow evidence","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H2O-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H2P-0","name":"Challenges rotation","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H2Q-0","name":"The matched buyer pu…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H2R-0","name":"Reporting-period evi…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H2S-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H2T-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H2U-0","name":"Inspect source","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H2V-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H2W-0","name":"Remove","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-028","tool":"write_html","arguments":{"targetNodeId":"6H13-0","mode":"insert-children","html":"<div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-muted);\">Each addition keeps its source, scope and observation period.</div><div style=\"display:flex;align-items:center;gap:12px;justify-content:flex-end;\"><div data-name=\"Action Keep working\" style=\"display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--mx-light-line);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;\">Keep working</div><div data-name=\"Action Review save options\" style=\"display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--mx-light-info);background:var(--mx-light-info);color:var(--mx-light-panel);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;\">Review save options</div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6H2Y-0","name":"Each addition keeps …","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H2Z-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H30-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H31-0","name":"Keep working","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H32-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H33-0","name":"Review save options","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-029","tool":"write_html","arguments":{"targetNodeId":"6H1F-0","mode":"insert-children","html":"<div style=\"display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:1px solid var(--mx-light-line);\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">APPLY</div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-text);\">Show the typed addition, source, affected output and Inspect / Remove. A duplicate attachment updates the same item.</div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6H44-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H45-0","name":"APPLY","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H46-0","name":"Show the typed addit…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-030","tool":"write_html","arguments":{"targetNodeId":"6H1F-0","mode":"insert-children","html":"<div style=\"display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:1px solid var(--mx-light-line);\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">CONTEXT</div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-text);\">Carry series, borrower, buyer, horizon and cutoff. Revalidate descendants when any dependency changes.</div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6H48-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H49-0","name":"CONTEXT","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H4A-0","name":"Carry series, borrow…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-031","tool":"write_html","arguments":{"targetNodeId":"6H1F-0","mode":"insert-children","html":"<div style=\"display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:1px solid var(--mx-light-line);\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">UNDO</div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-text);\">Undo reverses only the selected addition; preserve unrelated draft edits and the saved revision.</div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6H4C-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H4D-0","name":"UNDO","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H4E-0","name":"Undo reverses only t…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-032","tool":"write_html","arguments":{"targetNodeId":"6H1F-0","mode":"insert-children","html":"<div style=\"display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:1px solid var(--mx-light-line);\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">SAVE</div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-text);\">Route to I15 admission review. A question-only result excludes charts, assumptions and rules.</div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6H4G-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H4H-0","name":"SAVE","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H4I-0","name":"Route to I15 admissi…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-033","tool":"write_html","arguments":{"targetNodeId":"6H1F-0","mode":"insert-children","html":"<div style=\"display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:1px solid var(--mx-light-line);\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">ACCESS</div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-text);\">Keyboard apply/cancel; Escape and Close restore focus. At 390px, stack rows and keep actions reachable.</div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6H4K-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H4L-0","name":"ACCESS","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H4M-0","name":"Keyboard apply/cance…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-034","tool":"write_html","arguments":{"targetNodeId":"6C21-1","mode":"insert-children","html":"<div data-name=\"Context mismatch state\" style=\"display:flex;flex-direction:column;gap:18px;background:var(--mx-light-panel);border:1px solid var(--mx-light-line);border-radius:12px;padding:20px;font-family:Inter;color:var(--mx-light-text);background:var(--mx-light-warn-soft);\"><div style=\"display:flex;align-items:center;gap:20px;justify-content:space-between;\"><div style=\"display:flex;flex-direction:column;gap:7px;flex:1;\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">INCOMPATIBLE ADDITION</div><div style=\"font-size:20px;line-height:1.45;font-weight:700;color:var(--mx-light-text);\">This belongs to another borrower</div><div style=\"font-size:14px;line-height:1.45;font-weight:400;color:var(--mx-light-muted);\">The cash scenario is for Synthetic Parent A. CoreWeave remains selected.</div></div><div data-name=\"Action Return to cash scenario\" style=\"display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--mx-light-line);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;\">Return to cash scenario</div></div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6H4O-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H4P-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H4Q-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H4R-0","name":"INCOMPATIBLE ADDITIO…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H4S-0","name":"This belongs to anot…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H4T-0","name":"The cash scenario is…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H4U-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H4V-0","name":"Return to cash scena…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-035","tool":"write_html","arguments":{"targetNodeId":"6C21-1","mode":"insert-children","html":"<div data-name=\"Outlook comparison\" style=\"display:flex;flex-direction:column;gap:18px;background:var(--mx-light-panel);border:1px solid var(--mx-light-line);border-radius:12px;padding:20px;font-family:Inter;color:var(--mx-light-text);\"><div style=\"display:flex;align-items:center;gap:16px;justify-content:space-between;\"><div style=\"display:flex;flex-direction:column;gap:8px;\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">I03 / PATH COMPARISON</div><div style=\"font-size:26px;line-height:1.45;font-weight:700;color:var(--mx-light-text);\">Compare what could follow</div></div><div data-name=\"Action ×\" style=\"display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--mx-light-line);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;\">×</div></div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6H4X-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H4Y-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H4Z-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H50-0","name":"I03 / PATH COMPARISO…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H51-0","name":"Compare what could f…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H52-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H53-0","name":"×","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-036","tool":"update_styles","arguments":{"updates":[{"nodeIds":["6H4X-0"],"styles":{"width":"1120px","alignSelf":"flex-start"}}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"6H4X-0"}]}]},{"operation_id":"bonds-transmission-r32-20261018-037","tool":"write_html","arguments":{"targetNodeId":"6H4X-0","mode":"insert-children","html":"<div style=\"display:flex;align-items:center;gap:10px;\"><div data-name=\"Action Rate relief\" style=\"display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--mx-light-info);background:var(--mx-light-info);color:var(--mx-light-panel);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;\">Rate relief</div><div data-name=\"Action Supply pressure\" style=\"display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--mx-light-line);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;\">Supply pressure</div><div data-name=\"Action Funding stress\" style=\"display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--mx-light-line);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;\">Funding stress</div><div style=\"display:flex;align-items:center;white-space:nowrap;border-radius:999px;padding:5px 10px;background:var(--mx-light-panel2);color:var(--mx-light-muted);font-size:12px;line-height:16px;font-weight:600;\">1–5 sessions</div></div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-muted);\">Paths can coexist. Select one to change the question and next check.</div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6H6E-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H6F-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H6G-0","name":"Rate relief","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H6H-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H6I-0","name":"Supply pressure","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H6J-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H6K-0","name":"Funding stress","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H6L-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H6M-0","name":"1–5 sessions","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H6N-0","name":"Paths can coexist. S…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-038","tool":"write_html","arguments":{"targetNodeId":"6H4X-0","mode":"insert-children","html":"<div style=\"display:flex;flex-direction:column;gap:12px;background:var(--mx-light-info-soft);border-radius:10px;padding:18px;\"><div style=\"display:flex;align-items:center;gap:16px;justify-content:space-between;\"><div style=\"font-size:22px;line-height:1.45;font-weight:700;color:var(--mx-light-text);\">Rate relief persists</div><div style=\"display:flex;align-items:center;white-space:nowrap;border-radius:999px;padding:5px 10px;background:var(--mx-light-warn-soft);color:var(--mx-light-ink-warn);font-size:12px;line-height:16px;font-weight:600;\">Watching</div></div><div style=\"font-size:15px;line-height:1.45;font-weight:500;color:var(--mx-light-text);\">If rate expectations fall and funding stays orderly, Treasuries may remain supported.</div><div style=\"display:flex;align-items:center;gap:24px;\"><div style=\"display:flex;flex-direction:column;gap:8px;flex:1;\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">NEXT MARKET TEST</div><div style=\"font-size:13px;line-height:1.45;font-weight:500;color:var(--mx-light-text);\">10Y below 5.08% · mean peer OAS +15 bp · orderly funding</div></div><div style=\"display:flex;flex-direction:column;gap:8px;flex:1;\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">NEXT DISCRIMINATING CHECK</div><div style=\"font-size:13px;line-height:1.45;font-weight:500;color:var(--mx-light-text);\">Auction demand and dated financing terms</div></div></div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6H6P-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H6Q-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H6R-0","name":"Rate relief persists","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H6S-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H6T-0","name":"Watching","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H6U-0","name":"If rate expectations…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H6V-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H6W-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H6X-0","name":"NEXT MARKET TEST","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H6Y-0","name":"10Y below 5.08% · me…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H6Z-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H70-0","name":"NEXT DISCRIMINATING …","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H71-0","name":"Auction demand and d…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-039","tool":"write_html","arguments":{"targetNodeId":"6H4X-0","mode":"insert-children","html":"<div style=\"display:flex;align-items:center;gap:16px;justify-content:space-between;\"><div style=\"font-size:18px;line-height:1.45;font-weight:650;color:var(--mx-light-text);\">What explains the move?</div><div style=\"display:flex;align-items:center;white-space:nowrap;border-radius:999px;padding:5px 10px;background:var(--mx-light-panel2);color:var(--mx-light-muted);font-size:12px;line-height:16px;font-weight:600;\">Unranked hypotheses</div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6H7F-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H7G-0","name":"What explains the mo…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H7H-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H7I-0","name":"Unranked hypotheses","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-040","tool":"write_html","arguments":{"targetNodeId":"6H4X-0","mode":"insert-children","html":"<div style=\"display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid var(--mx-light-line);\"><div style=\"font-size:14px;line-height:1.45;font-weight:650;color:var(--mx-light-text);width:180px;flex-shrink:0;\">Growth repricing</div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-text);width:400px;flex-shrink:0;\">Dated growth evidence + policy path</div><div style=\"font-size:12px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);width:190px;flex-shrink:0;\">Consistent response</div><div style=\"font-size:12px;line-height:1.45;font-weight:400;color:var(--mx-light-muted);flex:1;\">Next release</div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6H7K-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H7L-0","name":"Growth repricing","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H7M-0","name":"Dated growth evidenc…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H7N-0","name":"Consistent response","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H7O-0","name":"Next release","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-041","tool":"write_html","arguments":{"targetNodeId":"6H4X-0","mode":"insert-children","html":"<div style=\"display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid var(--mx-light-line);\"><div style=\"font-size:14px;line-height:1.45;font-weight:650;color:var(--mx-light-text);width:180px;flex-shrink:0;\">Buyer substitution</div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-text);width:400px;flex-shrink:0;\">Matched transactions + funding origin</div><div style=\"font-size:12px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);width:190px;flex-shrink:0;\">Missing link</div><div style=\"font-size:12px;line-height:1.45;font-weight:400;color:var(--mx-light-muted);flex:1;\">Reporting period</div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6H7Q-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H7R-0","name":"Buyer substitution","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H7S-0","name":"Matched transactions…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H7T-0","name":"Missing link","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H7U-0","name":"Reporting period","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-042","tool":"write_html","arguments":{"targetNodeId":"6H4X-0","mode":"insert-children","html":"<div style=\"display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid var(--mx-light-line);\"><div style=\"font-size:14px;line-height:1.45;font-weight:650;color:var(--mx-light-text);width:180px;flex-shrink:0;\">Issuer-specific risk</div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-text);width:400px;flex-shrink:0;\">Issuer versus matched peer repricing</div><div style=\"font-size:12px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);width:190px;flex-shrink:0;\">Still possible</div><div style=\"font-size:12px;line-height:1.45;font-weight:400;color:var(--mx-light-muted);flex:1;\">Next close</div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6H7W-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H7X-0","name":"Issuer-specific risk","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H7Y-0","name":"Issuer versus matche…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H7Z-0","name":"Still possible","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H80-0","name":"Next close","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-043","tool":"write_html","arguments":{"targetNodeId":"6H4X-0","mode":"insert-children","html":"<div style=\"display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid var(--mx-light-line);\"><div style=\"font-size:14px;line-height:1.45;font-weight:650;color:var(--mx-light-text);width:180px;flex-shrink:0;\">Funding stress</div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-text);width:400px;flex-shrink:0;\">Collateral terms + market depth</div><div style=\"font-size:12px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);width:190px;flex-shrink:0;\">Counterevidence</div><div style=\"font-size:12px;line-height:1.45;font-weight:400;color:var(--mx-light-muted);flex:1;\">Funding clock</div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6H82-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H83-0","name":"Funding stress","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H84-0","name":"Collateral terms + m…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H85-0","name":"Counterevidence","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H86-0","name":"Funding clock","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-044","tool":"write_html","arguments":{"targetNodeId":"6H4X-0","mode":"insert-children","html":"<div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-muted);\">Shared inputs remain linked. A missing buyer record leaves substitution unresolved.</div><div style=\"display:flex;align-items:center;gap:12px;justify-content:flex-end;\"><div data-name=\"Action Inspect shared inputs\" style=\"display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--mx-light-line);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;\">Inspect shared inputs</div><div data-name=\"Action Use this outlook\" style=\"display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--mx-light-info);background:var(--mx-light-info);color:var(--mx-light-panel);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;\">Use this outlook</div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6H88-0","name":"Shared inputs remain…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H89-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H8A-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H8B-0","name":"Inspect shared input…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H8C-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6H8D-0","name":"Use this outlook","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-045","tool":"write_html","arguments":{"targetNodeId":"6H4X-0","mode":"insert-children","html":"<div style=\"display:flex;align-items:center;gap:12px;\"><div style=\"font-size:10px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);width:180px;flex-shrink:0;letter-spacing:.7px;\">EXPLANATION</div><div style=\"font-size:10px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);width:400px;flex-shrink:0;letter-spacing:.7px;\">DISCRIMINATING EVIDENCE</div><div style=\"font-size:10px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);width:190px;flex-shrink:0;letter-spacing:.7px;\">CURRENT READING</div><div style=\"font-size:10px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);flex:1;letter-spacing:.7px;\">NEXT CHECK</div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6HAY-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HAZ-0","name":"EXPLANATION","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HB0-0","name":"DISCRIMINATING EVIDE…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HB1-0","name":"CURRENT READING","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HB2-0","name":"NEXT CHECK","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-046","tool":"move_nodes","arguments":{"moves":[{"nodeId":"6HAY-0","parentId":"6H4X-0","index":5}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"moves":[{"nodeId":"6HAY-0","parentId":"6H4X-0","index":5}],"affectedParents":[{"parentId":"6H4X-0","childIds":["6H4Y-0","6H6E-0","6H6N-0","6H6P-0","6H7F-0","6HAY-0","6H7K-0","6H7Q-0","6H7W-0","6H82-0","6H88-0","6H89-0"]}]}]},{"operation_id":"bonds-transmission-r32-20261018-047","tool":"set_text_content","arguments":{"updates":[{"nodeId":"6H2P-0","textContent":"Funding origin unresolved"},{"nodeId":"6H50-0","textContent":"CONDITIONAL PATHS"}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"6H2P-0","textContent":"Funding origin unresolved"},{"nodeId":"6H50-0","textContent":"CONDITIONAL PATHS"}]}]},{"operation_id":"bonds-transmission-r32-20261018-048","tool":"write_html","arguments":{"targetNodeId":"6C21-1","mode":"insert-children","html":"<div style=\"display:flex;align-items:center;gap:24px;align-items:stretch;\"><div data-name=\"Supply path alternate\" style=\"display:flex;flex-direction:column;gap:18px;background:var(--mx-light-panel);border:1px solid var(--mx-light-line);border-radius:12px;padding:20px;font-family:Inter;color:var(--mx-light-text);flex:1;\"><div style=\"display:flex;align-items:center;gap:12px;justify-content:space-between;\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">SUPPLY PRESSURE</div><div style=\"display:flex;align-items:center;white-space:nowrap;border-radius:999px;padding:5px 10px;background:var(--mx-light-warn-soft);color:var(--mx-light-ink-warn);font-size:12px;line-height:16px;font-weight:600;\">Unresolved</div></div><div style=\"font-size:22px;line-height:1.45;font-weight:700;color:var(--mx-light-text);\">Supply pressure wins</div><div style=\"font-size:14px;line-height:1.45;font-weight:400;color:var(--mx-light-text);\">Watch long yields, auction reception and the modeled term premium.</div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-muted);\">Next check: concession, tail and bidder mix at the next auction.</div><div style=\"font-size:12px;line-height:1.45;font-weight:500;color:var(--mx-light-ink-warn);\">Selecting this outlook keeps evidence; the rate-relief rule needs review.</div></div><div data-name=\"Funding path alternate\" style=\"display:flex;flex-direction:column;gap:18px;background:var(--mx-light-panel);border:1px solid var(--mx-light-line);border-radius:12px;padding:20px;font-family:Inter;color:var(--mx-light-text);flex:1;\"><div style=\"display:flex;align-items:center;gap:12px;justify-content:space-between;\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">FUNDING STRESS</div><div style=\"display:flex;align-items:center;white-space:nowrap;border-radius:999px;padding:5px 10px;background:var(--mx-light-panel2);color:var(--mx-light-muted);font-size:12px;line-height:16px;font-weight:600;\">Not observed</div></div><div style=\"font-size:22px;line-height:1.45;font-weight:700;color:var(--mx-light-text);\">Liquidity interrupts the move</div><div style=\"font-size:14px;line-height:1.45;font-weight:400;color:var(--mx-light-text);\">Cash demand can put Treasuries, credit and equities under pressure.</div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-muted);\">Next check: funding terms and market depth on their native clocks.</div><div style=\"font-size:12px;line-height:1.45;font-weight:500;color:var(--mx-light-ink-warn);\">Orderly funding is counterevidence. A price fall alone is insufficient.</div></div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6HB4-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HB5-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HB6-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HB7-0","name":"SUPPLY PRESSURE","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HB8-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HB9-0","name":"Unresolved","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBA-0","name":"Supply pressure wins","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBB-0","name":"Watch long yields, a…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBC-0","name":"Next check: concessi…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBD-0","name":"Selecting this outlo…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBE-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBF-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBG-0","name":"FUNDING STRESS","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBH-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBI-0","name":"Not observed","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBJ-0","name":"Liquidity interrupts…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBK-0","name":"Cash demand can put …","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBL-0","name":"Next check: funding …","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBM-0","name":"Orderly funding is c…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-049","tool":"write_html","arguments":{"targetNodeId":"6C21-1","mode":"insert-children","html":"<div data-name=\"Trigger and continuation separation\" style=\"display:flex;flex-direction:column;gap:18px;background:var(--mx-light-panel);border:1px solid var(--mx-light-line);border-radius:12px;padding:20px;font-family:Inter;color:var(--mx-light-text);\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">I04 / MATCHED EVENT → LATER REVIEW</div><div style=\"font-size:24px;line-height:1.45;font-weight:700;color:var(--mx-light-text);\">A match can precede a reversal</div><div style=\"display:flex;align-items:center;gap:24px;align-items:flex-start;\"><div style=\"display:flex;flex-direction:column;gap:8px;flex:1;\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">CLOSE 1 · TEST EVENT</div><div style=\"font-size:22px;line-height:1.45;font-weight:700;color:var(--mx-light-ink-up);\">Matched</div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-text);\">10Y 5.07% · mean OAS +16 bp · orderly</div><div style=\"font-size:12px;line-height:1.45;font-weight:500;color:var(--mx-light-muted);\">Original event stays closed.</div></div><div style=\"display:flex;flex-direction:column;gap:8px;flex:1;\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">CLOSE 2 · LATER OBSERVATION</div><div style=\"font-size:22px;line-height:1.45;font-weight:700;color:var(--mx-light-ink-down);\">Continuation challenged</div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-text);\">10Y 5.23% · above the declared review level</div><div style=\"font-size:12px;line-height:1.45;font-weight:500;color:var(--mx-light-muted);\">New evidence; no rewrite of close 1.</div></div><div style=\"display:flex;flex-direction:column;gap:8px;flex:1;\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">EXPLANATION</div><div style=\"font-size:22px;line-height:1.45;font-weight:700;color:var(--mx-light-text);\">Still unresolved</div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-text);\">The event does not establish the funding route.</div><div data-name=\"Action Inspect event and later evidence\" style=\"display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--mx-light-line);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;\">Inspect event and later evidence</div></div></div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6HBO-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBP-0","name":"I04 / MATCHED EVENT …","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBQ-0","name":"A match can precede …","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBR-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBS-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBT-0","name":"CLOSE 1 · TEST EVENT","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBU-0","name":"Matched","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBV-0","name":"10Y 5.07% · mean OAS…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBW-0","name":"Original event stays…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBX-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBY-0","name":"CLOSE 2 · LATER OBSE…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HBZ-0","name":"Continuation challen…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HC0-0","name":"10Y 5.23% · above th…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HC1-0","name":"New evidence; no rew…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HC2-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HC3-0","name":"EXPLANATION","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HC4-0","name":"Still unresolved","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HC5-0","name":"The event does not e…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HC6-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HC7-0","name":"Inspect event and la…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-050","tool":"set_text_content","arguments":{"updates":[{"nodeId":"63KU-1","textContent":"AI ISSUER · CDS"},{"nodeId":"63ML-1","textContent":"NEXT OBSERVATION"},{"nodeId":"63MP-1","textContent":"REVIEW IF"},{"nodeId":"642B-1","textContent":"5 of 12"},{"nodeId":"6423-1","textContent":"ISSUER CDS CHANGE"}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"63KU-1","textContent":"AI ISSUER · CDS"},{"nodeId":"63ML-1","textContent":"NEXT OBSERVATION"},{"nodeId":"63MP-1","textContent":"REVIEW IF"},{"nodeId":"642B-1","textContent":"5 of 12"},{"nodeId":"6423-1","textContent":"ISSUER CDS CHANGE"}]}]},{"operation_id":"bonds-transmission-r32-20261018-051","tool":"write_html","arguments":{"targetNodeId":"6C21-1","mode":"insert-children","html":"<div data-name=\"Path comparison scorecard\" style=\"display:flex;flex-direction:column;gap:18px;background:var(--mx-light-panel);border:1px solid var(--mx-light-line);border-radius:12px;padding:20px;font-family:Inter;color:var(--mx-light-text);\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">I03 / OUTLOOK COMPARISON / SCORECARD</div><div style=\"display:flex;align-items:center;gap:24px;align-items:flex-start;\"><div style=\"display:flex;flex-direction:column;gap:8px;flex:1;\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">SELECT</div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-text);\">Select a path locally. Change its next check and consequence together; sensitivity stays a separate assumption.</div></div><div style=\"display:flex;flex-direction:column;gap:8px;flex:1;\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">DEPENDENCIES</div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-text);\">One source can create several derived views. Keep source lineage; do not sum these views as independent support.</div></div><div style=\"display:flex;flex-direction:column;gap:8px;flex:1;\"><div style=\"font-size:11px;line-height:1.45;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;text-transform:uppercase;\">REVALIDATE</div><div style=\"font-size:13px;line-height:1.45;font-weight:400;color:var(--mx-light-text);\">A rule attached to another outlook needs review. Unsupported or late inputs cannot become a matched event.</div></div></div></div>"},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"createdNodes":[{"id":"6HC9-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HCA-0","name":"I03 / OUTLOOK COMPAR…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HCB-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HCC-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HCD-0","name":"SELECT","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HCE-0","name":"Select a path locall…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HCF-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HCG-0","name":"DEPENDENCIES","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HCH-0","name":"One source can creat…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HCI-0","name":"Frame","component":"Frame","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HCJ-0","name":"REVALIDATE","component":"Text","worldX":null,"worldY":null,"x":null,"y":null},{"id":"6HCK-0","name":"A rule attached to a…","component":"Text","worldX":null,"worldY":null,"x":null,"y":null}]}]},{"operation_id":"bonds-transmission-r32-20261018-052","tool":"set_text_content","arguments":{"updates":[{"nodeId":"64RN-1","textContent":"Transmission / Outlook & scenarios"},{"nodeId":"64RY-1","textContent":"CASE WORKSPACE · OUTLOOK & SCENARIOS"},{"nodeId":"64TQ-1","textContent":"Funding assumption"}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"64RN-1","textContent":"Transmission / Outlook & scenarios"},{"nodeId":"64RY-1","textContent":"CASE WORKSPACE · OUTLOOK & SCENARIOS"},{"nodeId":"64TQ-1","textContent":"Funding assumption"}]}]},{"operation_id":"bonds-transmission-r32-20261018-053","tool":"set_text_content","arguments":{"updates":[{"nodeId":"6889-1","textContent":"R30–R32 · current design"},{"nodeId":"6898-1","textContent":"R30–R32 · current design"},{"nodeId":"67ZK-1","textContent":"R30–R32 · design specification"},{"nodeId":"67ZI-1","textContent":"Eight routes and fifteen tools share one investigation. R32 adds visible tool handoffs and conditional outlook review."},{"nodeId":"6811-1","textContent":"Outlook & scenarios"},{"nodeId":"6812-1","textContent":"Read the next test; compare explanations and stress assumptions."},{"nodeId":"6828-1","textContent":"Review conditions / next test"},{"nodeId":"685T-1","textContent":"Typed tool returns, source clocks, formulas, rule precedence, replay and exact revision recovery."}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"6889-1","textContent":"R30–R32 · current design"},{"nodeId":"6898-1","textContent":"R30–R32 · current design"},{"nodeId":"67ZK-1","textContent":"R30–R32 · design specification"},{"nodeId":"67ZI-1","textContent":"Eight routes and fifteen tools share one investigation. R32 adds visible tool handoffs and conditional outlook review."},{"nodeId":"6811-1","textContent":"Outlook & scenarios"},{"nodeId":"6812-1","textContent":"Read the next test; compare explanations and stress assumptions."},{"nodeId":"6828-1","textContent":"Review conditions / next test"},{"nodeId":"685T-1","textContent":"Typed tool returns, source clocks, formulas, rule precedence, replay and exact revision recovery."}]}]},{"operation_id":"bonds-transmission-r32-20261018-054","tool":"rename_nodes","arguments":{"updates":[{"nodeId":"63GL-1","name":"R32 · 01 Bonds Desk · Light EN"},{"nodeId":"63S3-1","name":"R32 · 02 Curve & Duration · Light EN"},{"nodeId":"63YS-1","name":"R32 · 03 Issuer & Credit Case · Light EN"},{"nodeId":"648A-1","name":"R32 · 04 Capital Competition · Light EN"},{"nodeId":"64G1-1","name":"R32 · 05 Transmission Desk · Light EN"},{"nodeId":"64PQ-1","name":"R32 · 06 Case Workspace · Outlook & Scenarios · EN"},{"nodeId":"64WP-1","name":"R32 · 07 Case Workspace · Replay · EN"},{"nodeId":"65YV-1","name":"R32 · S01 Overlays & Interaction Scorecards"},{"nodeId":"670P-1","name":"R32 · 08 Saved Cases & Change Review · EN"},{"nodeId":"67ZC-1","name":"R32 · S05 Implementation Map & Data Contract"},{"nodeId":"6885-1","name":"R32 · START · Bonds Journey & Build References"},{"nodeId":"6894-1","name":"R32 · START · Transmission Journey & Build Map"},{"nodeId":"6C1S-1","name":"R32 · S07 Flow, Drafts & Case Continuity"}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"63GL-1","name":"R32 · 01 Bonds Desk · Light EN"},{"nodeId":"63S3-1","name":"R32 · 02 Curve & Duration · Light EN"},{"nodeId":"63YS-1","name":"R32 · 03 Issuer & Credit Case · Light EN"},{"nodeId":"648A-1","name":"R32 · 04 Capital Competition · Light EN"},{"nodeId":"64G1-1","name":"R32 · 05 Transmission Desk · Light EN"},{"nodeId":"64PQ-1","name":"R32 · 06 Case Workspace · Outlook & Scenarios · EN"},{"nodeId":"64WP-1","name":"R32 · 07 Case Workspace · Replay · EN"},{"nodeId":"65YV-1","name":"R32 · S01 Overlays & Interaction Scorecards"},{"nodeId":"670P-1","name":"R32 · 08 Saved Cases & Change Review · EN"},{"nodeId":"67ZC-1","name":"R32 · S05 Implementation Map & Data Contract"},{"nodeId":"6885-1","name":"R32 · START · Bonds Journey & Build References"},{"nodeId":"6894-1","name":"R32 · START · Transmission Journey & Build Map"},{"nodeId":"6C1S-1","name":"R32 · S07 Flow, Drafts & Case Continuity"}]}]},{"operation_id":"bonds-transmission-r32-20261018-055","tool":"finish_working_on_nodes","arguments":{"nodeIds":["63GL-1","63S3-1","63YS-1","648A-1","64G1-1","64PQ-1","64WP-1","65YV-1","670P-1","67ZC-1","6885-1","6894-1","6C1S-1"]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"text":"OK"}]},{"operation_id":"bonds-transmission-r32-20261018-056","tool":"set_text_content","arguments":{"updates":[{"nodeId":"64KQ-1","textContent":"Consistent response"},{"nodeId":"64KU-1","textContent":"CONSISTENT OBSERVATION"},{"nodeId":"64KW-1","textContent":"COUNTERVAILING FORCE"},{"nodeId":"66IY-1","textContent":"Consistent response"},{"nodeId":"66J0-1","textContent":"CONSISTENT OBSERVATION"},{"nodeId":"66J2-1","textContent":"COUNTERVAILING FORCE"}]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"updates":[{"nodeId":"64KQ-1","textContent":"Consistent response"},{"nodeId":"64KU-1","textContent":"CONSISTENT OBSERVATION"},{"nodeId":"64KW-1","textContent":"COUNTERVAILING FORCE"},{"nodeId":"66IY-1","textContent":"Consistent response"},{"nodeId":"66J0-1","textContent":"CONSISTENT OBSERVATION"},{"nodeId":"66J2-1","textContent":"COUNTERVAILING FORCE"}]}]},{"operation_id":"bonds-transmission-r32-20261018-057","tool":"finish_working_on_nodes","arguments":{"nodeIds":["64G1-1","66HU-1"]},"state":"APPLIED_RESPONSE_OBSERVED","result":[{"file":{"id":"01M2WGNCX9475G79JRKJTCM08P","name":"MASTERMIND PAGES"},"contentHash":{"tokens":"cfd3d65c"}},{"text":"OK"}]}],"unresolved":[]}
+{
+  "operation_id": "bonds-transmission-r32-20261018",
+  "summary": {
+    "operations": 62,
+    "applied": 61,
+    "reconciled_no_effect": 1,
+    "unresolved": 0
+  },
+  "effects": [
+    {
+      "operation_id": "bonds-transmission-r32-20261018-001",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "64UT-1"
+      ],
+      "response": [
+        {
+          "id": "6GTF-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GTG-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GTH-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GTI-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GTJ-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GTK-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GTL-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GTM-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-002",
+      "tool": "rename_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6GTF-0"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-003",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6GTF-0"
+      ],
+      "response": [
+        {
+          "id": "6GTO-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GTP-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GTQ-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-004",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6GTF-0"
+      ],
+      "response": [
+        {
+          "id": "6GTS-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GTT-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GTU-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GTV-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GTW-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GTX-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GTY-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GTZ-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GU0-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GU1-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GU2-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GU3-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GU4-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GU5-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GU6-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GU7-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-005",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6GTF-0"
+      ],
+      "response": [
+        {
+          "id": "6GU9-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUA-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUB-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GUC-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GUD-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GUE-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUF-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-006",
+      "tool": "move_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": []
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-007",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "64SK-1"
+      ],
+      "response": [
+        {
+          "id": "6GUI-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUJ-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUK-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUL-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUM-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GUN-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUO-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GUP-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUQ-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GUR-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUS-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GUT-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUU-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GUV-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GUW-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GUX-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-008",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "63K4-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-009",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "63UM-1",
+        "63YQ-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-010",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "641B-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-011",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "64AT-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-012",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "64IK-1",
+        "64IQ-1",
+        "64KY-1",
+        "64LD-1",
+        "64ME-1",
+        "64KR-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-013",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "64SF-1",
+        "64S9-1",
+        "64S4-1",
+        "64WN-1",
+        "64WH-1",
+        "64WI-1",
+        "6GTM-0"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-014",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "64ZE-1",
+        "64Z8-1",
+        "64ZU-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-015",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "673E-1",
+        "6738-1",
+        "673R-1",
+        "673Y-1",
+        "674K-1",
+        "674O-1",
+        "674Q-1",
+        "672Z-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-016",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "66HS-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-017",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "66K6-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-018",
+      "tool": "rename_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "64L6-1",
+        "6GUI-0"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-019",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "665Y-1",
+        "6660-1",
+        "6662-1",
+        "666S-1",
+        "666V-1",
+        "666X-1",
+        "666Y-1",
+        "6671-1",
+        "6673-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-020",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": []
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-021",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6C21-1"
+      ],
+      "response": [
+        {
+          "id": "6GY5-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GY6-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GY7-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GY8-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GY9-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GYA-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GYB-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-022",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6C21-1"
+      ],
+      "response": [
+        {
+          "id": "6GZW-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GZX-0",
+          "component": "Rectangle"
+        },
+        {
+          "id": "6GZY-0",
+          "component": "Rectangle"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-023",
+      "tool": "write_html",
+      "state": "EFFECT_UNKNOWN",
+      "reconciliation": {
+        "state": "EFFECT_NONE_CONFIRMED_BY_SAME_CARRIER_READBACK",
+        "reason": "Upstream rejected insertion into a Rectangle. Exact target remains an empty Rectangle under the original owned row.",
+        "target": {
+          "id": "6GZX-0",
+          "name": "Rectangle",
+          "component": "Rectangle",
+          "width": 760,
+          "height": null,
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null,
+          "isVisible": true,
+          "isLocked": false,
+          "parentId": "6GZW-0",
+          "childIds": [],
+          "childCount": 0,
+          "artboardId": "6C1S-1",
+          "textContent": null
+        }
+      },
+      "target_node_ids": [
+        "6GZX-0"
+      ],
+      "response": []
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-024",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6GZX-0"
+      ],
+      "response": [
+        {
+          "id": "6H13-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H14-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H15-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H16-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H17-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H18-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H19-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H1A-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H1B-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H1C-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H1D-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-025",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6GZY-0"
+      ],
+      "response": [
+        {
+          "id": "6H1F-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H1G-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H1H-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-026",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H13-0"
+      ],
+      "response": [
+        {
+          "id": "6H26-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H27-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H28-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H29-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H2A-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H2B-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H2C-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H2D-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H2E-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H2F-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H2G-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H2H-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-027",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H13-0"
+      ],
+      "response": [
+        {
+          "id": "6H2L-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H2M-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H2N-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H2O-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H2P-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H2Q-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H2R-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H2S-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H2T-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H2U-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H2V-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H2W-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-028",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H13-0"
+      ],
+      "response": [
+        {
+          "id": "6H2Y-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H2Z-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H30-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H31-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H32-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H33-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-029",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H1F-0"
+      ],
+      "response": [
+        {
+          "id": "6H44-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H45-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H46-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-030",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H1F-0"
+      ],
+      "response": [
+        {
+          "id": "6H48-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H49-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H4A-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-031",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H1F-0"
+      ],
+      "response": [
+        {
+          "id": "6H4C-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H4D-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H4E-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-032",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H1F-0"
+      ],
+      "response": [
+        {
+          "id": "6H4G-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H4H-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H4I-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-033",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H1F-0"
+      ],
+      "response": [
+        {
+          "id": "6H4K-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H4L-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H4M-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-034",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6C21-1"
+      ],
+      "response": [
+        {
+          "id": "6H4O-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H4P-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H4Q-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H4R-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H4S-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H4T-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H4U-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H4V-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-035",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6C21-1"
+      ],
+      "response": [
+        {
+          "id": "6H4X-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H4Y-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H4Z-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H50-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H51-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H52-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H53-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-036",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": []
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-037",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H4X-0"
+      ],
+      "response": [
+        {
+          "id": "6H6E-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H6F-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H6G-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H6H-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H6I-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H6J-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H6K-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H6L-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H6M-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H6N-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-038",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H4X-0"
+      ],
+      "response": [
+        {
+          "id": "6H6P-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H6Q-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H6R-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H6S-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H6T-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H6U-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H6V-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H6W-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H6X-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H6Y-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H6Z-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H70-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H71-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-039",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H4X-0"
+      ],
+      "response": [
+        {
+          "id": "6H7F-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H7G-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H7H-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H7I-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-040",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H4X-0"
+      ],
+      "response": [
+        {
+          "id": "6H7K-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H7L-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H7M-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H7N-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H7O-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-041",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H4X-0"
+      ],
+      "response": [
+        {
+          "id": "6H7Q-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H7R-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H7S-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H7T-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H7U-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-042",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H4X-0"
+      ],
+      "response": [
+        {
+          "id": "6H7W-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H7X-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H7Y-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H7Z-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H80-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-043",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H4X-0"
+      ],
+      "response": [
+        {
+          "id": "6H82-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H83-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H84-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H85-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H86-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-044",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H4X-0"
+      ],
+      "response": [
+        {
+          "id": "6H88-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H89-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H8A-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H8B-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H8C-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H8D-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-045",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H4X-0"
+      ],
+      "response": [
+        {
+          "id": "6HAY-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HAZ-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HB0-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HB1-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HB2-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-046",
+      "tool": "move_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": []
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-047",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H2P-0",
+        "6H50-0"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-048",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6C21-1"
+      ],
+      "response": [
+        {
+          "id": "6HB4-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HB5-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HB6-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HB7-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HB8-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HB9-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBA-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBB-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBC-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBD-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBE-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HBF-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HBG-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBH-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HBI-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBJ-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBK-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBL-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBM-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-049",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6C21-1"
+      ],
+      "response": [
+        {
+          "id": "6HBO-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HBP-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBQ-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBR-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HBS-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HBT-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBU-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBV-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBW-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBX-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HBY-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBZ-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HC0-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HC1-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HC2-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HC3-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HC4-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HC5-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HC6-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HC7-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-050",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "63KU-1",
+        "63ML-1",
+        "63MP-1",
+        "642B-1",
+        "6423-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-051",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6C21-1"
+      ],
+      "response": [
+        {
+          "id": "6HC9-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HCA-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HCB-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HCC-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HCD-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HCE-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HCF-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HCG-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HCH-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HCI-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HCJ-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HCK-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-052",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "64RN-1",
+        "64RY-1",
+        "64TQ-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-053",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6889-1",
+        "6898-1",
+        "67ZK-1",
+        "67ZI-1",
+        "6811-1",
+        "6812-1",
+        "6828-1",
+        "685T-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-054",
+      "tool": "rename_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "63GL-1",
+        "63S3-1",
+        "63YS-1",
+        "648A-1",
+        "64G1-1",
+        "64PQ-1",
+        "64WP-1",
+        "65YV-1",
+        "670P-1",
+        "67ZC-1",
+        "6885-1",
+        "6894-1",
+        "6C1S-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-055",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "63GL-1",
+        "63S3-1",
+        "63YS-1",
+        "648A-1",
+        "64G1-1",
+        "64PQ-1",
+        "64WP-1",
+        "65YV-1",
+        "670P-1",
+        "67ZC-1",
+        "6885-1",
+        "6894-1",
+        "6C1S-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-056",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "64KQ-1",
+        "64KU-1",
+        "64KW-1",
+        "66IY-1",
+        "66J0-1",
+        "66J2-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-057",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "64G1-1",
+        "66HU-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-058",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "67ZI-1",
+        "67ZK-1",
+        "6813-1",
+        "681D-1",
+        "685N-1",
+        "685Q-1",
+        "685S-1",
+        "685T-1",
+        "685V-1",
+        "685X-1",
+        "685Y-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-059",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6891-1",
+        "6892-1",
+        "689G-1",
+        "689J-1",
+        "689L-1",
+        "689T-1",
+        "68A0-1",
+        "68A1-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-060",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6B6S-1"
+      ],
+      "response": [
+        {
+          "id": "6JFT-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6JFU-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6JFV-0",
+          "component": "Text"
+        },
+        {
+          "id": "6JFW-0",
+          "component": "Text"
+        },
+        {
+          "id": "6JFX-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6JFY-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6JFZ-0",
+          "component": "Text"
+        },
+        {
+          "id": "6JG0-0",
+          "component": "Text"
+        },
+        {
+          "id": "6JG1-0",
+          "component": "Text"
+        },
+        {
+          "id": "6JG2-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6JG3-0",
+          "component": "Text"
+        },
+        {
+          "id": "6JG4-0",
+          "component": "Text"
+        },
+        {
+          "id": "6JG5-0",
+          "component": "Text"
+        },
+        {
+          "id": "6JG6-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-061",
+      "tool": "rename_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6JFT-0"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-062",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "67ZC-1",
+        "6885-1",
+        "6894-1",
+        "6B6Q-1"
+      ]
+    }
+  ]
+}

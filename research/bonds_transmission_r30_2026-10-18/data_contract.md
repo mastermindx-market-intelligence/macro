@@ -1,3 +1,9 @@
+# R32 current handoff
+
+The current design and verified offline reference are documented in [R32 implementation](r32/implementation.md), [feature scorecard](r32/feature-scorecard.md), [R32 data/state extension](r32/data_contract.md), and [validation](r32/validation.md). These R32 documents govern the current journey and reference behavior; the historical baseline below remains preserved for traceability.
+
+---
+
 # R30 + R31 data and model contract
 
 **Current binding update:** [R31 source-bound data contract](r31/data_contract.md) and [machine-readable owner map](r31/source_bindings.json). Terminal Investigation v2 and Alerts are now identified. Bond evidence/scenario admission and the compound rule still require extensions to those existing owners. The baseline unresolved-owner wording below is retained as the R30 historical record, not the current finding.

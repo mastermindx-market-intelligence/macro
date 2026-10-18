@@ -31,7 +31,7 @@ export default function StartTransmissionReference() {
               05 / TRANSMISSION
             </div>
             <div id="689G-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '19px', fontWeight: 600, lineHeight: '27px' }}>
-              Which link is supported?
+              Which explanation fits?
             </div>
             <div id="689H-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '19px' }}>
               Compare growth, substitution, safety and funding.
@@ -39,13 +39,13 @@ export default function StartTransmissionReference() {
           </div>
           <div id="689I-1" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '16px', minHeight: '174px', padding: '20px', width: '326px' }}>
             <div id="689J-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-              06 / SCENARIO
+              06 / OUTLOOK
             </div>
             <div id="689K-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '19px', fontWeight: 600, lineHeight: '27px' }}>
               What could happen next?
             </div>
             <div id="689L-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '19px' }}>
-              Change assumptions; identify confirmation and failure.
+              Read the next test, compare paths and stress assumptions.
             </div>
           </div>
           <div id="689M-1" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '16px', minHeight: '174px', padding: '20px', width: '326px' }}>
@@ -67,7 +67,7 @@ export default function StartTransmissionReference() {
               What changed since review?
             </div>
             <div id="689T-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '19px' }}>
-              Return to new evidence, pending tests and monitors.
+              Review retained content, changed evidence and unresolved tests.
             </div>
           </div>
         </div>
@@ -83,13 +83,13 @@ export default function StartTransmissionReference() {
             </div>
             <div id="689Z-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
               <div id="68A0-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', display: 'flex', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
-                Design + behavior specified
+                Interactive reference verified
               </div>
             </div>
           </div>
         </div>
         <div id="68A1-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '17px' }}>
-          Earlier studies are preserved in ARCHIVE · Bonds + Transmission · pre-R30. Build from the R30 sequence and its scorecards.
+          Build from the current R32 sequence and scorecards. Working reference: PR #9578 · r32/reference/index.html. Earlier studies remain in the archive.
         </div>
       </div>
     </div>

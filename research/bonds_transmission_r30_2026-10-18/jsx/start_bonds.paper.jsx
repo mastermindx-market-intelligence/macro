@@ -83,13 +83,13 @@ export default function StartBondsReference() {
             </div>
             <div id="6890-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
               <div id="6891-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', display: 'flex', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
-                Design + behavior specified
+                Interactive reference verified
               </div>
             </div>
           </div>
         </div>
         <div id="6892-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '17px' }}>
-          Earlier studies are preserved in ARCHIVE · Bonds + Transmission · pre-R30. Build from the R30 sequence and its scorecards.
+          Build from the current R32 sequence and scorecards. Working reference: PR #9578 · r32/reference/index.html. Earlier studies remain in the archive.
         </div>
       </div>
     </div>

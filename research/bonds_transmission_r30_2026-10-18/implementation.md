@@ -1,3 +1,9 @@
+# R32 current handoff
+
+The current design and verified offline reference are documented in [R32 implementation](r32/implementation.md), [feature scorecard](r32/feature-scorecard.md), [R32 data/state extension](r32/data_contract.md), and [validation](r32/validation.md). These R32 documents govern the current journey and reference behavior; the historical baseline below remains preserved for traceability.
+
+---
+
 # R30 + R31 implementation contract
 
 **Current extension:** [R31 depth and continuity](r31/implementation.md), [exact owner bindings](r31/data_contract.md), and [action map](r31/action_map.json). R31 expands the inventory to I01–I15 and resolves the previously unknown Investigation/Alerts owners. Its capability and retention boundaries take precedence over the baseline descriptions below. Native specimens remain design references; no runtime activation is implied.
