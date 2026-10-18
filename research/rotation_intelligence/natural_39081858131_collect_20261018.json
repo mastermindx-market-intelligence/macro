@@ -453,12 +453,50 @@
     "engine_status": "in_progress",
     "active_step_number": 26,
     "active_step_started_at_utc": "2026-10-18T03:32:22Z",
-    "exact_cache_hit": "UNVERIFIED",
-    "actual_engine_checkout": "UNVERIFIED",
-    "prophet_step33": "pending",
+    "exact_cache_hit": "VERIFIED exact key, producer-to-engine restored",
+    "actual_engine_checkout": "5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa",
+    "prophet_step33": "PENDING at consumer evidence read",
     "turnwatch_step43": "pending",
     "factor_series": "success",
     "factor_panel": "success",
-    "limitation": "Job-state success is not exact source/cache/Prophet evidence; no later completed engine log was read."
+    "limitation": "Job-state success is not exact source/cache/Prophet evidence; no later completed engine log was read.",
+    "superseded_by": "engine_consumer_exact above",
+    "engine_turn_watch_step": 43,
+    "turn_watch_publication": "PENDING at consumer evidence read",
+    "b1_consumption": "NOT_ESTABLISHED"
+  },
+  "engine_consumer_exact": {
+    "scope": "Read-only actual production log and original runner checkout. Exact producer->consumer cache evidence only; independent of market Git push/Prophet/B1.",
+    "observed_date_utc": "2026-10-18",
+    "daily_run": 39081858131,
+    "engine_job_id": 117575031870,
+    "engine_runner": "mac-builder-5",
+    "original_runner_workspace": "/Users/chriswong/actions-runner-2/_work/macro/macro",
+    "actual_checkout_sha": "5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa",
+    "checkout_reflog_at_utc": "2026-10-18T03:27:07Z",
+    "checkout_commit_metadata": "5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa parent 20d904c0dfe341bd4791881bd5d1f92177f5209a, committed 2026-10-18T03:26:47Z data: nightly timings active_build_map 2026-10-18",
+    "accepted_turnwatch_source_blobs": {
+      "engine/us_turn_watch.py": "a3c2b7f13e58a3363b9e1b0c665e8e01045698ab",
+      "scripts/build_turn_watch.py": "5a3a192ac1ba685e5c102bc06393687db5c6283b"
+    },
+    "cache": {
+      "key": "russell-closes-39081858131",
+      "lookup_log_utc": "2026-10-18T03:27:41.572864Z",
+      "hit_log_utc": "2026-10-18T03:27:42.019864Z",
+      "successful_restore_log_utc": "2026-10-18T03:27:43.605103Z",
+      "exact_key_confirmation_utc": "2026-10-18T03:27:43.622873Z",
+      "compressed_bytes": 3734274,
+      "uncompressed_cache_hash": null,
+      "producer_save_at_utc": "2026-10-18T03:06:49.417325Z",
+      "producer_restored_different_runner": true
+    },
+    "other_runtime_observations": {
+      "price_store_gate": "SPY last close October 16 passes expected-session freshness; not broad cross-security coverage",
+      "signal_contract": "FAILED validation in Step18 despite outer success; 7 reason/reasons errors, last-good signal tree restored. See research/rotation_intelligence/mtf_signal_contract_20261018.json.",
+      "signal_research_commit": "8b18dc6ea4f637e84db09e00c5d13e317304d071",
+      "status_at_read": "engine IN_PROGRESS core Step26; Prophet Step33 and TurnWatch Step43 pending"
+    },
+    "publisher": "No accepted push from failed collect/tail; same-run engine output, Prophet/B1 and published main price coverage not established",
+    "source_modification": false
   }
 }
