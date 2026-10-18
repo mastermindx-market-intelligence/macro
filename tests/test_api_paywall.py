@@ -158,10 +158,10 @@ def test_gmi_bea_paid_human_view_uses_same_source_api_and_no_cache():
     assert response.headers.get("cache-control") == "private, no-store"
     assert response.headers.get("content-type", "").startswith("text/html")
     assert "default-src 'none'" in response.headers.get("content-security-policy", "")
-    assert '<script defer src="/api/gmi/bea/assets/view.js"></script>' in response.text
+    assert '<script src="/api/gmi/bea/assets/view.js"></script>' in response.text
     assert 'id="bea-gvc-root"' in response.text
     assert 'id="bea-year-name"' in response.text
-    assert "Not yet available" in response.text
+    assert "Source status not checked" in response.text
     assert "2026" in response.text
     assert "observed company" in response.text
 
@@ -195,7 +195,8 @@ def test_gmi_bea_human_view_script_is_existing_auth_gated_and_private():
     assert response.headers.get("content-type", "").startswith("application/javascript")
     assert "encodeURIComponent" in response.text
     assert "innerHTML" not in response.text
-    assert "PUBLISHED_CURRENT_DESCRIPTIVE" in response.text
+    assert "PUBLISHED_CURRENT_DESCRIPTIVE" not in response.text
+    assert "CANDIDATE_NOT_PUBLISHED" in response.text
     app.dependency_overrides.pop(require_user, None)
     assert client.get("/api/gmi/bea/assets/view.js").status_code == 401
 

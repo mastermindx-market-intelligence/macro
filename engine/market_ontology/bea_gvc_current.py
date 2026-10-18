@@ -511,8 +511,12 @@ def candidate_packet_bytes(packet: Mapping[str, Any]) -> bytes:
         expected = None if prior is None else {
             field: amounts[field] - prior[field] for field in _ANNUAL_AMOUNT_FIELDS
         }
-        if difference != expected or (expected is not None and any(
-                abs(value) > MAX_JSON_SAFE_INTEGER for value in expected.values())):
+        if (difference != expected
+                or (expected is not None and (
+                    type(difference) is not dict
+                    or set(difference) != set(_ANNUAL_AMOUNT_FIELDS)
+                    or any(type(value) is not int for value in difference.values())
+                    or any(abs(value) > MAX_JSON_SAFE_INTEGER for value in expected.values())))):
             raise BEADescriptiveRefused("CANDIDATE_PACKET_YEARLY_CHANGE_INVALID")
         prior = amounts
     return _payload(packet)

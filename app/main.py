@@ -1109,9 +1109,15 @@ def gmi_bea_industry_current(
 
 def _gmi_bea_static_response(file_name: str, media_type: str) -> Response:
     """Serve only a fixed, reviewed UI source file; not a data workspace file."""
+    allowed_assets = {
+        "gmi_bea_view.html": "text/html",
+        "gmi_bea_view.js": "application/javascript",
+        "gmi_bea_view.css": "text/css",
+    }
     try:
-        # Caller supplies only one of two hardcoded names below. No path/query
-        # from the browser reaches this file read.
+        # Fixed source-asset allowlist; no browser-supplied filesystem path.
+        if allowed_assets.get(file_name) != media_type:
+            raise ValueError("unexpected static asset")
         content = Path(__file__).with_name(file_name).read_bytes()
         if not content or len(content) > 131072:
             raise ValueError("unexpected static view byte size")
@@ -1125,7 +1131,7 @@ def _gmi_bea_static_response(file_name: str, media_type: str) -> Response:
     }
     if media_type == "text/html":
         headers["Content-Security-Policy"] = (
-            "default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; "
+            "default-src 'none'; script-src 'self'; style-src 'self'; "
             "connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; "
             "form-action 'self'"
         )
@@ -1166,6 +1172,20 @@ def gmi_bea_industry_human_script(
     if request.query_params:
         raise HTTPException(422, detail={"error": "BEA_CURRENT_ONLY_NO_QUERY_PARAMETERS"})
     return _gmi_bea_static_response("gmi_bea_view.js", "application/javascript")
+
+
+@app.get("/api/gmi/bea/assets/view.css")
+def gmi_bea_industry_human_styles(
+    request: Request,
+    user: dict = Depends(require_user),
+) -> Response:
+    """Fixed same-origin styles; the existing paid authority remains controlling."""
+    from app.paywall import enforce_site_full
+
+    enforce_site_full(user, always=True)
+    if request.query_params:
+        raise HTTPException(422, detail={"error": "BEA_CURRENT_ONLY_NO_QUERY_PARAMETERS"})
+    return _gmi_bea_static_response("gmi_bea_view.css", "text/css")
 
 
 @app.get("/api/me")

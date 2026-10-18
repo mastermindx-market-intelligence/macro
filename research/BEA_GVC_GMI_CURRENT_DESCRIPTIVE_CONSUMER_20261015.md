@@ -264,3 +264,11 @@ browser+machine parity acceptance untouched.
 ## Production remains HELD
 
 Real acceptance still requires lawful original 72-response L0 validation, source industry axis resolution, accepted 5241X/5241XX mapping or explicit unresolved handling, installed L0/L1 UTC ingest/revision/correction chain and registry PRODUCED promotion by the current Data OS owner. Existing app authentication and entitlement then must be proven alongside same-generation browser/API descriptive results. This candidate is not a release, approval, producer or new control plane.
+
+## Current audit update — October 17 Pro design/architecture pass
+
+The historical milestones above are retained as evidence, not current implementation status. See [the Pro design and architecture audit](BEA_GVC_PRO_DESIGN_ARCHITECTURE_AUDIT_20261017.md) for the present architecture and [the visual verification folder](verification/BEA_GVC_PRO_AUDIT_20261017/README.md) for before/after screenshots.
+
+The current implementation removes the speculative published-status browser branch, uses the real nonpublic contract for isolated research-component tests, redesigns the source-safe workspace and signed charts, and moves actual HTTP/browser tests into required PR CI. **85 runtime, contract and browser tests** and **four canonical CI scope/packing/ancestor tests** passed locally. All 26 source refusal reasons have meaningful explanations, zero and negative chart values have truthful geometry, and the existing real cookie parser is exercised with explicitly mocked identity verification. No real account credentials or original BEA source files were used.
+
+The original source-admission and production-proof obligations remain unchanged. No placeholder chart, synthetic screenshot, passing test or feature-branch merge is a native Data OS admission, protected-main merge, deployment or production acceptance.
