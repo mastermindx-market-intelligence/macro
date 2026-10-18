@@ -331,6 +331,8 @@ public:
     # transform logic and reads only the market preference already in the user's
     # own session — no signals, no customer data.
     - /nav_market.js
+    # Dormant presentation bridge; no account, token, or market payload.
+    - /shared_shell_bridge.js
     - /supabase.js
     - /data_base.js
     - /live.js

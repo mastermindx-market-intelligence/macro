@@ -329,6 +329,25 @@
     var embedUrl = requestedUrl ? terminalExistingUrl(requestedUrl, true) : terminalEmbedUrl(t);
     loadTerminalOverlay(function (loaded) {
       if (loaded === false || !window.MDXTerminalOverlay) {
+        var _ss = window.MMXSharedShell;
+        if (_ss) {
+          // The controller is unavailable: offer only validated native presentation
+          // state, retaining a page-only return without transient query or hash data.
+          try {
+            var _tu = new URL(directUrl, location.href);
+            if (_tu.origin !== 'https://app.mastermind-x.com' || _tu.username || _tu.password ||
+                (_tu.pathname !== '/terminal' && _tu.pathname !== '/')) return;
+            var _tp = new URLSearchParams();
+            var _sym = String(t || _tu.searchParams.get('symbol') || _tu.searchParams.get('sym') || '').slice(0, 64);
+            if (_sym) _tp.set('symbol', _sym);
+            if (_tu.searchParams.get('ai') === '1') _tp.set('ai', '1');
+            _tp.set('from', 'macro');
+            if (location.origin === 'https://www.mastermind-x.com' || location.origin === 'https://mastermind-x.com')
+              _tp.set('ret', location.origin + location.pathname);
+            _ss.navigate('/terminal?' + _tp.toString(), 'push');
+          } catch (e) {}
+          return;
+        }
         location.href = directUrl;
         return;
       }
@@ -463,7 +482,7 @@
     if (!chip) return;
     e.preventDefault(); e.stopPropagation();
     var href = chip.getAttribute('data-href');
-    if (href) { location.href = href; }
+    if (href) { var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(href, 'push'); return; } location.href = href; }
   }, true);
 
   /* ---- account / profile panel loader -------------------------------------
@@ -547,13 +566,62 @@
   }
 
   /* ---- theme (dark default) ------------------------------------------------ */
+  /* ---- Shared Shell bridge: presentation/auth ownership helpers -------------
+     window.MMXSharedShell exists only in the exact qualified embed context: the
+     first-party child bridge installs it behind parent/frame-generation/referrer
+     guards and deletes it on teardown, so candidate EXISTENCE is itself the
+     qualification signal. There is deliberately no presented-state prerequisite
+     in these helpers. The bridge applies the parent's INITIAL context
+     synchronously BEFORE it marks itself presenting (handleInit -> applyContext
+     runs before the state flip), and applyingContext is a frozen, read-only
+     getter that is true for the synchronous duration of every bridge invocation
+     of the incumbent setTheme/setLang — the initial apply and later setter
+     calls alike. Gating applyingContext on the presented flag loses the initial
+     apply and leaks legacy preference writes during the first INIT (the
+     integration defect this repair removes). We read the getters at call time,
+     inside the synchronous dispatch; nothing is mirrored into a locally-lifted
+     flag an async boundary could race. No bridge => every helper is falsy =>
+     legacy behavior, byte for byte. */
+  function _mmShellBridge() {
+    try {
+      var s = window.MMXSharedShell;
+      return (s && typeof s.openAuth === 'function') ? s : null;
+    } catch (e) { return null; }
+  }
+  function _mmShellApplying() {
+    var s = _mmShellBridge();
+    if (!s) return false;
+    try { return !!s.applyingContext; } catch (e) { return false; }
+  }
+  // Auth handoff: the parent renders identity UI; this frame must never open a
+  // duplicate sheet/modal, and a single user action must never emit a duplicate
+  // bridge intent — every auth entry point funnels through exactly one guarded
+  // seam (see _mmOpenOnboard / _openSDash). Candidate existence claims the
+  // handoff even before the first apply, because bridge.openAuth is queue-safe
+  // pre-INIT (the bridge enqueues and drains after INIT). Only fixed intent
+  // tokens cross — never mode options, sections, targets, credentials, or
+  // arbitrary caller params.
+  function _mmShellAuthHandoff(intent) {
+    var s = _mmShellBridge();
+    if (!s) return false;
+    try { s.openAuth(intent); } catch (e) {}
+    return true;
+  }
   function curTheme() { return docEl.getAttribute('data-theme') || 'dark'; }
   // Hour-derived theme for Auto mode: 7-19 local = light, else dark
   function _hourTheme() { var h = new Date().getHours(); return (h >= 7 && h < 19) ? 'light' : 'dark'; }
   function setTheme(tm) {
+    // Shared Shell bridge apply: repaint + emit only. The parent owns storage
+    // and Auto mode; nothing persists for the duration of the bridge call. The
+    // getter is read at call time inside the synchronous dispatch, which covers
+    // the INITIAL bridge apply that happens before the bridge marks itself
+    // presenting.
+    var shellApply = _mmShellApplying();
     docEl.setAttribute('data-theme', tm);
     // an explicit choice ends time-of-day auto mode (see each page's no-flash init)
-    try { localStorage.setItem('theme', tm); localStorage.removeItem('themeAuto'); } catch (e) {}
+    if (!shellApply) {
+      try { localStorage.setItem('theme', tm); localStorage.removeItem('themeAuto'); } catch (e) {}
+    }
     document.querySelectorAll('.theme-btn').forEach(function (b) {
       b.innerHTML = tm === 'light'
         ? '<span class="l-en">🌙 Dark</span><span class="l-zh">🌙 深色</span>'
@@ -562,7 +630,7 @@
     if (window.hydrateMTF) window.hydrateMTF();
     themeCharts();
     document.dispatchEvent(new CustomEvent('themechange', { detail: tm }));
-    skyToggleFx(tm);
+    if (!shellApply) skyToggleFx(tm);   // the user-choice flourish is legacy-only
     _syncThemeSegment();
   }
   /* Sitewide theme-toggle flourish: a luminous sun (→ light) or a crescent moon
@@ -663,10 +731,14 @@
   /* ---- language (en default) ----------------------------------------------- */
   function curLang() { return docEl.getAttribute('data-lang') || 'en'; }
   function setLang(lg) {
+    // Shared Shell bridge apply: repaint + emit only; no localStorage
+    // persistence. Read at call time so the initial bridge apply — which runs
+    // before the bridge marks itself presenting — is covered too.
+    var shellApply = _mmShellApplying();
     docEl.setAttribute('data-lang', lg);
     // WCAG 3.1.1: keep document.documentElement.lang in sync with the active language
     docEl.lang = lg === 'zh' ? 'zh-CN' : 'en';
-    try { localStorage.setItem('lang', lg); } catch (e) {}
+    if (!shellApply) { try { localStorage.setItem('lang', lg); } catch (e) {} }
     document.querySelectorAll('.lang-btn').forEach(function (b) {
       // label advertises the OTHER language (what a click switches you to)
       b.textContent = lg === 'zh' ? 'EN' : '中文';
@@ -1117,7 +1189,7 @@
         });
       } catch (e) {}
       if (mmTerminalOn() && TERMINAL_PAGES[x._tgt]) { openTerminal(x.t, box, null, trigger); return; }
-      location.href = pfx + (x._tgt || 'stock.html') + '#' + encodeURIComponent(x.t);
+      var _d = pfx + (x._tgt || 'stock.html') + '#' + encodeURIComponent(x.t); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); return; } location.href = _d;
     }
 
     /* A search-only Chinese alias: broad-but-noisy (mixed Simplified/Traditional,
@@ -3631,6 +3703,15 @@
     }
     // whitelist: signin (default) · signup · upgrade (post-login monetization sheet)
     var m = (mode === 'signup') ? 'signup' : (mode === 'upgrade') ? 'upgrade' : 'signin';
+    // Shared Shell: ONE central handoff at the single auth entry point. Every
+    // estate auth trigger funnels through this seam — MDXAuth.open, the gear
+    // popover sign-in/sign-up rows, the hub sign-in link, the settings
+    // dashboard CTAs (_sdWireCta), tier_preview's locked-container CTA, the
+    // Brain 401 path, plans.html — so guarding here means no per-caller guards,
+    // no duplicated bridge intents, and no in-frame sheet. The whitelist value
+    // is already one of the fixed tokens; nothing else about the caller travels.
+    // Claiming pre-INIT is safe: bridge.openAuth queues until INIT drains it.
+    if (_mmShellAuthHandoff(m === 'upgrade' ? 'billing' : m)) return;
     if (window.MMOnboard && window.MMOnboard.open) { window.MMOnboard.open(m); return; }
     var pfx = _mmSharedAssetRoot;
     if (window.__mmOnboardLoading) return;    // second click while loading — first one will open
@@ -3954,6 +4035,14 @@
 
   /* ---- open / close ------------------------------------------------------- */
   function _openSDash(section) {
+    // Shared Shell: the native identity/Settings surface owns the presentation
+    // and preference UI, so the legacy dashboard must never be built or opened
+    // inside the frame. This is the single settings seam — window.MMSettings.open
+    // delegates here, and so does any future internal caller — hence exactly one
+    // 'settings' intent per entry with no per-export guard and no duplicate
+    // modal. The legacy `section` ('account'|'prefs') is NOT forwarded as a
+    // bridge param; only the fixed token crosses.
+    if (_mmShellAuthHandoff('settings')) return;
     _buildSDash();
     _renderSDash();
     // pick the section: honour the request, but default account->prefs when auth off
@@ -4069,6 +4158,14 @@
 
   function _applyServerPrefs(user) {
     if (!user) return;
+    // Shared Shell candidate exists: the native identity/Settings surface is
+    // the authoritative owner of the presented theme/locale, so late legacy
+    // server-pref application (theme/themeAuto/lang, incl. setThemeAuto and the
+    // MarketMemoryIntent.applyProfileLanguage path) must never fight it —
+    // including in the pre-INIT window, where the parent context owns the frame
+    // before the first apply has been acknowledged. The parent repaints this
+    // frame through the bridge's applyingContext setTheme/setLang instead.
+    if (_mmShellBridge()) return;
     var meta = user.user_metadata || {};
     var theme = _sharedPref(meta, 'theme', 'theme', _isTheme);
     var themeAuto = _sharedPref(meta, 'theme_auto', 'themeAuto', _isFlag);
@@ -4092,7 +4189,14 @@
      carry a theme along with it — that restraint is the whole point. Coalesced
      over the 800 ms debounce, so a burst still costs one request. */
   function _savePrefToServer(which) {
-    if (_prefSyncing || !_curUser || !_authEnabled) return;
+    // _mmShellApplying(): a bridge applyingContext repaint fires the same
+    // themechange/langchange events, and the _hookPrefSync listeners run
+    // synchronously inside the dispatch, so the getter is still true when this
+    // is entered — during the INITIAL bridge apply (before the bridge marks
+    // itself presenting) exactly as during later CONTEXT applies. A bridge
+    // repaint is not a user preference edit: it must never reach
+    // sb.auth.updateUser writes (or the debounce queue).
+    if (_prefSyncing || _mmShellApplying() || !_curUser || !_authEnabled) return;
     var patch = _prefSavePending || {};
     // account.js owns theme/lang while its panel holds a signed-in account; this path
     // then carries only the browser-only theme_auto flag, which is never claimed.

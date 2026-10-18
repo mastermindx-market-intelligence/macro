@@ -191,3 +191,83 @@ Accepted now: current commission captured; same source carriers recovered; origi
 Not yet accepted: refreshed route coverage, new shell implementation, bridge, complete family integration, identity/browser matrix, Paper write qualification, beta DNS/service, required CI, independent source review, deployment or production proof.
 
 Next actions are executable S1–S3 leaves alongside completion of the bounded Macro merge candidate. Preserve each worker's stable ID and exact result; no unknown-effect resubmission. The first census remains unaccepted and is not route-coverage authority. Continue healthy implementation after checkpoints; this document is not a completion announcement.
+
+## Attended production checkpoint — 2026-10-18, resumed session
+
+The original carriers remain Macro PR #7949 (`sol/market-os-shared-shell-design-20260924`, owned `shared-shell-r27` worktree) and Terminal PR #859 (`claude/investor-shell-native-20261008-c1`). Protected Mastermind authority remains c355e6a4ce3c15ac1e46c14f642bb5984da810d2; inventory provenance at other commits is not an authority repin. The programme root correlation remains market-os-shared-shell-design-20260924-sol-001 and this attended commission remains shared-shell-production-20261018-c1. Neither is asserted to be a native run ID.
+
+### Source implemented and bounded verification
+
+Macro published HEAD 8eea49839b22fc332edeff1d687d80a62d413acf includes the protected-main source join and the exact canonical registry projection. Terminal published HEAD e44aa9e2f3c798b76b537cdbbb66444a29c9e85d includes the persistent native host, flag, route boundary, catalog/directory, status endpoint and original identity/settings owners.
+
+The canonical projection contains 13,015 admitted legacy paths, 14 native paths and 293 directory entries, with zero unexplained tracked-HTML gaps. The 13,039 tracked HTML files include 13,028 full documents; eleven fragments remain byte-preserved by the injector. The first capability sweep stamped 13,028 served documents plus three paired source templates. This is route/document coverage, not proof of every page's interactive behavior.
+
+Current additional source work includes strict document response classification (content versus the actual coming-soon gate), parent recovery states, responsive mobile reuse, preserved Terminal return locations, the common HTML writer/optimizer capability integration, exact beta framing headers and the isolated beta Caddy vhost. The bridge remains opt-in, bound to the exact parent/child context; production's native flag defaults off.
+
+Observed bounded checks before this checkpoint:
+- Macro document injector/gate producer: 22 passing tests.
+- Bridge VM suite: 36 passing tests, before the subsequently identified boot-context interop repairs.
+- Native TypeScript check and contract suite: passed; latest completed contract run had 14 passing tests.
+- Full first HTML capability sweep: completed with zero process error; bridge digest prefix 996086e0 at that sweep.
+- Actual Caddy configuration adaptation: passed without a live reload.
+- Isolated HTTP execution of the actual Caddy framing rules: ten cases passed, including ordinary DENY, exact beta admission, wrong referrer/flag/path, and the gate response.
+- Relevant Macro regression run: 216 passed, two skipped, one failed. The remaining failure is `test_every_workflow_that_stages_html_runs_externalize`: options-intel.yml stages options.html without the canonical normalizer chain. It is under repair; this checkpoint does not label that suite green.
+
+### Returned work and integration adjudication
+
+Ordinary Fabric artifacts were retained under the approved evidence root with matched manifests and verified producer contracts. Retention is separate from outcome acceptance. Navigation and owner candidates are not accepted as final implementations: integration review found active-only guards that miss pre-INIT queues and initial context application. Review also found legacy boot theme/locale overwrites and the actual zh-CN document language convention requiring bridge normalization.
+
+The returned beta target profile is also not accepted: it lacks the shared build-resource lock, lacks first-install admission, and moved production hub-change detection after the runtime overlay. These defects are being repaired before adoption. No candidate release owner has been installed on the VPS.
+
+The continuing ordinary artifact leaves are:
+- shared-shell-navigation-final-20261018-c1-r1: candidate-safe redirects, actual hash owners, declarative redirect fallbacks and targeted VM tests.
+- shared-shell-owner-final-20261018-c1-r1: existing theme/account/onboard ownership, initial apply suppression and centralized auth handoff.
+- shared-shell-options-publish-20261018-c1-r1: the scoped Options publication normalizer gap.
+- shared-shell-beta-bootstrap-20261018-c1-r1: isolated target, shared build lock, preserved production behavior, enforced source-provisioned bootstrap, real source-audit tests and source-managed beta unit.
+- shared-shell-bridge-final-20261018-c1-r1: post-boot parent context, zh locale normalization and explicit-target href projection.
+
+These are original continuing requests; controller polling alone is not worker liveness or acceptance. Reconcile each stable request/result before any retry.
+
+### Beta runtime decision and remaining gates
+
+Use the existing source-managed Terminal release owner with an exact beta target profile: app /opt/terminal/beta/terminal, canonical source /opt/terminal/.gitsrc-beta, terminal-beta service on 3001, and /var/lib/mastermind-terminal-beta/release-preflight receipts. Protected-source containment, trusted policy/runtime custody and ordinary CLEAN preflight remain mandatory.
+
+A first install must have an enforced source-provisioned state distinct from runtime acceptance and rollback eligibility. Unexpected prior state refuses bootstrap; a matching interrupted provisioning state can resume only after verification. Successful installation requires the actual running status/build identity, not a generic HTTP 200 or the mere presence of a source marker.
+
+The actual native app/API filesystem census found read/stat access, not a writable intraday runtime cache. Reuse the existing published production data through a service-namespace read-only bind, with a non-root beta identity and production paths unwritable through every alias. The beta build/prebuild sees only its own local tree. Caddy reuses the existing public-data owner. Before install, verify publication-root lifetime, intended coverage masking, namespace/capability enforcement, denied data writes, permitted beta cache writes and publication continuity. This avoids inventing another market-data producer.
+
+DNS remains at DNSPod. The official console is at a sign-in wall; no DNS mutation has been attempted. The concrete intended record is beta A 146.190.142.17, leaving apex/www ownership intact. The user sign-in is a real remaining provider step. Paper reads remain usable, but the actual catalog qualification mismatch still refuses Paper writes; no bypass or new design-file mutation was attempted.
+
+Both PRs remain under their existing review/hold custody. Required CI, independent current-source review, full Next build, the actual browser history/auth/theme/focus/responsive matrix, beta installation/TLS/build identity, rollback proof and programme acceptance remain outstanding. No deployment, merge, complete product acceptance or unattended continuation is claimed. Continue useful authorized work after this checkpoint.
+
+
+## 2026-10-18 continuation checkpoint — native integration published; beta release pending
+
+The original programme and worktrees remain the delivery owners. Terminal PR859 now publishes a9f0d78810b6fec05d80c50f59fef8ff9e3e1b2d, joining protected master 9f26d3a00dbaada3580706f7e059dd8eff682d7e without conflicts. Source repairs preserve the incumbent global CSS/i18n bytes, ordinary mobile Escape focus, true pre-stream legacy-route 404s, safe beta signup/callback return paths and chart-only exact beta framing. The production beta build passed. Ten actual Next HTTP cases passed across beta and ordinary flags: exact build/protocol/bridge/document/registry identity, appropriate macro route 200/404, unknown404 and one chart CSP with beta admitted only on the chart route. Both owned local servers were stopped. This is server evidence, not deployed or browser acceptance.
+
+The current Terminal CI watcher has closed with actionable failures: two CodeQL substring-check reports and the plain-language scanner failing to recognize the new feature copy dictionary. The review findings are being corrected at their source; no required checks are bypassed. The serial and mobile-2 browser CI shards passed at that observation, while remaining shards were pending. No merge or beta deployment is claimed.
+
+Macro has adopted 74 recorded navigation/owner/Options adapters plus the qualified Terminal handoff integration. The final r3 bridge was qualified by the existing Fabric artifact owner. Principal review then reproduced and repaired four readiness defects: interactive readyState before deferred scripts complete; losing DOMContentLoaded before a delayed INIT; queued startup callbacks escaping preference suppression; and accepting a correct semantic locale with a wrong html language. All 161 bridge/navigation/owner/handoff tests pass after the repairs. Bridge source SHA256 is 674abd8c95ecf60d96afaad049f5199d260d76717380c925af4a90acb263c64d. Generated site copies still await final canonical propagation and asset stamping.
+
+The remaining navigation audit completed through run shared-shell-navigation-coverage-20261018-c1-r1, result SHA256 f95c724916289fd38609caf131a2ea9f32527f0bae6e67d7e3e2c0444ab8a1c5. Both advertised files were retained with manifest match and producer verification. It classified all 109 entries across 48 first-party files and proposed 25 further exact adapters, now under parent review. The source-only optional Terminal return-path concern is retained: transient credential material must not be nested into a return query. Normal current-page returns have not been shown to contain secrets.
+
+Supabase redirect configuration was saved with two exact beta callback entries, bringing the observed count to 13; the incumbent Site URL remains www. No auth emails, user records, roles or RLS were changed. The unsaved DNS editor was cancelled; existing beta DNS is unchanged. The beta release-owner candidate remains unadopted and under independent principal review, including shared build locking, exact runtime identity, service file readability, cache-only write access, read-only data aliases and truthful first-bootstrap/rollback evidence. No beta unit, beta runtime, DNS cutover or VPS mutation has been performed. Paper write qualification remains blocked on the existing catalog proof; the published accessible-file design census remains authoritative for observed design references.
+
+Next delivery steps are final adapter integration and canonical generated-output propagation, CI repair and protected landing, qualified release-owner adoption, installation and TLS/DNS proof on beta.mastermind-x.com, followed by actual desktop/tablet/mobile and fresh-session browser acceptance. This checkpoint preserves continuation; it does not close the commissioned programme.
+
+## 2026-10-18 13:56 UTC — principal review corrections and generated-page checkpoint
+
+The production task remains active. Beta installation, DNS cutover, actual public TLS/header acceptance, and responsive browser acceptance are still pending; none is claimed here.
+
+- Native PR859 is published at 56055052a6b5753340b01f427876f0e86ed0abe0. Its CodeQL and Terminal unit/typecheck jobs pass. At the last exact-head observation, the serial and tablet-2 browser shards also passed; five other browser shards were still running. The subsequent parent URL-boundary repair is working-tree source, not yet published.
+- The current Macro bridge SHA256 is 9e98cc403b65a433d2699885c793dcd8c95a656296d400074c977f5d7e5cb554. The protocol, bridge version, and document version remain mmx.shared-shell.v1 / 20261018.1 / 20261018.1.
+- Principal review used SHA-verified local snapshots after large remote reads stalled. The reviewer independently reproduced cross-path history desynchronization, direct-fragment authentication leakage, false post-INIT context readiness, and persisted-pagehide teardown. Root added regressions that failed on the inspected implementation, then fixed the actual template. History now distinguishes pathname replacement from query/fragment state before child mutation, and a full pre-INIT queue cannot silently alter the URL. Credential-bearing/current authentication URLs cannot become protocol messages. Every READY proves theme, semantic locale, and HTML language. Persisted pagehide retains its bridge owners.
+- The native parent now parses direct and routed fragment parameters together with query state, rejects credentials and split recovery context, and applies this predicate at first-party route admission. Current parent source SHA256 dc7c893852c287b2a18c6b71cbced07bfa0996c1168490c5a8c24e4d3de01266. Native contract/header/auth/status tests: 91 passed; typecheck passed.
+- Actual Macro bridge/navigation/owner/Terminal-handoff integration: 179 tests passed. Python injection/projection/assets/stamping/render-gate coverage: 182 passed, 2 existing skips. The old minified-overlay test now checks the actual five-method interface; its initialization/listener/config assertions remain.
+- Navigation/owner adoption ledger contains 102 exact source edits. The qualified coverage return contributed 25 reviewed edits; root corrected its theme fallback to exact-origin bounded native handoff and separately covered the dashboard alert event twin. Safe Terminal return validation rejects recursive or credential-like state. The controller-absent fallback retains a page-only return.
+- Generated propagation applied 59 actual adapter replacements across 29 output pages. Seventeen canonical paired assets and the earnings-wire asset owner were synchronized; 13,028 HTML documents were stamped. The latest bridge change was synchronized and all 13,028 documents restamped again. The prior full integration gate passed 128 template/site pairs, 13,015 legacy plus 14 native route projection (293 directory entries, zero gaps), zero dead/pin/ticker asset references, and ten actual isolated Caddy response-header cases. Those gates will be rerun after joining current main.
+- Incoming Macro main eb0dbd77cf380f019d6a0e98bf5eb65656b80b92 includes 67 commits beyond this branch's merge base, principally current market data/generated output. Preserve its data while joining, then reapply canonical shared-shell adapters and stamping. The new design doctrine forbids container accent stripes; Shared Shell CSS was checked and uses neutral surfaces/even borders, with color retained for complete focus outlines and semantic ink.
+- The original qualified beta installer candidate is not accepted or installed. Principal review found additional upgrade-transaction defects beyond exact tuple verification and cache-only service writes: original provisioning provenance incorrectly tied to each new release, non-advancing accepted pointers, premature rollback-marker removal, insufficient binding of the accepted baseline, incomplete failed-bootstrap cleanup, and service-user ancestor/readability gaps. The ordinary Fabric repair successor shared-shell-beta-owner-repair-20261018-c1-r2 is active on ubuntu1. Its predecessor was refused before execution by the host staging-disk reserve. Candidate repairs must be checked against these findings and actual fixture/runtime evidence before adoption.
+- Supabase's two exact beta callback patterns are saved; its existing site URL is unchanged. DNS remains on the existing EdgeOne CNAME records. Paper write qualification remains false, so no new Paper file or bypass has been attempted. The accessible-file design census and programme design decisions remain in this branch.
+
+Owned evidence logs on M2: /tmp/shared-shell-principal-integration-green-20261018.log; /tmp/shared-shell-principal-final-stamp-python-20261018.log; /tmp/shared-shell-parent-auth-boundary-final-20261018.log; /tmp/shared-shell-all-principal-regressions-red-20261018.log; /tmp/shared-shell-lifecycle-credentials-red-20261018.log.

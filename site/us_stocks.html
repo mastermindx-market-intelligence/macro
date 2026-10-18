@@ -29,7 +29,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><!-- mmx-shared-shell:start --><meta name="mmx-shell-document" content="20261018.1"><meta name="mmx-shell-response" content="content"><script data-sync data-mmx-shared-shell-bridge="20261018.1" src="shared_shell_bridge.js?v=9e98cc40"></script><!-- mmx-shared-shell:end -->
 <meta charset="utf-8">
 <script data-dbase>(function () {
   window.DATA_BASE = window.DATA_BASE || "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev";  // R2 public data plane (flip: clear to revert to Pages)
@@ -89,7 +89,7 @@
 
 <link rel="stylesheet" href="assets/css/39352b0a.css?v=39352b0a">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
-<link rel="preload" as="style" href="navigation-refresh.css?v=ef068fe1">
+<link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
 <link rel="preload" as="style" href="assets/css/20d98c47.css?v=20d98c47">
 <link rel="preload" as="style" href="assets/css/983df2de.css?v=983df2de">
 <link rel="preload" as="style" href="assets/css/65aef5e4.css?v=65aef5e4">
@@ -113,7 +113,7 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=ef068fe1">
+    <link rel="stylesheet" href="navigation-refresh.css?v=edfd821b">
     <div class="nav-links">
     
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
@@ -4521,7 +4521,7 @@
         if (!tk) return;
         var T = window.MDXTerminal;
         if (T && T.on && T.on() && T.open && T.open(tk, tr)) return;
-        location.href = 'stock.html#' + encodeURIComponent(tk);
+        var _d = 'stock.html#' + encodeURIComponent(tk); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); } else { location.href = _d; }
       });
     })();
     </script>
@@ -5421,6 +5421,7 @@
     }
     window.addEventListener('load', fromHash);
     window.addEventListener('hashchange', fromHash);
+    window.addEventListener('mmx:shell-location', fromHash);
     document.addEventListener('click', function (e) {
       var a = e.target.closest('a.alert[href^="#"]');
       if (!a) return;
@@ -5440,8 +5441,8 @@ window.__CHART_SWAP__ = {
            "HY OAS %":"高收益债利差 %","% S&P500 > 50DMA":"标普500 高于50日均线 %"}
 };
 </script>
-<script src="theme.js?v=46939917" defer></script>
-<script src="tier_preview.js?v=5c2f37a6" defer></script>
+<script src="theme.js?v=31df78a0" defer></script>
+<script src="tier_preview.js?v=14b41b6c" defer></script>
 
 
 <script src="chart_i18n.js?v=23272c48" defer></script>
@@ -7406,7 +7407,7 @@ if(_plvPanel||_bsPanel){
 
 })();
 </script>
-<script src="stocktable.js?v=c5387799" defer></script>
+<script src="stocktable.js?v=94935dc1" defer></script>
 <script>
 /* W8-R6: USStockTable init — standout board table view (US market).
    Mirrors the CN implementation (china.html.j2 StockTable init block).
@@ -8485,6 +8486,7 @@ if (document.readyState === 'loading') {
         var a = si.querySelector('[data-act="signin"]');
         if (a) a.addEventListener('click', function(ev){
           ev.preventDefault();
+          if(window.MMXSharedShell){ window.MMXSharedShell.openAuth('signin'); return; }
           try{ window.MDXAuth.open('signin'); }catch(e2){ location.href = 'plans.html'; }
         });
       }

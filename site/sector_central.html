@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><!-- mmx-shared-shell:start --><meta name="mmx-shell-document" content="20261018.1"><meta name="mmx-shell-response" content="content"><script data-sync data-mmx-shared-shell-bridge="20261018.1" src="shared_shell_bridge.js?v=9e98cc40"></script><!-- mmx-shared-shell:end -->
 <meta charset="utf-8">
 <script data-dbase>(function () {
   window.DATA_BASE = window.DATA_BASE || "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev";  // R2 public data plane (flip: clear to revert to Pages)
@@ -2509,7 +2509,7 @@ function renderBTable(){
   tbl.querySelectorAll('th[data-c]').forEach(h=>h.onclick=()=>{ const c=h.dataset.c;
     if(c===btblSort.col) btblSort.dir*=-1; else btblSort={col:c,dir:c==='name'?1:-1};
     localStorage.setItem('fw-btbl-sort',JSON.stringify(btblSort)); renderBTable(); });
-  tbl.querySelectorAll('.bname[data-id]').forEach(n=>n.onclick=()=>{ const id=n.dataset.id||''; if(/^[a-z0-9_-]+$/i.test(id)) location.href='basket/'+id+'.html'; });
+  tbl.querySelectorAll('.bname[data-id]').forEach(n=>n.onclick=()=>{ const id=n.dataset.id||''; if(/^[a-z0-9_-]+$/i.test(id)){ var _d='basket/'+id+'.html'; var _ss=window.MMXSharedShell; if(_ss){_ss.navigate(_d,'push')}else{location.href=_d} } });
 }
 
 // ---- 02 chart -------------------------------------------------------------
@@ -2628,7 +2628,7 @@ function resolveThemeHash(){
   let id=location.hash.slice(7);          // '#theme-'.length
   try{ id=decodeURIComponent(id); }catch(e){}
   if(!id||!themeById(id)) return;         // unknown id → stay put rather than 404
-  location.replace('basket/'+encodeURIComponent(id)+'.html');
+  var _d='basket/'+encodeURIComponent(id)+'.html'; var _ss=window.MMXSharedShell; if(_ss){_ss.navigate(_d,'replace')}else{location.replace(_d)}
 }
 
 // ---- Money flow: ETF style/risk tone + vol pill (Op 2) ----
@@ -2919,7 +2919,7 @@ function __siWireTrace(){
     var open=lanes.querySelector('.si-trace'); var was=row.nextElementSibling===open;
     if(open) open.remove();
     if(was) return;
-    var html=window.__siTrace(id); if(!html){ location.href=row.getAttribute('href'); return; }
+    var html=window.__siTrace(id); if(!html){ var _d=row.getAttribute('href'); var _ss=window.MMXSharedShell; if(_ss){_ss.navigate(_d,'push')}else{location.href=_d} return; }
     var d=document.createElement('div'); d.className='si-trace'; d.innerHTML=html+
       '<div class="si-trace-foot"><a href="basket/'+encodeURIComponent(id)+'.html">'+
       (document.documentElement.getAttribute('data-lang')==='zh'?'打开成分页 →':'members →')+'</a></div>';
@@ -3913,7 +3913,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
 /* mr-panel:end */
 </script>
 
-<script src="si_workspace.js?v=9d4d6860" defer></script>
+<script src="si_workspace.js?v=e6c4db9f" defer></script>
 <script>
 (function(){
   'use strict';
@@ -4007,6 +4007,6 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     });
 })();
 </script>
-<script src="theme.js?v=46939917" defer></script>
+<script src="theme.js?v=31df78a0" defer></script>
 </body>
 </html>

@@ -57,6 +57,114 @@
   var CLOSE_ANIMATION_MS = 300;
   var HISTORY_STATE_KEY = '__mdxTerminalOverlay';
 
+  /* Shared Shell handoff (terminal compatibility repair, defect B). The beta
+     shell nests this legacy dashboard document, so the incumbent full-screen
+     overlay would create an app /terminal iframe two levels deep - the shell's
+     own document policy cannot frame it and the native route owns framing. Any
+     candidate bridge (its presence means this document is shell-nested, which
+     includes the pre-INIT window) is therefore handed to the configured native
+     /terminal route BEFORE any overlay build, frame insert, history guard or
+     body-lock effect. The child bridge only maps the beta origin onto this
+     legacy origin, so an absolute app URL is never admitted and never passed to
+     it: the validated app origin is dropped and only the admitted route plus the
+     incumbent safe state travels. A claimed or refused handoff falls back to
+     nothing - no raw Location write, no nested overlay, no API, no relay, no
+     route registry. No candidate keeps the exact standalone behavior below. */
+  function mmxSharedShellNativeURL() {
+    try {
+      if (typeof window === 'undefined') return null;
+      var base = window.MM_TERMINAL_BASE;
+      if (typeof base !== 'string' || !base) return null;
+      var u = new URL(base, window.location.href);
+      // Production admission is the exact app origin. A local dev base is not a
+      // production admission, so it keeps the incumbent overlay behavior.
+      if (u.origin !== 'https://app.mastermind-x.com') return null;
+      if (u.username || u.password) return null;
+      if (u.pathname !== '/terminal' && u.pathname !== '/') return null;
+      if (u.search || u.hash) return null;
+      return u;
+    } catch (e) { return null; }
+  }
+  function mmxSharedShellReturnOrigin() {
+    try {
+      var origin = new URL(window.location.href).origin;
+      if (origin === 'https://www.mastermind-x.com') return origin;
+      if (origin === 'https://mastermind-x.com') return origin;
+    } catch (e) {}
+    return null;
+  }
+  function mmxSharedShellSafeReturn(href) {
+    try {
+      if (typeof href !== 'string' || !href || href.length > 8192 || /[\u0000-\u0020\\]/.test(href)) return null;
+      var u = new URL(href, window.location.href);
+      if (u.origin !== mmxSharedShellReturnOrigin() || u.username || u.password) return null;
+      // A return is another URL value: validate its own query and fragment before
+      // nesting it in the native destination. Recursive return/callback state is
+      // unnecessary for a page return and cannot carry credential material across.
+      var secretKeys = ['access_token', 'refresh_token', 'token_hash', 'id_token', 'code_verifier',
+        'authorization', 'ret', 'next', 'redirect_to', 'redirect_uri'];
+      var rejected = false, hasCode = false, hasOnboard = false;
+      function inspect(value, key) {
+        var k = key.toLowerCase(), v = value.toLowerCase();
+        if (secretKeys.indexOf(k) !== -1 || (k === 'type' && (v === 'recovery' || v === 'signup'))) rejected = true;
+        if (k === 'code') hasCode = true;
+        if (k === 'onboard') hasOnboard = true;
+      }
+      new URLSearchParams(u.search).forEach(inspect);
+      new URLSearchParams(u.hash.replace(/^#/, '')).forEach(inspect);
+      var sensitivePath = u.pathname.split('/').some(function (part) {
+        return ['auth', 'login', 'reset-password'].indexOf(part) !== -1;
+      });
+      if (rejected || (hasCode && (hasOnboard || sensitivePath))) return null;
+      // Preserve presentation query bytes while removing frame-only transport.
+      var kept = u.search.replace(/^\?/, '').split('&').filter(function (part) {
+        if (!part) return false;
+        var key = decodeURIComponent(part.split('=')[0].replace(/\+/g, ' '));
+        return key !== 'mmx_shell' && key !== 'mmx_generation';
+      });
+      u.search = kept.length ? '?' + kept.join('&') : '';
+      return u.href;
+    } catch (e) { return null; }
+  }
+  // Validates the existing configured native URL, then converts it to the
+  // admitted relative /terminal destination carrying only the incumbent safe
+  // symbol / AI / return state. Embed-only presentation parameters (the portal
+  // iframe's embed=dashboard) and any auth secret are dropped: a shell-nested
+  // document must not receive them.
+  function mmxSharedShellTerminalDestination(config) {
+    if (!config || !config.url) return null;
+    if (!mmxSharedShellNativeURL()) return null;
+    var source;
+    try { source = new URL(config.url, window.location.href); }
+    catch (e) { return null; }
+    if (source.origin !== 'https://app.mastermind-x.com') return null;
+    if (source.username || source.password) return null;
+    if (source.pathname !== '/terminal' && source.pathname !== '/') return null;
+    var symbol = String(config.symbol || '').slice(0, 64);
+    if (!symbol) {
+      symbol = source.searchParams.get('symbol') || source.searchParams.get('sym') || '';
+    }
+    var params = new URLSearchParams();
+    if (symbol) params.set('symbol', symbol);
+    if (source.searchParams.get('ai') === '1') params.set('ai', '1');
+    params.set('from', 'macro');
+    var ret = mmxSharedShellSafeReturn(source.searchParams.get('ret'));
+    if (ret) params.set('ret', ret);
+    var query = params.toString();
+    var dest = '/terminal' + (query ? '?' + query : '');
+    return dest.length <= 8192 ? dest : null;
+  }
+  function mmxSharedShellTerminalHandoff(config) {
+    var bridge = typeof window === 'undefined' ? null : window.MMXSharedShell;
+    if (!bridge || typeof bridge.navigate !== 'function') return false;
+    // Candidate presence owns the launch even when the configured native URL
+    // cannot be validated or the destination is refused: claiming still beats
+    // building nested native UI or raw-writing Location.
+    var dest = mmxSharedShellTerminalDestination(config);
+    if (dest !== null) bridge.navigate(dest, 'push');
+    return true;
+  }
+
   function isDashboardHost() {
     var h = location.hostname || '';
     if (h === 'mastermind-x.com' || h === 'www.mastermind-x.com') return true;
@@ -586,12 +694,17 @@
 
   function openInternal(config) {
     if (!config || !config.url) return;
+    /* Candidate gate: before isDashboardHost, before buildOverlay, before any
+       frame, history guard or body-lock effect. */
+    if (mmxSharedShellTerminalHandoff(config)) return;
     if (!isDashboardHost()) {
+      var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(config.directUrl || config.url, 'push'); return; }
       location.href = config.directUrl || config.url;
       return;
     }
     var root = buildOverlay();
     if (!root) {
+      var _ss2 = window.MMXSharedShell; if (_ss2) { _ss2.navigate(config.directUrl || config.url, 'push'); return; }
       location.href = config.directUrl || config.url;
       return;
     }
@@ -604,6 +717,7 @@
     var launchUrl = remount ? freshMobileLaunchUrl(config.url) : config.url;
     var frame = ensureFrame(launchUrl);
     if (!frame) {
+      var _ss3 = window.MMXSharedShell; if (_ss3) { _ss3.navigate(config.directUrl || config.url, 'push'); return; }
       location.href = config.directUrl || config.url;
       return;
     }
@@ -735,7 +849,11 @@
   window.MDXTerminalOverlay = {
     open: function (config) { openInternal(config); },
     close: requestClose,
-    isOpen: function () { return state.open; }
+    isOpen: function () { return state.open; },
+    // Stock-table direct fallback and other launch owners reach the SAME
+    // centralized handoff; no second copy of the admission rules.
+    terminalHandoff: mmxSharedShellTerminalHandoff,
+    terminalDestination: mmxSharedShellTerminalDestination
   };
 
   try {

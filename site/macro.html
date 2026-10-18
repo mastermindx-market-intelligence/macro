@@ -29,7 +29,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><!-- mmx-shared-shell:start --><meta name="mmx-shell-document" content="20261018.1"><meta name="mmx-shell-response" content="content"><script data-sync data-mmx-shared-shell-bridge="20261018.1" src="shared_shell_bridge.js?v=9e98cc40"></script><!-- mmx-shared-shell:end -->
 <meta charset="utf-8">
 <script data-dbase>(function () {
   window.DATA_BASE = window.DATA_BASE || "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev";  // R2 public data plane (flip: clear to revert to Pages)
@@ -10724,7 +10724,8 @@ Today&#39;s clear driver is the unwind in chip stocks and growth shares, while f
          tiers; until it does, fail toward the non-destructive sign-in sheet. */
       if(document.body && document.body.classList.contains('page-macro') &&
          (!window.MMXAccessPreview || window.MMXAccessPreview.isAnon())){
-        if(window.MMXAccessPreview) window.MMXAccessPreview.openSignin();
+        if(window.MMXSharedShell) window.MMXSharedShell.openAuth('signin');
+        else if(window.MMXAccessPreview) window.MMXAccessPreview.openSignin();
         else if(window.MMOnboard && window.MMOnboard.open) window.MMOnboard.open('signin', {});
         else location.href='/?signin=1&ret=/macro.html';
         return;
@@ -10860,7 +10861,7 @@ Today&#39;s clear driver is the unwind in chip stocks and growth shares, while f
       var legacy = false;
       if(_legacyAnchor[h]){
         var tgt = _legacyAnchor[h];
-        if(tgt.indexOf('.html') !== -1){ location.replace(tgt); return; }
+        if(tgt.indexOf('.html') !== -1){ var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(tgt, 'replace'); } else { location.replace(tgt); } return; }
         h = tgt; legacy = true;
       }
       var el = document.getElementById(h);
@@ -10892,6 +10893,7 @@ Today&#39;s clear driver is the unwind in chip stocks and growth shares, while f
       window.addEventListener('load', function(){ setTimeout(_resolveAlertHashOnce, 500); });
     }
     window.addEventListener('hashchange', _resolveAlertHash);
+    window.addEventListener('mmx:shell-location', _resolveAlertHash);
 
   })();
   </script>
@@ -12801,6 +12803,7 @@ Today&#39;s clear driver is the unwind in chip stocks and growth shares, while f
     }
     window.addEventListener('load', fromHash);
     window.addEventListener('hashchange', fromHash);
+    window.addEventListener('mmx:shell-location', fromHash);
     document.addEventListener('click', function (e) {
       var a = e.target.closest('a.alert[href^="#"]');
       if (!a) return;
@@ -12820,8 +12823,8 @@ window.__CHART_SWAP__ = {
            "HY OAS %":"高收益债利差 %","% S&P500 > 50DMA":"标普500 高于50日均线 %"}
 };
 </script>
-<script src="theme.js?v=46939917" defer></script>
-<script src="tier_preview.js?v=5c2f37a6" defer></script>
+<script src="theme.js?v=31df78a0" defer></script>
+<script src="tier_preview.js?v=14b41b6c" defer></script>
 
 
 <script src="tablesort.js?v=62f1b5ef" defer></script>

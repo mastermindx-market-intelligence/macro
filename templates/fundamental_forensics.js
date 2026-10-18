@@ -894,6 +894,7 @@
       window.MMOnboard.open('upgrade', { plan: 'essential', period: 'annual' });
       return;
     }
+    if (window.MMXSharedShell) { window.MMXSharedShell.openAuth('billing'); return; }
     window.location.href = '/plans.html';
   }
 
@@ -906,6 +907,7 @@
       window.MDXAuth.open('signin');
       return;
     }
+    if (window.MMXSharedShell) { window.MMXSharedShell.openAuth('signin'); return; }
     window.location.href = '/?signin=1';
   }
 
