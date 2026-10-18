@@ -362,6 +362,7 @@ jobs:
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
       - "engine/fundamental_forensics/health.py"
+      - "engine/fundamental_forensics/issuer_sic.py"
       - "engine/fundamental_forensics/ixbrl_extraction.py"
       - "engine/fundamental_forensics/ixbrl_raw_ledger.py"
       - "engine/fundamental_forensics/lineage_evidence.py"
@@ -2117,6 +2118,7 @@ jobs:
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
       - "engine/fundamental_forensics/health.py"
+      - "engine/fundamental_forensics/issuer_sic.py"
       - "engine/fundamental_forensics/ixbrl_extraction.py"
       - "engine/fundamental_forensics/ixbrl_raw_ledger.py"
       - "engine/fundamental_forensics/lineage_evidence.py"
@@ -14991,6 +14993,7 @@ jobs:
       - engine/fundamental_forensics/filing_attestation.py
       - engine/fundamental_forensics/filing_package.py
       - engine/fundamental_forensics/financial_intelligence_packet.py
+      - engine/fundamental_forensics/issuer_sic.py
       - engine/fundamental_forensics/ixbrl_extraction.py
       - engine/fundamental_forensics/lineage_evidence.py
       - engine/fundamental_forensics/metric_registry.py
@@ -20074,6 +20077,7 @@ jobs:
       - engine/fundamental_forensics/filing_package.py
       - engine/fundamental_forensics/financial_intelligence_packet.py
       - engine/fundamental_forensics/health.py
+      - engine/fundamental_forensics/issuer_sic.py
       - engine/fundamental_forensics/ixbrl_extraction.py
       - engine/fundamental_forensics/ixbrl_raw_ledger.py
       - engine/fundamental_forensics/lineage_evidence.py
@@ -23461,6 +23465,7 @@ jobs:
       - "engine/fundamental_forensics/filing_attestation.py"
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
+      - "engine/fundamental_forensics/issuer_sic.py"
       - "engine/fundamental_forensics/ixbrl_extraction.py"
       - "engine/fundamental_forensics/lineage_evidence.py"
       - "engine/fundamental_forensics/metric_registry.py"
@@ -28344,6 +28349,7 @@ jobs:
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
       - "engine/fundamental_forensics/health.py"
+      - "engine/fundamental_forensics/issuer_sic.py"
       - "engine/fundamental_forensics/ixbrl_extraction.py"
       - "engine/fundamental_forensics/ixbrl_raw_ledger.py"
       - "engine/fundamental_forensics/lineage_evidence.py"
@@ -31128,6 +31134,7 @@ jobs:
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
       - "engine/fundamental_forensics/health.py"
+      - "engine/fundamental_forensics/issuer_sic.py"
       - "engine/fundamental_forensics/ixbrl_extraction.py"
       - "engine/fundamental_forensics/ixbrl_raw_ledger.py"
       - "engine/fundamental_forensics/lineage_evidence.py"
