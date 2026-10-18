@@ -219,7 +219,7 @@ def test_run_p1_refuses_before_loader(tmp_path, monkeypatch):
 # H1/H2/H3 are NOT_EXECUTABLE. Even a passing old size gate does not allow
 # the one-time P1 market-data read until V3 is preregistered and powered.
 @pytest.mark.parametrize("record", [True, False])
-def test_p1_v3_embargo_refuses_even_with_v2_size_gate_passed(tmp_path, monkeypatch, record):
+def test_p1_v3_and_unrecorded_look_refusals_are_before_market_effects(tmp_path, monkeypatch, record):
     from scripts import leadership_rotation_run as lr
 
     calls = []
@@ -242,12 +242,30 @@ def test_p1_v3_embargo_refuses_even_with_v2_size_gate_passed(tmp_path, monkeypat
     monkeypatch.setattr(st, "load_closes_from_git", forbidden)
     output = tmp_path / "must-not-write-p1.json"
 
-    with pytest.raises(lr.P1StatisticsNotQualified, match="V3_STATISTICS_NOT_QUALIFIED") as err:
+    if record:
+        expected_type = lr.P1StatisticsNotQualified
+        expected_reason = "V3_STATISTICS_NOT_QUALIFIED"
+        expected_calls = ["v1_v2", "v2_1", "v2_size"]
+    else:
+        expected_type = lr.P1UnrecordedLookRefused
+        expected_reason = "P1_UNRECORDED_LOOK_REFUSED"
+        expected_calls = []
+
+    with pytest.raises(expected_type, match=expected_reason) as err:
         lr.run_p1(str(tmp_path), commit="synthetic-commit", out=str(output), record=record)
 
-    assert err.value.reason == "V3_STATISTICS_NOT_QUALIFIED"
-    assert calls == ["v1_v2", "v2_1", "v2_size"]
+    assert err.value.reason == expected_reason
+    assert calls == expected_calls
     assert not output.exists()
+
+
+def test_cli_rejects_removed_no_record_bypass(tmp_path):
+    from scripts import leadership_rotation_run as lr
+
+    # Parser refuses the retired option without any attempt to read a repo.
+    with pytest.raises(SystemExit) as err:
+        lr.main(["p1", "--repo", str(tmp_path), "--no-record"])
+    assert err.value.code == 2
 
 
 def test_p0_synthetic_composer_stays_available_while_p1_is_sealed():
