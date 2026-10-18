@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import time
 
 import pandas as pd
@@ -189,23 +190,72 @@ class RussellBreadthAdapter(BreadthAdapter):
         yfinance batch well inside Yahoo's throttle zone while halving the
         wall-clock vs using batch_size=80. All other retry/backoff/extras
         logic inherited from the base class is preserved by patching ycfg."""
-        # Temporarily override the batch_size so the base-class loop uses 250.
+        # The canonical cache belongs to BreadthAdapter.fetch AFTER successful
+        # source validation/merge. Historically this override wrote a 1mo Yahoo
+        # response straight to that path before the base 80% coverage check,
+        # destroying a recoverable whole-window cache on a partial provider read.
+        # Only an actual cache-MISSING first backfill may save a partial seed.
+        cache_path = getattr(self, "cache_path", None)
+        had_cache = cache_path is not None and cache_path.exists()
+        # Freeze one owner-provided *completed* session before any provider I/O.
+        # A slow batch spanning the next close may not borrow that later date.
+        completed = None
+        if len(tickers) >= _CONSTITUENTS_FLOOR:
+            from lib import nyse_calendar
+            completed = nyse_calendar.expected_last_session()
         orig_bs = self.ycfg.get("batch_size", 80)
         self.ycfg = {**self.ycfg, "batch_size": _CHUNK_SIZE}
         try:
             closes = super()._download_closes(tickers, period)
         finally:
             self.ycfg = {**self.ycfg, "batch_size": orig_bs}
-        # Cold-start resilience: persist the matrix BEFORE the base class's 80%
-        # coverage gate (breadth.py raises "too sparse" pre-write). A partial
-        # first-night download is thus kept and the next run's incremental merge
-        # continues from it instead of restarting cold. Best-effort, never fatal.
-        try:
-            if closes is not None and not closes.empty:
-                self.cache_path.parent.mkdir(parents=True, exist_ok=True)
-                closes.to_parquet(self.cache_path)
-        except Exception as e:  # noqa: BLE001
-            log.debug("russell_breadth: partial-cache persist skipped: %s", e)
+
+        # Cold-start resilience is intentional, but it is NOT a general write
+        # permission. Only seed an absent cache from a historical backfill. A
+        # normal 1mo refresh or split-seam re-pull cannot overwrite an existing
+        # complete cache before the base owner accepts/publishes the final merge.
+        if not had_cache and period != "1mo":
+            try:
+                if closes is not None and not closes.empty and cache_path is not None:
+                    cache_path.parent.mkdir(parents=True, exist_ok=True)
+                    closes.to_parquet(cache_path)
+            except Exception as exc:  # noqa: BLE001
+                log.debug("russell_breadth: first-backfill partial persist skipped: %s", exc)
+
+        # Valid data at any historical date is not proof of THIS completed
+        # session's closes. Yahoo can return a successful but partially empty
+        # DataFrame; the inherited global column-count test only checks whether
+        # members EVER reported. For a normal large-universe refresh, require the
+        # incumbent completed-session calendar and ≥80% finite positive closes.
+        # Fail before fetch() can publish a mixed/stale cache as collector=ok.
+        # An absent-cache first backfill may persist its partial recovery seed
+        # above, but still MUST report source failure until this check passes.
+        # Tiny seam re-pulls are optional source repairs, not full-universe
+        # qualification; don't apply a 1,600-name threshold to them.
+        if completed is not None:
+            matching = [] if closes is None else [
+                pos for pos, stamp in enumerate(closes.index)
+                if pd.Timestamp(stamp).date() == completed
+            ]
+            valid_count = 0
+            if len(matching) == 1:
+                row = closes.iloc[matching[0]]
+                for symbol in tickers:
+                    value = row.get(symbol)
+                    try:
+                        price = float(value)
+                    except (ValueError, TypeError):
+                        continue
+                    if math.isfinite(price) and price > 0:
+                        valid_count += 1
+            needed = (4 * len(tickers) + 4) // 5  # ceil(80%), integer-safe
+            if valid_count < needed:
+                raise RuntimeError(
+                    "russell_breadth completed-session close coverage "
+                    f"{valid_count}/{len(tickers)} < {needed} on {completed}; "
+                    "refusing incomplete refresh before cache publication"
+                )
+
         return closes
 
     # ------------------------------------------------------------------

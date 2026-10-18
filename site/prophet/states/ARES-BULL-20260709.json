@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ARES-BULL-20260709",
-  "asof": "2026-10-15",
+  "asof": "2026-10-17",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 11.7,
@@ -14,13 +14,13 @@
     "progress": 60.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 32.9
   },
   "geometry": {
     "dist_to_stop_r": -0.407,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 215.6,
+    "horizon_pct_used": 220.0,
     "p1": -0.9378,
     "p2": -0.4689,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-17",
   "_first_t1_ts": "2026-08-06",
   "_first_t2_ts": "2026-08-12",
-  "days_elapsed": 97,
-  "tau": 2.1556
+  "days_elapsed": 99,
+  "tau": 2.2
 }

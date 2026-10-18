@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "LPG-BULL-20260724",
-  "asof": "2026-10-15",
+  "asof": "2026-10-17",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 46.7,
@@ -14,13 +14,13 @@
     "progress": 38.9,
     "pace": 0.0,
     "retention": 74.9,
-    "overlay": 53.0
+    "overlay": 32.9
   },
   "geometry": {
     "dist_to_stop_r": 1.712,
     "dist_to_t1_r": 0.788,
     "dist_to_t2_r": 2.288,
-    "horizon_pct_used": 175.6,
+    "horizon_pct_used": 180.0,
     "p1": 0.4747,
     "p2": 0.2373,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-29",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 79,
-  "tau": 1.7556
+  "days_elapsed": 81,
+  "tau": 1.8
 }

@@ -1,26 +1,26 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "APG-BULL-20260930",
-  "asof": "2026-10-15",
+  "asof": "2026-10-17",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 53.5,
-  "raw_confidence": 53.6,
-  "delta_vs_base": -6.5,
+  "management_confidence": 51.2,
+  "raw_confidence": 50.0,
+  "delta_vs_base": -8.8,
   "recommended_action": "hold",
   "human_state": "Needs Follow-Through",
   "components": {
     "validity": 82.1,
     "progress": 0.0,
-    "pace": 81.1,
+    "pace": 70.5,
     "retention": 50.0,
-    "overlay": 59.0
+    "overlay": 38.9
   },
   "geometry": {
     "dist_to_stop_r": 0.864,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 20.0,
+    "horizon_pct_used": 24.4,
     "p1": -0.0906,
     "p2": -0.0453,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-10-07",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 9,
-  "tau": 0.2
+  "days_elapsed": 11,
+  "tau": 0.2444
 }

@@ -1,10 +1,10 @@
 {
-  "as_of": "2026-10-15",
-  "health_score": 77,
+  "as_of": "2026-10-16",
+  "health_score": 78,
   "health_label": "healthy",
   "cycle_phase": "recession",
-  "recession_risk": 3.676556478291821,
-  "drawdown_risk": 17.03894050207551,
+  "recession_risk": 3.6789761453456347,
+  "drawdown_risk": 16.016602977994467,
   "pillars": {
     "curve": {
       "spread_10y3m": 0.91,
@@ -28,7 +28,7 @@
       "hy_ig_ratio": 3.807228915662651,
       "baa_aaa": 0.5,
       "ebp": -0.3919245963723856,
-      "hy_pctile": 0.8283730158730159,
+      "hy_pctile": 0.8273809523809523,
       "distress_band": "normal",
       "direction": "widening"
     },
@@ -41,17 +41,17 @@
       "tp_repriced_positive": true
     },
     "stress": {
-      "move": 102.48999786376953,
+      "move": 101.10289764404297,
       "move_band": "normal",
-      "move_pctile": 0.9484126984126984,
-      "move_leads_vix": false,
+      "move_pctile": 0.9404761904761905,
+      "move_leads_vix": true,
       "sofr_iorb_bp": -0.9999999999999787,
       "repo_spike_bp": 8.999999999999986,
       "reserve_scarcity": false,
       "repo_stress": false
     },
     "cross_asset": {
-      "stock_bond_corr": 0.4555125833440127,
+      "stock_bond_corr": 0.45302365803325795,
       "regime": "breakdown",
       "hedge_working": false
     },
@@ -65,13 +65,19 @@
     }
   },
   "stress_legs": {
-    "recession": 3.676556478291821,
-    "drawdown": 17.03894050207551,
+    "recession": 3.6789761453456347,
+    "drawdown": 16.016602977994467,
     "credit": 22.400000000000002,
-    "rates_vol": 49.67874813079834,
+    "rates_vol": 48.4650354385376,
     "plumbing": 16.000000000000085
   },
   "alarms": [
+    {
+      "key": "rates_vol",
+      "severity": "medium",
+      "en": "Rates volatility (MOVE) leading equity volatility (VIX) — stress often transmits this way.",
+      "zh": "利率波动（MOVE）领先股票波动（VIX）— 压力常以此路径传导。"
+    },
     {
       "key": "sovereign",
       "severity": "medium",
@@ -79,8 +85,8 @@
       "zh": "欧元区外围利差自平静水平扩大 — 留意分化风险。"
     }
   ],
-  "verdict_en": "Bond health healthy (77/100), recession. Curve positively sloped. Credit normal. Rates-vol normal.",
-  "verdict_zh": "债券健康度健康（77/100），衰退。曲线正向倾斜。信用正常。利率波动正常。",
+  "verdict_en": "Bond health healthy (78/100), recession. Curve positively sloped. Credit normal. Rates-vol normal.",
+  "verdict_zh": "债券健康度健康（78/100），衰退。曲线正向倾斜。信用正常。利率波动正常。",
   "drivers_for": {
     "forex": {
       "note_en": "Rate differentials drive FX — the US 2y policy-path and the real-10y are the carry and value anchors; a US-favorable widening vs foreign rates is a USD tailwind.",
@@ -101,12 +107,12 @@
       "note_en": "Discount-rate channel (real-10y, term premium) compresses long-duration multiples; HY OAS widening is associated with equity drawdowns in stress episodes; this snapshot does not establish a lead; the SPEED of yield moves (MOVE) matters more than the level.",
       "hy_oas": 3.16,
       "credit_canary": true,
-      "stock_bond_corr": 0.4555125833440127
+      "stock_bond_corr": 0.45302365803325795
     }
   },
   "fed_path": {
-    "asof": "2026-10-15",
-    "built": "2026-10-16T06:15:53.977035+00:00",
+    "asof": "2026-10-16",
+    "built": "2026-10-17T17:50:59.610555+00:00",
     "policy_rate": 3.88,
     "target_low": 3.75,
     "target_high": 4.0,
@@ -561,7 +567,7 @@
         "authority": "display_only",
         "status": "computed",
         "reason": null,
-        "cutoff_effective": "2026-10-16",
+        "cutoff_effective": "2026-10-17",
         "cutoff_basis": "live_asof_plus_1d",
         "effective_date_law": "decision_plus_1d",
         "calendar_years_covered": [
@@ -608,7 +614,7 @@
               "first_public_evidence": "2026-10-14",
               "first_public_precision": "day",
               "admitted_at": null,
-              "cutoff": "2026-10-16",
+              "cutoff": "2026-10-17",
               "model_id": null,
               "target_epoch": null,
               "vintage": null,
@@ -616,7 +622,7 @@
               "quality": [],
               "authority": "display_only",
               "limitations": [],
-              "obs_id": "fbfe2323a27043b9"
+              "obs_id": "95465d126efea9b9"
             },
             "effective_dates_inside": [
               "2026-10-29"
@@ -670,16 +676,16 @@
               ],
               "limitations": [],
               "reason": "transform:monthly_average_vs_level",
-              "left_ref": "fbfe2323a27043b9",
-              "right_ref": "d95e5dee25dd4b73",
-              "left_cutoff": "2026-10-16",
-              "right_cutoff": "2026-10-16"
+              "left_ref": "95465d126efea9b9",
+              "right_ref": "0093381b821041b2",
+              "left_cutoff": "2026-10-17",
+              "right_cutoff": "2026-10-17"
             },
             "weights": {
               "days_pre": 28,
               "days_post": 3,
-              "realised_days": 14,
-              "remaining_days": 17
+              "realised_days": 15,
+              "remaining_days": 16
             },
             "post_rate_sensitivity": 10.3333,
             "limitations": []
@@ -712,7 +718,7 @@
               "first_public_evidence": "2026-10-14",
               "first_public_precision": "day",
               "admitted_at": null,
-              "cutoff": "2026-10-16",
+              "cutoff": "2026-10-17",
               "model_id": null,
               "target_epoch": null,
               "vintage": null,
@@ -720,7 +726,7 @@
               "quality": [],
               "authority": "display_only",
               "limitations": [],
-              "obs_id": "887b9d33bbb457ce"
+              "obs_id": "442a9760b4328d4d"
             },
             "effective_dates_inside": [],
             "status": "identified_conditional",
@@ -766,10 +772,10 @@
               ],
               "limitations": [],
               "reason": "transform:monthly_average_vs_level",
-              "left_ref": "887b9d33bbb457ce",
-              "right_ref": "d95e5dee25dd4b73",
-              "left_cutoff": "2026-10-16",
-              "right_cutoff": "2026-10-16"
+              "left_ref": "442a9760b4328d4d",
+              "right_ref": "0093381b821041b2",
+              "left_cutoff": "2026-10-17",
+              "right_cutoff": "2026-10-17"
             },
             "weights": {
               "days_pre": null,
@@ -808,7 +814,7 @@
               "first_public_evidence": "2026-10-14",
               "first_public_precision": "day",
               "admitted_at": null,
-              "cutoff": "2026-10-16",
+              "cutoff": "2026-10-17",
               "model_id": null,
               "target_epoch": null,
               "vintage": null,
@@ -816,7 +822,7 @@
               "quality": [],
               "authority": "display_only",
               "limitations": [],
-              "obs_id": "8a2c31ee3fc96273"
+              "obs_id": "e910ce114aca9d52"
             },
             "effective_dates_inside": [
               "2026-12-10"
@@ -870,10 +876,10 @@
               ],
               "limitations": [],
               "reason": "transform:monthly_average_vs_level",
-              "left_ref": "8a2c31ee3fc96273",
-              "right_ref": "d95e5dee25dd4b73",
-              "left_cutoff": "2026-10-16",
-              "right_cutoff": "2026-10-16"
+              "left_ref": "e910ce114aca9d52",
+              "right_ref": "0093381b821041b2",
+              "left_cutoff": "2026-10-17",
+              "right_cutoff": "2026-10-17"
             },
             "weights": {
               "days_pre": 9,
@@ -914,7 +920,7 @@
               "first_public_evidence": "2026-10-14",
               "first_public_precision": "day",
               "admitted_at": null,
-              "cutoff": "2026-10-16",
+              "cutoff": "2026-10-17",
               "model_id": null,
               "target_epoch": null,
               "vintage": null,
@@ -922,7 +928,7 @@
               "quality": [],
               "authority": "display_only",
               "limitations": [],
-              "obs_id": "3821eeadc8efd84d"
+              "obs_id": "255aca35f76459e0"
             },
             "effective_dates_inside": [
               "2027-01-28"
@@ -976,10 +982,10 @@
               ],
               "limitations": [],
               "reason": "transform:monthly_average_vs_level",
-              "left_ref": "3821eeadc8efd84d",
-              "right_ref": "d95e5dee25dd4b73",
-              "left_cutoff": "2026-10-16",
-              "right_cutoff": "2026-10-16"
+              "left_ref": "255aca35f76459e0",
+              "right_ref": "0093381b821041b2",
+              "left_cutoff": "2026-10-17",
+              "right_cutoff": "2026-10-17"
             },
             "weights": {
               "days_pre": 27,
@@ -1020,7 +1026,7 @@
               "first_public_evidence": "2026-10-14",
               "first_public_precision": "day",
               "admitted_at": null,
-              "cutoff": "2026-10-16",
+              "cutoff": "2026-10-17",
               "model_id": null,
               "target_epoch": null,
               "vintage": null,
@@ -1028,7 +1034,7 @@
               "quality": [],
               "authority": "display_only",
               "limitations": [],
-              "obs_id": "5ea3cc55beadc65d"
+              "obs_id": "7be063073606614d"
             },
             "effective_dates_inside": [],
             "status": "identified_conditional",
@@ -1074,10 +1080,10 @@
               ],
               "limitations": [],
               "reason": "transform:monthly_average_vs_level",
-              "left_ref": "5ea3cc55beadc65d",
-              "right_ref": "d95e5dee25dd4b73",
-              "left_cutoff": "2026-10-16",
-              "right_cutoff": "2026-10-16"
+              "left_ref": "7be063073606614d",
+              "right_ref": "0093381b821041b2",
+              "left_cutoff": "2026-10-17",
+              "right_cutoff": "2026-10-17"
             },
             "weights": {
               "days_pre": null,
@@ -1116,7 +1122,7 @@
               "first_public_evidence": "2026-10-14",
               "first_public_precision": "day",
               "admitted_at": null,
-              "cutoff": "2026-10-16",
+              "cutoff": "2026-10-17",
               "model_id": null,
               "target_epoch": null,
               "vintage": null,
@@ -1124,7 +1130,7 @@
               "quality": [],
               "authority": "display_only",
               "limitations": [],
-              "obs_id": "cad102c26e1d3cd7"
+              "obs_id": "3d454e9d9706ea28"
             },
             "effective_dates_inside": [
               "2027-03-18"
@@ -1178,10 +1184,10 @@
               ],
               "limitations": [],
               "reason": "transform:monthly_average_vs_level",
-              "left_ref": "cad102c26e1d3cd7",
-              "right_ref": "d95e5dee25dd4b73",
-              "left_cutoff": "2026-10-16",
-              "right_cutoff": "2026-10-16"
+              "left_ref": "3d454e9d9706ea28",
+              "right_ref": "0093381b821041b2",
+              "left_cutoff": "2026-10-17",
+              "right_cutoff": "2026-10-17"
             },
             "weights": {
               "days_pre": 17,
@@ -1222,7 +1228,7 @@
               "first_public_evidence": "2026-10-14",
               "first_public_precision": "day",
               "admitted_at": null,
-              "cutoff": "2026-10-16",
+              "cutoff": "2026-10-17",
               "model_id": null,
               "target_epoch": null,
               "vintage": null,
@@ -1230,7 +1236,7 @@
               "quality": [],
               "authority": "display_only",
               "limitations": [],
-              "obs_id": "4e101added724d7e"
+              "obs_id": "d44bc9ccbe0e7fde"
             },
             "effective_dates_inside": [
               "2027-04-29"
@@ -1284,10 +1290,10 @@
               ],
               "limitations": [],
               "reason": "transform:monthly_average_vs_level",
-              "left_ref": "4e101added724d7e",
-              "right_ref": "d95e5dee25dd4b73",
-              "left_cutoff": "2026-10-16",
-              "right_cutoff": "2026-10-16"
+              "left_ref": "d44bc9ccbe0e7fde",
+              "right_ref": "0093381b821041b2",
+              "left_cutoff": "2026-10-17",
+              "right_cutoff": "2026-10-17"
             },
             "weights": {
               "days_pre": 28,
@@ -1328,7 +1334,7 @@
               "first_public_evidence": "2026-10-14",
               "first_public_precision": "day",
               "admitted_at": null,
-              "cutoff": "2026-10-16",
+              "cutoff": "2026-10-17",
               "model_id": null,
               "target_epoch": null,
               "vintage": null,
@@ -1336,7 +1342,7 @@
               "quality": [],
               "authority": "display_only",
               "limitations": [],
-              "obs_id": "172a7abd72c6d0c7"
+              "obs_id": "0d11085d00bdd0ff"
             },
             "effective_dates_inside": [],
             "status": "identified_conditional",
@@ -1382,10 +1388,10 @@
               ],
               "limitations": [],
               "reason": "transform:monthly_average_vs_level",
-              "left_ref": "172a7abd72c6d0c7",
-              "right_ref": "d95e5dee25dd4b73",
-              "left_cutoff": "2026-10-16",
-              "right_cutoff": "2026-10-16"
+              "left_ref": "0d11085d00bdd0ff",
+              "right_ref": "0093381b821041b2",
+              "left_cutoff": "2026-10-17",
+              "right_cutoff": "2026-10-17"
             },
             "weights": {
               "days_pre": null,
@@ -1424,7 +1430,7 @@
               "first_public_evidence": "2026-10-14",
               "first_public_precision": "day",
               "admitted_at": null,
-              "cutoff": "2026-10-16",
+              "cutoff": "2026-10-17",
               "model_id": null,
               "target_epoch": null,
               "vintage": null,
@@ -1432,7 +1438,7 @@
               "quality": [],
               "authority": "display_only",
               "limitations": [],
-              "obs_id": "45e37fac42f96fe6"
+              "obs_id": "8c999b9d14b895d0"
             },
             "effective_dates_inside": [
               "2027-06-10"
@@ -1486,10 +1492,10 @@
               ],
               "limitations": [],
               "reason": "transform:monthly_average_vs_level",
-              "left_ref": "45e37fac42f96fe6",
-              "right_ref": "d95e5dee25dd4b73",
-              "left_cutoff": "2026-10-16",
-              "right_cutoff": "2026-10-16"
+              "left_ref": "8c999b9d14b895d0",
+              "right_ref": "0093381b821041b2",
+              "left_cutoff": "2026-10-17",
+              "right_cutoff": "2026-10-17"
             },
             "weights": {
               "days_pre": 9,
@@ -1530,7 +1536,7 @@
               "first_public_evidence": "2026-10-14",
               "first_public_precision": "day",
               "admitted_at": null,
-              "cutoff": "2026-10-16",
+              "cutoff": "2026-10-17",
               "model_id": null,
               "target_epoch": null,
               "vintage": null,
@@ -1538,7 +1544,7 @@
               "quality": [],
               "authority": "display_only",
               "limitations": [],
-              "obs_id": "d44bbb84c09e3327"
+              "obs_id": "5fb59062a7742327"
             },
             "effective_dates_inside": [
               "2027-07-29"
@@ -1592,10 +1598,10 @@
               ],
               "limitations": [],
               "reason": "transform:monthly_average_vs_level",
-              "left_ref": "d44bbb84c09e3327",
-              "right_ref": "d95e5dee25dd4b73",
-              "left_cutoff": "2026-10-16",
-              "right_cutoff": "2026-10-16"
+              "left_ref": "5fb59062a7742327",
+              "right_ref": "0093381b821041b2",
+              "left_cutoff": "2026-10-17",
+              "right_cutoff": "2026-10-17"
             },
             "weights": {
               "days_pre": 28,
@@ -1636,7 +1642,7 @@
               "first_public_evidence": "2026-10-14",
               "first_public_precision": "day",
               "admitted_at": null,
-              "cutoff": "2026-10-16",
+              "cutoff": "2026-10-17",
               "model_id": null,
               "target_epoch": null,
               "vintage": null,
@@ -1644,7 +1650,7 @@
               "quality": [],
               "authority": "display_only",
               "limitations": [],
-              "obs_id": "82324586321c632f"
+              "obs_id": "d7d9a066ccdcc0d6"
             },
             "effective_dates_inside": [],
             "status": "identified_conditional",
@@ -1690,10 +1696,10 @@
               ],
               "limitations": [],
               "reason": "transform:monthly_average_vs_level",
-              "left_ref": "82324586321c632f",
-              "right_ref": "d95e5dee25dd4b73",
-              "left_cutoff": "2026-10-16",
-              "right_cutoff": "2026-10-16"
+              "left_ref": "d7d9a066ccdcc0d6",
+              "right_ref": "0093381b821041b2",
+              "left_cutoff": "2026-10-17",
+              "right_cutoff": "2026-10-17"
             },
             "weights": {
               "days_pre": null,
@@ -1732,7 +1738,7 @@
               "first_public_evidence": "2026-10-14",
               "first_public_precision": "day",
               "admitted_at": null,
-              "cutoff": "2026-10-16",
+              "cutoff": "2026-10-17",
               "model_id": null,
               "target_epoch": null,
               "vintage": null,
@@ -1740,7 +1746,7 @@
               "quality": [],
               "authority": "display_only",
               "limitations": [],
-              "obs_id": "01759409039131a5"
+              "obs_id": "ad9b5013454cc8ed"
             },
             "effective_dates_inside": [
               "2027-09-16"
@@ -1794,10 +1800,10 @@
               ],
               "limitations": [],
               "reason": "transform:monthly_average_vs_level",
-              "left_ref": "01759409039131a5",
-              "right_ref": "d95e5dee25dd4b73",
-              "left_cutoff": "2026-10-16",
-              "right_cutoff": "2026-10-16"
+              "left_ref": "ad9b5013454cc8ed",
+              "right_ref": "0093381b821041b2",
+              "left_cutoff": "2026-10-17",
+              "right_cutoff": "2026-10-17"
             },
             "weights": {
               "days_pre": 15,
@@ -1838,7 +1844,7 @@
               "first_public_evidence": "2026-10-14",
               "first_public_precision": "day",
               "admitted_at": null,
-              "cutoff": "2026-10-16",
+              "cutoff": "2026-10-17",
               "model_id": null,
               "target_epoch": null,
               "vintage": null,
@@ -1846,7 +1852,7 @@
               "quality": [],
               "authority": "display_only",
               "limitations": [],
-              "obs_id": "5c0f650fc6ddf8a8"
+              "obs_id": "95576062f48b503d"
             },
             "effective_dates_inside": [
               "2027-10-28"
@@ -1900,10 +1906,10 @@
               ],
               "limitations": [],
               "reason": "transform:monthly_average_vs_level",
-              "left_ref": "5c0f650fc6ddf8a8",
-              "right_ref": "d95e5dee25dd4b73",
-              "left_cutoff": "2026-10-16",
-              "right_cutoff": "2026-10-16"
+              "left_ref": "95576062f48b503d",
+              "right_ref": "0093381b821041b2",
+              "left_cutoff": "2026-10-17",
+              "right_cutoff": "2026-10-17"
             },
             "weights": {
               "days_pre": 27,
@@ -1944,7 +1950,7 @@
               "first_public_evidence": "2026-10-14",
               "first_public_precision": "day",
               "admitted_at": null,
-              "cutoff": "2026-10-16",
+              "cutoff": "2026-10-17",
               "model_id": null,
               "target_epoch": null,
               "vintage": null,
@@ -1952,7 +1958,7 @@
               "quality": [],
               "authority": "display_only",
               "limitations": [],
-              "obs_id": "f38f4dbb54257549"
+              "obs_id": "fe839d454fb5de63"
             },
             "effective_dates_inside": [],
             "status": "identified_conditional",
@@ -1998,10 +2004,10 @@
               ],
               "limitations": [],
               "reason": "transform:monthly_average_vs_level",
-              "left_ref": "f38f4dbb54257549",
-              "right_ref": "d95e5dee25dd4b73",
-              "left_cutoff": "2026-10-16",
-              "right_cutoff": "2026-10-16"
+              "left_ref": "fe839d454fb5de63",
+              "right_ref": "0093381b821041b2",
+              "left_cutoff": "2026-10-17",
+              "right_cutoff": "2026-10-17"
             },
             "weights": {
               "days_pre": null,
@@ -2021,10 +2027,10 @@
     }
   },
   "intl_bonds": {
-    "as_of": "2026-10-15",
+    "as_of": "2026-10-16",
     "global": {
       "avg_10y": 4.31,
-      "avg_10y_chg_63d_bp": 43.0,
+      "avg_10y_chg_63d_bp": 40.0,
       "direction": "rising",
       "avg_slope": 0.85,
       "n": 7,
@@ -2050,15 +2056,15 @@
         "slope": 0.42,
         "slope_basis": "2s10s",
         "slope_state": "normal",
-        "chg_63d_bp": 61.0,
+        "chg_63d_bp": 58.0,
         "direction": "rising",
-        "z1y": 2.41,
-        "z5y": 1.75,
+        "z1y": 2.38,
+        "z5y": 1.76,
         "diff_vs_us_bp": 0.0,
         "real_10y": 2.88,
-        "vel_5d_bp": -1.0,
-        "vel_20d_bp": 27.0,
-        "vel_20d_z": 1.311,
+        "vel_5d_bp": -3.0,
+        "vel_20d_bp": 20.0,
+        "vel_20d_z": 0.914,
         "vel_window_days": 504
       },
       {
@@ -2074,15 +2080,15 @@
         "slope": 0.41,
         "slope_basis": "2s10s",
         "slope_state": "normal",
-        "chg_63d_bp": 32.0,
+        "chg_63d_bp": 28.0,
         "direction": "rising",
-        "z1y": 1.96,
+        "z1y": 1.94,
         "z5y": 1.49,
         "diff_vs_us_bp": -172.0,
         "real_10y": null,
-        "vel_5d_bp": -2.7,
-        "vel_20d_bp": 0.4,
-        "vel_20d_z": -0.25,
+        "vel_5d_bp": -1.9,
+        "vel_20d_bp": -3.8,
+        "vel_20d_z": -0.515,
         "vel_window_days": 504
       },
       {
@@ -2098,15 +2104,15 @@
         "slope": 1.1,
         "slope_basis": "2s10s",
         "slope_state": "steep",
-        "chg_63d_bp": 34.0,
+        "chg_63d_bp": 33.0,
         "direction": "rising",
-        "z1y": 1.53,
-        "z5y": 2.41,
+        "z1y": 1.52,
+        "z5y": 2.4,
         "diff_vs_us_bp": -215.0,
         "real_10y": null,
         "vel_5d_bp": 0.0,
-        "vel_20d_bp": 6.4,
-        "vel_20d_z": -0.164,
+        "vel_20d_bp": 7.6,
+        "vel_20d_z": -0.057,
         "vel_window_days": 504
       },
       {
@@ -2209,12 +2215,12 @@
     "em": {
       "em_oas": 1.54,
       "pctile": 22.0,
-      "direction": "stable",
+      "direction": "rising",
       "emb_trend": "down",
-      "emb_chg_63d_pct": -2.6
+      "emb_chg_63d_pct": -2.7
     },
-    "verdict_en": "Global 10y avg 4.31% and rising (+43bp/3m) — a global tightening/duration-bear impulse. US 10y is 161bp above the GDP-weighted rest of the world and rising — the dollar's rate-differential anchor. EM hard-currency OAS 1.54% (stable).",
-    "verdict_zh": "全球10年期均值 4.31%，3个月 +43基点 — 全球收紧/久期偏空动能。美国10年期较GDP加权的世界其余高161基点，利差走阔 — 美元的利差之锚。新兴市场硬通货利差 1.54%（平稳）。",
+    "verdict_en": "Global 10y avg 4.31% and rising (+40bp/3m) — a global tightening/duration-bear impulse. US 10y is 161bp above the GDP-weighted rest of the world and rising — the dollar's rate-differential anchor. EM hard-currency OAS 1.54% (rising).",
+    "verdict_zh": "全球10年期均值 4.31%，3个月 +40基点 — 全球收紧/久期偏空动能。美国10年期较GDP加权的世界其余高161基点，利差走阔 — 美元的利差之锚。新兴市场硬通货利差 1.54%（走阔）。",
     "drivers_for": {
       "forex": {
         "us_premium_bp": 161.0,
@@ -2224,11 +2230,11 @@
     }
   },
   "bond_compass": {
-    "as_of": "2026-10-15",
+    "as_of": "2026-10-16",
     "duration": {
-      "lean": 0.25,
+      "lean": 0.26,
       "bucket": "lean_long",
-      "conviction": 0.25,
+      "conviction": 0.26,
       "agreement": 0.6,
       "n_legs": 5,
       "legs": [
@@ -2276,9 +2282,9 @@
           "key": "macro",
           "label_en": "Macro impulse (reflation)",
           "label_zh": "宏观动能（再通胀）",
-          "value": -0.15,
+          "value": -0.1,
           "weight": 0.5,
-          "state": "bearish",
+          "state": "neutral",
           "note_en": "Rising copper/gold + breakevens = reflation = a duration headwind.",
           "note_zh": "铜/金比与盈亏平衡通胀上行=再通胀=久期逆风。"
         }
@@ -2298,22 +2304,22 @@
       "cushion_bp": 68.0,
       "duration": 8.0
     },
-    "verdict_en": "Lean long duration (lean +0.25, 60% of legs agree). Carry+roll ≈ 5.48%/yr; yields can rise ~68bp before a 10y loses money over a year.",
-    "verdict_zh": "偏多久期（倾向 +0.25，60% 分项一致）。套息+滚动约 5.48%/年；收益率上行约 68基点以内，10年期一年总回报仍不亏。",
+    "verdict_en": "Lean long duration (lean +0.26, 60% of legs agree). Carry+roll ≈ 5.48%/yr; yields can rise ~68bp before a 10y loses money over a year.",
+    "verdict_zh": "偏多久期（倾向 +0.26，60% 分项一致）。套息+滚动约 5.48%/年；收益率上行约 68基点以内，10年期一年总回报仍不亏。",
     "honest_en": "Display-only positioning context, never scored. The same factors, backtested as a long/flat duration timer (reports/duration-timing-phase0.md), earn their keep through DRAWDOWN-CONTROL (MaxDD −18% vs −48% buy-and-hold), not reliable return-timing — the deflated Sharpe is marginal. Read it as 'when to stand aside', not a trade signal.",
     "honest_zh": "仅供仓位参考，从不评分。同样的因子作为多/空久期择时回测（见 reports/duration-timing-phase0.md），其价值在于回撤控制（最大回撤 −18% 对比买入持有 −48%），而非可靠的收益择时——贬值夏普处于临界。应理解为“何时退场”，而非交易信号。"
   },
   "bond_cross_asset": {
-    "as_of": "2026-10-15",
+    "as_of": "2026-10-16",
     "drivers_now": {
       "real_10y": 2.88,
-      "real_chg_bp": 53.0,
+      "real_chg_bp": 51.0,
       "slope": 0.91,
-      "slope_chg_bp": 17.0,
+      "slope_chg_bp": 15.0,
       "hy_oas": 3.16,
       "hy_chg_bp": 47.0,
       "breakeven": 2.35,
-      "move": 102.0
+      "move": 101.0
     },
     "assets": [
       {
@@ -2348,8 +2354,8 @@
         "corr": -0.03,
         "n": 1241,
         "sign": "neg",
-        "impulse_en": "+53bp/3m",
-        "impulse_zh": "+53基点/3月",
+        "impulse_en": "+51bp/3m",
+        "impulse_zh": "+51基点/3月",
         "verdict": "headwind",
         "story_en": "Long-duration growth de-rates as the real discount rate rises.",
         "story_zh": "实际贴现率上升时，长久期成长股估值下移。"
@@ -2367,8 +2373,8 @@
         "corr": 0.18,
         "n": 1451,
         "sign": "pos",
-        "impulse_en": "+17bp/3m",
-        "impulse_zh": "+17基点/3月",
+        "impulse_en": "+15bp/3m",
+        "impulse_zh": "+15基点/3月",
         "verdict": "tailwind",
         "story_en": "Curve slope and XLF returns can co-move, but this panel does not observe bank net interest margins or prove a causal margin channel.",
         "story_zh": "曲线斜率与XLF回报可能同步共变，但本面板不观测银行净息差，也不证明因果性的息差通道。"
@@ -2386,8 +2392,8 @@
         "corr": -0.39,
         "n": 575,
         "sign": "neg",
-        "impulse_en": "+53bp/3m",
-        "impulse_zh": "+53基点/3月",
+        "impulse_en": "+51bp/3m",
+        "impulse_zh": "+51基点/3月",
         "verdict": "headwind",
         "story_en": "Rate-sensitive long-duration cash flows; rising real yields are a headwind.",
         "story_zh": "对利率敏感的长久期现金流；实际利率上行为逆风。"
@@ -2405,8 +2411,8 @@
         "corr": -0.03,
         "n": 1451,
         "sign": "neg",
-        "impulse_en": "+61bp/3m",
-        "impulse_zh": "+61基点/3月",
+        "impulse_en": "+58bp/3m",
+        "impulse_zh": "+58基点/3月",
         "verdict": "headwind",
         "story_en": "A bond proxy — high yield, rate-sensitive; rising yields compete it down.",
         "story_zh": "类债券——高股息、对利率敏感；利率上行形成竞争压力。"
@@ -2443,8 +2449,8 @@
         "corr": 0.3,
         "n": 1241,
         "sign": "pos",
-        "impulse_en": "+53bp/3m",
-        "impulse_zh": "+53基点/3月",
+        "impulse_en": "+51bp/3m",
+        "impulse_zh": "+51基点/3月",
         "verdict": "tailwind",
         "story_en": "Rate-differential / real-carry channel — a higher US real yield pulls the dollar up.",
         "story_zh": "利差/实际套息通道——美国实际利率走高拉升美元。"
@@ -2462,8 +2468,8 @@
         "corr": -0.28,
         "n": 1241,
         "sign": "neg",
-        "impulse_en": "+53bp/3m",
-        "impulse_zh": "+53基点/3月",
+        "impulse_en": "+51bp/3m",
+        "impulse_zh": "+51基点/3月",
         "verdict": "headwind",
         "story_en": "The real 10y is gold's opportunity cost — the cleanest inverse in macro.",
         "story_zh": "10年实际利率是黄金的机会成本——宏观中最干净的反向关系。"
@@ -2481,8 +2487,8 @@
         "corr": 0.11,
         "n": 1363,
         "sign": "pos",
-        "impulse_en": "+17bp/3m",
-        "impulse_zh": "+17基点/3月",
+        "impulse_en": "+15bp/3m",
+        "impulse_zh": "+15基点/3月",
         "verdict": "tailwind",
         "story_en": "Dr. Copper tracks the growth impulse the curve slope proxies.",
         "story_zh": "“铜博士”跟随曲线斜率所代表的增长动能。"
@@ -2500,8 +2506,8 @@
         "corr": 0.35,
         "n": 1241,
         "sign": "pos",
-        "impulse_en": "+10bp/3m",
-        "impulse_zh": "+10基点/3月",
+        "impulse_en": "+9bp/3m",
+        "impulse_zh": "+9基点/3月",
         "verdict": "tailwind",
         "story_en": "Breakevens and energy feed each other; growth + inflation impulse.",
         "story_zh": "盈亏平衡通胀与能源相互驱动；增长+通胀动能。"
@@ -2519,16 +2525,16 @@
         "corr": -0.07,
         "n": 630,
         "sign": "neg",
-        "impulse_en": "+53bp/3m",
-        "impulse_zh": "+53基点/3月",
+        "impulse_en": "+51bp/3m",
+        "impulse_zh": "+51基点/3月",
         "verdict": "headwind",
         "story_en": "A long-duration liquidity asset — falling real yields + calm rates-vol are a tailwind.",
         "story_zh": "长久期流动性资产——实际利率下行+利率波动平静为顺风。"
       }
     ],
     "interpretation_scope": "contemporaneous_association_not_lead_or_causal_effect",
-    "verdict_en": "Real-10y 2.88% (+53bp/3m), curve 0.91pp, HY OAS 3.16%. 4 markets with a bond-associated tailwind, 7 with a bond-associated headwind right now.",
-    "verdict_zh": "10年实际利率 2.88%（+53基点/3月），曲线 0.91pp，高收益利差 3.16%。当前 4 个市场呈与债券指标相关的顺风，7 个呈相关逆风。"
+    "verdict_en": "Real-10y 2.88% (+51bp/3m), curve 0.91pp, HY OAS 3.16%. 4 markets with a bond-associated tailwind, 7 with a bond-associated headwind right now.",
+    "verdict_zh": "10年实际利率 2.88%（+51基点/3月），曲线 0.91pp，高收益利差 3.16%。当前 4 个市场呈与债券指标相关的顺风，7 个呈相关逆风。"
   },
   "intl": {
     "em_oas_ladder": {
@@ -2545,10 +2551,10 @@
         "asof": "2026-10-13"
       },
       "em_fx_basket": {
-        "value": -2.45,
+        "value": -2.44,
         "vel_5d_z": null,
-        "vel_20d_z": -0.592,
-        "asof": "2026-10-16"
+        "vel_20d_z": -0.428,
+        "asof": "2026-10-17"
       },
       "em_equity_breadth": {
         "value": 42.9,
@@ -2563,10 +2569,10 @@
         "asof": "2026-10-09"
       },
       "emb_ief": {
-        "value": 1.02,
+        "value": 1.01,
         "vel_5d_z": null,
-        "vel_20d_z": -1.179,
-        "asof": "2026-10-15"
+        "vel_20d_z": -1.749,
+        "asof": "2026-10-16"
       }
     },
     "inversion_board": {
@@ -2575,7 +2581,7 @@
       "synchronized": false
     },
     "swap_lines_bn": 0.2,
-    "em_stress_state": "strained",
+    "em_stress_state": "calm",
     "display_only": true
   },
   "corporate_credit": {
