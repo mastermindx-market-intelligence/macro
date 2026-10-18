@@ -725,7 +725,7 @@
       "accepted_turnwatch_source_rows": 378,
       "accepted_mapped_events": 18,
       "accepted_suppressions": 360,
-      "old_accepted_input_sha256": "5f8be5b320ce6d8123f11d11cc940e051298539819b038cfb4eff5fb06",
+      "old_accepted_input_sha256": "5f8be5b320ce6d8123f11d11cc940e051298539819b038cf1dccafc4eff5fb06",
       "old_accepted_content_sha256": "61ee56f229b9e3cdb76e100e2695e93be483a6917ae80e04027b54e513ad3a4f",
       "old_public_artifact_sha256": "761722ccfb54dd0539fdc881479a2f519eb5fd6a6ceebad0f9eb6103dfaa96db"
     },
