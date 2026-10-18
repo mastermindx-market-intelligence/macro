@@ -134,6 +134,26 @@ def evaluate(
             errors,
             dates,
         )
+    # Baskets embed an independent US market-breadth observation read from
+    # data/breadth/breadth.parquet. Its source session must not be laundered by
+    # theme_intel.as_of when the basket renderer advances independently.
+    if baskets is not None:
+        theme_intel = baskets.get("theme_intel")
+        breadth = theme_intel.get("market_concentration") if isinstance(theme_intel, dict) else None
+        if breadth is not None and breadth != {}:
+            if not isinstance(breadth, dict):
+                errors.append("site/basketdata/baskets.json:market_concentration must be an object")
+            else:
+                _require_date(
+                    "site/basketdata/baskets.json:theme_intel.market_concentration.source_as_of",
+                    breadth.get("source_as_of"), errors, dates,
+                )
+                if breadth.get("source_universe") != "sp500_current_constituents":
+                    errors.append(
+                        "UNVERIFIED SECTOR INTELLIGENCE BREADTH UNIVERSE: "
+                        "embedded US concentration must identify its observed S&P 500 source; "
+                        "it does not qualify S&P 1500 participation"
+                    )
     if action is not None:
         _require_date("site/basketdata/action_board.json:as_of", action.get("as_of"), errors, dates)
         board = action.get("action_board")
