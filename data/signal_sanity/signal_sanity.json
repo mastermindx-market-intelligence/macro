@@ -1,6 +1,8 @@
 {
-  "ok": true,
-  "fail_reasons": [],
+  "ok": false,
+  "fail_reasons": [
+    "news: CONTENT FROZEN — as_of advanced 2026-10-17→2026-10-18 but signal values are byte-identical to the prior vintage (builder did not recompute)"
+  ],
   "warnings": [],
   "surfaces": {
     "standouts": {
@@ -13,26 +15,26 @@
       "n": 101,
       "coverage": 101,
       "row": {
-        "run_date": "2026-10-17",
+        "run_date": "2026-10-18",
         "surface": "standouts",
         "as_of": "2026-10-14",
         "n_records": 101,
         "coverage": 101,
-        "fingerprint": "5d86ed27d320e56b",
+        "fingerprint": "b7acdffd6d448e26",
         "scores": {
           "conviction.composite_z": {
             "n_sub": 101,
             "pop": 101,
-            "uniq": 95,
-            "mean": 0.004079207920792079,
-            "std": 0.5163908007242576
+            "uniq": 96,
+            "mean": -0.014485148514851484,
+            "std": 0.5120051557185764
           },
           "alpha": {
             "n_sub": 101,
             "pop": 101,
-            "uniq": 88,
-            "mean": -0.18386138613861386,
-            "std": 1.0023417830725845
+            "uniq": 87,
+            "mean": -0.19237623762376238,
+            "std": 0.9967354123375103
           }
         }
       }
@@ -47,26 +49,26 @@
       "n": 25,
       "coverage": 25,
       "row": {
-        "run_date": "2026-10-17",
+        "run_date": "2026-10-18",
         "surface": "briefing",
         "as_of": "2026-10-17",
         "n_records": 25,
         "coverage": 25,
-        "fingerprint": "249d4e26711e8521",
+        "fingerprint": "10ad1528e8c851b8",
         "scores": {
           "priority": {
             "n_sub": 25,
             "pop": 25,
             "uniq": 23,
-            "mean": 0.28504,
-            "std": 0.1258454544272458
+            "mean": 0.28443999999999997,
+            "std": 0.12552197576520216
           },
           "strength": {
             "n_sub": 25,
             "pop": 25,
             "uniq": 17,
-            "mean": 0.39039999999999997,
-            "std": 0.15723816330649504
+            "mean": 0.3896,
+            "std": 0.15683060925724926
           }
         }
       }
@@ -81,19 +83,19 @@
       "n": 215,
       "coverage": 215,
       "row": {
-        "run_date": "2026-10-17",
+        "run_date": "2026-10-18",
         "surface": "radar",
         "as_of": "2026-10-17",
         "n_records": 215,
         "coverage": 215,
-        "fingerprint": "fc447a6e344a99b1",
+        "fingerprint": "be49c8c7401e0b19",
         "scores": {
           "edge_score": {
             "n_sub": 204,
             "pop": 204,
             "uniq": 28,
-            "mean": 5.931372549019608,
-            "std": 11.106666258198773
+            "mean": 5.882352941176471,
+            "std": 10.941729903776515
           }
         }
       }
@@ -104,30 +106,30 @@
       "ok": true,
       "fails": [],
       "warns": [],
-      "as_of": "2026-10-17",
+      "as_of": "2026-10-18",
       "n": 30,
       "coverage": 30,
       "row": {
-        "run_date": "2026-10-17",
+        "run_date": "2026-10-18",
         "surface": "altdata",
-        "as_of": "2026-10-17",
+        "as_of": "2026-10-18",
         "n_records": 30,
         "coverage": 30,
-        "fingerprint": "96c7ed83f69ddbd6",
+        "fingerprint": "95fb70145332ccb5",
         "scores": {
           "signal_score": {
             "n_sub": 30,
             "pop": 30,
-            "uniq": 21,
-            "mean": 38.46666666666667,
-            "std": 11.271596554565324
+            "uniq": 20,
+            "mean": 38.9,
+            "std": 11.602729563914403
           },
           "weighted_score": {
             "n_sub": 30,
             "pop": 30,
-            "uniq": 18,
-            "mean": 1.1633333333333333,
-            "std": 0.4449594238679398
+            "uniq": 16,
+            "mean": 1.1783333333333335,
+            "std": 0.445099863950652
           }
         }
       }
@@ -135,16 +137,18 @@
     "news": {
       "key": "news",
       "label": "news flow",
-      "ok": true,
-      "fails": [],
+      "ok": false,
+      "fails": [
+        "news: CONTENT FROZEN — as_of advanced 2026-10-17→2026-10-18 but signal values are byte-identical to the prior vintage (builder did not recompute)"
+      ],
       "warns": [],
-      "as_of": "2026-10-17",
+      "as_of": "2026-10-18",
       "n": 1193,
       "coverage": 1067,
       "row": {
-        "run_date": "2026-10-17",
+        "run_date": "2026-10-18",
         "surface": "news",
-        "as_of": "2026-10-17",
+        "as_of": "2026-10-18",
         "n_records": 1193,
         "coverage": 1067,
         "fingerprint": "6209fb3fd3d4af9f",
@@ -176,33 +180,33 @@
       "n": 30,
       "coverage": 30,
       "row": {
-        "run_date": "2026-10-17",
+        "run_date": "2026-10-18",
         "surface": "intel_hub",
         "as_of": "2026-10-17",
         "n_records": 30,
         "coverage": 30,
-        "fingerprint": "02962dd9865ca8f4",
+        "fingerprint": "1fa7918d4efb0174",
         "scores": {
           "composite_conviction": {
             "n_sub": 30,
             "pop": 30,
             "uniq": 29,
-            "mean": 36.059999999999995,
-            "std": 14.4568230719385
+            "mean": 35.88,
+            "std": 14.325441238114331
           },
           "opportunity_score": {
             "n_sub": 30,
             "pop": 30,
             "uniq": 19,
-            "mean": 22.006666666666664,
-            "std": 4.818224661520972
+            "mean": 21.970000000000002,
+            "std": 4.8511270168212794
           },
           "edge_remaining": {
             "n_sub": 30,
             "pop": 30,
             "uniq": 21,
-            "mean": 0.5982,
-            "std": 0.1387134696655904
+            "mean": 0.5979333333333333,
+            "std": 0.1391397219424497
           }
         }
       }
@@ -217,5 +221,5 @@
     "intel_hub"
   ],
   "missing": [],
-  "evaluated_at": "2026-10-17T18:53:45.072549+00:00"
+  "evaluated_at": "2026-10-18T07:03:08.550133+00:00"
 }

@@ -5185,8 +5185,8 @@
     ],
     "freshness": {
       "asof": "2026-10-16",
-      "built_at": "2026-10-17T15:27:41Z",
-      "age_days": 1,
+      "built_at": "2026-10-18T03:34:17Z",
+      "age_days": 2,
       "age_sessions": 0,
       "max_age_sessions": 1,
       "stale": false,
@@ -5326,7 +5326,7 @@
               0.1176
             ],
             [
-              "mean_reversion_rubber_band",
+              "stair_step_leader",
               0.0588
             ]
           ],
@@ -5469,15 +5469,15 @@
           "dominant_chart_labels": [
             [
               "mixed_chart",
-              0.4533
+              0.4595
             ],
             [
               "basing_accumulator",
-              0.16
+              0.1622
             ],
             [
               "failed_breakout_trap",
-              0.1067
+              0.1081
             ]
           ],
           "tinderbox_share": 0.0588,
@@ -5626,7 +5626,7 @@
               0.2642
             ],
             [
-              "failed_breakout_trap",
+              "defensive_range_stock",
               0.0629
             ]
           ],
@@ -5699,7 +5699,7 @@
   },
   "alerts": {
     "asof": "2026-10-16",
-    "generated_utc": "2026-10-17 15:39",
+    "generated_utc": "2026-10-18 03:44",
     "total": 60,
     "critical": 3,
     "major": 4,
@@ -5718,7 +5718,7 @@
     "ratio_qqq_spy_20d": -0.017170958002003966,
     "ratio_iwm_spy_20d": -0.05012974733405218,
     "display_only": true,
-    "factor_state_as_of": "2026-10-17",
+    "factor_state_as_of": "2026-10-18",
     "seasonal_climate": {
       "month": 10,
       "seasonality_as_of": "2026-08",
@@ -6484,7 +6484,7 @@
   },
   "intelligence": {
     "as_of": "2026-10-17",
-    "n_universe": 3627,
+    "n_universe": 3612,
     "n_priority": 25,
     "n_actionable": 2,
     "n_divergences": 30,
@@ -6519,8 +6519,8 @@
         "read": "accumulation"
       },
       {
-        "ticker": "TYL",
-        "priority": 0.36,
+        "ticker": "TENB",
+        "priority": 0.345,
         "lean": -1,
         "read": "fading"
       }
@@ -7408,10 +7408,10 @@
     "revision": "settled",
     "source_session": "2026-10-16",
     "as_of": "2026-10-16",
-    "observed_at": "2026-10-17T18:53:53Z",
-    "produced_at": "2026-10-17T18:53:53Z",
+    "observed_at": "2026-10-18T07:03:18Z",
+    "produced_at": "2026-10-18T07:03:18Z",
     "stale_after": null,
-    "bundle_id": "f17668b2486089d1",
+    "bundle_id": "e252d005fd25614a",
     "measured_state": {
       "as_of": "2026-10-16",
       "role": "slow_confirmed_trend",
@@ -8419,7 +8419,7 @@
       "excluded_reason": null,
       "source_artifact": "site-marketdata-rotation-events",
       "source_clock_receipt": {
-        "generated_utc": "2026-10-17 18:09 UTC"
+        "generated_utc": "2026-10-18 06:27 UTC"
       },
       "state": "MIXED_ROTATION",
       "usable": true
@@ -9207,10 +9207,10 @@
   "stock_personality_summary": {
     "available": true,
     "as_of": "2026-10-14",
-    "n_tickers": 2944,
+    "n_tickers": 2945,
     "coverage": {
       "archetype": 0.73,
-      "dna_class": 0.385,
+      "dna_class": 0.384,
       "ownership": 0.421,
       "micro": 0.181,
       "chart": 0.735
@@ -9232,15 +9232,15 @@
     "top_chart_shares": [
       [
         "mixed_chart",
-        0.4635
+        0.4632
       ],
       [
         "basing_accumulator",
-        0.1909
+        0.1911
       ],
       [
         "failed_breakout_trap",
-        0.1625
+        0.1624
       ]
     ],
     "n_tinderbox": 185,
@@ -9249,32 +9249,32 @@
   },
   "context_risk": {
     "available": true,
-    "as_of": "2026-10-17T07:22Z",
+    "as_of": "2026-10-17T19:12Z",
     "board_top_overweights": [
       {
         "archetype": "distressed",
-        "ratio": 1.57,
-        "member_share": 0.2021,
-        "universe_share": 0.1287,
-        "member_n": 19
+        "ratio": 2.344,
+        "member_share": 0.2105,
+        "universe_share": 0.0898,
+        "member_n": 20
       },
       {
         "archetype": "mixed",
-        "ratio": 1.451,
-        "member_share": 0.1809,
-        "universe_share": 0.1247,
+        "ratio": 2.035,
+        "member_share": 0.1789,
+        "universe_share": 0.0879,
         "member_n": 17
       },
       {
-        "archetype": "secular_growth",
-        "ratio": 1.323,
-        "member_share": 0.0426,
-        "universe_share": 0.0322,
-        "member_n": 4
+        "archetype": "deep_value",
+        "ratio": 1.75,
+        "member_share": 0.0105,
+        "universe_share": 0.006,
+        "member_n": 1
       }
     ],
-    "weighted_p10_21d": -0.0804,
-    "weighted_median_21d": 0.0105,
+    "weighted_p10_21d": -0.0805,
+    "weighted_median_21d": 0.0104,
     "p10_interpretation": "per-type share-weighted average of marginal worst-decile returns; NOT a portfolio P10 — diversification and cross-type correlation are not modeled.",
     "n_board": 101,
     "regime_context": {
@@ -9440,8 +9440,8 @@
   "live_overlay": {
     "source": "data/regime/latest.json:freshness",
     "asof": "2026-10-16",
-    "built_at": "2026-10-17T15:27:41Z",
-    "age_days": 1,
+    "built_at": "2026-10-18T03:34:17Z",
+    "age_days": 2,
     "stale": false
   },
   "contradictions": {
@@ -9509,14 +9509,14 @@
     "display_only": true
   },
   "special_situations": {
-    "asof": "2026-10-17",
+    "asof": "2026-10-18",
     "counts": {
-      "total": 1540,
-      "new_today": 73,
+      "total": 1551,
+      "new_today": 16,
       "grade_a": 0,
       "grade_b": 8,
-      "with_arb": 20,
-      "cross_border": 547
+      "with_arb": 21,
+      "cross_border": 548
     },
     "setups_display": [
       {
@@ -9600,59 +9600,59 @@
     "changes": [
       {
         "kind": "new",
-        "ticker": "ASGI",
-        "category": "Rights Offerings",
-        "from": null,
-        "to": "live"
-      },
-      {
-        "kind": "new",
-        "ticker": "CMLSQ",
-        "category": "Restructuring",
-        "from": null,
-        "to": "filed"
-      },
-      {
-        "kind": "new",
-        "ticker": "GAUZ",
-        "category": "Other",
+        "ticker": "UNG",
+        "category": "Deal Terminations",
         "from": null,
         "to": "announced"
       },
       {
         "kind": "new",
-        "ticker": "AIMDW",
-        "category": "Other",
+        "ticker": "FUL",
+        "category": "Acquisitions",
         "from": null,
         "to": "announced"
       },
       {
         "kind": "new",
-        "ticker": "DAICW",
-        "category": "Other",
-        "from": null,
-        "to": "announced"
-      },
-      {
-        "kind": "new",
-        "ticker": "GPRK",
-        "category": "Issuer Tenders",
-        "from": null,
-        "to": "announced"
-      },
-      {
-        "kind": "new",
-        "ticker": "IRS",
+        "ticker": "VYLR",
         "category": "Issuer Tenders",
         "from": null,
         "to": "live"
       },
       {
         "kind": "new",
-        "ticker": "BMEZ",
-        "category": "Issuer Tenders",
+        "ticker": "IA",
+        "category": "Acquisitions",
         "from": null,
-        "to": "live"
+        "to": "closed"
+      },
+      {
+        "kind": "new",
+        "ticker": "SWRD",
+        "category": "Acquisitions",
+        "from": null,
+        "to": "terminated"
+      },
+      {
+        "kind": "new",
+        "ticker": "UYSCU",
+        "category": "SPACs",
+        "from": null,
+        "to": "de-SPAC"
+      },
+      {
+        "kind": "new",
+        "ticker": "NLST",
+        "category": "Other",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "BURUW",
+        "category": "Other",
+        "from": null,
+        "to": "announced"
       }
     ],
     "risk_arb_top": [
@@ -9879,7 +9879,7 @@
     "display_only": true
   },
   "stage_analysis": {
-    "as_of": "2026-10-17",
+    "as_of": "2026-10-18",
     "counts": {
       "total": 2681,
       "stage1": 114,
@@ -10237,9 +10237,9 @@
       {
         "chain": "dollar_spike_em_multinational",
         "title_en": "Dollar spike → EM & multinational-EPS headwind",
-        "state": "expressed",
+        "state": "arming",
         "tier": "calibrated_context",
-        "links_confirmed": 2,
+        "links_confirmed": 0,
         "n_hops": 2,
         "base_rates": {
           "asof": null,
@@ -10312,7 +10312,7 @@
         "blast": {
           "em_revenue_exposure": {
             "n": 127,
-            "unevaluable": 2660,
+            "unevaluable": 2661,
             "names": [
               "A",
               "AAPL",
@@ -10326,7 +10326,7 @@
           },
           "multinational_fx_translation": {
             "n": 419,
-            "unevaluable": 1985,
+            "unevaluable": 1986,
             "names": [
               "A",
               "AA",
@@ -10340,7 +10340,7 @@
           },
           "dollar_debt_burden": {
             "n": 38,
-            "unevaluable": 2383,
+            "unevaluable": 2384,
             "names": [
               "ATNI",
               "AVGO",
@@ -10489,7 +10489,7 @@
         "blast": {
           "long_duration_valuation": {
             "n": 711,
-            "unevaluable": 2162,
+            "unevaluable": 2163,
             "names": [
               "A",
               "AA",
@@ -10503,7 +10503,7 @@
           },
           "refinancing_channel": {
             "n": 386,
-            "unevaluable": 1785,
+            "unevaluable": 1786,
             "names": [
               "ACCO",
               "ACDC",
@@ -10517,7 +10517,7 @@
           },
           "capex_borrower": {
             "n": 6,
-            "unevaluable": 1671,
+            "unevaluable": 1672,
             "names": [
               "ACMR",
               "AVAV",
@@ -10529,7 +10529,7 @@
           },
           "fcf_burner": {
             "n": 336,
-            "unevaluable": 810,
+            "unevaluable": 811,
             "names": [
               "AAMI",
               "AAP",
@@ -10738,7 +10738,7 @@
         "blast": {
           "real_rate_beneficiary": {
             "n": 692,
-            "unevaluable": 1491,
+            "unevaluable": 1492,
             "names": [
               "A",
               "AA",
@@ -10755,9 +10755,9 @@
       {
         "chain": "vol_regime_deleveraging",
         "title_en": "Vol-regime shift → systematic deleveraging → high-beta unwind",
-        "state": "propagating",
+        "state": "expressed",
         "tier": "hypothesis",
-        "links_confirmed": 1,
+        "links_confirmed": 2,
         "n_hops": 2,
         "base_rates": {
           "asof": null,
@@ -10823,7 +10823,7 @@
         },
         "blast": {
           "high_beta_proxy": {
-            "n": 589,
+            "n": 591,
             "unevaluable": 7,
             "names": [
               "ABEO",
@@ -10838,7 +10838,7 @@
           },
           "crowded_positioning": {
             "n": 777,
-            "unevaluable": 2034,
+            "unevaluable": 2035,
             "names": [
               "AA",
               "AAL",
@@ -10852,7 +10852,7 @@
           },
           "low_liquidity": {
             "n": 51,
-            "unevaluable": 2699,
+            "unevaluable": 2700,
             "names": [
               "ADM",
               "AEE",
@@ -10915,8 +10915,8 @@
     "regime_outlook": {
       "schema_version": "regime_outlook.v1",
       "scope": "US",
-      "analysis_cutoff": "2026-10-17T18:53:44.922572+00:00",
-      "built_at": "2026-10-17T18:53:44.923515+00:00",
+      "analysis_cutoff": "2026-10-18T07:03:08.376398+00:00",
+      "built_at": "2026-10-18T07:03:08.377315+00:00",
       "mapping_version": "VERDICT_MAPPING_V2",
       "mapping_sha256": "4da240fbff55caefbdb17290f37e8164cc672c9f520f97704534059f862ce9c0",
       "inputs": {
@@ -10927,7 +10927,7 @@
         },
         "R": {
           "path": "data/regime/latest.json",
-          "sha256": "c158e8a71c1a8cde5cb2485a95555588242da8718f22650834d370449321c987",
+          "sha256": "26e907d427006363665d299c8831d364cb109a252bc2244f839e61b7d02d44a3",
           "read_status": "available"
         },
         "M": {
@@ -10947,7 +10947,7 @@
         },
         "B": {
           "path": "data/bonds/bond_health.json",
-          "sha256": "09e2b925c87b839d4af7d7c6bacc9b24af60b86f1886a431964773e1b8ea51b9",
+          "sha256": "8a533786c9e5355d0e2fbd5029f94c9bca7039dafbb185f0c7421796aff1b180",
           "read_status": "available"
         },
         "C": {
@@ -11093,7 +11093,7 @@
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-10-16",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11130,7 +11130,7 @@
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-10-16",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11167,7 +11167,7 @@
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-10-16",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11204,7 +11204,7 @@
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-10-16",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11241,7 +11241,7 @@
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-10-16",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11278,7 +11278,7 @@
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-10-16",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11315,7 +11315,7 @@
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-10-16",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11352,7 +11352,7 @@
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-10-16",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11389,7 +11389,7 @@
             "clock_semantics": "source_observation_date",
             "as_of": "2026-10-13",
             "precision": "date",
-            "age_calendar_days": 4,
+            "age_calendar_days": 5,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11426,7 +11426,7 @@
             "clock_semantics": "source_observation_date",
             "as_of": "2026-10-13",
             "precision": "date",
-            "age_calendar_days": 4,
+            "age_calendar_days": 5,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11463,7 +11463,7 @@
             "clock_semantics": "source_observation_date",
             "as_of": "2026-10-13",
             "precision": "date",
-            "age_calendar_days": 4,
+            "age_calendar_days": 5,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11500,7 +11500,7 @@
             "clock_semantics": "source_observation_date",
             "as_of": "2026-10-13",
             "precision": "date",
-            "age_calendar_days": 4,
+            "age_calendar_days": 5,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11537,7 +11537,7 @@
             "clock_semantics": "source_observation_date",
             "as_of": "2026-10-13",
             "precision": "date",
-            "age_calendar_days": 4,
+            "age_calendar_days": 5,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11570,11 +11570,11 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/labor_nowcast/read",
-            "sha256": "c158e8a71c1a8cde5cb2485a95555588242da8718f22650834d370449321c987",
+            "sha256": "26e907d427006363665d299c8831d364cb109a252bc2244f839e61b7d02d44a3",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-10-16",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11602,11 +11602,11 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/financial_conditions/state",
-            "sha256": "c158e8a71c1a8cde5cb2485a95555588242da8718f22650834d370449321c987",
+            "sha256": "26e907d427006363665d299c8831d364cb109a252bc2244f839e61b7d02d44a3",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-10-02",
             "precision": "date",
-            "age_calendar_days": 15,
+            "age_calendar_days": 16,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11639,11 +11639,11 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/complacency/breadth_div",
-            "sha256": "c158e8a71c1a8cde5cb2485a95555588242da8718f22650834d370449321c987",
+            "sha256": "26e907d427006363665d299c8831d364cb109a252bc2244f839e61b7d02d44a3",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-10-14",
             "precision": "date",
-            "age_calendar_days": 3,
+            "age_calendar_days": 4,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11676,11 +11676,11 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/label",
-            "sha256": "c158e8a71c1a8cde5cb2485a95555588242da8718f22650834d370449321c987",
+            "sha256": "26e907d427006363665d299c8831d364cb109a252bc2244f839e61b7d02d44a3",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-10-16",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11713,11 +11713,11 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/stress_overlay/confirming_stress",
-            "sha256": "c158e8a71c1a8cde5cb2485a95555588242da8718f22650834d370449321c987",
+            "sha256": "26e907d427006363665d299c8831d364cb109a252bc2244f839e61b7d02d44a3",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-10-16",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11754,7 +11754,7 @@
             "clock_semantics": "source_observation_date",
             "as_of": "2026-10-14",
             "precision": "date",
-            "age_calendar_days": 3,
+            "age_calendar_days": 4,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11791,7 +11791,7 @@
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-10-14",
             "precision": "date",
-            "age_calendar_days": 3,
+            "age_calendar_days": 4,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11824,11 +11824,11 @@
           "source": {
             "artifact": "B",
             "pointer": "/fed_path/implied_cuts_12m",
-            "sha256": "09e2b925c87b839d4af7d7c6bacc9b24af60b86f1886a431964773e1b8ea51b9",
+            "sha256": "8a533786c9e5355d0e2fbd5029f94c9bca7039dafbb185f0c7421796aff1b180",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-10-16",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11893,11 +11893,11 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/stress_overlay/hy_oas_pct",
-            "sha256": "c158e8a71c1a8cde5cb2485a95555588242da8718f22650834d370449321c987",
+            "sha256": "26e907d427006363665d299c8831d364cb109a252bc2244f839e61b7d02d44a3",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-10-16",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11934,7 +11934,7 @@
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-10-16",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11971,7 +11971,7 @@
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-10-16",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -12008,7 +12008,7 @@
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-10-16",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -12045,7 +12045,7 @@
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-10-17",
             "precision": "date",
-            "age_calendar_days": 0,
+            "age_calendar_days": 1,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -12082,7 +12082,7 @@
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-10-17",
             "precision": "date",
-            "age_calendar_days": 0,
+            "age_calendar_days": 1,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -12113,11 +12113,11 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/financial_conditions/trend",
-            "sha256": "c158e8a71c1a8cde5cb2485a95555588242da8718f22650834d370449321c987",
+            "sha256": "26e907d427006363665d299c8831d364cb109a252bc2244f839e61b7d02d44a3",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-10-02",
             "precision": "date",
-            "age_calendar_days": 15,
+            "age_calendar_days": 16,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -12150,11 +12150,11 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/stress_overlay/nfci_trend",
-            "sha256": "c158e8a71c1a8cde5cb2485a95555588242da8718f22650834d370449321c987",
+            "sha256": "26e907d427006363665d299c8831d364cb109a252bc2244f839e61b7d02d44a3",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-10-16",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -13816,7 +13816,7 @@
     "data/intl_risk/latest.json": null,
     "site/basketdata/theme_context.json": "2026-10-14",
     "data/market_structure/latest.json": "2026-10-16",
-    "data/stage_analysis/context/latest.json": "2026-10-17",
+    "data/stage_analysis/context/latest.json": "2026-10-18",
     "data/darkpool/context/latest.json": "2026-10-14",
     "data/transmission/chain_state.json": "2026-10-16",
     "data/mag7_washout/latest.json": "2026-10-14",
@@ -13825,7 +13825,7 @@
   },
   "schema_version": 1,
   "produced_by": "engine/neuralweb/world_state.py",
-  "produced_at": "2026-10-17T18:53:54Z",
-  "inputs_hash": "sha256:b05e1b53915c4abda1710b68c6f77206c716927dd71edb142025512ad1d8b06d",
+  "produced_at": "2026-10-18T07:03:19Z",
+  "inputs_hash": "sha256:7640fac7ac22fbe650696b9ac3a0777b7ce4535e831e97761c956aaf17e46c66",
   "tier": "infrastructure"
 }
