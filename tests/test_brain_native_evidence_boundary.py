@@ -84,7 +84,7 @@ def test_native_recent_series_accepts_six_newest_first_samples():
     samples = result["suites"][0]["series"][0]["samples"]
     assert [row["index"] for row in samples] == [9, 8, 7, 6, 5, 4]
     assert [row["age_bars"] for row in samples] == [0, 1, 2, 3, 4, 5]
-    assert result["basis"]["recent_series"] == "up_to_6_newest_source_samples_per_returned_series"
+    assert result["basis"]["recent_series"] == "up_to_6_newest_source_samples_through_selection_per_returned_series"
 
 
 @pytest.mark.parametrize("samples", [
@@ -210,3 +210,64 @@ def test_binding_booleans_are_not_integer_chart_identities(field, value):
         state["context_revision"] = 1
     state["session"]["native_observations"]["binding"][field] = value
     assert qualify(state)["reason"] == "native_observation_binding_mismatch"
+
+
+def selected_native_state() -> dict:
+    state = native_state()
+    packet = state["session"]["native_observations"]
+    packet["binding"]["selected_time"] = "2026-09-23"
+    packet["context"]["selected_bar"] = {"index": 1, "time": "2026-09-23"}
+    packet["suites"][0]["series"][0]["samples"] = [{"index": 1, "value": 51.0}]
+    return state
+
+
+def test_selected_native_event_cannot_include_a_later_confirmation():
+    row = {"type": "delayed", "direction": "bull", "label": None,
+           "native_value": None, "native_strength": None,
+           "timing": {"anchorI": 0, "confirmedI": 2, "anchorT": 100, "confirmedT": 300}}
+    assert gw._sanitize_native_live_events([row], 3, 1) is None
+    row["timing"].update(confirmedI=1, confirmedT=200)
+    assert gw._sanitize_native_live_events([row], 3, 1)[0]["age_bars"] == 0
+
+
+def test_selected_native_series_rejects_future_samples_and_uses_selection_age():
+    row = {"id": "rsi-wave", "kind": "poly", "samples": [{"index": 2, "value": 61.0}]}
+    assert gw._sanitize_native_live_series([row], 3, 1) is None
+    row["samples"] = [{"index": 1, "value": None}, {"index": 0, "value": 45.0}]
+    out = gw._sanitize_native_live_series([row], 3, 1)
+    assert [sample["age_bars"] for sample in out[0]["samples"]] == [0, 1]
+    assert out[0]["samples"][0]["value"] is None
+
+
+def test_selected_native_read_discloses_current_calculation_and_withheld_geometry():
+    state = selected_native_state()
+    coverage = state["session"]["native_observations"]["suites"][0]["coverage"]
+    coverage["geometry"].update(available=2, unqualified_time=2)
+    coverage["events"].update(available=3, after_selection=3)
+    out = qualify(state)
+    assert out["status"] == "partial"
+    assert "not_historical_replay" in out["basis"]["historical_calculation"]
+    assert out["basis"]["event_selection"] == "confirmed_index_at_or_before_selected_bar_else_loaded_end"
+    assert out["suites"][0]["coverage"]["events"]["after_selection"] == 3
+    assert out["suites"][0]["coverage"]["events"]["omitted"] == 0
+    assert out["suites"][0]["coverage"]["geometry"]["unqualified_time"] == 2
+
+
+@pytest.mark.parametrize("group", ["geometry", "tables"])
+def test_selected_native_read_refuses_undated_current_analytical_objects(group):
+    state = selected_native_state()
+    suite = state["session"]["native_observations"]["suites"][0]
+    suite[group] = ([{"id": "fit", "kind": "line", "coordinates": {
+        "a": {"i": 0, "p": 100}, "b": {"i": "right", "p": 105}}}] if group == "geometry" else
+        [{"id": "regime", "title": None, "columns": [{"label": "state"}], "row_label": "current",
+          "cells": ["rising"], "footnote": None}])
+    suite["coverage"][group].update(available=1, eligible=1, returned=1)
+    assert qualify(state)["reason"] == "native_observation_historical_time_unqualified"
+
+
+def test_temporal_omission_counts_are_not_budget_loss_or_invalid_facts():
+    raw = {"available": 10, "eligible": 2, "returned": 1, "omitted": 1,
+           "invalid": 1, "after_selection": 7}
+    assert gw._native_live_coverage(raw, 1)["after_selection"] == 7
+    raw["after_selection"] = 6
+    assert gw._native_live_coverage(raw, 1) is None

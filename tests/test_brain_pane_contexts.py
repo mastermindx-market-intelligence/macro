@@ -155,7 +155,9 @@ def test_pre_presentation_client_degrades_pane_context_to_partial_not_invalid():
     state["session"]["pane_contexts"]["panes"][1].pop("presentation")
     out = gw._qualified_chart_pane_contexts(state)
     assert out["status"] == "partial"
-    assert out["panes"][0]["presentation_ref"] == "session.presentation"
+    assert out["panes"][0]["presentation"]["status"] == "unavailable"
+    assert out["panes"][0]["presentation"]["reason"] == "presentation_not_supplied"
+    assert "presentation_ref" not in out["panes"][0]
     assert out["panes"][1]["presentation"]["status"] == "unavailable"
     assert out["panes"][1]["presentation"]["reason"] == "presentation_not_supplied"
 

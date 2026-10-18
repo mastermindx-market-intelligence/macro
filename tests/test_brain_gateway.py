@@ -1838,8 +1838,10 @@ def test_chart_command_tools_offered_on_terminal_page(tmp_path):
     chat_names = {s["name"] for s in schemas_chat}
     empty_names = {s["name"] for s in schemas_empty}
 
-    # All four chart-command tools must appear on terminal page
-    for tool in ("set_chart_symbol", "set_chart_timeframe", "toggle_chart_indicator", "run_chart_detection"):
+    assert "run_chart_detection" not in terminal_names
+    assert "annotate_chart" not in terminal_names
+    # Compatibility names and native commands share the bound v2 path.
+    for tool in ("set_chart_symbol", "set_chart_timeframe", "toggle_chart_indicator", "emit_chart_command"):
         assert tool in terminal_names, f"{tool} not in terminal schemas"
         assert tool not in chat_names, f"{tool} leaked into chat schemas"
         assert tool not in empty_names, f"{tool} leaked into empty-page schemas"
@@ -1933,7 +1935,7 @@ def test_chart_command_emitted_as_sse_event_in_stream(tmp_path):
                     with patch("lib.ai_costs.record_usage", return_value=True):
                         events = list(gw.chat_stream(
                             "Switch to AAPL", "user1", lane="fast",
-                            context={"page": "terminal"},
+                            context=_cmx_terminal_context(user_id="user1"),
                             root=root,
                         ))
 
@@ -1941,10 +1943,10 @@ def test_chart_command_emitted_as_sse_event_in_stream(tmp_path):
     command_events = [p for p in parsed if p.get("type") == "command"]
     assert command_events, f"No 'command' SSE events emitted: {parsed}"
     cmd = command_events[0]
-    # FLAT shape (mirrors annotate) — fields at top level, NOT nested under 'payload'.
-    assert cmd.get("action") == "set_symbol"
-    assert cmd.get("symbol") == "AAPL", f"symbol must be flat/top-level: {cmd}"
-    assert "payload" not in cmd, f"command event must not nest under 'payload': {cmd}"
+    assert cmd["v"] == 2 and cmd["op"] == "chart.set_symbol"
+    assert cmd["args"]["symbol"] == "AAPL"
+    assert cmd["target"]["symbol"] == "NVDA"
+    assert "action" not in cmd and "payload" not in cmd
 
 
 def test_chart_command_returned_in_chat_result(tmp_path):
@@ -1964,15 +1966,16 @@ def test_chart_command_returned_in_chat_result(tmp_path):
                     with patch("lib.ai_costs.record_usage", return_value=True):
                         result = gw.chat(
                             "Show weekly chart", "user1", lane="fast",
-                            context={"page": "terminal"},
+                            context=_cmx_terminal_context(user_id="user1"),
                             root=root,
                         )
 
     assert result.get("ok") is True
     commands = result.get("commands", [])
     assert commands, f"No commands in chat() result: {result}"
-    assert commands[0].get("action") == "set_timeframe"
-    assert commands[0].get("tf") == "W"
+    assert commands[0]["v"] == 2 and commands[0]["op"] == "chart.set_tf"
+    assert commands[0]["args"]["tf"] == "W"
+    assert commands[0]["target"]["tf"] == "D"
 
 
 # ---------------------------------------------------------------------------
@@ -2239,7 +2242,7 @@ def test_terminal_system_prompt_describes_chart_tools_as_display_only():
     prompt = gw._build_system_prompt("chat", page="terminal")
     assert "CHART CONTROL" in prompt
     assert "set_chart_symbol" in prompt
-    assert "run_chart_detection" in prompt
+    assert "emit_chart_command" in prompt
     # display-only framing, never a recommendation
     assert "DISPLAY ACTIONS ONLY" in prompt or "display action" in prompt.lower()
     assert "recommendation" in prompt.lower()
@@ -2289,7 +2292,7 @@ def test_unknown_sse_event_type_ignored_gracefully(tmp_path):
                     with patch("lib.ai_costs.record_usage", return_value=True):
                         events = list(gw.chat_stream(
                             "Switch to TSLA", "user_cmd",
-                            context={"page": "terminal"},
+                            context=_cmx_terminal_context(user_id="user_cmd"),
                             root=root,
                         ))
 
@@ -2299,11 +2302,11 @@ def test_unknown_sse_event_type_ignored_gracefully(tmp_path):
     assert "meta" in event_types
     assert "done" in event_types
     assert "command" in event_types, f"Expected 'command' event type, got: {event_types}"
-    # Verify 'command' event has the FLAT expected shape (fields top-level, no 'payload')
     cmd_ev = next(p for p in parsed if p.get("type") == "command")
-    assert cmd_ev.get("action") == "set_symbol"
-    assert cmd_ev.get("symbol"), f"command event must carry a flat 'symbol': {cmd_ev}"
-    assert "payload" not in cmd_ev
+    assert cmd_ev["v"] == 2 and cmd_ev["op"] == "chart.set_symbol"
+    assert cmd_ev["args"]["symbol"] == "TSLA"
+    assert cmd_ev["target"]["symbol"] == "NVDA"
+    assert "action" not in cmd_ev and "payload" not in cmd_ev
 
 
 # ---------------------------------------------------------------------------
@@ -4355,7 +4358,8 @@ def test_v2_host_target_binds_exact_chart_state():
     origin = "target-origin"
     gw.put_chart_state(
         "u-target", "terminal",
-        {"symbol": "NVDA", "tf": "D", "pane_id": 2},
+        {"symbol": "NVDA", "tf": "D", "pane_id": 2, "capabilities": {
+            "command_target": {"schema": "chart.command_target.v1", "required_for": ["all_effectful_v2"]}}},
         origin_id=origin, context_revision=7,
     )
     result = gw._tool_chart_command({
@@ -4381,7 +4385,8 @@ def test_v2_host_target_refuses_revision_drift():
     origin = "target-drift"
     gw.put_chart_state(
         "u-target-drift", "terminal",
-        {"symbol": "NVDA", "tf": "W", "pane_id": 0},
+        {"symbol": "NVDA", "tf": "W", "pane_id": 0, "capabilities": {
+            "command_target": {"schema": "chart.command_target.v1", "required_for": ["all_effectful_v2"]}}},
         origin_id=origin, context_revision=8,
     )
     result = gw._tool_chart_command({
@@ -4392,13 +4397,15 @@ def test_v2_host_target_refuses_revision_drift():
         "u-target-drift", origin, 7, result) is None
 
 
-def test_v2_host_target_not_required_for_plain_draw():
+def test_v2_plain_draw_requires_exact_host_target():
     result = gw._tool_chart_command({
         "op": "draw.hline", "id": "ai_plain", "args": {"p": 100.0},
     })
-    assert gw._chart_command_requires_target(result) is False
-    wire = gw._flat_command(result, batch_id="brain_plain", seq=0)
-    assert "target" not in wire
+    assert gw._chart_command_requires_target(result) is True
+    with pytest.raises(ValueError, match="host target"):
+        gw._flat_command(result, batch_id="brain_plain", seq=0)
+    wire = gw._flat_command(result, batch_id="brain_plain", seq=0, target=_cmx_host_target())
+    assert wire["target"] == _cmx_host_target()
 
 
 def test_v2_command_accepts_valid_trendline():
@@ -4416,7 +4423,7 @@ def test_v2_command_accepts_valid_trendline():
     assert res.get("caption")
     # Raw tool output is model-facing validation only; host wire identity is bound later.
     assert "on" not in res and "batch_id" not in res and "seq" not in res
-    flat = gw._flat_command(res, batch_id="brain_test_0", seq=0)
+    flat = gw._flat_command(res, batch_id="brain_test_0", seq=0, target=_cmx_host_target())
     assert "client_executed" not in flat and "note" not in flat
     assert flat["op"] == "draw.trendline" and flat["v"] == 2
     assert flat["on"] is True and flat["batch_id"] == "brain_test_0" and flat["seq"] == 0
@@ -4432,7 +4439,7 @@ def test_v2_command_ignores_model_supplied_wire_identity():
     })
     assert res.get("client_executed") is True
     assert "on" not in res and "batch_id" not in res and "seq" not in res
-    wire = gw._flat_command(res, batch_id="brain_host_batch", seq=3)
+    wire = gw._flat_command(res, batch_id="brain_host_batch", seq=3, target=_cmx_host_target())
     assert wire["on"] is True
     assert wire["batch_id"] == "brain_host_batch"
     assert wire["seq"] == 3
@@ -4527,7 +4534,19 @@ def test_v2_batch_rejects_bad_member():
 # ── emit_chart_command in the tool loop → 'command' SSE event ─────────────────
 
 
-def _cmx_terminal_context(origin_id: str = "cmx-stream-origin", revision: int = 7) -> dict:
+def _cmx_host_target(origin_id: str = "cmx-stream-origin", revision: int = 7, pane_id: int = 0) -> dict:
+    return {"schema": "chart.command_target.v1", "origin_id": origin_id,
+            "context_revision": revision, "pane_id": pane_id, "symbol": "NVDA", "tf": "D"}
+
+
+def _cmx_terminal_context(origin_id: str = "cmx-stream-origin", revision: int = 7, user_id: str = "userX") -> dict:
+    """Seed a connected, capable chart fixture before testing command transport."""
+    from copy import deepcopy
+    previous = gw.get_chart_state_record(user_id, "terminal", origin_id=origin_id)
+    session = deepcopy(previous["session"]) if previous else {"symbol": "NVDA", "tf": "D", "pane_id": 0}
+    session.setdefault("capabilities", {})["command_target"] = {
+        "schema": "chart.command_target.v1", "required_for": ["all_effectful_v2"]}
+    gw.put_chart_state(user_id, "terminal", session, origin_id=origin_id, context_revision=revision)
     return {
         "page": "terminal",
         "ai_context": {
@@ -4807,10 +4826,12 @@ def test_v2_stream_ack_survives_expected_context_revision_transition(tmp_path):
 
 
 
-def test_v2_stream_verified_context_change_advances_followup_chart_read(tmp_path):
-    """After an ACKed TF change, later tools in the SAME Brain turn read the new revision."""
+@pytest.mark.parametrize("ack_mode", ["applied", "unproven", "rejected", "manual"])
+def test_v2_stream_only_applied_successor_advances_followup_chart_read(tmp_path, ack_mode):
+    """A later observation cannot inherit the turn authority of an applied command."""
     root = _make_temp_root()
-    origin = "cmx-stream-followup"
+    # Each scenario owns a distinct session; chart revisions intentionally never regress.
+    origin = "cmx-stream-followup-" + ack_mode
     set_tf = _MockBlock(
         "tool_use", name="emit_chart_command",
         input_={"op": "chart.set_tf", "args": {"tf": "W"}}, id_="set-tf",
@@ -4846,22 +4867,32 @@ def test_v2_stream_verified_context_change_advances_followup_chart_read(tmp_path
                                         "visible_range": {"from": 1.0, "to": 2.0},
                                     },
                                     origin_id=origin,
-                                    context_revision=8,
+                                    context_revision=9 if ack_mode == "manual" else 8,
                                     acks=[{
                                         "batch_id": parsed["batch_id"],
                                         "seq": parsed["seq"],
                                         "id": None,
-                                        "ok": True,
+                                        "ok": ack_mode != "rejected",
+                                        **({"error": "command_target_revision_mismatch"} if ack_mode == "rejected" else {}),
+                                        **({"application": {
+                                            "schema": "chart.command_application.v1",
+                                            "predecessor": parsed["target"],
+                                            "successor": {**parsed["target"], "tf": "W", "context_revision": 8},
+                                        }} if ack_mode in {"applied", "manual"} else {}),
                                     }],
                                 )
 
     first_receipt = _tool_result_payload(client, 1, tool_use_id="set-tf")
-    assert first_receipt["command_status"] == "accepted"
-    assert first_receipt["observed_context_revision"] == 8
+    assert first_receipt["command_status"] == ("rejected" if ack_mode == "rejected" else "accepted")
+    assert first_receipt["observed_context_revision"] == (9 if ack_mode == "manual" else 8)
     second_receipt = _tool_result_payload(client, 2, tool_use_id="read-new")
-    assert second_receipt["connected"] is True
-    assert second_receipt["context_revision"] == 8
-    assert second_receipt["session"]["tf"] == "W"
+    if ack_mode == "applied":
+        assert second_receipt["connected"] is True
+        assert second_receipt["context_revision"] == 8
+        assert second_receipt["session"]["tf"] == "W"
+    else:
+        assert second_receipt["connected"] is False
+        assert second_receipt["reason"] == "context_revision_mismatch"
 
 
 def test_v2_stream_timeout_is_explicitly_unverified(tmp_path):
@@ -4961,7 +4992,7 @@ def test_v2_command_emitted_as_sse_event_in_stream(tmp_path):
                 with patch.object(gw, "_ensure_thread", return_value=None):
                     with patch("lib.ai_costs.record_usage", return_value=True):
                         events = list(gw.chat_stream("mark the prior high", "userX", lane="fast",
-                                                     context={"page": "terminal"}, root=root))
+                                                     context=_cmx_terminal_context(), root=root))
     parsed = [json.loads(e[6:]) for e in events if e.startswith("data: ")]
     cmds = [p for p in parsed if p.get("type") == "command" and p.get("v") == 2]
     assert cmds, f"no v2 command event: {parsed}"
@@ -4989,7 +5020,7 @@ def test_v2_same_round_commands_share_host_batch_and_sequence(tmp_path):
                 with patch.object(gw, "_ensure_thread", return_value=None):
                     with patch("lib.ai_costs.record_usage", return_value=True):
                         events = list(gw.chat_stream("mark both", "userX", lane="fast",
-                                                     context={"page": "terminal"}, root=root))
+                                                     context=_cmx_terminal_context(), root=root))
     parsed = [json.loads(e[6:]) for e in events if e.startswith("data: ")]
     cmds = [p for p in parsed if p.get("type") == "command" and p.get("v") == 2]
     assert len(cmds) == 2
@@ -5015,7 +5046,7 @@ def test_v2_commands_across_rounds_share_turn_batch_and_monotone_sequence(tmp_pa
                 with patch.object(gw, "_ensure_thread", return_value=None):
                     with patch("lib.ai_costs.record_usage", return_value=True):
                         events = list(gw.chat_stream("mark in two steps", "userX", lane="fast",
-                                                     context={"page": "terminal"}, root=root))
+                                                     context=_cmx_terminal_context(), root=root))
     parsed = [json.loads(e[6:]) for e in events if e.startswith("data: ")]
     cmds = [p for p in parsed if p.get("type") == "command" and p.get("v") == 2]
     assert len(cmds) == 2
@@ -5037,7 +5068,7 @@ def test_v2_command_returned_in_nonstream_has_strict_wire_identity(tmp_path):
                 with patch.object(gw, "_ensure_thread", return_value=None):
                     with patch("lib.ai_costs.record_usage", return_value=True):
                         out = gw.chat("mark 113", "userX", lane="fast",
-                                      context={"page": "terminal"}, root=root)
+                                      context=_cmx_terminal_context(), root=root)
     cmds = [c for c in out.get("commands", []) if c.get("v") == 2]
     assert len(cmds) == 1
     assert cmds[0]["on"] is True
@@ -5059,7 +5090,7 @@ def test_v2_invalid_command_not_emitted(tmp_path):
                 with patch.object(gw, "_ensure_thread", return_value=None):
                     with patch("lib.ai_costs.record_usage", return_value=True):
                         events = list(gw.chat_stream("do a barrel roll", "userX", lane="fast",
-                                                     context={"page": "terminal"}, root=root))
+                                                     context=_cmx_terminal_context(), root=root))
     parsed = [json.loads(e[6:]) for e in events if e.startswith("data: ")]
     cmds = [p for p in parsed if p.get("type") == "command"]
     assert cmds == [], f"invalid command leaked to SSE: {cmds}"
@@ -5379,6 +5410,16 @@ def test_read_chart_state_default_disconnected():
     assert gw._tool_read_chart_state("anyone", "dashboard") == {"connected": False}
     # Terminal client with no stored session → disconnected.
     assert gw._tool_read_chart_state("ghost-user-xyz", "terminal") == {"connected": False}
+
+
+@pytest.mark.parametrize("user_id", ["guest:chart-example", "unknown", ""])
+def test_guest_chart_read_explains_sign_in_without_reading_private_state(user_id):
+    with patch.object(gw, "get_chart_state_record") as read_state:
+        result = gw._tool_read_chart_state(user_id, "terminal", origin_id="visible-guest-chart")
+    read_state.assert_not_called()
+    assert result["connected"] is False
+    assert result["reason"] == "sign_in_required"
+    assert "General chat is available" in result["note"]
 
 
 def test_read_chart_state_connected_returns_session():
@@ -5866,6 +5907,8 @@ def test_tool_label_whitelist_covers_every_tool():
             internals_allowed=True,
             user_id="label-audit-member",
         )]
+        names += [t["name"] for t in gw._all_brain_tool_schemas(
+            root, page="chat", internals_allowed=True, user_id="label-audit-member")]
     assert names, "tool schema enumeration must not be empty"
     assert [n for n in names if n not in gw._TOOL_LABELS] == []
     assert [k for k in gw._TOOL_LABELS if k not in names] == [], "stale label rows"

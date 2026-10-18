@@ -2308,7 +2308,7 @@
     try {
       runStore.setItem(RUN_KEY, JSON.stringify({
         id: T.runId, cursor: T.cursor, thread: T.threadId || threadId || null,
-        q: (T.payload && T.payload.text) || '', ts: Date.now()
+        q: (T.payload && T.payload.text) || '', ts: Date.now(), chart_handed: !!T.chartHanded
       }));
     } catch (e) {}
   }
@@ -2490,7 +2490,8 @@
        screen and never a row that belongs to an earlier exchange. */
     return { payload: payload, typing: typing, bub: null, ub: null, stream: null, tl: null,
              suggestions: null, sawDelta: false, doneSeen: false, stopped: false, retracted: false,
-             runId: null, threadId: null, cursor: 0, tries: 0, parks: 0 };
+             runId: null, threadId: null, cursor: 0, tries: 0, parks: 0,
+             chartHanded: false, chartBatches: [], chartUnscoped: false, chartReplay: false, chartNote: null };
   }
   function ensureBub(T) {
     if (!T.bub) {
@@ -2510,8 +2511,34 @@
     setBusy(false); syncSend();
   }
 
+  /* The turn owns delivery bookkeeping; only the existing Terminal host executes or
+     cancels chart operations. Record a handoff before invoking an effectful callback. */
+  function chartEffectNote(T, message) {
+    ensureBub(T);
+    if (!T.chartNote) { T.chartNote = el('p', 'mmb-stopped'); T.bub.appendChild(T.chartNote); }
+    T.chartNote.textContent = message;
+  }
+  function handChartEvent(j, T) {
+    if (T.chartReplay) {
+      chartEffectNote(T, L('Recovered answer. Chart actions were not replayed. Check the chart for their current state.',
+        '已恢复回复。图表操作未重新执行；请检查图表的当前状态。'));
+      return;
+    }
+    var forward = j.type === 'command' ? CFG.onCommand : CFG.onAnnotate;
+    if (typeof forward !== 'function') return;
+    T.chartHanded = true;
+    if (typeof j.batch_id === 'string' && j.batch_id.length > 0 && j.batch_id.length <= 128) {
+      if (T.chartBatches.indexOf(j.batch_id) < 0) {
+        if (T.chartBatches.length < 128) T.chartBatches.push(j.batch_id);
+        else T.chartUnscoped = true;
+      }
+    } else T.chartUnscoped = true;
+    saveRun(T);
+    try { forward(j); } catch (e) { /* a throwing callback does not prove no effect */ }
+  }
   /* Parse one SSE event. Returns false for the `run` envelope (cursor must not move). */
   function handleEvent(j, T) {
+    if (!T || T.stopped || T.doneSeen) return j.type !== 'run';
     if (j.type === 'run') { T.runId = j.run_id; if (j.thread_id) T.threadId = j.thread_id; saveRun(T); return false; }
     T.tries = 0;   /* bytes are flowing again — reset the reconnect backoff */
     if (j.type === 'meta') { if (j.thread_id) { threadId = j.thread_id; T.threadId = j.thread_id; } if (j.quota) { quotas[j.quota.lane] = j.quota; renderQuota(); } }
@@ -2554,8 +2581,7 @@
     else if (j.type === 'suggest') { if (j.items && j.items.length) T.suggestions = j.items.slice(0, 3); }
     /* host bridges (Terminal): chart-command + annotate events are executed by the
        host page, not the widget — forward them to the CFG callbacks when provided. */
-    else if (j.type === 'command') { try { if (CFG.onCommand) CFG.onCommand(j); } catch (e) {} }
-    else if (j.type === 'annotate') { try { if (CFG.onAnnotate) CFG.onAnnotate(j); } catch (e) {} }
+    else if (j.type === 'command' || j.type === 'annotate') { handChartEvent(j, T); }
     else if (j.type === 'done') { finalizeDone(j, T); }
     else if (j.type === 'error') {
       if (!T.sawDelta && !(T.bub && T.bub._raw)) { failTurn(T, j.message || ''); }
@@ -2758,7 +2784,16 @@
   function stopStream() {
     if (!streaming) return;
     var a = activeStream;
+    if (a && a.doneSeen) { endTurn(a); return; } // completion already won this race
     if (a) a.stopped = true;
+    var chartStop = null;
+    if (a && a.chartHanded && a.chartBatches.length && typeof CFG.onChartStop === 'function') {
+      try {
+        var result = CFG.onChartStop({ scope: 'received_batches', batch_ids: a.chartBatches.slice() });
+        if (result && result.scope === 'received_batches' && Number.isSafeInteger(result.cancelled) && result.cancelled >= 0)
+          chartStop = result;
+      } catch (e) { /* cancellation is unconfirmed; already-applied changes remain */ }
+    }
     parked = null;
     /* the strip stops with the stream; a receipt chip (delta already landed) stays put */
     if (a) thinkTeardown(a.tl);
@@ -2770,10 +2805,19 @@
     /* "landed" = at least one delta made it into a real bubble; a bubble that holds only
        the reasoning strip is not an answer and is retracted with the rest. */
     var landed = !!(a && a.bub && a.stream && (a.sawDelta || a.bub._raw));
+    if (a && a.chartHanded && !landed) { ensureBub(a); landed = true; }
     if (landed) {
       a.stream.stop();
-      var txt = a.bub.querySelector('.mmb-txt') || a.bub;
-      var s = el('span', 'mmb-stopped'); s.textContent = L(' · stopped', ' · 已停止'); txt.appendChild(s);
+      if (a.chartHanded) {
+        chartEffectNote(a, chartStop && !a.chartUnscoped
+          ? L('Response stopped. Chart changes already applied remain. Pending actions in this response\'s received batches were cancelled (' + chartStop.cancelled + ').',
+              '回复已停止。已应用的图表更改仍然保留。已取消本回复已接收批次中待执行的操作（' + chartStop.cancelled + '）。')
+          : L('Response stopped. Chart actions may already have applied; pending cancellation could not be confirmed. Check the chart before continuing.',
+              '回复已停止。图表操作可能已生效；无法确认待执行操作是否取消。继续前请检查图表。'));
+      } else {
+        var txt = a.bub.querySelector('.mmb-txt') || a.bub;
+        var s = el('span', 'mmb-stopped'); s.textContent = L(' · stopped', ' · 已停止'); txt.appendChild(s);
+      }
       bumpTime(a.bub); markLastAssistant();
     } else if (a) {
       retractTurn(a);
@@ -2876,6 +2920,12 @@
     /* replayed status events fast-forward the strip to the run's live stage */
     T.tl = thinkInit(typing.querySelector('.mmb-bub'), status.mode);
     T.runId = status.run_id; T.threadId = status.thread_id || null; T.cursor = cursor || 0;
+    // A reconstructed reply restores text/visuals, never chart execution authority.
+    var priorRun = loadRun();
+    T.chartReplay = true;
+    T.chartHanded = !!(priorRun && priorRun.id === status.run_id && priorRun.chart_handed);
+    if (T.chartHanded) chartEffectNote(T, L('Recovered answer. Chart actions were not replayed. Check the chart for their current state.',
+      '已恢复回复。图表操作未重新执行；请检查图表的当前状态。'));
     saveRun(T);   /* re-arm immediately — openThread() cleared the record on its way in */
     attachRun(T);
   }
@@ -3187,7 +3237,9 @@
   function paintGuestThreads() {
     if (!tlist) return;
     tlist.innerHTML = '<div class="mmb-th-empty" style="display:flex;flex-direction:column;gap:10px;align-items:flex-start">' +
-      '<span>' + LB('Sign in to save your conversations.', '登录后可保存对话记录。') + '</span>' +
+      '<span>' + (ANCHOR === 'top'
+        ? LB('Sign in to connect this chart and save your conversations.', '登录后可连接此图表并保存对话记录。')
+        : LB('Sign in to save your conversations.', '登录后可保存对话记录。')) + '</span>' +
       '<button class="mmb-signin" data-act="signin" style="margin-top:0;padding:9px 18px;font-size:13px">' + LB('Sign in', '登录') + '</button></div>';
   }
 
