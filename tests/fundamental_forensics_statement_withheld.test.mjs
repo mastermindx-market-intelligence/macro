@@ -40,7 +40,11 @@ function harness() {
     querySelector() { return element(); },
     querySelectorAll() { return []; },
     body: { classList: { add() {}, remove() {} } },
-    documentElement: { getAttribute() { return 'en'; } },
+    documentElement: {
+      getAttribute() { return 'en'; },
+      setAttribute(key, value) { this._lang = value; },
+      _lang: 'en',
+    },
     activeElement: null,
   };
   const windowObject = {
@@ -124,11 +128,9 @@ test('mixed accession renders one withheld block with EN copy and ZH under zh', 
   const html = nodes['ff-statements'].innerHTML;
   assert.match(html, /ff-statement-block--withheld/);
   assert.match(html, /ff-statement-table/);
-  assert.match(html, /couldn't rebuild this statement line by line/);
+  assert.match(html, /rebuild this statement line by line from this filing yet/);
   assert.doesNotMatch(html, /linked above/);
-  documentObject.documentElement.setAttribute('data-lang', 'zh');
-  api.renderStatementTree();
-  assert.match(nodes['ff-statements'].innerHTML, /我们暂时无法从该财报逐行重建此报表/);
+  assert.match(html, /我们暂时无法从该财报逐行重建此报表/);
 });
 
 test('all-refused accession renders notice and normalized table', () => {
