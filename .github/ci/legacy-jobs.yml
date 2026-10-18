@@ -8777,6 +8777,13 @@ jobs:
       - "contracts/theme_graph/ontology_neighborhood.v1.schema.json"
       - "lib/dataos/price_views.py"
       - "lib/dataos/read_contract.py"
+      # U4 company profile closure (classification_axes.registry readers).
+      - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
+      - "contracts/theme_graph/edges.v1.schema.json"
+      - "lib/symbol_directory_receipts.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14615,6 +14622,20 @@ jobs:
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
+      # U4 company profile closure (classification_axes.registry readers).
+      - "config/issuer_group_allowlist.yml"
+      - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
+      - "contracts/theme_graph/edges.v1.schema.json"
+      - "engine/classification_axes/business_model.py"
+      - "engine/classification_axes/geography.py"
+      - "engine/classification_axes/lifecycle.py"
+      - "engine/classification_axes/registry.py"
+      - "engine/classification_axes/sic_industry.py"
+      - "engine/classification_axes/value_chain.py"
+      - "lib/symbol_directory_receipts.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16688,6 +16709,13 @@ jobs:
       - "site/government-revenue-data/sbir-progression.json"
       - "site/government-revenue-data/theme-context.json"
       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
+      # U4 company profile closure (classification_axes.registry readers).
+      - "engine/classification_axes/business_model.py"
+      - "engine/classification_axes/geography.py"
+      - "engine/classification_axes/lifecycle.py"
+      - "engine/classification_axes/registry.py"
+      - "engine/classification_axes/sic_industry.py"
+      - "engine/classification_axes/value_chain.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -23138,6 +23166,20 @@ jobs:
       - "engine/quote_resolution.py"
       - "engine/theme_graph/change_report.py"
       - "engine/theme_graph/structural_navigation.py"
+      # U4 company profile closure (classification_axes.registry readers).
+      - "config/issuer_group_allowlist.yml"
+      - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
+      - "contracts/theme_graph/edges.v1.schema.json"
+      - "engine/classification_axes/business_model.py"
+      - "engine/classification_axes/geography.py"
+      - "engine/classification_axes/lifecycle.py"
+      - "engine/classification_axes/registry.py"
+      - "engine/classification_axes/sic_industry.py"
+      - "engine/classification_axes/value_chain.py"
+      - "lib/symbol_directory_receipts.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -24555,6 +24597,16 @@ jobs:
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
+      # U4 company profile closure (classification_axes.registry readers).
+      - "engine/classification_axes/business_model.py"
+      - "engine/classification_axes/geography.py"
+      - "engine/classification_axes/lifecycle.py"
+      - "engine/classification_axes/registry.py"
+      - "engine/classification_axes/sic_industry.py"
+      - "engine/classification_axes/value_chain.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -26259,6 +26311,7 @@ jobs:
       - "engine/theme_graph/rights.py"
       - "tests/test_theme_tree_detail_card.py"
       - "tests/test_theme_tree_ticker_lookup.py"
+      - "tests/test_theme_tree_axes.py"
       # U3 ticker lookup closure (batch composition via structural navigation).
       - "engine/theme_graph/structural_navigation.py"
       - "engine/theme_graph/ontology.py"
@@ -26344,6 +26397,19 @@ jobs:
       - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
+      # U4 company profile closure (classification_axes.registry readers).
+      - "collectors/equity_profile.py"
+      - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
+      - "contracts/theme_graph/edges.v1.schema.json"
+      - "engine/classification_axes/business_model.py"
+      - "engine/classification_axes/geography.py"
+      - "engine/classification_axes/lifecycle.py"
+      - "engine/classification_axes/registry.py"
+      - "engine/classification_axes/sic_industry.py"
+      - "engine/classification_axes/value_chain.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -26356,7 +26422,7 @@ jobs:
       - name: subsector rotation family — turn engine, state machine, alerts, scan, confluence
         run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py tests/test_energy_economic_change_non_regression.py -q
       - name: themes heatmap + Theme Tracker page (full suite; portfolio-ctx keeps its subset)
-        run: python -m pytest tests/test_themes_heatmap.py tests/test_principal_receipt_ambiguity.py tests/test_state_of_themes.py tests/test_build_theme_tree_page.py tests/test_theme_tree_detail_card.py tests/test_theme_tree_ticker_lookup.py -q
+        run: python -m pytest tests/test_themes_heatmap.py tests/test_principal_receipt_ambiguity.py tests/test_state_of_themes.py tests/test_build_theme_tree_page.py tests/test_theme_tree_detail_card.py tests/test_theme_tree_ticker_lookup.py tests/test_theme_tree_axes.py -q
 
   ohlc-basis-coherence:
     # The breadth OHLC caches must share ONE yfinance adjustment basis across
@@ -31385,6 +31451,18 @@ jobs:
       - "engine/intelligence_workspace/registry.py"
       - "engine/intelligence_workspace/resolver.py"
       - "engine/intelligence_workspace/runtime.py"
+      # U4 company profile closure (classification_axes.registry readers).
+      - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
+      - "contracts/theme_graph/edges.v1.schema.json"
+      - "engine/classification_axes/business_model.py"
+      - "engine/classification_axes/geography.py"
+      - "engine/classification_axes/lifecycle.py"
+      - "engine/classification_axes/registry.py"
+      - "engine/classification_axes/sic_industry.py"
+      - "engine/classification_axes/value_chain.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
