@@ -22210,6 +22210,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/intelligence_workspace/__init__.py"
+      - "engine/intelligence_workspace/adapters/__init__.py"
       # Connected Research Factory import closure (PR9463).
       - engine/research_codegen/__init__.py
       - engine/research_codegen/accounting_contract.py
@@ -23517,6 +23519,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/intelligence_workspace/__init__.py"
+      - "engine/intelligence_workspace/adapters/__init__.py"
       # Connected Research Factory import closure (PR9463).
       - engine/research_codegen/__init__.py
       - engine/research_codegen/accounting_contract.py
@@ -26219,6 +26223,13 @@ jobs:
       - "scripts/__init__.py"
       - "scripts/build_themes_heatmap.py"
       - "scripts/build_state_of_themes.py"
+      - "engine/earnings_narrative/__init__.py"
+      - "engine/earnings_release/__init__.py"
+      - "engine/fundamental_forensics/__init__.py"
+      - "engine/intelligence_workspace/__init__.py"
+      - "engine/intelligence_workspace/adapters/__init__.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/press/__init__.py"
       # U1 Theme Map (GMI seat 6f14c2da) — closure widening 2026-10-17.
       - "scripts/build_theme_tree_page.py"
       - "engine/theme_graph/hierarchy_breadth_display.py"
@@ -31172,6 +31183,8 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "engine/intelligence_workspace/__init__.py"
+      - "engine/intelligence_workspace/adapters/__init__.py"
       - engine/research_codegen/__init__.py
       - engine/research_codegen/accounting_contract.py
       - engine/research_codegen/admission.py
