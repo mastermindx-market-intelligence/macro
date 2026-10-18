@@ -13556,3 +13556,8 @@
 {"date":"2026-10-17","ticker":"MKL","departed":true,"left_desk":"2026-10-17","last_rank":50,"last_score":43.1}
 {"date":"2026-10-17","ticker":"NXPI","departed":true,"left_desk":"2026-10-17","last_rank":145,"last_score":24.6}
 {"date":"2026-10-17","ticker":"W","departed":true,"left_desk":"2026-10-17","last_rank":22,"last_score":49.2}
+{"date":"2026-10-17","ticker":"SKWD","rank":40,"score":45.1,"lean":1,"covered":true,"unconfirmed":false}
+{"date":"2026-10-17","ticker":"IBRX","rank":50,"score":42.5,"lean":1,"covered":true,"unconfirmed":false}
+{"date":"2026-10-17","ticker":"RIG","rank":79,"score":36.8,"lean":1,"gate_tier":"T2","covered":true,"unconfirmed":false}
+{"date":"2026-10-17","ticker":"PHR","rank":124,"score":28.1,"lean":1,"gate_tier":"T1","covered":true,"unconfirmed":false}
+{"date":"2026-10-17","ticker":"RARE","rank":149,"score":24.4,"lean":1,"covered":true,"unconfirmed":false}

@@ -662,6 +662,26 @@ def _run_shared_qledger_postcollect(root, *, only: str) -> None:
     _grade_qledger()
 
 
+def _run_source_registry_postcollect(*, only: str) -> None:
+    """Keep extra narrative QLedger issuance out of targeted --only runs.
+
+    The original source_registry itself checks COLLECT_LANE=nightly, but that
+    clock is not evidence that an explicit --only adapter refresh owns its
+    other QLedger claim families. Preserve full nightly/Asia invocation and
+    the original nonfatal failure semantics; standalone source_registry is
+    unchanged. This is source safety, not full legacy-writer exclusion.
+    """
+    if only:
+        log.info("[qledger] source_registry skipped on scoped --only=%s", only)
+        return
+
+    try:
+        from engine.source_registry import run_as_collect_step as _src_reg_run
+        _src_reg_run()
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.warning("source_registry nightly_run step failed: %s", e)
+
+
 def main() -> int:
     args = _build_arg_parser().parse_args()
 
@@ -1404,14 +1424,10 @@ def main() -> int:
                   os.environ.get("COLLECT_LANE"))
 
     # ---- Narrative Ignition W4 — source_registry + qledger claim families (2026-07-10) ----
-    # Registers narrative_source_call + narrative_flare_state claims and resolves matured
-    # source_call claims (Beta-Bernoulli registry update). All writes nightly-gated.
-    # Runs AFTER W2 collectors so first_coverage.parquet is fresh. Non-fatal.
-    try:
-        from engine.source_registry import run_as_collect_step as _src_reg_run
-        _src_reg_run()
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.warning("source_registry nightly_run step failed: %s", e)
+    # Preserve the one nightly/full-collection owner of narrative claims and
+    # matured grading. A --only refresh is adapter-scoped even if COLLECT_LANE
+    # carries "nightly" (operator invocation or reused execution context).
+    _run_source_registry_postcollect(only=args.only)
 
     required_rc = _required_group_health(
         args.group, skip_quality=args.skip_quality, only=args.only)

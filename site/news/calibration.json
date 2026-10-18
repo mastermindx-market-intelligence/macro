@@ -1,8 +1,8 @@
 {
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
-  "asof": "2026-10-16",
-  "n_events_logged": 1654,
+  "asof": "2026-10-17",
+  "n_events_logged": 1659,
   "n_events_graded": 954,
   "classes": [
     {
@@ -73,7 +73,7 @@
     {
       "event_type": "dividend_change",
       "direction": "mixed",
-      "n": 18,
+      "n": 19,
       "n_graded": 7,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -86,7 +86,7 @@
     {
       "event_type": "earnings_result",
       "direction": "mixed",
-      "n": 773,
+      "n": 775,
       "n_graded": 414,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -151,7 +151,7 @@
     {
       "event_type": "macro_release",
       "direction": "informational",
-      "n": 138,
+      "n": 139,
       "n_graded": 55,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -164,7 +164,7 @@
     {
       "event_type": "management_change",
       "direction": "mixed",
-      "n": 30,
+      "n": 31,
       "n_graded": 25,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 1940,
+    "n_sampled": 1960,
     "n_graded": 0,
     "classes": []
   }
