@@ -1,0 +1,370 @@
+{
+  "record_type": "Chairman rotation programme evidence receipt",
+  "operation": "rotation-intelligence-architecture-20261012",
+  "original_carrier": "https://github.com/mastermindx-market-intelligence/macro/pull/9035",
+  "observed_at_utc": "2026-10-18T03:36:15Z",
+  "scope": "Read-only source/cache-producer acceptance and failed market-push diagnosis. No replay, ref/source/index/workspace mutation, source takeover or customer-delivery claim.",
+  "natural_run": {
+    "id": 39081858131,
+    "event": "schedule",
+    "created_at": "2026-10-18T00:11:41Z",
+    "dispatch_sha": "b140360f39266c7ffb00dce2d8e118aba677436a",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39081858131",
+    "collector_job_id": 117540284932,
+    "collector_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39081858131/job/117540284932",
+    "collector_runner": "mac-builder-light",
+    "collector_started_at": "2026-10-18T00:11:49Z",
+    "collector_completed_at": "2026-10-18T03:24:31Z",
+    "collector_conclusion": "failure",
+    "actual_checkout_sha": "b140360f39266c7ffb00dce2d8e118aba677436a",
+    "actual_checkout_log_at": "2026-10-18T00:12:00.5962740Z"
+  },
+  "accepted_producer": {
+    "sources_merged_do_not_redo": {
+      "russell_9484": "426ad5d1f593aa3cde031a768d4dd97b547faadb",
+      "dia_9518": "9f9e71a8943e9436bfc68acb961b56166fb61d79"
+    },
+    "completed_session": "2026-10-16",
+    "collector_started_at": "2026-10-18T00:15:28Z",
+    "source_finished_receipt": "2026-10-18T02:47:47.130870+00:00",
+    "source_checked_at": "2026-10-18T02:47:47.131052+00:00",
+    "qualification_notice_at": "2026-10-18T03:06:47.5604140Z",
+    "qualification": "Executed current-session status/date/ordered-clock/nonempty-cache predicate passed. Large-universe source guard requires at least ceil(80%) finite positive completed-session closes before source=ok.",
+    "source_guard_blob": "2b7bffc9505aafaa6ffcc291534465e8ca1cdd3c",
+    "exact_completed_session_coverage_fraction": null,
+    "coverage_fraction_limitation": "The source log does not print the exact finite-positive-close numerator. Do not substitute 950 historical close rows or 1908 breadth denominator for that numerator.",
+    "committed_constituents_fallback_count": 1971,
+    "source_warning": "Rejected empty Finviz idx_rut snapshot; used incumbent 1971-name committed constituent fallback. 235 mixed-basis seams were repulled and 10 named seams had no returned repair; no B4 basis clearance is inferred.",
+    "cache_key": "russell-closes-39081858131",
+    "cache_path": "data/russell_breadth/_closes_cache.parquet",
+    "cache_saved_at": "2026-10-18T03:06:49.4173250Z",
+    "compressed_transport_bytes": 3734274,
+    "cache_archive_payload_sha256": null
+  },
+  "unpublished_collector_artifacts": {
+    "source_commit_before_rebase": "c21a3057f5c0c48c1aad7f154da63c62c188bb86",
+    "commit_metadata": "c21a3057f5c0c48c1aad7f154da63c62c188bb86\nb140360f39266c7ffb00dce2d8e118aba677436a\n2026-10-17T20:16:26-07:00\ndata: daily collection 2026-10-18",
+    "artifacts": {
+      "data/run_status.json": {
+        "blob": "4d9e29da9011c9de954156b1e2ca8e8f49214df4",
+        "bytes": 106704,
+        "sha256": "7a844ef01311bd82b2a2645915d007726fe7e3fd83cbc8f8fedef8f39f7cacef",
+        "last_run": "2026-10-18T02:47:47.130870+00:00",
+        "russell_breadth": {
+          "source": "russell_breadth",
+          "status": "ok",
+          "rows": 950,
+          "last_date": "2026-10-16",
+          "error": null,
+          "notes": [],
+          "probed_at": null,
+          "elapsed_sec": 175.2,
+          "checked_at": "2026-10-18T02:47:47.131052+00:00"
+        },
+        "yahoo": {
+          "source": "yahoo",
+          "status": "ok",
+          "rows": 156602,
+          "last_date": "2026-10-18",
+          "error": null,
+          "notes": [],
+          "probed_at": null,
+          "elapsed_sec": 92,
+          "checked_at": "2026-10-18T02:47:47.130989+00:00"
+        }
+      },
+      "data/russell_breadth/breadth.parquet": {
+        "blob": "82a602aa5bf1afc6a19773b7ec1de6674b46f5fa",
+        "bytes": 28162,
+        "sha256": "c871371092542ff36609fb67806992cdb3cd9209157f48abe87a4e81d129038c",
+        "rows": 535,
+        "columns": [
+          "n_members",
+          "pct_above_50",
+          "pct_above_200",
+          "nh",
+          "nl",
+          "adv",
+          "dec",
+          "ad_line"
+        ],
+        "index_name": "Date",
+        "last_index": "2026-10-16 00:00:00",
+        "last_row": {
+          "Date": "2026-10-16 00:00:00",
+          "n_members": 1908,
+          "pct_above_50": 24.720298348428344,
+          "pct_above_200": 43.31348132106118,
+          "nh": 27,
+          "nl": 141,
+          "adv": 537,
+          "dec": 1341,
+          "ad_line": -9278
+        }
+      },
+      "data/yahoo/DIA.parquet": {
+        "blob": "c61df54f9a439ca2e007d18cdb5378e5743430a6",
+        "bytes": 204746,
+        "sha256": "ebd83fe049eacdc9aa1434ecdf2ed550ad787d8d36cacf43fa4e9a7898e9daef",
+        "rows": 7231,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "index_name": "Date",
+        "last_index": "2026-10-16 00:00:00",
+        "last_row": {
+          "Date": "2026-10-16 00:00:00",
+          "close_price": 519.0999755859375,
+          "close": 519.0999755859375,
+          "volume": 5368000
+        }
+      },
+      "data/yahoo/QQQ.parquet": {
+        "blob": "2b5c1a98a318f0deb950a61528d19bd51985bfd0",
+        "bytes": 201452,
+        "sha256": "219f7792a993b6a07f55885e52a93c80288aa3d83fb98f576cdee64f76603f2a",
+        "rows": 6945,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "index_name": "Date",
+        "last_index": "2026-10-16 00:00:00",
+        "last_row": {
+          "Date": "2026-10-16 00:00:00",
+          "close_price": 709.7999877929688,
+          "close": 709.7999877929688,
+          "volume": 66693300
+        }
+      }
+    }
+  },
+  "rejected_push": {
+    "failed_step_number": 34,
+    "failed_step": "push market data (survives a job-cap cancel; alarm-bounded git ops)",
+    "started_at": "2026-10-18T03:16:31Z",
+    "error_at": "2026-10-18T03:19:14.8559170Z",
+    "stop_at": "2026-10-18T03:19:14.8577000Z",
+    "classification": "GH001 large-file rejection; automatic retry stopped",
+    "claims_path": "data/qledger/claims.jsonl",
+    "claims_blob": "6285635d4a882b5c99ef5ce1897fd1809704db64",
+    "claims_bytes": 105232525,
+    "limit_bytes": 104857600,
+    "excess_bytes": 374925,
+    "rejected_source_head_witness": "515e1dd5bb7202aa0d07481e4bd3cfb62590eca1",
+    "parent": "654bbd3797ffe36b12410acbd6648184af6a1a9d",
+    "binding_evidence": "Completed job logs show default push_do after successful rebase. Bounded original-runner HEAD reflog ends that rebase at 515e1dd5... at03:17:31Z; no later HEAD transition occurs before failure. Git tree metadata and four source artifact blobs were read at that exact retained object. This is a local source witness, not a successful remote push.",
+    "actual_helper": "scripts/ci/push_retry.sh",
+    "actual_helper_blob": "b3abe82ba137466fe42a1160b1ba2a65dd19e576",
+    "workflow_blob": "25fda89c70eb6eef643fd11d1bdf02dfbbadd3fe",
+    "four_source_artifacts_preserved_across_rebase": true,
+    "qledger_contents_read": false,
+    "refs_replayed_or_repaired": false,
+    "incumbent_9450_head": "aabe2778e6998ec72545f6a8d6932e40de78e444",
+    "incumbent_9450_state": "DRAFT, no source adoption or qualification inferred",
+    "incumbent_8756_head": "818e0504af4f1186650df51e11f6e936d2f0af7c",
+    "incumbent_8756_state": "DRAFT/HOLD, lossless cutover remains separately qualified; no truncation or replay"
+  },
+  "downstream_at_cut": {
+    "engine_job": 117575031870,
+    "engine_runner": "mac-builder-5",
+    "engine_started_at": "2026-10-18T03:26:59Z",
+    "russell_restore_step": 12,
+    "russell_restore_step_status": "completed/success",
+    "russell_restore_step_window": [
+      "2026-10-18T03:27:41Z",
+      "2026-10-18T03:27:43Z"
+    ],
+    "exact_key_cache_hit": null,
+    "actual_engine_checkout_sha": null,
+    "engine_turn_watch_step": 43,
+    "turn_watch_publication": "pending at read cut",
+    "b1_consumption": "not yet established",
+    "published_main_price_coverage": "not established by this rejected collector push",
+    "customer_delivery": false,
+    "trade_or_b4_authority": false,
+    "predictive_accuracy_admission": false
+  },
+  "log_excerpts": [
+    {
+      "decoded_log_lines": [
+        254,
+        255
+      ],
+      "lines": [
+        "2026-10-18T00:12:00.5898580Z [command]/opt/homebrew/bin/git log -1 --format=%H",
+        "2026-10-18T00:12:00.5962740Z b140360f39266c7ffb00dce2d8e118aba677436a"
+      ]
+    },
+    {
+      "decoded_log_lines": [
+        860,
+        862
+      ],
+      "lines": [
+        "2026-10-18T00:21:33.2387620Z 2026-10-17 17:21:33,238 collect INFO === running russell_breadth ===",
+        "2026-10-18T00:21:33.2425610Z ##[warning] russell_breadth: idx_rut.json has only 0 rows (floor 1600) — using committed constituents.parquet to avoid bad-scrape universe shrink",
+        "2026-10-18T00:21:33.2458860Z 2026-10-17 17:21:33,245 collectors.russell_breadth WARNING russell_breadth: falling back to 1971 committed constituents (idx_rut.json absent or rejected)"
+      ]
+    },
+    {
+      "decoded_log_lines": [
+        971,
+        985
+      ],
+      "lines": []
+    },
+    {
+      "decoded_log_lines": [
+        1090,
+        1090
+      ],
+      "lines": [
+        "2026-10-18T00:24:28.3934860Z 2026-10-17 17:24:28,393 collect INFO russell_breadth -> ok (950 rows, last 2026-10-16) [175.2s]"
+      ]
+    },
+    {
+      "decoded_log_lines": [
+        2553,
+        2618
+      ],
+      "lines": [
+        "2026-10-18T03:06:47.3954750Z ##[group]Run python - <<'PY_RUSSELL_HANDOFF'",
+        "2026-10-18T03:06:47.3955210Z \u001b[36;1mpython - <<'PY_RUSSELL_HANDOFF'\u001b[0m",
+        "2026-10-18T03:06:47.3955500Z \u001b[36;1mimport json\u001b[0m",
+        "2026-10-18T03:06:47.3955730Z \u001b[36;1mimport os\u001b[0m",
+        "2026-10-18T03:06:47.3956030Z \u001b[36;1mfrom datetime import datetime, time, timezone\u001b[0m",
+        "2026-10-18T03:06:47.3956370Z \u001b[36;1mfrom pathlib import Path\u001b[0m",
+        "2026-10-18T03:06:47.3956660Z \u001b[36;1mfrom zoneinfo import ZoneInfo\u001b[0m",
+        "2026-10-18T03:06:47.3957040Z \u001b[36;1mfrom lib.nyse_calendar import expected_last_session\u001b[0m",
+        "2026-10-18T03:06:47.3957360Z \u001b[36;1m\u001b[0m",
+        "2026-10-18T03:06:47.3957590Z \u001b[36;1mexpected = expected_last_session()\u001b[0m",
+        "2026-10-18T03:06:47.3957900Z \u001b[36;1mclose_utc = datetime.combine(\u001b[0m",
+        "2026-10-18T03:06:47.3958250Z \u001b[36;1m    expected, time(16), tzinfo=ZoneInfo(\"America/New_York\")\u001b[0m",
+        "2026-10-18T03:06:47.3958990Z \u001b[36;1m).astimezone(timezone.utc)\u001b[0m",
+        "2026-10-18T03:06:47.3959260Z \u001b[36;1mreceipt = {}\u001b[0m",
+        "2026-10-18T03:06:47.3959480Z \u001b[36;1mtry:\u001b[0m",
+        "2026-10-18T03:06:47.3959820Z \u001b[36;1m    receipt = json.loads(Path(\"data/run_status.json\").read_text())\u001b[0m",
+        "2026-10-18T03:06:47.3960230Z \u001b[36;1mexcept (OSError, ValueError, TypeError):\u001b[0m",
+        "2026-10-18T03:06:47.3960530Z \u001b[36;1m    pass\u001b[0m",
+        "2026-10-18T03:06:47.3960840Z \u001b[36;1msource = ((receipt.get(\"sources\") or {}).get(\"russell_breadth\") or {})\u001b[0m",
+        "2026-10-18T03:06:47.3961210Z \u001b[36;1mdef parse_utc(stamp):\u001b[0m",
+        "2026-10-18T03:06:47.3961480Z \u001b[36;1m    if not isinstance(stamp, str):\u001b[0m",
+        "2026-10-18T03:06:47.3961770Z \u001b[36;1m        return None\u001b[0m",
+        "2026-10-18T03:06:47.3962000Z \u001b[36;1m    try:\u001b[0m",
+        "2026-10-18T03:06:47.3962320Z \u001b[36;1m        instant = datetime.fromisoformat(stamp.replace(\"Z\", \"+00:00\"))\u001b[0m",
+        "2026-10-18T03:06:47.3962690Z \u001b[36;1m        if instant.tzinfo is None:\u001b[0m",
+        "2026-10-18T03:06:47.3963030Z \u001b[36;1m            instant = instant.replace(tzinfo=timezone.utc)\u001b[0m",
+        "2026-10-18T03:06:47.3963400Z \u001b[36;1m        return instant.astimezone(timezone.utc)\u001b[0m",
+        "2026-10-18T03:06:47.3963700Z \u001b[36;1m    except ValueError:\u001b[0m",
+        "2026-10-18T03:06:47.3963970Z \u001b[36;1m        return None\u001b[0m",
+        "2026-10-18T03:06:47.3964260Z \u001b[36;1m\u001b[0m",
+        "2026-10-18T03:06:47.3964530Z \u001b[36;1mchecked = parse_utc(source.get(\"checked_at\"))\u001b[0m",
+        "2026-10-18T03:06:47.3964890Z \u001b[36;1mfinished = parse_utc(receipt.get(\"last_run\"))\u001b[0m",
+        "2026-10-18T03:06:47.3965300Z \u001b[36;1mstarted = parse_utc(os.environ.get(\"RUSSELL_COLLECT_STARTED_AT\"))\u001b[0m",
+        "2026-10-18T03:06:47.3965690Z \u001b[36;1mnow = datetime.now(timezone.utc)\u001b[0m",
+        "2026-10-18T03:06:47.3966060Z \u001b[36;1mcache = Path(\"data/russell_breadth/_closes_cache.parquet\")\u001b[0m",
+        "2026-10-18T03:06:47.3966420Z \u001b[36;1mqualified = (\u001b[0m",
+        "2026-10-18T03:06:47.3966680Z \u001b[36;1m    source.get(\"status\") == \"ok\"\u001b[0m",
+        "2026-10-18T03:06:47.3967030Z \u001b[36;1m    and source.get(\"last_date\") == expected.isoformat()\u001b[0m",
+        "2026-10-18T03:06:47.3967480Z \u001b[36;1m    and started is not None and finished is not None and checked is not None\u001b[0m",
+        "2026-10-18T03:06:47.3967940Z \u001b[36;1m    and close_utc <= started <= finished <= checked <= now\u001b[0m",
+        "2026-10-18T03:06:47.3968350Z \u001b[36;1m    and cache.is_file() and cache.stat().st_size > 0\u001b[0m",
+        "2026-10-18T03:06:47.3968670Z \u001b[36;1m)\u001b[0m",
+        "2026-10-18T03:06:47.3968990Z \u001b[36;1mwith open(os.environ[\"GITHUB_OUTPUT\"], \"a\", encoding=\"utf-8\") as out:\u001b[0m",
+        "2026-10-18T03:06:47.3969460Z \u001b[36;1m    out.write(f\"qualified={'true' if qualified else 'false'}\\n\")\u001b[0m",
+        "2026-10-18T03:06:47.3969830Z \u001b[36;1mif qualified:\u001b[0m",
+        "2026-10-18T03:06:47.3970700Z \u001b[36;1m    print(\"::notice title=Russell cache handoff::qualified completed-session source; ready for same-run save\")\u001b[0m",
+        "2026-10-18T03:06:47.3971210Z \u001b[36;1melse:\u001b[0m",
+        "2026-10-18T03:06:47.3971950Z \u001b[36;1m    print(\"::warning title=Russell cache handoff withheld::missing/unqualified current Russell source; engine remains exact-key-only\")\u001b[0m",
+        "2026-10-18T03:06:47.3973260Z \u001b[36;1mPY_RUSSELL_HANDOFF\u001b[0m",
+        "2026-10-18T03:06:47.4668570Z shell: /opt/homebrew/bin/bash -e {0}",
+        "2026-10-18T03:06:47.4669150Z env:",
+        "2026-10-18T03:06:47.4669410Z   RUSSELL_COLLECT_STARTED_AT: 2026-10-18T00:15:28Z",
+        "2026-10-18T03:06:47.4669720Z ##[endgroup]",
+        "2026-10-18T03:06:47.5604140Z ##[notice]qualified completed-session source; ready for same-run save",
+        "2026-10-18T03:06:47.5733070Z ##[group]Run actions/cache/save@v4",
+        "2026-10-18T03:06:47.5744110Z with:",
+        "2026-10-18T03:06:47.5744630Z   path: data/russell_breadth/_closes_cache.parquet",
+        "2026-10-18T03:06:47.5745180Z   key: russell-closes-39081858131",
+        "2026-10-18T03:06:47.5745560Z   enableCrossOsArchive: false",
+        "2026-10-18T03:06:47.5746110Z ##[endgroup]",
+        "2026-10-18T03:06:47.8376660Z (node:90009) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.",
+        "2026-10-18T03:06:47.8377540Z (Use `node --trace-deprecation ...` to show where the warning was created)",
+        "2026-10-18T03:06:47.8737580Z [command]/opt/homebrew/bin/gtar --posix -cf cache.tzst --exclude cache.tzst -P -C /Users/chriswong/actions-runner-4/_work/macro/macro --files-from manifest.txt --delay-directory-restore --use-compress-program zstdmt",
+        "2026-10-18T03:06:48.2474730Z (node:90009) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.",
+        "2026-10-18T03:06:49.2359500Z Sent 3734274 of 3734274 (100.0%), 3.6 MBs/sec",
+        "2026-10-18T03:06:49.4173250Z Cache saved with key: russell-closes-39081858131"
+      ]
+    },
+    {
+      "decoded_log_lines": [
+        3058,
+        3063
+      ],
+      "lines": [
+        "2026-10-18T03:16:31.4652820Z \u001b[36;1m  # pre-sync collision sweep (render.yml / #2252): a mid-run commit on origin/main can\u001b[0m",
+        "2026-10-18T03:16:31.4653380Z \u001b[36;1m  # TRACK a path this job wrote as an UNTRACKED side-effect — the rebase checkout then\u001b[0m",
+        "2026-10-18T03:16:31.4653940Z \u001b[36;1m  # refuses (\"untracked working tree files would be overwritten\") and --autostash can't\u001b[0m",
+        "2026-10-18T03:16:31.4654510Z \u001b[36;1m  # clear it (it parks tracked modifications only), so every retry dies identically.\u001b[0m",
+        "2026-10-18T03:16:31.4655080Z \u001b[36;1m  # Everything this step publishes is already committed above, so a path untracked HERE\u001b[0m",
+        "2026-10-18T03:16:31.4655680Z \u001b[36;1m  # but tracked on origin/main is a throwaway local write — origin/main is authoritative.\u001b[0m"
+      ]
+    },
+    {
+      "decoded_log_lines": [
+        3073,
+        3086
+      ],
+      "lines": [
+        "2026-10-18T03:16:31.4661170Z \u001b[36;1m  # DAILY-COLLECT-JOBS-LOSE-APPEND-ONLY-ROWS): two collect jobs that OVERLAP\u001b[0m",
+        "2026-10-18T03:16:31.4661680Z \u001b[36;1m  # each build data/government_revenue/ from the base each checked out, and\u001b[0m",
+        "2026-10-18T03:16:31.4662170Z \u001b[36;1m  # `-X theirs` below then REPLACES the earlier run's appended rows with this\u001b[0m",
+        "2026-10-18T03:16:31.4662660Z \u001b[36;1m  # run's instead of unioning them. Runs after the fetch and before the rebase\u001b[0m",
+        "2026-10-18T03:16:31.4663140Z \u001b[36;1m  # because that is the only point where origin/main's version is known and\u001b[0m",
+        "2026-10-18T03:16:31.4663620Z \u001b[36;1m  # this run's commit is still withholdable. No-op on an ordinary night.\u001b[0m",
+        "2026-10-18T03:16:31.4664660Z \u001b[36;1m  # Non-zero ONLY when the fence proved a loss and then could not withhold it;\u001b[0m",
+        "2026-10-18T03:16:31.4665170Z \u001b[36;1m  # publishing that tree is the corruption the fence exists to stop, so skip the\u001b[0m",
+        "2026-10-18T03:16:31.4665670Z \u001b[36;1m  # attempt rather than fail open. Every other fence outcome returns 0.\u001b[0m",
+        "2026-10-18T03:16:31.4666140Z \u001b[36;1m  if ! push_append_only_fence origin/main; then push_backoff; continue; fi\u001b[0m",
+        "2026-10-18T03:16:31.4666760Z \u001b[36;1m  if perl -e 'alarm 420; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then\u001b[0m",
+        "2026-10-18T03:16:31.4667260Z \u001b[36;1m    if push_do; then\u001b[0m",
+        "2026-10-18T03:16:31.4667570Z \u001b[36;1m      echo \"pushed market data on attempt $PUSH_ATTEMPT\"\u001b[0m",
+        "2026-10-18T03:16:31.4667950Z \u001b[36;1m      echo \"published=true\" >> \"$GITHUB_OUTPUT\"\u001b[0m"
+      ]
+    },
+    {
+      "decoded_log_lines": [
+        3098,
+        3119
+      ],
+      "lines": [
+        "2026-10-18T03:16:33.1585530Z From https://github.com/***-market-intelligence/macro",
+        "2026-10-18T03:16:33.1586060Z  * branch                    main       -> FETCH_HEAD",
+        "2026-10-18T03:16:33.1615860Z    b140360f392..654bbd3797f  main       -> origin/main",
+        "2026-10-18T03:16:34.9383940Z append-only-base-fence: government-revenue ok (6 member(s) checked against origin/main)",
+        "2026-10-18T03:16:36.4601970Z From https://github.com/***-market-intelligence/macro",
+        "2026-10-18T03:16:36.4602620Z  * branch                    main       -> FETCH_HEAD",
+        "2026-10-18T03:16:40.5683300Z Created autostash: cb8ab36ec9b",
+        "2026-10-18T03:17:33.3886250Z Rebasing (1/1)",
+        "2026-10-18T03:17:33.3886670Z Applied autostash.",
+        "2026-10-18T03:17:33.3887200Z ",
+        "2026-10-18T03:17:33.3887630Z                                                                                 ",
+        "2026-10-18T03:17:33.3888120Z Successfully rebased and updated refs/heads/main.",
+        "2026-10-18T03:19:14.8554480Z remote: warning: File data/qledger/grades.jsonl is 75.99 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        ",
+        "2026-10-18T03:19:14.8556300Z remote: error: Trace: c9d80a294701cf82ebf16029583ebcf46e2c6ff71f4e0046e7c5200c518290fd        ",
+        "2026-10-18T03:19:14.8557170Z remote: error: See https://gh.io/lfs for more information.        ",
+        "2026-10-18T03:19:14.8559170Z remote: error: File data/qledger/claims.jsonl is 100.36 MB; this exceeds GitHub's file size limit of 100.00 MB        ",
+        "2026-10-18T03:19:14.8562550Z remote: error: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        ",
+        "2026-10-18T03:19:14.8565250Z To https://github.com/***-market-intelligence/macro",
+        "2026-10-18T03:19:14.8565910Z  ! [remote rejected]         main -> main (pre-receive hook declined)",
+        "2026-10-18T03:19:14.8569340Z error: failed to push some refs to 'https://github.com/***-market-intelligence/macro'",
+        "2026-10-18T03:19:14.8577000Z ##[error]collected market data: GH001 large-file rejection; automatic retry stopped",
+        "2026-10-18T03:19:14.8586780Z ##[error]Process completed with exit code 1."
+      ]
+    }
+  ]
+}
