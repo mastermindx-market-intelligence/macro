@@ -406,6 +406,37 @@ def test_semantic_freshness_accepts_one_session_lag(tmp_path: Path) -> None:
     assert report["facts"]["sessions_behind"] == 1
 
 
+def test_natural_october_sunday_rejects_stale_breadth_without_faking_a_market_day(
+    tmp_path: Path,
+) -> None:
+    """On Sunday Oct 18 the latest completed US session was Fri Oct 16.
+
+    These are synthetic date-labelled coherent fixtures, NOT observations or a
+    repair to the missing actual QLedger/S&P1500 market-data publication.
+    """
+    from scripts.check_sector_intelligence_freshness import evaluate
+
+    sunday_utc = datetime(2026, 10, 18, 12, tzinfo=timezone.utc)
+    _write_sector_intelligence_generation(
+        tmp_path, baskets_asof="2026-10-14", action_asof="2026-10-14"
+    )
+    stale = evaluate(tmp_path, now=sunday_utc, max_sessions_behind=1)
+    assert stale["ok"] is False, stale
+    assert stale["facts"]["as_of"] == "2026-10-14"
+    assert stale["facts"]["sessions_behind"] == 2
+    assert any("STALE SECTOR INTELLIGENCE" in err for err in stale["errors"])
+
+    # Date-only synthetic counterfactual: a truly coherent Friday generation
+    # is admissible over the weekend, without inventing a Sunday market session.
+    _write_sector_intelligence_generation(
+        tmp_path, baskets_asof="2026-10-16", action_asof="2026-10-16"
+    )
+    friday = evaluate(tmp_path, now=sunday_utc, max_sessions_behind=1)
+    assert friday["ok"] is True, friday
+    assert friday["facts"]["as_of"] == "2026-10-16"
+    assert friday["facts"]["sessions_behind"] == 0
+
+
 def test_semantic_freshness_rejects_individually_fresh_vintage_split(
     tmp_path: Path,
 ) -> None:
