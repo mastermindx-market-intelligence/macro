@@ -17,7 +17,7 @@ changed:
     what: "Released the existing source/evidence record as part of the same three-file PR9518 squash."
   -
     path: "agentos/handoffs/ROTATION-INTELLIGENCE-META-CEO-2026-10-17-HANDOFF.md"
-    what: "Preserve the original mission/effects, record the completed #9518 release and current production baseline, and supersede #9495 restoration routing with the incumbent #9566 split and exact blocking review."
+    what: "Preserve the original mission/effects; record #9566 corrected-source approval, concluded CI and native whole-artifact integration hold; qualify the first natural-run frontier, later board generation and #9568 forward receipt-stability repair without promoting historical or delivery authority."
   -
     path: "agentos/handoffs/ROTATION-INTELLIGENCE-META-CEO-2026-10-12.md"
     what: "Add required schema metadata to the original historical handoff while retaining its full10364-character body verbatim."
@@ -27,6 +27,7 @@ prs:
   - 9484
   - 9495
   - 9566
+  - 9568
 verified:
   -
     claim: "PR9518 exact reviewed head merged ordinarily; all three landed blobs equal the reviewed candidate and observed main."
@@ -69,13 +70,41 @@ verified:
     command: "GitHub read #9495 comment6243339773, get_pr_info(9566), and exact source-file readbacks at7acf61d43af04dfc94dfc26bb4c6edcca1f3790d."
     result: "#9566 open, not Draft, explicitly armed by its owner; head7acf61d43af04dfc94dfc26bb4c6edcca1f3790d. Three-file compact restoration. Earlier return6243396155 routing is explicitly superseded; source/B4/Plan findings retained."
   -
-    claim: "#9566 has a confirmed introduced CI test-registration defect."
+    claim: "#9566 initial7acf head had a confirmed introduced CI test-registration defect, subsequently repaired at06f/587."
     command: "Read run39080355224 jobs117535866201 and117539169266; parse semantic evidence; inspect exact-head .github/ci/legacy-jobs.yml."
     result: "contract-delta1 introduced/0 inherited: tests/test_us_prophet_original_card_layout.py is named by no workflow run step. All12 packs success; selected semantic evidence clear,272 passed proofs,0 infrastructure findings. ci-gate fails enforcing the introduced contract defect. Existing washout-turn-organ Prophet source/lifecycle/presentation step is a candidate owning run registration; no new job/waiver needed."
   -
-    claim: "Independent principal review returned a distinct source-inferred passive-overlay navigation defect on #9566."
+    claim: "Independent principal review returned a passive-overlay navigation defect on initial #9566 head7acf; corrected source and actual local click evidence later closed it."
     command: "Read exact-head templates/_prophet_workspace.css.j2, _prophet_card.html.j2, site/us_stocks.html, site/assets/css/2fa86f96.css, stocktable.js and tier_preview.js; independent principal source judgment; GitHub review write/readback."
     result: "Both entire pv-ov containers raised to z5 above separate pv-setup-stock-link z4 on article cards; passive verdict/price spans lie outside the anchor. ETSY/RSG/ENSG setup cards exist. Source inference, not browser reproduction. REQUEST_CHANGES review5560777128 at exact7acf head read back verbatim; incumbent correction or exact disproving evidence required."
+  -
+    claim: "#9566 corrected source is independently approved at587; both initial findings are closed."
+    command: "Exact source/blob reads; native retained evidence SHA-256 readback; GitHub APPROVE review5560930509 and readback; independent principal acceptance."
+    result: "Head587ee7f694f41ae70ae39aee4b85c8dce5938cbe. Review5560930509 submitted2026-10-18T01:25:13Z. Native157 tests and16/16 width/language/theme hit-test states accepted; actual passive-verdict/price mouse clicks emitted the existing Terminal handoff with external navigation deliberately aborted. CSS/HTML/test bytes match current587; the later CI-only closure path is separately qualified. No authenticated or production claim."
+  -
+    claim: "#9566 corrected-head binding CI concluded green; integration acceptance remains a separate unsatisfied gate."
+    command: "GitHub commits/587ee7f694f41ae70ae39aee4b85c8dce5938cbe/check-runs; run39084947459 contract-delta and ci-gate."
+    result: "26 records:21 success,4 conditional skips,1 existing intentionally nonbinding inactive-pilot failure. All12 packs pass; contract-delta0 introduced/0 inherited; ci-gate success01:30:35Z. Tested mergee0c2ef0be7f6a47c505b0aa65c9fda79abe52ae1 onto599ac1d476bc54b472e59510726627f45024d26c. No bypass."
+  -
+    claim: "#9566 native composition is held despite GitHub mergeability and green CI."
+    command: "git merge-tree --write-tree 587ee7f694f41ae70ae39aee4b85c8dce5938cbe cd75e57693acafec3659957a6e9b98f2f4cb2b13; repeat against actual tested base599ac1d; exact .gitattributes and HTML comparison."
+    result: "Both compositions rc1 at site/us_stocks.html. Existing -merge rule intentionally protects whole tier-gated renders. Base09c2b4a2cf22a68bf64d6dd0167e6918e07600d7; candidate786f359b0c32554b6819f7cd2147d64ca4b8749c; current/test-base6b04d61fca3255e22b75bd46b98d00453f3ec3d3; GitHub tested third blob5176d69134231c5afaf9068a28a5192da2101cf7. Only Today source/emit/selection receipts differ from the candidate; source approval does not accept this integration. Incumbent release hold6244294155; no attributes, source, branch or release mutation."
+  -
+    claim: "An actual post-release scheduled daily is now observed, with both existing source merges in its declared head."
+    command: "GitHub run39081858131/jobs; native git merge-base --is-ancestor for9484/9518 merges againstb140360f39266c7ffb00dce2d8e118aba677436a."
+    result: "Schedule event created2026-10-18T00:11:41Z; both ancestry checks rc0. At01:37Z collect117540284932 remained in step19; Russell restore step9 success, qualification20/save21 pending. No cache-hit or completed collection/engine effect accepted. Natural-run return6244327205."
+  -
+    claim: "The later committed board generation changes lineage but does not improve the accepted price-freshness result."
+    command: "Native immutable blob comparison and JSON metadata read atcd75e57693acafec3659957a6e9b98f2f4cb2b13."
+    result: "Board37acf3478fae60de44968d641f4176eea0e737bc; pair56d90e02782e40f0a94fdb296c5e59a3, emitted22:44:24Z, available23:03:49.118188Z onOct17. Source roster1356 Russell/3068 total complete;198/3063 atOct16, majorityOct7,7 sessions late, mixed/delayed; as_ofOct14,gate_go=false. Four price/status blobs unchanged fromca070; prior reads reused. Generation predates scheduled run, not attributed to it."
+  -
+    claim: "#9568 forward receipt-stability repair is accepted in bounded principal evidence-consumption judgment; current receipt joins remain unavailable."
+    command: "Read programme6817/comment6230825588 updated01:13:10Z, incumbent9568/comment6243961215, exactc5 publisher boundary; compare owned blobs through integration46d0614ad16f7f7343268a9c0c5ca7980d391f48."
+    result: "Only top-level runtime_seconds excluded from artifact_bytes shared by public output/private sidecar hashing. Owner151 tests/41 synthetic observations/six substantive invalidators/378 structural transformation reused. Original18 event+360 suppression witness valid only at40a886 and verified equal-blob cuts; later9f9e71 has378 unmatched exact pairs. Third receipt283 EPISODE_JOIN_UNAVAILABLE+95 IDENTITY_UNRESOLVED, all action authorities false. Current46d061 integrates main62a3f9; publisher/builder/two test blobs unchanged fromc5, manifest nowe55de99f84dbbf55ec265e9dee705f207b3ad4fb. Incumbent01a14838 retains ordinary release/CI ownership; no duplicate observer or writer."
+  -
+    claim: "Protected bootstrap-law continuity and installed capability were refreshed without altering custody or gates."
+    command: "Read Mastermind protected mastere77631490e5bddca7d40c8cf039ae7763ce17b99; INDEX; compare seven required procedure blobs with prior fully read ee0f pin; Executive session_targets/executive_fabric."
+    result: "All seven governing procedure blobs unchanged; bootstrap1/Skillpack1.0.1 retained, DELIVERY_WORKFLOW consumed. At01:13Z session_targets ok=true,data=[]; fabric ceo_submit_armed=false and unjoined enumeration. Not global worker absence or custody transfer. Incumbent9566/9568 owners are live independently."
 unverified:
   -
     claim: "Natural production cache handoff, complete price coverage, fresh DIA/QQQ ratio and downstream Prophet adoption."
@@ -85,59 +114,120 @@ unverified:
     what_would_verify: "Original owners supply qualified same-read B3/B4 geometry/basis/gates and exact episode/Plan/generation joins, followed by authorized authenticated render and real opt-in transport receipts."
   -
     claim: "Original compact Prophet cards restored in production."
-    what_would_verify: "The #9566 incumbent resolves its armed state through normal procedure, corrects CI registration and passive-overlay hit testing, qualifies the resulting exact head through checks/independent review, then supplies deployment and authorized production readback. Existing16-state candidate geometry evidence is reusable where dependencies remain unchanged; #9495 remains DRAFT / NO MERGE pending explicit compact-design compatibility."
+    what_would_verify: "The #9566 incumbent clears whole-artifact composition hold6244294155 through the normal renderer/integration procedure, binds the accepted complete page to the proposed tree, qualifies affected integration and ordinary release, then supplies deployment and authorized production readback. Corrected587 source/157-test/16-state evidence is already accepted and reusable where unchanged. #9495 remains DRAFT / NO MERGE."
   -
     claim: "Predictive accuracy or model-selected trades."
     what_would_verify: "Existing D06/track-record owner admits a point-in-time prospective controlled evaluation and retains canonical decisions/outcomes; October rotation is not an untouched holdout."
   -
-    claim: "#9566 passive-overlay navigation and controls function correctly after correction."
-    what_would_verify: "Incumbent exact-head source correction or evidence disproving the source inference; proportionate navigation from passive verdict/price regions and caution/trigger/live control behavior, without repeating unchanged geometry work."
+    claim: "Forward runtime-stable TurnWatch publication is normally adopted into exact B1 relations."
+    what_would_verify: "Incumbent #9568 normal source release, actual forward publisher/sidecar receipt and ordinary schedule-owned B1 intake followed by exact current downstream readback. The first runtime-excluded publication still differs from existing runtime-bearing receipts; no aliases or historical rewrite."
 unresolved:
-  - "#9566 head7acf61d43af04dfc94dfc26bb4c6edcca1f3790d remains open/armed with binding contract-delta/ci-gate failure and source review5560777128 requesting changes. Incumbent owns unarming/correction/requalification; do not push into its armed branch."
+  - "#9566 corrected587 source APPROVE5560930509 and binding CI are complete, but native generated-page composition conflicts against both current main and the actual tested base. Preserve hold6244294155 and incumbent source/release ownership; do not rearm or merge until the complete native artifact and resulting integration qualify."
+  - "#9568 forward repair is on incumbent integration head46d0614ad16f7f7343268a9c0c5ca7980d391f48, with normal hosted qualification/release still owner-held. Current378 exact receipt pairs remain unmatched; ordinary forward publication and B1 intake are required."
+  - "RQ1 original worker is now VERIFIED_TERMINAL rc1 NOT_ACCEPTED, while original Ubuntu2 source effects remain unresolved on #1404/#7772; termination is not source-effect clearance."
   - "Original Plan child prophet-plan-review-component-build-01a11e89-20261015-01 /34412 remains LOST/UNKNOWN; directory_owner_or_mode collection refusal with retry_authorized:false. Preserve original untracked five-red baseline test."
   - "Current source-writer/live-lease/pending-effect qualification for shared9495/8444 remains required; empty Executive addressable projection is not a custody transfer."
   - "Original Chrome consent unanswered; Paper UPSTREAM_SCHEMA_UNREVIEWED; no alternate carrier or repeated denied mutation."
   - "QLedger GH001 prevents normal publication;9450 local preflight still lacks actual collect/Asia caller bindings and is not the lossless native8756 cutover.9452 is the unselected alternative."
   - "Source-map original child and daily-brief9369 lost review remain unresolved on original carriers."
 next_actions:
-  - "Consume original9518 release receipt6243368898 and treat9518/9484 source releases as DO_NOT_REDO. At the next real normal-run boundary inspect daily.yml run source, cache qualification SAVE and exact-key restore hit, coverage and Prophet generation; do not dispatch or replay."
-  - "Consume incumbent split9495/comment6243339773 and exact #9566 review5560777128. The #9566 incumbent must resolve its armed state normally, register the new regression suite in the appropriate existing CI run/path selection, resolve passive-overlay navigation, and qualify the corrected head. No second writer, unchanged-head rerun, waiver or guard weakening."
-  - "Keep #9495 DRAFT / NO MERGE pending explicit compatibility with the compact design. Its admitted owner retains the qualified7018-byte truthful-copy patch6230950977 and native B4/Plan work. Reuse49 checks/synthetic compositions; qualify actual writer/lease/pending effects before source integration and preserve the original Plan child. Do not expand #9566 with this work."
-  - "Through incumbent native B4 owner, bind the existing same-read B3 verified_pair to genuine strategy geometry, adjustment/corporate-action basis and deterministic risk/liquidity/gap facts. Then qualify exact episode/Plan and current UI assertions; no display-side entry authority."
-  - "Consume incumbent QLedger9450/8756 recovery evidence without repeating prior caller audits or altering held data. Existing7022/7976/9428 owners retain native rotation visibility, EOD clock and risk-context work; actual denied effects remain on original targets."
-  - "Finish authorized production visual/history/alert verification only after their exact gates qualify, reusing accepted B03 and TurnWatch evidence unless changed behavior invalidates it."
+  - "Keep #9518/#9484 source release DO_NOT_REDO. Consume the real scheduled39081858131 boundary through its incumbent: executed checkout, >=80% completed-session Russell qualification, pre-push SAVE, exact engine run-key restore hit, then fresh DIA/QQQ and Prophet clocks. No manual dispatch, replay or restamp."
+  - "Consume #9566 source approval5560930509 and concluded run39084947459, then resolve native whole-page integration hold6244294155 through the incumbent's original branch and renderer. Preserve -merge and latest coherent tier/data generation; bind the exact generated blob and qualify affected integration/CI before normal release. Reuse accepted unchanged source/browser evidence."
+  - "Consume #9568 owner release on integration46d061; no duplicate reviewer/test/observer/writer. Scope old18/360 witness to40a886/equal-blob cuts. Qualify the first normal runtime-excluded publication and schedule-owned B1 intake without aliasing or relabeling current378 unmatched pairs."
+  - "Keep #9495 DRAFT / NO MERGE and compact-design compatible. Its incumbent retains qualified7018-byte refusal-copy patch6230950977 and native B4/Plan work; reuse49 checks. Qualify live custody/effects before source integration and preserve original held Plan child."
+  - "Through the native B4 owner, bind existing same-read B3 verified_pair to genuine geometry, adjustment/corporate-action basis and deterministic risk/liquidity/gap facts; qualify exact episode/Plan/current UI, then authorized authenticated rendering, as-issued history and actual opt-in alert receipts."
+  - "Advance unaffected original QLedger9450/8756, Alert7022, Finviz7976 and Risk9428 owner work only at real new evidence boundaries. Preserve source-map, Plan, RQ1 Ubuntu2 and daily-brief9369 original effects; no replacements or denied-action retries."
 do_not_redo:
   - "PR9484 already merged at426ad5d1f593aa3cde031a768d4dd97b547faadb with120 affected tests; verify natural use, never recreate source."
   - "PR9518 already merged at9f9e71a8943e9436bfc68acb961b56166fb61d79. Independent source review, inactive-pilot adjudication, unchanged208-pass/1-skip/2-xfail evidence, dependency-closure proof, conflict-free integration and three-file postmerge blob checks are complete."
   - "Basket fallback9511 merged;151/151 source replay and18 recency tests already accepted."
   - "Refusal-copy/fixture patch1e740b50273553665cfa5e0d8cd9e93635eb989703ff789c9e007f780dfaf7cc already qualified with49 checks. Do not retry failed sparse-helper Fabric task or repeat parent fixture repair."
-  - "October11 B03 paging/filter/exact relation/signout/Return EN and settled ZH accepted. October16 TurnWatch378 sourceevent/receipt pairs fully dispositioned:18 event relations and360 typed suppressions. Do not reclassify them as missed winners."
+  - "October11 B03 paging/filter/exact relation/signout/Return EN and settled ZH accepted. TurnWatch18 event relations+360 typed suppressions remain accepted ONLY at40a886aca7eac07a6d98555efcd3a7d42b53e5e2 and originally verified equal-blob cuts including9484 merge426ad5. Later9f9e71 runtime-only receipt change leaves378 unmatched exact pairs; do not generalize old disposition, force joins or classify observations as missed winners."
   - "Native B3 verified_pair and read_plan_candidate_source already exist; earlier parallel relation proposal superseded."
   - "October16 Risk Envelope already has usable MIXED_ROTATION. Prior risk-ordering defect is not automatically current."
   - "Original alert-turn red test/shadow0-to-4, Finviz366 ahead-of-close/572 uncomparable census, candidate archives/forensics and QLedger collect/Asia caller findings are retained; do not rerun without a material invalidator."
   - "Do not recreate, reset, release, chmod, retry or replace original held workspaces/workers/effects; no new collector, ranker, B4, history ledger, publisher, alert transport or control plane."
-  - "Latest committed artifact baseline at ca0700187e17fa73f459e83ce688b5c838cd316e and receipt6243511974 is complete. Refresh at a real new natural-run/generation boundary, not by repeatedly rereading unchanged source files."
+  - "Committed baselineca070/6243511974 and later pre-run boardcd75e576/37acf347/56d90e generation in6244327205 are complete. Four price/status blobs are unchanged;198/3063 and majorityOct7 freshness result retained. Refresh at a real natural-run/generation boundary, not by rereading unchanged artifacts."
   - "#9566 exact7acf source/CI review is complete: review5560777128, run39080355224, tested mergee2d54275f6fded5476f21b11d84d5cd77b35ca96, evidenceef27c76d97465e44d42151ce70f3c6b7d06b4de57aaab83e22b7752fcbe8af71. Do not re-audit or rerun unchanged CI; consume a changed source head or actual incumbent disproving evidence."
+  - "#9566 corrected587 source/157-test/16-state and actual local click receipts are accepted; initial7acf review and failed contract remain red provenance. Do not rerun unchanged geometry/source tests; the new whole-render composition is the material invalidator."
+  - "#9568 accepted151 tests,41 synthetic publication/sidecar/B1 observations,six substantive-change cases and378 structural transformation are complete. Reuse; the first forward publication/B1 transition remains unproved."
 danger_areas:
   - "Source merge is not scheduled adoption, production deployment, current entry permission, predictive accuracy or user delivery. A cache step success is not evidence of a restore hit."
   - "Current quotes, legacy partial/Buy signals, Featured membership, same-ticker Plans and source-emission time cannot replace native exact-episode entry authority and source clocks."
   - "9495 now calls the richer renderer; merely removing the old CSS include can both fail compact restoration and remove setup styles. Preserve original compact macro and qualify actual call sites."
   - "Actual STARTed/UNKNOWN/refused effects remain target-bound even under the new assignment. Stale historical ownership alone does not block unrelated safe work, and source-clean/empty-projection alone does not clear live custody."
   - "Original handoff8f53d498 lacked YAML frontmatter and failed scoped agentos validation; this continuation repairs format without granting authority or editing generated Agent OS views."
-  - "Use protected procedure pin Mastermind@ee0f0d9ba71d76dbc8144f56f3566a1f9dc70a71 for this continuation; prior2cc4942e136ad4fb544fd5c72ab1856608a5dac1 remains historical provenance."
+  - "Use protected procedure pin Mastermind@e77631490e5bddca7d40c8cf039ae7763ce17b99; all seven required procedure blobs equal prior fully read ee0f0d9ba71d76dbc8144f56f3566a1f9dc70a71. Earlier pins retain historical provenance; no protected law was changed."
   - "Earlier missing-Russell and249/1758 panel descriptions were superseded by the20:16:50Z board: source-roster inclusion improved but majority prices are October7 in a different3063-member panel. Source complete does not mean completed-session price integrity."
   - "The earlier #9495 compact-restoration routing in f7d5a8df/return6243396155/checkpoint6243573945 is superseded by incumbent comment6243339773. #9566 owns restoration; #9495's rich .po-card/grid geometry must not return through a routine rebase or merge. The16-state owner browser receipt does not clear original Chrome consent or establish production/authenticated behavior."
+  - "GitHub mergeability and green CI do not override the existing whole-artifact -merge rule for tier-gated generated HTML. The third tested blob requires native generation/composition acceptance; preserve attributes and source custody."
 ---
 
 # Meta-CEO rotation / Prophet recovery — canonical successor handoff
-**Canonical handoff date:** 2026-10-17; latest continuation 2026-10-18 00:27 UTC  
+**Canonical handoff date:** 2026-10-17; latest continuation 2026-10-18 01:43 UTC  
 **Mission:** Chairman's October defensive-rotation failure review and end-to-end Mastermind/Prophet rehabilitation.  
 **Original research operation:** rotation-intelligence-architecture-20261012.  
 **Original research carrier:** Macro draft PR #9035, branch sol/web-rotation-intelligence-architecture-20261012.  
-**Authority:** Current Chairman continuation; protected Mastermind Skillpack procedure pin **ee0f0d9ba71d76dbc8144f56f3566a1f9dc70a71** (bootstrap major 1 / Skillpack 1.0.1). Prior checkpoint pin 2cc4942e136ad4fb544fd5c72ab1856608a5dac1 remains historical provenance. No protected law or execution gate was changed.  
+**Authority:** Current Chairman continuation; protected Mastermind Skillpack procedure pin **e77631490e5bddca7d40c8cf039ae7763ce17b99** (bootstrap major 1 / Skillpack 1.0.1). All seven required procedure blobs equal prior fully read **ee0f0d9ba71d76dbc8144f56f3566a1f9dc70a71**; earlier pins remain historical provenance. Current DELIVERY_WORKFLOW was consumed. No protected law or execution gate was changed.  
 **Classification:** MATERIAL_SOURCE_MILESTONE / CONTINUATION_WITH_SCOPED_BLOCKERS. **PR #9518 is merged; #9484 was already merged. The complete product mission is NOT accepted or delivered.** This knowledge record does not grant execution, source-custody, deployment or retry authority.
 
-## Current material milestone — 2026-10-18 00:27 UTC continuation
+## Current material milestone — 2026-10-18 01:43 UTC continuation
+
+The complete product mission remains **OPEN**. This continuation completed corrected-source acceptance and hosted-CI reconciliation, exposed a distinct whole-artifact release conflict, advanced the actual natural-run frontier, and corrected the current B1 receipt claim. [Programme acceptance return6244379784](https://github.com/mastermindx-market-intelligence/macro/issues/6817#issuecomment-6244379784) preserves incumbent ownership across these boundaries.
+
+### #9566: corrected source approved; whole-page integration held
+
+The incumbent disarmed before correcting both initial7acf findings, returned06f67bd, then added only the stylesheet path to the existing native CI closure at **587ee7f694f41ae70ae39aee4b85c8dce5938cbe**. [Source APPROVE5560930509](https://github.com/mastermindx-market-intelligence/macro/pull/9566#pullrequestreview-5560930509), submitted01:25:13Z and read back identical, closes the earlier REQUEST_CHANGES5560777128.
+
+| Exact587 input | Git blob |
+| --- | --- |
+| templates/_prophet_workspace.css.j2 | 7f50c64ed7856f72c016cdca37c11139cd765154 |
+| site/us_stocks.html | 786f359b0c32554b6819f7cd2147d64ca4b8749c |
+| tests/test_us_prophet_original_card_layout.py | 3a2b8defa9ae35c033f32bf4810785c843489969 |
+| .github/ci/legacy-jobs.yml | 5c458ab77c0da5ba96417a9e3792140e7229887f |
+| unchanged templates/_prophet_card.html.j2 | 2f2c2fe8b7e5d63ac271a89e12c699ac0da2a2f7 |
+
+Passive overlays now use pointer-events:none; genuine caution/trigger/visible-live controls restore auto. The original native157-test log and16-state width/language/theme receipt were consumed. Actual verdict/price mouse clicks emitted the existing ETSY Terminal handoff; external delivery was deliberately aborted. Four PNG hashes match, and parent visually consumed desktop-dark/mobile-light. Receipt paths remain on original M2 at `~/.mastermind/agent-evidence/prophet-original-cards-20261017-r2/`. `click-proof.json` SHA-256 **347b083dff5dd08b902ce888689eaf99de6227043b92793c9a475b67fec5f580**; `focused-tests.log` **9af219c1440a9740da26a7b57b0896f12bd98908193b4c183f79751329d31e98**. The three behavior inputs match587. The receipt's older06f CI hash differs only because587 adds the existing stylesheet to closure; this was explicitly checked. These are local interaction receipts, not authenticated production delivery or clearance of original Chrome consent.
+
+[Run39084947459](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39084947459) concluded with all12 packs, contract-delta and ci-gate passing; ci-gate completed01:30:35Z. Contract-delta reports0 introduced/0 inherited. The26 check records comprise21 success,4 conditional skips and the existing intentionally nonbinding inactive-pilot failure. No failing binding check was bypassed.
+
+**Release remains HOLD** under [incumbent return6244294155](https://github.com/mastermindx-market-intelligence/macro/pull/9566#issuecomment-6244294155). Native `git merge-tree --write-tree` returns1 for587 against both current main **cd75e57693acafec3659957a6e9b98f2f4cb2b13** and CI's actual tested base **599ac1d476bc54b472e59510726627f45024d26c**. Conflict is `site/us_stocks.html`; the unchanged repository `-merge` attribute deliberately prevents splicing different tier-gated whole-page renders. No NUL/size/custom-driver explanation supersedes that rule.
+
+Conflict base blob09c2b4a2cf22a68bf64d6dd0167e6918e07600d7; candidate786f359b...; current/test-base6b04d61fca3255e22b75bd46b98d00453f3ec3d3. GitHub synthetic merge **e0c2ef0be7f6a47c505b0aa65c9fda79abe52ae1** contains third page blob **5176d69134231c5afaf9068a28a5192da2101cf7**, SHA-256 **379c2180e5c42cacdc16e2154260ec1b156b4e4599004880be61a577ffa4ad17**. The exact difference from the reviewed page is one Today section line: current-main source hash/emit pair/selection receipt replace the older candidate values. All other page lines and both embedded script payloads match. This bounds the delta but does not establish a coherent native render. Independent principal release judgment retains HOLD until the incumbent pins current inputs, produces/qualifies the whole intended artifact through the existing renderer, binds the exact proposed tree/blob and passes affected integration/normal CI. Do not change attributes, mechanically splice pages, or select ours/theirs without generation evidence. Reuse unchanged source and browser proof.
+
+### #9484 / #9518: an actual natural run, with cache and freshness still unproven
+
+Both source releases remain MERGED / DO_NOT_REDO. [Daily39081858131](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39081858131) is a real schedule event created2026-10-18 00:11:41Z, declared source **b140360f39266c7ffb00dce2d8e118aba677436a**. Native ancestry from both merge426ad5 and merge9f9e71 returns0. The prior “no new run observed” snapshot is superseded by this actual later event, not retroactively invalidated.
+
+At01:37Z, collect117540284932 was still in collector step19; Russell restore9 succeeded00:12:08Z, qualification20/save21 pending. Per-job actual checkout, >=80% completed-session close coverage, pre-push cache SAVE, exact same-run engine restore hit and downstream publication remain required. Step success alone is not a cache hit. [Natural-run receipt6244327205](https://github.com/mastermindx-market-intelligence/macro/pull/9484#issuecomment-6244327205) records the boundary without dispatch, retry, cancellation or duplicate observer.
+
+The newer pre-run board at pinned maincd75e576 has blob **37acf3478fae60de44968d641f4176eea0e737bc**, pair **56d90e02782e40f0a94fdb296c5e59a3**, emit2026-10-17 22:44:24Z and availability23:03:49.118188Z. Its source roster remains complete1356 Russell/3068 total, but price freshness is unchanged: **198/3063 atOctober16, majorityOctober7,7 sessions late, mixed/delayed**, boardas_ofOctober14,gate_go=false. DIA/QQQ/Russell-breadth/run_status blobs equal the previous ca070 cut, so their accepted data reads were reused. This generation predates the new schedule and is not attributed to it.
+
+### #9568: forward receipt stability; present B1 continuity still blocked
+
+[Updated programme6230825588](https://github.com/mastermindx-market-intelligence/macro/issues/6817#issuecomment-6230825588) is a material invalidator of applying the older disposition to current receipts. Preserve all three distinct cuts:
+
+| Receipt cut | Accepted conclusion |
+| --- | --- |
+| 40a886aca7eac07a6d98555efcd3a7d42b53e5e2 and originally verified equal-blob cuts, including #9484 merge426ad5 | 18 event relations +360 typed suppressions; original witness retained |
+| Later9f9e71 with identical378 observation rows/event IDs but runtime66.58→66.66 | All378 exact receipt pairs unmatched against unchanged valid B1 store |
+| Structural transformation under9568 | All378 observations retained,40 featured/338 beyond cap; new third receipt283 EPISODE_JOIN_UNAVAILABLE+95 IDENTITY_UNRESOLVED; all action authorities false |
+
+The accepted forward mechanism excludes **only top-level runtime_seconds** from `artifact_bytes()`; the public publisher and private sidecar hash use those same bytes. Substantive source/decision/trigger/coverage/era/clock changes remain receipt-bearing. Runtime remains in operational memory/log/CLI. No alias, permissive reader, B1 rewrite or admission authority is added.
+
+Semantic source **c5ffa5cc15edb5b9f6f6cce0d213710197a223d1** repairs the initial introduced CI closure defect by adding the existing builder path. Incumbent later integrated main62a3f9ad070c7583687aef8c30d53fd1764c6aab as **46d0614ad16f7f7343268a9c0c5ca7980d391f48**. Native equality through46d061 confirms publishera3c2b7f13e58a3363b9e1b0c665e8e01045698ab, builder5a3a192ac1ba685e5c102bc06393687db5c6283b, us-turn testsd0b1b08f97a6261a8c344b6ea6dbd645cc55064b and observation tests69b36fbcbf7e11df20165b2aebf22d2890669563 unchanged; manifest nowe55de99f84dbbf55ec265e9dee705f207b3ad4fb incorporates main. The accepted151 tests,41-observation synthetic publisher/sidecar/B1 composition, six substantive invalidators and378-row transformation were consumed without rerun. Source release/integration CI remains with incumbent **01a14838-b9e0-755c-8c94-92aa4f1db0c5**, [correction6243961215](https://github.com/mastermindx-market-intelligence/macro/pull/9568#issuecomment-6243961215).
+
+The first runtime-excluded forward publication still differs from old runtime-bearing receipts. **Ordinary forward publication and schedule-owned B1 intake, then exact downstream readback, are the next acceptance frontier.** The current mismatch does not mean B1 is corrupt, nor does the repair create B4, Plans, historical recommendations, outcomes or predictive accuracy.
+
+### Preserved ownership and effects
+
+#9495 remains Draft0661c53d and compact-design held; qualified copy7018 bytes/49 checks remains with its incumbent. No overlapping UI writer was created. Existing same-read B3 and native Plan source reader remain DO_NOT_REDO; native B4 availability/geometry/basis/risk/liquidity/gap refusals remain genuine. The original RQ1 worker is now VERIFIED_TERMINAL rc1 NOT_ACCEPTED, but original Ubuntu2 source effects remain unresolved under #1404/#7772; no replacement. Original Plan LOST/UNKNOWN /34412 and denied collection with retry_authorized:false, source-map unknown, daily-brief9369 lost review, Chrome consent, Paper refusal and all QLedger source/data effects remain on their original targets.
+
+Protected pin refresh confirms governing procedure blob identity; bounded Executive observation01:13Z still has session_targets=[] and ceo_submit_armed=false. This is not global owner absence or a custody transfer: the9566/9568 incumbents are independently active. No new Fabric worker, release observer, transport, collector, B4 owner or alternate control plane was introduced.
+
+## Prior milestone — 2026-10-18 00:27 UTC (source defects resolved; current integration hold supersedes)
+
+The following is retained red evidence and historical routing. The later 01:43 UTC milestone controls current source-review, CI, generation and release instructions.
 
 **Restoration routing is superseded by the incumbent's later split.** [#9495 comment6243339773](https://github.com/mastermindx-market-intelligence/macro/pull/9495#issuecomment-6243339773) assigns original compact-card restoration to **#9566**, head **7acf61d43af04dfc94dfc26bb4c6edcca1f3790d**, and keeps **#9495 DRAFT / NO MERGE** until its richer renderer is explicitly reconciled with the Chairman's compact-card decision. The earlier restoration-through-9495 instruction in f7d5a8df, return6243396155 and checkpoint6243573945 is superseded. Source custody stays with each incumbent.
 
@@ -186,11 +276,12 @@ A follow-up daily lookup after this changed-artifact observation still showed no
 
 ## Successor's immediate, concrete first action
 
-1. Consume release receipt6243368898 and **do not redo #9518 or #9484 source release**. At the next real natural-run boundary inspect exact daily source revision, qualified same-run cache SAVE and actual exact-key restore hit, >=80% Russell completed-session close coverage, DIA native price/basis/availability, matched DIA/QQQ sessions and downstream Prophet clocks. No manual collection, daily replay or restamp.
-2. Consume incumbent split6243339773 and #9566 review5560777128. The incumbent must resolve its armed state, repair the new-suite registration and passive-overlay hit testing, then qualify the changed exact head through normal CI/review and production acceptance. Do not create a competing writer, rerun unchanged CI or weaken a failing check.
-3. Keep #9495 DRAFT / NO MERGE until explicit compact-design compatibility. Its qualified refusal-copy/fixture patch6230950977 and native B4/Plan work remain in incumbent scope. Qualify actual writer/live-lease/pending effects before integration; the empty/stale Executive projection is not source admission.
-4. Preserve the original LOST/UNKNOWN Plan child and denied collection. Repair native B4 facts through its incumbent owner using existing same-read B3 and the source-origin reader; then prove exact episode-to-Plan-to-authenticated display-to-as-issued history-to-real alert receipt.
-5. Advance unaffected incumbent work while source/data/browser gates remain scoped: QLedger9450/8756, Alert7022, Finviz7976 and Risk9428 keep their originals. Do not redo accepted audits or replace refused effects.
+1. Keep #9518/#9484 source release DO_NOT_REDO. Consume the real scheduled39081858131 boundary through its incumbent: executed checkout, >=80% completed-session Russell qualification, pre-push SAVE, exact engine run-key restore hit, then fresh DIA/QQQ and Prophet clocks. No manual dispatch, replay or restamp.
+2. Consume #9566 source approval5560930509 and concluded run39084947459, then resolve native whole-page integration hold6244294155 through the incumbent's original branch and renderer. Preserve -merge and latest coherent tier/data generation; bind the exact generated blob and qualify affected integration/CI before normal release. Reuse accepted unchanged source/browser evidence.
+3. Consume #9568 owner release on integration46d061; no duplicate reviewer/test/observer/writer. Scope old18/360 witness to40a886/equal-blob cuts. Qualify the first normal runtime-excluded publication and schedule-owned B1 intake without aliasing or relabeling current378 unmatched pairs.
+4. Keep #9495 DRAFT / NO MERGE and compact-design compatible. Its incumbent retains qualified7018-byte refusal-copy patch6230950977 and native B4/Plan work; reuse49 checks. Qualify live custody/effects before source integration and preserve original held Plan child.
+5. Through the native B4 owner, bind existing same-read B3 verified_pair to genuine geometry, adjustment/corporate-action basis and deterministic risk/liquidity/gap facts; qualify exact episode/Plan/current UI, then authorized authenticated rendering, as-issued history and actual opt-in alert receipts.
+6. Advance unaffected original QLedger9450/8756, Alert7022, Finviz7976 and Risk9428 owner work only at real new evidence boundaries. Preserve source-map, Plan, RQ1 Ubuntu2 and daily-brief9369 original effects; no replacements or denied-action retries.
 
 ## Chairman's end-state (DONE_WHEN)
 - Recognize macro regime and distinguish defensive rotation / AI hardware and semiconductor unwinds from a systemwide liquidity crisis; retain independent measured-state, hazard and capital-policy authority.
@@ -260,6 +351,6 @@ A follow-up daily lookup after this changed-artifact observation still showed no
 
 ## Handoff command for the next continuation
 
-“Continue the SAME original Chairman rotation / Sector Intelligence / Prophet / Risk Radar Meta-CEO mission from PR9035's current October17 handoff. #9518 is merged at9f9e71a8943e9436bfc68acb961b56166fb61d79; #9484 was already merged. Do not redo either. First consume naturally occurring postmerge daily cache/price/Prophet evidence if present, and consume the #9566 incumbent compact-restoration split6243339773 and blocking review5560777128. Keep #9495 DRAFT / NO MERGE; its native B4/Plan/refusal-copy work remains incumbent-owned. Preserve exact source custody and all Plan/browser/Paper effects. Keep current B4 authority, exact Plan relation, authenticated display, historical recommendations and actual opt-in alert delivery distinct. Advance safe independent owner work; do not invent a trade, prediction, deployment or customer receipt.”
+“Continue the SAME original Chairman rotation / Sector Intelligence / Prophet / Risk Radar Meta-CEO mission from PR9035's current October17 handoff. #9518 is merged at9f9e71a8943e9436bfc68acb961b56166fb61d79; #9484 was already merged. Do not redo either. Consume the actual scheduled39081858131 source/cache/price boundary without dispatch or replay. #9566 corrected587 source is APPROVED5560930509 and its binding CI is green, but native whole-page integration hold6244294155 must be cleared by the incumbent before ordinary release. Preserve -merge and qualify one complete native render, not GitHub's third blob by assumption. #9568 is an incumbent-owned forward receipt-stability repair, now integrated at46d061; current378 exact B1 pairs remain unmatched until normal publication/intake. Old18/360 evidence applies only to its original/equal-blob cuts. Keep #9495 DRAFT / NO MERGE and its qualified refusal-copy/native B4/Plan work incumbent-owned. Preserve Plan/browser/Paper/RQ1 source effects and all DO_NOT_REDO records. Advance safe independent work; do not invent trades, predictive accuracy, deployment or customer delivery.”
 
-**Final mission state:** source milestone verified; original product mission remains OPEN with scoped source/data/browser/effect blockers. This handoff is durable knowledge, not an execution admission or a completed product.
+**Final mission state:** source and evidence milestones verified; original product mission remains OPEN with scoped integration, data, B4/Plan, browser and original-effect blockers. This handoff is durable knowledge, not an execution admission or a completed product.
