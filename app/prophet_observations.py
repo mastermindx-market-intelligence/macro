@@ -24,6 +24,20 @@ _SESSION_FILE = re.compile(r"\d{4}-\d{2}-\d{2}\.json\Z", re.ASCII)
 _QUERIES = frozenset({"ticker", "security_id", "offset", "limit", "snapshot"})
 
 
+def _read_active_universe(data_root: Path) -> dict | None:
+    """Read the era-bound active universe contract from the engine.
+
+    The loader is additive: missing/tampered contracts return None rather than
+    raising — the B03 surface stays open and reports typed UNAVAILABLE.
+    """
+    from engine import us_turn_watch as tw  # noqa: PLC0415
+    try:
+        return tw.universe_contract_for_active(data_root)
+    except Exception:  # noqa: BLE001 — engine must not break the B03 read path
+        log.warning("active universe load failed for %s", data_root)
+        return None
+
+
 def read_current_observations() -> dict:
     """Select the newest completed-session input, then validate that exact file.
 
@@ -49,6 +63,7 @@ def read_current_observations() -> dict:
                 paths.append(path)
     except OSError:
         pass
+    active_universe = _read_active_universe(_DATA_ROOT)
     if paths:
         source = max(paths, key=lambda p: p.stem)
         try:
@@ -59,6 +74,8 @@ def read_current_observations() -> dict:
             source, spine=spine, reference_session=reference,
             episode_root=_DATA_ROOT / "us_prophet_rank/episodes",
             public_artifact_path=_DATA_ROOT.parent / "site/turn_watch/turn_watch.json",
+            active_universe=active_universe,
+            universe_proof_artifact_path=_DATA_ROOT.parent / "site/turn_watch/turn_watch.json",
         )
         if (projection["status"] != "UNAVAILABLE"
                 and projection["clocks"]["source_session"] != source.stem):

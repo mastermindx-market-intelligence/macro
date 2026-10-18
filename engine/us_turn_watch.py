@@ -105,6 +105,10 @@ log = logging.getLogger(__name__)
 SCHEMA = "us_turn_watch.v1"
 #: Selection era this deck belongs to (§6.2 stamp law — a population change is dated).
 SELECTION_ERA = "anticipation-v1-2026-08-08"
+#: v2 selection era — activated on the first completed NYSE session >= 2026-10-19.
+SELECTION_ERA_V2 = "anticipation-v2-2026-10-19"
+#: Earliest completed NYSE session that activates v2 (the v1 era serves everything before).
+_V2_ACTIVATION_SESSION = __import__("datetime").date(2026, 10, 19)
 #: Where the indicator legs come from, published so the era above travels with the numbers.
 INDICATOR_SOURCE = "engine.confluence_tiers"
 
@@ -143,12 +147,23 @@ _UNIVERSE_SKIP_SUFFIXES = ("-USD", "-EUR", "-GBP", "_X", "_F")
 #: grow for unrelated products; directory membership is therefore not strategy semantics.
 UNIVERSE_CONTRACT_SCHEMA = "us_turn_watch_universe.v1"
 UNIVERSE_CONTRACT_REL = Path("config/us_turn_watch_universe.v1.json")
+#: Prospective v2 selection-era universe contract — different schema, era and source basis.
+#: Activates only on a completed session >= 2026-10-19.  Before that, v1 is the active
+#: contract and this file is read but never used to populate the deck.
+UNIVERSE_CONTRACT_SCHEMA_V2 = "us_turn_watch_universe.v2"
+UNIVERSE_CONTRACT_REL_V2 = Path("config/us_turn_watch_universe.v2.json")
 
 
 def _universe_contract_path(data_root: Path) -> Path:
     root = Path(data_root)
     repo_root = root.parent if root.name == "data" else root
     return repo_root / UNIVERSE_CONTRACT_REL
+
+
+def _v2_universe_contract_path(data_root: Path) -> Path:
+    root = Path(data_root)
+    repo_root = root.parent if root.name == "data" else root
+    return repo_root / UNIVERSE_CONTRACT_REL_V2
 
 
 def universe_contract(data_root: Path) -> dict[str, Any] | None:
@@ -184,6 +199,99 @@ def universe_contract(data_root: Path) -> dict[str, Any] | None:
     return raw
 
 
+def _completed_session(now_utc: datetime | None = None) -> "datetime.date":
+    """The latest completed NYSE session per the canonical NYSE calendar.
+
+    Used only to dispatch between v1 and v2 contracts.  Tests monkeypatch this
+    to a fixed date so the dispatch is deterministic; production uses the
+    calendar's own ``expected_last_session`` reader.
+    """
+    from lib import nyse_calendar  # noqa: PLC0415, I001
+    return nyse_calendar.expected_last_session(now_utc)
+
+
+def universe_contract_v2(data_root: Path) -> dict[str, Any] | None:
+    """Load and authenticate the prospective v2 selection-era population contract.
+
+    Same fail-closed posture as :func:`universe_contract`, but for the v2 schema/era
+    and the canonical outcome-independent US membership roster
+    (``data/reference/security_master.parquet``) instead of the price-directory
+    enumeration v1 used.
+
+    The contract is NOT yet required by the engine — it only becomes the active
+    contract on a completed session >= 2026-10-19.  See :func:`active_selection_era`.
+    """
+    p = _v2_universe_contract_path(data_root)
+    try:
+        raw = json.loads(p.read_text(encoding="utf-8"))
+    except Exception as e:  # noqa: BLE001
+        print(f"::warning title=us-turn-watch-universe::v2 contract unavailable ({e})", flush=True)
+        return None
+    tickers = raw.get("tickers")
+    if (raw.get("schema") != UNIVERSE_CONTRACT_SCHEMA_V2
+            or raw.get("selection_era") != SELECTION_ERA_V2
+            or not isinstance(tickers, list)
+            or not tickers
+            or not all(isinstance(t, str) and t for t in tickers)
+            or tickers != sorted(set(tickers))
+            or raw.get("population_count") != len(tickers)
+            or not isinstance(raw.get("freshness"), dict)
+            or raw["freshness"].get("reference") != "lib.nyse_calendar.expected_last_session"
+            or not isinstance(raw["freshness"].get("max_completed_session_lag"), int)
+            or raw["freshness"]["max_completed_session_lag"] < 0):
+        print("::warning title=us-turn-watch-universe::v2 contract shape/era invalid", flush=True)
+        return None
+    digest = hashlib.sha256(("\n".join(tickers) + "\n").encode("utf-8")).hexdigest()
+    if raw.get("tickers_sha256") != digest:
+        print("::warning title=us-turn-watch-universe::v2 ticker digest mismatch", flush=True)
+        return None
+    return raw
+
+
+def active_selection_era(data_root: Path, *,
+                          now_utc: datetime | None = None) -> str | None:
+    """Which selection era the engine should serve this run.
+
+    v1 is the active era for every completed session before 2026-10-19; v2 is
+    the active era on or after that date.  When v2 is required but the v2
+    contract is missing or tampered, returns None and emits an explicit warning
+    — the engine never silently falls back to v1 or to raw-directory enumeration.
+
+    Tests monkeypatch :func:`_completed_session` to a fixed date so the dispatch
+    is deterministic; the production path uses ``lib.nyse_calendar``.
+    """
+    try:
+        session = _completed_session(now_utc)
+    except Exception:  # noqa: BLE001
+        # Calendar unavailable: v1 is the conservative default.
+        session = None
+    if session is None or session < _V2_ACTIVATION_SESSION:
+        return SELECTION_ERA
+    v2 = universe_contract_v2(data_root)
+    if v2 is None:
+        print("::warning title=us-turn-watch-universe::"
+              "v2 contract required after 2026-10-19 but missing or invalid "
+              "— selection era is unresolved, deck fails closed", flush=True)
+        return None
+    return SELECTION_ERA_V2
+
+
+def universe_contract_for_active(data_root: Path, *,
+                                 now_utc: datetime | None = None) -> dict[str, Any] | None:
+    """The contract for the active selection era — v1 before activation, v2 after.
+
+    Returns None when the active era is unresolved (i.e. v2 is required but
+    unavailable).  ``universe_contract`` (v1) and :func:`universe_contract_v2`
+    remain the only direct loaders; this is the dispatcher used by the engine.
+    """
+    era = active_selection_era(data_root, now_utc=now_utc)
+    if era == SELECTION_ERA_V2:
+        return universe_contract_v2(data_root)
+    if era == SELECTION_ERA:
+        return universe_contract(data_root)
+    return None
+
+
 def source_contract_status(
     data_root: Path,
     *,
@@ -203,7 +311,7 @@ def source_contract_status(
     benchmark reaches that session, and that modal session is no more stale than the versioned
     contract permits versus the existing NYSE calendar owner.
     """
-    contract = universe_contract(data_root)
+    contract = universe_contract_for_active(data_root, now_utc=now_utc)
     dates: list[str] = []
     for series in closes.values():
         try:
@@ -460,13 +568,17 @@ def universe(data_root: Path, limit: int | None = None) -> list[str]:
     The bar-count floor is still applied later, per name, exactly as in the original v1
     construction. ``limit`` remains a deterministic diagnostic lever, but source-contract
     qualification rejects limited populations so a subset cannot masquerade as the v1 RS ruler.
+
+    Dispatched by :func:`active_selection_era`: before 2026-10-19 this returns the v1
+    roster unchanged; on or after that date it returns the v2 roster from the
+    canonical outcome-independent US membership roster contract.
     """
     d = Path(data_root) / DECK_STORE
     if not d.exists():
         print(f"::warning title=us-turn-watch::price store {d} not found "
               f"— the deck is EMPTY for this run", flush=True)
         return []
-    contract = universe_contract(Path(data_root))
+    contract = universe_contract_for_active(Path(data_root))
     if contract is None:
         return []
     out = list(contract["tickers"])

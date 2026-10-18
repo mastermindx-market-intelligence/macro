@@ -12,6 +12,7 @@ import json
 import re
 import sys
 from collections.abc import Mapping
+from typing import Any
 from datetime import date
 from hashlib import sha256
 from pathlib import Path
@@ -29,6 +30,14 @@ from engine.us_candidate_episode_intake import IdentitySpine, TURN_WATCH_SCHEMA,
 SCHEMA = "prophet.early_observations/v1"
 AUTHORITY = {"buy": False, "alert": False, "entry_open": False,
              "rank": False, "size": False, "episode_write": False}
+#: Typed source-bound coverage slots — every per-query result resolves to exactly one
+#: of these four literals.  An absent row alone NEVER means "evaluated": a ticker
+#: that is in the active universe but absent from the current observation set is
+#: :data:`SOURCE_COVERAGE_IN_UNIVERSE_NO_RECORDED_TRIGGER`, not a fabricated verdict.
+SOURCE_COVERAGE_NOT_IN_UNIVERSE = "NOT_IN_UNIVERSE"
+SOURCE_COVERAGE_IN_UNIVERSE_NO_RECORDED_TRIGGER = "IN_UNIVERSE_NO_RECORDED_TRIGGER"
+SOURCE_COVERAGE_UNAVAILABLE = "UNAVAILABLE"
+SOURCE_COVERAGE_VERIFIED = "VERIFIED_SOURCE_PARTITION"
 _SECURITY = re.compile(r"SEC:[A-Za-z0-9][A-Za-z0-9_.:-]{0,126}\Z")
 _TICKER = re.compile(r"[A-Za-z0-9][A-Za-z0-9.-]{0,31}\Z")
 
@@ -155,7 +164,118 @@ def unavailable_observations(reason: str) -> dict:
                       "first_available_at": None, "source_available_at": None,
                       "observed_at": None, "published_at": None,
                       "actual_clock_state": "NOT_RECORDED"},
+           "universe_coverage": {"state": SOURCE_COVERAGE_UNAVAILABLE,
+                                 "reason": "ACTIVE_UNIVERSE_UNAVAILABLE",
+                                 "selection_era": None,
+                                 "tickers_sha256": None,
+                                 "published_proof_sha256": None},
+           "_universe_tickers": None,
            "authority": dict(AUTHORITY)}
+
+
+def _universe_coverage(active_universe, *, public_artifact_path):
+    """Bind the active universe contract to a verifiable proof.
+
+    Returns ``(universe_coverage_dict, ticker_set_or_None)`` — the ticker set is
+    present only when the proof is verified against the public artifact.
+
+    Membership is verified by recomputing ``sha256(tickers)`` against the
+    contract's own ``tickers_sha256``.  When a separate public artifact is
+    provided (e.g. a v2 contract published alongside the engine), its
+    ``sha256`` is bound against ``universe_published_proof_sha256`` on the
+    contract so a tampered publication withholds the claim.
+    """
+    out = {"state": SOURCE_COVERAGE_UNAVAILABLE,
+           "reason": "ACTIVE_UNIVERSE_UNAVAILABLE",
+           "selection_era": None,
+           "tickers_sha256": None,
+           "published_proof_sha256": None}
+    if not isinstance(active_universe, dict):
+        return out, None
+    tickers = active_universe.get("tickers")
+    digest = active_universe.get("tickers_sha256")
+    era = active_universe.get("selection_era")
+    if not isinstance(tickers, list) or not isinstance(digest, str) or not isinstance(era, str):
+        out["reason"] = "ACTIVE_UNIVERSE_SHAPE_INVALID"
+        return out, None
+    # The contract validates itself by re-deriving the membership digest.
+    recomputed = sha256(("\n".join(tickers) + "\n").encode("utf-8")).hexdigest()
+    if recomputed != digest:
+        out["reason"] = "ACTIVE_UNIVERSE_DIGEST_MISMATCH"
+        out["selection_era"] = era
+        out["tickers_sha256"] = digest
+        return out, None
+    out.update(selection_era=era, tickers_sha256=digest)
+    # Optional public-artifact proof — only consulted when the contract
+    # declares a ``universe_published_proof_sha256`` field.
+    expected_proof = None
+    if isinstance(active_universe.get("source"), dict):
+        expected_proof = active_universe["source"].get("universe_published_proof_sha256")
+    if public_artifact_path is not None and expected_proof is not None:
+        try:
+            raw = Path(public_artifact_path).read_bytes()
+        except OSError:
+            out["reason"] = "ACTIVE_UNIVERSE_PROOF_UNREADABLE"
+            return out, None
+        published_proof = sha256(raw).hexdigest()
+        out["published_proof_sha256"] = published_proof
+        if published_proof != expected_proof:
+            out["reason"] = "ACTIVE_UNIVERSE_PROOF_HASH_MISMATCH"
+            return out, None
+    out["state"] = SOURCE_COVERAGE_VERIFIED
+    out["reason"] = None
+    return out, set(tickers)
+
+
+def _source_timing(row, session: str) -> dict[str, Any]:
+    """Source-bound timing context for the Terminal.
+
+    Stale ``asof`` cannot inherit a fresh document clock: the value travels with
+    the producer-published row, not with the query reference.  Every field is
+    None-with-a-reason when not knowable.
+    """
+    out = {"asof": None, "close": None, "reset_low": None, "reset_low_date": None,
+           "off_reset_low_pct": None,
+           "slow_tier_eligible": None, "slow_tier_tier": None,
+           "slow_tier_bars_to_cross_3d": None, "slow_tier_blocking": None,
+           "slow_tier_evaluated": None, "slow_tier_above_200dma": None}
+    if not isinstance(row, dict):
+        return out
+    asof = row.get("asof")
+    if isinstance(asof, str):
+        out["asof"] = asof
+    elif isinstance(session, str):
+        out["asof"] = session
+    close = row.get("close")
+    if isinstance(close, (int, float)):
+        out["close"] = float(close)
+    reset = row.get("reset")
+    if isinstance(reset, dict):
+        rl = reset.get("reset_low")
+        rld = reset.get("reset_low_date")
+        off = reset.get("off_reset_low_pct")
+        if isinstance(rl, (int, float)):
+            out["reset_low"] = float(rl)
+        if isinstance(rld, str):
+            out["reset_low_date"] = rld
+        if isinstance(off, (int, float)):
+            out["off_reset_low_pct"] = float(off)
+    slow = row.get("slow_tier")
+    if isinstance(slow, dict):
+        if "eligible" in slow:
+            out["slow_tier_eligible"] = bool(slow["eligible"]) if isinstance(slow["eligible"], bool) else None
+        if "tier" in slow:
+            out["slow_tier_tier"] = slow["tier"] if isinstance(slow["tier"], (str, type(None))) else None
+        if "bars_to_cross_3d" in slow:
+            out["slow_tier_bars_to_cross_3d"] = slow["bars_to_cross_3d"] if isinstance(slow["bars_to_cross_3d"], (int, float)) else None
+        if "blocking" in slow:
+            bl = slow["blocking"]
+            out["slow_tier_blocking"] = list(bl) if isinstance(bl, list) and all(isinstance(v, str) for v in bl) else None
+        if "evaluated" in slow:
+            out["slow_tier_evaluated"] = bool(slow["evaluated"]) if isinstance(slow["evaluated"], bool) else None
+        if "above200" in slow:
+            out["slow_tier_above_200dma"] = bool(slow["above200"]) if isinstance(slow["above200"], bool) else None
+    return out
 
 
 def _source_coverage(doc, public_path):
@@ -191,18 +311,34 @@ def _source_coverage(doc, public_path):
 
 def load_observations(source_path: Path, *, spine: IdentitySpine | None,
                       reference_session: str, episode_root: Path | None = None,
-                      public_artifact_path: Path | None = None) -> dict:
+                      public_artifact_path: Path | None = None,
+                      active_universe: dict | None = None,
+                      universe_proof_artifact_path: Path | None = None) -> dict:
     """Read one source byte snapshot and, optionally, one validated atomic B1 HEAD.
 
     A broken B1/identity read degrades only its relationships, never the observation
     population. Invalid source bytes invalidate the population rather than fabricate
     a successful zero. This function never modifies any producer or episode file.
+
+    ``active_universe`` is the era-bound selection contract (v1 or v2) the engine
+    serves this run; when provided, the response carries typed per-query source-
+    bound coverage (:data:`SOURCE_COVERAGE_NOT_IN_UNIVERSE`,
+    :data:`SOURCE_COVERAGE_IN_UNIVERSE_NO_RECORDED_TRIGGER`,
+    :data:`SOURCE_COVERAGE_UNAVAILABLE`,
+    :data:`SOURCE_COVERAGE_VERIFIED`). ``universe_proof_artifact_path`` is an
+    optional public artifact whose SHA binds the universe proof — when supplied
+    and matching the contract's published_proof_sha256, the universe coverage
+    upgrades to :data:`SOURCE_COVERAGE_VERIFIED`.
     """
     date.fromisoformat(reference_session)
     out = unavailable_observations("SOURCE_UNREADABLE")
+    universe_coverage, universe_tickers = _universe_coverage(
+        active_universe, public_artifact_path=universe_proof_artifact_path
+    )
     try:
         raw = Path(source_path).read_bytes()
     except OSError:
+        out["universe_coverage"] = universe_coverage
         return out
     try:
         doc = json.loads(raw)
@@ -234,6 +370,7 @@ def load_observations(source_path: Path, *, spine: IdentitySpine | None,
             pass
     projected = []
     seen = set()
+    source_row_by_ticker = {}
     for row in rows:
         event_id = _source_id("turn_watch", {"data_session": session, "row": row})
         if event_id in seen:
@@ -273,20 +410,31 @@ def load_observations(source_path: Path, *, spine: IdentitySpine | None,
                               if coverage["state"] == "VERIFIED_SOURCE_PARTITION" else "UNAVAILABLE",
                           "source_evidence": {"triggers": triggers, "counterevidence": blockers,
                               "counterevidence_state": "RECORDED" if blockers is not None else "UNAVAILABLE_FIELD"},
+                          "source_timing": _source_timing(row, session),
                           "lineage": {"state": "CURRENT_RECEIPT_ONLY", "current_receipt": receipt,
                               "source_event_id": event_id, "source_artifact_receipt": doc.get("source_artifact_sha256"),
                               "selection_era": doc.get("selection_era"), "anchor_era": doc.get("anchor_era"),
                               "prior_receipt": None, "correction_available_at": None},
                           "episode_relation": _episode_relation(event_id, receipt, security, relation_index),
                           "authority": dict(AUTHORITY)})
+        source_row_by_ticker[ticker] = row
     out.update(status="CURRENT_SESSION" if session == reference_session else "RETAINED_PREVIOUS_SESSION",
-               reason=None, source_receipt=receipt, rows=projected, coverage=coverage)
+               reason=None, source_receipt=receipt, rows=projected, coverage=coverage,
+               universe_coverage=universe_coverage,
+               _universe_tickers=universe_tickers)
     out["clocks"].update(source_session=session, logical_known_at=doc.get("known_at"))
     # Bind pagination to source, B1 generation and the actual current identity
     # projection. A changed receipt, alias resolution or B1 return invalidates it.
     material = {"source_receipt": receipt, "rows": projected, "coverage": coverage,
+                "universe_coverage": universe_coverage,
+                "universe_tickers": sorted(universe_tickers) if universe_tickers else None,
+                "source_row_by_ticker": sorted(source_row_by_ticker),
                 "generation_id": relation_index[0] if relation_index else None,
                 "identity_receipts": list(spine.source_receipts) if spine else []}
+    # Remove the live universe set (not JSON-serializable) and the cached
+    # lookup table from the persisted snapshot material — the live set is
+    # kept on the projection only for the in-process query path.
+    material["universe_tickers"] = sorted(universe_tickers) if universe_tickers else None
     out["snapshot_id"] = "early:" + sha256(canonical_json(material).encode()).hexdigest()
     return out
 
@@ -311,10 +459,101 @@ def query_observations(projection: dict, *, security_id: str | None = None,
     matched = [row for row in rows
                if (security_id is None or row["security_id"] == security_id)
                and (ticker is None or row["ticker"].casefold() == ticker.casefold())]
-    page = matched[offset:offset + limit]
     unavailable = projection["status"] == "UNAVAILABLE"
+    universe_coverage = projection.get("universe_coverage") or {
+        "state": SOURCE_COVERAGE_UNAVAILABLE, "reason": "ACTIVE_UNIVERSE_UNAVAILABLE"}
+    universe_state = universe_coverage.get("state")
+    universe_tickers = projection.get("_universe_tickers")
+    universe_tickers = universe_tickers if isinstance(universe_tickers, set) else None
+    synthetic_rows = []
+    if (ticker is not None
+            and not matched
+            and not unavailable
+            and universe_state == SOURCE_COVERAGE_VERIFIED
+            and isinstance(universe_tickers, set)
+            and ticker.casefold() in {t.casefold() for t in universe_tickers}):
+        security_id = None
+        synthetic_rows = [_synthetic_absent_row(projection, ticker)]
+    elif (ticker is not None and not matched and not unavailable
+          and universe_state == SOURCE_COVERAGE_VERIFIED
+          and isinstance(universe_tickers, set)
+          and ticker.casefold() not in {t.casefold() for t in universe_tickers}):
+        synthetic_rows = [_synthetic_outside_row(projection, ticker)]
+    matched_all = list(matched) + synthetic_rows
+    page = matched_all[offset:offset + limit]
+    page = [_annotate_universe_coverage(r, universe_state, universe_tickers)
+            for r in page]
     return {**{key: value for key, value in projection.items() if key != "rows"},
             "rows": page, "counts": {"source": None if unavailable else len(rows),
-                                      "matched": None if unavailable else len(matched), "returned": len(page)},
+                                      "matched": None if unavailable else len(matched_all),
+                                      "returned": len(page)},
             "page": {"offset": offset, "limit": limit,
-                     "next_offset": offset + limit if offset + limit < len(matched) else None}}
+                     "next_offset": offset + limit if offset + limit < len(matched_all) else None}}
+
+
+def _annotate_universe_coverage(row: dict, universe_state, universe_tickers) -> dict:
+    """Stamp typed source-bound coverage on one row.
+
+    The coverage resolution:
+      * ``VERIFIED_SOURCE_PARTITION`` universe contract + ticker in set ⇒
+        ``SOURCE_COVERAGE_IN_UNIVERSE_NO_RECORDED_TRIGGER`` when the row is a
+        synthetic "absent from observations" stub, otherwise no extra stamp.
+      * ``VERIFIED_SOURCE_PARTITION`` universe contract + ticker NOT in set ⇒
+        ``SOURCE_COVERAGE_NOT_IN_UNIVERSE``.
+      * any other universe state ⇒ ``SOURCE_COVERAGE_UNAVAILABLE`` is preserved
+        on the projection; the per-row stamp remains ``UNAVAILABLE`` so a missing
+        ticker is never reported as an evaluation.
+    """
+    state = SOURCE_COVERAGE_UNAVAILABLE
+    reason = "ACTIVE_UNIVERSE_UNAVAILABLE"
+    if universe_state == SOURCE_COVERAGE_VERIFIED and isinstance(universe_tickers, set):
+        if row.get("ticker") in universe_tickers:
+            if row.get("_absent_from_observations"):
+                state = SOURCE_COVERAGE_IN_UNIVERSE_NO_RECORDED_TRIGGER
+                reason = "TICKER_IN_UNIVERSE_BUT_ABSENT_FROM_OBSERVATIONS"
+            else:
+                state = SOURCE_COVERAGE_VERIFIED
+                reason = None
+        else:
+            state = SOURCE_COVERAGE_NOT_IN_UNIVERSE
+            reason = "TICKER_NOT_IN_ACTIVE_UNIVERSE"
+    out = dict(row)
+    out["source_coverage_state"] = state
+    out["source_coverage_reason"] = reason
+    return out
+
+
+def _synthetic_absent_row(projection: dict, ticker: str) -> dict:
+    """A typed stub for a ticker that IS in the active universe but is absent from
+    the current observation set.  It is NEVER a fabricated evaluation."""
+    return {"source_event_id": None, "source_receipt": projection.get("source_receipt"),
+            "ticker": ticker, "security_id": None, "identity_basis": "UNRESOLVED",
+            "source_session": projection.get("clocks", {}).get("source_session"),
+            "triggers_fired": [], "source_visibility": "UNAVAILABLE",
+            "source_evidence": {"triggers": {}, "counterevidence": None,
+                                "counterevidence_state": "UNAVAILABLE_FIELD"},
+            "source_timing": {"asof": None, "close": None, "reset_low": None,
+                              "reset_low_date": None, "off_reset_low_pct": None,
+                              "slow_tier_eligible": None, "slow_tier_tier": None,
+                              "slow_tier_bars_to_cross_3d": None,
+                              "slow_tier_blocking": None,
+                              "slow_tier_evaluated": None, "slow_tier_above_200dma": None},
+            "lineage": {"state": "CURRENT_RECEIPT_ONLY",
+                        "current_receipt": projection.get("source_receipt"),
+                        "source_event_id": None,
+                        "source_artifact_receipt": None,
+                        "selection_era": None, "anchor_era": None,
+                        "prior_receipt": None, "correction_available_at": None},
+            "episode_relation": {"state": "EPISODE_JOIN_UNAVAILABLE",
+                                 "reason": "NO_OBSERVATION_FOR_TICKER",
+                                 "episode_id": None, "generation_id": None},
+            "authority": dict(AUTHORITY), "_absent_from_observations": True}
+
+
+def _synthetic_outside_row(projection: dict, ticker: str) -> dict:
+    """A typed stub for a ticker that is NOT in the active universe."""
+    row = _synthetic_absent_row(projection, ticker)
+    row["episode_relation"] = {"state": "OUTSIDE_ACTIVE_UNIVERSE",
+                               "reason": "TICKER_NOT_IN_ACTIVE_UNIVERSE",
+                               "episode_id": None, "generation_id": None}
+    return row
