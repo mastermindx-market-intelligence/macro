@@ -217,11 +217,27 @@ def evaluate(
     sessions_behind: int | None = None
     if common_as_of is not None:
         try:
-            sessions_behind = nyse_calendar.sessions_behind(common_as_of, now)
+            last_completed = nyse_calendar.expected_last_session(now)
+            valid_session = nyse_calendar.is_session(common_as_of)
+            # sessions_behind alone cannot validate a date: future-dated and
+            # weekend observations both return zero missing completed sessions.
+            if not valid_session:
+                errors.append(
+                    "INVALID SECTOR INTELLIGENCE MARKET SESSION: common as_of="
+                    f"{common_as_of.isoformat()} is not an NYSE session"
+                )
+            if common_as_of > last_completed:
+                errors.append(
+                    "FUTURE SECTOR INTELLIGENCE: common as_of="
+                    f"{common_as_of.isoformat()} exceeds last completed NYSE "
+                    f"session {last_completed.isoformat()}"
+                )
+            if valid_session and common_as_of <= last_completed:
+                sessions_behind = nyse_calendar.sessions_behind(common_as_of, now)
         except Exception as exc:  # noqa: BLE001 - calendar failure is fail closed here
             errors.append(f"NYSE calendar unavailable: {exc!r}")
         else:
-            if sessions_behind > max_sessions_behind:
+            if sessions_behind is not None and sessions_behind > max_sessions_behind:
                 errors.append(
                     "STALE SECTOR INTELLIGENCE: common as_of="
                     f"{common_as_of.isoformat()} is {sessions_behind} completed NYSE "
