@@ -103,7 +103,7 @@ python research/catalyst_intelligence/decision_desk_r1/build_preview.py
 node tests/verify_biocatalyst_decision_desk.cjs
 ```
 
-The browser check needs the existing Playwright/Chromium runtime. `CATALYST_CHROMIUM_EXECUTABLE` selects an installed browser; `DECISION_DESK_QA_DIR` chooses an output directory. The standalone replay deliberately labels its synthetic data and simulated conflict/withdrawal/unavailable controls. Its fixture driver is confined to research/QA files and is never a production fallback.
+The browser check needs the existing Playwright/Chromium runtime and a Chinese font from the declared UI stack (for example Noto Sans CJK SC on Linux). It inspects the rendered Chinese title's actual backing font in every Chinese layout; geometry measured with missing-glyph boxes is not visual proof. The font is a QA runtime dependency, not a new embedded product asset. `CATALYST_CHROMIUM_EXECUTABLE` selects an installed browser; `DECISION_DESK_QA_DIR` chooses an output directory. The standalone replay deliberately labels its synthetic data and simulated conflict/withdrawal/unavailable controls. Its fixture driver is confined to research/QA files and is never a production fallback.
 
 Direct checks cover exact response bytes, optional estimates, asynchronous list/detail races, current-context changes, unsupported contracts, issuer/revision/timing mismatches, complete pagination, superseded/withdrawn semantics, elapsed windows, immutable state and correctly bound links. Browser checks cover the actual rendered tasks, URL restoration, keyboard/focus behavior, correction/error states and 16 EN/ZH × dark/light × 320/390/768/1440 layouts. An independent principal review accepted the bounded component after the historical-revision correction.
 

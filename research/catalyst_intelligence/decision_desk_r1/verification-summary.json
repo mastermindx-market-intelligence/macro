@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-18T11:20:47.896Z",
+  "generated_at": "2026-10-18T23:55:03.301Z",
   "browser": "155.0.8059.84",
   "scope": "Component replay only; no source admission, authentication or live integration proof",
   "checks": [
@@ -15,6 +15,7 @@
     "Host authorization-context change immediately removes the previous account’s data",
     "Historical revisions remain distinct from withdrawn events in the card and Research task",
     "Supplied source wording is rendered as text",
+    "Chinese titles use a resolved CJK font in every Chinese layout; missing-glyph geometry cannot count as visual proof",
     "Sixteen language/theme/viewport combinations preserve readable risk, action and detail without horizontal overflow",
     "No browser runtime errors in the reviewed paths"
   ],
@@ -23,8 +24,8 @@
       "lang": "en",
       "theme": "dark",
       "width": 320,
-      "cardHeight": 436.828125,
-      "actionBottomWithinComponent": 840
+      "cardHeight": 409.53125,
+      "actionBottomWithinComponent": 812
     },
     {
       "lang": "en",
@@ -51,8 +52,8 @@
       "lang": "en",
       "theme": "light",
       "width": 320,
-      "cardHeight": 436.828125,
-      "actionBottomWithinComponent": 840
+      "cardHeight": 409.53125,
+      "actionBottomWithinComponent": 812
     },
     {
       "lang": "en",
@@ -79,15 +80,15 @@
       "lang": "zh",
       "theme": "dark",
       "width": 320,
-      "cardHeight": 338.859375,
-      "actionBottomWithinComponent": 673
+      "cardHeight": 366.15625,
+      "actionBottomWithinComponent": 750
     },
     {
       "lang": "zh",
       "theme": "dark",
       "width": 390,
       "cardHeight": 317.171875,
-      "actionBottomWithinComponent": 651
+      "actionBottomWithinComponent": 681
     },
     {
       "lang": "zh",
@@ -107,15 +108,15 @@
       "lang": "zh",
       "theme": "light",
       "width": 320,
-      "cardHeight": 338.859375,
-      "actionBottomWithinComponent": 673
+      "cardHeight": 366.15625,
+      "actionBottomWithinComponent": 750
     },
     {
       "lang": "zh",
       "theme": "light",
       "width": 390,
       "cardHeight": 317.171875,
-      "actionBottomWithinComponent": 651
+      "actionBottomWithinComponent": 681
     },
     {
       "lang": "zh",
@@ -130,6 +131,120 @@
       "width": 1440,
       "cardHeight": 349.03125,
       "actionBottomWithinComponent": 648
+    }
+  ],
+  "fontProof": [
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 320,
+      "heading": "核查下一次已披露的临床进展。",
+      "fonts": [
+        {
+          "familyName": "Noto Sans CJK SC",
+          "postScriptName": "NotoSansCJKsc-Regular",
+          "isCustomFont": false,
+          "glyphCount": 14
+        }
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 390,
+      "heading": "核查下一次已披露的临床进展。",
+      "fonts": [
+        {
+          "familyName": "Noto Sans CJK SC",
+          "postScriptName": "NotoSansCJKsc-Regular",
+          "isCustomFont": false,
+          "glyphCount": 14
+        }
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 768,
+      "heading": "核查下一次已披露的临床进展。",
+      "fonts": [
+        {
+          "familyName": "Noto Sans CJK SC",
+          "postScriptName": "NotoSansCJKsc-Regular",
+          "isCustomFont": false,
+          "glyphCount": 14
+        }
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 1440,
+      "heading": "核查下一次已披露的临床进展。",
+      "fonts": [
+        {
+          "familyName": "Noto Sans CJK SC",
+          "postScriptName": "NotoSansCJKsc-Regular",
+          "isCustomFont": false,
+          "glyphCount": 14
+        }
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 320,
+      "heading": "核查下一次已披露的临床进展。",
+      "fonts": [
+        {
+          "familyName": "Noto Sans CJK SC",
+          "postScriptName": "NotoSansCJKsc-Regular",
+          "isCustomFont": false,
+          "glyphCount": 14
+        }
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 390,
+      "heading": "核查下一次已披露的临床进展。",
+      "fonts": [
+        {
+          "familyName": "Noto Sans CJK SC",
+          "postScriptName": "NotoSansCJKsc-Regular",
+          "isCustomFont": false,
+          "glyphCount": 14
+        }
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 768,
+      "heading": "核查下一次已披露的临床进展。",
+      "fonts": [
+        {
+          "familyName": "Noto Sans CJK SC",
+          "postScriptName": "NotoSansCJKsc-Regular",
+          "isCustomFont": false,
+          "glyphCount": 14
+        }
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 1440,
+      "heading": "核查下一次已披露的临床进展。",
+      "fonts": [
+        {
+          "familyName": "Noto Sans CJK SC",
+          "postScriptName": "NotoSansCJKsc-Regular",
+          "isCustomFont": false,
+          "glyphCount": 14
+        }
+      ]
     }
   ],
   "errors": [],
@@ -151,6 +266,28 @@
     "templates/biocatalyst_decision_desk.css": "3851ced297ead697958b7abcf6fe7a535026629c37e95782e11a7e3adacf32c6",
     "tests/test_biocatalyst_decision_desk.cjs": "fa5e77bd9d355447a709bee26ee19ac67af3ac2d99590a0ec6f6fea731f99ee9",
     "tests/test_biocatalyst_decision_desk.py": "6472c451690433c3cb0ed8e86c924e02ee8b176efae720891fc460718f0e222f",
-    "tests/verify_biocatalyst_decision_desk.cjs": "6ab1ada9e26ccedd150555eb709ea3a04a5cbb384551ce9bc26fe216b13f86fa"
+    "tests/verify_biocatalyst_decision_desk.cjs": "97b735f44dce4dbe143af4c5e32e09224a7dde045ee23c530c0dd6f066a3419c",
+    "research/catalyst_intelligence/decision_desk_r1/preview_shell.html": "f578ac47e1e096ee648876b09bb8594b6995da4d70df642aebf3381a3ddf04fa",
+    "research/catalyst_intelligence/decision_desk_r1/IMPLEMENTATION.md": "766056a199d0b9ea7cac85a006adab4b5aa8877623dcebba15227ac4d6da0f32"
+  },
+  "qa_font": {
+    "family": "Noto Sans CJK SC",
+    "source": "https://github.com/notofonts/noto-cjk/blob/main/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf",
+    "sha256": "2c76254f6fc379fddfce0a7e84fb5385bb135d3e399294f6eeb6680d0365b74b",
+    "distribution": "QA runtime only; not embedded in product or replay"
+  },
+  "visual_review": {
+    "verdict": "accepted for component replay",
+    "inspected": [
+      "desk-zh-dark-390.png",
+      "detail-zh-light-1440.png",
+      "desk-en-dark-390.png"
+    ],
+    "findings": [
+      "Readable Chinese glyphs replace the earlier missing-font boxes",
+      "Main task, unresolved evidence and review action remain clear on mobile",
+      "Sources task preserves supplied wording and exposes unavailable company evidence links"
+    ],
+    "scope": "Not an authenticated integrated workbench or production source review"
   }
 }

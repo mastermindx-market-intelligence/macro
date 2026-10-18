@@ -13,7 +13,9 @@ let runningBrowser;
     (fs.existsSync('/tmp/catalyst-browser/chrome-headless-shell-linux64/chrome-headless-shell') ? '/tmp/catalyst-browser/chrome-headless-shell-linux64/chrome-headless-shell' : undefined)});
   runningBrowser = browser;
   const context = await browser.newContext({viewport: {width: 1440, height: 1000}});
-  const page = await context.newPage(), errors = [], checks = [], layouts = [];
+  const page = await context.newPage(), errors = [], checks = [], layouts = [], fontProof = [];
+  const cdp = await context.newCDPSession(page);
+  await cdp.send('DOM.enable'); await cdp.send('CSS.enable');
   page.on('pageerror', error => errors.push(error.message));
   const pass = name => checks.push(name);
   const loaded = () => page.waitForFunction(() => window.reviewHarness?.desk.getState().phase === 'loaded');
@@ -106,6 +108,17 @@ let runningBrowser;
   for (const lang of ['en', 'zh']) for (const theme of ['dark', 'light']) for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({width, height: width >= 768 ? 1000 : 1100});
     await page.goto(url + '?lang=' + lang + '&theme=' + theme); await loaded();
+    if (lang === 'zh') {
+      await page.evaluate(() => document.fonts.ready);
+      const heading = await page.locator('.bci-dd-case-title').innerText();
+      assert(/[\u3400-\u9fff]/u.test(heading), 'Chinese review title must be localized');
+      const {root: documentRoot} = await cdp.send('DOM.getDocument');
+      const {nodeId} = await cdp.send('DOM.querySelector', {nodeId: documentRoot.nodeId, selector: '.bci-dd-case-title'});
+      const {fonts} = await cdp.send('CSS.getPlatformFontsForNode', {nodeId});
+      assert(fonts.some(font => font.glyphCount > 0 && /PingFang|Hiragino Sans GB|Microsoft YaHei|Noto.*(?:CJK|SC)/i.test(font.familyName)),
+        'Chinese visual verification requires an actual CJK font from the declared UI stack');
+      fontProof.push({lang,theme,width,heading,fonts});
+    }
     await page.evaluate(() => scrollTo(0, 0));
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${width}/${lang}/${theme} overflow`);
     const card = await page.locator('.bci-dd-card').boundingBox();
@@ -124,9 +137,10 @@ let runningBrowser;
     if ([390,1440].includes(width)) await page.screenshot({path:path.join(output,`desk-${lang}-${theme}-${width}.png`),fullPage:true});
     layouts.push({lang,theme,width,cardHeight:card.height,actionBottomWithinComponent:Math.round(action.y + action.height - root.y)});
   }
+  pass('Chinese titles use a resolved CJK font in every Chinese layout; missing-glyph geometry cannot count as visual proof');
   pass('Sixteen language/theme/viewport combinations preserve readable risk, action and detail without horizontal overflow');
   assert.deepEqual(errors, []); pass('No browser runtime errors in the reviewed paths');
-  const report={generated_at:new Date().toISOString(),browser:await browser.version(),scope:'Component replay only; no source admission, authentication or live integration proof',checks,layouts,errors};
+  const report={generated_at:new Date().toISOString(),browser:await browser.version(),scope:'Component replay only; no source admission, authentication or live integration proof',checks,layouts,fontProof,errors};
   fs.writeFileSync(path.join(output,'verification.json'),JSON.stringify(report,null,2)+'\n');
   console.log(JSON.stringify(report,null,2)); await browser.close();
 })().catch(async error=>{console.error(error);if(runningBrowser)await runningBrowser.close();process.exitCode=1;});
