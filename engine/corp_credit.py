@@ -32,12 +32,14 @@ Outputs (all under data/corp_bonds/):
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import math
 import re
 import time
 from datetime import date
+from io import BytesIO
 from pathlib import Path
 from typing import Any
 
@@ -1265,7 +1267,7 @@ def _ols_with_hc1(X: np.ndarray, y: np.ndarray) -> dict:
     return {"coefficients": beta.tolist(), "hc1_se": hc1_se.tolist(), "t_stats": t_stats.tolist(), "n": n, "k": k}
 
 
-def _load_validation_samples(root: Path | None = None) -> dict[str, pd.DataFrame | None]:
+def _load_validation_samples(root: Path | None = None, *, as_of: str | None = None) -> dict[str, pd.DataFrame | None]:
     """Load iShares LQD/HYG validation samples if available."""
     data_root = _data_root(root)
     sample_dir = data_root / "corp_bonds" / "validation_sample"
@@ -1274,6 +1276,10 @@ def _load_validation_samples(root: Path | None = None) -> dict[str, pd.DataFrame
         return result
     for fund in ["LQD", "HYG"]:
         files = sorted(sample_dir.glob(f"{fund}_*.parquet"))
+        if as_of is not None:
+            # Preserve the matching vintage when a newer independent fund file
+            # arrives before the holdings producer. Never pick a future sample.
+            files = [p for p in files if p.stem[len(fund) + 1:] <= as_of]
         if not files:
             continue
         try:
@@ -1470,6 +1476,69 @@ def resolve_price_convention(joined_df: pd.DataFrame, panel_date: str | None = N
     }
 
 
+def initial_price_convention(panel: pd.DataFrame, root: Path | None = None) -> str:
+    """Resolve the existing same-day probe before pricing the whole history.
+
+    The final four-criterion validation still owns acceptance. This only avoids a
+    redundant dirty-price history solve followed by the identical clean-price
+    solve. Missing/unusable samples preserve the prior provisional dirty default.
+    """
+    if panel.empty:
+        return "dirty"
+    latest = str(panel["as_of"].max())
+    sample = _load_validation_samples(root, as_of=latest)["LQD"]
+    if sample is None or sample.empty or set(sample["as_of"].astype(str)) != {latest}:
+        return "dirty"
+    try:
+        joined = _join_panel_to_sample(panel[panel["as_of"].astype(str) == latest], sample)
+        if len(joined) < 5:
+            return "dirty"
+        # Before the first solve only the independent sample has a YTM column.
+        if "ytm_pct_is" not in joined and "ytm_pct" in joined:
+            joined = joined.rename(columns={"ytm_pct": "ytm_pct_is"})
+        verdict = resolve_price_convention(joined, latest)["verdict"]
+        return verdict if verdict in {"clean", "dirty"} else "dirty"
+    except (KeyError, ValueError, TypeError, ArithmeticError) as exc:
+        log.warning("corp_credit: initial price probe unavailable: %s", exc)
+        return "dirty"
+
+
+def bind_validation_inputs(validation: dict, root: Path, *, observation_as_of: str,
+                           calculation_convention: str) -> dict:
+    """Bind a completed pricing check to the exact derived artifacts it checked.
+
+    This is provenance, not a new pricing verdict or predictive promotion. A later
+    data replacement invalidates the binding even when the dates are unchanged.
+    """
+    if calculation_convention not in {"clean", "dirty"}:
+        raise ValueError("unknown calculation price convention")
+    bound = dict(validation)
+    artifacts = {}
+    priced_rows = 0
+    for name in ("bond_panel_latest", "issuer_daily"):
+        path = root / "corp_bonds" / "series" / f"{name}.parquet"
+        payload = path.read_bytes()
+        artifacts[name] = hashlib.sha256(payload).hexdigest()
+        if name == "bond_panel_latest":
+            frame = pd.read_parquet(BytesIO(payload))
+            raw = 100.0 * frame["mv"] / frame["par"]
+            expected = raw + frame["accrued_pct"] if calculation_convention == "clean" else raw
+            valid = np.isfinite(expected) & np.isfinite(frame["price_dirty"]) & (frame["par"] > 0)
+            priced_rows = int(valid.sum())
+            if not priced_rows or not np.allclose(frame.loc[valid, "price_dirty"], expected[valid], rtol=1e-9, atol=1e-8):
+                raise ValueError("derived panel does not use the declared price convention")
+            if set(frame["as_of"].astype(str)) != {observation_as_of}:
+                raise ValueError("derived panel observation does not match the validation binding")
+    bound["input_binding"] = {
+        "schema": "corp_credit.validation_binding.v1",
+        "observation_as_of": observation_as_of,
+        "calculation_convention": calculation_convention,
+        "convention_verified_rows": priced_rows,
+        "artifacts": artifacts,
+    }
+    return bound
+
+
 def run_validation(
     panel: pd.DataFrame,
     market_daily: pd.DataFrame,
@@ -1481,7 +1550,7 @@ def run_validation(
     Returns the validation dict (written to data/corp_bonds/validation.json).
     """
     criteria: dict[str, Any] = {}
-    samples = _load_validation_samples(root)
+    samples = _load_validation_samples(root, as_of=str(panel["as_of"].max()) if not panel.empty else None)
     price_convention = "dirty"  # default; updated by criterion (a)
 
     # ------------------------------------------------------------------
@@ -2000,9 +2069,11 @@ def snapshot(root: str | Path | None = None) -> dict:
     )
 
     # -------------------------------------------------------------------------
-    # Step 3: Price convention (default "dirty"; updated after validation)
+    # Step 3: Same-day convention probe before the expensive full-history solve.
+    # Final validation below still controls acceptance; this is not promotion.
     # -------------------------------------------------------------------------
-    convention = "dirty"
+    convention = initial_price_convention(panel, _root)
+    log.info("corp_credit: initial price convention: %s", convention)
     panel["price_dirty"], panel["price_clean"] = apply_price_convention(
         panel["price_dirty_raw"], panel["accrued_pct"], convention
     )
@@ -2185,6 +2256,9 @@ def snapshot(root: str | Path | None = None) -> dict:
         _write_pq(bond_panel_latest, "bond_panel_latest.parquet")
         # Update validation with fresh market_daily
         val = run_validation(panel, market_daily, baml_oas, _root)
+
+    val = bind_validation_inputs(val, data_root, observation_as_of=str(latest_dt),
+                                 calculation_convention=resolved_convention)
 
     val_path = data_root / "corp_bonds" / "validation.json"
     val_path.parent.mkdir(parents=True, exist_ok=True)

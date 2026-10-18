@@ -21,6 +21,7 @@
     <span>{{ cdi.paired_count }} / {{ cdi.issuers|length }} {{ t('paired issuer comparisons', '组发行人配对比较') }}</span>
     <span>{{ cdi.bond_count }} {{ t('mapped bond holdings', '条已映射债券持仓') }}</span>
     <span>{{ t('CDS: unavailable', 'CDS：暂无数据') }}</span>
+    <span data-cdi-pricing="{{ 'passed' if cdi.pricing_qualified else 'unqualified' }}">{{ t(cdi.pricing_en, cdi.pricing_zh) }}</span>
   </div>
   <div class="cdi-toolbar">
     <label class="cdi-search-label" for="cdi-search">{{ t('Find issuer or bond identifier', '查找发行人或债券代码') }}

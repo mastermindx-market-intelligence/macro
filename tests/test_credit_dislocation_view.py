@@ -17,6 +17,8 @@ TODAY = date(2026, 10, 16)
 def sample():
     return {"schema": SCHEMA, "authority": dict(AUTHORITY), "display_only": True,
             "status": "partial", "as_of": "2026-10-16", "source_as_of": "2026-10-16",
+            "pricing_validation": {"status": "passed", "source_binding_verified": True,
+                                   "observation_as_of": "2026-10-16"},
             "observation_id": "cdi:synthetic", "issuers": [{
                 "issuer": "TEST0", "equity_ticker": "TEST0", "tier": "IG",
                 "theme": "hyperscaler_credit", "state": "credit_widening_equity_steadier",
@@ -179,3 +181,17 @@ def test_existing_bonds_template_binds_one_comparison():
     assert '{% if cdi is not defined %}' in source
     assert 'cdi=cdi' in builder
     assert 'snap["corporate_credit"]["dislocation"] = compact_context(cdi)' in builder
+
+
+@pytest.mark.parametrize("pricing", [None, {}, {"status": "passed"},
+    {"status": "passed", "source_binding_verified": True, "observation_as_of": "2026-10-15"}])
+def test_view_withholds_derived_values_without_exact_pricing_qualification(pricing):
+    value = sample()
+    value["pricing_validation"] = pricing
+    view = build_view(value, as_of=TODAY)
+    assert view["pricing_qualified"] is False
+    assert view["paired_count"] == 0
+    assert view["issuers"][0]["relative"] == "\u2014"
+    assert view["issuers"][0]["bonds"][0]["spread"] == "\u2014"
+    assert compact_context(view)["pricing_qualified"] is False
+    assert 'data-cdi-pricing="unqualified"' in render(view)

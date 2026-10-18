@@ -35,3 +35,9 @@ The isolated #9590 workspace subsequently completed a bounded YTM rebuild throug
 The implementation and recovery evidence are preserved under `research/credit_dislocation/IMPLEMENTATION_STATUS.md`, `evidence/recovery_receipt.json`, and `CONTINUATION.md` on PR #9590. The exact branch is `claude/ssd-ccw-dislocation-v1-cc87720e59421398`; the source workspace is `/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/ccw-dislocation-v1-cc87720e59421398`. Current assignment continues in a fresh Pro chat after the observed heavy-chat generation failure. No duplicate workstream, worker or generic state store is created.
 
 Next action: resolve the preserved pricing-validation PENDING result and recompile CDI against that refreshed generation, then qualify the real Bonds consumer before release. Raw source captures stay local and unstaged. The interrupted Paper bond-row edit was reconciled as applied on its original carrier and must not be replayed. Parent mission remains incomplete.
+
+## October 18 isolated-source qualification update
+
+The preserved #9590 workspace resolved its pricing PENDING state with a same-day LQD sample (3,171 rows, October 15). A full clean-price re-solve passed the existing CCW criteria: median independent yield error 2.40 bp, p90 5.00 bp over the existing 20-bond sample. This supersedes only the isolated workspace's pending validation, not the earlier primary-checkout lag observation.
+
+The compiler now binds that verdict to exact derived panel/history hashes and verifies price-convention arithmetic. The source-bound Bonds reader still has **zero eligible paired five-session comparisons**: missing intervening credit and equity dates remain real, not filled by the October 15 refresh. The existing nightly LQD collection dependency was missing and is now wired in the candidate, not deployed. Evidence: `research/credit_dislocation/evidence/oct15_pricing_qualification.json`.

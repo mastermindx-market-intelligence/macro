@@ -12,6 +12,7 @@ import json
 import math
 import os
 import tempfile
+from io import BytesIO
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -105,6 +106,12 @@ def _window(frame: pd.DataFrame, end: date, horizon: int) -> dict:
     expected = [d for d in expected if d > start]
     if len(expected) != horizon:
         return {"value_bp": None, "reason": "calendar_unavailable"}
+    observed = set(frame["as_of"])
+    missing = [d.isoformat() for d in [start, *expected] if d not in observed]
+    if missing:
+        return {"value_bp": None, "reason": "missing_session_or_matched_change",
+                "start": start.isoformat(), "end": end.isoformat(),
+                "missing_sessions": missing, "expected_sessions": horizon}
     window = frame.set_index("as_of").reindex(expected)
     delta = pd.to_numeric(window["d1_g_spread_bp_matched"], errors="coerce")
     matched = pd.to_numeric(window["matched_n"], errors="coerce")
@@ -133,7 +140,9 @@ def _equity_return(series: pd.Series | None, end: date, horizon: int) -> dict:
     expected = sessions_between(start, end)
     s = pd.to_numeric(s.reindex(expected), errors="coerce")
     if len(expected) != horizon + 1 or s.isna().any() or (s <= 0).any():
-        result["reason"] = "missing_equity_sessions"
+        result.update(reason="missing_equity_sessions", start=start.isoformat(), end=end.isoformat(),
+                      missing_sessions=[d.isoformat() for d in expected if pd.isna(s.loc[d])],
+                      expected_sessions=horizon + 1)
         return result
     if not all(math.isfinite(float(v)) for v in s):
         result["reason"] = "invalid_equity_values"
@@ -276,9 +285,54 @@ def compile_snapshot(issuer_daily: pd.DataFrame, bonds: pd.DataFrame, registry: 
     return result
 
 
-def _digest(path: Path) -> dict:
-    return {"path": str(path.name), "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+def _digest(path: Path, payload: bytes | None = None) -> dict:
+    return {"path": str(path.name), "sha256": hashlib.sha256(path.read_bytes() if payload is None else payload).hexdigest(),
             "availability": "current_snapshot_historical_publication_unqualified"}
+
+
+def _pricing_qualification(cc: Path, provenance: dict, *, source_as_of: str | None,
+                           as_of: date) -> dict:
+    """Read the existing CCW verdict; never manufacture a pass from a new clock."""
+    result = {"status": "unqualified", "reason": "validation_unavailable",
+              "source_binding_verified": False, "observation_as_of": source_as_of}
+    path = cc / "validation.json"
+    try:
+        payload = path.read_bytes()
+        val = json.loads(payload)
+        provenance["pricing_validation"] = _digest(path, payload)
+        result.update(price_convention=val.get("price_convention"),
+                      validation_overall=val.get("overall"))
+        binding = val.get("input_binding") or {}
+        if val.get("overall") != "PASS":
+            result["reason"] = "pricing_checks_not_passed"
+        elif date.fromisoformat(val["as_of"]) > as_of:
+            result["reason"] = "validation_after_cutoff"
+        elif (binding.get("schema") != "corp_credit.validation_binding.v1"
+              or binding.get("observation_as_of") != source_as_of):
+            result["reason"] = "validation_observation_binding_missing_or_mismatched"
+        elif (binding.get("calculation_convention") not in {"clean", "dirty"}
+              or binding.get("calculation_convention") != val.get("price_convention")):
+            result["reason"] = "calculation_convention_mismatch"
+        elif any(binding.get("artifacts", {}).get(name) != provenance[key]["sha256"]
+                 for name, key in [("bond_panel_latest", "bonds"), ("issuer_daily", "issuers")]):
+            result["reason"] = "validation_artifact_hash_mismatch"
+        elif val.get("sample_metadata", {}).get("LQD", {}).get("as_of") != source_as_of:
+            result["reason"] = "independent_sample_not_same_observation_date"
+        else:
+            result.update(status="passed", reason=None, source_binding_verified=True,
+                          sample_as_of=source_as_of,
+                          lqd_median_error_bp=val.get("criteria", {}).get("b", {}).get("LQD", {}).get("median_bp"))
+    except (OSError, ValueError, TypeError, KeyError, AttributeError):
+        result["reason"] = "validation_unreadable_or_incomplete"
+    return result
+
+
+def _seal_snapshot(snapshot: dict) -> dict:
+    """Include source qualification in the observation identity."""
+    snapshot.pop("observation_id", None)
+    body = json.dumps(snapshot, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    snapshot["observation_id"] = "cdi:" + hashlib.sha256(body.encode()).hexdigest()[:24]
+    return snapshot
 
 
 def load_snapshot(root: Path, *, as_of: date) -> dict:
@@ -291,25 +345,57 @@ def load_snapshot(root: Path, *, as_of: date) -> dict:
         empty = compile_snapshot(pd.DataFrame(), pd.DataFrame(), {}, {}, as_of=as_of)
         empty["reason"] = "missing_inputs:" + ",".join(missing)
         return empty
-    registry = json.loads(files["registry"].read_text())
+    payloads = {name: path.read_bytes() for name, path in files.items()}
+    registry = json.loads(payloads["registry"])
+    issuer_frame = pd.read_parquet(BytesIO(payloads["issuers"]))
+    bond_frame = pd.read_parquet(BytesIO(payloads["bonds"]))
+    dated = _frame(issuer_frame, {"as_of", "issuer", "d1_g_spread_bp_matched", "matched_n"}, "issuer", as_of)
+    source_day = max(dated["as_of"]) if not dated.empty else as_of
     equities: dict[str, pd.Series] = {}
-    provenance = {name: _digest(path) for name, path in files.items()}
+    provenance = {name: _digest(path, payloads[name]) for name, path in files.items()}
     for issuer, meta in _registry(registry).items():
         ticker = meta["equity_ticker"]
         if not isinstance(ticker, str) or not ticker.replace(".", "").replace("-", "").isalnum():
             continue
-        for prefix in ["baskets/ohlcv", "yahoo"]:
+        candidates = []
+        for priority, prefix in enumerate(["baskets/ohlcv", "yahoo"]):
             path = root / prefix / f"{ticker}.parquet"
             if not path.is_file():
                 continue
-            df = pd.read_parquet(path)
+            payload = path.read_bytes()
+            df = pd.read_parquet(BytesIO(payload))
             column = next((c for c in ["close", "close_price"] if c in df), None)
             if column:
-                equities[ticker] = df[column]
-                provenance[f"equity:{issuer}"] = _digest(path)
-                break
-    return compile_snapshot(pd.read_parquet(files["issuers"]), pd.read_parquet(files["bonds"]),
-                            registry, equities, as_of=as_of, provenance=provenance)
+                series = df[column]
+                check = _equity_return(series, source_day, 5)
+                dates = pd.to_datetime(series.index, errors="coerce", utc=True)
+                eligible = [d.date() for d in dates if not pd.isna(d) and d.date() <= source_day]
+                latest = max(eligible) if eligible else date.min
+                # Prefer an eligible complete window, then the freshest whole source.
+                # Do not stitch stores or let a stale preferred store hide a newer one.
+                score = (check.get("value_pct") is not None, latest, -priority)
+                meta = _digest(path, payload)
+                meta.update(store=prefix, observed_through=latest.isoformat())
+                candidates.append((score, series, meta))
+        if candidates:
+            _, equities[ticker], provenance[f"equity:{issuer}"] = max(candidates, key=lambda item: item[0])
+    snapshot = compile_snapshot(issuer_frame, bond_frame, registry, equities,
+                                as_of=as_of, provenance=provenance)
+    pricing = _pricing_qualification(cc, provenance, source_as_of=snapshot.get("source_as_of"), as_of=as_of)
+    snapshot["pricing_validation"] = pricing
+    if pricing["status"] != "passed":
+        for row in snapshot["issuers"]:
+            row["state"] = "insufficient_evidence"
+            row["reason"] = "pricing_unqualified"
+            for field in ("change_5", "change_21"):
+                row[field] = {"value_bp": None, "reason": "pricing_unqualified"}
+            for field in ("relative_change_5_bp", "peer_change_5_bp", "acceleration_bp_per_session"):
+                row[field] = None
+            for bond in row.get("bonds", []):
+                bond["price_clean"] = None
+                bond["g_spread_bp"] = None
+        snapshot["coverage"].update(issuers_with_5_sessions=0, paired_comparisons=0)
+    return _seal_snapshot(snapshot)
 
 
 def write_snapshot(snapshot: dict, destination: Path) -> None:

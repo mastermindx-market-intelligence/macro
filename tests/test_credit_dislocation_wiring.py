@@ -59,3 +59,11 @@ def test_existing_ci_job_includes_all_cdi_tests():
     for name in ['test_credit_dislocation.py', 'test_credit_dislocation_view.py', 'test_credit_dislocation_wiring.py']:
         assert f'tests/{name}' in commands
         assert f'tests/{name}' in job['paths']
+
+
+def test_existing_independent_sample_collector_precedes_pricing():
+    source = (ROOT / '.github/workflows/daily.yml').read_text()
+    assert source.count('python -m scripts.fetch_ishares_validation_sample --fund LQD') == 1
+    assert source.index('python -m scripts.fetch_ishares_validation_sample') < source.index('python -m engine.corp_credit')
+    nodes = list(nested_dicts(read_yaml('config/dag.yml')))
+    assert len([node for node in nodes if node.get('id') == 'ccw_independent_pricing_sample']) == 1

@@ -1896,6 +1896,22 @@ jobs:
             echo "::warning title=backfill_qledger_us::rc=$rc (non-fatal)"
           fi
           exit 0
+      - name: CCW pricing browser dependency (cached, non-fatal)
+        timeout-minutes: 5
+        continue-on-error: true
+        # Collector-only dependency; do not add a browser to every engine job.
+        # Playwright reuses its standard per-version Chromium cache when present.
+        run: |
+          python -m pip install -r requirements/credit-pricing.txt
+          python -m playwright install chromium
+      - name: CCW independent LQD pricing sample (non-fatal)
+        timeout-minutes: 3
+        continue-on-error: true
+        # Reuse the existing collector before pricing. Older samples are retained;
+        # missing/same-day mismatch keeps CDI explicitly unqualified.
+        run: |
+          python -m scripts.fetch_ishares_validation_sample --fund LQD \
+            || echo "::warning::CCW independent pricing sample unavailable (non-fatal)"
       - name: CCW W2 — corporate credit g-spread engine (non-fatal)
         # Cap: measured 3.8s locally (2026-07-14); the step's own comment says
         # "revisit if it nears ~2m", so 10m bounds a hang well clear of that line.

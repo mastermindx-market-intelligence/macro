@@ -1,5 +1,19 @@
 # Credit Dislocation Intelligence - recovered implementation status
 
+## October 18 qualification continuation (supersedes pricing PENDING below)
+
+The existing source/workspace/PR were retained. The first requested pricing blocker is resolved in the isolated October 15 generation, not yet in production.
+
+- The existing iShares collector recovered 3,171 LQD rows dated October 15. The full CCW rebuild re-solved the history using clean prices and passed the existing four-criterion validation in 517.17 seconds. The independent 20-bond, five-bin LQD pricing check reports median error 2.40 bp and p90 5.00 bp, compared with the provisional dirty-price median 23.43 bp. This is a pricing check, not a predictive backtest.
+- The report now binds to exact panel/history hashes and verifies the declared clean/dirty arithmetic. The compiler and Bonds reader withhold derived credit values when qualification is absent, failed, stale-bound, future-dated, or hash-mismatched. A newer source file cannot inherit an old PASS.
+- The October 15 compiler/reader has 311 mapped bond holdings and **zero eligible five-session paired issuer comparisons**. Missing dates are explicit. No alerts, return forecast or CDS claim was created. The equity loader chooses a whole eligible/fresher existing store instead of silently preferring a stale one. Credit windows now require their starting baseline as well as every change session.
+- The existing LQD collector is wired before CCW in the existing nightly job, with its task-local browser dependency. Matching validation vintages are retained; the same-day convention probe avoids an unnecessary whole-history provisional solve. These deployment changes are not yet live.
+- 148 local unit/contract tests passed (20.85s). The actual component passed 32 browser cases: four evidence states across all eight language/theme/device combinations. These are synthetic-state acceptance, not native-route or production proof.
+
+Receipt: `evidence/oct15_pricing_qualification.json`. Raw provider captures and generated data remain local, unstaged. Original Paper operation design-06 was read back again and its JSX was retrieved; no previous edit was replayed and R30 remains unchanged.
+
+The attempted full Bonds build found missing ordinary market inputs in this sparse workspace and produced no HTML. A bounded restore of missing committed FRED/benchmark inputs is underway from the original source commit, without replacing existing captures. Next: complete that exact hydration, build and inspect the native October 15 route/matrix, benchmark the pre-solve optimization, finish Paper states, consume required review/CI, reconcile #9589 and deliver through the existing PR. Financing/CDS, outcome memory and the remaining masterplan are still open. No runner/worker/watch has been created or restarted.
+
 Date: 2026-10-18. Parent mission incomplete. State: BUILT_NOT_PROVEN, draft implementation.
 Canonical carrier: Macro PR #9590, branch `claude/ssd-ccw-dislocation-v1-cc87720e59421398`.
 Masterplan: [MASTERPLAN.md](MASTERPLAN.md), first published at `2596c9e58872d1458ddb2ab116a960d22a16b0e6`.

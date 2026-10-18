@@ -509,6 +509,12 @@ lanes:
           (stable claim_ids prevent duplicates). Reads data/altdata/theses.jsonl
           from tonight's collect-core commit; runs BEFORE "commit tail data" so
           claims.jsonl rides the same push. Non-fatal (step always exits 0).
+      - id: ccw_independent_pricing_sample
+        module: scripts.fetch_ishares_validation_sample
+        note: >
+          Existing LQD collector, bounded before corp_credit in collect-tail.
+          Retains date-keyed samples; no current pricing qualification without
+          a matching independent observation. Non-fatal and no new scheduler.
       - id: corp_credit
         module: engine.corp_credit
         note: >

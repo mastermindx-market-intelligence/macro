@@ -36,6 +36,7 @@ THEME_COPY = {
     "telecom_legacy": ("Telecom controls", "电信对照组"),
 }
 REASON_COPY = {
+    "pricing_unqualified": ("Pricing validation is missing, failed, or bound to different data", "\u5b9a\u4ef7\u9a8c\u8bc1\u7f3a\u5931\u3001\u672a\u901a\u8fc7\u6216\u4e0e\u6570\u636e\u4e0d\u5339\u914d"),
     "equity_unavailable": ("Equity observations unavailable", "缺少股价观察"),
     "missing_equity_sessions": ("Equity sessions missing", "股价交易日数据缺失"),
     "conflicting_equity_dates": ("Conflicting equity observations", "股价日期存在冲突"),
@@ -112,11 +113,25 @@ def build_view(snapshot: dict | None, *, as_of: date) -> dict:
                                else "Compare the move. Inspect the borrower. Test the countercase."),
                   subtitle_zh=("这些历史观察不能证明当前信用状况。" if stale
                                else "比较变化，核查借款人，并检验相反解释。"))
+    pricing = snapshot.get("pricing_validation")
+    pricing = pricing if isinstance(pricing, dict) else {}
+    pricing_ok = (pricing.get("status") == "passed"
+                  and pricing.get("source_binding_verified") is True
+                  and pricing.get("observation_as_of") == source_day.isoformat())
+    result.update(pricing_qualified=pricing_ok, pricing_validation=pricing,
+                  pricing_en=("Pricing checked against same-day LQD holdings; source hashes verified."
+                              if pricing_ok else "Pricing unqualified: derived credit values are withheld."),
+                  pricing_zh=("\u5b9a\u4ef7\u5df2\u4e0e\u540c\u65e5LQD\u6301\u4ed3\u6838\u9a8c\uff0c\u6570\u636e\u54c8\u5e0c\u5339\u914d\u3002"
+                              if pricing_ok else "\u5b9a\u4ef7\u672a\u901a\u8fc7\u6838\u9a8c\uff1a\u6682\u4e0d\u5c55\u793a\u884d\u751f\u4fe1\u7528\u6570\u503c\u3002"))
     seen = set()
     for row in raw_rows:
         if not isinstance(row, dict) or not isinstance(row.get("issuer"), str) or row["issuer"] in seen:
             return _empty("invalid_or_duplicate_issuer")
         seen.add(row["issuer"])
+        if not pricing_ok:
+            row = dict(row, state="insufficient_evidence", reason="pricing_unqualified",
+                       change_5={}, change_21={}, relative_change_5_bp=None,
+                       peer_change_5_bp=None, acceleration_bp_per_session=None)
         change = row.get("change_5") if isinstance(row.get("change_5"), dict) else {}
         equity = row.get("equity_5") if isinstance(row.get("equity_5"), dict) else {}
         long = row.get("change_21") if isinstance(row.get("change_21"), dict) else {}
@@ -127,6 +142,12 @@ def build_view(snapshot: dict | None, *, as_of: date) -> dict:
         en, zh, tone = STATE_COPY.get(state, STATE_COPY["insufficient_evidence"])
         reasons = [row.get("reason"), change.get("reason"), equity.get("reason"), row.get("peer_reason")]
         notes = [REASON_COPY[r] for r in dict.fromkeys(r for r in reasons if isinstance(r, str)) if r in REASON_COPY]
+        for metric, label_en, label_zh in [(change, "Missing credit dates", "\u7f3a\u5c11\u4fe1\u7528\u65e5\u671f"),
+                                            (equity, "Missing equity dates", "\u7f3a\u5c11\u80a1\u4ef7\u65e5\u671f")]:
+            missing = metric.get("missing_sessions")
+            if isinstance(missing, list) and missing:
+                dates = ", ".join(str(day)[:10] for day in missing[:22])
+                notes.append((f"{label_en}: {dates}", f"{label_zh}: {dates}"))
         theme_en, theme_zh = THEME_COPY.get(row.get("theme"), ("Other tracked issuers", "其他跟踪发行人"))
         raw_bonds = row.get("bonds") or []
         if not isinstance(raw_bonds, list) or len(raw_bonds) > 1000:
@@ -143,8 +164,8 @@ def build_view(snapshot: dict | None, *, as_of: date) -> dict:
                 "identifier_valid": native.get("checksum_valid") is True,
                 "maturity": str(bond.get("maturity") or "—")[:10],
                 "coupon": _metric(bond.get("coupon_pct"), "%", signed=False, decimals=2),
-                "price": _metric(bond.get("price_clean"), "", signed=False, decimals=2),
-                "spread": _metric(bond.get("g_spread_bp"), " bp", signed=False),
+                "price": _metric(bond.get("price_clean") if pricing_ok else None, "", signed=False, decimals=2),
+                "spread": _metric(bond.get("g_spread_bp") if pricing_ok else None, " bp", signed=False),
                 "call_review": bond.get("near_par_call_flag") is not False,
             })
         relative = _finite(row.get("relative_change_5_bp"))
@@ -168,6 +189,9 @@ def build_view(snapshot: dict | None, *, as_of: date) -> dict:
         })
     result["paired_count"] = sum(r["paired"] for r in result["issuers"])
     result["bond_count"] = sum(len(r["bonds"]) for r in result["issuers"])
+    if not stale and result["paired_count"] == 0:
+        result["subtitle_en"] = "No eligible five-session comparisons yet. Missing observations are not evidence of low risk."
+        result["subtitle_zh"] = "\u6682\u65e0\u5408\u683c\u7684\u4e94\u4e2a\u4ea4\u6613\u65e5\u914d\u5bf9\u6bd4\u8f83\u3002\u7f3a\u5c11\u89c2\u5bdf\u6570\u636e\u5e76\u4e0d\u4ee3\u8868\u98ce\u9669\u8f83\u4f4e\u3002"
     return result
 
 
@@ -196,6 +220,8 @@ def compact_context(view: dict) -> dict:
         "display_only": True,
         "prediction_validated": False,
         "cds_available": False,
+        "pricing_qualified": view.get("pricing_qualified") is True,
+        "pricing_validation": view.get("pricing_validation", {}),
         "paired_issuer_count": view.get("paired_count") if available else None,
         "mapped_bond_count": view.get("bond_count") if available else None,
         "observation_id": view.get("observation_id"),

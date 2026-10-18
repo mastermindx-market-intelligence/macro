@@ -217,7 +217,8 @@ def test_adapter_uses_existing_store_without_source_writes(tmp_path):
     result = load_snapshot(tmp_path, as_of=END)
     after = {p: p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()}
     assert before == after
-    assert first(result)["relative_change_5_bp"] == 20
+    assert first(result)["relative_change_5_bp"] is None
+    assert result["pricing_validation"]["status"] == "unqualified"
     assert result["provenance"]["issuers"]["sha256"]
 
 
@@ -231,3 +232,129 @@ def test_unknown_call_flag_not_promoted_to_false():
     data = fixture()
     data[1]["near_par_call_flag"] = pd.Series([pd.NA] * 6, dtype="boolean")
     assert first(compile_data(data))["bonds"][0]["near_par_call_flag"] is None
+
+
+def _write_qualified_store(root):
+    from engine.corp_credit import bind_validation_inputs
+    history, bonds, registry, stocks = fixture()
+    cc = root / "corp_bonds"
+    (cc / "series").mkdir(parents=True)
+    (root / "baskets/ohlcv").mkdir(parents=True)
+    history.to_parquet(cc / "series/issuer_daily.parquet", index=False)
+    bonds["mv"] = bonds["par"] * 0.99
+    bonds["accrued_pct"] = 1.0
+    bonds["price_dirty"] = 100.0
+    bonds.to_parquet(cc / "series/bond_panel_latest.parquet", index=False)
+    (cc / "issuer_themes.json").write_text(json.dumps(registry))
+    for ticker, series in stocks.items():
+        series.to_frame("close").to_parquet(root / "baskets/ohlcv" / f"{ticker}.parquet")
+    val = {"as_of": END.isoformat(), "overall": "PASS", "price_convention": "clean",
+           "sample_metadata": {"LQD": {"as_of": END.isoformat()}},
+           "criteria": {"b": {"LQD": {"median_bp": 1.0}}}}
+    val = bind_validation_inputs(val, root, observation_as_of=END.isoformat(), calculation_convention="clean")
+    (cc / "validation.json").write_text(json.dumps(val))
+    return cc, val
+
+
+def test_source_qualification_binds_actual_prices_and_artifact_hashes(tmp_path):
+    cc, val = _write_qualified_store(tmp_path)
+    before = (cc / "validation.json").read_bytes()
+    result = load_snapshot(tmp_path, as_of=END)
+    assert result["pricing_validation"]["status"] == "passed"
+    assert result["pricing_validation"]["source_binding_verified"] is True
+    assert result["coverage"]["paired_comparisons"] == 6
+    assert val["input_binding"]["convention_verified_rows"] == 6
+    assert (cc / "validation.json").read_bytes() == before
+
+
+@pytest.mark.parametrize("change", ["absent", "failed", "wrong_day", "wrong_convention",
+                                    "changed_panel", "changed_history", "future", "sample_date"])
+def test_mismatched_or_missing_pricing_never_emits_derived_comparisons(tmp_path, change):
+    cc, val = _write_qualified_store(tmp_path)
+    if change == "failed": val["overall"] = "FAIL"
+    if change == "wrong_day": val["input_binding"]["observation_as_of"] = "2026-10-15"
+    if change == "wrong_convention": val["price_convention"] = "dirty"
+    if change == "future": val["as_of"] = "2026-10-19"
+    if change == "sample_date": val["sample_metadata"]["LQD"]["as_of"] = "2026-10-15"
+    if change in {"changed_panel", "changed_history"}:
+        name = "bond_panel_latest" if change == "changed_panel" else "issuer_daily"
+        file = cc / "series" / f"{name}.parquet"
+        frame = pd.read_parquet(file)
+        column = "price_clean" if change == "changed_panel" else "d1_g_spread_bp_matched"
+        frame.loc[0, column] += 1
+        frame.to_parquet(file, index=False)
+    (cc / "validation.json").write_text(json.dumps(val))
+    if change == "absent": (cc / "validation.json").unlink()
+    result = load_snapshot(tmp_path, as_of=END)
+    assert result["pricing_validation"]["status"] == "unqualified"
+    assert result["coverage"]["paired_comparisons"] == 0
+    assert all(row["state"] == "insufficient_evidence" for row in result["issuers"])
+    assert all(row["change_5"]["value_bp"] is None for row in result["issuers"])
+    assert all(b["g_spread_bp"] is None for row in result["issuers"] for b in row["bonds"])
+
+
+def test_missing_window_baseline_cannot_admit_a_multi_day_first_delta():
+    from lib.nyse_calendar import session_n_back
+    history, bonds, registry, stocks = fixture()
+    start = session_n_back(END, 5).isoformat()
+    history = history[~((history["issuer"] == "TEST0") & (history["as_of"] == start))]
+    result = compile_snapshot(history, bonds, registry, stocks, as_of=END)
+    assert first(result)["change_5"]["value_bp"] is None
+    assert start in first(result)["change_5"]["missing_sessions"]
+
+
+def test_equity_adapter_prefers_complete_whole_store_without_stitching(tmp_path):
+    _write_qualified_store(tmp_path)
+    path = tmp_path / "baskets/ohlcv/TEST0.parquet"
+    complete = pd.read_parquet(path)
+    complete.iloc[:-3].to_parquet(path)
+    (tmp_path / "yahoo").mkdir()
+    complete.to_parquet(tmp_path / "yahoo/TEST0.parquet")
+    result = load_snapshot(tmp_path, as_of=END)
+    assert result["provenance"]["equity:TEST0"]["store"] == "yahoo"
+    assert first(result)["equity_5"]["value_pct"] == 0
+
+
+def test_validation_receipt_change_changes_observation_identity(tmp_path):
+    cc, val = _write_qualified_store(tmp_path)
+    before = load_snapshot(tmp_path, as_of=END)
+    val["criteria"]["b"]["LQD"]["median_bp"] = 2.0
+    (cc / "validation.json").write_text(json.dumps(val))
+    after = load_snapshot(tmp_path, as_of=END)
+    assert before["observation_id"] != after["observation_id"]
+
+
+def test_binding_refuses_a_falsely_declared_calculation_convention(tmp_path):
+    from engine.corp_credit import bind_validation_inputs
+    _, val = _write_qualified_store(tmp_path)
+    with pytest.raises(ValueError, match="declared price convention"):
+        bind_validation_inputs(val, tmp_path, observation_as_of=END.isoformat(), calculation_convention="dirty")
+
+
+def test_validation_sample_selection_keeps_same_day_vintage(tmp_path):
+    from engine.corp_credit import _load_validation_samples
+    sample = tmp_path / "corp_bonds/validation_sample"
+    sample.mkdir(parents=True)
+    for day in ["2026-10-15", "2026-10-16"]:
+        pd.DataFrame({"as_of": [day], "coupon": [5.0]}).to_parquet(sample / f"LQD_{day}.parquet")
+    selected = _load_validation_samples(tmp_path, as_of="2026-10-15")["LQD"]
+    assert selected["as_of"].iloc[0] == "2026-10-15"
+    assert _load_validation_samples(tmp_path, as_of="2026-10-14")["LQD"] is None
+
+
+def test_initial_price_probe_reuses_resolved_convention_without_acceptance(monkeypatch, tmp_path):
+    import engine.corp_credit as cc
+    panel = pd.DataFrame({"as_of": ["2026-10-15"] * 6})
+    sample = pd.DataFrame({"as_of": ["2026-10-15"] * 6, "ytm_pct": [5.0] * 6})
+    monkeypatch.setattr(cc, "_load_validation_samples", lambda *a, **k: {"LQD": sample})
+    monkeypatch.setattr(cc, "_join_panel_to_sample", lambda *a: sample)
+    calls = []
+    def resolve(joined, day):
+        calls.append((day, "ytm_pct_is" in joined))
+        return {"verdict": "clean"}
+    monkeypatch.setattr(cc, "resolve_price_convention", resolve)
+    assert cc.initial_price_convention(panel, tmp_path) == "clean"
+    assert calls == [("2026-10-15", True)]
+    sample["as_of"] = "2026-10-14"
+    assert cc.initial_price_convention(panel, tmp_path) == "dirty"
+    assert len(calls) == 1
