@@ -437,6 +437,32 @@ def test_natural_october_sunday_rejects_stale_breadth_without_faking_a_market_da
     assert friday["facts"]["sessions_behind"] == 0
 
 
+@pytest.mark.parametrize(
+    ("fabricated_asof", "expected_error"),
+    [
+        ("2026-10-17", "INVALID SECTOR INTELLIGENCE MARKET SESSION"),
+        ("2026-10-18", "INVALID SECTOR INTELLIGENCE MARKET SESSION"),
+        ("2026-10-19", "FUTURE SECTOR INTELLIGENCE"),
+    ],
+)
+def test_future_or_weekend_sector_date_cannot_pass_with_zero_missing_sessions(
+    tmp_path: Path, fabricated_asof: str, expected_error: str,
+) -> None:
+    """A fabricated source date is NOT made fresh by sessions_behind == 0."""
+    from scripts.check_sector_intelligence_freshness import evaluate
+
+    _write_sector_intelligence_generation(
+        tmp_path, baskets_asof=fabricated_asof, action_asof=fabricated_asof
+    )
+    result = evaluate(
+        tmp_path, now=datetime(2026, 10, 18, 12, tzinfo=timezone.utc),
+        max_sessions_behind=1,
+    )
+    assert result["ok"] is False
+    assert any(expected_error in err for err in result["errors"]), result
+    assert result["facts"]["sessions_behind"] is None
+
+
 def test_semantic_freshness_rejects_individually_fresh_vintage_split(
     tmp_path: Path,
 ) -> None:
