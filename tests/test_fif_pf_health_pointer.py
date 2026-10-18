@@ -73,17 +73,22 @@ def _production_summary_stub(
     summaries: dict[str, dict | None],
     *,
     build: object = _BUILD_DEFAULT,
+    builds: list | None = None,
 ):
     """Patch the production module the route imports; record every issuer id.
 
     ``build``: a callable/call result for the store (``None`` means the store
     is None), or the sentinel for the default built store.
+    ``builds``: when given, every store-builder call appends to it, so a test
+    can pin that the store was never built (not only never read).
     """
     import engine.fundamental_forensics.production_datasets as pds_module
 
     requested: list[str] = []
 
     def _build(*_args, **_kwargs):
+        if builds is not None:
+            builds.append("build")
         if build is not _BUILD_DEFAULT:
             return build() if callable(build) else build
         return _StoreStub()
@@ -317,7 +322,10 @@ def test_over_length_grammar_matching_id_is_malformed_and_never_opens_the_store(
     monkeypatch, router_app
 ):
     _production(monkeypatch)
-    requested = _production_summary_stub(monkeypatch, {AAPL_ID: _aapl_summary()})
+    builds: list[str] = []
+    requested = _production_summary_stub(
+        monkeypatch, {AAPL_ID: _aapl_summary()}, builds=builds
+    )
     over_length = _issuer_grammar_tail(forensics_api._MAX_QUERY_VALUE_BYTES + 1)
     assert len(over_length.encode("utf-8")) > forensics_api._MAX_QUERY_VALUE_BYTES
     with TestClient(router_app, raise_server_exceptions=False) as client:
@@ -328,6 +336,7 @@ def test_over_length_grammar_matching_id_is_malformed_and_never_opens_the_store(
     assert "x-fif-dataset-pointer" not in response.headers
     assert "x-fif-dataset-generation-id" not in response.headers
     assert "x-fif-dataset-admitted-at" not in response.headers
+    assert builds == [], "the byte-bound check runs before the store is built"
     assert requested == [], "the byte-bound check runs before any store key lookup"
     assert response.json() == _HEALTH_BODY
 
@@ -338,7 +347,10 @@ def test_id_exactly_at_the_byte_bound_that_matches_the_grammar_is_accepted(
     _production(monkeypatch)
     at_bound = _issuer_grammar_tail(forensics_api._MAX_QUERY_VALUE_BYTES)
     assert len(at_bound.encode("utf-8")) == forensics_api._MAX_QUERY_VALUE_BYTES
-    requested = _production_summary_stub(monkeypatch, {at_bound: _aapl_summary()})
+    builds: list[str] = []
+    requested = _production_summary_stub(
+        monkeypatch, {at_bound: _aapl_summary()}, builds=builds
+    )
     with TestClient(router_app, raise_server_exceptions=False) as client:
         response = _get(client, f"entity_id={at_bound}")
     assert response.status_code == 200
@@ -350,6 +362,7 @@ def test_id_exactly_at_the_byte_bound_that_matches_the_grammar_is_accepted(
         == _aapl_summary()["dataset_generation_id"]
     )
     assert response.headers["x-fif-dataset-admitted-at"] == _aapl_summary()["admitted_at"]
+    assert builds == ["build"]
     assert requested == [at_bound]
     assert response.json() == _HEALTH_BODY
 
