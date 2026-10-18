@@ -9591,6 +9591,8 @@ jobs:
       - "scripts/ci/*.sh"
       - "data/**"
       - "site/index.html"
+      - "site/options.html"
+      - "site/options_intel_brief.json"
       - "site/premiumdata/special_situations.json"
       - "site/qledger/track_record.json"
       - "config/append_only_artifacts.json"
@@ -12329,7 +12331,7 @@ jobs:
         # writes to was dark too, which is how _capture_usage could bill free
         # Ollama calls to the Claude subscription lane unnoticed.  It guards the
         # same waterfall as the files beside it — keep it in this step.
-        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py tests/test_provider_production_modes.py tests/test_provider_native_capabilities.py tests/test_provider_native_capability_source.py -q
+        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py tests/test_provider_production_modes.py tests/test_provider_native_capabilities.py tests/test_provider_native_capability_source.py tests/test_provider_capacity_v2_cli.py -q
       - name: V10 key economy suite (enabled-set, header capture, usage snapshot)
         run: python -m pytest tests/test_key_pool_economy.py -q
       - name: cortex provider routing + tool loop suite
@@ -13694,6 +13696,7 @@ jobs:
       - engine/theme_graph/__init__.py
       - engine/theme_graph/capability.py
       - engine/theme_graph/identity.py
+      - engine/theme_graph/micro_rs_proxy_display.py
       - engine/theme_graph/identity_resolution.py
       - engine/theme_graph/local_sources.py
       - engine/theme_graph/materialize.py
@@ -20832,7 +20835,7 @@ jobs:
       - name: waves 9E/9F — shadow context packets + prophet annotation boundary
         run: python -m pytest tests/test_government_revenue_shadow_context.py tests/test_government_revenue_prophet_annotation.py -q
       - name: workspace / dossier / briefcase UI contracts
-        run: python -m pytest tests/test_government_revenue_ui.py tests/test_government_revenue_dossier_ui.py tests/test_government_revenue_briefcase_ui.py tests/test_government_revenue_glance_copy.py -q
+        run: python -m pytest tests/test_government_revenue_ui.py tests/test_government_revenue_candidate_sources.py tests/test_government_revenue_dossier_ui.py tests/test_government_revenue_briefcase_ui.py tests/test_government_revenue_glance_copy.py -q
       # D3 temporal contract: typed rail states (producer) + the Change Tape
       # clock/diff/successor renders (node harness, same runner requirement as
       # the UI suite above, whose _run_runtime it imports).
@@ -22793,6 +22796,7 @@ jobs:
       - "engine/theme_fingerprint.py"
       - "engine/theme_graph/__init__.py"
       - "engine/theme_graph/identity.py"
+      - "engine/theme_graph/micro_rs_proxy_display.py"
       - "engine/theme_graph/identity_resolution.py"
       - "engine/theme_graph/ontology.py"
       - "engine/theme_graph/probation.py"
@@ -23659,6 +23663,7 @@ jobs:
       - "engine/security_state.py"
       - "engine/theme_graph/__init__.py"
       - "engine/theme_graph/identity.py"
+      - "engine/theme_graph/micro_rs_proxy_display.py"
       - "engine/theme_graph/rights.py"
       - "engine/theme_graph/rights_use.py"
       - "lib/dataos/identity.py"
@@ -26190,6 +26195,9 @@ jobs:
       # walks through engine.theme_graph.identity via the build_site hook.
       - "templates/theme_tree.html.j2"
       - "engine/theme_graph/identity.py"
+      - "engine/theme_graph/micro_rs_proxy_display.py"
+      - "engine/theme_graph/rights.py"
+      - "tests/test_theme_tree_detail_card.py"
       - "tests/test_state_of_themes.py"
       - "tests/test_subsector_confluence.py"
       - "tests/test_subsector_rotation.py"
@@ -26215,7 +26223,7 @@ jobs:
       - name: subsector rotation family — turn engine, state machine, alerts, scan, confluence
         run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py tests/test_energy_economic_change_non_regression.py -q
       - name: themes heatmap + Theme Tracker page (full suite; portfolio-ctx keeps its subset)
-        run: python -m pytest tests/test_themes_heatmap.py tests/test_principal_receipt_ambiguity.py tests/test_state_of_themes.py tests/test_build_theme_tree_page.py -q
+        run: python -m pytest tests/test_themes_heatmap.py tests/test_principal_receipt_ambiguity.py tests/test_state_of_themes.py tests/test_build_theme_tree_page.py tests/test_theme_tree_detail_card.py -q
 
   ohlc-basis-coherence:
     # The breadth OHLC caches must share ONE yfinance adjustment basis across

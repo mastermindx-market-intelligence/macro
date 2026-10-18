@@ -88,9 +88,39 @@ html[data-theme="light"] .tt-theme{background:var(--panel)}
 
 /* ── MICRO CHIPS ── */
 .tt-chips{display:flex;flex-wrap:wrap;gap:6px 8px;padding:6px 0 8px}
-.tt-chip{display:inline-flex;align-items:center;padding:5px 11px;border-radius:var(--r-pill);background:var(--panel2);border:1px solid var(--line);font-size:12px;font-weight:600;color:var(--text);cursor:default;line-height:1.3;transition:border-color .15s ease}
+.tt-chip{display:inline-flex;align-items:center;padding:5px 11px;border-radius:var(--r-pill);background:var(--panel2);border:1px solid var(--line);font-size:12px;font-weight:600;color:var(--text);cursor:pointer;line-height:1.3;font-family:var(--font-ui);margin:0;transition:border-color .15s ease,background-color .15s ease}
 html[data-theme="light"] .tt-chip{background:var(--panel);border-color:var(--line)}
 .tt-chip:hover{border-color:var(--ff-tint-info-45-line)}
+
+.tt-chip:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.tt-chip[aria-expanded="true"]{border-color:var(--link)}
+
+/* ── DETAIL CARD (U2) — dark: instrument panel; light: white sheet + hairline + shadow ── */
+.tt-detail{position:fixed;z-index:60;right:24px;top:96px;width:340px;max-width:calc(100vw - 48px);max-height:calc(100vh - 120px);overflow:auto;background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-card,12px);padding:16px 18px 18px;color:var(--text);box-shadow:inset 0 1px 0 var(--line),var(--popover-shadow)}
+html[data-theme="light"] .tt-detail{background:var(--panel);border-color:var(--line);box-shadow:var(--popover-shadow)}
+.tt-detail[hidden]{display:none}
+@media (min-width:1101px){body.tt-detail-open .wrap{padding-right:388px}}
+.tt-detail-top{display:flex;align-items:flex-start;gap:10px}
+.tt-detail-name{font-size:16px;font-weight:800;line-height:1.3;margin:0;flex:1}
+.tt-detail-close{flex:none;width:32px;height:32px;border-radius:var(--r-ctl,8px);border:1px solid var(--line);background:transparent;color:var(--muted);font-size:16px;line-height:1;cursor:pointer;font-family:var(--font-ui)}
+.tt-detail-close:hover{color:var(--text)}
+.tt-detail-close:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.tt-detail-paths{list-style:none;margin:8px 0 0;padding:0;font-size:12.5px;color:var(--muted);line-height:1.5}
+.tt-detail-paths li + li{margin-top:2px}
+.tt-detail-breadth{margin:10px 0 0;font-size:12.5px;line-height:1.5}
+.tt-detail-sec{margin:14px 0 0;padding:12px 0 0;border-top:1px solid var(--line)}
+.tt-detail-h{font-size:13px;font-weight:800;margin:0}
+.tt-detail-note{font-size:11.5px;color:var(--muted);margin:2px 0 8px;line-height:1.45}
+.tt-detail-list{list-style:none;margin:0;padding:0;font-size:13px;line-height:1.45}
+.tt-detail-list li{display:flex;justify-content:space-between;gap:10px;padding:4px 0}
+.tt-detail-list a{color:var(--link);text-decoration:none}
+.tt-detail-list a:hover{text-decoration:underline}
+.tt-detail-mkt{flex:none;font-size:11.5px;color:var(--muted)}
+.tt-detail-empty{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+@media (max-width:560px){
+  .tt-detail{left:0;right:0;top:auto;bottom:0;width:auto;max-width:none;max-height:70vh;border-radius:var(--r-card,12px) var(--r-card,12px) 0 0;border-bottom:0;padding:14px 16px 22px}
+  .tt-detail-close{width:44px;height:44px}
+}
 
 /* ── DIRECT-CHIPS (theme with no sub_theme layer) ── */
 .tt-direct{margin:6px 0 0;padding:6px 0 0;color:var(--muted);font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
@@ -226,8 +256,9 @@ html[data-theme="light"] .tt-strip-tick{background:var(--text);opacity:.6}
           </span>
           <span class="tmeta">
             {% set sc = theme.sub_themes|length %}
-            <span class="l-en">{{ sc }} {{ 'sub-theme' if sc == 1 else 'sub-themes' }} · {{ theme.sub_themes|sum(attribute='micro_count') }} micro</span>
-            <span class="l-zh">{{ sc }} 个子主题 · {{ theme.sub_themes|sum(attribute='micro_count') }} 个细分</span>
+            {% set tm = theme.sub_themes|sum(attribute='micro_count') + theme.direct_micros|length %}
+            <span class="l-en">{{ sc }} {{ 'sub-theme' if sc == 1 else 'sub-themes' }} · {{ tm }} micro</span>
+            <span class="l-zh">{{ sc }} 个子主题 · {{ tm }} 个细分</span>
           </span>
         </summary>
         <div class="tt-theme-body">
@@ -245,14 +276,37 @@ html[data-theme="light"] .tt-strip-tick{background:var(--text);opacity:.6}
             </div>
             <div class="tt-chips">
               {% for chip in sub.micros %}
-              <span class="tt-chip" data-node="{{ chip.node_id }}" data-tip-en="{{ chip.tip_en|e }}" data-tip-zh="{{ chip.tip_zh|e }}">
+              <button type="button" class="tt-chip" data-node="{{ chip.node_id }}" aria-controls="tt-detail" aria-expanded="false" data-tip-en="{{ chip.tip_en|e }}" data-tip-zh="{{ chip.tip_zh|e }}">
                 <span class="l-en">{{ chip.name_en }}</span>
                 <span class="l-zh">{{ chip.name_zh or chip.name_en }}</span>
-              </span>
+              </button>
               {% endfor %}
             </div>
           </div>
           {% endfor %}
+          {% if theme.direct_micros %}
+          <div class="tt-subtheme">
+            <div class="tt-subtheme-head">
+              <span class="sname">
+                <span class="l-en">Directly under {{ theme.name_en }}</span>
+                <span class="l-zh">直属{{ theme.name_zh or theme.name_en }}</span>
+              </span>
+              <span class="smeta">
+                {% set dm = theme.direct_micros|length %}
+                <span class="l-en">{{ dm }} {{ 'micro' if dm == 1 else 'micros' }}</span>
+                <span class="l-zh">{{ dm }} 个细分</span>
+              </span>
+            </div>
+            <div class="tt-chips">
+              {% for chip in theme.direct_micros %}
+              <button type="button" class="tt-chip" data-node="{{ chip.node_id }}" aria-controls="tt-detail" aria-expanded="false" data-tip-en="{{ chip.tip_en|e }}" data-tip-zh="{{ chip.tip_zh|e }}">
+                <span class="l-en">{{ chip.name_en }}</span>
+                <span class="l-zh">{{ chip.name_zh or chip.name_en }}</span>
+              </button>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
         </div>
       </details>
       {% else %}
@@ -272,10 +326,10 @@ html[data-theme="light"] .tt-strip-tick{background:var(--text);opacity:.6}
         <div class="tt-theme-body">
           <div class="tt-chips">
             {% for chip in theme.direct_micros %}
-            <span class="tt-chip" data-node="{{ chip.node_id }}" data-tip-en="{{ chip.tip_en|e }}" data-tip-zh="{{ chip.tip_zh|e }}">
+            <button type="button" class="tt-chip" data-node="{{ chip.node_id }}" aria-controls="tt-detail" aria-expanded="false" data-tip-en="{{ chip.tip_en|e }}" data-tip-zh="{{ chip.tip_zh|e }}">
               <span class="l-en">{{ chip.name_en }}</span>
               <span class="l-zh">{{ chip.name_zh or chip.name_en }}</span>
-            </span>
+            </button>
             {% endfor %}
           </div>
         </div>
@@ -307,8 +361,90 @@ html[data-theme="light"] .tt-strip-tick{background:var(--text);opacity:.6}
 
 {% endif %}
 
+{% if tree.details_json %}
+<aside id="tt-detail" class="tt-detail" hidden role="region" aria-live="polite" aria-labelledby="tt-detail-name">
+  <div class="tt-detail-top">
+    <h2 class="tt-detail-name" id="tt-detail-name"></h2>
+    <button type="button" class="tt-detail-close" data-close aria-label="Close">×</button>
+  </div>
+  <ul class="tt-detail-paths"></ul>
+  <p class="tt-detail-breadth"></p>
+  <div class="tt-detail-sec">
+    <p class="tt-detail-h"><span class="l-en">Watch instead</span><span class="l-zh">可替代观察</span></p>
+    <p class="tt-detail-note"><span class="l-en">Proxy, not membership — these baskets track the parent theme</span><span class="l-zh">代理，非成分——这些篮子跟踪上级主题</span></p>
+    <ul class="tt-detail-list"></ul>
+    <p class="tt-detail-empty" hidden><span class="l-en">No public proxy basket for this theme yet.</span><span class="l-zh">该主题暂无可公开的代理篮子。</span></p>
+    <p class="tt-detail-empty tt-detail-unknown" hidden><span class="l-en">Proxy coverage for this theme is being worked out.</span><span class="l-zh">该主题的代理覆盖仍在整理中。</span></p>
+  </div>
+</aside>
+<script type="application/json" id="tt-detail-data">{{ tree.details_json|safe }}</script>
+{% endif %}
+
 </div>
 
+<script>
+(function(){
+  // Micro-theme detail card (U2). Data from the JSON blob; textContent only.
+  var blob=document.getElementById('tt-detail-data');
+  var card=document.getElementById('tt-detail');
+  if(!blob||!card)return;
+  var data;try{data=JSON.parse(blob.textContent);}catch(e){return;}
+  var opener=null;
+  function el(tag,cls){var n=document.createElement(tag);if(cls)n.className=cls;return n;}
+  function bi(parent,en,zh){
+    var a=el('span','l-en');a.textContent=en;var b=el('span','l-zh');b.textContent=zh||en;
+    parent.appendChild(a);parent.appendChild(b);return parent;
+  }
+  function clear(n){while(n.firstChild)n.removeChild(n.firstChild);}
+  function fill(d){
+    var name=card.querySelector('.tt-detail-name');clear(name);bi(name,d.name_en,d.name_zh);
+    var paths=card.querySelector('.tt-detail-paths');clear(paths);
+    (d.chains||[]).forEach(function(ch){
+      var li=el('li');
+      bi(li,ch.map(function(x){return x.name_en;}).join(' › '),ch.map(function(x){return x.name_zh||x.name_en;}).join(' › '));
+      paths.appendChild(li);
+    });
+    var br=card.querySelector('.tt-detail-breadth');clear(br);
+    (d.breadth||[]).forEach(function(b,i){
+      if(i){br.appendChild(document.createTextNode(' '));}
+      var n=b.micro_count;
+      bi(br,n+(n===1?' micro-theme in ':' micro-themes in ')+b.theme.name_en+'.',(b.theme.name_zh||b.theme.name_en)+' 下共 '+n+' 个细分主题。');
+    });
+    br.hidden=!(d.breadth&&d.breadth.length);
+    var list=card.querySelector('.tt-detail-list');clear(list);
+    var empties=card.querySelectorAll('.tt-detail-empty');
+    var note=card.querySelector('.tt-detail-note');
+    empties[0].hidden=d.proxy_state!=='none';
+    empties[1].hidden=d.proxy_state!=='unknown';
+    note.hidden=d.proxy_state!=='available';
+    (d.instruments||[]).forEach(function(it){
+      var li=el('li');var label=it.href?el('a'):el('span');
+      if(it.href)label.setAttribute('href',it.href);
+      bi(label,it.name_en,it.name_zh);li.appendChild(label);
+      if(it.market_en){li.appendChild(bi(el('span','tt-detail-mkt'),it.market_en,it.market_zh));}
+      list.appendChild(li);
+    });
+    list.hidden=!(d.instruments&&d.instruments.length);
+  }
+  function close(){
+    if(card.hidden)return;
+    card.hidden=true;document.body.classList.remove('tt-detail-open');
+    if(opener){opener.setAttribute('aria-expanded','false');opener.focus();}
+    opener=null;
+  }
+  document.addEventListener('click',function(e){
+    if(e.target.closest('[data-close]')){close();return;}
+    var chip=e.target.closest('.tt-chip[data-node]');
+    if(!chip){return;}
+    var d=data[chip.getAttribute('data-node')];if(!d)return;
+    if(opener&&opener!==chip)opener.setAttribute('aria-expanded','false');
+    if(opener===chip&&!card.hidden){close();return;}
+    fill(d);opener=chip;chip.setAttribute('aria-expanded','true');card.hidden=false;document.body.classList.add('tt-detail-open');
+    card.querySelector('.tt-detail-close').focus();
+  });
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+})();
+</script>
 <script>
 (function(){
   // Multi-parent tip on micro chips — stays a hover pop, no inline style mutation.

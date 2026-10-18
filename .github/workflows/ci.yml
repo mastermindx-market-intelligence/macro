@@ -1080,6 +1080,7 @@ on:
       - "tests/test_government_revenue_dossiers.py"
       - "tests/test_government_revenue_subaward_api.py"
       - "tests/test_government_revenue_ui.py"
+      - "tests/test_government_revenue_candidate_sources.py"
       - "tests/test_government_revenue_dossier_ui.py"
       - "tests/test_government_revenue_briefcase_ui.py"
       # D3 temporal contract suite (wired by the same PR that added it).
