@@ -111,6 +111,14 @@ class Projection(unittest.TestCase):
                   for row in x.rows)
         self.data['BIL']=replace(x,rows=bad)
         self.assertRaisesRegex(Refused,'ROW_CAPTURE_DAY_NOT_REFERENCED',self.invoke)
+    def test_market_day_cannot_exceed_original_capture(self):
+        """Original capture metadata cannot contain a future EOD market date."""
+        x=self.data['BIL']
+        rows=tuple(dict(row,source_observed_at_utc='2026-09-29T18:00:00+00:00',
+                        adjustment_asof_utc='2026-09-29T18:00:00+00:00')
+                   for row in x.rows)
+        self.data['BIL']=replace(x,rows=rows,source_partitions=(('2026-09-29',SHA),))
+        self.assertRaisesRegex(Refused,'MARKET_AFTER_CAPTURE',self.invoke)
     def test_source_capture_clock_future_refused(self):
         x=self.data['BIL'];self.data['BIL']=replace(x,rows=x.rows[:-1]+(dict(x.rows[-1],source_observed_at_utc='2026-11-01T14:00:00+00:00',adjustment_asof_utc='2026-11-01T14:00:00+00:00'),))
         self.assertRaisesRegex(Refused,'SOURCE_AFTER_CAPTURE_CUTOFF',self.invoke)
