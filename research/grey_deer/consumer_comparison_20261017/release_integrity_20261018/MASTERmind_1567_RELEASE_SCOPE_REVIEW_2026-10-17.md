@@ -6,7 +6,7 @@
 
 ## Evidence examined and its limits
 
-The primary evidence is [SOURCE_RELEASE_PREFLIGHT_20261017.json](../research_notes/consumer_comparison_20261017/SOURCE_RELEASE_PREFLIGHT_20261017.json), **213,956 bytes**, SHA256 **e1aa32bb50cd59103c58fe9275bfca861f50ae3a66f733658ac92132b790f49e**. The adjacent [consumer reproduction README](../research_notes/consumer_comparison_20261017/README.md), [source repair receipt](../research_notes/consumer_comparison_20261017/SOURCE_CLOCK_REPAIR_20261017.json), and [source-consumer audit](../research_notes/risk_radar_source_consumer_audit_20261017.md) were also read. Their older pending statements remain historical; the later merge proof controls the source disposition.
+The primary evidence is [SOURCE_RELEASE_PREFLIGHT_20261017.json](../SOURCE_RELEASE_PREFLIGHT_20261017.json), **213,956 bytes**, SHA256 **e1aa32bb50cd59103c58fe9275bfca861f50ae3a66f733658ac92132b790f49e**. The adjacent [consumer reproduction README](../README.md), [source repair receipt](../SOURCE_CLOCK_REPAIR_20261017.json), and [source-consumer audit](../../risk_radar_source_consumer_audit_20261017.md) were also read. Their older pending statements remain historical; the later merge proof controls the source disposition.
 
 | Boundary | What the retained evidence establishes | Remaining limitation |
 |---|---|---|
@@ -84,7 +84,7 @@ No file contents for these 1,507 rows are supplied. This review therefore **does
 
 ## Addendum — pinned release scripts reviewed, 17 October 2026
 
-The parent supplied [deploy_from_git.sh](source/scripts/deploy_from_git.sh) and [deploy_code_to_vps.sh](source/scripts/deploy_code_to_vps.sh), reporting byte identity between baseline `732cf7be…` and accepted merge `b0822368…`. I read all 47 and 340 lines respectively and verified the supplied local bytes:
+The parent supplied [deploy_from_git.sh](source/scripts/deploy_from_git.sh.txt) and [deploy_code_to_vps.sh](source/scripts/deploy_code_to_vps.sh.txt), reporting byte identity between baseline `732cf7be…` and accepted merge `b0822368…`. I read all 47 and 340 lines respectively and verified the supplied local bytes:
 
 | File | Bytes | SHA256 |
 |---|---:|---|

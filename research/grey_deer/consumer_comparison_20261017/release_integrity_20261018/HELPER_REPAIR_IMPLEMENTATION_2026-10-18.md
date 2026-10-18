@@ -10,8 +10,8 @@ Only these two first-party candidate paths change:
 
 | Path | Bytes | SHA256 |
 |---|---:|---|
-| [candidate/scripts/deploy_code_to_vps.sh](candidate/scripts/deploy_code_to_vps.sh) | 20,370 | `1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8` |
-| [candidate/tests/test_deploy_provenance.py](candidate/tests/test_deploy_provenance.py) | 39,649 | `a4ed6d45ed39eec1aa92ac9d4aeb82219dcefc60e9632e7f27dd8b00f6bfb42a` |
+| [candidate/scripts/deploy_code_to_vps.sh](candidate/scripts/deploy_code_to_vps.sh.txt) | 20,370 | `1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8` |
+| [candidate/tests/test_deploy_provenance.py](candidate/tests/test_deploy_provenance.py.txt) | 39,649 | `a4ed6d45ed39eec1aa92ac9d4aeb82219dcefc60e9632e7f27dd8b00f6bfb42a` |
 
 The original source copies remain unchanged: helper 14,934 bytes, SHA256 `c158fc903121b8c4ad680049ded16000913393039944c6eec3a23d44ca376204`; tests 19,097 bytes, SHA256 `1bc5bf5e1980cb97fb8051d062e90e60536432b03782ff008cb31066f950bd3c`. The archive wrapper, tag helper, forward module, accepted release reports, models and studies have not been edited. There is no additional first-party test support file. The small validation driver and receipts below are review artifacts.
 
@@ -68,7 +68,7 @@ Executed controls include initial and rollback stop failures; failed/incomplete 
 
 ## Reproducing the reported local execution
 
-[helper_fixture_driver_20261018.py](helper_fixture_driver_20261018.py) is 3,434 bytes, SHA256 `380ea13a8dcda1ef7a25eb888a5223e43ae1ab8bc36276509917303e9864be44`. It uses Python's standard library to load the exact standalone test functions, supplies only the small pytest decorator/assertion interface they require, and records each executed parametrized case. It excludes the five application-import tests. Pytest is absent in this cloud runtime; no installation was attempted. Native owning pytest remains a separate gate.
+[helper_fixture_driver_20261018.py](helper_fixture_driver_20261018.py.txt) is 3,434 bytes, SHA256 `380ea13a8dcda1ef7a25eb888a5223e43ae1ab8bc36276509917303e9864be44`. It uses Python's standard library to load the exact standalone test functions, supplies only the small pytest decorator/assertion interface they require, and records each executed parametrized case. It excludes the five application-import tests. Pytest is absent in this cloud runtime; no installation was attempted. Native owning pytest remains a separate gate.
 
 From the review workspace, reproduce the expected six original failures (exit 1):
 
