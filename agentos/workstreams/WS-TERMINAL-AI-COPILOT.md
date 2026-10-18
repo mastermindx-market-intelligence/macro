@@ -56,3 +56,10 @@ next_action: Conclude normal required CI on Macro 9601 and Terminal 1048, then p
 Chris Wong's October 18, 2026 commission requests an end-to-end upgrade of advanced technical drawings, indicator controls and an expandable AI layer below the study legend. No existing AgentOS workstream record names the incumbent Macro #7151/#8014 chart-copilot carrier. This record indexes that real continuing objective under the existing macro-mastermind-ai program; it creates no runtime, worker, queue or permission authority.
 
 The historical September 26 handoff retains its original Sol CEO identity, blocked boundary and chronological recovery entries. Its retroactive link to this workstream does not assert this workstream file existed then. The latest October 18 integration checkpoint in that same record identifies the current owned workspaces, exact joined source, executed checks and remaining live proof. This workstream remains active; no user mission completion is claimed.
+
+
+## Current release checks
+
+Terminal #1048 publishes d731e1e4cf85a753bdf00f44819ffb848343ba36; its fresh normal CI run is 39127614959. Macro #9601 is receiving the paired send-time preparation, actual shared-widget receipt repairs, and current main through 3554b5f80def6fc34e8935b90b24510c382d61d3. The latest handoff checkpoint records exact tests and capture hashes.
+
+The chart-related failures in the previous full runs have bounded repairs and passing focused checks. Macro additionally inherits the three Sector Central migration-packet RIG failures, already tracked by incumbent issue #7646. That reference-review dependency must resolve through its actual design authority before Macro's failed gate can clear. This workstream remains active; the release and ordinary-model production acceptance are still outstanding.
