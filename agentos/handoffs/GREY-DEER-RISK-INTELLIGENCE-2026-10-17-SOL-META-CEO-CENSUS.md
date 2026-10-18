@@ -139,6 +139,21 @@ verified:
   result: Local integration15bdaec7351d preserved original protocol/outcome ancestry. Only CI manifest overlapped,
     with no conflict. Recurring-briefs plus census tests passed 90 in 11.20s, receipt ac9aa77cff8415dab094bdbd3b872ceac6139bf805ee4b7e6f4ea35eacfadef2.
     Independent sibling source review accepted with remaining exact-probability and inherited-wording gaps; current live publication remains unverified.
+- claim: Macro PR 9515 final exact-head CI and source landing are accepted.
+  command: Native CI39035351978; normal expected-head squash; separate origin/main fetch and owned-path comparison.
+  result: Reviewed646cc093 merged eaf418862bdd at14:01:10Z. All12packs,ci-gate and active fences/authority succeeded. Fetched9b464c9d contains51 exact owned blobs and semantically identical owned shared-CI job; no waiver.
+- claim: Existing9517 workspace reached the authenticated desktop through its normal render/deploy path.
+  command: Render39029743025; read-only served-file hashes; existing authenticated overview/odds/source captures and independent review.
+  result: Render success13:49:09Z; served JS4df5cb03 matches browser asset. Bounded desktop delivery accepted; complete forecast qualification, all-state warning expiry and programme acceptance remain open.
+- claim: The failed Copilot answer has a bounded source counterexample and exact-question classification diagnosis.
+  command: Pinned pure-AST diagnostic, five finalization cases and six classifier controls; explicit source-reader adaptation checked against original output.
+  result: Original constraint falsely requires portfolio evidence; blank synthesis can become caveat-only success; synthetic contradiction scope contamination shown. Counterexample SHA61c23927 unchanged. No provider replay, backend source repair or useful replacement answer.
+- claim: Original SPY input identity and T12 sample construction are now frozen and independently reviewed.
+  command: Canonical one-key R2 read; exact original normalization/helpers; one original T12 build_sample call; independent sample arithmetic.
+  result: 1321rows/OHLCV SHA c686f0bc;6359byte sample SHA944e0054. Controls10/18,3/21,1/24; only matched 21-session event fails draft warmup and its control includes20immature origins. No Stage1 study rerun, feature join, fit or trial.
+- claim: Current official FRED source-purpose evidence was researched and the retained-purpose boundary made concrete.
+  command: Bounded official legal/API/ALFRED/series/source notice review; root independently opened critical pages and retained the dated evidence note.
+  result: Restrictive consolidated terms conflict with separately served API/help descriptions. Current model-use UNKNOWN/operational HOLD retained; no rights grant, new collection, source switch or probability publication.
 unverified:
 - claim: Full Mastermind release qualification, production decision and actual delivery of the merged source
     correction.
@@ -147,72 +162,65 @@ unverified:
     deployment. Obtain the decision for that complete release, reconcile later master advances, then verify
     installed source/health, unchanged policy/book invariants under existing owners, changed-path consumer
     behavior and actual entitled user delivery. No two-file deployment approval is implied.
-- claim: 'Final hosted CI and merge for the complete current #9515 head.'
-  what_would_verify: 'Read #9515''s exact current head, active main authority, contract-delta, all scheduled
-    packs and ci-gate through the incumbent merge predicates; after ordinary expected-head squash, fetch main
-    separately and compare every candidate-owned blob. The enclosing proposed record is not a pre-merge proof.'
 - claim: Current entitled warning delivery, long-open refresh, expiry and backend-to-user clocks.
   what_would_verify: 'Original #8132 warning carrier with actual writer/release clearance; current authenticated
-    browser paint and production receipts through the existing publisher. Authentication and bounded incumbent
-    Radar paint are now verified; new workspace publication, exact source-to-paint identity, all-state freshness/expiry
-    and current Terminal proof remain outstanding.'
+    browser paint and production receipts through the existing publisher. Authentication and bounded new Radar workspace delivery are verified; all-state warning freshness/expiry, exact latency measurement and current Terminal proof remain outstanding.'
 - claim: New predictive, remaining-loss, propagation or re-entry superiority.
   what_would_verify: Admitted immutable inputs, executable preregistration and counted trial family, chronological/prospective
     evaluation, calibrated incremental value, dependence-qualified uncertainty and costs. No unscanned holdout
     may be claimed from inspected history.
 unresolved:
 - >-
-  The parent programme is incomplete. A descriptive census and source merge do not establish finished warning
-  delivery or a new policy.
+  Parent programme incomplete. Source landing and bounded desktop delivery do not establish forecast competence,
+  complete evidence presentation, warning expiry, granular action/recovery intelligence or numerical authority.
 - >-
-  Macro evidence source delivery remains subject to current-head native gates. Prior 126c9 failed the shared weekly-brief tests;
-  their existing #9517 repair is now integrated at 15bdaec7351d with 90 local tests passing. This checkpoint cannot
-  certify its enclosing commit and is not armed.
+  The successor evidence checkpoint still requires its own enclosing-head gates and normal source landing.
+  Macro PR 9515 is already merged; do not push or rearm it. Its earlier red-head receipts remain historical.
 - >-
-  The future-date source correction is merged but absent from the observed live runtime. The standard release
-  is a full exact-master archive with 1507 repository differences from live; broader qualification and the
-  canonical production decision remain outstanding.
+  Actual gateway writer 9447 retains pending integration; recent workspace writer 9548 intersects the Radar template
+  and JavaScript paths. Preserve those source collisions while progressing compatible research/evidence work.
 - >-
-  W5 legitimate issuance remains absent at the frozen source pin and current refresh adds BACKFILL_ASOF; existing
-  QLedger/nightly publication custody remains controlling.
+  Original SPY/T12 identity is resolved, but confirmatory support is not. The only 21-session matched event has no
+  draft-warmup-eligible positive origin; severe missing/immature controls and horizon dependence are retained.
+  FRED model-purpose UNKNOWN/HOLD and sample-use/feasibility admission remain outstanding; drafts unactivated.
 - >-
-  Paper adapter catalog is not accepted for write. No compatibility or source-writer gate was bypassed.
+  The future-date source repair is merged but absent from the observed runtime. Qualify the full exact-master
+  release, deployment helper chain and rollback/activation before the reserved production decision and live parity.
 - >-
-  Authenticated incumbent Macro/Radar date/null/relative-strength disclosure is captured and accepted within scope.
-  The new #9517 workspace is not yet observed served; current Terminal proof and exact clock binding remain open.
-  One completed Copilot request failed usefulness. Prior GD-3 natural production proof remains accepted and must not be rerun by default.
+  W5 genuine issuance is absent at the inspected pins and BACKFILL_ASOF refusals persist. Original QLedger/nightly
+  publication custody controls; legacy pressure-session history is not the prospective forecast ledger.
 - >-
-  Company/theme historical membership, native-country/factor coverage, intraday execution and release-vintage
-  evidence remain incomplete.
+  Paper catalog is not accepted for write. Country/factor coverage, company/theme historical membership, true
+  historical availability, independent episodes and executable intraday clocks remain incomplete.
 - >-
-  The broad research extension remains proposed; current Sol owns methodological decisions, while actual data/source-purpose
-  and numerical-policy contracts remain evidence gates.
-- >-
-  The T13 worker's remote_desktop_commander read-only dependency probe aborted after 1,036 seconds with no
-  process handle; no parquet command was submitted. Root completed the result through studio_direct. Both native
-  children are explicitly stopped; the Fabric review was NOT_ACCEPTED and is terminal. No durable watcher or
-  autonomous wake is claimed.
+  The broad read-only native workspace census produced no usable receipt and was stopped. A separate documented
+  native acquire succeeded for the successor. The older merged checkout is preserved read-only; no cleanup or
+  takeover of another writer is inferred. No autonomous wake or complete cross-workspace custody census is claimed.
 next_actions:
-- 'Finish ordinary source gates on the same #9515 carrier after the existing #9517 shared-test repair was integrated.
-  Verify the exact current head and binding native checks; do not reuse old failed runs or waive a guard.
-  After normal expected-head merge, fetch main separately and compare owned blobs.'
-- 'Preserve #9517 release custody and observe its covering render; verify the changed authenticated workspace.
-  Trace the captured Copilot request through the existing response record and gateway before a custody-qualified
-  repair. Preserve real evidence limitations, probability qualification and numerical policy owners.'
-- 'Mastermind #1567 is merged as b08223680180 with native queue and fetched-blob proof; do not redo the repair
-  or push its merged branch. Use the recorded exact archive and old runtime baseline to qualify the complete
-  standard release, then obtain its required production decision and capture installed-source, changed-path
-  consumer and entitled user receipts. Full runtime/book/prompt/ledger parity was NOT_TESTED. Never call brain/macro_risk.risk_state()
-  as a read because its default dwell path writes.'
-- Use the qualified T13 admission result to bind the existing Massive RAW SPY source and T12 sample only after
-  actual input identity and source-purpose admission. No Yahoo substitution, trial registration or feature-outcome
-  join is authorized by metadata presence alone.
-- 'Advance per-component clocks and bundle publication, then original-owner #8132 publisher/client qualification
-  and real entitled Macro/Terminal proof. Reconcile actual current writer custody rather than waiting for an
-  imagined archived author.'
-- Resume on the connected Mastermind tools and the exact owned M2 worktree. No autonomous wake is claimed;
-  a fresh chat preserves this commission but does not confer new writer or release permission.
+- >-
+  Land the path-disjoint continuation evidence from native operation risk-radar-meta-ceo-evidence-20261017-01a14837
+  through ordinary exact-head source gates, then separately fetch main and compare owned artifacts.
+- >-
+  Use the completed Copilot diagnostic and repair contract for a custody-qualified source change. Preserve genuine
+  private evidence requirements, supported general market prose and scoped contradictions. Require installed behavior
+  and one useful authenticated original-question answer. Do not overwrite9447 or9548 paths.
+- >-
+  Freeze a separately declared T13 sample-use/feasibility contract before scored-origin projection or feature joins.
+  Preserve the original failed support, exact sample and unspent trial budgets. Resolve the concrete retained-acquisition
+  and model-purpose basis; no permissive label, substitute source or historical author is a waiver.
+- >-
+  The exact1567 wrapper/helper review is complete and found298 deployment-eligible paths outside rollback scope,
+  plus health-result and transaction-order weaknesses. Read portfolio.forward_evaluation and the actual service
+  definition next. Qualify the complete current-master bundle before the reserved production decision.
+  Preserve prior source acceptance and never call brain/macro_risk.risk_state() as a read because its dwell path writes.
+- >-
+  Continue original-owner publisher/consumer work on per-component clocks, freshness and expiry. Inspect the first
+  legitimate natural W5 issuance only when it exists, and grade only after maturity; no backfill or frozen-study rerun.
+- >-
+  Resume the same Chairman commission on connected Mastermind tools and the exact acquired successor worktree.
+  Authentication is verified. Current evidence does not justify closing the parent programme or claiming autonomous wake.
 do_not_redo:
+- Preserve the one frozen T12 sample and canonical bytes; no regeneration, forced controls or post-outcome relaxation.
 - Do not repeat the completed pinned consumer source-function comparison or metadata intake merely to recover
   findings. Preserve original hashes and separate vocabulary addendum; execute new repair regressions only
   for a real changed source path. No full runtime or cutover acceptance follows from the isolated receipt.
@@ -270,3 +278,25 @@ This section supersedes earlier authentication and immediate-next-action stateme
 Existing #9517 source merged as 9cfa8918b55a at 11:42:43Z. Its independent source review is accepted for the supplied descendant only, with exact forecast qualification, inherited wording and exposure/recovery usefulness still open. At12:50Z its covering render39029743025 remained in progress, successor39032477826 pending, and a fresh authenticated page still showed the incumbent layout. Preserve its original writer/release custody.
 
 The same sibling had already repaired the shared recurring-briefs tests. Root integrated fetched main e8cb76a6cd742690584f7a16b92ca195a151a71a into the clean, unarmed #9515 branch at 15bdaec7351dbe2f1bf1a227b6e7498a8b3c0ac7. The sole overlapping CI manifest merged cleanly. Ninety relevant tests pass. Original preregistration, frozen outcomes, rejected studies and all source-policy boundaries remain unchanged. Current enclosing-head CI and normal merge are still required; this is a source-time checkpoint, not a claim that this turn or the parent mission has completed.
+
+## Verified delivery, input admission and successor custody — October 17
+
+The original research carrier 9515 is merged and its fetched-main landing is accepted. See the revised existing masterplan §0A and [source landing receipt](../../research/grey_deer/live_delivery_20261017/9515_source_landing.json). All51owned research/source blobs match exactly; the shared CI file legitimately includes other upstream work while its owned parsed job is unchanged. This is not a reason to rewrite shared CI.
+
+The existing9517 workspace reached the authenticated browser through normal render39029743025 and the matching4df5cb03 JavaScript asset. The [desktop receipt](../../research/grey_deer/live_delivery_20261017/delivered_workspace/README.md) and independent review accept that bounded delivery. Exact forecast qualifiers remain omitted; the Copilot user job failed and now has a pinned source counterexample. Actual provider internals were not replayed. Writer9447 retains pending gateway integration; recent9548 intersects the Radar workspace files.
+
+The original SPY RAW bytes and T12 sample are now exactly bound. The [admission result](../../research/grey_deer/all_date_census/t12_frozen_sample_20261017/README.md) preserves the original sampler and severe support failure, including the warm-up-empty only matched 21-session event. Official FRED model-purpose restrictions and conflicting guidance are documented; current UNKNOWN/HOLD remains. No fitted hypothesis or predictive promotion was produced.
+
+Native operation `risk-radar-meta-ceo-evidence-20261017-01a14837`, lane web, repository macro, base `9b464c9d6ce9db60c7c86b3c6837fe2d5dfc05d6`, acquired `/Volumes/Mastermind 2/agent-workspaces/macro/web/risk-radar-meta-ceo-evidence-20261017-01a14837` on branch `sol/web-risk-radar-meta-ceo-evidence-20261017-01a14837`. Old 9515 remains closed/read-only. The new checkpoint has its own source gates; its enclosing commit is not pre-certified by this record. Protected procedure remains ad125292b34f313924f9719b8de772027f0ea225 and current Macro instruction blobs match the accepted prior carrier.
+
+Independent continuation consistency review verified all seven capture hashes, frozen sample/receipt and source counterexample identity. Its four prose findings are resolved: passed source gates are current, official terms chronology is unknown, provenance is qualified as extracted text, and specific reproducing cases are distinguished from controls. No accepted study or delivery proof was reopened.
+
+## October 18 UTC recovery and next phase
+
+At 01:28Z the interrupted Studio write was reconciled: the call was rejected because its catalog changed before execution, and the intended overview.txt target does not exist on M2. No copied-file success is inferred. The same native successor remains at9b464c9d with only the earlier exact scripts and9515 landing receipt untracked; its branch was not committed, pushed or armed. Current live user Resume continues the same commission.
+
+Protected Mastermind advanced to e77631490e5bddca7d40c8cf039ae7763ce17b99. The compatible INDEX1.0.1 and every required procedure body were verified byte-identical to the already loaded ad125 pin; the authority-boundaries reference was recovered from its canonical Git path. A fresh source inspection confirms9447 remains an open draft and9548 remains an open workspace writer with a newer head. Preserve those intersections; earlier observations do not imply expired custody.
+
+At 01:36Z the owned successor was normally fast-forwarded to Macro62a3f9ad070c7583687aef8c30d53fd1764c6aab after confirming no intervening programme or instruction-path changes. The interrupted overview target was then written successfully through the same authorized file capability. The reconciliation receipt is live_delivery_20261017/continuation_workspace_acquire.json; copied bytes and the enclosing source checkpoint still require their own verification. This is continuation of the original native operation, not a second workstream or release claim.
+
+The completed release-script addendum identifies298 deployment-eligible paths outside the named rollback snapshot and a rollback-health reporting weakness. No deployment or source repair followed. The next scientific phase is a separately frozen sample-use feasibility map derived only from immutable T12 metadata, preserving known control/warmup failures and refusing feature/fitting admission. It must not regenerate samples, recompute labels or spend a trial budget.
