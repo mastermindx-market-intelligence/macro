@@ -171,7 +171,12 @@ def project_histories(histories: object, *, anchor_market_day: str,
                     or row.get('dataos_identity_admitted') is not False
                     or row.get('source_rights_admitted') is not False):
                 raise Refused(f'{symbol}:ROW_AUTHORITY_CONFLICT')
-            for field in ('source_sha256','source_receipt_id'):
+            # Retained legacy views omit source_receipt_id entirely. The raw
+            # hash remains mandatory; a present-but-null/invalid identity is not
+            # equivalent to a legitimately absent legacy field.
+            identifiers=('source_sha256',) + (('source_receipt_id',)
+                if 'source_receipt_id' in row else ())
+            for field in identifiers:
                 value=row.get(field)
                 if type(value) is not str or not _SHA.fullmatch(value):
                     raise Refused(f'{symbol}:ROW_RECEIPT_INVALID')
@@ -179,8 +184,8 @@ def project_histories(histories: object, *, anchor_market_day: str,
             # or an exact receipt identity, and preserves that caller selector
             # in source_partitions. Both remain bound to the original day.
             matched_refs = {
-                identifier for identifier in (row['source_sha256'], row['source_receipt_id'])
-                if identifier in declared_receipt_days
+                row[field] for field in identifiers
+                if row[field] in declared_receipt_days
             }
             if not matched_refs:
                 raise Refused(f'{symbol}:ROW_SOURCE_NOT_REFERENCED')

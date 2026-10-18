@@ -157,6 +157,31 @@ class Projection(unittest.TestCase):
         self.assertEqual(tuple(s.values for s in by_raw.series),
                          tuple(s.values for s in by_receipt.series))
         self.assertNotEqual(by_raw.digest_sha256,by_receipt.digest_sha256)
+    def test_legacy_rows_without_receipt_id_accept_raw_references(self):
+        self.data={symbol:replace(history,rows=tuple(
+            {k:v for k,v in row.items() if k!='source_receipt_id'}
+            for row in history.rows)) for symbol,history in self.data.items()}
+        result=self.invoke()
+        self.assertEqual(len(result.series),13)
+        self.assertEqual(result.series[0].input_source_digests,(SHA,))
+        self.assertFalse(result.historical_pit_admitted or result.may_trade)
+    def test_present_but_invalid_receipt_id_still_refused(self):
+        for bad in (None,'',True,'c'*63):
+            with self.subTest(bad=bad):
+                x=fixtures()[0]['BIL']
+                self.data['BIL']=replace(x,rows=x.rows[:-1]+(
+                    dict(x.rows[-1],source_receipt_id=bad),))
+                self.assertRaisesRegex(Refused,'ROW_RECEIPT_INVALID',self.invoke)
+    def test_future_row_rejected_even_when_history_end_label_matches(self):
+        x=self.data['BIL']
+        future=dict(x.rows[-1],market_date='2026-10-01')
+        self.data['BIL']=replace(x,rows=x.rows+(future,))
+        self.assertRaisesRegex(Refused,'FUTURE_OUTCOME_ROW',self.invoke)
+    def test_legacy_receipt_only_reference_is_not_invented_from_raw_hash(self):
+        x=self.data['BIL']
+        rows=tuple({k:v for k,v in row.items() if k!='source_receipt_id'} for row in x.rows)
+        self.data['BIL']=replace(x,rows=rows,source_partitions=(('2026-10-12',OTHER),))
+        self.assertRaisesRegex(Refused,'ROW_SOURCE_NOT_REFERENCED',self.invoke)
     def test_source_capture_clock_future_refused(self):
         x=self.data['BIL'];self.data['BIL']=replace(x,rows=x.rows[:-1]+(dict(x.rows[-1],source_observed_at_utc='2026-11-01T14:00:00+00:00',adjustment_asof_utc='2026-11-01T14:00:00+00:00'),))
         self.assertRaisesRegex(Refused,'SOURCE_AFTER_CAPTURE_CUTOFF',self.invoke)
@@ -202,6 +227,7 @@ class Projection(unittest.TestCase):
                 lake=archive.Archive(base/'tiingo', check_mount=False, free_floor=0)
                 result={}
                 receipt_result={}
+                legacy_result={}
                 for j,symbol in enumerate(INPUTS):
                     request=archive.request_path('eod-bars',symbol,{
                         'startDate':self.days[0], 'endDate':ANCHOR})
@@ -217,7 +243,8 @@ class Projection(unittest.TestCase):
                              if json.loads(f.read_text()).get('raw_sha256')==stored['raw_sha256']
                              and json.loads(f.read_text()).get('symbol')==symbol]
                     self.assertEqual(len(matches),1)
-                    self.assertEqual(materialize_one(lake.root,matches[0],free_floor=0)['status'],'WRITTEN')
+                    materialized=materialize_one(lake.root,matches[0],free_floor=0)
+                    self.assertEqual(materialized['status'],'WRITTEN')
                     result[symbol]=read_research_history('eod-bars',symbol,
                         (('2026-10-12',stored['raw_sha256']),),
                         self.days[0],ANCHOR,CUTOFF,root=lake.root,
@@ -226,12 +253,43 @@ class Projection(unittest.TestCase):
                         (('2026-10-12',archive.receipt_identity(matches[0])),),
                         self.days[0],ANCHOR,CUTOFF,root=lake.root,
                         check_mount=False,acknowledge_hindsight=True)
+                    # Emulate the explicitly supported retained legacy view shape,
+                    # in the temporary invented archive only, without rewriting raw bytes.
+                    import hashlib
+                    import pyarrow.parquet as pq
+                    data_file=lake.root/materialized['path']
+                    manifest_file=lake.root/'manifests'/'eod-bars'/'2026-10-12'/(data_file.stem+'.json')
+                    manifest=json.loads(manifest_file.read_text())
+                    self.assertEqual(data_file, lake.root/manifest['output_path'])
+                    table=pq.read_table(data_file).drop(['source_receipt_id'])
+                    pq.write_table(table,data_file)
+                    manifest.pop('source_receipt_id')
+                    manifest['columns']=table.schema.names
+                    manifest['output_sha256']=hashlib.sha256(data_file.read_bytes()).hexdigest()
+                    manifest_file.write_text(json.dumps(manifest))
+                    receipt_file=next(f for f in receipt_files
+                        if json.loads(f.read_text()).get('raw_sha256')==stored['raw_sha256']
+                        and json.loads(f.read_text()).get('symbol')==symbol)
+                    legacy_receipt=json.loads(receipt_file.read_text())
+                    legacy_receipt.pop('receipt_id',None)
+                    receipt_file.write_text(json.dumps(legacy_receipt))
+                    legacy_result[symbol]=read_research_history('eod-bars',symbol,
+                        (('2026-10-12',stored['raw_sha256']),),
+                        self.days[0],ANCHOR,CUTOFF,root=lake.root,
+                        check_mount=False,acknowledge_hindsight=True)
+                    self.assertTrue(all('source_receipt_id' not in row
+                                        for row in legacy_result[symbol].rows))
+                legacy_projection=project_histories(legacy_result,
+                    anchor_market_day=ANCHOR,capture_cutoff_utc=CUTOFF)
                 receipt_projection=project_histories(receipt_result,
                     anchor_market_day=ANCHOR,capture_cutoff_utc=CUTOFF)
                 projection=project_histories(result,anchor_market_day=ANCHOR,
                                               capture_cutoff_utc=CUTOFF)
                 self.assertEqual(tuple(s.values for s in receipt_projection.series),
                                  tuple(s.values for s in projection.series))
+                self.assertEqual(tuple(s.values for s in legacy_projection.series),
+                                 tuple(s.values for s in projection.series))
+                self.assertFalse(legacy_projection.historical_pit_admitted)
                 self.assertNotEqual(receipt_projection.digest_sha256,projection.digest_sha256)
                 self.assertFalse(receipt_projection.historical_pit_admitted)
                 self.assertEqual(len(projection.series),13)
