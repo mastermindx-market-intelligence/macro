@@ -45,6 +45,24 @@ def _resolve(ref,rail,owners,reason_code=None):
   return 'Official notification context is available; it does not establish award revenue.','已有官方通知背景；它不能证明合同收入。',sources
  if owner.owner_kind=='program_ontology':
   evidence={x['evidence_id']:x for x in p['evidence']}
+  if ref['pointer'].startswith('/public_agreement_assertions/'):
+   e=evidence[node['evidence_refs'][0]]
+   url=_primary(node['source_url'],{'www.sda.mil','www.l3harris.com'})
+   sources=[_source(ref['owner_key'],ref,node,node['program_label']+' — prototype agreement announcement',url)]
+   sources[0].update(source_publication_date=node['published_on'],source_available_at=e['known_at'],house_known_at=node['known_at'],documentary_class='prototype_agreement',native_reason_code='prototype_agreement_only')
+   if rail=='next_event':
+    year=node['expected_launch_year']
+    return f'Reported target: launch availability by the end of {year}; this is an expected target, not observed delivery, acceptance or installed capacity.',f'报告预期目标：到{year}年底具备发射条件；这不是已观测交付、验收或已安装产能。',sources
+   def amount(v,zh=False):
+    unit=({'USD_million':'百万美元','USD_billion':'十亿美元'} if zh else {'USD_million':' million USD','USD_billion':' billion USD'})[v['unit']]
+    return ('约' if zh and v['approximate'] else 'approximately ' if v['approximate'] else '')+str(v['value'])+unit
+   en='; '.join(x['name_literal']+': '+amount(x['potential_value'])+(f"; reported quantity {x['announced_vehicles']} vehicles" if x['announced_vehicles'] is not None else '') for x in node['parties'])
+   zh='；'.join(x['name_literal']+'：'+amount(x['potential_value'],True)+(f"；报告载具数量{x['announced_vehicles']}" if x['announced_vehicles'] is not None else '') for x in node['parties'])
+   collective=node['collective_value'];collective_en='';collective_zh=''
+   if collective is not None:
+    collective_en=' Reported overlapping collective view: '+amount(collective)+'; do not add it to named-party values.'
+    collective_zh=' 报告中的重叠合计视图为'+amount(collective,True)+'，不能与具名参与方金额相加。'
+   return node['program_label']+': source reports firm-fixed-price OTA prototype agreements, with total potential agreement values '+en+'.'+collective_en+' These are not observed obligations, issuer revenue or cash; legal counterparty and issuer allocation remain unreviewed.',node['program_label']+'：来源报告固定价格OTA原型协议，协议潜在总金额为'+zh+'。'+collective_zh+'这些不是已观测义务金额、发行人收入或现金；法律交易对手与发行人分配尚未核验。',sources
   if node.get('evidence_class')=='official_alliance_policy':
    url=_primary(node['source_url'],{'www.nato.int'});sources=[_source(ref['owner_key'],ref,node,'The Hague Summit Declaration',url)]
    for item in sources:item.update(house_known_at=node['known_at'],documentary_class='alliance_policy',native_reason_code='policy_commitment_only')
@@ -190,6 +208,12 @@ def _theme_economic_story(theme_id,resolved):
  fms=any(rail=='funding_stage' and kind=='fms' and isinstance(node,dict) and node.get('case_key')=='fms:transmittal:25-104' and node.get('stage')=='congressional_notification' for rail,kind,node in anchors)
  policy=any(rail=='funding_stage' and kind=='program_ontology' and isinstance(node,dict) and node.get('evidence_class')=='official_alliance_policy' and node.get('claim_scopes')==['policy_context'] for rail,kind,node in anchors)
  electric_boat=any(rail=='exposure' and kind=='program_ontology' and isinstance(node,dict) and node.get('program_id')=='acq-program:virginia-class-ssn' and node.get('entity_id')=='legal:gd:electric-boat-corp' and node.get('role')=='prime_contractor' and node.get('verification_state')=='reviewed' for rail,kind,node in anchors)
+ prototype=any(rail=='funding_stage' and kind=='program_ontology' and isinstance(node,dict) and node.get('agreement_form')=='firm_fixed_price_ota_prototype' for rail,kind,node in anchors)
+ if theme_id=='golden_dome' and prototype:
+  return ('Conditional: prototype activity can support development demand, but potential values do not establish delivery timing, production capacity, margins or shareholder capture. Execution costs, milestone acceptance and later funding can interrupt that transmission.',
+   '条件性解读：原型活动可形成研发需求，但潜在金额不能证明交付时间、生产产能、利润率或股东收益。执行成本、里程碑验收及后续资金都可能中断传导。',
+   'Invalidation: funding, acceptance or launch availability does not advance as expected, or later source evidence changes the scope. Verify native award/legal identities and reported delivery and financial evidence before attribution.',
+   '失效条件：资金、验收或发射条件未按预期推进，或后续来源改变范围。归属前需核实原生授予及法律主体身份，以及报告的交付与财务证据。')
  if theme_id=='golden_dome':permitted=budget
  elif theme_id=='space':permitted=finance
  elif theme_id=='nato_fms_demand':permitted=fms and policy
@@ -279,7 +303,8 @@ historical view stays cited, labeled stale, without auto-reminting authority.
    missing_en+=' '+story[0];missing_zh+=' '+story[1]
    next_en.append(story[2]);next_zh.append(story[3])
   out.append(dict(theme_id=theme['theme_id'],rail_states=rail_states,known_en=' '.join(dict.fromkeys(known_en)) or 'No qualified current source evidence is available for this theme.',known_zh=' '.join(dict.fromkeys(known_zh)) or '此主题暂无合格的当前来源证据。',missing_en=missing_en,missing_zh=missing_zh,next_en=' '.join(dict.fromkeys(next_en)) or NEXT[theme['theme_id']][0],next_zh=' '.join(dict.fromkeys(next_zh)) or NEXT[theme['theme_id']][1],sources=dedup,research_state='SOURCE_CONTEXT_COMPLETE' if all(s=='supported' for s in rail_states.values()) else 'EVIDENCE_INSUFFICIENT'))
- result=dict(contract=CONTRACT,schema_version='1.0.0',content_id='',theme_content_id=payload['content_id'],as_of=payload['as_of'],authority=dict(t.AUTHORITY),themes=out)
+ version='1.1.0' if any(source['documentary_class']=='prototype_agreement' for theme in out for source in theme['sources']) else '1.0.0'
+ result=dict(contract=CONTRACT,schema_version=version,content_id='',theme_content_id=payload['content_id'],as_of=payload['as_of'],authority=dict(t.AUTHORITY),themes=out)
  result['content_id']=disclosure_content_id(result);validate_public_theme_disclosure(result);return result
 
 def read_current_theme_owner_receipts(root,*,review,retained_owners):
@@ -332,15 +357,18 @@ def validate_public_theme_disclosure(payload):
  import json
  from pathlib import Path
  from jsonschema import Draft202012Validator,FormatChecker
- schema=json.loads((t._SCHEMA_ROOT/'government_program_theme_public_disclosure.v1.schema.json').read_text())
+ schemas={'1.0.0':'government_program_theme_public_disclosure.v1.schema.json','1.1.0':'government_program_theme_public_disclosure.v1_1.schema.json'}
+ if not isinstance(payload,dict) or payload.get('schema_version') not in schemas:raise ValueError('public_theme_shape_invalid')
+ schema=json.loads((t._SCHEMA_ROOT/schemas[payload['schema_version']]).read_text())
  if next(Draft202012Validator(schema,format_checker=FormatChecker()).iter_errors(payload),None) is not None:raise ValueError('public_theme_shape_invalid')
  if [row['theme_id'] for row in payload['themes']]!=list(t.THEMES) or payload['content_id']!=disclosure_content_id(payload):raise ValueError('public_theme_identity_invalid')
  for row in payload['themes']:
   expected='SOURCE_CONTEXT_COMPLETE' if all(s=='supported' for s in row['rail_states'].values()) else 'EVIDENCE_INSUFFICIENT'
   if row['research_state']!=expected:raise ValueError('public_theme_state_invalid')
-  classes={'congressional_notification':('congressional_notification_only',{'www.dsca.mil'}),'alliance_policy':('policy_commitment_only',{'www.nato.int'}),'allocation_plan':('allocation_plan_only',{'comptroller.war.gov','comptroller.defense.gov'})}
+  classes={'congressional_notification':('congressional_notification_only',{'www.dsca.mil'}),'alliance_policy':('policy_commitment_only',{'www.nato.int'}),'allocation_plan':('allocation_plan_only',{'comptroller.war.gov','comptroller.defense.gov'}),'prototype_agreement':('prototype_agreement_only',{'www.sda.mil','www.l3harris.com'})}
   for source in row['sources']:
    cls=source['documentary_class']
+   if cls=='prototype_agreement' and (payload['schema_version']!='1.1.0' or row['theme_id']!='golden_dome' or any(source[k] is not None for k in ('program_id','issuer_id','security_id'))):raise ValueError('public_prototype_attribution_promotion')
    if cls is None:
     if source['native_reason_code'] is not None:raise ValueError('public_native_class_invalid')
    else:
