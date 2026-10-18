@@ -684,6 +684,9 @@ jobs:
         #     caches, macro series, ~228 adapters. The only bulk producer here.
         #   site/qledger/track_record.json
         #                              -> `run collectors`  (grade_qledger)   GATES
+        #   data/qledger/**, site/qledger/**  CARVED OUT (unstaged, never reverted)
+        #     when any staged qledger blob is within 1 MiB of GitHub's 100 MiB file
+        #     limit — GH001 otherwise rejects the whole market commit (2026-10-16/17).
         #   data/capital_structure/**  -> NOT STAGED HERE. `run collectors`
         #     (sec_capital_structure) rewrites source_manifest.jsonl inside the broad
         #     `data/` add, so it is unstaged again below and belongs to the SECOND
@@ -756,6 +759,30 @@ jobs:
           # its INPUT: reverting it would feed the spine yesterday's manifests every
           # single night. Unstage, do not revert.
           git reset -q -- data/capital_structure site/capital-structure-data 2>/dev/null || true
+          # QLEDGER OVERSIZE CARVE-OUT (2026-10-17). data/qledger/claims.jsonl is an
+          # append-only monolith; once it crossed GitHub's 100 MiB file limit, GH001
+          # rejected this WHOLE commit and the market plane (data/baskets/ohlcv,
+          # data/stocks, breadth, macro) stopped publishing on 2026-10-16 and 10-17
+          # (jobs 116748357565, 117262684428). When any staged qledger blob is within
+          # 1 MiB of the limit (headroom for the rebase onto a moving main), unstage ALL
+          # of data/qledger + site/qledger (one plane: published together or not at
+          # all) and warn. Unstage only, never revert; the ledger's size belongs to the
+          # qledger publication program.
+          qledger_limit=104857600
+          qledger_margin=1048576
+          qledger_over=""
+          while IFS= read -r -d '' qpath; do
+            qsize=$(git cat-file -s ":$qpath" 2>/dev/null || echo unmeasured)
+            case "$qsize" in
+              ''|*[!0-9]*) qledger_over="$qledger_over $qpath=unmeasured" ;;
+              *) if [ "$qsize" -gt $((qledger_limit - qledger_margin)) ]; then qledger_over="$qledger_over $qpath=${qsize}B"; fi ;;
+            esac
+          done < <(git diff --cached --name-only -z --no-renames --diff-filter=d -- data/qledger site/qledger)
+          if [ -n "$qledger_over" ]; then
+            git reset -q -- data/qledger site/qledger
+            echo "qledger_carved=true" >> "$GITHUB_OUTPUT"
+            echo "::warning title=qledger carved out of market commit::staged qledger blob(s) within ${qledger_margin}B of GitHub's ${qledger_limit}B file limit:${qledger_over}; this run's data/qledger + site/qledger are NOT published (owner: qledger publication program); market data is committed without them."
+          fi
           if git diff --cached --quiet; then echo "no market data changes to commit"; exit 0; fi
           git commit -m "data: daily collection $(date -u +%F)"
           echo "committed=true" >> "$GITHUB_OUTPUT"
