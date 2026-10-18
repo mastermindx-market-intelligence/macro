@@ -712,6 +712,8 @@ def _glued_header_columns(
             continue
         if not dates:
             dates = row_dates
+        elif row_dates != dates:
+            return None
         consumed.add(index)
     if not dates:
         return None
@@ -785,6 +787,7 @@ def _compose_grouped_duration_year_row(
         return None
     year_row: int | None = None
     consumed: set[int] = {banner_row}
+    unit_band_consumed = False
     for index in range(banner_row + 1, header_limit):
         cells = rows[index]
         if any(cell["facts"] for cell in cells):
@@ -795,6 +798,9 @@ def _compose_grouped_duration_year_row(
             consumed.add(index)
             continue
         if len(nonempty) == 1 and nonempty[0] in _STATEMENT_UNIT_BANDS:
+            if unit_band_consumed:
+                return None
+            unit_band_consumed = True
             consumed.add(index)
             continue
         year_row = index
@@ -1550,6 +1556,7 @@ def _enforce_cell_period_agreement(
     facts_by_id: Mapping[str, dict[str, Any]],
     contexts: Mapping[str, dict[str, Any]],
     exact_starts: bool,
+    row_preferred_label_roles: list[str | None] | None = None,
 ) -> None:
     """R7: a displayed numeric cell never sits in a column its context contradicts.
 
@@ -1561,8 +1568,13 @@ def _enforce_cell_period_agreement(
     tags) is left as today. A contradiction refuses; a cell is never
     reassigned, reordered or dropped.
     """
-    for spec in displayed_rows:
+    for row_index, spec in enumerate(displayed_rows):
         label = str(spec.get("label") or "")
+        preferred_role = (
+            row_preferred_label_roles[row_index]
+            if row_preferred_label_roles is not None and row_index < len(row_preferred_label_roles)
+            else None
+        )
         for index, html_fact in enumerate(spec.get("value_facts") or []):
             if index >= len(columns):
                 break
@@ -1593,16 +1605,38 @@ def _enforce_cell_period_agreement(
                         day_before_start = (date.fromisoformat(str(start)) - timedelta(days=1)).isoformat()
                     except ValueError:
                         day_before_start = None
-                if period.get("instant_date") not in (column.get("end"), day_before_start):
-                    raise _cell_period_disagreement(
-                        index,
-                        label,
-                        parsed,
-                        period,
-                        column,
-                        "cash position instant is not the column end or the day before the column start",
+                instant_date = period.get("instant_date")
+                column_end = column.get("end")
+                label_lower = label.lower()
+                period_end_in_label = (
+                    "at end of" in label_lower
+                    or "end of period" in label_lower
+                    or "end of year" in label_lower
+                )
+                period_start_row = (
+                    "beginning" in label_lower
+                    or "at january 1" in label_lower
+                    or (
+                        preferred_role == LABEL_PERIOD_START
+                        and not period_end_in_label
                     )
-                continue
+                )
+                if period_start_row:
+                    if "beginning" in label_lower or "at january 1" in label_lower:
+                        if instant_date == day_before_start:
+                            continue
+                    elif instant_date in (day_before_start, column_end):
+                        continue
+                elif instant_date == column_end:
+                    continue
+                raise _cell_period_disagreement(
+                    index,
+                    label,
+                    parsed,
+                    period,
+                    column,
+                    "instant is not the row's period anchor",
+                )
             if kind != "duration":
                 continue
             if period.get("end_date") != column.get("end"):
@@ -1961,14 +1995,8 @@ def reconstruct_statement(
         contexts=contexts,
         explicit_periods=displayed.get("columns_periods"),
     )
-    _enforce_cell_period_agreement(
-        columns=columns,
-        displayed_rows=displayed["rows"],
-        facts_by_id=facts_by_id,
-        contexts=contexts,
-        exact_starts=displayed.get("columns_periods") is not None,
-    )
-    out_rows: list[dict[str, Any]] = []
+    row_presentation: list[dict[str, Any] | None] = []
+    row_preferred_label_roles: list[str | None] = []
     for spec in displayed["rows"]:
         value_facts = spec["value_facts"]
         concept = ""
@@ -1976,6 +2004,25 @@ def reconstruct_statement(
             names = sorted({_prefixed_from_html_name(item.get("name")) for item in value_facts})
             concept = names[0]
         presentation_row = _select_presentation_row(spec, by_concept.get(concept) or [])
+        row_presentation.append(presentation_row)
+        row_preferred_label_roles.append(
+            presentation_row.get("preferred_label_role") if presentation_row else None
+        )
+    _enforce_cell_period_agreement(
+        columns=columns,
+        displayed_rows=displayed["rows"],
+        facts_by_id=facts_by_id,
+        contexts=contexts,
+        exact_starts=displayed.get("columns_periods") is not None,
+        row_preferred_label_roles=row_preferred_label_roles,
+    )
+    out_rows: list[dict[str, Any]] = []
+    for spec, presentation_row in zip(displayed["rows"], row_presentation, strict=True):
+        value_facts = spec["value_facts"]
+        concept = ""
+        if value_facts:
+            names = sorted({_prefixed_from_html_name(item.get("name")) for item in value_facts})
+            concept = names[0]
         preferred = presentation_row.get("preferred_label_role") if presentation_row else None
         path = list(presentation_row["presentation_path"]) if presentation_row else ([concept] if concept else [spec["label"]])
         first_fact = facts_by_id.get(str(value_facts[0].get("fact_id") or "")) if value_facts else None
