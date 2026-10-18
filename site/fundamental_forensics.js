@@ -3087,6 +3087,11 @@
         notice.innerHTML = '';
       }
     }
+    // X2-b+c r4 (MINOR-4): every path that sets or clears a saved-view
+    // refusal ends here — a refused restore, the resolve path, another tab's
+    // edit noticed on render — so Export re-reads the refusal on each of
+    // them instead of only on the next run-meta render.
+    refreshExportState();
   }
 
   // The newer-generation signal: the view was saved against one production

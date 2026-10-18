@@ -2135,6 +2135,55 @@ test('T-R3-MINOR4-button: a saved-view refusal disables Export and names the vie
   }
 });
 
+// ── X2-b+c r4 MINOR-4: the refusal paths themselves refresh Export — no
+// health render in between ────────────────────────────────────────────────
+
+function assertExportRefused(drive, why) {
+  assert.equal(drive.api.ui.exportBtn.disabled, true, why + ': Export is disabled');
+  assert.equal(drive.api.ui.exportBtn.getAttribute('data-tip-en'), 'Export unavailable for this view.', why);
+  assert.equal(drive.api.ui.exportBtn.getAttribute('data-tip-zh'), '此视图暂不支持导出。', why);
+  assert.equal(drive.api.ui.exportWrap.getAttribute('data-tip-en'), 'Export unavailable for this view.',
+    why + ': the wrapper carries the same tip for hover');
+}
+
+test('T-R4-MINOR4-render: another tab\'s edit noticed by renderSavedUI disables Export', async () => {
+  const xlsxCalls = (drive) => drive.fetchCalls.filter((call) => call.url.indexOf('/financial/query.xlsx') >= 0);
+  // changed: tab B unpins the view.
+  {
+    const { drive, row } = await restoredPinnedSettledDrive();
+    assert.equal(drive.api.ui.exportBtn.disabled, false, 'Export starts enabled');
+    const tabB = freshBriefcase(drive.storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+    assert.equal(tabB.update(row.id, { pinned: false }).ok, true, 'tab B unpins the view');
+    drive.api.renderSavedUI();
+    assert.equal(drive.api.state.savedRefusal, 'changed');
+    assertExportRefused(drive, 'changed via renderSavedUI');
+    drive.api.runExport();
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(xlsxCalls(drive).length, 0, 'the disabled control sends no workbook request');
+  }
+  // missing: tab B deletes the view.
+  {
+    const { drive, row } = await restoredPinnedSettledDrive();
+    const tabB = freshBriefcase(drive.storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+    sameJson(tabB.remove(row.id), { ok: true, deleted: true });
+    drive.api.renderSavedUI();
+    assert.equal(drive.api.state.savedRefusal, 'missing');
+    assertExportRefused(drive, 'missing via renderSavedUI');
+  }
+});
+
+test('T-R4-MINOR4-restore: a refused restoreSavedView disables Export', async () => {
+  const { drive, row } = await restoredPinnedSettledDrive();
+  assert.equal(drive.api.ui.exportBtn.disabled, false, 'Export starts enabled');
+  const tabB = freshBriefcase(drive.storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  sameJson(tabB.remove(row.id), { ok: true, deleted: true });
+  const restored = drive.api.restoreSavedView(row.id);
+  assert.equal(restored.ok, false);
+  assert.equal(restored.reason, 'missing');
+  assert.equal(drive.api.state.savedRefusal, 'missing');
+  assertExportRefused(drive, 'missing via restoreSavedView');
+});
+
 // ── PF-3 re-resolve: a pinned view behind a newer generation re-resolves to
 // latest, and the resolve that follows backfills the new answer's digest ────
 
