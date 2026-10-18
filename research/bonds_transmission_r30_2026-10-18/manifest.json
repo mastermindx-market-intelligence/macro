@@ -1,7 +1,7 @@
 {
   "schema": "mastermind.design_handoff.bonds_transmission.r31",
-  "operation_id": "bonds-transmission-r31-20261018",
-  "status": "design_complete",
+  "operation_id": "bonds-transmission-r32-20261018",
+  "status": "native_design_applied_reference_in_progress",
   "paper_file_id": "01M2WGNCX9475G79JRKJTCM08P",
   "owned_pages": [
     "p-1H-0",
@@ -10,7 +10,7 @@
   "excluded_pages": [
     "p-1F-0"
   ],
-  "procedure_pin": "mastermindx-market-intelligence/Mastermind@0d51da5463a18a251905ec0ef5a580ccdb0b3546",
+  "procedure_pin": "ef4be2f5c9b0b82fc11be83f03cf7bcdb8cea6f2",
   "source_pin": "mastermindx-market-intelligence/macro@62a3f9ad070c7583687aef8c30d53fd1764c6aab",
   "predecessor": "Macro #8147; R26 #8326 source milestone, production/model claims not inherited",
   "carrier": "mastermind_paper accepted schema 1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db",
@@ -22,55 +22,55 @@
       "sidebar": "63GN-1",
       "topbar": "63GP-1",
       "body": "63GQ-1",
-      "name": "R30 · 01 Bonds Desk · Light EN"
+      "name": "R32 · 01 Bonds Desk · Light EN"
     },
     "curve": {
       "id": "63S3-1",
       "page": "p-1H-0",
       "topbar": "63TU-1",
       "body": "63TV-1",
-      "name": "R30 · 02 Curve & Duration · Light EN"
+      "name": "R32 · 02 Curve & Duration · Light EN"
     },
     "credit": {
       "id": "63YS-1",
       "page": "p-1H-0",
       "topbar": "640J-1",
       "body": "640K-1",
-      "name": "R30 · 03 Issuer & Credit Case · Light EN"
+      "name": "R32 · 03 Issuer & Credit Case · Light EN"
     },
     "capital": {
       "id": "648A-1",
       "page": "p-1H-0",
       "topbar": "64A1-1",
       "body": "64A2-1",
-      "name": "R30 · 04 Capital Competition · Light EN"
+      "name": "R32 · 04 Capital Competition · Light EN"
     },
     "transmission": {
       "id": "64G1-1",
       "page": "p-1E-0",
       "topbar": "64HS-1",
       "body": "64HT-1",
-      "name": "R30 · 05 Transmission Desk · Light EN"
+      "name": "R32 · 05 Transmission Desk · Light EN"
     },
     "scenario": {
       "id": "64PQ-1",
       "page": "p-1E-0",
       "topbar": "64RH-1",
       "body": "64RI-1",
-      "name": "R30 · 06 Case Workspace · Scenarios · EN"
+      "name": "R32 · 06 Case Workspace · Outlook & Scenarios · EN"
     },
     "replay": {
       "id": "64WP-1",
       "page": "p-1E-0",
       "topbar": "64YG-1",
       "body": "64YH-1",
-      "name": "R30 · 07 Case Workspace · Replay · EN"
+      "name": "R32 · 07 Case Workspace · Replay · EN"
     },
     "overlays": {
       "id": "65YV-1",
       "page": "p-1E-0",
       "body": "65YW-1",
-      "name": "R30 · S01 Overlays & Interaction Scorecards",
+      "name": "R32 · S01 Overlays & Interaction Scorecards",
       "type": "implementation_specimen"
     },
     "tools": {
@@ -115,7 +115,7 @@
       "page": "p-1E-0",
       "topbar": "672G-1",
       "body": "672H-1",
-      "name": "R30 · 08 Saved Cases & Change Review · EN"
+      "name": "R32 · 08 Saved Cases & Change Review · EN"
     },
     "tablet": {
       "id": "676M-1",
@@ -143,21 +143,21 @@
       "id": "67ZC-1",
       "page": "p-1H-0",
       "body": "67ZD-1",
-      "name": "R30 · S05 Implementation Map & Data Contract",
+      "name": "R32 · S05 Implementation Map & Data Contract",
       "type": "implementation_specimen"
     },
     "start_bonds": {
       "id": "6885-1",
       "page": "p-1H-0",
       "body": "6886-1",
-      "name": "R30 · START · Bonds Journey & Build References",
+      "name": "R32 · START · Bonds Journey & Build References",
       "type": "navigation_index"
     },
     "start_transmission": {
       "id": "6894-1",
       "page": "p-1E-0",
       "body": "6895-1",
-      "name": "R30 · START · Transmission Journey & Build Map",
+      "name": "R32 · START · Transmission Journey & Build Map",
       "type": "navigation_index"
     },
     "depth": {
@@ -170,7 +170,7 @@
     "continuity": {
       "id": "6C1S-1",
       "page": "p-1E-0",
-      "name": "R31 · S07 Flow Evidence & Case Continuity",
+      "name": "R32 · S07 Flow, Drafts & Case Continuity",
       "body": "6C21-1",
       "type": "implementation_specimen"
     }
@@ -186,7 +186,9 @@
     "forecast_validated": false,
     "canonical_case_and_alert_owners_identified": true,
     "bond_case_payload_extensions_implemented": false,
-    "compound_monitor_implemented": false
+    "compound_monitor_implemented": false,
+    "interactive_reference_built": false,
+    "interactive_reference_verified": false
   },
   "pending": [
     "Extend the existing Investigation admission/resolver path for bond evidence and retained scenarios",
@@ -204,7 +206,7 @@
     "Terminal Investigation v2",
     "Terminal Alerts"
   ],
-  "completed_at": "2026-10-18T05:33:59.794Z",
+  "completed_at": null,
   "counts": {
     "routes": 8,
     "interactions": 15,
@@ -333,7 +335,7 @@
       "I04",
       "Case monitor composer",
       "665W-1",
-      "Monitor this view/case, Use this path or Manage monitors.",
+      "Review conditions / next test",
       "Fresh valid invalidation outranks confirmation. Unknown critical evidence blocks confirmation. The fifth eligible close is evaluated before expiry. Pauses do not extend the window silently. Late data cannot silently reopen or backdate a terminal outcome. Duplicate saves have one canonical effect."
     ],
     [
@@ -410,7 +412,7 @@
       "I15",
       "Save + compare",
       "6CEV-1",
-      "Save analysis; Saved cases Review changed evidence / Review saved contents",
+      "Review save options; Review draft; Review changed evidence / saved contents",
       "Question saved does not mean scenario retained. Exact read failure never falls through to latest. Original operation receipt controls uncertainty; conflict preserves draft."
     ]
   ],
@@ -472,7 +474,7 @@
   "validation": {
     "schema": "mastermind.design_validation.bonds_transmission.r31",
     "at": "2026-10-18T05:33:59.794Z",
-    "status": "design_and_reference_handoff_validated",
+    "status": "native_design_reviewed_reference_pending",
     "native": {
       "mutations": 96,
       "applied_response_observed": 96,
@@ -1065,9 +1067,15 @@
       "Forecast calibration",
       "Trading",
       "Deployment"
-    ]
+    ],
+    "r32": {
+      "boards": 21,
+      "nodeCount": 4067,
+      "unique": 4067,
+      "duplicates": []
+    }
   },
-  "revision": "R30 + R31",
+  "revision": "R32",
   "source_pins": {
     "macro": "mastermindx-market-intelligence/macro@4f52d22596545cbd67b5143e188baf5660237024",
     "terminal": "mastermindx-market-intelligence/mastermind-terminal@d6515f47232538161af8d3d4c27064165eda40fe",
@@ -1172,6 +1180,27 @@
     "native_effects_file": "r31/native_effects.json",
     "binding_file": "r31/source_bindings.json",
     "mutations_observed": 96,
-    "reconciled_foreign_attachment_incidents": 1
+    "reconciled_foreign_attachment_incidents": 1,
+    "accepted_commit": "1bfbb96c3e7a4c2c6db26f510fbfcbf908b983ca"
+  },
+  "r32_nodes": {
+    "outlook": "6GTF-0",
+    "context": "6GUI-0",
+    "handoffRow": "6GZW-0",
+    "handoffLeft": "6H13-0",
+    "handoffRight": "6H1F-0",
+    "draftReview": "6H13-0",
+    "draftScore": "6H1F-0",
+    "contextMismatch": "6H4O-0",
+    "pathCompare": "6H4X-0",
+    "pathAlternates": "6HB4-0",
+    "triggerFollowthrough": "6HBO-0",
+    "pathScore": "6HC9-0"
+  },
+  "r32_record": {
+    "native_effects": "r32/native_effects.json",
+    "implementation": "r32/implementation.md",
+    "reference": "r32/reference/index.html",
+    "reference_status": "IN_PROGRESS"
   }
 }

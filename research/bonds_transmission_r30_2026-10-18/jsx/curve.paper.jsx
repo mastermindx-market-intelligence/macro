@@ -1,7 +1,7 @@
-/* R30 + R31 editable Paper reference. UI/data/effects are not wired.
+/* R30–R32 editable Paper reference. Runtime services are not wired.
  * Page: https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1H-0
- * Artboard: 63S3-1 — R30 · 02 Curve & Duration · Light EN
- * Use existing Mastermind tokens and runtime component owners.
+ * Artboard: 63S3-1 — R32 · 02 Curve & Duration · Light EN
+ * Reuse existing Mastermind component, data, auth and state owners.
  */
 export default function CurveReference() {
   return (
@@ -185,7 +185,7 @@ export default function CurveReference() {
                   </div>
                   <div id="63UL-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info)', borderColor: 'var(--mx-light-info)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
                     <div id="63UM-1" style={{ boxSizing: 'border-box', color: '#FFFFFF', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                      Save analysis
+                      Review save options
                     </div>
                   </div>
                 </div>
@@ -529,7 +529,7 @@ export default function CurveReference() {
                   </div>
                   <div id="63YP-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info)', borderColor: 'var(--mx-light-info)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
                     <div id="63YQ-1" style={{ boxSizing: 'border-box', color: '#FFFFFF', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                      Monitor this condition
+                      Review conditions
                     </div>
                   </div>
                 </div>

@@ -1,7 +1,7 @@
-/* R30 editable Paper reference. UI/data/effects are not wired.
+/* R30–R32 editable Paper reference. Runtime services are not wired.
  * Page: https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1E-0
  * Artboard: 66HU-1 — R30 · M02 Transmission · Mobile Light EN
- * Use existing Mastermind tokens and runtime component owners.
+ * Reuse existing Mastermind component, data, auth and state owners.
  */
 export default function MobileTransmissionReference() {
   return (
@@ -91,18 +91,18 @@ export default function MobileTransmissionReference() {
               </div>
               <div id="66IX-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
                 <div id="66IY-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
-                  Partly supported
+                  Consistent response
                 </div>
               </div>
               <div id="66IZ-1" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div id="66J0-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                  SUPPORTS
+                  CONSISTENT OBSERVATION
                 </div>
                 <div id="66J1-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-up)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 500, lineHeight: '20px' }}>
                   Policy expectations move lower.
                 </div>
                 <div id="66J2-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                  COULD STOP THIS PATH
+                  COUNTERVAILING FORCE
                 </div>
                 <div id="66J3-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-down)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 500, lineHeight: '20px' }}>
                   Inflation lifts the term premium.
@@ -203,7 +203,7 @@ export default function MobileTransmissionReference() {
           </div>
           <div id="66K5-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info)', borderColor: 'var(--mx-light-info)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', height: '46px', justifyContent: 'center', paddingInline: '14px' }}>
             <div id="66K6-1" style={{ boxSizing: 'border-box', color: '#FFFFFF', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '18px' }}>
-              Monitor
+              Conditions
             </div>
           </div>
         </div>

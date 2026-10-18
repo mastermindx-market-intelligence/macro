@@ -1,7 +1,7 @@
-/* R30 + R31 editable Paper reference. UI/data/effects are not wired.
+/* R30–R32 editable Paper reference. Runtime services are not wired.
  * Page: https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1E-0
- * Artboard: 64G1-1 — R30 · 05 Transmission Desk · Light EN
- * Use existing Mastermind tokens and runtime component owners.
+ * Artboard: 64G1-1 — R32 · 05 Transmission Desk · Light EN
+ * Reuse existing Mastermind component, data, auth and state owners.
  */
 export default function TransmissionReference() {
   return (
@@ -185,7 +185,7 @@ export default function TransmissionReference() {
                   </div>
                   <div id="64IJ-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info)', borderColor: 'var(--mx-light-info)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
                     <div id="64IK-1" style={{ boxSizing: 'border-box', color: '#FFFFFF', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                      Monitor this case
+                      Review conditions
                     </div>
                   </div>
                 </div>
@@ -199,7 +199,7 @@ export default function TransmissionReference() {
               </div>
               <div id="64IP-1" style={{ boxSizing: 'border-box', paddingBottom: '12px', paddingInline: '12px' }}>
                 <div id="64IQ-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 500, lineHeight: '19px', width: 'max-content' }}>
-                  Change assumptions
+                  Outlook & scenarios
                 </div>
               </div>
               <div id="64IR-1" style={{ boxSizing: 'border-box', paddingBottom: '12px', paddingInline: '12px' }}>
@@ -364,31 +364,31 @@ export default function TransmissionReference() {
                   </div>
                   <div id="64KP-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
                     <div id="64KQ-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
-                      Partly supported
+                      Consistent response
                     </div>
                   </div>
                 </div>
                 <div id="64KR-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '24px', fontWeight: 600, lineHeight: '34px' }}>
-                  Growth expectations weaken.
+                  Growth repricing fits.
                 </div>
                 <div id="64KS-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '20px' }}>
                   A lower policy path can support Treasuries while weaker earnings pressure equities.
                 </div>
                 <div id="64KT-1" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   <div id="64KU-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                    SUPPORTS THIS PATH
+                    CONSISTENT OBSERVATION
                   </div>
                   <div id="64KV-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-up)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 500, lineHeight: '20px' }}>
                     Short-rate expectations decline.
                   </div>
                   <div id="64KW-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                    WHAT COULD STOP IT?
+                    COUNTERVAILING FORCE
                   </div>
                   <div id="64KX-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-down)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 500, lineHeight: '20px' }}>
                     Inflation or fiscal risk lifts the term premium.
                   </div>
                   <div id="64KY-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                    NEXT INDEPENDENT CHECK
+                    NEXT DISCRIMINATING CHECK
                   </div>
                   <div id="64KZ-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 500, lineHeight: '20px' }}>
                     Earnings revisions and new financing terms.
@@ -422,7 +422,7 @@ export default function TransmissionReference() {
               <div id="64LB-1" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
                 <div id="64LC-1" style={{ alignItems: 'center', borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '14px', paddingBottom: '12px' }}>
                   <div id="64LD-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, lineHeight: '16px', width: '205px' }}>
-                    Independent family
+                    Evidence group
                   </div>
                   <div id="64LE-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, lineHeight: '16px', width: '215px' }}>
                     Observed change
@@ -519,7 +519,7 @@ export default function TransmissionReference() {
                 </div>
                 <div id="64MD-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info)', borderColor: 'var(--mx-light-info)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
                   <div id="64ME-1" style={{ boxSizing: 'border-box', color: '#FFFFFF', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                    Change assumptions →
+                    Open outlook →
                   </div>
                 </div>
               </div>

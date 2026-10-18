@@ -1,7 +1,7 @@
-/* R30 + R31 editable Paper reference. UI/data/effects are not wired.
+/* R30–R32 editable Paper reference. Runtime services are not wired.
  * Page: https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1H-0
  * Artboard: 6693-1 — R30 · S02 Advanced Tools & Scorecards
- * Use existing Mastermind tokens and runtime component owners.
+ * Reuse existing Mastermind component, data, auth and state owners.
  */
 export default function ToolsReference() {
   return (

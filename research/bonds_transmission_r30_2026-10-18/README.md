@@ -1,3 +1,7 @@
+# R32 current refinement
+
+The native R32 design is applied. See [R32 journey contracts](r32/implementation.md) for visible tool returns, outlook comparison, exact change review and honest save/activation states. The executable reference is being completed in the same branch.
+
 # Bonds × Transmission R30 + R31 — design handoff
 
 **Status: Paper design and behavior specified. Existing runtime owners are identified; their bond-specific extensions, live data binding and empirical qualification remain implementation work.**

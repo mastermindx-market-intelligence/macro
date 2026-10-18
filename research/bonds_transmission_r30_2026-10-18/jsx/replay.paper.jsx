@@ -1,7 +1,7 @@
-/* R30 editable Paper reference. UI/data/effects are not wired.
+/* R30–R32 editable Paper reference. Runtime services are not wired.
  * Page: https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1E-0
- * Artboard: 64WP-1 — R30 · 07 Case Workspace · Replay · EN
- * Use existing Mastermind tokens and runtime component owners.
+ * Artboard: 64WP-1 — R32 · 07 Case Workspace · Replay · EN
+ * Reuse existing Mastermind component, data, auth and state owners.
  */
 export default function ReplayReference() {
   return (
@@ -185,7 +185,7 @@ export default function ReplayReference() {
                   </div>
                   <div id="64Z7-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info)', borderColor: 'var(--mx-light-info)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
                     <div id="64Z8-1" style={{ boxSizing: 'border-box', color: '#FFFFFF', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                      Save episode set
+                      Review save options
                     </div>
                   </div>
                 </div>
@@ -199,7 +199,7 @@ export default function ReplayReference() {
               </div>
               <div id="64ZD-1" style={{ boxSizing: 'border-box', paddingBottom: '12px', paddingInline: '12px' }}>
                 <div id="64ZE-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 500, lineHeight: '19px', width: 'max-content' }}>
-                  Change assumptions
+                  Outlook & scenarios
                 </div>
               </div>
               <div id="64ZF-1" style={{ borderBottomColor: 'var(--mx-light-info)', borderBottomStyle: 'solid', borderBottomWidth: '2px', boxSizing: 'border-box', paddingBottom: '12px', paddingInline: '12px' }}>
@@ -238,7 +238,7 @@ export default function ReplayReference() {
               </div>
               <div id="64ZT-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
                 <div id="64ZU-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                  Change assumptions →
+                  Open outlook →
                 </div>
               </div>
             </div>

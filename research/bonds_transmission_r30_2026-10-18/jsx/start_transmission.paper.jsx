@@ -1,7 +1,7 @@
-/* R30 + R31 editable Paper reference. UI/data/effects are not wired.
+/* R30–R32 editable Paper reference. Runtime services are not wired.
  * Page: https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1E-0
- * Artboard: 6894-1 — R30 · START · Transmission Journey & Build Map
- * Use existing Mastermind tokens and runtime component owners.
+ * Artboard: 6894-1 — R32 · START · Transmission Journey & Build Map
+ * Reuse existing Mastermind component, data, auth and state owners.
  */
 export default function StartTransmissionReference() {
   return (
@@ -10,7 +10,7 @@ export default function StartTransmissionReference() {
         <div id="6896-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '24px', justifyContent: 'space-between' }}>
           <div id="6897-1" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <div id="6898-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', lineHeight: '17px' }}>
-              MASTERMIND / R30 + R31
+              R30–R32 · current design
             </div>
             <div id="6899-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '34px', fontWeight: 700, lineHeight: '48px' }}>
               Follow the transmission

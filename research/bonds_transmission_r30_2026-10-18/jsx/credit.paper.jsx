@@ -1,7 +1,7 @@
-/* R30 editable Paper reference. UI/data/effects are not wired.
+/* R30–R32 editable Paper reference. Runtime services are not wired.
  * Page: https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1H-0
- * Artboard: 63YS-1 — R30 · 03 Issuer & Credit Case · Light EN
- * Use existing Mastermind tokens and runtime component owners.
+ * Artboard: 63YS-1 — R32 · 03 Issuer & Credit Case · Light EN
+ * Reuse existing Mastermind component, data, auth and state owners.
  */
 export default function CreditReference() {
   return (
@@ -185,7 +185,7 @@ export default function CreditReference() {
                   </div>
                   <div id="641A-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info)', borderColor: 'var(--mx-light-info)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
                     <div id="641B-1" style={{ boxSizing: 'border-box', color: '#FFFFFF', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                      Monitor this case
+                      Review conditions
                     </div>
                   </div>
                 </div>
@@ -250,7 +250,7 @@ export default function CreditReference() {
             <div id="6421-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '16px' }}>
               <div id="6422-1" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '10px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '10px', padding: '18px' }}>
                 <div id="6423-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                  CREDIT REPRICING
+                  ISSUER CDS CHANGE
                 </div>
                 <div id="6424-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
                   <div id="6425-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-down)', fontFamily: 'system-ui, sans-serif', fontSize: '24px', fontWeight: 600, lineHeight: '34px' }}>
@@ -269,7 +269,7 @@ export default function CreditReference() {
                 </div>
                 <div id="642A-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
                   <div id="642B-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-warn)', fontFamily: 'system-ui, sans-serif', fontSize: '24px', fontWeight: 600, lineHeight: '34px' }}>
-                    3 of 12
+                    5 of 12
                   </div>
                   <div id="642C-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-warn-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
                     <div id="642D-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-warn)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>

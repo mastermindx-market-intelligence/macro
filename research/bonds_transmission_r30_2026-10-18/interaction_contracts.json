@@ -60,9 +60,13 @@
     "effect": "Read-only interpretation; Add to scenario carries the hypothesis into route 06.",
     "acceptance": "Growth, substitution, safety demand and funding squeeze remain distinct. A Treasury price response does not fill a missing buyer-allocation link. Dashed edges carry no flow volume or causal proof.",
     "extension_nodes": [
-      "6DBB-1"
+      "6DBB-1",
+      "6H4X-0",
+      "6HB4-0"
     ],
-    "r31_behavior": "Price structure opens I13; buyer flows opens I14. Preserve the same hypothesis and observation cutoff."
+    "r31_behavior": "Price structure opens I13; buyer flows opens I14. Preserve the same hypothesis and observation cutoff.",
+    "r32_behavior": "Select an outlook locally; show its market test, discriminating evidence and next clock. Hypotheses are unranked/nonexclusive. Source groups do not establish independence; no support count or odds.",
+    "r32_acceptance": "A changed outlook revalidates attached rules. Trigger, later continuation and proposed cause remain separate."
   },
   {
     "id": "I04",
@@ -76,14 +80,15 @@
       "08"
     ],
     "node": "665W-1",
-    "entry": "Monitor this view/case, Use this path or Manage monitors.",
+    "entry": "Review conditions / next test",
     "behavior": "Inherit the case revision and show all confirmation conditions, explicit invalidators, source freshness/alignment policy, session expiry and delivery mode before saving. A composer preview explains unresolved data. Canonical persistence and activation are different outcomes.",
     "dependencies": "Existing Terminal Alerts and Investigation v2 owners located at terminal d6515f47232538161af8d3d4c27064165eda40fe. Current Alerts admission does not accept arbitrary yield + credit + funding AND conditions; extend the existing schema/evaluator/dry-run/receipt path before activation.",
-    "states": "Draft, saving, saved, effect uncertain, save failed, waiting, data paused, confirmed while watching, invalidated, expired, window closed.",
+    "states": "Local draft, unavailable activation, waiting, data paused, matched event, invalidated, expired, closed window; later outlook reviewed separately.",
     "effect": "A user-directed configuration save through the canonical owner. This design task activated no monitor or notification.",
     "acceptance": "Fresh valid invalidation outranks confirmation. Unknown critical evidence blocks confirmation. The fifth eligible close is evaluated before expiry. Pauses do not extend the window silently. Late data cannot silently reopen or backdate a terminal outcome. Duplicate saves have one canonical effect.",
     "current_capability": "unavailable_for_compound_bond_rule",
-    "r31_acceptance": "No activation or equivalent claim from split independent alerts; preserve the complete authored rule and show the unsupported state."
+    "r31_acceptance": "No activation or equivalent claim from split independent alerts; preserve the complete authored rule and show the unsupported state.",
+    "r32_behavior": "Current compound activation is visibly unavailable in the main composer. Keep working preserves the local draft. A matched event remains immutable when later continuation is challenged."
   },
   {
     "id": "I05",
@@ -267,12 +272,17 @@
     ],
     "node": "6CEV-1",
     "alternate_node": "6CLB-1",
-    "entry": "Save analysis; Saved cases Review changed evidence / Review saved contents",
+    "entry": "Review save options; Review draft; Review changed evidence / saved contents",
     "behavior": "Review admitted contents before saving; preserve explicit partial-success language, immutable saved revision versus latest, operation receipts and conflict recovery.",
     "dependencies": "Existing Terminal Investigation v2. Bond evidence/scenario admission and exact resolvers require extension; selected supported subject references must pass the owner.",
     "states": "Question-only capability, full-save unavailable, question saved, saved exact-read unavailable, operation uncertain, revision conflict, complete-case synthetic future state.",
     "effect": "Only explicit admitted Investigation command. No unsupported payload hidden in text; no monitoring activation.",
     "acceptance": "Question saved does not mean scenario retained. Exact read failure never falls through to latest. Original operation receipt controls uncertainty; conflict preserves draft.",
-    "reference": "r31/implementation.md#i15--retained-research-and-change-review"
+    "reference": "r31/implementation.md#i15--retained-research-and-change-review",
+    "extension_nodes": [
+      "6H13-0",
+      "6H4O-0"
+    ],
+    "r32_behavior": "Typed tool additions visibly enter the same local draft with source, relationship and observation period. Inspect, remove and undo preserve unrelated edits. Borrower/series/horizon/cutoff conflicts require review; no silent cross-entity attachment."
   }
 ]

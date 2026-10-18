@@ -1,7 +1,7 @@
-/* R30 + R31 editable Paper reference. UI/data/effects are not wired.
+/* R30–R32 editable Paper reference. Runtime services are not wired.
  * Page: https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1H-0
- * Artboard: 67ZC-1 — R30 · S05 Implementation Map & Data Contract
- * Use existing Mastermind tokens and runtime component owners.
+ * Artboard: 67ZC-1 — R32 · S05 Implementation Map & Data Contract
+ * Reuse existing Mastermind component, data, auth and state owners.
  */
 export default function ImplementationReference() {
   return (
@@ -16,12 +16,12 @@ export default function ImplementationReference() {
               Build the complete journey
             </div>
             <div id="67ZI-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '20px' }}>
-              Eight routes and fifteen tools share one investigation. Runtime and model qualification remain separate.
+              Eight routes and fifteen tools share one investigation. R32 adds visible tool handoffs and conditional outlook review.
             </div>
           </div>
           <div id="67ZJ-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel2)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
             <div id="67ZK-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', display: 'flex', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
-              R30 + R31 · design specification
+              R30–R32 · design specification
             </div>
           </div>
         </div>
@@ -125,10 +125,10 @@ export default function ImplementationReference() {
               06
             </div>
             <div id="6811-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '192px' }}>
-              Scenario
+              Outlook & scenarios
             </div>
             <div id="6812-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '422px' }}>
-              Change assumptions; retain confirmation and failure.
+              Read the next test; compare explanations and stress assumptions.
             </div>
             <div id="6813-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '620px' }}>
               I02 Curve shape · I05 Cash timing · I04 Monitor
@@ -241,7 +241,7 @@ export default function ImplementationReference() {
               Monitor composer
             </div>
             <div id="6828-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '365px' }}>
-              Monitor / use this path
+              Review conditions / next test
             </div>
             <div id="6829-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '677px' }}>
               Explicit basket, clock, expiry and state precedence.
@@ -570,7 +570,7 @@ export default function ImplementationReference() {
               </div>
             </div>
             <div id="685T-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px', width: '835px' }}>
-              Context, source clocks, formulas, monitoring precedence and replay disclosure.
+              Typed tool returns, source clocks, formulas, rule precedence, replay and exact revision recovery.
             </div>
           </div>
           <div id="685U-1" style={{ alignItems: 'center', borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '18px', paddingBlock: '13px' }}>

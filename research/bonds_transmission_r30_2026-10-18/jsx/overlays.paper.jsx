@@ -1,7 +1,7 @@
-/* R30 + R31 editable Paper reference. UI/data/effects are not wired.
+/* R30–R32 editable Paper reference. Runtime services are not wired.
  * Page: https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1E-0
- * Artboard: 65YV-1 — R30 · S01 Overlays & Interaction Scorecards
- * Use existing Mastermind tokens and runtime component owners.
+ * Artboard: 65YV-1 — R32 · S01 Overlays & Interaction Scorecards
+ * Reuse existing Mastermind component, data, auth and state owners.
  */
 export default function OverlaysReference() {
   return (
@@ -390,18 +390,18 @@ export default function OverlaysReference() {
             <div id="665W-1" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '16px', minHeight: '742px', padding: '20px' }}>
               <div id="665X-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between' }}>
                 <div id="665Y-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '23px', fontWeight: 700, lineHeight: '33px' }}>
-                  Monitor this case
+                  Review conditions
                 </div>
                 <div id="665Z-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '24px', lineHeight: '34px' }}>
                   ×
                 </div>
               </div>
               <div id="6660-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 500, lineHeight: '20px' }}>
-                AI funding → Treasury continuation
+                Treasury / credit test · local draft
               </div>
               <div id="6661-1" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div id="6662-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                  CONFIRMATION · ALL MUST HOLD
+                  MATCH RULE · ALL MUST HOLD
                 </div>
                 <div id="6663-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel2)', borderRadius: '8px', boxSizing: 'border-box', display: 'flex', gap: '10px', padding: '14px' }}>
                   <div id="6664-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
@@ -465,7 +465,7 @@ export default function OverlaysReference() {
                     EXPIRES
                   </div>
                   <div id="666S-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
-                    After 5 sessions
+                    After 5 eligible closes
                   </div>
                 </div>
                 <div id="666T-1" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '6px' }}>
@@ -473,27 +473,27 @@ export default function OverlaysReference() {
                     DELIVERY
                   </div>
                   <div id="666V-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
-                    In-app · once per change
+                    Not active
                   </div>
                 </div>
               </div>
               <div id="666W-1" style={{ backgroundColor: 'var(--mx-light-info-soft)', borderRadius: '8px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px', padding: '16px' }}>
                 <div id="666X-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                  PREVIEW
+                  ACTIVATION UNAVAILABLE
                 </div>
                 <div id="666Y-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 500, lineHeight: '20px' }}>
-                  Notify only after both confirmations. Missing data keeps the case unresolved.
+                  The full yield + credit + funding rule is not supported yet. Keep these conditions in your draft.
                 </div>
               </div>
               <div id="666Z-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', justifyContent: 'end' }}>
                 <div id="6670-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
                   <div id="6671-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                    Cancel
+                    Keep working
                   </div>
                 </div>
-                <div id="6672-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info)', borderColor: 'var(--mx-light-info)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
-                  <div id="6673-1" style={{ boxSizing: 'border-box', color: '#FFFFFF', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                    Save monitor
+                <div id="6672-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel2)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
+                  <div id="6673-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
+                    Activation unavailable
                   </div>
                 </div>
               </div>

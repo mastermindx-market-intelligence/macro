@@ -1,7 +1,7 @@
-/* R30 + R31 editable Paper reference. UI/data/effects are not wired.
+/* R30–R32 editable Paper reference. Runtime services are not wired.
  * Page: https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1E-0
- * Artboard: 64PQ-1 — R30 · 06 Case Workspace · Scenarios · EN
- * Use existing Mastermind tokens and runtime component owners.
+ * Artboard: 64PQ-1 — R32 · 06 Case Workspace · Outlook & Scenarios · EN
+ * Reuse existing Mastermind component, data, auth and state owners.
  */
 export default function ScenarioReference() {
   return (
@@ -134,7 +134,7 @@ export default function ScenarioReference() {
                 /
               </div>
               <div id="64RN-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '19px' }}>
-                Transmission / Change assumptions
+                Transmission / Outlook & scenarios
               </div>
             </div>
             <div id="64RO-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '16px' }}>
@@ -160,7 +160,7 @@ export default function ScenarioReference() {
             <div id="64RW-1" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div id="64RX-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between' }}>
                 <div id="64RY-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                  CASE WORKSPACE · CHANGE ASSUMPTIONS
+                  CASE WORKSPACE · OUTLOOK & SCENARIOS
                 </div>
                 <div id="64RZ-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel2)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
                   <div id="64S0-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
@@ -174,7 +174,7 @@ export default function ScenarioReference() {
                     Test what happens next
                   </div>
                   <div id="64S4-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '20px' }}>
-                    Change assumptions, compare conditional paths and monitor the next meaningful test.
+                    Follow the next test, challenge the explanation, and stress the exposure.
                   </div>
                 </div>
                 <div id="64S5-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px' }}>
@@ -185,7 +185,7 @@ export default function ScenarioReference() {
                   </div>
                   <div id="64S8-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info)', borderColor: 'var(--mx-light-info)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
                     <div id="64S9-1" style={{ boxSizing: 'border-box', color: '#FFFFFF', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                      Save scenario
+                      Review save options
                     </div>
                   </div>
                 </div>
@@ -199,7 +199,7 @@ export default function ScenarioReference() {
               </div>
               <div id="64SE-1" style={{ borderBottomColor: 'var(--mx-light-info)', borderBottomStyle: 'solid', borderBottomWidth: '2px', boxSizing: 'border-box', paddingBottom: '12px', paddingInline: '12px' }}>
                 <div id="64SF-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '19px', width: 'max-content' }}>
-                  Change assumptions
+                  Outlook & scenarios
                 </div>
               </div>
               <div id="64SG-1" style={{ boxSizing: 'border-box', paddingBottom: '12px', paddingInline: '12px' }}>
@@ -213,27 +213,129 @@ export default function ScenarioReference() {
                 </div>
               </div>
             </div>
-            <div id="64SK-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between' }}>
-              <div id="64SL-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px' }}>
-                <div id="64SM-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
-                  <div id="64SN-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                    AI funding → safe assets ▾
+            <div id="6GUI-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div id="6GUJ-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '16px', justifyContent: 'space-between' }}>
+                <div id="6GUK-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px' }}>
+                  <div id="6GUL-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '40px', paddingInline: '14px' }}>
+                    <div id="6GUM-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
+                      AI funding → safe assets ▾
+                    </div>
+                  </div>
+                  <div id="6GUN-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '5px', paddingInline: '10px' }}>
+                    <div id="6GUO-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
+                      1–5 sessions
+                    </div>
+                  </div>
+                  <div id="6GUP-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel2)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '5px', paddingInline: '10px' }}>
+                    <div id="6GUQ-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
+                      Local draft
+                    </div>
                   </div>
                 </div>
-                <div id="64SO-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
-                  <div id="64SP-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
-                    1–5 sessions
-                  </div>
-                </div>
-                <div id="64SQ-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-warn-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
-                  <div id="64SR-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-warn)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
-                    Manual assumptions
+                <div id="6GUR-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '40px', paddingInline: '14px' }}>
+                  <div id="6GUS-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
+                    Review draft · 2
                   </div>
                 </div>
               </div>
-              <div id="64SS-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
-                <div id="64ST-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                  Compare episodes →
+              <div id="6GUT-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info-soft)', borderRadius: '8px', boxSizing: 'border-box', display: 'flex', gap: '16px', paddingBlock: '12px', paddingInline: '16px' }}>
+                <div id="6GUU-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '145%' }}>
+                  Added to this draft
+                </div>
+                <div id="6GUV-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 500, lineHeight: '145%' }}>
+                  Price conditions · Buyer-flow evidence
+                </div>
+                <div id="6GUW-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '145%' }}>
+                  Inspect →
+                </div>
+                <div id="6GUX-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '145%' }}>
+                  Undo last change
+                </div>
+              </div>
+            </div>
+            <div id="6GTF-0" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '18px', padding: '20px' }}>
+              <div id="6GTG-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between' }}>
+                <div id="6GTH-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div id="6GTI-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                    SELECTED OUTLOOK
+                  </div>
+                </div>
+                <div id="6GTJ-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-warn-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '5px', paddingInline: '10px' }}>
+                  <div id="6GTK-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-warn)', display: 'flex', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
+                    Watching
+                  </div>
+                </div>
+                <div id="6GTL-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '40px', paddingInline: '14px' }}>
+                  <div id="6GTM-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
+                    Compare paths
+                  </div>
+                </div>
+              </div>
+              <div id="6GTO-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div id="6GTP-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '24px', fontWeight: 700, lineHeight: '145%' }}>
+                  Rate relief persists
+                </div>
+                <div id="6GTQ-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '145%' }}>
+                  Treasuries may stay supported while credit remains selective.
+                </div>
+              </div>
+              <div id="6GTS-0" style={{ alignItems: 'start', borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '24px', paddingBlock: '18px' }}>
+                <div id="6GTT-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px', minWidth: '0px' }}>
+                  <div id="6GTU-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                    RATE TEST
+                  </div>
+                  <div id="6GTV-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px' }}>
+                    <div id="6GTW-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-warn)', fontFamily: 'system-ui, sans-serif', fontSize: '22px', fontWeight: 700, lineHeight: '145%' }}>
+                      5.10%
+                    </div>
+                  </div>
+                  <div id="6GTX-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+                    Needs a close below 5.08%.
+                  </div>
+                </div>
+                <div id="6GTY-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px', minWidth: '0px' }}>
+                  <div id="6GTZ-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                    CREDIT TEST
+                  </div>
+                  <div id="6GU0-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px' }}>
+                    <div id="6GU1-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-warn)', fontFamily: 'system-ui, sans-serif', fontSize: '22px', fontWeight: 700, lineHeight: '145%' }}>
+                      +11 bp
+                    </div>
+                  </div>
+                  <div id="6GU2-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+                    Matched peer mean needs +15 bp.
+                  </div>
+                </div>
+                <div id="6GU3-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px', minWidth: '0px' }}>
+                  <div id="6GU4-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                    FUNDING TEST
+                  </div>
+                  <div id="6GU5-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px' }}>
+                    <div id="6GU6-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-up)', fontFamily: 'system-ui, sans-serif', fontSize: '22px', fontWeight: 700, lineHeight: '145%' }}>
+                      Orderly
+                    </div>
+                  </div>
+                  <div id="6GU7-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+                    Must remain current and orderly.
+                  </div>
+                </div>
+              </div>
+              <div id="6GU9-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '24px', justifyContent: 'space-between' }}>
+                <div id="6GUA-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '6px' }}>
+                  <div id="6GUB-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '145%' }}>
+                    All three must hold within five eligible closes.
+                  </div>
+                  <div id="6GUC-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-down)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+                    A close above 5.22% or funding stress ends the test.
+                  </div>
+                  <div id="6GUD-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '145%' }}>
+                    A matched test does not establish the cause or guarantee continuation.
+                  </div>
+                </div>
+                <div id="6GUE-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info)', borderColor: 'var(--mx-light-info)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '40px', paddingInline: '14px' }}>
+                  <div id="6GUF-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-panel)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
+                    Review conditions
+                  </div>
                 </div>
               </div>
             </div>
@@ -302,7 +404,7 @@ export default function ScenarioReference() {
                 </div>
                 <div id="64TP-1" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   <div id="64TQ-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 500, lineHeight: '19px' }}>
-                    Funding conditions
+                    Funding assumption
                   </div>
                   <div id="64TR-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px' }}>
                     <div id="64TS-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
@@ -401,159 +503,13 @@ export default function ScenarioReference() {
                 </div>
               </div>
             </div>
-            <div id="64UT-1" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div id="64UU-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between' }}>
-                <div id="64UV-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>
-                  Three conditional paths
-                </div>
-                <div id="64UW-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel2)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
-                  <div id="64UX-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
-                    Likelihood unavailable
-                  </div>
-                </div>
-              </div>
-              <div id="64UY-1" style={{ boxSizing: 'border-box', display: 'flex', gap: '16px' }}>
-                <div id="64UZ-1" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '16px', padding: '20px' }}>
-                  <div id="64V0-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px' }}>
-                    <div id="64V1-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-up-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
-                      <div id="64V2-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-up)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
-                        A
-                      </div>
-                    </div>
-                    <div id="64V3-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                      CONDITIONAL PATH
-                    </div>
-                  </div>
-                  <div id="64V4-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '21px', fontWeight: 600, lineHeight: '30px' }}>
-                    Duration relief persists
-                  </div>
-                  <div id="64V5-1" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div id="64V6-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                      IF
-                    </div>
-                    <div id="64V7-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '20px' }}>
-                      Growth weakens; funding stays orderly.
-                    </div>
-                  </div>
-                  <div id="64V8-1" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div id="64V9-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                      THEN WATCH
-                    </div>
-                    <div id="64VA-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-up)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 500, lineHeight: '20px' }}>
-                      Treasuries bid · credit selective
-                    </div>
-                  </div>
-                  <div id="64VB-1" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div id="64VC-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                      CONFIRMATION / FAILURE
-                    </div>
-                    <div id="64VD-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px' }}>
-                      10Y closes below 5.08%; auction demand holds.
-                    </div>
-                  </div>
-                  <div id="64VE-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
-                    <div id="64VF-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                      Use this path →
-                    </div>
-                  </div>
-                </div>
-                <div id="64VG-1" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '16px', padding: '20px' }}>
-                  <div id="64VH-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px' }}>
-                    <div id="64VI-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-warn-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
-                      <div id="64VJ-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-warn)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
-                        B
-                      </div>
-                    </div>
-                    <div id="64VK-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                      CONDITIONAL PATH
-                    </div>
-                  </div>
-                  <div id="64VL-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '21px', fontWeight: 600, lineHeight: '30px' }}>
-                    The rate tailwind fades
-                  </div>
-                  <div id="64VM-1" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div id="64VN-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                      IF
-                    </div>
-                    <div id="64VO-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '20px' }}>
-                      Inflation or supply lifts term premium.
-                    </div>
-                  </div>
-                  <div id="64VP-1" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div id="64VQ-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                      THEN WATCH
-                    </div>
-                    <div id="64VR-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-warn)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 500, lineHeight: '20px' }}>
-                      Long yields rise · credit stays heavy
-                    </div>
-                  </div>
-                  <div id="64VS-1" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div id="64VT-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                      CONFIRMATION / FAILURE
-                    </div>
-                    <div id="64VU-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px' }}>
-                      10Y reclaims 5.22%; long-end pressure broadens.
-                    </div>
-                  </div>
-                  <div id="64VV-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
-                    <div id="64VW-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                      Use this path →
-                    </div>
-                  </div>
-                </div>
-                <div id="64VX-1" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '16px', padding: '20px' }}>
-                  <div id="64VY-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px' }}>
-                    <div id="64VZ-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-down-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
-                      <div id="64W0-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-down)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
-                        C
-                      </div>
-                    </div>
-                    <div id="64W1-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                      CONDITIONAL PATH
-                    </div>
-                  </div>
-                  <div id="64W2-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '21px', fontWeight: 600, lineHeight: '30px' }}>
-                    Liquidity becomes the problem
-                  </div>
-                  <div id="64W3-1" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div id="64W4-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                      IF
-                    </div>
-                    <div id="64W5-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '20px' }}>
-                      Collateral pressure forces asset sales.
-                    </div>
-                  </div>
-                  <div id="64W6-1" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div id="64W7-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                      THEN WATCH
-                    </div>
-                    <div id="64W8-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-down)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 500, lineHeight: '20px' }}>
-                      Cash favored · bonds can also sell
-                    </div>
-                  </div>
-                  <div id="64W9-1" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div id="64WA-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                      CONFIRMATION / FAILURE
-                    </div>
-                    <div id="64WB-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '19px' }}>
-                      Repo and market depth deteriorate together.
-                    </div>
-                  </div>
-                  <div id="64WC-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
-                    <div id="64WD-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                      Use this path →
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
             <div id="64WF-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info-soft)', borderRadius: '12px', boxSizing: 'border-box', display: 'flex', gap: '20px', justifyContent: 'space-between', padding: '20px' }}>
               <div id="64WG-1" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <div id="64WH-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                  ONE CONDITION TO CARRY FORWARD
+                  NEXT DISCRIMINATING CHECK
                 </div>
                 <div id="64WI-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '17px', fontWeight: 600, lineHeight: '24px' }}>
-                  Watch broader credit weakness
+                  Check auction demand and new financing terms.
                 </div>
               </div>
               <div id="64WJ-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px' }}>
@@ -564,7 +520,7 @@ export default function ScenarioReference() {
                 </div>
                 <div id="64WM-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info)', borderColor: 'var(--mx-light-info)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
                   <div id="64WN-1" style={{ boxSizing: 'border-box', color: '#FFFFFF', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                    Create case monitor →
+                    Review conditions →
                   </div>
                 </div>
               </div>

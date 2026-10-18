@@ -1,7 +1,7 @@
-/* R30 editable Paper reference. UI/data/effects are not wired.
+/* R30–R32 editable Paper reference. Runtime services are not wired.
  * Page: https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1H-0
- * Artboard: 63GL-1 — R30 · 01 Bonds Desk · Light EN
- * Use existing Mastermind tokens and runtime component owners.
+ * Artboard: 63GL-1 — R32 · 01 Bonds Desk · Light EN
+ * Reuse existing Mastermind component, data, auth and state owners.
  */
 export default function BondsReference() {
   return (
@@ -185,7 +185,7 @@ export default function BondsReference() {
                   </div>
                   <div id="63K3-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info)', borderColor: 'var(--mx-light-info)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
                     <div id="63K4-1" style={{ boxSizing: 'border-box', color: '#FFFFFF', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                      Monitor this view
+                      Review conditions
                     </div>
                   </div>
                 </div>
@@ -244,7 +244,7 @@ export default function BondsReference() {
               </div>
               <div id="63KT-1" style={{ borderRightColor: 'var(--mx-light-line)', borderRightStyle: 'solid', borderRightWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px', minWidth: '0px', paddingInline: '20px' }}>
                 <div id="63KU-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                  AI CREDIT SPREAD
+                  AI ISSUER · CDS
                 </div>
                 <div id="63KV-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '10px', justifyContent: 'space-between' }}>
                   <div id="63KW-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '28px', fontWeight: 600, lineHeight: '40px' }}>
@@ -380,7 +380,7 @@ export default function BondsReference() {
                 </div>
                 <div id="63MK-1" style={{ borderLeftColor: 'var(--mx-light-ink-up)', borderLeftStyle: 'solid', borderLeftWidth: '3px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '4px', paddingLeft: '12px' }}>
                   <div id="63ML-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-up)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, lineHeight: '16px' }}>
-                    CONFIRM
+                    NEXT OBSERVATION
                   </div>
                   <div id="63MM-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 500, lineHeight: '20px' }}>
                     10Y settles below 5.08%; funding stays orderly.
@@ -388,7 +388,7 @@ export default function BondsReference() {
                 </div>
                 <div id="63MO-1" style={{ borderLeftColor: 'var(--mx-light-ink-down)', borderLeftStyle: 'solid', borderLeftWidth: '3px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '4px', paddingLeft: '12px' }}>
                   <div id="63MP-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-down)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, lineHeight: '16px' }}>
-                    REVERSE
+                    REVIEW IF
                   </div>
                   <div id="63MQ-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 500, lineHeight: '20px' }}>
                     Yield reclaims 5.22% or term premium surges.

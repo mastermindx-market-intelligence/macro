@@ -1,7 +1,7 @@
-/* R30 + R31 editable Paper reference. UI/data/effects are not wired.
+/* R30–R32 editable Paper reference. Runtime services are not wired.
  * Page: https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1E-0
- * Artboard: 670P-1 — R30 · 08 Saved Cases & Change Review · EN
- * Use existing Mastermind tokens and runtime component owners.
+ * Artboard: 670P-1 — R32 · 08 Saved Cases & Change Review · EN
+ * Reuse existing Mastermind component, data, auth and state owners.
  */
 export default function SavedReference() {
   return (
@@ -164,7 +164,7 @@ export default function SavedReference() {
                 </div>
                 <div id="672Y-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel2)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
                   <div id="672Z-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
-                    Design specimen · synthetic values
+                    Full-case preview · synthetic values
                   </div>
                 </div>
               </div>
@@ -185,7 +185,7 @@ export default function SavedReference() {
                   </div>
                   <div id="6737-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info)', borderColor: 'var(--mx-light-info)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
                     <div id="6738-1" style={{ boxSizing: 'border-box', color: '#FFFFFF', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                      Manage monitors
+                      Review conditions
                     </div>
                   </div>
                 </div>
@@ -199,7 +199,7 @@ export default function SavedReference() {
               </div>
               <div id="673D-1" style={{ boxSizing: 'border-box', paddingBottom: '12px', paddingInline: '12px' }}>
                 <div id="673E-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 500, lineHeight: '19px', width: 'max-content' }}>
-                  Change assumptions
+                  Outlook & scenarios
                 </div>
               </div>
               <div id="673F-1" style={{ boxSizing: 'border-box', paddingBottom: '12px', paddingInline: '12px' }}>
@@ -230,7 +230,7 @@ export default function SavedReference() {
               <div id="673P-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '10px' }}>
                 <div id="673Q-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
                   <div id="673R-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                    Since: last review ▾
+                    Baseline: revision 3 ▾
                   </div>
                 </div>
                 <div id="673S-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
@@ -244,7 +244,7 @@ export default function SavedReference() {
               <div id="673W-1" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '16px', padding: '20px', width: '824px' }}>
                 <div id="673X-1" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '10px', justifyContent: 'space-between' }}>
                   <div id="673Y-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>
-                    SELECTED CASE
+                    REVISION 3 → LATEST ELIGIBLE CLOSE
                   </div>
                   <div id="673Z-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '4px', paddingInline: '10px' }}>
                     <div id="6740-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
@@ -302,7 +302,7 @@ export default function SavedReference() {
                     </div>
                   </div>
                   <div id="674K-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 500, lineHeight: '17px' }}>
-                    Illustrative change review · next close
+                    Mean peer OAS remains below +15 bp.
                   </div>
                 </div>
               </div>
@@ -314,11 +314,11 @@ export default function SavedReference() {
                   Does credit stress broaden?
                 </div>
                 <div id="674O-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '20px' }}>
-                  The breadth signal strengthened. The rate confirmation is still pending.
+                  More peers weakened. The basket spread threshold and rate test remain unmet.
                 </div>
                 <div id="674P-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '38px', justifyContent: 'center', paddingInline: '14px' }}>
                   <div id="674Q-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
-                    Inspect monitor logic
+                    Inspect condition logic
                   </div>
                 </div>
               </div>

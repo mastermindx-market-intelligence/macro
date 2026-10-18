@@ -1,7 +1,7 @@
-/* R30 + R31 editable Paper reference. UI/data/effects are not wired.
+/* R30–R32 editable Paper reference. Runtime services are not wired.
  * Page: https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1E-0
- * Artboard: 6C1S-1 — R31 · S07 Flow Evidence & Case Continuity
- * Use existing Mastermind tokens and runtime component owners.
+ * Artboard: 6C1S-1 — R32 · S07 Flow, Drafts & Case Continuity
+ * Reuse existing Mastermind component, data, auth and state owners.
  */
 export default function ContinuityReference() {
   return (
@@ -1148,6 +1148,501 @@ export default function ContinuityReference() {
               </div>
               <div id="6EJ2-1" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '19px' }}>
                 Back preserves a local draft. Saving follows I15 capability disclosure; compound monitoring remains unavailable until the existing owner accepts the full rule.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="6GY5-0" style={{ borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '32px' }}>
+          <div id="6GY6-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '16px', justifyContent: 'space-between' }}>
+            <div id="6GY7-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+              R32 / CASE HANDOFF
+            </div>
+            <div id="6GY8-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '5px', paddingInline: '10px' }}>
+              <div id="6GY9-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
+                I15 extension
+              </div>
+            </div>
+          </div>
+          <div id="6GYA-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '26px', fontWeight: 700, lineHeight: '145%' }}>
+            See what the tools changed
+          </div>
+          <div id="6GYB-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '145%' }}>
+            One question, typed additions, and an honest retained result.
+          </div>
+        </div>
+        <div id="6GZW-0" style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', gap: '24px' }}>
+          <div id="6H13-0" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '18px', padding: '20px', width: '760px' }}>
+            <div id="6H14-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between' }}>
+              <div id="6H15-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div id="6H16-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                  CASE DRAFT
+                </div>
+                <div id="6H17-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '24px', fontWeight: 700, lineHeight: '145%' }}>
+                  Review your additions
+                </div>
+              </div>
+              <div id="6H18-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '40px', paddingInline: '14px' }}>
+                <div id="6H19-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
+                  ×
+                </div>
+              </div>
+            </div>
+            <div id="6H1A-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px' }}>
+              <div id="6H1B-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-warn-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '5px', paddingInline: '10px' }}>
+                <div id="6H1C-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-warn)', display: 'flex', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
+                  Local only
+                </div>
+              </div>
+              <div id="6H1D-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 500, lineHeight: '145%' }}>
+                AI funding → safe assets · 1–5 sessions
+              </div>
+            </div>
+            <div id="6H26-0" style={{ backgroundColor: 'var(--mx-light-panel2)', borderRadius: '10px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', padding: '16px' }}>
+              <div id="6H27-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between' }}>
+                <div id="6H28-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '16px', fontWeight: 700, lineHeight: '145%' }}>
+                  Price conditions
+                </div>
+                <div id="6H29-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '5px', paddingInline: '10px' }}>
+                  <div id="6H2A-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
+                    Applied
+                  </div>
+                </div>
+              </div>
+              <div id="6H2B-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '15px', fontWeight: 500, lineHeight: '145%' }}>
+                Close below 5.08% · end test above 5.22%
+              </div>
+              <div id="6H2C-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '145%' }}>
+                Market structure · synthetic NY close · same Treasury series
+              </div>
+              <div id="6H2D-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '10px' }}>
+                <div id="6H2E-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '40px', paddingInline: '14px' }}>
+                  <div id="6H2F-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
+                    Inspect source
+                  </div>
+                </div>
+                <div id="6H2G-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '40px', paddingInline: '14px' }}>
+                  <div id="6H2H-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
+                    Remove
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="6H2L-0" style={{ backgroundColor: 'var(--mx-light-panel2)', borderRadius: '10px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', padding: '16px' }}>
+              <div id="6H2M-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between' }}>
+                <div id="6H2N-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '16px', fontWeight: 700, lineHeight: '145%' }}>
+                  Buyer-flow evidence
+                </div>
+                <div id="6H2O-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-warn-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '5px', paddingInline: '10px' }}>
+                  <div id="6H2P-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-warn)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
+                    Funding origin unresolved
+                  </div>
+                </div>
+              </div>
+              <div id="6H2Q-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '15px', fontWeight: 500, lineHeight: '145%' }}>
+                The matched buyer purchased both baskets.
+              </div>
+              <div id="6H2R-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '145%' }}>
+                Reporting-period evidence · does not satisfy a daily trigger
+              </div>
+              <div id="6H2S-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '10px' }}>
+                <div id="6H2T-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '40px', paddingInline: '14px' }}>
+                  <div id="6H2U-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
+                    Inspect source
+                  </div>
+                </div>
+                <div id="6H2V-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '40px', paddingInline: '14px' }}>
+                  <div id="6H2W-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
+                    Remove
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="6H2Y-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+              Each addition keeps its source, scope and observation period.
+            </div>
+            <div id="6H2Z-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'end' }}>
+              <div id="6H30-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '40px', paddingInline: '14px' }}>
+                <div id="6H31-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
+                  Keep working
+                </div>
+              </div>
+              <div id="6H32-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info)', borderColor: 'var(--mx-light-info)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '40px', paddingInline: '14px' }}>
+                <div id="6H33-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-panel)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
+                  Review save options
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="6H1F-0" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '18px', minWidth: '0px', padding: '20px' }}>
+            <div id="6H1G-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+              I15 / DRAFT HANDOFF / SCORECARD
+            </div>
+            <div id="6H1H-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '22px', fontWeight: 700, lineHeight: '145%' }}>
+              Applied means visible
+            </div>
+            <div id="6H44-0" style={{ borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: '12px' }}>
+              <div id="6H45-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                APPLY
+              </div>
+              <div id="6H46-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+                Show the typed addition, source, affected output and Inspect / Remove. A duplicate attachment updates the same item.
+              </div>
+            </div>
+            <div id="6H48-0" style={{ borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: '12px' }}>
+              <div id="6H49-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                CONTEXT
+              </div>
+              <div id="6H4A-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+                Carry series, borrower, buyer, horizon and cutoff. Revalidate descendants when any dependency changes.
+              </div>
+            </div>
+            <div id="6H4C-0" style={{ borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: '12px' }}>
+              <div id="6H4D-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                UNDO
+              </div>
+              <div id="6H4E-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+                Undo reverses only the selected addition; preserve unrelated draft edits and the saved revision.
+              </div>
+            </div>
+            <div id="6H4G-0" style={{ borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: '12px' }}>
+              <div id="6H4H-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                SAVE
+              </div>
+              <div id="6H4I-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+                Route to I15 admission review. A question-only result excludes charts, assumptions and rules.
+              </div>
+            </div>
+            <div id="6H4K-0" style={{ borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: '12px' }}>
+              <div id="6H4L-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                ACCESS
+              </div>
+              <div id="6H4M-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+                Keyboard apply/cancel; Escape and Close restore focus. At 390px, stack rows and keep actions reachable.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="6H4O-0" style={{ backgroundColor: 'var(--mx-light-warn-soft)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '18px', padding: '20px' }}>
+          <div id="6H4P-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '20px', justifyContent: 'space-between' }}>
+            <div id="6H4Q-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '7px' }}>
+              <div id="6H4R-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                INCOMPATIBLE ADDITION
+              </div>
+              <div id="6H4S-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '20px', fontWeight: 700, lineHeight: '145%' }}>
+                This belongs to another borrower
+              </div>
+              <div id="6H4T-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '145%' }}>
+                The cash scenario is for Synthetic Parent A. CoreWeave remains selected.
+              </div>
+            </div>
+            <div id="6H4U-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '40px', paddingInline: '14px' }}>
+              <div id="6H4V-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
+                Return to cash scenario
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="6H4X-0" style={{ alignSelf: 'start', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '18px', padding: '20px', width: '1120px' }}>
+          <div id="6H4Y-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '16px', justifyContent: 'space-between' }}>
+            <div id="6H4Z-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div id="6H50-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                CONDITIONAL PATHS
+              </div>
+              <div id="6H51-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '26px', fontWeight: 700, lineHeight: '145%' }}>
+                Compare what could follow
+              </div>
+            </div>
+            <div id="6H52-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '40px', paddingInline: '14px' }}>
+              <div id="6H53-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
+                ×
+              </div>
+            </div>
+          </div>
+          <div id="6H6E-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '10px' }}>
+            <div id="6H6F-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info)', borderColor: 'var(--mx-light-info)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '40px', paddingInline: '14px' }}>
+              <div id="6H6G-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-panel)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
+                Rate relief
+              </div>
+            </div>
+            <div id="6H6H-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '40px', paddingInline: '14px' }}>
+              <div id="6H6I-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
+                Supply pressure
+              </div>
+            </div>
+            <div id="6H6J-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '40px', paddingInline: '14px' }}>
+              <div id="6H6K-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
+                Funding stress
+              </div>
+            </div>
+            <div id="6H6L-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel2)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '5px', paddingInline: '10px' }}>
+              <div id="6H6M-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
+                1–5 sessions
+              </div>
+            </div>
+          </div>
+          <div id="6H6N-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+            Paths can coexist. Select one to change the question and next check.
+          </div>
+          <div id="6H6P-0" style={{ backgroundColor: 'var(--mx-light-info-soft)', borderRadius: '10px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '18px' }}>
+            <div id="6H6Q-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '16px', justifyContent: 'space-between' }}>
+              <div id="6H6R-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '22px', fontWeight: 700, lineHeight: '145%' }}>
+                Rate relief persists
+              </div>
+              <div id="6H6S-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-warn-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '5px', paddingInline: '10px' }}>
+                <div id="6H6T-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-warn)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
+                  Watching
+                </div>
+              </div>
+            </div>
+            <div id="6H6U-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '15px', fontWeight: 500, lineHeight: '145%' }}>
+              If rate expectations fall and funding stays orderly, Treasuries may remain supported.
+            </div>
+            <div id="6H6V-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '24px' }}>
+              <div id="6H6W-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px' }}>
+                <div id="6H6X-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                  NEXT MARKET TEST
+                </div>
+                <div id="6H6Y-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 500, lineHeight: '145%' }}>
+                  10Y below 5.08% · mean peer OAS +15 bp · orderly funding
+                </div>
+              </div>
+              <div id="6H6Z-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px' }}>
+                <div id="6H70-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                  NEXT DISCRIMINATING CHECK
+                </div>
+                <div id="6H71-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 500, lineHeight: '145%' }}>
+                  Auction demand and dated financing terms
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="6H7F-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '16px', justifyContent: 'space-between' }}>
+            <div id="6H7G-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'system-ui, sans-serif', fontSize: '18px', fontWeight: 700, lineHeight: '145%' }}>
+              What explains the move?
+            </div>
+            <div id="6H7H-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel2)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '5px', paddingInline: '10px' }}>
+              <div id="6H7I-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
+                Unranked hypotheses
+              </div>
+            </div>
+          </div>
+          <div id="6HAY-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px' }}>
+            <div id="6HAZ-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 600, letterSpacing: '0.7px', lineHeight: '145%', width: '180px' }}>
+              EXPLANATION
+            </div>
+            <div id="6HB0-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 600, letterSpacing: '0.7px', lineHeight: '145%', width: '400px' }}>
+              DISCRIMINATING EVIDENCE
+            </div>
+            <div id="6HB1-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 600, letterSpacing: '0.7px', lineHeight: '145%', width: '190px' }}>
+              CURRENT READING
+            </div>
+            <div id="6HB2-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexBasis: '0%', flexGrow: '1', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 600, letterSpacing: '0.7px', lineHeight: '145%' }}>
+              NEXT CHECK
+            </div>
+          </div>
+          <div id="6H7K-0" style={{ alignItems: 'center', borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '12px', paddingBlock: '14px' }}>
+            <div id="6H7L-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 700, lineHeight: '145%', width: '180px' }}>
+              Growth repricing
+            </div>
+            <div id="6H7M-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '145%', width: '400px' }}>
+              Dated growth evidence + policy path
+            </div>
+            <div id="6H7N-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '145%', width: '190px' }}>
+              Consistent response
+            </div>
+            <div id="6H7O-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexBasis: '0%', flexGrow: '1', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '145%' }}>
+              Next release
+            </div>
+          </div>
+          <div id="6H7Q-0" style={{ alignItems: 'center', borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '12px', paddingBlock: '14px' }}>
+            <div id="6H7R-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 700, lineHeight: '145%', width: '180px' }}>
+              Buyer substitution
+            </div>
+            <div id="6H7S-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '145%', width: '400px' }}>
+              Matched transactions + funding origin
+            </div>
+            <div id="6H7T-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '145%', width: '190px' }}>
+              Missing link
+            </div>
+            <div id="6H7U-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexBasis: '0%', flexGrow: '1', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '145%' }}>
+              Reporting period
+            </div>
+          </div>
+          <div id="6H7W-0" style={{ alignItems: 'center', borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '12px', paddingBlock: '14px' }}>
+            <div id="6H7X-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 700, lineHeight: '145%', width: '180px' }}>
+              Issuer-specific risk
+            </div>
+            <div id="6H7Y-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '145%', width: '400px' }}>
+              Issuer versus matched peer repricing
+            </div>
+            <div id="6H7Z-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '145%', width: '190px' }}>
+              Still possible
+            </div>
+            <div id="6H80-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexBasis: '0%', flexGrow: '1', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '145%' }}>
+              Next close
+            </div>
+          </div>
+          <div id="6H82-0" style={{ alignItems: 'center', borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '12px', paddingBlock: '14px' }}>
+            <div id="6H83-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 700, lineHeight: '145%', width: '180px' }}>
+              Funding stress
+            </div>
+            <div id="6H84-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '145%', width: '400px' }}>
+              Collateral terms + market depth
+            </div>
+            <div id="6H85-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '145%', width: '190px' }}>
+              Counterevidence
+            </div>
+            <div id="6H86-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexBasis: '0%', flexGrow: '1', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '145%' }}>
+              Funding clock
+            </div>
+          </div>
+          <div id="6H88-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+            Shared inputs remain linked. A missing buyer record leaves substitution unresolved.
+          </div>
+          <div id="6H89-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'end' }}>
+            <div id="6H8A-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '40px', paddingInline: '14px' }}>
+              <div id="6H8B-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
+                Inspect shared inputs
+              </div>
+            </div>
+            <div id="6H8C-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info)', borderColor: 'var(--mx-light-info)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '40px', paddingInline: '14px' }}>
+              <div id="6H8D-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-panel)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
+                Use this outlook
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="6HB4-0" style={{ boxSizing: 'border-box', display: 'flex', gap: '24px' }}>
+          <div id="6HB5-0" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '18px', padding: '20px' }}>
+            <div id="6HB6-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between' }}>
+              <div id="6HB7-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                SUPPLY PRESSURE
+              </div>
+              <div id="6HB8-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-warn-soft)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '5px', paddingInline: '10px' }}>
+                <div id="6HB9-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-warn)', display: 'flex', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
+                  Unresolved
+                </div>
+              </div>
+            </div>
+            <div id="6HBA-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '22px', fontWeight: 700, lineHeight: '145%' }}>
+              Supply pressure wins
+            </div>
+            <div id="6HBB-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '145%' }}>
+              Watch long yields, auction reception and the modeled term premium.
+            </div>
+            <div id="6HBC-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+              Next check: concession, tail and bidder mix at the next auction.
+            </div>
+            <div id="6HBD-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-warn)', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 500, lineHeight: '145%' }}>
+              Selecting this outlook keeps evidence; the rate-relief rule needs review.
+            </div>
+          </div>
+          <div id="6HBE-0" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '18px', padding: '20px' }}>
+            <div id="6HBF-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between' }}>
+              <div id="6HBG-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                FUNDING STRESS
+              </div>
+              <div id="6HBH-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel2)', borderRadius: '999px', boxSizing: 'border-box', display: 'flex', paddingBlock: '5px', paddingInline: '10px' }}>
+                <div id="6HBI-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', display: 'flex', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
+                  Not observed
+                </div>
+              </div>
+            </div>
+            <div id="6HBJ-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '22px', fontWeight: 700, lineHeight: '145%' }}>
+              Liquidity interrupts the move
+            </div>
+            <div id="6HBK-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '145%' }}>
+              Cash demand can put Treasuries, credit and equities under pressure.
+            </div>
+            <div id="6HBL-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+              Next check: funding terms and market depth on their native clocks.
+            </div>
+            <div id="6HBM-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-warn)', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 500, lineHeight: '145%' }}>
+              Orderly funding is counterevidence. A price fall alone is insufficient.
+            </div>
+          </div>
+        </div>
+        <div id="6HBO-0" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '18px', padding: '20px' }}>
+          <div id="6HBP-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+            I04 / MATCHED EVENT → LATER REVIEW
+          </div>
+          <div id="6HBQ-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '24px', fontWeight: 700, lineHeight: '145%' }}>
+            A match can precede a reversal
+          </div>
+          <div id="6HBR-0" style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', gap: '24px' }}>
+            <div id="6HBS-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px' }}>
+              <div id="6HBT-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                CLOSE 1 · TEST EVENT
+              </div>
+              <div id="6HBU-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-up)', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '22px', fontWeight: 700, lineHeight: '145%' }}>
+                Matched
+              </div>
+              <div id="6HBV-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+                10Y 5.07% · mean OAS +16 bp · orderly
+              </div>
+              <div id="6HBW-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 500, lineHeight: '145%' }}>
+                Original event stays closed.
+              </div>
+            </div>
+            <div id="6HBX-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px' }}>
+              <div id="6HBY-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                CLOSE 2 · LATER OBSERVATION
+              </div>
+              <div id="6HBZ-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-down)', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '22px', fontWeight: 700, lineHeight: '145%' }}>
+                Continuation challenged
+              </div>
+              <div id="6HC0-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+                10Y 5.23% · above the declared review level
+              </div>
+              <div id="6HC1-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 500, lineHeight: '145%' }}>
+                New evidence; no rewrite of close 1.
+              </div>
+            </div>
+            <div id="6HC2-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px' }}>
+              <div id="6HC3-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                EXPLANATION
+              </div>
+              <div id="6HC4-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '22px', fontWeight: 700, lineHeight: '145%' }}>
+                Still unresolved
+              </div>
+              <div id="6HC5-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+                The event does not establish the funding route.
+              </div>
+              <div id="6HC6-0" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '40px', paddingInline: '14px' }}>
+                <div id="6HC7-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', display: 'flex', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
+                  Inspect event and later evidence
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="6HC9-0" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '18px', padding: '20px' }}>
+          <div id="6HCA-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+            I03 / OUTLOOK COMPARISON / SCORECARD
+          </div>
+          <div id="6HCB-0" style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', gap: '24px' }}>
+            <div id="6HCC-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px' }}>
+              <div id="6HCD-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                SELECT
+              </div>
+              <div id="6HCE-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+                Select a path locally. Change its next check and consequence together; sensitivity stays a separate assumption.
+              </div>
+            </div>
+            <div id="6HCF-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px' }}>
+              <div id="6HCG-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                DEPENDENCIES
+              </div>
+              <div id="6HCH-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+                One source can create several derived views. Keep source lineage; do not sum these views as independent support.
+              </div>
+            </div>
+            <div id="6HCI-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px' }}>
+              <div id="6HCJ-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', lineHeight: '145%', textTransform: 'uppercase' }}>
+                REVALIDATE
+              </div>
+              <div id="6HCK-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '145%' }}>
+                A rule attached to another outlook needs review. Unsupported or late inputs cannot become a matched event.
               </div>
             </div>
           </div>

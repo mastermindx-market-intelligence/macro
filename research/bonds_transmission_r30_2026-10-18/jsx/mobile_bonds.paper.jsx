@@ -1,7 +1,7 @@
-/* R30 editable Paper reference. UI/data/effects are not wired.
+/* R30–R32 editable Paper reference. Runtime services are not wired.
  * Page: https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1H-0
  * Artboard: 66FJ-1 — R30 · M01 Bonds Desk · Mobile Light EN
- * Use existing Mastermind tokens and runtime component owners.
+ * Reuse existing Mastermind component, data, auth and state owners.
  */
 export default function MobileBondsReference() {
   return (
@@ -190,7 +190,7 @@ export default function MobileBondsReference() {
           </div>
           <div id="66HR-1" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-info)', borderColor: 'var(--mx-light-info)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', height: '46px', justifyContent: 'center', paddingInline: '14px' }}>
             <div id="66HS-1" style={{ boxSizing: 'border-box', color: '#FFFFFF', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '18px' }}>
-              Monitor
+              Conditions
             </div>
           </div>
         </div>
