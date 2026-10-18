@@ -33,7 +33,7 @@ import unicodedata
 from typing import Any, Iterable, Mapping, Sequence
 from urllib.parse import urlparse
 
-from .public_agreement import agreement_assertion_id as public_agreement_assertion_id, agreement_payload_errors
+from engine.government_revenue.public_agreement import agreement_assertion_id as public_agreement_assertion_id, agreement_payload_errors
 
 
 CONTRACT = "government_program_ontology.v1"
