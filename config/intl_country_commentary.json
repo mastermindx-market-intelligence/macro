@@ -1,0 +1,142 @@
+{
+  "schema": "intl_country_commentary.v1",
+  "reviewed_at": "2026-10-18",
+  "countries": {
+    "JP": {
+      "kind": "attributed_assessment",
+      "published": "2026-07-31",
+      "provider": "Bank of Japan",
+      "source_url": "https://www.boj.or.jp/en/mopo/outlook/gor2607a.pdf",
+      "title": [
+        "Wages and technology demand cushion the energy shock",
+        "工资与科技需求缓冲能源冲击"
+      ],
+      "read": [
+        "The Bank of Japan expects higher energy costs to weigh on activity in fiscal 2026. Wage gains, government support and AI demand provide offsets; easing energy pressure and stronger income-to-spending transmission underpin its later pickup.",
+        "日本央行预计能源成本上升拖累2026财年经济。工资增长、政府支持与AI需求提供缓冲；能源压力缓解、收入更有效地转化为支出，构成后续增长改善的基础。"
+      ],
+      "theme": [
+        "Energy costs versus household income",
+        "能源成本与家庭收入"
+      ],
+      "driver": [
+        "Energy imports reduce purchasing power when prices rise faster than household income. The Bank of Japan sees wage gains and fiscal measures cushioning that pressure.",
+        "能源价格涨幅超过家庭收入时，进口能源会削弱购买力。日本央行认为工资增长与财政措施有助于缓冲压力。"
+      ],
+      "upside": [
+        "If energy costs ease while wage gains hold, real incomes and household spending could improve; broader demand would support domestic-facing earnings.",
+        "若能源成本下降且工资增长持续，实际收入与家庭支出可能改善，更广泛的需求将支持内需型企业利润。"
+      ],
+      "downside": [
+        "If energy and import costs stay high, they could absorb wage gains and constrain consumption even with strong technology demand.",
+        "若能源与进口成本持续偏高，可能抵消工资增长并限制消费，即使科技需求仍强。"
+      ],
+      "watch": [
+        "Real wages, household spending, energy import costs and the next Bank of Japan outlook.",
+        "实际工资、家庭支出、能源进口成本与下一份日本央行展望。"
+      ]
+    },
+    "KR": {
+      "kind": "attributed_assessment",
+      "published": "2026-09-10",
+      "provider": "Bank of Korea",
+      "source_url": "https://www.bok.or.kr/eng/bbs/E0000628/view.do?depth=400215&menuNo=400215&nttId=11064614&programType=newsDataEng&relate=Y",
+      "title": [
+        "Export strength meets higher rates",
+        "出口强劲，政策利率上升"
+      ],
+      "read": [
+        "The Bank of Korea describes support from exports, investment and recovering consumption. Inflation and housing-related credit pressures keep further rate increases in view.",
+        "韩国央行指出出口、投资与消费复苏支持经济。通胀与住房相关信贷压力，使进一步加息仍在考虑范围内。"
+      ],
+      "theme": [
+        "Export demand and domestic financing",
+        "出口需求与国内融资"
+      ],
+      "driver": [
+        "Exports and investment support activity in the central bank’s assessment. Higher rates can act on housing and financing-sensitive spending through a different channel.",
+        "央行研判认为出口与投资支撑经济。较高利率则可能通过另一渠道影响住房及对融资敏感的支出。"
+      ],
+      "upside": [
+        "If export strength continues and consumption broadens without renewed inflation, growth could spread beyond the external sector.",
+        "若出口保持强势，消费扩张且未重新推高通胀，增长有望扩散至对外部门之外。"
+      ],
+      "downside": [
+        "If inflation persists and further rate increases pass through to borrowing costs, households and financing-sensitive firms could face greater pressure.",
+        "若通胀持续，进一步加息传导至借贷成本，家庭与对融资敏感的企业可能面临更大压力。"
+      ],
+      "watch": [
+        "Exports, consumption, housing and household credit, and subsequent Bank of Korea decisions.",
+        "出口、消费、住房与家庭信贷，以及韩国央行后续决策。"
+      ]
+    },
+    "AU": {
+      "kind": "attributed_assessment",
+      "published": "2026-08-11",
+      "provider": "Reserve Bank of Australia",
+      "source_url": "https://www.rba.gov.au/publications/smp/2026/aug/",
+      "title": [
+        "Earlier rate rises are still working through spending",
+        "此前加息仍在传导至支出"
+      ],
+      "read": [
+        "The RBA expects earlier interest-rate increases to slow spending, with their full effect still ahead. Its August outlook places inflation’s return to the midpoint of its target range in early 2028 and anticipates a gradual rise in unemployment.",
+        "澳大利亚央行预计此前加息将减缓支出，其完整影响尚未显现。8月展望预计通胀于2028年初回到目标区间中点，失业率则逐步上升。"
+      ],
+      "theme": [
+        "Borrowing costs and household demand",
+        "借贷成本与家庭需求"
+      ],
+      "driver": [
+        "Rate increases can reduce household spending capacity and investment demand. The RBA expects slowing demand to help reduce inflation.",
+        "加息可能压低家庭支出能力与投资需求。澳大利亚央行预计需求放缓将有助于通胀回落。"
+      ],
+      "upside": [
+        "If inflation falls with only a modest slowdown in employment and spending, households could regain purchasing power without a sharp contraction.",
+        "若通胀回落，同时就业与支出仅温和放缓，家庭购买力可能恢复，而无需经历剧烈收缩。"
+      ],
+      "downside": [
+        "If higher borrowing costs weaken spending more than expected while energy inflation persists, growth could slow before households receive price relief.",
+        "若借贷成本上升对支出的打击超出预期，而能源通胀持续，经济可能在家庭获得价格缓解之前先行放缓。"
+      ],
+      "watch": [
+        "Household spending, unemployment, housing activity and inflation’s response to earlier rate increases.",
+        "家庭支出、失业率、住房活动与通胀对先前加息的反应。"
+      ]
+    },
+    "EZ": {
+      "kind": "attributed_assessment",
+      "published": "2026-09-10",
+      "provider": "European Central Bank",
+      "source_url": "https://www.ecb.europa.eu/press/projections/html/ecb.projections202609_ecbstaff~8e340fc69d.en.html",
+      "title": [
+        "A firmer outlook still depends on energy relief",
+        "前景改善仍取决于能源压力缓解"
+      ],
+      "read": [
+        "The ECB’s September assessment finds the economy more resilient than expected. Its baseline relies on the energy shock fading, real incomes recovering and infrastructure and defence spending supporting demand; persistent export competitiveness problems remain a constraint.",
+        "欧洲央行9月研判认为经济韧性强于预期。其基准情景依赖能源冲击消退、实际收入恢复，以及基建与国防支出支持需求；出口竞争力问题仍构成限制。"
+      ],
+      "theme": [
+        "Energy, real incomes and public investment",
+        "能源、实际收入与公共投资"
+      ],
+      "driver": [
+        "Lower energy inflation can restore household purchasing power, while infrastructure and defence spending support investment. Those are assumptions behind the ECB’s improving growth path.",
+        "能源通胀下降可能恢复家庭购买力，基建与国防支出则支持投资。这些构成欧洲央行增长路径改善的前提。"
+      ],
+      "upside": [
+        "If energy pressure eases as assumed and public investment reaches activity, domestic demand could carry more of the growth pickup.",
+        "若能源压力按预期缓解，公共投资转化为实际活动，内需可能为增长改善提供更多动力。"
+      ],
+      "downside": [
+        "If the energy shock persists, real-income gains could be delayed while higher input costs pressure margins and slow the projected pickup.",
+        "若能源冲击持续，实际收入改善可能推迟，投入成本上升则可能压缩利润率、拖慢预期中的增长改善。"
+      ],
+      "watch": [
+        "Energy prices, real household incomes, investment spending and bank lending.",
+        "能源价格、家庭实际收入、投资支出与银行信贷。"
+      ]
+    }
+  }
+}

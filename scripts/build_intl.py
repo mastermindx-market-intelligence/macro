@@ -1076,7 +1076,17 @@ def main() -> int:
         except Exception as exc:  # Preserve all incumbent views on adapter failure.
             log.error("International workspace unavailable (%s)", type(exc).__name__)
 
+        from lib.intl_country_inputs import load_country_inputs
+        from lib.intl_country_assessment import build_country_assessments
+        country_inputs = load_country_inputs(config.data_dir(), Path(__file__).resolve().parent.parent)
+        country_analysis = build_country_assessments(
+            latest, today=datetime.now(timezone.utc).date(),
+            official=country_inputs.get("official"), forecasts=country_inputs.get("forecasts"),
+            commentary=country_inputs.get("commentary"),
+        )
+
         vm = {
+            "intl_analysis": country_analysis,
             "intl_workspace": workspace,
             "latest": latest,
             "built": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),

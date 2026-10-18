@@ -1,0 +1,2263 @@
+{
+  "schema": "intl_country_assessment.v1",
+  "evaluated_at": "2026-10-18",
+  "source_as_of": "2026-10-15",
+  "countries": [
+    {
+      "cc": "JP",
+      "name_en": "Japan",
+      "name_zh": "日本",
+      "index": "Nikkei 225",
+      "currency": "JPY",
+      "market": {
+        "state": "pullback",
+        "label_en": "Pullback",
+        "label_zh": "回调",
+        "tone": "neutral",
+        "as_of": "2026-10-15",
+        "current": true,
+        "above_50d": false,
+        "above_200d": true,
+        "drawdown": -10.2,
+        "fx_3m": null,
+        "fx_as_of": null,
+        "high_window_observations": 252,
+        "high_window_start": "2025-10-01"
+      },
+      "forecast": {
+        "kind": "sourced_forecast",
+        "provider": "IMF",
+        "source_url": "https://www.imf.org/en/publications/weo/issues/2026/07/08/world-economic-outlook-update-july-2026",
+        "published": "2026-07-08",
+        "period_basis": "calendar_year",
+        "year": 2026,
+        "next_year": 2027,
+        "current": 0.6,
+        "next": 0.7,
+        "previous": 1.1,
+        "change": 0.1,
+        "revision": -0.1,
+        "revision_from": "2026-04",
+        "path_en": "Faster growth projected",
+        "path_zh": "预计增长加快"
+      },
+      "metrics": [
+        {
+          "key": "gdp",
+          "label_en": "GDP growth",
+          "label_zh": "GDP增长",
+          "value": 0.73,
+          "period": "2026-04",
+          "unit": "% y/y",
+          "current": true,
+          "quality": "current",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        },
+        {
+          "key": "inflation",
+          "label_en": "Inflation",
+          "label_zh": "通胀",
+          "value": 1.898102,
+          "period": "2026-07",
+          "unit": "% y/y",
+          "current": true,
+          "quality": "current",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CPI",
+          "change_3m_pp": 0.59419
+        },
+        {
+          "key": "policy",
+          "label_en": "Policy rate",
+          "label_zh": "政策利率",
+          "value": 1.25,
+          "period": "2026-09",
+          "unit": "%",
+          "current": true,
+          "quality": "current",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CBPOL",
+          "change_3m_pp": 0.25
+        },
+        {
+          "key": "unemployment",
+          "label_en": "Unemployment",
+          "label_zh": "失业率",
+          "value": 2.4,
+          "period": "2026-07",
+          "unit": "%",
+          "current": true,
+          "quality": "current",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        }
+      ],
+      "title_en": "Wages and technology demand cushion the energy shock",
+      "title_zh": "工资与科技需求缓冲能源冲击",
+      "read_en": "IMF lowered its 2026 growth forecast by 0.1 percentage points from its 2026-04 edition, to 0.6%; it projects 0.7% for 2027. The 2026-09 policy rate was 1.25%, 0.25 points above three months earlier.",
+      "read_zh": "IMF将2026年增长预测较2026-04版下调0.1个百分点至0.6%，预计2027年为0.7%。2026-09政策利率为1.25%，高于三个月前0.25个百分点。",
+      "profile": {
+        "theme": [
+          "Energy costs versus household income",
+          "能源成本与家庭收入"
+        ],
+        "driver": [
+          "Energy imports reduce purchasing power when prices rise faster than household income. The Bank of Japan sees wage gains and fiscal measures cushioning that pressure.",
+          "能源价格涨幅超过家庭收入时，进口能源会削弱购买力。日本央行认为工资增长与财政措施有助于缓冲压力。"
+        ],
+        "transmission": [
+          "A stronger yen improves unhedged dollar translation but can reduce overseas earnings in yen.",
+          "日元升值改善未对冲的美元换算收益，但可能压低海外利润的日元计价。"
+        ],
+        "upside": [
+          "If energy costs ease while wage gains hold, real incomes and household spending could improve; broader demand would support domestic-facing earnings.",
+          "若能源成本下降且工资增长持续，实际收入与家庭支出可能改善，更广泛的需求将支持内需型企业利润。"
+        ],
+        "downside": [
+          "If energy and import costs stay high, they could absorb wage gains and constrain consumption even with strong technology demand.",
+          "若能源与进口成本持续偏高，可能抵消工资增长并限制消费，即使科技需求仍强。"
+        ],
+        "watch": [
+          "Real wages, household spending, energy import costs and the next Bank of Japan outlook.",
+          "实际工资、家庭支出、能源进口成本与下一份日本央行展望。"
+        ],
+        "route": "japan.html",
+        "source": "https://www.boj.or.jp/en/mopo/outlook/"
+      },
+      "research": {
+        "kind": "attributed_assessment",
+        "published": "2026-07-31",
+        "provider": "Bank of Japan",
+        "source_url": "https://www.boj.or.jp/en/mopo/outlook/gor2607a.pdf",
+        "title": [
+          "Wages and technology demand cushion the energy shock",
+          "工资与科技需求缓冲能源冲击"
+        ],
+        "read": [
+          "The Bank of Japan expects higher energy costs to weigh on activity in fiscal 2026. Wage gains, government support and AI demand provide offsets; easing energy pressure and stronger income-to-spending transmission underpin its later pickup.",
+          "日本央行预计能源成本上升拖累2026财年经济。工资增长、政府支持与AI需求提供缓冲；能源压力缓解、收入更有效地转化为支出，构成后续增长改善的基础。"
+        ],
+        "theme": [
+          "Energy costs versus household income",
+          "能源成本与家庭收入"
+        ],
+        "driver": [
+          "Energy imports reduce purchasing power when prices rise faster than household income. The Bank of Japan sees wage gains and fiscal measures cushioning that pressure.",
+          "能源价格涨幅超过家庭收入时，进口能源会削弱购买力。日本央行认为工资增长与财政措施有助于缓冲压力。"
+        ],
+        "upside": [
+          "If energy costs ease while wage gains hold, real incomes and household spending could improve; broader demand would support domestic-facing earnings.",
+          "若能源成本下降且工资增长持续，实际收入与家庭支出可能改善，更广泛的需求将支持内需型企业利润。"
+        ],
+        "downside": [
+          "If energy and import costs stay high, they could absorb wage gains and constrain consumption even with strong technology demand.",
+          "若能源与进口成本持续偏高，可能抵消工资增长并限制消费，即使科技需求仍强。"
+        ],
+        "watch": [
+          "Real wages, household spending, energy import costs and the next Bank of Japan outlook.",
+          "实际工资、家庭支出、能源进口成本与下一份日本央行展望。"
+        ]
+      },
+      "scope_note_en": null,
+      "scope_note_zh": null,
+      "macro_current_count": 4
+    },
+    {
+      "cc": "KR",
+      "name_en": "South Korea",
+      "name_zh": "韩国",
+      "index": "KOSPI",
+      "currency": "KRW",
+      "market": {
+        "state": "pressure",
+        "label_en": "Under pressure",
+        "label_zh": "承压",
+        "tone": "down",
+        "as_of": "2026-10-15",
+        "current": true,
+        "above_50d": false,
+        "above_200d": false,
+        "drawdown": -39.2,
+        "fx_3m": null,
+        "fx_as_of": null,
+        "high_window_observations": 252,
+        "high_window_start": "2025-09-29"
+      },
+      "forecast": {
+        "kind": "sourced_forecast",
+        "provider": "IMF",
+        "source_url": "https://www.imf.org/en/publications/weo/issues/2026/07/08/world-economic-outlook-update-july-2026",
+        "published": "2026-07-08",
+        "period_basis": "calendar_year",
+        "year": 2026,
+        "next_year": 2027,
+        "current": 2.6,
+        "next": 2.5,
+        "previous": 1.1,
+        "change": -0.1,
+        "revision": 0.7,
+        "revision_from": "2026-04",
+        "path_en": "Slower growth projected",
+        "path_zh": "预计增长放缓"
+      },
+      "metrics": [
+        {
+          "key": "gdp",
+          "label_en": "GDP growth",
+          "label_zh": "GDP增长",
+          "value": 3.75,
+          "period": "2026-04",
+          "unit": "% y/y",
+          "current": true,
+          "quality": "current",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        },
+        {
+          "key": "inflation",
+          "label_en": "Inflation",
+          "label_zh": "通胀",
+          "value": 2.789221,
+          "period": "2026-07",
+          "unit": "% y/y",
+          "current": true,
+          "quality": "current",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CPI",
+          "change_3m_pp": 0.220051
+        },
+        {
+          "key": "policy",
+          "label_en": "Policy rate",
+          "label_zh": "政策利率",
+          "value": 3.0,
+          "period": "2026-09",
+          "unit": "%",
+          "current": true,
+          "quality": "current",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CBPOL",
+          "change_3m_pp": 0.5
+        },
+        {
+          "key": "unemployment",
+          "label_en": "Unemployment",
+          "label_zh": "失业率",
+          "value": 2.8,
+          "period": "2026-07",
+          "unit": "%",
+          "current": true,
+          "quality": "current",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        }
+      ],
+      "title_en": "Export strength meets higher rates",
+      "title_zh": "出口强劲，政策利率上升",
+      "read_en": "IMF raised its 2026 growth forecast by 0.7 percentage points from its 2026-04 edition, to 2.6%; it projects 2.5% for 2027. The 2026-09 policy rate was 3.00%, 0.50 points above three months earlier.",
+      "read_zh": "IMF将2026年增长预测较2026-04版上调0.7个百分点至2.6%，预计2027年为2.5%。2026-09政策利率为3.00%，高于三个月前0.50个百分点。",
+      "profile": {
+        "theme": [
+          "Export demand and domestic financing",
+          "出口需求与国内融资"
+        ],
+        "driver": [
+          "Exports and investment support activity in the central bank’s assessment. Higher rates can act on housing and financing-sensitive spending through a different channel.",
+          "央行研判认为出口与投资支撑经济。较高利率则可能通过另一渠道影响住房及对融资敏感的支出。"
+        ],
+        "transmission": [
+          "Export earnings, the won and domestic financing conditions connect the economy to equities.",
+          "出口利润、韩元与国内融资条件将经济变化传导至股市。"
+        ],
+        "upside": [
+          "If export strength continues and consumption broadens without renewed inflation, growth could spread beyond the external sector.",
+          "若出口保持强势，消费扩张且未重新推高通胀，增长有望扩散至对外部门之外。"
+        ],
+        "downside": [
+          "If inflation persists and further rate increases pass through to borrowing costs, households and financing-sensitive firms could face greater pressure.",
+          "若通胀持续，进一步加息传导至借贷成本，家庭与对融资敏感的企业可能面临更大压力。"
+        ],
+        "watch": [
+          "Exports, consumption, housing and household credit, and subsequent Bank of Korea decisions.",
+          "出口、消费、住房与家庭信贷，以及韩国央行后续决策。"
+        ],
+        "route": "south_korea.html",
+        "source": "https://www.bok.or.kr/eng/main/main.do"
+      },
+      "research": {
+        "kind": "attributed_assessment",
+        "published": "2026-09-10",
+        "provider": "Bank of Korea",
+        "source_url": "https://www.bok.or.kr/eng/bbs/E0000628/view.do?depth=400215&menuNo=400215&nttId=11064614&programType=newsDataEng&relate=Y",
+        "title": [
+          "Export strength meets higher rates",
+          "出口强劲，政策利率上升"
+        ],
+        "read": [
+          "The Bank of Korea describes support from exports, investment and recovering consumption. Inflation and housing-related credit pressures keep further rate increases in view.",
+          "韩国央行指出出口、投资与消费复苏支持经济。通胀与住房相关信贷压力，使进一步加息仍在考虑范围内。"
+        ],
+        "theme": [
+          "Export demand and domestic financing",
+          "出口需求与国内融资"
+        ],
+        "driver": [
+          "Exports and investment support activity in the central bank’s assessment. Higher rates can act on housing and financing-sensitive spending through a different channel.",
+          "央行研判认为出口与投资支撑经济。较高利率则可能通过另一渠道影响住房及对融资敏感的支出。"
+        ],
+        "upside": [
+          "If export strength continues and consumption broadens without renewed inflation, growth could spread beyond the external sector.",
+          "若出口保持强势，消费扩张且未重新推高通胀，增长有望扩散至对外部门之外。"
+        ],
+        "downside": [
+          "If inflation persists and further rate increases pass through to borrowing costs, households and financing-sensitive firms could face greater pressure.",
+          "若通胀持续，进一步加息传导至借贷成本，家庭与对融资敏感的企业可能面临更大压力。"
+        ],
+        "watch": [
+          "Exports, consumption, housing and household credit, and subsequent Bank of Korea decisions.",
+          "出口、消费、住房与家庭信贷，以及韩国央行后续决策。"
+        ]
+      },
+      "scope_note_en": null,
+      "scope_note_zh": null,
+      "macro_current_count": 4
+    },
+    {
+      "cc": "TW",
+      "name_en": "Taiwan",
+      "name_zh": "台湾",
+      "index": "TAIEX",
+      "currency": "TWD",
+      "market": {
+        "state": "uptrend",
+        "label_en": "Uptrend",
+        "label_zh": "上升趋势",
+        "tone": "up",
+        "as_of": "2026-10-15",
+        "current": true,
+        "above_50d": true,
+        "above_200d": true,
+        "drawdown": -5.1,
+        "fx_3m": null,
+        "fx_as_of": null,
+        "high_window_observations": 252,
+        "high_window_start": "2025-09-30"
+      },
+      "forecast": {
+        "kind": "sourced_forecast",
+        "provider": "DGBAS",
+        "source_url": "https://eng.dgbas.gov.tw/News_Content.aspx?n=4438&s=236587",
+        "published": "2026-08-14",
+        "period_basis": "calendar_year",
+        "year": 2026,
+        "next_year": 2027,
+        "current": 11.05,
+        "next": 6.04,
+        "previous": null,
+        "change": -5.01,
+        "revision": null,
+        "revision_from": null,
+        "path_en": "Slower growth projected",
+        "path_zh": "预计增长放缓"
+      },
+      "metrics": [
+        {
+          "key": "gdp",
+          "label_en": "GDP growth",
+          "label_zh": "GDP增长",
+          "value": null,
+          "period": null,
+          "unit": "% y/y",
+          "current": false,
+          "quality": "missing",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        },
+        {
+          "key": "inflation",
+          "label_en": "Inflation",
+          "label_zh": "通胀",
+          "value": null,
+          "period": null,
+          "unit": "% y/y",
+          "current": false,
+          "quality": "missing",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        },
+        {
+          "key": "policy",
+          "label_en": "Policy rate",
+          "label_zh": "政策利率",
+          "value": null,
+          "period": null,
+          "unit": "%",
+          "current": false,
+          "quality": "missing",
+          "source": null,
+          "source_url": null,
+          "change_3m_pp": null
+        },
+        {
+          "key": "unemployment",
+          "label_en": "Unemployment",
+          "label_zh": "失业率",
+          "value": null,
+          "period": null,
+          "unit": "%",
+          "current": false,
+          "quality": "missing",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        }
+      ],
+      "title_en": "Exceptional growth is forecast to cool",
+      "title_zh": "高速增长预计降温",
+      "read_en": "DGBAS projects real GDP growth of 11.05% in 2026 and 6.04% in 2027.",
+      "read_zh": "DGBAS预计2026年实际GDP增长11.05%，2027年为6.04%。",
+      "profile": {
+        "theme": [
+          "Technology investment",
+          "科技投资"
+        ],
+        "driver": [
+          "Technology exports and capacity investment are central to the published growth outlook.",
+          "科技出口与产能投资是已发布增长展望的核心。"
+        ],
+        "transmission": [
+          "Strong technology demand can support export income while energy and currency costs affect margins.",
+          "强劲科技需求支持出口收入，能源与汇率成本则影响利润率。"
+        ],
+        "upside": [
+          "If technology investment broadens and export demand persists, growth could retain support beyond the leading firms.",
+          "若科技投资扩散且出口需求持续，增长支撑可能延伸至龙头企业之外。"
+        ],
+        "downside": [
+          "If technology spending slows or energy costs rise, concentrated export exposure could amplify the impact.",
+          "若科技支出放缓或能源成本上升，集中的出口敞口可能放大影响。"
+        ],
+        "watch": [
+          "Export orders, capital spending and the next GDP release.",
+          "出口订单、资本支出与下一次GDP发布。"
+        ],
+        "route": null,
+        "source": "https://eng.dgbas.gov.tw/News_Content.aspx?n=4438&s=236587"
+      },
+      "research": null,
+      "scope_note_en": null,
+      "scope_note_zh": null,
+      "macro_current_count": 0
+    },
+    {
+      "cc": "IN",
+      "name_en": "India",
+      "name_zh": "印度",
+      "index": "Nifty 50",
+      "currency": "INR",
+      "market": {
+        "state": "pressure",
+        "label_en": "Under pressure",
+        "label_zh": "承压",
+        "tone": "down",
+        "as_of": "2026-10-14",
+        "current": true,
+        "above_50d": false,
+        "above_200d": false,
+        "drawdown": -14.1,
+        "fx_3m": null,
+        "fx_as_of": null,
+        "high_window_observations": 252,
+        "high_window_start": "2025-10-07"
+      },
+      "forecast": {
+        "kind": "sourced_forecast",
+        "provider": "IMF",
+        "source_url": "https://www.imf.org/en/publications/weo/issues/2026/07/08/world-economic-outlook-update-july-2026",
+        "published": "2026-07-08",
+        "period_basis": "fiscal_year",
+        "year": 2026,
+        "next_year": 2027,
+        "current": 6.4,
+        "next": 6.7,
+        "previous": 7.7,
+        "change": 0.3,
+        "revision": -0.1,
+        "revision_from": "2026-04",
+        "path_en": "Faster growth projected",
+        "path_zh": "预计增长加快"
+      },
+      "metrics": [
+        {
+          "key": "gdp",
+          "label_en": "GDP growth",
+          "label_zh": "GDP增长",
+          "value": null,
+          "period": null,
+          "unit": "% y/y",
+          "current": false,
+          "quality": "missing",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        },
+        {
+          "key": "inflation",
+          "label_en": "Inflation",
+          "label_zh": "通胀",
+          "value": 4.441219,
+          "period": "2026-07",
+          "unit": "% y/y",
+          "current": true,
+          "quality": "current",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CPI",
+          "change_3m_pp": 0.956281
+        },
+        {
+          "key": "policy",
+          "label_en": "Policy rate",
+          "label_zh": "政策利率",
+          "value": 5.25,
+          "period": "2026-06",
+          "unit": "%",
+          "current": false,
+          "quality": "dated",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CBPOL",
+          "change_3m_pp": null
+        },
+        {
+          "key": "unemployment",
+          "label_en": "Unemployment",
+          "label_zh": "失业率",
+          "value": null,
+          "period": null,
+          "unit": "%",
+          "current": false,
+          "quality": "missing",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        }
+      ],
+      "title_en": "Faster growth projected as inflation rises",
+      "title_zh": "增长预计加快，通胀同时上升",
+      "read_en": "IMF lowered its FY2026 growth forecast by 0.1 percentage points from its 2026-04 edition, to 6.4%; it projects 6.7% for FY2027. Inflation was 4.44% year over year in 2026-07.",
+      "read_zh": "IMF将FY2026年增长预测较2026-04版下调0.1个百分点至6.4%，预计FY2027年为6.7%。2026-07通胀同比为4.44%。",
+      "profile": {
+        "theme": [
+          "Domestic demand, oil",
+          "内需与石油"
+        ],
+        "driver": [
+          "Domestic demand supports the growth outlook; imported energy can change the inflation trade-off.",
+          "内需支持增长前景，进口能源则可能改变通胀的权衡。"
+        ],
+        "transmission": [
+          "Oil costs and the rupee affect import prices, while financing conditions influence domestic investment.",
+          "油价与卢比影响进口价格，融资条件则影响国内投资。"
+        ],
+        "upside": [
+          "If inflation eases without a demand slowdown, domestic investment could gain breathing room.",
+          "若通胀回落而需求未放缓，国内投资将获得更多空间。"
+        ],
+        "downside": [
+          "If oil and import costs rise, inflation pressure could constrain support for growth.",
+          "若油价与进口成本上升，通胀压力可能限制对增长的支持。"
+        ],
+        "watch": [
+          "Inflation, investment activity and the rupee.",
+          "通胀、投资活动与卢比。"
+        ],
+        "route": "india.html",
+        "source": "https://www.rbi.org.in/"
+      },
+      "research": null,
+      "scope_note_en": null,
+      "scope_note_zh": null,
+      "macro_current_count": 1
+    },
+    {
+      "cc": "AU",
+      "name_en": "Australia",
+      "name_zh": "澳大利亚",
+      "index": "ASX 200",
+      "currency": "AUD",
+      "market": {
+        "state": "pressure",
+        "label_en": "Under pressure",
+        "label_zh": "承压",
+        "tone": "down",
+        "as_of": "2026-10-15",
+        "current": true,
+        "above_50d": false,
+        "above_200d": false,
+        "drawdown": -6.1,
+        "fx_3m": null,
+        "fx_as_of": null,
+        "high_window_observations": 252,
+        "high_window_start": "2025-10-20"
+      },
+      "forecast": {
+        "kind": "sourced_forecast",
+        "provider": "IMF",
+        "source_url": "https://www.imf.org/en/publications/weo/issues/2026/07/08/world-economic-outlook-update-july-2026",
+        "published": "2026-07-08",
+        "period_basis": "calendar_year",
+        "year": 2026,
+        "next_year": 2027,
+        "current": 1.9,
+        "next": 1.7,
+        "previous": 2.0,
+        "change": -0.2,
+        "revision": -0.1,
+        "revision_from": "2026-04",
+        "path_en": "Slower growth projected",
+        "path_zh": "预计增长放缓"
+      },
+      "metrics": [
+        {
+          "key": "gdp",
+          "label_en": "GDP growth",
+          "label_zh": "GDP增长",
+          "value": 2.14,
+          "period": "2026-04",
+          "unit": "% y/y",
+          "current": true,
+          "quality": "current",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        },
+        {
+          "key": "inflation",
+          "label_en": "Inflation",
+          "label_zh": "通胀",
+          "value": 3.941849,
+          "period": "2026-06",
+          "unit": "% y/y",
+          "current": false,
+          "quality": "dated",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CPI",
+          "change_3m_pp": null
+        },
+        {
+          "key": "policy",
+          "label_en": "Policy rate",
+          "label_zh": "政策利率",
+          "value": 4.6,
+          "period": "2026-09",
+          "unit": "%",
+          "current": true,
+          "quality": "current",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CBPOL",
+          "change_3m_pp": 0.25
+        },
+        {
+          "key": "unemployment",
+          "label_en": "Unemployment",
+          "label_zh": "失业率",
+          "value": 4.46,
+          "period": "2026-07",
+          "unit": "%",
+          "current": true,
+          "quality": "current",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        }
+      ],
+      "title_en": "Earlier rate rises are still working through spending",
+      "title_zh": "此前加息仍在传导至支出",
+      "read_en": "IMF lowered its 2026 growth forecast by 0.1 percentage points from its 2026-04 edition, to 1.9%; it projects 1.7% for 2027. The 2026-09 policy rate was 4.60%, 0.25 points above three months earlier.",
+      "read_zh": "IMF将2026年增长预测较2026-04版下调0.1个百分点至1.9%，预计2027年为1.7%。2026-09政策利率为4.60%，高于三个月前0.25个百分点。",
+      "profile": {
+        "theme": [
+          "Borrowing costs and household demand",
+          "借贷成本与家庭需求"
+        ],
+        "driver": [
+          "Rate increases can reduce household spending capacity and investment demand. The RBA expects slowing demand to help reduce inflation.",
+          "加息可能压低家庭支出能力与投资需求。澳大利亚央行预计需求放缓将有助于通胀回落。"
+        ],
+        "transmission": [
+          "Commodity income supports the external sector; interest rates shape household spending capacity.",
+          "大宗商品收入支持对外部门，利率影响家庭支出能力。"
+        ],
+        "upside": [
+          "If inflation falls with only a modest slowdown in employment and spending, households could regain purchasing power without a sharp contraction.",
+          "若通胀回落，同时就业与支出仅温和放缓，家庭购买力可能恢复，而无需经历剧烈收缩。"
+        ],
+        "downside": [
+          "If higher borrowing costs weaken spending more than expected while energy inflation persists, growth could slow before households receive price relief.",
+          "若借贷成本上升对支出的打击超出预期，而能源通胀持续，经济可能在家庭获得价格缓解之前先行放缓。"
+        ],
+        "watch": [
+          "Household spending, unemployment, housing activity and inflation’s response to earlier rate increases.",
+          "家庭支出、失业率、住房活动与通胀对先前加息的反应。"
+        ],
+        "route": null,
+        "source": "https://www.rba.gov.au/publications/smp/"
+      },
+      "research": {
+        "kind": "attributed_assessment",
+        "published": "2026-08-11",
+        "provider": "Reserve Bank of Australia",
+        "source_url": "https://www.rba.gov.au/publications/smp/2026/aug/",
+        "title": [
+          "Earlier rate rises are still working through spending",
+          "此前加息仍在传导至支出"
+        ],
+        "read": [
+          "The RBA expects earlier interest-rate increases to slow spending, with their full effect still ahead. Its August outlook places inflation’s return to the midpoint of its target range in early 2028 and anticipates a gradual rise in unemployment.",
+          "澳大利亚央行预计此前加息将减缓支出，其完整影响尚未显现。8月展望预计通胀于2028年初回到目标区间中点，失业率则逐步上升。"
+        ],
+        "theme": [
+          "Borrowing costs and household demand",
+          "借贷成本与家庭需求"
+        ],
+        "driver": [
+          "Rate increases can reduce household spending capacity and investment demand. The RBA expects slowing demand to help reduce inflation.",
+          "加息可能压低家庭支出能力与投资需求。澳大利亚央行预计需求放缓将有助于通胀回落。"
+        ],
+        "upside": [
+          "If inflation falls with only a modest slowdown in employment and spending, households could regain purchasing power without a sharp contraction.",
+          "若通胀回落，同时就业与支出仅温和放缓，家庭购买力可能恢复，而无需经历剧烈收缩。"
+        ],
+        "downside": [
+          "If higher borrowing costs weaken spending more than expected while energy inflation persists, growth could slow before households receive price relief.",
+          "若借贷成本上升对支出的打击超出预期，而能源通胀持续，经济可能在家庭获得价格缓解之前先行放缓。"
+        ],
+        "watch": [
+          "Household spending, unemployment, housing activity and inflation’s response to earlier rate increases.",
+          "家庭支出、失业率、住房活动与通胀对先前加息的反应。"
+        ]
+      },
+      "scope_note_en": null,
+      "scope_note_zh": null,
+      "macro_current_count": 3
+    },
+    {
+      "cc": "GB",
+      "name_en": "United Kingdom",
+      "name_zh": "英国",
+      "index": "FTSE 100",
+      "currency": "GBP",
+      "market": {
+        "state": "uptrend",
+        "label_en": "Uptrend",
+        "label_zh": "上升趋势",
+        "tone": "up",
+        "as_of": "2026-10-14",
+        "current": true,
+        "above_50d": true,
+        "above_200d": true,
+        "drawdown": -1.7,
+        "fx_3m": null,
+        "fx_as_of": null,
+        "high_window_observations": 252,
+        "high_window_start": "2025-10-16"
+      },
+      "forecast": {
+        "kind": "sourced_forecast",
+        "provider": "IMF",
+        "source_url": "https://www.imf.org/en/publications/weo/issues/2026/07/08/world-economic-outlook-update-july-2026",
+        "published": "2026-07-08",
+        "period_basis": "calendar_year",
+        "year": 2026,
+        "next_year": 2027,
+        "current": 1.0,
+        "next": 1.3,
+        "previous": 1.4,
+        "change": 0.3,
+        "revision": 0.2,
+        "revision_from": "2026-04",
+        "path_en": "Faster growth projected",
+        "path_zh": "预计增长加快"
+      },
+      "metrics": [
+        {
+          "key": "gdp",
+          "label_en": "GDP growth",
+          "label_zh": "GDP增长",
+          "value": 1.17,
+          "period": "2026-04",
+          "unit": "% y/y",
+          "current": true,
+          "quality": "current",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        },
+        {
+          "key": "inflation",
+          "label_en": "Inflation",
+          "label_zh": "通胀",
+          "value": 3.086863,
+          "period": "2026-08",
+          "unit": "% y/y",
+          "current": true,
+          "quality": "current",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CPI",
+          "change_3m_pp": 0.19669
+        },
+        {
+          "key": "policy",
+          "label_en": "Policy rate",
+          "label_zh": "政策利率",
+          "value": 3.75,
+          "period": "2026-09",
+          "unit": "%",
+          "current": true,
+          "quality": "current",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CBPOL",
+          "change_3m_pp": 0.0
+        },
+        {
+          "key": "unemployment",
+          "label_en": "Unemployment",
+          "label_zh": "失业率",
+          "value": 4.9,
+          "period": "2026-05",
+          "unit": "%",
+          "current": false,
+          "quality": "dated",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        }
+      ],
+      "title_en": "A gradual pickup, with policy rates steady",
+      "title_zh": "预计逐步加快，政策利率稳定",
+      "read_en": "IMF raised its 2026 growth forecast by 0.2 percentage points from its 2026-04 edition, to 1.0%; it projects 1.3% for 2027. The 2026-09 policy rate was 3.75%, unchanged over three months.",
+      "read_zh": "IMF将2026年增长预测较2026-04版上调0.2个百分点至1.0%，预计2027年为1.3%。2026-09政策利率为3.75%，较三个月前不变。",
+      "profile": {
+        "theme": [
+          "Services, rates, sterling",
+          "服务业、利率与英镑"
+        ],
+        "driver": [
+          "Services inflation and wage growth matter for the pace of monetary easing.",
+          "服务业通胀与工资增长影响货币宽松的节奏。"
+        ],
+        "transmission": [
+          "Lower financing costs can support domestic demand; sterling also changes overseas earnings translation.",
+          "融资成本下降可支持内需，英镑也会改变海外利润的换算。"
+        ],
+        "upside": [
+          "If services inflation cools while spending holds, a gradual recovery could gain support.",
+          "若服务业通胀降温且支出保持稳定，渐进复苏可能获得支持。"
+        ],
+        "downside": [
+          "If inflation stays persistent, prolonged borrowing costs could restrain an already modest growth path.",
+          "若通胀持续，高企的借贷成本可能抑制本已温和的增长路径。"
+        ],
+        "watch": [
+          "Services prices, wages and household spending.",
+          "服务价格、工资与家庭支出。"
+        ],
+        "route": "united_kingdom.html",
+        "source": "https://www.bankofengland.co.uk/monetary-policy-report"
+      },
+      "research": null,
+      "scope_note_en": null,
+      "scope_note_zh": null,
+      "macro_current_count": 3
+    },
+    {
+      "cc": "EZ",
+      "name_en": "Euro Area",
+      "name_zh": "欧元区",
+      "index": "STOXX Europe 600",
+      "currency": "EUR",
+      "market": {
+        "state": "pullback",
+        "label_en": "Pullback",
+        "label_zh": "回调",
+        "tone": "neutral",
+        "as_of": "2026-10-14",
+        "current": true,
+        "above_50d": false,
+        "above_200d": true,
+        "drawdown": -3.4,
+        "fx_3m": null,
+        "fx_as_of": null,
+        "high_window_observations": 252,
+        "high_window_start": "2025-10-13"
+      },
+      "forecast": {
+        "kind": "sourced_forecast",
+        "provider": "IMF",
+        "source_url": "https://www.imf.org/en/publications/weo/issues/2026/07/08/world-economic-outlook-update-july-2026",
+        "published": "2026-07-08",
+        "period_basis": "calendar_year",
+        "year": 2026,
+        "next_year": 2027,
+        "current": 0.9,
+        "next": 1.2,
+        "previous": 1.4,
+        "change": 0.3,
+        "revision": -0.2,
+        "revision_from": "2026-04",
+        "path_en": "Faster growth projected",
+        "path_zh": "预计增长加快"
+      },
+      "metrics": [
+        {
+          "key": "gdp",
+          "label_en": "GDP growth",
+          "label_zh": "GDP增长",
+          "value": 1.16,
+          "period": "2026-04",
+          "unit": "% y/y",
+          "current": true,
+          "quality": "current",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        },
+        {
+          "key": "inflation",
+          "label_en": "Inflation",
+          "label_zh": "通胀",
+          "value": 3.248577,
+          "period": "2026-08",
+          "unit": "% y/y",
+          "current": true,
+          "quality": "current",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CPI",
+          "change_3m_pp": 0.071562
+        },
+        {
+          "key": "policy",
+          "label_en": "Policy rate",
+          "label_zh": "政策利率",
+          "value": 2.5,
+          "period": "2026-09",
+          "unit": "%",
+          "current": true,
+          "quality": "current",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CBPOL",
+          "change_3m_pp": 0.25
+        },
+        {
+          "key": "unemployment",
+          "label_en": "Unemployment",
+          "label_zh": "失业率",
+          "value": 6.4,
+          "period": "2026-08",
+          "unit": "%",
+          "current": true,
+          "quality": "current",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        }
+      ],
+      "title_en": "A firmer outlook still depends on energy relief",
+      "title_zh": "前景改善仍取决于能源压力缓解",
+      "read_en": "IMF lowered its 2026 growth forecast by 0.2 percentage points from its 2026-04 edition, to 0.9%; it projects 1.2% for 2027. The 2026-09 policy rate was 2.50%, 0.25 points above three months earlier.",
+      "read_zh": "IMF将2026年增长预测较2026-04版下调0.2个百分点至0.9%，预计2027年为1.2%。2026-09政策利率为2.50%，高于三个月前0.25个百分点。",
+      "profile": {
+        "theme": [
+          "Energy, real incomes and public investment",
+          "能源、实际收入与公共投资"
+        ],
+        "driver": [
+          "Lower energy inflation can restore household purchasing power, while infrastructure and defence spending support investment. Those are assumptions behind the ECB’s improving growth path.",
+          "能源通胀下降可能恢复家庭购买力，基建与国防支出则支持投资。这些构成欧洲央行增长路径改善的前提。"
+        ],
+        "transmission": [
+          "Import costs affect real incomes; bank lending conditions transmit policy into investment and consumption.",
+          "进口成本影响实际收入，银行信贷条件将政策传导至投资与消费。"
+        ],
+        "upside": [
+          "If energy pressure eases as assumed and public investment reaches activity, domestic demand could carry more of the growth pickup.",
+          "若能源压力按预期缓解，公共投资转化为实际活动，内需可能为增长改善提供更多动力。"
+        ],
+        "downside": [
+          "If the energy shock persists, real-income gains could be delayed while higher input costs pressure margins and slow the projected pickup.",
+          "若能源冲击持续，实际收入改善可能推迟，投入成本上升则可能压缩利润率、拖慢预期中的增长改善。"
+        ],
+        "watch": [
+          "Energy prices, real household incomes, investment spending and bank lending.",
+          "能源价格、家庭实际收入、投资支出与银行信贷。"
+        ],
+        "route": "euro_area.html",
+        "source": "https://www.ecb.europa.eu/pub/projections/html/index.en.html"
+      },
+      "research": {
+        "kind": "attributed_assessment",
+        "published": "2026-09-10",
+        "provider": "European Central Bank",
+        "source_url": "https://www.ecb.europa.eu/press/projections/html/ecb.projections202609_ecbstaff~8e340fc69d.en.html",
+        "title": [
+          "A firmer outlook still depends on energy relief",
+          "前景改善仍取决于能源压力缓解"
+        ],
+        "read": [
+          "The ECB’s September assessment finds the economy more resilient than expected. Its baseline relies on the energy shock fading, real incomes recovering and infrastructure and defence spending supporting demand; persistent export competitiveness problems remain a constraint.",
+          "欧洲央行9月研判认为经济韧性强于预期。其基准情景依赖能源冲击消退、实际收入恢复，以及基建与国防支出支持需求；出口竞争力问题仍构成限制。"
+        ],
+        "theme": [
+          "Energy, real incomes and public investment",
+          "能源、实际收入与公共投资"
+        ],
+        "driver": [
+          "Lower energy inflation can restore household purchasing power, while infrastructure and defence spending support investment. Those are assumptions behind the ECB’s improving growth path.",
+          "能源通胀下降可能恢复家庭购买力，基建与国防支出则支持投资。这些构成欧洲央行增长路径改善的前提。"
+        ],
+        "upside": [
+          "If energy pressure eases as assumed and public investment reaches activity, domestic demand could carry more of the growth pickup.",
+          "若能源压力按预期缓解，公共投资转化为实际活动，内需可能为增长改善提供更多动力。"
+        ],
+        "downside": [
+          "If the energy shock persists, real-income gains could be delayed while higher input costs pressure margins and slow the projected pickup.",
+          "若能源冲击持续，实际收入改善可能推迟，投入成本上升则可能压缩利润率、拖慢预期中的增长改善。"
+        ],
+        "watch": [
+          "Energy prices, real household incomes, investment spending and bank lending.",
+          "能源价格、家庭实际收入、投资支出与银行信贷。"
+        ]
+      },
+      "scope_note_en": "Equities use STOXX Europe 600, which includes markets outside the Euro Area.",
+      "scope_note_zh": "股票采用STOXX欧洲600指数，覆盖范围包含欧元区以外市场。",
+      "macro_current_count": 4
+    }
+  ],
+  "count": 7,
+  "display_countries": [
+    {
+      "cc": "KR",
+      "name_en": "South Korea",
+      "name_zh": "韩国",
+      "index": "KOSPI",
+      "currency": "KRW",
+      "market": {
+        "state": "pressure",
+        "label_en": "Under pressure",
+        "label_zh": "承压",
+        "tone": "down",
+        "as_of": "2026-10-15",
+        "current": true,
+        "above_50d": false,
+        "above_200d": false,
+        "drawdown": -39.2,
+        "fx_3m": null,
+        "fx_as_of": null,
+        "high_window_observations": 252,
+        "high_window_start": "2025-09-29"
+      },
+      "forecast": {
+        "kind": "sourced_forecast",
+        "provider": "IMF",
+        "source_url": "https://www.imf.org/en/publications/weo/issues/2026/07/08/world-economic-outlook-update-july-2026",
+        "published": "2026-07-08",
+        "period_basis": "calendar_year",
+        "year": 2026,
+        "next_year": 2027,
+        "current": 2.6,
+        "next": 2.5,
+        "previous": 1.1,
+        "change": -0.1,
+        "revision": 0.7,
+        "revision_from": "2026-04",
+        "path_en": "Slower growth projected",
+        "path_zh": "预计增长放缓"
+      },
+      "metrics": [
+        {
+          "key": "gdp",
+          "label_en": "GDP growth",
+          "label_zh": "GDP增长",
+          "value": 3.75,
+          "period": "2026-04",
+          "unit": "% y/y",
+          "current": true,
+          "quality": "current",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        },
+        {
+          "key": "inflation",
+          "label_en": "Inflation",
+          "label_zh": "通胀",
+          "value": 2.789221,
+          "period": "2026-07",
+          "unit": "% y/y",
+          "current": true,
+          "quality": "current",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CPI",
+          "change_3m_pp": 0.220051
+        },
+        {
+          "key": "policy",
+          "label_en": "Policy rate",
+          "label_zh": "政策利率",
+          "value": 3.0,
+          "period": "2026-09",
+          "unit": "%",
+          "current": true,
+          "quality": "current",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CBPOL",
+          "change_3m_pp": 0.5
+        },
+        {
+          "key": "unemployment",
+          "label_en": "Unemployment",
+          "label_zh": "失业率",
+          "value": 2.8,
+          "period": "2026-07",
+          "unit": "%",
+          "current": true,
+          "quality": "current",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        }
+      ],
+      "title_en": "Export strength meets higher rates",
+      "title_zh": "出口强劲，政策利率上升",
+      "read_en": "IMF raised its 2026 growth forecast by 0.7 percentage points from its 2026-04 edition, to 2.6%; it projects 2.5% for 2027. The 2026-09 policy rate was 3.00%, 0.50 points above three months earlier.",
+      "read_zh": "IMF将2026年增长预测较2026-04版上调0.7个百分点至2.6%，预计2027年为2.5%。2026-09政策利率为3.00%，高于三个月前0.50个百分点。",
+      "profile": {
+        "theme": [
+          "Export demand and domestic financing",
+          "出口需求与国内融资"
+        ],
+        "driver": [
+          "Exports and investment support activity in the central bank’s assessment. Higher rates can act on housing and financing-sensitive spending through a different channel.",
+          "央行研判认为出口与投资支撑经济。较高利率则可能通过另一渠道影响住房及对融资敏感的支出。"
+        ],
+        "transmission": [
+          "Export earnings, the won and domestic financing conditions connect the economy to equities.",
+          "出口利润、韩元与国内融资条件将经济变化传导至股市。"
+        ],
+        "upside": [
+          "If export strength continues and consumption broadens without renewed inflation, growth could spread beyond the external sector.",
+          "若出口保持强势，消费扩张且未重新推高通胀，增长有望扩散至对外部门之外。"
+        ],
+        "downside": [
+          "If inflation persists and further rate increases pass through to borrowing costs, households and financing-sensitive firms could face greater pressure.",
+          "若通胀持续，进一步加息传导至借贷成本，家庭与对融资敏感的企业可能面临更大压力。"
+        ],
+        "watch": [
+          "Exports, consumption, housing and household credit, and subsequent Bank of Korea decisions.",
+          "出口、消费、住房与家庭信贷，以及韩国央行后续决策。"
+        ],
+        "route": "south_korea.html",
+        "source": "https://www.bok.or.kr/eng/main/main.do"
+      },
+      "research": {
+        "kind": "attributed_assessment",
+        "published": "2026-09-10",
+        "provider": "Bank of Korea",
+        "source_url": "https://www.bok.or.kr/eng/bbs/E0000628/view.do?depth=400215&menuNo=400215&nttId=11064614&programType=newsDataEng&relate=Y",
+        "title": [
+          "Export strength meets higher rates",
+          "出口强劲，政策利率上升"
+        ],
+        "read": [
+          "The Bank of Korea describes support from exports, investment and recovering consumption. Inflation and housing-related credit pressures keep further rate increases in view.",
+          "韩国央行指出出口、投资与消费复苏支持经济。通胀与住房相关信贷压力，使进一步加息仍在考虑范围内。"
+        ],
+        "theme": [
+          "Export demand and domestic financing",
+          "出口需求与国内融资"
+        ],
+        "driver": [
+          "Exports and investment support activity in the central bank’s assessment. Higher rates can act on housing and financing-sensitive spending through a different channel.",
+          "央行研判认为出口与投资支撑经济。较高利率则可能通过另一渠道影响住房及对融资敏感的支出。"
+        ],
+        "upside": [
+          "If export strength continues and consumption broadens without renewed inflation, growth could spread beyond the external sector.",
+          "若出口保持强势，消费扩张且未重新推高通胀，增长有望扩散至对外部门之外。"
+        ],
+        "downside": [
+          "If inflation persists and further rate increases pass through to borrowing costs, households and financing-sensitive firms could face greater pressure.",
+          "若通胀持续，进一步加息传导至借贷成本，家庭与对融资敏感的企业可能面临更大压力。"
+        ],
+        "watch": [
+          "Exports, consumption, housing and household credit, and subsequent Bank of Korea decisions.",
+          "出口、消费、住房与家庭信贷，以及韩国央行后续决策。"
+        ]
+      },
+      "scope_note_en": null,
+      "scope_note_zh": null,
+      "macro_current_count": 4
+    },
+    {
+      "cc": "JP",
+      "name_en": "Japan",
+      "name_zh": "日本",
+      "index": "Nikkei 225",
+      "currency": "JPY",
+      "market": {
+        "state": "pullback",
+        "label_en": "Pullback",
+        "label_zh": "回调",
+        "tone": "neutral",
+        "as_of": "2026-10-15",
+        "current": true,
+        "above_50d": false,
+        "above_200d": true,
+        "drawdown": -10.2,
+        "fx_3m": null,
+        "fx_as_of": null,
+        "high_window_observations": 252,
+        "high_window_start": "2025-10-01"
+      },
+      "forecast": {
+        "kind": "sourced_forecast",
+        "provider": "IMF",
+        "source_url": "https://www.imf.org/en/publications/weo/issues/2026/07/08/world-economic-outlook-update-july-2026",
+        "published": "2026-07-08",
+        "period_basis": "calendar_year",
+        "year": 2026,
+        "next_year": 2027,
+        "current": 0.6,
+        "next": 0.7,
+        "previous": 1.1,
+        "change": 0.1,
+        "revision": -0.1,
+        "revision_from": "2026-04",
+        "path_en": "Faster growth projected",
+        "path_zh": "预计增长加快"
+      },
+      "metrics": [
+        {
+          "key": "gdp",
+          "label_en": "GDP growth",
+          "label_zh": "GDP增长",
+          "value": 0.73,
+          "period": "2026-04",
+          "unit": "% y/y",
+          "current": true,
+          "quality": "current",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        },
+        {
+          "key": "inflation",
+          "label_en": "Inflation",
+          "label_zh": "通胀",
+          "value": 1.898102,
+          "period": "2026-07",
+          "unit": "% y/y",
+          "current": true,
+          "quality": "current",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CPI",
+          "change_3m_pp": 0.59419
+        },
+        {
+          "key": "policy",
+          "label_en": "Policy rate",
+          "label_zh": "政策利率",
+          "value": 1.25,
+          "period": "2026-09",
+          "unit": "%",
+          "current": true,
+          "quality": "current",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CBPOL",
+          "change_3m_pp": 0.25
+        },
+        {
+          "key": "unemployment",
+          "label_en": "Unemployment",
+          "label_zh": "失业率",
+          "value": 2.4,
+          "period": "2026-07",
+          "unit": "%",
+          "current": true,
+          "quality": "current",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        }
+      ],
+      "title_en": "Wages and technology demand cushion the energy shock",
+      "title_zh": "工资与科技需求缓冲能源冲击",
+      "read_en": "IMF lowered its 2026 growth forecast by 0.1 percentage points from its 2026-04 edition, to 0.6%; it projects 0.7% for 2027. The 2026-09 policy rate was 1.25%, 0.25 points above three months earlier.",
+      "read_zh": "IMF将2026年增长预测较2026-04版下调0.1个百分点至0.6%，预计2027年为0.7%。2026-09政策利率为1.25%，高于三个月前0.25个百分点。",
+      "profile": {
+        "theme": [
+          "Energy costs versus household income",
+          "能源成本与家庭收入"
+        ],
+        "driver": [
+          "Energy imports reduce purchasing power when prices rise faster than household income. The Bank of Japan sees wage gains and fiscal measures cushioning that pressure.",
+          "能源价格涨幅超过家庭收入时，进口能源会削弱购买力。日本央行认为工资增长与财政措施有助于缓冲压力。"
+        ],
+        "transmission": [
+          "A stronger yen improves unhedged dollar translation but can reduce overseas earnings in yen.",
+          "日元升值改善未对冲的美元换算收益，但可能压低海外利润的日元计价。"
+        ],
+        "upside": [
+          "If energy costs ease while wage gains hold, real incomes and household spending could improve; broader demand would support domestic-facing earnings.",
+          "若能源成本下降且工资增长持续，实际收入与家庭支出可能改善，更广泛的需求将支持内需型企业利润。"
+        ],
+        "downside": [
+          "If energy and import costs stay high, they could absorb wage gains and constrain consumption even with strong technology demand.",
+          "若能源与进口成本持续偏高，可能抵消工资增长并限制消费，即使科技需求仍强。"
+        ],
+        "watch": [
+          "Real wages, household spending, energy import costs and the next Bank of Japan outlook.",
+          "实际工资、家庭支出、能源进口成本与下一份日本央行展望。"
+        ],
+        "route": "japan.html",
+        "source": "https://www.boj.or.jp/en/mopo/outlook/"
+      },
+      "research": {
+        "kind": "attributed_assessment",
+        "published": "2026-07-31",
+        "provider": "Bank of Japan",
+        "source_url": "https://www.boj.or.jp/en/mopo/outlook/gor2607a.pdf",
+        "title": [
+          "Wages and technology demand cushion the energy shock",
+          "工资与科技需求缓冲能源冲击"
+        ],
+        "read": [
+          "The Bank of Japan expects higher energy costs to weigh on activity in fiscal 2026. Wage gains, government support and AI demand provide offsets; easing energy pressure and stronger income-to-spending transmission underpin its later pickup.",
+          "日本央行预计能源成本上升拖累2026财年经济。工资增长、政府支持与AI需求提供缓冲；能源压力缓解、收入更有效地转化为支出，构成后续增长改善的基础。"
+        ],
+        "theme": [
+          "Energy costs versus household income",
+          "能源成本与家庭收入"
+        ],
+        "driver": [
+          "Energy imports reduce purchasing power when prices rise faster than household income. The Bank of Japan sees wage gains and fiscal measures cushioning that pressure.",
+          "能源价格涨幅超过家庭收入时，进口能源会削弱购买力。日本央行认为工资增长与财政措施有助于缓冲压力。"
+        ],
+        "upside": [
+          "If energy costs ease while wage gains hold, real incomes and household spending could improve; broader demand would support domestic-facing earnings.",
+          "若能源成本下降且工资增长持续，实际收入与家庭支出可能改善，更广泛的需求将支持内需型企业利润。"
+        ],
+        "downside": [
+          "If energy and import costs stay high, they could absorb wage gains and constrain consumption even with strong technology demand.",
+          "若能源与进口成本持续偏高，可能抵消工资增长并限制消费，即使科技需求仍强。"
+        ],
+        "watch": [
+          "Real wages, household spending, energy import costs and the next Bank of Japan outlook.",
+          "实际工资、家庭支出、能源进口成本与下一份日本央行展望。"
+        ]
+      },
+      "scope_note_en": null,
+      "scope_note_zh": null,
+      "macro_current_count": 4
+    },
+    {
+      "cc": "TW",
+      "name_en": "Taiwan",
+      "name_zh": "台湾",
+      "index": "TAIEX",
+      "currency": "TWD",
+      "market": {
+        "state": "uptrend",
+        "label_en": "Uptrend",
+        "label_zh": "上升趋势",
+        "tone": "up",
+        "as_of": "2026-10-15",
+        "current": true,
+        "above_50d": true,
+        "above_200d": true,
+        "drawdown": -5.1,
+        "fx_3m": null,
+        "fx_as_of": null,
+        "high_window_observations": 252,
+        "high_window_start": "2025-09-30"
+      },
+      "forecast": {
+        "kind": "sourced_forecast",
+        "provider": "DGBAS",
+        "source_url": "https://eng.dgbas.gov.tw/News_Content.aspx?n=4438&s=236587",
+        "published": "2026-08-14",
+        "period_basis": "calendar_year",
+        "year": 2026,
+        "next_year": 2027,
+        "current": 11.05,
+        "next": 6.04,
+        "previous": null,
+        "change": -5.01,
+        "revision": null,
+        "revision_from": null,
+        "path_en": "Slower growth projected",
+        "path_zh": "预计增长放缓"
+      },
+      "metrics": [
+        {
+          "key": "gdp",
+          "label_en": "GDP growth",
+          "label_zh": "GDP增长",
+          "value": null,
+          "period": null,
+          "unit": "% y/y",
+          "current": false,
+          "quality": "missing",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        },
+        {
+          "key": "inflation",
+          "label_en": "Inflation",
+          "label_zh": "通胀",
+          "value": null,
+          "period": null,
+          "unit": "% y/y",
+          "current": false,
+          "quality": "missing",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        },
+        {
+          "key": "policy",
+          "label_en": "Policy rate",
+          "label_zh": "政策利率",
+          "value": null,
+          "period": null,
+          "unit": "%",
+          "current": false,
+          "quality": "missing",
+          "source": null,
+          "source_url": null,
+          "change_3m_pp": null
+        },
+        {
+          "key": "unemployment",
+          "label_en": "Unemployment",
+          "label_zh": "失业率",
+          "value": null,
+          "period": null,
+          "unit": "%",
+          "current": false,
+          "quality": "missing",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        }
+      ],
+      "title_en": "Exceptional growth is forecast to cool",
+      "title_zh": "高速增长预计降温",
+      "read_en": "DGBAS projects real GDP growth of 11.05% in 2026 and 6.04% in 2027.",
+      "read_zh": "DGBAS预计2026年实际GDP增长11.05%，2027年为6.04%。",
+      "profile": {
+        "theme": [
+          "Technology investment",
+          "科技投资"
+        ],
+        "driver": [
+          "Technology exports and capacity investment are central to the published growth outlook.",
+          "科技出口与产能投资是已发布增长展望的核心。"
+        ],
+        "transmission": [
+          "Strong technology demand can support export income while energy and currency costs affect margins.",
+          "强劲科技需求支持出口收入，能源与汇率成本则影响利润率。"
+        ],
+        "upside": [
+          "If technology investment broadens and export demand persists, growth could retain support beyond the leading firms.",
+          "若科技投资扩散且出口需求持续，增长支撑可能延伸至龙头企业之外。"
+        ],
+        "downside": [
+          "If technology spending slows or energy costs rise, concentrated export exposure could amplify the impact.",
+          "若科技支出放缓或能源成本上升，集中的出口敞口可能放大影响。"
+        ],
+        "watch": [
+          "Export orders, capital spending and the next GDP release.",
+          "出口订单、资本支出与下一次GDP发布。"
+        ],
+        "route": null,
+        "source": "https://eng.dgbas.gov.tw/News_Content.aspx?n=4438&s=236587"
+      },
+      "research": null,
+      "scope_note_en": null,
+      "scope_note_zh": null,
+      "macro_current_count": 0
+    },
+    {
+      "cc": "IN",
+      "name_en": "India",
+      "name_zh": "印度",
+      "index": "Nifty 50",
+      "currency": "INR",
+      "market": {
+        "state": "pressure",
+        "label_en": "Under pressure",
+        "label_zh": "承压",
+        "tone": "down",
+        "as_of": "2026-10-14",
+        "current": true,
+        "above_50d": false,
+        "above_200d": false,
+        "drawdown": -14.1,
+        "fx_3m": null,
+        "fx_as_of": null,
+        "high_window_observations": 252,
+        "high_window_start": "2025-10-07"
+      },
+      "forecast": {
+        "kind": "sourced_forecast",
+        "provider": "IMF",
+        "source_url": "https://www.imf.org/en/publications/weo/issues/2026/07/08/world-economic-outlook-update-july-2026",
+        "published": "2026-07-08",
+        "period_basis": "fiscal_year",
+        "year": 2026,
+        "next_year": 2027,
+        "current": 6.4,
+        "next": 6.7,
+        "previous": 7.7,
+        "change": 0.3,
+        "revision": -0.1,
+        "revision_from": "2026-04",
+        "path_en": "Faster growth projected",
+        "path_zh": "预计增长加快"
+      },
+      "metrics": [
+        {
+          "key": "gdp",
+          "label_en": "GDP growth",
+          "label_zh": "GDP增长",
+          "value": null,
+          "period": null,
+          "unit": "% y/y",
+          "current": false,
+          "quality": "missing",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        },
+        {
+          "key": "inflation",
+          "label_en": "Inflation",
+          "label_zh": "通胀",
+          "value": 4.441219,
+          "period": "2026-07",
+          "unit": "% y/y",
+          "current": true,
+          "quality": "current",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CPI",
+          "change_3m_pp": 0.956281
+        },
+        {
+          "key": "policy",
+          "label_en": "Policy rate",
+          "label_zh": "政策利率",
+          "value": 5.25,
+          "period": "2026-06",
+          "unit": "%",
+          "current": false,
+          "quality": "dated",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CBPOL",
+          "change_3m_pp": null
+        },
+        {
+          "key": "unemployment",
+          "label_en": "Unemployment",
+          "label_zh": "失业率",
+          "value": null,
+          "period": null,
+          "unit": "%",
+          "current": false,
+          "quality": "missing",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        }
+      ],
+      "title_en": "Faster growth projected as inflation rises",
+      "title_zh": "增长预计加快，通胀同时上升",
+      "read_en": "IMF lowered its FY2026 growth forecast by 0.1 percentage points from its 2026-04 edition, to 6.4%; it projects 6.7% for FY2027. Inflation was 4.44% year over year in 2026-07.",
+      "read_zh": "IMF将FY2026年增长预测较2026-04版下调0.1个百分点至6.4%，预计FY2027年为6.7%。2026-07通胀同比为4.44%。",
+      "profile": {
+        "theme": [
+          "Domestic demand, oil",
+          "内需与石油"
+        ],
+        "driver": [
+          "Domestic demand supports the growth outlook; imported energy can change the inflation trade-off.",
+          "内需支持增长前景，进口能源则可能改变通胀的权衡。"
+        ],
+        "transmission": [
+          "Oil costs and the rupee affect import prices, while financing conditions influence domestic investment.",
+          "油价与卢比影响进口价格，融资条件则影响国内投资。"
+        ],
+        "upside": [
+          "If inflation eases without a demand slowdown, domestic investment could gain breathing room.",
+          "若通胀回落而需求未放缓，国内投资将获得更多空间。"
+        ],
+        "downside": [
+          "If oil and import costs rise, inflation pressure could constrain support for growth.",
+          "若油价与进口成本上升，通胀压力可能限制对增长的支持。"
+        ],
+        "watch": [
+          "Inflation, investment activity and the rupee.",
+          "通胀、投资活动与卢比。"
+        ],
+        "route": "india.html",
+        "source": "https://www.rbi.org.in/"
+      },
+      "research": null,
+      "scope_note_en": null,
+      "scope_note_zh": null,
+      "macro_current_count": 1
+    },
+    {
+      "cc": "AU",
+      "name_en": "Australia",
+      "name_zh": "澳大利亚",
+      "index": "ASX 200",
+      "currency": "AUD",
+      "market": {
+        "state": "pressure",
+        "label_en": "Under pressure",
+        "label_zh": "承压",
+        "tone": "down",
+        "as_of": "2026-10-15",
+        "current": true,
+        "above_50d": false,
+        "above_200d": false,
+        "drawdown": -6.1,
+        "fx_3m": null,
+        "fx_as_of": null,
+        "high_window_observations": 252,
+        "high_window_start": "2025-10-20"
+      },
+      "forecast": {
+        "kind": "sourced_forecast",
+        "provider": "IMF",
+        "source_url": "https://www.imf.org/en/publications/weo/issues/2026/07/08/world-economic-outlook-update-july-2026",
+        "published": "2026-07-08",
+        "period_basis": "calendar_year",
+        "year": 2026,
+        "next_year": 2027,
+        "current": 1.9,
+        "next": 1.7,
+        "previous": 2.0,
+        "change": -0.2,
+        "revision": -0.1,
+        "revision_from": "2026-04",
+        "path_en": "Slower growth projected",
+        "path_zh": "预计增长放缓"
+      },
+      "metrics": [
+        {
+          "key": "gdp",
+          "label_en": "GDP growth",
+          "label_zh": "GDP增长",
+          "value": 2.14,
+          "period": "2026-04",
+          "unit": "% y/y",
+          "current": true,
+          "quality": "current",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        },
+        {
+          "key": "inflation",
+          "label_en": "Inflation",
+          "label_zh": "通胀",
+          "value": 3.941849,
+          "period": "2026-06",
+          "unit": "% y/y",
+          "current": false,
+          "quality": "dated",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CPI",
+          "change_3m_pp": null
+        },
+        {
+          "key": "policy",
+          "label_en": "Policy rate",
+          "label_zh": "政策利率",
+          "value": 4.6,
+          "period": "2026-09",
+          "unit": "%",
+          "current": true,
+          "quality": "current",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CBPOL",
+          "change_3m_pp": 0.25
+        },
+        {
+          "key": "unemployment",
+          "label_en": "Unemployment",
+          "label_zh": "失业率",
+          "value": 4.46,
+          "period": "2026-07",
+          "unit": "%",
+          "current": true,
+          "quality": "current",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        }
+      ],
+      "title_en": "Earlier rate rises are still working through spending",
+      "title_zh": "此前加息仍在传导至支出",
+      "read_en": "IMF lowered its 2026 growth forecast by 0.1 percentage points from its 2026-04 edition, to 1.9%; it projects 1.7% for 2027. The 2026-09 policy rate was 4.60%, 0.25 points above three months earlier.",
+      "read_zh": "IMF将2026年增长预测较2026-04版下调0.1个百分点至1.9%，预计2027年为1.7%。2026-09政策利率为4.60%，高于三个月前0.25个百分点。",
+      "profile": {
+        "theme": [
+          "Borrowing costs and household demand",
+          "借贷成本与家庭需求"
+        ],
+        "driver": [
+          "Rate increases can reduce household spending capacity and investment demand. The RBA expects slowing demand to help reduce inflation.",
+          "加息可能压低家庭支出能力与投资需求。澳大利亚央行预计需求放缓将有助于通胀回落。"
+        ],
+        "transmission": [
+          "Commodity income supports the external sector; interest rates shape household spending capacity.",
+          "大宗商品收入支持对外部门，利率影响家庭支出能力。"
+        ],
+        "upside": [
+          "If inflation falls with only a modest slowdown in employment and spending, households could regain purchasing power without a sharp contraction.",
+          "若通胀回落，同时就业与支出仅温和放缓，家庭购买力可能恢复，而无需经历剧烈收缩。"
+        ],
+        "downside": [
+          "If higher borrowing costs weaken spending more than expected while energy inflation persists, growth could slow before households receive price relief.",
+          "若借贷成本上升对支出的打击超出预期，而能源通胀持续，经济可能在家庭获得价格缓解之前先行放缓。"
+        ],
+        "watch": [
+          "Household spending, unemployment, housing activity and inflation’s response to earlier rate increases.",
+          "家庭支出、失业率、住房活动与通胀对先前加息的反应。"
+        ],
+        "route": null,
+        "source": "https://www.rba.gov.au/publications/smp/"
+      },
+      "research": {
+        "kind": "attributed_assessment",
+        "published": "2026-08-11",
+        "provider": "Reserve Bank of Australia",
+        "source_url": "https://www.rba.gov.au/publications/smp/2026/aug/",
+        "title": [
+          "Earlier rate rises are still working through spending",
+          "此前加息仍在传导至支出"
+        ],
+        "read": [
+          "The RBA expects earlier interest-rate increases to slow spending, with their full effect still ahead. Its August outlook places inflation’s return to the midpoint of its target range in early 2028 and anticipates a gradual rise in unemployment.",
+          "澳大利亚央行预计此前加息将减缓支出，其完整影响尚未显现。8月展望预计通胀于2028年初回到目标区间中点，失业率则逐步上升。"
+        ],
+        "theme": [
+          "Borrowing costs and household demand",
+          "借贷成本与家庭需求"
+        ],
+        "driver": [
+          "Rate increases can reduce household spending capacity and investment demand. The RBA expects slowing demand to help reduce inflation.",
+          "加息可能压低家庭支出能力与投资需求。澳大利亚央行预计需求放缓将有助于通胀回落。"
+        ],
+        "upside": [
+          "If inflation falls with only a modest slowdown in employment and spending, households could regain purchasing power without a sharp contraction.",
+          "若通胀回落，同时就业与支出仅温和放缓，家庭购买力可能恢复，而无需经历剧烈收缩。"
+        ],
+        "downside": [
+          "If higher borrowing costs weaken spending more than expected while energy inflation persists, growth could slow before households receive price relief.",
+          "若借贷成本上升对支出的打击超出预期，而能源通胀持续，经济可能在家庭获得价格缓解之前先行放缓。"
+        ],
+        "watch": [
+          "Household spending, unemployment, housing activity and inflation’s response to earlier rate increases.",
+          "家庭支出、失业率、住房活动与通胀对先前加息的反应。"
+        ]
+      },
+      "scope_note_en": null,
+      "scope_note_zh": null,
+      "macro_current_count": 3
+    },
+    {
+      "cc": "GB",
+      "name_en": "United Kingdom",
+      "name_zh": "英国",
+      "index": "FTSE 100",
+      "currency": "GBP",
+      "market": {
+        "state": "uptrend",
+        "label_en": "Uptrend",
+        "label_zh": "上升趋势",
+        "tone": "up",
+        "as_of": "2026-10-14",
+        "current": true,
+        "above_50d": true,
+        "above_200d": true,
+        "drawdown": -1.7,
+        "fx_3m": null,
+        "fx_as_of": null,
+        "high_window_observations": 252,
+        "high_window_start": "2025-10-16"
+      },
+      "forecast": {
+        "kind": "sourced_forecast",
+        "provider": "IMF",
+        "source_url": "https://www.imf.org/en/publications/weo/issues/2026/07/08/world-economic-outlook-update-july-2026",
+        "published": "2026-07-08",
+        "period_basis": "calendar_year",
+        "year": 2026,
+        "next_year": 2027,
+        "current": 1.0,
+        "next": 1.3,
+        "previous": 1.4,
+        "change": 0.3,
+        "revision": 0.2,
+        "revision_from": "2026-04",
+        "path_en": "Faster growth projected",
+        "path_zh": "预计增长加快"
+      },
+      "metrics": [
+        {
+          "key": "gdp",
+          "label_en": "GDP growth",
+          "label_zh": "GDP增长",
+          "value": 1.17,
+          "period": "2026-04",
+          "unit": "% y/y",
+          "current": true,
+          "quality": "current",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        },
+        {
+          "key": "inflation",
+          "label_en": "Inflation",
+          "label_zh": "通胀",
+          "value": 3.086863,
+          "period": "2026-08",
+          "unit": "% y/y",
+          "current": true,
+          "quality": "current",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CPI",
+          "change_3m_pp": 0.19669
+        },
+        {
+          "key": "policy",
+          "label_en": "Policy rate",
+          "label_zh": "政策利率",
+          "value": 3.75,
+          "period": "2026-09",
+          "unit": "%",
+          "current": true,
+          "quality": "current",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CBPOL",
+          "change_3m_pp": 0.0
+        },
+        {
+          "key": "unemployment",
+          "label_en": "Unemployment",
+          "label_zh": "失业率",
+          "value": 4.9,
+          "period": "2026-05",
+          "unit": "%",
+          "current": false,
+          "quality": "dated",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        }
+      ],
+      "title_en": "A gradual pickup, with policy rates steady",
+      "title_zh": "预计逐步加快，政策利率稳定",
+      "read_en": "IMF raised its 2026 growth forecast by 0.2 percentage points from its 2026-04 edition, to 1.0%; it projects 1.3% for 2027. The 2026-09 policy rate was 3.75%, unchanged over three months.",
+      "read_zh": "IMF将2026年增长预测较2026-04版上调0.2个百分点至1.0%，预计2027年为1.3%。2026-09政策利率为3.75%，较三个月前不变。",
+      "profile": {
+        "theme": [
+          "Services, rates, sterling",
+          "服务业、利率与英镑"
+        ],
+        "driver": [
+          "Services inflation and wage growth matter for the pace of monetary easing.",
+          "服务业通胀与工资增长影响货币宽松的节奏。"
+        ],
+        "transmission": [
+          "Lower financing costs can support domestic demand; sterling also changes overseas earnings translation.",
+          "融资成本下降可支持内需，英镑也会改变海外利润的换算。"
+        ],
+        "upside": [
+          "If services inflation cools while spending holds, a gradual recovery could gain support.",
+          "若服务业通胀降温且支出保持稳定，渐进复苏可能获得支持。"
+        ],
+        "downside": [
+          "If inflation stays persistent, prolonged borrowing costs could restrain an already modest growth path.",
+          "若通胀持续，高企的借贷成本可能抑制本已温和的增长路径。"
+        ],
+        "watch": [
+          "Services prices, wages and household spending.",
+          "服务价格、工资与家庭支出。"
+        ],
+        "route": "united_kingdom.html",
+        "source": "https://www.bankofengland.co.uk/monetary-policy-report"
+      },
+      "research": null,
+      "scope_note_en": null,
+      "scope_note_zh": null,
+      "macro_current_count": 3
+    },
+    {
+      "cc": "EZ",
+      "name_en": "Euro Area",
+      "name_zh": "欧元区",
+      "index": "STOXX Europe 600",
+      "currency": "EUR",
+      "market": {
+        "state": "pullback",
+        "label_en": "Pullback",
+        "label_zh": "回调",
+        "tone": "neutral",
+        "as_of": "2026-10-14",
+        "current": true,
+        "above_50d": false,
+        "above_200d": true,
+        "drawdown": -3.4,
+        "fx_3m": null,
+        "fx_as_of": null,
+        "high_window_observations": 252,
+        "high_window_start": "2025-10-13"
+      },
+      "forecast": {
+        "kind": "sourced_forecast",
+        "provider": "IMF",
+        "source_url": "https://www.imf.org/en/publications/weo/issues/2026/07/08/world-economic-outlook-update-july-2026",
+        "published": "2026-07-08",
+        "period_basis": "calendar_year",
+        "year": 2026,
+        "next_year": 2027,
+        "current": 0.9,
+        "next": 1.2,
+        "previous": 1.4,
+        "change": 0.3,
+        "revision": -0.2,
+        "revision_from": "2026-04",
+        "path_en": "Faster growth projected",
+        "path_zh": "预计增长加快"
+      },
+      "metrics": [
+        {
+          "key": "gdp",
+          "label_en": "GDP growth",
+          "label_zh": "GDP增长",
+          "value": 1.16,
+          "period": "2026-04",
+          "unit": "% y/y",
+          "current": true,
+          "quality": "current",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        },
+        {
+          "key": "inflation",
+          "label_en": "Inflation",
+          "label_zh": "通胀",
+          "value": 3.248577,
+          "period": "2026-08",
+          "unit": "% y/y",
+          "current": true,
+          "quality": "current",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CPI",
+          "change_3m_pp": 0.071562
+        },
+        {
+          "key": "policy",
+          "label_en": "Policy rate",
+          "label_zh": "政策利率",
+          "value": 2.5,
+          "period": "2026-09",
+          "unit": "%",
+          "current": true,
+          "quality": "current",
+          "source": "Bank for International Settlements",
+          "source_url": "https://data.bis.org/topics/CBPOL",
+          "change_3m_pp": 0.25
+        },
+        {
+          "key": "unemployment",
+          "label_en": "Unemployment",
+          "label_zh": "失业率",
+          "value": 6.4,
+          "period": "2026-08",
+          "unit": "%",
+          "current": true,
+          "quality": "current",
+          "source": "Existing international macro series",
+          "source_url": null,
+          "change_3m_pp": null
+        }
+      ],
+      "title_en": "A firmer outlook still depends on energy relief",
+      "title_zh": "前景改善仍取决于能源压力缓解",
+      "read_en": "IMF lowered its 2026 growth forecast by 0.2 percentage points from its 2026-04 edition, to 0.9%; it projects 1.2% for 2027. The 2026-09 policy rate was 2.50%, 0.25 points above three months earlier.",
+      "read_zh": "IMF将2026年增长预测较2026-04版下调0.2个百分点至0.9%，预计2027年为1.2%。2026-09政策利率为2.50%，高于三个月前0.25个百分点。",
+      "profile": {
+        "theme": [
+          "Energy, real incomes and public investment",
+          "能源、实际收入与公共投资"
+        ],
+        "driver": [
+          "Lower energy inflation can restore household purchasing power, while infrastructure and defence spending support investment. Those are assumptions behind the ECB’s improving growth path.",
+          "能源通胀下降可能恢复家庭购买力，基建与国防支出则支持投资。这些构成欧洲央行增长路径改善的前提。"
+        ],
+        "transmission": [
+          "Import costs affect real incomes; bank lending conditions transmit policy into investment and consumption.",
+          "进口成本影响实际收入，银行信贷条件将政策传导至投资与消费。"
+        ],
+        "upside": [
+          "If energy pressure eases as assumed and public investment reaches activity, domestic demand could carry more of the growth pickup.",
+          "若能源压力按预期缓解，公共投资转化为实际活动，内需可能为增长改善提供更多动力。"
+        ],
+        "downside": [
+          "If the energy shock persists, real-income gains could be delayed while higher input costs pressure margins and slow the projected pickup.",
+          "若能源冲击持续，实际收入改善可能推迟，投入成本上升则可能压缩利润率、拖慢预期中的增长改善。"
+        ],
+        "watch": [
+          "Energy prices, real household incomes, investment spending and bank lending.",
+          "能源价格、家庭实际收入、投资支出与银行信贷。"
+        ],
+        "route": "euro_area.html",
+        "source": "https://www.ecb.europa.eu/pub/projections/html/index.en.html"
+      },
+      "research": {
+        "kind": "attributed_assessment",
+        "published": "2026-09-10",
+        "provider": "European Central Bank",
+        "source_url": "https://www.ecb.europa.eu/press/projections/html/ecb.projections202609_ecbstaff~8e340fc69d.en.html",
+        "title": [
+          "A firmer outlook still depends on energy relief",
+          "前景改善仍取决于能源压力缓解"
+        ],
+        "read": [
+          "The ECB’s September assessment finds the economy more resilient than expected. Its baseline relies on the energy shock fading, real incomes recovering and infrastructure and defence spending supporting demand; persistent export competitiveness problems remain a constraint.",
+          "欧洲央行9月研判认为经济韧性强于预期。其基准情景依赖能源冲击消退、实际收入恢复，以及基建与国防支出支持需求；出口竞争力问题仍构成限制。"
+        ],
+        "theme": [
+          "Energy, real incomes and public investment",
+          "能源、实际收入与公共投资"
+        ],
+        "driver": [
+          "Lower energy inflation can restore household purchasing power, while infrastructure and defence spending support investment. Those are assumptions behind the ECB’s improving growth path.",
+          "能源通胀下降可能恢复家庭购买力，基建与国防支出则支持投资。这些构成欧洲央行增长路径改善的前提。"
+        ],
+        "upside": [
+          "If energy pressure eases as assumed and public investment reaches activity, domestic demand could carry more of the growth pickup.",
+          "若能源压力按预期缓解，公共投资转化为实际活动，内需可能为增长改善提供更多动力。"
+        ],
+        "downside": [
+          "If the energy shock persists, real-income gains could be delayed while higher input costs pressure margins and slow the projected pickup.",
+          "若能源冲击持续，实际收入改善可能推迟，投入成本上升则可能压缩利润率、拖慢预期中的增长改善。"
+        ],
+        "watch": [
+          "Energy prices, real household incomes, investment spending and bank lending.",
+          "能源价格、家庭实际收入、投资支出与银行信贷。"
+        ]
+      },
+      "scope_note_en": "Equities use STOXX Europe 600, which includes markets outside the Euro Area.",
+      "scope_note_zh": "股票采用STOXX欧洲600指数，覆盖范围包含欧元区以外市场。",
+      "macro_current_count": 4
+    }
+  ],
+  "world_brief": {
+    "title_en": "Taiwan’s growth is forecast to cool sharply in 2027.",
+    "title_zh": "台湾2027年增长预计将明显放缓。",
+    "read_en": "DGBAS projects 11.05% growth in 2026, moderating to 6.04% in 2027.",
+    "read_zh": "DGBAS预计2026年增长11.05%，2027年放缓至6.04%。",
+    "source_url": "https://eng.dgbas.gov.tw/News_Content.aspx?n=4438&s=236587",
+    "source": "DGBAS",
+    "published": "2026-08-14",
+    "cc": "TW",
+    "year": 2026,
+    "next_year": 2027
+  },
+  "expansion_count": 7,
+  "forecast_count": 7,
+  "pressure_count": 3,
+  "uptrend_count": 2,
+  "qualified_market_count": 7,
+  "pressure_names_en": "South Korea, India, Australia",
+  "pressure_names_zh": "韩国、印度、澳大利亚",
+  "focus_cc": "KR",
+  "focus": {
+    "cc": "KR",
+    "name_en": "South Korea",
+    "name_zh": "韩国",
+    "index": "KOSPI",
+    "currency": "KRW",
+    "market": {
+      "state": "pressure",
+      "label_en": "Under pressure",
+      "label_zh": "承压",
+      "tone": "down",
+      "as_of": "2026-10-15",
+      "current": true,
+      "above_50d": false,
+      "above_200d": false,
+      "drawdown": -39.2,
+      "fx_3m": null,
+      "fx_as_of": null,
+      "high_window_observations": 252,
+      "high_window_start": "2025-09-29"
+    },
+    "forecast": {
+      "kind": "sourced_forecast",
+      "provider": "IMF",
+      "source_url": "https://www.imf.org/en/publications/weo/issues/2026/07/08/world-economic-outlook-update-july-2026",
+      "published": "2026-07-08",
+      "period_basis": "calendar_year",
+      "year": 2026,
+      "next_year": 2027,
+      "current": 2.6,
+      "next": 2.5,
+      "previous": 1.1,
+      "change": -0.1,
+      "revision": 0.7,
+      "revision_from": "2026-04",
+      "path_en": "Slower growth projected",
+      "path_zh": "预计增长放缓"
+    },
+    "metrics": [
+      {
+        "key": "gdp",
+        "label_en": "GDP growth",
+        "label_zh": "GDP增长",
+        "value": 3.75,
+        "period": "2026-04",
+        "unit": "% y/y",
+        "current": true,
+        "quality": "current",
+        "source": "Existing international macro series",
+        "source_url": null,
+        "change_3m_pp": null
+      },
+      {
+        "key": "inflation",
+        "label_en": "Inflation",
+        "label_zh": "通胀",
+        "value": 2.789221,
+        "period": "2026-07",
+        "unit": "% y/y",
+        "current": true,
+        "quality": "current",
+        "source": "Bank for International Settlements",
+        "source_url": "https://data.bis.org/topics/CPI",
+        "change_3m_pp": 0.220051
+      },
+      {
+        "key": "policy",
+        "label_en": "Policy rate",
+        "label_zh": "政策利率",
+        "value": 3.0,
+        "period": "2026-09",
+        "unit": "%",
+        "current": true,
+        "quality": "current",
+        "source": "Bank for International Settlements",
+        "source_url": "https://data.bis.org/topics/CBPOL",
+        "change_3m_pp": 0.5
+      },
+      {
+        "key": "unemployment",
+        "label_en": "Unemployment",
+        "label_zh": "失业率",
+        "value": 2.8,
+        "period": "2026-07",
+        "unit": "%",
+        "current": true,
+        "quality": "current",
+        "source": "Existing international macro series",
+        "source_url": null,
+        "change_3m_pp": null
+      }
+    ],
+    "title_en": "Export strength meets higher rates",
+    "title_zh": "出口强劲，政策利率上升",
+    "read_en": "IMF raised its 2026 growth forecast by 0.7 percentage points from its 2026-04 edition, to 2.6%; it projects 2.5% for 2027. The 2026-09 policy rate was 3.00%, 0.50 points above three months earlier.",
+    "read_zh": "IMF将2026年增长预测较2026-04版上调0.7个百分点至2.6%，预计2027年为2.5%。2026-09政策利率为3.00%，高于三个月前0.50个百分点。",
+    "profile": {
+      "theme": [
+        "Export demand and domestic financing",
+        "出口需求与国内融资"
+      ],
+      "driver": [
+        "Exports and investment support activity in the central bank’s assessment. Higher rates can act on housing and financing-sensitive spending through a different channel.",
+        "央行研判认为出口与投资支撑经济。较高利率则可能通过另一渠道影响住房及对融资敏感的支出。"
+      ],
+      "transmission": [
+        "Export earnings, the won and domestic financing conditions connect the economy to equities.",
+        "出口利润、韩元与国内融资条件将经济变化传导至股市。"
+      ],
+      "upside": [
+        "If export strength continues and consumption broadens without renewed inflation, growth could spread beyond the external sector.",
+        "若出口保持强势，消费扩张且未重新推高通胀，增长有望扩散至对外部门之外。"
+      ],
+      "downside": [
+        "If inflation persists and further rate increases pass through to borrowing costs, households and financing-sensitive firms could face greater pressure.",
+        "若通胀持续，进一步加息传导至借贷成本，家庭与对融资敏感的企业可能面临更大压力。"
+      ],
+      "watch": [
+        "Exports, consumption, housing and household credit, and subsequent Bank of Korea decisions.",
+        "出口、消费、住房与家庭信贷，以及韩国央行后续决策。"
+      ],
+      "route": "south_korea.html",
+      "source": "https://www.bok.or.kr/eng/main/main.do"
+    },
+    "research": {
+      "kind": "attributed_assessment",
+      "published": "2026-09-10",
+      "provider": "Bank of Korea",
+      "source_url": "https://www.bok.or.kr/eng/bbs/E0000628/view.do?depth=400215&menuNo=400215&nttId=11064614&programType=newsDataEng&relate=Y",
+      "title": [
+        "Export strength meets higher rates",
+        "出口强劲，政策利率上升"
+      ],
+      "read": [
+        "The Bank of Korea describes support from exports, investment and recovering consumption. Inflation and housing-related credit pressures keep further rate increases in view.",
+        "韩国央行指出出口、投资与消费复苏支持经济。通胀与住房相关信贷压力，使进一步加息仍在考虑范围内。"
+      ],
+      "theme": [
+        "Export demand and domestic financing",
+        "出口需求与国内融资"
+      ],
+      "driver": [
+        "Exports and investment support activity in the central bank’s assessment. Higher rates can act on housing and financing-sensitive spending through a different channel.",
+        "央行研判认为出口与投资支撑经济。较高利率则可能通过另一渠道影响住房及对融资敏感的支出。"
+      ],
+      "upside": [
+        "If export strength continues and consumption broadens without renewed inflation, growth could spread beyond the external sector.",
+        "若出口保持强势，消费扩张且未重新推高通胀，增长有望扩散至对外部门之外。"
+      ],
+      "downside": [
+        "If inflation persists and further rate increases pass through to borrowing costs, households and financing-sensitive firms could face greater pressure.",
+        "若通胀持续，进一步加息传导至借贷成本，家庭与对融资敏感的企业可能面临更大压力。"
+      ],
+      "watch": [
+        "Exports, consumption, housing and household credit, and subsequent Bank of Korea decisions.",
+        "出口、消费、住房与家庭信贷，以及韩国央行后续决策。"
+      ]
+    },
+    "scope_note_en": null,
+    "scope_note_zh": null,
+    "macro_current_count": 4
+  },
+  "basis": "Dated observations, attributed forecasts and conditional interpretation"
+}

@@ -71,6 +71,11 @@ def country_record(cc: str, closes: pd.DataFrame, macro: pd.DataFrame,
         "data_limited": bool(g_n < 2 or i_n < 2 or _macro_present(snap) < 2),
         "cycle_components": cycle_components,
     }
+    fx = closes.get(c.get("fx"))
+    if fx is not None and snap.get("fx_strength_3m") is not None:
+        observed_fx = fx.loc[:asof].dropna()
+        if not observed_fx.empty:
+            record["macro_asof"]["fx_strength_3m"] = str(observed_fx.index[-1].date())
     hist = reg[[col for col in reg.columns if not str(col).startswith("c_")]]
     return record, hist
 

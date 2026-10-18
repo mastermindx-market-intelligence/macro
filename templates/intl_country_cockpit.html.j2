@@ -1,0 +1,130 @@
+{# Analyst-led country reading. Native disclosures retain a full no-script path. #}
+{% macro pair(en, zh) -%}{{ t(en, zh) }}{%- endmacro %}
+{% set a = intl_analysis %}
+<section class="imc" data-im-country-analysis aria-labelledby="imc-title">
+  <header class="imc-masthead">
+    <div><p class="imc-kicker">{{ pair('INTERNATIONAL / RESEARCH DESK', '国际市场 / 研究台') }}</p>
+      <h1 id="imc-title">{{ pair('International markets', '国际市场') }}</h1></div>
+    <div class="imc-edition"><span>{{ pair('COUNTRY INTELLIGENCE', '国家与地区研判') }}</span>
+      <time datetime="{{ a.evaluated_at|e }}">{{ a.evaluated_at|e }}</time></div>
+  </header>
+  <nav class="imc-nav" aria-label="{{ 'International analysis' }}">
+    <a href="#imc-world">{{ pair('World brief', '全球简报') }}</a>
+    <a href="#imc-countries">{{ pair('Country assessments', '国家与地区研判') }}</a>
+    <a href="#imc-connections">{{ pair('Global connections', '全球关联') }}</a>
+    <a class="imc-tools-link" href="#intl-analysis-tools">{{ pair('Data & tools', '数据与工具') }} <span aria-hidden="true">↗</span></a>
+  </nav>
+
+  {% if a.world_brief %}{% set w = a.world_brief %}
+  <article class="imc-world" id="imc-world">
+    <div class="imc-world-label"><p class="imc-kicker">{{ pair('WORLD BRIEF', '全球简报') }}</p><span>{{ w.year }} → {{ w.next_year }}</span></div>
+    <div><h2>{{ pair(w.title_en,w.title_zh) }}</h2><p>{{ pair(w.read_en,w.read_zh) }}</p></div>
+    <a href="{{ w.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ w.source|e }}<span>{{ w.published|e }} ↗</span></a>
+  </article>
+  {% endif %}
+
+  <section class="imc-countries" id="imc-countries" aria-labelledby="imc-countries-title">
+    <header class="imc-section-head imc-country-heading"><h2 id="imc-countries-title">{{ pair('Country assessments', '国家与地区研判') }}</h2><span class="imc-section-note">{{ pair('Economy · Policy · Markets', '经济 · 政策 · 市场') }}</span></header>
+    <nav class="imc-country-rail" aria-label="Countries">
+    {% for c in a.countries %}
+      <a href="#imc-country-{{ c.cc|e }}" data-imc-country="{{ c.cc|e }}"><span>{{ c.cc|e }}</span>{{ pair(c.name_en, c.name_zh) }}</a>
+    {% endfor %}
+    </nav>
+    <div class="imc-country-list">
+    {% for c in a.display_countries %}
+      <details class="panel imc-country" id="imc-country-{{ c.cc|e }}" name="imc-country" {% if c.cc == a.focus_cc %}open{% endif %}>
+        <summary>
+          <span class="imc-identity"><span class="imc-country-code">{{ c.cc|e }}</span><span><strong>{{ pair(c.name_en, c.name_zh) }}</strong><small>{% if c.cc == 'EZ' %}{{ pair('European equity proxy: ', '欧洲股市参考：') }}{% endif %}{{ c.index|e }}</small></span></span>
+          <span class="imc-country-thesis">{{ pair(c.title_en, c.title_zh) }}</span>
+          <span class="imc-row-forecast">{% if c.forecast %}<b>{{ '%.1f'|format(c.forecast.current) }}% <span aria-hidden="true">→</span> {{ '%.1f'|format(c.forecast.next) }}%</b><small>{% if c.forecast.period_basis == 'fiscal_year' %}FY{% endif %}{{ c.forecast.year }} → {{ c.forecast.next_year }} · {{ pair('GDP forecast', 'GDP预测') }}</small>{% else %}<b>—</b><small>{{ pair('Outlook unavailable', '暂无增长展望') }}</small>{% endif %}</span>
+          <span class="imc-market-state imc-{{ c.market.tone|e }}">{{ pair(c.market.label_en, c.market.label_zh) }}</span>
+          <span class="imc-disclosure" aria-hidden="true">+</span>
+        </summary>
+        <div class="imc-country-body">
+          <div class="imc-assessment-heading"><div>{% if c.research %}<p>{{ pair(c.research.read[0], c.research.read[1]) }}</p><p class="imc-source-line"><a href="{{ c.research.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ c.research.provider|e }} ↗</a> · {{ c.research.published|e }}</p>{% else %}<p>{{ pair(c.read_en, c.read_zh) }}</p>{% endif %}</div><span>{{ pair('Market observations · ', '市场观测 · ') }}{{ c.market.as_of|default('—',true)|e }}</span></div>
+          <div class="imc-country-grid">
+            <div class="imc-main-column">
+              <section class="imc-outlook-panel" aria-labelledby="imc-outlook-{{ c.cc }}">
+                <div class="imc-subhead"><h3 id="imc-outlook-{{ c.cc }}">{{ pair('Published growth path', '机构增长预测') }}</h3><span>{{ pair('SOURCED OUTLOOK', '机构展望') }}</span></div>
+                {% if c.forecast %}
+                <div class="imc-forecast-path">
+                  <div><span>{% if c.forecast.period_basis == 'fiscal_year' %}FY{% endif %}{{ c.forecast.year }}</span><strong>{{ '%.1f'|format(c.forecast.current) }}<small>%</small></strong><small>{{ pair('Real GDP growth', '实际GDP增长') }}</small></div>
+                  <div class="imc-path-arrow" aria-hidden="true"><svg viewBox="0 0 120 24" fill="none"><path d="M1 12h112m-9-8 9 8-9 8" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 4"/></svg></div>
+                  <div><span>{% if c.forecast.period_basis == 'fiscal_year' %}FY{% endif %}{{ c.forecast.next_year }}</span><strong>{{ '%.1f'|format(c.forecast.next) }}<small>%</small></strong><small>{{ pair('Real GDP growth', '实际GDP增长') }}</small></div>
+                  <p>{{ pair(c.forecast.path_en,c.forecast.path_zh) }}</p>
+                </div>
+                <p class="imc-forecast-interpretation">{{ pair(c.read_en,c.read_zh) }}</p>
+                <p class="imc-source-line"><a href="{{ c.forecast.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ c.forecast.provider|e }} <span aria-hidden="true">↗</span></a> · {{ pair('Published ', '发布于 ') }}{{ c.forecast.published|e }} · {% if c.forecast.period_basis == 'fiscal_year' %}{{ pair('Fiscal years', '财政年度') }}{% else %}{{ pair('Calendar years', '日历年度') }}{% endif %}</p>
+                {% else %}
+                <p class="imc-missing">{{ pair('A dated growth projection is not available for this country.', '该经济体目前没有可用的带日期增长预测。') }}</p>
+                {% endif %}
+              </section>
+              <div class="imc-vitals">
+                {% for m in c.metrics if m.key in ['inflation','policy','gdp'] %}
+                <div class="{% if not m.current %}imc-vital-dated{% endif %}">
+                  <span>{{ pair(m.label_en,m.label_zh) }}</span>
+                  <strong>{% if m.value is not none %}{{ '%.2f'|format(m.value) }}<small>%</small>{% else %}—{% endif %}</strong>
+                  <small>{% if m.period %}{{ m.period|e }}{% if m.key in ['inflation','gdp'] %} · {{ pair('year over year','同比') }}{% endif %}{% else %}{{ pair('No current observation','暂无当前观测') }}{% endif %}</small>
+                  {% if m.change_3m_pp is not none %}<small class="imc-vital-change">{{ '%+.2f'|format(m.change_3m_pp) }} {{ pair('pp over 3 months','个百分点 / 3个月') }}</small>{% endif %}
+                  {% if m.value is not none and not m.current %}<small class="imc-dated-label">{{ pair('Earlier observation', '较早观测') }}</small>{% endif %}
+                </div>
+                {% endfor %}
+              </div>
+              <section class="imc-market-read">
+                <div class="imc-subhead"><h3>{{ pair('Market conditions', '市场状况') }}</h3><span>{{ c.index|e }}</span></div>
+                {% if c.scope_note_en %}<p class="imc-scope-note">{{ pair(c.scope_note_en,c.scope_note_zh) }}</p>{% endif %}
+                <div class="imc-market-grid">
+                  <div><span>{{ pair('Equity trend', '股市趋势') }}</span><strong class="imc-{{ c.market.tone|e }}">{{ pair(c.market.label_en,c.market.label_zh) }}</strong></div>
+                  <div><span>{{ pair('From recent high', '距近期高点') }}</span><strong>{% if c.market.drawdown is not none %}{{ '%.1f'|format(c.market.drawdown) }}%{% else %}—{% endif %}</strong></div>
+                  <div><span>{{ c.currency|e }} · {{ pair('3-month change', '3个月变化') }}</span><strong class="{% if c.market.fx_3m is not none %}imc-{{ 'up' if c.market.fx_3m >= 0 else 'down' }}{% endif %}">{% if c.market.fx_3m is not none %}{{ '%+.2f'|format(c.market.fx_3m) }}%{% else %}—{% endif %}</strong></div>
+                </div>
+                <p class="imc-market-explanation">
+                  {% if c.market.state == 'pressure' %}{{ pair('The index is below its 50- and 200-observation averages. Both the shorter and longer price trends remain weak.', '指数低于最近50次与200次收盘均值，较短期与较长期价格趋势均偏弱。') }}
+                  {% elif c.market.state == 'uptrend' %}{{ pair('The index is above its 50- and 200-observation averages. Both price trends point upward; these measures do not identify the cause.', '指数高于最近50次与200次收盘均值，两条价格趋势均向上；这些指标本身不说明原因。') }}
+                  {% elif c.market.state == 'pullback' %}{{ pair('The index is below its 50-observation average but above its 200-observation average. Recent price weakness has not yet broken the longer trend.', '指数低于最近50次收盘均值，但高于200次收盘均值；近期走弱尚未破坏较长期趋势。') }}
+                  {% elif c.market.state == 'rebound' %}{{ pair('The index is above its 50-observation average and below its 200-observation average. The shorter price trend has improved; the longer trend remains weak.', '指数高于最近50次收盘均值、低于200次收盘均值；较短期价格趋势改善，较长期趋势仍弱。') }}
+                  {% else %}{{ pair('The available price evidence does not establish a complete trend reading.', '现有价格证据尚不足以形成完整的趋势判断。') }}{% endif %}
+                </p>
+              </section>
+              <section class="imc-driver">
+                <p class="imc-kicker">{{ pair('THE TRANSMISSION CHANNEL', '传导渠道') }}</p><h3>{{ pair(c.profile.theme[0],c.profile.theme[1]) }}</h3>
+                <p>{{ pair(c.profile.driver[0],c.profile.driver[1]) }}</p>
+                <p class="imc-driver-mechanism">{{ pair(c.profile.transmission[0],c.profile.transmission[1]) }}</p>
+              </section>
+            </div>
+            <aside class="imc-paths">
+              <p class="imc-kicker">{{ pair('CONDITIONS TO WATCH', '需要观察的条件') }}</p><h3>{{ pair('What changes the view', '什么会改变判断') }}</h3>
+              <p class="imc-path-type">{{ pair('How the outlook could change', '前景可能如何变化') }}</p>
+              <section><span class="imc-path-number">01</span><div><h4>{{ pair('A stronger path', '更强的路径') }}</h4><p>{{ pair(c.profile.upside[0],c.profile.upside[1]) }}</p></div></section>
+              <section><span class="imc-path-number">02</span><div><h4>{{ pair('A weaker path', '更弱的路径') }}</h4><p>{{ pair(c.profile.downside[0],c.profile.downside[1]) }}</p></div></section>
+              <div class="imc-next-test"><p class="imc-kicker">{{ pair('WHAT TO WATCH', '关注重点') }}</p><p>{{ pair(c.profile.watch[0],c.profile.watch[1]) }}</p></div>
+              {% if c.profile.route %}<a class="imc-text-link" href="{{ c.profile.route|e }}">{{ pair('Open country research', '打开地区研究') }} <span aria-hidden="true">↗</span></a>{% endif %}
+            </aside>
+          </div>
+          <details class="imc-evidence">
+            <summary>{{ pair('Sources, dates & interpretation', '来源、日期与解读方法') }} <span aria-hidden="true">+</span></summary>
+            <div>
+              <p>{{ pair('The economic path is an attributed forecast. The near-term paths are conditional interpretations, without assigned probabilities or price targets.', '经济路径为有出处的预测。近期路径是条件解读，不附加概率或价格目标。') }}</p>
+              <p>{{ pair('Equity trends use the most recent 50 and 200 observed closes. Currency strength is measured against the US dollar and carries its own observation date.', '股市趋势采用最近50次与200次收盘。汇率强弱以美元为基准，并保留其独立的观测日期。') }}</p>
+              <p>{{ pair('Recent high reference: ', '近期高点参考：') }}{% if c.market.high_window_observations %}{{ c.market.high_window_observations }} {{ pair('observed closes, ', '次收盘，') }}{{ c.market.high_window_start|e }} → {{ c.market.as_of|e }}{% else %}{{ pair('Observation window unavailable', '暂无完整观测窗口') }}{% endif %}. {{ pair('Currency observation: ', '汇率观测：') }}{{ c.market.fx_as_of|default('—',true)|e }}.</p>
+              <div class="imc-table-wrap"><table><caption>{{ pair('Observation ledger', '观测记录') }}</caption><thead><tr><th>{{ pair('Measure','指标') }}</th><th>{{ pair('Observation','观测') }}</th><th>{{ pair('Period','时期') }}</th><th>{{ pair('Source','来源') }}</th></tr></thead><tbody>
+              {% for m in c.metrics %}<tr><td>{{ pair(m.label_en,m.label_zh) }}</td><td>{% if m.value is not none %}{{ '%.2f'|format(m.value) }} {{ m.unit|e }}{% else %}—{% endif %}</td><td>{{ m.period|default('—',true)|e }}</td><td>{% if m.source_url %}<a href="{{ m.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ m.source|e }} ↗</a>{% else %}{{ m.source|default('—',true)|e }}{% endif %}</td></tr>{% endfor %}
+              </tbody></table></div>
+              <p>{{ pair('BIS statistics are attributed to the Bank for International Settlements. Chinese translations are not official BIS translations. No endorsement is implied.', 'BIS统计数据来源于国际清算银行。中文翻译并非BIS官方译文，亦不代表其认可。') }}</p>
+            </div>
+          </details>
+        </div>
+      </details>
+    {% endfor %}
+    </div>
+  </section>
+
+  <section class="imc-connections" id="imc-connections" aria-labelledby="imc-connections-title">
+    <header class="imc-section-head"><div><p class="imc-kicker">{{ pair('FOLLOW THE MECHANISM', '追踪传导机制') }}</p><h2 id="imc-connections-title">{{ pair('Global connections', '全球关联') }}</h2></div><span class="imc-section-note">{{ pair('Channels to examine, not causal estimates', '用于研究的渠道，并非因果估计') }}</span></header>
+    <div class="imc-connection-grid">
+      <article class="panel"><span class="imc-channel-index">01 / {{ pair('DEMAND', '需求') }}</span><h3>{{ pair('Technology to exports', '科技传导至出口') }}</h3><p>{{ pair('Investment demand flows into export orders, production and earnings. Follow whether that strength spreads into domestic activity.', '投资需求传导至出口订单、生产与利润。关注这股力量能否扩散至国内经济。') }}</p><div><a href="#imc-country-TW" data-imc-country="TW">{{ pair('Taiwan','台湾') }} ↗</a><a href="#imc-country-KR" data-imc-country="KR">{{ pair('South Korea','韩国') }} ↗</a></div></article>
+      <article class="panel"><span class="imc-channel-index">02 / {{ pair('PRICES', '价格') }}</span><h3>{{ pair('Energy to real incomes', '能源传导至实际收入') }}</h3><p>{{ pair('Higher import costs can squeeze households and margins. Inflation then changes the room available for monetary support.', '进口成本上升可能挤压家庭购买力与利润率。通胀继而改变货币政策的支持空间。') }}</p><div><a href="#imc-country-JP" data-imc-country="JP">{{ pair('Japan','日本') }} ↗</a><a href="#imc-country-IN" data-imc-country="IN">{{ pair('India','印度') }} ↗</a><a href="#imc-country-EZ" data-imc-country="EZ">{{ pair('Euro Area','欧元区') }} ↗</a></div></article>
+      <article class="panel"><span class="imc-channel-index">03 / {{ pair('FINANCING', '融资') }}</span><h3>{{ pair('Policy to spending', '政策传导至支出') }}</h3><p>{{ pair('Policy reaches the economy through borrowing, saving and exchange rates. A lower rate is useful only if transmission follows.', '政策通过借贷、储蓄与汇率影响经济。利率下降的作用，取决于后续传导。') }}</p><div><a href="#imc-country-GB" data-imc-country="GB">{{ pair('United Kingdom','英国') }} ↗</a><a href="#imc-country-AU" data-imc-country="AU">{{ pair('Australia','澳大利亚') }} ↗</a></div></article>
+    </div>
+  </section>
+</section>

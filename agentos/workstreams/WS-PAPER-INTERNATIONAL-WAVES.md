@@ -1,9 +1,9 @@
 ---
 key: PAPER-INTERNATIONAL-WAVES
 title: International Markets Paper implementation Waves 1–3
-objective: Deliver the existing International product with the received foundation, ten views and existing-owner
-  Saved integration, preserved legacy tools, truthful source qualification, independent review, served user journeys
-  and a subsequent normal publication.
+objective: Deliver the Chairman-rebriefed International product centered on country economic and market
+  interpretation, attributed projected paths and conditional developments. Keep legacy comparison and Saved tools
+  subordinate; require truthful source qualification, independent review, served journeys and normal publication.
 status: active
 program: international-risk-intelligence
 repos:
@@ -49,6 +49,18 @@ owns_paths:
 - tests/intl_workspace_library_controller.test.cjs
 - tests/intl_workspace_legacy_navigation.test.cjs
 - mockups/evidence/paper-international-library/**
+- collectors/intl_country_sources.py
+- collectors/intl_macro.py
+- config/intl_country_baseline.json
+- config/intl_country_commentary.json
+- lib/intl_country_assessment.py
+- lib/intl_country_inputs.py
+- engine/intl_equity_risk.py
+- engine/intl_run.py
+- templates/intl_country_cockpit.html.j2
+- templates/intl_country_cockpit.css
+- templates/intl_country_cockpit.js
+- tests/test_intl_country_cockpit.py
 waves:
 - id: IM00
   title: Shared performance, presentation and route foundation
@@ -129,11 +141,15 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Publish the accepted History/scenario integration on PR8527, then qualify source-specific History,
-  Macro, Risk and equity inputs using response coverage and successful artifact-write witnesses. Continue
-  Investigation/Saved and policy comparison through the accepted incumbent interface. Hosted CI, merge,
-  served access and subsequent production publication remain separate acceptance gates.
+next_action: Obtain the Studio Direct installer owner’s accepted C2 Personal repository-aware publisher
+  migration, then publish the owned R11 country-analysis branch through the original typed carrier. Independent
+  source/data/publisher review, hosted CI, merge and served production acceptance remain required. Preserve the
+  earlier PR8754 carrier and its unresolved release, rights, browser and Saved migration holds.
 artifacts:
+- research/paper_international_wave1_wave2/COUNTRY_ANALYSIS_REBRIEF_20261018.md
+- research/paper_international_wave1_wave2/paper_r11_receipt.json
+- research/paper_international_wave1_wave2/country_verification_receipt.json
+- research/paper_international_wave1_wave2/country_publication_diagnosis.json
 - research/paper_international_wave1_wave2/README.md
 - research/paper_international_wave1_wave2/INPUTS.json
 do_not_redo:
@@ -167,3 +183,18 @@ Macro #7202 remains the incumbent performance carrier. Macro #7870 is a Theme Re
 The Library integration now passes61 actual Chrome tests (20 existing controller,18 Library controller,14 retained-navigation and9 actual-page tests). Python metadata/render/composition checks remain separately recorded. Canonical Library evidence captures48 default/selected-group rest, search-focus, row-hover and link-focus states across dark/light, EN/ZH and1440/390; its final run has no console errors or horizontal page overflow. All screenshots use the actual builder/template with explicitly synthetic empty supplied frames, not live financial data or authenticated access.
 
 The latest failure recovery installed stable native run IDs, classified proven economic prelaunch refusal correctly, reconciled one exact historical prestart failure through authenticated owner proof, and repaired MiniMax's canonical-source read binding. No host/provider cap or quality hold was relaxed. Later full-GLM and Grok returns were rejected when incomplete; parent repaired the bounded Library integration. Sol investigated repeated diff output and found no proven shim replay defect, so no speculative shared shim patch was installed. Final independent controller review and publication remain separate gates.
+
+
+## 2026-10-18 — Chairman’s R11 country-analysis rebrief
+
+This checkpoint supersedes the feature hierarchy and next action in the historical narrative above. It does not clear its independent data, browser, Saved, rights or release holds. The preserved later carrier is Macro PR #8754 (draft head `a312dda41e3e0f2183f89ac22d3717448a57c09b`); it was not changed by this rebuild.
+
+The new owned operation `intl-country-cockpit-20261018` is registered in the Macro `web` lane at base `1ed4b870a426ff3cafb439152072c5bf47858551`, branch `sol/web-intl-country-cockpit-20261018`. Its source implements World Brief → seven Country Assessments → Global Connections → subordinate research tools. Country assessments expose both forecast years, dated official observations, policy interpretation, market conditions, conditional stronger/weaker paths, transmission channels and source disclosures. India retains fiscal-year forecast labels; the Euro Area identifies its wider European equity proxy. The ordinary International publisher owns the integration; no separate Saved or assistant state owner was added.
+
+Four new native Paper boards in the recovered International file are applied: desktop dark `DMX-0`, desktop light `DW7-0`, mobile dark `E4D-0`, mobile light `EC2-0`. All effects returned APPLIED_RESPONSE_OBSERVED and native finish completed. The original boards remain preserved. The final source-backed integrated screenshots use the site’s current shared theme and navigation; Paper completion is not production publication.
+
+Final local verification: 77 targeted Python cases pass; 12 integrated Chrome width/theme/language states and six journey families pass. The final principal visual judgment accepted the desktop dark and mobile light views, including the assistant’s footer placement. Tests cover core readability with JavaScript disabled and with the nine legacy workspace assets returning401. This does not repair those live assets or establish source admission, authenticated served behavior, formal release review or full institutional coverage.
+
+The one typed Git publication status call refused with TYPED_GIT_PRECHECK_REFUSED / INVALID_ARGUMENT / NOT_APPLIED. Read-only runtime diagnosis found C2 Personal’s legacy Mastermind-only publisher; same-environment canonical Macro registration succeeds. The current inspected installer has no proved migration admitting this Personal generation to the closed repository publisher. Its fleet-only and Business-only flags do not apply. The installer owner needs the exact Personal compatibility migration and installed/native readback. No publisher retry, alternate source-publication channel, commit, push, new PR, merge or deploy has occurred.
+
+Complete source, data-provenance limits, Paper effect receipt, final verification fingerprints and the exact runtime-owner handoff are linked in this workstream’s artifacts. These records preserve the reviewable result; they do not grant a scheduler wake, source lease, publication or runtime mutation.

@@ -65,6 +65,10 @@ def equity_risk_all(mat: pd.DataFrame | None = None) -> dict[str, dict]:
         grade = ex.get("grade", "na")
         bubble = grade in ("stretched", "parabolic") or (rsi_v >= 72 and off_high > -3)
         out[cc] = {
+            "as_of": str(px.index[-1].date()),
+            "high_window_observations": min(252, len(px)),
+            "high_window_start": str(px.index[max(0, len(px) - 252)].date()),
+            "trend_200d_complete": bool(len(px) >= 200),
             "price": round(last, 2), "off_52w_high": round(off_high, 1),
             "above_50d": bool(last > ma50),
             "above_200d": bool(not np.isnan(ma200) and last > ma200),

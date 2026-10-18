@@ -1,0 +1,46 @@
+{
+  "base": "1ed4b870a426ff3cafb439152072c5bf47858551",
+  "kind": "SOURCE_BACKED_LOCAL_RENDER_NOT_PUBLISHED",
+  "rendered_at": "2026-10-18T05:51:30.097403+00:00",
+  "countries": 7,
+  "forecasts": 7,
+  "sources": [
+    {
+      "url": "https://data.bis.org/static/bulk/WS_LONG_CPI_csv_flat.zip",
+      "sha256": "f677bf6e4c9e74d0b68b7777342a1461f97ff36266e5acc30cf2e6c1a1d0e0a7",
+      "status": "read"
+    },
+    {
+      "url": "https://data.bis.org/static/bulk/WS_CBPOL_csv_flat.zip",
+      "sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d",
+      "status": "read"
+    }
+  ],
+  "errors": [
+    {
+      "source": "imf",
+      "error": "HTTPError"
+    },
+    {
+      "source": "taiwan",
+      "error": "URLError"
+    }
+  ],
+  "sha256": "52cd01ba5816f3037b3412057b02c27614b46574802fff2f3efe01c752ca9ad6",
+  "paper_design": {
+    "receipt": "../paper_r11_receipt.json",
+    "applied": true,
+    "boards": {
+      "dark": "DMX-0",
+      "light": "DW7-0",
+      "mobileDark": "E4D-0",
+      "mobileLight": "EC2-0"
+    }
+  },
+  "html_sha256": {
+    "intl_country_preview.html": "52cd01ba5816f3037b3412057b02c27614b46574802fff2f3efe01c752ca9ad6",
+    "intl_integrated_preview.html": "fd4400e2ed1c81f4c3d13b1ece6e5916e5819602d85d5e9cc547552465b2e256",
+    "intl_stocks_integrated_preview.html": "c94c8cee10f2fd6dc5df63802401f76a1ba08920fc6f57e02314d525422ab152"
+  },
+  "evidence_updated_at": "2026-10-18T06:10:36.639815+00:00"
+}

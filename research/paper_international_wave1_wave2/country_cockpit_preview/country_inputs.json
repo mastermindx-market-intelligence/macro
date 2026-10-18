@@ -1,0 +1,417 @@
+{
+  "schema": "intl_country_inputs.v1",
+  "retrieved_at": "2026-10-18T03:33:39.379940+00:00",
+  "official": {
+    "EZ": {
+      "inflation": {
+        "metric": "inflation",
+        "value": 3.248577,
+        "period": "2026-08",
+        "unit": "% y/y",
+        "provider": "Bank for International Settlements",
+        "source_url": "https://data.bis.org/topics/CPI",
+        "dataset_url": "https://data.bis.org/static/bulk/WS_LONG_CPI_csv_flat.zip",
+        "series_id": "M.XM.771",
+        "status": "observed",
+        "frequency": "monthly",
+        "definition": "",
+        "retrieved_at": "2026-10-18T03:33:39.379940+00:00",
+        "change_3m_pp": 0.071562,
+        "source_sha256": "f677bf6e4c9e74d0b68b7777342a1461f97ff36266e5acc30cf2e6c1a1d0e0a7"
+      },
+      "policy": {
+        "metric": "policy",
+        "value": 2.5,
+        "period": "2026-09",
+        "unit": "%",
+        "provider": "Bank for International Settlements",
+        "source_url": "https://data.bis.org/topics/CBPOL",
+        "dataset_url": "https://data.bis.org/static/bulk/WS_CBPOL_csv_flat.zip",
+        "series_id": "M.XM",
+        "status": "observed",
+        "frequency": "monthly",
+        "definition": "From 18 Sep 2024 onwards: official central bank steering rate is the deposit facility rate, fixed rate; from 15 Oct 2008 to 17 Sep 2024: official central bank liquidity providing, main refinancing operations, fixed rate; from 28 Jun 2000 to 14 Oct 2008: official central bank liquidity providing, main refinancing operations, minimum bid rate; from 5 Jan 1999 to 27 Jun 2000: official central bank liquidity providing, main refinancing operations, fixed rate.",
+        "retrieved_at": "2026-10-18T03:33:39.379940+00:00",
+        "change_3m_pp": 0.25,
+        "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+      }
+    },
+    "IN": {
+      "inflation": {
+        "metric": "inflation",
+        "value": 4.441219,
+        "period": "2026-07",
+        "unit": "% y/y",
+        "provider": "Bank for International Settlements",
+        "source_url": "https://data.bis.org/topics/CPI",
+        "dataset_url": "https://data.bis.org/static/bulk/WS_LONG_CPI_csv_flat.zip",
+        "series_id": "M.IN.771",
+        "status": "observed",
+        "frequency": "monthly",
+        "definition": "",
+        "retrieved_at": "2026-10-18T03:33:39.379940+00:00",
+        "change_3m_pp": 0.956281,
+        "source_sha256": "f677bf6e4c9e74d0b68b7777342a1461f97ff36266e5acc30cf2e6c1a1d0e0a7"
+      },
+      "policy": {
+        "metric": "policy",
+        "value": 5.25,
+        "period": "2026-06",
+        "unit": "%",
+        "provider": "Bank for International Settlements",
+        "source_url": "https://data.bis.org/topics/CBPOL",
+        "dataset_url": "https://data.bis.org/static/bulk/WS_CBPOL_csv_flat.zip",
+        "series_id": "M.IN",
+        "status": "observed",
+        "frequency": "monthly",
+        "definition": "From 3 Apr 2001 onwards: official repo overnight rate; from 1 Jan 1946 to 2 Apr 2001: oank rate.",
+        "retrieved_at": "2026-10-18T03:33:39.379940+00:00",
+        "change_3m_pp": 0.0,
+        "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+      }
+    },
+    "GB": {
+      "inflation": {
+        "metric": "inflation",
+        "value": 3.086863,
+        "period": "2026-08",
+        "unit": "% y/y",
+        "provider": "Bank for International Settlements",
+        "source_url": "https://data.bis.org/topics/CPI",
+        "dataset_url": "https://data.bis.org/static/bulk/WS_LONG_CPI_csv_flat.zip",
+        "series_id": "M.GB.771",
+        "status": "observed",
+        "frequency": "monthly",
+        "definition": "",
+        "retrieved_at": "2026-10-18T03:33:39.379940+00:00",
+        "change_3m_pp": 0.19669,
+        "source_sha256": "f677bf6e4c9e74d0b68b7777342a1461f97ff36266e5acc30cf2e6c1a1d0e0a7"
+      },
+      "policy": {
+        "metric": "policy",
+        "value": 3.75,
+        "period": "2026-09",
+        "unit": "%",
+        "provider": "Bank for International Settlements",
+        "source_url": "https://data.bis.org/topics/CBPOL",
+        "dataset_url": "https://data.bis.org/static/bulk/WS_CBPOL_csv_flat.zip",
+        "series_id": "M.GB",
+        "status": "observed",
+        "frequency": "monthly",
+        "definition": "From 3 Aug 2006 onwards: official bank rate; from 6 May 1997 to 2 Aug 2006: repo rate; from 20 Aug 1981 to 5 May 1997: minimum Bank of England Band 1 dealing rate; from 16 Oct 1972 to 19 Aug 1981: minimum lending rate; from 1 Jan 1946 to 15 Oct 1972: bank rate.",
+        "retrieved_at": "2026-10-18T03:33:39.379940+00:00",
+        "change_3m_pp": 0.0,
+        "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+      }
+    },
+    "JP": {
+      "inflation": {
+        "metric": "inflation",
+        "value": 1.898102,
+        "period": "2026-07",
+        "unit": "% y/y",
+        "provider": "Bank for International Settlements",
+        "source_url": "https://data.bis.org/topics/CPI",
+        "dataset_url": "https://data.bis.org/static/bulk/WS_LONG_CPI_csv_flat.zip",
+        "series_id": "M.JP.771",
+        "status": "observed",
+        "frequency": "monthly",
+        "definition": "",
+        "retrieved_at": "2026-10-18T03:33:39.379940+00:00",
+        "change_3m_pp": 0.59419,
+        "source_sha256": "f677bf6e4c9e74d0b68b7777342a1461f97ff36266e5acc30cf2e6c1a1d0e0a7"
+      },
+      "policy": {
+        "metric": "policy",
+        "value": 1.25,
+        "period": "2026-09",
+        "unit": "%",
+        "provider": "Bank for International Settlements",
+        "source_url": "https://data.bis.org/topics/CBPOL",
+        "dataset_url": "https://data.bis.org/static/bulk/WS_CBPOL_csv_flat.zip",
+        "series_id": "M.JP",
+        "status": "observed",
+        "frequency": "monthly",
+        "definition": "From 24 Sep 2026: the BOJ encourages the uncollateralized overnight call rate to remain at around 1.25 percent; From 17 Jun 2026 to 23 Sep 2026: the BOJ encourages the uncollateralized overnight call rate to remain at around 1.00 percent; From 22 Dec 2025 to 16 Jun 2026: the BOJ encourages the uncollateralized overnight call rate to remain at around 0.75 percent; From 27 Jan 2025 to 21 Dec 2025: the BOJ encourages the uncollateralized overnight call rate to remain at around 0.50 percent; From 1 Aug 2024 to 26 Jan 2025: the BOJ encouraged the UOCR to remain at around 0.25% ; From 21 Mar 2024 to 31 July: the BOJ encouraged the UOCR to remain at around 0 to 0.1 %; from 21 Sep 2016 to 20 Mar 2024: the BOJ set the guideline for market operations which specifies a short-term policy interest rate at minus 0.1% and a target level of 10-year JGB yields at around 0%. Short-term policy interest rate; from 4 Apr 2013 to 20 Sep 2016: no policy rate; from 5 Oct 2010 to 3 Apr 2013: the BOJ encouraged the UOCR to remain at around 0 to 0.1%; from 19 Dec 2008 to 4 Oct 2010: the BOJ encouraged the UOCR to remain at around 0. %; from 31 Oct 2008 to 18 Dec 2008: the BOJ encouraged the UOCR to remain at around 0.3%; before 30 Oct 2008, refer to https://data.bis.org/topics/CBPOL",
+        "retrieved_at": "2026-10-18T03:33:39.379940+00:00",
+        "change_3m_pp": 0.25,
+        "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+      }
+    },
+    "KR": {
+      "inflation": {
+        "metric": "inflation",
+        "value": 2.789221,
+        "period": "2026-07",
+        "unit": "% y/y",
+        "provider": "Bank for International Settlements",
+        "source_url": "https://data.bis.org/topics/CPI",
+        "dataset_url": "https://data.bis.org/static/bulk/WS_LONG_CPI_csv_flat.zip",
+        "series_id": "M.KR.771",
+        "status": "observed",
+        "frequency": "monthly",
+        "definition": "",
+        "retrieved_at": "2026-10-18T03:33:39.379940+00:00",
+        "change_3m_pp": 0.220051,
+        "source_sha256": "f677bf6e4c9e74d0b68b7777342a1461f97ff36266e5acc30cf2e6c1a1d0e0a7"
+      },
+      "policy": {
+        "metric": "policy",
+        "value": 3.0,
+        "period": "2026-09",
+        "unit": "%",
+        "provider": "Bank for International Settlements",
+        "source_url": "https://data.bis.org/topics/CBPOL",
+        "dataset_url": "https://data.bis.org/static/bulk/WS_CBPOL_csv_flat.zip",
+        "series_id": "M.KR",
+        "status": "observed",
+        "frequency": "monthly",
+        "definition": "From 7 Mar 2008 onwards: Bank of Korea base rate; from 6 May 1999 to 6 Mar 2008: target overnight call rate(base rate). ",
+        "retrieved_at": "2026-10-18T03:33:39.379940+00:00",
+        "change_3m_pp": 0.5,
+        "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+      }
+    },
+    "AU": {
+      "inflation": {
+        "metric": "inflation",
+        "value": 3.941849,
+        "period": "2026-06",
+        "unit": "% y/y",
+        "provider": "Bank for International Settlements",
+        "source_url": "https://data.bis.org/topics/CPI",
+        "dataset_url": "https://data.bis.org/static/bulk/WS_LONG_CPI_csv_flat.zip",
+        "series_id": "M.AU.771",
+        "status": "observed",
+        "frequency": "monthly",
+        "definition": "",
+        "retrieved_at": "2026-10-18T03:33:39.379940+00:00",
+        "change_3m_pp": -0.152361,
+        "source_sha256": "f677bf6e4c9e74d0b68b7777342a1461f97ff36266e5acc30cf2e6c1a1d0e0a7"
+      },
+      "policy": {
+        "metric": "policy",
+        "value": 4.6,
+        "period": "2026-09",
+        "unit": "%",
+        "provider": "Bank for International Settlements",
+        "source_url": "https://data.bis.org/topics/CBPOL",
+        "dataset_url": "https://data.bis.org/static/bulk/WS_CBPOL_csv_flat.zip",
+        "series_id": "M.AU",
+        "status": "observed",
+        "frequency": "monthly",
+        "definition": "From 2 Aug 1990 onwards: cash rate target; from 23 Jan 1990 to 1 Aug 1990: middle of the cash rate target range; from 7 Apr 1976 to 22 Jan 1990: interbank overnight cash rate.",
+        "retrieved_at": "2026-10-18T03:33:39.379940+00:00",
+        "change_3m_pp": 0.25,
+        "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+      }
+    }
+  },
+  "forecasts": {
+    "EZ": {
+      "cc": "EZ",
+      "kind": "sourced_forecast",
+      "provider": "IMF",
+      "source_url": "https://www.imf.org/en/publications/weo/issues/2026/07/08/world-economic-outlook-update-july-2026",
+      "dataset_url": "https://www.imf.org/-/media/files/publications/weo/2026/update/july/english/data/weojul2026.xlsx",
+      "published": "2026-07-08",
+      "retrieved_at": "2026-10-18",
+      "unit": "percent",
+      "period_basis": "calendar_year",
+      "values": {
+        "2024": 1,
+        "2025": 1.4,
+        "2026": 0.9,
+        "2027": 1.2
+      },
+      "revision_current_pp": -0.2,
+      "revision_from": "2026-04",
+      "source_evidence": {
+        "method": "normalized_from_successful_workbook_read",
+        "tool_process_id": 85721,
+        "sheet": "Table 1.",
+        "row": 12,
+        "source_bytes_retained": false,
+        "revalidation": "A later automated refresh failed; preserve this dated, previously observed release."
+      }
+    },
+    "JP": {
+      "cc": "JP",
+      "kind": "sourced_forecast",
+      "provider": "IMF",
+      "source_url": "https://www.imf.org/en/publications/weo/issues/2026/07/08/world-economic-outlook-update-july-2026",
+      "dataset_url": "https://www.imf.org/-/media/files/publications/weo/2026/update/july/english/data/weojul2026.xlsx",
+      "published": "2026-07-08",
+      "retrieved_at": "2026-10-18",
+      "unit": "percent",
+      "period_basis": "calendar_year",
+      "values": {
+        "2024": -0.2,
+        "2025": 1.1,
+        "2026": 0.6,
+        "2027": 0.7
+      },
+      "revision_current_pp": -0.1,
+      "revision_from": "2026-04",
+      "source_evidence": {
+        "method": "normalized_from_successful_workbook_read",
+        "tool_process_id": 85721,
+        "sheet": "Annex Table 1.",
+        "row": 21,
+        "source_bytes_retained": false,
+        "revalidation": "A later automated refresh failed; preserve this dated, previously observed release."
+      }
+    },
+    "GB": {
+      "cc": "GB",
+      "kind": "sourced_forecast",
+      "provider": "IMF",
+      "source_url": "https://www.imf.org/en/publications/weo/issues/2026/07/08/world-economic-outlook-update-july-2026",
+      "dataset_url": "https://www.imf.org/-/media/files/publications/weo/2026/update/july/english/data/weojul2026.xlsx",
+      "published": "2026-07-08",
+      "retrieved_at": "2026-10-18",
+      "unit": "percent",
+      "period_basis": "calendar_year",
+      "values": {
+        "2024": 1,
+        "2025": 1.4,
+        "2026": 1,
+        "2027": 1.3
+      },
+      "revision_current_pp": 0.2,
+      "revision_from": "2026-04",
+      "source_evidence": {
+        "method": "normalized_from_successful_workbook_read",
+        "tool_process_id": 85721,
+        "sheet": "Annex Table 1.",
+        "row": 37,
+        "source_bytes_retained": false,
+        "revalidation": "A later automated refresh failed; preserve this dated, previously observed release."
+      }
+    },
+    "IN": {
+      "cc": "IN",
+      "kind": "sourced_forecast",
+      "provider": "IMF",
+      "source_url": "https://www.imf.org/en/publications/weo/issues/2026/07/08/world-economic-outlook-update-july-2026",
+      "dataset_url": "https://www.imf.org/-/media/files/publications/weo/2026/update/july/english/data/weojul2026.xlsx",
+      "published": "2026-07-08",
+      "retrieved_at": "2026-10-18",
+      "unit": "percent",
+      "period_basis": "fiscal_year",
+      "values": {
+        "2024": 7.1,
+        "2025": 7.7,
+        "2026": 6.4,
+        "2027": 6.7
+      },
+      "revision_current_pp": -0.1,
+      "revision_from": "2026-04",
+      "source_evidence": {
+        "method": "normalized_from_successful_workbook_read",
+        "tool_process_id": 85721,
+        "sheet": "Annex Table 1.",
+        "row": 17,
+        "source_bytes_retained": false,
+        "revalidation": "A later automated refresh failed; preserve this dated, previously observed release."
+      }
+    },
+    "AU": {
+      "cc": "AU",
+      "kind": "sourced_forecast",
+      "provider": "IMF",
+      "source_url": "https://www.imf.org/en/publications/weo/issues/2026/07/08/world-economic-outlook-update-july-2026",
+      "dataset_url": "https://www.imf.org/-/media/files/publications/weo/2026/update/july/english/data/weojul2026.xlsx",
+      "published": "2026-07-08",
+      "retrieved_at": "2026-10-18",
+      "unit": "percent",
+      "period_basis": "calendar_year",
+      "values": {
+        "2024": 1,
+        "2025": 2,
+        "2026": 1.9,
+        "2027": 1.7
+      },
+      "revision_current_pp": -0.1,
+      "revision_from": "2026-04",
+      "source_evidence": {
+        "method": "normalized_from_successful_workbook_read",
+        "tool_process_id": 85721,
+        "sheet": "Annex Table 1.",
+        "row": 10,
+        "source_bytes_retained": false,
+        "revalidation": "A later automated refresh failed; preserve this dated, previously observed release."
+      }
+    },
+    "KR": {
+      "cc": "KR",
+      "kind": "sourced_forecast",
+      "provider": "IMF",
+      "source_url": "https://www.imf.org/en/publications/weo/issues/2026/07/08/world-economic-outlook-update-july-2026",
+      "dataset_url": "https://www.imf.org/-/media/files/publications/weo/2026/update/july/english/data/weojul2026.xlsx",
+      "published": "2026-07-08",
+      "retrieved_at": "2026-10-18",
+      "unit": "percent",
+      "period_basis": "calendar_year",
+      "values": {
+        "2024": 2.2,
+        "2025": 1.1,
+        "2026": 2.6,
+        "2027": 2.5
+      },
+      "revision_current_pp": 0.7,
+      "revision_from": "2026-04",
+      "source_evidence": {
+        "method": "normalized_from_successful_workbook_read",
+        "tool_process_id": 85721,
+        "sheet": "Annex Table 1.",
+        "row": 23,
+        "source_bytes_retained": false,
+        "revalidation": "A later automated refresh failed; preserve this dated, previously observed release."
+      }
+    },
+    "TW": {
+      "cc": "TW",
+      "kind": "sourced_forecast",
+      "provider": "DGBAS",
+      "source_url": "https://eng.dgbas.gov.tw/News_Content.aspx?n=4438&s=236587",
+      "published": "2026-08-14",
+      "retrieved_at": "2026-10-18",
+      "unit": "percent",
+      "period_basis": "calendar_year",
+      "values": {
+        "2026": 11.05,
+        "2027": 6.04
+      },
+      "revision_current_pp": null,
+      "source_evidence": {
+        "method": "official_release_search_excerpt_transcription",
+        "reference": "GDP: Preliminary Estimate for 2026Q2 and Outlook for 2026-27",
+        "access_limit": "The indexed official release was returned by search; direct HTML retrieval was unavailable. This is not a claimed successful HTML parser run."
+      }
+    }
+  },
+  "sources": [
+    {
+      "url": "https://data.bis.org/static/bulk/WS_LONG_CPI_csv_flat.zip",
+      "sha256": "f677bf6e4c9e74d0b68b7777342a1461f97ff36266e5acc30cf2e6c1a1d0e0a7",
+      "status": "read"
+    },
+    {
+      "url": "https://data.bis.org/static/bulk/WS_CBPOL_csv_flat.zip",
+      "sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d",
+      "status": "read"
+    }
+  ],
+  "errors": [
+    {
+      "source": "imf",
+      "error": "HTTPError"
+    },
+    {
+      "source": "taiwan",
+      "error": "URLError"
+    }
+  ],
+  "forecast_basis": "Previously observed official releases; see verified_forecast_seed.json for exact research evidence and retrieval limitations."
+}
