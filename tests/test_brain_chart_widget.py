@@ -13,6 +13,8 @@ RUN = "a" * 32
 QUESTION = "Add the requested study to this chart."
 
 SETUP = r"""
+window.stateTransport = window.fetch.bind(window);
+window.streamPosts = [];
 window.chartCalls = [];
 window.chartStops = [];
 window.cancelRequests = [];
@@ -40,6 +42,7 @@ window.fetch = function (input, options) {
   if (path.endsWith('/cancel')) { window.cancelRequests.push(path); return json({cancelled: true}); }
   if (path.endsWith('/threads')) return json({threads: []});
   var isNew = path === '/api/brain/stream';
+  if (isNew) window.streamPosts.push(JSON.parse(options.body));
   if (isNew || /\/runs\/[^/]+\/stream$/.test(path)) {
     var stream = new ReadableStream({start: function (controller) {
       window.streamController = controller;
@@ -79,9 +82,9 @@ def page():
 
         def route(request):
             if request.request.url.endswith("/mm_brain.js"):
-                request.fulfill(path=str(ROOT / "templates/mm_brain.js"), content_type="application/javascript")
+                request.fulfill(path=str(ROOT / "templates/mm_brain.js"), content_type="application/javascript; charset=utf-8")
             else:
-                request.fulfill(body='<html data-theme="dark" data-lang="en"><head></head><body><script src="/mm_brain.js"></script></body></html>', content_type="text/html")
+                request.fulfill(body='<html data-theme="dark" data-lang="en"><head><meta charset="utf-8"></head><body><script src="/mm_brain.js"></script></body></html>', content_type="text/html")
 
         page.route("http://brain.test/**", route)
         page.goto("http://brain.test/")
@@ -190,3 +193,164 @@ def test_previous_principals_buffered_chart_events_cannot_reach_the_host(page):
     assert "Previous principal's private answer." not in page.locator("#mmb-scroll").inner_text()
     assert QUESTION not in page.locator("#mmb-scroll").inner_text()
     assert page.evaluate("sessionStorage.getItem('mm.brain.run.v2:user:user-B')") is None
+
+
+def install_preparation(page, *, principal="chart-user"):
+    page.evaluate(r"""principal => {
+      MMBrain.setPrincipal(principal);
+      window.chartContext = {schema: 'ai_context_client.v1', origin_id: 'quiet-chart',
+        context_revision: 7, captured_at: new Date().toISOString(),
+        active: {type: 'security', id: 'NVDA'}, pinned: [],
+        ambient: {page: 'terminal', symbol: 'NVDA', timeframe: '3D'}};
+      MM_BRAIN_CFG.getAiContext = function () { return window.chartContext; };
+      window.preparationCalls = [];
+      MM_BRAIN_CFG.prepareChartState = function (target, signal) {
+        window.preparationCalls.push(target);
+        window.preparationSignal = signal;
+        return new Promise(function (resolve) { window.finishPreparation = resolve; });
+      };
+    }""", principal)
+
+
+def start_prepared_turn(page):
+    page.locator("#mmb-ta").fill("Read the active chart only. Do not draw or change settings.")
+    page.locator("#mmb-send").click()
+    page.wait_for_function("window.preparationCalls.length === 1")
+
+
+def test_quiet_chart_reconnects_to_real_gateway_before_the_new_turn(page, monkeypatch):
+    # Explicit synthetic authentication/transport; the chart-state owner and reader are real.
+    from engine.neuralweb import brain_gateway as gw
+
+    monkeypatch.setattr(gw, "_chart_state_store", {})
+    uid, origin, revision = "chart-user", "quiet-chart", 7
+    session = {"symbol": "NVDA", "tf": "3D", "pane_id": 0,
+               "indicators": [], "drawings": [], "capabilities": {"tfs": ["3D"], "indicators": []}}
+    gw.put_chart_state(uid, "terminal", session, origin_id=origin, context_revision=revision)
+    read = lambda: gw._tool_read_chart_state(uid, "terminal", origin_id=origin, context_revision=revision)
+    assert read()["connected"] is True
+    # Simulate gateway restart while the client chart and its identity remain unchanged.
+    gw._chart_state_store.clear()
+    assert read() == {"connected": False, "reason": "origin_not_connected", "origin_id": origin}
+    pending_state, posted_turns, observed_reads = [], [], []
+
+    def transport(route):
+        body = route.request.post_data_json
+        if route.request.url.endswith("/chart/state"):
+            pending_state.append((route, body))
+            return  # Keep the response behind a barrier; a scheduled send is not readiness.
+        posted_turns.append(body)
+        observed = read()
+        observed_reads.append(observed)
+        text = f'{observed.get("connected")} {observed.get("session", {}).get("symbol")} {observed.get("session", {}).get("tf")}'
+        import json
+        events = [{"type": "run", "run_id": RUN},
+                  {"type": "delta", "text": text},
+                  {"type": "done", "citations": []}]
+        route.fulfill(body="".join("data: " + json.dumps(event) + "\n\n" for event in events),
+                      content_type="text/event-stream")
+
+    page.route("http://brain.test/api/brain/chart/state", transport)
+    page.route("http://brain.test/api/brain/stream", transport)
+    install_preparation(page)
+    page.evaluate(r"""session => {
+      MM_BRAIN_CFG.prepareChartState = function (target, signal) {
+        window.preparationCalls.push(target);
+        return window.stateTransport('/api/brain/chart/state', {
+          method: 'POST', credentials: 'include', headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({client: 'terminal', origin_id: target.origin_id,
+            context_revision: target.context_revision, session: session, acks: []})
+        }).then(function (res) { return res.ok
+          ? {ok: true, origin_id: target.origin_id, context_revision: target.context_revision}
+          : {ok: false, reason: 'state_post_failed'}; });
+      };
+      var fixtureFetch = window.fetch;
+      window.fetch = function (input, options) {
+        if (new URL(String(input), location.href).pathname === '/api/brain/stream')
+          return window.stateTransport(input, options);
+        return fixtureFetch(input, options);
+      };
+    }""", session)
+    start_prepared_turn(page)
+    page.wait_for_timeout(80)
+    assert len(pending_state) == 1
+    assert posted_turns == []
+    assert read()["connected"] is False
+    route, body = pending_state[0]
+    assert (body["origin_id"], body["context_revision"]) == (origin, revision)
+    gw.put_chart_state(uid, body["client"], body["session"], origin_id=body["origin_id"],
+                       context_revision=body["context_revision"], acks=body["acks"])
+    route.fulfill(json={"ok": True})
+    page.get_by_text("True NVDA 3D", exact=True).wait_for()
+    assert len(posted_turns) == 1
+    assert posted_turns[0]["context"]["ai_context"]["origin_id"] == origin
+    assert posted_turns[0]["context"]["ai_context"]["context_revision"] == revision
+    assert observed_reads[0]["connected"] is True
+    assert observed_reads[0]["session"]["drawings"] == []
+    assert page.evaluate("window.chartCalls") == []
+    assert page.evaluate("window.preparationCalls") == [{"origin_id": origin, "context_revision": revision}]
+
+
+@pytest.mark.parametrize("change", ["stop", "principal", "context", "binding"])
+def test_preparation_cannot_start_a_late_model_request_after_owner_changes(page, change):
+    install_preparation(page)
+    start_prepared_turn(page)
+    assert page.evaluate("window.streamPosts") == []
+    if change == "stop":
+        page.locator("#mmb-send").click()
+    elif change == "principal":
+        page.evaluate("MMBrain.setPrincipal('user-B')")
+    elif change == "context":
+        page.evaluate("window.chartContext.context_revision++")
+    else:
+        page.evaluate("MM_BRAIN_CFG.prepareChartState = function () { return Promise.resolve({ok: false}); }")
+    page.evaluate("window.finishPreparation({ok: true, origin_id: 'quiet-chart', context_revision: 7})")
+    if change in {"context", "binding"}:
+        page.get_by_text("The chart changed before your request started. Send your question again from the chart you want to analyze.", exact=True).wait_for()
+        assert page.locator("#mmb-ta").input_value().startswith("Read the active chart only.")
+        assert page.get_by_role("button", name="Retry", exact=True).count() == 0
+    else:
+        page.wait_for_timeout(80)
+    assert page.evaluate("window.streamPosts") == []
+    assert page.evaluate("window.chartCalls") == []
+
+
+@pytest.mark.parametrize(("reason", "message"), [
+    ("sign_in_required", "Sign in to let the assistant read and edit this chart."),
+    ("state_post_timeout", "I couldn’t refresh the active chart. Please try again."),
+])
+def test_failed_preparation_is_specific_and_never_falls_back_to_a_model_request(page, reason, message):
+    install_preparation(page)
+    start_prepared_turn(page)
+    page.evaluate("reason => window.finishPreparation({ok: false, reason: reason})", reason)
+    page.get_by_text(message, exact=True).wait_for()
+    assert page.evaluate("window.streamPosts") == []
+    assert page.evaluate("window.cancelRequests") == []
+
+
+def test_known_guest_general_chat_does_not_claim_or_wait_for_chart_readiness(page):
+    install_preparation(page, principal=None)
+    send(page)
+    assert page.evaluate("window.preparationCalls") == []
+    assert len(page.evaluate("window.streamPosts")) == 1
+    assert page.evaluate("window.chartCalls") == []
+
+
+def test_context_read_failure_after_auth_is_a_chart_preparation_failure(page):
+    install_preparation(page)
+    start_prepared_turn(page)
+    page.evaluate(r"""() => {
+      window.authPreparationChecks = 0;
+      window.MDXAuth = {client: function () {
+        return Promise.resolve({auth: {getSession: function () {
+          window.authPreparationChecks++;
+          MM_BRAIN_CFG.getAiContext = function () { throw new Error('retired context getter'); };
+          return Promise.resolve({data: {session: null}});
+        }}});
+      }};
+      window.finishPreparation({ok: true, origin_id: 'quiet-chart', context_revision: 7});
+    }""")
+    page.get_by_text("I couldn’t refresh the active chart. Please try again.", exact=True).wait_for()
+    assert page.evaluate("window.authPreparationChecks") >= 1
+    assert page.evaluate("window.streamPosts") == []
+    assert page.evaluate("window.chartCalls") == []

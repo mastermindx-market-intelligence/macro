@@ -27,12 +27,12 @@ waves:
   - id: FOUNDATION
     title: Integrate incumbent chart target, native evidence, continuation and Stop foundations
     status: in_progress
-    pr: [8005, 8014]
-    next_action: Complete the owned Macro current-main integration PR; retain Terminal companion 757 source.
+    pr: [8005, 8014, 9601]
+    next_action: Conclude normal CI on Macro 9601 and Terminal 1048; preserve both parent foundations.
   - id: DRAWING-WORKSPACE
     title: Native drawing plans, requested indicator visibility and individual AI-layer controls
     status: in_progress
-    next_action: Publish the two locally qualified owned branches and conclude normal required CI.
+    next_action: Conclude the final source and evidence checks on Macro 9601 and Terminal 1048.
   - id: RELEASE
     title: Coordinated deployment and ordinary-model live acceptance
     status: todo
@@ -48,7 +48,7 @@ do_not_redo:
 landmines:
   - "Historical handoff ended_because describes its September 26 blocked boundary, not this active workstream; see agentos/handoffs/CMX-COPILOT-FEATURE-CONTINUATION-2026-09-26.md."
   - "Fixture commands and accepted ACKs are not ordinary-model or production pixel proof; see terminal:terminal/docs/pr-crops/chart-ai-drawing-workspace-20261018/README.md."
-next_action: Publish and qualify the two owned integration PRs, then perform the authorized coordinated release and live acceptance.
+next_action: Conclude normal required CI on Macro 9601 and Terminal 1048, then perform the authorized coordinated release and live acceptance.
 ---
 
 ## Current commission and source continuity

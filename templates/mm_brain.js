@@ -2763,7 +2763,7 @@
       })
       .catch(function () { failTurn(T, ''); });
   }
-  function failTurn(T, msg) {
+  function failTurn(T, msg, chartPreparationReason) {
     if (T.stopped || T.epoch !== historyEpoch) return;
     if (T.doneSeen) { endTurn(T); return; }
     T.doneSeen = true; clearRun(); parked = null;
@@ -2774,9 +2774,76 @@
       /* A bubble with only a "Reading …" step and no text is not a reply — drop it, or
          the error card stacks under a dead assistant slot. */
       if (T.bub && T.bub.parentNode) T.bub.remove();
-      errorCard(T.payload, msg || '');
+      var changedChart = chartPreparationReason === 'context_changed' || chartPreparationReason === 'host_unmounted';
+      if (changedChart) {
+        if (T.ub) dropRow(T.ub);
+        restoreComposer(T.payload);
+      }
+      errorCard(T.payload, msg || '', chartPreparationReason);
     }
     endTurn(T);
+  }
+
+  /* The mounted Terminal refreshes its existing exact-origin state mirror before
+     a NEW turn. Recovery attaches to an existing run and never enters this gate.
+     Known guests retain general chat; the authenticated chart tools stay gated. */
+  function prepareChartForTurn(T, signal) {
+    var ctx = T.payload && T.payload.ctx, prepare = CFG.prepareChartState;
+    if (!ctx || ctx.page !== 'terminal' || typeof prepare !== 'function' ||
+        (principalKnown && !historyOwner)) return Promise.resolve(null);
+    var target = ctx.ai_context;
+    function failure(reason) {
+      var err = new Error('chart preparation failed');
+      err.chartPreparation = true; err.chartPreparationReason = reason;
+      return err;
+    }
+    function checkCurrent() {
+      if (T.stopped || T.epoch !== historyEpoch || activeStream !== T || (signal && signal.aborted)) {
+        var aborted = new Error('turn cancelled'); aborted.name = 'AbortError'; throw aborted;
+      }
+      if (CFG.prepareChartState !== prepare) throw failure('host_unmounted');
+      var current;
+      try { current = typeof CFG.getAiContext === 'function' ? CFG.getAiContext() : null; }
+      catch (err) { throw failure('state_unavailable'); }
+      if (!target || !current || !target.origin_id || !Number.isSafeInteger(target.context_revision) ||
+          current.origin_id !== target.origin_id || current.context_revision !== target.context_revision)
+        throw failure('context_changed');
+    }
+    return new Promise(function (resolve, reject) {
+      var finished = false, timer = null;
+      function finish(err) {
+        if (finished) return; finished = true;
+        if (timer) clearTimeout(timer);
+        if (signal) signal.removeEventListener('abort', abort);
+        if (err) reject(err); else resolve(checkCurrent);
+      }
+      function abort() { var err = new Error('turn cancelled'); err.name = 'AbortError'; finish(err); }
+      if (signal) signal.addEventListener('abort', abort, { once: true });
+      timer = setTimeout(function () { finish(failure('state_post_timeout')); }, 10000);
+      Promise.resolve().then(function () {
+        checkCurrent();
+        return prepare({ origin_id: target.origin_id, context_revision: target.context_revision }, signal);
+      }).then(function (result) {
+        checkCurrent();
+        if (!result || !result.ok) throw failure(result && result.reason || 'state_unavailable');
+        if (result.origin_id !== target.origin_id || result.context_revision !== target.context_revision)
+          throw failure('context_changed');
+        finish(null);
+      }).catch(function (err) {
+        finish(err && (err.chartPreparation || err.name === 'AbortError') ? err : failure('state_unavailable'));
+      });
+    });
+  }
+
+  function chartPreparationMessage(reason) {
+    if (reason === 'sign_in_required') return L(
+      'Sign in to let the assistant read and edit this chart.',
+      '请登录，以便助手读取和编辑此图表。');
+    if (reason === 'context_changed' || reason === 'host_unmounted') return L(
+      'The chart changed before your request started. Send your question again from the chart you want to analyze.',
+      '请求开始前图表已发生变化。请从您要分析的图表重新发送问题。');
+    return L('I couldn’t refresh the active chart. Please try again.',
+      '无法刷新当前图表，请重试。');
   }
 
   /* runStream(payload, showUser): runs one SSE turn. showUser=false skips drawing a new
@@ -2809,9 +2876,12 @@
     var body = JSON.stringify({ message: apiText, lane: payload.lane, mode: payload.mode, thread_id: threadId || undefined, context: payload.ctx, company_source_span: payload.sourceSpan || undefined, images: (payload.imgs && payload.imgs.length) ? payload.imgs : undefined });
     if (streamAbort) { try { streamAbort.abort(); } catch (e) {} }
     var ac = (typeof AbortController !== 'undefined') ? new AbortController() : null; streamAbort = ac;
-    withAuth({ 'Content-Type': 'application/json' }).then(function (h) {
-      if (T.stopped || T.epoch !== historyEpoch) return null;
-      return fetch(API + '/api/brain/stream', { method: 'POST', headers: h, credentials: 'include', body: body, signal: ac ? ac.signal : undefined });
+    prepareChartForTurn(T, ac ? ac.signal : undefined).then(function (checkChart) {
+      return withAuth({ 'Content-Type': 'application/json' }).then(function (h) {
+        if (T.stopped || T.epoch !== historyEpoch || activeStream !== T) return null;
+        if (checkChart) checkChart();
+        return fetch(API + '/api/brain/stream', { method: 'POST', headers: h, credentials: 'include', body: body, signal: ac ? ac.signal : undefined });
+      });
     }).then(function (res) {
       if (T.stopped || T.epoch !== historyEpoch || !res) return;
       if (res.status === 401) { T.doneSeen = true; thinkTeardown(T.tl); if (typing.parentNode) typing.remove(); endTurn(T); if (window.MDXAuth && window.MDXAuth.enabled()) window.MDXAuth.open('signin'); else if (CFG.onAuthRequired) { try { CFG.onAuthRequired(); } catch (e) {} } return; }
@@ -2822,6 +2892,9 @@
       /* AbortError = user pressed Stop; keep partial, no error card. Anything else is a
          dropped connection — recover() re-attaches before we ever claim the reply is lost. */
       if (err && err.name === 'AbortError') { endTurn(T); return; }
+      if (err && err.chartPreparation) {
+        failTurn(T, '', err.chartPreparationReason); return;
+      }
       recover(T);
     });
   }
@@ -3010,16 +3083,21 @@
   }
   function bumpTime(bub) { var t = bub && bub.querySelector('.mmb-time'); if (t) t.textContent = relTime(t._ts); }
   /* Inline error card in the assistant slot with a Retry that replays the same payload. */
-  function errorCard(payload, msg) {
+  function errorCard(payload, msg, chartPreparationReason) {
     var d = el('div', 'mmb-msg assistant'); var b = el('div', 'mmb-bub');
     var orb = el('span', 'mmb-orbmark'); orb.innerHTML = '<svg viewBox="0 0 24 24"><path d="' + ORB_PATH + '"/></svg>'; b.appendChild(orb);
     var card = el('div', 'mmb-errcard');
-    var line = el('div', 'mmb-errline'); line.textContent = L("The reply didn't make it through.", '回复没有送达。'); card.appendChild(line);
+    var line = el('div', 'mmb-errline');
+    line.textContent = chartPreparationReason ? chartPreparationMessage(chartPreparationReason)
+      : L("The reply didn't make it through.", '回复没有送达。');
+    card.appendChild(line);
     var retry = el('button', 'mmb-retry'); retry.type = 'button';
     retry.innerHTML = ic('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>') + '<span class="mmb-l" data-en="Retry" data-zh="重试">' + L('Retry', '重试') + '</span>';
     retry.setAttribute('aria-label', L('Retry', '重试'));
     retry.addEventListener('click', function () { if (streaming) return; d.remove(); runStream(payload, false); });
-    card.appendChild(retry); b.appendChild(card); d.appendChild(b); scroll.appendChild(d); stickAfter();
+    if (chartPreparationReason !== 'context_changed' && chartPreparationReason !== 'host_unmounted')
+      card.appendChild(retry);
+    b.appendChild(card); d.appendChild(b); scroll.appendChild(d); stickAfter();
   }
   /* a11y: announce completion once per done via the polite live region. */
   function announceDone() { try { var lr = $('#mmb-live'); if (lr) { lr.textContent = ''; lr.textContent = L('Reply finished', '回复完成'); } } catch (e) {} }
