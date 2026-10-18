@@ -23044,6 +23044,7 @@ jobs:
       - "site/turn_watch/turn_watch.json"
       - "templates/_navlinks.html.j2"
       - "templates/_prophet_card.html.j2"
+      - "templates/_prophet_workspace.css.j2"
       - "templates/_prophet_setup_detail.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
