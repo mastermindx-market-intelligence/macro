@@ -330,6 +330,8 @@ def _write_sector_intelligence_generation(
     root: Path,
     *,
     baskets_asof: str = "2026-09-14",
+    breadth_asof: str | None = None,
+    breadth_scope: str = "sp500_current_constituents",
     theme_asof: str | None = None,
     action_asof: str | None = None,
     sector_asof: str | None = None,
@@ -348,6 +350,14 @@ def _write_sector_intelligence_generation(
         "theme_intel": {"as_of": theme_asof},
         "baskets": [{"id": "theme-a"}],
     }
+    if breadth_asof is not None:
+        baskets["theme_intel"]["market_concentration"] = {
+            "adv": 251,
+            "dec": 240,
+            "source_as_of": breadth_asof,
+            "source_universe": breadth_scope,
+            "directional": False,
+        }
     baskets_path = site / "basketdata" / "baskets.json"
     baskets_path.write_bytes(_json_bytes(baskets))
     baskets_sha = hashlib.sha256(baskets_path.read_bytes()).hexdigest()
@@ -461,6 +471,36 @@ def test_future_or_weekend_sector_date_cannot_pass_with_zero_missing_sessions(
     assert result["ok"] is False
     assert any(expected_error in err for err in result["errors"]), result
     assert result["facts"]["sessions_behind"] is None
+
+
+@pytest.mark.parametrize(
+    ("breadth_session", "scope", "expected_error"),
+    [
+        ("2026-09-14", "sp500_current_constituents", None),
+        ("2026-09-11", "sp500_current_constituents", "VINTAGE SPLIT"),
+        ("", "sp500_current_constituents", "carries no usable as_of"),
+        ("2026-09-14", "unverified_sp1500", "UNVERIFIED SECTOR INTELLIGENCE BREADTH"),
+    ],
+)
+def test_sector_gate_binds_embedded_breadth_source_session_and_population(
+    tmp_path: Path, breadth_session: str, scope: str, expected_error: str | None,
+) -> None:
+    """Full payload hashes stay consistent while the embedded source can differ."""
+    _write_sector_intelligence_generation(
+        tmp_path,
+        action_asof="2026-09-14",
+        breadth_asof=breadth_session,
+        breadth_scope=scope,
+    )
+    report = _evaluate_sector_intelligence(tmp_path)
+    if expected_error is None:
+        assert report["ok"] is True, report
+        assert report["facts"]["dates"][
+            "site/basketdata/baskets.json:theme_intel.market_concentration.source_as_of"
+        ] == "2026-09-14"
+    else:
+        assert report["ok"] is False
+        assert any(expected_error in err for err in report["errors"]), report
 
 
 def test_semantic_freshness_rejects_individually_fresh_vintage_split(
