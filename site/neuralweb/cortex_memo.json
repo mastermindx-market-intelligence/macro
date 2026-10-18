@@ -1,33 +1,14 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-10-16T18:40:15+00:00",
-  "summary": "Context-only shadow memo: the US backdrop is MIXED (46), not a calibrated risk-off call. The central tension is deterioration beneath a still-resilient index: confirmed credit-spread acceleration, breadth near the bottom of its recent distribution, and CRACKING leadership coexist with calm volatility, low recession risk, loose headline financial conditions, and an index still above its 200-day average. The risk radar remains advisory and its exact caution cell has a measured 21-day pullback rate below the unconditional base rate, so it supplies attention context rather than an edge. Factor evidence is immature: only nine panel dates, no Pair G records, no factor-attention grading history, and no tradeable composite. The graded spine sample returned was dominated by context-only Canadian board observations using unsigned MFE proxies, so it does not justify a broad directional inference. No signal, ranking, sizing change, or escalation is originated here.",
-  "what_fired": [
-    "Credit stress is the dominant advisory scare: credit OAS acceleration is confirmed while the secondary HYG/TLT leg is unconfirmed.",
-    "Breadth is weak: roughly 49% of members are above their 200-day average and the breadth measure sits near the 14th percentile, with a price divergence present.",
-    "Leadership is CRACKING and the current deterioration-spreading path fits on leader damage plus credit stress, although headline financial conditions remain loose.",
-    "Long-end pressure is supported as context by rising restrictive real yields and rising term premium; several maturities are at extreme-high watch levels, but no rate/inflation leg passed the scored forward-drawdown robustness bar.",
-    "Factor weather is mixed with profitability the descriptive leader; size is weak, but the factor panel has not met its history floor."
-  ],
-  "contradictions_review": "Three displayed contradictions were reviewed. First, Q2/Reflation sits in label tension with a caution risk radar dominated by credit; this is a mixed-state warning, not permission to override the measured tape. Second, 21 ticker-level demand-versus-supply divergences conflict with the briefing aggregate and require name-level reconciliation before relying on the brief. Third, the options contradiction record contains zero affected buy-lane names and adds no current de-escalation. Pair G is dormant because the factor panel has fewer than 60 dates. Open-thesis review found a material conflict between the China-overweight thesis and current China Q3/stagflation, contracting liquidity, GRINDING_BEAR, dormant participation, Panic context, and dollar/EM strain. The open long-Treasury theses also meet their own adverse-review conditions: real 10-year yield is 2.88% and the curve is bear-steepening. Multiple semiconductor-underweight theses are directionally consistent with broken AI-infrastructure leadership and semiconductor weakness, so no contradiction flag was added solely from current evidence.",
-  "decaying_families": [
-    "Factor intelligence: nine dates, no scorecard survivors, composite non-tradeable, and Pair G dormant.",
-    "Risk-radar alert authority: 50 graded observations but zero alerts; caution-state drawdown incidence has not demonstrated above-base lift.",
-    "Options flow: only 82 put/call and 83 GEX rows versus 252 required, with unrecoverable missing live snapshots.",
-    "Recovery ruler: five graded observations and fewer than 30 per arm; descriptive only.",
-    "Desk families including stock, thematic, radar, narrative, policy, and AI remain unarmed; several show negative signed excess or vacuous held-out tests.",
-    "Open Master Brain theses are overdue for scoring: all displayed items remain open beyond their check-by dates despite 12 prior scored leans."
-  ],
-  "deserves_operator": [
-    "Credit-breadth-leadership tension \u2014 shadow attention claim ada2fbf7cb4bd38a. Close only if HY OAS 20-day change returns to <=0 bp, breadth exceeds 60% above the 200-day average, and leadership is no longer CRACKING for five consecutive sessions.",
-    "China-overweight thesis mb-2026-07-09-1 conflicts with current China and EM context \u2014 shadow attention claim 26cf065fd287fa62. Resolve if China exits GRINDING_BEAR, participation is no longer dormant, and either growth turns positive or the HK peg leaves weak-side/outflow for five sessions.",
-    "Long-Treasury theses mb-2026-07-01-1 and mb-2026-06-26-1 have reached their stated adverse evidence \u2014 shadow attention claim 6d1c0d76cc31716d. Clear review only if real 10-year yield falls below 2.5% and bear steepening ends for five sessions.",
-    "Reconcile the 21 demand-versus-supply ticker divergences against the aggregate briefing before treating the briefing as coherent.",
-    "Score or retire the overdue open Master Brain theses; duplicated thesis IDs and expired check-by dates weaken auditability."
-  ],
+  "as_of": "2026-10-18T07:13:36+00:00",
+  "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
+  "what_fired": [],
+  "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
+  "decaying_families": [],
+  "deserves_operator": [],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-10-16",
+    "as_of": "2026-10-17",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -39,75 +20,48 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 136,
-      "total_rows": 144
+      "ungradeable": 141,
+      "total_rows": 149
     },
     "is_context_only": true
   },
-  "tool_call_census": {
-    "read_world_state": 1,
-    "read_factor_state": 1,
-    "query_spine": 1,
-    "read_contradictions": 1,
-    "list_factor_contradictions": 1,
-    "read_kernel": 1,
-    "read_master_brain_theses": 1,
-    "flag_attention": 1,
-    "stake_hypothesis": 2,
-    "write_memo": 1
-  },
+  "tool_call_census": {},
   "is_context_only": true,
   "run_status": {
-    "status": "ok",
-    "degraded": false,
-    "degradation_reason": null,
-    "model_used": "claude-opus-4-8",
+    "status": "degraded",
+    "degraded": true,
+    "degradation_reason": "model_unavailable",
+    "model_used": "claude-sonnet-4-6",
     "provider_attempts": [
       {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
+        "provider": "oauth",
+        "model": "claude-opus-4-8",
         "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
+        "ok": false,
+        "error_type": "auth",
+        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011Cg9HhhAaEvrwSTNGC9nPn'}"
       },
       {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
+        "provider": "oauth",
+        "model": "claude-opus-4-8",
         "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
+        "ok": false,
+        "error_type": "auth",
+        "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011Cg9HhiNkRaWDHDXWLxDff'}"
       },
       {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
+        "provider": "oauth",
+        "model": "claude-sonnet-4-6",
         "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
-      },
-      {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
-        "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
-      },
-      {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
-        "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
+        "ok": false,
+        "error_type": "auth",
+        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011Cg9HhjL3e6MGhs787GCrz'}"
       }
     ],
-    "tool_call_batches": 4,
-    "individual_tool_calls": 11,
+    "tool_call_batches": 0,
+    "individual_tool_calls": 0,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-10-16T18:21:15Z"
+    "context_as_of": "2026-10-18T07:03:19Z"
   }
 }
