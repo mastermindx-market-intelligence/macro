@@ -124,3 +124,58 @@ def test_gated_hk_quote_artifact_is_not_in_caddy_public_matchers():
     assert "path /live/* /marketdata/sp500_heatmap.json" in caddy
     assert "handle @reg_asset {" in caddy
     assert "handle @vps_external {" in caddy
+
+
+
+def _hk_projection_fixture(tmp_path, stamp):
+    from datetime import datetime
+    directory = tmp_path / "marketdata"
+    directory.mkdir(exist_ok=True)
+    (directory / "hk_heatmap.json").write_text(json.dumps({
+        "market": "hk", "map_type": "stocks", "asof": "2026-10-16",
+        "tiles": [{"t": "0700.HK"}],
+    }))
+    ts = int(datetime.fromisoformat(stamp).timestamp() * 1000)
+    return {"source": "snapshot", "ts": ts, "quotes": {
+        "0700.HK": {"source": "yahoo", "basis": "regular", "price": 102.,
+                    "prevClose": 100., "changePct": 2., "ts": ts - 60000}}}
+
+
+def test_hk_sidecar_uses_incumbent_holiday_not_weekday_only_clock(tmp_path):
+    snap = _hk_projection_fixture(tmp_path, "2026-10-19T11:00:00+08:00")
+    out = live.project_hk_heatmap_snapshot(snap, tmp_path)
+    session = out["session"]
+    assert session["schema"] == "hk_heatmap_session.v1"
+    assert session["calendar_date"] == "2026-10-19"
+    assert session["is_session"] is False
+    assert session["phase"] == "holiday"
+    assert session["session_date"] == "2026-10-16"
+    assert session["next_open_at"] == "2026-10-20T09:30:00+08:00"
+    assert session["settled_asof"] == "2026-10-16"
+    assert not out["quotes"], "a holiday heartbeat cannot certify a trade"
+
+
+def test_hk_half_day_and_settlement_use_existing_calendar_owner(tmp_path):
+    snap = _hk_projection_fixture(tmp_path, "2026-12-24T12:25:00+08:00")
+    out = live.project_hk_heatmap_snapshot(snap, tmp_path)
+    session = out["session"]
+    assert session["is_session"] is True
+    assert session["close_minute"] == 730
+    assert session["phase"] == "post_close"
+    assert session["settled_asof"] == "2026-12-23"
+    assert session["next_open_at"] == "2026-12-28T09:30:00+08:00"
+
+
+def test_hk_sidecar_does_not_copy_vendor_percentage_as_a_second_truth(tmp_path):
+    snap = _hk_projection_fixture(tmp_path, "2026-10-20T11:00:00+08:00")
+    snap["quotes"]["0700.HK"]["changePct"] = 900.
+    out = live.project_hk_heatmap_snapshot(snap, tmp_path)
+    assert abs(out["quotes"]["0700.HK"]["changePct"] - 2.) < 1e-8
+    assert out["session"]["previous_session"] == "2026-10-16"
+
+
+def test_hk_sidecar_rejects_quotes_in_lunch_or_after_exchange_close(tmp_path):
+    from datetime import datetime
+    snap = _hk_projection_fixture(tmp_path, "2026-10-20T13:30:00+08:00")
+    snap["quotes"]["0700.HK"]["ts"] = int(datetime.fromisoformat("2026-10-20T12:35:00+08:00").timestamp()*1000)
+    assert not live.project_hk_heatmap_snapshot(snap, tmp_path)["quotes"]

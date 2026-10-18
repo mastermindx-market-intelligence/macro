@@ -190,3 +190,31 @@ def test_board_breadth_absent_by_default():
     """Every existing caller passes nothing — the payload must be unchanged for them."""
     p = mh.build_market_heatmap("china", _constituents(), _closes())
     assert "board_breadth" not in p
+
+
+
+def test_hk_turnover_proxy_has_explicit_economic_measure_and_keeps_weighting():
+    import pandas as pd
+    from engine import market_heatmap as mh
+    cons = pd.DataFrame({"name": ["One", "Two"], "sector": ["Technology", "Technology"]}, index=["0700.HK", "9988.HK"])
+    closes = pd.DataFrame({"0700.HK": [100., 102.], "9988.HK": [100., 98.]}, index=pd.to_datetime(["2026-10-15", "2026-10-16"]))
+    data = mh.build_market_heatmap("hk", cons, closes, caps={"0700.HK": 300., "9988.HK": 100.})
+    assert data["size_measure"] == "average_daily_turnover"
+    assert data["size_label_en"] == "Avg turnover"
+    assert mh._sector_agg("marketcap", [{"size": 3, "perf": {"1D": 2}}, {"size": 1, "perf": {"1D": -2}}], "1D") == 1.
+
+
+
+def test_hk_economic_size_metadata_preserves_existing_open_browser_weighting():
+    import pandas as pd
+    from engine import market_heatmap as mh
+    cons = pd.DataFrame({"name": ["One", "Two"], "sector": ["Technology", "Technology"]}, index=["0700.HK", "9988.HK"])
+    closes = pd.DataFrame({"0700.HK": [100., 102.], "9988.HK": [100., 98.]}, index=pd.to_datetime(["2026-10-15", "2026-10-16"]))
+    data = mh.build_market_heatmap("hk", cons, closes, caps={"0700.HK": 300., "9988.HK": 100.})
+    # The deployed pre-audit client uses this legacy enum to choose weighted
+    # arithmetic. A new enum would silently turn open tabs into median weighting.
+    assert data["size_basis"] == "marketcap"
+    assert data["size_measure"] == "average_daily_turnover"
+    rows = data["tiles"]
+    old_client = sum(t["size"]*t["perf"]["1D"] for t in rows)/sum(t["size"] for t in rows)
+    assert mh._sector_agg(data["size_basis"], rows, "1D") == old_client

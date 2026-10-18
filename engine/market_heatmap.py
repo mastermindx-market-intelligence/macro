@@ -496,6 +496,11 @@ def build_market_heatmap(
         "tiles": tiles,
         "n_tiles": len(tiles),
         "size_basis": size_basis,
+        # Keep the deployed weighting enum compatible with already-open tabs.
+        # Economic meaning is explicit: HK's weighted area is turnover, not cap.
+        **({"size_measure": "average_daily_turnover" if size_basis == "marketcap"
+            else "index_weight_proxy" if size_basis == "weight_proxy" else "equal_area"}
+           if market == "hk" else {}),
         **({"observation_coverage": observation_view["coverage"]} if observation_view is not None else {}),
         # Whole-board 涨跌家数 for the SAME session as the tiles, when we have it.
         # Absent (or stale) → the front-end counts tiles, as it always did.
@@ -584,7 +589,7 @@ def _median(vals: list[float]) -> float | None:
 
 
 def _sector_agg(size_basis: str, tiles: list[dict], tf: str) -> float | None:
-    """Cap-weighted where sizes are real caps, median otherwise (heatmap.js sectorAgg)."""
+    """Legacy size-weighted mode (caps or HK turnover), median for other proxies."""
     vals = [(t, t["perf"][tf]) for t in tiles if t.get("perf", {}).get(tf) is not None]
     if not vals:
         return None

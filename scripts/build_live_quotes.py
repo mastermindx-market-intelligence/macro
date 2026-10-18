@@ -380,6 +380,67 @@ def project_public_display_snapshot(snapshot: dict, site_dir: Path) -> dict:
     return out
 
 
+def hk_heatmap_session(stamp_ms: int | float) -> dict:
+    """Project the incumbent HKEX calendar into the existing member sidecar.
+
+    This is a wire projection, not a new calendar or quote publication owner.
+    The browser may validate within-day bounds; it may not invent holidays.
+    """
+    from datetime import time, timedelta
+    from lib import hk_calendar
+    from lib.exchange_holidays import early_close
+
+    instant = datetime.fromtimestamp(stamp_ms / 1000, timezone.utc).astimezone(hk_calendar.HKT)
+    today = instant.date()
+    trading = hk_calendar.is_session(today)
+    half_close = early_close("HK", today) if trading else None
+    close_minute = half_close.hour * 60 + half_close.minute if half_close else 970
+    minute = instant.hour * 60 + instant.minute
+    session_day = today if trading and minute >= 570 else hk_calendar.last_session_on_or_before(today - timedelta(days=1))
+    previous = hk_calendar.last_session_on_or_before(session_day - timedelta(days=1))
+    if not trading:
+        phase = "weekend" if today.weekday() >= 5 else "holiday"
+    elif minute < 570:
+        phase = "pre_open"
+    elif minute >= close_minute:
+        phase = "post_close"
+    elif minute >= close_minute - 10:
+        phase = "closing_auction"
+    elif minute < 720:
+        phase = "morning"
+    elif minute < 780:
+        phase = "session_break"
+    else:
+        phase = "afternoon"
+    next_day = today if trading and minute < 570 else today + timedelta(days=1)
+    for _ in range(30):
+        if hk_calendar.is_session(next_day):
+            break
+        next_day += timedelta(days=1)
+    else:
+        raise ValueError("HK calendar has no next session in 30 days")
+    return {
+        "schema": "hk_heatmap_session.v1", "calendar_date": today.isoformat(),
+        "session_date": session_day.isoformat(), "previous_session": previous.isoformat(),
+        "is_session": trading, "phase": phase, "close_minute": close_minute,
+        "settled_asof": hk_calendar.expected_last_session(instant).isoformat(),
+        "next_open_at": datetime.combine(next_day, time(9, 30), hk_calendar.HKT).isoformat(),
+    }
+
+
+def _hk_quote_in_session(stamp_ms: int | float, session: dict) -> bool:
+    from lib.hk_calendar import HKT
+
+    instant = datetime.fromtimestamp(stamp_ms / 1000, timezone.utc).astimezone(HKT)
+    if not session["is_session"] or session["phase"] == "pre_open" or instant.date().isoformat() != session["session_date"]:
+        return False
+    minute = instant.hour * 60 + instant.minute + instant.second / 60 + instant.microsecond / 60000000
+    close = session["close_minute"]
+    if not 570 <= minute <= close:
+        return False
+    return close == 730 or minute <= 720 or minute >= 780
+
+
 def project_hk_heatmap_snapshot(snapshot: dict, site_dir: Path) -> dict | None:
     """Member-gated HK quote projection from the SAME one-minute display fetch.
 
@@ -402,6 +463,10 @@ def project_hk_heatmap_snapshot(snapshot: dict, site_dir: Path) -> dict | None:
     ts, raw = snapshot.get("ts"), snapshot.get("quotes")
     if type(ts) not in (int, float) or not math.isfinite(ts) or not isinstance(raw, dict):
         return None
+    try:
+        session = hk_heatmap_session(ts)
+    except (ValueError, OverflowError, OSError):
+        return None
     out = {}
     allowed_fields = ("source", "basis", "price", "prevClose", "changePct", "ts")
     for ticker in members:
@@ -411,12 +476,15 @@ def project_hk_heatmap_snapshot(snapshot: dict, site_dir: Path) -> dict | None:
         vals = (q.get("price"), q.get("prevClose"), q.get("ts"))
         if any(type(v) not in (int, float) or not math.isfinite(v) or v <= 0 for v in vals):
             continue
-        change = q.get("changePct")
-        if type(change) not in (int, float) or not math.isfinite(change) or q["ts"] > ts + 60000:
+        change = (q["price"] / q["prevClose"] - 1) * 100
+        if not math.isfinite(change) or q["ts"] > ts + 5000 or not _hk_quote_in_session(q["ts"], session):
             continue
-        out[ticker] = {k: q[k] for k in allowed_fields}
+        # Vendor percentages are not an independent return authority.
+        out[ticker] = {k: q[k] for k in allowed_fields if k != "changePct"}
+        out[ticker]["changePct"] = change
     return {"source": "snapshot", "baseline_asof": asof, "ts": ts,
-            "quotes": out, "meta": {"requested": len(members), "resolved": len(out)}}
+            "quotes": out, "session": session,
+            "meta": {"requested": len(members), "resolved": len(out)}}
 
 
 def basket_member_symbols() -> list[str]:

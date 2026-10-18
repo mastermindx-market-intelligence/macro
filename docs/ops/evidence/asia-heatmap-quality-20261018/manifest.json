@@ -1,0 +1,88 @@
+{
+  "schema": "mastermind.heatmap_quality_evidence.v1",
+  "date": "2026-10-18",
+  "source_parent": "df6e53e2c3b4ead8e0ee41ff8b562bd1be01a3cc",
+  "scope": "LOCAL_CANDIDATE_REHEARSAL_NOT_DEPLOYED",
+  "production_authentication": false,
+  "natural_market_quote_proof": false,
+  "fixture_notice": "HK quote values and access responses are deliberately synthetic. China uses observed production daily baseline; both date Oct16.",
+  "local_tests": {
+    "python_passed": 142,
+    "javascript_passed": 163,
+    "ci_scope_checks_passed": 2,
+    "inherited_pytest_cleanup_warning": true
+  },
+  "sources": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "sha256": "8039673439fc71d8330efbb0882b6c2e88baa637594c6ce8f8956d11fe5787b7"
+    },
+    {
+      "path": "engine/market_heatmap.py",
+      "sha256": "d502ea45387a6eeaa77fcfd977a237ffcff1d16ca3ecae1061313a12dde5b9d5"
+    },
+    {
+      "path": "scripts/build_live_quotes.py",
+      "sha256": "1c3326b108fc3222c57c42adf74012d2a401eb78127ad70f1c5b05232cbfa0a8"
+    },
+    {
+      "path": "site/heatmap.js",
+      "sha256": "4a3b94421029d9ca4103b0fd2cd4e953dab258eecb981bfd15014872ba296df0"
+    },
+    {
+      "path": "templates/heatmap.js",
+      "sha256": "4a3b94421029d9ca4103b0fd2cd4e953dab258eecb981bfd15014872ba296df0"
+    },
+    {
+      "path": "templates/market_heatmap.html.j2",
+      "sha256": "d32697aa8b61edcf06065634aba46c0de1f9e8b71d0c083add9b42e162a63f94"
+    },
+    {
+      "path": "tests/test_china_heatmap_live_render.cjs",
+      "sha256": "011ea221fbab776c791216274b21ff1df4efa3ba00f3d94e182b2527fdd8da59"
+    },
+    {
+      "path": "tests/test_china_heatmap_refresh.cjs",
+      "sha256": "f9f920bb042be95ba273ea21cd2561514472df1a4bb536257363f4dd4804a30d"
+    },
+    {
+      "path": "tests/test_hk_heatmap_live.cjs",
+      "sha256": "b0f0aca256dc39b80135cd8553a1646bee7eaf256b6e58f839557573c7c543cd"
+    },
+    {
+      "path": "tests/test_hk_heatmap_live_source.py",
+      "sha256": "ae1ae91f51d38eddf6f47a91bfa75d4e2ec478f46da8dc7bc274fc16ac0619ce"
+    },
+    {
+      "path": "tests/test_market_heatmap.py",
+      "sha256": "9a042fbec04af11538c98b974aaf9864058edaf76231e0ac683b082f5a669c85"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "china-desktop.png",
+      "bytes": 343737,
+      "sha256": "20a05e8e124c4d36850ccec3d9e298ca5f95b477024cd7b1cb4648a082529a7f"
+    },
+    {
+      "path": "china-mobile.png",
+      "bytes": 140270,
+      "sha256": "6ba0dd144ddffd73e48e4153c8a7234d1c10eb105dc1bfc086b2791b1dd871cd"
+    },
+    {
+      "path": "hk-synthetic.png",
+      "bytes": 327533,
+      "sha256": "3521c8fc5d09cec689124b6e1ad6a08252ca493feac219cde104a62ca4c73fc5"
+    },
+    {
+      "path": "browser-two-poll-result.json",
+      "bytes": 1718,
+      "sha256": "37170fdbe6d14ad7adb70c43d8e9553251165e1345078af8a585a774b0e65d0e"
+    },
+    {
+      "path": "browser-pulse-result.json",
+      "bytes": 1491,
+      "sha256": "4c8702fb795206fc6af73a64c6c7956c28173ba4b9f418f53a0a0d0c32b4d6f7"
+    }
+  ]
+}

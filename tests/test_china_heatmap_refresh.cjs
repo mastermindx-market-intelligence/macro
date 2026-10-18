@@ -104,7 +104,7 @@ test('hidden tabs do not fetch',async()=>{
 test('query-string China URL is still identity-validated',async()=>{
  const h=harness([payload({market:'hk'})]);await assert.rejects(h.load('marketdata/china_heatmap.json?v=1'));
 });
-for(const [market,url] of [['us','marketdata/sp500_heatmap.json'],['hk','marketdata/hk_heatmap.json'],['canada','marketdata/canada_heatmap.json']]){
+for(const [market,url] of [['us','marketdata/sp500_heatmap.json'],['canada','marketdata/canada_heatmap.json']]){
  test(`${market} legacy refresh remains timestamp-driven and does not use China validation`,async()=>{
   const first={market,tiles:[{t:'A'}],generated_utc:'1'};const second={market,tiles:[{t:'B'}],generated_utc:'2'};
   const h=harness([first,second]);const d=await h.load(url);h.start(url);await h.tick();assert.equal(d.tiles[0].t,'B');assert.equal(h.events.length,1);
@@ -146,4 +146,18 @@ test('overlapping mounts share one initial request and same state object',async(
 });
 test('new payload private arbitrary state is not reflected to client',async()=>{
  const {h,data}=await setup(payload({_isFresh:true,generated_utc:'2026-09-18 15:41'}));await h.tick();assert.equal(data._isFresh,undefined);assert.equal(data.generated_utc,'2026-09-18 15:40');
+});
+
+
+// HK now uses its own daily schema on the existing atomic snapshot transport.
+// US/Canada retain the legacy behavior asserted above; HK is not China-shaped.
+test('HK refresh accepts same-stamp corrections and refuses backward sessions without China-only metadata',async()=>{
+ const first=payload({market:'hk'});first.tiles[0].t='0700.HK';first.tiles[1].t='9988.HK';
+ const correction=JSON.parse(JSON.stringify(first));correction.tiles[0].perf['1D']=6;
+ const older=JSON.parse(JSON.stringify(correction));older.asof='2026-09-17';older.generated_utc='2026-09-19 12:00';
+ const h=harness([first,correction,older]),url='marketdata/hk_heatmap.json';
+ const d=await h.load(url);h.start(url);await h.tick();
+ assert.equal(d.tiles[0].perf['1D'],6);assert.equal(h.events.length,1);
+ await h.tick();assert.equal(d.asof,'2026-09-18');assert.equal(h.events.length,1);
+ assert.equal(h.intervals.length,1,'same incumbent owner');
 });

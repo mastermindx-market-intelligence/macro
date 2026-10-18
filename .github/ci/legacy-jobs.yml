@@ -7357,6 +7357,7 @@ jobs:
       - "site/rr_banner.json"
       - "site/wh_banner.json"
       - "templates/heatmap.js"
+      - "templates/market_heatmap.html.j2"
       - "tests/china_heatmap_live_refresh_harness.cjs"
       - "tests/test_china_board_breadth.py"
       - "tests/test_china_heatmap_live.py"

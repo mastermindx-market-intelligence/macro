@@ -1,0 +1,44 @@
+{
+  "scope": "LOCAL CANDIDATE REHEARSAL; HK quotes and authorization responses are synthetic, not production authentication",
+  "checks": [
+    {
+      "name": "stable live repaint",
+      "sameTile": true,
+      "sameControl": true,
+      "detailsOpen": true
+    },
+    {
+      "name": "tiny/missing name reachable by keyboard link",
+      "symbol": "300773.SZ",
+      "rows": 1
+    },
+    {
+      "name": "mobile complete searchable list",
+      "rows": 1724,
+      "sourceVisible": true,
+      "searchVisible": true,
+      "overflow": false
+    },
+    {
+      "name": "typed member refusal preserves public SSR",
+      "message": "Sign in to load the Hong Kong constituent map. The public summary remains available. After signing in through the navigation, try again.\n\nTry again",
+      "summaryRetained": true,
+      "tiles": 0
+    },
+    {
+      "name": "HK market pulse, source strip and values share current cohort",
+      "pulseClock": "HK delayed quotes · 2026-10-20 10:29 HKT · 157/158 · 1D only"
+    },
+    {
+      "name": "same-owner retry loads independently qualified HK cohort",
+      "source": "HK delayed quotes · 2026-10-20 10:29 HKT · 157/158 · 1D only",
+      "coverage": "157 / 158 valid · 99.37%",
+      "size": "Average daily turnover · liquidity proxy",
+      "shownQuote": "+2.00%"
+    }
+  ],
+  "existingTwoPollProof": "browser-two-poll-result.json",
+  "consoleErrors": [],
+  "completed": true,
+  "source": "candidate files in original PR8144 workspace"
+}
