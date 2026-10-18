@@ -305,3 +305,61 @@ test('HK market-pulse clock matches the active delayed cohort rather than its da
  vm.createContext(ctx);vm.runInContext(raw.slice(a,b)+'\nrenderPulse({pctUp:100,med:2});',ctx);
  assert.match(pulse.innerHTML,/2026-10-20 10:29 HKT/);assert.doesNotMatch(pulse.innerHTML,/2026-10-16/);
 });
+
+
+function overlayHarness(){
+ const raw=source(),a=raw.indexOf('  var _ov ='),b=raw.indexOf('  /*  EMBED API',a);
+ assert.ok(a>=0&&b>a,'incumbent overlay owner missing');
+ let resolve;const load=new Promise(r=>resolve=r),children=[],listeners={},views=[];
+ const doc={activeElement:null,addEventListener:(k,f)=>listeners[k]=f,removeEventListener:k=>delete listeners[k]};
+ function control(){return {isConnected:true,disabled:false,offsetWidth:10,offsetHeight:10,
+  getClientRects:()=>[{}],getAttribute:()=>null,focus(){doc.activeElement=this},addEventListener(){}}}
+ const opener=control();doc.activeElement=opener;
+ doc.body={style:{overflow:'clip'},appendChild(node){children.push(node);node.isConnected=true}};
+ doc.createElement=()=>{const first=control(),last=control(),panel=control(),host={innerHTML:'',querySelector:()=>first};
+  const node={style:{},isConnected:false,classList:{add(){},remove(){}},innerHTML:'',first,last,panel,host,
+   querySelector(sel){return sel==='.hm-ov-full'?host:sel==='.hm-ov-panel'?panel:sel==='.hm-ov-scrim'?control():first},
+   querySelectorAll(){return [first,last]},contains(x){return [first,last,panel,host].includes(x)},
+   remove(){children.splice(children.indexOf(this),1);this.isConnected=false}};
+  return node};
+ const ctx={document:doc,window:{matchMedia:()=>({matches:true}),console},console,setTimeout,clearTimeout,
+  requestAnimationFrame:f=>f(),getComputedStyle:()=>({visibility:'visible',display:'block'}),
+  L:en=>en,lz:en=>en,isZh:()=>false,esc:s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'),
+  loadData:()=>load,_emptyHtml:s=>s,heatmapLoadError:()=>'<button data-hm-retry>Try again</button>',
+  createFullView(){const v={destroyed:false,destroy(){this.destroyed=true}};views.push(v);return v}};
+ vm.createContext(ctx);vm.runInContext(raw.slice(a,b)+'\nglobalThis.ovApi={openOverlay,closeOverlay,onKey};',ctx);
+ return {api:ctx.ovApi,doc,children,opener,views,resolve,flush:async()=>{await Promise.resolve();await Promise.resolve();await Promise.resolve()}};
+}
+test('overlay double-open while the data request is pending has one DOM owner',async()=>{
+ const h=overlayHarness();h.api.openOverlay('marketdata/china_heatmap.json','China');h.api.openOverlay('marketdata/china_heatmap.json','China');
+ h.resolve({});await h.flush();assert.equal(h.children.length,1);assert.equal(h.views.length,1);
+});
+test('overlay enters focus and restores the invoking control and prior scroll lock on close',async()=>{
+ const h=overlayHarness();h.api.openOverlay('marketdata/china_heatmap.json','China');h.resolve({});await h.flush();
+ assert.equal(h.doc.activeElement,h.children[0].first);h.api.closeOverlay();
+ assert.equal(h.doc.activeElement,h.opener);assert.equal(h.doc.body.style.overflow,'clip');assert.equal(h.children.length,0);assert.ok(h.views[0].destroyed);
+});
+test('closing a pending overlay prevents a late fetch from creating a phantom modal',async()=>{
+ const h=overlayHarness();h.api.openOverlay('marketdata/china_heatmap.json','China');h.api.closeOverlay();h.resolve({});await h.flush();
+ assert.equal(h.children.length,0);assert.equal(h.views.length,0);
+});
+test('overlay traps Tab and escapes an external label instead of injecting markup',async()=>{
+ const h=overlayHarness();h.api.openOverlay('marketdata/china_heatmap.json','<img onerror=x>');h.resolve({});await h.flush();
+ const node=h.children[0];assert.doesNotMatch(node.innerHTML,/<img onerror=x>/);let prevented=0;
+ node.last.focus();h.api.onKey({key:'Tab',shiftKey:false,preventDefault:()=>prevented++,stopPropagation(){}});
+ assert.equal(h.doc.activeElement,node.first);assert.equal(prevented,1);
+ node.first.focus();h.api.onKey({key:'Tab',shiftKey:true,preventDefault:()=>prevented++,stopPropagation(){}});
+ assert.equal(h.doc.activeElement,node.last);assert.equal(prevented,2);
+});
+
+
+test('legacy Asia label disappears before data loads, including a member refusal on old HTML',()=>{
+ const raw=source(),a=raw.indexOf('  function removeLegacyAsiaLabel('),b=raw.indexOf('  function heatmapLoadError(',a);
+ assert.ok(a>=0&&b>a,'rolling-release label guard is missing');let removed=0;
+ const ctx={isChinaHeatmapUrl:u=>u.includes('china_heatmap'),isHKHeatmapUrl:u=>u.includes('hk_heatmap'),
+  document:{querySelectorAll:()=>[{remove:()=>removed++}]},Array};vm.createContext(ctx);
+ vm.runInContext(raw.slice(a,b)+'\nglobalThis.clean=removeLegacyAsiaLabel;',ctx);
+ ctx.clean('marketdata/hk_heatmap.json');ctx.clean('marketdata/china_heatmap.json');assert.equal(removed,2);
+ ctx.clean('marketdata/canada_heatmap.json');assert.equal(removed,2);
+ assert.match(raw,/curKey = m\.key;\s*removeLegacyAsiaLabel\(m\.url\)/,'multimap entry must remove before the fetch');
+});

@@ -1,16 +1,17 @@
 {
   "schema": "mastermind.heatmap_quality_evidence.v1",
   "date": "2026-10-18",
-  "source_parent": "df6e53e2c3b4ead8e0ee41ff8b562bd1be01a3cc",
+  "source_parent": "32e2c7a2c7c93796cdc48d3235ba4da504c15d74",
   "scope": "LOCAL_CANDIDATE_REHEARSAL_NOT_DEPLOYED",
   "production_authentication": false,
   "natural_market_quote_proof": false,
   "fixture_notice": "HK quote values and access responses are deliberately synthetic. China uses observed production daily baseline; both date Oct16.",
   "local_tests": {
     "python_passed": 142,
-    "javascript_passed": 163,
+    "javascript_passed": 168,
     "ci_scope_checks_passed": 2,
-    "inherited_pytest_cleanup_warning": true
+    "inherited_pytest_cleanup_warning": true,
+    "heatmap_page_gate_passed": 40
   },
   "sources": [
     {
@@ -27,11 +28,11 @@
     },
     {
       "path": "site/heatmap.js",
-      "sha256": "4a3b94421029d9ca4103b0fd2cd4e953dab258eecb981bfd15014872ba296df0"
+      "sha256": "951cfec04e3f3ca6b2623b8ae8be8f3676303ac2d688cf83d500cec9db452dbb"
     },
     {
       "path": "templates/heatmap.js",
-      "sha256": "4a3b94421029d9ca4103b0fd2cd4e953dab258eecb981bfd15014872ba296df0"
+      "sha256": "951cfec04e3f3ca6b2623b8ae8be8f3676303ac2d688cf83d500cec9db452dbb"
     },
     {
       "path": "templates/market_heatmap.html.j2",
@@ -39,7 +40,7 @@
     },
     {
       "path": "tests/test_china_heatmap_live_render.cjs",
-      "sha256": "011ea221fbab776c791216274b21ff1df4efa3ba00f3d94e182b2527fdd8da59"
+      "sha256": "3c8efbac1f470a7b0c2bce8a259ad90a7265ba359b641b85afd7e84c99fc7667"
     },
     {
       "path": "tests/test_china_heatmap_refresh.cjs",
@@ -83,6 +84,18 @@
       "path": "browser-pulse-result.json",
       "bytes": 1491,
       "sha256": "4c8702fb795206fc6af73a64c6c7956c28173ba4b9f418f53a0a0d0c32b4d6f7"
+    },
+    {
+      "path": "embedded-overlay-result.json",
+      "bytes": 578,
+      "sha256": "abbd5a6320880a1783586d96bf15eb5204294cd57022aec6e62e236f40b022e6"
+    },
+    {
+      "path": "legacy-html-result.json",
+      "bytes": 640,
+      "sha256": "579ec04b1cbc75ab57a4cbecd677cae1a5fd46fcdf636e4fdfc04326f2502dd2"
     }
-  ]
+  ],
+  "prior_evidence_commit": "32e2c7a2c7c93796cdc48d3235ba4da504c15d74",
+  "verification_reuse": "R1 two-poll/daily-source proof remains applicable: subsequent changes are overlay ownership/focus/label handling and old-HTML label cleanup. Fresh 168-test JS suites on template and served mirrors plus 40 page-gate tests pass. Actual public-dashboard local-code overlay and old-HTML replays qualify the changed paths. No production deployment or authentication is claimed."
 }

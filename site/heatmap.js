@@ -2927,39 +2927,78 @@
   /*  OVERLAY                                                                */
   /* ====================================================================== */
   var _ov = null, _ovView = null;
-  // openOverlay([jsonUrl, label]) — zero-arg = S&P 500 default (existing behaviour).
-  // Called externally via MMHeatmap.openOverlayFor(jsonUrl, label).
-  // The overlay is appended to document.body so it escapes any parent
-  // backdrop-filter containing block (e.g. a dialog that embeds the scorecard).
+  // Reserve the existing overlay DOM synchronously: two clicks must not create
+  // two dialogs while a shared data request is unresolved. No second loader.
   function openOverlay(jsonUrl, label) {
     if (_ov) return;
     var url = (typeof jsonUrl === 'string' && jsonUrl) ? jsonUrl : null;
-    var title = (typeof label === 'string' && label) ? label : L('S&amp;P 500 Heatmap', 'S&amp;P 500 热力图');
-    loadData(url).then(function (data) {
-      _ov = document.createElement('div');
-      _ov.className = 'hm-ov hm-scope';
-      _ov.innerHTML = '<div class="hm-ov-scrim"></div>'
-        + '<div class="hm-ov-panel" role="dialog" aria-modal="true" aria-label="' + esc(title) + '">'
-        +   '<div class="hm-ov-head"><span class="t">' + title + '</span>'
-        +     '<button type="button" class="hm-ov-x" aria-label="Close">✕</button></div>'
-        +   '<div class="hm-ov-body"><div class="hm-ov-full"></div></div>'
-        + '</div>';
-      document.body.appendChild(_ov);
-      document.body.style.overflow = 'hidden';
-      _ovView = createFullView(_ov.querySelector('.hm-ov-full'), data);
-      requestAnimationFrame(function () { requestAnimationFrame(function () { if (_ov) _ov.classList.add('open'); }); });
-      _ov.querySelector('.hm-ov-x').addEventListener('click', closeOverlay);
-      _ov.querySelector('.hm-ov-scrim').addEventListener('click', closeOverlay);
-      document.addEventListener('keydown', onKey);
-    });
+    var title = (typeof label === 'string' && label) ? label : lz('S&P 500 Heatmap', 'S&P 500 热力图');
+    var node = document.createElement('div');
+    node.className = 'hm-ov hm-scope';
+    node._hmReturnFocus = document.activeElement;
+    node._hmPreviousOverflow = document.body.style.overflow;
+    node.innerHTML = '<div class="hm-ov-scrim"></div>'
+      + '<div class="hm-ov-panel" role="dialog" aria-modal="true" tabindex="-1" aria-label="' + esc(title) + '">'
+      + '<div class="hm-ov-head"><span class="t">' + esc(title) + '</span>'
+      + '<button type="button" class="hm-ov-x" aria-label="Close">✕</button></div>'
+      + '<div class="hm-ov-body"><div class="hm-ov-full"></div></div></div>';
+    _ov = node;
+    document.body.appendChild(node);
+    document.body.style.overflow = 'hidden';
+    node.querySelector('.hm-ov-x').addEventListener('click', closeOverlay);
+    node.querySelector('.hm-ov-scrim').addEventListener('click', closeOverlay);
+    document.addEventListener('keydown', onKey);
+    node.querySelector('.hm-ov-x').focus();
+    requestAnimationFrame(function () { requestAnimationFrame(function () {
+      if (_ov === node && !node._hmClosing) node.classList.add('open');
+    }); });
+    function load() {
+      var host = node.querySelector('.hm-ov-full');
+      host.innerHTML = _emptyHtml(L('Loading heatmap…', '正在加载热力图…'));
+      return loadData(url).then(function (data) {
+        if (_ov !== node || node._hmClosing || !node.isConnected) return;
+        _ovView = createFullView(host, data);
+      }).catch(function (error) {
+        if (_ov !== node || node._hmClosing || !node.isConnected) return;
+        host.innerHTML = heatmapLoadError(error, url || JSON_URL);
+        var retry = host.querySelector('[data-hm-retry]');
+        if (retry) retry.addEventListener('click', load);
+      });
+    }
+    return load();
   }
-  function onKey(e) { if (e.key === 'Escape') closeOverlay(); }
+  function onKey(e) {
+    if (!_ov || _ov._hmClosing) return;
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      if (e.stopImmediatePropagation) e.stopImmediatePropagation(); else e.stopPropagation();
+      closeOverlay(); return;
+    }
+    if (e.key !== 'Tab') return;
+    var nodes = Array.prototype.filter.call(_ov.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])'), function (el) {
+      return (el.tabIndex == null || el.tabIndex >= 0) && el.getClientRects().length && getComputedStyle(el).visibility !== 'hidden';
+    });
+    var first = nodes[0], last = nodes[nodes.length - 1], active = document.activeElement;
+    if (!first) { e.preventDefault(); _ov.querySelector('.hm-ov-panel').focus(); }
+    else if (!_ov.contains(active) || (e.shiftKey ? active === first : active === last)) {
+      e.preventDefault(); (e.shiftKey ? last : first).focus();
+    }
+  }
   function closeOverlay() {
-    if (!_ov) return;
-    var node = _ov, view = _ovView; _ov = null; _ovView = null;
+    if (!_ov || _ov._hmClosing) return;
+    var node = _ov, view = _ovView;
+    node._hmClosing = true;
     document.removeEventListener('keydown', onKey);
     node.classList.remove('open');
-    var done = function () { if (view) view.destroy(); node.remove(); document.body.style.overflow = ''; };
+    var done = function () {
+      if (view) view.destroy();
+      node.remove();
+      if (_ov !== node) return;
+      _ov = null; _ovView = null;
+      document.body.style.overflow = node._hmPreviousOverflow;
+      var trigger = node._hmReturnFocus;
+      if (trigger && trigger.isConnected && typeof trigger.focus === 'function') trigger.focus({ preventScroll: true });
+    };
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce) done(); else setTimeout(done, 280);
   }
@@ -3321,6 +3360,7 @@
       + '@media(min-width:900px){.hm-asia.hm-mobile .hm-tm{columns:2;column-gap:14px;}}'
       + '@media(max-width:560px){.hm-asia .hm-view-toggle{display:none;}.hm-quality summary{gap:7px 10px;padding:11px 12px;}.hm-quality [data-hm-q=coverage]{margin-left:0;}.hm-quality dl{grid-template-columns:repeat(2,minmax(0,1fr));}.hm-asia .hm-read-br{display:none;}}';
     css += '.hm-load-state{padding:22px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--muted);font-size:13px;line-height:1.7;}.hm-load-state p{max-width:75ch;margin:0 0 12px;}.hm-load-state button{min-height:40px;padding:8px 16px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text);font:inherit;cursor:pointer;}';
+    css += '.hm-ov-x{min-width:40px;min-height:40px;}.hm-ov-x:focus-visible{outline:2px solid var(--text);outline-offset:3px;}';
     var st = document.createElement('style');
     st.id = 'mm-heatmap-style';
     st.textContent = css;
@@ -3330,6 +3370,12 @@
   /* ====================================================================== */
   /*  BOOT                                                                   */
   /* ====================================================================== */
+  function removeLegacyAsiaLabel(url) {
+    if (!isChinaHeatmapUrl(url) && !isHKHeatmapUrl(url)) return;
+    // Cached pre-release HTML can outlive the template update. Do not let its
+    // global provider caption misrepresent this map, even if HK returns 401.
+    Array.prototype.forEach.call(document.querySelectorAll('.hm-head .hm-live-badge[data-live-label]'), function (node) { node.remove(); });
+  }
   function heatmapLoadError(error, url) {
     var member = isHKHeatmapUrl(url), status = error && error.status;
     var text = member && status === 401
@@ -3364,6 +3410,7 @@
     function select(m) {
       if (curKey === m.key) return;
       curKey = m.key;
+      removeLegacyAsiaLabel(m.url);
       Object.keys(btns).forEach(function (k) {
         var on = k === m.key;
         btns[k].classList.toggle('on', on); btns[k].setAttribute('aria-selected', on ? 'true' : 'false');
@@ -3402,6 +3449,7 @@
     if (full && full.getAttribute('data-hm-maps')) {
       mountMulti(full);
     } else if (full) {
+      removeLegacyAsiaLabel(JSON_URL);
       loadData().then(function (data) {
         if (!data.tiles || !data.tiles.length) full.innerHTML = _emptyHtml(L('No heatmap data available.', '暂无热力图数据。'));
         else createFullView(full, data);

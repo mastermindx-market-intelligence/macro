@@ -1,13 +1,13 @@
-# China / Hong Kong heatmap quality audit — R1
+# China / Hong Kong heatmap quality audit — R1 + overlay hardening
 
 Date: 2026-10-18. Status: **BUILT_NOT_PROVEN; original mission incomplete**.
 
 This is the Chairman's same live and settled-close heatmap mission, not a new
 workstream or replacement release. Source carrier: Macro draft PR #8144,
 `sol/china-heatmap-live-stream-20260927`, original source parent
-`df6e53e2c3b4ead8e0ee41ff8b562bd1be01a3cc`. Settled-close dependency remains
-original PR #7193 at `94c1fb2db41e04ff345fe9a71532792004e32f62` unless a later
-canonical receipt supersedes that head. Protected procedure pin:
+`df6e53e2c3b4ead8e0ee41ff8b562bd1be01a3cc`; R1 was published at
+`32e2c7a2c7c93796cdc48d3235ba4da504c15d74`. Settled-close dependency is original
+PR #7193, now `00eca5c41ac4a69c03b5e7afe2293039c5105496`, receipt 6248076559. Protected procedure pin:
 `mastermindx-market-intelligence/Mastermind@1ffe6b566b9addb58d13893bfb78e8505dce1752`.
 
 ## Architecture ruling
@@ -89,16 +89,35 @@ The public China map and member HK dataset retain their existing access scopes.
 The HK public summary remains available when the member data request is refused.
 Template copy no longer promises that the HK constituent dataset is public.
 
+## Expanded-view closure and keyboard hardening
+
+The actual public China dashboard running the local candidate revealed a second
+interaction defect: Escape discarded keyboard position and cleared a pre-existing
+scroll lock. The incumbent overlay owner now reserves its one DOM node before
+awaiting data, ignores results after closure, focuses the close control, traps Tab,
+restores the invoking control and prior scroll-lock value, and escapes external
+labels. Double clicks cannot create duplicate dialogs. This adds no modal manager
+or loader. Four discriminating tests failed before the repair and pass afterward.
+
+A real Chrome replay of the dashboard-to-expanded-map-to-complete-list journey
+passed: one modal, source date October 16, all 1,724 list links, Tab contained in
+the modal, Escape restoring the exact Expand button, parent scroll lock preserved,
+and an HTML-looking label rendered as literal text. No JavaScript errors. This
+is retained as `embedded-overlay-result.json`, still **not a deployed release**.
+
 ## Verification and limits
 
 Fresh local verification on the repaired source:
 
 - 142 Python tests passed across the HK sidecar, China live contract/producer/
   health/deploy, incumbent live quote, and market-heatmap suites.
-- 163 JavaScript tests passed across daily refresh, observation contracts,
+- 168 JavaScript tests passed across daily refresh, observation contracts,
   live refresh, renderer, and HK lifecycle/source-clock cases.
 - The two incumbent CI exclusive-scope/import-closure checks passed. The new
   standalone-template dependency is registered with `china-board-breadth`.
+- 40 heatmap standalone page/render/access-gate tests passed with exact committed
+  sparse-excluded fixtures materialized; the broader unrelated SEO suite was not
+  claimed green.
 - Template parse and `git diff --check` passed; `templates/heatmap.js` and
   `site/heatmap.js` remain byte-identical.
 - The canonical standalone page renderer produced local China and HK pages from
@@ -127,9 +146,13 @@ acceptance evidence for the new policy. A fresh natural-session rehearsal is owe
 
 No merge, deployment, source entitlement, authenticated production session, or
 naturally advancing current-market quote has been established by this audit.
-The original PR #7193 recurring-briefs CI failure remains an independent-owner
-matter; original owner evidence is comment 6246151661 on PR #7106. No recurring
-briefs implementation or anti-mask test was changed here.
+The old PR #7193 CI failure remains a failed historical run. Accepted main already
+changed the recurring-briefs test contract to distinguish complete translations
+from explicit gaps; owner reconciliation is PR #7106 comment 6247970289. The
+original settled carrier now includes that dependency without editing owner tests,
+preserves main's extra 3,220 HK history rows, and has 234 passing local tests plus
+2 passing CI declaration/closure checks. Exact-head hosted CI is run 39114047414;
+its result must be consumed separately. No missing translation was claimed fixed.
 
 Independent paid Fabric audit was requested once as
 `heatmap-quality-audit-20261018-c1-r1`, under the original
@@ -153,3 +176,18 @@ production verification. Actual live-session and close-overlap source coverage,
 return basis, access boundaries, and natural advancing polls remain DONE_WHEN
 requirements. A UI refresh, local fixture, source commit, or green test is not
 that final acceptance.
+
+## Rolling-HTML and hosted-CI readback
+
+The original pending browser run completed successfully: real production China
+HTML/data with local candidate JS shows the settled daily source with no obsolete
+provider badge. HK anonymous 401 preserves public SSR and offers the existing
+sign-in/retry path, also without the obsolete badge. The retained
+`legacy-html-result.json` is local-code compatibility, not deployment.
+
+Original settled run 39114047414 completed FAILED: eleven packs passed, including
+ci-pack-5; ci-pack-4 failed `reference-integrity` because three inherited Sector
+Central migration packets lack approved RIG receipt references. The failed gate
+remains binding. No heatmap code, required check, or another source owner was
+changed to bypass it. The exact job is 117636268236; source-owner reconciliation
+and independent exact-head review remain separate next actions.

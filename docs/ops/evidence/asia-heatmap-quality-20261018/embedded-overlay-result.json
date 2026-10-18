@@ -1,0 +1,23 @@
+{
+  "scope": "LOCAL CANDIDATE heatmap.js on actual public China dashboard, not deployed",
+  "source_parent": "32e2c7a2c7c93796cdc48d3235ba4da504c15d74",
+  "completed": true,
+  "entering": {
+    "focusedClose": true,
+    "dialogs": 1,
+    "source": "Daily close · 2026-10-16"
+  },
+  "tabWrapStaysInModal": true,
+  "completeListRows": 1724,
+  "closing": {
+    "overlayGone": true,
+    "focusRestored": true,
+    "overflow": "hidden"
+  },
+  "doubleOpenAndEscapedLabel": {
+    "dialogs": 1,
+    "unsafeImages": 0,
+    "title": "<img onerror=alert(1)>"
+  },
+  "consoleErrors": []
+}
