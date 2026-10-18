@@ -42,6 +42,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+_ROOT = Path(__file__).resolve().parent.parent   # scripts/* -> repo root
+sys.path.insert(0, str(_ROOT))
+
 __all__ = ["main"]
 
 
