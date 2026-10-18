@@ -1780,6 +1780,7 @@ jobs:
     # C19 WP31: incremental-information evaluator gates, arms/statistics and label-blind sources (offline).
     timeout-minutes: 10
     paths:
+      - "engine/company_intelligence/rms_segment_profile.py"
       - "tests/test_c19_wp31_gates.py"
       - "tests/test_c19_wp31_stats.py"
       - "tests/test_c19_wp31_sources.py"

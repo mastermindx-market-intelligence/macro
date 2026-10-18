@@ -740,3 +740,26 @@ def test_parent_large_finite_integer_is_not_float_coerced():
     row = _sda_row(); row['parties'][0]['potential_value']['value'] = 10**500
     row['id'] = agreement_assertion_id(row)
     assert not agreement_payload_errors(row, _sda_evidence_index(), graph_known_at=SDA_GRAPH_KNOWN_AT)
+
+@pytest.mark.parametrize('label', ['Synthetic\u202eparty', 'Synthetic\x00party', 'Synthetic\u2028party'])
+def test_review_invisible_label_controls_refuse(label):
+    row = _sda_row(); row['parties'][0]['name_literal'] = label; row['id'] = agreement_assertion_id(row)
+    assert agreement_payload_errors(row, _sda_evidence_index(), graph_known_at=SDA_GRAPH_KNOWN_AT)
+
+
+@pytest.mark.parametrize('published', ['٢٠٢٦-07-13', '２０２６-07-13'])
+def test_review_publication_day_uses_ascii_iso_digits(published):
+    row = _sda_row(); row['published_on'] = published; row['id'] = agreement_assertion_id(row)
+    assert agreement_payload_errors(row, _sda_evidence_index(), graph_known_at=SDA_GRAPH_KNOWN_AT)
+
+
+def test_review_source_document_url_agrees_with_versioned_schema_path():
+    row = _sda_row(); index = _sda_evidence_index(); row['source_url'] = 'https://www.sda.mil'
+    index[row['evidence_refs'][0]].update(source_url=row['source_url'], retrieved_from_url=row['source_url'])
+    row['id'] = agreement_assertion_id(row)
+    assert agreement_payload_errors(row, index, graph_known_at=SDA_GRAPH_KNOWN_AT)
+
+
+def test_review_sha256_is_exactly_64_hex_without_newline_alias():
+    row = _sda_row(); index = _sda_evidence_index(); index[row['evidence_refs'][0]]['sha256'] += '\n'
+    assert agreement_payload_errors(row, index, graph_known_at=SDA_GRAPH_KNOWN_AT)

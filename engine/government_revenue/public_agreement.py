@@ -14,6 +14,7 @@ import hashlib
 import json
 import math
 import re
+import unicodedata
 from datetime import datetime, timedelta, timezone
 from typing import Any, Mapping
 from urllib.parse import urlsplit
@@ -121,6 +122,8 @@ def _check_text_label(value: Any) -> bool:
         return False
     if len(value) > 256:
         return False
+    if any(unicodedata.category(ch) in {"Cc", "Cf", "Zl", "Zp"} for ch in value):
+        return False
     return True
 
 
@@ -151,7 +154,7 @@ def _split_source_url(value: Any):
             return None
     except ValueError:
         return None
-    if not parts.hostname:
+    if not parts.hostname or not parts.path.startswith("/"):
         return None
     return parts
 
@@ -320,7 +323,7 @@ def agreement_payload_errors(
         if succession is not None:
             errors.append("public_agreement_first_revision_succession_must_be_null")
     elif revision_valid and revision > 1:
-        if not isinstance(predecessor, str) or not _PREDECESSOR_RE.match(predecessor):
+        if not isinstance(predecessor, str) or not _PREDECESSOR_RE.fullmatch(predecessor):
             errors.append("public_agreement_invalid_predecessor_id")
         if succession != EXACT_SUCCESSION_REVISED:
             errors.append("public_agreement_invalid_succession_reason")
@@ -414,7 +417,7 @@ def agreement_payload_errors(
         errors.append("public_agreement_invalid_evidence_refs_count")
     else:
         candidate = evidence_refs[0]
-        if isinstance(candidate, str) and _EVIDENCE_REF_RE.match(candidate):
+        if isinstance(candidate, str) and _EVIDENCE_REF_RE.fullmatch(candidate):
             ev_id = candidate
         else:
             errors.append("public_agreement_invalid_evidence_ref_format")
@@ -450,7 +453,7 @@ def agreement_payload_errors(
 
         # sha256 + evidence_id agreement
         sha = evidence.get("sha256")
-        sha_valid = isinstance(sha, str) and bool(_SHA256_RE.match(sha))
+        sha_valid = isinstance(sha, str) and bool(_SHA256_RE.fullmatch(sha))
         if not sha_valid:
             errors.append("public_agreement_invalid_evidence_sha256")
         else:

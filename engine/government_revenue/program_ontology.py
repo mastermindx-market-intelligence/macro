@@ -1310,15 +1310,20 @@ def load_program_ontology_graph(
                 ctx.err("public_agreement_succession_invalid", key)
     # Multiple independent roots from the same document URL are ambiguous.
     # Corrections must name a predecessor; a retirement is explicit, immutable.
-    current = current_content_addressed_rows(agreement_rows, id_key="id", analysis_as_of=None,
-                                             retired_ids=override_targets_of(overrides))
-    urls: set[str] = set()
-    for row in current:
-        url = _text(row.get("source_url"))
-        if url is not None and url in urls:
-            ctx.err("public_agreement_multiplicity_invalid", _text(row.get("id")))
-        if url is not None:
-            urls.add(url)
+    # Visibility changes only at known_at. A future retirement must not
+    # conceal an earlier interval with two independent current roots.
+    boundaries = {_strict_datetime(item.get("known_at")) for item in agreement_rows + overrides}
+    boundaries.discard(None)
+    for cutoff in [None, *sorted(boundaries)]:
+        current = current_content_addressed_rows(agreement_rows, id_key="id", analysis_as_of=cutoff,
+            retired_ids=retired_row_ids(overrides, cutoff))
+        urls: set[str] = set()
+        for row in current:
+            url = _text(row.get("source_url"))
+            if url is not None and url in urls:
+                ctx.err("public_agreement_multiplicity_invalid", _text(row.get("id")) or "<public-agreement>")
+            if url is not None:
+                urls.add(url)
 
     all_row_ids = (
         program_ids | capability_ids | platform_ids | role_assertion_ids

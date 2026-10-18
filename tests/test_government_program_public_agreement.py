@@ -192,3 +192,35 @@ def test_source_block_is_cutoff_visible_and_does_not_rewrite_evidence():
     assert len(po.current_public_agreement_rows(out, analysis_as_of=datetime.fromisoformat(FIRST))) == 1
     assert po.current_public_agreement_rows(out, analysis_as_of=datetime.fromisoformat(SECOND)) == []
     assert out['evidence'] == original_evidence
+
+
+def test_review_delayed_retirement_does_not_revive_visible_predecessor():
+    g = graph(); first = claim(g)
+    second = claim(g, revision=2, known_at=SECOND, predecessor_id=first['id'], succession_reason='corrected')
+    g['public_agreement_assertions'] = [first, second]
+    g['overrides'] = [b.override_row(target_row_id=first['id'], known_at='2026-10-18T04:16:00+00:00', evidence_refs=first['evidence_refs'])]
+    out = po.load_program_ontology_graph(g)
+    assert [r['id'] for r in po.current_public_agreement_rows(out, analysis_as_of=datetime.fromisoformat('2026-10-18T04:15:30+00:00'))] == [second['id']]
+
+
+def test_two_independent_roots_cannot_hide_prior_overlap_behind_later_retirement():
+    g = graph(); first = claim(g)
+    independent = claim(g, known_at=SECOND, program_label='Different interpretation with no predecessor')
+    g['public_agreement_assertions'] = [first, independent]
+    g['overrides'] = [b.override_row(target_row_id=first['id'], known_at='2026-10-18T04:16:00+00:00', evidence_refs=first['evidence_refs'])]
+    with pytest.raises(po.OntologyInputError, match='public_agreement_multiplicity_invalid'):
+        po.load_program_ontology_graph(g)
+
+
+def test_review_issuer_pin_path_is_qualified_without_global_official_allowlist():
+    g = graph(); e = g['evidence'][0]
+    e.update(evidence_class='issuer_disclosure', source_url='https://www.l3harris.com/newsroom/example/', retrieved_from_url='https://www.l3harris.com/newsroom/example/', pinned_issuer_host='www.l3harris.com', pinned_issuer_host_basis='Synthetic first-party source pin')
+    g['public_agreement_assertions'] = [claim(g)]
+    assert po.load_program_ontology_graph(g)['public_agreement_assertions'][0]['parties'][0]['entity_id'] is None
+
+
+def test_review_new_source_scope_cannot_become_programme_identity():
+    g = graph(); g['public_agreement_assertions'] = [claim(g)]
+    g['programs'] = [b.program_row(known_at=FIRST, evidence_refs=[g['evidence'][0]['evidence_id']])]
+    with pytest.raises(po.OntologyInputError, match='claim_scope_coverage_missing'):
+        po.load_program_ontology_graph(g)
