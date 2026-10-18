@@ -7,6 +7,7 @@ no trial ledger. Every number below is hand-constructible from the helper.
 from __future__ import annotations
 
 import copy
+from fractions import Fraction
 
 import pytest
 
@@ -36,7 +37,7 @@ def episode(**over) -> dict:
         "label": 1,
         "k": {"average": 2.10, "year_ago": 2.00, "observed_at": FRESH_K,
               "expectation_state": "CURRENT", "identity_status": "CHECKED",
-              "rights_class": "public", "attempt_status": "success",
+              "rights_class": "UNKNOWN", "attempt_status": "success",
               "period_end": "2026-09-30", "abstain_reason": None,
               "record_ids": ["K-1", "K-2"]},
         "s": {"q_minus_1_resolved": True, "source_sha256": "sha-synthetic-s",
@@ -83,7 +84,8 @@ def test_constants_match_prereg():
     assert st.BUDGET == 6
     assert st.HEDGE == {"AAPL": "XLK", "HOMEBUILDERS": "XHB"}
     assert st.COST_PER_EPISODE == pytest.approx(0.0040)
-    assert isinstance(st.BLOCKED_RIGHTS, frozenset)
+    assert st.NONBLOCKING_RIGHTS == frozenset({"UNKNOWN"})
+    assert st.USEFUL_EFFECT_EXACT == Fraction(1, 10)
     assert issubclass(st.AblationError, RuntimeError)
     assert st.Emission == tuple[int | None, str | None]
 
@@ -143,6 +145,10 @@ def test_k_backed_stale_by_one_second():
     ("rights_class", "blocked"),
     ("rights_class", "restricted"),
     ("rights_class", " unlicensed "),
+    ("rights_class", "public"),
+    ("rights_class", "LICENSED"),
+    ("rights_class", "MIXED:PUBLIC,UNKNOWN"),
+    ("rights_class", "MIXED:DISPLAY_ONLY,UNKNOWN"),
     ("attempt_status", "error"),
     ("attempt_status", None),
 ])
@@ -150,17 +156,30 @@ def test_k_backed_false_on_each_gate(field, value):
     assert st.k_backed(episode(k={field: value})) is False
 
 
-def test_blocked_rights_is_the_k_surface_vocabulary():
-    # The gate must speak the engine's labels; a case-mismatched private set fails open.
+def test_every_k_surface_blocked_label_is_blocked():
+    # prereg §10 A1: an allow-list; every label the engine itself blocks or demotes to
+    # display-only must also fail the gate, in any case and with surrounding space.
     from engine.k3e_expectation_surface import BLOCKED_RIGHTS, DISPLAY_ONLY_RIGHTS
-    assert st.BLOCKED_RIGHTS == frozenset(BLOCKED_RIGHTS | DISPLAY_ONLY_RIGHTS | {"RESTRICTED"})
+    labels = BLOCKED_RIGHTS | DISPLAY_ONLY_RIGHTS
+    assert labels
+    for label in labels:
+        assert st.rights_blocked(label) is True
+        assert st.rights_blocked(f" {label.lower()} ") is True
+        assert "UNKNOWN" not in label.upper().split(":")
 
 
-@pytest.mark.parametrize("value", ["UNKNOWN", "unknown", None, "", "public"])
-def test_k_backed_true_on_unknown_or_unblocked_rights(value):
+@pytest.mark.parametrize("value", ["UNKNOWN", "unknown", " Unknown ", None, ""])
+def test_k_backed_true_only_on_unknown_rights(value):
     # UNKNOWN is the producer's labeled absence (engine: SOURCE_USE_RIGHTS_UNKNOWN), not a block.
     assert st.rights_blocked(value) is False
     assert st.k_backed(episode(k={"rights_class": value})) is True
+
+
+def test_unrecognized_rights_label_fails_closed():
+    # A deny-list failed open on "public"; the allow-list blocks any label nobody anticipated.
+    for value in ("public", "LICENSED", "OPEN", "MIXED:PUBLIC,UNKNOWN", "UNKNOWN_PLUS"):
+        assert st.rights_blocked(value) is True
+        assert st.k_backed(episode(k={"rights_class": value})) is False
 
 
 def test_k_backed_false_when_a1_abstains():
@@ -372,6 +391,28 @@ def test_verdict_table_rows_in_order():
     assert st.verdict(40, 12, 0.10, (0.00, 0.30)) == (
         "INCONCLUSIVE", "delta_ge_useful_effect_but_interval_includes_zero")
     assert st.verdict(40, 12, 0.20, (-0.05, 0.40))[0] == "INCONCLUSIVE"
+
+
+def test_exact_boundary_delta_is_a_pass_candidate():
+    # 24/40 A2 hits against 20/40 A2[-K] hits is exactly +0.10. The float difference of
+    # the hit rates is 0.0999..., which a float comparison would have called NULL.
+    rows = []
+    for idx in range(40):
+        # A2 always emits sign(K)=+1 here; A2[-K] abstains-to-A0 with a0 sign.
+        if idx < 20:          # both hit
+            rows.append(row(1, 1, True))
+        elif idx < 24:        # A2 hits, A2[-K] misses
+            rows.append(row(1, -1, True))
+        else:                 # both miss
+            rows.append(row(-1, 1, True))
+    assert st.hits("A2", rows) == 24
+    assert st.hits("A2-K", rows) == 20
+    assert 0.6 - 0.5 < st.USEFUL_EFFECT                     # the float trap
+    exact = st.primary_delta_exact(rows)
+    assert exact == Fraction(1, 10)
+    assert st.verdict(40, 12, exact, (0.01, 0.30))[0] == "PASS_FOR_REVIEW"
+    assert st.verdict(40, 12, Fraction(3, 40), (0.01, 0.30))[0] == "NULL"
+    assert st.primary_delta(rows) == pytest.approx(0.1)
 
 
 # --------------------------------------------------------------------------- #

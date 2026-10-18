@@ -217,10 +217,12 @@ def test_enumerate_drops_missing_exhibit_991() -> None:
 def test_enumerate_two_filings_for_one_quarter_keeps_the_earlier() -> None:
     # Both anchors (2026-08-05 and 2026-08-12) map to AAPL FYE-9 quarter end
     # 2026-06-30 -> the same (issuer, q); the earlier acceptance must win.
+    # Clocks follow the submissions-JSON convention (prereg §10 A2): the raw value
+    # runs 4h ahead in EDT, so 00:10 "Z" on the 6th is 20:10Z on the 5th.
     early = _eightk("AAPL", "0000000000-26-000110",
-                    "2026-08-05T20:10:00.000Z", "2026-08-05")
+                    "2026-08-06T00:10:00.000Z", "2026-08-05")
     late = _eightk("AAPL", "0000000000-26-000111",
-                   "2026-08-12T20:10:00.000Z", "2026-08-12")
+                   "2026-08-13T00:10:00.000Z", "2026-08-12")
     episodes = sources.enumerate_episodes([late, early])
     assert len(episodes) == 1
     assert episodes[0]["t_rel"] == "2026-08-05T20:10:00Z"
@@ -265,6 +267,102 @@ def test_enumerate_episode_shape_is_the_shared_dict() -> None:
 def test_enumerate_empty_input_returns_empty_list() -> None:
     assert sources.enumerate_episodes([]) == []
     assert sources.enumerate_episodes([{"ticker": "AAPL"}]) == []
+
+
+# prereg §10 A2: the submissions-JSON acceptanceDateTime carries a "Z" suffix but is
+# Eastern wall-clock time read as UTC, so it runs |ET offset| ahead of true UTC.
+# Pins from non-universe filings (MSFT); the header <ACCEPTANCE-DATETIME> agrees.
+
+
+def test_edgar_json_clock_edt_and_est_pins() -> None:
+    fix = sources._edgar_json_acceptance_utc
+    assert fix("2026-07-30T00:04:53.000Z") == datetime(2026, 7, 29, 20, 4, 53, tzinfo=UTC)
+    assert fix("2026-01-29T02:04:38.000Z") == datetime(2026, 1, 28, 21, 4, 38, tzinfo=UTC)
+
+
+def test_edgar_json_clock_dst_transitions_are_unresolvable() -> None:
+    fix = sources._edgar_json_acceptance_utc
+    assert fix("2026-03-08T09:00:00Z") is None   # spring-forward hour
+    assert fix("2026-11-01T08:00:00Z") is None   # fall-back hour
+
+
+def test_edgar_json_clock_rejects_missing_and_garbage() -> None:
+    fix = sources._edgar_json_acceptance_utc
+    for value in (None, "", "garbage"):
+        assert fix(value) is None, value
+
+
+def test_enumerate_corrects_the_json_clock_to_true_utc() -> None:
+    rows = [_eightk("DHI", "0000000000-26-000140",
+                    "2026-10-29T20:05:00.000Z", "2026-10-29")]
+    (episode,) = sources.enumerate_episodes(rows)
+    assert episode["t_rel"] == "2026-10-29T16:05:00Z"  # EDT: 4h behind the raw value
+    assert episode["status"] == "ELIGIBLE"
+
+
+def test_enumerate_unresolvable_clock_alone_mints_no_episode() -> None:
+    rows = [_eightk("DHI", "0000000000-26-000141",
+                    "2026-11-01T08:00:00Z", "2026-11-01")]
+    assert sources.enumerate_episodes(rows) == []
+
+
+def test_enumerate_unresolvable_clock_blocks_a_later_eligible_filing() -> None:
+    # prereg §10 A3: a same-quarter Item 2.02 row whose clock cannot be ordered may be
+    # the true first release, so the kept filing is not evaluable — never shifted.
+    unordered = _eightk("DHI", "0000000000-26-000142",
+                        "2026-11-01T08:00:00Z", "2026-11-01")
+    kept = _eightk("DHI", "0000000000-26-000143",
+                   "2026-10-29T20:05:00.000Z", "2026-10-29")
+    (episode,) = sources.enumerate_episodes([kept, unordered])
+    assert episode["status"] == "NOT_EVALUABLE"
+    assert episode["not_evaluable_reason"] == "earlier_release_filing_dropped"
+    assert episode["t_rel"] == "2026-10-29T16:05:00Z"
+
+
+def test_enumerate_earlier_filing_without_exhibit_blocks_the_kept_one() -> None:
+    dropped = _eightk("PHM", "0000000000-26-000150",
+                      "2026-10-28T20:05:00.000Z", "2026-10-28", exhibits=None)
+    kept = _eightk("PHM", "0000000000-26-000151",
+                   "2026-10-29T20:05:00.000Z", "2026-10-29")
+    (episode,) = sources.enumerate_episodes([kept, dropped])
+    assert episode["status"] == "NOT_EVALUABLE"
+    assert episode["not_evaluable_reason"] == "earlier_release_filing_dropped"
+    assert episode["t_rel"] == "2026-10-29T16:05:00Z"  # never shifted to another filing
+
+
+def test_enumerate_later_dropped_filing_leaves_the_kept_one_eligible() -> None:
+    kept = _eightk("PHM", "0000000000-26-000152",
+                   "2026-10-29T20:05:00.000Z", "2026-10-29")
+    later = _eightk("PHM", "0000000000-26-000153",
+                    "2026-10-30T20:05:00.000Z", "2026-10-30", exhibits=None)
+    (episode,) = sources.enumerate_episodes([later, kept])
+    assert episode["status"] == "ELIGIBLE"
+    assert episode["not_evaluable_reason"] is None
+
+
+def test_enumerate_same_accession_shadow_is_the_kept_filing_itself() -> None:
+    kept = _eightk("PHM", "0000000000-26-000154",
+                   "2026-10-29T20:05:00.000Z", "2026-10-29")
+    echo = _eightk("PHM", "0000000000-26-000154",
+                   "2026-10-29T20:05:00.000Z", "2026-10-29", exhibits=None)
+    (episode,) = sources.enumerate_episodes([echo, kept])
+    assert episode["status"] == "ELIGIBLE"
+
+
+def test_enumerate_exposed_episode_keeps_its_status_with_earlier_shadow() -> None:
+    dropped = _eightk("DHI", "0000000000-26-000155",
+                      "2026-10-15T20:05:00.000Z", "2026-10-15", exhibits=None)
+    kept = _eightk("DHI", "0000000000-26-000156",
+                   "2026-10-16T20:05:00.000Z", "2026-10-15")
+    (episode,) = sources.enumerate_episodes([kept, dropped])
+    assert episode["status"] == "EXPOSED"
+    assert episode["not_evaluable_reason"] is None
+
+
+def test_enumerate_shadow_only_quarter_mints_no_episode() -> None:
+    rows = [_eightk("TOL", "0000000000-26-000157",
+                    "2026-11-20T21:05:00.000Z", "2026-11-20", exhibits=None)]
+    assert sources.enumerate_episodes(rows) == []
 
 
 # ---------------------------------------------------------------------------
@@ -394,8 +492,31 @@ def test_k_reads_lineage_fields() -> None:
     assert k["expectation_state"] == "CURRENT"
     assert k["identity_status"] == "NOT_CHECKED"
     assert k["attempt_status"] == "success"
-    assert k["rights_class"] is None
+    assert k["rights_class"] == "UNKNOWN"  # both consumed rows unlabeled (§10 A1)
     assert k["period_end"] == "2026-06-30"
+
+
+def _k_with_rights(average_rights: object, year_ago_rights: object) -> dict:
+    rows, att = _surface_rows("hash-RC", "att-rc", "2026-10-19T18:00:00Z", 2.22, 2.05)
+    for row in rows:
+        row["rights_class"] = (average_rights if row["observation_type"] == "average"
+                               else year_ago_rights)
+    return sources.k_from_surface(rows, att, cutoff=_CUTOFF, period_end="2026-06-30",
+                                  source_provenance=_prov())
+
+
+def test_k_rights_reads_both_consumed_rows() -> None:
+    # prereg §10 A1: a label on either consumed row counts; disagreement is MIXED.
+    assert _k_with_rights(None, "LICENSED")["rights_class"] == "MIXED:LICENSED,UNKNOWN"
+
+
+def test_k_rights_absent_and_unknown_labels_read_as_unknown() -> None:
+    assert _k_with_rights("unknown", None)["rights_class"] == "UNKNOWN"
+    assert _k_with_rights("", None)["rights_class"] == "UNKNOWN"
+
+
+def test_k_rights_agreeing_labels_are_normalized() -> None:
+    assert _k_with_rights(" licensed ", "LICENSED")["rights_class"] == "LICENSED"
 
 
 def test_k_accepts_synthetic_pandas_dataframes() -> None:

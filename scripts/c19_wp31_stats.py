@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import math
 from datetime import datetime, timedelta, timezone
+from fractions import Fraction
 from typing import Any, Iterable, Mapping, Sequence
 
 import numpy as np
@@ -35,18 +36,21 @@ import numpy as np
 #: An arm's output: (sign, None) when it emits, (None, "<abstain reason>") when not.
 Emission = tuple[int | None, str | None]
 
-#: prereg §4 K-backed: "rights_class not blocked". "Blocked" is the K surface's own
-#: rights vocabulary (engine/k3e_expectation_surface.py BLOCKED_RIGHTS |
-#: DISPLAY_ONLY_RIGHTS) plus RESTRICTED, compared upper-cased; a missing class reads
-#: as UNKNOWN exactly as the engine reads it. UNKNOWN is a labeled absence
-#: (SOURCE_USE_RIGHTS_UNKNOWN), not a block. Pinned to the engine sets by test.
-BLOCKED_RIGHTS = frozenset({"RIGHTS_BLOCKED", "UNLICENSED", "PROHIBITED", "BLOCKED",
-                            "DISPLAY_ONLY", "RESTRICTED"})
+#: prereg §4 K-backed: "rights_class not blocked", operationalized by prereg §10
+#: amendment A1 as an ALLOW-list: the label (None or empty read as UNKNOWN, compared
+#: upper-cased) must be in NONBLOCKING_RIGHTS. UNKNOWN is the producer's labeled
+#: absence (collectors/equity_revisions.py; engine reason SOURCE_USE_RIGHTS_UNKNOWN),
+#: not a block. Every other label is blocked: the K surface's own blocked vocabulary
+#: (engine/k3e_expectation_surface.py BLOCKED_RIGHTS | DISPLAY_ONLY_RIGHTS), any
+#: unrecognized label, and a "MIXED:" label from two consumed rows that disagree.
+#: An allow-list fails closed on a label nobody anticipated; a deny-list failed open.
+NONBLOCKING_RIGHTS = frozenset({"UNKNOWN"})
 
 
 def rights_blocked(rights_class: Any) -> bool:
-    """True when a K rights_class is in the blocked vocabulary (None -> UNKNOWN)."""
-    return str(rights_class or "UNKNOWN").strip().upper() in BLOCKED_RIGHTS
+    """True unless a K rights_class is in NONBLOCKING_RIGHTS (None/empty -> UNKNOWN)."""
+    label = str(rights_class or "UNKNOWN").strip().upper() or "UNKNOWN"
+    return label not in NONBLOCKING_RIGHTS
 
 #: prereg §4 arm table. "A2-K" is A2[-K], "A2-S" is A2[-S].
 ARMS = ("A0", "A1", "A2", "A2-K", "A2-S")
@@ -72,8 +76,11 @@ _STALE_DAYS = 4
 MIN_EPISODES = 40
 MIN_CLUSTERS = 12
 
-#: prereg §5 "Useful effect": +0.10 hit rate over A2[-K].
+#: prereg §5 "Useful effect": +0.10 hit rate over A2[-K]. The float is for display;
+#: the verdict compares the exact rational (hits are integers, so Delta = d/n and a
+#: float subtraction such as 0.6 - 0.5 = 0.0999... would turn a PASS into a NULL).
 USEFUL_EFFECT = 0.10
+USEFUL_EFFECT_EXACT = Fraction(1, 10)
 
 #: prereg §5 Looks: look 2 is the first read at which common-support N reaches 80.
 LOOK2_N = 80
@@ -340,25 +347,39 @@ def common_support(episodes: Iterable[Mapping[str, Any]]) -> list[dict]:
     return rows
 
 
+def hits(arm: str, rows: Sequence[Mapping[str, Any]]) -> int:
+    """The integer count of rows whose arm sign equals Y(e); an abstention is not a hit."""
+    count = 0
+    for row in rows:
+        sign, _ = emit(arm, row)
+        if sign is not None and sign == row.get("label"):
+            count += 1
+    return count
+
+
 def hit_rate(arm: str, rows: Sequence[Mapping[str, Any]]) -> float | None:
     """HR(arm, rows) (prereg §5): the fraction of rows whose arm sign equals Y(e).
     An abstention is not a hit. None on empty rows."""
     if not rows:
         return None
-    hits = 0
-    for row in rows:
-        sign, _ = emit(arm, row)
-        if sign is not None and sign == row.get("label"):
-            hits += 1
-    return hits / len(rows)
+    return hits(arm, rows) / len(rows)
+
+
+def primary_delta_exact(rows: Sequence[Mapping[str, Any]]) -> Fraction | None:
+    """prereg §5 primary statistic as an exact rational:
+    Delta = (hits(A2) - hits(A2[-K])) / n on common support. None on empty rows.
+    The verdict's +0.10 comparison uses this value, never a float difference."""
+    if not rows:
+        return None
+    return Fraction(hits("A2", rows) - hits("A2-K", rows), len(rows))
 
 
 def primary_delta(rows: Sequence[Mapping[str, Any]]) -> float | None:
-    """prereg §5 primary statistic: Delta = HR(A2) - HR(A2[-K]) on common support.
+    """prereg §5 primary statistic: Delta = HR(A2) - HR(A2[-K]) on common support,
+    as a float for display and the bootstrap (its interval is compared with 0 only).
     A2 always emits on common support (A2[-K] emitting implies S-backed)."""
-    if not rows:
-        return None
-    return hit_rate("A2", rows) - hit_rate("A2-K", rows)
+    exact = primary_delta_exact(rows)
+    return None if exact is None else float(exact)
 
 
 def cluster_key(ep: Mapping[str, Any]) -> tuple[str, str]:
@@ -458,7 +479,13 @@ def minimum_met(n: int, n_clusters: int) -> bool:
     return int(n) >= MIN_EPISODES and int(n_clusters) >= MIN_CLUSTERS
 
 
-def verdict(n: int, n_clusters: int, delta: float | None,
+def _exact(delta: Fraction | float | int) -> Fraction:
+    """A Fraction passes through; an int or float converts exactly (a float keeps its
+    binary value, so callers deciding the +0.10 boundary pass primary_delta_exact)."""
+    return delta if isinstance(delta, Fraction) else Fraction(delta)
+
+
+def verdict(n: int, n_clusters: int, delta: Fraction | float | None,
             interval: tuple[float, float] | None) -> tuple[str, str]:
     """prereg §5 verdict table (the rows partition every outcome; first match wins).
 
@@ -469,19 +496,22 @@ def verdict(n: int, n_clusters: int, delta: float | None,
     | INCONCLUSIVE    | minimum met, Delta >= +0.10, 2.5th pct <= 0          |
 
     Delta exactly +0.10 is a PASS candidate, not a NULL (>= / < split, prereg
-    "Useful effect"). The reason strings for rows 2-5 are not fixed by the prereg
-    or the spec; these wordings name the matched condition (reported in GAPS).
+    "Useful effect"); the comparison is exact (USEFUL_EFFECT_EXACT against the
+    rational Delta), so 24/40 against 20/40 is a PASS candidate. The reason strings
+    for rows 2-5 are not fixed by the prereg or the spec; these wordings name the
+    matched condition (reported in GAPS).
     """
     if not minimum_met(n, n_clusters):
         return ("INCONCLUSIVE", "minimum_not_met")
     if delta is None or interval is None:
         return ("INCONCLUSIVE", "no_common_support_statistics")
     p25, p975 = float(interval[0]), float(interval[1])
-    if p25 > 0.0 and delta >= USEFUL_EFFECT:
+    useful = _exact(delta) >= USEFUL_EFFECT_EXACT
+    if p25 > 0.0 and useful:
         return ("PASS_FOR_REVIEW", "delta_ge_useful_effect_and_interval_excludes_zero")
     if p975 < 0.0:
         return ("ADVERSE", "interval_below_zero")
-    if delta < USEFUL_EFFECT:
+    if not useful:
         return ("NULL", "delta_below_useful_effect")
     return ("INCONCLUSIVE", "delta_ge_useful_effect_but_interval_includes_zero")
 
@@ -746,7 +776,8 @@ def build_report(episodes: Iterable[Mapping[str, Any]],
     rows = common_support(eps)
     n = len(rows)
     n_clusters = len({cluster_key(row) for row in rows})
-    delta = primary_delta(rows)
+    delta_exact = primary_delta_exact(rows)
+    delta = None if delta_exact is None else float(delta_exact)
     interval = bootstrap_interval(rows)
     look = classify_look(n, n_clusters, reads)
     if look == "monitoring":
@@ -762,7 +793,7 @@ def build_report(episodes: Iterable[Mapping[str, Any]],
             verdict_reason = "monitoring_descriptive_only"
             study_stopped = False
     else:
-        study_verdict, verdict_reason = verdict(n, n_clusters, delta, interval)
+        study_verdict, verdict_reason = verdict(n, n_clusters, delta_exact, interval)
         study_stopped = is_study_stopped(look, study_verdict)
 
     return {
@@ -773,6 +804,8 @@ def build_report(episodes: Iterable[Mapping[str, Any]],
         "n_common_support": n,
         "n_clusters": n_clusters,
         "delta": delta,
+        "delta_exact": (None if delta_exact is None
+                        else f"{delta_exact.numerator}/{delta_exact.denominator}"),
         "interval": list(interval) if interval is not None else None,
         "discordant": discordant(rows),
         "verdict": study_verdict,

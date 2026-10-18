@@ -203,12 +203,15 @@ def _aware_utc(moment: datetime, *, label: str) -> datetime:
 
 
 def _parse_utc(value: Any) -> datetime | None:
-    """Parse an EDGAR-style UTC clock; None when absent/malformed (fail closed).
+    """Parse an ISO clock as UTC; None when absent/malformed (fail closed).
 
-    ``collectors/edgar_earnings_8k.py`` stores ``acceptance_datetime`` as an
-    ISO-UTC string ("…Z"); offset-less strings/datetimes are read as UTC per
-    that convention, unparseable values return None and the caller drops or
-    refuses the record — never a guessed clock.
+    Generic parser: offset-less strings/datetimes are read as UTC, explicit
+    offsets are honoured, unparseable values return None and the caller drops
+    or refuses the record — never a guessed clock.  It does NOT correct the
+    EDGAR submissions-JSON ``acceptanceDateTime``, whose "…Z" suffix is not true
+    UTC (``collectors/edgar_earnings_8k.py`` stores that raw value under an
+    "ISO-UTC" label); release times go through
+    :func:`_edgar_json_acceptance_utc` (prereg §10 A2).
     """
     if value is None:
         return None
@@ -228,6 +231,27 @@ def _parse_utc(value: Any) -> datetime | None:
             return parsed.replace(tzinfo=timezone.utc)
         return parsed.astimezone(timezone.utc)
     return None
+
+
+def _edgar_json_acceptance_utc(value: Any) -> datetime | None:
+    """True UTC from an EDGAR submissions-JSON ``acceptanceDateTime`` (prereg §10 A2).
+
+    The JSON clock J runs ahead of the true acceptance instant U by the
+    America/New_York offset (verified on non-universe MSFT/JPM filings against
+    the filing header's ET ``ACCEPTANCE-DATETIME``).  With o = -NY offset at J,
+    U = J - o, and the result is kept only when -NY offset at U equals o;
+    otherwise the clock is unresolvable and None is returned (fail closed —
+    the caller drops the row and prereg §10 A3 applies).  The two offsets can
+    disagree only within hours of a DST transition (a weekend night).
+    """
+    j = _parse_utc(value)
+    if j is None:
+        return None
+    offset = -j.astimezone(_ET).utcoffset()
+    u = j - offset
+    if -u.astimezone(_ET).utcoffset() != offset:
+        return None
+    return u
 
 
 def _parse_day(value: Any) -> date | None:
@@ -382,18 +406,32 @@ def enumerate_episodes(rows: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]
     report_date, items) plus EX-99.1 exhibit proof (see :func:`_has_ex991` —
     the collector itself carries no exhibit list, so exhibit-less rows are
     dropped fail-closed).  Kept per row: issuer in UNIVERSE, Item 2.02 exact
-    token, an EX-99.1 exhibit, a parseable acceptance clock and a report_date
-    anchor.  ``(issuer, q, period_end)`` come from the repo fiscal helper
+    token, an EX-99.1 exhibit, a resolvable acceptance clock and a report_date
+    anchor.  The clock is the EDGAR submissions-JSON ``acceptanceDateTime``
+    corrected to true UTC by :func:`_edgar_json_acceptance_utc` (prereg §10 A2).
+    ``(issuer, q, period_end)`` come from the repo fiscal helper
     (``FISCAL_HELPER_SOURCE`` records which path is live).  The FIRST
     qualifying filing per (issuer, q) is kept by acceptance time (prereg §1
     "unit" — first filing carrying the release).  ``status`` is "ELIGIBLE"
     when :func:`is_eligible` (t_rel strictly after the prereg commit instant)
     else "EXPOSED" (smoke-test plumbing only, never counted — prereg §0).
+
+    prereg §10 A3: an in-universe Form 8-K Item 2.02 row for the same
+    (issuer, q) that was dropped only for a missing EX-99.1 or an unresolvable
+    clock, and that is earlier than the kept filing (or cannot be ordered
+    against it), means the kept filing may not be the first release.  An
+    ELIGIBLE episode in that position becomes NOT_EVALUABLE with reason
+    ``earlier_release_filing_dropped`` — never shifted to a later filing.  A
+    dropped row with the kept filing's own accession is the same filing and is
+    ignored.  Limits: a key with only dropped rows mints no episode, and a row
+    without a report_date cannot be attributed to a quarter.
+
     Output is ordered by (t_rel, issuer, q); every key of the shared episode
     dict is initialized (``returns`` stays absent — it is written by the
     cost-descriptive stage).
     """
     best: dict[tuple[str, str], dict[str, Any]] = {}
+    shadows: dict[tuple[str, str], list[tuple[str, datetime | None]]] = {}
     for row in rows or ():
         if not isinstance(row, Mapping):
             continue
@@ -406,11 +444,6 @@ def enumerate_episodes(rows: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]
             continue
         if not _has_item_202(row.get("items")):
             continue
-        if not _has_ex991(row):
-            continue
-        t_rel = _parse_utc(row.get("acceptance_datetime"))
-        if t_rel is None:
-            continue
         report_date = str(row.get("report_date") or "").strip()
         if not report_date:
             continue
@@ -422,6 +455,12 @@ def enumerate_episodes(rows: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]
         q = f"{fiscal.year}Q{fiscal.quarter}"
         period_end = fiscal.calendar_end.isoformat()
         key = (issuer, q)
+        accession = str(row.get("accession") or "").strip()
+        t_rel = _edgar_json_acceptance_utc(row.get("acceptance_datetime"))
+        if t_rel is None or not _has_ex991(row):
+            # dropped, but it may be the true first release (prereg §10 A3)
+            shadows.setdefault(key, []).append((accession, t_rel))
+            continue
         current = best.get(key)
         if current is not None and current["_t_rel"] <= t_rel:
             continue  # keep the FIRST qualifying filing by acceptance time
@@ -439,12 +478,24 @@ def enumerate_episodes(rows: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]
             "s": _empty_s(),
             "a0": _empty_a0(),
             "_t_rel": t_rel,
+            "_accession": accession,
         }
+    for key, episode in best.items():
+        if episode["status"] != "ELIGIBLE":
+            continue  # EXPOSED is never counted; its status stays as is
+        for accession, moment in shadows.get(key, ()):
+            if accession and accession == episode["_accession"]:
+                continue  # the kept filing itself
+            if moment is None or moment <= episode["_t_rel"]:
+                episode["status"] = "NOT_EVALUABLE"
+                episode["not_evaluable_reason"] = "earlier_release_filing_dropped"
+                break
     episodes = sorted(
         best.values(), key=lambda e: (e["_t_rel"], e["issuer"], e["q"])
     )
     for episode in episodes:
         episode.pop("_t_rel")
+        episode.pop("_accession")
     return list(episodes)
 
 
@@ -511,8 +562,12 @@ def k_from_surface(
     otherwise from the chosen "average" row's own state field (default
     "CURRENT", mirroring ``engine/k3e_expectation_surface.py:499``).
     ``record_ids`` are the observation ids actually consumed (average, year_ago)
-    — the STATS lane's manifest.  ``rights_class`` is the average row's own
-    label (None stays None: an unlabeled right fails the K-backed gate closed).
+    — the STATS lane's manifest.  ``rights_class`` labels BOTH consumed rows
+    (prereg §10 A1): each row's label is upper-cased with None/empty read as
+    "UNKNOWN" (the producer's labeled absence); one shared label is returned
+    as is, two different labels as ``"MIXED:<a>,<b>"`` (sorted), which the
+    stats allow-list blocks.  With neither row present it is None — A1 then
+    cannot emit, so the K-backed gate is already closed.
     """
     k = _empty_k()
     cutoff_utc = _aware_utc(cutoff, label="cutoff")
@@ -624,8 +679,21 @@ def k_from_surface(
         if row is not None and row.get("observation_id"):
             k["record_ids"].append(str(row["observation_id"]))
 
-    average_row = by_type.get("average")
-    k["rights_class"] = average_row.get("rights_class") if average_row else None
+    consumed = [
+        row for row in (by_type.get("average"), by_type.get("year_ago")) if row is not None
+    ]
+    labels = sorted(
+        {
+            str(row.get("rights_class") or "UNKNOWN").strip().upper() or "UNKNOWN"
+            for row in consumed
+        }
+    )
+    if not labels:
+        k["rights_class"] = None
+    elif len(labels) == 1:
+        k["rights_class"] = labels[0]
+    else:
+        k["rights_class"] = "MIXED:" + ",".join(labels)
 
     latest = payload.get("latest_captured_snapshot") or {}
     latest_snapshot = latest.get("snapshot") if latest.get("status") == "AVAILABLE" else None
@@ -762,7 +830,11 @@ def label_and_a0_from_companyfacts(
     (prereg §2.1 point-in-time: acceptance timestamps come from
     ``prior_filings``, rows ``{"accession", "accepted_at", ...}``; an unknown
     accession or timestamp fails closed).  None available -> ``a0["sign"]=None``
-    (the STATS lane ABSTAINs "no_prior_filing").
+    (the STATS lane ABSTAINs "no_prior_filing").  ``accepted_at`` is read as
+    given (:func:`_parse_utc`), deliberately NOT through the EDGAR-JSON
+    correction (prereg §10 A2): a raw submissions-JSON value runs late by the
+    NY offset, which can only exclude a filing accepted within those hours
+    before ``cutoff`` — never admit one accepted after it.
 
     All clocks are aware UTC; ``cutoff`` refuses naive datetimes.
     """

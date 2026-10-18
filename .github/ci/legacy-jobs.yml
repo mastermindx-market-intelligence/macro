@@ -1774,6 +1774,7 @@ jobs:
   c19-wp31-incremental-information:
     if: ${{ false }}
     gate: code
+    scope: exclusive
     # C19 WP31: incremental-information evaluator gates, arms/statistics and label-blind sources (offline).
     timeout-minutes: 10
     paths:
@@ -1783,17 +1784,29 @@ jobs:
       - "scripts/c19_wp31_gates.py"
       - "scripts/c19_wp31_stats.py"
       - "scripts/c19_wp31_sources.py"
+      - "config/earnings_story_promotion.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "config/sparse_worktree.json"
       - "engine/__init__.py"
       - "engine/company_intelligence/__init__.py"
       - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/documents.py"
       - "engine/company_intelligence/event_id_adapter.py"
       - "engine/company_intelligence/event_workspace.py"
       - "engine/company_intelligence/event_workspace_build.py"
       - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/industrial_sources.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/issuer_supplements.py"
+      - "engine/company_intelligence/noc_adverse_profile.py"
+      - "engine/company_intelligence/pg_envelope.py"
+      - "engine/company_intelligence/pg_profile.py"
       - "engine/company_intelligence/qa_exchange.py"
       - "engine/company_intelligence/qa_reconstruction.py"
       - "engine/company_intelligence/views.py"
@@ -1829,6 +1842,7 @@ jobs:
       - "engine/trial_ledger.py"
       - "engine/validation.py"
       - "lib/__init__.py"
+      - "lib/config.py"
       - "lib/dataos/__init__.py"
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
@@ -1840,7 +1854,9 @@ jobs:
       - "lib/dataos/temporal.py"
       - "lib/exchange_holidays.py"
       - "lib/nyse_calendar.py"
+      - "lib/pages.py"
       - "lib/us_cash_calendar.py"
+      - "research/C19_WP31_INCREMENTAL_INFORMATION_PREREG.md"
       - "scripts/__init__.py"
       - "scripts/publish_company_intelligence_r2.py"
       - "scripts/refresh_event_workspaces.py"
