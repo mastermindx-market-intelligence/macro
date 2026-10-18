@@ -134,3 +134,21 @@ html[data-theme="light"] .tt-strip-tick{background:var(--text);opacity:.6}
 @media (prefers-reduced-motion: reduce){
   .tt-cat,.tt-cat summary .caret,.tt-theme summary .tcaret{transition:none}
 }
+
+/* ── U3 — ticker lookup (search field + result panel) ── */
+.tt-lookup{display:flex;align-items:center;gap:10px;margin:14px 0 8px;padding:10px 14px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2);box-shadow:inset 0 1px 0 var(--line);flex-wrap:wrap}
+html[data-theme="light"] .tt-lookup{background:var(--panel);box-shadow:var(--card-shadow)}
+.tt-lookup-label{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap}
+.tt-lookup-input{flex:1 1 180px;min-width:160px;background:transparent;border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:8px 12px;font-size:14px;color:var(--text);font-family:var(--font-ui);outline:none}
+.tt-lookup-input::placeholder{color:var(--muted)}
+.tt-lookup-input:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-color:var(--link)}
+.tt-lookup-hint{font-size:12px;color:var(--muted);flex-basis:100%}
+.tt-lookup-empty{font-size:13px;color:var(--muted);margin:6px 0 0}
+.tt-ticker-result .tt-detail-paths li{font-size:13px;color:var(--text)}
+.tt-ticker-micro,.tt-ticker-abst,.tt-ticker-empty-public,.tt-ticker-not-found{margin:10px 0 0;font-size:12.5px;color:var(--muted);line-height:1.5}
+.tt-ticker-not-found{color:var(--ink-warn,var(--warn));font-weight:700}
+.tt-ticker-empty-public{font-style:italic}
+.tt-ticker-abst li{margin:2px 0}
+.tt-ticker-match + .tt-ticker-match{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.tt-ticker-market{display:block;margin:0 0 6px;font-size:12px;font-weight:700;color:var(--muted)}
+.tt-detail-sec + .tt-detail-sec{margin-top:10px}
