@@ -21,25 +21,36 @@ depends_on: ["WS:EXECUTIVE-AUTONOMY-V1-CLOSURE", "WS:EXECUTIVE-CAPACITY-FABRIC"]
 waves:
   - id: A0
     title: Phase A census → canonical capability ledger and integrated programme plan (Mastermind research/)
-    status: in_progress
+    status: done
     next_action: >
-      Ship research/EXECUTIVE_ECOSYSTEM_COMPLETION_CAPABILITY_LEDGER_2026-10-17.md and
-      research/EXECUTIVE_ECOSYSTEM_COMPLETION_PROGRAMME_PLAN_2026-10-17.md to Mastermind master
-      behind the `test` check. The ledger holds 46 capability rows, each with owning surface,
-      evidence revision, writer/effect risk and a falsifiable completion test.
+      Closed 2026-10-18 — the ledger and plan are on Mastermind master (present in the 08d78873
+      release clone). The plan section 6 checkpoint and the ledger Lane R / F3 row refresh ride the
+      child session's single follow-up docs PR, consumed by the seat when it returns.
   - id: C1
     title: Continuity — this workstream, dated handoffs, seat memory, P4 frontier refresh
     status: in_progress
     next_action: >
-      Merge this record; then refresh WS:EXECUTIVE-AUTONOMY-V1-CLOSURE P4 with the installed
-      91c1cac5 facts (installed; its prepared supersede_unstarted_v1 acceptance, bound to JOB-003, is
-      itself superseded by the current-master successor S') in a follow-up PR.
+      Merge the 2026-10-18 Lane R handoff; then refresh WS:EXECUTIVE-AUTONOMY-V1-CLOSURE P4 with the
+      installed 08d78873 facts (S2 installed 04:08Z, not accepted, not armed, read side running from
+      it; the 91c1cac5 supersede_unstarted_v1 acceptance bound to JOB-003 is superseded by descriptor
+      6594613b…) in a follow-up PR.
   - id: R1
-    title: Restore codex-01 provider readiness (human credential rotation), then supersede the prepared 91c1cac5 acceptance with the current-master successor S' (root JOB-003; terminal JOB-006 carried)
-    status: todo
+    title: Requalify codex-01 provider readiness with the existing credential (Mastermind PR 1591), then supersede the prepared 91c1cac5 acceptance with the current-master successor S2 = 08d78873 (root JOB-003; terminal JOB-006 carried)
+    status: in_progress
     depends_on: [A0]
     next_action: >
-      CORRECTED 2026-10-17 13:5xZ (seat 873aabd3): the live codex-01 readiness receipt is a FAILED
+      2026-10-18 04:2xZ (seat 873aabd3): PR 1591 MERGED (master 08d7887335ee8aea11f0809e0660a5298c3ef68c);
+      the ONE canary PASSED 03:59:35Z with the unchanged credential; stop-readside, the supersede prepare
+      (descriptor 6594613b…) and install SUCCEEDED 04:08Z; acceptance REFUSED fail-closed — control
+      account directory group set drifted (_mastermind_exec sits in gid 470 _mastermind_minimax from
+      the finite lane's 2026-10-14 host registration while control.json has no fabric_attended_probe;
+      PR 1563 merged 2026-10-17T23:57:29Z but finite_definition_publication and finite-control-stage were never run).
+      The receipt's 30-minute margin lapsed 04:26:45Z, so the one canary is spent. Read side restored
+      from 08d78873 at 04:17Z. HOLD for the Chairman's decision, asked once — (a) finite host
+      publication + finite-control-stage, then stop-readside, ONE further canary, acceptance.sh, the
+      read-only arming review, arm; or (b) hold installed-unaccepted. Never a second canary, group
+      change or control.json edit without his word; never cancel JOB-003.
+      HISTORY (2026-10-17 13:5xZ correction): the live codex-01 readiness receipt was a FAILED
       canary (observed 2026-10-12T07:08Z, refusal provider_turn_failed, provider error terms
       capacity/model, identity refusal none) and every automated requalification route refuses it
       (readiness_receipt_not_passing, requalification_identity_continuity_unproven,
@@ -111,6 +122,8 @@ landmines:
   - Sol's open sol/web-* PRs (1570 1569 1568 1566 1553 1542 1536 1515 1477 1473) and codex 1563 are live writers on the gateway, app and fabric surfaces; extend, never compete.
   - Fable is never enrolled with mastermind.executive.intent.submit (rejected by design). Personal-Pro realm re-enrollment is a human/provider ceremony named once, not probed.
   - Fabric kit files pools.yaml, pick.py and RELAUNCH_QUEUE.txt belong to another lane; read-only.
+  - _mastermind_exec carries gid 470 _mastermind_minimax (finite lane host registration 2026-10-14) while control.json declares no fabric_attended_probe — acceptance of ANY release fails closed until the finite publication chain (finite_definition_publication.py plus finite-control-stage) runs or the Chairman rules; never strip the grant, weaken the check or hand-edit control.json.
+  - Acceptance and arm both require a readiness receipt with at least 30 minutes of margin; a canary passed at the top of an install chain is spent if acceptance cannot run within that window.
   - Python tests at the pin need the repo root on sys.path and the macro checkout's tests/ package off it (python -P), or tests.test_executive_ceo_ingress resolves into macro.
   - Agent OS records are not liveness — the P4 "PICKED_UP by chat 01a1230a" claim is historical; the S' acceptance path is driven by the current seat after the human rotation, unless a live START is observed first.
 do_not_redo:
@@ -119,12 +132,14 @@ do_not_redo:
   - Mastermind PRs 1283, 1560, 1543, 1534/1537, 1544, 1527, 1509, 1558 and the R2 master plan §17 (accepted work enumerated in the ledger §4).
   - The 213-test transport run at a552a5e5 (plan §6) until the transport source changes.
 next_action: >
-  Mastermind ledger/plan PR #1571 is MERGED (master ee0f0d9b); correction PR #1581 carries the
-  readiness/human-gate facts. Lane R waits on the HUMAN-ONLY codex-01 credential rotation; the seat
-  then runs ONE --verify-ready, the fresh S' clone + release assets + install-inputs, service stop,
-  supersede prepare, install.sh S', acceptance.sh once, then the arming sequence after its
-  read-only review. Meanwhile, with no host mutation: Lane A inputs (publication owner still
-  unnamed), Node-side app qualification at a552a5e5, Phase F after arming.
+  Lane R is HELD at the Chairman's decision (asked once 2026-10-18 04:2xZ): S2 = 08d78873 is
+  INSTALLED (04:08Z) with the read side running from it, acceptance REFUSED on the finite lane's
+  undeclared gid 470 host grant, and the one canary's receipt margin lapsed 04:26:45Z. On (a) the
+  finite host publication + finite-control-stage land first, then stop-readside, ONE further
+  canary, acceptance.sh, the read-only arming review, arm, Phase F; on (b) S2 stays
+  installed-unaccepted. Meanwhile, with no host mutation: land the 2026-10-18 Lane R handoff,
+  consume the child session's follow-up Mastermind docs PR, Lane A inputs (publication owner
+  still unnamed).
 ---
 
 ## Context
