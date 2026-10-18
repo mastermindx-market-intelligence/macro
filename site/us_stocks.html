@@ -96,7 +96,6 @@
 <link rel="preload" as="style" href="assets/css/307c6f26.css?v=307c6f26">
 <link rel="preload" as="style" href="assets/css/4546f775.css?v=4546f775">
 <link rel="preload" as="style" href="assets/css/2fa86f96.css?v=2fa86f96">
-<link rel="preload" as="style" href="assets/css/115f7592.css?v=115f7592">
 <link rel="preload" as="style" href="assets/css/0c244078.css?v=0c244078">
 <link rel="preload" as="style" href="assets/css/6b41b25d.css?v=6b41b25d">
 <link rel="preload" as="style" href="assets/css/7331c259.css?v=7331c259">
@@ -1130,7 +1129,16 @@
     
 <link rel="stylesheet" href="assets/css/2fa86f96.css?v=2fa86f96">
 
-    <link rel="stylesheet" href="assets/css/115f7592.css?v=115f7592">
+    <style>
+#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-ov {
+  z-index: 5;
+  pointer-events: none;
+}
+#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-cau,
+#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-trg,
+#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-live:not([hidden]) {
+  pointer-events: auto;
+}</style>
     
     
 <link rel="stylesheet" href="assets/css/0c244078.css?v=0c244078">
@@ -1998,7 +2006,7 @@
       
       
       
-      <section class="mx-sec" id="us-today" data-today-total="12" data-today-visible="1" data-today-source-sha256="sha256:4a7b79f771df088a3332a3b208c4e738a161ee98ea0481352f83ecee228e2cd7" data-today-pair-id="f34eb82589b44f42a5d5fce96e1ec033" data-today-selection-receipt="sha256:0f2f2e68717299b78c0bb3f801ca1a4b7fbb3b9c8538773892bc5f1a25fa426d" data-today-roster-size="102" data-today-served="0~sha256:a76c17e2633729256b68013c64ff8b0b274db0b46c814fab805c61ce68dd907f">
+      <section class="mx-sec" id="us-today" data-today-total="12" data-today-visible="1" data-today-source-sha256="sha256:054a147d1371fa44004474558e19161561c505989f3ac92b1fd171f28beec843" data-today-pair-id="b0d3ea37a4514d69a1fa7d46e5359802" data-today-selection-receipt="sha256:0c866dfd2f1405b0af54fb36d904287c8b88e9552de1266e4f21704fb4f6d27d" data-today-roster-size="102" data-today-served="0~sha256:a76c17e2633729256b68013c64ff8b0b274db0b46c814fab805c61ce68dd907f">
         <div class="mx-sec-hd">
           <h2 class="mx-sec-h2"><span class="l-en">Today</span><span class="l-zh">今日</span></h2>
           <span class="mx-sec-total"><span class="l-en"><b>1</b> of <b>12</b> Featured</span><span class="l-zh">精选 <b>1</b> / <b>12</b></span></span>

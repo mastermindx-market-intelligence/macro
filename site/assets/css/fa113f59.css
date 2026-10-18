@@ -152,3 +152,12 @@ html[data-theme="light"] .tt-lookup{background:var(--panel);box-shadow:var(--car
 .tt-ticker-match + .tt-ticker-match{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
 .tt-ticker-market{display:block;margin:0 0 6px;font-size:12px;font-weight:700;color:var(--muted)}
 .tt-detail-sec + .tt-detail-sec{margin-top:10px}
+.tt-ticker-profile{margin:12px 0 0;padding:10px 12px 10px;border-radius:var(--r-ctl,8px);background:var(--panel);border:1px solid var(--line);box-shadow:inset 0 1px 0 var(--line)}
+html[data-theme="light"] .tt-ticker-profile{background:var(--panel);box-shadow:none}
+.tt-ticker-profile-title{font-size:12.5px;font-weight:800;margin:0 0 6px}
+.tt-ticker-profile dl{display:grid;grid-template-columns:max-content 1fr;column-gap:12px;row-gap:5px;margin:0;font-size:12.5px;line-height:1.45}
+.tt-ticker-profile dt{color:var(--muted)}
+.tt-ticker-profile dd{margin:0;color:var(--text);min-width:0;overflow-wrap:anywhere}
+.tt-ticker-profile dd.tt-ticker-profile-reason{color:var(--muted);font-style:italic}
+.tt-ticker-profile-note{margin:8px 0 0;font-size:11.5px;color:var(--muted)}
+@media (max-width:560px){.tt-ticker-profile dl{grid-template-columns:1fr;row-gap:1px}.tt-ticker-profile dd{margin-bottom:5px}}
