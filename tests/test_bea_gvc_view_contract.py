@@ -149,3 +149,55 @@ def test_unpublished_candidate_metadata_has_exact_not_permissive_end_anchors():
                    {"legacy_mapping_state": "APPROVED_CROSSWALK"},
                    {"attribution": "Some other publisher"}):
         assert run_js("v.validateCandidate(input)", {**packet, **change}) is False
+
+
+def test_full_checkout_source_dependencies_are_not_lost_in_sparse_curation():
+    """Hosted CI 39082707115 found real app-route dependencies absent locally.
+
+    Check the declared path identities, not their sparse filesystem presence.
+    Reading any provider source or the generated file contents is unnecessary.
+    A local sparse pass must not erase these full-checkout integration facts.
+    """
+    hosted_dependencies = (
+        'site/basketdata/baskets.json',
+        'site/basketdata/fear_greed.json',
+        'site/basketdata/foresight_cascade.json',
+        'site/basketdata/narrative_emergence.json',
+        'site/basketdata/radar.json',
+        'site/basketdata/radar_enriched.json',
+        'site/canadabasketdata/baskets.json',
+        'site/chinabasketdata/baskets.json',
+        'site/chinabasketdata/narrative_emergence.json',
+        'site/coming-soon.html',
+        'site/data/portfolio_ctx.json',
+        'site/factordata/alerts_triage.json',
+        'site/factordata/basket_washout_state.json',
+        'site/factordata/china_standouts.json',
+        'site/factordata/dna_class.json',
+        'site/factordata/factors.json',
+        'site/factordata/impulse.json',
+        'site/factordata/reflexivity_overlay.json',
+        'site/factordata/signal_gate.json',
+        'site/factordata/stock_personality.json',
+        'site/factordata/us_standouts.json',
+        'site/factordata/us_standouts_v2.json',
+        'site/flowleaders/leaders.json',
+        'site/government-revenue-data/defense-economics.json',
+        'site/government-revenue-data/program-theme-context.json',
+        'site/government-revenue-data/research-state.json',
+        'site/government-revenue-data/sbir-progression.json',
+        'site/government-revenue-data/theme-context.json',
+        'site/hkbasketdata/baskets.json',
+        'site/leaderradar/radar.json',
+        'site/marketdata/subsector_rotation.json',
+        'site/master_brief.json',
+        'site/neuralwebdata/theme_state.json',
+        'site/prophet/index.json',
+        'site/turn_watch/turn_watch.json',
+        'site/vol/regime.json',
+    )
+    manifest = yaml.safe_load((ROOT / ".github/ci/legacy-jobs.yml").read_text())
+    job = manifest["jobs"]["bea-gvc-current-descriptive-consumer"]
+    assert job["scope"] == "exclusive" and job["gate"] == "code"
+    missing = sorted(set(hosted_dependencies) - set(job["paths"]))
+    assert not missing, f"Full-checkout source dependencies are undeclared: {missing}"
