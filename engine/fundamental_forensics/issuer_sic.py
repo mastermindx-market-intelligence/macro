@@ -39,13 +39,21 @@ def _normalize_cik(value: Any) -> str | None:
 
 
 def _normalize_sic(value: Any) -> str | None:
+    """Normalize a SIC spelling to its digit string.
+
+    Anything that is not a non-negative integer or a digit-only string
+    returns ``None``.  ``issuer_class_for_sic`` maps unparseable text to the
+    class ``unknown``, which no exclusion-only applicability policy excludes,
+    so letting such text through would admit class-restricted metrics; a
+    ``None`` SIC instead keeps them ``NOT_EVALUABLE`` (``issuer_class_unknown``).
+    """
     if isinstance(value, bool) or value is None:
         return None
     if isinstance(value, int):
-        return str(value)
+        return str(value) if value >= 0 else None
     if isinstance(value, str):
         text = value.strip()
-        return text if text else None
+        return text if text and text.isascii() and text.isdigit() else None
     return None
 
 
