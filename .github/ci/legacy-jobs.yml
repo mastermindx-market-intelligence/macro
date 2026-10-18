@@ -9591,6 +9591,8 @@ jobs:
       - "scripts/ci/*.sh"
       - "data/**"
       - "site/index.html"
+      - "site/options.html"
+      - "site/options_intel_brief.json"
       - "site/premiumdata/special_situations.json"
       - "site/qledger/track_record.json"
       - "config/append_only_artifacts.json"

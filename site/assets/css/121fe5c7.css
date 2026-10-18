@@ -62,9 +62,39 @@ html[data-theme="light"] .tt-theme{background:var(--panel)}
 
 /* ── MICRO CHIPS ── */
 .tt-chips{display:flex;flex-wrap:wrap;gap:6px 8px;padding:6px 0 8px}
-.tt-chip{display:inline-flex;align-items:center;padding:5px 11px;border-radius:var(--r-pill);background:var(--panel2);border:1px solid var(--line);font-size:12px;font-weight:600;color:var(--text);cursor:default;line-height:1.3;transition:border-color .15s ease}
+.tt-chip{display:inline-flex;align-items:center;padding:5px 11px;border-radius:var(--r-pill);background:var(--panel2);border:1px solid var(--line);font-size:12px;font-weight:600;color:var(--text);cursor:pointer;line-height:1.3;font-family:var(--font-ui);margin:0;transition:border-color .15s ease,background-color .15s ease}
 html[data-theme="light"] .tt-chip{background:var(--panel);border-color:var(--line)}
 .tt-chip:hover{border-color:var(--ff-tint-info-45-line)}
+
+.tt-chip:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.tt-chip[aria-expanded="true"]{border-color:var(--link)}
+
+/* ── DETAIL CARD (U2) — dark: instrument panel; light: white sheet + hairline + shadow ── */
+.tt-detail{position:fixed;z-index:60;right:24px;top:96px;width:340px;max-width:calc(100vw - 48px);max-height:calc(100vh - 120px);overflow:auto;background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-card,12px);padding:16px 18px 18px;color:var(--text);box-shadow:inset 0 1px 0 var(--line),var(--popover-shadow)}
+html[data-theme="light"] .tt-detail{background:var(--panel);border-color:var(--line);box-shadow:var(--popover-shadow)}
+.tt-detail[hidden]{display:none}
+@media (min-width:1101px){body.tt-detail-open .wrap{padding-right:388px}}
+.tt-detail-top{display:flex;align-items:flex-start;gap:10px}
+.tt-detail-name{font-size:16px;font-weight:800;line-height:1.3;margin:0;flex:1}
+.tt-detail-close{flex:none;width:32px;height:32px;border-radius:var(--r-ctl,8px);border:1px solid var(--line);background:transparent;color:var(--muted);font-size:16px;line-height:1;cursor:pointer;font-family:var(--font-ui)}
+.tt-detail-close:hover{color:var(--text)}
+.tt-detail-close:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.tt-detail-paths{list-style:none;margin:8px 0 0;padding:0;font-size:12.5px;color:var(--muted);line-height:1.5}
+.tt-detail-paths li + li{margin-top:2px}
+.tt-detail-breadth{margin:10px 0 0;font-size:12.5px;line-height:1.5}
+.tt-detail-sec{margin:14px 0 0;padding:12px 0 0;border-top:1px solid var(--line)}
+.tt-detail-h{font-size:13px;font-weight:800;margin:0}
+.tt-detail-note{font-size:11.5px;color:var(--muted);margin:2px 0 8px;line-height:1.45}
+.tt-detail-list{list-style:none;margin:0;padding:0;font-size:13px;line-height:1.45}
+.tt-detail-list li{display:flex;justify-content:space-between;gap:10px;padding:4px 0}
+.tt-detail-list a{color:var(--link);text-decoration:none}
+.tt-detail-list a:hover{text-decoration:underline}
+.tt-detail-mkt{flex:none;font-size:11.5px;color:var(--muted)}
+.tt-detail-empty{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+@media (max-width:560px){
+  .tt-detail{left:0;right:0;top:auto;bottom:0;width:auto;max-width:none;max-height:70vh;border-radius:var(--r-card,12px) var(--r-card,12px) 0 0;border-bottom:0;padding:14px 16px 22px}
+  .tt-detail-close{width:44px;height:44px}
+}
 
 /* ── DIRECT-CHIPS (theme with no sub_theme layer) ── */
 .tt-direct{margin:6px 0 0;padding:6px 0 0;color:var(--muted);font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
