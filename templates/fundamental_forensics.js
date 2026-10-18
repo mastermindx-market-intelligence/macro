@@ -2962,18 +2962,16 @@
   function backfillSavedAgainst() {
     // X2-b+c r3 R3-3b: reconcile before any write (the fetch-resolve path
     // reconciles first too; this seam stays safe when driven directly), then
-    // write only when no refusal is active, the active view is still the
-    // PINNED view this desk captured, and its canonical request bytes still
-    // equal the captured pinned body — a digest from a fetch this desk no
-    // longer serves never lands in a view another tab edited.
+    // write only when no refusal is active. MINOR-3 (repair): the polarity is
+    // main's — only a LATEST view (a fresh save or a re-resolve, which clears
+    // the digest) is backfilled; a pinned view keeps the digest it was saved
+    // with. The reconcile is what makes that safe: a view another tab pinned,
+    // unpinned, re-cut or deleted while this tab's fetch was in flight is
+    // refused first, so a digest from a fetch this desk no longer serves
+    // never lands in it.
     reconcileSavedActive();
     var view = savedActiveView();
-    if (!view || !view.pinned) return;
-    var captured = state.pinnedRequest;
-    if (!captured) return;
-    var storedBytes = window.FifSavedBriefcase.canonicalJson(view.request);
-    var capturedBytes = window.FifSavedBriefcase.canonicalJson(captured);
-    if (storedBytes === null || capturedBytes === null || storedBytes !== capturedBytes) return;
+    if (!view || view.pinned || state.pinnedRequest) return;
     var digest = state.financial && state.financial.responseSha256 || '';
     if (!digest || view.saved_against.response_sha256 === digest) return;
     savedBriefcase.update(view.id, {
@@ -3244,6 +3242,11 @@
     if (state.access === 'signin' || state.access === 'pending') return 'signin';
     if (state.access === 'upgrade') return 'upgrade';
     if (state.exportUnavailable) return 'unavailable';
+    // X2-b+c r3 MINOR-4 (repair): the button agrees with exportQueryBody — a
+    // saved-view refusal leaves Export with no body, so the control reads
+    // unavailable instead of offering a click that does nothing.
+    reconcileSavedActive();
+    if (state.savedRefusal) return 'unavailable';
     var target = company() || {};
     var body = buildQueryBody();
     var legal = !!target.entity_id && !!body.periods.length &&
@@ -3261,6 +3264,8 @@
         ? ['Export unavailable: this server does not offer workbook downloads yet.', '导出不可用：此服务器尚未提供工作簿下载。']
         : ['Export unavailable: the last download request failed. Reload to try again.', '导出不可用：上次下载请求失败，请重新载入后再试。'];
     }
+    // MINOR-4: the saved-view notice already names the cause and the action.
+    if (state.savedRefusal) return ['Export unavailable for this view.', '此视图暂不支持导出。'];
     var target = company() || {};
     var body = buildQueryBody();
     var en = [];

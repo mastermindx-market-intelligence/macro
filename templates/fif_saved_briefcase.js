@@ -641,17 +641,8 @@
       // above are stricter, so this adds the blank/NUL/control laws) and its
       // Terminal identity tuple is deduped exactly as the emitter dedups, so
       // a stored view always exports.
-      var seenIdentities = {};
-      for (var refIndex = 0; refIndex < evidenceRefs.value.length; refIndex += 1) {
-        var refPath = '$.evidence_refs[' + refIndex + ']';
-        var projection = manifestEvidenceRef(evidenceRefs.value[refIndex], refPath, pinned);
-        if (!projection.ok) return projection;
-        var identity = evidenceIdentity(projection.value);
-        if (Object.prototype.hasOwnProperty.call(seenIdentities, identity)) {
-          return manifestRefusal('duplicate_reference', refPath);
-        }
-        seenIdentities[identity] = true;
-      }
+      var refsRefusal = evidenceExportRefusal(evidenceRefs.value, pinned);
+      if (refsRefusal) return refsRefusal;
       if (pinned && (!request.policy.source_snapshot_at || !request.policy.recorded_at)) {
         return { ok: false, reason: 'pinned_cutoffs' };
       }
@@ -735,6 +726,13 @@
         return manifestRefusal('invalid_date', '$.intent.research_as_of');
       }
       next.pinned = pinned;
+      // X2-b+c r3 R3-1 (repair): the stored refs re-run the emitter's
+      // projection and dedup under the pin state the row will carry —
+      // unconditionally, because an unpin can collapse two refs to one
+      // identity and a pin can surface an accession the latest projection
+      // never checked. Refused typed; the row is unchanged.
+      var refsRefusal = evidenceExportRefusal(next.evidence_refs, pinned);
+      if (refsRefusal) return refsRefusal;
       if (Object.prototype.hasOwnProperty.call(input, 'saved_against')) {
         // X2-b+c r3 R3-2: generation_id is never cut here either — an
         // over-limit or lone-surrogate id refuses typed, row unchanged.
@@ -1040,6 +1038,28 @@
       entry.owner, entry.object_type, entry.object_id, entry.mode,
       entry.version_ref === undefined ? null : entry.version_ref, null
     ]);
+  }
+
+  // X2-b+c r3 R3-1 (repair): the store's export gate for evidence refs — the
+  // emitter's own projection (its checker, paths and limits) and its Terminal
+  // identity dedup, run under the pin state the row will carry. save() and
+  // update() both call it, so a pin flip that would make stored refs refuse
+  // at export (an unpin collapsing two refs to one identity, or a pin
+  // surfacing an accession as version_ref) refuses at the write instead, and
+  // nothing is stored. Returns the refusal, or null when every ref exports.
+  function evidenceExportRefusal(refs, pinned) {
+    if (refs == null) return null;
+    if (!Array.isArray(refs)) return manifestRefusal('invalid_type', '$.evidence_refs');
+    var seen = {};
+    for (var index = 0; index < refs.length; index += 1) {
+      var path = '$.evidence_refs[' + index + ']';
+      var projection = manifestEvidenceRef(refs[index], path, pinned);
+      if (!projection.ok) return projection;
+      var identity = evidenceIdentity(projection.value);
+      if (Object.prototype.hasOwnProperty.call(seen, identity)) return manifestRefusal('duplicate_reference', path);
+      seen[identity] = true;
+    }
+    return null;
   }
 
   // A->B with typed refusals: {ok: true, manifest, notices} or
