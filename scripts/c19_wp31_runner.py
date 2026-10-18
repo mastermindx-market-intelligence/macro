@@ -147,10 +147,15 @@ def run_evaluation(
             ep["a0"] = sources._empty_a0()
             continue
         episode_end = sources._parse_day(ep.get("period_end"))
-        q_accession = _q_accession_for_period(
-            sources._quarterly_eps_filings(facts), episode_end
-        )
-        if q_accession is not None:
+        quarterly = sources._quarterly_eps_filings(facts)
+        q_period_matches = _q_period_matches(quarterly, episode_end)
+        q_accession = _q_accession_for_period(quarterly, episode_end)
+        # Wave-3 spec §3: record whenever the facts JSON holds AT LEAST ONE
+        # original-filing EPS context for the episode period (one OR several
+        # matches).  Zero matches -> no record (no label value exists to read
+        # for this episode).  The whole facts JSON is in memory either way,
+        # so this is more conservative under prereg §6 and needs none.
+        if q_period_matches:
             gates.record_label_read(
                 exposure_path, issuer, ep["q"], gates.EVALUATOR_READER, now_iso
             )
@@ -210,19 +215,41 @@ def run_evaluation(
 def _q_accession_for_period(
     filings: Mapping[str, Mapping[Any, float]], target: Any
 ) -> str | None:
-    """The accession whose latest fact end equals ``target``, or None.
+    """The single accession whose latest fact end equals ``target``, or None.
 
-    Zero or more than one match -> no q filing (wave-2 spec §4 step 5): the
-    episode's quarter is identified by its period END DATE, and an ambiguous
-    filing set refuses rather than guessing which filing carries the release.
+    Wave-2 semantics retained for the label read: zero or several matches ->
+    no q filing for ``_q_accession_for_period`` (the label read refuses an
+    ambiguous filing set rather than guessing).  Wave-3 introduces
+    :func:`_q_period_matches` so the EXPOSURE LEDGER records whenever at
+    least one original-filing EPS context for the episode period exists in
+    the facts JSON (one OR several matches), not only exactly one — prereg
+    §6: the whole JSON is in memory either way; the more-conservative read
+    is to record.
     """
     if target is None:
         return None
+    matches = _q_period_matches(filings, target)
+    if len(matches) != 1:
+        return None
+    return matches[0]
+
+
+def _q_period_matches(
+    filings: Mapping[str, Mapping[Any, float]], target: Any
+) -> list[str]:
+    """Accessions whose latest fact end equals ``target``, sorted (wave-3 §3).
+
+    Returns the empty list when ``target`` is ``None`` or no filing carries
+    the episode's period end.  One or several matches -> the episode has at
+    least one original-filing EPS context; the exposure ledger is then
+    recorded BEFORE the label value is touched.
+    """
+    if target is None:
+        return []
     matches = [
         accession
         for accession, ends in filings.items()
         if ends and max(ends) == target  # ends is never empty (sources builds it so)
     ]
-    if len(matches) != 1:
-        return None
-    return matches[0]
+    matches.sort()
+    return matches
