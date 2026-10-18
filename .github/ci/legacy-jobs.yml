@@ -2588,15 +2588,17 @@ jobs:
     if: ${{ false }}
     gate: code
     scope: exclusive
-    # C19 WP31: incremental-information evaluator gates, arms/statistics and label-blind sources (offline).
+    # C19 WP31: incremental-information evaluator gates, arms/statistics, label-blind sources and the injected-I/O runner (offline).
     timeout-minutes: 10
     paths:
       - "tests/test_c19_wp31_gates.py"
       - "tests/test_c19_wp31_stats.py"
       - "tests/test_c19_wp31_sources.py"
+      - "tests/test_c19_wp31_runner.py"
       - "scripts/c19_wp31_gates.py"
       - "scripts/c19_wp31_stats.py"
       - "scripts/c19_wp31_sources.py"
+      - "scripts/c19_wp31_runner.py"
       - "config/earnings_story_promotion.yml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/sparse_worktree.json"
@@ -2684,7 +2686,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml requests
       - name: c19-wp31-incremental-information
-        run: python -m pytest tests/test_c19_wp31_gates.py tests/test_c19_wp31_stats.py tests/test_c19_wp31_sources.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_c19_wp31_gates.py tests/test_c19_wp31_stats.py tests/test_c19_wp31_sources.py tests/test_c19_wp31_runner.py -q -p no:cacheprovider
 
   inline-js:
     if: ${{ false }}
