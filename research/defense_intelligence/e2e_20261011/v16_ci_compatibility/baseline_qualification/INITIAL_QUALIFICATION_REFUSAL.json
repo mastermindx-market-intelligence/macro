@@ -1,0 +1,6 @@
+{
+  "observed_at": "2026-10-14T13:42:17.818259+00:00",
+  "assertion": "Daily must be exact inherited protected-main source",
+  "outcome": "qualification refused; no baseline produced",
+  "diagnosis": "The complete Daily workflow includes this branch original GovRev caller changes, so compare only the two changed inherited jobs to protected main while separately requiring the GovRev caller byte equality to accepted baseline."
+}

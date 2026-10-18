@@ -29,6 +29,11 @@ const FIXTURE_DIR = new URL('../tests/fixtures/fundamental_forensics/fif_saved_r
 const RECORDED_BODY = readFileSync(new URL('recorded_query_response.json', FIXTURE_DIR), 'utf8');
 const RECORDED_BYTES = new TextEncoder().encode(JSON.stringify(JSON.parse(RECORDED_BODY)));
 const RECORDED_SHA = createHash('sha256').update(RECORDED_BYTES).digest('hex');
+// The health world the harness seeds (state.health AND the health stub below
+// answer with exactly these clocks/generation, so the page's real health flow
+// and the direct injection describe one world).
+const SEEDED_CLOCKS = { broad_source_at: '2026-10-11T23:59:59Z', composed_state_at: '2026-10-11T23:59:59Z' };
+const SEEDED_GENERATION = { id: 'ffprods_' + 'a1b2c3d4'.repeat(8), admitted_at: '2026-10-10T04:00:00Z' };
 
 function fixtureContainer(name) {
   return JSON.parse(readFileSync(new URL(name, FIXTURE_DIR), 'utf8'));
@@ -200,6 +205,20 @@ function harness(options) {
   function fetchStub(url, init) {
     fetchCalls.push({ url: String(url), body: init && init.body ? String(init.body) : '' });
     if (options.fetchThrows) throw new Error('network is forbidden in this suite');
+    // PF r1 (R1): the compare chain now consumes the health FETCH answer, so
+    // the stub answers health with the same clocks/generation the harness
+    // seeds below (previously the generic envelope raced the direct
+    // injection and only lost after the request bytes were built).
+    if (String(url).indexOf('/api/forensics/health') >= 0) {
+      return Promise.resolve({
+        ok: true,
+        headers: {
+          get: (name) => (name === 'X-FIF-Dataset-Generation-Id' ? SEEDED_GENERATION.id
+            : name === 'X-FIF-Dataset-Admitted-At' ? SEEDED_GENERATION.admitted_at : '')
+        },
+        json: () => Promise.resolve({ status: 'current', clocks: SEEDED_CLOCKS })
+      });
+    }
     const bodyBytes = RECORDED_BYTES;
     return Promise.resolve({
       ok: true,
@@ -259,9 +278,13 @@ function harness(options) {
   api.state.access = 'open';
   api.state.health = {
     status: 'current',
-    clocks: { broad_source_at: '2026-10-11T23:59:59Z', composed_state_at: '2026-10-11T23:59:59Z' },
-    generation: { id: 'ffprods_' + 'a1b2c3d4'.repeat(8), admitted_at: '2026-10-10T04:00:00Z' }
+    clocks: SEEDED_CLOCKS,
+    generation: { id: SEEDED_GENERATION.id, admitted_at: SEEDED_GENERATION.admitted_at }
   };
+  // PF r1 (R1): the compare chain waits for the selected issuer's accepted
+  // health answer; tests that never run loadHealth still describe a world
+  // where AAPL's answer already landed (the seed above).
+  api.state.healthAnswer = { entity_id: 'ISS:US-XNAS-AAPL', seq: 0, ok: true, pointer: '' };
   return {
     api, nodes, windowListeners, pushes, replaces, location, storage,
     fetchCalls, xhrCount, window: windowObject

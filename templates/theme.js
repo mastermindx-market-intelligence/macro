@@ -471,25 +471,52 @@
      window.MMAccount.open(), which the settings-gear signed-in row calls. Identity
      rides the shared .mastermind-x.com cookie (credentials:include) — so it never
      loads a Supabase SDK here (jsdelivr is GFW-blocked). Path-depth aware; idempotent. */
-  (function loadAccount() {
-    if (window.__mmAccountLoading) return;
-    window.__mmAccountLoading = true;
+/* Account singleton loader -- drop-in replacement for the original loadAccount
+   IIFE (same scope, same net effect).  On every ordinary page this behaves
+   exactly as before and runs synchronously.  The single addition is a bounded
+   opt-in deferral: when the gov page publishes window.MDX_PROGRESSIVE_BOOT
+   carrying a ready.then promise, the SAME original loader below is deferred
+   until whichever comes first -- ready resolution, ready rejection, a 1500ms
+   fallback timer, or the first pointerdown/keydown input.  The original loader
+   body is unchanged: the __mmAccountLoading singleton guard is claimed
+   synchronously at execution (so a duplicate boot can never double-load), and
+   the MM_API default, the _mmSharedAssetRoot source prefix and the account.js
+   release key are all retained.  The deferral arms (timer + both listeners)
+   are removed on release and the loader fires exactly once.  No scheduler,
+   storage, auth, session or entitlement access is added. */
+(function loadAccount() {
+  if (window.__mmAccountLoading) return;
+  window.__mmAccountLoading = true;
+  var done = false;
+  function run() {
+    if (done) return;
+    done = true;
     window.MM_API = window.MM_API || 'https://app.mastermind-x.com';
-    /* Derive the shared-asset root from this script's own URL.  The previous
-       pathname special-case only knew about /sectors/, so every other nested
-       estate (/basket_canada/, /basket/, /rotation/, …) requested account.js
-       from its page folder.  That 404 also prevented account.js from loading
-       nav_market.js, leaving those pages on the legacy dropdown.  The rendered
-       theme.js reference already carries the correct ../ depth, so reuse it as
-       the single source of truth for every current and future nested page. */
+    /* Shared-asset root comes from this script's own URL context via
+       _mmSharedAssetRoot (the rendered theme.js reference already carries the
+       correct ../ depth); the explicit release key below keeps a year-cached
+       account.js from pinning an older navigation loader. */
     var pfx = _mmSharedAssetRoot;
     var s = document.createElement('script');
-    // Keep the dynamic dependency cache-safe too. theme.js itself is
-    // content-hashed in every page; this explicit release key prevents a
-    // year-cached account.js from pinning an older navigation loader.
-    s.src = pfx + 'account.js?v=20261011-account-identity'; s.async = true;
+    s.src = pfx + 'account.js?v=20261015-mm-return-language'; s.async = true;
     document.head.appendChild(s);
-  })();
+  }
+  var boot = window.MDX_PROGRESSIVE_BOOT;
+  var ready = (boot && boot.ready && typeof boot.ready.then === 'function') ? boot.ready : null;
+  if (!ready) { run(); return; }
+  var timer = setTimeout(release, 1500);
+  document.addEventListener('pointerdown', release, true);
+  document.addEventListener('keydown', release, true);
+  ready.then(release, release);
+  function release() {
+    if (done) return;
+    clearTimeout(timer);
+    document.removeEventListener('pointerdown', release, true);
+    document.removeEventListener('keydown', release, true);
+    run();
+  }
+})();
+
 
   /* ---- Plotly charts: re-theme to the active theme -------------------------
      Charts are built transparent with neutral-grey axes (build_site.py); here we
@@ -3591,6 +3618,13 @@
   // (script unreachable): navigate to the landing with the param — index.html
   // always carries the sheet.
   function _mmOpenOnboard(mode) {
+    // Every global entry (including Settings and an already loaded sheet) must
+    // freeze this page's current reference before provider navigation. Waiting
+    // for a catalogue response can leave an older same-tab capsule in place.
+    if (location.pathname === '/market_memory.html' && window.MarketMemoryIntent) {
+      var memoryReturn = window.MarketMemoryIntent.syncReturn();
+      if (!memoryReturn.ok) return; // Ambiguous references cannot reuse old intent.
+    }
     // whitelist: signin (default) · signup · upgrade (post-login monetization sheet)
     var m = (mode === 'signup') ? 'signup' : (mode === 'upgrade') ? 'upgrade' : 'signin';
     if (window.MMOnboard && window.MMOnboard.open) { window.MMOnboard.open(m); return; }
@@ -3600,7 +3634,18 @@
     var s = document.createElement('script');
     s.src = pfx + 'onboard.js'; s.defer = true;
     var fbQ = (m === 'signup') ? 'signup=1' : (m === 'upgrade') ? 'upgrade=1' : 'signin=1';
-    var fallback = function () { location.href = pfx + 'index.html?' + fbQ; };
+    var fallbackTarget = pfx + 'index.html?' + fbQ;
+    try {
+      var returnParams = new URL(location.href).searchParams;
+      var returnPath = returnParams.get('ret');
+      var returnUrl = new URL(returnPath || '', location.origin);
+      if (returnParams.getAll('ret').length === 1 && returnPath && returnPath.length <= 4096
+          && returnPath.charAt(0) === '/' && returnPath.slice(0, 2) !== '//'
+          && returnUrl.origin === location.origin) {
+        fallbackTarget += '&ret=' + encodeURIComponent(returnUrl.pathname + returnUrl.search + returnUrl.hash);
+      }
+    } catch (e) { /* Invalid or ambiguous return state cannot choose a destination. */ }
+    var fallback = function () { location.href = fallbackTarget; };
     var t = setTimeout(function () { if (!window.MMOnboard) fallback(); }, 4000);
     s.onload = function () {
       clearTimeout(t); window.__mmOnboardLoading = false;
@@ -4030,7 +4075,11 @@
       if (theme && theme !== curTheme()) setTheme(theme);
       if (themeAuto === '1') setThemeAuto();
       var lg = docEl.getAttribute('data-lang') || 'en';
-      if (lang && lang !== lg) setLang(lang);
+      if (lang && lang !== lg) {
+        if (window.MarketMemoryIntent && typeof window.MarketMemoryIntent.applyProfileLanguage === 'function') {
+          window.MarketMemoryIntent.applyProfileLanguage(lang, setLang);
+        } else setLang(lang);
+      }
     } catch (e) {}
     _prefSyncing = false;
   }

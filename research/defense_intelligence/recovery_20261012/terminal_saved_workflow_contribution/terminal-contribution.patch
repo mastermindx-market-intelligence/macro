@@ -1,0 +1,628 @@
+--- a/terminal/lib/savedViewContract.ts
++++ b/terminal/lib/savedViewContract.ts
+@@ -2,6 +2,8 @@
+ import { MAX_SAVED_VIEW_NAME } from "@/lib/rmsViews";
+ import type { SavedView, ViewFilter } from "@/lib/rmsViews";
+ import { isUuid } from "@/lib/theses";
++import { normalizeGovernmentRevenueMonitor } from "@/lib/governmentRevenueMonitor";
++import type { GovernmentRevenueMonitorDeclaration } from "@/lib/governmentRevenueMonitor";
+ 
+ export const SAVED_VIEW_CONTRACT = "mastermind.saved_view.v2" as const;
+ export const MAX_SAVED_DEFINITION_BYTES = 24 * 1024;
+@@ -16,7 +18,8 @@
+   | { version: 1; kind: "heatmap_live"; universe: SavedUniverse;
+       membershipPolicy: "current_on_open"; sessionPolicy: "latest_eligible_close";
+       metric: { id: "price_return_pct"; window: SavedReturnWindow };
+-      condition: { operator: "gt" | "gte" | "lt" | "lte"; value: number } };
++      condition: { operator: "gt" | "gte" | "lt" | "lte"; value: number } }
++  | { version: 1; kind: "government_revenue"; monitor: GovernmentRevenueMonitorDeclaration };
+ export type WorkspaceSavedView = {
+   id: string; name: string; definition: SavedViewDefinition;
+   createdAt: string; updatedAt: string; revision: number;
+@@ -104,6 +107,13 @@
+       membershipPolicy: "current_on_open", sessionPolicy: "latest_eligible_close",
+       metric: { id: "price_return_pct", window: metric.window as SavedReturnWindow },
+       condition: { operator: condition.operator as "gt" | "gte" | "lt" | "lte", value: Object.is(condition.value, -0) ? 0 : condition.value } };
++  } else if (raw.kind === "government_revenue") {
++    // Typed durable monitor declaration; the declaration parser owns every
++    // field bound, the closed vocabularies and the 24 KiB payload cap.
++    if (!exactKeys(raw, ["version", "kind", "monitor"])) return null;
++    const monitor = normalizeGovernmentRevenueMonitor(raw.monitor);
++    if (!monitor) return null;
++    definition = { version: 1, kind: "government_revenue", monitor };
+   } else return null;
+   return new TextEncoder().encode(JSON.stringify(definition)).byteLength <= MAX_SAVED_DEFINITION_BYTES ? definition : null;
+ }
+--- a/terminal/lib/theses.ts
++++ b/terminal/lib/theses.ts
+@@ -1,5 +1,9 @@
+ import type { DbResult, WatchlistDb } from "@/lib/watchlists";
+ import { ANALYSIS_SYMBOL } from "@/lib/analysisSymbol";
++import {
++  normalizeGovernmentRevenueMonitor, governmentRevenueMonitorToWire,
++} from "@/lib/governmentRevenueMonitor";
++import type { GovernmentRevenueMonitorDeclaration } from "@/lib/governmentRevenueMonitor";
+ 
+ export const THESIS_CONTENT_SCHEMA = "mastermind.thesis-content/v1" as const;
+ export const THESIS_SUBJECT_SCHEMA = "mastermind.thesis-subject-ref/v1" as const;
+@@ -36,6 +40,9 @@
+   horizon: ThesisHorizon;
+   effectiveAt: string | null;
+   revisionNote: string | null;
++  /** Optional typed Government Revenue monitor declaration. `undefined` keeps the
++   * key off the wire (legacy rows); `null` is an explicit, preserved empty value. */
++  governmentRevenueMonitor?: GovernmentRevenueMonitorDeclaration | null;
+ };
+ 
+ export type ThesisVersion = {
+@@ -332,11 +339,18 @@
+   };
+ }
+ 
++const CONTENT_BASE_KEYS = [
++  "schema", "title", "statement", "catalysts", "falsifiers", "risks", "horizon", "effectiveAt", "revisionNote",
++] as const;
++
+ export function normalizeThesisContent(value: unknown): ThesisContent | null {
+   const raw = record(value);
+-  if (!raw || !exactKeys(raw, [
+-    "schema", "title", "statement", "catalysts", "falsifiers", "risks", "horizon", "effectiveAt", "revisionNote",
+-  ])) return null;
++  if (!raw) return null;
++  // The optional Government Revenue member is admitted verbatim; legacy content
++  // that predates it keeps its exact legacy key set.
++  if (!exactKeys(raw, raw.governmentRevenueMonitor === undefined
++    ? CONTENT_BASE_KEYS
++    : [...CONTENT_BASE_KEYS, "governmentRevenueMonitor"])) return null;
+   if (raw.schema !== THESIS_CONTENT_SCHEMA || typeof raw.horizon !== "string" || !HORIZONS.has(raw.horizon as ThesisHorizon)) return null;
+   const title = boundedSingleLineText(raw.title, MAX_THESIS_TITLE, true);
+   const statement = boundedText(raw.statement, MAX_THESIS_STATEMENT, true);
+@@ -346,6 +360,15 @@
+   const effectiveAt = isoTimestamp(raw.effectiveAt);
+   const revisionNote = nullableBoundedText(raw.revisionNote, MAX_REVISION_NOTE);
+   if (!title || !statement || !catalysts || !falsifiers || !risks || effectiveAt === undefined || !revisionNote.ok) return null;
++  let governmentRevenueMonitor: GovernmentRevenueMonitorDeclaration | null;
++  if (raw.governmentRevenueMonitor === undefined) {
++    governmentRevenueMonitor = undefined as unknown as GovernmentRevenueMonitorDeclaration | null;
++  } else if (raw.governmentRevenueMonitor === null) {
++    governmentRevenueMonitor = null;
++  } else {
++    governmentRevenueMonitor = normalizeGovernmentRevenueMonitor(raw.governmentRevenueMonitor);
++    if (!governmentRevenueMonitor) return null;
++  }
+   return {
+     schema: THESIS_CONTENT_SCHEMA,
+     title,
+@@ -356,10 +379,11 @@
+     horizon: raw.horizon as ThesisHorizon,
+     effectiveAt,
+     revisionNote: revisionNote.value,
++    ...(governmentRevenueMonitor === undefined ? {} : { governmentRevenueMonitor }),
+   };
+ }
+ 
+-function subjectToWire(subject: ThesisSubjectRef): Record<string, unknown> {
++export function subjectToWire(subject: ThesisSubjectRef): Record<string, unknown> {
+   return {
+     schema: subject.schema,
+     kind: subject.kind,
+@@ -389,6 +413,11 @@
+     horizon: content.horizon,
+     effective_at: content.effectiveAt,
+     revision_note: content.revisionNote,
++    ...(content.governmentRevenueMonitor === undefined ? {} : {
++      government_revenue_monitor: content.governmentRevenueMonitor === null
++        ? null
++        : governmentRevenueMonitorToWire(content.governmentRevenueMonitor),
++    }),
+   };
+ }
+ 
+@@ -432,11 +461,45 @@
+   return normalized && sameJsonValue(raw, subjectToWire(normalized)) ? normalized : null;
+ }
+ 
++/** Wire-to-application form of the optional Government Revenue member, mirroring
++ * `wireSubject`: the canonical subject is converted by the existing subject wire
++ * parser, everything else is a plain key-space rename; strict validation and
++ * canonicalization then happen once, inside the declaration normalizer. */
++function wireGovernmentRevenueMonitor(value: unknown): unknown {
++  const raw = record(value);
++  const selection = record(raw?.selection);
++  const window = record(raw?.window);
++  if (!raw || !selection || !window || !Array.isArray(raw.baseline_events)) return null;
++  const baselineEvents: unknown[] = [];
++  for (const item of raw.baseline_events) {
++    const event = record(item);
++    if (!event) return null;
++    baselineEvents.push({
++      recordId: event.record_id, eventId: event.event_id, version: event.version, knownAt: event.known_at,
++    });
++  }
++  return {
++    schema: raw.schema,
++    enabled: raw.enabled,
++    subject: wireSubject(raw.subject),
++    selection: {
++      mode: selection.mode, truth: selection.truth, q: selection.q,
++      agency: selection.agency, ticker: selection.ticker, issuer: selection.issuer,
++    },
++    window: { start: window.start, end: window.end },
++    knowledgeCutoff: raw.knowledge_cutoff,
++    inputRefs: raw.input_refs,
++    baselineEvents,
++  };
++}
++
+ function wireContent(value: unknown): ThesisContent | null {
+   const raw = record(value);
+-  if (!raw || !exactKeySet(raw, [
+-    "schema", "title", "statement", "catalysts", "falsifiers", "risks", "horizon", "effective_at", "revision_note",
+-  ])) return null;
++  if (!raw) return null;
++  const hasDeclaration = raw.government_revenue_monitor !== undefined;
++  if (!exactKeySet(raw, hasDeclaration
++    ? ["schema", "title", "statement", "catalysts", "falsifiers", "risks", "horizon", "effective_at", "revision_note", "government_revenue_monitor"]
++    : ["schema", "title", "statement", "catalysts", "falsifiers", "risks", "horizon", "effective_at", "revision_note"])) return null;
+   const normalized = normalizeThesisContent({
+     schema: raw.schema,
+     title: raw.title,
+@@ -447,7 +510,11 @@
+     horizon: raw.horizon,
+     effectiveAt: raw.effective_at,
+     revisionNote: raw.revision_note,
++    ...(hasDeclaration ? { governmentRevenueMonitor: wireGovernmentRevenueMonitor(raw.government_revenue_monitor) } : {}),
+   });
++  // The roundtrip below re-canonicalizes the declaration in BOTH directions: a
++  // non-canonical member (untrimmed text, offset clock, reordered optional) can
++  // never enter an immutable version snapshot.
+   return normalized && sameJsonValue(raw, contentToWire(normalized)) ? normalized : null;
+ }
+ 
+@@ -553,6 +620,13 @@
+   if (input.action === "invalidate" && !content.revisionNote) {
+     return { ok: false, status: "invalid_payload", error: "invalidation reason required" };
+   }
++  if (content.governmentRevenueMonitor
++    && JSON.stringify(governmentRevenueMonitorToWire(content.governmentRevenueMonitor).subject)
++      !== JSON.stringify(subjectToWire(subject))) {
++    // A declaration may only monitor its own thesis's canonical subject; a
++    // display ticker or a different issuer can never be substituted here.
++    return { ok: false, status: "invalid_payload", error: "invalid thesis payload" };
++  }
+ 
+   let result: DbResult;
+   try {
+--- a/supabase/migrations/0012_thesis_objects.sql
++++ b/supabase/migrations/0012_thesis_objects.sql
+@@ -166,6 +166,8 @@
+   v_statement text;
+   v_revision_note text;
+   v_effective_at timestamptz;
++  v_govrev_raw jsonb;
++  v_govrev jsonb;
+ begin
+   status := null;
+   thesis_id := null;
+@@ -328,7 +330,8 @@
+      or exists (
+        select 1 from jsonb_object_keys(p_content) as k(key)
+        where k.key not in (
+-         'schema','title','statement','catalysts','falsifiers','risks','horizon','effective_at','revision_note'
++         'schema','title','statement','catalysts','falsifiers','risks','horizon','effective_at','revision_note',
++         'government_revenue_monitor'
+        )
+      )
+      or jsonb_typeof(p_content->'schema') <> 'string'
+@@ -451,6 +454,212 @@
+     'revision_note', v_revision_note
+   );
+ 
++  -- Optional typed Government Revenue monitor declaration
++  -- (government_revenue.monitor_declaration.v1). Absent on every legacy row and
++  -- admitted here only as an explicit JSON null or a strict closed object; the
++  -- canonical member is merged into v_content afterwards, so the optional typed
++  -- member is covered by the request fingerprint exactly like the rest of the
++  -- immutable snapshot. Lifecycle-only transitions keep their existing
++  -- substance-equality fence: changing a declaration requires a real revise.
++  v_govrev := null;
++  if p_content ? 'government_revenue_monitor' then
++    if jsonb_typeof(p_content->'government_revenue_monitor') not in ('object','null') then
++      status := 'invalid_transition';
++      return next;
++      return;
++    end if;
++    if jsonb_typeof(p_content->'government_revenue_monitor') = 'object' then
++      v_govrev_raw := p_content->'government_revenue_monitor';
++
++      -- Closed declaration object: exact keys, typed schema marker, boolean
++      -- enable, bounded canonical bytes. The declaration subject must equal
++      -- the thesis owner's canonical subject_ref exactly. A foreign subject is
++      -- rejected; no silent subject substitution changes the saved meaning.
++      if not (v_govrev_raw ?& array[
++           'schema','enabled','subject','selection','window','knowledge_cutoff','input_refs','baseline_events'
++         ])
++         or exists (
++           select 1 from jsonb_object_keys(v_govrev_raw) as k(key)
++           where k.key not in (
++             'schema','enabled','subject','selection','window','knowledge_cutoff','input_refs','baseline_events'
++           )
++         )
++         or jsonb_typeof(v_govrev_raw->'schema') <> 'string'
++         or v_govrev_raw->>'schema' <> 'government_revenue.monitor_declaration.v1'
++         or jsonb_typeof(v_govrev_raw->'enabled') <> 'boolean'
++         or jsonb_typeof(v_govrev_raw->'subject') <> 'object'
++         or (v_govrev_raw->'subject') is distinct from v_subject_ref
++         or jsonb_typeof(v_govrev_raw->'knowledge_cutoff') <> 'string'
++         or jsonb_typeof(v_govrev_raw->'selection') <> 'object'
++         or jsonb_typeof(v_govrev_raw->'window') <> 'object'
++         or octet_length(convert_to(v_govrev_raw::text, 'UTF8')) > 24576 then
++        status := 'invalid_transition';
++        return next;
++        return;
++      end if;
++
++      if not (v_govrev_raw->'selection' ?& array['mode','truth','q','agency','ticker','issuer'])
++         or exists (
++           select 1 from jsonb_object_keys(v_govrev_raw->'selection') as k(key)
++           where k.key not in ('mode','truth','q','agency','ticker','issuer')
++         )
++         or jsonb_typeof(v_govrev_raw->'selection'->'mode') <> 'string'
++         or v_govrev_raw->'selection'->>'mode' not in ('changes','awards','opportunities','recompetes')
++         or jsonb_typeof(v_govrev_raw->'selection'->'truth') <> 'string'
++         or v_govrev_raw->'selection'->>'truth' not in ('all','official','linked','defense')
++         or jsonb_typeof(v_govrev_raw->'selection'->'q') not in ('string','null')
++         or jsonb_typeof(v_govrev_raw->'selection'->'agency') not in ('string','null')
++         or jsonb_typeof(v_govrev_raw->'selection'->'ticker') not in ('string','null')
++         or jsonb_typeof(v_govrev_raw->'selection'->'issuer') not in ('string','null')
++         or (jsonb_typeof(v_govrev_raw->'selection'->'q') = 'string'
++             and (length(btrim(v_govrev_raw->'selection'->>'q', ' ')) not between 1 and 120
++                  or btrim(v_govrev_raw->'selection'->>'q', ' ') ~ '[[:cntrl:]]'))
++         or (jsonb_typeof(v_govrev_raw->'selection'->'agency') = 'string'
++             and (length(btrim(v_govrev_raw->'selection'->>'agency', ' ')) not between 1 and 100
++                  or btrim(v_govrev_raw->'selection'->>'agency', ' ') ~ '[[:cntrl:]]'))
++         or (jsonb_typeof(v_govrev_raw->'selection'->'ticker') = 'string'
++             and (length(btrim(v_govrev_raw->'selection'->>'ticker', ' ')) not between 1 and 10
++                  or btrim(v_govrev_raw->'selection'->>'ticker', ' ')
++                     !~ '^([A-Z0-9]+([.-][A-Z0-9]+)*)$'))
++         or (jsonb_typeof(v_govrev_raw->'selection'->'issuer') = 'string'
++             and v_govrev_raw->'selection'->>'issuer' not in ('LMT','RTX','NOC','LHX')) then
++        status := 'invalid_transition';
++        return next;
++        return;
++      end if;
++
++      if not (v_govrev_raw->'window' ?& array['start','end'])
++         or exists (
++           select 1 from jsonb_object_keys(v_govrev_raw->'window') as k(key)
++           where k.key not in ('start','end')
++         )
++         or jsonb_typeof(v_govrev_raw->'window'->'start') <> 'string'
++         or jsonb_typeof(v_govrev_raw->'window'->'end') <> 'string'
++         or (v_govrev_raw->'window'->>'start')
++            !~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{3}Z$'
++         or (v_govrev_raw->'window'->>'end')
++            !~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{3}Z$'
++         or (v_govrev_raw->>'knowledge_cutoff')
++            !~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{3}Z$' then
++        status := 'invalid_transition';
++        return next;
++        return;
++      end if;
++
++      if jsonb_typeof(v_govrev_raw->'input_refs') <> 'array'
++         or jsonb_array_length(v_govrev_raw->'input_refs') not between 1 and 16
++         or exists (
++           select 1 from jsonb_array_elements(v_govrev_raw->'input_refs') as r(ref)
++           where jsonb_typeof(r.ref) <> 'string'
++              or (r.ref #>> '{}') !~ '^(workspace-sha256:[0-9a-f]{64}|grw2-[0-9a-f]{24})$'
++              or (r.ref #>> '{}') ~ '[[:cntrl:]]'
++         )
++         or (
++           select count(distinct r.ref #>> '{}')
++           from jsonb_array_elements(v_govrev_raw->'input_refs') as r(ref)
++         ) <> jsonb_array_length(v_govrev_raw->'input_refs') then
++        status := 'invalid_transition';
++        return next;
++        return;
++      end if;
++
++      if jsonb_typeof(v_govrev_raw->'baseline_events') <> 'array'
++         or jsonb_array_length(v_govrev_raw->'baseline_events') > 100
++         or exists (
++           select 1
++           from jsonb_array_elements(v_govrev_raw->'baseline_events') as b(event)
++           where jsonb_typeof(b.event) <> 'object'
++              or not (b.event ?& array['record_id','event_id','version','known_at'])
++              or exists (
++                select 1 from jsonb_object_keys(b.event) as k(key)
++                where k.key not in ('record_id','event_id','version','known_at')
++              )
++              or jsonb_typeof(b.event->'record_id') <> 'string'
++              or jsonb_typeof(b.event->'event_id') <> 'string'
++              or jsonb_typeof(b.event->'version') <> 'number'
++              or jsonb_typeof(b.event->'known_at') <> 'string'
++              or length(btrim(b.event->>'record_id', ' ')) not between 1 and 128
++              or length(btrim(b.event->>'event_id', ' ')) not between 1 and 128
++              or btrim(b.event->>'record_id', ' ') ~ '[[:cntrl:]]'
++              or btrim(b.event->>'event_id', ' ') ~ '[[:cntrl:]]'
++              or (b.event->>'version') !~ '^[1-9][0-9]{0,8}$'
++              or (b.event->>'known_at')
++                 !~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{3}Z$'
++         ) then
++        status := 'invalid_transition';
++        return next;
++        return;
++      end if;
++
++      if (select count(distinct jsonb_build_array(btrim(b.event->>'record_id',' '), btrim(b.event->>'event_id',' ')))
++          from jsonb_array_elements(v_govrev_raw->'baseline_events') as b(event))
++         <> jsonb_array_length(v_govrev_raw->'baseline_events') then
++        status := 'invalid_transition'; return next; return;
++      end if;
++
++      -- Calendar-valid, offset-free canonical clocks only; each stored wall clock
++      -- must be the UTC millisecond rendering of the same instant, and the
++      -- declared window must be ordered.
++      begin
++        if to_char((v_govrev_raw->'window'->>'start')::timestamptz at time zone 'UTC',
++                   'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') is distinct from (v_govrev_raw->'window'->>'start')
++           or to_char((v_govrev_raw->'window'->>'end')::timestamptz at time zone 'UTC',
++                      'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') is distinct from (v_govrev_raw->'window'->>'end')
++           or to_char((v_govrev_raw->>'knowledge_cutoff')::timestamptz at time zone 'UTC',
++                      'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') is distinct from (v_govrev_raw->>'knowledge_cutoff')
++           or (v_govrev_raw->'window'->>'start')::timestamptz > (v_govrev_raw->'window'->>'end')::timestamptz
++           or exists (
++             select 1
++             from jsonb_array_elements(v_govrev_raw->'baseline_events') as b(event)
++             where (b.event->>'known_at')::timestamptz > (v_govrev_raw->>'knowledge_cutoff')::timestamptz
++                or to_char((b.event->>'known_at')::timestamptz at time zone 'UTC',
++                           'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') is distinct from (b.event->>'known_at')
++           ) then
++          status := 'invalid_transition';
++          return next;
++          return;
++        end if;
++      exception when invalid_datetime_format or datetime_field_overflow then
++        status := 'invalid_transition';
++        return next;
++        return;
++      end;
++
++      v_govrev := jsonb_build_object(
++        'schema', v_govrev_raw->>'schema',
++        'enabled', (v_govrev_raw->'enabled'),
++        'subject', v_subject_ref,
++        'selection', jsonb_build_object(
++          'mode', v_govrev_raw->'selection'->>'mode',
++          'truth', v_govrev_raw->'selection'->>'truth',
++          'q', nullif(btrim(v_govrev_raw->'selection'->>'q', ' '), ''),
++          'agency', nullif(btrim(v_govrev_raw->'selection'->>'agency', ' '), ''),
++          'ticker', nullif(btrim(v_govrev_raw->'selection'->>'ticker', ' '), ''),
++          'issuer', nullif(btrim(v_govrev_raw->'selection'->>'issuer', ' '), '')
++        ),
++        'window', jsonb_build_object(
++          'start', v_govrev_raw->'window'->>'start',
++          'end', v_govrev_raw->'window'->>'end'
++        ),
++        'knowledge_cutoff', v_govrev_raw->>'knowledge_cutoff',
++        'input_refs', (
++          select jsonb_agg(r.ref #>> '{}' order by r.ordinality)
++          from jsonb_array_elements(v_govrev_raw->'input_refs') with ordinality as r(ref, ordinality)
++        ),
++        'baseline_events', (
++          select coalesce(jsonb_agg(jsonb_build_object(
++                   'record_id', btrim(b.event->>'record_id', ' '),
++                   'event_id', btrim(b.event->>'event_id', ' '),
++                   'version', (b.event->>'version')::integer,
++                   'known_at', b.event->>'known_at'
++                 ) order by b.ordinality), '[]'::jsonb)
++          from jsonb_array_elements(v_govrev_raw->'baseline_events') with ordinality as b(event, ordinality)
++        )
++      );
++    end if;
++    v_content := v_content || jsonb_build_object('government_revenue_monitor', v_govrev);
++  end if;
++
+   v_subject_digest := extensions.digest(convert_to(v_subject_ref::text, 'UTF8'), 'sha256');
+   v_fingerprint := extensions.digest(convert_to(jsonb_build_object(
+     'thesis_id', p_thesis_id,
+--- a/terminal/app/api/thesis-saved-views/route.ts
++++ b/terminal/app/api/thesis-saved-views/route.ts
+@@ -40,7 +40,7 @@
+         || params.getAll("id").length > 1 || params.getAll("contract").length > 1 || params.getAll("kind").length > 1) return jsonError("invalid_query", 400);
+     if (params.has("contract") && params.get("contract") !== SAVED_VIEW_CONTRACT) return jsonError("invalid_contract", 400);
+     if (params.has("kind") && (params.get("contract") !== SAVED_VIEW_CONTRACT || params.has("id")
+-        || !["thesis_filter", "heatmap_fixed", "heatmap_live"].includes(params.get("kind")!))) return jsonError("invalid_query", 400);
++        || !["thesis_filter", "heatmap_fixed", "heatmap_live", "government_revenue"].includes(params.get("kind")!))) return jsonError("invalid_query", 400);
+     if (params.has("id")) {
+       const result = await lookupWorkspaceSavedView(session.db, session.userId, params.get("id"));
+       return result.ok ? json(result.result) : failure(result.status);
+--- /dev/null
++++ b/terminal/lib/governmentRevenueMonitor.ts
+@@ -0,0 +1,185 @@
++/**
++ * Typed Government Revenue monitor declaration
++ * (schema `government_revenue.monitor_declaration.v1`).
++ *
++ * Tightly scoped helper: shape validation and canonicalization ONLY. No
++ * persistence, no subject resolution, no evaluation and no IO live here. The
++ * declaration is carried by EXISTING owners — either as the payload of the new
++ * `government_revenue` saved-view kind (workspace_settings owner) or as the
++ * optional `governmentRevenueMonitor` member of the existing immutable thesis
++ * content — and is applied only through the existing optimistic
++ * `applyThesisVersion` RPC. Canonical identity always comes from the existing
++ * normalized ThesisSubjectRef; a display-only ticker is never substituted for
++ * the canonical subject key.
++ */
++import { normalizeThesisSubject, subjectToWire } from "@/lib/theses";
++import type { ThesisSubjectRef } from "@/lib/theses";
++
++export const GOVREV_DECLARATION_SCHEMA = "government_revenue.monitor_declaration.v1" as const;
++export const MAX_GOVREV_DECLARATION_BYTES = 24 * 1024;
++export const MAX_GOVREV_INPUT_REFS = 16;
++export const MAX_GOVREV_BASELINE_EVENTS = 100;
++export const MAX_GOVREV_Q = 120;
++export const MAX_GOVREV_AGENCY = 100;
++export const MAX_GOVREV_TICKER = 10;
++export const MAX_GOVREV_BASELINE_ID = 128;
++export const GOVREV_MODES = ["changes", "awards", "opportunities", "recompetes"] as const;
++export const GOVREV_TRUTHS = ["all", "official", "linked", "defense"] as const;
++export const GOVREV_ISSUERS = ["LMT", "RTX", "NOC", "LHX"] as const;
++
++export type GovRevMode = typeof GOVREV_MODES[number];
++export type GovRevTruth = typeof GOVREV_TRUTHS[number];
++export type GovRevIssuer = typeof GOVREV_ISSUERS[number];
++export type GovRevSelection = {
++  mode: GovRevMode;
++  truth: GovRevTruth;
++  q: string | null;
++  agency: string | null;
++  ticker: string | null;
++  issuer: GovRevIssuer | null;
++};
++export type GovRevBaselineEvent = { recordId: string; eventId: string; version: number; knownAt: string };
++export type GovernmentRevenueMonitorDeclaration = {
++  schema: typeof GOVREV_DECLARATION_SCHEMA;
++  enabled: boolean;
++  subject: ThesisSubjectRef;
++  selection: GovRevSelection;
++  window: { start: string; end: string };
++  knowledgeCutoff: string;
++  inputRefs: string[];
++  baselineEvents: GovRevBaselineEvent[];
++};
++
++const CONTROL = /[\u0000-\u001f\u007f]/;
++const CANONICAL_UTC = /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{3}Z$/;
++const INPUT_REF = /^(?:workspace-sha256:[0-9a-f]{64}|grw2-[0-9a-f]{24})$/;
++const CANONICAL_TICKER = /^[A-Z0-9]+(?:[.-][A-Z0-9]+)*$/;
++
++function objectRecord(value: unknown): Record<string, unknown> | null {
++  return value !== null && typeof value === "object" && !Array.isArray(value)
++    ? value as Record<string, unknown> : null;
++}
++function hasExactKeys(raw: Record<string, unknown>, keys: readonly string[]): boolean {
++  const allowed = new Set(keys);
++  return Object.keys(raw).length === keys.length && Object.keys(raw).every(key => allowed.has(key));
++}
++/** Canonical UTC wall clock, millisecond precision, `Z` zone only — the same
++ * closed timestamp subset the existing thesis content contract uses. */
++export function canonicalUtcTimestamp(value: unknown): string | null {
++  if (typeof value !== "string" || value.startsWith("0000-") || !CANONICAL_UTC.test(value)) return null;
++  const parsed = Date.parse(value);
++  return Number.isFinite(parsed) && new Date(parsed).toISOString() === value ? value : null;
++}
++/** PostgreSQL btrim(text, ' ') semantics: U+0020 only, never ECMAScript trim(). */
++function boundedLine(value: unknown, max: number): string | null {
++  if (typeof value !== "string") return null;
++  const trimmed = value.replace(/^ +| +$/g, "");
++  return trimmed.length > 0 && trimmed.length <= max && !CONTROL.test(trimmed) ? trimmed : null;
++}
++/** Sentinel distinguishing "invalid text" from a legitimate `null`. */
++const INVALID: unique symbol = Symbol("invalid");
++
++/** Optional nullable bounded text: `null` passes through, anything invalid is
++ * reported as the `INVALID` sentinel so callers can reject it. */
++function nullableBoundedLine(value: unknown, max: number): string | null | typeof INVALID {
++  if (value === null) return null;
++  return boundedLine(value, max) ?? INVALID;
++}
++
++function normalizeSelection(value: unknown): GovRevSelection | null {
++  const raw = objectRecord(value);
++  if (!raw || !hasExactKeys(raw, ["mode", "truth", "q", "agency", "ticker", "issuer"])) return null;
++  if (typeof raw.mode !== "string" || !GOVREV_MODES.includes(raw.mode as GovRevMode)) return null;
++  if (typeof raw.truth !== "string" || !GOVREV_TRUTHS.includes(raw.truth as GovRevTruth)) return null;
++  const q = nullableBoundedLine(raw.q, MAX_GOVREV_Q);
++  const agency = nullableBoundedLine(raw.agency, MAX_GOVREV_AGENCY);
++  if (q === INVALID || agency === INVALID) return null;
++  const tickerRaw = nullableBoundedLine(raw.ticker, MAX_GOVREV_TICKER);
++  if (tickerRaw === INVALID) return null;
++  const ticker = tickerRaw === null ? null : tickerRaw.toUpperCase();
++  if (ticker !== null && (ticker.length > MAX_GOVREV_TICKER || !CANONICAL_TICKER.test(ticker))) return null;
++  const issuer = raw.issuer === null ? null
++    : typeof raw.issuer === "string" && GOVREV_ISSUERS.includes(raw.issuer as GovRevIssuer) ? raw.issuer as GovRevIssuer : null;
++  if (raw.issuer !== null && issuer === null) return null;
++  return { mode: raw.mode as GovRevMode, truth: raw.truth as GovRevTruth, q, agency, ticker, issuer };
++}
++
++function normalizeBaselineEvents(value: unknown): GovRevBaselineEvent[] | null {
++  if (!Array.isArray(value) || value.length > MAX_GOVREV_BASELINE_EVENTS) return null;
++  const events: GovRevBaselineEvent[] = [];
++  for (const item of value) {
++    const raw = objectRecord(item);
++    if (!raw || !hasExactKeys(raw, ["recordId", "eventId", "version", "knownAt"])) return null;
++    const recordId = boundedLine(raw.recordId, MAX_GOVREV_BASELINE_ID);
++    const eventId = boundedLine(raw.eventId, MAX_GOVREV_BASELINE_ID);
++    const knownAt = canonicalUtcTimestamp(raw.knownAt);
++    if (!recordId || !eventId || !knownAt
++      || typeof raw.version !== "number" || !Number.isSafeInteger(raw.version) || raw.version < 1 || raw.version > 999_999_999) return null;
++    events.push({ recordId, eventId, version: raw.version, knownAt });
++  }
++  return new Set(events.map(event => `${event.recordId}\u0000${event.eventId}`)).size === events.length ? events : null;
++}
++
++/**
++ * Validate and canonicalize one declaration. `null` return means reject: unknown
++ * keys, malformed clocks, non-finite versions, free-form URLs/bodies/private
++ * fields and over-limit payloads are all refused here, before any DB write.
++ */
++export function normalizeGovernmentRevenueMonitor(value: unknown): GovernmentRevenueMonitorDeclaration | null {
++  const raw = objectRecord(value);
++  if (!raw || !hasExactKeys(raw, ["schema", "enabled", "subject", "selection", "window", "knowledgeCutoff", "inputRefs", "baselineEvents"])) return null;
++  if (raw.schema !== GOVREV_DECLARATION_SCHEMA || typeof raw.enabled !== "boolean") return null;
++  // Canonical identity only: the existing normalizer rejects display-only keys
++  // and closed owner/kind vocabularies, exactly as for the thesis subject itself,
++  // without inventing a casing rule for the owning resolver's opaque keys.
++  const subject = normalizeThesisSubject(raw.subject);
++  if (!subject) return null;
++  const selection = normalizeSelection(raw.selection);
++  if (!selection) return null;
++  const window = objectRecord(raw.window);
++  if (!window || !hasExactKeys(window, ["start", "end"])) return null;
++  const start = canonicalUtcTimestamp(window.start), end = canonicalUtcTimestamp(window.end);
++  const knowledgeCutoff = canonicalUtcTimestamp(raw.knowledgeCutoff);
++  if (!start || !end || start > end || !knowledgeCutoff) return null;
++  if (!Array.isArray(raw.inputRefs) || raw.inputRefs.length < 1 || raw.inputRefs.length > MAX_GOVREV_INPUT_REFS
++    || !raw.inputRefs.every(ref => typeof ref === "string" && ref === ref.trim() && INPUT_REF.test(ref))
++    || new Set(raw.inputRefs).size !== raw.inputRefs.length) return null;
++  const baselineEvents = normalizeBaselineEvents(raw.baselineEvents);
++  if (!baselineEvents || baselineEvents.some(event => event.knownAt > knowledgeCutoff)) return null;
++  const declaration: GovernmentRevenueMonitorDeclaration = {
++    schema: GOVREV_DECLARATION_SCHEMA,
++    enabled: raw.enabled,
++    subject,
++    selection,
++    window: { start, end },
++    knowledgeCutoff,
++    inputRefs: [...raw.inputRefs] as string[],
++    baselineEvents,
++  };
++  return new TextEncoder().encode(JSON.stringify(declaration)).byteLength <= MAX_GOVREV_DECLARATION_BYTES ? declaration : null;
++}
++
++/** Wire form mirrors the existing thesis content mapping (snake_case on the wire,
++ * camelCase in application space). Key order is fixed so callers may compare
++ * canonical bytes directly. */
++export function governmentRevenueMonitorToWire(declaration: GovernmentRevenueMonitorDeclaration): Record<string, unknown> {
++  return {
++    schema: declaration.schema,
++    enabled: declaration.enabled,
++    subject: subjectToWire(declaration.subject),
++    selection: {
++      mode: declaration.selection.mode,
++      truth: declaration.selection.truth,
++      q: declaration.selection.q,
++      agency: declaration.selection.agency,
++      ticker: declaration.selection.ticker,
++      issuer: declaration.selection.issuer,
++    },
++    window: { start: declaration.window.start, end: declaration.window.end },
++    knowledge_cutoff: declaration.knowledgeCutoff,
++    input_refs: [...declaration.inputRefs],
++    baseline_events: declaration.baselineEvents.map(event => ({
++      record_id: event.recordId, event_id: event.eventId, version: event.version, known_at: event.knownAt,
++    })),
++  };
++}

@@ -91,15 +91,17 @@ _MONTH_TOKEN = (
 )
 # Word boundaries keep month tokens from matching inside words ("Decor. 31, 2025"
 # is not December). The optional period covers EDGAR viewer dates ("Dec. 31, 2025").
+# A month token may also start at a lowercase-to-capital seam, where "\b" does
+# not fire, so glued banner text like "As ofMarch 31, 2025" still yields a date.
 _DATE_RE = re.compile(
-    r"\b(" + _MONTH_TOKEN + r")\.?\s+(\d{1,2}),\s*(\d{4})\b",
+    r"(?:\b|(?-i:(?<=[a-z])(?=[A-Z])))(" + _MONTH_TOKEN + r")\.?\s+(\d{1,2}),\s*(\d{4})\b",
     re.I,
 )
 # A month-day phrase WITHOUT a year ("Fiscal Year Ended January 31,"): the
 # negative lookahead rejects the day whenever a 4-digit year follows it, so a
 # full date never doubles as a bare month-day phrase.
 _MONTH_DAY_RE = re.compile(
-    r"\b(" + _MONTH_TOKEN + r")\.?\s+(\d{1,2})(?!\s*,?\s*\d{4})\b",
+    r"(?:\b|(?-i:(?<=[a-z])(?=[A-Z])))(" + _MONTH_TOKEN + r")\.?\s+(\d{1,2})(?!\s*,?\s*\d{4})\b",
     re.I,
 )
 _YEAR_CELL_RE = re.compile(r"^\d{4}$")
@@ -560,7 +562,7 @@ def _month_day_pairs_from_text(text: str) -> list[tuple[int, int]]:
 
 def _compose_year_row_header(
     rows: list[list[dict[str, Any]]],
-) -> tuple[list[str], frozenset[int]] | None:
+) -> tuple[list[str], frozenset[int], str] | None:
     """Compose year-only header columns from a month-day banner over a year row.
 
     Fiscal-year statements (the SNOW shape) print the period as
@@ -571,7 +573,9 @@ def _compose_year_row_header(
     facts. An ambiguous banner (two distinct month-days) or a year row that is
     not purely years (fewer than two, or any other non-empty cell besides "$")
     returns None so the caller keeps its existing refusal. Returns the composed
-    ISO dates and the consumed row indices.
+    ISO dates, the consumed row indices, and the composition source:
+    ``"composed_title_year_row"`` when the CAT title banner reached its year row
+    across one exact unit band, otherwise ``"composed_year_row"``.
     """
     first_fact_row = next(
         (index for index, cells in enumerate(rows) if any(cell["facts"] for cell in cells)),
@@ -591,7 +595,27 @@ def _compose_year_row_header(
         if len(distinct) != 1:
             return None
         month, day = distinct[0]
-        year_cells = rows[index + 1]
+        year_row = index + 1
+        year_cells = rows[year_row]
+        # CAT annual statements print a factless, unit-only band between the
+        # "at December 31," title and the bare-year comparative row.  This is
+        # a narrow, source-observed interstitial, not an invitation to skip any
+        # arbitrary narrative or extra header row.
+        units = [str(cell["text"]).strip() for cell in year_cells if str(cell["text"]).strip()]
+        skip_units = (
+            year_row + 1 < header_limit
+            and not any(cell["facts"] for cell in year_cells)
+            # The other observed CAT annual headings use the same one-row
+            # position for different, but exact, statement-unit labels.
+            and units in (
+                ["(Dollars in millions)"],
+                ["(Dollars in millions except per share data)"],
+                ["(Millions of dollars)"],
+            )
+        )
+        if skip_units:
+            year_row += 1
+            year_cells = rows[year_row]
         if any(cell["facts"] for cell in year_cells):
             return None
         years: list[str] = []
@@ -605,7 +629,11 @@ def _compose_year_row_header(
         if len(years) < 2:
             return None
         composed = [f"{int(year):04d}-{month:02d}-{day:02d}" for year in years]
-        return composed, frozenset({index, index + 1})
+        consumed = {index, year_row}
+        if skip_units:
+            consumed.add(index + 1)
+        source = "composed_title_year_row" if skip_units else "composed_year_row"
+        return composed, frozenset(consumed), source
     return None
 
 
@@ -637,9 +665,10 @@ def _expand_displayed_statement_grid(raw_rows: list[list[dict[str, Any]]]) -> li
 
     Origin slots keep text and facts. Colspan continuations are empty placeholders so
     spacer groups (the AAPL pattern) do not duplicate dates or facts. A label rowspan
-    carries its text down the occupied rows with ``rowspan_carry``. Overlap, a span
-    past the captured table, a span overflow, or a hole after expansion is
-    ``displayed statement layout unsupported``.
+    carries its text down the occupied rows with ``rowspan_carry``. A fact-free row
+    narrower than the grid gets ``edge_pad`` slots on its right edge only. Overlap,
+    a span past the captured table, a span overflow, or an interior hole after
+    expansion is ``displayed statement layout unsupported``.
     """
     if not raw_rows:
         return []
@@ -721,10 +750,29 @@ def _expand_displayed_statement_grid(raw_rows: list[list[dict[str, Any]]]) -> li
     for row_index in range(row_count):
         row_map = occupied.get(row_index, {})
         row_cells: list[dict[str, Any]] = []
+        # k is one past this row's highest occupied column. A hole below k (or a
+        # row with no occupied slot at all, k is None) is still unsupported;
+        # missing slots from k to the table's right edge belong to a banner row
+        # narrower than the body (the GOOGL and SNOW income shape) and are
+        # padded fact-free so the row expands onto the body's grid. Only a
+        # fact-free row is padded: a narrow row carrying a fact would bind it to
+        # whichever column its left-packed position happens to land on.
+        k = max(row_map) + 1 if row_map else None
+        row_has_facts = any(slot.get("facts") for slot in row_map.values())
         for column in range(max_col):
             cell = row_map.get(column)
-            if cell is None:
+            if cell is None and (k is None or column < k or row_has_facts):
                 raise _layout_unsupported(f"ragged grid at row {row_index} column {column}")
+            if cell is None:
+                cell = _grid_slot(
+                    text="",
+                    facts=[],
+                    colspan=1,
+                    rowspan=1,
+                    rowspan_carry=False,
+                    colspan_carry=True,
+                )
+                cell["edge_pad"] = True
             row_cells.append(cell)
         grid.append(row_cells)
     return grid
@@ -754,6 +802,7 @@ class _StatementTableParser(HTMLParser):
         self._table_depth = 0
         self._capturing = False
         self._seen_title = False
+        self._discarded = False
         self._ended = False
         self._in_row = False
         self._in_cell = False
@@ -767,16 +816,56 @@ class _StatementTableParser(HTMLParser):
         self._grid_finalized = False
 
     def _title_hit(self, text: str) -> str | None:
-        """The first declared title present in ``text``, or None."""
+        """The first declared title present in ``text``, or None.
+
+        After a factless capture has been discarded, a title only re-arms the
+        capture when ``text`` is the title itself: a narrative sentence or a
+        note row that merely names the statement no longer qualifies.
+        """
         if self._folded_titles is None:
+            stripped = re.sub(r"\s+", " ", text).strip()
             for candidate in self._titles:
-                if candidate and candidate in text:
+                if not candidate:
+                    continue
+                if self._discarded:
+                    if stripped == candidate.strip():
+                        return candidate
+                elif candidate in text:
                     return candidate
             return None
         normalized = _search_normalize(text)
         for candidate, folded_candidate in zip(self._titles, self._folded_titles):
-            if folded_candidate and folded_candidate in normalized:
+            if not folded_candidate:
+                continue
+            if self._discarded:
+                if normalized == folded_candidate:
+                    return candidate
+            elif folded_candidate in normalized:
                 return candidate
+        return None
+
+    def _row_title_hit(self, cells: list[dict[str, Any]]) -> str | None:
+        """Title hit for a finished row: the joined row text, or after a
+        discard, any single cell whose whole text is the title."""
+        if not self._discarded:
+            return self._title_hit(" ".join(cell["text"] for cell in cells))
+        # CAT annual balance sheets render the entire title in one cell with a
+        # terminal comma ("... December 31,").  After a discarded factless TOC,
+        # accept that precise punctuation variant only if the title is the
+        # row's sole nonblank text and the row carries no numeric facts.  The
+        # ordinary full-cell exact-title rule below remains unchanged; a note
+        # with neighboring text or any other suffix cannot exploit this seam.
+        nonblank = [cell for cell in cells if cell["text"].strip()]
+        if len(nonblank) == 1 and not any(cell.get("facts") for cell in cells):
+            title_text = nonblank[0]["text"].strip()
+            if title_text.endswith(","):
+                hit = self._title_hit(title_text[:-1].rstrip())
+                if hit is not None:
+                    return hit
+        for cell in cells:
+            hit = self._title_hit(cell["text"])
+            if hit is not None:
+                return hit
         return None
 
     def _finalize_grid(self) -> None:
@@ -784,6 +873,19 @@ class _StatementTableParser(HTMLParser):
             return
         self._grid_finalized = True
         self.rows = _expand_displayed_statement_grid(self.rows)
+
+    def _capture_has_facts(self) -> bool:
+        return any(cell.get("facts") for cells in self.rows for cell in cells)
+
+    def _discard_factless_capture(self) -> None:
+        # A capture with zero inline-XBRL numeric facts is not the statement
+        # (a table of contents naming it carries none): drop it and keep
+        # parsing, so the next title hit starts a fresh capture.
+        self.rows = []
+        self.chrome_row_indices = set()
+        self._capturing = False
+        self._seen_title = False
+        self._discarded = True
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         if self._ended:
@@ -860,7 +962,7 @@ class _StatementTableParser(HTMLParser):
             self._in_row = False
             if self._row_cells:
                 joined = " ".join(cell["text"] for cell in self._row_cells)
-                hit = self._title_hit(joined)
+                hit = self._row_title_hit(self._row_cells)
                 if hit is not None:
                     self._seen_title = True
                     self._capturing = True
@@ -877,9 +979,12 @@ class _StatementTableParser(HTMLParser):
                 elif self._capturing or self._seen_title:
                     self._capturing = True
                     if "see accompanying notes" in joined.lower():
-                        self._ended = True
                         self._row_cells = []
-                        self._finalize_grid()
+                        if self._capture_has_facts():
+                            self._ended = True
+                            self._finalize_grid()
+                        else:
+                            self._discard_factless_capture()
                         return
                     self.rows.append(self._row_cells)
             self._row_cells = []
@@ -887,8 +992,11 @@ class _StatementTableParser(HTMLParser):
         if tag == "table" and self._table_depth:
             self._table_depth -= 1
             if self._capturing and self._table_depth == 0:
-                self._ended = True
-                self._finalize_grid()
+                if self._capture_has_facts():
+                    self._ended = True
+                    self._finalize_grid()
+                else:
+                    self._discard_factless_capture()
         if self._ix_open is not None and _is_ix_numeric(tag):
             self._cell_facts.append(self._ix_open)
             self._ix_open = None
@@ -916,8 +1024,9 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
     as written, or a list of candidates tried in order. Columns come from a
     header row printing two or more full dates; when no row does, a month-day
     banner over a bare-year row (the fiscal-year SNOW shape) composes the
-    columns and the output carries ``"columns_source": "composed_year_row"``
-    (absent on the full-date path).
+    columns and the output carries ``"columns_source": "composed_year_row"``;
+    the CAT title banner composed across one exact unit band carries
+    ``"composed_title_year_row"`` (absent on the full-date path).
     """
     title_label = title if isinstance(title, str) else ", ".join(str(item) for item in title)
     if not title_label.strip():
@@ -928,7 +1037,7 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
     parser._finalize_grid()
     if not parser.rows:
         raise StatementGraphError(f"displayed statement table is absent: {title_label}")
-    composed: tuple[list[str], frozenset[int]] | None = None
+    composed: tuple[list[str], frozenset[int], str] | None = None
     if not any(
         len(_iso_dates_from_text(" ".join(cell["text"] for cell in cells))) >= 2
         for cells in parser.rows
@@ -979,9 +1088,18 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
         header_dates = composed[0]
     if len(header_dates) < 2:
         raise StatementGraphError(f"displayed statement columns are absent: {title_label}")
+    # Values bind to columns by position, so a row carrying more values than the
+    # table prints dated columns would silently lose its trailing values. The
+    # right-edge pad lets a narrow banner row widen onto the body's grid; it must
+    # never let a body value sit beyond the dated columns.
+    for spec in display_rows:
+        if len(spec["value_facts"]) > len(header_dates):
+            raise _layout_unsupported(
+                f"row {spec['order']} carries {len(spec['value_facts'])} values for {len(header_dates)} dated columns"
+            )
     output: dict[str, Any] = {"columns_iso": header_dates, "rows": display_rows}
     if composed is not None:
-        output["columns_source"] = "composed_year_row"
+        output["columns_source"] = composed[2]
     return output
 
 

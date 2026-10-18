@@ -34,36 +34,36 @@ waves:
     status: in_progress
     pr: [8698, 945, 955, 8986, 9004, 9018, 9020, 9022, 9027]
 next_action: >-
-  Preserve accepted producer integrity, quality/foreign-custody dispositions and
-  exactly four PRODUCED research contracts; twenty remain PROPOSED. Macro #9075
-  passed all12 original CI packs and ci-gate38346775069 at ca8852f, normally
-  merged21652b3a0ff316de74e66eb930251f33402c773a and all39 reviewed blobs match
-  canonical source. All physical03 capture85004, qualifier45885 and accounting
-  returns are consumed. The four-phase partition covers all4,392 identities:
-  2,566 qualified, one wholeSCNG quarantine, nine held timeouts and1,816 never
-  admitted. Accepted coverage is45,724 histories and96,788,107 bars;117 empty,
-  1,845 uncaptured and three quality quarantines remain. No failed retry or
-  full-history, dated-identity orPIT claim follows. Restart recovery preserves
-  lost76884 terminal status, unchanged source77134, retained orphan lock and
-  exact historical script hashes. A reviewed one-shot attended gate consumes
-  actual validation READY with terminal exitnull, fresh visible quota and full
-  snapshot/source/module/evidence/storage checks before exclusive scope/key.
-  Original20348 rc0 remains historical; rejected recovery01 is retained.
-  Original81573 admitted the exact1,816-request phase04 at05:00:56.237806UTC,
-  excluding34 holds with24,478,712,262 remaining raw bytes. Capture is ongoing
-  in this snapshot; one reviewed finite qualifier29227 is also pending. Consume
-  their actual returns, qualify every response, extend final accounting and
-  continue useful ready work. Preserve one raw and oneQA writer, unchanged
-  collector/credential/TLS, four-inflight rolling-five-second admission,
-  first-error stop/drain and40GiB floor. Accepted BOATS2,000,000-frame and
-  SAPIF installedLab/host proofs stay valid. Terminal955 retains its actual
-  approval refusal at8811e38c64eb14fadc40a00ccfbfb31c37f863e8; required PR CI
-  remains absent at the last protected read, independently dispatched jobs
-  do not substitute. Preserve incumbent QuoteHub/News/peerintraday writers,
-  SHW/PFE/evaluation/split/provider holds, deepfundamentals/identity/knowledge
-  time/rights/runtime publication and responsive production acceptance gates.
-  Actual reviewed methods and proof are saved in
-  docs/tiingo-evidence/20261013-attended-recovery/.
+  Preserve accepted producer integrity, the four PRODUCED research contracts,
+  original refusals, foreign writers and PIT boundaries. Macro9084 merged9d3fe8.
+  Six actual captures account for all4,392 original requests:4,381 qualified,
+  one wholeSCNG quarantine, ten historical failures and zero never admitted.
+  The final121 captures and reader checks passed. Recovery accepted568 retained
+  projections, then536 complete plus326 missing-only writes;22925/91287 native
+  exits remain unknown. Separate eleven-request and fourteen-request later
+  repairs each completed and passed full new-reader comparison. Current accepted
+  census is47,564 nonempty histories/100,626,945 distinct bars,117 empty responses,
+  five explicit provider refusals and three whole-response quality quarantines.
+  All47,689 catalogue candidates have a current disposition; full vendor history,
+  dated identity and historical known-at remain unproven. Preserve original
+  fourteen failures and their eleven unknown causes, the failed directory
+  preflight and validation90730's unknown native exit. Terminal955 merged1408943
+  after all12 original jobs passed on c90b1ca;82 reviewed blobs match the merge
+  and installed afae release. The later5fa856bf release also passed exact10
+  consumer/builder and source/marker/public-HTML identity checks. The original
+  public relay read returned explicitHTTP403 and remains frozen. No publisher,
+  R2 PUT or new stream started. Separate Cloudflare configuration diagnosis
+  reached the verified account's Google passkey/user-presence step; only the
+  account user can complete that step. Preserve it without alternate login or
+  relay routes. Carry the reviewed evidence through protected CI and merge;
+  then continue lawful configuration diagnosis. Actual access resolution and
+  all current source, account, archive/relay custody, resource, session and
+  clock checks remain required before any separately admitted finite publication.
+  Preserve the persistent scheduling refusal. Prove real trade provenance through
+  the incumbent R2 key, installed QuoteHub/API, responsive EN/ZH and final expiry.
+  Keep News/QuoteHub/peer-intraday custody and SHW/PFE/evaluation/split/provider
+  holds. Full fundamentals and PIT remain unadmitted. Retained source, methods,
+  reviews and actual returns are in docs/tiingo-evidence/20261013-recovered-final-history/.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -71,6 +71,7 @@ owns_paths:
   - docs/TIINGO_DATA_OS_INGESTION_20261009.md
   - docs/tiingo-evidence/
 artifacts:
+  - docs/tiingo-evidence/20261013-recovered-final-history/
   - docs/tiingo-evidence/20261013-attended-recovery/
   - docs/tiingo-evidence/20261013-continuation-accounting/
   - docs/tiingo-evidence/20261013-final-scope-disposition/

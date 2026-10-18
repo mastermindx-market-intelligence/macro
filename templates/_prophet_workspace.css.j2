@@ -1,0 +1,13 @@
+{# 2026-10-17: Restore the original compact chart-first US Prophet card.
+   PR #9260's opportunity-workspace card enlargement is intentionally withdrawn.
+   Keep actual controls above the full-card link, but let passive verdict/quote
+   regions pass clicks through to that link. Shared regional geometry is unchanged. #}
+#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-ov {
+  z-index: 5;
+  pointer-events: none;
+}
+#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-cau,
+#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-trg,
+#us-standouts :is(#us-today-grid, #us-cand-grid) .pv-live:not([hidden]) {
+  pointer-events: auto;
+}

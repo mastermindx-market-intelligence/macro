@@ -404,9 +404,59 @@ def _taper_points(s: pd.Series, recent_start: pd.Timestamp, value_fn=None) -> li
     return out
 
 
+RS_HISTORY_MAX_POINTS = 252
+_RS_MIN_ROWS = 210
+# Sessions a missing benchmark close may be carried forward inside the shared RS
+# formula.  Unbounded, one stale holiday row silently prices every later session
+# against a benchmark that never traded; bounded, the ratio simply drops out.
+RS_BENCH_FFILL_LIMIT = 5
+
+
+def _relative_strength_series_counted(
+    close_full: pd.DataFrame,
+    ticker: str,
+    bench: str = "SPY",
+    asof: pd.Timestamp | None = None,
+) -> tuple[pd.Series, int]:
+    """The incumbent sector/benchmark relative-strength ratio, plus a count of the
+    non-finite ratio rows it had to exclude.
+
+    This is the one source for both the current 21/63-session coordinates and
+    the reconstructed history projection.  Keeping the formula shared prevents
+    the Terminal history trail from drifting away from the current snapshot.
+
+    A zero or negative benchmark close divides into ±inf, which ``json.dumps``
+    would emit as the non-standard ``Infinity`` token — so those rows are dropped
+    here, once, for every consumer of the formula, and counted.  Rows whose ratio
+    is NaN are dropped exactly as before and are NOT counted: an absent price is
+    unmeasured, not excluded.
+    """
+    if ticker not in close_full or bench not in close_full:
+        return pd.Series(dtype=float), 0
+    t = close_full[ticker].dropna()
+    b = close_full[bench].dropna()
+    if asof is not None:
+        t = t[t.index <= asof]
+        b = b[b.index <= asof]
+    ratio = t / b.reindex(t.index).ffill(limit=RS_BENCH_FFILL_LIMIT)
+    bad = ratio.notna() & (~np.isfinite(ratio) | (ratio <= 0))
+    return ratio[ratio.notna() & ~bad], int(bad.sum())
+
+
+def _relative_strength_series(
+    close_full: pd.DataFrame,
+    ticker: str,
+    bench: str = "SPY",
+    asof: pd.Timestamp | None = None,
+) -> pd.Series:
+    """The incumbent sector/benchmark relative-strength ratio (count discarded)."""
+    return _relative_strength_series_counted(
+        close_full, ticker, bench=bench, asof=asof)[0]
+
+
 def _leadership(close_full: pd.DataFrame, ticker: str, bench: str = "SPY",
                 asof: pd.Timestamp | None = None) -> dict:
-    """RS vs SPY: 63d & 126d relative momentum + above-200d-trend of the ratio.
+    """RS vs SPY: 21d/63d/126d relative momentum + above-200d ratio trend.
 
     Parameters
     ----------
@@ -415,17 +465,12 @@ def _leadership(close_full: pd.DataFrame, ticker: str, bench: str = "SPY",
         verifiable.  In the live path `closes` is already sliced by compute(),
         so asof is not strictly required there, but can be passed for clarity.
     """
-    if ticker not in close_full or bench not in close_full:
+    rs = _relative_strength_series(close_full, ticker, bench=bench, asof=asof)
+    if rs.empty and (ticker not in close_full or bench not in close_full):
         return {"thin_history": False}
-    t = close_full[ticker].dropna()
-    b = close_full[bench].dropna()
-    if asof is not None:
-        t = t[t.index <= asof]
-        b = b[b.index <= asof]
-    rs = (t / b.reindex(t.index).ffill()).dropna()
-    if len(rs) < 210:
-        log.warning("_leadership: %s has only %d RS rows (< 210 min) — thin_history flagged",
-                    ticker, len(rs))
+    if len(rs) < _RS_MIN_ROWS:
+        log.warning("_leadership: %s has only %d RS rows (< %d min) — thin_history flagged",
+                    ticker, len(rs), _RS_MIN_ROWS)
         return {"thin_history": True, "rs_rows": len(rs)}
     m21 = float(rs.pct_change(21).iloc[-1] * 100)
     m63 = float(rs.pct_change(63).iloc[-1] * 100)
@@ -436,6 +481,63 @@ def _leadership(close_full: pd.DataFrame, ticker: str, bench: str = "SPY",
     # own rollover). 63d stays the quarter lens; 21d is the month lens.
     return {"rs_21d": round(m21, 1), "rs_63d": round(m63, 1), "rs_126d": round(m126, 1),
             "rs_above_trend": bool(rs.iloc[-1] > ma200), "thin_history": False}
+
+
+def _leadership_history_counted(
+    close_full: pd.DataFrame,
+    ticker: str,
+    bench: str = "SPY",
+    asof: pd.Timestamp | None = None,
+    max_points: int = RS_HISTORY_MAX_POINTS,
+) -> tuple[list[dict], int]:
+    """Bounded daily reconstruction of the exact current 21d/63d RS coordinates,
+    plus a count of the rows excluded for being non-finite.
+
+    A point is eligible only once the live owner itself would have had the
+    required 210-row history.  The trail is therefore historical reconstruction
+    from the committed price owner, not a claim that these snapshots were
+    naturally observed at the time.
+
+    The count covers both exclusion sites: ratio rows dropped by the shared
+    formula, and horizon rows whose 21/63-session change is still non-finite
+    after that (an independent guard on the ``Infinity`` token).
+    """
+    rs, ratio_excluded = _relative_strength_series_counted(
+        close_full, ticker, bench=bench, asof=asof)
+    if len(rs) < _RS_MIN_ROWS:
+        return [], ratio_excluded
+    frame = pd.DataFrame({
+        "rs_21d": rs.pct_change(21) * 100,
+        "rs_63d": rs.pct_change(63) * 100,
+    }).iloc[_RS_MIN_ROWS - 1:]
+    inf_rows = (frame.replace([np.inf, -np.inf], np.nan).isna().any(axis=1)
+                & frame.notna().all(axis=1))
+    frame = frame.replace([np.inf, -np.inf], np.nan).dropna()
+    if frame.empty:
+        return [], ratio_excluded
+    if max_points > 0:
+        frame = frame.tail(max_points)
+    rows = [
+        {
+            "date": pd.Timestamp(ts).date().isoformat(),
+            "rs_21d": round(float(row.rs_21d), 1),
+            "rs_63d": round(float(row.rs_63d), 1),
+        }
+        for ts, row in frame.iterrows()
+    ]
+    return rows, ratio_excluded + int(inf_rows.sum())
+
+
+def _leadership_history(
+    close_full: pd.DataFrame,
+    ticker: str,
+    bench: str = "SPY",
+    asof: pd.Timestamp | None = None,
+    max_points: int = RS_HISTORY_MAX_POINTS,
+) -> list[dict]:
+    """Bounded daily reconstruction of the exact current 21d/63d RS coordinates."""
+    return _leadership_history_counted(
+        close_full, ticker, bench=bench, asof=asof, max_points=max_points)[0]
 
 
 def _zz_pct_for(full: pd.Series) -> float:
@@ -1020,6 +1122,9 @@ def build_sector(ticker: str, meta: dict, closes: pd.DataFrame,
                 "group": meta["group"], "group_zh": GROUP_ZH.get(meta["group"], meta["group"]),
                 "accent": meta["accent"]})
     _apply_leadership(rec, _leadership(closes, ticker))
+    rec["rs_history"], _n_ex = _leadership_history_counted(closes, ticker)
+    if _n_ex:
+        rec["rs_history_rows_excluded_nonfinite"] = _n_ex
     _set_engine_read(rec)    # W0.3: populate engine-owned read after RS is available
     _stamp_hazard(rec, family="sector")   # W4.3: now['hazard'] P(turn ≤ 1m/3m/6m)
     return rec
@@ -1297,6 +1402,28 @@ def compute(asof: str | None = None) -> dict | None:
             "default_window_years": DEFAULT_WINDOW_YEARS,
             "rebaseDate": str(win_start.date()),
             "benchmark": benchmark,
+            "rs_history": {
+                "schema": "sector_cycles.rs_history.v1",
+                "mode": "reconstructed_price_history",
+                "naturally_observed": False,
+                "basis": "tr",
+                "benchmark": benchmark,
+                "horizons_sessions": [21, 63],
+                "max_points_per_sector": RS_HISTORY_MAX_POINTS,
+                "as_of": str(last_ts.date()),
+                "min_history_sessions": _RS_MIN_ROWS,
+                "rows_excluded_nonfinite": sum(
+                    int(rec.get("rs_history_rows_excluded_nonfinite", 0))
+                    for rec in sectors
+                ),
+                "benchmark_ffill_limit_sessions": RS_BENCH_FFILL_LIMIT,
+                "source_cohort": {
+                    "registry": "engine.sector_cycles.SECTORS",
+                    "tickers": sorted(
+                        rec["ticker"] for rec in sectors if rec.get("rs_history")
+                    ),
+                },
+            },
             "n_sectors": len(sectors),
             "n_baskets": len(baskets),
             "families": [{"key": ns, "label": _AMALGAM_FAMILIES[ns]["label"],
