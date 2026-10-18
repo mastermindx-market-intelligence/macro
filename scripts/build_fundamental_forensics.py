@@ -58,6 +58,11 @@ from engine.fundamental_forensics.disclosure_projection import (
     read_disclosure_projection_directory,
 )  # noqa: E402
 from engine.fundamental_forensics.detectors import issuer_class_for_sic  # noqa: E402
+from engine.fundamental_forensics.metric_registry import (  # noqa: E402
+    ISSUER_CLASSES,
+    load_core_metric_registry,
+    qualify_metric,
+)
 from engine.fundamental_forensics.peer_cohort import (  # noqa: E402
     CohortDefinition,
     CohortMember,
@@ -832,19 +837,27 @@ def _contract_metric_ids(contract: Mapping[str, Any]) -> tuple[str, ...]:
     return tuple(item for item in raw if isinstance(item, str) and item)
 
 
-def _contract_not_applicable(contract: Mapping[str, Any]) -> dict[str, frozenset[str]]:
-    """The contract's per-ticker metric exclusions, normalized for lookup."""
-    denominator = contract.get("field_denominator")
-    if not isinstance(denominator, dict):
-        return {}
-    raw = denominator.get("not_applicable")
-    if not isinstance(raw, dict):
-        return {}
+def _class_not_applicable_metric_ids(root: Path) -> dict[str, frozenset[str]]:
+    """Per-issuer-class metric exclusions derived from the shipped catalog.
+
+    G0-b retired the ticker-keyed ``field_denominator.not_applicable`` overlay:
+    the build path derives its exclusions from the same S1-b class policies the
+    query path qualifies through ``qualify_metric`` (formula=None, the direct
+    stage's exact call), so a per-ticker answer can no longer diverge from the
+    class answer. Keyed by issuer class — never by ticker, CIK, or issuer name
+    — and resolved per member through ``issuer_class_for_sic`` at the call
+    site.
+    """
+    registry = load_core_metric_registry(root)
     out: dict[str, frozenset[str]] = {}
-    for ticker, metrics in raw.items():
-        if not isinstance(metrics, dict):
-            continue
-        out[str(ticker).upper()] = frozenset(metrics)
+    for issuer_class in sorted(ISSUER_CLASSES):
+        excluded = frozenset(
+            contract.metric_id
+            for contract in registry.contracts
+            if qualify_metric(contract, None, issuer_class, {}).state != "applicable"
+        )
+        if excluded:
+            out[issuer_class] = excluded
     return out
 
 
@@ -862,8 +875,7 @@ def _tree_metric_observations(
     generation: Any,
     accessions: list[str],
     metric_ids: tuple[str, ...],
-    not_applicable: Mapping[str, frozenset[str]],
-    ticker: str,
+    excluded_metrics: frozenset[str],
 ) -> dict[str, MetricObservation] | None:
     """Project the latest available cell per metric from the precomputed trees.
 
@@ -871,9 +883,10 @@ def _tree_metric_observations(
     dataset-absent case. A cell whose value is not canonical text contributes
     nothing (the cohort table then reports that member×metric as a missing
     observation); no value is converted, scaled, rounded, or floated here.
+    ``excluded_metrics`` is the member's class-derived not-applicable closure
+    (G0-b), intersected with the field denominator by the caller.
     """
     wanted = set(metric_ids)
-    excluded_metrics = not_applicable.get(ticker, frozenset())
     latest: dict[str, MetricObservation] = {}
     latest_end: dict[str, str] = {}
     readable = False
@@ -955,7 +968,7 @@ def _compose_peer_cohort(
         return None, PEER_COHORT_REASON_DATASET_ABSENT
     contract_id = str(contract.get("contract_id") or "")
     metric_ids = _contract_metric_ids(contract)
-    not_applicable = _contract_not_applicable(contract)
+    class_not_applicable = _class_not_applicable_metric_ids(root)
 
     exclusions: list[dict[str, Any]] = []
     admitted: list[_AdmittedPeer] = []
@@ -994,9 +1007,12 @@ def _compose_peer_cohort(
                 "coverage contract carries no parseable pinned sic for the issuer",
             ))
             continue
+        issuer_class = issuer_class_for_sic(sic)
+        excluded_metrics = (
+            frozenset(metric_ids) & class_not_applicable.get(issuer_class, frozenset())
+        )
         observations = _tree_metric_observations(
-            generation, member["accessions"], metric_ids, not_applicable,
-            member["ticker"],
+            generation, member["accessions"], metric_ids, excluded_metrics,
         )
         if observations is None:
             exclusions.append(_member_exclusion(
@@ -1008,7 +1024,7 @@ def _compose_peer_cohort(
             member=member,
             issuer_id=issuer_id,
             sic=sic,
-            issuer_class=issuer_class_for_sic(sic),
+            issuer_class=issuer_class,
             observations=observations,
         ))
 
