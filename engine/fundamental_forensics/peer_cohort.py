@@ -37,6 +37,7 @@ class MetricObservation:
     period_end: date | None
     period_basis: str
     applicable: bool
+    withheld: bool = False
 
 
 @dataclass(frozen=True)
@@ -274,6 +275,13 @@ def _evaluate_member(
             metric_id=metric_id,
             code="A35-B1",
             reason="metric_not_applicable",
+        )
+    if observation.withheld:
+        return None, Exclusion(
+            issuer_id=member.issuer_id,
+            metric_id=metric_id,
+            code="A35-W1",
+            reason="statement_withheld",
         )
     if observation.value is None:
         return None, Exclusion(
