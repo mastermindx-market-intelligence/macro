@@ -47,6 +47,12 @@ def _parse_date(value: object) -> date | None:
         return None
 
 
+def _refuse_nonfinite_json(token: str) -> None:
+    # stdlib json.loads accepts Python's NaN/Infinity extensions by default;
+    # browsers do not, so the release validator must be at least as strict.
+    raise ValueError(f"nonstandard JSON number {token!r} is forbidden")
+
+
 def _read_json(path: Path, errors: list[str]) -> tuple[dict[str, Any] | None, bytes | None]:
     try:
         raw = path.read_bytes()
@@ -54,7 +60,7 @@ def _read_json(path: Path, errors: list[str]) -> tuple[dict[str, Any] | None, by
         errors.append(f"{path.relative_to(path.parents[2])} is absent or unreadable: {exc}")
         return None, None
     try:
-        payload = json.loads(raw)
+        payload = json.loads(raw, parse_constant=_refuse_nonfinite_json)
     except (UnicodeDecodeError, ValueError) as exc:
         errors.append(f"{path.name} is not valid JSON: {exc}")
         return None, raw
