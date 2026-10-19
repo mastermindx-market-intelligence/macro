@@ -493,6 +493,38 @@ _FROZEN_PACKS = {
         ),
         "pack_specific_codes": (),
     },
+    "PK03": {
+        "digest": "dd02fd3b7fa8810d16881a9ee55e4dcf2747004f7da88214afddd3a73b16cc07",
+        "fields": (
+            "number_of_operating_segments",
+            "segment_revenue",
+            "segment_profit_or_loss",
+            "unallocated_corporate_and_eliminations",
+            "geographic_revenue",
+            "product_service_revenue",
+            "segment_definition_change_note",
+            "segment_reporting_text_block",
+        ),
+        "required": (
+            "segment_revenue",
+        ),
+        "checks": (
+            "segment_sum_plus_eliminations_equals_consolidated",
+            "fp_internal_revenue_not_double_counted",
+            "segment_count_consistent",
+        ),
+        "reason_codes": (
+            "applicability_rule_satisfied",
+            "form_outside_pack_forms",
+            "missing_standard_fact",
+            "extension_concept_unaliased",
+            "disallowed_dimension",
+            "missing_dependency",
+            "unit_mismatch",
+            "numeric_value_in_narrative_only",
+        ),
+        "pack_specific_codes": (),
+    },
 }
 _FROZEN_IDS = sorted(_FROZEN_PACKS)
 
