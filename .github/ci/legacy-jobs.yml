@@ -1791,6 +1791,8 @@ jobs:
       - "tests/test_company_theme_exposure.py"
       - "engine/company_theme_exposure/**"
       - "engine/company_intelligence/views.py"
+      - "engine/company_intelligence/rms_segment_profile.py"
+      - "engine/government_revenue/public_agreement.py"
       # 2026-10-18 scope: exclusive closure: the static import closure of the three test
       # files (curated_exclusive_closure_findings), listed literally so no glob widens
       # the job onto the packing-probe paths.
