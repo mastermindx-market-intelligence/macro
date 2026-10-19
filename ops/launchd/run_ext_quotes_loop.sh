@@ -11,6 +11,10 @@
 # fires the next session at the next StartCalendarInterval.  A crashed or
 # refused run is NOT retried — the Python runner's permanent per-session start
 # receipt blocks any same-session replay until lawful manual reconciliation.
+# Reconciliation retains both receipts and the original run: inspect its final
+# result, archive and publication evidence and confirm no live lock holder.
+# Missing final evidence is an unknown effect. Never delete or move the start
+# receipt to rerun this session; the next calendar session has a distinct receipt.
 #
 # DEPLOYMENT CONFIGURATION (fail closed): every value below must be present,
 # either in the environment exported by run_with_env.sh from .env, or set here.
@@ -45,6 +49,7 @@ fail_closed() {
 [ -n "$BOATS_ARCHIVE_ROOT" ] || fail_closed "BOATS_ARCHIVE_ROOT is not configured"
 [ -n "$BOATS_TOTAL_MAX_MESSAGES" ] || fail_closed "BOATS_TOTAL_MAX_MESSAGES is not configured"
 [ -x "$PYTHON" ] || fail_closed "python interpreter missing: $PYTHON"
+[ -x /usr/bin/caffeinate ] || fail_closed "macOS power assertion helper missing"
 [ -d "$REPO_ROOT" ] || fail_closed "repo root missing: $REPO_ROOT"
 [ -f "$REPO_ROOT/scripts/run_boats_session.py" ] || fail_closed "runner module missing in repo"
 [ -r "$BOATS_SYMBOLS_FILE" ] || fail_closed "symbols file not readable: $BOATS_SYMBOLS_FILE"
@@ -54,7 +59,8 @@ fail_closed() {
 # runner via exec so its exit status is launchd's exit status.
 cd "$REPO_ROOT" || fail_closed "cannot enter repo root"
 log "starting one bounded overnight BOATS session (messages=$BOATS_TOTAL_MAX_MESSAGES)"
-PYTHONPATH="$REPO_ROOT${PYTHONPATH:+:$PYTHONPATH}" exec "$PYTHON" -m "$MODULE" \
+# Hold the power assertion only for this bounded command; no power settings change.
+PYTHONPATH="$REPO_ROOT${PYTHONPATH:+:$PYTHONPATH}" exec /usr/bin/caffeinate -i -s "$PYTHON" -m "$MODULE" \
     --publish \
     --symbols-file "$BOATS_SYMBOLS_FILE" \
     --archive-root "$BOATS_ARCHIVE_ROOT" \

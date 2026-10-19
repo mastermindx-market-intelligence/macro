@@ -357,7 +357,8 @@ class BudgetAndStopRuleTests(Harness):
         clock = FakeClock(et(2026, 10, 19, 3, 55).astimezone(timezone.utc), step_seconds=600)
         result = self.run_with(self.config(), clock=clock,
                           segment=make_segment_stub(clock, raw=5))
-        self.assertEqual(result["terminal_reason"], "outside_overnight_window")
+        self.assertEqual(result["terminal_reason"], "overnight_window_closed")
+        self.assertTrue(result["window_end_reached"])
         self.assertTrue(result["stopped_outside_window"])
 
     def test_wall_clock_regression_is_refused(self):
@@ -408,7 +409,7 @@ class ConfigValidationTests(Harness):
         with self.assertRaises(SessionRefused):
             self.run_with(self.config(symbols_file=str(empty)))
         bad = Path(self.tmp.name) / "bad.txt"; bad.write_text("aapl\n")
-        with self.assertRaises(ValueError):  # incumbent uppercase coverage gate
+        with self.assertRaises(SessionRefused):  # classified incumbent coverage refusal
             self.run_with(self.config(symbols_file=str(bad)))
         self.assertFalse((self.archive / "run-receipts").exists())
 
@@ -453,6 +454,81 @@ class CliTests(Harness):
         self.assertEqual(rbs.main(["--publish", "--symbols-file", str(self.symbols_file),
                                    "--archive-root", str(self.archive),
                                    "--total-max-messages", "0"]), 2)
+
+
+class ReviewRegressionTests(Harness):
+    def test_real_os_zone_name_is_verified_without_injected_timezone(self):
+        from unittest.mock import patch
+        with patch.object(rbs.os, "readlink", return_value="/var/db/timezone/zoneinfo/America/Vancouver"):
+            proof = validate_host_timezone(self.clock.utc)
+            self.assertEqual(proof["host_zone"], "America/Vancouver")
+            self.assertTrue(proof["host_timezone_ok"])
+        for target in ("/usr/share/zoneinfo/Etc/GMT+7", "/unrecognized"):
+            with patch.object(rbs.os, "readlink", return_value=target):
+                with self.assertRaises(HostTimezoneError):
+                    validate_host_timezone(self.clock.utc)
+
+    def test_full_eight_hour_night_closes_cleanly(self):
+        self.clock.step = 3600
+        result = self.run_with(self.config())
+        self.assertEqual(result["segments_run"], 8)
+        self.assertEqual(result["terminal_reason"], "overnight_window_closed")
+        self.assertTrue(result["window_end_reached"])
+        receipt = json.loads(Path(result["start_receipt"]).read_text())
+        self.assertEqual(receipt["host_zone"], "America/Vancouver")
+
+    def test_too_short_segment_plan_is_refused(self):
+        with self.assertRaisesRegex(SessionRefused, "cannot cover"):
+            self.config(segment_max_seconds=600)
+
+    def test_stop_receipt_retains_capture_and_publication_cause(self):
+        result = self.run_with(self.config(),
+            segment=make_segment_stub(self.clock, publication_ok=False))
+        retained = json.loads(Path(result["final_receipt"]).read_text())
+        self.assertEqual(retained["capture_ids"], ["stub"])
+        self.assertEqual(retained["last_segment"]["publication"], {"requested": True})
+        self.assertFalse(retained["window_end_reached"])
+
+    def test_malformed_segment_return_stops_with_receipt_and_unbanked_counts(self):
+        for index, payload in enumerate((None, {"raw_messages": 1, "bytes": "bad",
+                "transport_breaks": 0}, {"raw_messages": 1, "bytes": 1,
+                "transport_breaks": 0, "publication": object()})):
+            archive = self.archive / str(index)
+            archive.mkdir()
+            result = self.run_with(self.config(archive_root=str(archive)),
+                segment=lambda **_: payload)
+            self.assertEqual(result["raw_messages_total"], 0)
+            self.assertEqual(result["bytes_total"], 0)
+            self.assertTrue(Path(result["final_receipt"]).is_file())
+            self.assertTrue(result["lock_released"])
+
+    def test_interrupt_leaves_terminal_evidence_and_blocks_replay(self):
+        def interrupted(**_):
+            rbs._interrupt(rbs.signal.SIGTERM, None)
+        result = self.run_with(self.config(), segment=interrupted)
+        self.assertEqual(result["terminal_reason"], "exception:SessionInterrupted")
+        self.assertTrue(Path(result["final_receipt"]).is_file())
+        with self.assertRaises(StartReceiptBlocked):
+            self.run_with(self.config())
+
+    def test_cli_distinguishes_closed_window_from_budget_partial_and_restores_signals(self):
+        from unittest.mock import patch
+        handlers = {sig: rbs.signal.getsignal(sig) for sig in (rbs.signal.SIGTERM, rbs.signal.SIGINT)}
+        args = ["--publish", "--symbols-file", str(self.symbols_file),
+                "--archive-root", str(self.archive), "--total-max-messages", "1000"]
+        for reason, expected in [("overnight_window_closed", 0), ("outside_overnight_window", 0),
+                                 ("message_budget_exhausted", 5), ("segment_cap_reached", 5),
+                                 ("time_budget_exhausted", 5), ("publication_not_ok", 1)]:
+            with patch.object(rbs, "run_session", return_value={"terminal_reason": reason}):
+                self.assertEqual(rbs.main(args), expected)
+            self.assertEqual({sig: rbs.signal.getsignal(sig) for sig in handlers}, handlers)
+
+    def test_dst_change_sunday_is_closed_and_following_session_is_eight_hours(self):
+        for year, month, day in [(2026, 3, 8), (2026, 11, 1)]:
+            self.assertIsNone(boats_session_date(et(year, month, day, 1, 30)))
+            start = et(year, month, day, 20, 0)
+            self.assertIsNotNone(boats_session_date(start))
+            self.assertEqual(rbs.seconds_until_boundary(start.astimezone(timezone.utc)), 28800)
 
 
 if __name__ == "__main__":

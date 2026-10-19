@@ -63,6 +63,7 @@ import json
 import logging
 import os
 import shutil
+import signal
 import sys
 import time
 import uuid
@@ -70,6 +71,7 @@ from dataclasses import dataclass
 from datetime import datetime, time as dtime, timezone, timedelta
 from pathlib import Path
 from typing import Any, Callable, Optional
+from zoneinfo import ZoneInfo
 
 _REPO = Path(__file__).resolve().parent.parent
 if str(_REPO) not in sys.path:
@@ -117,6 +119,14 @@ class HostTimezoneError(SessionRefused):
     """Host timezone does not match the 17:00 Vancouver / 20:00 New York contract."""
 
 
+class SessionInterrupted(RuntimeError):
+    """A process termination request; cleanup must never start another segment."""
+
+
+def _interrupt(signum: int, _frame: Any) -> None:
+    raise SessionInterrupted(f"signal {signum}")
+
+
 @dataclass(frozen=True)
 class SessionConfig:
     """Everything a real run needs; every field is explicit for --publish."""
@@ -141,6 +151,8 @@ class SessionConfig:
         if type(self.total_max_seconds) is not int or not 1 <= self.total_max_seconds <= MAX_TOTAL_SECONDS:
             raise SessionRefused(
                 f"total seconds budget must be an integer in 1..{MAX_TOTAL_SECONDS}")
+        if self.max_segments * self.segment_max_seconds < self.total_max_seconds:
+            raise SessionRefused("segment plan cannot cover the configured time budget")
         if self.publish and not (self.symbols_file and self.archive_root):
             raise SessionRefused("publish requires explicit symbols file and archive root")
 
@@ -167,6 +179,17 @@ def _zone_name(tzinfo: Any) -> str:
     return getattr(tzinfo, "key", None) or getattr(tzinfo, "zone", None) or ""
 
 
+def _host_zone_name() -> str:
+    """Read the OS zone used by launchd, independently of process TZ overrides."""
+    try:
+        target = os.readlink("/etc/localtime")
+    except OSError as exc:
+        raise HostTimezoneError("OS timezone name cannot be verified") from exc
+    if "zoneinfo/" not in target:
+        raise HostTimezoneError("OS timezone is not a recognized zoneinfo link")
+    return target.rsplit("zoneinfo/", 1)[1]
+
+
 def validate_host_timezone(now_utc: datetime, local_tz: Any = None) -> dict[str, Any]:
     """Validate the launchd/host timezone contract before any effect.
 
@@ -180,7 +203,12 @@ def validate_host_timezone(now_utc: datetime, local_tz: Any = None) -> dict[str,
     ``local_tz`` defaults to the process timezone (production); tests inject
     the zone under test without touching the OS.
     """
-    local = now_utc.astimezone(local_tz) if local_tz is not None else now_utc.astimezone()
+    if local_tz is None:
+        zone = _host_zone_name()
+        if zone != "America/Vancouver":
+            raise HostTimezoneError(f"OS timezone {zone!r} does not match America/Vancouver")
+        local_tz = ZoneInfo(zone)
+    local = now_utc.astimezone(local_tz)
     et = now_utc.astimezone(ET)
     offset = local.utcoffset() - et.utcoffset()
     zone = _zone_name(local.tzinfo)
@@ -312,7 +340,7 @@ def _write_receipt(path: Path, payload: dict[str, Any]) -> None:
 
 def write_start_receipt(archive_root: str | Path, session_date: str,
                         config: SessionConfig, started_at: datetime,
-                        symbols_count: int) -> Path:
+                        symbols_count: int, *, host_zone: str | None = None) -> Path:
     """Permanent per-trading-session start receipt (O_EXCL)."""
     area = receipt_dir(archive_root)
     area.mkdir(parents=True, exist_ok=True)
@@ -324,7 +352,7 @@ def write_start_receipt(archive_root: str | Path, session_date: str,
         "trading_session": session_date,
         "started_at_utc": started_at.isoformat(),
         "pid": os.getpid(),
-        "host_zone": _zone_name(datetime.now(timezone.utc).astimezone().tzinfo),
+        "host_zone": host_zone,
         "publish": config.publish,
         "total_max_messages": config.total_max_messages,
         "max_segments": config.max_segments,
@@ -396,6 +424,7 @@ def run_session(config: SessionConfig, *, clock: Optional[_Clock] = None,
         "total_seconds_budget": config.total_max_seconds,
         "terminal_reason": None, "stopped_outside_window": False,
         "publication_ok_last": None, "start_receipt": None, "final_receipt": None,
+        "capture_ids": [], "last_segment": None, "window_end_reached": False,
     }
     lock_fd: Optional[int] = None
     symbols: list[str] = []
@@ -405,7 +434,7 @@ def run_session(config: SessionConfig, *, clock: Optional[_Clock] = None,
         result["stopped_outside_window"] = outside
         result["elapsed_seconds"] = round(clock.monotonic() - started_mono, 3)
         result["finished_at_utc"] = clock.now_utc().isoformat()
-        if config.publish and result["session_date"]:
+        if config.publish and result["start_receipt"]:
             try:
                 result["final_receipt"] = str(write_final_receipt(
                     config.archive_root, result["session_date"], started_at, result))
@@ -440,7 +469,11 @@ def run_session(config: SessionConfig, *, clock: Optional[_Clock] = None,
         return finish("outside_overnight_window", outside=True)
 
     # 3. Coverage: existing read helper + incumbent validation, before effects.
-    symbols = load_and_validate_symbols(config.symbols_file)
+    from collectors.tiingo_archive import TiingoArchiveError
+    try:
+        symbols = load_and_validate_symbols(config.symbols_file)
+    except (ValueError, OSError, TiingoArchiveError) as exc:
+        raise SessionRefused(f"coverage precondition: {exc}") from exc
     result["symbols_count"] = len(symbols)
 
     if not config.publish:
@@ -454,14 +487,17 @@ def run_session(config: SessionConfig, *, clock: Optional[_Clock] = None,
         return finish("dry_run_plan")
 
     # 4. Mounted archive + reserve.
-    archive_info = archive_prep(config.archive_root)
+    try:
+        archive_info = archive_prep(config.archive_root)
+    except (ValueError, OSError, TiingoArchiveError) as exc:
+        raise SessionRefused(f"archive precondition: {exc}") from exc
     result.update(archive_info)
 
     # 5. Single writer: nonblocking kernel lock, then permanent start receipt.
     lock_fd = acquire_session_lock(config.archive_root)
     try:
         receipt = write_start_receipt(config.archive_root, session, config,
-                                      started_at, len(symbols))
+                                      started_at, len(symbols), host_zone=tz["host_zone"])
     except BaseException:
         os.close(lock_fd)
         raise
@@ -469,12 +505,18 @@ def run_session(config: SessionConfig, *, clock: Optional[_Clock] = None,
 
     # 6. Sequential bounded segments; budget consumed by actual returns.
     last_wall = started_at.timestamp()
+    boundary = overnight_boundary_et(started_at).astimezone(timezone.utc)
     for _ in range(config.max_segments):
         now = clock.now_utc()
         wall = now.timestamp()
         if wall < last_wall - CLOCK_REGRESSION_TOLERANCE_S:
             return finish("clock_regression")
+        if abs((wall - started_at.timestamp()) - (clock.monotonic() - started_mono)) > CLOCK_REGRESSION_TOLERANCE_S:
+            return finish("clock_discontinuity")
         last_wall = wall
+        if now >= boundary and now - boundary < timedelta(minutes=1):
+            result["window_end_reached"] = True
+            return finish("overnight_window_closed", outside=True)
         current_session = boats_session_date(now)
         if current_session is None:
             return finish("outside_overnight_window", outside=True)
@@ -498,27 +540,43 @@ def run_session(config: SessionConfig, *, clock: Optional[_Clock] = None,
                                  max_messages=plan["max_messages"],
                                  symbols=symbols, publish=config.publish,
                                  archive_root=config.archive_root)
+            result["segments_run"] += 1
+            if not isinstance(seg, dict):
+                raise ValueError("segment result is not an object")
+            raw = seg.get("raw_messages")
+            size = seg.get("bytes")
+            breaks = seg.get("transport_breaks")
+            if type(raw) is not int or raw < 0 or raw > plan["max_messages"]:
+                return finish("count_overflow")
+            if type(size) is not int or size < 0 or type(breaks) is not int or breaks < 0:
+                raise ValueError("segment byte/transport counts are invalid")
+            retained_segment = {key: seg.get(key) for key in (
+                "capture_id", "connections", "segments", "transport_breaks", "raw_messages",
+                "bytes", "publication", "publication_ok")}
+            # Validate retained metadata before either banking counts or writing receipts.
+            json.dumps(retained_segment, allow_nan=False)
+            result["last_segment"] = retained_segment
+            if isinstance(seg.get("capture_id"), str):
+                result["capture_ids"].append(seg["capture_id"])
+            result["bytes_total"] += size
+            result["raw_messages_total"] += raw
+            result["publication_ok_last"] = seg.get("publication_ok")
+            if breaks > 0:
+                result["last_transport_breaks"] = breaks
+                return finish("transport_break")
+            if config.publish and seg.get("publication_ok") is not True:
+                return finish("publication_not_ok")
         except Exception as exc:  # noqa: BLE001 — any exception stops the night
             log.error("segment raised %s: %s", type(exc).__name__, exc)
             result["exception"] = type(exc).__name__
             return finish(f"exception:{type(exc).__name__}")
-        result["segments_run"] += 1
-        raw = seg.get("raw_messages", 0)
-        result["bytes_total"] += int(seg.get("bytes", 0) or 0)
-        if type(raw) is not int or raw < 0 or raw > plan["max_messages"]:
-            result["last_segment_raw_messages"] = raw
-            return finish("count_overflow")
-        result["raw_messages_total"] += raw
-        result["publication_ok_last"] = seg.get("publication_ok")
-        breaks = int(seg.get("transport_breaks", 0) or 0)
-        if breaks > 0:
-            result["last_transport_breaks"] = breaks
-            return finish("transport_break")
-        if config.publish and seg.get("publication_ok") is not True:
-            return finish("publication_not_ok")
         log.info("segment %d settled raw_messages=%d budget_left=%d",
                  result["segments_run"], raw,
                  config.total_max_messages - result["raw_messages_total"])
+    now = clock.now_utc()
+    if boundary <= now < boundary + timedelta(minutes=1):
+        result["window_end_reached"] = True
+        return finish("overnight_window_closed", outside=True)
     return finish("segment_cap_reached")
 
 
@@ -568,7 +626,10 @@ def main(argv: list[str] | None = None) -> int:
     except SessionRefused as exc:
         log.error("refusing to start: %s", exc)
         return 2
+    original_handlers = {sig: signal.getsignal(sig) for sig in (signal.SIGTERM, signal.SIGINT)}
     try:
+        for sig in original_handlers:
+            signal.signal(sig, _interrupt)
         result = run_session(config)
     except HostTimezoneError as exc:
         log.error("%s", exc)
@@ -582,10 +643,16 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as exc:  # noqa: BLE001 — precondition failures never loop
         log.error("session aborted before completion: %s: %s", type(exc).__name__, exc)
         return 1
-    if args.publish and result["terminal_reason"] not in {
-            "segment_cap_reached", "message_budget_exhausted",
-            "time_budget_exhausted", "overnight_window_closed"}:
-        return 1
+    finally:
+        for sig, handler in original_handlers.items():
+            signal.signal(sig, handler)
+    if args.publish:
+        reason = result["terminal_reason"]
+        if reason in {"segment_cap_reached", "message_budget_exhausted", "time_budget_exhausted"}:
+            log.warning("bounded run ended before window completion: %s", reason)
+            return 5
+        if reason not in {"overnight_window_closed", "outside_overnight_window"}:
+            return 1
     return 0
 
 
