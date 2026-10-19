@@ -354,7 +354,7 @@ waves:
   - id: RECOVERY-S8
     title: "Recovery step 8: descriptive-product acceptance records and Neural Web reconciliation"
     status: done
-    pr: __S8_PR__
+    pr: 9757
     next_action: >
       DEC:GMI-DESCRIPTIVE-PRODUCT-ACCEPTANCE-2026-10-19 records the per-threshold verdicts
       and owner acts; DSC:GMI-NEURAL-WEB-THEME-STATE-REGISTRY-UNCHANGED-THROUGH-STEP-7

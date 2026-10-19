@@ -88,7 +88,7 @@ next_actions:
   - "After the first nightly with history rows: re-run scripts/gmi_coverage_proof.py and update the DEC's measured column"
   - "Route L13 micro RS proxy, transmission and opportunity candidates to the existing evaluator, F04 and K3-D owners; no promotion from this acceptance"
 do_not_redo:
-  - "Steps 2 to 8 (#9423, #9645, #9644, #9670, #9652, #9641, #9745, 9754, 9753, __S8_PR__): accepted, do not re-spec or re-implement"
+  - "Steps 2 to 8 (#9423, #9645, #9644, #9670, #9652, #9641, #9745, 9754, 9753, 9757): accepted, do not re-spec or re-implement"
   - "Do not admit the 103 micro candidates or 46 addendum activities by code or by seat ratification"
   - "Do not flip the default build_thematic_state mode or call publish_generation from the engine step"
   - "Do not add a synapse.yml entry for the history fold until a job writes it"
@@ -102,7 +102,7 @@ danger_areas:
   - "DSC:GMI-D2C-AND-D2D-CARRIERS-CONFLICT-IN-LEGACY-JOBS-YML"
   - "DSC:DAILY-ENGINE-RESULT-IS-FAILURE-AFTER-ITS-COMMIT"
   - "Known inherited reds on main during this wave: reference-integrity RIG (Sol #9592), sni-program-guards seal tests; attribute by job log before calling a red yours"
-prs: [9423, 9645, 9644, 9670, 9652, 9641, 9745, 9754, 9753, __S8_PR__]
+prs: [9423, 9645, 9644, 9670, 9652, 9641, 9745, 9754, 9753, 9757]
 decisions:
   - "DEC:GMI-DESCRIPTIVE-PRODUCT-ACCEPTANCE-2026-10-19"
 discoveries:
