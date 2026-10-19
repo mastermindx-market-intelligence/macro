@@ -20,12 +20,17 @@ CHAIN='oil_inflation_duration_derate'
 def theme_reading(tmp_path):
     return native_theme_reading(tmp_path)
 
-def native_theme_reading(tmp_path, *, etf=False):
+def native_theme_reading(tmp_path, *, etf=False, etf_identity=False, monkeypatch=None):
     root=_theme_owner_root(tmp_path)
     fx.build_root(root,slug=CHAIN)
     if etf:
         from tests.test_theme_graph_hierarchy_paths import _selected_etf_view
         view=_selected_etf_view()
+        if etf_identity:
+            from tests.test_theme_graph_hierarchy_paths import _etf_adoption_inputs
+            view,sources,*_=_etf_adoption_inputs(tmp_path/'listing',monkeypatch)
+            for rel,raw in sources.items():
+                path=root/rel;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(raw)
         for name, rows in [('nodes',view._nodes),('edges',view._edges),('evidence',view._evidence)]:
             parquet.write_table(arrow.Table.from_pylist(rows),root/'data/theme_graph'/f'{name}.parquet')
     path=root/'data/theme_graph/nodes.parquet'
@@ -60,11 +65,82 @@ def test_native_etf_reference_is_displayed_without_holdings_claim(browser,etf_re
         text=card.inner_text()
         assert 'SEC:US-XNAS-AAA' in text and 'ev:tracking' in text and '2024-01-02T00:00:00Z' in text
         full=page.locator('[data-theme-result]').inner_text()
-        assert ('not fund identity' if language=='en' else '不是基金身份') in full
+        assert ('ETF identity unavailable' if language=='en' else 'ETF 身份不可用') in full
         assert ('Holdings, weights and performance are unavailable' if language=='en' else '持仓、权重及表现不可用') in full
         assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
         assert len(seen)==1 and not errors and page.evaluate('pCalls.queries')==0
     finally:ctx.close()
+
+@pytest.fixture
+def etf_identity_reading(tmp_path,monkeypatch):
+    result=native_theme_reading(tmp_path,etf=True,etf_identity=True,monkeypatch=monkeypatch)
+    assert result[1]['theme_map']['etf_tracking']['security_identity']['status']=='available'
+    return result
+
+@pytest.mark.parametrize('width,theme,language',[(1440,'dark','en'),(390,'light','zh')])
+def test_etf_native_identity_stays_distinct_from_symbol_holdings_and_graph_clock(browser,etf_identity_reading,width,theme,language):
+    ctx,page,seen,errors=start(browser,etf_identity_reading,width=width,theme=theme,language=language)
+    try:
+        page.locator('[data-theme-read]').click();settled(page,'ready')
+        card=page.locator('[data-etf-reference]');card.locator('summary').click();text=card.inner_text()
+        assert 'AAAETF' in text and 'SEC:US-XNAS-DIFFERENT' in text
+        assert 'SEC:US-XNAS-AAAETF' not in text
+        assert '2026-08-10' in text and '2024-01-02T00:00:00Z' in text
+        assert ('not a historical identity claim' if language=='en' else '不代表历史身份') in text
+        assert ('Holdings, weights and performance are unavailable' if language=='en' else '持仓、权重及表现不可用') in page.locator('[data-theme-result]').inner_text()
+        assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+        assert len(seen)==1 and not errors and page.evaluate('pCalls.queries')==0
+    finally:ctx.close()
+
+@pytest.mark.parametrize('mutation',[
+ 'i.security_id="SEC:US-XNAS-AAAETF"',
+ 'i.historical_identity_claim=true',
+ 'i.instrument_type_basis="SYMBOL_GUESS"',
+ 'i.master_generated_at="2999-01-01T00:00:00Z"',
+ 'i.listing_known_at="2999-01-01T00:00:00Z"',
+ 'i.listing_observed_on="2026-08-11"',
+ 'i.private_body="unqualified"',
+ 'i.status="unavailable";i.reason="ETF_IDENTITY_INPUTS_UNAVAILABLE"',
+ 't.security_identity.status="partial"',
+ 'v.source.reads=v.source.reads.filter(r=>!r.path.endsWith("vendor_aliases.parquet"))',
+ 'v.source.reads.find(r=>r.path.includes("receipts/snapshots")).path="data/symbol_directory/receipts/snapshots/2026-08-09.json"',
+ 'v.source.reads.find(r=>r.path.endsWith("vendor_aliases.parquet")).path="data/private/source_body.parquet"',
+])
+def test_etf_identity_decoder_refuses_unbound_claims_even_with_matching_manifest(browser,etf_identity_reading,mutation):
+    ctx,page,seen,errors=start(browser,etf_identity_reading)
+    try:
+        rejected=page.evaluate("""async ({v,r})=>{const t=v.theme_map.etf_tracking,i=t.references[0].security_identity;"""+mutation+""";
+          const reads=[...v.source.reads].sort((a,b)=>a.path.localeCompare(b.path));
+          const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode([v.source.method,...reads.map(x=>x.path+':'+x.sha256)].join('\\n')));
+          v.source.theme_source_manifest_hash='sha256:'+Array.from(new Uint8Array(hash),x=>x.toString(16).padStart(2,'0')).join('');
+          const m=await import('/ontology-theme.js');try{await m.decodeTheme(v,r,{identity_kind:'security',identity_id:'SEC:US-XNAS-AAA'});return false}catch{return true}
+        }""",{'v':etf_identity_reading[1],'r':etf_identity_reading[0]['source']})
+        assert rejected and not errors and seen==[]
+    finally:ctx.close()
+
+def test_etf_decoder_accepts_native_naive_clock_and_partial_reads_but_not_invalid_calendar(browser,etf_identity_reading):
+    ctx,page,seen,errors=start(browser,etf_identity_reading)
+    try:
+        outcomes=page.evaluate("""async ({v,r})=>{
+          const m=await import('/ontology-theme.js'),out=[];
+          for(const variant of ['naive','partial','invalid_calendar']) {
+            const x=structuredClone(v),t=x.theme_map.etf_tracking,i=t.references[0].security_identity;
+            if(variant==='naive') i.master_generated_at=i.master_generated_at.replace('Z','');
+            if(variant==='invalid_calendar') i.master_generated_at='2026-02-31T00:00:00Z';
+            if(variant==='partial') {
+              t.references[0].security_identity={status:'unavailable',reason:'ETF_IDENTITY_INPUTS_UNAVAILABLE'};
+              t.security_identity={status:'unavailable',reason:'ETF_IDENTITY_NOT_FULLY_RESOLVED'};
+              x.source.reads=x.source.reads.filter(q=>!q.path.includes('symbol_directory/')&&!q.path.endsWith('vendor_aliases.parquet'));
+              const reads=[...x.source.reads].sort((a,b)=>a.path.localeCompare(b.path));
+              const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode([x.source.method,...reads.map(q=>q.path+':'+q.sha256)].join('\\n')));
+              x.source.theme_source_manifest_hash='sha256:'+Array.from(new Uint8Array(hash),q=>q.toString(16).padStart(2,'0')).join('');
+            }
+            try{await m.decodeTheme(x,r,{identity_kind:'security',identity_id:'SEC:US-XNAS-AAA'});out.push(true)}catch{out.push(false)}
+          }return out;
+        }""",{'v':etf_identity_reading[1],'r':etf_identity_reading[0]['source']})
+        assert outcomes==[True,True,False] and not errors and seen==[]
+    finally:ctx.close()
+
 
 @pytest.mark.parametrize('mutation',[
  't.references[0].selected_security_id="SEC:US-XNAS-BBB"',

@@ -3,6 +3,16 @@
 const HASH = /^sha256:[a-f0-9]{64}$/, HEX = /^[a-f0-9]{64}$/;
 const METHOD = 'ontology_house_theme_continuation.v1', LIMIT = 262144, BUDGET = 15000;
 const FILES = ['config/theme_sources.yml', ...['edges','evidence','identity_resolution','node_lifecycle','nodes'].map(n => 'data/theme_graph/' + n + '.parquet')].sort();
+const IDENTITY_FILES = ['data/reference/_receipt.json','data/reference/security_master.parquet','data/reference/vendor_aliases.parquet'];
+const ETF_REASONS = {
+  ETF_IDENTITY_INPUTS_UNAVAILABLE: ['Native identity inputs unavailable.', '原生身份输入不可用。'],
+  ETF_GRAPH_IDENTITY_UNQUALIFIED: ['Graph identity is not qualified.', '图谱身份尚未合格。'],
+  AMBIGUOUS_ACTIVE_COMPANY_WRAPPER: ['An active company binding conflicts with this ETF.', '活动公司绑定与此 ETF 存在冲突。'],
+  AMBIGUOUS_CANONICAL_ALIAS: ['Native aliases disagree on identity.', '原生别名的身份绑定不一致。'],
+  ETF_CANONICAL_ALIAS_UNAVAILABLE: ['Canonical alias unavailable.', '规范别名不可用。'],
+  ETF_CANONICAL_SECURITY_UNAVAILABLE: ['Canonical security unavailable.', '规范证券身份不可用。'],
+  ETF_INSTRUMENT_TYPE_UNQUALIFIED: ['Native listing does not qualify the ETF type.', '原生上市记录未确认 ETF 类型。'],
+};
 const STATES = ['AVAILABLE','PARTIAL','NO_QUALIFIED_HOUSE_PATH','NO_GRAPH_BINDING','IDENTITY_OWNER_UNAVAILABLE'];
 function fail() { throw new Error('THEME_UNAVAILABLE'); }
 function owner() { try { const u = window.MDXAuth?.user?.(); return typeof u?.id === 'string' && u.id || null; } catch (_) { return null; } }
@@ -26,20 +36,62 @@ function house(n) {
 function knownClock(value, cutoff) {
   return day(value) ? Date.parse(value) + 86400000 <= time(cutoff) : stamp(value) && time(value) <= time(cutoff);
 }
-function decodeTracking(tracking, map, selected) {
+function decodeIdentitySources(reads) {
+  const paths = reads.map(r => r.path);
+  if (new Set(paths).size !== paths.length || FILES.some(p => !paths.includes(p))) fail();
+  const extra = paths.filter(p => !FILES.includes(p));
+  let observed = null;
+  for (const p of extra) {
+    if (IDENTITY_FILES.includes(p)) continue;
+    const match = /^data\/symbol_directory\/(?:snapshots\/(\d{4}-\d{2}-\d{2})\.parquet|receipts\/snapshots\/(\d{4}-\d{2}-\d{2})\.json)$/.exec(p);
+    const value = match?.[1] || match?.[2];
+    if (!day(value) || Date.parse(value) > Date.now() || observed && observed !== value) fail();
+    observed = value;
+  }
+  // An unavailable identity may expose the prefix of a failed native read.
+  // Available identities require the full five-input generation below.
+  const order = [...IDENTITY_FILES, `data/symbol_directory/snapshots/${observed}.parquet`,
+    `data/symbol_directory/receipts/snapshots/${observed}.json`];
+  if (extra.some(p => !order.slice(0,extra.length).includes(p))) fail();
+  return {count:extra.length, observed};
+}
+function currentMasterClock(v) {
+  // The native master producer also emits naive ISO UTC stamps.
+  if (stamp(v) && day(v.slice(0,10))) return time(v);
+  if (typeof v !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?$/.test(v)) return NaN;
+  return day(v.slice(0,10)) ? Date.parse(v+'Z') : NaN;
+}
+function decodeEtfIdentity(v, sources) {
+  if (v?.status === 'unavailable') {
+    if (Object.keys(v).sort().join(',') !== 'reason,status' || !Object.hasOwn(ETF_REASONS,v.reason)) fail();
+    return false;
+  }
+  const keys = ['status','reason','security_id','listing_key','identity_basis','historical_identity_claim',
+    'instrument_type','instrument_type_basis','master_generated_at','listing_observed_on','listing_known_at'];
+  const generated = currentMasterClock(v?.master_generated_at);
+  if (v?.status !== 'available' || v.reason !== null || Object.keys(v).sort().join(',') !== keys.sort().join(',')
+      || !str(v.listing_key) || !/^US-[A-Z0-9]{4}-[^\s:]+$/.test(v.listing_key) || v.security_id !== 'SEC:'+v.listing_key
+      || v.identity_basis !== 'LATEST_PUBLISHED_DATAOS_VENDOR_ALIAS' || v.historical_identity_claim !== false
+      || v.instrument_type !== 'ETF' || v.instrument_type_basis !== 'NATIVE_LISTING_OBSERVATION_ONLY'
+      || !Number.isFinite(generated) || generated > Date.now()
+      || !stamp(v.listing_known_at) || time(v.listing_known_at) > Date.now()
+      || sources.count !== 5 || v.listing_observed_on !== sources.observed) fail();
+  return true;
+}
+function decodeTracking(tracking, map, selected, sources) {
   const powers = ['can_rank','can_gate','can_size','can_trade','can_originate','can_escalate'];
   if (tracking?.schema !== 'gmi.theme_etf_tracking_display/v1' || tracking.exhaustive !== false
       || tracking.meaning !== 'curated_tracking_reference_not_holdings' || tracking.authority_ceiling !== 'display_only'
-      || tracking.security_identity?.status !== 'unavailable' || tracking.security_identity.reason !== 'ETF_SECURITY_IDENTITY_NOT_BOUND'
       || tracking.holdings?.status !== 'unavailable' || tracking.holdings.asof !== null
       || tracking.weights !== null || tracking.performance !== null || powers.some(k => tracking.authority?.[k] !== false)
       || !Array.isArray(tracking.references) || tracking.references.length > 128) fail();
   if (!tracking.references.length) {
-    if (tracking.status !== 'unavailable' || !['NO_QUALIFIED_ETF_TRACKING_REFERENCE','HOUSE_DISPLAY_PERMISSION_UNAVAILABLE','ETF_REFERENCE_BOUND_EXCEEDED'].includes(tracking.reason)) fail();
+    if (sources.count !== 0 || tracking.security_identity?.status !== 'unavailable' || tracking.security_identity.reason !== 'ETF_SECURITY_IDENTITY_NOT_BOUND'
+        || tracking.status !== 'unavailable' || !['NO_QUALIFIED_ETF_TRACKING_REFERENCE','HOUSE_DISPLAY_PERMISSION_UNAVAILABLE','ETF_REFERENCE_BOUND_EXCEEDED'].includes(tracking.reason)) fail();
     return;
   }
   if (tracking.status !== 'available' || tracking.reason !== null) fail();
-  const seen = new Set();
+  const seen = new Set(); let resolved = 0;
   for (const ref of tracking.references) {
     const binding = map.bindings.find(b => b.resolution.node_id === ref?.binding_node_id);
     const basket = binding?.paths.flatMap(p => p.via).find(h => h.type === 'MEMBER_OF' && h.node.kind === 'basket' && h.node.node_id === ref.basket_node_id);
@@ -54,6 +106,7 @@ function decodeTracking(tracking, map, selected) {
         || !(c.valid_to === null || day(c.valid_to) && c.valid_to > map.asof)
         || !['evidence_time','belief_time','computed_at'].every(k => knownClock(c[k],map.knowledge_cutoff))
         || !Array.isArray(ref.evidence) || !ref.evidence.length || ref.evidence.length > 32) fail();
+    if (decodeEtfIdentity(ref.security_identity,sources)) resolved++;
     const key = JSON.stringify([ref.binding_node_id, ref.basket_node_id, ref.edge_id]);
     if (seen.has(key)) fail(); seen.add(key);
     const evidence = new Set();
@@ -63,6 +116,8 @@ function decodeTracking(tracking, map, selected) {
       evidence.add(receipt.evidence_id);
     }
   }
+  if (tracking.security_identity?.status !== (resolved === tracking.references.length ? 'available' : resolved ? 'partial' : 'unavailable')
+      || tracking.security_identity.reason !== (resolved === tracking.references.length ? null : 'ETF_IDENTITY_NOT_FULLY_RESOLVED')) fail();
 }
 export async function decodeTheme(value, reading, selected) {
   const s = value?.source, m = value?.theme_map;
@@ -77,10 +132,11 @@ export async function decodeTheme(value, reading, selected) {
       || m.identity_basis !== 'LATEST_PUBLISHED_OWNER_REFERENCE' || m.identity_owner !== 'gmi.identity_resolution/v1'
       || m.historical_identity_claim !== false || m.knowledge_cutoff_applies_to !== 'GRAPH_PATHS_ONLY'
       || !STATES.includes(m.availability?.state) || !Array.isArray(m.bindings) || m.bindings.length > 64
-      || !Array.isArray(s.reads) || s.reads.length !== FILES.length) fail();
+      || !Array.isArray(s.reads) || s.reads.length < FILES.length || s.reads.length > FILES.length + 5) fail();
   const reads = [...s.reads].sort((a,b) => String(a.path).localeCompare(String(b.path)));
+  const identitySources = decodeIdentitySources(reads);
   for (let i = 0; i < reads.length; i++) {
-    if (reads[i]?.path !== FILES[i] || !HEX.test(reads[i].sha256) || !Number.isSafeInteger(reads[i].bytes)
+    if (!HEX.test(reads[i].sha256) || !Number.isSafeInteger(reads[i].bytes)
         || reads[i].bytes <= 0 || reads[i].bytes > 33554432) fail();
   }
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode([METHOD,...reads.map(r => r.path + ':' + r.sha256)].join('\n')));
@@ -111,7 +167,7 @@ export async function decodeTheme(value, reading, selected) {
   if (m.bindings.length) {
     if (m.availability.state !== (available === m.bindings.length ? 'AVAILABLE' : available ? 'PARTIAL' : 'NO_QUALIFIED_HOUSE_PATH')) fail();
   } else if (!['NO_GRAPH_BINDING','IDENTITY_OWNER_UNAVAILABLE'].includes(m.availability.state)) fail();
-  decodeTracking(m.etf_tracking,m,selected);
+  decodeTracking(m.etf_tracking,m,selected,identitySources);
   return value;
 }
 export function mountTheme(root) {
@@ -195,8 +251,19 @@ export function mountTheme(root) {
         '生效起始：'+ref.clocks.valid_from+(ref.clocks.valid_to?'；结束：'+ref.clocks.valid_to:'；未记录结束日期')+'。'));
       if(ref.era==='reconstruction' || ref.date_provenance==='seed_constant') card.append(note(
         'Reconstructed relationship or seed date; not proof of an observation made on that date.', '此关系为重建记录或使用种子日期，不证明该日期当时已有观测。'));
+      const identity = ref.security_identity;
+      if (identity.status === 'available') card.append(note(
+        'ETF identity qualified through current native aliases. The listing observation qualifies instrument type only; this is not a historical identity claim.',
+        'ETF 身份已由当前原生别名确认。上市观测仅确认工具类型；这不代表历史身份。'));
+      else { card.append(note('ETF identity unavailable.', 'ETF 身份不可用。')); card.append(note(...ETF_REASONS[identity.reason])); }
       const details=node('details','ox-detail');details.append(node('summary','','Tracking evidence and clocks','跟踪凭证与时间'));
       const list=node('dl','ox-company-fields ox-company-references');
+      if (identity.status === 'available') {
+        field(list,'ETF security','ETF 证券',identity.security_id); field(list,'ETF listing','ETF 上市标识',identity.listing_key);
+        field(list,'Identity master generation','身份主表生成时刻',identity.master_generated_at);
+        field(list,'Instrument type observation date','工具类型观测日期',identity.listing_observed_on);
+        field(list,'Instrument type known at','工具类型获知时刻',identity.listing_known_at);
+      }
       field(list,'Selected security','所选证券',ref.selected_security_id);field(list,'Graph edge','图谱边',ref.edge_id);
       field(list,'Evidence time','证据时间',ref.clocks.evidence_time);field(list,'Knowledge time','知识时间',ref.clocks.belief_time);
       field(list,'Computation','计算时刻',ref.clocks.computed_at);field(list,'Era','时期',ref.era);field(list,'Date provenance','日期来源',ref.date_provenance);
@@ -204,8 +271,8 @@ export function mountTheme(root) {
         receipt.evidence_id+' / '+receipt.published_at+' / '+receipt.computed_at);
       details.append(list);card.append(details);output.append(card);
     }
-    output.append(note('These are curated graph tracking references, not fund identity or proof that the fund holds the selected company. Holdings, weights and performance are unavailable. Coverage is incomplete; these paths confer no ranking, sizing or trading authority.',
-      '这些是自有图谱跟踪引用，不是基金身份，也不证明基金持有所选公司。持仓、权重及表现不可用。覆盖范围并不完整；这些路径不赋予排名、仓位或交易权限。'));
+    output.append(note('These are curated graph tracking references. A qualified ETF identity does not prove that the fund holds the selected company. Holdings, weights and performance are unavailable. Coverage is incomplete; these paths confer no ranking, sizing or trading authority.',
+      '这些是自有图谱跟踪引用。合格的 ETF 身份不证明基金持有所选公司。持仓、权重及表现不可用。覆盖范围并不完整；这些路径不赋予排名、仓位或交易权限。'));
     const details=node('details','ox-detail');details.append(node('summary','','Selected source references','所选来源引用'));
     const list=node('dl','ox-company-fields ox-company-references');field(list,'Path reading','路径读数',v.source.source_manifest_hash);field(list,'Theme source generation','主题来源版本',v.source.theme_source_manifest_hash);details.append(list);output.append(details);
   }
