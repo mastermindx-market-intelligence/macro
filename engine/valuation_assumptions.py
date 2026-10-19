@@ -738,11 +738,16 @@ def latest_issuer_event_record(ticker: object) -> tuple[dict | None, bool]:
             }
         ]
         for event in iter_classified_spine_events(wanted):
+            filing = event["filing"]
             events.append({
                 "id": event["event_id"],
                 "tickers": [event["issuer"]["ticker"]],
                 "kind": event["event"]["subtype"],
                 "ts": event["point_in_time"]["available_at"],
+                # Preserve the owner's exact document, never infer a URL from
+                # an accession or promote an unlinked event into evidence.
+                "links": {"source": filing.get("primary_document_url")},
+                "source_ref": filing.get("accession"),
             })
     except Exception as exc:
         log.warning("valuation: issuer event record lookup failed: %s", exc)
