@@ -269,7 +269,19 @@ waves:
       earlier with different work; no causal gain or cost neutrality established.
       Exact-run command replay2694.53 to2266.33sec supports retaining two weights,
       not additional expansion. Collect a separate post18:49:48Z natural cohort;
-      first snapshot one pending, none complete. No blind rerun or speculative shards.
+      Report PR9780 merged576e21dc2e46bea739465c84a33ffbdf2135cd78, source verified.
+      Weighted20:48 cohort32runs/19verified completions/9pending/4cancelled;
+      scoped-success N13 p50/p95 2106/3941sec, summed wall215.68/399.37min.
+      No exact baseline proof matches; nine completions select neither calibrated
+      job. One exploratory adjacent-window exact pair is unexposed and has
+      different failure/success outcomes, so cannot estimate the weights' benefit.
+      Successful tail has3205sec execution wrapper with two exact-ancestry
+      depth8->32 waits691/726sec. Next bounded trial rechecks existing ancestry
+      before fetching, preventing a later consumer from re-shallowing complete
+      history. Real shallow-Git regression fails before, nine recovery tests pass
+      after;199 authority tests plus repaired mock pass, manifest validates.
+      No new cache, proof relaxation or shards; normal hosted proof remains due.
+      No causal target or cost-neutrality claim.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.
