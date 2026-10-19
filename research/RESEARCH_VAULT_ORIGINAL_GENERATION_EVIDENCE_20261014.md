@@ -158,8 +158,8 @@ must actually wait for its own original child, retain the closed journal's
 capture digest, and invoke one fresh isolated continuation child. A saved receipt,
 manual CLI call, newly assigned run identity or matching remote postimage cannot
 substitute for that original control flow. Mastermind PR1546 supplies that
-composition; its source-pair release remains held until the focused recovery
-review has been consumed.
+composition; its source-pair release requires adjudicated recovery-review
+findings and the normal protected release checks.
 
 The analyzer accepts only acknowledged, observed BUILDING publication with an
 exact live catalog version and bytes, valid corpus/receipt/PDF bindings, and no
@@ -169,6 +169,18 @@ previously unissued create-only receipts and the final COMPLETE transition. It
 retains the same source/run identity and epoch, leaves the original journal
 immutable, and never starts another BEGIN. Failed or ambiguous tails stay on the
 same reserved operation; there is no recursive or manual retry entry point.
+
+The continuation uses the analyzer's existing 1 GiB aggregate live-read ceiling.
+The ordinary 256 MiB budget could be exhausted by an admitted 256 MiB corpus
+before receipt, PDF and catalog-fence checks finished. A scaled regression runs
+the actual analyzer and same-epoch completion at that boundary; the former
+budget fails before continuation writes. Larger aggregate cuts still refuse
+before writes and require original-operation reconciliation. This is a bounded
+continuation, not a general recovery mechanism for every possible batch size.
+
+The CLI opens its read-only SQLite projection by a percent-encoded absolute
+file URI. A corpus path containing percent, question-mark or hash characters
+must identify the named database rather than a decoded or truncated decoy.
 
 Generation invocations use a separate write client with a resolved standard SDK
 policy of one total attempt and a per-invocation guard on actual outbound sends.

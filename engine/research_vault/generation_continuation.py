@@ -24,6 +24,12 @@ from engine.research_vault.generation_evidence import FileGenerationEvidence
 from engine.research_vault.generation_recovery import inspect_live_settled_publication
 from engine.research_vault.producer_generation_writer import ProducerGenerationSession
 
+# The admitted corpus alone can consume the analyzer's ordinary 256 MiB
+# budget. This bounded continuation also checks acknowledged PDFs, receipts
+# and catalog fences, so use the analyzer's existing 1 GiB aggregate limit.
+# Larger cuts still refuse before any continuation write.
+LIVE_BYTE_BUDGET = 1024 * 1024 * 1024
+
 
 class OriginalContinuationUnavailable(RuntimeError):
     """The retained original operation requires reconciliation; never retry."""
@@ -59,7 +65,8 @@ def _continue_after_original_exit(store, original_journal, *, expected_identity,
         # journal or emitting any remote write, even when postimages match.
         plan = inspect_live_settled_publication(
             store, original_journal, expected_identity=expected_identity,
-            original_capture_sha256=original_capture_sha256)
+            original_capture_sha256=original_capture_sha256,
+            byte_budget=LIVE_BYTE_BUDGET)
         document = catalog.parse_strict(plan["catalog_bytes"], check_future_clock=False)
         record = document[contract.GENERATION_FIELD]
         if now.timestamp() < record["started_at"]:

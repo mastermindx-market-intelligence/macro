@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from engine.research_vault import catalog, producer_generation as contract
+from engine.research_vault import generation_continuation as continuation
 from engine.research_vault.generation_continuation import (
     _continue_after_original_exit as continue_tail, OriginalContinuationUnavailable,
 )
@@ -145,3 +146,21 @@ def test_original_uncertainty_refuses_even_when_its_receipt_is_visible(original,
         invoke(alternate, sink.capture_sha256, store)
     assert calls == []
     assert not (path.parent / "continuation.jsonl").exists()
+
+
+def test_full_admitted_corpus_leaves_budget_for_required_checks(original, monkeypatch):
+    # Scale the production 256 MiB corpus/read-budget boundary to 4 KiB.
+    # The actual analyzer, reads and same-epoch completion still execute;
+    # this avoids a 256 MiB allocation in every CI run.
+    scale = (256 * 1024 * 1024) // 4096
+    monkeypatch.setattr(contract, "CORPUS_MAX_BYTES", 4096)
+    path, digest, _, _, store = original.fixture(promote=True, corpus_bytes=b"c" * 4096)
+    real_live = continuation.inspect_live_settled_publication
+
+    def scaled_live(*args, **kwargs):
+        supplied_budget = kwargs.pop("byte_budget", 256 * 1024 * 1024)
+        return real_live(*args, byte_budget=supplied_budget // scale, **kwargs)
+
+    monkeypatch.setattr(continuation, "inspect_live_settled_publication", scaled_live)
+    result = invoke(path, digest, store)
+    assert json.loads(result["catalog_bytes"])[contract.GENERATION_FIELD]["state"] == "COMPLETE"

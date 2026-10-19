@@ -24,7 +24,7 @@ NOW = datetime(2026, 10, 14, 16, tzinfo=timezone.utc)
 
 
 class RecoverabilityTests(unittest.TestCase):
-    def fixture(self, issued=0, promote=False, existing_pdfs=False):
+    def fixture(self, issued=0, promote=False, existing_pdfs=False, corpus_bytes=None):
         temp = tempfile.TemporaryDirectory(prefix="private-original-plan-")
         self.addCleanup(temp.cleanup)
         root = Path(temp.name)
@@ -57,7 +57,7 @@ class RecoverabilityTests(unittest.TestCase):
             for rid in ("report-a", "report-b")
         ]
         corpus = root / "corpus.sqlite"
-        corpus.write_bytes(b"synthetic original corpus bytes")
+        corpus.write_bytes(b"synthetic original corpus bytes" if corpus_bytes is None else corpus_bytes)
         if existing_pdfs:
             for rid in ("report-a", "report-b"):
                 store.put_bytes("research_vault/" + rid + ".pdf", rid.encode())

@@ -422,7 +422,7 @@ def _run_pipeline(a, gen_src, gen_run, evidence, repo_catalog, repo_excerpts):
             ids = {it["id"] for it in items if isinstance(it, dict) and it.get("id")}
             # READ-ONLY: this connection must never mutate the corpus that was
             # just published to R2.
-            conn = sqlite3.connect(f"file:{corpus_path}?mode=ro", uri=True)
+            conn = sqlite3.connect(f"{corpus_path.resolve().as_uri()}?mode=ro", uri=True)
             try:
                 excerpts = excerpt_mod.snapshot(conn, ids)
             finally:
