@@ -237,6 +237,39 @@ waves:
       across client behavior, and projects the caller's PR branch identity into
       the detached trusted executor. Repaired exact execution/parity/gate proof
       remains owed.
+  - id: W-THROUGHPUT-20261019
+    title: Measured CI throughput and bounded planner/weight trials
+    status: in_progress
+    note: >
+      Chairman's October 19 commission is assigned to Codex session
+      01a153e8-3c85-7bb2-af63-7f477b570512. The 40-run baseline retains 22
+      noncancelled first attempts, 17 cancellations and one separate rerun.
+      Successful first-attempt run-to-gate p50/p95 is 3196/4074 seconds.
+      Initial trial removes duplicate named-suite closure traversal within one
+      planner command; twelve packs and all semantic/gate contracts remain.
+      Existing PR 8126 is already delivered and PR 8094 remains separate.
+      Research and limitations: research/ci_pack_throughput_20261019/README.md.
+      Current continuation: agentos/handoffs/WS-CI-MERGE-CONTROL-PLANE-2026-10-19-THROUGHPUT.md.
+      PR 9722 merged as 7736fd72895fc24e55bf2d4bbc7b1f4e94203414 with full
+      hosted proof. First broad trial took 78.1 minutes, including 825 seconds
+      of post-pack queueing; packing-contract group 740.414 seconds versus a
+      historical 847.738-second median is descriptive, not a causal gain.
+      Natural cohort has 37 verified first-attempt completions, two selected-set
+      matches but zero execution-proof matches and nine pending; no causal gain.
+      A twelve-pack replay of all 255 measured job costs supports a bounded
+      FIF/earnings weight calibration: modeled maximum command time
+      2085.4 to 1532.3 seconds, excluding install/checkout/queue effects.
+      Trial PR9763 incorporated landed Defense heal PR9758. The next run
+      passed Defense but found a missing schema identifier from PR9765 on
+      both candidate and base. A one-field schema registry repair reproduces
+      three failures before and passes181 affected tests after. PR9763 merged as
+      38d2dac36faabfff04f8efe5ee28e5c8dfa1c5ae after all257 jobs and active checks
+      passed in run39298424658. Source landing verified; observer50933 consumed.
+      Weighted full trial48.82min/371.70 summed job minutes, versus78.08/337.38
+      earlier with different work; no causal gain or cost neutrality established.
+      Exact-run command replay2694.53 to2266.33sec supports retaining two weights,
+      not additional expansion. Collect a separate post18:49:48Z natural cohort;
+      first snapshot one pending, none complete. No blind rerun or speculative shards.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.

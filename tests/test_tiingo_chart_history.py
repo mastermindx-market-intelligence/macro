@@ -86,3 +86,67 @@ def test_duplicate_capture_refs_are_not_coverage(lake):
     ref = capture(lake, [bar()])
     with pytest.raises(TiingoViewRefusal, match="duplicate capture"):
         build_chart_history("AMD", [ref, ref], root=lake.root, check_mount=False)
+
+
+def receipt_hints(lake, ref):
+    return {ref: next(p for p in (lake.root / "receipts").rglob("*.json")
+                      if json.loads(p.read_text())["receipt_id"] == ref[1])}
+
+
+def test_exact_receipt_hint_matches_full_scan_without_directory_scan(lake, monkeypatch):
+    from pathlib import Path
+    ref = capture(lake, [bar()])
+    expected = build_chart_history("AMD", [ref], root=lake.root, check_mount=False)
+    hints = receipt_hints(lake, ref)
+    def no_scan(*args, **kwargs):
+        raise AssertionError("exact receipt lookup must not scan the directory")
+    monkeypatch.setattr(Path, "glob", no_scan)
+    actual = build_chart_history("AMD", [ref], root=lake.root, check_mount=False, receipt_paths=hints)
+    assert actual == expected
+
+
+def test_receipt_hint_cannot_select_another_receipt_or_hide_raw_collision(lake):
+    from lib.dataos.tiingo_reader import read_research_view
+    ref = capture(lake, [bar()])
+    other = capture(lake, [bar()], symbol="OTHER")
+    hints = receipt_hints(lake, other)
+    with pytest.raises(TiingoViewRefusal):
+        build_chart_history("AMD", [ref], root=lake.root, check_mount=False,
+                            receipt_paths={ref: hints[other]})
+    own = receipt_hints(lake, ref)[ref]
+    digest = json.loads(own.read_text())["raw_sha256"]
+    with pytest.raises(TiingoViewRefusal):
+        read_research_view("boats-bars", ref[0], digest, root=lake.root,
+                           check_mount=False, receipt_path=own)
+    # Exact receipt selection remains valid even for identical vendor payloads.
+    assert build_chart_history("AMD", [ref], root=lake.root, check_mount=False,
+                               receipt_paths={ref: own})["symbol"] == "AMD"
+
+
+@pytest.mark.parametrize("escape", ["outside", "symlink", "missing", "wrong_day"])
+def test_receipt_hint_refuses_path_evasion(lake, tmp_path, escape):
+    ref = capture(lake, [bar()])
+    own = receipt_hints(lake, ref)[ref]
+    if escape == "outside":
+        bad = tmp_path / "outside.json"; bad.write_bytes(own.read_bytes())
+    elif escape == "symlink":
+        bad = own.with_name("link.json"); bad.symlink_to(own)
+    elif escape == "wrong_day":
+        bad = own.parent.parent / "2026-10-12" / own.name
+        bad.parent.mkdir(); bad.write_bytes(own.read_bytes())
+    else:
+        bad = own.with_name("missing.json")
+    with pytest.raises(TiingoViewRefusal):
+        build_chart_history("AMD", [ref], root=lake.root, check_mount=False, receipt_paths={ref: bad})
+
+
+def test_receipt_hint_still_verifies_raw_and_receipt_bytes(lake):
+    ref = capture(lake, [bar()]); hints = receipt_hints(lake, ref)
+    p = hints[ref]; original = p.read_bytes(); r = json.loads(original)
+    r["symbol"] = "OTHER"; p.write_text(json.dumps(r))
+    with pytest.raises(TiingoViewRefusal):
+        build_chart_history("AMD", [ref], root=lake.root, check_mount=False, receipt_paths=hints)
+    p.write_bytes(original)
+    next((lake.root / "raw").rglob("*.gz")).write_bytes(b"broken")
+    with pytest.raises(TiingoViewRefusal):
+        build_chart_history("AMD", [ref], root=lake.root, check_mount=False, receipt_paths=hints)

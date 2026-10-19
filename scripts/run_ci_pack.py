@@ -418,6 +418,12 @@ OBSERVED_COMMAND_SECONDS = {
     # render-lane contracts and the options/sparse suites: about 90 s including
     # its data-stack install.
     "ci-control-plane-contracts": 1400,
+    # Hosted command groups, 2026-10-19: FIF historical kernel median 1618 s
+    # plus ~13 s guards (nine runs); earnings 1071 s in full trial 39247388552.
+    # These calibrate balancing only; install/checkout/queue are excluded.
+    # Evidence and sensitivity replay: research/ci_pack_throughput_20261019/.
+    "fif-kernel-guards": 1630,
+    "earnings-economic-dossier": 1070,
     "workflow-yaml": 90,
     "market-memory-contract": 416,
     "unrun-government-revenue-grader": 322,
@@ -1224,6 +1230,13 @@ def infer_job_scopes(jobs: Iterable[LegacyJob]) -> tuple[list[LegacyJob], str]:
 
             for reference in SCOPE_REFERENCE_RE.findall(command):
                 rel = reference.split("::", 1)[0].rstrip(".,;:'\")")
+                # Named suites already contributed their complete closure above.
+                # They also match the generic path scanner, sometimes repeatedly
+                # (multiple node IDs in one suite). Rewalking the same graph adds
+                # no ownership: pytest ambiguity was checked before either pass,
+                # and the final named_pytest filter applies to both fallbacks.
+                if rel in named_here:
+                    continue
                 path = Path(rel)
                 if not planner_path_is_file(path):
                     continue
