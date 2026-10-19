@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 from datetime import datetime, timezone
 
 from engine.bottleneck import _band, _series, _yoy, _z
@@ -85,6 +86,44 @@ def _queue_vintage() -> int | None:
         return None
 
 
+def _queue_figures() -> dict:
+    """The published GW behind the queue leg — display-only, from the same LBNL cache.
+
+    `_queue_pull()` squashes the queue into one z-score. That is what the composite
+    needs and what a reader cannot check; the physical fact is the totals themselves
+    (the 2023 edition: 2,600 GW queued against 2,058 GW the prior year). They ride the
+    payload as their own keys so the card can print them. Never raises, and a figure
+    that is not a finite positive number is simply absent — an absent key is an
+    unprinted clause, not a zero. Nothing here touches the z, the legs or the band."""
+    p = config.data_dir() / "eia" / "interconnection_queue.json"
+    if not p.exists():
+        return {}
+    try:
+        d = json.loads(p.read_text())
+    except Exception:  # noqa: BLE001
+        return {}
+    if not isinstance(d, dict):
+        return {}
+
+    def positive(raw):                     # one published figure, or nothing at all
+        if isinstance(raw, bool):
+            return None
+        try:
+            v = float(raw)
+        except (TypeError, ValueError):
+            return None
+        return v if math.isfinite(v) and v > 0 else None
+
+    out: dict = {}
+    for key, src in (("queue_total_gw", "total_gw"), ("queue_prior_gw", "prior_gw"),
+                     ("queue_prior_year", "prior_year")):
+        v = positive(d.get(src))
+        if v is None:
+            continue
+        out[key] = int(v) if key.endswith("_year") else v
+    return out
+
+
 def compute_power_scarcity(write_ledger: bool = True) -> dict | None:
     """Per-power-theme electricity-scarcity read. DISPLAY-ONLY. Returns None when no FRED
     electricity series have collected yet (engine degrades; the desk runs unchanged)."""
@@ -129,6 +168,7 @@ def compute_power_scarcity(write_ledger: bool = True) -> dict | None:
     if "queue_buildout" in present:
         vintage = _queue_vintage()
         payload["queue_buildout_asof_year"] = vintage
+        payload.update(_queue_figures())          # display-only; the z math is untouched
         # UTC year, matching collectors/lbnl_queue.py's own as-of basis.
         if vintage is not None and vintage < datetime.now(timezone.utc).year - 1:
             payload["queue_buildout_stale"] = (
