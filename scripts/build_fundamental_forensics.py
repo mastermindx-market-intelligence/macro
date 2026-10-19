@@ -1517,7 +1517,8 @@ def render_shell(root: Path, state_summary: dict[str, Any] | None = None) -> Pat
         os.replace(page_temp, page)
     finally:
         page_temp.unlink(missing_ok=True)
-    for name in ("fundamental_forensics.css", "fundamental_forensics.js"):
+    for name in ("fundamental_forensics.css", "fundamental_forensics.js",
+                 "institutional_holding_research.css", "institutional_holding_research.js"):
         _atomic_copy(root / "templates" / name, site / name)
     return page
 

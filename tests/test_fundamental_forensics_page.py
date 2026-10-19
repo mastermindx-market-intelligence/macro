@@ -174,6 +174,16 @@ def _render_into(tmp_path: Path, root: Path, *, summary=None) -> str:
     return render_shell(tmp_path, state_summary=summary).read_text(encoding="utf-8")
 
 
+def test_public_shell_build_copies_the_reported_holding_client_without_private_rows(tmp_path: Path):
+    root = Path(__file__).resolve().parents[1]
+    html = _render_into(tmp_path, root)
+    for name in ("institutional_holding_research.css", "institutional_holding_research.js"):
+        assert (tmp_path / "site" / name).read_bytes() == (root / "templates" / name).read_bytes()
+    assert 'id="ff-holding-result" hidden' in html
+    assert not (tmp_path / "data" / "fundamental_forensics" / "private").exists()
+    assert not (tmp_path / "site" / "data" / "fundamental_forensics" / "private").exists()
+
+
 # ---------------------------------------------------------------------------
 # FIF P1-b state data contract (items I1, I2, I4, I5)
 # ---------------------------------------------------------------------------
