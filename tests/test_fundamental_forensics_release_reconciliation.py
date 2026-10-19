@@ -7,6 +7,7 @@ cells; the release side uses the real ``ReleaseFigure``/``ReleaseFigureSet``/
 """
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 
 import yaml
@@ -214,6 +215,36 @@ def test_release_scale_falls_back_to_scale_factor_table():
     assert row["tolerance"] == "500000"  # 0.5 * 1e6, zero displayed decimals
 
 
+def test_display_precision_unknown_without_a_usable_literal():
+    # E2-m5: decimals are never guessed from the float's repr.  A missing
+    # receipt and a literal that is not the accepted form (a trailing
+    # footnote marker) both yield the typed state, with no tolerance, no
+    # delta and no verdict.
+    packet = _packet(_cell("c-rev-1", "revenue", value="94930000000"))
+    millions = dict(units="usd_millions", scale_factor=None)
+    no_receipt = replace(
+        _figure("revenue", "Net sales", 94930.0, tag="m0", display="94,930", **millions),
+        receipt=None,
+    )
+    footnote_marker = _figure(
+        "revenue", "Net sales", 94930.0, tag="m1", display="94,930 (1)", **millions
+    )
+    for figure in (no_receipt, footnote_marker):
+        row = _row(reconcile_release(_release([figure]), packet), "revenue")
+        assert row["outcome"] == "display_precision_unknown"
+        assert row["filed_cell_ids"] == ["c-rev-1"]
+        assert row["released_value"] == "94930000000"
+        assert row["filed_value"] == "94930000000"
+        assert row["tolerance"] is None
+        assert row["delta"] is None
+
+    # The accepted literal forms keep today's results.
+    accepted = _figure("revenue", "Net sales", 94930.0, tag="m2", display="94,930", **millions)
+    row = _row(reconcile_release(_release([accepted]), packet), "revenue")
+    assert row["outcome"] == "agrees"
+    assert row["tolerance"] == "500000"
+
+
 # ─── (b) EPS: per-share unit handling ─────────────────────────────────────────
 
 def test_eps_agrees_per_share_and_mismatches_currency_unit():
@@ -244,6 +275,27 @@ def test_currency_mismatch_between_release_and_cell_unit():
         _cell("c-rev-1", "revenue", value="94930000000", unit="USD")
     ))
     assert _row(result, "revenue")["outcome"] == "unit_mismatch"
+
+
+def test_iso4217_unit_namespace_prefix_is_accepted_as_currency():
+    # E2 nit: ``iso4217:USD`` is the same currency as ``USD``.
+    per_share = _figure("eps_diluted", "Diluted", 1.64, units="per_share", scale_factor=1.0, tag="i")
+    agreed = reconcile_release(_release([per_share]), _packet(
+        _cell("c-eps-1", "diluted_earnings_per_share", value="1.64", unit="iso4217:USD/shares")
+    ))
+    assert _row(agreed, "eps_diluted")["outcome"] == "agrees"
+
+    monetary = _figure("revenue", "Net sales", 94.93, tag="o")
+    agreed_money = reconcile_release(_release([monetary]), _packet(
+        _cell("c-rev-1", "revenue", value="94930000000", unit="iso4217:USD")
+    ))
+    assert _row(agreed_money, "revenue")["outcome"] == "agrees"
+
+    # A namespaced DIFFERENT currency still mismatches.
+    mismatch = reconcile_release(_release([monetary]), _packet(
+        _cell("c-rev-2", "revenue", value="94930000000", unit="iso4217:EUR")
+    ))
+    assert _row(mismatch, "revenue")["outcome"] == "unit_mismatch"
 
 
 # ─── (c) period matching ──────────────────────────────────────────────────────
@@ -334,6 +386,31 @@ def test_two_matching_cells_with_different_values_are_ambiguous():
     assert _row(agreed, "eps_diluted")["outcome"] == "agrees"
 
 
+def test_valueless_cells_with_different_non_value_states_are_ambiguous():
+    # E2-m4: the ambiguity key carries non_value_state, so two matching
+    # valueless cells with different states never collapse to a picked cell.
+    figure = _figure("net_income", "Net income", 23.4, tag="s1")
+    result = reconcile_release(_release([figure]), _packet(
+        _cell("c-ni-1", "net_income_loss", value=None, non_value_state="not_evaluable"),
+        _cell("c-ni-2", "net_income_loss", value=None, non_value_state="restated"),
+    ))
+    row = _row(result, "net_income")
+    assert row["outcome"] == "ambiguous_filed_cell"
+    assert row["filed_cell_ids"] == ["c-ni-1", "c-ni-2"]  # sorted, never picked
+    assert row["filed_value"] is None
+    assert row["delta"] is None
+
+    # The SAME state on both cells still collapses; only differing states
+    # are ambiguous.
+    collapsed = reconcile_release(_release([figure]), _packet(
+        _cell("c-ni-1", "net_income_loss", value=None, non_value_state="not_evaluable"),
+        _cell("c-ni-2", "net_income_loss", value=None, non_value_state="not_evaluable"),
+    ))
+    row = _row(collapsed, "net_income")
+    assert row["outcome"] == "packet_cell_without_value"
+    assert row["non_value_state"] == "not_evaluable"
+
+
 # ─── (f) filed non-values and release absences ────────────────────────────────
 
 def test_filed_non_value_state_is_carried_verbatim():
@@ -346,6 +423,22 @@ def test_filed_non_value_state_is_carried_verbatim():
     assert row["non_value_state"] == "not_evaluable"
     assert row["filed_value"] is None
     assert row["delta"] is None
+
+
+def test_non_numeric_filed_value_returns_typed_state_not_a_crash():
+    # E2-m3: a filed value that is not a decimal number is a typed state,
+    # never a raw InvalidOperation.
+    figure = _figure("revenue", "Net sales", 94.93, tag="x1")
+    result = reconcile_release(_release([figure]), _packet(
+        _cell("c-rev-1", "revenue", value="n/a"),
+    ))
+    row = _row(result, "revenue")
+    assert row["outcome"] == "filed_value_unparseable"
+    assert row["filed_cell_ids"] == ["c-rev-1"]
+    assert row["released_value"] is None
+    assert row["filed_value"] is None
+    assert row["delta"] is None
+    assert row["tolerance"] is None
 
 
 def test_typed_absence_becomes_release_absence_row_with_reason_and_detail():
@@ -399,7 +492,7 @@ def _eps_event(event_key: str, report_date: str, non_gaap_label: str, gaap_filed
     )
 
 
-def test_relabel_starts_new_series_and_records_one_definition_change():
+def test_relabel_starts_new_series_and_records_each_definition_change():
     events = [
         _eps_event(f"{CIK:010d}|2026-04-25", "2026-04-25", "Adjusted EPS", gaap_filed="1.60"),
         _eps_event(f"{CIK:010d}|2026-07-24", "2026-07-24", "Core EPS", gaap_filed="1.64"),
@@ -410,13 +503,16 @@ def test_relabel_starts_new_series_and_records_one_definition_change():
 
     keys = [item["key"] for item in series["series"]]
     assert keys == [
-        {"concept": "eps_diluted", "basis": "gaap", "label_key": "diluted"},
-        {"concept": "eps_diluted", "basis": "non_gaap", "label_key": "adjusted eps"},
-        {"concept": "eps_diluted", "basis": "non_gaap", "label_key": "core eps"},
+        {"concept": "eps_diluted", "basis": "gaap", "label_key": "diluted", "period_length_class": "quarter"},
+        {"concept": "eps_diluted", "basis": "non_gaap", "label_key": "adjusted eps", "period_length_class": "quarter"},
+        {"concept": "eps_diluted", "basis": "non_gaap", "label_key": "core eps", "period_length_class": "quarter"},
     ]
 
     by_key = {tuple(sorted(item["key"].items())): item["points"] for item in series["series"]}
-    gaap_points = by_key[(("basis", "gaap"), ("concept", "eps_diluted"), ("label_key", "diluted"))]
+    gaap_points = by_key[(
+        ("basis", "gaap"), ("concept", "eps_diluted"),
+        ("label_key", "diluted"), ("period_length_class", "quarter"),
+    )]
     assert [point["event_key"] for point in gaap_points] == [
         f"{CIK:010d}|2026-04-25", f"{CIK:010d}|2026-07-24", f"{CIK:010d}|2026-10-23",
     ]
@@ -431,13 +527,98 @@ def test_relabel_starts_new_series_and_records_one_definition_change():
     assert len(non_gaap_points) == 3
     assert not ({id(p) for p in gaap_points} & {id(p) for p in non_gaap_points})
 
-    assert series["definition_changes"] == [{
-        "concept": "eps_diluted",
-        "basis": "non_gaap",
-        "from_label": "Adjusted EPS",
-        "to_label": "Core EPS",
-        "first_event_key": f"{CIK:010d}|2026-07-24",
-    }]
+    # E2-m1: the A→B→A revert is recorded as its own definition change, so
+    # the history holds two changes, not one.
+    assert series["definition_changes"] == [
+        {
+            "concept": "eps_diluted",
+            "basis": "non_gaap",
+            "period_length_class": "quarter",
+            "from_label": "Adjusted EPS",
+            "to_label": "Core EPS",
+            "first_event_key": f"{CIK:010d}|2026-07-24",
+        },
+        {
+            "concept": "eps_diluted",
+            "basis": "non_gaap",
+            "period_length_class": "quarter",
+            "from_label": "Core EPS",
+            "to_label": "Adjusted EPS",
+            "first_event_key": f"{CIK:010d}|2026-10-23",
+        },
+    ]
+
+
+def test_q4_and_full_year_columns_yield_one_series_per_period_length_class():
+    # E2-M1: one release, one label, one period_end — two period lengths.
+    # The Q4 and full-year columns must never share a series.
+    figures = [
+        _figure("revenue", "Net sales", 25.1, period_label=Q_LABEL, period_end=Q_END, tag="q4c", display="25.1"),
+        _figure("revenue", "Net sales", 94.93, period_label=FY_LABEL, period_end=Q_END, tag="fyc", display="94.93"),
+    ]
+    packet = _packet(
+        _cell("c-q-1", "revenue", value="25100000000", start=Q_START, end=Q_END),
+        _cell("c-y-1", "revenue", value="94930000000", start=FY_START, end=Q_END),
+    )
+    reconciliation = reconcile_release(_release(figures), packet)
+    rows = {row["period_length_class"]: row for row in reconciliation.to_dict()["rows"]}
+    assert set(rows) == {"quarter", "annual"}
+    assert rows["quarter"]["outcome"] == "agrees"
+    assert rows["quarter"]["released_value"] == "25100000000"
+    assert rows["quarter"]["filed_cell_ids"] == ["c-q-1"]
+    assert rows["annual"]["outcome"] == "agrees"
+    assert rows["annual"]["released_value"] == "94930000000"
+    assert rows["annual"]["filed_cell_ids"] == ["c-y-1"]
+
+    series = build_release_series([reconciliation])
+    assert [item["key"] for item in series["series"]] == [
+        {"concept": "revenue", "basis": "gaap", "label_key": "net sales", "period_length_class": "annual"},
+        {"concept": "revenue", "basis": "gaap", "label_key": "net sales", "period_length_class": "quarter"},
+    ]
+    points = {item["key"]["period_length_class"]: item["points"] for item in series["series"]}
+    assert [(p["period_length_class"], p["released_value"]) for p in points["annual"]] == [
+        ("annual", "94930000000"),
+    ]
+    assert [(p["period_length_class"], p["released_value"]) for p in points["quarter"]] == [
+        ("quarter", "25100000000"),
+    ]
+    assert series["definition_changes"] == []
+
+
+def _two_non_gaap_labels_event(event_key: str, report_date: str, labels, gaap_filed: str):
+    figures = [
+        _figure("eps_diluted", "Diluted", float(gaap_filed), units="per_share", scale_factor=1.0, tag=f"g{report_date}"),
+        *(
+            _figure(
+                "eps_diluted", label, 2.05,
+                basis="non_gaap", units="per_share", scale_factor=1.0, tag=f"n{label}{report_date}",
+            )
+            for label in labels
+        ),
+    ]
+    cells = [_cell(f"c-{report_date}", "diluted_earnings_per_share", value=gaap_filed, unit="USD/shares")]
+    return reconcile_release(
+        _release(figures, event_key=event_key, report_date=report_date), _packet(*cells)
+    )
+
+
+def test_two_labels_within_one_event_record_no_definition_change_in_either_order():
+    # E2-m2: the label SET of an event is what changes (or does not); two
+    # labels inside one event never record a change against each other,
+    # whatever figure order the release lists them in.
+    events = [
+        _two_non_gaap_labels_event(
+            f"{CIK:010d}|2026-04-25", "2026-04-25", ["Adjusted EPS", "Core EPS"], gaap_filed="1.60",
+        ),
+        _two_non_gaap_labels_event(
+            f"{CIK:010d}|2026-07-24", "2026-07-24", ["Core EPS", "Adjusted EPS"], gaap_filed="1.64",
+        ),
+    ]
+    series = build_release_series(events)
+    assert series["definition_changes"] == []
+    assert sorted(item["key"]["label_key"] for item in series["series"]) == [
+        "adjusted eps", "core eps", "diluted",
+    ]
 
 
 # ─── extra outcomes the packet requires to be reachable ───────────────────────

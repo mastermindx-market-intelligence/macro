@@ -34,9 +34,15 @@ Decision order for one figure (first match wins):
 6. no candidate cell → ``no_packet_cell``;
 7. matching cells disagree with each other → ``ambiguous_filed_cell``;
 8. the matching cell carries no value → ``packet_cell_without_value``;
-9. release units unrecognized → ``unit_unrecognized``;
-10. cell unit shape/currency wrong → ``unit_mismatch``;
-11. otherwise ``agrees`` / ``differs``.  Tolerance is half of one unit of the
+9. the matching cell's value is not a finite decimal →
+   ``filed_value_unparseable``;
+10. release units unrecognized → ``unit_unrecognized``;
+11. cell unit shape/currency wrong → ``unit_mismatch`` (a cell unit currency
+   may carry a leading ``iso4217:`` namespace: ``iso4217:USD`` equals ``USD``);
+12. the release's displayed precision is held as no accepted literal →
+   ``display_precision_unknown`` (the pinned per-share tolerance reads no
+   displayed precision);
+13. otherwise ``agrees`` / ``differs``.  Tolerance is half of one unit of the
    release's displayed precision: ``0.5 * scale`` at zero displayed decimals
    (the packet's millions example: 500,000), tightened by the decimals the
    release shows — a ``94.93``-billions display is precise to 0.005 billions,
@@ -114,13 +120,15 @@ _HALF = Decimal("0.5")
 _DISPLAY_NUMERIC_RE = re.compile(r"\A-?\d+(?:\.\d+)?\Z")
 
 
-def _displayed_decimals(figure: ReleaseFigure) -> int:
+def _displayed_decimals(figure: ReleaseFigure) -> int | None:
     """Decimal places the release itself shows for this figure.
 
     The receipt's ``value_text`` is the literal as typeset — ``94,930`` shows
-    zero decimals even though the parsed float's repr adds ``.0`` — so it is
-    the display of record; the float repr is the fallback when no usable
-    literal is held.
+    zero decimals even though the parsed float's repr adds ``.0`` — and it is
+    the ONLY display of record.  When it is missing, or is not the accepted
+    literal form (``94,930 (1)`` carries a footnote marker), the precision is
+    unknown and the caller reports ``display_precision_unknown``; decimals
+    are never guessed from the parsed float's repr.
     """
     text = ""
     if figure.receipt is not None:
@@ -129,8 +137,7 @@ def _displayed_decimals(figure: ReleaseFigure) -> int:
         text = text[1:-1]
     if text and _DISPLAY_NUMERIC_RE.match(text):
         return len(text.partition(".")[2])
-    exponent = Decimal(repr(figure.value)).as_tuple().exponent
-    return max(0, -int(exponent))
+    return None
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -245,7 +252,11 @@ def _cell_currency(unit: object) -> str | None:
     text = str(unit if unit is not None else "").strip()
     if not text:
         return None
-    return text.split("/", 1)[0].strip().upper() or None
+    prefix = text.split("/", 1)[0].strip()
+    # A leading iso4217: namespace is the same currency: iso4217:USD == USD.
+    if prefix[:8].lower() == "iso4217:":
+        prefix = prefix[8:].strip()
+    return prefix.upper() or None
 
 
 def _candidate_cells(
@@ -281,18 +292,34 @@ def _candidate_cells(
     return sorted(matches, key=lambda cell: cell["cell_id"])
 
 
-def _filed_value_key(value: object) -> str:
-    """Comparable identity of a filed cell value for ambiguity detection.
+def _filed_value_key(cell: Mapping[str, Any]) -> str:
+    """Comparable identity of a filed cell for ambiguity detection.
 
-    ``94930000000`` and ``94930000000.0`` are the same filed number; a value
-    that is None or not a decimal string is its own key.
+    ``94930000000`` and ``94930000000.0`` are the same filed number; a cell
+    without a value is keyed by its ``non_value_state`` (or its absence), so
+    two matching valueless cells with different states never collapse to one
+    picked cell; a value that is not a decimal string is its own key.
     """
-    if value is None:
-        return "<no-value>"
+    if cell.get("value") is None or cell.get("non_value_state"):
+        return f"<no-value:{cell.get('non_value_state')!r}>"
     try:
-        return _dec_str(Decimal(str(value)))
+        return _dec_str(Decimal(str(cell["value"])))
     except ArithmeticError:
-        return f"<unparseable:{value!r}>"
+        return f"<unparseable:{cell['value']!r}>"
+
+
+def _filed_decimal(value: object) -> Decimal | None:
+    """Parse a filed cell value, or None when it is not a finite decimal.
+
+    A value like ``n/a`` is a typed finding (``filed_value_unparseable``),
+    never a raw ``InvalidOperation``; NaN and infinities parse as Decimals
+    but poison every delta, so they are unparseable here too.
+    """
+    try:
+        parsed = Decimal(str(value))
+    except ArithmeticError:
+        return None
+    return parsed if parsed.is_finite() else None
 
 
 def _released_scale(figure: ReleaseFigure) -> Decimal:
@@ -355,10 +382,16 @@ def _compare_row(
         row["non_value_state"] = representative.get("non_value_state")
         return row
 
+    filed = _filed_decimal(representative.get("value"))
+    if filed is None:
+        row["outcome"] = "filed_value_unparseable"
+        row["filed_cell_ids"] = cell_ids
+        return row
+
     if figure.units not in _KNOWN_RELEASE_UNITS:
         row["outcome"] = "unit_unrecognized"
         row["filed_cell_ids"] = cell_ids
-        row["filed_value"] = _dec_str(Decimal(str(representative["value"])))
+        row["filed_value"] = _dec_str(filed)
         return row
 
     # Unit shape: per-share concepts need a per-share cell unit; monetary
@@ -373,22 +406,31 @@ def _compare_row(
     if not unit_ok or not currency_ok:
         row["outcome"] = "unit_mismatch"
         row["filed_cell_ids"] = cell_ids
-        row["filed_value"] = _dec_str(Decimal(str(representative["value"])))
+        row["filed_value"] = _dec_str(filed)
         return row
 
     scale = _released_scale(figure)
     released = Decimal(repr(figure.value)) * scale
-    filed = Decimal(str(representative["value"]))
     if wants_per_share:
         # Pinned flat by the spec for per-share amounts.
         tolerance = _PER_SHARE_TOLERANCE
     else:
+        decimals = _displayed_decimals(figure)
+        if decimals is None:
+            # No accepted literal: the displayed precision is unknown, so no
+            # tolerance is minted and no verdict is stated.  The two values
+            # remain on the row as observed facts.
+            row["outcome"] = "display_precision_unknown"
+            row["filed_cell_ids"] = cell_ids
+            row["released_value"] = _dec_str(released)
+            row["filed_value"] = _dec_str(filed)
+            return row
         # Half of one unit of the release's DISPLAYED precision: 0.5 * scale
         # for a whole-unit display (the spec's millions example: 500,000),
         # tightened by the decimals the release actually shows — a 94.93
         # billions display is precise to 0.005 billions, and a 100,000,000
         # filed gap on that display DIFFERS.
-        tolerance = scale * _HALF * Decimal(10) ** (-_displayed_decimals(figure))
+        tolerance = scale * _HALF * Decimal(10) ** (-decimals)
     row["released_value"] = _dec_str(released)
     row["filed_value"] = _dec_str(filed)
     row["tolerance"] = _dec_str(tolerance)
@@ -427,7 +469,7 @@ def _figure_row(figure: ReleaseFigure, packet: Mapping[str, Any]) -> dict[str, A
         row["outcome"] = "no_packet_cell"
         return row
     values = {
-        _filed_value_key(cell.get("value")) for cell in candidates
+        _filed_value_key(cell) for cell in candidates
     }
     if len(values) > 1:
         row = _row_skeleton(figure, metric_id=metric_id)
@@ -496,57 +538,90 @@ def _label_key(label: object) -> str:
     return " ".join(str(label if label is not None else "").split()).casefold()
 
 
+def _label_set_transitions(
+    previous: frozenset[str], current: frozenset[str]
+) -> list[tuple[str | None, str | None]]:
+    """Label-key pairs that express one set change, deterministically.
+
+    Removed and added labels pair up index-wise in sorted order; an uneven
+    side leaves a ``None`` beside the orphan, so a pure addition or removal
+    is still one retained change.
+    """
+    removed = sorted(previous - current)
+    added = sorted(current - previous)
+    return [
+        (
+            removed[index] if index < len(removed) else None,
+            added[index] if index < len(added) else None,
+        )
+        for index in range(max(len(removed), len(added)))
+    ]
+
+
 def build_release_series(
     reconciliations: Sequence[ReleaseReconciliation],
 ) -> dict[str, Any]:
     """Group reconciled rows into issuer-defined series, never splicing.
 
-    The series key is ``(concept, basis, label_key)``: a relabel under the same
-    concept and basis starts a NEW series, and rows with a different basis or
-    label never share a list with it.  A label that reverts to an
-    already-seen spelling rejoins that spelling's series and records no new
-    definition change — the issuer returned to an existing definition, it did
-    not mint one.  ``release_absence`` rows carry no released number and form
-    no series.
+    The series key is ``(concept, basis, label_key, period_length_class)``:
+    a relabel under the same concept and basis starts a NEW series, rows
+    with a different basis or label never share a list with it, and a
+    release that reports both a quarter and a full-year column under one
+    label and ``period_end`` yields one series per period length — the two
+    columns never share a point list.  A label that reverts to an
+    already-seen spelling rejoins that spelling's series, and the return is
+    itself recorded as a definition change: A29 retains every definition
+    change, including the return to a definition used before.  Definition
+    changes compare the SET of labels one event carries for one
+    ``(concept, basis, period_length_class)`` pair against the previous
+    event that reported that pair, so two labels inside one event never
+    record a change against each other, in any figure order.
+    ``release_absence`` rows carry no released number and form no series.
     """
     ordered = sorted(reconciliations, key=lambda item: (item.report_date, item.event_key))
-    grouped: dict[tuple[str, str, str], list[dict[str, Any]]] = {}
-    previous_label: dict[tuple[str, str], str] = {}
-    seen_labels: dict[tuple[str, str], set[str]] = {}
+    grouped: dict[tuple[str, str, str, str], list[dict[str, Any]]] = {}
+    previous_sets: dict[tuple[str, str, str], frozenset[str]] = {}
     verbatim: dict[str, str] = {}
     changes: list[dict[str, Any]] = []
 
     for reconciliation in ordered:
+        event_labels: dict[tuple[str, str, str], set[str]] = {}
         for row in reconciliation.rows:
             if row["outcome"] == "release_absence":
                 continue
             concept = str(row["concept"])
             basis = row["basis"] or ""
             label_key = _label_key(row["label"])
+            length_class = row["period_length_class"] or ""
             verbatim.setdefault(label_key, str(row["label"]))
-            grouped.setdefault((concept, basis, label_key), []).append({
+            grouped.setdefault((concept, basis, label_key, length_class), []).append({
                 "event_key": reconciliation.event_key,
                 "report_date": reconciliation.report_date,
                 "period_end": row["period_end"],
+                "period_length_class": row["period_length_class"],
                 "released_value": row["released_value"],
                 "outcome": row["outcome"],
             })
-            pair_key = (concept, basis)
-            seen = seen_labels.setdefault(pair_key, set())
-            previous = previous_label.get(pair_key)
-            if previous is not None and label_key != previous and label_key not in seen:
-                changes.append({
-                    "concept": concept,
-                    "basis": row["basis"],
-                    "from_label": verbatim[previous],
-                    "to_label": str(row["label"]),
-                    "first_event_key": reconciliation.event_key,
-                })
-            previous_label[pair_key] = label_key
-            seen.add(label_key)
+            event_labels.setdefault((concept, basis, length_class), set()).add(label_key)
+
+        for pair_key in sorted(event_labels):
+            labels = frozenset(event_labels[pair_key])
+            previous = previous_sets.get(pair_key)
+            if previous is not None and previous != labels:
+                for from_key, to_key in _label_set_transitions(previous, labels):
+                    changes.append({
+                        "concept": pair_key[0],
+                        "basis": pair_key[1] or None,
+                        "period_length_class": pair_key[2] or None,
+                        "from_label": verbatim[from_key] if from_key is not None else None,
+                        "to_label": verbatim[to_key] if to_key is not None else None,
+                        "first_event_key": reconciliation.event_key,
+                    })
+            previous_sets[pair_key] = labels
 
     series = [
-        {"key": {"concept": key[0], "basis": key[1], "label_key": key[2]},
+        {"key": {"concept": key[0], "basis": key[1], "label_key": key[2],
+                 "period_length_class": key[3] or None},
          "points": sorted(points, key=lambda p: (p["report_date"], p["event_key"], p["period_end"] or ""))}
         for key, points in sorted(grouped.items())
     ]
