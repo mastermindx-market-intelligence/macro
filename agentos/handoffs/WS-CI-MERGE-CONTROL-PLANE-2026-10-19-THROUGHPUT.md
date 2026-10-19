@@ -1,6 +1,6 @@
 ---
 workstream: "WS:CI-MERGE-CONTROL-PLANE"
-session: "01a153e8-3c85-7bb2-af63-7f477b570512 / claude/ci-pack-throughput-evidence-20261019"
+session: "01a153e8-3c85-7bb2-af63-7f477b570512 / claude/ci-pack-throughput-results-20261019"
 model: codex
 ended_because: ci_handoff
 mission: >
@@ -52,7 +52,7 @@ unverified:
 unresolved:
   - Comparable post-merge natural-traffic improvement remains unproven; hosted correctness and merge are verified.
 next_actions:
-  - Deliver the two-weight trial through required hosted checks and normal merge.
+  - Collect natural first attempts after the second merge, with exact treatment and execution proof identities.
   - Compare actual install, checkout, queue, command and total wall cost before further expansion.
 do_not_redo:
   - Preserve the accepted September scope-test reuse in PR 8126.
@@ -64,50 +64,48 @@ danger_areas:
 ---
 
 Workspace: `/Volumes/Mastermind/agent-workspaces/codex/ffcf/macro-main`.
-Branch: `claude/ci-pack-throughput-evidence-20261019`; original root
-`01a153e8-3c85-7bb2-af63-7f477b570512`.
-Raw evidence: `/Volumes/Mastermind/ci-pack-throughput-20261019/`.
+Branch: `claude/ci-pack-throughput-results-20261019`, fresh main after PR9763.
+Original root: `01a153e8-3c85-7bb2-af63-7f477b570512`.
+Evidence: `/Volumes/Mastermind/ci-pack-throughput-20261019/`.
 Report: `research/ci_pack_throughput_20261019/README.md`.
 
-PR9722 merged as7736fd72895fc24e55bf2d4bbc7b1f4e94203414 with full hosted proof.
-Reuse accepted scope/CPU/tests/review evidence. Its observer44369 is consumed.
-No causal fleet gain/30% target is established. The first full trial took78.1min,
-including825sec final-gate queueing. Do not re-download its retained logs.
+PR9722 merged7736fd72895fc24e55bf2d4bbc7b1f4e94203414; accepted scope parity,
+CPU, tests and same-ID review remain settled. PR9763 merged18:49:48Z as
+38d2dac36faabfff04f8efe5ee28e5c8dfa1c5ae, head996a22e7e5acebc5fd883068f04fa803d7a1aab7.
+Full CI39298424658 passed all257 jobs/twelve packs/gate plus active authority
+and fences. Plan3f62b28f67c5a17df6094debca5aa845ebf562c605cf5ce454798aeac5dfa4cb;
+tested treea111b2f49b0d46b06d8a2d4f22dec9bf4d6acd6c. Planner/schema blobs and
+new regression landed; other independent test edits remain. No observer remains:
+50933,57835,70423,44369 are all settled/consumed; never recreate.
 
-Current carrier: https://github.com/mastermindx-market-intelligence/macro/pull/9763
-Two balancing estimates1630/1070, twelve packs and all proof/isolation controls
-unchanged. One optional Fabric weight review was denied before execution
-(canonical_source_unreadable); no verdict/bypass. PR8094 remains separate.
+Two weights1630/1070 only; twelve packs/commands/proof/isolation unchanged.
+Defense heal9758 incorporated. One-field reviewer-plan schema ID repair
+reproduced3 failures before, passed181 affected and1345 owning tests/429subtests
+after, then hosted proof passed. Prior39282678531/39290075936 include base
+replay and are not successful throughput samples. Optional Fabric weight review
+was denied before execution canonical_source_unreadable; no verdict or bypass.
 
-Trial39282678531 failed Defense's eight-minute deadline on candidate and base.
-Existing landed heal PR9758 was incorporated; observer70423 consumed rc1.
-Recovery39290075936 (head67377ec633cf3e797ebe61a0453ccd2b44b18b35) passed Defense
-but failed three population tests in research-price-panel on candidate AND base.
-Observer57835 is now consumed rc1; do not recreate it. Full log retained as
-weight-recovery-full.log, exact plan in weight-recovery-plan/ci-plan.json.
-Tested tree2b12ec85550ac49c3e17f15627335cb22737d8dd; baseaee0f40a6b40e8b9287d3ffee9cf988d2a641434;
-257 selected jobs; plan4bf52141b3d0106616678078ca620b7c498eab66bc10dadd3ec054161474f591.
-Both failed runs include extra base replay and are not successful latency samples.
+Full accepted logs: trial-full.log, weight-success-full.log (do not redownload).
+New metadata weight-success-run.json; per-step weight-success-stage-costs.json;
+command/install groups weight-success-command-comparison.json; exact manifest
+weight-success-legacy-jobs.yml; assignment replay weight-success-replay.json.
+Weighted result48.82min/371.70 summed wall min versus78.08/337.38 first trial.
+Gate wait3sec versus825sec. Two added jobs/seven changed definitions, so no
+causal gain, cost neutrality or30% fleet p95 established. Exact-run fixed-cost
+replay: old heuristic2694.53 -> calibrated2266.33sec max; excludes overhead.
+Retain calibration; no speculative expansion.
 
-Cause: PR9765 added e0_reviewer_plan.v1.schema.json without the $id required by
-the existing population schema registry. Main b2bf0b63a1eae8fc894dd2290ec62bd2f7d00a68
-still lacks it.500 open PRs checked; no competing repair on this schema, and the
-original schema worktree has no dirty edit on the path. Add only canonical $id;
-all other parsed schema contents identical. Three failures reproduced before;
-181 affected tests pass after; full exact research-price-panel pytest command
-passes1345 tests and429 subtests in116.29s (45 inherited warnings). All52 schema
-identifiers complete/unique. Logs: schema-id-before.log, schema-id-after.log,
-schema-owner-battery.log. No validation constraint, timeout or selector changed.
+Natural dedup-only16:50 cohort37 completions, two selected-set matches, zero
+execution-proof matches; reuse caches. Weighted cohort starts after18:49:48Z;
+18:53 snapshot weighted-natural-runs-1853.json has one pending/no completions.
+Require tested blobf5e4e9c3202c35c9b29c6d038e1d077661fe6375 and base ancestry
+from38d2dac36faabfff04f8efe5ee28e5c8dfa1c5ae. compare_natural.py accepts
+--merge/--blob/--output; earlier defaults retained. Ancestry cache must match
+treatment merge, not merely base SHA. Keep cancellations/reruns/pending visible.
 
-Natural16:50 cohort:57 runs,37 verified first attempts,9 pending,9 cancelled,
-2 reruns; two selected-set matches but zero execution-proof matches. Scoped
-success p50/p95 1920/3511 seconds remains descriptive. Reuse cached captures.
-Heavy successful groups in failed recovery: FIF1969.43sec total, earnings577.05;
-FIF checkout800.22sec. No additional weight/shard decision follows from this.
-
-Next: push the schema repair and batched evidence to this same PR, then retain
-ONE verified observer for the new head/run. Required hosted checks and normal
-merge remain owed. At completed-run boundary collect full logs before other
-same-run reads; respect300sec cooldown with no alternate reader/reset.
-Preserve this checkpoint, active writers and unknown effects. No artificial CI,
-peer messages, new coordinator/control plane, extra shards or unrelated deploy.
+Next: finish publishing this batched result through normal source, then collect
+naturally concluded weighted first attempts at the existing hourly boundary;
+compare exact selected and execution-proof identities before another source slice.
+Do not dispatch artificial CI, rerun accepted tests, duplicate observers, message
+peers, add a control plane, expand shards or deploy unrelated services. Preserve
+writers/root/unknown effects. Respect300sec same-run read cooldown, no bypass.
