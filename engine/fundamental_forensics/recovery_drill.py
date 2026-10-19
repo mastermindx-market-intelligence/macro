@@ -14,7 +14,9 @@ cases of the recovery drill:
   manifest, every object the manifest references); ``restore_issuer``
   replays them CREATE-ONLY — identical bytes are left in place, different
   bytes stop the restore, nothing is ever overwritten — and re-points the
-  target only when it has no pointer. ``audit_issuer`` classifies an issuer
+  target only when it has no pointer: an existing pointer, even one naming
+  a different generation, is kept as ``kept_existing`` with both
+  generation ids. ``audit_issuer`` classifies an issuer
   into exactly one recovery state. Rollback is a CORRECTION (a new
   superseding generation through ``publish_production_dataset``); the owner
   refuses pointer rewinds and this drill deliberately exposes no rewind
@@ -23,9 +25,9 @@ cases of the recovery drill:
   ``reconcile_effect_unknown`` performs ZERO writes and returns one of
   ``landed`` / ``manifest_landed_pointer_not_advanced`` / ``not_landed`` /
   ``pointer_names_other_generation``. It never retries a publish and never
-  fails over; the only lawful remedy for an unprovable outcome is a re-run
-  of ``publish_production_dataset`` on the same carrier (every key is
-  content-addressed or create-only, so the retry is idempotent).
+  fails over: the target stays EFFECT_UNKNOWN on its original carrier until
+  reconciliation reads it, and no republish or failover may precede that
+  read.
 
 Manifest fields consumed by the backup (read through the public
 ``ProductionDatasetGeneration.manifest`` attribute, so no JSON is re-parsed
@@ -52,10 +54,12 @@ Typed gaps (never worked around):
   different generation; replacing it is a publisher act, not a restore.
 
 Recovery-path mapping notes for the closed ``reconcile_effect_unknown``
-vocabulary: a pointer that exists but cannot be verified, and an unreadable
-manifest probe, surface as hard ``ProductionDatasetError`` / ``not_landed``
-respectively — the drill never invents a fifth state and never writes to
-resolve one.
+vocabulary: a pointer that exists but cannot be verified raises
+``ProductionDatasetEffectUnknownError`` (A18 — an unverifiable pointer
+proves nothing about landing, so the outcome is never reported
+``not_landed``), and an unreadable manifest probe fails closed with
+``ProductionDatasetError``. The drill never invents a fifth state and never
+writes to resolve one.
 """
 from __future__ import annotations
 
@@ -70,6 +74,7 @@ from .production_datasets import (
     ProductionDatasetGeneration,
     load_generation,
     load_latest_generation,
+    latest_generation_summary,
     production_latest_key,
     production_manifest_key,
     production_object_key,
@@ -112,6 +117,14 @@ _SHA256_RE = re.compile(r"\A[a-f0-9]{64}\Z")
 
 RESTORE_POINTER_RESTORED = "restored"
 RESTORE_POINTER_KEPT_EXISTING = "kept_existing"
+
+# Immutable-entry (object/manifest) restore outcomes. ``restored`` is the
+# drill's OWN write whose ambiguous signal (a raised or falsy conditional
+# put) a read-back then confirmed with exact bytes; ``already_present`` is
+# reserved for keys that held the exact bytes before any write was attempted.
+RESTORE_ENTRY_WRITTEN = "written"
+RESTORE_ENTRY_RESTORED = "restored"
+RESTORE_ENTRY_ALREADY_PRESENT = "already_present"
 
 AUDIT_STATE_ADMITTED = "admitted"
 AUDIT_STATE_ABSENT = "absent"
@@ -412,19 +425,37 @@ def backup_bytes(store: Any, manifest: BackupManifest) -> dict[str, bytes]:
 
 @dataclass(frozen=True)
 class RestoreReceipt:
-    """What one restore did: writes, idempotent hits, pointer rule, verdict."""
+    """What one restore did: writes, idempotent hits, pointer rule, verdict.
+
+    ``written`` holds keys the conditional put created cleanly (True
+    returned); ``restored`` holds keys whose write signal was ambiguous
+    (raised or falsy) but whose exact bytes a read-back then confirmed —
+    the drill's own write, never counted as ``already_present``;
+    ``already_present`` holds keys that were already there, byte-identical,
+    before the drill attempted any write. ``pointer_generation_id`` is the
+    generation this restore carried; ``kept_pointer_generation_id`` names
+    the generation a kept existing pointer names (``kept_existing`` only;
+    None when the drill itself pointed the pointer or the kept pointer
+    cannot be proven).
+    """
 
     written: tuple[str, ...]
     already_present: tuple[str, ...]
+    restored: tuple[str, ...]
     pointer: str
+    pointer_generation_id: str
     verified: bool
+    kept_pointer_generation_id: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "written": list(self.written),
             "already_present": list(self.already_present),
+            "restored": list(self.restored),
             "pointer": self.pointer,
+            "pointer_generation_id": self.pointer_generation_id,
             "verified": self.verified,
+            "kept_pointer_generation_id": self.kept_pointer_generation_id,
         }
 
 
@@ -433,14 +464,18 @@ def _restore_create_only(
 ) -> str:
     """Create one immutable entry at an absent key; classify the outcome.
 
-    ``written`` | ``already_present``; different bytes stop the restore;
-    an unprovable write outcome preserves EFFECT_UNKNOWN on the original
-    target (A18) instead of retrying or failing over.
+    ``written`` (the conditional put returned True) | ``restored`` (the
+    write signal was ambiguous — raised or falsy — but a read-back then
+    confirmed the drill's exact bytes, and the key was verifiably absent
+    before the write was attempted) | ``already_present`` (the key held the
+    exact bytes before any write was attempted). Different bytes stop the
+    restore; an unprovable write outcome preserves EFFECT_UNKNOWN on the
+    original target (A18) instead of retrying or failing over.
     """
     current = _read_strict(target_store, entry.key, DRILL_MAX_OBJECT_BYTES)
     if current is not None:
         if current == payload:
-            return "already_present"
+            return RESTORE_ENTRY_ALREADY_PRESENT
         raise ProductionDatasetError("restore target holds different bytes")
     try:
         written = target_store.put_bytes_strict_conditional(
@@ -453,30 +488,70 @@ def _restore_create_only(
         echoed = _try_read_strict(target_store, entry.key, DRILL_MAX_OBJECT_BYTES)
         if echoed is not None:
             if echoed == payload:
-                return "already_present"
+                return RESTORE_ENTRY_RESTORED
             raise ProductionDatasetError("restore target holds different bytes") from exc
         raise ProductionDatasetEffectUnknownError(
             "restore conditional write outcome could not be reconciled"
         ) from exc
     if written is True:
-        return "written"
+        return RESTORE_ENTRY_WRITTEN
     echoed = _try_read_strict(target_store, entry.key, DRILL_MAX_OBJECT_BYTES)
     if echoed is None:
         raise ProductionDatasetEffectUnknownError(
             "restore conditional write outcome could not be reconciled"
         )
     if echoed == payload:
-        return "already_present"
+        return RESTORE_ENTRY_RESTORED
     raise ProductionDatasetError("restore target holds different bytes")
 
 
-def _restore_pointer(target_store: Any, *, entry: BackupEntry, payload: bytes) -> str:
-    """Restore the pointer last, only when the target has none (A47)."""
+def _kept_pointer_generation_id(target_store: Any, issuer_id: str) -> str | None:
+    """Generation id the target's live pointer names, when that is provable.
+
+    The kept pointer belongs to another writer; when it cannot be decoded
+    and verified through the owner's public summary the receipt says None
+    rather than guessing.
+    """
+    try:
+        summary = latest_generation_summary(target_store, issuer_id)
+    except ProductionDatasetError:
+        return None
+    if not isinstance(summary, Mapping):
+        return None
+    generation_id = summary.get("dataset_generation_id")
+    if not isinstance(generation_id, str) or not generation_id:
+        return None
+    return generation_id
+
+
+def _restore_pointer(
+    target_store: Any,
+    *,
+    entry: BackupEntry,
+    payload: bytes,
+    issuer_id: str,
+    generation_id: str,
+) -> tuple[str, str | None]:
+    """Restore the pointer last, only when the target has none (A47).
+
+    An existing pointer is always KEPT — even when it names a different
+    generation (replacing it is a publisher act, not a restore) — and
+    nothing is written to it. Returns ``(outcome, kept_generation_id)``:
+    ``kept_generation_id`` is the generation a kept pointer names (the
+    restore's own generation when the kept bytes are identical, the other
+    writer's generation when they differ and can be proven, None when they
+    cannot), None when the drill itself pointed the pointer. An unprovable
+    write outcome preserves EFFECT_UNKNOWN on the original target (A18)
+    instead of retrying or failing over.
+    """
     current = _read_strict(target_store, entry.key, DRILL_MAX_POINTER_BYTES)
     if current is not None:
         if current == payload:
-            return RESTORE_POINTER_KEPT_EXISTING
-        raise ProductionDatasetError("restore target holds different bytes")
+            return RESTORE_POINTER_KEPT_EXISTING, generation_id
+        return (
+            RESTORE_POINTER_KEPT_EXISTING,
+            _kept_pointer_generation_id(target_store, issuer_id),
+        )
     try:
         written = target_store.put_bytes_strict_conditional(
             entry.key,
@@ -488,21 +563,31 @@ def _restore_pointer(target_store: Any, *, entry: BackupEntry, payload: bytes) -
         echoed = _try_read_strict(target_store, entry.key, DRILL_MAX_POINTER_BYTES)
         if echoed is not None:
             if echoed == payload:
-                return RESTORE_POINTER_KEPT_EXISTING
-            raise ProductionDatasetError("restore target holds different bytes") from exc
+                # The drill's own write evidently committed.
+                return RESTORE_POINTER_RESTORED, None
+            # A concurrent writer pointed the pointer first: keep theirs.
+            return (
+                RESTORE_POINTER_KEPT_EXISTING,
+                _kept_pointer_generation_id(target_store, issuer_id),
+            )
         raise ProductionDatasetEffectUnknownError(
             "restore pointer write outcome could not be reconciled"
         ) from exc
     if written is True:
-        return RESTORE_POINTER_RESTORED
+        return RESTORE_POINTER_RESTORED, None
     echoed = _try_read_strict(target_store, entry.key, DRILL_MAX_POINTER_BYTES)
     if echoed is None:
         raise ProductionDatasetEffectUnknownError(
             "restore pointer write outcome could not be reconciled"
         )
     if echoed == payload:
-        return RESTORE_POINTER_KEPT_EXISTING
-    raise ProductionDatasetError("restore target holds different bytes")
+        # Verifiably absent before the write attempt, the drill's exact
+        # bytes after it: the drill's own write.
+        return RESTORE_POINTER_RESTORED, None
+    return (
+        RESTORE_POINTER_KEPT_EXISTING,
+        _kept_pointer_generation_id(target_store, issuer_id),
+    )
 
 
 def restore_issuer(
@@ -513,10 +598,15 @@ def restore_issuer(
     Every ``object`` and ``manifest`` entry is written with the store's
     strict conditional put under an absent precondition. A key that already
     holds IDENTICAL bytes is recorded ``already_present`` and not written; a
-    key that holds DIFFERENT bytes stops the restore with
+    key whose ambiguous write signal (raised or falsy) a read-back then
+    confirms with exact bytes is recorded ``restored`` — the drill's own
+    write; a key that holds DIFFERENT bytes stops the restore with
     ``ProductionDatasetError("restore target holds different bytes")``. The
-    pointer is restored last and only when the target has no pointer for the
-    issuer. The receipt's ``verified`` is True only when the restored
+    pointer is restored last and only when the target has no pointer for
+    the issuer — an existing pointer is KEPT even when it names a different
+    generation (replacing it is a publisher act), the receipt reports
+    ``kept_existing`` with both generation ids, and nothing is written to
+    the pointer. The receipt's ``verified`` is True only when the restored
     generation loads and verifies afterwards — a False means the restore is
     not complete, not that it succeeded.
     """
@@ -537,17 +627,39 @@ def restore_issuer(
         verified_payloads[entry.key] = payload
 
     written: list[str] = []
+    restored: list[str] = []
     already_present: list[str] = []
     ordered = sorted(manifest.entries, key=lambda e: e.key)
+
+    def _record(entry: BackupEntry, outcome: str) -> None:
+        if outcome == RESTORE_ENTRY_WRITTEN:
+            written.append(entry.key)
+        elif outcome == RESTORE_ENTRY_RESTORED:
+            restored.append(entry.key)
+        else:
+            already_present.append(entry.key)
+
     for entry in (e for e in ordered if e.role == BACKUP_ROLE_OBJECT):
-        outcome = _restore_create_only(target_store, entry=entry, payload=verified_payloads[entry.key])
-        (written if outcome == "written" else already_present).append(entry.key)
+        _record(
+            entry,
+            _restore_create_only(
+                target_store, entry=entry, payload=verified_payloads[entry.key]
+            ),
+        )
     for entry in (e for e in ordered if e.role == BACKUP_ROLE_MANIFEST):
-        outcome = _restore_create_only(target_store, entry=entry, payload=verified_payloads[entry.key])
-        (written if outcome == "written" else already_present).append(entry.key)
+        _record(
+            entry,
+            _restore_create_only(
+                target_store, entry=entry, payload=verified_payloads[entry.key]
+            ),
+        )
     pointer_entry = next(e for e in manifest.entries if e.role == BACKUP_ROLE_POINTER)
-    pointer = _restore_pointer(
-        target_store, entry=pointer_entry, payload=verified_payloads[pointer_entry.key]
+    pointer, kept_generation_id = _restore_pointer(
+        target_store,
+        entry=pointer_entry,
+        payload=verified_payloads[pointer_entry.key],
+        issuer_id=manifest.issuer_id,
+        generation_id=manifest.generation_id,
     )
 
     try:
@@ -558,8 +670,11 @@ def restore_issuer(
     return RestoreReceipt(
         written=tuple(sorted(written)),
         already_present=tuple(sorted(already_present)),
+        restored=tuple(sorted(restored)),
         pointer=pointer,
+        pointer_generation_id=manifest.generation_id,
         verified=complete,
+        kept_pointer_generation_id=kept_generation_id,
     )
 
 
@@ -664,19 +779,29 @@ def reconcile_effect_unknown(store: Any, issuer_id: str, expected_generation_id:
     Returns exactly one of ``landed`` (the pointer names the expected
     generation and it verifies), ``manifest_landed_pointer_not_advanced``
     (no pointer, but the expected generation's manifest object is present),
-    ``not_landed`` (nothing provable landed — including a pointer that
-    exists but cannot be verified), or ``pointer_names_other_generation``
-    (a different verified generation is live under ``latest``).
+    ``not_landed`` (a VERIFIED absence: no pointer and no manifest object
+    for the expected generation), or ``pointer_names_other_generation`` (a
+    different verified generation is live under ``latest``). A pointer that
+    exists but cannot be verified — corrupt, unparseable, or naming a
+    generation that fails verification — proves nothing about landing: the
+    call raises ``ProductionDatasetEffectUnknownError`` so the target stays
+    EFFECT_UNKNOWN (A18) instead of being reported ``not_landed``.
     """
     _require_issuer_id(issuer_id)
     if not isinstance(expected_generation_id, str) or not expected_generation_id:
         raise ProductionDatasetError("recovery drill expected generation id is malformed")
     try:
         generation = load_latest_generation(store, issuer_id)
-    except ProductionDatasetError:
+    except ProductionDatasetEffectUnknownError:
+        raise
+    except ProductionDatasetError as exc:
         # A pointer that exists but cannot be verified proves nothing about
-        # landing; the closed vocabulary has no fifth state for it.
-        return RECONCILE_NOT_LANDED
+        # landing: the outcome on the original target stays EFFECT_UNKNOWN
+        # (A18) — never "not landed" and never replayed.
+        raise ProductionDatasetEffectUnknownError(
+            "recovery drill reconciliation found an unverifiable pointer; "
+            "landing on the original target is unknown"
+        ) from exc
     if generation is not None:
         if generation.generation_id == expected_generation_id:
             return RECONCILE_LANDED

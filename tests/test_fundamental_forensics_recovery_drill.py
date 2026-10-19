@@ -200,6 +200,44 @@ class _OneByteCorruptingStore(PDS.InMemoryStrictConditionalStore):
         )
 
 
+class _CommitThenLoseResponseStore(PDS.InMemoryStrictConditionalStore):
+    """Restore double: one key's conditional put COMMITS, then the response is lost."""
+
+    def __init__(self, key: str) -> None:
+        super().__init__()
+        self._key = key
+
+    def put_bytes_strict_conditional(
+        self, key: str, data: bytes, *, expected_version: str | None,
+        content_type: str = "application/octet-stream",
+    ) -> bool:
+        committed = super().put_bytes_strict_conditional(
+            key, data, expected_version=expected_version, content_type=content_type
+        )
+        if key == self._key:
+            raise RuntimeError("response lost after commit")
+        return committed
+
+
+class _CommitThenDenyStore(PDS.InMemoryStrictConditionalStore):
+    """Restore double: one key's conditional put COMMITS but returns False."""
+
+    def __init__(self, key: str) -> None:
+        super().__init__()
+        self._key = key
+
+    def put_bytes_strict_conditional(
+        self, key: str, data: bytes, *, expected_version: str | None,
+        content_type: str = "application/octet-stream",
+    ) -> bool:
+        committed = super().put_bytes_strict_conditional(
+            key, data, expected_version=expected_version, content_type=content_type
+        )
+        if key == self._key:
+            return False
+        return committed
+
+
 class _UnlistableStore:
     """Read-protocol store double with NO list surface (the typed listing gap)."""
 
@@ -320,6 +358,126 @@ def test_restore_refuses_different_bytes_and_never_overwrites(tmp_path) -> None:
     # Originals intact: the hostile bytes and every other key are untouched.
     assert target.get_bytes(hostile_key) == b"hostile different bytes"
     assert target.get_bytes(intact_key) == intact_before
+
+
+def test_restore_keeps_existing_pointer_naming_another_generation() -> None:
+    source = PDS.InMemoryStrictConditionalStore()
+    g1 = PDS.publish_production_dataset(source, _material())
+    manifest = RD.backup_issuer(source, ISSUER)
+    payloads = RD.backup_bytes(source, manifest)
+
+    target = PDS.InMemoryStrictConditionalStore()
+    PDS.publish_production_dataset(target, _material())  # the same deterministic g1
+    g2 = PDS.publish_production_dataset(
+        target, _material(admitted_at=T_LATER, supersedes=g1.generation_id)
+    )
+    pointer_key = PDS.production_latest_key(ISSUER)
+    before = target.get_bytes(pointer_key)
+
+    counting = _CountingStore(target)
+    receipt = RD.restore_issuer(counting, manifest, payloads)
+    counting.assert_zero_writes()
+    # An existing pointer naming another generation is KEPT, not overwritten:
+    # the outcome carries both generation ids and nothing is written (MAJOR-2).
+    assert receipt.pointer == "kept_existing"
+    assert receipt.pointer_generation_id == g1.generation_id
+    assert receipt.kept_pointer_generation_id == g2.generation_id
+    immutable_keys = [e.key for e in manifest.entries if e.role != "pointer"]
+    assert sorted(receipt.already_present) == sorted(immutable_keys)
+    assert receipt.written == ()
+    assert receipt.restored == ()
+    assert target.get_bytes(pointer_key) == before
+    latest = PDS.load_latest_generation(target, ISSUER)
+    assert latest is not None and latest.generation_id == g2.generation_id
+    # The restored generation itself still loads and verifies.
+    assert receipt.verified is True
+
+
+def test_restore_keeps_unparseable_existing_pointer_without_naming_a_generation() -> None:
+    source = PDS.InMemoryStrictConditionalStore()
+    PDS.publish_production_dataset(source, _material())
+    manifest = RD.backup_issuer(source, ISSUER)
+    payloads = RD.backup_bytes(source, manifest)
+
+    target = PDS.InMemoryStrictConditionalStore()
+    RD.restore_issuer(target, manifest, payloads)
+    pointer_key = PDS.production_latest_key(ISSUER)
+    target.drop(pointer_key)
+    target.raw_put(pointer_key, b"{not a pointer")
+    before = target.get_bytes(pointer_key)
+
+    counting = _CountingStore(target)
+    receipt = RD.restore_issuer(counting, manifest, payloads)
+    counting.assert_zero_writes()
+    assert receipt.pointer == "kept_existing"
+    # The kept pointer cannot be decoded; the receipt refuses to guess.
+    assert receipt.kept_pointer_generation_id is None
+    assert target.get_bytes(pointer_key) == before
+
+
+def test_restore_labels_echo_confirmed_object_write_restored_not_already_present() -> None:
+    source = PDS.InMemoryStrictConditionalStore()
+    PDS.publish_production_dataset(source, _material())
+    manifest = RD.backup_issuer(source, ISSUER)
+    payloads = RD.backup_bytes(source, manifest)
+    object_key = next(e.key for e in manifest.entries if e.role == "object")
+
+    target = _CommitThenLoseResponseStore(object_key)
+    receipt = RD.restore_issuer(target, manifest, payloads)
+    # The drill's own write, confirmed by read-back after the lost
+    # response: "restored", never "already_present" (MINOR-1).
+    assert object_key in receipt.restored
+    assert object_key not in receipt.already_present
+    assert object_key not in receipt.written
+    assert receipt.pointer == "restored"
+    assert receipt.verified is True
+    assert target.get_bytes(object_key) == payloads[object_key]
+
+    # The other label: replaying the same backup finds every immutable key
+    # genuinely pre-existing -> "already_present", with zero writes.
+    counting = _CountingStore(target)
+    again = RD.restore_issuer(counting, manifest, payloads)
+    counting.assert_zero_writes()
+    immutable_keys = [e.key for e in manifest.entries if e.role != "pointer"]
+    assert sorted(again.already_present) == sorted(immutable_keys)
+    assert again.restored == ()
+    assert again.written == ()
+    assert again.pointer == "kept_existing"
+
+
+def test_restore_labels_denied_but_committed_object_write_restored() -> None:
+    source = PDS.InMemoryStrictConditionalStore()
+    PDS.publish_production_dataset(source, _material())
+    manifest = RD.backup_issuer(source, ISSUER)
+    payloads = RD.backup_bytes(source, manifest)
+    object_key = next(e.key for e in manifest.entries if e.role == "object")
+
+    target = _CommitThenDenyStore(object_key)
+    receipt = RD.restore_issuer(target, manifest, payloads)
+    # Falsy CAS signal with exact bytes on read-back after a verified
+    # absence: still the drill's own write -> "restored" (MINOR-1).
+    assert object_key in receipt.restored
+    assert object_key not in receipt.already_present
+    assert receipt.verified is True
+    assert target.get_bytes(object_key) == payloads[object_key]
+
+
+def test_restore_labels_echo_confirmed_pointer_write_restored() -> None:
+    source = PDS.InMemoryStrictConditionalStore()
+    PDS.publish_production_dataset(source, _material())
+    manifest = RD.backup_issuer(source, ISSUER)
+    payloads = RD.backup_bytes(source, manifest)
+
+    target = _CommitThenLoseResponseStore(PDS.production_latest_key(ISSUER))
+    receipt = RD.restore_issuer(target, manifest, payloads)
+    # The drill's pointer write evidently committed: "restored", not
+    # "kept_existing" (MINOR-1).
+    assert receipt.pointer == "restored"
+    assert receipt.kept_pointer_generation_id is None
+    assert receipt.pointer_generation_id == manifest.generation_id
+    assert receipt.verified is True
+    latest = PDS.load_latest_generation(target, ISSUER)
+    assert latest is not None and latest.generation_id == manifest.generation_id
 
 
 def test_restore_refuses_tampered_payloads(tmp_path) -> None:
@@ -483,6 +641,22 @@ def test_effect_unknown_write_never_lands_reconciles_not_landed_zero_writes() ->
     counting.assert_zero_writes()
     # Nothing at all landed for this issuer.
     assert RD.audit_issuer(store, ISSUER).state == "absent"
+
+
+def test_reconcile_corrupt_pointer_raises_effect_unknown_zero_writes() -> None:
+    store = PDS.InMemoryStrictConditionalStore()
+    PDS.publish_production_dataset(store, _material())
+    pointer_key = PDS.production_latest_key(ISSUER)
+    store.drop(pointer_key)
+    store.raw_put(pointer_key, b"{not a pointer")
+
+    counting = _CountingStore(store)
+    # A corrupt pointer proves nothing about landing (A18): the outcome on
+    # the original target stays EFFECT_UNKNOWN — never "not_landed" and
+    # never replayed (MAJOR-1).
+    with pytest.raises(PDS.ProductionDatasetEffectUnknownError):
+        RD.reconcile_effect_unknown(counting, ISSUER, _baseline_generation_id())
+    counting.assert_zero_writes()
 
 
 @pytest.mark.parametrize("kind", ["memory", "local"])
