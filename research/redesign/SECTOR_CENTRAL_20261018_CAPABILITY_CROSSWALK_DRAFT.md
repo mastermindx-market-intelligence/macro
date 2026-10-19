@@ -1,5 +1,8 @@
 # Sector Central — 92-capability migration crosswalk
 
+> Draft planning only. This candidate has no approved RIG receipt and is not an executable migration packet. Preserve the existing Sector Central owner and all recorded holds. Before a builder consumes it as a migration contract, that owner must complete the reference review and publish the approved packet under `research/migration_packets/` with its real `RIG-RECEIPT:`.
+
+
 Parent: macro#7646 / sector-central-redesign-20260921-sol-001.
 Authority: Chairman's 2026-10-18 fresh design and end-to-end migration commission.
 Status: DESIGN CONTRACT; production parity is not accepted.
@@ -111,4 +114,4 @@ The new working reference demonstrates selected measured, event, original-coordi
 
 The implementation record must name the canonical producer/renderer, actual route or control, tested source/candidate identity, null/empty/locked/error behavior, and the evidence proving parity. Reuse accepted source checks where unchanged; regenerate only evidence invalidated by changed semantics or populations. Never turn this table into 92 new duplicated tests or a second feature registry.
 
-Sources: [archived ledger](../reference_integrity/mastermind-xpv2-sector-r3/capability_disposition_ledger.md), [producer binding](../reference_integrity/mastermind-xpv2-sector-r3/producer_binding_matrix.md), [new migration packet](MP-20261018-sector-central.md).
+Sources: [archived ledger](../reference_integrity/mastermind-xpv2-sector-r3/capability_disposition_ledger.md), [producer binding](../reference_integrity/mastermind-xpv2-sector-r3/producer_binding_matrix.md), [draft design plan](SECTOR_CENTRAL_20261018_DESIGN_DRAFT.md).
