@@ -155,7 +155,7 @@ def _owner_tuple(baseline: SeriesBaseline) -> tuple[dict, pd.Series]:
 
 
 def evaluate_scenario(assumption: dict, *, snapshot: dict, chain: dict,
-                      baseline: SeriesBaseline, evaluated_at: str) -> dict:
+                      baseline: SeriesBaseline, evaluated_at: str, created_at: str | None = None) -> dict:
     """Return a private derived result; caller retains it only for this reading.
 
     The snapshot, chain and SeriesBaseline are trusted native-owner inputs, NEVER
@@ -164,7 +164,9 @@ def evaluate_scenario(assumption: dict, *, snapshot: dict, chain: dict,
     Missing tuple members abstain; no cached/live fallback exists here.
     """
     normalized = _normalize(assumption)
-    _stamp(evaluated_at)
+    evaluated = _stamp(evaluated_at)
+    created_at = created_at or evaluated_at
+    if _stamp(created_at) > evaluated: raise ScenarioInputError('CREATED_AFTER_EVALUATION')
     method_available = True
     try:
         method_versions = [METHOD, 'pandas:' + pd.__version__, _hash([
@@ -236,7 +238,8 @@ def evaluate_scenario(assumption: dict, *, snapshot: dict, chain: dict,
     logical = dict(assumption_id=assumption_id, snapshot_id=snapshot_id, chain_hash=_hash(chain),
                    owner=owner_receipt, method_versions=method_versions, root=root, hops=hops)
     return dict(schema='ontology_scenario_eval.v1', scenario_eval_id=_hash(logical),
-                assumption={**normalized, 'assumption_id': assumption_id, 'snapshot_id': snapshot_id},
+                assumption={**normalized, 'assumption_id': assumption_id, 'snapshot_id': snapshot_id,
+                            'created_at': created_at},
                 assumption_id=assumption_id, snapshot_id=snapshot_id, evaluated_at=evaluated_at,
                 method_versions=method_versions, owner_receipt=owner_receipt, root_evaluation=root,
                 hop_evaluations=hops, combined_estimate=None,
