@@ -39,6 +39,7 @@ jobs:
     paths:
       - "app/institutional_research.py"
       - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
       - "engine/institutional_census/k3e_projection.py"
@@ -1871,6 +1872,7 @@ jobs:
     paths:
       - "app/institutional_research.py"
       - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
       - "engine/institutional_census/k3e_projection.py"
@@ -2766,6 +2768,7 @@ jobs:
     paths:
       - "app/institutional_research.py"
       - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
       - "engine/institutional_census/k3e_projection.py"
@@ -6503,6 +6506,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
       - "engine/institutional_census/k3e_projection.py"
@@ -18805,6 +18809,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
       - "engine/institutional_census/k3e_projection.py"
@@ -19569,6 +19574,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
       - "engine/institutional_census/k3e_projection.py"
@@ -21565,6 +21571,7 @@ jobs:
     paths:
       - "app/institutional_research.py"
       - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
       - "engine/institutional_census/k3e_projection.py"
@@ -23221,6 +23228,7 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
       - "engine/institutional_census/k3e_projection.py"
@@ -24007,6 +24015,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
       - "engine/institutional_census/k3e_projection.py"
@@ -29399,6 +29408,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
       - "engine/institutional_census/k3e_projection.py"
@@ -29891,6 +29901,7 @@ jobs:
     paths:
       - "app/institutional_research.py"
       - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
       - "engine/institutional_census/k3e_projection.py"
@@ -32857,6 +32868,7 @@ jobs:
     paths:
       - "app/institutional_research.py"
       - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
       - "engine/institutional_census/k3e_projection.py"
