@@ -3,7 +3,7 @@
 Commission: `/Users/chriswong/Desktop/MASTERMIND-CI-PACKS-CODEX-ASTRA-HANDOFF-2026-10-19.md`, directly assigned to Codex chat `01a153e8-3c85-7bb2-af63-7f477b570512`.
 Source: Macro `168c96bf9ca68427749bc70664902c343d968d9c`; protected procedure: Mastermind `5469f12de01158b0e495d616d2be6f56c03cf8a8`, skillpack 1.0.1/bootstrap 1.
 
-Status: **first optimization merged and hosted-correct; fleet throughput outcome not yet proven**.
+Status: **two bounded optimizations merged with full hosted proof; fleet throughput outcome not yet proven**.
 
 ## Decision
 
@@ -121,3 +121,25 @@ The independently owned [PR 9758](https://github.com/mastermindx-market-intellig
 The repair adds only `https://mastermind-x.com/contracts/market_memory/e0_reviewer_plan.v1.schema.json` as that schema's canonical identifier, following its peers. Removing this one field reproduces the original parsed schema exactly: all payload constraints, validation logic and authority boundaries remain unchanged. All 52 Market Memory schema identifiers are complete and unique. The existing three failing tests reproduced locally before repair; all 181 population/reviewer-plan tests pass after repair. The exact full owning pytest command then passed **1345 tests and 429 subtests** in 116.29 seconds (45 inherited warnings). Required hosted checks remain binding; neither failed run is a successful throughput sample.
 
 The passed heavy-job groups in this failed run further illustrate timing variability: FIF's kernel group took 1955.4 seconds, while earnings took 577.1 seconds. FIF also had a long checkout and finished as the 47-minute pack. These observations do not validate the original command-only counterfactual or justify another weight change; retain them separately while completing the current trial.
+
+## Weighted trial landed; performance remains a measured open question
+
+[PR 9763](https://github.com/mastermindx-market-intelligence/macro/pull/9763) merged at **2026-10-19T18:49:48Z** as `38d2dac36faabfff04f8efe5ee28e5c8dfa1c5ae`. [Run 39298424658](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39298424658) passed all twelve packs and complete reconciliation of **257 logical jobs**, plus contract-delta, fences and active main authority. Its tested head is `996a22e7e5acebc5fd883068f04fa803d7a1aab7`, tested merge tree `a111b2f49b0d46b06d8a2d4f22dec9bf4d6acd6c`, and plan hash `3f62b28f67c5a17df6094debca5aa845ebf562c605cf5ce454798aeac5dfa4cb`. The merged planner/schema blobs match the candidate; the exact new regression is present alongside independently landed test edits. Observer 50933 is settled and consumed. `weight-success-result.json` retains the identities, stage costs and comparability limits.
+
+| Observed metric | First full trial | Successful weighted trial |
+| --- | ---: | ---: |
+| Logical jobs | 255 | 257 |
+| Run creation to binding gate | 78.08 min | 48.82 min |
+| Summed job wall time | 337.38 min | 371.70 min |
+| Last pack end to gate start | 825 sec | 3 sec |
+| Pack checkout total | 2520 sec | 2735 sec |
+| Command groups total | 14219.79 sec | 15630.72 sec |
+| Dependency install groups / total | 175 / 1737.74 sec | 174 / 1902.65 sec |
+
+The 37.5% shorter single-run latency is **not a demonstrated 30% fleet p95 gain**. Aggregate job time increased 10.2%; cost neutrality is unproven. Main added `research-codegen-runtime-qualification` and `research-vault` and changed seven existing execution definitions, while source inputs and runner conditions also differ. The final-gate wait alone fell by 822 seconds. Neither these observations nor the broader unmatched natural cohort isolate the treatment effect.
+
+The successful run's critical pack was pack 7: **2833 seconds wall**, including **245 seconds checkout**, **2266.33 seconds command groups**, and **220.33 seconds dependency installation**. Its largest groups were dashboard rendering (442.75 seconds), the newly added Research Vault battery (370.49), and a Defense command (305.33). FIF ran alone in pack 0 with **2035.11 command seconds**; earnings ran alone in pack 2 with **550.89 seconds**. Workload growth and heterogeneous execution times remain material.
+
+Replaying this exact tested manifest reproduces the hosted assignment. Holding all 257 realized command costs fixed, removing only the two calibration overrides raises the modeled maximum from **2266.33 to 2694.53 seconds** (a 15.9% command-only difference). This supports retaining the bounded calibration, but excludes installation/environment reuse, checkout, queueing and artifacts. It does not establish causal total cost or justify further weight changes. The single FIF job already imposes a 2035-second command floor, limiting what additional balancing alone can save on this observation.
+
+**Next decision:** retain twelve packs and both measured overrides while collecting naturally concluded first attempts after the second merge. Require planner blob `f5e4e9c3202c35c9b29c6d038e1d077661fe6375` and base ancestry from `38d2dac36faabfff04f8efe5ee28e5c8dfa1c5ae`; separate this cohort from deduplication-only traffic. At 18:53Z the first post-merge snapshot contains one pending run and no completed observations. No new shard, routing, timeout, caching or test-decomposition change is justified by that sample. The previous 37-run cohort and all cancellation/failure strata remain available; do not reclassify failed base replays as successful cost samples.

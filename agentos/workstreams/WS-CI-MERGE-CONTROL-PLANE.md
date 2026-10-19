@@ -262,8 +262,14 @@ waves:
       Trial PR9763 incorporated landed Defense heal PR9758. The next run
       passed Defense but found a missing schema identifier from PR9765 on
       both candidate and base. A one-field schema registry repair reproduces
-      three failures before and passes181 affected tests after; hosted proof
-      remains required. No blind rerun, gate suppression or speculative shards.
+      three failures before and passes181 affected tests after. PR9763 merged as
+      38d2dac36faabfff04f8efe5ee28e5c8dfa1c5ae after all257 jobs and active checks
+      passed in run39298424658. Source landing verified; observer50933 consumed.
+      Weighted full trial48.82min/371.70 summed job minutes, versus78.08/337.38
+      earlier with different work; no causal gain or cost neutrality established.
+      Exact-run command replay2694.53 to2266.33sec supports retaining two weights,
+      not additional expansion. Collect a separate post18:49:48Z natural cohort;
+      first snapshot one pending, none complete. No blind rerun or speculative shards.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.
