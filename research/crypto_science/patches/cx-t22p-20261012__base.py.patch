@@ -1,0 +1,16 @@
+diff --git a/collectors/base.py b/collectors/base.py
+--- a/collectors/base.py
++++ b/collectors/base.py
+@@ -700,6 +700,12 @@
+         notes += observation_notes
+         # Column-grain alarms: bare-print annotations + run_status["dark_columns"].
+         notes += _emit_dark_columns(dark_found)
++        for item in getattr(adapter, "source_capture_status", ()) or ():
++            if isinstance(item, dict) and item.get("status") == "unavailable":
++                notes.append(
++                    "source_capture_unavailable:"
++                    f"{item.get('source_id')}:{item.get('error_type')}"
++                )
+         res = FetchResult(adapter.name, status, rows=rows,
+                           last_date=str(last.date()) if last is not None else None,
+                           notes=notes)

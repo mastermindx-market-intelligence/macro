@@ -945,6 +945,178 @@ def test_validate_trade_plan_invalid_direction():
 
 
 # ---------------------------------------------------------------------------
+# 18b. Prospective Plan source_origin validation (validator-side contract)
+# ---------------------------------------------------------------------------
+
+def _source_origin_fixture(index: int = 0, rows: int = 3) -> dict:
+    """A well-formed source_origin over synthetic original material.
+
+    Receipts mirror the frozen producer exactly (canonical_json hashing); the
+    plan-level row receipt is COPIED from the binding's ordered row, exactly as
+    origination does.
+    """
+    from engine.us_candidate_episode import canonical_json  # noqa: PLC0415
+
+    ordered = [
+        {"selection_index": i,
+         "row_receipt": "sha256:" + hashlib.sha256(
+             canonical_json({"ticker": ticker, "i": i}).encode()).hexdigest()}
+        for i, ticker in enumerate(["AAA", "BBB", "CCC"][:rows])
+    ]
+    material = {
+        "source_sha256": "sha256:" + "a" * 64,
+        "pair_id": "0123456789abcdef0123456789abcdef",
+        "market_session": "2026-07-02",
+        "ordered_rows": ordered,
+    }
+    binding = {
+        **material,
+        "selection_receipt": "sha256:" + hashlib.sha256(
+            canonical_json(material).encode()).hexdigest(),
+        "schema": "prophet.today_selection_source_binding/v1",
+        "receipt_kind": "EXACT_DISPLAYED_SOURCE",
+    }
+    return {
+        "schema": "prophet.plan_source_origin/v1",
+        "owner_ref": "scripts/build_stock_library.py::main",
+        "receipt_kind": "EXACT_DISPLAYED_SOURCE",
+        "source_binding": binding,
+        "selection_index": index,
+        "row_receipt": ordered[index]["row_receipt"],
+    }
+
+
+def _origin_plan(origin: Any) -> dict:
+    return {
+        "schema": "prophet.trade_plan/v1",
+        "id": "TEST-BULL-20260702",
+        "asof": "2026-07-02",
+        "asset": "TEST",
+        "direction": "BULL",
+        "source_engines": ["us_standouts_buy_lane"],
+        "source_origin": origin,
+    }
+
+
+def test_validate_trade_plan_without_source_origin_is_unchanged():
+    """Absent origin: EXACT legacy behavior — no new errors, no invented field."""
+    assert validate_trade_plan({
+        "schema": "prophet.trade_plan/v1",
+        "id": "TEST-BULL-20260702",
+        "asof": "2026-07-02",
+        "asset": "TEST",
+        "direction": "BULL",
+        "source_engines": ["us_standouts_buy_lane"],
+    }) == []
+
+
+def test_validate_trade_plan_accepts_a_consistent_source_origin():
+    assert validate_trade_plan(_origin_plan(_source_origin_fixture())) == []
+
+
+def test_validate_trade_plan_accepts_every_referenced_position():
+    for index in range(3):
+        assert validate_trade_plan(
+            _origin_plan(_source_origin_fixture(index=index))) == []
+
+
+def test_validate_trade_plan_rejects_malformed_source_origin_pins():
+    for mutation, needle in [
+        ({"schema": "prophet.plan_source_origin/v2"}, "schema"),
+        ({"receipt_kind": "W3C_CAPTURE"}, "receipt_kind"),
+        ({"owner_ref": "someone/else.py::main"}, "owner_ref"),
+        ({"source_binding": None}, "source_binding"),
+    ]:
+        origin = _source_origin_fixture()
+        origin.update(mutation)
+        errs = validate_trade_plan(_origin_plan(origin))
+        assert errs and any(needle in e for e in errs), mutation
+    assert validate_trade_plan(_origin_plan(["not", "an", "object"])) == [
+        "source_origin must be an object"]
+
+
+def test_validate_trade_plan_rejects_wrong_source_binding_schema_or_kind():
+    origin = _source_origin_fixture()
+    origin["source_binding"]["schema"] = "prophet.today_selection_source_binding/v2"
+    errs = validate_trade_plan(_origin_plan(origin))
+    assert any("source_binding.schema" in e for e in errs)
+    origin = _source_origin_fixture()
+    origin["source_binding"]["receipt_kind"] = "SOMETHING_ELSE"
+    assert any(
+        "source_binding.receipt_kind" in e
+        for e in validate_trade_plan(_origin_plan(origin)))
+
+
+def test_validate_trade_plan_rejects_bad_selection_indexes():
+    origin = _source_origin_fixture()
+    origin["selection_index"] = True  # a bool is not an integer here
+    assert any(
+        "selection_index must be an integer" in e
+        for e in validate_trade_plan(_origin_plan(origin)))
+    origin = _source_origin_fixture()
+    origin["selection_index"] = "0"
+    assert any(
+        "selection_index must be an integer" in e
+        for e in validate_trade_plan(_origin_plan(origin)))
+    origin = _source_origin_fixture()
+    origin["selection_index"] = -1
+    assert any(
+        "out of bounds" in e for e in validate_trade_plan(_origin_plan(origin)))
+    origin = _source_origin_fixture()
+    origin["selection_index"] = 3
+    assert any(
+        "out of bounds" in e for e in validate_trade_plan(_origin_plan(origin)))
+
+
+def test_validate_trade_plan_rejects_row_receipt_mismatch():
+    origin = _source_origin_fixture(index=1)
+    origin["row_receipt"] = "sha256:" + "b" * 64
+    errs = validate_trade_plan(_origin_plan(origin))
+    assert any("row_receipt does not match" in e for e in errs)
+
+
+def test_validate_trade_plan_rejects_noncontiguous_or_invalid_ordered_rows():
+    origin = _source_origin_fixture()
+    origin["source_binding"]["ordered_rows"][1]["selection_index"] = 5
+    errs = validate_trade_plan(_origin_plan(origin))
+    assert any("contiguous" in e for e in errs)
+    origin = _source_origin_fixture()
+    origin["source_binding"]["ordered_rows"][2]["row_receipt"] = "sha256:ZZ"
+    errs = validate_trade_plan(_origin_plan(origin))
+    assert any("row_receipt" in e for e in errs)
+    origin = _source_origin_fixture()
+    origin["source_binding"]["ordered_rows"] = []
+    assert any(
+        "non-empty list" in e for e in validate_trade_plan(_origin_plan(origin)))
+    origin = _source_origin_fixture()
+    origin["source_binding"]["ordered_rows"][0] = "not-an-object"
+    assert any(
+        "must be an object" in e
+        for e in validate_trade_plan(_origin_plan(origin)))
+
+
+def test_validate_trade_plan_rejects_inconsistent_selection_receipt():
+    origin = _source_origin_fixture()
+    origin["source_binding"]["pair_id"] = "f" * 32  # material tampered, receipt kept
+    errs = validate_trade_plan(_origin_plan(origin))
+    assert any("selection_receipt does not match" in e for e in errs)
+    origin = _source_origin_fixture()
+    origin["source_binding"]["selection_receipt"] = "sha256:" + "c" * 64
+    assert any(
+        "selection_receipt does not match" in e
+        for e in validate_trade_plan(_origin_plan(origin)))
+
+
+def test_validate_trade_plan_rejects_malformed_binding_scalar_pins():
+    origin = _source_origin_fixture()
+    origin["source_binding"]["source_sha256"] = "SHA256:" + "a" * 64
+    origin["source_binding"]["market_session"] = "2026-07-02T00:00:00Z"
+    errs = validate_trade_plan(_origin_plan(origin))
+    assert any("source_sha256" in e for e in errs)
+    assert any("market_session" in e for e in errs)
+
+
+# ---------------------------------------------------------------------------
 # 21. Validator round-trip
 # ---------------------------------------------------------------------------
 
@@ -2313,3 +2485,56 @@ class TestPriceFrameFreshness:
         fr = self._frame("2026-02-16", 11)
         out = price_frame_freshness(fr, "2026-03-06")
         assert out["max_lag"] == STALE_BASIS_MAX_SESSIONS == 3
+
+
+class TestPlanSourceOriginCodec:
+    """Actual producer receipts verify without a candidate-ledger dependency."""
+
+    @staticmethod
+    def _fixture(tmp_path, payload):
+        from scripts.build_stock_library import today_selection_source_binding
+
+        doc = _make_standouts(buys=[_make_buy("AAA")])
+        doc["emit"] = {"pair_id": "1" * 32, "at_utc": "2026-07-02T21:00:00Z"}
+        doc["board_definition"] = "us_prophet_v3"
+        doc["buy"][0]["receipt_probe"] = payload
+        path = tmp_path / "codec-board.json"
+        raw = json.dumps(doc, ensure_ascii=False, allow_nan=False).encode("utf-8")
+        path.write_bytes(raw)
+        return path, json.loads(raw), today_selection_source_binding(raw)
+
+    @pytest.mark.parametrize("payload", [
+        {"unicode": "研究é🙂", "escapes": "line\n\t\\\""},
+        {"z": [None, True, False], "a": {"nested": [1, -2, 0]}},
+        {"negative_zero": -0.0, "fraction": 0.125, "exponent": 1e20},
+        ["array", {}, [], 123456789012345678901234567890],
+    ], ids=["unicode-escapes", "nested-order-scalars", "floats", "array-large-int"])
+    def test_producer_receipts_survive_without_ledger_import(
+            self, tmp_path, monkeypatch, payload):
+        import builtins
+
+        path, doc, binding = self._fixture(tmp_path, payload)
+        original_import = builtins.__import__
+
+        def reject_ledger(name, globals=None, locals=None, fromlist=(), level=0):
+            if name == "engine.us_candidate_episode" or (
+                    name == "engine" and "us_candidate_episode" in (fromlist or ())):
+                raise AssertionError("Plan consumer imported the candidate ledger")
+            return original_import(name, globals, locals, fromlist, level)
+
+        monkeypatch.setattr(builtins, "__import__", reject_ledger)
+        plans = originate_plans(path, "2026-07-02", set(), None,
+                                standouts_doc=doc, source_binding=binding)
+        assert len(plans) == 1
+        assert plans[0]["source_origin"]["source_binding"] == binding
+        assert plans[0]["source_origin"]["row_receipt"] == binding["ordered_rows"][0]["row_receipt"]
+        assert validate_trade_plan(plans[0]) == []
+
+    @pytest.mark.parametrize("payload", [float("nan"), float("inf"), -float("inf"), {1, 2}, object()],
+                             ids=["nan", "inf", "negative-inf", "set", "object"])
+    def test_non_json_row_is_rejected_before_origination(self, tmp_path, payload):
+        path, doc, binding = self._fixture(tmp_path, "valid")
+        doc["buy"][0]["receipt_probe"] = payload
+        with pytest.raises(ValueError, match="value is not canonical JSON"):
+            originate_plans(path, "2026-07-02", set(), None,
+                            standouts_doc=doc, source_binding=binding)

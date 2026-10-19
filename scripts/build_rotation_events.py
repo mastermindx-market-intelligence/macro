@@ -116,10 +116,16 @@ def build(site: Path | None = None, *, generated_utc: str | None = None,
     art_dir: optional scratch override for the data_dir used by rotation_events
     (for repeatable local/test runs that must not write real data/).
     When not set, uses config.data_dir() (the production path).
+    When art_dir is set and site is not, the published JSON goes to art_dir/'site'
+    — a scratch run never writes the live site tree.
     """
-    site = site or (config.ROOT / config.load()["storage"]["site_dir"])
     generated_utc = generated_utc or datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     data_dir = art_dir or config.data_dir()
+    if site is None:
+        # LR-T16 / RC-R14: a scratch art_dir run publishes into art_dir/"site", never the
+        # live site tree; with no art_dir the production default is unchanged.
+        site = (Path(art_dir) / "site") if art_dir is not None else (
+            config.ROOT / config.load()["storage"]["site_dir"])
 
     registry = sector_legs.load_registry()
     sectors = sector_legs.sector_closes(registry)
@@ -178,14 +184,14 @@ def build(site: Path | None = None, *, generated_utc: str | None = None,
         from engine import subsector_rotation_alerts as sra
         new_alerts = rotation_events.to_alerts(payload)
         if new_alerts:
-            by_id = {e["id"]: e for e in sra.load_events()}
+            by_id = {e["id"]: e for e in sra.load_events(data_root=data_dir)}
             for e in new_alerts:
                 by_id.setdefault(e["id"], e)
             merged = list(by_id.values())
             ref = max(pd.Timestamp(e["ts"]) for e in merged)
             merged = [e for e in merged if pd.Timestamp(e["ts"]) >= ref - pd.Timedelta(days=sra.KEEP_DAYS)]
             merged.sort(key=lambda e: e["ts"])
-            sra.write_events(merged)
+            sra.write_events(merged, data_root=data_dir)
             log.info("rotation-event alerts: %d fired (%s)", len(new_alerts),
                      ", ".join(a["asset"] for a in new_alerts[:4]))
     except Exception as e:  # noqa: BLE001 — alerts are additive, never fatal

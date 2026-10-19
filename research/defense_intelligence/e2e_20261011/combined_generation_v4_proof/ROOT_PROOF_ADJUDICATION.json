@@ -1,0 +1,24 @@
+{
+  "state": "EXACT_FROZEN_GENERATION_PROOF_PASSED_NOT_RELEASED",
+  "source_checkout": "253df98603ac7f1f9944d92cb5efcab37fa9f5fb",
+  "proof_identity": "178898fa2f23ada7cf39b1389913ec18b6d823b48a7585454421dc626060cb31",
+  "receipt_sha256": "3389f70763429272d6b5267e4e650b8a19dd930d4600551ec8c4536d392d3521",
+  "output_files": 109,
+  "source_dependencies": 7378,
+  "full_default_suites": 3,
+  "passed": 104,
+  "skipped": 1,
+  "skip_reason": "no unaccounted rows to exercise",
+  "seconds": 816.61,
+  "candidate_ledger_lines": 642,
+  "candidate_ledger_sha256": "da1ed3014a967963165c56944846059d94099927aa8500d926429aaa3c7e0fd6",
+  "preproof_census_retained_as_historical_not_restamped": true,
+  "remaining": [
+    "committed generation verification",
+    "cold browser timing and independent visual acceptance",
+    "exact-head protected CI and merge",
+    "fresh financial CAS and complete readback",
+    "serialized publication and installed entitled acceptance",
+    "remaining 30-task/45-case obligations"
+  ]
+}

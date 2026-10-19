@@ -540,3 +540,94 @@ def test_real_artifact_round_trip_surfaces_identity_unavailable_on_schema_drift(
     from lib.dataos.identity import IdentityError
     with pytest.raises(IdentityError):
         VendorAliasTable.from_records(alias_rows)
+
+@pytest.mark.parametrize("chain_asof", [
+    None, "", "2026-09-25junk", "2026-09-25T00:00:00Z", "20260925",
+    "2026-W39-5", "2026-02-30", 20260925,
+])
+def test_chain_clock_invalid_preserves_membership_without_links(chain_asof):
+    chains = {"asof": chain_asof, "chains": [_chain(
+        id="dollar_ch", state="propagating",
+        blast={"em_revenue": _channel("EM revenue", ["AAPL", "NVDA"], 3)},
+    )]}
+    out = enrich_display_chains(chains, _good_aliases(), DECISION)
+    channel = out["chains"][0]["companies"]["em_revenue"]
+    assert channel["linked"] == []
+    assert channel["unlinked"] == ["AAPL", "NVDA"]
+    assert channel["identity_unavailable"] is True
+    assert channel["unevaluable"] == 3
+    assert out["asof"] == chain_asof
+    assert "companies" not in chains["chains"][0]
+
+
+def test_chain_clock_cannot_be_replaced_by_page_decision_date():
+    chains = {"asof": "2026-09-25", "chains": [_chain(
+        id="dollar_ch", state="propagating",
+        blast={"em_revenue": _channel("EM revenue", ["AAPL"])},
+    )]}
+    out = enrich_display_chains(chains, _good_aliases(), date(2026, 10, 11))
+    channel = out["chains"][0]["companies"]["em_revenue"]
+    assert channel["linked"] == []
+    assert channel["identity_unavailable"] is True
+
+
+@pytest.mark.parametrize("chain_asof", [None, "", "2026-09-25junk", "2026-09-25"])
+def test_chain_clock_builder_uses_only_snapshot_time(tmp_path, monkeypatch, chain_asof):
+    """Run the real page adapter with inert upstream engines and a captured render.
+
+    The page is newer than the chain. A known identity is valid on the chain
+    date only, so this catches both substitution and loss of lawful prior data.
+    """
+    import json
+    import sys
+    from types import SimpleNamespace
+    from scripts import build_transmission as builder
+
+    stamp = SimpleNamespace(date=lambda: date(2026, 10, 11))
+    class Index:
+        def __getitem__(self, _): return stamp
+        def min(self): return stamp
+        def max(self): return stamp
+    monkeypatch.setitem(sys.modules, "engine.inputs", SimpleNamespace(
+        build_features=lambda: SimpleNamespace(index=Index())))
+    monkeypatch.setitem(sys.modules, "engine.rate_inflation_transmission", SimpleNamespace(
+        snapshot=lambda _: {"asof": "2026-10-11"}, load_calibration=lambda: {}))
+    monkeypatch.setitem(sys.modules, "engine.yield_curve", SimpleNamespace(snapshot=lambda _: None))
+    monkeypatch.setitem(sys.modules, "engine.transmission_context", SimpleNamespace(
+        compose_dollar_channel=lambda: None, compose_hero=lambda *_: None,
+        build_changes=lambda *_: ({}, {})))
+    loaded = []
+    def records(_):
+        loaded.append(True)
+        return [{"vendor": "store", "vendor_symbol": "AAPL", "security_id": AAPL_ID,
+                 "valid_from": date(2026, 9, 1), "valid_to": date(2026, 9, 30)}]
+    monkeypatch.setitem(sys.modules, "engine.intelligence_workspace.entity", SimpleNamespace(
+        VENDOR_ALIASES="aliases.parquet", _records=records))
+    monkeypatch.setattr(builder.config, "ROOT", tmp_path)
+    monkeypatch.setattr(builder.config, "data_dir", lambda: tmp_path / "data")
+    monkeypatch.setattr(builder.config, "load", lambda: {"storage": {"site_dir": "site"}})
+    data = tmp_path / "data" / "transmission"
+    data.mkdir(parents=True)
+    (data / "chain_state.json").write_text(json.dumps({"asof": chain_asof, "chains": [{
+        "chain": "dollar_ch", "state": "propagating", "title": {"en": "Dollar", "zh": "美元"},
+        "blast": {"em_revenue": _channel("EM revenue", ["AAPL"], 3)}, "hops": [],
+    }]}))
+    captured = {}
+    def render(**kwargs):
+        captured.update(kwargs)
+        return "inert rendered fixture"
+    monkeypatch.setattr(builder, "Environment", lambda **_: SimpleNamespace(
+        get_template=lambda _: SimpleNamespace(render=render)))
+    monkeypatch.setattr(builder, "write_page", lambda *_: None)
+    assert builder.main() == 0
+    channel = captured["chains"]["chains"][0]["companies"]["em_revenue"]
+    if chain_asof == "2026-09-25":
+        assert loaded == [True]
+        assert channel["linked"][0]["symbol"] == "AAPL"
+        assert parse_qs(urlparse(channel["linked"][0]["href"]).query)["mo_asof"] == [chain_asof]
+    else:
+        assert loaded == [], "an invalid chain clock must not reach identity lookup"
+        assert channel["linked"] == []
+        assert channel["unlinked"] == ["AAPL"]
+        assert channel["identity_unavailable"] is True
+    assert channel["unevaluable"] == 3

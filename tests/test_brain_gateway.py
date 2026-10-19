@@ -3879,7 +3879,10 @@ def test_run_brain_loop_accepts_user_id_kwarg(tmp_path):
     client = _MockClient([tool_resp, text_resp])
     seen = {}
 
-    def _spy_dispatch(name, params, root_, tdd, thu, user_id="", internals_ok=False, chart_client=""):
+    def _spy_dispatch(
+        name, params, root_, tdd, thu, user_id="", internals_ok=False,
+        chart_client="", chart_origin_id="", chart_context_revision=None,
+    ):
         seen["user_id"] = user_id
         return {"available": False, "note": "stub"}
 
@@ -4607,6 +4610,187 @@ def test_chart_state_put_get_roundtrip():
     assert got == {"symbol": "NVDA", "tf": "1D"}
 
 
+
+
+def test_chart_state_origins_do_not_overwrite_each_other():
+    """Two Terminal mounts for one user stay isolated by the existing ai-context origin."""
+    gw.put_chart_state("u-origin", "terminal", {"symbol": "NVDA", "tf": "1D"},
+                       origin_id="origin-a", context_revision=3)
+    gw.put_chart_state("u-origin", "terminal", {"symbol": "AAPL", "tf": "1W"},
+                       origin_id="origin-b", context_revision=7)
+    assert gw.get_chart_state("u-origin", "terminal", origin_id="origin-a")["symbol"] == "NVDA"
+    assert gw.get_chart_state("u-origin", "terminal", origin_id="origin-b")["symbol"] == "AAPL"
+
+
+def test_chart_state_ack_history_survives_empty_followup_and_dedupes():
+    """An ACK is a receipt: a later state-only mirror must not erase it, and retries dedupe."""
+    ack = {"batch_id": "brain_turn_1", "seq": 0, "id": "ai_h1", "ok": True}
+    gw.put_chart_state("u-ack", "terminal", {"symbol": "NVDA", "tf": "1D"},
+                       origin_id="origin-ack", context_revision=2, acks=[ack])
+    gw.put_chart_state("u-ack", "terminal", {"symbol": "NVDA", "tf": "1D", "tick": 2},
+                       origin_id="origin-ack", context_revision=2, acks=[])
+    gw.put_chart_state("u-ack", "terminal", {"symbol": "NVDA", "tf": "1D", "tick": 3},
+                       origin_id="origin-ack", context_revision=2, acks=[ack])
+    rec = gw.get_chart_state_record("u-ack", "terminal", origin_id="origin-ack")
+    assert rec is not None
+    assert rec["session"]["tick"] == 3
+    assert rec["acks"] == [ack]
+
+
+def test_chart_state_older_revision_cannot_replace_current_state_or_acks(monkeypatch):
+    """A delayed old-target POST cannot rewind the mounted chart or erase its receipt."""
+    clock = [1000.0]
+    monkeypatch.setattr(gw.time, "monotonic", lambda: clock[0])
+    ack = {"batch_id": "brain_current", "seq": 0, "id": "ai_current", "ok": True}
+    session = {"symbol": "AAPL", "tf": "1W", "visible_range": {"from": 10, "to": 20}}
+    gw.put_chart_state("u-reorder", "terminal", session,
+                       origin_id="origin-reorder", context_revision=8, acks=[ack])
+    clock[0] += 5
+    returned = gw.put_chart_state(
+        "u-reorder", "terminal", {"symbol": "NVDA", "tf": "1D"},
+        origin_id="origin-reorder", context_revision=7, acks=[],
+    )
+    assert returned["context_revision"] == 8
+    assert returned["updated_at"] == 1000.0  # stale traffic is not fresh telemetry
+    out = gw._tool_read_chart_state(
+        "u-reorder", "terminal", origin_id="origin-reorder", context_revision=8,
+    )
+    assert out["connected"] is True
+    assert out["session"] == session
+    assert out["acks"] == [ack]
+
+
+def test_chart_state_older_revision_cannot_import_stale_acks():
+    """Stale receipts must not overwrite current outcomes or leak into a new target epoch."""
+    ack = {"batch_id": "brain_current", "seq": 0, "id": "ai_current", "ok": True}
+    gw.put_chart_state("u-old-acks", "terminal", {"symbol": "AAPL"},
+                       origin_id="origin-old-acks", context_revision=8, acks=[ack])
+    gw.put_chart_state(
+        "u-old-acks", "terminal", {"symbol": "NVDA"},
+        origin_id="origin-old-acks", context_revision=7,
+        acks=[{**ack, "ok": False},
+              {"batch_id": "brain_old", "seq": 1, "id": None, "ok": True}],
+    )
+    rec = gw.get_chart_state_record("u-old-acks", "terminal", origin_id="origin-old-acks")
+    assert rec["acks"] == [ack]
+    assert rec["session"]["symbol"] == "AAPL"
+
+
+@pytest.mark.parametrize("revision", [None, -1, True, "8"])
+def test_chart_state_missing_or_invalid_revision_cannot_downgrade_versioned_origin(revision):
+    gw.put_chart_state("u-downgrade", "terminal", {"symbol": "AAPL"},
+                       origin_id="origin-downgrade", context_revision=8)
+    gw.put_chart_state("u-downgrade", "terminal", {"symbol": "NVDA"},
+                       origin_id="origin-downgrade", context_revision=revision)
+    rec = gw.get_chart_state_record("u-downgrade", "terminal", origin_id="origin-downgrade")
+    assert rec["context_revision"] == 8
+    assert rec["session"]["symbol"] == "AAPL"
+
+
+def test_chart_state_new_revision_still_starts_fresh_ack_epoch():
+    old_ack = {"batch_id": "brain_old", "seq": 0, "id": None, "ok": True}
+    new_ack = {"batch_id": "brain_new", "seq": 0, "id": None, "ok": True}
+    gw.put_chart_state("u-forward", "terminal", {"symbol": "NVDA"},
+                       origin_id="origin-forward", context_revision=7, acks=[old_ack])
+    gw.put_chart_state("u-forward", "terminal", {"symbol": "AAPL"},
+                       origin_id="origin-forward", context_revision=8, acks=[new_ack])
+    rec = gw.get_chart_state_record("u-forward", "terminal", origin_id="origin-forward")
+    assert rec["context_revision"] == 8
+    assert rec["session"]["symbol"] == "AAPL"
+    assert rec["acks"] == [new_ack]
+
+
+def test_chart_state_empty_origin_retains_legacy_last_write_behavior():
+    gw.put_chart_state("u-legacy-revision", "terminal", {"symbol": "NVDA"}, context_revision=8)
+    gw.put_chart_state("u-legacy-revision", "terminal", {"symbol": "AAPL"})
+    assert gw.get_chart_state("u-legacy-revision", "terminal") == {"symbol": "AAPL"}
+
+
+def test_chart_state_ack_history_sanitizes_and_bounds():
+    """Untrusted POST extras never become model-visible receipt fields; history remains bounded."""
+    rows = []
+    for i in range(gw._CHART_ACK_HISTORY_CAP + 8):
+        rows.append({
+            "batch_id": "brain_bounded",
+            "seq": i,
+            "id": None,
+            "ok": bool(i % 2),
+            "error": "x" * 400,
+            "forged": {"authority": "trade"},
+        })
+    rows.extend([
+        {"batch_id": "", "seq": 0, "id": None, "ok": True},
+        {"batch_id": "brain_bad", "seq": -1, "id": None, "ok": True},
+        {"batch_id": "brain_bad", "seq": 1, "id": "user_owned", "ok": True},
+    ])
+    gw.put_chart_state("u-cap", "terminal", {"symbol": "NVDA"},
+                       origin_id="origin-cap", context_revision=1, acks=rows)
+    rec = gw.get_chart_state_record("u-cap", "terminal", origin_id="origin-cap")
+    assert rec is not None
+    assert len(rec["acks"]) == gw._CHART_ACK_HISTORY_CAP
+    assert rec["acks"][0]["seq"] == 8
+    assert rec["acks"][-1]["seq"] == gw._CHART_ACK_HISTORY_CAP + 7
+    assert all(set(a) <= {"batch_id", "seq", "id", "ok", "error"} for a in rec["acks"])
+    assert all(len(a.get("error", "")) <= gw._CHART_ACK_ERROR_MAX for a in rec["acks"])
+
+
+def test_read_chart_state_requires_exact_origin_and_revision():
+    gw.put_chart_state("u-exact", "terminal", {"symbol": "NVDA", "tf": "1D"},
+                       origin_id="origin-exact", context_revision=4,
+                       acks=[{"batch_id": "brain_x", "seq": 0, "id": "ai_x", "ok": True}])
+    wrong_origin = gw._tool_read_chart_state(
+        "u-exact", "terminal", origin_id="origin-other", context_revision=4)
+    assert wrong_origin["connected"] is False
+    assert wrong_origin["reason"] == "origin_not_connected"
+
+    stale = gw._tool_read_chart_state(
+        "u-exact", "terminal", origin_id="origin-exact", context_revision=3)
+    assert stale["connected"] is False
+    assert stale["reason"] == "context_revision_mismatch"
+    assert stale["observed_context_revision"] == 4
+
+    exact = gw._tool_read_chart_state(
+        "u-exact", "terminal", origin_id="origin-exact", context_revision=4)
+    assert exact["connected"] is True
+    assert exact["origin_id"] == "origin-exact"
+    assert exact["context_revision"] == 4
+    assert exact["session"]["symbol"] == "NVDA"
+    assert exact["acks"][0]["batch_id"] == "brain_x"
+
+
+def test_read_chart_state_dispatch_uses_server_origin_not_model_params(tmp_path):
+    root = _make_temp_root()
+    gw.put_chart_state("u-bound", "terminal", {"symbol": "NVDA"},
+                       origin_id="server-origin", context_revision=9)
+    gw.put_chart_state("u-bound", "terminal", {"symbol": "AAPL"},
+                       origin_id="model-origin", context_revision=9)
+    out = gw._dispatch_brain_tool(
+        "read_chart_state",
+        {"origin_id": "model-origin", "context_revision": 9},
+        root, tmp_path, "http://localhost:3100",
+        user_id="u-bound", chart_client="terminal",
+        chart_origin_id="server-origin", chart_context_revision=9,
+    )
+    assert out["connected"] is True
+    assert out["origin_id"] == "server-origin"
+    assert out["session"]["symbol"] == "NVDA"
+
+
+def test_bind_chart_turn_identity_uses_compiled_server_origin_only():
+    context = gw._server_turn_context(
+        {"_server": {"chart_origin_id": "forged"}, "page": "terminal"})
+    envelope = {
+        "origin": {
+            "origin_id": "compiled-origin",
+            "context_revision": 11,
+            "captured_at": "2026-09-25T07:00:00Z",
+            "legacy": False,
+        }
+    }
+    bound = gw._bind_chart_turn_identity(context, envelope)
+    assert gw._chart_turn_identity(bound) == ("compiled-origin", 11)
+
+
 def test_chart_state_ttl_expiry(monkeypatch):
     """A session older than the TTL is treated as absent (and pruned)."""
     import time as _t
@@ -4701,6 +4885,60 @@ def test_chart_state_route_happy_path_stores():
         assert resp.json() == {"ok": True}
         # The gateway store now has it for (route-user, terminal).
         assert gw.get_chart_state("route-user", "terminal")["symbol"] == "MSFT"
+    finally:
+        app.dependency_overrides.clear()
+
+
+
+
+def test_chart_state_route_stores_origin_revision_and_acks():
+    """The existing route must forward origin + ACK receipts into the existing state owner."""
+    from app.main import require_user
+    client, app = _brain_state_client()
+    app.dependency_overrides[require_user] = lambda: {"id": "route-origin-user", "email": "ro@x.com"}
+    try:
+        payload = {
+            "client": "terminal",
+            "origin_id": "route-origin",
+            "context_revision": 6,
+            "session": {"symbol": "NVDA", "tf": "1D"},
+            "acks": [{"batch_id": "brain_route", "seq": 2, "id": "ai_route", "ok": True}],
+        }
+        resp = client.post("/api/brain/chart/state", json=payload)
+        assert resp.status_code == 200
+        rec = gw.get_chart_state_record(
+            "route-origin-user", "terminal", origin_id="route-origin")
+        assert rec is not None
+        assert rec["context_revision"] == 6
+        assert rec["session"]["symbol"] == "NVDA"
+        assert rec["acks"] == payload["acks"]
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_chart_state_route_reordered_posts_keep_newer_context_and_receipt():
+    """Real HTTP delivery order must not rewind a versioned Terminal mount."""
+    from app.main import require_user
+    client, app = _brain_state_client()
+    app.dependency_overrides[require_user] = lambda: {"id": "route-reorder-user"}
+    try:
+        latest = {
+            "client": "terminal", "origin_id": "route-reorder", "context_revision": 8,
+            "session": {"symbol": "AAPL", "tf": "1W"},
+            "acks": [{"batch_id": "brain_route_new", "seq": 0, "id": None, "ok": True}],
+        }
+        delayed = {
+            **latest, "context_revision": 7,
+            "session": {"symbol": "NVDA", "tf": "1D"}, "acks": [],
+        }
+        assert client.post("/api/brain/chart/state", json=latest).status_code == 200
+        assert client.post("/api/brain/chart/state", json=delayed).status_code == 200
+        out = gw._tool_read_chart_state(
+            "route-reorder-user", "terminal", origin_id="route-reorder", context_revision=8,
+        )
+        assert out["connected"] is True
+        assert out["session"] == latest["session"]
+        assert out["acks"] == latest["acks"]
     finally:
         app.dependency_overrides.clear()
 
@@ -5050,7 +5288,7 @@ def test_tool_label_whitelist_covers_every_tool():
     # entitlement. The guest-safe schema intentionally omits exact earnings evidence.
     with patch.object(gw, "_resolve_tier", return_value={
         "tier": "essential", "status": "active",
-    }):
+    }), patch("app.paywall.enforce_site_full", return_value=None):
         names = [t["name"] for t in gw._all_brain_tool_schemas(
             root,
             page="terminal",
@@ -5978,13 +6216,16 @@ def test_contradiction_doctrine_does_not_tell_the_model_to_pick_a_winner():
 # comment promises "the real cause is logged server-side".
 
 def test_degraded_stub_reports_degraded_and_logs_the_cause(tmp_path, caplog):
-    """The exact live shape: a round that stops AT the cap carrying only a thinking
-    block. The stub ships (users must never see a blank bubble), `done` says degraded,
-    and one server-side line carries the cause — lane, model, phase, stop reason,
-    both token counts, and the configured cap."""
+    """If the bounded answer pass also exhausts its cap, report the degraded
+    state, the final phase/cap, and the tokens spent by both calls."""
+    class ExhaustedAgain(_CaptureClient):
+        def _synthesis_stream(self):
+            return _ScriptedStreamCtx(_MockResponse(
+                [_ThinkBlock()], "max_tokens", _MockUsage(51_500, 8000)))
+
     truncated = _MockResponse([_ThinkBlock()], "max_tokens",
                               usage=_MockUsage(input_tokens=51_500, output_tokens=4000))
-    client = _CaptureClient(responses=[truncated])
+    client = ExhaustedAgain(responses=[truncated])
     root = _make_temp_root()
     with caplog.at_level(logging.WARNING, logger="engine.neuralweb.brain_gateway"):
         parsed = _stream_events(client, root, tmp_path, lane="fast")
@@ -5996,9 +6237,9 @@ def test_degraded_stub_reports_degraded_and_logs_the_cause(tmp_path, caplog):
     line = next((r.getMessage() for r in caplog.records
                  if "degraded stub shipped" in r.getMessage()), None)
     assert line is not None, [r.getMessage() for r in caplog.records]
-    for frag in ("lane=fast", "model=deepseek-v4-flash", "phase=tool-round",
-                 "stop=max_tokens", "input_tokens=51500", "output_tokens=4000",
-                 f"max_tokens={gw._FAST_MAX_TOKENS}"):
+    for frag in ("lane=fast", "model=deepseek-v4-flash", "phase=synthesis",
+                 "stop=max_tokens", "input_tokens=103000", "output_tokens=12000",
+                 f"max_tokens={gw._FAST_MAX_TOKENS * 2}"):
         assert frag in line, (frag, line)
 
 
@@ -7097,3 +7338,84 @@ def test_public_ontology_quota_gate_still_precedes_owner_read(tmp_path, monkeypa
     else:
         assert gw.chat("Explain this step", "test-user", context=context, root=tmp_path)["quota_exhausted"] is True
     owner.assert_not_called()
+
+
+def test_thinking_only_token_limit_gets_one_bounded_synthesis(tmp_path):
+    """Live Audit20 shape: completed reads, then all 4000 tokens spent thinking."""
+    truncated = _MockResponse([_ThinkBlock()], "max_tokens", _MockUsage(1399, 4000))
+    client = _CaptureClient([
+        _MockResponse([_MockBlock("tool_use", name="get_quote", input_={"symbol": "AAPL"}, id_="audit20-read")], "tool_use"),
+        truncated,
+    ])
+    events = _stream_events(client, _make_temp_root(), tmp_path, lane="fast")
+    synthesis = [kw for kw in client.stream_kwargs if "tools" not in kw]
+    assert len(synthesis) == 1
+    assert synthesis[0]["max_tokens"] == 8000
+    assert [kw["max_tokens"] for kw in client.stream_kwargs if "tools" in kw] == [4000, 4000]
+    transcript = synthesis[0]["messages"]
+    assert any(isinstance(m["content"], list) and any(isinstance(b, dict) and b.get("tool_use_id") == "audit20-read" for b in m["content"]) for m in transcript)
+    assert not any(isinstance(m["content"], list) and any(getattr(b, "type", "") == "thinking" for b in m["content"]) for m in transcript)
+    done = next(e for e in events if e["type"] == "done")
+    assert done["degraded"] is False
+    assert done["usage"]["input_tokens"] == 1409
+    assert done["usage"]["output_tokens"] == 4020
+    assert "temporarily unavailable" not in "".join(e.get("text", "") for e in events if e["type"] == "delta")
+
+
+def test_thinking_only_recovery_is_not_recursive(tmp_path):
+    class ExhaustedAgain(_CaptureClient):
+        def _synthesis_stream(self):
+            return _ScriptedStreamCtx(_MockResponse([_ThinkBlock()], "max_tokens", _MockUsage(1399, 8000)))
+    client = ExhaustedAgain([_MockResponse([_ThinkBlock()], "max_tokens", _MockUsage(1399, 4000))])
+    events = _stream_events(client, _make_temp_root(), tmp_path, lane="fast")
+    assert len([kw for kw in client.stream_kwargs if "tools" not in kw]) == 1
+    assert next(e for e in events if e["type"] == "done")["degraded"] is True
+
+
+def test_thinking_recovery_does_not_retry_refusal_or_partial_answer(tmp_path):
+    for response in [
+        _MockResponse([_ThinkBlock()], "refusal"),
+        _MockResponse([_MockBlock("text", "A partial answer."), _ThinkBlock()], "max_tokens"),
+        _MockResponse([_MockBlock("tool_use", name="get_quote", id_="unfinished")], "max_tokens"),
+    ]:
+        client = _CaptureClient([response])
+        _stream_events(client, _make_temp_root(), tmp_path, lane="fast")
+        assert not [kw for kw in client.stream_kwargs if "tools" not in kw]
+
+
+def test_sync_thinking_only_recovery_keeps_reads_and_counts_spent_tokens(tmp_path):
+    client = _MockClient([
+        _MockResponse([_MockBlock("tool_use", name="get_quote", input_={"symbol": "AAPL"}, id_="sync-read")], "tool_use"),
+        _MockResponse([_ThinkBlock()], "max_tokens", _MockUsage(1399, 4000)),
+        _MockResponse([_MockBlock("text", "The cached quote is context only.")]),
+    ])
+    answer, _, _, messages, usage, _, _ = gw._run_brain_loop(
+        "How is AAPL doing?", "fast", [], {}, _make_temp_root(), tmp_path,
+        "", client, "deepseek-v4-pro", 4000, 5,
+    )
+    assert answer == "The cached quote is context only."
+    assert [call["max_tokens"] for call in client.calls] == [4000, 4000, 8000]
+    assert client.calls[-1]["tools"] == []
+    assert any(isinstance(m["content"], list) and any(isinstance(b, dict) and b.get("tool_use_id") == "sync-read" for b in m["content"]) for m in messages)
+    assert not any(isinstance(m["content"], list) and any(getattr(b, "type", "") == "thinking" for b in m["content"]) for m in messages)
+    assert usage["input_tokens"] == 1409
+    assert usage["output_tokens"] == 4020
+
+
+def test_sync_exhausted_recovery_does_not_ship_earlier_tool_narration(tmp_path):
+    client = _MockClient([
+        _MockResponse([
+            _MockBlock("text", "Let me check that quote."),
+            _MockBlock("tool_use", name="get_quote", input_={"symbol": "AAPL"}, id_="sync-read"),
+        ], "tool_use"),
+        _MockResponse([_ThinkBlock()], "max_tokens", _MockUsage(1399, 4000)),
+        _MockResponse([_ThinkBlock()], "max_tokens", _MockUsage(1399, 8000)),
+    ])
+    answer, _, _, _, usage, _, _ = gw._run_brain_loop(
+        "How is AAPL doing?", "fast", [], {}, _make_temp_root(), tmp_path,
+        "", client, "deepseek-v4-pro", 4000, 5,
+    )
+    assert answer == ""
+    assert len(client.calls) == 3
+    assert usage["input_tokens"] == 2798
+    assert usage["output_tokens"] == 12000

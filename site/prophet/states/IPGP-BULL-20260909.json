@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "IPGP-BULL-20260909",
-  "asof": "2026-10-08",
+  "asof": "2026-10-18",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 48.6,
-  "raw_confidence": 43.4,
-  "delta_vs_base": -11.4,
+  "management_confidence": 27.8,
+  "raw_confidence": 24.0,
+  "delta_vs_base": -32.2,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 100.0,
-    "progress": 7.5,
-    "pace": 10.5,
+    "validity": 33.4,
+    "progress": 0.0,
+    "pace": 0.5,
     "retention": 50.0,
-    "overlay": 53.0
+    "overlay": 32.9
   },
   "geometry": {
-    "dist_to_stop_r": 1.079,
-    "dist_to_t1_r": 1.421,
-    "dist_to_t2_r": 2.921,
-    "horizon_pct_used": 60.0,
-    "p1": 0.0528,
-    "p2": 0.0264,
+    "dist_to_stop_r": 0.444,
+    "dist_to_t1_r": 1.5,
+    "dist_to_t2_r": 3.0,
+    "horizon_pct_used": 82.2,
+    "p1": -0.3706,
+    "p2": -0.1853,
     "p3": null,
-    "move_r": 0.079,
+    "move_r": -0.556,
     "mfe_r": 0.357,
-    "mae_r": -0.448
+    "mae_r": -0.556
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 4.060003051757818,
-  "_mae": -5.089998474121089,
+  "_mae": -6.320001831054682,
   "_max_p1": 0.23805353572312027,
   "_first_trigger_ts": "2026-10-02",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 27,
-  "tau": 0.6
+  "days_elapsed": 37,
+  "tau": 0.8222
 }

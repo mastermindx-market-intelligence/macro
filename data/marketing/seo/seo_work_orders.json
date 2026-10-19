@@ -1,6 +1,6 @@
 {
   "schema": "seo_work_orders.v1",
-  "as_of": "2026-10-04T18:31:50Z",
+  "as_of": "2026-10-18T17:51:09Z",
   "orders": [
     {
       "id": "missing_description",
@@ -123,13 +123,14 @@
       "class": "desc_length",
       "severity": "medium",
       "pages": [
+        "crypto.html",
         "macro_capital_structure.html",
         "macro_consumer_payments.html",
         "macro_monetary.html",
         "sanctions_map.html",
         "stock_seasonality.html"
       ],
-      "pages_count": 5,
+      "pages_count": 6,
       "suggested_fix": "Adjust description length to 50-170 chars",
       "falsifiable_check": "Measure len(desc) for each page; assert 50 <= len <= 170"
     },
@@ -140,10 +141,11 @@
       "class": "title_length",
       "severity": "medium",
       "pages": [
+        "consumer_cyclical_plnt.html",
         "stock_seasonality.html",
         "watchlist.html"
       ],
-      "pages_count": 2,
+      "pages_count": 3,
       "suggested_fix": "Adjust title length to 15-70 chars",
       "falsifiable_check": "Measure len(title) for each page; assert 15 <= len <= 70"
     },
@@ -172,6 +174,19 @@
       "pages_count": 1,
       "suggested_fix": "Add lang attribute to <html> element",
       "falsifiable_check": "grep '<html' in page — should include lang= attribute"
+    },
+    {
+      "id": "page_weight",
+      "priority": 11,
+      "title": "Reduce HTML page weight to <2.5 MB",
+      "class": "page_weight",
+      "severity": "low",
+      "pages": [
+        "intl.html"
+      ],
+      "pages_count": 1,
+      "suggested_fix": "Reduce HTML page weight to <2.5 MB",
+      "falsifiable_check": "wc -c site/<page>.html < 2621440 bytes"
     }
   ]
 }

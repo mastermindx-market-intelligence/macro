@@ -1,0 +1,114 @@
+{
+  "fixture": "F9",
+  "origin": "adjudicated_gold",
+  "provenance_note": "Hand-built adjudicated gold record for SPEC_X0 \u00a74 fixture F9. Every observation and binding carries origin 'adjudicated_gold' with a decided_at: an owner decision over retained bytes, NOT extracted filing text and NOT a fabricated filing.",
+  "issuer_id": "cik:0001234567",
+  "security_class_id": "class:common:0001234567",
+  "paths": [
+    {
+      "path_id": "path:atm:2026",
+      "file_number": "333-000002",
+      "sec_accepted_at": "2025-01-02T00:00:00Z"
+    }
+  ],
+  "observations": {
+    "q1": {
+      "transaction_id": "tx:f9-2026-q1",
+      "kind": "atm_sales",
+      "reporting_basis": "cumulative",
+      "period_start": "2026-01-01",
+      "period_end": "2026-03-31",
+      "gross_proceeds_usd": "1000000",
+      "form": "10-Q",
+      "accepted": "2026-03-31",
+      "target_kind": "registration_path",
+      "target_id": "path:atm:2026",
+      "usage_class": "programme_sale",
+      "programme_key": null,
+      "programme_inception_date": "2026-01-01"
+    },
+    "q2": {
+      "transaction_id": "tx:f9-2026-q2",
+      "kind": "atm_sales",
+      "reporting_basis": "cumulative",
+      "period_start": "2026-04-01",
+      "period_end": "2026-06-30",
+      "gross_proceeds_usd": "1500000",
+      "form": "10-Q",
+      "accepted": "2026-06-30",
+      "target_kind": "registration_path",
+      "target_id": "path:atm:2026",
+      "usage_class": "programme_sale",
+      "programme_key": null,
+      "programme_inception_date": "2026-01-01"
+    },
+    "q3": {
+      "transaction_id": "tx:f9-2026-q3",
+      "kind": "atm_sales",
+      "reporting_basis": "cumulative",
+      "period_start": "2026-07-01",
+      "period_end": "2026-09-30",
+      "gross_proceeds_usd": "2000000",
+      "form": "10-Q",
+      "accepted": "2026-09-30",
+      "target_kind": "registration_path",
+      "target_id": "path:atm:2026",
+      "usage_class": "programme_sale",
+      "programme_key": null,
+      "programme_inception_date": "2026-01-01"
+    }
+  },
+  "coverage": {},
+  "cases": [
+    {
+      "label": "contiguous_chain",
+      "as_of": "2026-06-30",
+      "observations": [
+        "q1",
+        "q2"
+      ],
+      "coverage": [],
+      "expected_support": "supported",
+      "expected": {
+        "usage_key": "programme_usage:path:atm:2026",
+        "status": "known",
+        "usage": "2500000",
+        "evidenced_floor": "2500000",
+        "complete_through": "2026-06-30",
+        "usage_through_complete": "2500000",
+        "post_window_additions": "0",
+        "roles": {
+          "tx:f9-2026-q1": "window",
+          "tx:f9-2026-q2": "window"
+        },
+        "resolving_fact_contains": null
+      }
+    },
+    {
+      "label": "gap_after_q1",
+      "as_of": "2026-09-30",
+      "observations": [
+        "q1",
+        "q3"
+      ],
+      "coverage": [],
+      "expected_support": "supported",
+      "expected": {
+        "usage_key": "programme_usage:path:atm:2026",
+        "status": "unknown",
+        "usage": null,
+        "evidenced_floor": "3000000",
+        "complete_through": "2026-03-31",
+        "usage_through_complete": "1000000",
+        "post_window_additions": "0",
+        "unknown_id": "usage_history_incomplete:programme_usage:path:atm:2026",
+        "resolving_fact_contains": "10-Q/10-K ATM sales disclosures",
+        "roles": {
+          "tx:f9-2026-q1": "window",
+          "tx:f9-2026-q3": "window"
+        },
+        "note": "Q2 is missing, so the chain stops at 2026-03-31; the floor is still the sum."
+      }
+    }
+  ]
+}
