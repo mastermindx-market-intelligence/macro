@@ -519,6 +519,9 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
     missing: set[str] = set()
     linked_digests: set[str] = set()
     reviewer_plan = None
+    from . import market_memory_e0_evaluation_spec as evaluation
+    evaluation_roles = {schema: role for role, schema in evaluation.SCHEMAS.items()}
+    evaluation_values = {}
 
     for _role, ref in roots:
         clean = _domain_reference(ref)
@@ -540,6 +543,8 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
             raise E0ControlError("task_reference_role_mismatch")
         if clean["schema"] == _REVIEWER_PLAN_SCHEMA and _role != "reviewer_plan_ref":
             raise E0ControlError("reviewer_plan_reference_role_mismatch")
+        if clean["schema"] in evaluation_roles and _role != evaluation_roles[clean["schema"]]:
+            raise E0ControlError("evaluation_declaration_reference_role_mismatch")
         if digest in references:
             if references[digest] != clean:
                 raise E0ControlError("domain_reference_alias_mismatch")
@@ -558,7 +563,8 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
         json_digests = {_FROZEN_DOMAIN_DIGESTS[key]
                         for key in ("membership", "design", "prelabel_binding")}
         value = (_domain_json(body) if digest in json_digests
-                 or clean["schema"] in {_TASK_SCHEMA, _REVIEWER_PLAN_SCHEMA} else None)
+                 or clean["schema"] in {_TASK_SCHEMA, _REVIEWER_PLAN_SCHEMA}
+                 or clean["schema"] in evaluation_roles else None)
         if type(value) is dict:
             declared_schema = value.get("schema", value.get("document_type"))
             if declared_schema != clean["schema"]:
@@ -570,6 +576,10 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
         if clean["schema"] == _REVIEWER_PLAN_SCHEMA:
             reviewer_plan = _validate_reviewer_plan_declaration(value, body, reg)
             roots.extend(_reviewer_plan_evidence_references(reviewer_plan))
+            linked_digests.add(_FROZEN_DOMAIN_DIGESTS["annotation_guide"])
+        if clean["schema"] in evaluation_roles:
+            evaluation_values[_role] = evaluation.validate_declaration(value, body, role=_role, registration=reg)
+            roots.extend(evaluation.provenance_references(evaluation_values[_role], role=_role))
             linked_digests.add(_FROZEN_DOMAIN_DIGESTS["annotation_guide"])
 
     binding = None
@@ -637,6 +647,10 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
         reviewer_checks.append(_reviewer_plan_binding_checks(
             reviewer_plan, tasks=task_value, membership=membership, parsed=parsed))
 
+    evaluation_checks = [evaluation.binding_checks(declared, role=role, tasks=task_value,
+        reviewer_plan=reviewer_plan, outcome_definition=evaluation_values.get("outcome_definition_ref"),
+        resolved_digests=set(parsed)) for role, declared in sorted(evaluation_values.items())]
+
     return {"schema": "research_factory.market_memory_e0_reference_resolution.v1",
             "authority": "display_only", "study_id": reg["study_id"],
             "registration_ref": _record_ref(reg, "registration"),
@@ -652,6 +666,7 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
             "frozen_metadata_gaps": gaps,
             "task_binding_checks": task_checks,
             "reviewer_plan_binding_checks": reviewer_checks,
+            "evaluation_binding_checks": evaluation_checks,
             "domain_metadata_complete": False, "operational_admission": False,
             "unresolved_semantics": ["tasks_and_query_selection", "source_coverage_and_feature_intervals",
                 "episode_clusters_and_interval_splits", "reviewer_plan_and_independence",
