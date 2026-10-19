@@ -398,7 +398,8 @@ def scenario_result(**over) -> c.ScenarioResult:
         price_bases=(c.PriceBasis("capacity", "fixed", "2.50", "2.50"),),
         coverage=(
             c.CoveragePeriod(
-                "2026-10-01", "2026-12-31", usd("0"), usd("7760000"), usd("12760000"), usd("0"),
+                "2026-10-01", "2026-12-31", usd("0"), c.SignedQuantity.known("7760000", "usd"),
+                c.SignedQuantity.known("12760000", "usd"), usd("0"),
                 "covered", c.COVERAGE_SCENARIO_ONLY_NOTE,
             ),
         ),
