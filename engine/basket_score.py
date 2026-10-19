@@ -17,7 +17,7 @@ import json
 import numpy as np
 import pandas as pd
 
-from lib import config
+from lib import config, nyse_calendar
 
 # Hand weights for the rollover_risk breadth-free legs (rs>=.8 · rolling-over · decel<-.4 ·
 # below-50d · 5d<-1%&rs>.7). scripts.calibrate_baskets can OVERRIDE these with OOS-validated
@@ -509,10 +509,35 @@ def market_concentration(region: str = "us") -> dict:
            "source_as_of": source_as_of,
            "source_universe": "sp500_current_constituents" if region == "us" else f"{region}_breadth",
            "directional": False}
+    # A positional tail is not an N-session observation: a 1-row cache used
+    # to masquerade as 3d, weekly AND monthly A/D; interior NYSE holes
+    # silently stretched the lookback. Require every source session and all
+    # measured A/D legs; never let pandas' skipna sums fill missing rows.
     for lbl, n in (("ad_3d", 3), ("ad_w", 5), ("ad_m", 21)):
-        seg = b.iloc[-n:]
-        sa, sd = seg["adv"].sum(), seg["dec"].sum()
-        out[lbl] = round(float(sa / sd), 2) if sd else None
+        metric = None
+        if len(b) >= n and {"adv", "dec"}.issubset(b.columns):
+            seg = b.iloc[-n:]
+            try:
+                days = [pd.Timestamp(idx).date() for idx in seg.index]
+                ordered = len(set(days)) == n and days == sorted(days)
+                # Only US breadth uses the NYSE calendar. Other regional
+                # adapters have distinct holiday calendars; do not relabel
+                # those as NYSE sessions to force a US-qualified number.
+                contiguous = (
+                    nyse_calendar.sessions_between(days[0], days[-1]) == days
+                    if region == "us" and ordered else ordered
+                )
+                advances = seg["adv"].to_numpy(dtype=float)
+                declines = seg["dec"].to_numpy(dtype=float)
+                if (contiguous and np.isfinite(advances).all()
+                        and np.isfinite(declines).all()
+                        and (advances >= 0).all()
+                        and (declines >= 0).all()
+                        and declines.sum() > 0):
+                    metric = round(float(advances.sum() / declines.sum()), 2)
+            except (TypeError, ValueError, OverflowError, KeyError):
+                pass
+        out[lbl] = metric
     p50 = out["pct_above_50"]
     if ad is not None and p50 is not None:
         if ad < 0.95 and p50 < 45:
