@@ -27,10 +27,12 @@ waves:
     title: "One existing-owner producer-to-Risk-Radar vertical, proof and publication"
     status: in_progress
 next_action: >
-  Publish the corrected SNI injection-safety line-position repair on the
-  existing Fear/Greed PR 9548 after verified A20 tests, rearm native
-  merge-on-green, qualify exact-head GitHub CI and fences, then verify
-  covering site render/VPS and signed-in Risk Radar customer proof.
+  Qualify the original PR 9548 post-reference-de-admission integration against
+  actual current main, finish affected source/CI and browser proof, publish the
+  one existing branch normally and rearm protected merge-on-green. After its
+  successful native merge, verify render/VPS HTML and authenticated Risk Radar
+  customer operation; qualify data freshness after the distinct reviewed
+  QLedger market-publication PR 9556 naturally lands.
 landmines:
   - "The legacy machine-consumed dial and existing regime/risk/trade authority stay unchanged."
   - "VIX acceleration is not VVIX. Absolute VIX threshold and liquidity-shock classifier kills remain binding."
@@ -328,3 +330,54 @@ registered workspace. Next: source commit/push only after scoped checks,
 remote readback, rearm the SAME protected merge workflow, consume fresh
 exact-head full CI and subsequent real-world render/customer-path proof.
 This is not a product feature completion receipt. MISSION_COMPLETE false.
+
+
+## October 19 2026 11:00 UTC - true RIG gate restored without fake approval
+
+Actual shared-main recovery: pre-admission Sector Central working design packets
+were moved out of research/migration_packets/ by already accepted and MERGED
+source PRs #7100 and #9637 (2026-10-19 08:21Z / 08:38Z), preserving their
+unapproved October 92-capability proposal contents as candidates, NOT
+granting design/production approval. Existing conservative RIG L8 gate
+and independent Full RIG approval remain mandatory for any future
+consuming Sector Central redesign. The separately proposed #9648
+clarification PR remains OPEN/CONFLICTING after overlapping landings;
+not required to unblock FGI and must not be duplicated or merged blindly.
+
+Refreshed protected Mastermind compatible source pin:
+065b7fe719bb07407eae965ffb15e300ae2395f6.
+The registered FGI head remained 2e017f066e102c698f711db0eb2eee0138232c5f.
+Disarmed existing PR #9548 merge-on-green label at exact head with
+readback; retained existing merge-blocked until new CI qualification.
+Fetched exact market-source main 5913c2303416fa21d4520a27f15323135a37a02a.
+Git merge-tree dry-run was clean, then original worktree executed
+git merge --no-commit --no-ff into that main with zero unmerged paths;
+no new branch, alternate writer or CI run created. Actual
+scripts/check_reference_integrity.py in this post-main integration:
+EXIT 0, 10 artifact sets, 3 approved, clean.
+
+Local affected feature, legacy Risk Radar, SNI A20 injection policy,
+render ownership and curated named CI import closure regression:
+109 passed, zero failures, in 165.52 seconds (two unrelated historical
+Chromium temp-fixture cleanup warnings), exact source test log
+/tmp/fgi9548-post-rig-regression-20261019.log. Agent OS validate:
+1881 records, zero errors. Current main 5913c230 public Macro HTTP 200
+served decoded blob 5c353ce27ea664719476d9cbd448893d2928a9c0
+exactly matches the committed main site/macro.html blob, with
+data-fgi-version marker absent as expected while the feature is unmerged.
+Next is one original-branch merge commit and normal non-forced push
+with exact remote SHA reconciliation, then restore the existing
+protected merger and qualify new-head browser + hosted CI.
+Latest accepted pre-integration browser proof was 145/145 but a fresh
+integrated-source browser run remains owed after creating the exact
+new head. Main-base integration alone is NOT CI, deployment or
+signed-in customer acceptance.
+
+QLedger market-data publication PR #9556 is a separate active source
+owner/writer lane; never merge, edit or duplicate that ledger. Fresh
+market data and user score clocks remain distinct from shipping the
+UI with accurate delayed/stale disclosures. Existing authenticated
+Risk Radar JS endpoints deliberately deny anonymous requests with
+HTTP401; no bypass or spoofed cookie acceptance.
+
+MISSION_COMPLETE: false.
