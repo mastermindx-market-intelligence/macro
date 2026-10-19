@@ -137,3 +137,31 @@ The existing workflow single-writer change is prepared on that carrier; generati
 and public-projection review are ongoing. Source implementation of the bounded I03
 Brain comparison consumer is commissioned separately using synthetic qualified
 owners; real basis/provenance resolution and two-source acceptance remain open.
+
+
+### I03 companion composition — source preparation, 2026-10-19
+
+The current source repair replaces the missing production callback composition
+with a closed companion qualification record inside incumbent Research
+Intelligence, strict immutable/CAS authoring, bounded read-only resolution and
+server-admitted pair-reference discovery. Frozen RIO artifacts and extraction
+receipts are unchanged. The default factory binds the concrete root-sealed
+comparison policy adapter following incumbent deployment-grant custody; absent
+or expired actual policy refuses; no author string, status flag or grounded quote grants semantic
+acceptance. Exact selected claim scope, source identity, revocation and provenance
+are re-admitted before disclosure. See
+`engine/research_intelligence/COMPARISON_QUALIFICATION.md` for the contract and the
+remaining actual author/adjudication obligation. No production qualification is
+created by this source work; actual development two-source acceptance and full
+F11 common-generation/writer/auth admission remain open.
+
+The same source preparation now supplies atomic comparison metering through
+incumbent `view_ratelimit`: the original per-user hourly ledger is charged once
+for the deduplicated report pair, under locks shared with ordinary views. Present
+malformed counters refuse comparison; only actual absence begins a fresh period.
+A lost write acknowledgement is reconciled by exact readback without replay; an
+unconfirmed write withholds output without claiming nothing was charged. The
+synthetic Brain IP mirror cannot deny a proven canonical charge. Existing web IP
+anti-scrape behavior and paid-view fail-open availability remain; all deployed
+writers must share these locks before runtime adoption. Source proof includes
+real process concurrency, not production quota or runtime admission.

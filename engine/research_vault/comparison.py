@@ -42,12 +42,21 @@ class QualifiedRevision:
 
 
 @dataclass(frozen=True)
+class QualifiedPair:
+    """One current admitted pair, scoped to two specific selected claims."""
+    basis_ref: str
+    claim_indices: tuple[int, int]
+    revision_ref: str | None = None
+
+
+@dataclass(frozen=True)
 class ComparisonOwners:
-    semantic: Callable[[Any, Any], bool]
+    semantic: Callable[[Any, Any], bool] | None
     preflight: Callable[[Any, tuple[str, ...], datetime], bool]
     commit: Callable[[Any, tuple[str, ...], datetime], bool]
     basis: Callable[[Any, str, tuple[Any, Any]], QualifiedBasis | None] | None = None
     revision: Callable[[Any, str, tuple[Any, Any]], QualifiedRevision | None] | None = None
+    pair: Callable[[Any, tuple[Any, Any]], QualifiedPair | None] | None = None
 
 
 class _Unavailable(ValueError):
@@ -134,7 +143,8 @@ def _load(service, ctx, items, side, owners, action):
     extracted = copy.deepcopy(extracted)
     state, stored, warnings = service._rio_state(rid, extracted)
     _require(state == "CURRENT" and stored is not None, "RIO_UNAVAILABLE")
-    _require(owners.semantic(ctx, stored) is True, "SEMANTIC_UNQUALIFIED")
+    if owners.pair is None:
+        _require(callable(owners.semantic) and owners.semantic(ctx, stored) is True, "SEMANTIC_UNQUALIFIED")
     rio = validate_rio(stored.rio, require_grounded_claims=True)
     _require(rio["document"]["id"] == rid and rio["document"]["institution"] == institution
         and rio["document"]["content_sha256"] == extracted["extracted_text_sha256"], "RIO_SOURCE_MISMATCH")
@@ -240,7 +250,7 @@ def _compare(owners, ctx, request, legs):
 
 def view(service, ctx, request, owners):
     """No text is exposed until both legs, final identity and quota qualify."""
-    if type(owners) is not ComparisonOwners or not all(callable(getattr(owners, k)) for k in ("semantic", "preflight", "commit")):
+    if type(owners) is not ComparisonOwners or not all(callable(getattr(owners, k)) for k in ("preflight", "commit")) or (not callable(owners.semantic) and not callable(owners.pair)):
         return failure("COMPARISON_OWNERS_UNAVAILABLE")
     try:
         request = copy.deepcopy(_parse(service, request))
@@ -253,6 +263,19 @@ def view(service, ctx, request, owners):
         quota_ids = tuple(dict.fromkeys(ids))
         _require(owners.preflight(ctx, quota_ids, now) is True, "QUOTA_UNAVAILABLE")
         legs = tuple(_load(service, ctx, items, request[k], owners, request["action"]) for k in ("left", "right"))
+        admission = None
+        if owners.pair is not None:
+            admission = owners.pair(ctx, legs)
+            _require(type(admission) is QualifiedPair and _REF.fullmatch(admission.basis_ref) is not None
+                and type(admission.claim_indices) is tuple and len(admission.claim_indices) == 2
+                and all(type(i) is int and 0 <= i < len(leg["rio"]["claims"])
+                        for i, leg in zip(admission.claim_indices, legs))
+                and (admission.revision_ref is None or
+                     (type(admission.revision_ref) is str and _REF.fullmatch(admission.revision_ref) is not None)), "SEMANTIC_UNQUALIFIED")
+            if request["action"] == "compare":
+                _require(request["basis_ref"] == admission.basis_ref
+                    and tuple(request[k]["claim_index"] for k in ("left", "right")) == admission.claim_indices
+                    and request.get("revision_ref") in (None, admission.revision_ref), "REQUESTED_QUALIFICATION_UNAVAILABLE")
         result = {"schema": SCHEMA, "state": "INPUTS_ONLY" if request["action"] == "prepare" else "AVAILABLE",
             "authority": "descriptive_research_only", "visibility": "private_entitled_only",
             "left": _public_leg(legs[0]), "right": _public_leg(legs[1]),
@@ -261,9 +284,10 @@ def view(service, ctx, request, owners):
                 list(_source.get("known_degradation", ())) + [w for leg in legs for w in leg["warnings"]]))}
         if request["action"] == "prepare":
             result["basis_state"] = "UNRESOLVED"
-            for name, leg in zip(("left", "right"), legs):
+            for position, (name, leg) in enumerate(zip(("left", "right"), legs)):
                 result[name]["claims"] = []
-                for index in range(min(MAX_PREVIEWS, len(leg["rio"]["claims"]))):
+                indices = (admission.claim_indices[position],) if admission is not None else range(min(MAX_PREVIEWS, len(leg["rio"]["claims"])))
+                for index in indices:
                     candidate = _preview(leg, index)
                     result[name]["claims"].append(candidate)
                     if _strings(result) > MAX_CHARS:
@@ -271,6 +295,22 @@ def view(service, ctx, request, owners):
                         break
                 result[name]["omitted_claim_count"] = len(leg["rio"]["claims"]) - len(result[name]["claims"])
                 _require(bool(result[name]["claims"]), "OUTPUT_BUDGET_UNAVAILABLE")
+            if admission is not None:
+                # Resolve/validate the basis against actual source-bound claim
+                # identities before advertising a client-usable reference.
+                discovery = {"action": "compare", "basis_ref": admission.basis_ref,
+                    "left": result["left"]["claims"][0]["ref"],
+                    "right": result["right"]["claims"][0]["ref"]}
+                if admission.revision_ref is not None:
+                    discovery["revision_ref"] = admission.revision_ref
+                selected = []
+                for side, leg in zip(("left", "right"), legs):
+                    copy_leg = dict(leg)
+                    copy_leg["selected_binding"] = (*_source_binding(leg), discovery[side]["claim_index"])
+                    selected.append(copy_leg)
+                _compare(owners, ctx, discovery, tuple(selected))
+                result["basis_state"] = "QUALIFIED"
+                result["basis_options"] = [{k: v for k, v in discovery.items() if k != "action"}]
         else:
             result["comparison"] = _compare(owners, ctx, request, legs)
         _require(_strings(result) <= MAX_CHARS, "OUTPUT_BUDGET_UNAVAILABLE")
@@ -291,7 +331,27 @@ def view(service, ctx, request, owners):
             _require(state == "CURRENT" and stored is not None
                 and stored.artifact_sha256 == leg["artifact_sha"]
                 and stored.receipt == leg["receipt"]
-                and owners.semantic(ctx, stored) is True, "RIO_CHANGED")
+                and (owners.pair is not None or (callable(owners.semantic) and owners.semantic(ctx, stored) is True)), "RIO_CHANGED")
+        if admission is not None:
+            # Admission/provenance and optional revision are IO owners too.
+            # Re-resolve exact current qualification immediately before the last
+            # catalog check and atomic charge; no cached acceptance survives CAS.
+            _require(owners.pair(ctx, legs) == admission, "QUALIFICATION_CHANGED")
+            if request["action"] == "compare":
+                _require(_compare(owners, ctx, request, legs) == result["comparison"], "QUALIFICATION_CHANGED")
+            else:
+                _compare(owners, ctx, discovery, tuple(selected))
+            _require(owners.pair(ctx, legs) == admission, "QUALIFICATION_CHANGED")
+            # The last qualification callback may itself cross an IO boundary.
+            # Re-admit both actual bodies/RIOs after it, not only catalog rows.
+            for leg in legs:
+                coverage, current, _segments, _extra = service._resolve_text(leg["id"], leg["item"])
+                _require(coverage == "FULL_TEXT" and current is not None
+                    and _revision_identity(current) == _revision_identity(leg["extracted"]), "SOURCE_CHANGED")
+                state, stored, _extra = service._rio_state(leg["id"], current)
+                _require(state == "CURRENT" and stored is not None
+                    and stored.artifact_sha256 == leg["artifact_sha"]
+                    and stored.receipt == leg["receipt"], "RIO_CHANGED")
         # The final semantic owner call is another I/O boundary. Re-admit the
         # selected catalog targets once more after it and before quota commit.
         final_catalog, final_source = service._read_catalog(service._now())

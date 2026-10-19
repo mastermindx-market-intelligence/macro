@@ -5083,7 +5083,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_639),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_645),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5092,6 +5092,13 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    I03 concrete comparison composition (2026-10-19): extend the existing
+    F11 API invocation with its qualification, sealed-policy and atomic-meter
+    suites. Canonical measurement is 135/5770, 134/5645 and 128/5519
+    jobs/weight, all at 10 packs. Fund only build_free_content 5639 -> 5645;
+    all job-count, other weight and pack ceilings remain unchanged. The
+    measured manifest is retained with the source integration evidence.
 
     Full F11 consumer reconciliation on protected 521306fe (2026-10-19):
     keep the protected 42 Vault suites and 2 API suites, then add only the 5
