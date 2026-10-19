@@ -9386,6 +9386,7 @@ jobs:
           tests/test_fundamental_forensics_query_metric_qualification.py
           tests/test_fundamental_forensics_query_snapshots.py
           tests/test_fundamental_forensics_raw_ledger.py
+          tests/test_fundamental_forensics_release_reconciliation.py
           tests/test_fundamental_forensics_saved_store_schema.py
           tests/test_fundamental_forensics_sec_request_pacer.py
           tests/test_fundamental_forensics_source_sync.py
