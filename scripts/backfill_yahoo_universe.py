@@ -332,10 +332,14 @@ def vendor_symbol(ticker: str) -> str:
 
 def prophet_consumer_universe(data_dir: Path | None = None) -> set[str]:
     """Prewarm the declared prospective roster through the incumbent Yahoo owner."""
-    from engine.us_turn_watch import universe_contract_v2  # noqa: PLC0415
+    try:
+        from engine.us_turn_watch import universe_contract_v2  # noqa: PLC0415
 
-    contract = universe_contract_v2(data_dir or config.data_dir())
-    return set(contract["tickers"]) if contract is not None else set()
+        contract = universe_contract_v2(data_dir or config.data_dir())
+        return set(contract["tickers"]) if contract is not None else set()
+    except Exception as exc:
+        log.warning("Prophet consumer unavailable; continuing incumbent Yahoo queue (%s)", type(exc).__name__)
+        return set()
 
 
 def needed_queue(state: dict, today: date | None = None, recent_days: int = 90,

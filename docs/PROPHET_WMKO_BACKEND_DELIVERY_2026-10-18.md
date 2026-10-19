@@ -33,7 +33,7 @@ The normal daily owner must supply and qualify actual data before a v2 publicati
 
 - Complete backend battery: **391 passed, 1 skipped**, process-reported `TEST_EXIT=0`, 22.36 seconds.
   Suites: us_turn_watch; us_turn_watch_v2; prophet_early_observations; prophet_early_observations_v2; prophet_observations_api; prophet_wmko_delivery_contract; yahoo_universe_backfill; us_scan_tier; us_leader_pullback_coverage.
-  Receipt preserved at `research/prophet_v4/wm_ko_20261018/prophet-final-backend-battery-20261018.log`.
+  Committed receipt: `docs/prophet-wmko-review-20261019/backend-pre-review-tests.log`; the original local log is also preserved.
   The skip is not counted as a pass; sparse-worktree data-dependent gates remain for their normal owner.
 - Added regressions first reproduced the source/transport/clock/coverage defects. Yahoo queue tests reproduced five missing-integration failures after installing the repository's existing yfinance requirement in an isolated test environment.
 - Exact frozen-v1 file SHA-256: `645dc6274aaa7606734d6f9f77168425fea21556737996ef0664b2c9a122e4eb`.
@@ -41,7 +41,7 @@ The normal daily owner must supply and qualify actual data before a v2 publicati
   AST comparison found 37 old function definitions unchanged; only universe, source_contract_status and compute_deck_with_candidates changed.
   Receipt: `research/prophet_v4/wm_ko_20261018/v1_parity_proof_20261018.json`.
 - Native committed Oct16 source/public/reference blobs yield 378 source observations, one matched KO row (recorded close 93.90) and zero WM rows with NOT_IN_UNIVERSE under frozen v1. The resulting JSON is also consumed by Terminal decoder/responsive tests as an explicitly labeled fixture, never live proof.
-- Existing research `native_replay.json` and `replay.py` were preserved and not rerun. Native cut/replay dates are not silently substituted for dates recorded in earlier source checkpoints.
+- Existing research `native_replay.json` and `replay.py` remain local untracked files in the original workspace, preserved and not rerun; they are not cited as artifacts available from this Git commit. Native cut/replay dates are not silently substituted for dates recorded in earlier source checkpoints.
 
 ## Independent review disposition
 
@@ -54,3 +54,24 @@ The missing-store finding is addressed through the incumbent queue plus an uncha
 The original inaccessible Linux-to-Mac build child is terminal/blocked and was not retried. No predecessor safety-blocked checkpoint write was replayed.
 
 Final immutable-head CI/review, normal deployment, authenticated current-source proof and the first eligible v2 session remain separate acceptance gates.
+
+## Final review and CI repairs — 2026-10-19 UTC
+
+Paid Fabric `prophet-wmko-final-backend-review-20261018-r2` independently **APPROVED the repaired source** at `88090e9327412c96686a4fde953bbe8229aea215`.
+Accepted response SHA-256: `f86fbc2b442726e4b72455703d70bfaffb265e9715e79c3d5776560ca8cdbd9a`.
+It recomputed roster/transition digests, real Oct16 receipt and partition proofs, held-file equality and AST parity. It did not execute the reported test battery or verify deployment.
+
+Its residual import-containment issue was reproduced with both ImportError and RuntimeError. The prospective Prophet consumer now logs a bounded warning and returns an empty consumer set if its optional import/initialization fails; the incumbent ledger/hub queue continues. Store/parked/price-basis and publication gates are unchanged.
+The remaining report observations about unavailable-reason wording and redundant top-level public-era checking are nonblocking; neither can grant membership or trading authority.
+
+The report's Linux clone could not establish common ancestry. The canonical original Mac carrier successfully merged current `origin/main` with the normal ort strategy into `8d87632cb45e3e4006d34b8668356582243861fe`; no unrelated-history override, replacement checkout or discarded CI content was used.
+
+Hosted CI on the earlier head reported 49 missing import-closure path declarations across 13 existing jobs. Those literal paths were added to their incumbent manifest entries; a parsed before/after comparison proved that no other job semantics changed, and the normal loader accepted all 327 jobs.
+CI also identified `engine/us_turn_watch.py` as an import-cached API dependency missing from the existing deployment restart predicate. It is now included in that predicate, preserving the normal deployment owner.
+
+Actual post-review backend battery: **393 passed, 1 skipped, 6 warnings**, exit 0, 24.99 seconds. The two newly passing tests are the import-containment regressions.
+The existing API import/restart closure regression passed (one selected test, 288 deselected), and `bash -n app/deploy/update.sh` exited 0.
+Committed outputs: `docs/prophet-wmko-review-20261019/backend-final-tests.log` and `docs/prophet-wmko-review-20261019/api-restart-closure.log`.
+
+A read-only production filename census observed 1,858 existing files and 70 missing from the 1,928-name roster at Macro `14735f1f35cb028f47d673d5525e9f9bd1919464`. SAFE and SATS remain parked; this census is not a claim that all existing files satisfy v2 quality/freshness.
+The then-served source remains Oct16 frozen v1, with a passing embedded source contract. No v2 qualification or authenticated deployment completion is asserted.

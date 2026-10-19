@@ -37,6 +37,12 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      # Prophet WM/KO read-path import closure (contract-delta PR #9610).
+      - "config/us_turn_watch_universe.v1.json"
+      - "config/us_turn_watch_universe.v2.json"
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "app/__init__.py"
       - "app/account_actions.py"
       - "app/account_prefs.py"
@@ -1778,6 +1784,12 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      # Prophet WM/KO read-path import closure (contract-delta PR #9610).
+      - "config/us_turn_watch_universe.v1.json"
+      - "config/us_turn_watch_universe.v2.json"
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "tests/test_c19_wp32_correction.py"
       - "tests/test_c19_wp32_denial_cache.py"
       - "tests/test_c19_wp19_integrated_answer_entitlement_pins.py"
@@ -2582,6 +2594,12 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      # Prophet WM/KO read-path import closure (contract-delta PR #9610).
+      - "config/us_turn_watch_universe.v1.json"
+      - "config/us_turn_watch_universe.v2.json"
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - "tests/test_c19_wp22_dhi_traversal.py"
@@ -6226,6 +6244,10 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Prophet WM/KO read-path import closure (contract-delta PR #9610).
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -8495,6 +8517,12 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      # Prophet WM/KO read-path import closure (contract-delta PR #9610).
+      - "config/us_turn_watch_universe.v1.json"
+      - "config/us_turn_watch_universe.v2.json"
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - "engine/government_revenue/program_dossier.py"
@@ -15345,6 +15373,8 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # Prophet WM/KO read-path import closure (contract-delta PR #9610).
+      - "config/us_turn_watch_universe.v2.json"
       # Connected Research Factory import closure (PR9463).
       - engine/oracle/compounds.py
       - engine/oracle/graph.py
@@ -18605,6 +18635,10 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # Prophet WM/KO read-path import closure (contract-delta PR #9610).
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -20592,6 +20626,12 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Prophet WM/KO read-path import closure (contract-delta PR #9610).
+      - "config/us_turn_watch_universe.v1.json"
+      - "config/us_turn_watch_universe.v2.json"
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - "engine/government_revenue/program_dossier.py"
@@ -22929,6 +22969,10 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      # Prophet WM/KO read-path import closure (contract-delta PR #9610).
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -24021,6 +24065,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # Prophet WM/KO read-path import closure (contract-delta PR #9610).
+      - "config/us_turn_watch_universe.v2.json"
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
       - "scripts/build_turn_watch.py"
@@ -28292,6 +28338,10 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Prophet WM/KO read-path import closure (contract-delta PR #9610).
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -28776,6 +28826,12 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # Prophet WM/KO read-path import closure (contract-delta PR #9610).
+      - "config/us_turn_watch_universe.v1.json"
+      - "config/us_turn_watch_universe.v2.json"
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - lib/dataos/web_history.py
@@ -31610,6 +31666,12 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Prophet WM/KO read-path import closure (contract-delta PR #9610).
+      - "config/us_turn_watch_universe.v1.json"
+      - "config/us_turn_watch_universe.v2.json"
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # MI W14 (2026-10-17): scripts/build_qbus_news_universe.py reads via the native parquet helper.

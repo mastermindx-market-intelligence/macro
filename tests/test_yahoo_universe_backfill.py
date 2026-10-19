@@ -1081,3 +1081,19 @@ def test_prophet_roster_dry_run_is_a_plan_without_network_or_writes(tree, monkey
     report = bf.run(cap=1, dry_run=True)
     assert report["planned"] == 1 and report["remaining"] == 2
     assert list((tree / "data/yahoo").iterdir()) == []
+
+
+@pytest.mark.parametrize("failure", [ImportError("optional engine unavailable"), RuntimeError("optional engine initialization failed")])
+def test_prophet_import_failure_does_not_stop_incumbent_queue(tree, monkeypatch, caplog, failure):
+    import builtins
+    native_import = builtins.__import__
+    def import_with_failure(name, *args, **kwargs):
+        if name == "engine.us_turn_watch":
+            raise failure
+        return native_import(name, *args, **kwargs)
+    monkeypatch.setattr(builtins, "__import__", import_with_failure)
+    _write_hub(tree, command=["AMZN"])
+    queue, census = bf.needed_queue({})
+    assert queue == [("AMZN", 1)]
+    assert census["prophet_v2_universe"] == 0
+    assert "Prophet consumer unavailable" in caplog.text
