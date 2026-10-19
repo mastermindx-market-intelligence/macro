@@ -61,8 +61,7 @@ from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping
 
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT))
 
 from engine.fundamental_forensics.metric_registry import load_core_metric_registry  # noqa: E402
 

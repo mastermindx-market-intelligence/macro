@@ -442,6 +442,7 @@ jobs:
       - "engine/fundamental_forensics/issuer_sic.py"
       - "engine/fundamental_forensics/ixbrl_extraction.py"
       - "engine/fundamental_forensics/ixbrl_raw_ledger.py"
+      - "engine/fundamental_forensics/latency.py"
       - "engine/fundamental_forensics/lineage_evidence.py"
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
@@ -2719,6 +2720,7 @@ jobs:
       - "engine/earnings_narrative/__init__.py"
       - "engine/earnings_release/__init__.py"
       - "engine/fundamental_forensics/__init__.py"
+      - "engine/fundamental_forensics/latency.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
       - "engine/market_ontology/__init__.py"
       - "engine/marketing/__init__.py"
@@ -3620,6 +3622,7 @@ jobs:
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
       - "engine/capital_structure/listing_facts.py"
+      - "engine/fundamental_forensics/latency.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -8783,6 +8786,8 @@ jobs:
       - "contracts/capital_structure_registration_lifecycle.schema.json"
       - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
       - "contracts/capital_structure_source_manifest.schema.json"
+      - "contracts/fundamental_forensics_cost_ledger.v1.schema.json"
+      - "contracts/fundamental_forensics_coverage_proof.v1.schema.json"
       - "engine/capital_structure/authorized_shares.py"
       - "engine/capital_structure/capacity.py"
       - "engine/capital_structure/capacity_joint.py"
@@ -8809,6 +8814,12 @@ jobs:
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
       - "engine/capital_structure/listing_facts.py"
+      - "scripts/fif_cost_ledger.py"
+      - "scripts/fif_coverage_proof.py"
+      - "scripts/fif_finding_judgments.py"
+      - "scripts/fif_latency_benchmark.py"
+      - "scripts/fif_pack_quality_report.py"
+      - "scripts/fif_recovery_drill.py"
       - engine/theme_graph/economic_context.py
       - engine/theme_graph/issuer_economic_context.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -21497,6 +21508,7 @@ jobs:
       - "engine/capital_structure/transactions.py"
       - "engine/capital_structure/variable_terms.py"
       - "engine/capital_structure/verified_projection_generation.py"
+      - "engine/fundamental_forensics/latency.py"
       - "scripts/compile_capital_structure_events.py"
       - contracts/theme_graph/activity_membership_proposal.v1.schema.json
       - "engine/market_ontology/__init__.py"
@@ -29862,6 +29874,7 @@ jobs:
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
       - "engine/capital_structure/listing_facts.py"
+      - "engine/fundamental_forensics/latency.py"
       - engine/theme_graph/economic_context.py
       - engine/theme_graph/issuer_economic_context.py
       # R15: the existing phase1 tests now reach both native 30m pivot families.
@@ -32758,6 +32771,7 @@ jobs:
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      - "engine/fundamental_forensics/latency.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - "scripts/compile_capital_structure_events.py"

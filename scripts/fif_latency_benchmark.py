@@ -28,8 +28,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT))
 
 DEFAULT_ITERATIONS = 200
 _LATEST_GLOB = "fundamental_forensics/production-datasets/v1/issuers/*/latest.json"

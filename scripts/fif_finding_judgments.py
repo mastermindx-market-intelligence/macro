@@ -29,8 +29,7 @@ from pathlib import Path
 from typing import Any
 
 _ROOT = Path(__file__).resolve().parent.parent
-if str(_ROOT) not in sys.path:
-    sys.path.insert(0, str(_ROOT))
+sys.path.insert(0, str(_ROOT))
 
 from engine.fundamental_forensics import finding_judgments as FJ  # noqa: E402
 from engine.fundamental_forensics.production_datasets import (  # noqa: E402
