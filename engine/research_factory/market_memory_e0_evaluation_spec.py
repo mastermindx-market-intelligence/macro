@@ -39,7 +39,7 @@ def validate_declaration(value: object, body: bytes, *, role: str, registration:
     """Return detached declarations; the fixed margins are not observed scores."""
     if role not in SCHEMAS:
         raise control.E0ControlError("evaluation_declaration_role_required")
-    declared, canonical = control._snapshot(value)
+    declared, canonical = control._domain_snapshot(value)
     if declared.get("schema") != SCHEMAS[role]:
         raise control.E0ControlError("evaluation_declaration_schema_role_mismatch")
     if next(_validator().iter_errors(declared), None) is not None:
