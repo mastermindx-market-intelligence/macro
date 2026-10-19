@@ -4284,6 +4284,9 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # Vault code-gate closure from exact tracked-tree analysis; includes runtime
+    # Jinja/page assets. Packing ceilings and suite coverage remain unchanged.
+    "research-vault",
     # BEA human/HTTP browser gate: measured literal closure, no opaque fallback smear.
     "bea-gvc-current-descriptive-consumer",
     # R2 original-intent context producer: the ten Agent OS knowledge suites
@@ -5013,7 +5016,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_609),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5022,6 +5025,19 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-19 Research Vault full-body/producer composition: the existing
+    code-gated job gains its complete 36-suite invocation (estimated weight
+    43 -> 76). Its exact tracked-tree import/read closure is now exclusive,
+    with Jinja and committed page assets declared explicitly. This removes the
+    template probe's opaque fallback selection while preserving the real
+    scripts.build_free_content dependency reached through press.validators.
+    Hosted contract-delta39234988640 measured build_free_content 5,576 -> 5,609;
+    the scoped local probe independently measured 134 jobs / 5,609 against 5,600.
+    Fund only that nine-weight-second excess: 5,600 -> 5,609, no padding.
+    Job counts, the other weight ceilings and the ten-pack ceiling remain.
+    Dropping the imported validator or understating the suite weight would
+    discard coverage or hide the actual added test load.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py
