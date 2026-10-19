@@ -15534,6 +15534,7 @@ jobs:
       - "collectors/yahoo.py"
       - "lib/stooq.py"
       - research/prophet_v4/d2/D2B3_FROZEN_CONTRACT_2026-08-21.md
+      - research/theme_graph/GMI_PROGRAM_RECOVERY_2026-10-16.md
       - scripts/__init__.py
       - scripts/build_company_theme_exposure.py
       - scripts/build_dt_contra_state.py
