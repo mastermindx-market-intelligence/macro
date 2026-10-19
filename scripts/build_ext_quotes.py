@@ -638,10 +638,13 @@ def publish_boats_stream(*, max_seconds: int = 600, max_messages: int = 20000,
                     delivered = False
                     log.warning("ext_quotes: R2 access denied; publication stopped for this invocation")
                 publication["succeeded" if delivered else "failed"] += 1
+                # A failed attempt consumes this publication slot too, so one
+                # transient storage failure cannot promote every later frame
+                # into an immediate retry PUT. Forced terminal invalidation and
+                # the strict denied-PUT latch below are unaffected.
+                last_publish = tick
                 if reducer.status == "ended":
                     publication["final_invalidation_delivered"] = delivered
-                if delivered:
-                    last_publish = tick
             else:
                 last_publish = tick
 
@@ -804,7 +807,9 @@ def main() -> None:
         symbols = None
         if args.symbols_file:
             from scripts.tiingo_ingest import load_symbols
-            symbols = load_symbols("", args.symbols_file)
+            # The display publisher admits its own full public coverage ceiling;
+            # the ordinary 12000-symbol collector default would truncate the file.
+            symbols = load_symbols("", args.symbols_file, limit=MAX_BOATS_SYMBOLS)
             # Validate before any provider, archive or R2 effect. An empty file
             # must not silently fall back to the default watchlist.
             BoatsLastTrade(symbols, "coverage-validation")

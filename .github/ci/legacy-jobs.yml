@@ -365,6 +365,7 @@ jobs:
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
       - "engine/fundamental_forensics/health.py"
+      - "engine/fundamental_forensics/issuer_sic.py"
       - "engine/fundamental_forensics/ixbrl_extraction.py"
       - "engine/fundamental_forensics/ixbrl_raw_ledger.py"
       - "engine/fundamental_forensics/lineage_evidence.py"
@@ -2108,6 +2109,7 @@ jobs:
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
       - "engine/fundamental_forensics/health.py"
+      - "engine/fundamental_forensics/issuer_sic.py"
       - "engine/fundamental_forensics/ixbrl_extraction.py"
       - "engine/fundamental_forensics/ixbrl_raw_ledger.py"
       - "engine/fundamental_forensics/lineage_evidence.py"
@@ -2934,6 +2936,7 @@ jobs:
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
       - "engine/fundamental_forensics/health.py"
+      - "engine/fundamental_forensics/issuer_sic.py"
       - "engine/fundamental_forensics/ixbrl_extraction.py"
       - "engine/fundamental_forensics/ixbrl_raw_ledger.py"
       - "engine/fundamental_forensics/lineage_evidence.py"
@@ -9381,6 +9384,7 @@ jobs:
           tests/test_fundamental_forensics_financial_query_service.py
           tests/test_fundamental_forensics_financial_revision_api.py
           tests/test_fundamental_forensics_financial_revision_service.py
+          tests/test_fundamental_forensics_five_issuer_sic_contract.py
           tests/test_fundamental_forensics_health.py
           tests/test_fundamental_forensics_held_out_isolation.py
           tests/test_fundamental_forensics_ingest.py
@@ -15869,6 +15873,7 @@ jobs:
       - engine/fundamental_forensics/filing_attestation.py
       - engine/fundamental_forensics/filing_package.py
       - engine/fundamental_forensics/financial_intelligence_packet.py
+      - engine/fundamental_forensics/issuer_sic.py
       - engine/fundamental_forensics/ixbrl_extraction.py
       - engine/fundamental_forensics/lineage_evidence.py
       - engine/fundamental_forensics/metric_registry.py
@@ -20977,6 +20982,7 @@ jobs:
       - engine/fundamental_forensics/filing_package.py
       - engine/fundamental_forensics/financial_intelligence_packet.py
       - engine/fundamental_forensics/health.py
+      - engine/fundamental_forensics/issuer_sic.py
       - engine/fundamental_forensics/ixbrl_extraction.py
       - engine/fundamental_forensics/ixbrl_raw_ledger.py
       - engine/fundamental_forensics/lineage_evidence.py
@@ -24375,6 +24381,7 @@ jobs:
       - "engine/fundamental_forensics/filing_attestation.py"
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
+      - "engine/fundamental_forensics/issuer_sic.py"
       - "engine/fundamental_forensics/ixbrl_extraction.py"
       - "engine/fundamental_forensics/lineage_evidence.py"
       - "engine/fundamental_forensics/metric_registry.py"
@@ -26660,6 +26667,7 @@ jobs:
       - "tests/test_healthcare_observation_split.py"
       - "tests/test_healthcare_fda_details.py"
       - "collectors/base.py"
+      - "collectors/lbnl_queue.py"
       - "collectors/sector_holdings.py"
       - "config/delisted_symbols.yml"
       - "lib/cn_calendar.py"
@@ -29282,6 +29290,7 @@ jobs:
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
       - "engine/fundamental_forensics/health.py"
+      - "engine/fundamental_forensics/issuer_sic.py"
       - "engine/fundamental_forensics/ixbrl_extraction.py"
       - "engine/fundamental_forensics/ixbrl_raw_ledger.py"
       - "engine/fundamental_forensics/lineage_evidence.py"
@@ -31096,7 +31105,27 @@ jobs:
       - scripts/tiingo_ingest.py
       - scripts/build_ext_quotes.py
       - tests/test_tiingo_boats_display.py
+      - tests/test_boats_session_runner.py
+      - tests/test_boats_delivery_regressions.py
+      - scripts/run_boats_session.py
+      - scripts/refresh_boats_history.py
+      - tests/test_boats_history_refresh.py
+      - scripts/boats_history_window.py
+      - tests/test_boats_history_window.py
+      - scripts/boats_history_delivery.py
+      - scripts/publish_boats_history.py
+      - scripts/run_boats_history_cycle.py
+      - tests/test_boats_history_delivery.py
+      - tests/test_boats_history_publish.py
+      - tests/test_boats_history_cycle.py
+      - ops/launchd/com.macro.boats-history.plist
+      - ops/launchd/run_ext_quotes_loop.sh
+      - ops/launchd/com.macro.extquotes.plist
       - tests/test_tiingo_boats_coverage_cli.py
+      - scripts/boats_history_bridge.py
+      - scripts/refresh_boats_live_history.py
+      - ops/launchd/com.macro.boats-live-history.plist
+      - tests/test_boats_live_history_refresh.py
       - tests/test_build_ext_quotes.py
       - scripts/tiingo_materialize.py
       - scripts/tiingo_vendor_cohort.py
@@ -31139,7 +31168,15 @@ jobs:
           tests/test_tiingo_research_query.py tests/test_tiingo_boats_tape.py
           tests/test_tiingo_boats_stream_chain.py tests/test_tiingo_vendor_cohort.py
           tests/test_tiingo_boats_display.py tests/test_build_ext_quotes.py
+          tests/test_boats_session_runner.py
+          tests/test_boats_delivery_regressions.py
+          tests/test_boats_history_refresh.py
+          tests/test_boats_history_window.py
+          tests/test_boats_history_delivery.py
+          tests/test_boats_history_publish.py
+          tests/test_boats_history_cycle.py
           tests/test_tiingo_boats_coverage_cli.py
+          tests/test_boats_live_history_refresh.py
           tests/test_tiingo_ingestion_integrity.py
           tests/test_tiingo_reference_audit.py tests/test_tiingo_planning.py
           tests/test_tiingo_corpus_audit.py tests/test_tiingo_additional_history.py
@@ -32076,6 +32113,7 @@ jobs:
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
       - "engine/fundamental_forensics/health.py"
+      - "engine/fundamental_forensics/issuer_sic.py"
       - "engine/fundamental_forensics/ixbrl_extraction.py"
       - "engine/fundamental_forensics/ixbrl_raw_ledger.py"
       - "engine/fundamental_forensics/lineage_evidence.py"
