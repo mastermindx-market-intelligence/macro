@@ -196,6 +196,10 @@ INTERFACE_OWNERSHIP: tuple[tuple[str, str, tuple[str, ...], str], ...] = (
             # verbatim to ``explain_capacity``; it names no contract type, so it
             # is listed like ``as_of`` rather than as a dataclass name.
             "pack",
+            # ``listing`` is the optional then-known ListingFact (SPEC_G0 §2.4),
+            # forwarded verbatim to ``explain_capacity``; like ``pack`` it is a
+            # keyword, not a state contract type.
+            "listing",
         ),
         "ScenarioResult",
     ),

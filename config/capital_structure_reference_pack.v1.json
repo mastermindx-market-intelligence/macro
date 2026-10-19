@@ -1509,6 +1509,28 @@
       "source_id": "nasdaq_rule_5600_series",
       "spans": [
         {
+          "amendment_trail": "Amended November 24, 2025 (SR-NASDAQ-2025-037)",
+          "chars": 117,
+          "interpretation_date": "2025-11-24",
+          "label": "nasdaq_5615_a_3_A_fpi_home_country_practice",
+          "rendered_at": "2026-10-19T08:20:51Z",
+          "rendered_page_text_sha256": "adbee39938f63d9e7680d067398cabf1f1304845679746d0600fb68da7b465c3",
+          "rule": "5615(a)(3)(A)",
+          "sha256": "c037f7c516a11ff8b263226c1dfe823f632d7ebce47e3bf286a2c4d4de150be6",
+          "text": "(A) A Foreign Private Issuer may follow its home country practice in lieu of the requirements of the Rule 5600 Series"
+        },
+        {
+          "amendment_trail": "Amended November 24, 2025 (SR-NASDAQ-2025-037)",
+          "chars": 306,
+          "interpretation_date": "2025-11-24",
+          "label": "nasdaq_5615_a_3_B_i_annual_report_disclosure",
+          "rendered_at": "2026-10-19T08:20:51Z",
+          "rendered_page_text_sha256": "adbee39938f63d9e7680d067398cabf1f1304845679746d0600fb68da7b465c3",
+          "rule": "5615(a)(3)(B)(i)",
+          "sha256": "87f96f8b7b3ecd7051bcfa2604049db4d2d6fd9cdab4bc2c95f1b6e8c3862240",
+          "text": "(i) A Foreign Private Issuer that follows a home country practice in lieu of one or more of the Listing Rules shall disclose in its annual reports filed with the Commission each requirement that it does not follow and describe the home country practice followed by the Company in lieu of such requirements."
+        },
+        {
           "amendment_trail": "Amended Jan. 15, 2020 (SR-NASDAQ-2020-004)",
           "chars": 363,
           "interpretation_date": "2020-01-15",

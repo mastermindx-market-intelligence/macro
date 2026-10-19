@@ -101,6 +101,7 @@ from engine.capital_structure.issuer_state_contracts import (
     _record,
     sha256_of,
 )
+from engine.capital_structure.listing_facts import ListingFact
 from engine.capital_structure.rule_applicability import (
     FLOAT_MEASUREMENT_LOOKBACK_DAYS,
     RuleApplicabilityError,
@@ -140,6 +141,9 @@ BABY_SHELF_RULES: dict[str, tuple[str, str]] = {
     "F-3": ("form_f3.I.B.5", "form_f3.I.B.1"),
 }
 NASDAQ_RULE_ID = "nasdaq.5635.d.1.B"
+#: SPEC_G0 §2.3: the foreign-private-issuer home-country-practice rule whose
+#: verified status at the sale date exempts the 5635(d) pool.
+NASDAQ_5615_RULE_ID = "nasdaq.5615.a.3"
 REFERENCE_PACK_MANIFEST_ID = "capital_structure.reference_pack.E0"
 
 #: The A14 scenario assumptions that make Rule 5635(d) reachable at all.
@@ -271,20 +275,25 @@ def explain_capacity(
     *,
     pack: rule_applicability.RuleApplicabilityPack | None = None,
     transactions: TransactionLedger | None = None,
+    listing: ListingFact | None = None,
 ) -> CapacityEvaluation:
     """As :func:`evaluate_capacity`, plus the digested inputs and kernel records.
 
     ``transactions`` is the additive SPEC_C2X keyword: an X0a
     :class:`~engine.capital_structure.transactions.TransactionLedger` at the same
     ``as_of`` for the same issuer, whose usage rows capacity consumes as fact, as
-    an evidenced floor or as a contradiction.  ``evaluate_capacity`` keeps the
-    three-parameter signature ``INTERFACE_OWNERSHIP`` freezes for it, so a caller
-    that supplies a ledger reads ``explain_capacity(...).envelope``.
+    an evidenced floor or as a contradiction.  ``listing`` is the additive
+    SPEC_G0 keyword: a :class:`~engine.capital_structure.listing_facts.ListingFact`
+    whose observed venue binds the listing_venue assumption and whose
+    foreign-private-issuer status decides the Nasdaq 5615(a)(3) exemption.
+    ``evaluate_capacity`` keeps the three-parameter signature
+    ``INTERFACE_OWNERSHIP`` freezes for it, so a caller that supplies either
+    reads ``explain_capacity(...).envelope``.
     """
     if pack is None:
         pack = load_rule_applicability_pack()
     try:
-        return _Builder(state, scenario, rules, pack, transactions).run()
+        return _Builder(state, scenario, rules, pack, transactions, listing).run()
     except CapacityInputError:
         raise
     except (ContractViolation, JointModelError, RuleApplicabilityError) as exc:
@@ -863,6 +872,7 @@ class _Builder:
         rules: RulePack,
         pack: rule_applicability.RuleApplicabilityPack,
         transactions: TransactionLedger | None = None,
+        listing: ListingFact | None = None,
     ) -> None:
         if not isinstance(state, CapitalState):
             raise CapacityInputError("state: a CapitalState is required")
@@ -872,6 +882,8 @@ class _Builder:
             raise CapacityInputError("rules: a RulePack is required")
         if not isinstance(pack, rule_applicability.RuleApplicabilityPack):
             raise CapacityInputError("pack: a RuleApplicabilityPack is required")
+        if listing is not None and not isinstance(listing, ListingFact):
+            raise CapacityInputError("listing: a ListingFact or None is required")
         # SPEC_C2X §1: refused before anything is read, so no partial digest exists.
         transactions = _check_transactions(state, transactions)
         cutoff = _utc(state.request.as_of)
@@ -916,6 +928,24 @@ class _Builder:
         self.resolutions = {item.unknown_id: item for item in scenario.unknown_resolutions}
         self.assumptions = dict(scenario.other_assumptions)
         self.transactions = transactions
+        #: SPEC_G0 §2.2: the listing enters as an additive keyword.  A then-known
+        #: view later than the state cutoff is not yet known: it is treated as
+        #: None, and the digest records the exclusion instead of the fact.  The
+        #: view is later when it became available after the cutoff, or when it
+        #: describes a day after the cutoff's own day (it was derived from
+        #: filings the state could not yet see).
+        self.listing_supplied = listing
+        self.listing_excluded_after_as_of = False
+        self.listing: ListingFact | None = listing
+        if listing is not None:
+            available = _utc(listing.available_at)
+            if (
+                available is None
+                or available > cutoff
+                or listing.as_of > cutoff.date().isoformat()
+            ):
+                self.listing_excluded_after_as_of = True
+                self.listing = None
         #: SPEC_C2X §3: the effective resolution the ledger decides for a usage key
         #: -- an evidenced fact, or ``None`` when the scenario assumption was
         #: refused below an evidenced floor or the row contradicted.  A key absent
@@ -2552,6 +2582,60 @@ class _Builder:
         except ContractViolation:
             return ()
 
+    def _listing_digest_keys(self) -> dict[str, Any]:
+        """SPEC_G0 §2.2: the additive ``nasdaq`` digest keys of a supplied listing.
+
+        Present only when an effective listing was supplied; their order follows
+        the module's canonical JSON (sorted keys).
+        """
+        if self.listing is None:
+            return {}
+        if self.listing.venue != "unknown":
+            basis: str = "observed"
+            venue: str | None = self.listing.venue
+        else:
+            basis = "assumption"
+            venue = _text(self.assumptions.get("listing_venue"))
+        return {
+            "listing_venue_basis": basis,
+            "listing_venue": venue,
+            "fpi": self.listing.foreign_private_issuer,
+            "home_country_practice_5635": self.listing.home_country_practice_5635,
+        }
+
+    def _nasdaq_record(self) -> Any:
+        """``inputs["nasdaq"]``: today's record, or the additive listing keys."""
+        if self.nasdaq_inputs is None and self.listing is None:
+            return None
+        body: dict[str, Any] = dict(self.nasdaq_inputs) if self.nasdaq_inputs is not None else {"pool": None}
+        body.update(self._listing_digest_keys())
+        return body
+
+    def _demote_exchange_pool(
+        self,
+        shared_by: tuple[str, ...],
+        *,
+        condition: str,
+        unknown_prefix: str,
+        description: str,
+        resolving_fact: str,
+        reason: str,
+    ) -> None:
+        """SPEC_G0 §2.2: demote every active path; no exchange pool is decided.
+
+        The condition lands on every active path's routes, so a route that
+        carries it is never eligible; the routes stay active, so no path is
+        reported as no-active-path (A33).
+        """
+        for path in self.paths:
+            if path.classification != "ineligible":
+                self.path_conditions[path.path_id].add(condition)
+        for route_id in shared_by:
+            self.unknowns.append(
+                _unknown(f"{unknown_prefix}:{route_id}", description, resolving_fact, (route_id,))
+            )
+        self.nasdaq_inputs = {"pool": None, "reason": reason, **self._listing_digest_keys()}
+
     def _nasdaq_pool(self) -> None:
         active_paths = [path for path in self.paths if path.classification != "ineligible"]
         if not active_paths:
@@ -2560,10 +2644,55 @@ class _Builder:
             sorted({route_id for path in active_paths for route_id in self._route_ids(path)})
         )
         pool_id = f"nasdaq_20pct:{self.sale_iso}"
-        assumed = all(
-            _text(self.assumptions.get(key)) == value
-            for key, value in NASDAQ_OFFERING_ASSUMPTIONS.items()
-        )
+        keys = {
+            key: _text(self.assumptions.get(key)) for key in NASDAQ_OFFERING_ASSUMPTIONS
+        }
+        assumed = all(keys[key] == value for key, value in NASDAQ_OFFERING_ASSUMPTIONS.items())
+        observed = self.listing if self.listing is not None and self.listing.venue != "unknown" else None
+        if observed is not None:
+            # SPEC_G0 §2.2: the observed venue is an issuer fact.  Conflict is
+            # checked before the qualified-venue test; an unqualified venue is
+            # never eligible on the venue axis, whatever the scenario assumed.
+            if keys["listing_venue"] is not None and keys["listing_venue"] != observed.venue:
+                self._demote_exchange_pool(
+                    shared_by,
+                    condition="listing_venue_conflict",
+                    unknown_prefix="listing_venue_conflict",
+                    description=(
+                        f"the scenario assumes {keys['listing_venue']} but the issuer is "
+                        f"listed on {observed.venue}"
+                    ),
+                    resolving_fact=(
+                        "an issuer listing fact whose venue agrees with the scenario's "
+                        "listing_venue assumption"
+                    ),
+                    reason="listing_venue_conflict",
+                )
+                return
+            if observed.venue not in self.pack.venues:
+                self._demote_exchange_pool(
+                    shared_by,
+                    condition=f"venue_rule_pack_unqualified:{observed.venue}",
+                    unknown_prefix=f"venue_rule_pack_unqualified:{observed.venue}",
+                    description=(
+                        f"the issuer is listed on {observed.venue}, which no qualified "
+                        "rule-applicability pack carries, so the exchange pool is not decided (A33)"
+                    ),
+                    resolving_fact=(
+                        f"a qualified rule-applicability pack carrying venue {observed.venue!r}"
+                    ),
+                    reason=f"venue_rule_pack_unqualified:{observed.venue}",
+                )
+                return
+            # The observed venue is used in place of an absent assumption and
+            # satisfies the listing_venue key; the other two keys are still
+            # assumed exactly as before -- nothing is inferred for them.
+            assumed = (
+                keys["exchange_offering_treatment"]
+                == NASDAQ_OFFERING_ASSUMPTIONS["exchange_offering_treatment"]
+                and keys["price_relative_to_minimum_price"]
+                == NASDAQ_OFFERING_ASSUMPTIONS["price_relative_to_minimum_price"]
+            )
         if not assumed:
             for route_id in shared_by:
                 self.unknowns.append(
@@ -2582,6 +2711,10 @@ class _Builder:
             self.path_conditions[path.path_id].add(
                 "nasdaq_aggregation_of_related_transactions_not_evaluated"
             )
+        # SPEC_G0 §2.2: G0-E never removes an existing condition, so an exempted
+        # route keeps the Rule 5635(d) citation and its aggregation condition.
+        if self._nasdaq_5615_pool_inapplicable(active_paths):
+            return
         price = self.scenario.price
         assert self.price_view is not None
         view = self.price_view
@@ -2712,6 +2845,59 @@ class _Builder:
         }
         if route_coefficients:
             self.nasdaq_inputs["route_coefficients"] = [list(row) for row in route_coefficients]
+
+    def _nasdaq_5615_pool_inapplicable(self, active_paths: Sequence[_ShelfPath]) -> bool:
+        """SPEC_G0 §2.3: the Nasdaq 5615(a)(3) foreign-private-issuer exemption.
+
+        Reached only when venue nasdaq is used (observed or assumed) and the
+        offering assumptions hold.  An FPI that elected home-country practice in
+        lieu of the Rule 5600 Series is not subject to Rule 5635(d); the rule's
+        qualified status at the sale date decides whether that is asserted.
+        Returns True when the 5635(d) pool must not be added.  An election
+        unknown keeps the pool and conditions every sharing route; any other
+        status of the rule, or its absence from the pack, is no exemption.
+        """
+        listing = self.listing
+        if listing is None or listing.foreign_private_issuer is not True:
+            return False
+        if listing.home_country_practice_5635 == "unknown":
+            for path in active_paths:
+                self.path_conditions[path.path_id].add(
+                    "nasdaq_5635_applies_unless_home_country_practice_elected"
+                )
+            return False
+        if listing.home_country_practice_5635 != "elected":
+            return False
+        if not listing.evidence:
+            # An election asserted without its Item 16G evidence decides nothing:
+            # the pool stays and every sharing route is conditioned on it.
+            for path in active_paths:
+                self.path_conditions[path.path_id].add(
+                    "nasdaq_5635_applies_unless_home_country_practice_evidenced"
+                )
+            return False
+        if NASDAQ_5615_RULE_ID not in self.pack.rules:
+            for path in active_paths:
+                self.path_conditions[path.path_id].add("nasdaq_5615_a_3_absent_at_sale_date")
+            return False
+        status = rule_status_as_of(self.pack, NASDAQ_5615_RULE_ID, self.sale_iso)
+        if status.state != "verified":
+            for path in active_paths:
+                self.path_conditions[path.path_id].add(
+                    f"nasdaq_5615_a_3_{status.state}_at_sale_date"
+                )
+            return False
+        for path in active_paths:
+            self.path_rules[path.path_id].add(NASDAQ_5615_RULE_ID)
+        self.nasdaq_inputs = {
+            "pool": None,
+            "reason": "home_country_practice_elected",
+            "rule_id": NASDAQ_5615_RULE_ID,
+            "rule_state": status.state,
+            "evidence": [item.as_record() for item in listing.evidence],
+            **self._listing_digest_keys(),
+        }
+        return True
 
     # -- §8b the authorized-unreserved share pool (C2c-A) ---
 
@@ -4158,10 +4344,20 @@ class _Builder:
                 if self.transactions is not None
                 else {}
             ),
+            **(
+                {"listing_excluded_after_as_of": True}
+                if self.listing_excluded_after_as_of
+                else {}
+            ),
+            **(
+                {"listing": self.listing_supplied.as_record()}
+                if self.listing_supplied is not None and not self.listing_excluded_after_as_of
+                else {}
+            ),
             "remaining_capacity": self._remaining_record(),
             "registration_paths": path_records,
             "baby_shelf": self.baby_shelf_inputs,
-            "nasdaq": self.nasdaq_inputs,
+            "nasdaq": self._nasdaq_record(),
             **({"authorized": self.authorized_inputs} if self.authorized_inputs is not None else {}),
             "routes": [route.as_record() for route in routes],
             "pools": [pool.as_record() for pool in pools],

@@ -1308,6 +1308,7 @@ async def issuer_scenario_evaluate(
             scenario,
             assembled.rules,
             pack=_rule_pack(),
+            listing=assembled.listing,
         )
     except ScenarioCompositionError as exc:
         raise _private_error(409, str(exc)) from exc

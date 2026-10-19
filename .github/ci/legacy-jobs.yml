@@ -292,6 +292,7 @@ jobs:
       - "engine/capital_structure/instrument_candidates.py"
       - "engine/capital_structure/instrument_resolution.py"
       - "engine/capital_structure/issuer_state_contracts.py"
+      - "engine/capital_structure/listing_facts.py"
       - "engine/capital_structure/projection.py"
       - "engine/capital_structure/reference_qualification.py"
       - "engine/capital_structure/registration_integration.py"
@@ -1944,6 +1945,7 @@ jobs:
       - "engine/capital_structure/variable_terms.py"
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
+      - "engine/capital_structure/listing_facts.py"
       # 2026-10-18 scope: exclusive closure: the static import closure of the three test
       # files (curated_exclusive_closure_findings), listed literally so no glob widens
       # the job onto the packing-probe paths.
@@ -3617,6 +3619,7 @@ jobs:
       - "engine/capital_structure/variable_terms.py"
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
+      - "engine/capital_structure/listing_facts.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -8805,6 +8808,7 @@ jobs:
       - "engine/capital_structure/variable_terms.py"
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
+      - "engine/capital_structure/listing_facts.py"
       - engine/theme_graph/economic_context.py
       - engine/theme_graph/issuer_economic_context.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -9884,6 +9888,7 @@ jobs:
           tests/test_capital_structure_capacity_c2c_a.py
           tests/test_capital_structure_capacity_c2x.py
           tests/test_capital_structure_capacity_c2d.py
+          tests/test_capital_structure_g0_venue.py
           tests/test_capital_structure_registration_integration.py
           tests/test_capital_structure_share_basis.py
           tests/test_capital_structure_authorized_shares.py
@@ -21034,6 +21039,7 @@ jobs:
       - "engine/capital_structure/variable_terms.py"
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
+      - "engine/capital_structure/listing_facts.py"
       - engine/theme_graph/economic_context.py
       - engine/theme_graph/issuer_economic_context.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -29351,6 +29357,7 @@ jobs:
       - "engine/capital_structure/variable_terms.py"
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
+      - "engine/capital_structure/listing_facts.py"
       - engine/theme_graph/economic_context.py
       - engine/theme_graph/issuer_economic_context.py
       # R15: the existing phase1 tests now reach both native 30m pivot families.
@@ -32191,6 +32198,7 @@ jobs:
       - "engine/capital_structure/instrument_candidates.py"
       - "engine/capital_structure/instrument_resolution.py"
       - "engine/capital_structure/issuer_state_contracts.py"
+      - "engine/capital_structure/listing_facts.py"
       - "engine/capital_structure/reference_qualification.py"
       - "engine/capital_structure/registration_integration.py"
       - "engine/capital_structure/registration_lifecycle.py"

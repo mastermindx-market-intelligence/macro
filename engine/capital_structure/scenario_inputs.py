@@ -58,6 +58,7 @@ from engine.capital_structure.issuer_state_contracts import (
     stable_id,
     structure_from_record,
 )
+from engine.capital_structure.listing_facts import ListingFact, listing_fact_from_record
 
 CAPACITY_INPUTS_SCHEMA = "capital_structure.capacity_inputs.v1"
 CAPACITY_INPUTS_FILENAME = "capacity_inputs.json"
@@ -621,6 +622,11 @@ class CapacityInputsBundle:
     source_generation_id: str
     rules: RulesEntry
     issuers: Mapping[str, Mapping[str, FamilyEntry]]
+    #: SPEC_G0 §2.4: the OPTIONAL per-issuer listing facts.  Outside
+    #: ``ISSUER_FAMILIES`` entirely, so coverage tallies and support states do
+    #: not change; the key is omitted from the record when the map is empty, so
+    #: a bundle without listings round-trips byte-identically.
+    listings: Mapping[str, ListingFact] | None = None
 
     def __post_init__(self) -> None:
         _timestamp(self.as_of, "capacity_inputs.as_of")
@@ -641,6 +647,18 @@ class CapacityInputsBundle:
             )
             for family, entry in entries.items():
                 _require(isinstance(entry, FamilyEntry), f"issuers[{issuer_id}].{family}: FamilyEntry required")
+        object.__setattr__(self, "listings", {
+            str(issuer_id): fact for issuer_id, fact in (self.listings or {}).items()
+        })
+        for issuer_id, fact in self.listings.items():
+            _require(
+                isinstance(fact, ListingFact),
+                f"capacity_inputs.listings[{issuer_id}]: ListingFact required",
+            )
+            _require(
+                issuer_id in self.issuers,
+                f"capacity_inputs.listings[{issuer_id}]: no such issuer in the bundle",
+            )
 
     def _record_without_identity(self) -> dict[str, Any]:
         """The full record body except the identity and stamp fields."""
@@ -671,6 +689,11 @@ class CapacityInputsBundle:
             "unavailable": list(INHERITED_UNAVAILABLE_CAPABILITIES),
             "capabilities_proven": [],
             "authority": dict(AUTHORITY),
+            **(
+                {"listings": {issuer_id: fact.as_record() for issuer_id, fact in self.listings.items()}}
+                if self.listings
+                else {}
+            ),
         }
 
     @property
@@ -700,6 +723,7 @@ class CapacityInputsBundle:
             "unavailable": body["unavailable"],
             "capabilities_proven": body["capabilities_proven"],
             "authority": body["authority"],
+            **({"listings": body["listings"]} if "listings" in body else {}),
         }
 
 
@@ -822,6 +846,17 @@ def validate_capacity_inputs_bundle(record: Any) -> None:
         "coverage.families differs from the per-issuer tallies",
     )
 
+    listings = normal.get("listings")
+    if listings is not None:
+        _require(isinstance(listings, Mapping), "listings: an object keyed by issuer is required")
+        for issuer_id, listing_record in sorted(listings.items()):
+            _require(
+                issuer_id in issuers,
+                f"listings[{issuer_id}]: no such issuer in the bundle",
+            )
+            # The record MUST reconstruct through its contract class.
+            listing_fact_from_record(listing_record)
+
 
 # ---------------------------------------------------------------------------
 # Assembly
@@ -843,6 +878,9 @@ class ScenarioInputs:
     commitments: CommitmentInputs
     rules: RulePack
     bindings: tuple[GenerationBinding, ...] = ()
+    #: SPEC_G0 §2.4: the issuer's listing fact when the bundle carries one;
+    #: ``None`` keeps production in the venue-unknown branch.
+    listing: ListingFact | None = None
 
     def __post_init__(self) -> None:
         for name, expected in (
@@ -856,6 +894,8 @@ class ScenarioInputs:
         object.__setattr__(self, "bindings", tuple(self.bindings))
         for binding in self.bindings:
             _require(isinstance(binding, GenerationBinding), "scenario_inputs.bindings: GenerationBinding required")
+        if self.listing is not None:
+            _require(isinstance(self.listing, ListingFact), "scenario_inputs.listing: ListingFact or None required")
 
 
 def _entry_for(entries: Mapping[str, Any], family: str, issuer_id: str) -> dict[str, Any]:
@@ -961,6 +1001,7 @@ def assemble_scenario_inputs(
         binding_record = _entry_for(entries, family, issuer_id).get("binding")
         if isinstance(binding_record, Mapping):
             bindings.append(generation_binding_from_record(binding_record, f"{family}.binding"))
+    listing_record = (bundle.get("listings") or {}).get(issuer_id)
     return ScenarioInputs(
         instruments=instruments,
         basis=basis,
@@ -968,6 +1009,7 @@ def assemble_scenario_inputs(
         commitments=commitments,
         rules=rules,
         bindings=tuple(bindings),
+        listing=listing_fact_from_record(listing_record) if listing_record is not None else None,
     )
 
 
