@@ -18,9 +18,10 @@ module-scoped registry that ``test_a1_zz_no_forbidden_vocabulary_in_any_served_b
 from __future__ import annotations
 
 import calendar
+import dataclasses
 import json
 import re
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, timedelta
 from decimal import ROUND_DOWN, Decimal
 from fractions import Fraction
 from typing import Any
@@ -47,6 +48,7 @@ from tests.test_capital_structure_state_api import (  # noqa: E402
     _fixture_entries,
     _inputs_bundle_record,
     _scenario_body,
+    _shift,
     built,
     client,
     inputs_suite,
@@ -55,6 +57,7 @@ from tests.test_capital_structure_state_api import (  # noqa: E402
     with_inputs,
 )
 from engine.capital_structure.issuer_state_contracts import (  # noqa: E402
+    AUTHORITY,
     FORBIDDEN_PROPERTY_PATTERN,
 )
 from engine.capital_structure.scenario_inputs import CAPACITY_INPUTS_FILENAME  # noqa: E402
@@ -77,6 +80,10 @@ _FLOAT_THRESHOLD = Decimal("75000000")
 _LOWERED_INSTRUMENTS_OUTSTANDING = "400000"
 #: The added trailing-sale resolution for ``add_trailing_sale``.
 _ADDED_TRAILING_SOLD_USD = "4000000.00"
+#: The trailing-12-month sold amount the boundary requests state, so the
+#: one-third pool's headroom is fully known (an unresolved operand keeps the
+#: whole bound unknown, which would say nothing about the boundary under test).
+_RESOLVED_TRAILING_SOLD_USD = "1000000.00"
 #: The shortened scenario window for ``shorten_window``.
 _SHORTENED_HORIZON_END = "2026-11-30"
 
@@ -89,9 +96,12 @@ _ZERO_HEADROOM_FLOAT = "30000000.00"
 _ZERO_HEADROOM_LIMIT = "10000000.00"
 _ONE_CENT = Decimal("0.01")
 
-#: §3.6 — the A48 vocabulary this file's walker enforces on VALUES.  Keys are
-#: checked against the contracts' canonical ``FORBIDDEN_PROPERTY_PATTERN``
-#: (issuer_state_contracts.py:445), so the key law is never duplicated here.
+#: §3.6 — the A48 vocabulary this file's walker enforces on VALUES and KEYS.
+#: The contract's own ``FORBIDDEN_PROPERTY_PATTERN`` (issuer_state_contracts
+#: .py:445) only ever refuses a WHOLE name (it is anchored ``^…$``), so a key
+#: like ``probability_of_recovery`` slips past it; the walker therefore runs
+#: the stem search on keys too, and keeps the contract pattern as the
+#: exact-name law on top.
 _VOCABULARY_STEMS = (
     "probability",
     "likelihood",
@@ -110,6 +120,14 @@ _VALUE_PATTERN = re.compile(
     r"\b(?:" + "|".join(re.escape(stem) for stem in _VOCABULARY_STEMS) + r")",
     re.IGNORECASE,
 )
+
+#: The contract's own authority record (projection.py:31-37, served verbatim in
+#: every response body): ``rank_authority``/``sizing_authority``/``entry_authority``
+#: are the literal ``False`` denials the state family itself must carry — a
+#: refusal, not an output.  The walker exempts exactly those keys, and only
+#: while they hold the literal ``False``, mirroring the contract's own rule for
+#: ``prophet_authority`` (issuer_state_contracts.py:543-544).
+_AUTHORITY_DENIAL_KEYS = frozenset(AUTHORITY)
 
 #: Every earlier served test must contribute at least one body to the walk.
 _SERVED_TESTS = (
@@ -227,7 +245,13 @@ def _keep_entries(entries: dict[str, Any]) -> dict[str, Any]:
 
 
 def _with_lowered_pool_bound(entries: dict[str, Any]) -> dict[str, Any]:
-    """The instruments family with the outstanding pool bound lowered."""
+    """The instruments family with the outstanding pool bound lowered.
+
+    The rebuilt set is re-keyed to the served issuer and as_of exactly as
+    ``_fixture_entries`` re-keys its own families (scenario_inputs.py:931-937
+    refuses a binding cut at any other instant).
+    """
+    as_of = entries[inputs_suite.INSTRUMENTS_FAMILY].binding.as_of
     instrument_id, instrument = SS.make_instrument(
         "series_u1b_gate_warrants",
         instruments_outstanding=_LOWERED_INSTRUMENTS_OUTSTANDING,
@@ -235,31 +259,52 @@ def _with_lowered_pool_bound(entries: dict[str, Any]) -> dict[str, Any]:
         exercise_price="1.50",
     )
     entries[inputs_suite.INSTRUMENTS_FAMILY] = inputs_suite._entry_for(
-        SS.instrument_set((instrument_id, instrument)),
+        dataclasses.replace(
+            SS.instrument_set((instrument_id, instrument)),
+            issuer_id=ISSUER_ONE,
+            as_of=as_of,
+        ),
         inputs_suite.INSTRUMENTS_FAMILY,
     )
     return entries
 
 
 def _with_unknown_outstanding(entries: dict[str, Any]) -> dict[str, Any]:
-    """The instruments family with an UNKNOWN outstanding count (never zero)."""
+    """The instruments family with an UNKNOWN outstanding count (never zero).
+
+    The contract admits an unknown the only way it allows (issuer_state_contracts
+    .py:2520-2527): an ``unknown`` term whose Quantity carries no value — never an
+    admitted term with no value, never a zero count.
+    """
+    as_of = entries[inputs_suite.INSTRUMENTS_FAMILY].binding.as_of
     instrument_id = SS.series_id("series_u1b_gate_warrants")
-    unknown_term = SS.economic_term(instrument_id, "instruments_outstanding")
+    unknown_term = SS.economic_term(
+        instrument_id, "instruments_outstanding", status="unknown"
+    )
     rebuilt_id, instrument = SS.make_instrument(
         "series_u1b_gate_warrants", instruments_outstanding=unknown_term
     )
     entries[inputs_suite.INSTRUMENTS_FAMILY] = inputs_suite._entry_for(
-        SS.instrument_set((rebuilt_id, instrument)),
+        dataclasses.replace(
+            SS.instrument_set((rebuilt_id, instrument)),
+            issuer_id=ISSUER_ONE,
+            as_of=as_of,
+        ),
         inputs_suite.INSTRUMENTS_FAMILY,
     )
     return entries
 
 
 def _with_unavailable_commitments(entries: dict[str, Any]) -> dict[str, Any]:
+    """The commitments family unavailable with a reason from the closed vocabulary.
+
+    ``commitment_rows_absent`` is one of the schema's eight reason codes
+    (capital_structure_capacity_inputs.v1.schema.json:129-140).
+    """
     entries[inputs_suite.COMMITMENTS_FAMILY] = inputs_suite.FamilyEntry(
         family=inputs_suite.COMMITMENTS_FAMILY,
         support="unavailable",
-        reason_codes=("covenant_terms_not_admitted",),
+        reason_codes=("commitment_rows_absent",),
     )
     return entries
 
@@ -282,6 +327,19 @@ def _route_kind_of(body: dict[str, Any], route_id: str) -> str:
     for route in _envelope(body).get("routes") or ():
         if route.get("route_id") == route_id:
             return str(route["route_kind"])
+    raise AssertionError(f"route {route_id!r} missing from the served envelope")
+
+
+def _route_conditions_of(body: dict[str, Any], route_id: str) -> list[str]:
+    """The conditions one served route itself carries.
+
+    An action on an envelope route may only assume conditions that route
+    carries (capacity.py:3223-3228), so the asserted list is read from the
+    route, never invented.
+    """
+    for route in _envelope(body).get("routes") or ():
+        if route.get("route_id") == route_id:
+            return [str(condition) for condition in route.get("conditions") or ()]
     raise AssertionError(f"route {route_id!r} missing from the served envelope")
 
 
@@ -382,9 +440,10 @@ def test_a1_tightening_never_raises_served_bound(
 #: The request-echo and request-identity fields the §3.2 comparison removes:
 #: ``view`` echoes the request's own view identity (mode/as_of/clock plus the
 #: state, generation and scenario ids); ``scenario_id`` and ``result_id``
-#: digest the request's assumption order; ``input_digest`` digests the receipt
-#: inputs.  Nothing else is removed.
-_REMOVED_ECHO_FIELDS = ("view", "scenario_id", "result_id", "input_digest")
+#: digest the request's assumption order; ``input_digest`` and ``receipt_id``
+#: digest the receipts' inputs, which carry that same scenario identity.
+#: Nothing else is removed.
+_REMOVED_ECHO_FIELDS = ("view", "scenario_id", "result_id", "input_digest", "receipt_id")
 
 
 def _strip_identity(value: Any) -> Any:
@@ -437,6 +496,7 @@ def test_a1_row_order_permutation_is_byte_identical(
                 "route_id": route_id,
                 "action": _route_kind_of(probe, route_id),
                 "settlement": "cash",
+                "conditions_assumed_met": _route_conditions_of(probe, route_id),
             }
             for route_id in route_ids[:2]
         ]
@@ -508,14 +568,19 @@ def test_a1_unit_rescaling_or_assert_no_unit(
             "route_id": route_id,
             "action": _route_kind_of(probe, route_id),
             "settlement": "cash",
+            "conditions_assumed_met": _route_conditions_of(probe, route_id),
             "quantity": {"unit": "usd", "status": "known", "value": _RESCALING_USD},
         }
     ]
     share_body = json.loads(json.dumps(usd_body))
+    #: The scenario share quantity names the scenario basis, exactly as the
+    #: contract requires of a scenario issuance share count
+    #: (issuer_state_contracts.py:1914-1921).
     share_body["actions"][0]["quantity"] = {
         "unit": "shares",
         "status": "known",
         "value": _RESCALING_SHARES,
+        "share_basis": "scenario_incremental_issuance",
     }
 
     usd_answer = _serve(client, usd_body)
@@ -535,43 +600,67 @@ def test_a1_boundary_ib6_threshold_one_cent_either_side(
 ) -> None:
     """Public float at the I.B.6 threshold and one cent either side.
 
-    The contract (:func:`baby_shelf_limit`, rule_applicability.py:993-1011): a
+    The contract (:func:`baby_shelf_limit`, rule_applicability.py:993-1014): a
     float at or above $75,000,000 makes the one-third limit ``not_applicable``;
-    below it the limit is float/3 rounded DOWN to the cent.
+    below it the limit is float/3 rounded DOWN to the cent.  The served pool
+    bound is the one-third limit less the resolved trailing sales
+    (capacity.py:2176-2189 serves ``pool.headroom``), so the trailing-12-month
+    sold amount is resolved to one stated value in every case: a bound operand
+    left unresolved keeps the whole headroom unknown, which would say nothing
+    about the threshold.
+
+    Served shape: below the threshold the I.B.6 pool is in ``shared_pools`` with
+    the exact headroom; at or above it the limit does not apply, so no I.B.6
+    pool is served at all and every consuming route names why
+    (capacity.py:2160-2164 adds the ``…not_applicable…75m`` path condition).
     """
-    below = (Decimal("74999999.99") / 3).quantize(Decimal("0.01"), rounding=ROUND_DOWN)
+    below_limit = (Decimal("74999999.99") / 3).quantize(
+        Decimal("0.01"), rounding=ROUND_DOWN
+    )
     cases = [
-        ("74999999.99", f"{below:f}"),
+        ("74999999.99", below_limit - Decimal(_RESOLVED_TRAILING_SOLD_USD)),
         ("75000000.00", None),
         ("75000000.01", None),
     ]
-    for float_value, expected_limit in cases:
+    for float_value, expected_headroom in cases:
         body = _scenario_body()
         body["unknown_resolutions"] = [
-            _resolution_body(_FLOAT_RESOLUTION_ID, float_value)
+            _resolution_body(_FLOAT_RESOLUTION_ID, float_value),
+            _resolution_body(_SOLD_RESOLUTION_ID, _RESOLVED_TRAILING_SOLD_USD),
         ]
         answer = _serve(client, body)
         pools = _pools_by_rule(_envelope(answer), _BABY_SHELF_RULES)
-        if not pools:
-            _NOT_EXPRESSIBLE.append(
-                "ib6_threshold: the served envelope carries no baby-shelf pool "
-                f"for float {float_value}; envelope: "
-                f"{json.dumps(_envelope(answer), sort_keys=True)[:800]}"
+        if expected_headroom is None:
+            assert not pools, (
+                f"float {float_value} (>= {_FLOAT_THRESHOLD}): the one-third "
+                f"limit does not apply, but an I.B.6 pool is still served: "
+                f"{pools!r}"
             )
-            continue
-        bound = pools[0]["bound"]
-        if expected_limit is None:
-            assert bound["status"] == "not_applicable", (
-                f"float {float_value} (>= {_FLOAT_THRESHOLD}): expected the "
-                f"limit not_applicable, got {bound!r}"
+            named = [
+                route
+                for route in _envelope(answer).get("routes") or ()
+                if "baby_shelf_not_applicable_public_float_at_or_above_75m"
+                in (route.get("conditions") or ())
+            ]
+            assert named, (
+                f"float {float_value}: no served route names the 75m "
+                f"not-applicability: "
+                f"{json.dumps(_envelope(answer).get('routes'), sort_keys=True)[:800]}"
             )
         else:
+            assert pools, (
+                f"float {float_value} (< {_FLOAT_THRESHOLD}): expected the "
+                f"I.B.6 pool served, got "
+                f"{json.dumps(_envelope(answer), sort_keys=True)[:800]}"
+            )
+            bound = pools[0]["bound"]
             assert bound["status"] == "known", (
                 f"float {float_value} (< {_FLOAT_THRESHOLD}): expected a known "
                 f"limit, got {bound!r}"
             )
-            assert Decimal(bound["value"]) == Decimal(expected_limit), (
-                f"float {float_value}: limit {bound['value']} != {expected_limit}"
+            assert Decimal(bound["value"]) == expected_headroom, (
+                f"float {float_value}: limit {bound['value']} != "
+                f"{expected_headroom}"
             )
 
 
@@ -580,9 +669,9 @@ def test_a1_boundary_zero_headroom(
 ) -> None:
     """Exactly-zero headroom reads ``binding``; one cent reads ``slack``.
 
-    The contract (rule_applicability.py:1105-1109): gap == 0 is ``binding``,
-    gap > 0 is ``slack``.  A float of $30,000,000 caps the pool at exactly
-    $10,000,000.00 (one third, no rounding remnant).
+    The contract (:func:`baby_shelf_pool`, rule_applicability.py:1088-1089):
+    gap == 0 is ``binding``, gap > 0 is ``slack``.  A float of $30,000,000 caps
+    the pool at exactly $10,000,000.00 (one third, no rounding remnant).
     """
     cases = [
         ("binding", format(Decimal(_ZERO_HEADROOM_LIMIT), "f")),
@@ -597,20 +686,25 @@ def test_a1_boundary_zero_headroom(
         ]
         answer = _serve(client, body)
         pools = _pools_by_rule(_envelope(answer), _BABY_SHELF_RULES)
-        if not pools:
-            _NOT_EXPRESSIBLE.append(
-                f"zero_headroom: no baby-shelf pool served for sold {sold_value}; "
-                f"envelope: {json.dumps(_envelope(answer), sort_keys=True)[:800]}"
-            )
-            continue
+        assert pools, (
+            f"no baby-shelf pool served for sold {sold_value}; envelope: "
+            f"{json.dumps(_envelope(answer), sort_keys=True)[:800]}"
+        )
         observed[expected_status] = pools[0]
-    if len(observed) == 2:
-        assert observed["binding"]["status"] == "binding", (
-            f"a zero gap must read binding: {observed['binding']!r}"
-        )
-        assert observed["slack"]["status"] == "slack", (
-            f"a one-cent gap must read slack: {observed['slack']!r}"
-        )
+    #: The exact headroom is served either way: gap == 0 serves bound ``0``,
+    #: the one-cent gap serves bound ``0.01``.
+    assert Decimal(observed["binding"]["bound"]["value"]) == Decimal("0"), (
+        "the zero gap must serve bound 0"
+    )
+    assert Decimal(observed["slack"]["bound"]["value"]) == _ONE_CENT, (
+        "the one-cent gap must serve bound 0.01"
+    )
+    assert observed["binding"]["status"] == "binding", (
+        f"a zero gap must read binding: {observed['binding']!r}"
+    )
+    assert observed["slack"]["status"] == "slack", (
+        f"a one-cent gap must read slack: {observed['slack']!r}"
+    )
 
 
 def test_a1_boundary_trailing_window_day_365_and_366(
@@ -621,23 +715,30 @@ def test_a1_boundary_trailing_window_day_365_and_366(
     The contract (:func:`_twelve_month_window`, rule_applicability.py:1017-1022)
     makes the window ``[sale − 1 year (day-clamped) + 1 day, sale]`` —
     inclusive of both ends.  For the fixture sale on 2026-10-14 the window is
-    2025-10-15..2026-10-14: 365 calendar days, so day one (the window start) is
-    inside and the day before the start (the "day 366" side) is outside.  This
-    base carries no dated-sale input the route reads — ``_sold_trailing``
-    accepts only the aggregate resolution (capacity.py:2260-2269) — so a dated
-    day-365/day-366 sale itself is recorded as not expressible, never invented.
+    2025-10-15..2026-10-14: the 365 calendar days ending on the sale date, so
+    day one (the window start) is inside and the day before the start (the
+    "day 366" side) is outside.  The float is resolved alongside the sold
+    amount so the pool bound is known and the served window is the one the
+    known bound was computed over.  This base carries no dated-sale input the
+    route reads — ``_sold_trailing`` accepts only the aggregate resolution
+    (capacity.py:2260-2269) — so a dated day-365/day-366 sale itself is
+    recorded as not expressible, never invented.
     """
     body = _scenario_body()
-    body["unknown_resolutions"] = [_resolution_body(_SOLD_RESOLUTION_ID, "1000000.00")]
+    body["unknown_resolutions"] = [
+        _resolution_body(_FLOAT_RESOLUTION_ID, "40000000.00"),
+        _resolution_body(_SOLD_RESOLUTION_ID, _RESOLVED_TRAILING_SOLD_USD),
+    ]
     answer = _serve(client, body)
     pools = _pools_by_rule(_envelope(answer), _BABY_SHELF_RULES)
-    if not pools:
-        _NOT_EXPRESSIBLE.append(
-            "trailing_window: no baby-shelf pool served; the window convention "
-            f"is not observable in {json.dumps(_envelope(answer), sort_keys=True)[:600]}"
-        )
-        return
+    assert pools, (
+        "no baby-shelf pool served; the window convention is not observable in "
+        f"{json.dumps(_envelope(answer), sort_keys=True)[:600]}"
+    )
     pool = pools[0]
+    assert pool["bound"]["status"] == "known", (
+        f"the window is only observable on a known bound: {pool!r}"
+    )
     assert pool["window_end"] == _SALE_ISO, (
         f"the window must end on and include the sale date: {pool!r}"
     )
@@ -648,8 +749,9 @@ def test_a1_boundary_trailing_window_day_365_and_366(
     assert pool["window_start"] == window_start.isoformat(), (
         f"the window must start one day after the clamped prior-year date: {pool!r}"
     )
-    assert (sale - window_start).days == 365, (
-        f"the fixture window is expected to span 365 days: {pool!r}"
+    assert (sale - window_start).days + 1 == 365, (
+        f"the fixture window must span the 365 calendar days ending on the "
+        f"sale date: {pool!r}"
     )
     _NOT_EXPRESSIBLE.append(
         "trailing_window: a dated day-365/day-366 sale is not expressible on "
@@ -671,14 +773,10 @@ def test_a1_boundary_cutoff_equal_to_available_at(
     or the typed refusal an empty then-known view produces).
     """
     boundary = _earliest_bound(built, ISSUER_ONE)
-    moment = datetime.fromisoformat(boundary.replace("Z", "+00:00"))
-    earlier = (
-        (moment + timedelta(seconds=-1))
-        .astimezone(timezone.utc)
-        .replace(microsecond=0, tzinfo=None)
-        .isoformat()
-        .replace("+00:00", "Z")
-    )
+    #: One second earlier, in the same UTC ``…Z`` form the contract's
+    #: ``_timestamp`` law requires (a naive instant is refused:
+    #: issuer_state_contracts.py:497).  ``_shift`` keeps the event-instant form.
+    earlier = _shift(boundary, seconds=-1)
 
     def _serve_then_known(cutoff: str) -> Any:
         _publish_bundle(
@@ -792,7 +890,19 @@ def test_a1_unknown_route_limit_gives_floor_and_open_ceiling(
 def test_a1_unknown_share_count_never_zero_or_unlimited(
     client: Any, served: Any, built: Any, with_inputs: Any
 ) -> None:
-    """An unknown share count stays unknown-with-note, never 0 or unlimited."""
+    """An unknown share count stays unknown, never 0 or unlimited.
+
+    The served record that carries the instruments' as-converted claims is
+    ``result.supply_envelope.as_converted_claims``: on the base fixture it reads
+    the known 1,000,000-share count, and under the mutation — the outstanding
+    term admitted as ``unknown`` (issuer_state_contracts.py:2520-2527) — the
+    same record must go unknown with no value.  The scenario share totals are
+    the no-action baseline (zero new shares) and are never allowed to smuggle
+    the unknown in as a 0 or an unlimited answer either.
+    """
+    baseline = client.post(EVALUATE_PATH, json=_scenario_body())
+    known = _checked(baseline, status=200)
+    _collect(baseline, known)
     _publish_bundle(
         served, built, _with_unknown_outstanding(_fixture_entries(built.bundle["as_of"])),
         as_of=built.bundle["as_of"],
@@ -807,6 +917,19 @@ def test_a1_unknown_share_count_never_zero_or_unlimited(
         )
     answer = _checked(response, status=200)
     _collect(response, answer)
+    known_claims = known["result"]["supply_envelope"]["as_converted_claims"]
+    assert known_claims["status"] == "known", (
+        f"the base claims record must carry the fixture count: {known_claims!r}"
+    )
+    assert Decimal(known_claims["value"]) == Decimal("1000000"), known_claims
+    claims = answer["result"]["supply_envelope"]["as_converted_claims"]
+    assert claims["status"] == "unknown", (
+        f"an unknown outstanding count must serve an unknown claims record, "
+        f"not {claims!r}"
+    )
+    assert claims["value"] is None, (
+        f"an unknown claims record carries no value: {claims!r}"
+    )
     low = answer["result"]["scenario_new_shares_low"]
     high = answer["result"]["scenario_new_shares_high"]
     assert low["status"] == high["status"], (
@@ -840,7 +963,7 @@ def test_a1_missing_input_family_returns_typed_409_with_components(
         "components": {
             "commitments": {
                 "support": "unavailable",
-                "reason_codes": ["covenant_terms_not_admitted"],
+                "reason_codes": ["commitment_rows_absent"],
             },
         },
         "available": ["instruments", "share_basis", "financials", "rules"],
@@ -854,15 +977,27 @@ def test_a1_missing_input_family_returns_typed_409_with_components(
 
 
 def _violations(body: Any) -> list[str]:
-    """The A48 violations of one response body: keys and string values."""
+    """The A48 violations of one response body: keys and string values.
+
+    A KEY violates when the contract's exact-name pattern matches it or when it
+    CONTAINS a forbidden stem — ``probability_of_recovery`` is as much a
+    forbidden output under A48 as a bare ``probability`` — except the
+    contract's own authority keys, which are only denials while they hold the
+    literal ``False``.
+    """
     found: list[str] = []
 
     def _walk(node: Any, path: str) -> None:
         if isinstance(node, dict):
             for key, item in node.items():
-                if FORBIDDEN_PROPERTY_PATTERN.match(str(key)):
-                    found.append(f"key {path}.{key}")
-                _walk(item, f"{path}.{key}")
+                name = str(key)
+                denial = name in _AUTHORITY_DENIAL_KEYS and item is False
+                stem = None if denial else _VALUE_PATTERN.search(name)
+                if FORBIDDEN_PROPERTY_PATTERN.match(name):
+                    found.append(f"key {path}.{name} (contract pattern)")
+                elif stem:
+                    found.append(f"key {path}.{name} (stem {stem.group(0)!r})")
+                _walk(item, f"{path}.{name}")
         elif isinstance(node, list):
             for index, item in enumerate(node):
                 _walk(item, f"{path}[{index}]")
