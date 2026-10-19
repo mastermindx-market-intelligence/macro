@@ -8525,6 +8525,8 @@ jobs:
       - "tests/test_fundamental_forensics_lane_c2_bac_periods.py"
       - "tests/test_fif_pf_health_entity.py"
       - "tests/test_fif_pf_health_pointer.py"
+      - "tests/test_fif_a0_production_mode_unit.py"
+      - "app/deploy/macro-api.service"
       - "tests/fixtures/fundamental_forensics/**"
       - "tests/fixtures/fundamental_forensics_held_out/**"
       - "research/financial_intelligence_fabric/**"
@@ -9323,6 +9325,7 @@ jobs:
           tests/test_fif_se_receipts.py
           tests/test_fif_pf_health_entity.py
           tests/test_fif_pf_health_pointer.py
+          tests/test_fif_a0_production_mode_unit.py
           tests/test_filing_forensics_broad_sec_lane.py
           tests/test_filing_forensics_sec_lane.py
           tests/test_forensics_api.py
