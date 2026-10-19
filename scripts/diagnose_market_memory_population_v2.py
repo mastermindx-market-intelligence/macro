@@ -9,11 +9,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
-from scripts import accrue_market_memory_spy_experience as installed
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
-_ROOT = Path(__file__).resolve().parents[1]
+from scripts import accrue_market_memory_spy_experience as installed  # noqa: E402
+
 _ROOTS = (Path("/opt/macro"),
           Path("/var/lib/macro-market-memory/state/experience-v2"),
           Path("/var/lib/macro-market-memory/state/sources-spy-rest-v1"),
