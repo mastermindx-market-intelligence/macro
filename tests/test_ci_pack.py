@@ -4284,6 +4284,8 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # BEA human/HTTP browser gate: measured literal closure, no opaque fallback smear.
+    "bea-gvc-current-descriptive-consumer",
     # R2 original-intent context producer: the ten Agent OS knowledge suites
     # share their measured 43-file import/read closure plus the Agent OS corpus.
     # Source/fence execution remains in the existing self-mod job.
@@ -4825,6 +4827,24 @@ CURATED_EXCLUSIVE = {
     #  scripts/build_sector_central.py via ast and the T18 panel template, so inference smeared it onto
     #  scripts/build_free_content.py (135 > 134). Register the reviewed 199-path owner (rates_command_basis.py added after #9317 widened the closure); closure audits and ceilings stay fixed.
     "leadership-rotation-countercases",
+    # 2026-10-17 C19 WP22: the DHI traversal suite's app/engine imports made
+    # inference select it, at the fallback tier only, on the index-template
+    # (137 > 136 jobs) and build_free_content (135 > 134) packing probes;
+    # check_contract_delta: 2 introduced. scope: exclusive pins it to its
+    # declared static import closure plus ancestor inits; ceilings stay fixed.
+    "c19-wp22-dhi-traversal",
+    # 2026-10-17 C19 WP31: the incremental-information evaluator's engine/lib
+    # imports made inference select it on the same index-template (137 > 136)
+    # and build_free_content (135 > 134) packing probes; check_contract_delta:
+    # 2 introduced. scope: exclusive pins it to its declared static import
+    # closure plus ancestor inits; ceilings stay fixed.
+    "c19-wp31-incremental-information",
+    # 2026-10-18 C19 WP32: the P5/P6 integrated-answer pins import app/ and
+    # engine/ modules, so inference selected the new job on the
+    # build_free_content (135 > 134) and index-template (137 > 136) packing
+    # probes. scope: exclusive pins it to its declared static import closure
+    # plus ancestor inits; ceilings stay fixed.
+    "c19-wp32-integrated-answer-correction-denial-pins",
 }
 
 

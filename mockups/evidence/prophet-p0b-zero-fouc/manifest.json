@@ -530,7 +530,7 @@
     "browser_receipts": {
       "hk": {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
-        "sha256": "971a937baea829c09647a1b25735ec1644c370f3243db5a00c14b1adcceede88",
+        "sha256": "58d7d7d57ebd2f9230716d02ee05124f14a002e0ffd2d4225546dbb4f9b1bf79",
         "pass": true,
         "primary_cases": 48,
         "degraded_control_cases": 16,
@@ -538,7 +538,7 @@
       },
       "ca": {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-        "sha256": "a55c83346fb2c66701c27810cf706228bc31934569843ab36cbb4b990e35e7fa",
+        "sha256": "67026bb8dbd64c94309ccf505e45b2e678904b7ba909273ef26264ad3bb42904",
         "pass": true,
         "primary_cases": 48,
         "degraded_control_cases": 16,
@@ -553,7 +553,7 @@
     },
     "fixture_receipt": {
       "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-      "sha256": "c21c26f8c75a945916017929dd524a2670264ca5f6efb112d39752137966812b"
+      "sha256": "91a8f743c1d99973888f5a63ff0032bc5faedd3e04991dfd48999996b2a5a762"
     },
     "generated_at": "2026-10-15T19:23:36.753923+00:00",
     "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",

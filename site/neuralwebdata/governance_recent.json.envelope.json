@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "produced_by": "scripts/build_site.py",
-  "produced_at": "2026-10-17T12:07:47Z",
-  "inputs_hash": "sha256:221d1a7a2a0f5c1546162348d289eae33cf76d35349d9484b5b932e70e1f9825",
+  "produced_at": "2026-10-18T18:03:19Z",
+  "inputs_hash": "sha256:c342ab05cbdf33c806d056be114bc3955b80126ae7e797b9dc7c1e98690e658b",
   "tier": "display",
   "artifact_path": "site/neuralwebdata/governance_recent.json",
-  "byte_sha256": "sha256:221d1a7a2a0f5c1546162348d289eae33cf76d35349d9484b5b932e70e1f9825"
+  "byte_sha256": "sha256:c342ab05cbdf33c806d056be114bc3955b80126ae7e797b9dc7c1e98690e658b"
 }
