@@ -1397,7 +1397,7 @@ def test_h8_a_resolution_hitting_a_tombstone_is_a_typed_refusal_not_a_resurrecti
 # registry; a RenameEvent-implied bare-code match on a DIFFERENT venue must NEVER
 # auto-tombstone (the reviewer's cross-MIC scenario) — it is disclosed instead.
 def test_m3_the_registry_matches_the_committed_vmrk_entry_exactly() -> None:
-    assert len(BUILD.SECURITY_SUPERSESSIONS) == 2  # + US-XNYS-PSKY (2026-10-11)
+    assert len(BUILD.SECURITY_SUPERSESSIONS) == 4  # + PSKY (10-11), KHC/ET transfers (10-18)
     entry = next(
         e for e in BUILD.SECURITY_SUPERSESSIONS if e.listing_key == "US-XNYS-VMRK"
     )
@@ -4296,3 +4296,64 @@ def test_a_notation_variant_key_no_rename_mentions_keeps_its_open_current_catalo
             "SEC:US-XNYS-MOG.A", None, None),
     }
     VendorAliasTable(rows)  # and the fixture table is unambiguous
+
+
+# ── SAME-SYMBOL VENUE TRANSFERS (KHC Nasdaq->NYSE 2026-09-14, ET NYSE->TXSE 2026-10-05)
+# A transfer re-derives US-{to}-{sym} while the committed row keeps its inception
+# venue; the exact-key SECURITY_SUPERSESSIONS pair joins it onto the ONE canonical
+# row (no mint, no fence-lost entry), exactly as the PSKY cross-venue rename does.
+def test_txse_exchange_code_f_resolves_to_txse_mic() -> None:
+    assert BUILD.EXCHANGE_MIC["F"] == "TXSE"
+    rows = BUILD.resolve_universe({"TXS": {}}, {}, {"TXS": "F"}, "2026-10-05")
+    assert len(rows) == 1
+    assert rows[0].reason is None
+    assert rows[0].listing_key is not None
+    assert rows[0].listing_key.render() == "US-TXSE-TXS"
+
+
+def _active_row(mic: str, code: str, cik: str) -> dict:
+    return {
+        "security_id": f"SEC:US-{mic}-{code}", "issuer_id": f"ISS:US-{mic}-{code}",
+        "issuer_state": "RESOLVED", "issuer_cik": cik,
+        "issuer_evidence_snapshot": "2026-08-18", "listing_key": f"US-{mic}-{code}",
+        "country": "US", "mic": mic, "inception_code": code,
+        "effective_at": "2023-05-09T00:00:00", "ingested_at": "2026-08-13T00:00:00",
+        "security_state": None, "superseded_by": None,
+    }
+
+
+@pytest.mark.parametrize(
+    ("sym", "from_mic", "to_mic", "cik"),
+    [("ET", "XNYS", "TXSE", "0001276187"), ("KHC", "XNAS", "XNYS", "0001637459")],
+)
+def test_venue_transfer_joins_the_canonical_row_never_mints(
+    sym: str, from_mic: str, to_mic: str, cik: str,
+) -> None:
+    canonical = f"SEC:US-{from_mic}-{sym}"
+    existing = [_active_row(from_mic, sym, cik)]
+    resolutions = [_res(sym, to_mic, sym)]
+    rows, ids, notes, refusals, pending, lost, exc_lost, gmi_refusals = BUILD.mint_master_rows(
+        resolutions, existing, "2026-10-18T00:00:00", cik_map={sym: (cik, sym)},
+    )
+    assert ids.get(sym) == canonical, "the transfer joins the ONE canonical row"
+    assert not any(r["security_id"] == f"SEC:US-{to_mic}-{sym}" for r in rows)
+    assert lost == [] and exc_lost == [] and pending == [] and refusals == []
+    entry = next(e for e in BUILD.SECURITY_SUPERSESSIONS
+                 if e.listing_key == f"US-{to_mic}-{sym}")
+    assert entry.canonical_id == canonical
+
+
+def test_unpaired_venue_transfer_raises(monkeypatch: pytest.MonkeyPatch) -> None:
+    bad = BUILD.VenueTransfer(symbol="ZZZT", from_mic="XNYS", to_mic="TXSE",
+                              on=date(2026, 10, 5), evidence="fixture")
+    monkeypatch.setattr(BUILD, "VENUE_TRANSFERS", BUILD.VENUE_TRANSFERS + (bad,))
+    with pytest.raises(ValueError, match="ZZZT"):
+        BUILD._venue_transfer_covered_keys()
+
+
+def test_huck_and_yfor_renames_are_modelled() -> None:
+    pairs = {(e.old, e.new): e.on for e in BUILD.RENAME_EVENTS}
+    assert pairs[("DOMO", "HUCK")] == date(2026, 9, 24)
+    assert pairs[("YYGH", "YFOR")] == date(2026, 9, 2)
+    fixups, migrations = BUILD.load_config_maps()
+    assert BUILD.unmodelled_renames(fixups, migrations) == []
