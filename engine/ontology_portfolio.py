@@ -156,8 +156,11 @@ def compose_portfolio_read(root: Path, payload: dict, *, now: datetime | None = 
         if len(raw) > explorer.MAX_SOURCE_BYTES or hashlib.sha256(raw).hexdigest() != identity.get('sha256'):
             raise explorer.SourceIncoherent('identity_read_changed')
         try:
-            import pandas as pd
-            aliases = VendorAliasTable.from_records(pd.read_parquet(io.BytesIO(raw)).to_dict('records'))
+            import pyarrow.parquet as parquet
+            # Preserve logical null/date values; Pandas3 string-null coercion
+            # can turn an unbounded validity date into numeric NaN. The native
+            # identity parser must still reject actual non-null numeric NaNs.
+            aliases = VendorAliasTable.from_records(parquet.read_table(io.BytesIO(raw)).to_pylist())
         except Exception as exc:
             raise explorer.SourceIncoherent('identity_read_unavailable') from exc
     result = project_portfolio_read(payload, snapshot=snapshot, aliases=aliases,
