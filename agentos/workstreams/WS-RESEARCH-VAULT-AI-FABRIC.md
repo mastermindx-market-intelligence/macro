@@ -143,15 +143,15 @@ waves:
       existing source/runtime and client prerequisites, then prove actual authenticated
       ChatGPT and Deep Research discovery, exact citations, correction and denial behavior.
 next_action: >
-  Continue the current #8438 frontier at comment 6199947153. Protected producer #9311
-  remains on its existing merge-on-green carrier; Mastermind #1467 is in its native
-  queue after required checks and scoped reviews passed. Consume selected-reader
-  #1458 checks and the default-off pinned workflow bridge. Preserve the active #1386
-  Source Continuity writer, original reading-order operation and frozen DCR633.
-  Auth0 authenticator MFA awaits Chris's direct completion in the preserved browser;
-  rights approval and C4 Pro selection remain accepted. Complete real writer adoption,
-  common-generation95percent, installed service and actual ChatGPT/Deep Research
-  citation, correction and revocation acceptance before declaring the programme done.
+  Continue #8438 checkpoint comment 6199947153. Mastermind launcher repair #1546 is
+  protected merged; Macro producer #9486 and workflow #9476 retain their normal
+  release carriers. Compose full-body/cache/intelligence source in #9646 with the
+  hermetic Vault suite in the PR code gate. Retain actual failed resource probes;
+  measure the repaired source on M2, then install the exact protected source pair
+  and qualify known writers plus >=95% common generation before F11 #9177 merges.
+  Preserve original uncertain/refused operations and the pending Auth0/C4 human
+  authentication steps. Finish installed reader and actual ChatGPT/Deep Research
+  ingestion, read, citation reopen, correction and denial acceptance.
 
 ---
 
@@ -162,5 +162,13 @@ holds the masterplan chapters, the 2026-10-04 Sol handoff and execution checkpoi
 record is the Agent OS pointer so that seat handoffs on main resolve to a workstream; the
 program narrative stays on the carrier.
 
-Seat continuity: `agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-07.md` (latest) and
+Seat continuity: `agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-13.md` (latest) and
 `agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-05.md`.
+
+
+Historical canary record: the October 14 03:20 UTC continuation update records the
+fifth intelligence canary's semantic refusal, all three recovered original Fabric
+results with unresolved controller/lease state, and resumed M1 discovery without
+fresh publication proof. The current execution checkpoint above supersedes that dated activity record;
+neither source progress nor old producer counters satisfies the required
+current-generation 95 percent or live-client gates.

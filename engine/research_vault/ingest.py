@@ -54,6 +54,7 @@ from pathlib import Path
 
 from engine.research_vault import catalog as catalog_mod
 from engine.research_vault import corpus as corpus_mod
+from engine.research_vault import fulltext
 from engine.research_vault import probe as probe_mod
 from engine.research_vault import sidecar as sidecar_mod
 from engine.research_vault import title as title_mod
@@ -91,6 +92,54 @@ def extract_pdf_text(pdf_bytes: bytes) -> str | None:
                 fh.write(pdf_bytes)
             result = subprocess.run(
                 ["pdftotext", "-layout", tmp_path, "-"],
+                capture_output=True, timeout=30,
+            )
+            if result.returncode != 0:
+                log.warning("research_vault: pdftotext returned %d: %s",
+                            result.returncode, result.stderr[:200])
+                return None
+            return result.stdout.decode("utf-8", errors="replace")
+        finally:
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
+    except subprocess.TimeoutExpired:
+        log.warning("research_vault: pdftotext timed out")
+        return None
+    except Exception as e:  # noqa: BLE001
+        log.warning("research_vault: pdftotext exception: %s", e)
+        return None
+
+
+# Explicit opt-in CANDIDATE extractor (reading_order.v2). The incumbent v1
+# ``-layout`` extractor above is untouched and remains the ONLY default: no
+# production caller selects v2, and the materializer reaches it solely through
+# an explicit ``extractor_version`` keyword. Same pdftotext idiom (tmpfile,
+# 30s timeout, UTF-8, graceful None) minus the ``-layout`` flag, so pdftotext
+# emits its default reading order. No layout repair, no table/header join
+# repair, no cleanup of any kind: unresolved joins are retained verbatim.
+READING_ORDER_EXTRACTOR_VERSION = fulltext.EXTRACTOR_VERSION_READING_ORDER_V2
+
+
+def extract_pdf_text_reading_order_v2(pdf_bytes: bytes) -> str | None:
+    """Extract text with pdftotext's DEFAULT reading order (no ``-layout``).
+
+    Opt-in candidate only, bound to
+    ``research_vault.ingest.extract_pdf_text.reading_order.v2``. Returns the
+    text, or None on failure (pdftotext missing / crash / timeout). Never
+    raises. Same host-fault semantics as :func:`extract_pdf_text`.
+    """
+    if not _pdftotext_available():
+        log.warning("research_vault: pdftotext not found — body text unavailable")
+        return None
+    try:
+        fd, tmp_path = tempfile.mkstemp(suffix=".pdf")
+        try:
+            with os.fdopen(fd, "wb") as fh:
+                fh.write(pdf_bytes)
+            result = subprocess.run(
+                ["pdftotext", tmp_path, "-"],
                 capture_output=True, timeout=30,
             )
             if result.returncode != 0:
