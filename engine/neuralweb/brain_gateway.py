@@ -683,6 +683,12 @@ is signed in — their own theses, notes and monitors. Do not use general knowle
 use training memory. Do not name file paths, field names, tool names, or internal slugs.
 Never invent a reading the corpus does not contain.
 
+Attribute each substantive observation in the answer body to the exact plain English or Chinese artifact name
+supplied in the corpus, and preserve that artifact's original as-of date.
+A name only in a source list or heading is not body attribution.
+If a date is unknown, say so; never substitute today's date. Do not invent an
+attribution when the corpus does not support the observation.
+
 If that corpus does not cover the question, answer exactly:
 "We don't publish anything that answers this yet."
 「我们目前还没有发布能回答这个问题的内容。」
