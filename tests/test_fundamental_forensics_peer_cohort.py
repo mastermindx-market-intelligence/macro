@@ -9,6 +9,7 @@ from pathlib import Path
 
 import pytest
 
+from engine.fundamental_forensics.detectors import issuer_class_for_sic
 import scripts.build_fundamental_forensics as bff
 from engine.fundamental_forensics.production_datasets import ProductionDatasetError
 from engine.fundamental_forensics.peer_cohort import (
@@ -28,6 +29,11 @@ CLOSED_A35_CODES = frozenset({
     "A35-W1",
     "A35-P1",
     "A35-P2",
+    "A35-R1",
+    "A35-K1",
+    "A35-U1",
+    "A35-D1",
+    "A35-V1",
 })
 
 AAPL = "ISS:US-XNAS-AAPL"
@@ -131,20 +137,24 @@ def test_member_count_above_hard_max_tickers_raises() -> None:
 
 
 def test_goog_googl_collapse_one_member_and_a35_i1() -> None:
+    # G0-a: the GOOG/GOOGL member class is the kernel SIC projection (7370 is
+    # software), not a hard-coded literal — the fixture cannot drift from
+    # issuer_class_for_sic again.
     goog = CohortMember(
         issuer_id=GOOG,
         cik="0001652044",
         tickers=("GOOG",),
-        issuer_class="industrial",
+        issuer_class=issuer_class_for_sic("7370"),
         sic="7370",
     )
     googl = CohortMember(
         issuer_id=GOOGL,
         cik="0001652044",
         tickers=("GOOGL",),
-        issuer_class="industrial",
+        issuer_class=issuer_class_for_sic("7370"),
         sic="7370",
     )
+    assert issuer_class_for_sic("7370") == "software"
     # GOOGL listed first; collapse still keeps the lexicographically first issuer_id.
     table = build_cohort_table(
         _definition((googl, goog), min_n=1),
@@ -432,6 +442,7 @@ def _stmt_row(metric_id: str, end: str, value: str, *, statement_type: str) -> d
             "cells": [{
                 "period": {"kind": "duration", "start": "2026-01-01", "end": end},
                 "value": value,
+                "unit": "USD",
             }],
         }],
     }
@@ -460,8 +471,7 @@ def _project(
         generation,
         list(trees),
         metric_ids,
-        {},
-        "TST",
+        frozenset(),
         periods,
     )
     assert out is not None
