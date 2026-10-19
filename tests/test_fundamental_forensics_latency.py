@@ -2,15 +2,17 @@
 
 Unit contracts for the bounded recorder (nearest-rank percentiles, window
 eviction, the 65-template overflow bucket), the declared SLO config loader
-and evaluator, and the HTTP surface: every forensics response carries
-``Server-Timing``, recording never changes a status or body, and the SLO
-report sits behind the same entitlement as health and never reports an
-unreadable config as within.
+and evaluator, and the HTTP surface: every forensics SUCCESS response
+carries ``Server-Timing`` (the contract is success responses only — error
+responses carry none), only 2xx/3xx responses enter the percentile window,
+recording never changes a status or body, and the SLO report sits behind the
+same entitlement as health and never reports an unreadable config as within.
 """
 from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 from fastapi import FastAPI
@@ -82,11 +84,34 @@ def test_b_window_evicts_oldest_while_count_total_keeps_counting() -> None:
     assert recorder.snapshot() == {}
 
 
-def test_b_error_n_counts_only_5xx_in_the_window() -> None:
+def test_b_error_counts_live_outside_the_percentile_window() -> None:
+    """4xx raises ``client_error_n``, 5xx raises ``error_n``; neither lands
+    in the window — only the 200 sample does."""
     recorder = LatencyRecorder(window=8)
     for status in (200, 429, 500, 503):
         recorder.record("/t", 1.0, status)
-    assert recorder.snapshot()["/t"]["error_n"] == 2
+    summary = recorder.snapshot()["/t"]
+    assert summary["error_n"] == 2
+    assert summary["client_error_n"] == 1
+    assert summary["window_n"] == 1
+    assert summary["count_total"] == 4
+
+
+def test_b_client_and_server_errors_stay_outside_the_percentile_window() -> None:
+    """MAJOR-1: a burst of fast rejections must never drag p95 down."""
+    recorder = LatencyRecorder(window=16)
+    for value in range(1, 11):
+        recorder.record("/t", float(value), 200)
+    before = recorder.snapshot()["/t"]
+    for _ in range(25):
+        recorder.record("/t", 0.1, 401)
+    recorder.record("/t", 0.1, 500)
+    after = recorder.snapshot()["/t"]
+    assert after["window_n"] == before["window_n"] == 10
+    assert after["p95_ms"] == before["p95_ms"] == 10.0
+    assert after["client_error_n"] == 25
+    assert after["error_n"] == 1
+    assert after["count_total"] == 36
 
 
 # ---------------------------------------------------------------------------
@@ -137,6 +162,7 @@ def _measured(window_n: int, p95: float, p99: float) -> dict:
         "p95_ms": p95,
         "p99_ms": p99,
         "max_ms": p99,
+        "client_error_n": 0,
         "error_n": 0,
     }
 
@@ -276,6 +302,31 @@ def test_f_recorder_failure_never_changes_status_or_body(
     assert degraded.headers.get("Server-Timing", "").startswith("fif;dur=")
 
 
+def test_f_client_error_burst_never_pollutes_the_percentile_window(
+    router_app,
+) -> None:
+    """MAJOR-1: anonymous rejections are counted, never windowed (HTTP path)."""
+    with TestClient(router_app, raise_server_exceptions=False) as client:
+        for _ in range(5):
+            response = client.get(_HEALTH_PATH)
+            assert response.status_code in (401, 403)
+        # MINOR-1: the Server-Timing contract is success responses only.
+        assert "Server-Timing" not in response.headers
+    summary = RECORDER.snapshot()["/api/forensics/health"]
+    assert summary["window_n"] == 0
+    assert summary["p95_ms"] is None
+    assert summary["client_error_n"] == 5
+    assert summary["error_n"] == 0
+
+
+def test_f_method_not_allowed_handlers_are_not_recorded(paid_client) -> None:
+    """MAJOR-1: a private 405 never reaches handler work, so nothing is
+    recorded on the real route template."""
+    response = paid_client.get("/api/forensics/v1/financial/query")
+    assert response.status_code == 405
+    assert "/api/forensics/v1/financial/query" not in RECORDER.snapshot()
+
+
 def test_g_slo_route_returns_the_report_with_the_entitlement_override(
     paid_client,
 ) -> None:
@@ -360,3 +411,121 @@ def test_g_slo_route_returns_503_when_the_config_is_malformed(
         response = client.get(_SLO_PATH)
     assert response.status_code == 503
     assert response.json() == {"error": "slo_config_unavailable"}
+
+
+def test_g_slo_route_sends_the_full_private_header_set(paid_client) -> None:
+    """MINOR-3: ``{**_PRIVATE_HEADERS, "Cache-Control": "no-store"}``."""
+    response = paid_client.get(_SLO_PATH)
+    assert response.status_code == 200, response.text
+    assert response.headers["cache-control"] == "no-store"
+    assert response.headers["vary"] == "Authorization"
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert response.headers["x-robots-tag"] == "noindex, noarchive"
+
+
+def test_g_slo_route_reports_the_recorders_actual_window(
+    router_app, monkeypatch
+) -> None:
+    """MINOR-4: the reported window is the recorder's, not the config's."""
+    monkeypatch.setattr(forensics_api, "RECORDER", LatencyRecorder(window=7))
+    monkeypatch.setattr(forensics_api, "_SLO_CONFIG_CACHE", None)
+    router_app.dependency_overrides[forensics_api.require_site_full_user] = lambda: {
+        "id": "paid-user"
+    }
+    with TestClient(router_app, raise_server_exceptions=False) as client:
+        response = client.get(_SLO_PATH)
+    assert response.status_code == 200, response.text
+    assert response.json()["window"] == 7
+
+
+# ---------------------------------------------------------------------------
+# (h) The offline benchmark: status accounting and budget exclusion
+# ---------------------------------------------------------------------------
+
+
+def test_h_benchmark_counts_statuses_fails_on_a_500_and_excludes_it_from_the_budget(
+    monkeypatch, tmp_path
+) -> None:
+    """MAJOR-2: statuses are counted per route, an unexpected status makes the
+    run exit nonzero, and the failed response contributes no budget sample."""
+    import scripts.fif_latency_benchmark as bench
+    from engine.fundamental_forensics import production_datasets as datasets
+
+    class _Response:
+        def __init__(self, status_code: int) -> None:
+            self.status_code = status_code
+
+    class _StubClient:
+        """Stands in for TestClient plus the driven app: returns canned
+        statuses and records every response into the in-process recorder
+        exactly the way the timed route would."""
+
+        def __init__(self, app: Any, **_kwargs: Any) -> None:
+            self._app = app
+
+        def __enter__(self) -> "_StubClient":
+            return self
+
+        def __exit__(self, *_exc: Any) -> None:
+            return None
+
+        def get(self, path: str) -> _Response:
+            return self._serve(path, 200)
+
+        def post(
+            self,
+            path: str,
+            content: bytes | None = None,
+            headers: dict | None = None,
+        ) -> _Response:
+            status = 500 if path == "/api/forensics/v1/financial/revisions" else 200
+            return self._serve(path, status)
+
+        def _serve(self, path: str, status_code: int) -> _Response:
+            # A failing handler would have burned wall-clock too; the huge
+            # duration proves the sample never reaches the budget.
+            duration = 99999.0 if status_code >= 400 else 5.0
+            RECORDER.record(path, duration, status_code)
+            return _Response(status_code)
+
+    class _Generation:
+        def statement_accessions(self) -> list[str]:
+            return ["synthetic-accession"]
+
+    monkeypatch.setattr("fastapi.testclient.TestClient", _StubClient)
+    monkeypatch.setattr(datasets, "build_production_dataset_store", lambda _dir: object())
+    monkeypatch.setattr(
+        datasets,
+        "latest_generation_summary",
+        lambda _store, _issuer: {
+            "dataset_generation_id": "synthetic-generation",
+            "admitted_at": "2026-01-01T00:00:00Z",
+        },
+    )
+    monkeypatch.setattr(
+        datasets, "load_generation", lambda _store, _issuer, _gid: _Generation()
+    )
+    # main() exports its production-mode env; restore the ambient one after.
+    monkeypatch.delenv("FIF_FINANCIAL_DATASET_MODE", raising=False)
+    monkeypatch.delenv("FIF_PRODUCTION_DATASET_LOCAL_STORE", raising=False)
+
+    out = tmp_path / "bench-report.json"
+    rc = bench.main(
+        [
+            "--local-store", str(tmp_path),
+            "--issuer", "ISS:US-XNAS-TEST",
+            "--iterations", "1",
+            "--out", str(out),
+        ]
+    )
+    assert rc == 3
+    report = json.loads(out.read_text(encoding="utf-8"))
+    assert report["status_counts"]["/api/forensics/v1/financial/revisions"] == {"500": 1}
+    assert report["status_counts"]["/api/forensics/health"] == {"200": 1}
+    # The failed response never entered the latency budget: its route holds no
+    # window sample, while the success routes do.
+    routes = report["evaluation"]["routes"]
+    assert routes["/api/forensics/v1/financial/revisions"]["window_n"] == 0
+    assert routes["/api/forensics/v1/financial/revisions"]["p95_ms"] is None
+    assert routes["/api/forensics/health"]["window_n"] == 1
+    assert report["snapshot"]["/api/forensics/v1/financial/revisions"]["error_n"] == 1

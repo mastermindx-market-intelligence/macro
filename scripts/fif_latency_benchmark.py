@@ -8,8 +8,14 @@ configured route through ``TestClient``, and writes the measured snapshot plus
 the SLO evaluation. No network, no real credentials, never R2 or SEC: the
 dataset store is a local directory and the ASGI client opens no socket.
 
+Every response's status code is counted per route in the output; a response
+outside its route's expected set fails the run, and failed responses never
+enter the latency budget — the budget is computed from the recorder's
+success-only (2xx/3xx) window.
+
 Exit codes: 0 within budget, 1 when any configured route exercised here is in
-breach, 2 when the store or its issuers cannot be resolved.
+breach, 2 when the store or its issuers cannot be resolved, 3 when any
+response carries a status outside its route's expected set.
 """
 from __future__ import annotations
 
@@ -17,6 +23,7 @@ import argparse
 import json
 import os
 import sys
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -37,6 +44,23 @@ _REVENUE_PERIOD = {
     "start": "2023-10-01",
     "end": "2024-09-28",
     "label": "FY2024",
+}
+# MAJOR-2: every exercised route's lawful response set. A status outside its
+# route's set fails the benchmark (exit 3) and never becomes a latency sample.
+_EXPECTED_STATUS_BY_ROUTE: dict[str, frozenset[int]] = {
+    path: frozenset({200})
+    for path in (
+        "/api/forensics/health",
+        "/api/forensics/state",
+        "/api/forensics/v1/attested-history/latest",
+        "/api/forensics/v1/financial/query",
+        "/api/forensics/v1/financial/query.xlsx",
+        "/api/forensics/v1/financial/query.csv",
+        "/api/forensics/v1/financial/query.parquet",
+        "/api/forensics/v1/financial/revisions",
+        "/api/forensics/v1/financial/packet",
+        "/api/forensics/v1/financial/statements",
+    )
 }
 
 
@@ -114,15 +138,26 @@ def _policy_body(schema: str, profile: dict[str, Any]) -> bytes:
     ).encode("utf-8")
 
 
-def _exercise(client: Any, profile: dict[str, Any]) -> None:
-    """One pass over every configured route for one issuer profile."""
+def _exercise(client: Any, profile: dict[str, Any]) -> dict[str, Counter]:
+    """One pass over every configured route for one issuer profile.
+
+    Returns the per-route response-status counts observed on this pass. A
+    status outside its route's expected set is a benchmark failure (exit 3),
+    and failed responses never enter the latency budget: the in-process
+    recorder's window only ever holds success samples.
+    """
+    status_counts: dict[str, Counter] = {}
     json_headers = {"content-type": "application/json"}
+
+    def _record_status(path: str, status_code: int) -> None:
+        status_counts.setdefault(path, Counter())[status_code] += 1
+
     for path in (
         "/api/forensics/health",
         "/api/forensics/state",
         "/api/forensics/v1/attested-history/latest",
     ):
-        client.get(path)
+        _record_status(path, client.get(path).status_code)
     for path, schema in (
         ("/api/forensics/v1/financial/query", _QUERY_SCHEMA),
         ("/api/forensics/v1/financial/query.xlsx", _QUERY_SCHEMA),
@@ -131,20 +166,38 @@ def _exercise(client: Any, profile: dict[str, Any]) -> None:
         ("/api/forensics/v1/financial/revisions", _REVISION_SCHEMA),
         ("/api/forensics/v1/financial/packet", _PACKET_SCHEMA),
     ):
-        client.post(path, content=_policy_body(schema, profile), headers=json_headers)
-    if profile["accession"] is not None:
-        client.post(
-            "/api/forensics/v1/financial/statements",
-            content=json.dumps(
-                {
-                    "schema": _STATEMENT_SCHEMA,
-                    "entity_id": profile["entity_id"],
-                    "accession": profile["accession"],
-                },
-                separators=(",", ":"),
-            ).encode("utf-8"),
-            headers=json_headers,
+        response = client.post(
+            path, content=_policy_body(schema, profile), headers=json_headers
         )
+        _record_status(path, response.status_code)
+    if profile["accession"] is not None:
+        statements_path = "/api/forensics/v1/financial/statements"
+        statements_body = json.dumps(
+            {
+                "schema": _STATEMENT_SCHEMA,
+                "entity_id": profile["entity_id"],
+                "accession": profile["accession"],
+            },
+            separators=(",", ":"),
+        ).encode("utf-8")
+        response = client.post(
+            statements_path, content=statements_body, headers=json_headers
+        )
+        _record_status(statements_path, response.status_code)
+    return status_counts
+
+
+def _unexpected_status_counts(
+    status_counts: dict[str, dict[str, int]],
+) -> dict[str, dict[str, int]]:
+    """Per-route counts of statuses outside that route's expected set."""
+    unexpected: dict[str, dict[str, int]] = {}
+    for path, counts in status_counts.items():
+        expected = {str(status) for status in _EXPECTED_STATUS_BY_ROUTE.get(path, ())}
+        outside = {status: n for status, n in counts.items() if status not in expected}
+        if outside:
+            unexpected[path] = outside
+    return unexpected
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -192,18 +245,25 @@ def main(argv: list[str] | None = None) -> int:
     app.dependency_overrides[forensics_api.require_site_full_user] = lambda: {
         "id": "paid-user"
     }
+    per_route_statuses: dict[str, Counter] = {}
     with TestClient(app, raise_server_exceptions=False) as client:
         for _ in range(args.iterations):
             for profile in profiles:
-                _exercise(client, profile)
+                for path, counts in _exercise(client, profile).items():
+                    per_route_statuses.setdefault(path, Counter()).update(counts)
 
     forensics_api._reset_production_provider_cache()
     snapshot = RECORDER.snapshot()
     config = load_slo_config(_SLO_CONFIG)
     evaluation = evaluate_slo(snapshot, config)
+    status_counts = {
+        path: {str(status): count for status, count in sorted(counter.items())}
+        for path, counter in per_route_statuses.items()
+    }
     report = {
         "schema": "fif_latency_benchmark.v1",
         "iterations": args.iterations,
+        "status_counts": status_counts,
         "snapshot": snapshot,
         "evaluation": evaluation,
     }
@@ -214,6 +274,13 @@ def main(argv: list[str] | None = None) -> int:
     else:
         print(payload)
 
+    unexpected = _unexpected_status_counts(status_counts)
+    if unexpected:
+        print(
+            "unexpected response statuses: " + json.dumps(unexpected, sort_keys=True),
+            file=sys.stderr,
+        )
+        return 3
     breaches = sorted(
         template
         for template, row in evaluation["routes"].items()

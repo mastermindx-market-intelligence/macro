@@ -1,13 +1,15 @@
-"""FIF V0-a: no forensics route opens a network connection while it serves.
+"""FIF V0-a: no forensics route reaches SEC or R2 while it serves.
 
 A46 acceptance: measured latency SLOs with NO request-time SEC. The five
 production-backed routes (health, financial/query, financial/packet,
 financial/statements, financial/revisions) are served in-process over a
 publisher-built local store — the fixture pattern of
 tests/test_fundamental_forensics_production_api_chain.py, copied here in
-minimal form rather than imported — while ``socket.socket.connect`` and
-``socket.create_connection`` raise AssertionError("network"). Every call must
-complete with its normal status and the patched constructors must never run.
+minimal form rather than imported — while ``socket.socket.connect``,
+``socket.socket.connect_ex`` and ``socket.create_connection`` raise
+AssertionError("network"). No SEC/R2 reach exists under a local store: every
+call must complete with its normal status and the patched constructors must
+never run.
 """
 from __future__ import annotations
 
@@ -381,11 +383,16 @@ def test_no_forensics_route_opens_a_socket_while_serving(
         attempts.append(f"socket.socket.connect({address!r})")
         raise AssertionError("network")
 
+    def _connect_ex(self, address, *args, **kwargs):
+        attempts.append(f"socket.socket.connect_ex({address!r})")
+        raise AssertionError("network")
+
     def _create_connection(address, *args, **kwargs):
         attempts.append(f"socket.create_connection({address!r})")
         raise AssertionError("network")
 
     monkeypatch.setattr(socket.socket, "connect", _connect)
+    monkeypatch.setattr(socket.socket, "connect_ex", _connect_ex)
     monkeypatch.setattr(socket, "create_connection", _create_connection)
 
     identity = production_lane["identity"]

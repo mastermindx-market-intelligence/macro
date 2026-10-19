@@ -1,11 +1,15 @@
 """Bounded in-process latency distributions and declared SLO budgets (FIF V0-a).
 
 Pure stdlib; the only I/O is ``load_slo_config`` reading its config file. The
-recorder keeps a fixed-size window of ``(duration_ms, status)`` samples per
-route template, with at most 64 distinct templates — every further template
-shares the single ``__overflow__`` bucket, so memory stays bounded no matter
-what a future mount adds. Percentiles are NEAREST RANK over the windowed
-samples (``index = ceil(q * n) - 1``, no interpolation), rounded to 0.1 ms.
+recorder keeps a fixed-size window of ``(duration_ms, status)`` SUCCESS
+samples — 2xx/3xx responses only — per route template, with at most 64
+distinct templates; every further template shares the single ``__overflow__``
+bucket, so memory stays bounded no matter what a future mount adds. Client
+errors (4xx) and server errors (5xx) never enter the window: they raise the
+per-template ``client_error_n`` / ``error_n`` counters instead, so a burst of
+fast rejections can never drag a percentile down to a stale green.
+Percentiles are NEAREST RANK over the windowed samples
+(``index = ceil(q * n) - 1``, no interpolation), rounded to 0.1 ms.
 Nothing here fetches, parses filings, or talks to the network.
 """
 from __future__ import annotations
@@ -30,36 +34,53 @@ def _nearest_rank(sorted_values: list[float], q: float) -> float:
 
 
 class LatencyRecorder:
-    """One bounded sample window plus a monotonic total, per route template."""
+    """One bounded success-sample window plus monotonic totals, per template."""
 
     def __init__(self, window: int = 512) -> None:
         self._window = max(1, int(window))
         self._lock = threading.Lock()
         self._samples: dict[str, deque[tuple[float, int]]] = {}
         self._count_total: dict[str, int] = {}
+        self._client_error_n: dict[str, int] = {}
+        self._error_n: dict[str, int] = {}
+
+    @property
+    def window(self) -> int:
+        """The configured success-sample window size (what the SLO reports)."""
+        return self._window
 
     def record(self, template: str, duration_ms: float, status: int) -> None:
         with self._lock:
             key = template
-            if key not in self._samples and len(self._samples) >= MAX_TEMPLATES:
+            if key not in self._count_total and len(self._count_total) >= MAX_TEMPLATES:
                 key = OVERFLOW_TEMPLATE
-            samples = self._samples.get(key)
-            if samples is None:
-                samples = deque(maxlen=self._window)
-                self._samples[key] = samples
-            samples.append((float(duration_ms), int(status)))
+            status = int(status)
+            if status < 400:
+                samples = self._samples.get(key)
+                if samples is None:
+                    samples = deque(maxlen=self._window)
+                    self._samples[key] = samples
+                samples.append((float(duration_ms), status))
+            elif status < 500:
+                self._client_error_n[key] = self._client_error_n.get(key, 0) + 1
+            else:
+                self._error_n[key] = self._error_n.get(key, 0) + 1
             self._count_total[key] = self._count_total.get(key, 0) + 1
 
     def snapshot(self) -> dict[str, dict[str, Any]]:
         """A sorted, point-in-time copy; never a live view of the windows."""
         with self._lock:
             captured = {
-                key: (list(samples), self._count_total.get(key, 0))
-                for key, samples in self._samples.items()
+                key: (
+                    list(self._samples.get(key, ())),
+                    self._count_total.get(key, 0),
+                    self._client_error_n.get(key, 0),
+                    self._error_n.get(key, 0),
+                )
+                for key in sorted(self._count_total)
             }
         report: dict[str, dict[str, Any]] = {}
-        for key in sorted(captured):
-            samples, count_total = captured[key]
+        for key, (samples, count_total, client_error_n, error_n) in captured.items():
             durations = sorted(duration for duration, _status in samples)
             if durations:
                 percentiles = {
@@ -77,15 +98,18 @@ class LatencyRecorder:
                 "p95_ms": percentiles["p95_ms"],
                 "p99_ms": percentiles["p99_ms"],
                 "max_ms": max_ms,
-                "error_n": sum(1 for _d, status in samples if status >= 500),
+                "client_error_n": client_error_n,
+                "error_n": error_n,
             }
         return report
 
     def reset(self) -> None:
-        """Test seam: drop every window and total."""
+        """Test seam: drop every window, total and error count."""
         with self._lock:
             self._samples.clear()
             self._count_total.clear()
+            self._client_error_n.clear()
+            self._error_n.clear()
 
 
 RECORDER = LatencyRecorder()

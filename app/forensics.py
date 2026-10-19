@@ -24,20 +24,31 @@ from engine.fundamental_forensics.private_state import load_state_blob
 
 
 class _TimedRoute(APIRoute):
-    """FIF V0-a: measure every route's handler and record the distribution.
+    """FIF V0-a: time each real route's work and record the distribution.
 
-    Timing wraps the handler only — dependency auth runs before it. The
-    ``Server-Timing`` header rides the returned response; an ``HTTPException``
-    (the router's expected failure boundary) is recorded under its own status
-    and re-raised UNCHANGED, any other exception is recorded as a 500 and
-    re-raised unchanged. Recording itself can never alter a status, body or
-    existing header: it sits inside its own ``try/except Exception: pass``.
+    The timed span is the whole route handler — dependency solving included
+    (FastAPI solves dependencies inside the handler), so an auth rejection is
+    timed too. Only success responses (2xx/3xx) enter the percentile window:
+    4xx responses raise the route template's ``client_error_n`` and 5xx
+    responses its ``error_n``, both outside the window, so a burst of fast
+    401/403/400 rejections can never drag p95 down to a stale green. The
+    dedicated method-not-allowed handlers never reach real handler work and
+    are not recorded at all. The ``Server-Timing`` header rides success
+    responses only; an ``HTTPException`` (the router's expected failure
+    boundary) is counted under its own status and re-raised unchanged, any
+    other exception is counted as a 500 and re-raised unchanged. Recording
+    itself can never alter a status, body or existing header: it sits inside
+    its own ``try/except Exception: pass``.
     """
 
     def get_route_handler(self):
         original = super().get_route_handler()
 
         async def timed_route_handler(request: Request) -> Response:
+            if self.endpoint in _METHOD_NOT_ALLOWED_ENDPOINTS:
+                # A private 405 answers before any real handler work runs:
+                # not a latency sample, not a client-error count.
+                return await original(request)
             t0 = time.perf_counter()
             try:
                 response = await original(request)
@@ -347,7 +358,10 @@ def forensics_slo(_user: dict = Depends(require_site_full_user)) -> JSONResponse
     measured aggregates only — never an issuer, tenant, query or user
     identifier. The config is loaded once, at first use, from the repo path;
     a config that cannot be read or parsed is a 503, never a fabricated
-    "within" — the report exists only against the real declared budgets.
+    "within" — the report exists only against the real declared budgets. The
+    reported ``window`` is the recorder's actual sample window, not the
+    config's declared one, and the response carries the full private header
+    set with ``Cache-Control: no-store``.
     """
     global _SLO_CONFIG_CACHE
     try:
@@ -362,18 +376,18 @@ def forensics_slo(_user: dict = Depends(require_site_full_user)) -> JSONResponse
         return JSONResponse(
             {"error": "slo_config_unavailable"},
             status_code=503,
-            headers={"Cache-Control": "no-store"},
+            headers={**_PRIVATE_HEADERS, "Cache-Control": "no-store"},
         )
     evaluation = evaluate_slo(RECORDER.snapshot(), config)
     return JSONResponse(
         {
             "schema": "fif_slo_report.v1",
             "config_status": config["status"],
-            "window": config["window"],
+            "window": RECORDER.window,
             "routes": evaluation["routes"],
             "unbudgeted": evaluation["unbudgeted"],
         },
-        headers={"Cache-Control": "no-store"},
+        headers={**_PRIVATE_HEADERS, "Cache-Control": "no-store"},
     )
 
 
@@ -1477,6 +1491,24 @@ async def financial_statements(
             "X-FIF-Response-SHA256": result.sha256,
         },
     )
+
+
+# FIF V0-a MAJOR-1 fix: these handlers answer with the private 405 before any
+# real handler work runs, so the timed route does not record them at all — a
+# 405 is neither a latency sample nor a client-error count on the real route
+# template. (The alternative, keying the recorder by (method, path), would
+# break the SLO config's path-template keys.)
+_METHOD_NOT_ALLOWED_ENDPOINTS = frozenset(
+    {
+        financial_query_method_not_allowed,
+        financial_query_xlsx_method_not_allowed,
+        financial_query_csv_method_not_allowed,
+        financial_query_parquet_method_not_allowed,
+        financial_revisions_method_not_allowed,
+        financial_packet_method_not_allowed,
+        financial_statements_method_not_allowed,
+    }
+)
 
 
 __all__ = ["router", "require_site_full_user"]
