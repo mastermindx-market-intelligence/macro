@@ -741,3 +741,25 @@ def test_to_dict_holds_no_floats_and_is_deterministic():
     assert first.authority == {"class": "context_only", "display_only": True}
     assert build_release_series([first]) == build_release_series([second])
     _assert_no_floats(build_release_series([first]))
+
+
+def test_a25_invented_release_figure_never_overwrites_the_filed_packet():
+    # A25: a release (or model) figure that disagrees with the filing is stated as a
+    # context-only `differs` row; the filed packet is read, never edited, and no row or
+    # payload key carries canonical-value or action authority.
+    import copy
+
+    invented = _figure("revenue", "Net sales", 120.00, display="120.00")
+    packet = _packet(_cell("c-rev-1", "revenue", value="94930000000"))
+    before = copy.deepcopy(packet)
+    reconciliation = reconcile_release(_release([invented]), packet)
+    payload = reconciliation.to_dict()
+    assert packet == before
+    row = _row(reconciliation, "revenue")
+    assert row["outcome"] == "differs"
+    assert row["filed_value"] == "94930000000"
+    assert row["released_value"] == "120000000000"
+    assert payload["authority"] == {"class": "context_only", "display_only": True}
+    forbidden = {"canonical_value", "action", "trade", "size", "rank", "score", "override"}
+    assert not forbidden & set(payload)
+    assert all(not forbidden & set(item) for item in payload["rows"])
