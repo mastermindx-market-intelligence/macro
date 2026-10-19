@@ -1208,7 +1208,18 @@ def test_receipt_carries_the_security_axis_block(receipt: dict, master: pd.DataF
             assert probe["owner_refusals"]
             # Original dated probe refusals remain evidence even when no new
             # reference mint is attempted on an ordinary rerun.
+            # A later BOUND direct-registrant observation (#9465, SPY) is the
+            # independent evidence the refusal asked for; it may mint the key,
+            # and the dated refusal stays recorded beside it.
+            bound = {
+                obs["listing_key"]: obs.get("observed_on", "")
+                for obs in receipt.get("direct_registrant_intake", {}).get("observations", {}).values()
+                if obs.get("status") == "BOUND"
+            }
             for row in probe["owner_refusals"]:
+                if bound.get(row["listing_key"], "") > row.get("snapshot_date", "9999"):
+                    assert row["listing_key"] in set(active["listing_key"])
+                    continue
                 assert row["listing_key"] not in set(active["listing_key"])
                 if "lost_rows" in row:
                     assert row["reason"].startswith("pending-transition fence:")
@@ -3924,11 +3935,14 @@ def test_gmi_us_accounting_completeness_real_data(receipt: dict) -> None:
         )
     # AMENDMENT R13 — every resolved_not_rederivable entry names a code and a
     # real, currently-active security_id (a staleness fact, never a fabricated
-    # or dangling reference); WBS and SATS are the known real-data instances.
+    # or dangling reference); SATS is the known real-data instance. WBS left
+    # this bucket when its 2026-08-20 acquisition exit was ledgered
+    # (config/delisted_symbols.yml): an exited listing is no longer a target.
     not_rederivable_codes = {d["code"] for d in block["resolved_not_rederivable"]}
     for d in block["resolved_not_rederivable"]:
         assert d["code"] and d["security_id"]
-    assert {"WBS", "SATS"} <= not_rederivable_codes
+    assert "SATS" in not_rederivable_codes
+    assert "WBS" not in not_rederivable_codes
     # A code can never appear in more than one of the four buckets.
     refused_codes = {r["symbol"] for r in block["refusals_this_run"]}
     disclosed_codes = {d["symbol"] for d in block["disclosed_exclusions"]}
