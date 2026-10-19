@@ -10002,6 +10002,7 @@ jobs:
       - "engine/analyst_revisions.py"
       - "engine/capital_allocation.py"
       - "engine/capital_structure/__init__.py"
+      - "engine/capital_structure/covenant_html.py"
       - "engine/capital_structure/covenant_terms.py"
       - "engine/capital_structure/document_terms.py"
       - "engine/capital_structure/event_spine.py"
