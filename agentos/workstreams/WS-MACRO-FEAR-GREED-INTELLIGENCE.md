@@ -27,10 +27,10 @@ waves:
     title: "One existing-owner producer-to-Risk-Radar vertical, proof and publication"
     status: in_progress
 next_action: >
-  Finish the second one-file CI-manifest source conflict repair, verify affected
-  contract tests and publish on original PR 9548; re-arm the existing controller,
-  consume exact-head CI and native merge, then prove render/VPS and live Risk
-  Radar Fear and Greed disclosures.
+  Qualify the current-head CI-pack-2 SNI sealed-regeneration sidecar repair
+  on original PR 9548, publish one reconciled current-main commit after local
+  contract tests, then restore protected merge-on-green and verify exact-head
+  hosted CI, covering render and served authenticated Risk Radar proof.
 landmines:
   - "The legacy machine-consumed dial and existing regime/risk/trade authority stay unchanged."
   - "VIX acceleration is not VVIX. Absolute VIX threshold and liquidity-shock classifier kills remain binding."
@@ -240,3 +240,52 @@ This is the existing carrier, not a new source workspace, replacement PR,
 worker or pipeline. Prior public customer site had no new FGI markup. Keep
 MISSION_COMPLETE=false until protected merge, covering existing render,
 VPS publication, and real served desktop/mobile proof.
+
+
+## October 18 2026 23:54 UTC - current CI refusal and repair frontier
+
+At 23:45Z the exact head d481e93f61ca816ca6db1ab96a8ba7fffc944a98
+remained OPEN, with both merge-on-green and merge-blocked labels. GitHub run
+39120174450 COMPLETED FAILURE: 11 of 12 ci-packs SUCCESS, while pack 2
+job 117654304630 failed only SNI regeneration guards test_schk_05 and
+test_schk_06; ci-gate correctly refused. Both failures identify an
+extra-in-produced .trial_ledger.jsonl.lock under regenerated scratch output.
+Exact-base replay at base b912fd97827cca925a7123aa2012e9765077f3f7
+reproduced the SAME lockfile failure; the semantic gate still refuses an
+authority-changing candidate because this PR must preserve shared CI import
+closures. No Fear/Greed engine defect or missing pack transport was shown in
+this run. The historic preceding f28a75ec CI gate was a separate ECONNRESET
+artifact transport failure, not a basis for overriding this true test red.
+
+Root cause readback: engine/trial_ledger.py deliberately creates a stable
+zero-byte .trial_ledger.jsonl.lock via a durable file lock as part of its
+append-only ownership transaction. SNI's strict seal tree comparator treated
+this persistent lock in the temporary regeneration directory as a sealed
+study artifact, even though the committed seal contains only evidence files.
+Do NOT delete/unlink the lock or weaken generic full-tree comparison. The
+bounded repair in this original registered workspace keeps the ledger owner
+untouched, adds a private-regeneration-only inventory exclusion for the
+exact zero-byte regular lockfile with an accompanying generated ledger, and
+has negative tests for nonempty, symlink and unrelated extra artifacts.
+The complete affected suite passed locally: 60 passed in 445.30 seconds
+(2026-10-19 00:00Z), with one unrelated pytest cleanup warning for a
+temporary Chromium fixture and no failed tests. This includes both original
+sealed-regeneration failures, private sidecar anti-vacuity tests, the CI
+closure test and Fear/Greed regressions. Normal source publication is now
+qualified by the local affected regression verdict, not yet by hosted CI.
+
+The original branch was explicitly disarmed while merge-blocked and its
+d481e93f source SHA verified. Fetched main
+5b1cbb31e3af00c928b0aa277f105eee19bc917d and ordinary-merged
+it into the same worktree with no source conflict. Existing feature
+engines, Risk Radar UI, methodologies, replay and publisher are preserved.
+Current protected Mastermind law pin refreshed at
+bcf4a2f72538682f2fbe4902f6417e59cd038678, compatible schema
+mastermind.sol_skillpack.v1 / 1.0.1. No new branch, worker, CI runner,
+QLedger writer or production publisher.
+
+Remaining gates: verify local tests, exact remote push, protected merge and
+current-head hosted CI, renderer and VPS publication, signed-in customer
+Risk Radar acceptance. The separate market-source freshness dependency is
+incumbent QLedger market-isolation PR #9556, still unmerged at last check.
+MISSION_COMPLETE: false.
