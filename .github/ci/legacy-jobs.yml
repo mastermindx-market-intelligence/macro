@@ -6131,6 +6131,17 @@ jobs:
       # through app.main, names its authority record; contract-delta job
       # 115687457728 at 7ad23edf named exactly this one.
       - "research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md"
+      # Base-sync 11 CI (merge ref with origin/main 71bcc7ce, 2026-10-18):
+      # main's Defense government-revenue surface (PRs #9496/#9498:
+      # app/government_revenue.py, engine/government_revenue/candidate_grader.py),
+      # reached through app.main, names these; contract-delta job 117917260194
+      # at 54ddd593 named exactly these six.
+      - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
+      - "site/government-revenue-data/defense-economics.json"
+      - "site/government-revenue-data/program-theme-context.json"
+      - "site/government-revenue-data/research-state.json"
+      - "site/government-revenue-data/sbir-progression.json"
+      - "site/government-revenue-data/theme-context.json"
       # The vertical's own subjects first, then the app.main import closure the
       # transport suites drag in — the same glob closure `defense-rail-laws`
       # (gate: code, also imports app.main) declares, minus that job's own
