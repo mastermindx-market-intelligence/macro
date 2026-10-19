@@ -1,0 +1,106 @@
+{
+  "schema": "mastermind.asia_heatmap_neutral_border_followup.v1",
+  "recorded_at_utc": "2026-10-19 00:56:58 UTC",
+  "mission": "Original Chairman China/Hong Kong live and settled-close heatmap quality mission",
+  "disposition": "SOURCE_CORRECTION_INTEGRATED_LOCALLY_RELEASE_HELD",
+  "skillpack_pin": "1ffe6b566b9addb58d13893bfb78e8505dce1752",
+  "source": {
+    "workspace": "/Users/chriswong/lanes/sol-asia-heatmap-live-20261012",
+    "local_branch": "sol/china-hk-live-completion-20261012",
+    "original_pr": 8144,
+    "original_remote_branch": "sol/china-heatmap-live-stream-20260927",
+    "prior_published_head": "96233ea000a73dfff9f707e550622a19386df0ed",
+    "correction_commit": "6b5964bc9472a4666d7c6c15fb706ae31353d537",
+    "correction_tree": "3280936db2561b226539dad6350031c19c685f35",
+    "affected_paths": [
+      "templates/heatmap.js",
+      "site/heatmap.js"
+    ],
+    "prior_renderer_sha256": "951cfec04e3f3ca6b2623b8ae8be8f3676303ac2d688cf83d500cec9db452dbb",
+    "corrected_renderer_sha256": "98372feb91daf34a8cad63d3bbbc4356db3b3050220b0d2a52be6237ac41819b",
+    "correction": "Remove the degraded quality panel's amber-border override; use the existing neutral line token on Asia pulse containers in default/up/down states.",
+    "preserved": "Semantic labels and inks, quiet fills, chart data colors, keyboard focus outlines, data/auth/publisher behavior."
+  },
+  "source_verification": {
+    "git_diff_check": {
+      "exit_code": 0
+    },
+    "node_check_template": {
+      "exit_code": 0
+    },
+    "node_check_site": {
+      "exit_code": 0
+    },
+    "paired_renderer_bytes_equal": true,
+    "design_system_enforce_added": {
+      "exit_code": 0,
+      "added_blocking_findings": 0
+    },
+    "ui_visual_evidence_ratchet": {
+      "exit_code": 0,
+      "scope": "Changed-line gate only; not actual browser or full theme/language/viewport evidence."
+    },
+    "runtime_style_injection": {
+      "exit_code": 0,
+      "js_files_scanned": 212,
+      "injecting_files": 44,
+      "total_hits": 89,
+      "checkout_repair": "Canonical scripts/worktree_sparse.py add site completed successfully; the owned edit was hash-verified unchanged.",
+      "allowlist_modified": false
+    }
+  },
+  "integration": {
+    "workspace": "/Users/chriswong/lanes/sol-asia-pair-oct15-rehearsal-20261015",
+    "retained_previous_commit": "ef873ccfedd1330d0e883736baa4ac2eab40bcd9",
+    "retained_previous_tree": "ca6f166d2c8906baa486ad05a4feae2332d74f81",
+    "incoming_merge_base": "83b540a83eee06ee529dc7f7a4c723ab070c28d6",
+    "followup_commit": "3605a15fd661d3da06d47b388f144d08af6d99c6",
+    "followup_tree": "cf53d4f23cb09e02e6f5eadefad01f44780dfa71",
+    "parents": [
+      "ef873ccfedd1330d0e883736baa4ac2eab40bcd9",
+      "6b5964bc9472a4666d7c6c15fb706ae31353d537"
+    ],
+    "merge_conflicts": false,
+    "merge_head_present_after_completion": false,
+    "clean_after_merge": true,
+    "affected_renderers_identical_to_verified_correction": true,
+    "other_executable_configuration_and_ci_paths_changed": false,
+    "inherited_published_documents": [
+      "docs/ops/ASIA_HEATMAP_QUALITY_AUDIT_2026-10-18.md",
+      "docs/ops/evidence/asia-heatmap-quality-20261018/integrated-rehearsal-result.json",
+      "docs/ops/evidence/asia-heatmap-quality-20261018/integration-ci-scope.patch",
+      "docs/ops/evidence/asia-heatmap-quality-20261018/manifest.json"
+    ],
+    "published_as_release": false,
+    "original_tests_repeated": false,
+    "evidence_scope": "Original 432 Python / 168+168 JavaScript and CI-closure results retain their original revision and scope. New renderer source identity and the restricted integration diff are verified; new browser visual proof remains open."
+  },
+  "production_observation": {
+    "observed_on_utc": "2026-10-19",
+    "page": "https://www.mastermind-x.com/hk_heatmap.html",
+    "asset_url_observed_in_browser": "https://www.mastermind-x.com/heatmap.js?v=d76e68a7",
+    "asset_http_status": 200,
+    "asset_bytes": 160305,
+    "asset_sha256": "d76e68a77449ace9630b37ffca8b6e6d9abb0dfa2853301f3e709a41db8dc352",
+    "candidate_asset_match": false,
+    "auth_state": "Signed out; the existing sign-in form is visible.",
+    "authenticated_candidate_proof": false
+  },
+  "outstanding": {
+    "candidate_browser_visual_proof": "BLOCKED. M2 loopback preview was unreachable from the connected browser. A self-contained data URL was then rejected by the browser URL security policy; no workaround or alternate browser was attempted. Temporary preview stopped.",
+    "independent_audit_run": "heatmap-quality-audit-20261018-c1-r1",
+    "independent_audit_disposition": "Original run remains held for same-run recovery on Mastermind #1391; no new audit, resubmission, or approval.",
+    "settled_pr": 7193,
+    "settled_head": "00eca5c41ac4a69c03b5e7afe2293039c5105496",
+    "settled_ci_run": 39114047414,
+    "settled_ci_gate": "Existing reference-integrity owner receipt gap on Sector Central #9592 / parent #7646; no rerun of the unchanged run.",
+    "protected_review_ci_merge_deployment_and_natural_session_proof": "Remain required; none is established by this source correction."
+  },
+  "do_not_redo": [
+    "Preserve ef873ccf and the original integrated-rehearsal-result.json; this is a new descendant for a real CSS correction.",
+    "Do not rerun unchanged completed contract, old-HTML, cache, overlay, or CI-scope work.",
+    "Do not duplicate or resubmit heatmap-quality-audit-20261018-c1-r1.",
+    "Do not retry the predecessor's denied recovery-comment write.",
+    "Do not treat this evidence file as independent review, production admission, authenticated proof, or natural-session proof."
+  ]
+}

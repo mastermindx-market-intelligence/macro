@@ -245,3 +245,41 @@ approval gap. The existing owner was notified on #9592 and original parent #7646
 Original Fabric audit recovery stays on Mastermind #1391, with its exact run held.
 No source merge, production deployment, fresh independent approval or natural
 market-session/authenticated HK proof follows from this successful rehearsal.
+
+## 2026-10-19 neutral-border correction — release remains held
+
+A new, bounded design correction is committed on the original live carrier as
+`6b5964bc9472a4666d7c6c15fb706ae31353d537`. The October 18 Chairman rule in the
+retained integrated doctrine requires even neutral container borders. Both
+renderer mirrors now remove the degraded quality panel's amber-border override
+and neutralize Asia pulse container borders for default/up/down states. Status
+labels, semantic inks, quiet fills, chart colors and keyboard focus are preserved.
+Each renderer changes one line; the corrected SHA-256 is
+`98372feb91daf34a8cad63d3bbbc4356db3b3050220b0d2a52be6237ac41819b`.
+
+Syntax, paired-byte, diff, design added-line and UI-evidence ratchet checks pass.
+The runtime-style guard also passes over all 212 UI JavaScript files (44 injecting,
+89 existing hits) after the canonical `worktree_sparse.py add site` repair.
+No allowance was changed. These are source checks, not a new visual acceptance.
+The connected browser could not reach the M2 loopback preview; its security policy
+then rejected a self-contained data URL. No workaround or alternate browser was
+used, and the temporary server was stopped. New browser visual proof remains open.
+
+The actual correction justified a forward local integration in the SAME original
+rehearsal workspace. New commit `3605a15fd661d3da06d47b388f144d08af6d99c6`, tree
+`cf53d4f23cb09e02e6f5eadefad01f44780dfa71`, has parents `ef873ccf` and `6b5964bc`.
+The merge was conflict-free, completed cleanly, and has no pending MERGE_HEAD.
+Relative to `ef873ccf`, only the two renderer lines and the four already-published
+audit/evidence documents differ. Other executable, configuration and CI files
+are unchanged. Both integrated renderer files exactly match the source checked
+above. The original rehearsal and its test receipts are preserved; their tests
+and the published CI-scope follow-up were not repeated or regenerated.
+
+The actual production HK page still names renderer `heatmap.js?v=d76e68a7`:
+HTTP 200, SHA-256 `d76e68a77449ace9630b37ffca8b6e6d9abb0dfa2853301f3e709a41db8dc352`,
+which differs from the candidate. The selected browser is signed out. This is
+current production identity/access evidence, not authenticated candidate proof.
+[The new source and integration receipt](evidence/asia-heatmap-quality-20261018/neutral-border-followup-20261019.json)
+retains exact scope and limits. The original audit run, Sector Central RIG-owner
+blocker, protected review/CI, deployment admission and natural-session proof all
+remain separate gates. No release or new independent approval is claimed.
