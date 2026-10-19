@@ -443,3 +443,38 @@ def test_portfolio_wrapper_rechecks_selected_sources_after_projection(tmp_path, 
     monkeypatch.setattr(portfolio, 'project_portfolio_read', changed)
     with pytest.raises(explorer.SourceIncoherent, match='selected_source_changed'):
         portfolio.compose_portfolio_read(tmp_path, request, now=datetime(2026,10,19,tzinfo=UTC))
+
+
+def test_portfolio_composes_real_selected_owner_and_alias_bytes_without_recomputation(tmp_path, monkeypatch):
+    from datetime import UTC, datetime
+    import pandas as pd
+    from engine import ontology_explorer as explorer
+    from engine.ontology_portfolio import compose_portfolio_read
+    import engine.transmission_chains as owner
+    from tests.test_ontology_explorer_contract import _exposure_root
+    root=_exposure_root(tmp_path)
+    # Preserve synthetic values, but bind the one product chain accepted by this reader.
+    import yaml
+    definition=yaml.safe_load((root/'knowledge/transmission'/f'{fx.SLUG}.yaml').read_text())
+    definition['chain']=explorer.DEFAULT_CHAIN
+    state=json.loads((root/'data/transmission/chain_state.json').read_text())
+    state['chains'][0]['chain']=explorer.DEFAULT_CHAIN
+    root=fx.build_root(root,yaml_doc=definition,state_doc=state,slug=explorer.DEFAULT_CHAIN)
+    path=root/'data/reference/vendor_aliases.parquet';path.parent.mkdir(parents=True,exist_ok=True)
+    pd.DataFrame([{'vendor':'store','vendor_symbol':'SYNA','security_id':'SEC:US-XNAS-SYNA',
+      'valid_from':None,'valid_to':None}]).to_parquet(path,index=False)
+    now=datetime(2026,1,4,tzinfo=UTC)
+    snapshot=explorer.compose_snapshot(root,chain=explorer.DEFAULT_CHAIN,now=now)
+    before={str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()}
+    def forbidden(*args,**kwargs):raise AssertionError('cannot recompute owner screen')
+    monkeypatch.setattr(owner,'resolve_blast',forbidden)
+    out=compose_portfolio_read(root,{'schema':'ontology_portfolio_request.v1','chain':explorer.DEFAULT_CHAIN,
+      'source_manifest_hash':snapshot['source']['source_manifest_hash'],'symbols':['SYNA','SYNB']},now=now)
+    assert out['rows'][0]['security_id']=='SEC:US-XNAS-SYNA'
+    assert out['rows'][0]['channels']==['synthetic_screen']
+    assert out['rows'][0]['currency']=='USD'
+    assert out['rows'][1]['state']=='identity_unresolved'
+    assert out['unresolved_channels']==['synthetic_screen']
+    assert out['identity_source_sha256']==hashlib.sha256(path.read_bytes()).hexdigest()
+    assert out['membership_asof']=='2026-01-02' and out['identity_valid_on']=='2026-01-04'
+    assert before=={str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()}
