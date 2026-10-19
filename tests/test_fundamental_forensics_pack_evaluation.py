@@ -9,6 +9,7 @@ roots reach every report only through ``load_q0_protocol`` at runtime.
 from __future__ import annotations
 
 import json
+import math
 import subprocess
 import sys
 
@@ -26,6 +27,7 @@ from engine.fundamental_forensics.pack_evaluation import (
     LabelRecord,
     PackEvaluationError,
     PredictionRecord,
+    _frac,
     evaluate_pack,
     load_q0_protocol,
     predictions_from_pack_result,
@@ -211,12 +213,12 @@ def test_abstention_exclusions_and_refusal_recall() -> None:
         ),
     ]
     predictions = [
-        prediction(trial_id="t1", state="not_evaluable", value_text=None,
-                   unit=None, period_end=None, span_ref=None),
-        prediction(trial_id="t2", state="typed_absence", value_text=None,
-                   unit=None, period_end=None, span_ref=None),
-        prediction(trial_id="t3", state="typed_absence", value_text=None,
-                   unit=None, period_end=None, span_ref=None),
+        prediction(trial_id="t1", target_id="f1", state="not_evaluable",
+                   value_text=None, unit=None, period_end=None, span_ref=None),
+        prediction(trial_id="t2", target_id="f2", state="typed_absence",
+                   value_text=None, unit=None, period_end=None, span_ref=None),
+        prediction(trial_id="t3", target_id="f3", state="typed_absence",
+                   value_text=None, unit=None, period_end=None, span_ref=None),
     ]
     result = run(labels, predictions)
     abstention = result.report["metrics"]["extraction"]["abstention"]
@@ -377,12 +379,16 @@ def test_wilson_interval_matches_formula() -> None:
 
 
 def test_held_out_measured_when_all_power_rows_hold() -> None:
+    # PK01's required issuers are CAT and BAC, so the per-issuer positive
+    # minimum (Q1-M3) needs >= 2 positives on each of them.
     labels = [
         label(trial_id="p1", target_id="f1"),
         label(trial_id="p2", target_id="f2"),
+        label(trial_id="p3", target_id="f3", issuer="BAC"),
+        label(trial_id="p4", target_id="f4", issuer="BAC"),
         label(
             trial_id="n1",
-            target_id="f3",
+            target_id="f5",
             polarity="negative",
             label_class="extract_absent",
             format_class="unseen_amendment",
@@ -395,13 +401,21 @@ def test_held_out_measured_when_all_power_rows_hold() -> None:
     predictions = [
         prediction(trial_id="p1", target_id="f1"),
         prediction(trial_id="p2", target_id="f2"),
-        prediction(trial_id="n1", target_id="f3", state="typed_absence",
+        prediction(trial_id="p3", target_id="f3"),
+        prediction(trial_id="p4", target_id="f4"),
+        prediction(trial_id="n1", target_id="f5", state="typed_absence",
                    value_text=None, unit=None, period_end=None, span_ref=None),
     ]
     result = run(labels, predictions)
     assert result.report["quality_label"] == "held_out_measured"
     assert result.report["failed_families"] == []
-    by_rule = {check["rule"]: check for check in result.power_checks}
+    positive_checks = [
+        check
+        for check in result.power_checks
+        if "polarity=positive" in check["rule"]
+    ]
+    assert {check["issuer"] for check in positive_checks} == {"CAT", "BAC"}
+    assert all(check["observed_n"] == 2 for check in positive_checks)
     format_check = next(
         check
         for check in result.power_checks
@@ -410,7 +424,8 @@ def test_held_out_measured_when_all_power_rows_hold() -> None:
     assert (format_check["observed_n"], format_check["minimum_n"]) == (1, 1)
     assert format_check["met"] is True
     assert all(check["met"] for check in result.power_checks)
-    assert len(by_rule) == 3  # positive, negative, format rows apply to PK01
+    # per-issuer positive CAT + BAC, negative, format rows apply to PK01
+    assert len(result.power_checks) == 4
 
 
 # ---------------------------------------------------------------------------
@@ -427,11 +442,19 @@ def test_underpowered_cell_and_quality_label() -> None:
     positive_check = next(
         check
         for check in result.power_checks
-        if "polarity=positive" in check["rule"]
+        if "polarity=positive" in check["rule"] and check["issuer"] == "CAT"
     )
     assert positive_check["minimum_n"] == 2
     assert positive_check["observed_n"] == 1
     assert positive_check["met"] is False
+    # BAC is required for PK01 and carries no label: observed 0 (Q1-M3).
+    bac_check = next(
+        check
+        for check in result.power_checks
+        if "polarity=positive" in check["rule"] and check["issuer"] == "BAC"
+    )
+    assert (bac_check["observed_n"], bac_check["minimum_n"]) == (0, 2)
+    assert bac_check["met"] is False
     assert result.report["quality_label"] == "underpowered"
 
 
@@ -639,6 +662,224 @@ def test_match_rules_decimal_and_folded_text() -> None:
 
 
 # ---------------------------------------------------------------------------
+# fix-lane repairs 2026-10-19 (Q1-M1..M4, Q1-m1..m3, Q1-n1)
+
+
+def test_source_fidelity_error_denominator_covers_sff_emissions() -> None:
+    # 2 source_fidelity_fail emissions over 1 positive emission raised a raw
+    # decimal.InvalidOperation on BASE; the denominator is emissions on
+    # extract_positive plus emissions on source_fidelity_fail (Q1-M2).
+    labels = [
+        label(trial_id="p1", target_id="f1"),
+        label(trial_id="s1", target_id="f2", label_class="source_fidelity_fail"),
+        label(trial_id="s2", target_id="f3", label_class="source_fidelity_fail"),
+    ]
+    predictions = [
+        prediction(trial_id="p1", target_id="f1"),
+        prediction(trial_id="s1", target_id="f2", span_ref=f"{ACC}:1-2"),
+        prediction(trial_id="s2", target_id="f3", span_ref=f"{ACC}:1-2"),
+    ]
+    result = run(labels, predictions)
+    frac = result.report["metrics"]["extraction"]["source_fidelity_error"]
+    assert (frac["numerator"], frac["denominator"]) == (2, 3)
+    families = {
+        f["section_family"]: f["numerator_denominator"]
+        for f in result.report["failed_families"]
+    }
+    assert families["debt_outstanding"]["source_fidelity_error"] == "2/3"
+
+
+def test_frac_refuses_numerator_above_denominator() -> None:
+    with pytest.raises(PackEvaluationError):
+        _frac(2, 1, [])
+
+
+def test_per_issuer_positive_power_missing_required_issuer() -> None:
+    # 5 positives all on CAT; BAC is required for PK01 and carries zero, so
+    # the per-issuer minimum is unmet and the pack is underpowered (Q1-M3).
+    labels = [
+        label(trial_id=f"p{i}", target_id=f"f{i}") for i in range(5)
+    ] + [
+        label(
+            trial_id="n1",
+            target_id="f9",
+            polarity="negative",
+            label_class="extract_absent",
+            format_class="unseen_amendment",
+            expected_value_text=None,
+            expected_unit=None,
+            expected_period_end=None,
+            expected_span_ref=None,
+        ),
+    ]
+    predictions = [
+        prediction(trial_id=f"p{i}", target_id=f"f{i}") for i in range(5)
+    ] + [
+        prediction(trial_id="n1", target_id="f9", state="typed_absence",
+                   value_text=None, unit=None, period_end=None, span_ref=None),
+    ]
+    result = run(labels, predictions)
+    issuer_checks = {
+        check["issuer"]: check
+        for check in result.power_checks
+        if "polarity=positive" in check["rule"]
+    }
+    assert set(issuer_checks) == {"CAT", "BAC"}
+    assert issuer_checks["CAT"]["observed_n"] == 5
+    assert issuer_checks["CAT"]["met"] is True
+    assert (issuer_checks["BAC"]["observed_n"], issuer_checks["BAC"]["minimum_n"]) == (0, 2)
+    assert issuer_checks["BAC"]["met"] is False
+    assert result.report["quality_label"] == "underpowered"
+
+
+def test_pk12_negative_power_per_issuer_all_five() -> None:
+    # "PK12 x all five issuers | 1 negative each": negatives on AAPL only
+    # leave the other four coverage-contract issuers at 0 (Q1-M3).
+
+    def pk12_label(**overrides) -> LabelRecord:
+        base = dict(
+            pack_id="PK12",
+            issuer="AAPL",
+            form_type="10-K",
+            section_family="cash_runway_disclosure",
+            polarity="negative",
+            label_class="extract_absent",
+            expected_value_text=None,
+            expected_unit=None,
+            expected_period_end=None,
+            expected_span_ref=None,
+        )
+        base.update(overrides)
+        return label(**base)
+
+    labels = [
+        pk12_label(trial_id="n0", target_id="f0", format_class="unseen_amendment"),
+        pk12_label(trial_id="n1", target_id="f1"),
+        pk12_label(trial_id="n2", target_id="f2"),
+    ]
+    predictions = [
+        prediction(trial_id=f"n{i}", target_id=f"f{i}", state="typed_absence",
+                   value_text=None, unit=None, period_end=None, span_ref=None)
+        for i in range(3)
+    ]
+    result = run(labels, predictions, pack_id="PK12")
+    issuer_checks = {
+        check["issuer"]: check
+        for check in result.power_checks
+        if "PK12" in check["rule"]
+    }
+    assert set(issuer_checks) == {"AAPL", "SNOW", "CAT", "BAC", "GOOGL"}
+    assert issuer_checks["AAPL"]["observed_n"] == 3
+    assert issuer_checks["AAPL"]["met"] is True
+    assert issuer_checks["GOOGL"]["observed_n"] == 0
+    assert issuer_checks["GOOGL"]["met"] is False
+    assert result.report["quality_label"] == "underpowered"
+
+
+def test_silent_pack_with_declared_floor_cannot_be_held_out_measured() -> None:
+    # 5 held-out positives, every prediction a typed absence, floor 0.9: zero
+    # emissions means no defined precision lower bound, and an undefined bound
+    # cannot clear a declared floor (Q1-M4).
+    labels = [
+        label(trial_id=f"p{i}", target_id=f"f{i}",
+              issuer="CAT" if i < 3 else "BAC")
+        for i in range(5)
+    ]
+    predictions = [
+        prediction(trial_id=f"p{i}", target_id=f"f{i}", state="typed_absence",
+                   value_text=None, unit=None, period_end=None, span_ref=None)
+        for i in range(5)
+    ]
+    result = run(labels, predictions, precision_floor=Decimal("0.9"))
+    assert result.report["quality_label"] != "held_out_measured"
+    reasons = {
+        f["section_family"]: f["reason_codes"]
+        for f in result.report["failed_families"]
+    }
+    assert "precision_below_floor" in reasons["debt_outstanding"]
+
+
+def test_prediction_target_mismatch_refused() -> None:
+    # The join is keyed by trial_id only on BASE, so a prediction for a
+    # different target silently scores against its label's row (Q1-m1).
+    with pytest.raises(PackEvaluationError):
+        run(
+            [label(trial_id="t1", target_id="f1")],
+            [prediction(trial_id="t1", target_id="f2")],
+        )
+    with pytest.raises(PackEvaluationError):
+        run(
+            [label(trial_id="t1", target_kind="extract", target_id="f1")],
+            [
+                prediction(
+                    trial_id="t1",
+                    target_kind="finding",
+                    target_id="f1",
+                    state="TRIGGERED",
+                    value_text=None,
+                    unit=None,
+                    period_end=None,
+                    span_ref=None,
+                    finding_id="d1",
+                )
+            ],
+        )
+
+
+def test_wilson_lower_bound_of_zero_is_positive_zero() -> None:
+    # 0/16 quantizes to Decimal('-0.0000') on BASE, whose float() is -0.0
+    # (Q1-m2).
+    labels = [label(trial_id=f"t{i}", target_id=f"f{i}") for i in range(16)]
+    predictions = [
+        prediction(trial_id=f"t{i}", target_id=f"f{i}", value_text="999")
+        for i in range(16)
+    ]
+    result = run(labels, predictions)
+    lower = result.report["metrics"]["extraction"]["precision"]["wilson95"][0]
+    assert lower == 0.0
+    assert math.copysign(1, lower) == 1
+
+
+def test_extract_positive_without_expected_value_refused() -> None:
+    # On BASE a None expected value auto-matched every emission (Q1-m3).
+    with pytest.raises(PackEvaluationError):
+        run([label(trial_id="t1", expected_value_text=None)], [])
+
+
+def test_non_finite_values_never_match_and_never_raise() -> None:
+    # On BASE, Infinity == Infinity matched and an sNaN comparison raised a
+    # raw decimal.InvalidOperation (Q1-m3).
+    labels = [
+        label(trial_id="t1", expected_value_text="Infinity"),
+        label(trial_id="t2", expected_value_text="sNaN"),
+    ]
+    predictions = [
+        prediction(trial_id="t1", value_text="Infinity"),
+        prediction(trial_id="t2", value_text="sNaN"),
+    ]
+    result = run(labels, predictions)
+    precision = result.report["metrics"]["extraction"]["precision"]
+    assert (precision["numerator"], precision["denominator"]) == (0, 2)
+
+
+def test_precision_floor_must_be_finite_within_unit_interval() -> None:
+    labels = [label(trial_id="t1")]
+    predictions = [prediction(trial_id="t1")]
+    run(labels, predictions, precision_floor=Decimal("0"))
+    run(labels, predictions, precision_floor=Decimal("1"))
+    for bad in ("1.5", "-0.1", "NaN", "Infinity", "not-a-number"):
+        with pytest.raises(PackEvaluationError):
+            run(labels, predictions, precision_floor=bad)
+
+
+def test_evaluated_at_must_be_a_real_timestamp() -> None:
+    labels = [label(trial_id="t1")]
+    for bad in ("2026-13-19T00:00:00Z", "2026-10-32T00:00:00Z"):
+        with pytest.raises(PackEvaluationError):
+            run(labels, [], evaluated_at=bad)
+
+
+# ---------------------------------------------------------------------------
 # envelope adaptation
 
 
@@ -778,6 +1019,9 @@ def test_predictions_from_pack_result_adapts_rows() -> None:
             _field_row(field_id="f_noteval",
                        quality_state="not_evaluable",
                        non_value_state="not_evaluable"),
+            _field_row(field_id="f_unsup",
+                       quality_state="unsupported",
+                       non_value_state="unsupported"),
             _field_row(field_id="f_unmapped", quality_state="missing",
                        non_value_state="missing"),
         ]
@@ -790,11 +1034,12 @@ def test_predictions_from_pack_result_adapts_rows() -> None:
             "f_text": "t-text",
             "f_missing": "t-missing",
             "f_noteval": "t-noteval",
+            "f_unsup": "t-unsup",
         },
     )
     assert unmapped == ("f_unmapped",)
     by_trial = {record.trial_id: record for record in records}
-    assert set(by_trial) == {"t-val", "t-text", "t-missing", "t-noteval"}
+    assert set(by_trial) == {"t-val", "t-text", "t-missing", "t-noteval", "t-unsup"}
     assert by_trial["t-val"].state == "emitted"
     assert by_trial["t-val"].value_text == "125.5"
     assert by_trial["t-val"].unit == "USD"
@@ -804,7 +1049,14 @@ def test_predictions_from_pack_result_adapts_rows() -> None:
     assert by_trial["t-text"].value_text == "covenant text here"
     assert by_trial["t-text"].span_ref == f"{accession}:5-22"
     assert by_trial["t-missing"].state == "typed_absence"
-    assert by_trial["t-noteval"].state == "typed_absence"
+    assert by_trial["t-missing"].exclusion_reason is None
+    # Q1-M1: only missing / not_applicable are an honest typed refusal;
+    # unsupported and not_evaluable abstain as not_evaluable and keep their
+    # original non_value_state as the exclusion reason.
+    assert by_trial["t-noteval"].state == "not_evaluable"
+    assert by_trial["t-noteval"].exclusion_reason == "not_evaluable"
+    assert by_trial["t-unsup"].state == "not_evaluable"
+    assert by_trial["t-unsup"].exclusion_reason == "unsupported"
     assert all(record.target_kind == "extract" for record in records)
     broken = _pack_result_envelope(
         [_field_row(field_id="f_val", quality_state="valued", value="9.9",

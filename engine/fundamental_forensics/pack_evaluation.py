@@ -25,6 +25,7 @@ Unlabeled predictions belong to no cell and are reported only inside the
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP, localcontext
 from importlib import import_module
 import json
@@ -38,7 +39,6 @@ from engine.fundamental_forensics.ixbrl_raw_ledger import (
     GOLDEN_AAPL_QUERY_ACCESSIONS,
 )
 from engine.fundamental_forensics.specialist_pack_contract import (
-    ABSENCE_STATES,
     NUMERIC_TYPES,
     PACK_IDS,
     validate_pack_result,
@@ -73,6 +73,14 @@ TARGET_KINDS = frozenset({"extract", "finding"})
 EXTRACT_STATES = frozenset({"emitted", "not_evaluable", "typed_absence"})
 FINDING_STATES = frozenset({"TRIGGERED", "CLEAR", "NOT_EVALUABLE"})
 POLARITIES = frozenset({"positive", "negative"})
+# Contract non-value rows that map to the ``typed_absence`` prediction state:
+# the disclosure is not in the source (``missing``) or does not apply
+# (``not_applicable``) — an honest refusal. ``unsupported`` and
+# ``not_evaluable`` rows map to the ``not_evaluable`` prediction state and
+# keep their original ``non_value_state`` as the record's exclusion reason
+# (Q1-M1; the contract's own ``ABSENCE_STATES`` is deliberately broader and is
+# not used for this mapping).
+TYPED_ABSENCE_STATES = frozenset({"missing", "not_applicable"})
 # Label classes whose trials are negative examples: an emission or a TRIGGERED
 # finding on one of these is a false positive (Q0 protocol §8-§9).
 NEGATIVE_LABEL_CLASSES = frozenset(
@@ -148,6 +156,10 @@ class PredictionRecord:
     finding_id: str | None = None
     display_copy: tuple[str, ...] = ()
     alternative_explanation: str = ""
+    # For adapter-built ``not_evaluable`` rows: the contract non_value_state
+    # that caused the abstention ("unsupported" / "not_evaluable"); None for
+    # every other record.
+    exclusion_reason: str | None = None
 
 
 @dataclass(frozen=True)
@@ -210,7 +222,10 @@ def _cell_enums(schema: Mapping) -> dict[str, tuple[str, ...]]:
 # small pure helpers
 
 
-def _parse_decimal(text) -> Decimal | None:
+def _parse_any_decimal(text) -> Decimal | None:
+    """``Decimal(text)`` or None; accepts non-finite values (NaN, sNaN,
+    Infinity) so callers can refuse them explicitly instead of raising a raw
+    ``InvalidOperation`` on later arithmetic or comparison."""
     if text is None:
         return None
     try:
@@ -219,6 +234,18 @@ def _parse_decimal(text) -> Decimal | None:
             return Decimal(text)
     except (InvalidOperation, ValueError, TypeError):
         return None
+
+
+def _parse_decimal(text) -> Decimal | None:
+    """A finite Decimal, or None.
+
+    Non-finite decimals (``NaN``, ``sNaN``, ``Infinity``) are treated exactly
+    like unparseable text: they never enter numeric value matching (Q1-m3).
+    """
+    number = _parse_any_decimal(text)
+    if number is None or not number.is_finite():
+        return None
+    return number
 
 
 def _canonical_number_text(value) -> str:
@@ -238,11 +265,19 @@ def _collapse(text: str) -> str:
 
 
 def _value_matches(expected: str | None, predicted: str | None) -> bool:
-    """§3 value rule: numeric equality when both parse, else folded equality."""
+    """§3 value rule: numeric equality when both parse, else folded equality.
+
+    A non-finite decimal on either side (``NaN``, ``sNaN``, ``Infinity``)
+    never matches — not numerically and not as folded text (Q1-m3).
+    """
     if expected is None:
         return True
     if predicted is None:
         return False
+    for text in (expected, predicted):
+        number = _parse_any_decimal(text)
+        if number is not None and not number.is_finite():
+            return False
     expected_decimal = _parse_decimal(expected)
     predicted_decimal = _parse_decimal(predicted)
     if expected_decimal is not None and predicted_decimal is not None:
@@ -251,7 +286,11 @@ def _value_matches(expected: str | None, predicted: str | None) -> bool:
 
 
 def _wilson95_decimal(numerator: int, denominator: int) -> tuple[Decimal, Decimal] | None:
-    """Wilson score interval at z = 1.96, Decimal math, quantized to 4 dp."""
+    """Wilson score interval at z = 1.96, Decimal math, quantized to 4 dp.
+
+    Bounds are clamped to [0, 1] and a clamped negative zero is normalised to
+    a positive zero so the float conversion never yields ``-0.0`` (Q1-m2).
+    """
     if denominator < 1:
         return None
     with localcontext() as ctx:
@@ -267,6 +306,10 @@ def _wilson95_decimal(numerator: int, denominator: int) -> tuple[Decimal, Decima
         )
         lower = (center - spread).quantize(_WILSON_QUANTUM, rounding=ROUND_HALF_UP)
         upper = (center + spread).quantize(_WILSON_QUANTUM, rounding=ROUND_HALF_UP)
+    lower = max(lower, Decimal(0))
+    upper = min(upper, Decimal(1))
+    if lower == 0:
+        lower = abs(lower)
     return lower, upper
 
 
@@ -278,6 +321,11 @@ def _wilson95(numerator: int, denominator: int) -> list[float] | None:
 
 
 def _frac(numerator: int, denominator: int, exclusions: Sequence[str]) -> dict:
+    if numerator > denominator:
+        raise PackEvaluationError(
+            f"metric numerator {numerator} exceeds its denominator "
+            f"{denominator}; a rate above 1 is not a rate (Q1-M2)"
+        )
     return {
         "numerator": int(numerator),
         "denominator": int(denominator),
@@ -347,6 +395,12 @@ def _check_inputs(
         raise PackEvaluationError(
             "evaluated_at must be an ISO-8601 UTC string ending in Z or +00:00"
         )
+    try:
+        datetime.fromisoformat(evaluated_at.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise PackEvaluationError(
+            f"evaluated_at {evaluated_at!r} is not a real UTC timestamp: {exc}"
+        ) from exc
     for blocked in blocked_pack_ids:
         if blocked not in PACK_IDS:
             raise PackEvaluationError(f"blocked pack id {blocked!r} is not a pack id")
@@ -366,6 +420,15 @@ def _check_inputs(
             raise PackEvaluationError(
                 f"label {record.trial_id} has label_class {record.label_class!r} "
                 "outside the Q0 label vocabulary"
+            )
+        if (
+            record.label_class == "extract_positive"
+            and record.expected_value_text is None
+        ):
+            raise PackEvaluationError(
+                f"label {record.trial_id} is extract_positive but carries no "
+                "expected_value_text; a positive label without an expected "
+                "value can never be value-checked (Q1-m3)"
             )
         if record.target_kind not in TARGET_KINDS:
             raise PackEvaluationError(
@@ -397,6 +460,7 @@ def _check_inputs(
         if record.trial_id in seen_trials:
             raise PackEvaluationError(f"duplicate label trial_id {record.trial_id!r}")
         seen_trials.add(record.trial_id)
+    labels_by_trial = {record.trial_id: record for record in labels}
     seen_prediction_trials: set[str] = set()
     for record in predictions:
         if record.target_kind not in TARGET_KINDS:
@@ -410,6 +474,17 @@ def _check_inputs(
             raise PackEvaluationError(
                 f"prediction {record.trial_id} has state {record.state!r} outside "
                 f"{sorted(allowed_states)} for target_kind {record.target_kind!r}"
+            )
+        matching_label = labels_by_trial.get(record.trial_id)
+        if matching_label is not None and (
+            record.target_kind != matching_label.target_kind
+            or record.target_id != matching_label.target_id
+        ):
+            raise PackEvaluationError(
+                f"prediction {record.trial_id} targets "
+                f"{record.target_kind}:{record.target_id!r} but its label "
+                f"targets {matching_label.target_kind}:"
+                f"{matching_label.target_id!r} (Q1-m1)"
             )
         if record.trial_id in seen_prediction_trials:
             raise PackEvaluationError(
@@ -437,8 +512,12 @@ def predictions_from_pack_result(
     Row mapping (contract non-value states are missing / unsupported /
     not_evaluable / not_applicable — ``ABSENCE_STATES`` in
     engine/fundamental_forensics/specialist_pack_contract.py:41-49):
-    a value or text_value present -> ``emitted``; a ``non_value_state`` in the
-    typed-absence family -> ``typed_absence``; anything else -> ``not_evaluable``.
+    a value or text_value present -> ``emitted``; a ``non_value_state`` of
+    ``missing`` or ``not_applicable`` (``TYPED_ABSENCE_STATES``) ->
+    ``typed_absence`` — an honest refusal: the disclosure is not in the
+    source, or does not apply; ``unsupported`` / ``not_evaluable`` (and
+    anything else) -> ``not_evaluable``, with the original ``non_value_state``
+    kept as the record's ``exclusion_reason`` (Q1-M1).
     """
     errors = validate_pack_result(result)
     if errors:
@@ -467,16 +546,21 @@ def predictions_from_pack_result(
                 span_ref = f"{accession}:{start_offset}-{end_offset}"
         if value is not None or text_value is not None:
             state = "emitted"
+            exclusion_reason = None
             if row.get("type") in NUMERIC_TYPES and value is not None:
                 value_text: str | None = _canonical_number_text(value)
             else:
                 value_text = str(text_value) if text_value is not None else None
-        elif non_value_state in ABSENCE_STATES:
+        elif non_value_state in TYPED_ABSENCE_STATES:
             state = "typed_absence"
             value_text = None
+            exclusion_reason = None
         else:
             state = "not_evaluable"
             value_text = None
+            exclusion_reason = (
+                non_value_state if isinstance(non_value_state, str) else None
+            )
         records.append(
             PredictionRecord(
                 trial_id=trial_ids[field_id],
@@ -487,6 +571,7 @@ def predictions_from_pack_result(
                 unit=row.get("unit"),
                 period_end=period_end,
                 span_ref=span_ref,
+                exclusion_reason=exclusion_reason,
             )
         )
     return tuple(records), tuple(sorted(set(unmapped)))
@@ -688,6 +773,17 @@ def _extraction_metrics(
         if t.label.label_class
         in ("extract_absent", "extract_present_out_of_scope")
     ]
+    # Q1-M2: source-fidelity failures are counted over emissions on
+    # extract_positive labels PLUS emissions on source_fidelity_fail labels —
+    # both label classes can put a trial in the numerator, so both belong in
+    # the denominator; otherwise the numerator can exceed it.
+    fidelity_fail_emissions = [
+        t
+        for t in extract_trials
+        if t.label.label_class == "source_fidelity_fail"
+        and t.prediction is not None
+        and t.prediction.state == "emitted"
+    ]
     fpr_exclusions = [
         t.label.trial_id
         for t in negatives
@@ -706,7 +802,7 @@ def _extraction_metrics(
         ),
         "source_fidelity_error": _frac(
             sum(1 for t in extract_trials if t.source_fidelity_failure),
-            len(emitted_on_positive),
+            len(emitted_on_positive) + len(fidelity_fail_emissions),
             unlabeled_extract,
         ),
         "false_positive_rate": _frac(
@@ -890,16 +986,42 @@ def _build_cells(
 def _power_checks(
     protocol: Mapping, pack_id: str, split: str, labels: Sequence[LabelRecord]
 ) -> tuple[dict, ...]:
+    """Power checks from the protocol ``minimum_n`` rows.
+
+    Q1-M3: the per-issuer protocol rows ("pack, applicable issuer,
+    polarity=positive" and "PK12 x all five issuers | 1 negative each") emit
+    ONE check per issuer, each naming its ``issuer``; an issuer with no label
+    counts as 0 and fails its minimum. All other rows stay pack-level with
+    ``issuer`` None.
+    """
     positives = [l for l in labels if l.polarity == "positive"]
     negatives = [l for l in labels if l.polarity == "negative"]
     packs_by_id = {row["pack_id"]: row for row in protocol["packs"]}
+    labeled_issuers = {l.issuer for l in labels}
     checks: list[dict] = []
+
+    def append_check(
+        rule: str,
+        observed: int,
+        minimum: int,
+        issuer: str | None = None,
+        issuer_gate: bool = True,
+    ) -> None:
+        checks.append(
+            {
+                "rule": rule,
+                "issuer": issuer,
+                "observed_n": observed,
+                "minimum_n": minimum,
+                "met": observed >= minimum and issuer_gate,
+            }
+        )
+
     for row in protocol["minimum_n"]:
         if row.get("split") != split:
             continue
         cell = row.get("cell", "")
         minimum = int(row["minimum_n"])
-        issuer_gate = True
         if "PK11" in cell and "non-bank" in cell:
             if pack_id != "PK11":
                 continue
@@ -913,31 +1035,64 @@ def _power_checks(
                 ].items()
                 if applicability != "required"
             }
-            observed = sum(1 for l in negatives if l.issuer in non_bank)
+            append_check(
+                cell,
+                sum(1 for l in negatives if l.issuer in non_bank),
+                minimum,
+            )
         elif "PK12" in cell:
             if pack_id != "PK12":
                 continue
-            observed = len(negatives)
+            # "PK12 x all five issuers | 1 negative each": one check per
+            # issuer in the coverage contract; a missing issuer counts as 0.
+            for issuer in sorted(protocol["issuers"]):
+                append_check(
+                    cell,
+                    sum(1 for l in negatives if l.issuer == issuer),
+                    minimum,
+                    issuer=issuer,
+                )
+        elif "applicable issuer" in cell:
+            if pack_id not in packs_by_id:
+                continue
+            # The applicable issuers for this pack: every issuer whose
+            # applicability is "required", plus any "optional" issuer that
+            # carries at least one label for the pack; a missing issuer
+            # counts as 0.
+            applicability = packs_by_id[pack_id]["applicability"]
+            applicable = sorted(
+                issuer
+                for issuer, state in applicability.items()
+                if state == "required"
+                or (state == "optional" and issuer in labeled_issuers)
+            )
+            for issuer in applicable:
+                append_check(
+                    cell,
+                    sum(1 for l in positives if l.issuer == issuer),
+                    minimum,
+                    issuer=issuer,
+                )
         elif "format_class" in cell:
-            observed = sum(1 for l in labels if l.format_class != "ixbrl_inline")
+            append_check(
+                cell,
+                sum(1 for l in labels if l.format_class != "ixbrl_inline"),
+                minimum,
+            )
         elif "form_type in" in cell:
             subset = [l for l in positives if l.form_type in ("10-K", "10-Q")]
-            observed = len(subset)
-            issuer_gate = len({l.issuer for l in subset}) >= 2
+            append_check(
+                cell,
+                len(subset),
+                minimum,
+                issuer_gate=len({l.issuer for l in subset}) >= 2,
+            )
         elif "polarity=positive" in cell:
-            observed = len(positives)
+            append_check(cell, len(positives), minimum)
         elif "polarity=negative" in cell:
-            observed = len(negatives)
+            append_check(cell, len(negatives), minimum)
         else:
             continue
-        checks.append(
-            {
-                "rule": cell,
-                "observed_n": observed,
-                "minimum_n": minimum,
-                "met": observed >= minimum and issuer_gate,
-            }
-        )
     return tuple(checks)
 
 
@@ -959,6 +1114,17 @@ def _family_metrics(trials: Sequence[_Joined]) -> dict[str, str | None]:
         and t.prediction.state in ("not_evaluable", "typed_absence")
     ]
     fidelity = [t for t in extract if t.source_fidelity_failure]
+    # Q1-M2: same widened denominator as the extraction metric — emissions on
+    # extract_positive plus emissions on source_fidelity_fail labels.
+    fidelity_denominator = len(emitted_on_positive) + len(
+        [
+            t
+            for t in extract
+            if t.label.label_class == "source_fidelity_fail"
+            and t.prediction is not None
+            and t.prediction.state == "emitted"
+        ]
+    )
     emitted_on_negatives = [
         t
         for t in negatives
@@ -972,7 +1138,7 @@ def _family_metrics(trials: Sequence[_Joined]) -> dict[str, str | None]:
         "precision": as_str(len(matched), len(emitted_on_positive)),
         "recall": as_str(len(matched), len(positives)),
         "abstention": as_str(len(abstentions), len(extract)),
-        "source_fidelity_error": as_str(len(fidelity), len(emitted_on_positive)),
+        "source_fidelity_error": as_str(len(fidelity), fidelity_denominator),
         "false_positive_rate": as_str(len(emitted_on_negatives), len(negatives)),
     }
 
@@ -995,9 +1161,19 @@ def _failed_families(
         if precision_floor is not None:
             matched = sum(1 for t in trials if t.matched)
             emitted = sum(1 for t in trials if t.emitted_on_positive)
-            interval = _wilson95_decimal(matched, emitted)
-            if interval is not None and interval[0] < precision_floor:
-                reasons.add("precision_below_floor")
+            positives_in_family = sum(
+                1 for t in trials if t.label.label_class == "extract_positive"
+            )
+            if emitted == 0:
+                # Q1-M4: a family with positives but zero emissions has no
+                # defined precision lower bound, and an undefined bound
+                # cannot clear a declared floor — a silent pack never passes.
+                if positives_in_family >= 1:
+                    reasons.add("precision_below_floor")
+            else:
+                interval = _wilson95_decimal(matched, emitted)
+                if interval is not None and interval[0] < precision_floor:
+                    reasons.add("precision_below_floor")
         for trial in trials:
             error_class = _false_positive_error_class(trial, bank_issuers)
             if error_class is None:
@@ -1091,6 +1267,15 @@ def evaluate_pack(
             raise PackEvaluationError(
                 f"precision_floor {precision_floor!r} is not a decimal"
             ) from exc
+    if precision_floor is not None and (
+        not precision_floor.is_finite()
+        or precision_floor < 0
+        or precision_floor > 1
+    ):
+        raise PackEvaluationError(
+            f"precision_floor {precision_floor} is not a finite number in "
+            "[0, 1] (Q1-n1)"
+        )
     schema = _load_report_schema()
     _check_inputs(
         labels,
