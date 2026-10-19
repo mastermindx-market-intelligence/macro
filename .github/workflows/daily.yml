@@ -1335,6 +1335,17 @@ jobs:
         # public twin; terms, capacity, runway, scores, probabilities, and Prophet
         # authority stay absent.
         run: python -m scripts.build_capital_structure_projection
+      - name: capture the previous capital-structure generation (for the change ledger)
+        # SPEC_U2 U2-3 (a): the change-ledger producer below diffs TONIGHT's
+        # state generation against the PREVIOUS published one, so the previous
+        # state bundle and capacity inputs must be copied to $RUNNER_TEMP
+        # BEFORE the state step overwrites them. Absence on a first night (or
+        # after a bundle that refused to publish) is the stated baseline, so
+        # every copy is `|| true` — this step can never red the lane.
+        id: cs_previous_state
+        run: |
+          cp data/capital_structure/state_bundle.json "$RUNNER_TEMP/previous_state_bundle.json" 2>/dev/null || true
+          cp data/capital_structure/capacity_inputs.json "$RUNNER_TEMP/previous_capacity_inputs.json" 2>/dev/null || true
       - name: build the capital-structure state bundle (registration family; whole generation or nothing)
         id: cs_state
         # Reads the same verified generation, the generation-bound health horizon
@@ -1370,6 +1381,45 @@ jobs:
         # leaves the previous bundle in place, and a bundle that does not bind the
         # served state generation must not ride this checkpoint (SPEC_U1B §3).
         run: python -m scripts.build_capital_structure_capacity_inputs
+      - name: build the capital-structure change ledger (one changeset or nothing)
+        # SPEC_U2 U2-3 (b): the typed change desk between the PREVIOUS
+        # published generation (captured by cs_previous_state above) and
+        # tonight's, derived by scripts.build_capital_structure_state_changes
+        # from the two published bundles alone — the same fact the change-desk
+        # API serves, produced once per generation so the monitor and the API
+        # never disagree about what changed. Fatal like the compilers above:
+        # one changeset or nothing — a failed derivation must not ride this
+        # checkpoint, and an absent/unreadable previous bundle is the stated
+        # BASELINE (exit 0), never a synthesized diff.
+        id: cs_changes
+        run: python -m scripts.build_capital_structure_state_changes --root data/capital_structure --previous "$RUNNER_TEMP/previous_state_bundle.json" --previous-inputs "$RUNNER_TEMP/previous_capacity_inputs.json"
+      - name: saved-scenario monitor (typed restore outcomes -> alert outbox; fail-soft)
+        # SPEC_U2 U2-3 (c): the enqueue-only monitor over the users' OWN saved
+        # rows — classified offline against tonight's generation through the
+        # same composition the evaluate route owes, deduped by a frozen
+        # fire_event_id, delivered by the incumbent alert_outbox drain. It
+        # writes NOTHING into the tree (never a staged-path producer). Fail-
+        # soft: absent creds/tables/inputs -> typed unavailable, 0 rows, exit
+        # 0. Dormant unless BOTH CS_SAVED_SCENARIO_ENABLE=1 AND
+        # ALERT_DRAIN_ENABLE=1 (checked before the producer is even imported);
+        # arming the secret is human-only enrollment (SPEC_U2 §3).
+        id: cs_saved_monitor
+        if: always()
+        timeout-minutes: 3
+        continue-on-error: true
+        env:
+          # FIF producer precedent (engine job): reuse the incumbent repo
+          # service-role secret; the monitor's SUPABASE_URL has a reviewed
+          # project default, so it is NOT injected here.
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          CS_SAVED_SCENARIO_ENABLE: ${{ secrets.CS_SAVED_SCENARIO_ENABLE }}
+          ALERT_DRAIN_ENABLE: ${{ secrets.ALERT_DRAIN_ENABLE }}
+        run: '[ "${{ job.status }}" = "cancelled" ] && { echo "cs saved scenario monitor: job cancelled, skipping"; exit 0; }; python -m scripts.run_capital_structure_saved_scenario_monitor || echo "::warning::cs saved scenario monitor failed (non-fatal)"'
+      - name: summarize the capital-structure change-ledger steps (diagnostics only)
+        # One log line naming all three U2-3 outcomes, so a night's change
+        # ledger and monitor state are greppable without the job log.
+        if: always()
+        run: echo "cs_previous_state=${{ steps.cs_previous_state.outcome }} cs_changes=${{ steps.cs_changes.outcome }} cs_saved_monitor=${{ steps.cs_saved_monitor.outcome }}"
       # Diagnostics only — changes NO behavior. When the compiler above fails, the
       # ledger it rejected is the one artifact that identifies WHY, and today it is
       # unrecoverable: the failure skips every later step, so the post-collect tree
@@ -1465,6 +1515,7 @@ jobs:
           && steps.cs_state.outcome == 'success'
           && (steps.cs_candidates.outcome == 'success' || steps.cs_candidates.outcome == 'failure')
           && steps.cs_inputs.outcome == 'success'
+          && steps.cs_changes.outcome == 'success'
         id: commitcs
         run: |
           echo "committed=false" >> "$GITHUB_OUTPUT"
