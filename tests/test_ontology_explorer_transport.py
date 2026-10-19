@@ -867,3 +867,71 @@ def test_theme_http_binds_tracking_references_to_selected_source_and_private_rou
     assert len(value['source']['reads']) == 6
     assert value['theme_map']['etf_tracking']['holdings']['asof'] is None
     assert before == {str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()}
+
+
+@pytest.mark.parametrize('mutation', ['authority_revoked', 'both_revoked', 'malformed', 'invalid_yaml', 'mid_read', 'class_changed'])
+def test_theme_binds_fresh_code_authority_even_with_separate_data_root_and_warm_cache(monkeypatch, tmp_path, mutation):
+    from engine import ontology_theme as owner
+    from engine.theme_graph import rights
+    root = _theme_owner_root(tmp_path / 'estate')
+    data_policy = root / 'config/theme_sources.yml'
+    authority = tmp_path / 'code/config/theme_sources.yml'
+    authority.parent.mkdir(parents=True)
+    authority.write_bytes(data_policy.read_bytes())
+    monkeypatch.setattr(rights, 'registry_path', lambda: authority)
+    rights._load.cache_clear()
+    try:
+        assert rights.rights_class('mastermind_curated') == 'direct_display_ok'
+        with _client(monkeypatch, tmp_path, root=root) as client:
+            request = _theme_body(client)
+            if mutation in ('authority_revoked', 'both_revoked'):
+                authority.write_text('families: {mastermind_curated: {rights_class: internal_only, auth_class: house}}')
+                if mutation == 'both_revoked': data_policy.write_bytes(authority.read_bytes())
+            elif mutation in ('malformed', 'invalid_yaml'):
+                authority.write_text('families: {mastermind_curated: true}' if mutation == 'malformed' else 'families: [')
+                data_policy.write_bytes(authority.read_bytes())
+            elif mutation == 'mid_read':
+                original = owner.security_navigation.compose_security_hierarchy
+                def changed(*args, **kwargs):
+                    value = original(*args, **kwargs)
+                    authority.write_bytes(authority.read_bytes() + b'\n')
+                    return value
+                monkeypatch.setattr(owner.security_navigation, 'compose_security_hierarchy', changed)
+            else:
+                authority.write_bytes(authority.read_bytes().replace(b'rights_class: direct_display_ok', b'rights_class: derived_display_ok'))
+                data_policy.write_bytes(authority.read_bytes())
+            # The incumbent cache remains permissive; the serving guard must
+            # enforce the actual authority bytes instead of trusting this cache.
+            assert rights.rights_class('mastermind_curated') == 'direct_display_ok'
+            response = client.post(THEME_ROUTE, json=request)
+        assert response.headers['cache-control'] == 'private, no-store'
+        assert response.headers['vary'] == 'Authorization, Cookie'
+        if mutation == 'class_changed':
+            assert response.status_code == 200, response.text
+            value = response.json()
+            assert value['source']['policy_binding'] == 'AUTHORITATIVE_CODE_REGISTRY_EQUALS_SELECTED_SOURCE'
+            paths = value['theme_map']['bindings'][0]['paths']
+            assert paths
+            assert all(n['rights']['rights_class'] == 'derived_display_ok' for p in paths for n in p['path']+[h['node'] for h in p['via']])
+        else:
+            assert response.status_code == 503, response.text
+            # The private transport deliberately collapses source failures.
+            assert response.json()['detail']['code'] == 'source_unavailable'
+            assert 'bindings' not in response.text
+    finally:
+        rights._load.cache_clear()
+
+
+@pytest.mark.parametrize('asof', ['2026-01-04T07:00:00+09:00', '2026-W01-3', '2026-01-02T09:00:00Z', '2026-01-04'])
+def test_theme_refuses_noncalendar_or_after_build_observation_clock(monkeypatch, tmp_path, asof):
+    root = _theme_owner_root(tmp_path)
+    path = root / 'data/transmission/chain_state.json'
+    state = json.loads(path.read_text())
+    state['asof'] = asof
+    path.write_text(json.dumps(state))
+    with _client(monkeypatch, tmp_path, root=root) as client:
+        response = client.post(THEME_ROUTE, json=_theme_body(client))
+    assert response.status_code == 503, response.text
+    assert response.json()['detail']['code'] == 'source_unavailable'
+    assert response.headers['cache-control'] == 'private, no-store'
+    assert 'bindings' not in response.text

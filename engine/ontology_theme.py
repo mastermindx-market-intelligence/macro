@@ -15,7 +15,7 @@ from types import SimpleNamespace
 import yaml
 
 from engine import ontology_explorer as explorer
-from engine.theme_graph import security_navigation, store
+from engine.theme_graph import security_navigation, store, rights
 from engine.theme_graph.ontology import _clock_instant
 
 METHOD = 'ontology_house_theme_continuation.v1'
@@ -66,15 +66,20 @@ def _read(root: Path, rel: str) -> bytes:
 def compose_theme_continuation(root: Path | str, payload: dict, *, now: datetime | None = None) -> dict:
     payload = validate_request(payload)
     root = Path(root)
-    now = now or datetime.now(UTC)
+    now = (now or datetime.now(UTC)).astimezone(UTC)
     snapshot = explorer.compose_snapshot(root, chain=payload['chain'], now=now)
     source = snapshot['source']
     if source['source_manifest_hash'] != payload['source_manifest_hash']:
         raise ThemeInputError('snapshot_changed')
     try:
-        effective = datetime.fromisoformat(source['asof']).date()
+        # The owner observation clock is a calendar date, never a week date,
+        # timestamp or local-zone instant silently coerced into one.
+        if not isinstance(source['asof'], str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', source['asof']):
+            raise ValueError('observation date')
+        effective = datetime.strptime(source['asof'], '%Y-%m-%d').date()
         cutoff = explorer._parse_build_stamp(source['built'])
-        if cutoff is None or cutoff.tzinfo is None or cutoff > now or effective > now.date():
+        if (cutoff is None or cutoff.tzinfo is None or cutoff > now
+                or effective > now.date() or effective > cutoff.date()):
             raise ValueError('clock')
     except (TypeError, ValueError, KeyError):
         raise explorer.SourceUnavailable('theme_owner_clock_unavailable') from None
@@ -102,13 +107,19 @@ def compose_theme_continuation(root: Path | str, payload: dict, *, now: datetime
             if (_clock_instant(row['computed_at'], 'computed_at') > now
                     or datetime.fromisoformat(row['resolution_asof']).date() > now.date()):
                 raise ValueError('future identity')
-        # Preserve and bind the current policy bytes, independently of any
-        # memoized native resolver. A house policy revocation withholds output.
+        # A separate data estate may contain a policy copy. It cannot grant
+        # rights: require byte equality with the actual code-owned authority,
+        # freshly read before and after composition (never its memoized loader).
         policy_rel = 'config/theme_sources.yml'
         raw_sources[policy_rel] = _read(root, policy_rel)
+        authority_path = rights.registry_path()
+        authority_raw = _read(authority_path.parent, authority_path.name)
+        if raw_sources[policy_rel] != authority_raw:
+            raise ValueError('policy authority differs')
         policy = yaml.safe_load(raw_sources[policy_rel])
         house = policy['families']['mastermind_curated']
-        if house.get('rights_class') not in {'direct_display_ok', 'derived_display_ok'} or house.get('auth_class') != 'house':
+        if (not isinstance(house, dict) or house.get('rights_class') not in rights.EMISSION_OK
+                or house.get('auth_class') != 'house'):
             raise ValueError('house display not permitted')
         view = SimpleNamespace(read_nodes=lambda: frames['nodes'],
             read_edges=lambda: frames['edges'], read_node_lifecycle=lambda: frames['node_lifecycle'],
@@ -116,7 +127,13 @@ def compose_theme_continuation(root: Path | str, payload: dict, *, now: datetime
         result = security_navigation.compose_security_hierarchy(view, identities,
             identity_kind=payload['identity_kind'], identity_id=payload['identity_id'],
             asof=effective, knowledge_cutoff=cutoff, source_policy=policy)
-    except (OSError, ValueError, TypeError, KeyError, RecursionError):
+        # The native cached reader may conservatively withhold a path. It must
+        # not label admitted house output with an obsolete rights class.
+        for binding in result['bindings']:
+            for path in binding['paths']:
+                for node in path['path'] + [hop['node'] for hop in path['via']]:
+                    node['rights']['rights_class'] = house['rights_class']
+    except (OSError, ValueError, TypeError, KeyError, RecursionError, yaml.YAMLError, rights.RightsRefusal):
         raise explorer.SourceUnavailable('theme_owner_unavailable') from None
     receipts = [{'path': rel, 'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw)}
                 for rel, raw in sorted(raw_sources.items())]
@@ -128,10 +145,16 @@ def compose_theme_continuation(root: Path | str, payload: dict, *, now: datetime
             raise explorer.SourceIncoherent('theme_source_changed') from None
         if hashlib.sha256(raw).hexdigest() != receipt['sha256']:
             raise explorer.SourceIncoherent('theme_source_changed')
+    try:
+        if _read(authority_path.parent, authority_path.name) != authority_raw:
+            raise explorer.SourceIncoherent('theme_policy_changed')
+    except OSError:
+        raise explorer.SourceIncoherent('theme_policy_changed') from None
     return {'schema': 'ontology_theme_continuation.v1', 'source': {
         'chain': source['chain'], 'asof': source['asof'], 'built': source['built'],
         'source_manifest_hash': source['source_manifest_hash'], 'method': METHOD,
         'theme_source_manifest_hash': explorer.manifest_hash_for(receipts, method=METHOD),
+        'policy_binding': 'AUTHORITATIVE_CODE_REGISTRY_EQUALS_SELECTED_SOURCE',
         'reads': receipts,
     }, 'selection': {'identity_kind': payload['identity_kind'], 'identity_id': payload['identity_id']},
         'theme_map': result}

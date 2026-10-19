@@ -23,18 +23,59 @@ function house(n) {
       || n.rights?.family !== 'mastermind_curated' || n.rights.public_display_allowed !== true
       || !['direct_display_ok','derived_display_ok'].includes(n.rights.rights_class)) fail();
 }
+function knownClock(value, cutoff) {
+  return day(value) ? Date.parse(value) + 86400000 <= time(cutoff) : stamp(value) && time(value) <= time(cutoff);
+}
+function decodeTracking(tracking, map, selected) {
+  const powers = ['can_rank','can_gate','can_size','can_trade','can_originate','can_escalate'];
+  if (tracking?.schema !== 'gmi.theme_etf_tracking_display/v1' || tracking.exhaustive !== false
+      || tracking.meaning !== 'curated_tracking_reference_not_holdings' || tracking.authority_ceiling !== 'display_only'
+      || tracking.security_identity?.status !== 'unavailable' || tracking.security_identity.reason !== 'ETF_SECURITY_IDENTITY_NOT_BOUND'
+      || tracking.holdings?.status !== 'unavailable' || tracking.holdings.asof !== null
+      || tracking.weights !== null || tracking.performance !== null || powers.some(k => tracking.authority?.[k] !== false)
+      || !Array.isArray(tracking.references) || tracking.references.length > 128) fail();
+  if (!tracking.references.length) {
+    if (tracking.status !== 'unavailable' || !['NO_QUALIFIED_ETF_TRACKING_REFERENCE','HOUSE_DISPLAY_PERMISSION_UNAVAILABLE','ETF_REFERENCE_BOUND_EXCEEDED'].includes(tracking.reason)) fail();
+    return;
+  }
+  if (tracking.status !== 'available' || tracking.reason !== null) fail();
+  const seen = new Set();
+  for (const ref of tracking.references) {
+    const binding = map.bindings.find(b => b.resolution.node_id === ref?.binding_node_id);
+    const basket = binding?.paths.flatMap(p => p.via).find(h => h.type === 'MEMBER_OF' && h.node.kind === 'basket' && h.node.node_id === ref.basket_node_id);
+    const c = ref?.clocks, permission = ref?.relationship_rights;
+    if (!binding || !basket || ref.selected_security_id !== selected.identity_id || ref.selected_security_id !== binding.resolution.security_id
+        || ref.relationship !== 'TRACKS' || !str(ref.edge_id) || !str(ref.symbol,24) || !/^[A-Z0-9][A-Z0-9._-]*$/.test(ref.symbol)
+        || ref.etf_node_id !== 'etf:' + ref.symbol || !['observed','reconstruction'].includes(ref.era)
+        || !['seed_constant','curated_changelog'].includes(ref.date_provenance)
+        || permission?.family !== 'mastermind_curated' || permission.public_display_allowed !== true
+        || !['direct_display_ok','derived_display_ok'].includes(permission.rights_class)
+        || !c || !day(c.valid_from) || c.valid_from > map.asof
+        || !(c.valid_to === null || day(c.valid_to) && c.valid_to > map.asof)
+        || !['evidence_time','belief_time','computed_at'].every(k => knownClock(c[k],map.knowledge_cutoff))
+        || !Array.isArray(ref.evidence) || !ref.evidence.length || ref.evidence.length > 32) fail();
+    const key = JSON.stringify([ref.binding_node_id, ref.basket_node_id, ref.edge_id]);
+    if (seen.has(key)) fail(); seen.add(key);
+    const evidence = new Set();
+    for (const receipt of ref.evidence) {
+      if (!str(receipt?.evidence_id) || evidence.has(receipt.evidence_id)
+          || !knownClock(receipt.published_at,map.knowledge_cutoff) || !knownClock(receipt.computed_at,map.knowledge_cutoff)) fail();
+      evidence.add(receipt.evidence_id);
+    }
+  }
+}
 export async function decodeTheme(value, reading, selected) {
   const s = value?.source, m = value?.theme_map;
   if (value?.schema !== 'ontology_theme_continuation.v1' || !s || !m
       || s.chain !== reading.chain || s.asof !== reading.asof || !stamp(s.built) || time(s.built) !== time(reading.built)
       || s.source_manifest_hash !== reading.source_manifest_hash || s.method !== METHOD || !HASH.test(s.theme_source_manifest_hash)
+      || s.policy_binding !== 'AUTHORITATIVE_CODE_REGISTRY_EQUALS_SELECTED_SOURCE'
       || value.selection?.identity_kind !== selected.identity_kind || value.selection?.identity_id !== selected.identity_id
       || m.schema !== 'gmi.theme_security_hierarchy_display/v1' || m.authority_ceiling !== 'display_only'
       || m.query?.kind !== selected.identity_kind || m.query?.id !== selected.identity_id || m.asof !== reading.asof
       || !stamp(m.knowledge_cutoff) || time(m.knowledge_cutoff) !== time(reading.built)
       || m.identity_basis !== 'LATEST_PUBLISHED_OWNER_REFERENCE' || m.identity_owner !== 'gmi.identity_resolution/v1'
       || m.historical_identity_claim !== false || m.knowledge_cutoff_applies_to !== 'GRAPH_PATHS_ONLY'
-      || m.etf_tracking?.status !== 'unavailable' || m.etf_tracking.reason !== 'ETF_DISPLAY_BINDING_NOT_COMPOSED'
       || !STATES.includes(m.availability?.state) || !Array.isArray(m.bindings) || m.bindings.length > 64
       || !Array.isArray(s.reads) || s.reads.length !== FILES.length) fail();
   const reads = [...s.reads].sort((a,b) => String(a.path).localeCompare(String(b.path)));
@@ -70,6 +111,7 @@ export async function decodeTheme(value, reading, selected) {
   if (m.bindings.length) {
     if (m.availability.state !== (available === m.bindings.length ? 'AVAILABLE' : available ? 'PARTIAL' : 'NO_QUALIFIED_HOUSE_PATH')) fail();
   } else if (!['NO_GRAPH_BINDING','IDENTITY_OWNER_UNAVAILABLE'].includes(m.availability.state)) fail();
+  decodeTracking(m.etf_tracking,m,selected);
   return value;
 }
 export function mountTheme(root) {
@@ -140,7 +182,30 @@ export function mountTheme(root) {
       field(list,'Graph binding','图谱绑定',r.node_id);field(list,'Identity evidence date','身份凭证日期',r.resolution_asof);
       field(list,'Identity computation','身份计算时刻',r.computed_at);field(list,'Identity master generation','身份主表生成时刻',r.master_generated_at);details.append(list);card.append(details);output.append(card);
     }
-    output.append(note('ETF tracking is not available in this continuation. These paths confer no ranking, sizing or trading authority.', '本次续接尚不提供 ETF 跟踪。这些路径不赋予排名、仓位或交易权限。'));
+    output.append(node('h3','','Curated ETF tracking references','自有 ETF 跟踪引用'));
+    const tracking = v.theme_map.etf_tracking;
+    if (!tracking.references.length) output.append(note('No ETF tracking reference is qualified for this reading. Coverage is incomplete.', '本次读数暂无合格的 ETF 跟踪引用。覆盖范围并不完整。'));
+    for (const ref of tracking.references) {
+      const basket = v.theme_map.bindings.find(b=>b.resolution.node_id===ref.binding_node_id).paths.flatMap(p=>p.via)
+        .find(h=>h.type==='MEMBER_OF' && h.node.node_id===ref.basket_node_id).node;
+      const card=node('article','ox-card'); card.dataset.etfReference='';
+      card.append(node('h4','',ref.symbol+' · tracking reference',ref.symbol+' · 跟踪引用'));
+      const link=node('p','ox-note');link.append(words('Tracks curated basket: ','跟踪自有组合：'),label(basket));card.append(link);
+      card.append(note('Effective from '+ref.clocks.valid_from+(ref.clocks.valid_to?' until '+ref.clocks.valid_to:'; no recorded end date')+'.',
+        '生效起始：'+ref.clocks.valid_from+(ref.clocks.valid_to?'；结束：'+ref.clocks.valid_to:'；未记录结束日期')+'。'));
+      if(ref.era==='reconstruction' || ref.date_provenance==='seed_constant') card.append(note(
+        'Reconstructed relationship or seed date; not proof of an observation made on that date.', '此关系为重建记录或使用种子日期，不证明该日期当时已有观测。'));
+      const details=node('details','ox-detail');details.append(node('summary','','Tracking evidence and clocks','跟踪凭证与时间'));
+      const list=node('dl','ox-company-fields ox-company-references');
+      field(list,'Selected security','所选证券',ref.selected_security_id);field(list,'Graph edge','图谱边',ref.edge_id);
+      field(list,'Evidence time','证据时间',ref.clocks.evidence_time);field(list,'Knowledge time','知识时间',ref.clocks.belief_time);
+      field(list,'Computation','计算时刻',ref.clocks.computed_at);field(list,'Era','时期',ref.era);field(list,'Date provenance','日期来源',ref.date_provenance);
+      for(const receipt of ref.evidence) field(list,'Evidence reference / publication / computation','凭证引用 / 发布 / 计算',
+        receipt.evidence_id+' / '+receipt.published_at+' / '+receipt.computed_at);
+      details.append(list);card.append(details);output.append(card);
+    }
+    output.append(note('These are curated graph tracking references, not fund identity or proof that the fund holds the selected company. Holdings, weights and performance are unavailable. Coverage is incomplete; these paths confer no ranking, sizing or trading authority.',
+      '这些是自有图谱跟踪引用，不是基金身份，也不证明基金持有所选公司。持仓、权重及表现不可用。覆盖范围并不完整；这些路径不赋予排名、仓位或交易权限。'));
     const details=node('details','ox-detail');details.append(node('summary','','Selected source references','所选来源引用'));
     const list=node('dl','ox-company-fields ox-company-references');field(list,'Path reading','路径读数',v.source.source_manifest_hash);field(list,'Theme source generation','主题来源版本',v.source.theme_source_manifest_hash);details.append(list);output.append(details);
   }

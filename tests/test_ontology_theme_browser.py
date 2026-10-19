@@ -18,8 +18,16 @@ CHAIN='oil_inflation_duration_derate'
 
 @pytest.fixture
 def theme_reading(tmp_path):
+    return native_theme_reading(tmp_path)
+
+def native_theme_reading(tmp_path, *, etf=False):
     root=_theme_owner_root(tmp_path)
     fx.build_root(root,slug=CHAIN)
+    if etf:
+        from tests.test_theme_graph_hierarchy_paths import _selected_etf_view
+        view=_selected_etf_view()
+        for name, rows in [('nodes',view._nodes),('edges',view._edges),('evidence',view._evidence)]:
+            parquet.write_table(arrow.Table.from_pylist(rows),root/'data/theme_graph'/f'{name}.parquet')
     path=root/'data/theme_graph/nodes.parquet'
     rows=parquet.read_table(path).to_pylist()
     labels={'macro:energy':('Synthetic energy','合成能源'),'theme:solar':('Synthetic solar','合成太阳能'),
@@ -33,6 +41,56 @@ def theme_reading(tmp_path):
     result=ontology_theme.compose_theme_continuation(root,payload)
     assert result['theme_map']['availability']['state']=='AVAILABLE'
     return snapshot,result
+
+@pytest.fixture
+def etf_reading(tmp_path):
+    result=native_theme_reading(tmp_path,etf=True)
+    assert result[1]['theme_map']['etf_tracking']['status']=='available'
+    return result
+
+@pytest.mark.parametrize('width,theme,language',[(1440,'dark','en'),(390,'light','zh')])
+def test_native_etf_reference_is_displayed_without_holdings_claim(browser,etf_reading,width,theme,language):
+    ctx,page,seen,errors=start(browser,etf_reading,width=width,theme=theme,language=language)
+    try:
+        page.locator('[data-theme-read]').click();settled(page,'ready')
+        card=page.locator('[data-etf-reference]')
+        assert card.count()==1 and 'AAAETF' in card.inner_text()
+        assert ('seed date' if language=='en' else '种子日期') in card.inner_text()
+        card.locator('summary').click()
+        text=card.inner_text()
+        assert 'SEC:US-XNAS-AAA' in text and 'ev:tracking' in text and '2024-01-02T00:00:00Z' in text
+        full=page.locator('[data-theme-result]').inner_text()
+        assert ('not fund identity' if language=='en' else '不是基金身份') in full
+        assert ('Holdings, weights and performance are unavailable' if language=='en' else '持仓、权重及表现不可用') in full
+        assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+        assert len(seen)==1 and not errors and page.evaluate('pCalls.queries')==0
+    finally:ctx.close()
+
+@pytest.mark.parametrize('mutation',[
+ 't.references[0].selected_security_id="SEC:US-XNAS-BBB"',
+ 't.references[0].basket_node_id="basket:baskets:unselected"',
+ 't.references[0].binding_node_id="co:us:BBB"',
+ 't.references[0].etf_node_id="etf:OTHER"',
+ 't.references[0].relationship_rights.public_display_allowed=false',
+ 't.references[0].relationship_rights.family="vendor"',
+ 't.references[0].clocks.belief_time="2026-01-03"',
+ 't.references[0].clocks.valid_to="2026-01-02"',
+ 't.references[0].evidence[0].computed_at="2026-01-03T02:11:00Z"',
+ 't.references[0].evidence.push(t.references[0].evidence[0])',
+ 't.references.push(t.references[0])',
+ 't.authority.can_rank=true',
+ 't.holdings.status="available"',
+ 't.security_identity.status="available"',
+ 't.exhaustive=true',
+])
+def test_etf_decoder_refuses_foreign_identity_rights_clocks_or_authority(browser,etf_reading,mutation):
+    ctx,page,seen,errors=start(browser,etf_reading)
+    try:
+        accepted=page.evaluate("async ({v,r})=>{const m=await import('/ontology-theme.js');try{await m.decodeTheme(v,r,{identity_kind:'security',identity_id:'SEC:US-XNAS-AAA'});return true}catch{return false}}",{'v':etf_reading[1],'r':etf_reading[0]['source']})
+        assert accepted
+        rejected=page.evaluate("async ({v,r})=>{const t=v.theme_map.etf_tracking;"+mutation+";const m=await import('/ontology-theme.js');try{await m.decodeTheme(v,r,{identity_kind:'security',identity_id:'SEC:US-XNAS-AAA'});return false}catch{return true}}",{'v':etf_reading[1],'r':etf_reading[0]['source']})
+        assert rejected and not errors and seen==[]
+    finally:ctx.close()
 
 
 def start(browser,theme_reading,*,width=1440,theme='dark',language='en',mutate=None):
