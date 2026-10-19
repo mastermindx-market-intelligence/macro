@@ -254,3 +254,227 @@ def validate_e0_control_join(*, registration: object, closure: object,
             "metadata_consistent": True, "operational_admission": False,
             "unverified_obligations": ["complete_domain_manifests", "authenticated_owner_installation",
                 "independent_prelabel_closure", "current_access_history", "exact_durable_reservation"]}
+
+
+# Existing frozen artifacts, not a new registry or an installation authority.
+# Their original bytes include formatting (and, for the guide, Markdown).
+_FROZEN_DOMAIN_DIGESTS = {
+    "membership": "2b03cb59f2d2f8bca61d5cc7223b1f40c1f58a99df80908a223025e425ff66d6",
+    "design": "5821074f0ad1564780759a7e5d7ca6595cd8d411f119629f31ee431f2a481ca6",
+    "annotation_guide": "4efc664f6c86f5af6a62ac4fd8b98ae37ae130fa18ecfa7bdf0a88b399a71696",
+    "prelabel_binding": "ae8bb3987cce1555851ec91782aeb7e742d3222777ef2762722744f66540b65e",
+}
+_FROZEN_JSON_SCHEMAS = {
+    "market_memory.e0_original_owner_metadata_membership.v1": "membership",
+    "market_memory.research_protocol_design.v1": "design",
+    "market_memory.e0_prelabel_design_binding.v1": "prelabel_binding",
+}
+MAX_DOMAIN_OBJECTS = 64
+MAX_DOMAIN_OBJECT_BYTES = 4 * 1024 * 1024  # Existing reference-schema ceiling.
+MAX_DOMAIN_TOTAL_BYTES = 32 * 1024 * 1024
+_DOMAIN_KEYS = ("tasks_ref", "source_coverage_ref", "interval_split_ref", "design_ref",
+                "reviewer_plan_ref", "outcome_definition_ref", "metrics_ref", "access_rules_ref")
+_REFERENCE_KEYS = {"schema", "object_id", "sha256", "bytes"}
+
+
+def _domain_reference(value: object) -> dict:
+    if (type(value) is not dict or set(value) != _REFERENCE_KEYS
+            or any(type(value.get(key)) is not str or _ID.fullmatch(value[key]) is None
+                   for key in ("schema", "object_id"))
+            or type(value.get("sha256")) is not str
+            or re.fullmatch(r"[a-f0-9]{64}", value["sha256"]) is None
+            or type(value.get("bytes")) is not int
+            or not 1 <= value["bytes"] <= MAX_DOMAIN_OBJECT_BYTES):
+        raise E0ControlError("exact_domain_reference_required")
+    return dict(value)
+
+
+def _domain_json(body: bytes) -> object:
+    def pairs(values):
+        result = {}
+        for key, value in values:
+            if key in result:
+                raise E0ControlError("duplicate_domain_json_key")
+            result[key] = value
+        return result
+
+    def nonfinite(_value):
+        raise E0ControlError("nonfinite_domain_number")
+
+    try:
+        value = json.loads(body.decode("utf-8"), object_pairs_hook=pairs, parse_constant=nonfinite)
+        _bounded_tree(value)
+    except (UnicodeError, ValueError, RecursionError) as exc:
+        raise E0ControlError("invalid_domain_json") from exc
+    return value
+
+
+def resolve_e0_domain_references(*, registration: object, objects: object,
+                                 prelabel_design: bytes | None = None) -> dict:
+    """Resolve supplied exact bytes; never fetch, publish or admit a study.
+
+    ``objects`` is a bounded native dict of SHA-256 -> bytes, NOT paths, URLs,
+    readers or grants. Missing referenced bytes are unresolved; inconsistent
+    supplied bytes/references raise E0ControlError. New metadata is not
+    interpreted without an existing payload contract. Original
+    frozen JSON retains its exact pinned representation and is parsed strictly;
+    code/text and unknown schemas stay opaque, never imported or executed.
+    The optional original prelabel_design bytes are a diagnostic input, never
+    a substitute for a registration reference or a reviewer plan. They share
+    the object/byte bounds. Only registration references and that known guide
+    digest link are followed; this is not a recursive object loader.
+
+    Reference closure is distinct from domain completeness: current contracts
+    do not define tasks/splits/reviewer/allocation payload schemas. Resolving
+    their hashes must not silently certify those scientific obligations.
+    """
+    reg = validate_e0_registration(registration)
+    extra = int(prelabel_design is not None)
+    if type(objects) is not dict or len(objects) + extra > MAX_DOMAIN_OBJECTS:
+        raise E0ControlError("bounded_domain_objects_required")
+    if prelabel_design is not None and (type(prelabel_design) is not bytes
+            or not 0 < len(prelabel_design) <= MAX_DOMAIN_OBJECT_BYTES):
+        raise E0ControlError("bounded_prelabel_design_bytes_required")
+    total = len(prelabel_design) if prelabel_design is not None else 0
+    if total > MAX_DOMAIN_TOTAL_BYTES:
+        raise E0ControlError("aggregate_domain_byte_limit")
+    for digest, body in objects.items():
+        if (type(digest) is not str or re.fullmatch(r"[a-f0-9]{64}", digest) is None
+                or type(body) is not bytes or not 0 < len(body) <= MAX_DOMAIN_OBJECT_BYTES):
+            raise E0ControlError("bounded_domain_bytes_required")
+        total += len(body)
+        if total > MAX_DOMAIN_TOTAL_BYTES:
+            raise E0ControlError("aggregate_domain_byte_limit")
+
+    roots = [("corpus.membership_ref", reg["corpus"]["membership_ref"])]
+    roots += [(key, reg[key]) for key in _DOMAIN_KEYS]
+    roots += [("allocation." + key, reg["allocation"][key])
+              for key in ("algorithm_ref", "assignment_ref")]
+    roots += [("implementation." + key, reg["implementation"][key])
+              for key in ("method_ref", "code_ref", "dependencies_ref")]
+    roots += [("implementation.baseline_refs", ref) for ref in reg["implementation"]["baseline_refs"]]
+    expected = {"corpus.membership_ref": _FROZEN_DOMAIN_DIGESTS["membership"],
+                "design_ref": _FROZEN_DOMAIN_DIGESTS["design"]}
+    if any(ref["sha256"] != expected[role] for role, ref in roots if role in expected):
+        raise E0ControlError("frozen_domain_reference_mismatch")
+
+    references: dict[str, dict] = {}
+    parsed: dict[str, object] = {}
+    missing: set[str] = set()
+    linked_digests: set[str] = set()
+
+    for _role, ref in roots:
+        clean = _domain_reference(ref)
+        digest = clean["sha256"]
+        frozen_role = next((name for name, pin in _FROZEN_DOMAIN_DIGESTS.items()
+                            if pin == digest), None)
+        if frozen_role is not None:
+            expected_role = {"membership": "corpus.membership_ref", "design": "design_ref"}.get(frozen_role)
+            if _role != expected_role:
+                raise E0ControlError("frozen_domain_reference_role_mismatch")
+            expected_schema = next(schema for schema, role in _FROZEN_JSON_SCHEMAS.items()
+                                   if role == frozen_role)
+            if clean["schema"] != expected_schema:
+                raise E0ControlError("domain_schema_identity_mismatch")
+        known = _FROZEN_JSON_SCHEMAS.get(clean["schema"])
+        if known is not None and digest != _FROZEN_DOMAIN_DIGESTS[known]:
+            raise E0ControlError("frozen_domain_schema_reference_mismatch")
+        if digest in references:
+            if references[digest] != clean:
+                raise E0ControlError("domain_reference_alias_mismatch")
+            continue
+        references[digest] = clean
+        if len(references) > MAX_DOMAIN_OBJECTS:
+            raise E0ControlError("domain_reference_count_limit")
+        body = objects.get(digest)
+        if body is None:
+            missing.add(digest)
+            continue
+        if len(body) != clean["bytes"] or hashlib.sha256(body).hexdigest() != digest:
+            raise E0ControlError("domain_reference_bytes_mismatch")
+        # No JSON-by-first-character heuristic: source code and unsupported
+        # semantic schemas stay opaque. Only exact known frozen JSON is parsed.
+        json_digests = {_FROZEN_DOMAIN_DIGESTS[key]
+                        for key in ("membership", "design", "prelabel_binding")}
+        value = _domain_json(body) if digest in json_digests else None
+        if type(value) is dict:
+            declared_schema = value.get("schema", value.get("document_type"))
+            if declared_schema != clean["schema"]:
+                raise E0ControlError("domain_schema_identity_mismatch")
+            identity = value.get("object_id", value.get("protocol_id"))
+            if identity is not None and identity != clean["object_id"]:
+                raise E0ControlError("domain_object_identity_mismatch")
+        parsed[digest] = value
+
+    binding = None
+    if prelabel_design is not None:
+        digest = _FROZEN_DOMAIN_DIGESTS["prelabel_binding"]
+        if hashlib.sha256(prelabel_design).hexdigest() != digest:
+            raise E0ControlError("frozen_prelabel_design_bytes_mismatch")
+        binding = _domain_json(prelabel_design)
+        parsed[digest] = binding
+    if binding is not None:
+        # This is the real existing shape: a bare guide digest plus seed
+        # metadata, not an invented reviewer-plan/ref envelope or allocation.
+        if (binding["annotation_guide_sha256"] != _FROZEN_DOMAIN_DIGESTS["annotation_guide"]
+                or binding["protocol_design_sha256"] != _FROZEN_DOMAIN_DIGESTS["design"]
+                or binding["actual_membership_sha256"] != reg["corpus"]["membership_sha256"]
+                or binding["condition_seed"]["encoding"] != reg["allocation"]["seed_encoding"]
+                or binding["condition_seed"]["seed"] != reg["allocation"]["seed_hex"]):
+            raise E0ControlError("domain_prelabel_binding_mismatch")
+        digest = binding["annotation_guide_sha256"]
+        linked_digests.add(digest)
+        body = objects.get(digest)
+        if body is not None:
+            if hashlib.sha256(body).hexdigest() != digest:
+                raise E0ControlError("domain_guide_bytes_mismatch")
+            parsed[digest] = None  # Markdown, never JSON and never executed.
+    if set(objects) - references.keys() - linked_digests:
+        raise E0ControlError("unreferenced_domain_object")
+    missing_linked = linked_digests - parsed.keys()
+    frozen_resolved = sorted(name for name, digest in _FROZEN_DOMAIN_DIGESTS.items()
+                             if digest in parsed)
+    membership = parsed.get(_FROZEN_DOMAIN_DIGESTS["membership"])
+    gaps = []
+    if membership is not None:
+        rows = membership["ordered_membership"]
+        row_bytes = json.dumps(rows, ensure_ascii=False, sort_keys=True,
+                               separators=(",", ":"), allow_nan=False).encode("utf-8")
+        if (membership["capture_count"] != reg["corpus"]["count"]
+                or len(rows) != reg["corpus"]["count"]
+                or hashlib.sha256(row_bytes).hexdigest() != reg["corpus"]["membership_sha256"]
+                or any(membership["owner"][key] != reg["corpus"][key]
+                       for key in ("profile", "store_id", "generation_id", "generation_sha256"))):
+            raise E0ControlError("domain_membership_identity_mismatch")
+        for field in ("source_measurement_session", "economic_episode_id",
+                      "feature_support_interval", "label_interval"):
+            count = sum(row[field] is None for row in membership["query_candidates"])
+            if count:
+                gaps.append({"field": "membership." + field, "missing_rows": count})
+    if binding is not None:
+        for field in ("actual_task_query_list", "real_reviewer_assignment"):
+            if binding[field] is None:
+                gaps.append({"field": "prelabel_binding." + field, "missing_rows": 1})
+        if binding["condition_seed"]["allocation_hash"] is None:
+            gaps.append({"field": "prelabel_binding.condition_allocation", "missing_rows": 1})
+
+    return {"schema": "research_factory.market_memory_e0_reference_resolution.v1",
+            "authority": "display_only", "study_id": reg["study_id"],
+            "registration_ref": _record_ref(reg, "registration"),
+            "reference_scope": "registration_refs_and_known_prelabel_digest_link",
+            "references_complete": not missing and not missing_linked,
+            "resolved_references": [references[key] for key in sorted(parsed) if key in references],
+            "missing_references": [references[key] for key in sorted(missing)],
+            "frozen_artifacts_resolved": frozen_resolved,
+            "missing_frozen_artifacts": sorted(name for name, digest in _FROZEN_DOMAIN_DIGESTS.items()
+                                               if digest in missing_linked),
+            "unparsed_reference_schemas": sorted({references[key]["schema"] for key in parsed
+                if key in references and parsed[key] is None}),
+            "frozen_metadata_gaps": gaps,
+            "domain_metadata_complete": False, "operational_admission": False,
+            "unresolved_semantics": ["tasks_and_query_selection", "source_coverage_and_feature_intervals",
+                "episode_clusters_and_interval_splits", "reviewer_plan_and_independence",
+                "condition_allocation", "outcome_definition_and_maturity", "baseline_executables",
+                "metrics_and_access_rules"],
+            "unverified_obligations": ["authenticated_owner_installation", "independent_prelabel_closure",
+                "current_access_history", "exact_durable_reservation"]}

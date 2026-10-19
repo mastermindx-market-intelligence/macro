@@ -2,6 +2,7 @@
 import copy
 import hashlib
 import json
+from pathlib import Path
 import pytest
 from jsonschema import Draft202012Validator
 from engine.research_factory import market_memory_contextual_registration as e0
@@ -198,3 +199,218 @@ def test_unknown_kind_and_oversized_input_refuse_without_schema_resolution(recor
         e0.validate_e0_control_record(records["registration"], kind="../../private")
     with pytest.raises(e0.E0ControlError, match="bounded_control_bytes"):
         e0.parse_e0_control_record(b" " * (e0.MAX_CONTROL_BYTES + 1), kind="registration")
+
+
+# Outcome-blind domain-reference resolution; original artifacts below are test inputs only.
+ROOT = Path(__file__).resolve().parents[1]
+FIXTURES = ROOT / "tests/fixtures/market_memory_e0"
+
+
+def reference(body, schema="synthetic.domain.v1", identity="synthetic-domain"):
+    return {"schema": schema, "object_id": identity,
+            "sha256": hashlib.sha256(body).hexdigest(), "bytes": len(body)}
+
+
+@pytest.fixture
+def bundle(records):
+    reg = copy.deepcopy(records["registration"])
+    objects = {}
+
+    def add(body, schema="synthetic.domain.v1", identity="synthetic-domain"):
+        ref = reference(body, schema, identity)
+        objects[ref["sha256"]] = body
+        return ref
+
+    body = (FIXTURES / "E0_ACTUAL_METADATA_MEMBERSHIP.json").read_bytes()
+    reg["corpus"]["membership_ref"] = add(
+        body, "market_memory.e0_original_owner_metadata_membership.v1", "original109-metadata")
+    body = (ROOT / "research/market_memory/RETRIEVAL_PROTOCOL_2026_10_12.json").read_bytes()
+    reg["design_ref"] = add(body, "market_memory.research_protocol_design.v1",
+                            "market-memory-retrieval-evidence-e0-20261012")
+    for key in e0._DOMAIN_KEYS:
+        if key != "design_ref":
+            reg[key] = add(canonical({"schema": "synthetic.domain.v1", "object_id": key}), identity=key)
+    for key in ("algorithm_ref", "assignment_ref"):
+        reg["allocation"][key] = add(canonical({"object_id": key}), identity=key)
+    for key in ("method_ref", "code_ref", "dependencies_ref"):
+        reg["implementation"][key] = add(canonical({"object_id": key}), identity=key)
+    reg["implementation"]["baseline_refs"] = [add(
+        b"raise AssertionError('opaque baseline must never execute')", "python.source.v1", "baseline-source")]
+    # Diagnostic input is separate: the real design binding is not a reviewer plan.
+    prelabel = (FIXTURES / "E0_PRELABEL_DESIGN_BINDING_V1.json").read_bytes()
+    guide = (FIXTURES / "E0_ANNOTATION_GUIDE_PRELABEL_V1.md").read_bytes()
+    objects[hashlib.sha256(guide).hexdigest()] = guide
+    return reg, objects, prelabel
+
+
+def resolve(bundle):
+    reg, objects, prelabel = bundle
+    return e0.resolve_e0_domain_references(registration=reg, objects=objects, prelabel_design=prelabel)
+
+
+def test_exact_frozen_reference_closure_is_not_semantic_completeness_or_admission(bundle):
+    result = resolve(bundle)
+    assert result["references_complete"] is True
+    assert result["missing_references"] == []
+    assert result["frozen_artifacts_resolved"] == ["annotation_guide", "design", "membership", "prelabel_binding"]
+    assert result["domain_metadata_complete"] is result["operational_admission"] is False
+    assert "episode_clusters_and_interval_splits" in result["unresolved_semantics"]
+    assert "exact_durable_reservation" in result["unverified_obligations"]
+    # Preserve the actual null metadata, rather than filling it from UTC dates.
+    original = json.loads(bundle[1][e0._FROZEN_DOMAIN_DIGESTS["membership"]])
+    assert len(original["ordered_membership"]) == 109
+    assert all(row["source_measurement_session"] is None for row in original["query_candidates"])
+    assert all(row["feature_support_interval"] is None for row in original["query_candidates"])
+    assert bundle[0]["allocation"]["seed_hex"] == "7c8013e1e8092bdf91d4598a73c01d9690199dfb6c08db632b81f564367a4b03"
+    assert {"field": "membership.source_measurement_session", "missing_rows": 109} in result["frozen_metadata_gaps"]
+    assert {"field": "prelabel_binding.condition_allocation", "missing_rows": 1} in result["frozen_metadata_gaps"]
+    assert "ordered_membership" not in json.dumps(result)
+
+
+@pytest.mark.parametrize("role", ["tasks_ref", "design_ref", "membership_ref", "guide_ref"])
+def test_absent_bytes_are_unresolved_and_do_not_certify_domains(bundle, role):
+    reg, objects, prelabel = bundle
+    if role == "membership_ref":
+        digest = reg["corpus"][role]["sha256"]
+    elif role == "guide_ref":
+        digest = e0._FROZEN_DOMAIN_DIGESTS["annotation_guide"]
+    else:
+        digest = reg[role]["sha256"]
+    del objects[digest]
+    result = resolve(bundle)
+    assert result["references_complete"] is False
+    if role == "guide_ref":
+        assert result["missing_frozen_artifacts"] == ["annotation_guide"]
+    else:
+        assert [ref["sha256"] for ref in result["missing_references"]] == [digest]
+    assert result["domain_metadata_complete"] is result["operational_admission"] is False
+
+
+@pytest.mark.parametrize("mutate", [
+    lambda r, o: o.update({r["tasks_ref"]["sha256"]: b"wrong bytes"}),
+    lambda r, o: r["tasks_ref"].update(bytes=r["tasks_ref"]["bytes"] + 1),
+    lambda r, o: r["design_ref"].update(sha256="a" * 64),
+    lambda r, o: r["corpus"]["membership_ref"].update(sha256="a" * 64),
+    lambda r, o: r["design_ref"].update(schema="wrong.schema"),
+    lambda r, o: r["design_ref"].update(object_id="wrong-protocol"),
+    lambda r, o: r["implementation"].update(method_ref={**r["tasks_ref"], "object_id": "alias"}),
+])
+def test_supplied_contradictions_raise_instead_of_becoming_missing(bundle, mutate):
+    mutate(*bundle[:2])
+    with pytest.raises(e0.E0ControlError):
+        resolve(bundle)
+
+
+@pytest.mark.parametrize("body", [
+    b'{"object_id":"tasks_ref","object_id":"tasks_ref"}',
+    b'{"object_id":"tasks_ref","number":NaN}',
+    b'{"object_id":"tasks_ref"}\n',
+    b'[source code rather than JSON',
+])
+def test_unsupported_schema_bytes_stay_opaque_even_when_starting_like_json(bundle, body):
+    reg, objects, prelabel = bundle
+    del objects[reg["tasks_ref"]["sha256"]]
+    reg["tasks_ref"] = reference(body, "unsupported.source.v1", "tasks_ref")
+    objects[reg["tasks_ref"]["sha256"]] = body
+    result = resolve(bundle)
+    assert result["references_complete"] is True
+    assert "unsupported.source.v1" in result["unparsed_reference_schemas"]
+    assert result["domain_metadata_complete"] is False
+
+
+def test_prelabel_design_is_a_bounded_diagnostic_not_a_reviewer_plan(bundle):
+    reg, objects, prelabel = bundle
+    design_ref = reference(prelabel, "market_memory.e0_prelabel_design_binding.v1", "misbound-design")
+    reg["reviewer_plan_ref"] = design_ref
+    objects[design_ref["sha256"]] = prelabel
+    with pytest.raises(e0.E0ControlError, match="role_mismatch"):
+        resolve(bundle)
+    with pytest.raises(e0.E0ControlError, match="prelabel_design_bytes_mismatch"):
+        e0.resolve_e0_domain_references(registration=records_registration(bundle), objects={},
+                                        prelabel_design=prelabel + b"\n")
+
+
+def records_registration(bundle):
+    reg = copy.deepcopy(bundle[0])
+    reg["reviewer_plan_ref"] = reference(b"opaque reviewer plan", identity="reviewer_plan_ref")
+    return reg
+
+
+def test_known_wrong_schema_is_contradiction_even_when_bytes_missing(bundle):
+    reg, objects, prelabel = bundle
+    del objects[reg["design_ref"]["sha256"]]
+    reg["design_ref"]["schema"] = "unsupported.wrong.schema"
+    with pytest.raises(e0.E0ControlError, match="schema_identity_mismatch"):
+        resolve(bundle)
+
+
+def test_extra_objects_are_not_silently_scanned_as_evaluation_inputs(bundle):
+    bundle[1]["f" * 64] = b"unreferenced payload"
+    with pytest.raises(e0.E0ControlError, match="unreferenced"):
+        resolve(bundle)
+
+
+def test_bounds_precede_domain_parsing(bundle, monkeypatch):
+    def forbidden(*args, **kwargs):
+        pytest.fail("domain parsing must follow input limits")
+    monkeypatch.setattr(e0, "_domain_json", forbidden)
+    reg, objects, prelabel = bundle
+    with pytest.raises(e0.E0ControlError, match="bounded_domain_objects"):
+        e0.resolve_e0_domain_references(registration=reg, objects={str(i): b"x" for i in range(65)})
+    with pytest.raises(e0.E0ControlError, match="bounded_domain_bytes"):
+        e0.resolve_e0_domain_references(registration=reg, objects={"a" * 64: b"x" * (e0.MAX_DOMAIN_OBJECT_BYTES + 1)})
+    monkeypatch.setattr(e0, "MAX_DOMAIN_TOTAL_BYTES", 10)
+    with pytest.raises(e0.E0ControlError, match="aggregate_domain_byte"):
+        resolve(bundle)
+
+
+def test_resolution_does_not_open_paths_or_execute_opaque_code_and_returns_detached_refs(bundle, monkeypatch):
+    e0.validate_e0_registration(bundle[0])  # Warm only the existing public schema loader.
+    def forbidden(*args, **kwargs):
+        pytest.fail("reference resolution has no filesystem/network execution seam")
+    monkeypatch.setattr(Path, "open", forbidden)
+    result = resolve(bundle)
+    result["resolved_references"][0]["object_id"] = "caller-mutated"
+    assert all(ref["object_id"] != "caller-mutated" for ref in resolve(bundle)["resolved_references"])
+
+
+def test_real_markdown_digest_link_and_seed_binding_without_invented_reference_tuple(bundle):
+    binding = json.loads((FIXTURES / "E0_PRELABEL_DESIGN_BINDING_V1.json").read_bytes())
+    assert type(binding["annotation_guide_sha256"]) is str
+    assert binding["condition_seed"]["seed"] == bundle[0]["allocation"]["seed_hex"]
+    assert binding["protocol_design_sha256"] == bundle[0]["design_ref"]["sha256"]
+    assert binding["actual_membership_sha256"] == bundle[0]["corpus"]["membership_sha256"]
+    result = resolve(bundle)
+    assert "annotation_guide" in result["frozen_artifacts_resolved"]
+    bundle[1][binding["annotation_guide_sha256"]] += b"\n"
+    with pytest.raises(e0.E0ControlError, match="guide_bytes"):
+        resolve(bundle)
+
+
+def test_unknown_schema_does_not_claim_transitive_reference_closure(bundle):
+    reg, objects, prelabel = bundle
+    del objects[reg["tasks_ref"]["sha256"]]
+    child_body = b"must not be interpreted"
+    child = reference(child_body, "unsupported.child.v1", "child")
+    body = canonical({"nested": child})
+    reg["tasks_ref"] = reference(body, "unsupported.json.v1", "tasks_ref")
+    objects[reg["tasks_ref"]["sha256"]] = body
+    result = resolve(bundle)
+    assert result["reference_scope"] == "registration_refs_and_known_prelabel_digest_link"
+    assert "unsupported.json.v1" in result["unparsed_reference_schemas"]
+    assert child not in result["missing_references"]
+    objects[child["sha256"]] = child_body
+    with pytest.raises(e0.E0ControlError, match="unreferenced"):
+        resolve(bundle)
+
+
+def test_explicit_prelabel_input_shares_object_and_aggregate_bounds(bundle, monkeypatch):
+    reg, objects, prelabel = bundle
+    with monkeypatch.context() as patch:
+        patch.setattr(e0, "MAX_DOMAIN_OBJECTS", len(objects))
+        with pytest.raises(e0.E0ControlError, match="bounded_domain_objects"):
+            resolve(bundle)
+    with monkeypatch.context() as patch:
+        patch.setattr(e0, "MAX_DOMAIN_TOTAL_BYTES", sum(map(len, objects.values())) + len(prelabel) - 1)
+        with pytest.raises(e0.E0ControlError, match="aggregate_domain_byte"):
+            resolve(bundle)
