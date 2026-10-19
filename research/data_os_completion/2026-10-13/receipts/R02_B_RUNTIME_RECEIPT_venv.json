@@ -1,0 +1,237 @@
+{
+ "binding_path": "/tmp/dataos_r02_972d2923/binding.json",
+ "binding_roots": [
+  {
+   "alias": "macro_vps_snapshot",
+   "evidence_kind": "unqualified_snapshot"
+  }
+ ],
+ "binding_sha256": "526c118e15c0d606e58da469424bc31196ebf3583fb8a200563aa2f84ea29ca5",
+ "finished_at": "2026-10-17T13:38:58+00:00",
+ "host": "ubuntu-s-mastermindx",
+ "interpreter": "/opt/macro/.venv/bin/python",
+ "receipt": "R02 consumer B runtime execution",
+ "registry_path": "/opt/macro/config/dataset_registry.yml",
+ "repo_root": "/opt/macro",
+ "runs": [
+  {
+   "actions": [
+    "search",
+    "browse",
+    "describe",
+    "read",
+    "lab_signals",
+    "lab_plan",
+    "lab_run",
+    "history_dossier",
+    "history_transcript",
+    "tiingo_compare_statements"
+   ],
+   "envelope": {
+    "action": "capabilities",
+    "implementation_revision": "83daf2b783ba218c4beed3850b2fc34cc5d139e7",
+    "observed_at": "2026-10-17T13:38:55.960413+00:00",
+    "production_qualification": "NOT_ESTABLISHED_BY_THIS_ADAPTER",
+    "schema_version": "mastermind.data_workspace/v1",
+    "source_access": "read_only"
+   },
+   "label": "capabilities",
+   "rc": 0,
+   "request": null,
+   "stderr_bytes": 0,
+   "stdout_bytes": 3048,
+   "stdout_sha256": "e90ece4ebb872372d8c26af46c5d1c04efc0c4d5b188ea560f9528e5fc03aa94",
+   "top_level_keys": [
+    "access",
+    "action",
+    "actions",
+    "freshness",
+    "history",
+    "implementation_revision",
+    "lab",
+    "max_request_bytes",
+    "max_response_bytes",
+    "max_rows_per_read",
+    "max_scan_rows_per_read",
+    "observed_at",
+    "production_qualification",
+    "read_view",
+    "schema_version",
+    "source_access",
+    "supported_formats",
+    "tiingo_statement_comparison",
+    "unsupported_formats"
+   ]
+  },
+  {
+   "availability": "NOT_ESTABLISHED_BY_DECLARATION",
+   "contract": {
+    "adjustment": "total_return",
+    "dataset_id": "equity.bars.daily.stocks",
+    "format": "parquet",
+    "frequency": "1d",
+    "grain": [
+     "ticker",
+     "date"
+    ],
+    "layer": "L1",
+    "status": "PRODUCED",
+    "storage": "data/stocks/{ticker}.parquet",
+    "temporal_profile": "BARS",
+    "timezone": "America/New_York"
+   },
+   "envelope": {
+    "action": "describe_contract",
+    "implementation_revision": "83daf2b783ba218c4beed3850b2fc34cc5d139e7",
+    "observed_at": "2026-10-17T13:38:56.528677+00:00",
+    "production_qualification": "NOT_ESTABLISHED_BY_THIS_ADAPTER",
+    "schema_version": "mastermind.data_workspace/v1",
+    "source_access": "read_only"
+   },
+   "label": "describe_contract",
+   "rc": 0,
+   "request": {
+    "action": "describe",
+    "ref": "registry:equity.bars.daily.stocks"
+   },
+   "stderr_bytes": 0,
+   "stdout_bytes": 2747,
+   "stdout_sha256": "e6aac64d33291ed2a95d3965cf72a37e5df50463592bdc2cb8fc39cc4f17b1bb",
+   "top_level_keys": [
+    "action",
+    "availability",
+    "contract",
+    "declared_consumers",
+    "declared_inputs",
+    "implementation_revision",
+    "observed_at",
+    "production_qualification",
+    "schema_version",
+    "source_access"
+   ]
+  },
+  {
+   "envelope": {
+    "action": "read",
+    "implementation_revision": "83daf2b783ba218c4beed3850b2fc34cc5d139e7",
+    "observed_at": "2026-10-17T13:38:57.299245+00:00",
+    "production_qualification": "NOT_ESTABLISHED_BY_THIS_ADAPTER",
+    "schema_version": "mastermind.data_workspace/v1",
+    "source_access": "read_only"
+   },
+   "label": "read",
+   "price_basis": "PRESERVED_AS_STORED_NOT_REBASED",
+   "query_receipt_sha256": "6e8c2e6b7fb901e6c601956a4469cf53677e0d26b2f34f8cdf0d09679ba92c1d",
+   "rc": 0,
+   "request": {
+    "action": "read",
+    "limit": 1,
+    "ref": "macro_vps_snapshot:stocks/AAPL.parquet"
+   },
+   "result_shape": {
+    "columns": [
+     "Date",
+     "close",
+     "high",
+     "low",
+     "volume"
+    ],
+    "keys": [
+     "missingness_notes",
+     "next_offset",
+     "row_positions",
+     "rows",
+     "scan_complete",
+     "scanned_rows"
+    ],
+    "rows": 1,
+    "scan_complete": false,
+    "type": "dict"
+   },
+   "source": {
+    "file_bytes": 457100,
+    "file_version": "statv1:b29c3bdb770a6a7edc210b7965812dc17ce5940d3ad420118c85a592a396f921",
+    "ref": "macro_vps_snapshot:stocks/AAPL.parquet",
+    "relative_path": "stocks/AAPL.parquet",
+    "root_alias": "macro_vps_snapshot"
+   },
+   "stderr_bytes": 0,
+   "stdout_bytes": 1684,
+   "stdout_sha256": "41b6588ed103939b240f342897e4ff1d3f10368e335f9b122aef1b8862bd2b88",
+   "temporal_caution": "Filtering stored rows does not reconstruct point-in-time availability.",
+   "top_level_keys": [
+    "action",
+    "implementation_revision",
+    "observed_at",
+    "price_basis",
+    "production_qualification",
+    "query",
+    "query_receipt_sha256",
+    "result",
+    "schema_version",
+    "source",
+    "source_access",
+    "temporal_caution"
+   ]
+  },
+  {
+   "envelope": {
+    "action": "read",
+    "implementation_revision": "83daf2b783ba218c4beed3850b2fc34cc5d139e7",
+    "observed_at": "2026-10-17T13:38:58.073481+00:00",
+    "production_qualification": "NOT_ESTABLISHED_BY_THIS_ADAPTER",
+    "schema_version": "mastermind.data_workspace/v1",
+    "source_access": "read_only"
+   },
+   "label": "read_expected_version",
+   "query_receipt_sha256": "6e8c2e6b7fb901e6c601956a4469cf53677e0d26b2f34f8cdf0d09679ba92c1d",
+   "rc": 0,
+   "request": {
+    "action": "read",
+    "expected_version": "statv1:b29c3bdb770a6a7edc210b7965812dc17ce5940d3ad420118c85a592a396f921",
+    "limit": 1,
+    "ref": "macro_vps_snapshot:stocks/AAPL.parquet"
+   },
+   "result_shape": {
+    "columns": [
+     "Date",
+     "close",
+     "high",
+     "low",
+     "volume"
+    ],
+    "keys": [
+     "missingness_notes",
+     "next_offset",
+     "row_positions",
+     "rows",
+     "scan_complete",
+     "scanned_rows"
+    ],
+    "rows": 1,
+    "scan_complete": false,
+    "type": "dict"
+   },
+   "source_file_version_rechecked": true,
+   "stderr_bytes": 0,
+   "stdout_bytes": 1684,
+   "stdout_sha256": "fe18788268cf5919f594bc3a0e6328445097c045dceea20526dfb78d4e52ad1f",
+   "top_level_keys": [
+    "action",
+    "implementation_revision",
+    "observed_at",
+    "price_basis",
+    "production_qualification",
+    "query",
+    "query_receipt_sha256",
+    "result",
+    "schema_version",
+    "source",
+    "source_access",
+    "temporal_caution"
+   ]
+  }
+ ],
+ "scratch_removed": true,
+ "started_at": "2026-10-17T13:38:55+00:00"
+}
