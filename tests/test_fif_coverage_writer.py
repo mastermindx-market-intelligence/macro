@@ -567,6 +567,58 @@ def test_strict_rollups_exclude_qualified_present_cells():
     assert w._strict_status({**plain, "derivation": "composed"}) == "present_labelled"
     assert w._strict_status({**plain, "qualifier": None}) == "present"
     assert w._strict_status({"status": "absent", "qualifier": "cover_date_as_of"}) == "absent"
+    assert w._is_labelled({"derivation": "composed"}) is True
+    assert w._is_labelled({"qualifier": None, "derivation": None}) is False
+    assert w.REEVALUATED_KEYS == (*w.QUALIFIER_KEYS, "derivation")
+
+
+# N1: a re-evaluated cell drops a stale derivation; one strict predicate everywhere ----------------
+
+
+def test_rewrite_clears_stale_derivation_and_counts_strict_with_one_predicate():
+    annual = _slot(1)
+    specs = {"total_assets": _spec("total_assets", aliases=[(10, "us-gaap", "Assets")]), SHARES: _shares_spec()}
+
+    def cell(field_id, status, reason):
+        return {"cik": annual["cik"], "period_id": annual["slot_id"], "field_id": field_id,
+                "accession": annual["accession"], "tier": "core", "status": status, "reason_code": reason,
+                "derivation": "composed"}
+
+    base = {
+        "cells": [
+            cell("metric:total_assets", "present", "present"),
+            cell(f"metric:{SHARES}", "absent", "absent_no_alias_fact"),
+            cell("package.primary", "present", "present"),
+        ],
+        "issuers": [{"cik": annual["cik"], "tier_assigned": "core"}],
+    }
+    facts = _facts(
+        ("us-gaap", "Assets", "USD", [_fact(annual["accession"], annual["report_date"])]),
+        _dei(annual, "2026-07-20"),  # only the annual cover date: a qualified present
+    )
+
+    def derived_metric_cells(cells):
+        return sum(1 for c in cells if str(c["field_id"]).startswith("metric:") and c.get("derivation") is not None)
+
+    assert derived_metric_cells(base["cells"]) == 2
+    manifest, counts = w.rewrite_manifest(base, [annual], {annual["cik"]: facts}.get, specs, RULE_CLOCK, {})
+    assert derived_metric_cells(manifest["cells"]) == 0
+
+    by_field = {c["field_id"]: c for c in manifest["cells"]}
+    assert by_field["package.primary"]["derivation"] == "composed"
+    assets = by_field["metric:total_assets"]
+    assert assets["status"] == "present" and "derivation" not in assets
+    assert w._strict_status(assets) == "present"
+    shares = by_field[f"metric:{SHARES}"]
+    assert shares["status"] == "present" and shares.get("qualifier") is not None
+    assert w._strict_status(shares) == "present_labelled"
+
+    assert counts["present_strict"]["all"] == 1
+    assert counts["present_qualified"]["all"] == 1
+    (issuer,) = manifest["issuers"]
+    assert issuer["present_cells"] == 2
+    assert issuer["present_cells_strict"] == 1
+    assert issuer["present_cells_strict"] == counts["present_strict"]["all"]
 
 
 # W-R2 M3: the strict alias search never leaves the alias's own taxonomy -----------------------------------
