@@ -476,7 +476,7 @@ def test_the_continuation_context_is_consumed_on_both_ends():
 
     client = (ROOT / "templates" / "ontology.js").read_text(encoding="utf-8")
     assert 'h.indexOf("#ox-leg-") !== 0' in client
-    assert "render(snapshot); focusFromHash();" in client
+    assert re.search(r"render\(snapshot\);\s*focusFromHash\(\);", client)
     notice = client[client.index("function continuationNotice"):]
     notice = notice[:notice.index("function continuationHref")]
     assert 'get("rev")' in notice and "String(now) === String(left)" in notice

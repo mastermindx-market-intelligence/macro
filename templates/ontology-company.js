@@ -1,7 +1,7 @@
 /* Macro's private company inspector. Nothing is loaded until the reader asks.
  * Owner responses live only in this view; never in URLs, telemetry or storage. */
 import * as decoder from './ontology-company-contract.js?v=9abd91d3';
-import { createCompanyController } from './ontology-company-controller.js?v=d5da2e94';
+import { createCompanyController } from './ontology-company-controller.js?v=49f6e9a9';
 
 function words(en, zh) {
   const fragment = document.createDocumentFragment();
@@ -41,6 +41,7 @@ export function mountCompanyResearch(root) {
   let subscription = null;
   let client = null;
   let controller;
+  let selectedFrom = null;
   // The module can finish loading after a canonical sign-out. A missed event
   // must never let an SDK's older cached session authorize a private read.
   let canonicalKnown = true;
@@ -53,6 +54,7 @@ export function mountCompanyResearch(root) {
     canonicalKnown = true;
     const user = event.detail && event.detail.user;
     canonicalOwner = user && typeof user.id === 'string' ? user.id : null;
+    selectedFrom = null;
     if (controller) controller.clear();
     input.value = '';
   }
@@ -65,6 +67,7 @@ export function mountCompanyResearch(root) {
     if (disposed || !current || !current.auth
         || typeof current.auth.onAuthStateChange !== 'function') throw new Error('AUTH_UNAVAILABLE');
     const result = current.auth.onAuthStateChange(() => {
+      selectedFrom = null;
       if (controller) controller.clear();
       input.value = '';
     });
@@ -112,6 +115,13 @@ export function mountCompanyResearch(root) {
       output.append(link);
     }
     if (!state.context || !state.selection) return;
+    if (selectedFrom) {
+      const origin = element('p', 'ox-note');
+      origin.append(words('Selected from the WTI exposure membership dated ', '选自以下日期的 WTI 敞口成员名单：'));
+      origin.append(document.createTextNode(selectedFrom.asof));
+      origin.append(words('. This is owner screen membership, not an estimated company impact or a current causal claim.', '。这是来源筛选结果，并非公司影响估计，也不确立当前因果关系。'));
+      output.append(origin);
+    }
     const context = state.context;
     const selection = state.selection;
     const identity = element('div', 'ox-company-identity');
@@ -180,12 +190,31 @@ export function mountCompanyResearch(root) {
   function submit(event) {
     event.preventDefault();
     // Input is session-only. The form has no named controls and never navigates.
+    selectedFrom = null;
     void controller.lookup(input.value);
   }
-  function clear() { controller.clear(); input.value = ''; }
-  function edited() { controller.clear(); }
+  function clear() { selectedFrom = null; controller.clear(); input.value = ''; }
+  function edited() { selectedFrom = null; controller.clear(); }
+  function selectExposure(event) {
+    const choice = event.detail;
+    if (disposed || !choice || !decoder.isPrivateCompanySymbol(choice.symbol)
+        || typeof choice.security_id !== 'string' || !/^SEC:[A-Za-z0-9:._/-]{1,120}$/.test(choice.security_id)
+        || typeof choice.asof !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(choice.asof)
+        || typeof choice.manifest_hash !== 'string' || !/^sha256:[a-f0-9]{64}$/.test(choice.manifest_hash)) return;
+    clear();
+    selectedFrom = { asof: choice.asof, manifest_hash: choice.manifest_hash };
+    input.value = choice.symbol;
+    input.focus({ preventScroll: true });
+    root.scrollIntoView({ block: 'start', behavior: 'auto' });
+    void controller.lookup(choice.symbol, choice.security_id);
+  }
+  root.addEventListener('ontology-select-company', selectExposure);
+  root.addEventListener('ontology-source-changed', clear);
+  root.dataset.companyReady = 'true';
+  root.dispatchEvent(new CustomEvent('ontology-company-ready'));
+
   function hidden() { if (document.visibilityState === 'hidden') clear(); }
-  function leaving() { controller.clear(); }
+  function leaving() { clear(); }
   form.addEventListener('submit', submit);
   input.addEventListener('input', edited);
   clearButton.addEventListener('click', clear);
@@ -200,6 +229,10 @@ export function mountCompanyResearch(root) {
       client = null;
       if (subscription) subscription.unsubscribe();
       subscription = null;
+      selectedFrom = null;
+      delete root.dataset.companyReady;
+      root.removeEventListener('ontology-select-company', selectExposure);
+      root.removeEventListener('ontology-source-changed', clear);
       form.removeEventListener('submit', submit);
       input.removeEventListener('input', edited);
       window.removeEventListener('mdx-auth', canonicalAuth);

@@ -305,3 +305,10 @@ html:not([data-theme="light"]) .ox-hero--answer .ox-answer-summary{
   .ox-answer-title{font-size:var(--fs-h1);max-width:none}
   .ox-hero--answer .ox-answer-summary{padding:var(--sp-5,20px)}
 }
+
+/* Existing exposure cards: membership is an unranked source list. */
+.ox-exposure-members{list-style:none;padding:0;margin:var(--space-4,16px) 0;display:grid;gap:var(--space-3,12px)}
+.ox-exposure-members li{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3,12px);flex-wrap:wrap;padding:var(--space-3,12px) 0;border-bottom:1px solid var(--line)}
+.ox-exposure-members strong{overflow-wrap:anywhere}
+.ox-exposure-members .ox-cta{min-height:44px;white-space:normal;text-align:center}
+@media(max-width:600px){.ox-exposure-members .ox-cta{width:100%}}

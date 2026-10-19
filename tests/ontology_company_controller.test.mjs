@@ -134,3 +134,25 @@ test('header refusal aborts the transport without consuming a private body',asyn
   assert.equal(reads,0);assert.ok(signal.aborted);
   assert.equal(states.at(-1).status,'unavailable');controller.dispose();
 });
+
+
+test('dated exposure identity mismatch refuses before issuer selections',async()=>{
+  let calls=0;
+  const currentContext={...context,security_id:'SEC:CURRENT'};
+  const {controller,states}=setup(async()=>{calls++;return response({type:'context'});},async()=>session(),
+    {...decoder,decodePrivateCompanyContext:async()=>currentContext});
+  await controller.lookup('ONE','SEC:DATED');
+  assert.equal(calls,1);assert.equal(states.at(-1).status,'unavailable');
+  assert.ok(!states.at(-1).context);controller.dispose();
+});
+
+test('dated exposure identity must join before explicit fact selection',async()=>{
+  let calls=0;
+  const currentContext={...context,security_id:'SEC:DATED'};
+  const {controller,states}=setup(async()=>{calls++;return response(calls===1?{type:'context'}:{type:'selection'});},async()=>session(),
+    {...decoder,decodePrivateCompanyContext:async()=>currentContext,
+     assertPrivateContextSelection:(c,s)=>{assert.equal(c,currentContext);assert.equal(s,selection);}});
+  await controller.lookup('ONE','SEC:DATED');
+  assert.equal(calls,2);assert.equal(states.at(-1).status,'ready');
+  assert.ok(!states.at(-1).fact);controller.dispose();
+});

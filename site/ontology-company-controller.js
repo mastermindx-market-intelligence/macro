@@ -130,13 +130,16 @@ export function createCompanyController({ fetchImpl, getSession, onState, decode
       if (pending === op) pending = null;
     }
   }
-  function lookup(query) {
+  function lookup(query, expectedSecurityId = null) {
     return run(async op => {
       const symbol = typeof query === 'string' ? query.trim().toUpperCase() : '';
       if (!decoder.isPrivateCompanySymbol(symbol)) refuse('unavailable');
       const identity = await owner(op);
       const raw = await read(op, 'company-context?symbol=' + encodeURIComponent(symbol), identity);
       const context = await checked(op, decoder.decodePrivateCompanyContext(raw, symbol));
+      // A dated TXI alias may resolve differently today. Refuse that identity
+      // change before asking for issuer selections; never silently switch names.
+      if (expectedSecurityId !== null && context.security_id !== expectedSecurityId) refuse('unavailable');
       const issuer = context.issuer_binding.issuer_id;
       const list = await read(op, 'issuers/' + encodeURIComponent(issuer) + '/product-integrations', identity);
       const selection = decoder.decodePrivateIssuerSelections(list, issuer);
