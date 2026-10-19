@@ -1052,3 +1052,71 @@ def test_x2_numeric_decoder_refuses_cross_owner_clock_coverage_and_measurement_c
             assert not decode(changed), path
         assert not errors
     finally: ctx.close()
+
+
+# Native TXI -> Macro Gap view, using recorded owner transitions rather than UI verdict fixtures.
+def native_gap_snapshot(tmp_path, *, state='waiting_inside_window'):
+    from tests.test_ontology_explorer_contract import _native_gap_root
+    from tests import ontology_explorer_fixtures as fx
+    options={
+        'waiting_inside_window': {}, 'stalled': {'stall':True},
+        'contradicted': {'readings':{'n2':True}}, 'condition_stopped': {'kill':True},
+        'owner_expired': {'asof':'2026-01-12'}, 'source_unavailable': {},
+    }
+    root,doc,chain,ledger=_native_gap_root(tmp_path/'native',**options[state])
+    # This is still a wholly synthetic native owner fixture. Use the page's
+    # admitted chain identity before composing, rather than patching the response.
+    slug='oil_inflation_duration_derate';chain['chain']=slug;doc['chains'][0]['chain']=slug
+    for row in ledger:row['chain']=slug
+    if state=='source_unavailable':ledger=[]
+    root=fx.build_root(tmp_path/'selected',yaml_doc=chain,state_doc=doc,slug=slug)
+    (root/'data/transmission/chain_episodes.jsonl').write_text(''.join(json.dumps(r)+'\n' for r in ledger))
+    result=compose_snapshot(root,chain=slug,now=datetime(2026,2,1,tzinfo=UTC))
+    assert result['transmission_gap']['state']==state
+    return result
+
+@pytest.mark.parametrize('state',['waiting_inside_window','stalled','contradicted','condition_stopped','owner_expired','source_unavailable'])
+@pytest.mark.parametrize('language',['en','zh'])
+def test_native_gap_states_are_distinct_on_assembled_macro(browser,tmp_path,state,language):
+    from tests.test_ontology_exposure_company_browser import portfolio_start
+    snapshot=native_gap_snapshot(tmp_path,state=state)
+    ctx,page,seen,errors=portfolio_start(browser,snapshot,width=390,theme='light',language=language,full_shell=True)
+    try:
+        gap=page.locator('[data-transmission-gap]')
+        assert gap.get_attribute('data-gap-state')==state
+        if state!='source_unavailable':
+            gap.locator('summary').click();text=gap.inner_text()
+            assert '2026-01-01' in text and snapshot['source']['source_manifest_hash'] in text
+            assert ('Expected-condition wording unavailable' if language=='en' else '预期条件描述不可用') in text
+            assert ('calendar days' if language=='en' else '日历日') in text
+            assert ('not historical point-in-time evidence' if language=='en' else '不是历史时点证据') in text
+            gap.locator('button').click()
+            assert page.locator('#ox-steps').get_attribute('open') is not None
+            # The shared focus action waits for the newly opened details layout.
+            page.wait_for_function('(id) => document.activeElement.id === id', arg='ox-leg-'+snapshot['transmission_gap']['pending_hop']['to'])
+        else:
+            assert ('Missing data is not failed transmission' if language=='en' else '缺失数据不代表传导失败') in gap.inner_text()
+            assert gap.locator('button').count()==0
+        assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+        assert seen==[] and not errors and page.evaluate('pCalls.queries')==0
+    finally:ctx.close()
+
+@pytest.mark.parametrize('mutation',[
+    ('identity.chain','foreign'),('identity.rev',999),('identity.episode_id','foreign'),
+    ('observation.asof','2026-01-06'),('ledger.sha256','0'*64),
+    ('pending_hop.elapsed_calendar_days',99),('pending_hop.lag_d',[0,1]),
+    ('pending_hop.target_observation.confirmed',True),('market_thesis_verdict','false'),
+    ('state','stalled'),('current_contradiction',{'invented':True}),
+])
+def test_gap_view_withholds_foreign_generations_and_reinterpreted_conditions(browser,tmp_path,mutation):
+    from tests.test_ontology_exposure_company_browser import portfolio_start
+    snapshot=native_gap_snapshot(tmp_path);value=snapshot['transmission_gap'];path,replacement=mutation
+    parts=path.split('.')
+    for key in parts[:-1]:value=value[key]
+    value[parts[-1]]=replacement
+    ctx,page,seen,errors=portfolio_start(browser,snapshot,full_shell=True)
+    try:
+        gap=page.locator('[data-transmission-gap]')
+        assert gap.get_attribute('data-gap-state')=='source_unavailable'
+        assert gap.locator('button, details').count()==0 and not errors
+    finally:ctx.close()

@@ -1432,6 +1432,113 @@
   }
   if (portfolioRoot) portfolioRoot.addEventListener("ontology-consumer-ready", deliverPortfolioReading);
 
+  function renderTransmissionGap(snapshot) {
+    var box = card("Transmission gap", "传导缺口");
+    box.setAttribute("data-transmission-gap", "");
+    var g = snapshot.transmission_gap, src = snapshot.source;
+    var states = {
+      waiting_inside_window: ["Waiting inside the declared window", "正在声明的窗口内等待"],
+      stalled: ["Native stall annotation", "原生停滞标注"],
+      contradicted: ["Current readings disagree with the expected sequence", "当前读数与预期顺序不一致"],
+      condition_stopped: ["A watched condition stopped this episode", "观察条件使本轮过程停止"],
+      owner_expired: ["The owner recorded the window as expired", "数据方已记录窗口到期"],
+      owner_completed: ["The owner recorded this episode as complete", "数据方已记录本轮过程完成"],
+      dormant: ["No active episode", "暂无活动过程"]
+    };
+    function note(en, zh) { var p = el("p", "ox-note"); p.appendChild(say(en,zh)); box.appendChild(p); }
+    function calendar(v) { return typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v)
+      && isFinite(Date.parse(v)) && new Date(v).toISOString().slice(0,10) === v; }
+    function instant(v) { return typeof v === "string" ? Date.parse(v.replace(" UTC","Z").replace(" ","T")) : NaN; }
+    function same(a,b) { return JSON.stringify(a) === JSON.stringify(b); }
+    function unavailable(reason) {
+      box.setAttribute("data-gap-state", "source_unavailable");
+      note("A transmission gap cannot be qualified for this reading. Missing data is not failed transmission.",
+        "本次读数无法确认传导缺口。缺失数据不代表传导失败。");
+      if (reason === "owner_transition_unsettled") note("The target already reads met, but the owner has not settled the next transition.",
+        "目标条件已满足，但数据方尚未确认下一次状态转换。");
+      else if (reason === "owner_window_elapsed_unsettled") note("The captured window has elapsed without a settled owner transition. This page does not expire it.",
+        "所记录窗口已结束，但数据方尚未确认状态转换。本页不会自行判定到期。");
+      else if (reason === "arming_observation_unavailable" || reason === "episode_ledger_unavailable")
+        note("The recorded initiating observation is unavailable.", "已记录的起始观测不可用。");
+      return box;
+    }
+    if (!g || g.schema !== "txi_gap_projection.v1" || g.scope !== "txi_only"
+        || g.method_class !== "native_owner_state_projection" || g.instrument_only !== true || g.market_thesis_verdict !== null
+        || !g.identity || g.identity.chain !== src.chain || g.identity.rev !== src.rev
+        || g.identity.episode_id !== snapshot.state.episode_id || g.owner_state !== snapshot.state.owner_state
+        || !g.observation || g.observation.asof !== src.asof || !calendar(src.asof)
+        || !isFinite(instant(src.built)) || instant(g.observation.built) !== instant(src.built)
+        || g.ledger?.clock_basis !== "native_transition_asof" || g.ledger.historical_knowledge !== "unavailable") return unavailable();
+    if (g.status === "unavailable" && g.state === "source_unavailable") return unavailable(g.reason);
+    if (g.status !== "available" || g.reason !== null || !Object.prototype.hasOwnProperty.call(states,g.state)) return unavailable();
+    var legs = snapshot.path.legs, hops = snapshot.path.hops, p = g.pending_hop;
+    var ledger = (src.reads || []).find(function(r) { return r.path === "data/transmission/chain_episodes.jsonl"; });
+    if (!same(g.current_contradiction,snapshot.contradiction) || !same(g.watched_conditions,snapshot.invalidators)) return unavailable();
+    if (g.state !== "dormant") {
+      var initial = g.initiating_observation;
+      if (!ledger || ledger.sha256 !== g.ledger.sha256 || ledger.bytes !== g.ledger.bytes
+          || !initial || initial.node_id !== legs[0].node_id || !calendar(initial.asof) || initial.asof > src.asof
+          || !Array.isArray(initial.receipts) || !initial.receipts.length || initial.receipts.length > 64) return unavailable();
+    } else if (g.owner_state !== "dormant" || g.identity.episode_id !== null || p !== null) return unavailable();
+    if (g.state === "owner_completed") { if (g.owner_state !== "expressed" || p !== null) return unavailable(); }
+    else if (g.state !== "dormant") {
+      var hop = hops.find(function(h) { return h.hop_id === p?.hop_id; });
+      var target = legs.find(function(n) { return n.node_id === p?.to; });
+      if (!p || !hop || !target || p.from !== hop.from || p.to !== hop.to || !same(p.lag_d,hop.lag_d)
+          || !same(p.expected_condition,hop.condition) || !Array.isArray(p.lag_d) || p.lag_d.length !== 2
+          || !p.lag_d.every(function(n){return typeof n === "number" && isFinite(n);}) || p.lag_d[0] < 0 || p.lag_d[1] < p.lag_d[0]
+          || p.elapsed_basis !== "native_calendar_days" || !calendar(p.anchor_asof) || p.anchor_asof > src.asof
+          || !Number.isInteger(p.elapsed_calendar_days) || p.elapsed_calendar_days !== (Date.parse(src.asof)-Date.parse(p.anchor_asof))/86400000
+          || p.minimum_lag_elapsed !== (p.elapsed_calendar_days >= p.lag_d[0])
+          || !p.target_observation || p.target_observation.asof !== src.asof || p.target_observation.node_id !== target.node_id
+          || p.target_observation.confirmed !== target.confirmed || target.observation !== "observed"
+          || !same(p.target_observation.receipts,target.receipts)) return unavailable();
+      if (["waiting_inside_window","stalled","contradicted"].includes(g.state)
+          && (!["arming","propagating"].includes(g.owner_state) || p.elapsed_calendar_days > p.lag_d[1])) return unavailable();
+      if (["waiting_inside_window","stalled"].includes(g.state) && target.confirmed !== false) return unavailable();
+      if (g.state === "stalled" && (g.turn_watch?.status !== "available" || g.turn_watch.stalling !== true)) return unavailable();
+      if (g.state === "contradicted" && !snapshot.contradiction) return unavailable();
+      if (g.state === "owner_expired" && g.owner_state !== "expired") return unavailable();
+      if (g.state === "condition_stopped" && (g.owner_state !== "failed" || !g.condition_stop
+          || !calendar(g.condition_stop.asof) || g.condition_stop.asof > src.asof
+          || !snapshot.invalidators.some(function(c){return c.id === g.condition_stop.condition_id;}))) return unavailable();
+    }
+    box.setAttribute("data-gap-state",g.state);
+    var headline = el("h3"); headline.appendChild(say.apply(null,states[g.state])); box.appendChild(headline);
+    note("TXI conditions only. This is an instrument reading, not a verdict on the market thesis.",
+      "仅反映 TXI 条件。这是仪表读数，不是对市场论点的裁定。");
+    if (p) {
+      var named = el("p"); named.appendChild(bi(target.title)); named.appendChild(document.createTextNode(" — "));
+      named.appendChild(hop.condition ? bi(hop.condition) : say("Expected-condition wording unavailable", "预期条件描述不可用")); box.appendChild(named);
+      note("Declared lag: "+p.lag_d[0]+"–"+p.lag_d[1]+" calendar days. Elapsed: "+p.elapsed_calendar_days+" calendar days since "+p.anchor_asof+".",
+        "声明滞后："+p.lag_d[0]+"–"+p.lag_d[1]+" 个日历日。自 "+p.anchor_asof+" 起已过 "+p.elapsed_calendar_days+" 个日历日。");
+      if (!p.minimum_lag_elapsed) note("The declared minimum lag has not elapsed.", "声明的最短滞后尚未届满。");
+      var focus = el("button","ox-action"); focus.type="button";focus.setAttribute("aria-controls",LEG_DETAIL_ID);
+      focus.appendChild(say("Inspect the expected step", "查看预期环节"));
+      focus.addEventListener("click",function(){focusLeg(p.to);});box.appendChild(focus);
+    }
+    var d = detail("Initiating observation, target and source clocks", "起始观测、目标与来源时间");
+    function row(en,zh,value) { var kv=el("dl","ox-kv"),dt=el("dt");dt.appendChild(say(en,zh));kv.appendChild(dt);kv.appendChild(el("dd",null,value));d.appendChild(kv); }
+    function readings(receipts) { var kv=el("dl","ox-kv"); (receipts || []).forEach(function(r){var dt=el("dt"),dd=el("dd");
+      dt.appendChild(receiptLabel(r));dd.appendChild(receiptValue(r));kv.appendChild(dt);kv.appendChild(dd);});d.appendChild(kv); }
+    if (g.initiating_observation) { row("Initiating observation","起始观测",g.initiating_observation.asof);readings(g.initiating_observation.receipts); }
+    if (p) { row("Target observation","目标观测",p.target_observation.asof);readings(target.receipts); }
+    if (g.condition_stop) { row("Condition stopped on","条件停止日期",g.condition_stop.asof);readings(g.condition_stop.receipts); }
+    if (snapshot.invalidators.length) {
+      var watch = el("p","ox-note");watch.appendChild(say("Watched conditions: ","观察条件："));
+      snapshot.invalidators.forEach(function(c,i){if(i)watch.appendChild(document.createTextNode(" · "));if(c.note)watch.appendChild(bi(c.note));else if(c.watched && c.watched.series)watch.appendChild(watchedSentence(c.watched));else watch.appendChild(say("Condition wording unavailable", "条件描述不可用"));});d.appendChild(watch);
+    }
+    row("Owner observation / build","数据方观测 / 构建",g.observation.asof+" / "+g.observation.built);
+    row("Path revision","路径版本",String(g.identity.rev));
+    if (g.identity.episode_id) row("Episode reference","过程引用",g.identity.episode_id);
+    row("Source generation","来源版本",src.source_manifest_hash);
+    if (g.ledger.sha256) row("Captured ledger SHA-256","已读取账本 SHA-256",g.ledger.sha256);
+    var caution=el("p","ox-note");caution.appendChild(say("The ledger records transition dates without ingestion clocks. This is a captured reading, not historical point-in-time evidence.",
+      "账本记录状态转换日期，但不含接收时间。本页是本次读取结果，不是历史时点证据。"));d.appendChild(caution);
+    box.appendChild(d);return box;
+  }
+
+
   function render(snapshot) {
     root.textContent = "";
 
@@ -1471,6 +1578,8 @@
     answers.appendChild(renderBlocking(snapshot));
     answers.appendChild(renderNextAction(snapshot));
     root.appendChild(answers);
+
+    root.appendChild(renderTransmissionGap(snapshot));
 
     legDetail = renderLegDetail(snapshot);
     root.appendChild(legDetail);

@@ -145,10 +145,10 @@ html[data-lang="zh"] .blk>.l-zh{display:block!important}
 .ox-detail>summary:hover{color:var(--text)}
 .ox-leg{border-top:1px solid var(--line);padding:16px 0}
 .ox-leg h3{font-size:var(--fs-h3);margin:0 0 6px;color:var(--text)}
-.ox-kv{display:grid;grid-template-columns:minmax(120px,auto) 1fr;gap:4px 16px;margin:8px 0 0;
+.ox-kv{display:grid;grid-template-columns:minmax(120px,auto) minmax(0,1fr);gap:4px 16px;margin:8px 0 0;
   font-size:var(--fs-sm)}
 .ox-kv dt{color:var(--muted)}
-.ox-kv dd{margin:0;color:var(--text);font-family:var(--font-mono);font-size:var(--fs-sm)}
+.ox-kv dd{margin:0;min-width:0;overflow-wrap:anywhere;color:var(--text);font-family:var(--font-mono);font-size:var(--fs-sm)}
 .ox-note{font-size:var(--fs-sm);color:var(--muted);margin:8px 0 0;line-height:1.55}
 
 /* ---- the qualifying line under the stance ------------------------------- */

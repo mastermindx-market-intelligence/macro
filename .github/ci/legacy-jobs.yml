@@ -4946,6 +4946,12 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "config/issuer_group_allowlist.yml"
+      - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
+      - "lib/symbol_directory_receipts.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       - "scripts/calibrate_rate_inflation.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
@@ -5776,6 +5782,12 @@ jobs:
     # fails until it does.
     scope: exclusive
     paths:
+      - "config/theme_sources.yml"
+      - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
+      - "engine/theme_graph/ontology.py"
+      - "engine/theme_graph/probation.py"
+      - "engine/theme_graph/rights.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
       - "engine/classification_axes/**"
@@ -11583,6 +11595,12 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
+      - "config/issuer_group_allowlist.yml"
+      - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
+      - "lib/symbol_directory_receipts.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       - "engine/validation.py"
       - "scripts/calibrate_rate_inflation.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -14330,6 +14348,15 @@ jobs:
     # the shared closure guard keeps every concrete dependency selecting this job.
     scope: exclusive
     paths:
+      - "config/delisted_symbols.yml"
+      - "config/issuer_group_allowlist.yml"
+      - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
+      - "lib/delisted_symbols.py"
+      - "lib/symbol_directory_receipts.py"
+      - "lib/ticker_aliases.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       - "config/sector_legs.json"
       - "config/theme_crosswalk.yml"
       - "config/theme_graph_identity_breaks.yml"
@@ -15423,6 +15450,10 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "collectors/symbol_directory.py"
+      - "tests/__init__.py"
+      - "tests/test_symbol_directory_completion_receipts.py"
+      - "tests/test_theme_graph_hierarchy_paths.py"
       - "scripts/calibrate_rate_inflation.py"
       # Connected Research Factory import closure (PR9463).
       - engine/oracle/compounds.py
@@ -17564,6 +17595,12 @@ jobs:
     # hence the pandas-family install below.
     scope: exclusive
     paths:
+      - "config/issuer_group_allowlist.yml"
+      - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
+      - "lib/symbol_directory_receipts.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -20205,6 +20242,10 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
       - "scripts/build_risk_envelope.py"
       - "site/marketdata/rotation_events.json"
@@ -31114,6 +31155,13 @@ jobs:
     # Explicit scope covers the transitive import closure; no vendor calls,
     # runtime collection, outcome evaluation, or committed-artifact writes occur.
     paths:
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
+      - "engine/theme_graph/ontology.py"
+      - "engine/theme_graph/probation.py"
+      - "engine/theme_graph/rights.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
       - .github/ci/legacy-jobs.yml
