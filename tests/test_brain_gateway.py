@@ -235,14 +235,55 @@ def test_pro_lane_high_intensity_config():
     assert pro.get("thinking") == "adaptive"
 
 
-def test_pro_lane_has_no_lower_quality_fallbacks():
-    """The shipped Pro waterfall ends at Opus 5 rather than Sonnet/DS/Haiku."""
+def test_missing_config_does_not_implicitly_enable_degraded_providers():
+    """A missing config retains the original subscription-only default."""
     root = _make_temp_root()
     cfg = gw._load_brain_config(root)
     pro = cfg["lanes"]["pro"]
     assert "fallback_model" not in pro
     assert not pro.get("degraded_models")
     assert pro.get("weekly_ceiling_pct") == 95
+
+
+@pytest.mark.parametrize("status", [401, 403, 429])
+def test_shipped_pro_config_serves_after_subscription_provider_failure(status):
+    """The actual Research/Pro config reaches its independent production fallback."""
+    from engine import llm_auth
+
+    class Unavailable(Exception):
+        status_code = status
+
+    error_kind = {401: "authentication_error", 403: "permission_error",
+                  429: "rate_limit_error"}[status]
+    failed = _RaiseThenClient(exc=Unavailable(
+        f"Error code: {status} - {{'type': '{error_kind}'}}"))
+    served = _RaiseThenClient(resp=_MockResponse([_MockBlock("text", "sourced answer")]))
+    primary = {"name": "oauth", "env_var": "TEST_OAUTH", "client": failed,
+               "model": "claude-opus-5"}
+    fallback = {"name": "deepseek", "env_var": "TEST_DEEPSEEK", "client": served,
+                "model": "deepseek-v4-pro"}
+    builds = []
+
+    def build(cfg, **kwargs):
+        builds.append(cfg)
+        return [fallback] if cfg["provider_order"] == ["deepseek"] else [primary]
+
+    root = pathlib.Path(__file__).resolve().parents[1]
+    with patch.object(llm_auth, "build_providers", side_effect=build), \
+         patch.object(gw, "_skip_ahead_cooled_opus", side_effect=lambda p, m: p), \
+         patch.object(gw, "_mark_provider_dead_if_auth"), \
+         patch.object(gw, "_pool_cool_for_exc"), \
+         patch.object(gw, "_pool_record_success"):
+        providers = gw._build_lane_providers("pro", root)
+        assert [p["model"] for p in providers] == ["claude-opus-5", "deepseek-v4-pro"]
+        response, model = gw._create_failover(
+            providers, max_tokens=100, system="Use cited sources.", tools=[], messages=[])
+
+    assert model == "deepseek-v4-pro"
+    assert response.content[0].text == "sourced answer"
+    assert builds[-1]["usage_lane"] == "brain-pro"
+    assert builds[-1]["client_max_retries"] == 0
+    assert builds[-1]["deepseek_base_url"] == "https://api.deepseek.com/anthropic"
 
 
 def test_pro_degraded_providers_builds_deepseek_and_haiku():
@@ -5512,7 +5553,7 @@ def test_brain_yml_fast_lane_uses_v4_pro_with_native_thinking():
 
 
 def test_brain_yml_pro_lane_latency_guards():
-    """Shipped Pro is Sol High first, then high-effort Opus, with a long timeout."""
+    """Preferred Pro models retain their latency guards with independent capacity last."""
     root = pathlib.Path(__file__).resolve().parent.parent
     pro = gw._load_brain_config(root)["lanes"]["pro"]
     assert pro["provider_order"] == ["codex", "oauth", "anthropic"]
@@ -5520,7 +5561,7 @@ def test_brain_yml_pro_lane_latency_guards():
     assert pro["codex_reasoning_effort"] == "high"
     assert pro["opus_model"] == "claude-opus-5"
     assert "fallback_model" not in pro
-    assert not pro.get("degraded_models")
+    assert pro.get("degraded_models") == ["deepseek-v4-pro"]
     assert pro["client_max_retries"] == 0
     assert pro["client_timeout_s"] == 600  # covers a full 8k-token NO-TOOL answer (review MAJOR-1)
     assert "deepseek_thinking" not in pro
