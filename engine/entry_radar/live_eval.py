@@ -598,14 +598,18 @@ class JournalRecord:
     points: list[dict[str, Any]] = field(default_factory=list)
     observations: list[dict[str, Any]] = field(default_factory=list)
     refused: list[dict[str, Any]] = field(default_factory=list)
+    observation_quote_refs: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        return {"schema": SCHEMA_JOURNAL, "session": self.session,
+        result = {"schema": SCHEMA_JOURNAL, "session": self.session,
                 "ticker": self.ticker, "pack_as_of": self.pack_as_of,
                 "pack_hash": self.pack_hash, "price_basis": self.price_basis,
                 "points": copy.deepcopy(self.points),
                 "observations": [dict(o) for o in self.observations],
                 "refused": [dict(r) for r in self.refused]}
+        if self.observation_quote_refs:
+            result["observation_quote_refs"] = copy.deepcopy(self.observation_quote_refs)
+        return result
 
     @classmethod
     def from_dict(cls, raw: Mapping[str, Any]) -> JournalRecord:
@@ -616,7 +620,8 @@ class JournalRecord:
                    price_basis=str(raw.get("price_basis") or ch.BASIS_ADJUSTED),
                    points=copy.deepcopy(list(raw.get("points") or ())),
                    observations=[dict(o) for o in raw.get("observations") or ()],
-                   refused=[dict(r) for r in raw.get("refused") or ()])
+                   refused=[dict(r) for r in raw.get("refused") or ()],
+                   observation_quote_refs=copy.deepcopy(raw.get("observation_quote_refs") or {}))
 
     def last_ts(self) -> datetime | None:
         for row in reversed(self.points):
@@ -657,6 +662,10 @@ def _parse_iso(raw: Any) -> datetime | None:
     except (TypeError, ValueError):
         return None
     return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+
+
+def _quote_recorded_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 class SessionJournal:
@@ -754,6 +763,10 @@ class SessionJournal:
         metadata = copy_native_metadata(native_quote_metadata)
         if metadata is not None:
             point["native_quote_metadata"] = metadata
+            if "response_identity" in metadata:
+                # Actual local admission clock, separate from vendor/evaluation
+                # clocks. Never added to an old or refused point.
+                point["quote_recorded_at"] = _quote_recorded_now().isoformat()
         record.points.append(point)
         return True
 
@@ -778,6 +791,19 @@ class SessionJournal:
             existing = known.get(key)
             if existing is None:
                 record.observations.append(row)
+                # Optional provenance lives beside the frozen observation, never
+                # in its strict detector schema or in an older observation.
+                if any("response_identity" in (p.get("native_quote_metadata") or {})
+                       for p in record.points):
+                    try:
+                        from engine.entry_radar.candidate_provenance import capture_observation_quote_reference
+                        reference = capture_observation_quote_reference(record, row,
+                            recorded_at=_quote_recorded_now().isoformat())
+                        if reference is not None:
+                            record.observation_quote_refs[key] = reference
+                    except Exception:
+                        pass  # optional provenance never changes detector admission
+
                 known[key] = row
                 added += 1
             elif existing != row:

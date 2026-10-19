@@ -37,6 +37,15 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "collectors/edgar_earnings_8k.py"
+      - "engine/entry_radar/candidate_provenance.py"
+      - "engine/entry_radar/catalyst_adapters.py"
+      - "engine/entry_radar/catalyst_context.py"
+      - "engine/entry_radar/catalyst_edgar_live.py"
+      - "engine/entry_radar/catalyst_edgar_store.py"
+      - "engine/entry_radar/live_eval.py"
+      - "engine/entry_radar/research_priority.py"
+      - "lib/quote_native_metadata.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "engine/theme_graph/theme_state_gap.py"
@@ -1913,6 +1922,15 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "collectors/edgar_earnings_8k.py"
+      - "engine/entry_radar/candidate_provenance.py"
+      - "engine/entry_radar/catalyst_adapters.py"
+      - "engine/entry_radar/catalyst_context.py"
+      - "engine/entry_radar/catalyst_edgar_live.py"
+      - "engine/entry_radar/catalyst_edgar_store.py"
+      - "engine/entry_radar/live_eval.py"
+      - "engine/entry_radar/research_priority.py"
+      - "lib/quote_native_metadata.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "engine/theme_graph/theme_state_gap.py"
@@ -2853,6 +2871,15 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "collectors/edgar_earnings_8k.py"
+      - "engine/entry_radar/candidate_provenance.py"
+      - "engine/entry_radar/catalyst_adapters.py"
+      - "engine/entry_radar/catalyst_context.py"
+      - "engine/entry_radar/catalyst_edgar_live.py"
+      - "engine/entry_radar/catalyst_edgar_store.py"
+      - "engine/entry_radar/live_eval.py"
+      - "engine/entry_radar/research_priority.py"
+      - "lib/quote_native_metadata.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "engine/theme_graph/theme_state_gap.py"
@@ -6658,6 +6685,13 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/entry_radar/candidate_provenance.py"
+      - "engine/entry_radar/catalyst_adapters.py"
+      - "engine/entry_radar/catalyst_context.py"
+      - "engine/entry_radar/catalyst_edgar_live.py"
+      - "engine/entry_radar/catalyst_edgar_store.py"
+      - "engine/entry_radar/live_eval.py"
+      - "engine/entry_radar/research_priority.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
@@ -8952,6 +8986,15 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "collectors/edgar_earnings_8k.py"
+      - "engine/entry_radar/candidate_provenance.py"
+      - "engine/entry_radar/catalyst_adapters.py"
+      - "engine/entry_radar/catalyst_context.py"
+      - "engine/entry_radar/catalyst_edgar_live.py"
+      - "engine/entry_radar/catalyst_edgar_store.py"
+      - "engine/entry_radar/live_eval.py"
+      - "engine/entry_radar/research_priority.py"
+      - "lib/quote_native_metadata.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "engine/theme_graph/theme_state_gap.py"
@@ -12339,6 +12382,10 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "engine/entry_radar/candidate_provenance.py"
+      - "tests/test_entry_radar_candidate_provenance.py"
+      - "tests/test_entry_radar_quote_lineage_read.py"
+      - "tests/test_ontology_radar_quote_lineage_browser.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "engine/theme_graph/theme_state_gap.py"
@@ -13521,11 +13568,11 @@ jobs:
       - name: ontology research case — native evidence and existing live episode projection
         run: python -m pytest tests/test_opportunity_evidence_vector_contract.py tests/test_entry_radar_w4_live.py -k 'opportunity_case or research_case' -q
       - name: native earnings context, retained identity and published Radar read
-        run: python -m pytest tests/test_earnings_opportunity_qualification.py tests/test_earnings_opportunity_context.py tests/test_entry_radar_quote_context.py tests/test_entry_radar_research_read.py tests/test_entry_radar_earnings_context_producer.py -q
+        run: python -m pytest tests/test_earnings_opportunity_qualification.py tests/test_earnings_opportunity_context.py tests/test_entry_radar_quote_context.py tests/test_entry_radar_research_read.py tests/test_entry_radar_earnings_context_producer.py tests/test_entry_radar_candidate_provenance.py tests/test_entry_radar_quote_lineage_read.py -q
       - name: captured native DRL event and evidence composition
         run: python -m pytest tests/test_price_pressure_research.py tests/test_h20_supplier_conditional.py tests/test_gmi_native_disclosure_propagation.py -q
       - name: ontology explorer — real browser, selected context, responsive and failure states
-        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_ontology_explorer_brain_browser.py tests/test_ontology_company_browser.py tests/test_ontology_company_controller.py tests/test_ontology_exposure_company_browser.py tests/test_ontology_theme_browser.py tests/test_ontology_research_browser.py tests/test_ontology_radar_research_browser.py tests/test_ontology_supplier_research_browser.py -q
+        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_ontology_explorer_brain_browser.py tests/test_ontology_company_browser.py tests/test_ontology_company_controller.py tests/test_ontology_exposure_company_browser.py tests/test_ontology_theme_browser.py tests/test_ontology_research_browser.py tests/test_ontology_radar_research_browser.py tests/test_ontology_radar_quote_lineage_browser.py tests/test_ontology_supplier_research_browser.py -q
 
   research-factory-authority:
     if: ${{ false }}
@@ -17222,6 +17269,8 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "tests/test_theme_state_bundle_encoding.py"
+      - "tests/test_theme_state_bundle_codec.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "engine/theme_graph/theme_state_gap.py"
@@ -18343,7 +18392,7 @@ jobs:
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
-        run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_generation_applicability.py tests/test_theme_state_native_capture.py tests/test_theme_state_production.py tests/test_build_thematic_state_shadow_graph_state.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py tests/test_theme_state_generation_use_reader.py tests/test_theme_state_divergence_gap.py -q
+        run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_generation_applicability.py tests/test_theme_state_native_capture.py tests/test_theme_state_production.py tests/test_build_thematic_state_shadow_graph_state.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py tests/test_theme_state_generation_use_reader.py tests/test_theme_state_divergence_gap.py tests/test_theme_state_bundle_encoding.py tests/test_theme_state_bundle_codec.py -q
       - name: GMI CTE successor and v1 publisher fixture compatibility
         run: TZ=UTC python -m pytest tests/test_company_theme_exposure_successor.py tests/test_company_theme_exposure.py tests/test_publish_company_theme_exposure_r2.py tests/test_company_theme_exposure_production_bridge.py tests/test_company_theme_exposure_staleness_matrix.py -k 'not live_theme_inputs' -q
       - name: L3 leadership receipt (theme_state freshness + descriptive rows)
@@ -20214,6 +20263,13 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/entry_radar/candidate_provenance.py"
+      - "engine/entry_radar/catalyst_adapters.py"
+      - "engine/entry_radar/catalyst_context.py"
+      - "engine/entry_radar/catalyst_edgar_live.py"
+      - "engine/entry_radar/catalyst_edgar_store.py"
+      - "engine/entry_radar/live_eval.py"
+      - "engine/entry_radar/research_priority.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
@@ -21006,6 +21062,13 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/entry_radar/candidate_provenance.py"
+      - "engine/entry_radar/catalyst_adapters.py"
+      - "engine/entry_radar/catalyst_context.py"
+      - "engine/entry_radar/catalyst_edgar_live.py"
+      - "engine/entry_radar/catalyst_edgar_store.py"
+      - "engine/entry_radar/live_eval.py"
+      - "engine/entry_radar/research_priority.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
@@ -23037,6 +23100,15 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "collectors/edgar_earnings_8k.py"
+      - "engine/entry_radar/candidate_provenance.py"
+      - "engine/entry_radar/catalyst_adapters.py"
+      - "engine/entry_radar/catalyst_context.py"
+      - "engine/entry_radar/catalyst_edgar_live.py"
+      - "engine/entry_radar/catalyst_edgar_store.py"
+      - "engine/entry_radar/live_eval.py"
+      - "engine/entry_radar/research_priority.py"
+      - "lib/quote_native_metadata.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "engine/theme_graph/theme_state_gap.py"
@@ -25531,6 +25603,13 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/entry_radar/candidate_provenance.py"
+      - "engine/entry_radar/catalyst_adapters.py"
+      - "engine/entry_radar/catalyst_context.py"
+      - "engine/entry_radar/catalyst_edgar_live.py"
+      - "engine/entry_radar/catalyst_edgar_store.py"
+      - "engine/entry_radar/live_eval.py"
+      - "engine/entry_radar/research_priority.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
@@ -30968,6 +31047,13 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/entry_radar/candidate_provenance.py"
+      - "engine/entry_radar/catalyst_adapters.py"
+      - "engine/entry_radar/catalyst_context.py"
+      - "engine/entry_radar/catalyst_edgar_live.py"
+      - "engine/entry_radar/catalyst_edgar_store.py"
+      - "engine/entry_radar/live_eval.py"
+      - "engine/entry_radar/research_priority.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
@@ -31486,6 +31572,15 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "collectors/edgar_earnings_8k.py"
+      - "engine/entry_radar/candidate_provenance.py"
+      - "engine/entry_radar/catalyst_adapters.py"
+      - "engine/entry_radar/catalyst_context.py"
+      - "engine/entry_radar/catalyst_edgar_live.py"
+      - "engine/entry_radar/catalyst_edgar_store.py"
+      - "engine/entry_radar/live_eval.py"
+      - "engine/entry_radar/research_priority.py"
+      - "lib/quote_native_metadata.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "engine/theme_graph/theme_state_gap.py"
@@ -34505,6 +34600,15 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "collectors/edgar_earnings_8k.py"
+      - "engine/entry_radar/candidate_provenance.py"
+      - "engine/entry_radar/catalyst_adapters.py"
+      - "engine/entry_radar/catalyst_context.py"
+      - "engine/entry_radar/catalyst_edgar_live.py"
+      - "engine/entry_radar/catalyst_edgar_store.py"
+      - "engine/entry_radar/live_eval.py"
+      - "engine/entry_radar/research_priority.py"
+      - "lib/quote_native_metadata.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "engine/theme_graph/theme_state_gap.py"

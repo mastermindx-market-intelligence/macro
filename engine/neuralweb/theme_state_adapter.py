@@ -16,6 +16,7 @@ import hashlib
 import io
 import json
 import math
+import re
 import types
 from dataclasses import dataclass
 from pathlib import Path
@@ -29,6 +30,7 @@ from engine.theme_graph import identity, identity_resolution, ontology, rights, 
 from lib import config
 
 BUNDLE_SCHEMA = "gmi.theme_state_owner_bundle/v1"
+COMPACT_BUNDLE_SCHEMA = "gmi.theme_state_owner_bundle/v2"
 COMPILER_LIMIT = "UNQUALIFIED_NATIVE_FACT_REQUIRES_NULL_NATIVE_CLOCKS_NOT_SUPPORTED_BY_SHADOW_V1_RECEIPT"
 SOURCE_PATHS = {
     "theme_crosswalk": legacy._CROSSWALK_PATH,
@@ -50,6 +52,210 @@ def _json(value: Any) -> str:
 
 def _sha(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
+
+
+def _owner_codec_check_json(payload):
+    """Finite JSON-compatible values; tuples retain the native array encoding.
+
+    Shared maps are traversed once and cycles refuse.
+    """
+    complete, active = set(), set()
+    def visit(value):
+        kind = type(value)
+        if value is None or kind in (str, bool, int):
+            return
+        if kind is float and math.isfinite(value):
+            return
+        if kind not in (dict, list, tuple):
+            raise _OwnerBundleCodecError("value is not canonicalizable JSON")
+        identity = id(value)
+        if identity in active:
+            raise _OwnerBundleCodecError("cyclic value is not canonicalizable JSON")
+        if identity in complete:
+            return
+        active.add(identity)
+        if kind is dict:
+            if any(type(key) is not str for key in value):
+                raise _OwnerBundleCodecError("object keys are not canonicalizable JSON strings")
+            children = value.values()
+        else:
+            children = value
+        for child in children:
+            visit(child)
+        active.remove(identity)
+        complete.add(identity)
+    visit(payload)
+
+
+_OWNER_IDENTITY_REF = '$owner_identity_ref'
+_OWNER_IDENTITY_TABLES = 'identity_read_tables'
+_OWNER_IDENTITY_SHA_RE = re.compile('[0-9a-f]{64}')
+
+class _OwnerBundleCodecError(ValueError):
+    """Raised when a payload is malformed or violates the closed format."""
+
+def _owner_codec_json(value) -> str:
+    """Canonical JSON text for a JSON-compatible value.
+
+    Raises :class:`OwnerBundleCodecError` for values canonical JSON cannot
+    represent (NaN/Infinity, non-JSON types).
+    """
+    try:
+        return json.dumps(value, sort_keys=True, ensure_ascii=False, allow_nan=False, separators=(',', ':'))
+    except (TypeError, ValueError) as exc:
+        raise _OwnerBundleCodecError(f'value is not canonicalizable JSON: {exc}') from exc
+
+def _owner_codec_sha_text(canon_text: str) -> str:
+    """SHA-256 of canonical UTF-8 JSON; no process-global counters."""
+    return hashlib.sha256(canon_text.encode('utf-8')).hexdigest()
+
+def _owner_codec_sha(value) -> str:
+    """Canonical SHA-256 digest of a JSON-compatible value."""
+    return _owner_codec_sha_text(_owner_codec_json(value))
+
+def _owner_codec_dict(value, what: str) -> dict:
+    if not isinstance(value, dict):
+        raise _OwnerBundleCodecError(f'{what} must be a JSON object')
+    return value
+
+def _owner_codec_subject_identity(subject, node) -> dict:
+    """Validate one v1 subject and return its identity map (unvalidated body)."""
+    if not isinstance(subject, dict):
+        raise _OwnerBundleCodecError(f'subject {node!r} must be a JSON object')
+    native_reads = subject.get('native_reads')
+    if not isinstance(native_reads, dict):
+        raise _OwnerBundleCodecError(f'subject {node!r} native_reads must be a JSON object')
+    identity = native_reads.get('identity')
+    if not isinstance(identity, dict):
+        raise _OwnerBundleCodecError(f'subject {node!r} native_reads.identity must be a JSON object')
+    return identity
+
+def _compact_owner_payload(payload) -> dict:
+    """Lift an OwnerBundle v1 payload to the closed v2 reference format.
+
+    The input is never mutated; unrelated fields are deep-copied verbatim.
+    Repeated references to one identity dict object are canonicalized once.
+    """
+    _owner_codec_dict(payload, 'payload')
+    _owner_codec_check_json(payload)
+    schema = payload.get('schema')
+    if schema != BUNDLE_SCHEMA:
+        raise _OwnerBundleCodecError(f'unsupported schema for encode: {schema!r}')
+    if _OWNER_IDENTITY_TABLES in payload:
+        raise _OwnerBundleCodecError('v1 payload must not already carry identity_read_tables')
+    subjects = _owner_codec_dict(payload.get('subjects'), 'subjects')
+    digest_by_node: dict = {}
+    canon_by_digest: dict = {}
+    table_values: dict = {}
+    memo_by_id: dict = {}
+    for node, subject in subjects.items():
+        if not isinstance(node, str):
+            raise _OwnerBundleCodecError('subject keys must be strings')
+        identity = _owner_codec_subject_identity(subject, node)
+        memo_key = id(identity)
+        digest = memo_by_id.get(memo_key)
+        if digest is None:
+            canon_text = _owner_codec_json(identity)
+            digest = _owner_codec_sha_text(canon_text)
+            prior_text = canon_by_digest.get(digest)
+            if prior_text is None:
+                canon_by_digest[digest] = canon_text
+                table_values[digest] = identity
+            elif prior_text != canon_text:
+                raise _OwnerBundleCodecError('SHA-256 digest collision between distinct identity maps')
+            memo_by_id[memo_key] = digest
+        digest_by_node[node] = digest
+    encoded = copy.deepcopy(payload)
+    encoded['schema'] = COMPACT_BUNDLE_SCHEMA
+    encoded[_OWNER_IDENTITY_TABLES] = {digest: copy.deepcopy(table_values[digest]) for digest in table_values}
+    for node, subject in encoded['subjects'].items():
+        subject['native_reads']['identity'] = {_OWNER_IDENTITY_REF: digest_by_node[node]}
+    return encoded
+
+def _expand_owner_payload(payload) -> dict:
+    """Expand an OwnerBundle payload to the v1 logical schema.
+
+    v1 input returns a fresh deep copy with unchanged value semantics. v2
+    input validates the closed reference format (digests, references, table
+    completeness) and returns the expanded payload, sharing one decoded
+    identity dict across all subjects that referenced the same digest.
+    """
+    _owner_codec_dict(payload, 'payload')
+    _owner_codec_check_json(payload)
+    schema = payload.get('schema')
+    if schema == BUNDLE_SCHEMA:
+        if _OWNER_IDENTITY_TABLES in payload:
+            raise _OwnerBundleCodecError('legacy v1 payload must not carry identity_read_tables')
+        subjects = _owner_codec_dict(payload.get('subjects'), 'subjects')
+        for node, subject in subjects.items():
+            if not isinstance(node, str):
+                raise _OwnerBundleCodecError('subject keys must be strings')
+            _owner_codec_subject_identity(subject, node)
+        return copy.deepcopy(payload)
+    if schema == COMPACT_BUNDLE_SCHEMA:
+        return _expand_owner_payload_v2(payload)
+    raise _OwnerBundleCodecError(f'unsupported schema: {schema!r}')
+
+def _owner_codec_identity_ref(ref, where: str) -> str:
+    """Validate one identity reference object and return its digest."""
+    if not isinstance(ref, dict):
+        raise _OwnerBundleCodecError(f'{where} native_reads.identity must be an identity reference object')
+    if set(ref) != {_OWNER_IDENTITY_REF}:
+        raise _OwnerBundleCodecError(f'{where} identity reference must hold exactly {_OWNER_IDENTITY_REF!r}')
+    digest = ref[_OWNER_IDENTITY_REF]
+    if not isinstance(digest, str) or not _OWNER_IDENTITY_SHA_RE.fullmatch(digest):
+        raise _OwnerBundleCodecError(f'{where} identity reference digest must be lowercase 64-hex sha256')
+    return digest
+
+def _expand_owner_payload_v2(payload) -> dict:
+    """Validate and expand a v2 reference payload."""
+    table = payload.get(_OWNER_IDENTITY_TABLES)
+    if not isinstance(table, dict):
+        raise _OwnerBundleCodecError('v2 payload requires an identity_read_tables object')
+    table_canon: dict = {}
+    for digest, value in table.items():
+        if not isinstance(digest, str) or not _OWNER_IDENTITY_SHA_RE.fullmatch(digest):
+            raise _OwnerBundleCodecError('identity_read_tables keys must be lowercase 64-hex sha256 digests')
+        if not isinstance(value, dict):
+            raise _OwnerBundleCodecError(f'identity_read_tables[{digest}] must be a JSON object')
+        canon_text = _owner_codec_json(value)
+        if _owner_codec_sha_text(canon_text) != digest:
+            raise _OwnerBundleCodecError(f'identity_read_tables[{digest}] digest mismatch')
+        table_canon[digest] = canon_text
+    subjects = _owner_codec_dict(payload.get('subjects'), 'subjects')
+    digest_by_node: dict = {}
+    referenced: set = set()
+    for node, subject in subjects.items():
+        if not isinstance(node, str):
+            raise _OwnerBundleCodecError('subject keys must be strings')
+        if not isinstance(subject, dict):
+            raise _OwnerBundleCodecError(f'subject {node!r} must be a JSON object')
+        if 'native_reads' not in subject:
+            raise _OwnerBundleCodecError('subject native_reads is required')
+        native_reads = subject['native_reads']
+        if not isinstance(native_reads, dict):
+            raise _OwnerBundleCodecError(f'subject {node!r} native_reads must be a JSON object')
+        if 'identity' not in native_reads:
+            raise _OwnerBundleCodecError('subject native_reads.identity is required')
+        digest = _owner_codec_identity_ref(native_reads['identity'], f'subject {node!r}')
+        if digest not in table_canon:
+            raise _OwnerBundleCodecError(f'subject {node!r} references unknown identity digest {digest}')
+        referenced.add(digest)
+        digest_by_node[node] = digest
+    orphans = sorted(set(table_canon) - referenced)
+    if orphans:
+        raise _OwnerBundleCodecError(f'identity_read_tables entries are never referenced: {orphans}')
+    expanded = copy.deepcopy(payload)
+    del expanded[_OWNER_IDENTITY_TABLES]
+    expanded['schema'] = BUNDLE_SCHEMA
+    shared: dict = {}
+    for node, digest in digest_by_node.items():
+        shared_map = shared.get(digest)
+        if shared_map is None:
+            shared_map = copy.deepcopy(table[digest])
+            shared[digest] = shared_map
+        expanded['subjects'][node]['native_reads']['identity'] = shared_map
+    return expanded
 
 
 def _clock(value: str, *, precise: bool = False) -> dt.datetime:
@@ -112,10 +318,17 @@ class OwnerBundle:
     payload_json: str
     bundle_sha256: str
 
+    @property
+    def wire_schema(self) -> str:
+        """Serialization identity; snapshot keeps the original logical shape."""
+        if _sha(self.payload_json.encode()) != self.bundle_sha256:
+            raise ValueError("owner bundle digest mismatch")
+        return json.loads(self.payload_json)["schema"]
+
     def snapshot(self) -> dict:
         if _sha(self.payload_json.encode()) != self.bundle_sha256:
             raise ValueError("owner bundle digest mismatch")
-        value = json.loads(self.payload_json)
+        value = _expand_owner_payload(json.loads(self.payload_json))
         if value.get("schema") != BUNDLE_SCHEMA:
             raise ValueError("unsupported owner bundle")
         _clock(value["query"]["effective_at"])
@@ -429,7 +642,7 @@ def capture_owner_bundle(root: Path, *, owner_readers=None, effective_at: str, k
                "native_graph_generation_id": None, "graph_nodes_read": nodes, "subjects": subjects,
                "limits": ["captured digest is integrity, not authentication or native generation", "date-only owner APIs do not prove precise historical knowledge",
                           "before/after byte checks are not an atomic native-owner transaction or authentication", COMPILER_LIMIT]}
-    text = _json(payload)
+    text = _json(_compact_owner_payload(payload))
     return OwnerBundle(text, _sha(text.encode()))
 
 
@@ -778,9 +991,11 @@ def _source_dispositions(native: dict, qualified: dict, selected_narrative: str,
     return result
 
 
-def _assemble_from_bundle(snapshot: dict) -> tuple:
+def _assemble_from_bundle(snapshot: dict, *, bundle_sha256: str, include_sidecars: bool = True) -> tuple:
     """Single deterministic normalization used by composition and binding."""
-    inputs, generations, native_observations = [], {"adapter.owner_bundle": _sha(_json(snapshot).encode())}, {}
+    # snapshot was validated by OwnerBundle. Bind the actual wire bytes, without
+    # serializing the expanded identity map again for every subject.
+    inputs, generations, native_observations = [], {"adapter.owner_bundle": bundle_sha256}, {}
     source_dispositions = {}
     for node_id, subject in snapshot["subjects"].items():
         owners, qualified_sources = _qualified_receipts(subject, node_id, snapshot)
@@ -789,20 +1004,31 @@ def _assemble_from_bundle(snapshot: dict) -> tuple:
         observations = {}
         basket = subject["basket"]
         narrative_source = "narrative_emergence_cn" if basket is not None and identity.market_for_suite(basket["suite"]) == "cn" else "narrative_emergence"
-        native = {name: _source_observation(snapshot["sources"][source], snapshot["observed_at"], snapshot["query"]["known_at"])
-                  for name, source in [("narrative_measurements", narrative_source), ("narrative_measurements_us", "narrative_emergence"),
-                                       ("narrative_measurements_cn", "narrative_emergence_cn"), ("foresight_measurements", "foresight_cascade"),
-                                       ("basket_intel_measurements", "baskets"), ("radar_flag_measurements", "radar_enriched"),
-                                       ("radar_hypothesis_measurements", "radar"), ("subsector_measurements", "subsector_rotation"), ("divergence_measurements", "divergence_log")]}
+        # State-only callers discard these population-sized descriptive sidecars.
+        # Preserve structural refusals without repeatedly decoding their facts.
+        for source_name in SOURCE_PATHS:
+            source = snapshot["sources"][source_name]
+            for key in ("path", "availability", "null_reason", "sha256", "bytes_b64"):
+                source[key]
         membership = subject["native_reads"]["membership"]
-        native["membership_owner_read"] = {"availability": membership["availability"], "fact": membership["value"], "null_reason": membership["null_reason"],
-                                            "observed_at": snapshot["observed_at"], "known_at": None, "knowledge_qualification": "PRECISE_COMPLETENESS_UNPROVEN"}
+        for key in ("availability", "value", "null_reason"):
+            membership[key]
+        native = {}
+        if include_sidecars:
+            native = {name: _source_observation(snapshot["sources"][source], snapshot["observed_at"], snapshot["query"]["known_at"])
+                      for name, source in [("narrative_measurements", narrative_source), ("narrative_measurements_us", "narrative_emergence"),
+                                           ("narrative_measurements_cn", "narrative_emergence_cn"), ("foresight_measurements", "foresight_cascade"),
+                                           ("basket_intel_measurements", "baskets"), ("radar_flag_measurements", "radar_enriched"),
+                                           ("radar_hypothesis_measurements", "radar"), ("subsector_measurements", "subsector_rotation"), ("divergence_measurements", "divergence_log")]}
+            native["membership_owner_read"] = {"availability": membership["availability"], "fact": membership["value"], "null_reason": membership["null_reason"],
+                                                "observed_at": snapshot["observed_at"], "known_at": None, "knowledge_qualification": "PRECISE_COMPLETENESS_UNPROVEN"}
         nr, mr = qualified_sources.get(narrative_source), owners["membership"]
         if nr is not None and mr is not None and owners["identity"] is not None and subject["basket"] is not None:
             overlap = theme_state.adapt_recommended_overlap(nr, mr, basket_id=subject["basket"]["basket_id"], **snapshot["query"])
             observations["forming_narrative_recommended_ticker_overlap"] = overlap
-            native["forming_narrative_recommended_ticker_overlap"] = {"availability": overlap["presence"], "fact": overlap["value"], "null_reason": overlap["null_reason"], "freshness": overlap["freshness"], "coverage": overlap["coverage"]}
-        else:
+            if include_sidecars:
+                native["forming_narrative_recommended_ticker_overlap"] = {"availability": overlap["presence"], "fact": overlap["value"], "null_reason": overlap["null_reason"], "freshness": overlap["freshness"], "coverage": overlap["coverage"]}
+        elif include_sidecars:
             native["forming_narrative_recommended_ticker_overlap"] = {"availability": "UNAVAILABLE", "fact": None, "null_reason": "QUALIFIED_MEMBERSHIP_IDENTITY_AND_NARRATIVE_OUTCOME_REQUIRED", "coverage": {"declared": None, "observed": None, "basis": "recommended_entry_subset_not_full_cluster"}}
         for receipt in list(owners.values()) + list(qualified_sources.values()):
             if receipt is not None:
@@ -810,8 +1036,9 @@ def _assemble_from_bundle(snapshot: dict) -> tuple:
                 if owner in generations and generations[owner] != generation:
                     raise ValueError("mixed owner source generations")
                 generations[owner] = generation
-        native_observations[node_id] = native
-        source_dispositions[node_id] = _source_dispositions(native, qualified_sources, narrative_source, observations)
+        if include_sidecars:
+            native_observations[node_id] = native
+            source_dispositions[node_id] = _source_dispositions(native, qualified_sources, narrative_source, observations)
         name_en, name_zh = _assembled_labels(node_id, subject["name_en"], subject["name_zh"])
         inputs.append({"node_id": node_id, "kind": subject["kind"], "name_en": name_en, "name_zh": name_zh, "source_family": subject["source_family"], "native_id": subject["native_id"], "owners": owners, "observations": observations, "canonical_aggregation": None})
     return inputs, generations, native_observations, source_dispositions
@@ -827,7 +1054,7 @@ def _assert_state_matches_bundle(state: dict, bundle: OwnerBundle) -> tuple:
         raise ValueError("mixed owner bundle/state generation or query")
     if _clock(state["generated_at"], precise=True) < _clock(snapshot["observed_at"], precise=True):
         raise ValueError("generation emission precedes actual owner capture")
-    inputs, generations, native, dispositions = _assemble_from_bundle(snapshot)
+    inputs, generations, native, dispositions = _assemble_from_bundle(snapshot, bundle_sha256=bundle.bundle_sha256)
     expected = theme_state.compose_state(inputs, graph_generation_id=snapshot["graph_capture_id"],
                                         owner_generations=generations, **snapshot["query"],
                                         generated_at=state["generated_at"])
@@ -849,7 +1076,7 @@ def compose_state_only_from_owner_bundle(bundle: OwnerBundle, *, generated_at: s
     _clock(generated_at, precise=True)
     if _clock(generated_at, precise=True) < _clock(snapshot["observed_at"], precise=True):
         raise ValueError("generation emission precedes actual owner capture")
-    inputs, generations, _native_observations, _dispositions = _assemble_from_bundle(snapshot)
+    inputs, generations, _native_observations, _dispositions = _assemble_from_bundle(snapshot, bundle_sha256=bundle.bundle_sha256, include_sidecars=False)
     return theme_state.compose_state(inputs, graph_generation_id=snapshot["graph_capture_id"], owner_generations=generations,
                                      **snapshot["query"], generated_at=generated_at, previous=previous)
 
@@ -859,7 +1086,7 @@ def compose_from_owner_bundle(bundle: OwnerBundle, *, generated_at: str, previou
     _clock(generated_at, precise=True)
     if _clock(generated_at, precise=True) < _clock(snapshot["observed_at"], precise=True):
         raise ValueError("generation emission precedes actual owner capture")
-    inputs, generations, native_observations, dispositions = _assemble_from_bundle(snapshot)
+    inputs, generations, native_observations, dispositions = _assemble_from_bundle(snapshot, bundle_sha256=bundle.bundle_sha256)
     state = theme_state.compose_state(inputs, graph_generation_id=snapshot["graph_capture_id"], owner_generations=generations,
                                       **snapshot["query"], generated_at=generated_at, previous=previous)
     baseline = _legacy_from_bundle(snapshot, generated_at)
@@ -1143,7 +1370,7 @@ def _production_from_bundle(bundle, *, generated_at, previous=None, correction_r
         source_refs={name: {key: snapshot["sources"][name][key] for key in
                      ("path", "sha256", "availability", "null_reason")}
                      for name in SOURCE_PATHS if name != "theme_crosswalk"},
-        bundle_ref={"schema": BUNDLE_SCHEMA, "sha256": bundle.bundle_sha256,
+        bundle_ref={"schema": bundle.wire_schema, "sha256": bundle.bundle_sha256,
                     "observed_at": snapshot["observed_at"], "graph_capture_id": snapshot["graph_capture_id"],
                     "native_graph_generation_id": snapshot["native_graph_generation_id"],
                     "native_generation_null_reason": "NATIVE_OWNER_GENERATION_NOT_PROVEN"},

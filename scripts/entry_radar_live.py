@@ -461,6 +461,7 @@ def run(root: Path, *, now: datetime | None = None, dry_run: bool = False,
         from engine.entry_radar.earnings_context import attach_retrospective_earnings_context
         context_report = attach_retrospective_earnings_context(result.payload, pack=pack,
             identity_directory=root / "data" / "reference", committed=result.committed,
+            ledger=ledger, journal=LE.SessionJournal(state),
             budget_seconds=min(16.0, max(0.0, 540.0 - (time.perf_counter() - t_run))))
         health["retrospective_earnings_context"] = context_report
         result.payload.setdefault("health", {})["retrospective_earnings_context"] = context_report

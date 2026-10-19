@@ -355,6 +355,7 @@ MUST_RESTART = [
     'engine/entry_radar/readings.py',
     'engine/entry_radar/replay/identity_observation_snapshot.py',
     'engine/entry_radar/research_read.py',
+    'lib/quote_native_metadata.py',
     'engine/price_pressure/__init__.py',
     'engine/price_pressure/research.py',
     'lib/evidence_foundation.py',

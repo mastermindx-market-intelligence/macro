@@ -80,7 +80,10 @@ def _schema_store() -> dict[str, dict]:
         for path in sorted((ROOT / "contracts" / "market_memory").glob("*.schema.json")):
             schema = json.loads(path.read_text())
             Draft202012Validator.check_schema(schema)
-            SCHEMA_STORE[schema["$id"]] = schema
+            # Standalone JSON Schemas may omit $id. Validate them above, but
+            # only named schemas belong in the resolver's URI registry.
+            if "$id" in schema:
+                SCHEMA_STORE[schema["$id"]] = schema
     return SCHEMA_STORE
 
 

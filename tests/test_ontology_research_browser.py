@@ -131,3 +131,28 @@ def test_research_delayed_read_is_discarded_when_selection_changes(browser):
         assert page.locator('[data-research-result]').get_attribute('data-state')=='idle'
         assert '0.30%' not in page.locator('[data-research-result]').inner_text()
     finally:context.close()
+
+
+@pytest.mark.parametrize('status,final_call', [(200, 3), (404, 2)])
+def test_research_final_session_switch_cannot_render(browser, status, final_call):
+    context, page, seen, errors = start(browser, status=status)
+    try:
+        page.evaluate("""last => {
+          let calls=0;
+          sdk.auth.getSession=()=>{
+            const result={data:{session:{user:{id:owner},access_token:token}}};
+            if(++calls===last)return new Promise(resolve=>{
+              resolve(result);queueMicrotask(()=>queueMicrotask(()=>{
+                window.owner='owner-b';callbacks.forEach(f=>f('SIGNED_IN',{user:{id:owner}}));
+                window.dispatchEvent(new CustomEvent('mdx-auth',{detail:{user:{id:owner}}}));
+              }));
+            });return Promise.resolve(result);
+          };
+        }""", final_call)
+        inspect(page)
+        page.wait_for_function("window.owner==='owner-b'")
+        settled(page, 'idle')
+        assert '0.30%' not in page.locator('[data-research-result]').inner_text()
+        assert not page.locator('[data-research-result] dl').count()
+        assert len(seen)==1 and not errors
+    finally: context.close()

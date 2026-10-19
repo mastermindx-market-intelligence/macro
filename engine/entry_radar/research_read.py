@@ -22,6 +22,7 @@ MAX_EPISODES = 8192
 MAX_SELECTED = 64
 AUTHORITY = dict.fromkeys(("can_rank", "can_gate", "can_size", "can_originate", "can_open_entry"), False)
 _HEX = re.compile(r"[a-f0-9]{64}")
+_NO_QUOTE_LINEAGE = object()
 
 
 class ResearchReadUnavailable(ValueError):
@@ -137,7 +138,7 @@ def _projection(value, episode, *, schema="entry_radar.research_case/v1"):
     return result
 
 
-def _context_projection(value, episode, captured):
+def _context_projection(value, episode, captured, *, quote_provenance=_NO_QUOTE_LINEAGE):
     """Read a retrospective context without promoting it to a live case.
 
     Reuse native pointer/binding validators, then emit only closed metadata and
@@ -224,7 +225,111 @@ def _context_projection(value, episode, captured):
                     "live_projection_eligible", "limitations", "fiscal_period"):
             result[key] = value[key]
         result["published_context_sha256"] = value["sha256"]
+        if quote_provenance is not _NO_QUOTE_LINEAGE:
+            result["quote_lineage"] = _quote_lineage_projection(quote_provenance,
+                context=value, projection=result, episode=episode, captured=captured)
         return result
+    except ResearchReadUnavailable:
+        raise
+    except Exception:
+        raise ResearchReadUnavailable("radar_research_unavailable") from None
+
+
+def _quote_lineage_projection(value, *, context, projection, episode, captured):
+    """Closed metadata from the already-published producer, not a source replay.
+
+    Validate both native episode identity and the exact retrospective context.
+    Full identity receipts and spool paths remain internal to this check. Hashes
+    bind retained bytes; they do not authenticate the provider or grant rights.
+    """
+    from lib.evidence_foundation import canonical_json_bytes
+    from lib.quote_native_metadata import copy_response_identity
+    from lib.dataos.identity import ReferenceReadReceipt, parse_id
+    from engine.entry_radar.earnings_context import _closed_binding
+    from engine.entry_radar import challengers as ch
+    try:
+        fields = {"schema", "episode_binding", "scope", "composed_at", "candidate_clock_semantics",
+                  "quote", "observation", "identity", "origin", "live_projection_eligible",
+                  "rights_state", "authority", "sha256", "research_context_ref"}
+        _require(type(value) is dict and set(value) == fields
+                 and len(canonical_json_bytes(value)) <= 65536
+                 and value["schema"] == "entry_radar.quote_candidate_provenance/v1"
+                 and value["sha256"] == sha256(canonical_json_bytes(
+                     {k:v for k,v in value.items() if k != "sha256"})).hexdigest()
+                 and value["episode_binding"] == projection["episode_binding"]
+                 and value["research_context_ref"] == {"case_ref": projection["case_ref"],
+                                                       "context_sha256": context["sha256"]}
+                 and episode.detector_id in {ch.C1_DETECTOR_ID, ch.C2_DETECTOR_ID}
+                 and value["scope"] == "prospective_native_quote_observation"
+                 and value["candidate_clock_semantics"] == "detector_effective_observation_cutoff"
+                 and value["live_projection_eligible"] is False
+                 and value["rights_state"] == "not_granted_by_provenance"
+                 and value["authority"] == AUTHORITY and all(v is False for v in value["authority"].values()))
+        quote, observation, identity, origin = (value[k] for k in ("quote", "observation", "identity", "origin"))
+        _require(type(quote) is dict and set(quote) == {"schema", "vendor", "vendor_symbol", "response_field",
+            "namespace_basis", "provider_identity_attestation", "vendor_timestamp", "normalized_timestamp",
+            "native_basis", "normalized_basis", "recorded_at", "point_sha256"})
+        response = copy_response_identity({k:quote[k] for k in ("schema", "vendor", "vendor_symbol", "response_field")})
+        _require(response is not None and quote["vendor_symbol"].upper() == episode.ticker
+                 and quote["namespace_basis"] == "native_endpoint_parser"
+                 and quote["provider_identity_attestation"] == "not_available"
+                 and quote["native_basis"] in {"trade", "minute", "regular"}
+                 and (quote["normalized_basis"] is None or quote["normalized_basis"] == quote["native_basis"]))
+        _require(type(observation) is dict and set(observation) == {"sha256", "recorded_at", "interval_start", "pack_hash"}
+                 and type(observation["pack_hash"]) is str
+                 and re.fullmatch(r"[a-f0-9]{16}", observation["pack_hash"]) is not None)
+        cutoff, admitted, frozen, composed = (_instant(x) for x in (
+            episode.candidate_at, quote["recorded_at"], observation["recorded_at"], value["composed_at"]))
+        _require(_instant(quote["vendor_timestamp"]) <= admitted <= cutoff <= composed
+                 <= _instant(context["composed_at"]) <= captured
+                 and admitted <= frozen <= composed and _instant(observation["interval_start"]) < cutoff
+                 and int(_instant(quote["vendor_timestamp"]).timestamp()*1000)
+                     == int(_instant(quote["normalized_timestamp"]).timestamp()*1000))
+        _require(type(identity) is dict and set(identity) == {"security_id", "issuer_id", "cik", "alias_revision_id",
+                 "alias_known_at_utc_ns", "identity_read_receipt", "identity_snapshot_sha256"})
+        context_identity = _closed_binding(context["candidate_context_binding"])["identity"]
+        receipt = ReferenceReadReceipt.from_record(identity["identity_read_receipt"]).as_record()
+        _require(receipt == identity["identity_read_receipt"] == context_identity["identity_read_receipt"]
+                 and all(identity[k] == context_identity[k] for k in
+                         ("security_id", "issuer_id", "cik", "identity_snapshot_sha256"))
+                 and identity["identity_snapshot_sha256"] == receipt["receipt_sha256"]
+                 and parse_id(identity["security_id"])[0] == "security"
+                 and identity["security_id"] == "SEC:" + parse_id(identity["security_id"])[1].render()
+                 and parse_id(identity["issuer_id"])[0] == "issuer"
+                 and identity["issuer_id"] == "ISS:" + parse_id(identity["issuer_id"])[1].render()
+                 and identity["cik"] == projection["research_subject"]["key"]
+                 and type(identity["alias_revision_id"]) is str
+                 and re.fullmatch(r"[A-Za-z0-9_.:/-]{1,256}", identity["alias_revision_id"]) is not None
+                 and type(identity["alias_known_at_utc_ns"]) is str
+                 and re.fullmatch(r"[0-9]{1,19}", identity["alias_known_at_utc_ns"]) is not None
+                 and 0 < int(identity["alias_known_at_utc_ns"]) <= int(cutoff.timestamp()*10**9)
+                 and int(receipt["read_completed_at_utc_ns"]) <= int(cutoff.timestamp()*10**9))
+        if response["vendor"] == context_identity["vendor"] and response["vendor_symbol"] == context_identity["vendor_symbol"]:
+            _require(all(identity[k] == context_identity[k] for k in ("alias_revision_id", "alias_known_at_utc_ns")))
+        _require(type(origin) is dict and set(origin) == {"event_id", "event_sha256", "transition_sha256",
+                    "event_spool_key", "transition_spool_key", "receipt_scope"}
+                 and type(origin["event_id"]) is str and re.fullmatch(r"[a-f0-9]{16}", origin["event_id"]) is not None
+                 and origin["event_id"] in episode.evidence_refs
+                 and origin["receipt_scope"] == "ordinary_ledger_commit_not_spool_replay")
+        for key in ("event_spool_key", "transition_spool_key"):
+            _require(type(origin[key]) is str and re.fullmatch(r"live_flow/entry_radar_events/"
+                + re.escape(episode.market_session) + r"/[0-9]{6}-[a-z0-9_-]+\.json", origin[key]) is not None)
+        for digest in (quote["point_sha256"], observation["sha256"], identity["identity_snapshot_sha256"],
+                       origin["event_sha256"], origin["transition_sha256"]):
+            _require(type(digest) is str and _HEX.fullmatch(digest) is not None)
+        return {"schema": "ontology_radar_quote_lineage.v1", "state": "recorded_native_lineage",
+            "source_sha256": value["sha256"], "episode_binding": dict(projection["episode_binding"]),
+            "research_context_ref": {"case_ref": dict(projection["case_ref"]), "context_sha256": context["sha256"]},
+            "composed_at": value["composed_at"],
+            "quote": {k:quote[k] for k in ("vendor", "vendor_symbol", "response_field", "namespace_basis",
+                "provider_identity_attestation", "vendor_timestamp", "normalized_timestamp", "recorded_at",
+                "native_basis", "normalized_basis", "point_sha256")},
+            "observation": dict(observation),
+            "identity": {"security_id": identity["security_id"], "issuer_id": identity["issuer_id"],
+                         "cik": identity["cik"], "snapshot_sha256": identity["identity_snapshot_sha256"]},
+            "origin": {k:origin[k] for k in ("event_id", "event_sha256", "transition_sha256", "receipt_scope")}
+                      | {"event_spool_recorded": True, "transition_spool_recorded": True},
+            "live_projection_eligible": False, "rights_state": "not_granted_by_provenance", "authority": dict(AUTHORITY)}
     except ResearchReadUnavailable:
         raise
     except Exception:
@@ -269,7 +374,8 @@ def read_published_research(directory: Path, *, episode_id: str | None = None) -
         if "research_case" in row:
             _projection(row["research_case"], episode)
         if "research_context" in row:
-            _context_projection(row["research_context"], episode, captured)
+            _context_projection(row["research_context"], episode, captured,
+                quote_provenance=row.get("quote_candidate_provenance", _NO_QUOTE_LINEAGE))
         summary["research_state"] = ("published" if "research_case" in row else
                                      "retrospective_context" if "research_context" in row else "unqualified")
         candidates.append(summary)
@@ -287,7 +393,8 @@ def read_published_research(directory: Path, *, episode_id: str | None = None) -
     episode, row = selected
     result["candidate"] = {k:getattr(episode,k) for k in ("episode_id", "ticker", "detector_id", "candidate_at")}
     if "research_case" not in row and "research_context" in row:
-        return {**result, "state":"published_context", "case":_context_projection(row["research_context"], episode, captured)}
+        return {**result, "state":"published_context", "case":_context_projection(row["research_context"], episode, captured,
+                quote_provenance=row.get("quote_candidate_provenance", _NO_QUOTE_LINEAGE))}
     if "research_case" not in row:
         return {**result, "state": "unqualified", "case": None, "reason": "native_case_not_published"}
     return {**result, "state": "published_case", "case": _projection(row["research_case"], episode)}

@@ -88,8 +88,8 @@ export function mountResearch(root) {
     const op={id:epoch,owner:id,abort:new AbortController(),deadline:performance.now()+BUDGET,reader:null};const cancellation=new Promise((_,reject)=>{op.reject=reject;});operation=op;
     op.timer=setTimeout(()=>{op.abort.abort();if(op.reader)cancel(op.reader);op.reject(new Error('RESEARCH_TIMEOUT'));},BUDGET);state('loading');
     try{await Promise.race([(async()=>{const token=await session(op);const response=await checked(op,fetch('/api/ontology/explorer/research/v1',{method:'POST',credentials:'same-origin',cache:'no-store',redirect:'error',signal:op.abort.signal,headers:{Accept:'application/json','Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({schema:'ontology_drl_research_request.v1',...selection})}));
-      const value=await body(op,response);await session(op,token);if(response.status!==200){state(response.status===401?'signed_out':response.status===403?'forbidden':response.status===404?'not_found':'unavailable');return;}
-      const decoded=decodeResearch(value,selection);await session(op,token);render(decoded);
+      const value=await body(op,response);await session(op,token);check(op);if(response.status!==200){state(response.status===401?'signed_out':response.status===403?'forbidden':response.status===404?'not_found':'unavailable');return;}
+      const decoded=decodeResearch(value,selection);await session(op,token);check(op);render(decoded);
     })(),cancellation]);}catch(_){if(!disposed && epoch===op.id)state(owner()!==op.owner?'signed_out':'unavailable');}
     finally{op.abort.abort();if(op.reader)cancel(op.reader);clearTimeout(op.timer);if(operation===op)operation=null;}}
   function hidden(){if(document.hidden)clear();}

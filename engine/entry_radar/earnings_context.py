@@ -120,7 +120,8 @@ def project_context(envelope: dict, row: LiveEpisode, pointer: dict) -> dict:
 
 
 def attach_retrospective_earnings_context(payload: dict, *, pack, identity_directory,
-                                         committed: bool, budget_seconds: float = 16) -> dict:
+                                         committed: bool, budget_seconds: float = 16,
+                                         ledger=None, journal=None) -> dict:
     """Script hook AFTER commit/save and BEFORE normal publish; bounded to 8.
 
     Fresh owner I/O only verifies the exact retained pointers. This does not
@@ -130,12 +131,13 @@ def attach_retrospective_earnings_context(payload: dict, *, pack, identity_direc
     from engine.neuralweb import company_intelligence_reader as owner
     try:
         with owner.bounded_read_budget(budget_seconds):
-            return _attach(payload, pack=pack, identity_directory=identity_directory, committed=committed)
+            return _attach(payload, pack=pack, identity_directory=identity_directory, committed=committed,
+                           ledger=ledger, journal=journal)
     except owner.CompanyIntelligenceReadBudgetExceeded:
         return {'state':'unavailable','selected':0,'attached':0,'refusals':{'optional_resource_budget':1}}
 
 
-def _attach(payload, *, pack, identity_directory, committed):
+def _attach(payload, *, pack, identity_directory, committed, ledger=None, journal=None):
     from engine.neuralweb import company_intelligence_reader as owner
     report={'state':'unavailable','selected':0,'attached':0,'refusals':{}}
     def refuse(code):report['refusals'][code]=report['refusals'].get(code,0)+1
@@ -143,7 +145,6 @@ def _attach(payload, *, pack, identity_directory, committed):
         refuse('ledger_not_committed');return report
     try:
         owner.check_read_budget()
-        pointer=validate_generation_pointer(pack.earnings_generation)
         rows=payload.get('episodes')
         if type(rows) is not list or len(rows)>8192:raise ValueError()
         candidates=[r for r in rows if isinstance(r,dict) and r.get('state')=='CANDIDATE']
@@ -158,17 +159,52 @@ def _attach(payload, *, pack, identity_directory, committed):
         refuse('optional_resource_budget');return report
     except Exception:
         refuse('native_preparation_unavailable');return report
+    try:
+        pointer = validate_generation_pointer(pack.earnings_generation)
+    except Exception:
+        pointer = None
+    quote_report = None
+    if ledger is not None and journal is not None:
+        quote_report = {'attached':0, 'refusals':{}}
+        report['quote_candidate_provenance'] = quote_report
     prepared=[]
     for raw in choices:
         try:
             owner.check_read_budget()
             row=_candidate(raw)
-            if _instant(pointer['captured_at'])>_instant(row.candidate_at):raise ValueError()
             vendor,identity=_research_identity(row,read)
+            if quote_report is not None:
+                try:
+                    from engine.entry_radar.candidate_provenance import compose_candidate_quote_provenance
+                    if (re.fullmatch(r'[A-Z0-9.^=-]{1,32}', row.ticker) is None
+                            or ledger.get(row.episode_id) is None
+                            or ledger.get(row.episode_id).canonical != row.canonical):
+                        raise ValueError()
+                    record = journal.read(row.market_session,row.ticker)
+                    if record is None or record.pack_hash != pack.pack_hash:
+                        raise ValueError()
+                    provenance = compose_candidate_quote_provenance(row.to_dict(),
+                        record=record, identity_read=read,
+                        origin=ledger.candidate_origin(row.episode_id), composed_at=_now().isoformat())
+                    if any(provenance['identity'][key] != identity[key]
+                           for key in ('security_id','issuer_id','cik','identity_snapshot_sha256')):
+                        raise ValueError()
+                    owner.check_read_budget()
+                    raw['quote_candidate_provenance'] = provenance
+                    quote_report['attached'] += 1
+                except owner.CompanyIntelligenceReadBudgetExceeded:
+                    raise
+                except Exception:
+                    key = 'native_quote_provenance_unqualified'
+                    quote_report['refusals'][key] = quote_report['refusals'].get(key,0)+1
+            if pointer is None or _instant(pointer['captured_at'])>_instant(row.candidate_at):
+                raise ValueError()
             prepared.append((raw,row,vendor,identity))
         except owner.CompanyIntelligenceReadBudgetExceeded:
             refuse('optional_resource_budget');return report
         except Exception:refuse('candidate_context_unqualified')
+    if not prepared:
+        return report
     try:
         companies=sorted({'cik:'+identity['cik'] for _,_,_,identity in prepared})
         events=read_pinned_generation(pointer,companies)
@@ -187,6 +223,15 @@ def _attach(payload, *, pack, identity_directory, committed):
             projection=project_context(envelope,row,pointer)
             owner.check_read_budget()
             raw['research_context']=projection
+            # The optional link names this exact accepted research projection;
+            # neither its retrospective mode nor its eligibility/rights changes.
+            if 'quote_candidate_provenance' in raw:
+                provenance = dict(raw['quote_candidate_provenance'])
+                provenance['research_context_ref'] = {'case_ref':dict(projection['case_ref']),
+                    'context_sha256':projection['sha256']}
+                provenance.pop('sha256')
+                provenance['sha256'] = sha256(ef.canonical_json_bytes(provenance)).hexdigest()
+                raw['quote_candidate_provenance'] = provenance
             report['attached']+=1
         except owner.CompanyIntelligenceReadBudgetExceeded:
             refuse('optional_resource_budget');break

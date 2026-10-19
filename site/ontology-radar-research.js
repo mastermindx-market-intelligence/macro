@@ -8,6 +8,35 @@ function node(tag,cls,en,zh){const n=document.createElement(tag);if(cls)n.classN
 function note(en,zh){return node('p','ox-note',en,zh);}
 function field(dl,en,zh,value){const r=node('div','ox-company-field');r.append(node('dt','',en,zh));const d=node('dd');d.textContent=value;r.append(d);dl.append(r);}
 function authority(v){return v && Object.keys(v).sort().join(',')===AUTH.join(',') && AUTH.every(k=>v[k]===false);}
+function closed(v,fields){return !!v && typeof v==='object' && !Array.isArray(v) && Object.keys(v).sort().join(',')===[...fields].sort().join(',');}
+function same(v,expected){return closed(v,Object.keys(expected)) && Object.keys(expected).every(k=>v[k]===expected[k]);}
+function lineageHash(v){return typeof v==='string' && HEX.test(v);}
+function decodeQuoteLineage(l,c,v){
+  if(!closed(l,['schema','state','source_sha256','episode_binding','research_context_ref','composed_at','quote','observation','identity','origin','live_projection_eligible','rights_state','authority'])
+      || l.schema!=='ontology_radar_quote_lineage.v1' || l.state!=='recorded_native_lineage' || !lineageHash(l.source_sha256)
+      || !same(l.episode_binding,c.episode_binding) || !closed(l.research_context_ref,['case_ref','context_sha256'])
+      || !same(l.research_context_ref.case_ref,c.case_ref) || l.research_context_ref.context_sha256!==c.published_context_sha256
+      || l.live_projection_eligible!==false || l.rights_state!=='not_granted_by_provenance' || !authority(l.authority)
+      || !instant(l.composed_at) || Date.parse(l.composed_at)<Date.parse(c.evidence_cutoff)
+      || Date.parse(l.composed_at)>Date.parse(c.composed_at))fail();
+  const q=l.quote,o=l.observation,i=l.identity,r=l.origin,fields={polygon:'tickers[].ticker',yahoo:'spark.result[].symbol'};
+  if(!closed(q,['vendor','vendor_symbol','response_field','namespace_basis','provider_identity_attestation','vendor_timestamp','normalized_timestamp','recorded_at','native_basis','normalized_basis','point_sha256'])
+      || typeof q.vendor!=='string' || !Object.hasOwn(fields,q.vendor) || typeof q.vendor_symbol!=='string' || !/^[A-Za-z0-9.^=:/_-]{1,64}$/.test(q.vendor_symbol)
+      || q.vendor_symbol.toUpperCase()!==v.candidate.ticker || q.response_field!==fields[q.vendor]
+      || q.namespace_basis!=='native_endpoint_parser' || q.provider_identity_attestation!=='not_available'
+      || !['trade','minute','regular'].includes(q.native_basis) || q.normalized_basis!==null && q.normalized_basis!==q.native_basis
+      || !instant(q.vendor_timestamp) || !instant(q.normalized_timestamp) || !instant(q.recorded_at)
+      || Date.parse(q.vendor_timestamp)!==Date.parse(q.normalized_timestamp) || Date.parse(q.vendor_timestamp)>Date.parse(q.recorded_at)
+      || Date.parse(q.recorded_at)>Date.parse(c.evidence_cutoff) || !lineageHash(q.point_sha256)
+      || !closed(o,['sha256','recorded_at','interval_start','pack_hash']) || !lineageHash(o.sha256) || typeof o.pack_hash!=='string' || !/^[a-f0-9]{16}$/.test(o.pack_hash)
+      || !instant(o.recorded_at) || !instant(o.interval_start) || Date.parse(o.interval_start)>=Date.parse(c.evidence_cutoff)
+      || Date.parse(o.recorded_at)<Date.parse(q.recorded_at) || Date.parse(o.recorded_at)>Date.parse(l.composed_at)
+      || !closed(i,['security_id','issuer_id','cik','snapshot_sha256']) || typeof i.security_id!=='string' || !/^SEC:[A-Z0-9_.:/^=-]{1,128}$/.test(i.security_id)
+      || typeof i.issuer_id!=='string' || !/^ISS:[A-Z0-9_.:/^=-]{1,128}$/.test(i.issuer_id) || typeof i.cik!=='string' || i.cik!==c.research_subject.key || !lineageHash(i.snapshot_sha256)
+      || !closed(r,['event_id','event_sha256','transition_sha256','receipt_scope','event_spool_recorded','transition_spool_recorded'])
+      || typeof r.event_id!=='string' || !/^[a-f0-9]{16}$/.test(r.event_id) || !lineageHash(r.event_sha256) || !lineageHash(r.transition_sha256)
+      || r.receipt_scope!=='ordinary_ledger_commit_not_spool_replay' || r.event_spool_recorded!==true || r.transition_spool_recorded!==true)fail();
+}
 export function decodeRadarResearch(v,selection){
   const s=v?.source;
   if(v?.schema!=='ontology_radar_research.v1' || v.selection!==selection || !authority(v.authority)
@@ -60,7 +89,8 @@ export function decodeRadarResearch(v,selection){
           || !['USD','usd_millions'].includes(o.unit) || !['reported','gaap'].includes(o.basis)
           || typeof o.period!=='string' || !/^(?:\d{4}Q[1-4]|\d{4}FY|\d{4}-\d{2}-\d{2})$/.test(o.period)
           || o.lineage_state!=='owner_byte_replay_receipt' || o.locally_replayed!==false)fail();
-    }
+      if(Object.hasOwn(c,'quote_lineage'))decodeQuoteLineage(c.quote_lineage,c,v);
+    }else if(Object.hasOwn(c,'quote_lineage'))fail();
   }
   return v;
 }
@@ -109,7 +139,10 @@ export function mountRadarResearch(root){
       field(facts,'Fiscal period','财务期间',o.period);
       const basis=node('div','ox-company-field');basis.append(node('dt','','Reporting basis','披露口径'),node('dd','',o.basis==='gaap'?'GAAP':'Reported',o.basis==='gaap'?'GAAP':'已披露'));facts.append(basis);
       field(facts,'Evidence cutoff','证据截止时间',c.evidence_cutoff);field(facts,'Context composed','背景编制时间',c.composed_at);
-      output.append(facts,note('Retrospective issuer context only. The retained research identity does not establish which security supplied this candidate’s quote, or whether earnings caused the move.','仅为回溯性发行人背景。保留的研究身份无法证明哪只证券提供了此候选的报价，也不证明财报导致了该走势。'));
+      output.append(facts);
+      output.append(c.quote_lineage
+        ? note('Retrospective issuer context only. Radar retained a quote-to-security lineage for this observation. Provider identity is not authenticated here, and earnings causation and trading eligibility remain unestablished.','仅为回溯性发行人背景。雷达保留了此观察的报价至证券来源关联。此处未认证提供方身份，也未确立财报因果关系或交易资格。')
+        : note('Retrospective issuer context only. The retained research identity does not establish which security supplied this candidate’s quote, or whether earnings caused the move.','仅为回溯性发行人背景。保留的研究身份无法证明哪只证券提供了此候选的报价，也不证明财报导致了该走势。'));
       output.append(note('Revenue retains the owner’s value, units and fiscal period. Surprise, transmission and trading eligibility are not established. Source-span verification is an owner receipt, not a new source-body replay.','营收保留所有者的数值、单位及财务期间。尚未确立超预期、传导或交易资格。来源片段验证为所有者凭据，并非重新读取来源正文。'));
     }else{
       output.append(node('h3','','Published research case','已发布研究案例'));
@@ -122,6 +155,16 @@ export function mountRadarResearch(root){
       field(identity,'Issuer CIK','发行人 CIK',c.research_subject.key);field(identity,'Earnings event','财报事件',c.native_earnings_identity.event_id);
       field(identity,'Source generation','来源版本',c.native_earnings_identity.generation_id);field(identity,'Generation first retained','首次保留版本时间',c.source_generation.captured_at);
       field(identity,'Owner fact location','所有者事实位置',c.observation.field_path);field(identity,'Source document','来源文档',c.observation.document_id);
+      if(c.quote_lineage){
+        const l=c.quote_lineage,q=l.quote;
+        field(identity,'Recorded quote symbol','记录的报价代码',q.vendor+' · '+q.vendor_symbol);
+        field(identity,'Native security identity','原生证券身份',l.identity.security_id);
+        field(identity,'Vendor quote time','提供方报价时间',q.vendor_timestamp);
+        field(identity,'Quote admitted by Radar','雷达接纳报价时间',q.recorded_at);
+        field(identity,'Observation frozen','观察记录冻结时间',l.observation.recorded_at);
+        field(identity,'Originating event','原始事件',l.origin.event_id);
+        detail.append(note('The provider namespace is a native-parser declaration. Original ledger commit receipts are recorded; spool content was not re-read. This lineage grants no additional rights or live eligibility.','提供方命名空间为原生解析器声明。已记录原始账本提交凭据，未重新读取缓冲内容。此来源关联不赋予额外权利或实时资格。'));
+      }
     }
     detail.append(identity);
     for(const ref of c.evidence_refs){
