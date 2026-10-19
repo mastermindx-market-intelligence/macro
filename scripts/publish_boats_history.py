@@ -13,6 +13,7 @@ import argparse
 from datetime import datetime, timezone
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -47,6 +48,26 @@ def _private_write(path: Path, raw: bytes) -> None:
         stream.write(raw)
         stream.flush()
         os.fsync(stream.fileno())
+    directory = os.open(path.parent, os.O_RDONLY)
+    try:
+        os.fsync(directory)
+    finally:
+        os.close(directory)
+
+
+def validate_ssh_binding(ssh_target: str, ssh_key: Path) -> None:
+    """Check static delivery configuration before a cycle consumes its budget."""
+    if not re.fullmatch(r"[a-z_][a-z0-9_-]*@[A-Za-z0-9][A-Za-z0-9.-]{0,252}", ssh_target):
+        raise ValueError("invalid explicit SSH destination")
+    info = ssh_key.lstat()
+    if not stat.S_ISREG(info.st_mode) or info.st_uid != os.geteuid() or info.st_mode & 0o077:
+        raise ValueError("private owned regular SSH key required")
+
+
+def transfer_timeout(archive_bytes: int, file_count: int) -> int:
+    # A single bounded transfer, allowing 1 MiB/s plus per-file receiver fsync
+    # time. Slow transport still becomes an unknown effect, never a retry.
+    return max(600, min(14400, 300 + math.ceil(archive_bytes / 1024**2) + math.ceil(file_count / 5)))
 
 
 def validate_manifest(manifest: dict, version: str) -> None:
@@ -75,6 +96,11 @@ def validate_manifest(manifest: dict, version: str) -> None:
     if (type(manifest.get("bytes")) is not int or manifest["bytes"] != total or total > MAX_TOTAL
             or type(manifest.get("bars")) is not int or manifest["bars"] != bars):
         raise ValueError("invalid delivery totals")
+    empty = manifest.get("vendor_empty_symbols", [])
+    if (not isinstance(empty, list) or len(empty) > 20000
+            or any(not isinstance(s, str) or not FILE.fullmatch(s + ".json") or s + ".json" in seen for s in empty)
+            or len(set(empty)) != len(empty)):
+        raise ValueError("invalid empty-symbol identities")
 
 
 def verify_archive(stream, manifest_raw: bytes, manifest: dict) -> None:
@@ -128,7 +154,7 @@ with tarfile.open(fileobj=sys.stdin.buffer,mode='r|') as archive:
  assert manifest['directory']==str(target) and manifest['schema']=='terminal.private_boats_delivery.v1' and manifest['complete_history'] is False
  files=manifest['files'];assert isinstance(files,list) and len(files)<=20000
  items={item['name']:item for item in files};assert len(items)==len(files)
- assert all(re.fullmatch(r'[A-Z][A-Z0-9.-]{0,31}.json',name) for name in items)
+ assert all(re.fullmatch(r'[A-Z][A-Z0-9.-]{0,31}\.json',name) for name in items)
  assert type(manifest['bytes']) is int and 0<=manifest['bytes']<=8*1024**3
  assert sum(item['bytes'] for item in files)==manifest['bytes']
  assert shutil.disk_usage(base).free>manifest['bytes']+5*1024**3
@@ -170,8 +196,7 @@ finally:os.close(lock)
 def publish_bundle(manifest_path: Path, archive_path: Path, evidence_dir: Path,
                    version: str, predecessor: str, ssh_target: str, ssh_key: Path,
                    *, run=subprocess.run) -> dict:
-    if not re.fullmatch(r"[a-z_][a-z0-9_-]*@[A-Za-z0-9][A-Za-z0-9.-]{0,252}", ssh_target):
-        raise ValueError("invalid explicit SSH destination")
+    validate_ssh_binding(ssh_target, ssh_key)
     for path in (manifest_path, archive_path, ssh_key):
         info = path.lstat()
         if not stat.S_ISREG(info.st_mode) or info.st_uid != os.geteuid() or info.st_mode & 0o077:
@@ -199,8 +224,9 @@ def publish_bundle(manifest_path: Path, archive_path: Path, evidence_dir: Path,
             "version":version,"predecessor":predecessor,"manifest_sha256":digest(raw),
             "started_at_utc":datetime.now(timezone.utc).isoformat()}))
         response = run(["ssh", "-i", str(ssh_key), "-o", "BatchMode=yes", "-o", "StrictHostKeyChecking=yes",
-                        "-o", "ConnectTimeout=10", ssh_target, "python3 -c " + shlex.quote(command)],
-                       stdin=stream, capture_output=True, timeout=600)
+                        "-o", "ConnectTimeout=10", "-o", "ServerAliveInterval=30", "-o", "ServerAliveCountMax=3",
+                        ssh_target, "python3 -c " + shlex.quote(command)],
+                       stdin=stream, capture_output=True, timeout=transfer_timeout(before.st_size, len(manifest["files"])))
     if response.returncode:
         raise RuntimeError("private publication unconfirmed; retain start and reconcile original destination")
     if len(response.stdout) > 4096:

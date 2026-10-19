@@ -10,7 +10,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from scripts.publish_boats_history import encode, publish_bundle, receiver_code, verify_archive
+from scripts.publish_boats_history import encode, publish_bundle, receiver_code, verify_archive, transfer_timeout, validate_manifest
 
 
 def bundle(tmp_path, body=b'{"bars":[]}\n', bad_hash=False):
@@ -46,6 +46,8 @@ def test_verified_bundle_uses_one_transport_and_refuses_replay(tmp_path):
         assert (evidence/"publish-start.json").exists()
         assert kwargs["stdin"].tell() == 0
         assert argv[:2] == ["ssh", "-i"] and argv[-2] == "root@example.test"
+        assert "ServerAliveInterval=30" in argv and "ServerAliveCountMax=3" in argv
+        assert kwargs["timeout"] == transfer_timeout(args[2].stat().st_size, 1)
         compile(shlex.split(argv[-1])[-1], "receiver", "exec")
         calls.append(argv)
         return SimpleNamespace(returncode=0, stdout=encode({
@@ -63,6 +65,20 @@ def test_corrupt_bundle_is_rejected_before_start_or_transport(tmp_path):
     with pytest.raises(ValueError, match="digest"):
         publish(args, lambda *a, **k: pytest.fail("transport started"))
     assert not (args[-1]/"publish-start.json").exists()
+
+
+def test_real_cohort_transfer_gets_bounded_size_and_fsync_allowance():
+    seconds = transfer_timeout(1_118_747_051, 8343)
+    assert 2500 < seconds < 3600
+    assert transfer_timeout(8 * 1024**3 + 32 * 1024**2, 20000) <= 14400
+
+
+@pytest.mark.parametrize("symbols", [["../bad"], ["AAPL"], ["EMPTY", "EMPTY"], [1]])
+def test_invalid_empty_symbol_partition_refuses(tmp_path, symbols):
+    manifest = bundle(tmp_path)[0]
+    manifest["vendor_empty_symbols"] = symbols
+    with pytest.raises(ValueError, match="empty-symbol"):
+        validate_manifest(manifest, "day2")
 
 
 @pytest.mark.parametrize("result", ["nonzero", "wrong-receipt", "timeout"])

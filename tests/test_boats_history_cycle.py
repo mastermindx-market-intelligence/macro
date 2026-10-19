@@ -11,6 +11,13 @@ from scripts.run_boats_history_cycle import CycleConfig, build_bundle, run_cycle
 NOW = datetime(2026, 10, 19, 9, 10, tzinfo=timezone.utc)
 
 
+@pytest.fixture(autouse=True)
+def bounded_fixture_space(monkeypatch):
+    from types import SimpleNamespace
+    from scripts import run_boats_history_cycle as cycle
+    monkeypatch.setattr(cycle.shutil, "disk_usage", lambda p: SimpleNamespace(free=1024**4))
+
+
 def fixture(tmp_path):
     state, prior = tmp_path/"state", tmp_path/"prior"
     state.mkdir(mode=0o700)
@@ -26,6 +33,8 @@ def fixture(tmp_path):
     mp.write_text(json.dumps(baseline))
     (state/"current.json").write_text(json.dumps({"manifest_path":str(mp)}))
     cfg = CycleConfig(state, tmp_path/"archive", "root@example.test", tmp_path/"inert-key", 2, 1024**2)
+    cfg.ssh_key.write_bytes(b"inert test key; no transport")
+    cfg.ssh_key.chmod(0o600)
     calls = []
     def refresh(config, deps):
         calls.append(config)
@@ -115,6 +124,29 @@ def test_daily_calendar_is_one_postclose_fire_without_restart_loop():
     assert job["ProgramArguments"][:3] == ["/usr/bin/caffeinate", "-i", "-s"]
     assert job["WorkingDirectory"].startswith("/Volumes/Mastermind/")
     assert "--execute" in job["ProgramArguments"] and "--scheduled" in job["ProgramArguments"]
+
+
+@pytest.mark.parametrize("fault", ["key-missing", "key-public", "key-link", "target", "low-space"])
+def test_delivery_preflight_fails_before_permanent_session_or_capture(tmp_path, monkeypatch, fault):
+    from dataclasses import replace
+    from types import SimpleNamespace
+    from scripts import run_boats_history_cycle as cycle
+    args = list(fixture(tmp_path))
+    cfg = args[0]
+    if fault == "key-missing": cfg.ssh_key.unlink()
+    elif fault == "key-public": cfg.ssh_key.chmod(0o644)
+    elif fault == "key-link":
+        target = tmp_path / "other-key"
+        cfg.ssh_key.rename(target)
+        cfg.ssh_key.symlink_to(target)
+    elif fault == "target": args[0] = replace(cfg, ssh_target="-o ProxyCommand=bad")
+    else: monkeypatch.setattr(cycle.shutil, "disk_usage", lambda p: SimpleNamespace(free=1))
+    old = (cfg.state_dir / "current.json").read_bytes()
+    with pytest.raises((ValueError, FileNotFoundError)):
+        run(args, lambda *a: pytest.fail("transport started"))
+    assert args[-1] == []
+    assert not (cfg.state_dir / "session-2026-10-19").exists()
+    assert (cfg.state_dir / "current.json").read_bytes() == old
 
 
 def test_cycle_uses_real_assembler_with_producer_manifest(tmp_path):

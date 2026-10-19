@@ -1,126 +1,126 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!--
-  com.macro.extquotes.plist — launchd agent for the overnight BOATS session runner.
-
-  Candidate launches at 17:00 and 18:00 America/Vancouver cover permanent
-  UTC-7 and older host timezone databases. Only the candidate just after
-  20:00 America/New_York passes the scheduled entry guard, with an unused session receipt.
-  B.C. no longer changes clocks in November 2026:
-  https://news.gov.bc.ca/releases/2026CITZ0009-001073
-  One admitted invocation covers the finite 20:00-04:00 ET session. There is
-  no KeepAlive, RunAtLoad, StartInterval or retry after a failed process.
-
-  The Python runner validates the expected host timezone/offset equivalence and
-  the real NYSE calendar (holidays, DST) before any effect, takes a nonblocking
-  kernel lock plus a permanent O_EXCL per-trading-session start receipt in the
-  archive's run-receipts area, and writes a durable final receipt with segment
-  counts and an explicit terminal reason.  A crashed run leaves its start
-  receipt in place and therefore blocks same-session replay until lawful
-  manual reconciliation.
-
-  This relay runs on the Mac (residential IP) and publishes to R2, bypassing
-  Yahoo 429 errors that the VPS (DigitalOcean IP) encounters.  The hub fetches
-  the R2 file via the 'r2file' ext feed mode.
-
-  DO NOT touch the other flow lanes (com.mastermind.liveflow, com.mastermind.prophetmarks)
-  — this is an independent, additive job.
-
-  INSTALL (as the mac user — not root):
-    cp ops/launchd/com.macro.extquotes.plist ~/Library/LaunchAgents/
-    launchctl load ~/Library/LaunchAgents/com.macro.extquotes.plist
-
-  UNINSTALL:
-    launchctl unload ~/Library/LaunchAgents/com.macro.extquotes.plist
-    rm ~/Library/LaunchAgents/com.macro.extquotes.plist
-
-  DO NOT load this plist directly from the repo — copy first (launchd requires the
-  exact plist path when unloading).
-
-  ENV FILE (sourced from /Users/chriswong/flow-ops-wt/.env via run_with_env.sh):
-    R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET  (incumbent storage)
-    BOATS_SYMBOLS_FILE        bounded line-oriented BOATS coverage file
-    BOATS_ARCHIVE_ROOT        the existing mounted Tiingo archive root
-    BOATS_TOTAL_MAX_MESSAGES  explicit night message budget (<= 80000000)
-    BOATS_MAX_SEGMENTS        optional (default 32, hard cap 32)
-    BOATS_SEGMENT_MAX_SECONDS optional (default 3600, hard cap 3600)
-    The wrapper fails closed when any required value is missing.
-
-  LOG TAILING:
-    tail -f /tmp/extquotes.stdout.log /tmp/extquotes.stderr.log
-
-  MANUAL DRY-RUN PLAN (no stream, no R2, no receipts):
-    cd '/Users/chriswong/Documents/Cluade/Macro Dashboard'
-    python -m scripts.run_boats_session   # pass the symbols-file and
-      # archive-root options with $BOATS_SYMBOLS_FILE / $BOATS_ARCHIVE_ROOT
-
-  MANUAL ONE-SESSION RUN (same gate as launchd):
-    set -a && source /Users/chriswong/flow-ops-wt/.env && set +a
-    ops/launchd/run_ext_quotes_loop.sh
--->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Prepared deployment template, not an activation. Install only from the
+     protected runtime after the attended quote canary and consumer qualification.
+     Source the provisioned R2 env in place; no credential file is copied.
+     Apply the nonsecret runtime/budget bindings after that env is loaded.
+     Finite 17:00 and 18:00 Vancouver candidates are filtered by New York time
+     and the permanent session-start guard. No interval or crash relaunch. -->
 <plist version="1.0">
 <dict>
-  <key>Label</key>
-  <string>com.macro.extquotes</string>
-
-  <!--
-    run_with_env.sh sources .env then launches the wrapper, which execs the
-    bounded Python session runner (scripts.run_boats_session, publish mode).
-  -->
-  <key>ProgramArguments</key>
-  <array>
-    <string>/Users/chriswong/flow-ops-wt/ops/launchd/run_with_env.sh</string>
-    <string>/Users/chriswong/flow-ops-wt/.env</string>
-    <string>/bin/sh</string>
-    <string>/Users/chriswong/flow-ops-wt/ops/launchd/run_ext_quotes_loop.sh</string>
-  </array>
-
-  <!-- Working directory = flow-ops-wt (launchd law: never ~/Documents). -->
-  <key>WorkingDirectory</key>
-  <string>/Users/chriswong/flow-ops-wt</string>
-
-  <!-- Two finite host-clock candidates; the runner admits only 20:00 ET.
-       Sunday-Thursday target the next real US cash session. -->
-  <key>StartCalendarInterval</key>
-  <array>
-    <dict><key>Weekday</key><integer>0</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>0</integer></dict>
-    <dict><key>Weekday</key><integer>0</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
-    <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>0</integer></dict>
-    <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
-    <dict><key>Weekday</key><integer>2</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>0</integer></dict>
-    <dict><key>Weekday</key><integer>2</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
-    <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>0</integer></dict>
-    <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
-    <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>0</integer></dict>
-    <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
-  </array>
-
-  <key>EnvironmentVariables</key>
-  <dict>
-    <key>PYTHONPATH</key>
-    <string>/Users/chriswong/Documents/Cluade/Macro Dashboard</string>
-    <!-- R2_* secrets and the BOATS_* deployment configuration are sourced from
-         .env via run_with_env.sh above; the wrapper fails closed on missing
-         configuration and the Python runner fails closed on a mismatched host
-         timezone. -->
-  </dict>
-
-  <key>StandardOutPath</key>
-  <string>/tmp/extquotes.stdout.log</string>
-
-  <key>StandardErrorPath</key>
-  <string>/tmp/extquotes.stderr.log</string>
-
-  <!-- Do NOT set KeepAlive (and never RunAtLoad/StartInterval): the session
-       runner is finite; launchd respawns at the next StartCalendarInterval. -->
-  <key>KeepAlive</key>
-  <false/>
-
-  <!-- ThrottleInterval: if the job exits within 10 s, wait 60 s before the
-       next launch attempt (launchd's own throttle; there is no in-job retry). -->
-  <key>ThrottleInterval</key>
-  <integer>60</integer>
-
+	<key>Label</key>
+	<string>com.macro.extquotes</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/sh</string>
+		<string>/Volumes/Mastermind/market-data/tiingo-runtime/current/ops/launchd/run_with_env.sh</string>
+		<string>/Users/chriswong/Documents/Cluade/Macro Dashboard/.env</string>
+		<string>/usr/bin/env</string>
+		<string>BOATS_REPO_ROOT=/Volumes/Mastermind/market-data/tiingo-runtime/current</string>
+		<string>BOATS_SYMBOLS_FILE=/Volumes/Mastermind/market-data/tiingo-runtime/config/symbols.txt</string>
+		<string>BOATS_ARCHIVE_ROOT=/Volumes/Mastermind/market-data/tiingo</string>
+		<string>BOATS_TOTAL_MAX_MESSAGES=80000000</string>
+		<string>BOATS_PYTHON=/opt/homebrew/Caskroom/miniconda/base/bin/python</string>
+		<string>/bin/sh</string>
+		<string>/Volumes/Mastermind/market-data/tiingo-runtime/current/ops/launchd/run_ext_quotes_loop.sh</string>
+	</array>
+	<key>WorkingDirectory</key>
+	<string>/Volumes/Mastermind/market-data/tiingo-runtime/current</string>
+	<key>StartCalendarInterval</key>
+	<array>
+		<dict>
+			<key>Weekday</key>
+			<integer>0</integer>
+			<key>Hour</key>
+			<integer>17</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>Weekday</key>
+			<integer>0</integer>
+			<key>Hour</key>
+			<integer>18</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>Weekday</key>
+			<integer>1</integer>
+			<key>Hour</key>
+			<integer>17</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>Weekday</key>
+			<integer>1</integer>
+			<key>Hour</key>
+			<integer>18</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>Weekday</key>
+			<integer>2</integer>
+			<key>Hour</key>
+			<integer>17</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>Weekday</key>
+			<integer>2</integer>
+			<key>Hour</key>
+			<integer>18</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>Weekday</key>
+			<integer>3</integer>
+			<key>Hour</key>
+			<integer>17</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>Weekday</key>
+			<integer>3</integer>
+			<key>Hour</key>
+			<integer>18</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>Weekday</key>
+			<integer>4</integer>
+			<key>Hour</key>
+			<integer>17</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>Weekday</key>
+			<integer>4</integer>
+			<key>Hour</key>
+			<integer>18</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+		</dict>
+	</array>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PYTHONPATH</key>
+		<string>/Volumes/Mastermind/market-data/tiingo-runtime/current</string>
+	</dict>
+	<key>StandardOutPath</key>
+	<string>/Volumes/Mastermind/market-data/tiingo-runtime/logs/quotes.stdout.log</string>
+	<key>StandardErrorPath</key>
+	<string>/Volumes/Mastermind/market-data/tiingo-runtime/logs/quotes.stderr.log</string>
+	<key>KeepAlive</key>
+	<false/>
+	<key>RunAtLoad</key>
+	<false/>
 </dict>
 </plist>

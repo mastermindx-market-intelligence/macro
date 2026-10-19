@@ -554,3 +554,20 @@ def test_quote_calendar_candidates_require_new_york_entry_guard():
         {"Weekday": day, "Hour": hour, "Minute": 0} for day in range(5) for hour in (17,18)]
     assert not job.get("KeepAlive") and not job.get("RunAtLoad") and "StartInterval" not in job
     assert "--publish --scheduled" in (root/"ops/launchd/run_ext_quotes_loop.sh").read_text()
+
+
+def test_quote_job_uses_selected_runtime_and_existing_env_without_relaunch():
+    import plistlib
+    root = Path(__file__).resolve().parents[1]
+    job = plistlib.loads((root / "ops/launchd/com.macro.extquotes.plist").read_bytes())
+    runtime = "/Volumes/Mastermind/market-data/tiingo-runtime/current"
+    args = job["ProgramArguments"]
+    assert args[:4] == ["/bin/sh", runtime + "/ops/launchd/run_with_env.sh",
+                       "/Users/chriswong/Documents/Cluade/Macro Dashboard/.env", "/usr/bin/env"]
+    assert args[-2:] == ["/bin/sh", runtime + "/ops/launchd/run_ext_quotes_loop.sh"]
+    assert "BOATS_REPO_ROOT=" + runtime in args[4:-2]
+    assert "BOATS_TOTAL_MAX_MESSAGES=80000000" in args[4:-2]
+    assert job["WorkingDirectory"] == runtime
+    assert job["RunAtLoad"] is False and job["KeepAlive"] is False
+    assert "StartInterval" not in job
+    assert "flow-ops-wt" not in str(job)

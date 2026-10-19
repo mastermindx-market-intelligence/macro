@@ -17,6 +17,7 @@ import io
 import json
 import os
 from pathlib import Path
+import shutil
 import stat
 import sys
 import tarfile
@@ -25,9 +26,9 @@ from zoneinfo import ZoneInfo
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from scripts.publish_boats_history import MAX_FILE, REMOTE_BASE, encode, publish_bundle, validate_manifest, _private_write
+from scripts.publish_boats_history import MAX_FILE, MAX_TOTAL, REMOTE_BASE, encode, publish_bundle, validate_manifest, validate_ssh_binding, _private_write
 from scripts.refresh_boats_history import RefreshConfig, RefreshDeps, _read_regular, run_refresh, is_nyse_session
-from scripts.run_boats_session import validate_host_timezone
+from scripts.run_boats_session import validate_host_timezone, MIN_ARCHIVE_FREE_BYTES
 
 
 @dataclass(frozen=True)
@@ -47,6 +48,15 @@ def private_directory(path: Path) -> None:
     if (not path.is_absolute() or not stat.S_ISDIR(info.st_mode)
             or info.st_uid != os.geteuid() or stat.S_IMODE(info.st_mode) != 0o700):
         raise ValueError("private owned absolute directory required")
+
+
+def require_cycle_space(path: Path, capture_bytes: int) -> None:
+    # Reserve the maximum bounded new data copy + tar, capture staging and the
+    # archive's operating floor. Retained prior versions are never deleted by
+    # the collector; low space refuses before creating a session or fetching.
+    required = MIN_ARCHIVE_FREE_BYTES + 2 * MAX_TOTAL + 2 * capture_bytes + 32 * 1024**2
+    if shutil.disk_usage(path).free < required:
+        raise ValueError("insufficient private cycle staging space before capture")
 
 
 def build_bundle(manifest: dict, baseline_dir: Path, refresh_dir: Path, output: Path) -> tuple[Path, Path]:
@@ -102,6 +112,8 @@ def run_cycle(config: CycleConfig, *, now: datetime | None = None,
             or type(config.max_response_bytes) is not int or not 1 <= config.max_response_bytes <= 1024**2):
         raise ValueError("explicit finite capture budgets required")
     private_directory(config.state_dir)
+    validate_ssh_binding(config.ssh_target, config.ssh_key)
+    require_cycle_space(config.state_dir, config.max_total_bytes)
     lock = os.open(config.state_dir/".cycle.lock", os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
     try:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -128,6 +140,11 @@ def run_cycle(config: CycleConfig, *, now: datetime | None = None,
         assemble(baseline, {"status":"complete", "symbols":[], "outputs":[], "unavailable":[], "not_requested":[]})
         operation = config.state_dir/("session-"+session)
         operation.mkdir(mode=0o700)  # permanent, including on capture or publication failure
+        directory = os.open(config.state_dir, os.O_RDONLY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
         _private_write(operation/"cycle-start.json", encode({"session":session,
             "started_at_utc":now.isoformat(), "previous_manifest":str(baseline_path),
             "previous_selection_sha256":hashlib.sha256(selected_raw).hexdigest(),
