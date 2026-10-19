@@ -31,10 +31,11 @@ QUALIFICATION_ROOT = (
 )
 PINNED_RECORDED_AT = "2026-08-02T00:00:00Z"
 # Captured from load_core_metric_registry().governance_bundle_at(PINNED_RECORDED_AT)
-# and the registry lane digest attributes at 5267c66846e7733bc1eb30edc1524daff51598ca
-# before this lane's registry-field additions.
-PINNED_CATALOG_CONTENT_SHA256 = "2825936bc3cdf0194625f5c16b8c9652c2477b043f0067726156af8c7847fe29"
-PINNED_MAPPING_PACK_CONTENT_SHA256 = "70f2974db21a2a3f5d2c76cf6d976e521a48969ea46925d4f3740287b8e3dc29"
+# and the registry lane digest attributes.  File-level digests repinned for the
+# mapping pack 1.1.0 / metric catalog 1.1.0 append (seat rulings 2026-10-19
+# R-ALIAS, R-INTANG, D1); the pre-R bundle content_id is deliberately unchanged.
+PINNED_CATALOG_CONTENT_SHA256 = "84c5fbf8e5dc76e7bb783207d14b2c820da802912c0b9e86db4a8de3dde92a61"
+PINNED_MAPPING_PACK_CONTENT_SHA256 = "e1d8e925c58e202c6ec2b49b4d3a3990d55b87f9c6a0ca93b7e5c9de48b4dfc0"
 PINNED_FORMULA_PACK_CONTENT_SHA256 = "fdfca7fbaa4ef926232f771603146b2d9b44cdd5e74d43bb8e9bf47c6e0c54a8"
 PINNED_GOVERNANCE_BUNDLE_CONTENT_ID = "e724b79842bd978110b389b2997368a05958ee451538193f6071fc2451e52d29"
 
