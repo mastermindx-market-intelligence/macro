@@ -104,7 +104,7 @@ waves:
     depends_on: [P1]
     wait:
       kind: external_action
-      review_after: 2026-10-19
+      review_after: 2026-10-20
       condition: >
         Historical source mutual exclusion is superseded by accepted #1283. #1286 and
         #1298 are merged; exact 326c8469a21d7f50fc9ecb1848196bf1c6e66685 is installed.
@@ -118,7 +118,16 @@ waves:
         false. Full 326c acceptance is NOT_STARTED; last full accepted host is
         7d82b9adb839d54e4ab25378ca333e498dd83fcc. Acceptance-lane PICKUP is not START.
     next_action: >
-      2026-10-19 00:3xZ (Fable Meta-CEO seat 873aabd3, via WS:EXECUTIVE-ECOSYSTEM-COMPLETION R1):
+      2026-10-19 04:4xZ (seat 873aabd3, via WS:EXECUTIVE-ECOSYSTEM-COMPLETION R1): acceptance of
+      the installed bcf4a2f7 FAILED at 01:18:08Z (host status exit 1) after the Chairman's one
+      canary passed at 01:16:01Z (SPENT). Root cause — with workspace_acquisition configured,
+      Control hosts the Chairman Control Room on 127.0.0.1:8787 in-process and the host proof
+      forbids any TCP listener; the installed composition has never passed acceptance. The arming
+      auditor's FINAL is ARM_NOT_ADMISSIBLE and rejects a loopback allowlist. A reviewed fix
+      release (Control Room off TCP) is commissioned; P4 stays todo until a fixed release is
+      installed, accepted on one new Chairman-authorized canary and armed. bcf4a2f7 is UNARMED,
+      STOPPED and quiescent.
+      HISTORY 2026-10-19 00:3xZ (Fable Meta-CEO seat 873aabd3, via WS:EXECUTIVE-ECOSYSTEM-COMPLETION R1):
       the installed release is now S3-prime = bcf4a2f72538682f2fbe4902f6417e59cd038678 (install.sh
       2026-10-19 00:25Z; chain 91c1cac5 → S2 08d78873 2026-10-18 04:08Z → bcf4a2f7), DISARMED and
       re-bound (autonomy-control.sh disarm transaction autonomy-595595aa4389, status UNARMED), NOT
@@ -194,11 +203,11 @@ waves:
       supporting read-only evidence, not execution owners; their older readiness census
       is superseded by the two sealed Personal-Pro receipts.
 next_action: >
-  CURRENT FRONTIER 2026-10-19 / installed bcf4a2f72538682f2fbe4902f6417e59cd038678 (S3-prime,
-  install 00:25Z, disarm autonomy-595595aa4389, UNARMED, not accepted, not armed, services stopped
-  by design): see P4 — the sole open act is the Chairman's single canary decision for bcf4a2f7
-  acceptance and arm; no install, disarm, step-4 supersede or canary may be repeated; the
-  maintenance descriptor for acceptance is 7da3c9577cd5d9cc62898cc1b6806630835486f258d4f893d12db48cfabc2c12.
+  CURRENT FRONTIER 2026-10-19 04:4xZ / installed bcf4a2f72538682f2fbe4902f6417e59cd038678 (S3-prime,
+  UNARMED, not accepted, services stopped): see P4 — acceptance failed 01:18:08Z on the in-Control
+  Control Room loopback listener; the canary is SPENT; the auditor's FINAL is ARM_NOT_ADMISSIBLE;
+  a reviewed off-TCP fix release is commissioned, then one host chain, ONE Chairman canary,
+  acceptance and arm. Never rerun acceptance under bcf4a2f7 with control.json 74366b97….
   Everything after this paragraph is the 2026-10-10 history and must not be re-executed.
   HISTORY — CURRENT FRONTIER 2026-10-10 / installed 326c8469a21d7f50fc9ecb1848196bf1c6e66685:
   #1286/#1298 release/install, C1/A2 rebind, five-service restoration and MCP 1.5.0
