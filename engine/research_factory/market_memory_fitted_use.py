@@ -110,6 +110,36 @@ def _binding(body, registration, ref):
     return value
 
 
+def _training_audit_report(covered, checked):
+    """Classify only known descriptive gaps; this never authenticates a source.
+
+    The frozen audit remains unchanged. Native identities, actual measurement
+    sessions and clocks must still qualify in the separate source phase before
+    any numeric conversion. Economic independence/full support are not inferred.
+    """
+    source_allowed = {"frozen_owner_measurement_episode_or_span_provenance",
+        "declared_measurement_episode_feature_or_label_support",
+        "outcome_definition_semantics_for_declared_nonapplicability"}
+    split_allowed = {"declared_session_episode_and_full_support_spans",
+        "outcome_definition_semantics_for_declared_nonapplicability"}
+    _require(set(covered["unresolved"]) <= source_allowed
+        and set(checked["unresolved"]) <= split_allowed, "unclassified_training_audit_obligation")
+    _require(checked["exact_task_bindings_checked"] is True
+        and checked["declared_dispositions"]["unknown"] == 0,
+        "exact_chronological_training_partition_required")
+    return {"source_audit_markers": list(covered["unresolved"]),
+        "split_audit_markers": list(checked["unresolved"]),
+        "historical_frozen_unknown_counts": covered["frozen_owner_metadata_unknown_counts"],
+        "declared_unknown_counts": covered["unknown_declarations"],
+        "native_source_authentication": "pending_separate_native_phase",
+        "economic_episode_independence": "not_established",
+        "full_upstream_feature_support": "not_established",
+        "normalization_uses_labels": False,
+        "E0_annotation_or_L0_financial_outcomes_authenticated": False,
+        "scientific_purge_or_holdout_validity_verified": False,
+        "operational_study_admission": False}
+
+
 def _prepare(descriptor, selected, records, registration_body, purpose):
     reg = records["registration"]
     _require(records["access"]["status"] == "active"
@@ -152,8 +182,9 @@ def _prepare(descriptor, selected, records, registration_body, purpose):
 
     for name, ref in refs.items():
         bodies[name] = read(ref)
-    tasks.resolve_registered_task_inputs(registration=registration_body,
+    method, _ = tasks.resolve_registered_task_inputs(registration=registration_body,
         method_manifest=bodies["method"], task_manifest=bodies["tasks"], frozen_membership=bodies["membership"])
+    _require(binding["mode"] == method.mode, "selected_training_mode_mismatch")
     manifest, membership = (control._domain_json(bodies[k]) for k in ("tasks", "membership"))
     coverage = temporal.validate_declaration(control._domain_json(bodies["coverage"]),
         bodies["coverage"], role="source_coverage_ref", registration=reg)
@@ -165,9 +196,7 @@ def _prepare(descriptor, selected, records, registration_body, purpose):
     covered = temporal.source_coverage_checks(coverage, membership=membership, resolved_digests=set(observed))
     checked = temporal.interval_split_checks(split, tasks=manifest, coverage=coverage,
         membership=membership, resolved_digests=set(observed))
-    # Metadata consistency never substitutes for missing original provenance.
-    _require(not covered["unresolved"] and not checked["unresolved"],
-             "actual_training_source_or_split_provenance_unresolved")
+    report = _training_audit_report(covered, checked)
     training = [row["task_id"] for row in split["tasks"] if row["disposition"] == "development"]
     _require(training and training == binding["training_task_ids"]
         and split["boundaries"]["development_end_exclusive"] == binding["fit_cutoff"],
@@ -178,12 +207,18 @@ def _prepare(descriptor, selected, records, registration_body, purpose):
     selected_tasks = [task_map[identity] for identity in training]
     _require(len({row["capture_id"] for row in selected_tasks}) == len(selected_tasks),
              "one_training_row_per_original_capture_required")
-    body = control._domain_snapshot({"schema": "market_memory.authenticated_training_window.v2",
+    coverage_map = {row["capture_id"]: row for row in coverage["entries"]}
+    partitions = {row["task_id"]: row["disposition"] for row in split["tasks"]}
+    body = control._domain_snapshot({"schema": "market_memory.selected_training_inputs.v2",
         "purpose_sha256": sha256(control._domain_snapshot(purpose)[1]).hexdigest(),
         "selection_sha256": sha256(control._domain_snapshot(selected)[1]).hexdigest(),
         "binding": binding, "tasks": selected_tasks,
-        "coverage": [{row["capture_id"]: row for row in coverage["entries"]}[task["capture_id"]]
-                     for task in selected_tasks],
+        "partition_tasks": [{**task, "disposition": partitions[task["task_id"]]}
+                            for task in manifest["tasks"]],
+        "chronological_partition": {"boundaries": split["boundaries"],
+                                    "embargo_seconds": split["embargo_seconds"]},
+        "coverage": [coverage_map[task["capture_id"]] for task in manifest["tasks"]],
+        "training_audit_report": report,
         "reference_sha256": sorted(observed), "operational_study_admission": False})[1]
     for digest, original in observed.items():
         _require(owner._read(descriptor, digest + ".json", control.MAX_DOMAIN_OBJECT_BYTES) == original,
@@ -193,6 +228,7 @@ def _prepare(descriptor, selected, records, registration_body, purpose):
 
 @dataclass(frozen=True, slots=True, init=False, repr=False)
 class TrainingWindowCapability:
+    """Owner-qualified selected metadata; never native-source authentication."""
     _body: bytes
     _selection: bytes
     _seal: object
