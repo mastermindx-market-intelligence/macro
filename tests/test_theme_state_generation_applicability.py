@@ -7,10 +7,12 @@ Binds three facts the shadow ThemeState must never blur:
 * a current-data qualification applies only to the exact subject and graph
   generation it was computed over (a later subject generation does not inherit it);
 * the real owner reader supplies identity/membership/rights through the EXISTING
-  adapter interface only, never eligibility (D2E stays unsealed), and the builder
-  seam is default-off with the reader-free shadow as its fallback.
+  adapter interface only, never eligibility (D2E stays unsealed).
 
-No new producer: the only writer exercised is the existing GRAPH_SHADOW_STATE mode.
+No new producer: the existing GRAPH_SHADOW_STATE writer is unchanged (its frozen
+source shape stays pinned by tests/test_build_thematic_state_shadow_graph_state.py
+::test_t9_source_shape) and never constructs the reader; wiring the reader into that
+writer is a seat decision that must amend that pin, not a side effect of this lane.
 """
 from __future__ import annotations
 
@@ -242,43 +244,34 @@ def test_real_reader_never_emits_eligibility(world):
         assert "D2E_UNSEALED" in row["eligibility"]["reason_codes"]
 
 
-def test_shadow_seam_is_default_off_and_falls_back_on_reader_failure(production_world, monkeypatch, capsys):
+def test_existing_shadow_writer_is_unchanged_and_the_reader_composes_through_the_same_adapter(
+        production_world, monkeypatch):
     root = production_world
     monkeypatch.setenv("COLLECT_LANE", "nightly")
-    monkeypatch.delenv("GMI_THEME_STATE_OWNER_READERS", raising=False)
-    real_init = readers.StateQualificationReader.__init__
 
     def refuse(*args, **kwargs):
-        raise AssertionError("reader constructed on the default path")
+        raise AssertionError("the existing shadow writer constructed the owner reader")
 
+    real_init = readers.StateQualificationReader.__init__
     monkeypatch.setattr(readers.StateQualificationReader, "__init__", refuse)
     builder.build(root, mode="GRAPH_SHADOW_STATE", generated_at=owner_fixture.EMITTED)
-    default_bytes = (root / SHADOW).read_bytes()
-    out = capsys.readouterr().out
-    assert "gmi-shadow-owner-readers" not in out and "gmi-shadow-graph-state" not in out
+    written = json.loads((root / SHADOW).read_text())
+    reader_free = adapter.compose_state_only_from_owner_bundle(
+        adapter.capture_owner_bundle(root, effective_at=owner_fixture.EMITTED[:10],
+                                     known_at=owner_fixture.EMITTED),
+        generated_at=owner_fixture.EMITTED)
+    assert written == reader_free  # the writer's bytes are the reader-free composition
 
-    # Opted in, a reader failure warns once and keeps the reader-free shadow.
-    monkeypatch.setenv("GMI_THEME_STATE_OWNER_READERS", "1")
-
-    def explode(self, root):
-        raise RuntimeError("owner reader unavailable")
-
-    monkeypatch.setattr(readers.StateQualificationReader, "__init__", explode)
-    builder.build(root, mode="GRAPH_SHADOW_STATE", generated_at=owner_fixture.EMITTED)
-    out = capsys.readouterr().out
-    assert "::warning title=gmi-shadow-owner-readers::RuntimeError" in out
-    assert "gmi-shadow-graph-state" not in out
-    assert (root / SHADOW).read_bytes() == default_bytes
-
-    # Opted in with the real reader, the shadow is the validated reader-bound
-    # composition through the SAME writer; D2E stays unsealed for every subject.
+    # The real reader goes through the SAME capture -> state-only compose -> validate
+    # functions the writer uses; D2E stays unsealed for every subject.
     monkeypatch.setattr(readers.StateQualificationReader, "__init__", real_init)
-    builder.build(root, mode="GRAPH_SHADOW_STATE", generated_at=owner_fixture.EMITTED)
-    out = capsys.readouterr().out
-    assert "gmi-shadow-owner-readers" not in out and "gmi-shadow-graph-state" not in out
-    shadow = json.loads((root / SHADOW).read_text())
+    bundle = adapter.capture_owner_bundle(root, owner_readers=readers.StateQualificationReader(root),
+                                          effective_at=owner_fixture.EMITTED[:10],
+                                          known_at=owner_fixture.EMITTED)
+    shadow = adapter.compose_state_only_from_owner_bundle(bundle, generated_at=owner_fixture.EMITTED)
     theme_state.validate_state(shadow)
-    assert shadow["mode"] == "shadow" and shadow["authority"] == json.loads(default_bytes)["authority"]
+    assert shadow["mode"] == "shadow" and shadow["authority"] == written["authority"]
+    assert shadow["graph_generation_id"] == written["graph_generation_id"]
     assert all(row["eligibility"]["status"] == "NOT_QUALIFIED" for row in shadow["subjects"])
     reader_roles = {role for row in shadow["subjects"] for role, value in row["owner_receipts"].items()
                     if isinstance(value, dict) and value.get("schema") == readers.RECEIPT_SCHEMA}
