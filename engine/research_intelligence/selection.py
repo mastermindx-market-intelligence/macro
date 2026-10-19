@@ -309,8 +309,6 @@ def build_selector_prompt(identity: dict[str, Any], body: str, *, _work_budget=N
         key: catalog[key]
         for key in ("catalog_version", "document", "units", "catalog_sha256")
     }
-    if "source_layout" in catalog:
-        prompt_catalog["source_layout"] = catalog["source_layout"]
     user = (
         "DOCUMENT IDENTITY:\n" + json.dumps(identity, ensure_ascii=False)
         + "\n\nOUTPUT SHAPE:\n" + json.dumps(

@@ -200,3 +200,40 @@ def test_scope_xml_length_checked_before_utf8_expansion(monkeypatch):
     scope["layout_xml"] = "表格" * 3
     with pytest.raises(ValueError, match="scope invalid"):
         layout.eligible_evidence_ids(r, {}, scope)
+
+
+
+def test_provider_catalog_omits_private_layout_binding_but_retains_catalog_pin():
+    r, scope = fixture()
+    _system, user, catalog = selection.build_selector_prompt(
+        _identity(DOC, r["text"]), r["text"], source_record=r, layout_scope=scope)
+    sent = json.loads(user.split("EVIDENCE CATALOG:\n", 1)[1].split("\n\n", 1)[0])
+    assert "source_layout" not in sent
+    assert sent["catalog_sha256"] == catalog["catalog_sha256"]
+    assert "source_layout" in selection.source_context_receipt(catalog)
+
+
+def eligibility_catalog(count):
+    statements = [f"Evidence number{i} describes continued demand growth for regional companies." for i in range(count)]
+    text = "neutral " * 30000 + "\n" + "\n".join(statements)
+    r = record(text)
+    source = xml([statements])
+    scope = layout.build_layout_scope(r, source, expected_layout_sha256=hashlib.sha256(source).hexdigest())
+    catalog = {"document": {"id": r["report_id"], "content_sha256": r["extracted_text_sha256"]},
+        "units": [{"evidence_id": f"unit-{i}", "text": statement} for i, statement in enumerate(statements)]}
+    return r, scope, catalog
+
+
+def test_eligibility_uses_reserved_byte_work_instead_of_token_alignment_budget():
+    r, scope, catalog = eligibility_catalog(160)
+    assert len(r["text"].encode()) * len(catalog["units"]) > layout.MAX_COMPARISONS
+    result = layout.eligible_evidence_ids(r, catalog, scope)
+    assert result["omitted_layout"] == 0
+    assert len(result["allowed_evidence_ids"]) == 160
+
+
+def test_eligibility_still_refuses_beyond_existing_analysis_reservation():
+    assert 2 * layout.MAX_ELIGIBILITY_COMPARISONS <= selection.MAX_VERIFIER_WORK_BYTES
+    r, scope, catalog = eligibility_catalog(400)
+    with pytest.raises(ValueError, match="eligibility budget exceeded"):
+        layout.eligible_evidence_ids(r, catalog, scope)

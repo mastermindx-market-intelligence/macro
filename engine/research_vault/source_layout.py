@@ -22,6 +22,10 @@ MAX_BLOCKS = 10000
 MAX_TOKENS = 500000
 MAX_UNITS = 2048
 MAX_COMPARISONS = 20000000
+# Independent token-alignment and per-pass byte-verification bounds. The two
+# selector catalog passes still reserve at most the existing128MiB allowance.
+# Per-dimension caps above are joint limits, not a promise of every product.
+MAX_ELIGIBILITY_COMPARISONS = 64 * 1024 * 1024
 _NS = "{http://www.w3.org/1999/xhtml}"
 _SHA = re.compile(r"[a-f0-9]{64}\Z")
 
@@ -166,7 +170,7 @@ def eligible_evidence_ids(record, catalog, scope):
         seen.add(unit["evidence_id"])
         needle = unit["text"].encode("utf-8")
         work += len(raw) + len(rebuilt["blocks"])
-        if work > MAX_COMPARISONS:
+        if work > MAX_ELIGIBILITY_COMPARISONS:
             raise ValueError("layout eligibility budget exceeded")
         start = raw.find(needle)
         if start < 0 or raw.find(needle, start + 1) >= 0:
