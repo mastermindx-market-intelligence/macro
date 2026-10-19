@@ -431,3 +431,68 @@ def test_state_peer_cohort_identity_unresolved_is_typed(tmp_path: Path, monkeypa
     assert [t["anchor_issuer_id"] for t in cohort["tables"]] == [
         _issuer_id(ticker) for ticker, _, _ in ADMITTED
     ]
+
+
+def _with_revenue_cells(ticker: str, *cells: tuple[str, str]) -> dict:
+    """The member tree with its revenue row carrying the given (start, value) cells."""
+    tree = _member_tree(ticker)
+    row = next(
+        r for r in tree["statements"][0]["rows"] if r["standardized_metric_id"] == "revenue"
+    )
+    template = row["cells"][0]
+    row["cells"] = [
+        {**template, "period": {**template["period"], "start": start}, "value": value}
+        for start, value in cells
+    ]
+    return tree
+
+
+def test_state_peer_cohort_aligns_a_same_end_tie_to_each_anchor(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """Composer wiring: a peer's quarter/year-to-date tie resolves per anchor.
+
+    AAA reports only year-to-date revenue, CCC only the quarter, and BBB both
+    on the same end date (year-to-date cell first). AAA's table carries BBB's
+    year-to-date value and drops CCC under A35-D1; BBB's and CCC's tables carry
+    BBB's quarter value, the default shortest pick.
+    """
+    trees = {
+        "AAA": _with_revenue_cells("AAA", ("2026-01-01", "1001")),
+        "BBB": _with_revenue_cells("BBB", ("2026-01-01", "2002"), ("2026-04-01", "202")),
+        "CCC": _member_tree("CCC"),
+        "EEE": _member_tree("EEE"),
+    }
+    generations = {
+        _issuer_id(ticker): _FakeGeneration({f"0000000-26-00000{ticker[-1]}": tree})
+        for ticker, tree in trees.items()
+    }
+    _install_store(monkeypatch, generations=generations)
+    _write_root(tmp_path)
+    cohort = bff.compose_state(tmp_path, generated_at=GEN_AT)["payload"]["peer_cohort"]
+    assert cohort is not None
+    tables = {table["anchor_issuer_id"]: table for table in cohort["tables"]}
+
+    def revenue_value(anchor: str, member: str) -> str | None:
+        emission = next(
+            e for e in tables[_issuer_id(anchor)]["emissions"] if e["metric_id"] == "revenue"
+        )
+        return next(
+            (row["value"] for row in emission["rows"] if row["issuer_id"] == _issuer_id(member)),
+            None,
+        )
+
+    def revenue_codes(anchor: str, member: str) -> set[str]:
+        return {
+            x["code"] for x in tables[_issuer_id(anchor)]["exclusions"]
+            if x["metric_id"] == "revenue" and x["issuer_id"] == _issuer_id(member)
+        }
+
+    assert revenue_value("AAA", "AAA") == "1001"
+    assert revenue_value("AAA", "BBB") == "2002"
+    assert revenue_codes("AAA", "BBB") == set()
+    assert revenue_value("AAA", "CCC") is None
+    assert "A35-D1" in revenue_codes("AAA", "CCC")
+    assert revenue_value("BBB", "BBB") == "202"
+    assert revenue_value("CCC", "BBB") == "202"
+    assert revenue_codes("CCC", "BBB") == set()

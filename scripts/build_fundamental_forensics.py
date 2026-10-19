@@ -901,8 +901,10 @@ def _tree_metric_observations(
     (G0-b), intersected with the field denominator by the caller.
 
     Cells sharing the latest end date (a 10-Q's quarter beside its
-    year-to-date column) resolve to the shortest stated duration, so the pick
-    never depends on cell order. When ``same_end`` is given, every metric
+    year-to-date column) resolve to the shortest stated duration, so among
+    distinct durations the pick never depends on cell order; cells of equal
+    duration keep the first one met in contract accession order, and a dated
+    cell always outranks an undated one. When ``same_end`` is given, every metric
     whose latest end date carried more than one cell gets all of them there,
     for the caller to align against an anchor (``_aligned_to_anchor``).
     """
