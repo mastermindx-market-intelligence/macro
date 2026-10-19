@@ -28,9 +28,15 @@ anywhere in this module):
   fails ONLY by guard 11 (``source_taxonomy_namespace_version_mismatch``).
   Bucketed per logical key as ``v1_pair`` (exactly 2 accessions) or
   ``v2_unproven_chain`` (3+ accessions whose chain state is ``unproven``);
-  ``cascade`` counts derived cells whose not-evaluable dependency leaves are
-  ALL cross-taxonomy cells — a single precision leaf disqualifies the
-  cascade.
+  ``cascade`` counts derived cells whose EVERY not-evaluable dependency LEAF
+  classifies to this code.  A leaf is a dependency node with no
+  ``dependency_cell_ids`` of its own (``dependency_nodes`` holds ALL
+  transitive nodes, so intermediate derived nodes never count as leaves);
+  one non-cross leaf disqualifies the cascade.
+* ``mixed_leaf_causes`` — a derived cell with at least one cross-taxonomy
+  leaf AND at least one other not-evaluable leaf: too mixed to call a pure
+  cascade, it carries the cross verdicts' basis and accessions plus the
+  other leaves' reasons in ``leaf_reasons``.
 * ``unclassified_lineage_refusal`` — anything else, carrying the raw kernel
   codes verbatim.
 
@@ -75,6 +81,7 @@ CODE_RESTATEMENT = "restatement_requires_revision_lineage"
 # never a copied string literal.
 CODE_PRECISION = REFUSAL_PRECISION_CONSISTENT_UNCONFIRMED
 CODE_CROSS_TAXONOMY = "cross_taxonomy_version_confirmation_unavailable"
+CODE_MIXED_LEAF_CAUSES = "mixed_leaf_causes"
 CODE_UNCLASSIFIED = "unclassified_lineage_refusal"
 
 BUCKET_V1_PAIR = "v1_pair"
@@ -289,23 +296,33 @@ def classify_refusal_causes(
     taxonomy_uris: Mapping[tuple[str, str], str],
     archive_available: bool,
 ) -> dict[str, Any]:
-    """Typed causes for every unlinked-vintage cell plus the cascade.
+    """Typed causes for every unlinked-vintage cell plus the strict cascade.
 
     ``cells`` are ``MetricCell`` receipts from the kernel's own
     ``BitemporalMetricQueryEngine.query_matrix``.  Direct cells refused with
     the unlinked-vintages reason are classified through their
-    ``provenance.source_occurrence_ids``; derived cells refused with
-    ``incompatible_dependencies:`` are cascade-mapped when EVERY not-evaluable
-    dependency leaf (the receipt DAG nodes the kernel itself recorded,
-    resolving the dependency declaration the registry contract carries —
+    ``provenance.source_occurrence_ids``.  Derived cells refused with
+    ``incompatible_dependencies:`` are decided over their not-evaluable
+    dependency LEAVES (the receipt DAG nodes the kernel itself recorded with
+    no ``dependency_cell_ids`` of their own, resolving the dependency
+    declaration the registry contract carries —
     ``engine/fundamental_forensics/metric_registry.py``
-    ``MetricContract.formula_dependencies`` at metric_registry.py:365-366)
-    classifies to the cross-taxonomy code.
+    ``MetricContract.formula_dependencies`` at metric_registry.py:365-366):
+
+    * EVERY leaf classifies to the cross-taxonomy code → ``cascade``;
+    * at least one cross leaf AND at least one other not-evaluable leaf →
+      ``mixed_leaf_causes``, carrying the cross verdicts and the other
+      leaves' reasons;
+    * no cross leaf → the cell is skipped (no cause is invented).
     """
     from engine.fundamental_forensics.query import CellState  # local: avoid cycle at import
 
+    def _is_cross(verdict: dict[str, Any] | None) -> bool:
+        return verdict is not None and verdict["code"] == CODE_CROSS_TAXONOMY
+
     classified: list[dict[str, Any]] = []
     cascade_classified: list[dict[str, Any]] = []
+    mixed_classified: list[dict[str, Any]] = []
     for cell in cells:
         reason = getattr(cell, "reason", None)
         if reason == UNLINKED_VINTAGES_REASON:
@@ -338,54 +355,93 @@ def classify_refusal_causes(
                 }
             )
         elif isinstance(reason, str) and reason.startswith(INCOMPATIBLE_DEPENDENCIES_PREFIX):
-            leaves = [
+            # Leaves are the DAG nodes with no dependency_cell_ids of their
+            # own; intermediate derived nodes (non-empty dependency_cell_ids)
+            # are never leaves.  getattr keeps hand-built receipt nodes
+            # without the field in the leaf set.
+            ne_leaves = [
                 node
                 for node in cell.dependency_nodes
                 if node.state is CellState.NOT_EVALUABLE
-                and node.reason == UNLINKED_VINTAGES_REASON
+                and not tuple(getattr(node.provenance, "dependency_cell_ids", ()) or ())
             ]
-            if not leaves:
+            if not ne_leaves:
                 continue
-            leaf_verdicts = [
-                _key_classification_for_ids(
-                    tuple(node.provenance.source_occurrence_ids or ()),
-                    event_by_id=event_by_id,
-                    events_by_logical_key=events_by_logical_key,
-                    taxonomy_uris=taxonomy_uris,
-                    archive_available=archive_available,
-                )
-                for node in leaves
+            leaf_verdicts: list[tuple[Any, dict[str, Any] | None]] = []
+            for node in ne_leaves:
+                verdict = None
+                if node.reason == UNLINKED_VINTAGES_REASON:
+                    verdict = _key_classification_for_ids(
+                        tuple(node.provenance.source_occurrence_ids or ()),
+                        event_by_id=event_by_id,
+                        events_by_logical_key=events_by_logical_key,
+                        taxonomy_uris=taxonomy_uris,
+                        archive_available=archive_available,
+                    )
+                leaf_verdicts.append((node, verdict))
+            cross_pairs = [
+                (node, verdict) for node, verdict in leaf_verdicts if _is_cross(verdict)
             ]
-            if not all(
-                verdict is not None and verdict["code"] == CODE_CROSS_TAXONOMY
-                for verdict in leaf_verdicts
-            ):
+            if not cross_pairs:
                 continue
-            basis = next(
-                (v["basis"] for v in leaf_verdicts if v is not None), None
-            )
-            cascade_classified.append(
+            other_pairs = [
+                (node, verdict) for node, verdict in leaf_verdicts if not _is_cross(verdict)
+            ]
+            cross_accessions = sorted(
                 {
-                    "metric_id": cell.metric_id,
-                    "period": _period_key_text(cell),
-                    "code": CODE_CROSS_TAXONOMY,
-                    "bucket": BUCKET_CASCADE,
-                    "basis": basis,
-                    "kernel_code": REFUSAL_TAXONOMY_NAMESPACE_VERSION_MISMATCH,
-                    "kernel_codes": [],
-                    "accessions": sorted(
-                        {
-                            accession
-                            for verdict in leaf_verdicts
-                            if verdict is not None
-                            for accession in verdict["accessions"]
-                        }
-                    ),
-                    "cascade": True,
+                    accession
+                    for _node, verdict in cross_pairs
+                    for accession in verdict["accessions"]
                 }
             )
+            if other_pairs:
+                # A mixed leaf set is never a cascade: the cross verdicts are
+                # carried, and every OTHER leaf's reason is named.
+                leaf_reasons = sorted(
+                    {
+                        (
+                            verdict["code"]
+                            if verdict is not None
+                            else CODE_UNCLASSIFIED
+                        )
+                        if node.reason == UNLINKED_VINTAGES_REASON
+                        else str(node.reason or "")
+                        for node, verdict in other_pairs
+                    }
+                )
+                mixed_classified.append(
+                    {
+                        "metric_id": cell.metric_id,
+                        "period": _period_key_text(cell),
+                        "code": CODE_MIXED_LEAF_CAUSES,
+                        "bucket": None,
+                        "basis": cross_pairs[0][1]["basis"],
+                        "kernel_code": None,
+                        "kernel_codes": [],
+                        "accessions": cross_accessions,
+                        "cascade": False,
+                        "leaf_reasons": leaf_reasons,
+                    }
+                )
+            else:
+                basis = next(
+                    (verdict["basis"] for _node, verdict in cross_pairs), None
+                )
+                cascade_classified.append(
+                    {
+                        "metric_id": cell.metric_id,
+                        "period": _period_key_text(cell),
+                        "code": CODE_CROSS_TAXONOMY,
+                        "bucket": BUCKET_CASCADE,
+                        "basis": basis,
+                        "kernel_code": REFUSAL_TAXONOMY_NAMESPACE_VERSION_MISMATCH,
+                        "kernel_codes": [],
+                        "accessions": cross_accessions,
+                        "cascade": True,
+                    }
+                )
 
-    all_cells = classified + cascade_classified
+    all_cells = classified + cascade_classified + mixed_classified
     histogram: dict[str, Any] = {
         CODE_RESTATEMENT: 0,
         CODE_PRECISION: 0,
@@ -394,6 +450,7 @@ def classify_refusal_causes(
             BUCKET_V2_UNPROVEN_CHAIN: 0,
             BUCKET_CASCADE: 0,
         },
+        CODE_MIXED_LEAF_CAUSES: 0,
         CODE_UNCLASSIFIED: 0,
     }
     for row in all_cells:
@@ -436,6 +493,7 @@ __all__ = [
     "BUCKET_V1_PAIR",
     "BUCKET_V2_UNPROVEN_CHAIN",
     "CODE_CROSS_TAXONOMY",
+    "CODE_MIXED_LEAF_CAUSES",
     "CODE_PRECISION",
     "CODE_RESTATEMENT",
     "CODE_UNCLASSIFIED",

@@ -26,15 +26,25 @@ Laws this harness obeys:
   input file is recorded by basename + sha256 of its bytes; the store (and the
   optional archive root) by basename only.
 
-Exit codes: 0 every check passed; 1 at least one check failed (both outputs
-are still written); 2 unusable arguments/inputs (one-line typed error).
+Exit codes (an uncaught traceback is never the exit path):
+
+* 0 — every check passed;
+* 1 — the ledger was written and at least one check failed (both outputs are
+  still written);
+* 2 — unusable arguments/inputs: one typed stderr line plus a FAIL ledger
+  carrying the ``harness_input`` check row, written to both out paths (stale
+  out files are unlinked first, so no previous run's bytes survive);
+* 3 — internal error: one typed stderr line plus a FAIL ledger carrying the
+  ``harness_internal_error`` check row, written to both out paths.
 """
 from __future__ import annotations
 
 import argparse
 import hashlib
 import json
+import re
 import sys
+from functools import partial
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -47,7 +57,12 @@ from engine.fundamental_forensics.fif_member_capture import (  # noqa: E402
 from engine.fundamental_forensics.admitted_filing_package import (  # noqa: E402
     admit_retained_filing_package,
 )
+from engine.fundamental_forensics.issuer_sic import (  # noqa: E402
+    IssuerSicResolver,
+    resolve_issuer_sic,
+)
 from engine.fundamental_forensics.production_datasets import (  # noqa: E402
+    PRODUCTION_DATASET_SCHEMA,
     ProductionDatasetError,
     build_production_dataset_store,
     lineage_from_role_payload,
@@ -63,6 +78,7 @@ from engine.fundamental_forensics.query import (  # noqa: E402
     CellState,
     PeriodRequest,
     QueryBounds,
+    QueryEntity,
     QueryPolicy,
 )
 
@@ -79,15 +95,24 @@ LEDGER_SCHEMA = "fif.a1_journey_ledger/v1"
 PUBLISH_REPORT_SCHEMA = "fundamental_forensics.fif_production_publish_report/v1"
 COVERAGE_CONTRACT_SCHEMA = "fundamental_forensics.coverage_contract/v1"
 
-# The clock_basis vocabulary the production publisher can emit, read from the
-# publisher's own outcome/clock-basis pairing invariant
-# (scripts/publish_fif_production_datasets.py:1579-1585,
+# The lawful (outcome, clock_basis) pairs the production publisher can emit,
+# read from the publisher's own pairing invariant
+# (scripts/publish_fif_production_datasets.py,
 # ``_IssuerPlan._VALID_OUTCOME_CLOCK_BASIS``): "content" and
 # "run_recorded_at" pair with outcome "published", "latest_unchanged" pairs
-# with "unchanged".
-LAWFUL_CLOCK_BASES = frozenset(
-    {"content", "run_recorded_at", "latest_unchanged"}
+# with "unchanged".  Any other pair fails ``no_fixture_substitution``.
+LAWFUL_OUTCOME_CLOCK_PAIRS = frozenset(
+    {
+        ("published", "content"),
+        ("published", "run_recorded_at"),
+        ("unchanged", "latest_unchanged"),
+    }
 )
+
+# An EDGAR accession spelling (``0000320193-25-000079``) and a coverage
+# contract CIK spelling (1-10 digits; the EDGAR index URL rules require int()).
+_EDGAR_ACCESSION_RE = re.compile(r"^[0-9]{10}-[0-9]{2}-[0-9]{6}$")
+_CONTRACT_CIK_RE = re.compile(r"^[0-9]{1,10}$")
 
 # Statement types the precomputed trees role carries per accession
 # (engine/fundamental_forensics/statement_graph.py:2166,
@@ -147,6 +172,16 @@ _HARD_MAX_PERIODS_PER_CALL = 32  # query.HARD_MAX_PERIODS (engine/fundamental_fo
 
 class _UsageError(Exception):
     """Unusable arguments/inputs: printed as one typed line, exit 2."""
+
+
+class _EmptyPeriodUniverse(Exception):
+    """The governed ledger yields no queryable period.
+
+    Raised before the kernel matrix runs so the whole-issuer kernel refusal
+    is recorded as a failed ``kernel_query_engine`` check — never as the pass
+    row ``0 matrix periods queried``, which would claim a query that never
+    happened.
+    """
 
 
 def _sha256_bytes(payload: bytes) -> str:
@@ -257,20 +292,53 @@ def _period_universe(ledger: Any, registry: Any) -> list[PeriodRequest]:
     return [_period_request_for_key(key) for key in sorted(keys)]
 
 
-def _build_engine(payloads: Mapping[str, Any], ticker: str, source_entity_id: str):
+def _build_engine(
+    payloads: Mapping[str, Any],
+    ticker: str,
+    source_entity_id: str,
+    *,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
+):
     """The same engine the production request path builds.
 
     ``execute_financial_query`` constructs
     ``BitemporalMetricQueryEngine(ledger=..., registry=...,
-    entities={binding.ticker: binding.source_entity_id}, filing_metadata=...,
-    bounds=..., lineage_evidence=...)`` and calls ``query_matrix``
-    (engine/fundamental_forensics/query_service.py:648-666).  This harness
-    constructs it identically over ``load_query_dataset_payloads`` output.
+    entities=[QueryEntity(ticker=binding.ticker,
+    entity_id=binding.source_entity_id,
+    issuer_sic=sic_resolver(binding.source_entity_id))],
+    filing_metadata=..., bounds=..., lineage_evidence=...)`` and calls
+    ``query_matrix`` (engine/fundamental_forensics/query_service.py:653-684).
+    Production exposes no engine builder function, so this harness mirrors
+    that exact construction over ``load_query_dataset_payloads`` output —
+    the issuer SIC reaches the kernel through ``QueryEntity`` only, and a
+    class-restricted metric fails closed to ``issuer_class_unknown`` when no
+    SIC resolves.
+
+    Bounds: production admission caps one request at 8 periods / 400 cells
+    (``_MAX_PERIODS`` / ``_MAX_CELLS``, query_service.py:46-48).  The harness
+    queries the whole governed universe in 32-period chunks (``_query_cells``),
+    so it uses the kernel's hard per-call period cap (32) and its cell cap
+    covers 50 metrics x 32 periods (1600 <= 10_000).
+
+    The default resolver is looked up at CALL time (never bound as a default
+    argument), so the production default ``partial(resolve_issuer_sic)`` and
+    any test substitution of that module name take effect per call.
     """
+    sic_resolver = (
+        issuer_sic_resolver
+        if issuer_sic_resolver is not None
+        else partial(resolve_issuer_sic)
+    )
     return BitemporalMetricQueryEngine(
         ledger=payloads["ledger"],
         registry=payloads["registry"],
-        entities={ticker: source_entity_id},
+        entities=[
+            QueryEntity(
+                ticker=ticker,
+                entity_id=source_entity_id,
+                issuer_sic=sic_resolver(source_entity_id),
+            )
+        ],
         filing_metadata=payloads["filing_metadata"],
         bounds=QueryBounds(max_tickers=1, max_metrics=50, max_periods=32, max_cells=10_000),
         lineage_evidence=payloads["lineage_evidence"] or (),
@@ -374,10 +442,30 @@ def _journey_periods(
     annual_ends: set[str],
     quarterly_ends: set[str],
 ) -> dict[str, PeriodRequest | None]:
-    """Latest annual + latest quarterly period for one journey metric."""
+    """Latest annual + latest quarterly period for one journey metric.
+
+    Both scopes take the LATEST end date; annual then picks the LONGEST
+    duration ending there (a fiscal year, not a quarter that happens to share
+    its end date), quarterly the shortest (today's key).  Instants carry no
+    start, so they rank by end date only.
+    """
     contract = registry.metric(metric_id)
     kind = str(contract.period_constraints.kind)
     out: dict[str, PeriodRequest | None] = {"annual": None, "quarterly": None}
+
+    def _pick(candidates: list[PeriodRequest], *, annual: bool) -> PeriodRequest | None:
+        if not candidates:
+            return None
+        if annual:
+            return max(
+                candidates,
+                key=lambda period: (
+                    str(period.end),
+                    -(period.start.toordinal() if period.start is not None else 0),
+                ),
+            )
+        return max(candidates, key=lambda period: (str(period.end), str(period.start or "")))
+
     if annual_ends or quarterly_ends:
         for scope, ends in (("annual", annual_ends), ("quarterly", quarterly_ends)):
             candidates = [
@@ -385,8 +473,7 @@ def _journey_periods(
                 for period in universe
                 if str(period.kind.value) == kind and str(period.end) in ends
             ]
-            if candidates:
-                out[scope] = max(candidates, key=lambda period: (str(period.end), str(period.start or "")))
+            out[scope] = _pick(candidates, annual=scope == "annual")
         return out
     # No statement packages: fall back to duration length.  A year is at least
     # 300 days; a quarter is 60..150 days.  Instants key off those durations'
@@ -396,20 +483,19 @@ def _journey_periods(
         for period in universe
         if str(period.kind.value) == "duration" and period.start is not None
     ]
-    annual_ends = {
+    fallback_annual_ends = {
         str(period.end) for period in durations if (period.end - period.start).days >= 300
     }
-    quarterly_ends = {
+    fallback_quarterly_ends = {
         str(period.end)
         for period in durations
         if 60 <= (period.end - period.start).days <= 150
     }
-    for scope, ends in (("annual", annual_ends), ("quarterly", quarterly_ends)):
+    for scope, ends in (("annual", fallback_annual_ends), ("quarterly", fallback_quarterly_ends)):
         candidates = [
             period for period in universe if str(period.kind.value) == kind and str(period.end) in ends
         ]
-        if candidates:
-            out[scope] = max(candidates, key=lambda period: (str(period.end), str(period.start or "")))
+        out[scope] = _pick(candidates, annual=scope == "annual")
     return out
 
 
@@ -465,12 +551,17 @@ def _render_markdown(document: Mapping[str, Any]) -> str:
     lines.append("# FIF A1 journey ledger")
     lines.append("")
     inputs = document["inputs"]
-    lines.append(
-        f"Production report: `{inputs['production_report']['basename']}` "
-        f"(sha256 `{inputs['production_report']['sha256'][:16]}…`), "
-        f"store: `{inputs['store_dir']['basename']}`, "
-        f"contract: `{inputs['coverage_contract']['basename']}`."
-    )
+    if inputs:
+        lines.append(
+            f"Production report: `{inputs['production_report']['basename']}` "
+            f"(sha256 `{inputs['production_report']['sha256'][:16]}…`), "
+            f"store: `{inputs['store_dir']['basename']}`, "
+            f"contract: `{inputs['coverage_contract']['basename']}`."
+        )
+    else:
+        # A harness failure ledger carries no inputs: the run refused before
+        # reading them, and the markdown says so instead of raising.
+        lines.append("Inputs: none (the harness refused before reading its inputs).")
     lines.append("")
     lines.append("## Coverage")
     lines.append("")
@@ -630,7 +721,17 @@ def _archive_taxonomy_uris(
     used, each retained package's primary-document sha256 must equal the value
     the generation records for that accession — else failed check
     ``archive_package_mismatch`` and the elimination basis for this issuer.
+    An empty admitted set refuses before any archive read: there is nothing
+    to verify against, and a match over zero packages would be vacuous.
     """
+    if not admitted_accessions:
+        checks.add(
+            "archive_package_mismatch",
+            ticker,
+            False,
+            "no admitted accession to verify against the retained archive",
+        )
+        return {}, False
     uris: dict[tuple[str, str], str] = {}
     try:
         retained = read_retained_fif_packages(
@@ -718,14 +819,67 @@ def _fixture_locator_hits(gen: Any) -> list[str]:
     return hits
 
 
-def _report_locator_hits(report: Mapping[str, Any]) -> list[str]:
+_REPORT_ROW_SECTIONS = (
+    "published",
+    "excluded",
+    "coverage",
+    "statement_refusals",
+    "not_attempted",
+)
+
+
+def _row_cik_text(row: Mapping[str, Any]) -> str:
+    """A report row's cik as display text; no cik is ``"(missing)"``."""
+    return str(row.get("cik") or "") or "(missing)"
+
+
+def _failed_row(report: Mapping[str, Any]) -> Mapping[str, Any] | None:
+    failed = report.get("failed")
+    return failed if isinstance(failed, Mapping) else None
+
+
+def _report_fixture_hits_for_cik(report: Mapping[str, Any], cik: str) -> list[str]:
+    """Fixture locators in ONE contract issuer's own report rows.
+
+    Scans the row sections a report attributes to issuers (``published``,
+    ``excluded``, ``coverage``, ``statement_refusals``, ``not_attempted``,
+    plus the ``failed`` object) and keeps only rows whose ``cik`` is this
+    issuer's — a locator in another issuer's rows belongs to that issuer's
+    verdict, and an unattributed row to ``production_report_shape``.
+    """
     needle = "tests/fixtures/"
     hits: list[str] = []
-    for section in ("published", "excluded", "coverage", "statement_refusals"):
+    for section in _REPORT_ROW_SECTIONS:
         rows = _issuer_rows(report.get(section))
         for index, row in enumerate(rows):
+            if str(row.get("cik") or "") != cik:
+                continue
             if needle in json.dumps(row, sort_keys=True):
                 hits.append(f"report {section}[{index}]")
+    failed = _failed_row(report)
+    if failed is not None and str(failed.get("cik") or "") == cik:
+        if needle in json.dumps(failed, sort_keys=True):
+            hits.append("report failed")
+    return hits
+
+
+def _unattributed_fixture_hits(
+    report: Mapping[str, Any], contract_ciks: set[str]
+) -> list[str]:
+    """Fixture locators in report rows NO contract issuer owns."""
+    needle = "tests/fixtures/"
+    hits: list[str] = []
+    for section in _REPORT_ROW_SECTIONS:
+        rows = _issuer_rows(report.get(section))
+        for index, row in enumerate(rows):
+            if str(row.get("cik") or "") in contract_ciks:
+                continue
+            if needle in json.dumps(row, sort_keys=True):
+                hits.append(f"report {section}[{index}]")
+    failed = _failed_row(report)
+    if failed is not None and str(failed.get("cik") or "") not in contract_ciks:
+        if needle in json.dumps(failed, sort_keys=True):
+            hits.append("report failed")
     return hits
 
 
@@ -764,7 +918,6 @@ def build_ledger(
 
     issuers_out: list[dict[str, Any]] = []
     coverage_table: list[dict[str, Any]] = []
-    fixture_hits: list[str] = []
 
     contract_issuers = _issuer_rows(contract.get("issuers"))
 
@@ -773,13 +926,35 @@ def build_ledger(
         cik = str(issuer_row.get("cik") or "")
         binding = issuer_row.get("security_master_binding") or {}
         issuer_id = str(binding.get("issuer_id") or "") if isinstance(binding, Mapping) else ""
-        if not ticker or not cik or not issuer_id:
-            raise _UsageError(
-                f"coverage contract issuer row is malformed in {contract_basename}"
+        # A malformed contract row is a FAILED check and a skipped issuer, not
+        # a whole-run refusal: the remaining issuers are still processed.
+        malformed: list[str] = []
+        if not ticker:
+            malformed.append("ticker is missing")
+        if not cik:
+            malformed.append("cik is missing")
+        elif not _CONTRACT_CIK_RE.fullmatch(cik):
+            malformed.append(f"cik is not 1-10 digits: {cik!r}")
+        if not issuer_id:
+            malformed.append("security_master_binding.issuer_id is missing")
+        if malformed:
+            checks.add(
+                "contract_issuer_malformed",
+                ticker or None,
+                False,
+                f"coverage contract issuer row in {contract_basename}: " + "; ".join(malformed),
             )
+            continue
         pub_row = _row_by_cik(published_rows, cik)
         exc_row = _row_by_cik(excluded_rows, cik)
         cov_row = _row_by_cik(coverage_rows, cik)
+        if pub_row is not None and cov_row is None:
+            checks.add(
+                "coverage_row_missing",
+                ticker,
+                False,
+                "published issuer has no coverage[] row in the production report",
+            )
 
         # ---- 1. bridge -------------------------------------------------
         try:
@@ -866,12 +1041,33 @@ def build_ledger(
             if generation is not None:
                 basis = "local_replay_only"
         else:
-            checks.add(
-                "issuer_dropped",
-                ticker,
-                False,
-                "contract issuer appears in neither published[] nor excluded[]",
-            )
+            # In neither report section: name the precise terminal state the
+            # report itself records for this issuer before calling it dropped.
+            failed = _failed_row(report)
+            if failed is not None and str(failed.get("cik") or "") == cik:
+                checks.add(
+                    "publish_commit_failed",
+                    ticker,
+                    False,
+                    f"report failed[] records a commit failure with code {failed.get('code')!r}",
+                )
+            elif any(
+                str(row.get("cik") or "") == cik
+                for row in _issuer_rows(report.get("not_attempted"))
+            ):
+                checks.add(
+                    "publish_not_attempted",
+                    ticker,
+                    False,
+                    "report not_attempted[] lists the issuer without a publish outcome",
+                )
+            else:
+                checks.add(
+                    "issuer_dropped",
+                    ticker,
+                    False,
+                    "contract issuer appears in neither published[] nor excluded[]",
+                )
 
         issuer_out: dict[str, Any] = {
             "ticker": ticker,
@@ -901,8 +1097,14 @@ def build_ledger(
         if generation is not None:
             try:
                 statement_index = _statement_index(generation)
-            except Exception:  # noqa: BLE001 - typed, never a crash
+            except Exception as exc:  # noqa: BLE001 - typed, never a crash
                 statement_index = {}
+                checks.add(
+                    "statement_index_unreadable",
+                    ticker,
+                    False,
+                    f"statement packages index cannot be decoded ({type(exc).__name__})",
+                )
 
         served_accessions_report = {
             accession
@@ -965,14 +1167,18 @@ def build_ledger(
                 else set(statement_index)
             )
             statement_rows: list[dict[str, Any]] = []
+            unindexed_accessions: set[str] = set()
+            unreadable_trees: set[str] = set()
             for accession in sorted(served_accessions):
                 if accession not in statement_index:
+                    unindexed_accessions.add(accession)
                     continue
                 try:
                     trees = statement_trees_from_role_payload(
                         generation.role_payloads["statement_trees_json"], accession
                     )
-                except ProductionDatasetError:
+                except ProductionDatasetError as exc:
+                    unreadable_trees.add(f"{accession} ({type(exc).__name__})")
                     continue
                 for statement in trees.get("statements") or []:
                     if not isinstance(statement, dict):
@@ -983,6 +1189,51 @@ def build_ledger(
                         gen_refusals[(accession, statement_type)] = str(refusal["code"])
                     else:
                         gen_served.add((accession, statement_type))
+            if unindexed_accessions:
+                checks.add(
+                    "served_accession_unindexed",
+                    ticker,
+                    False,
+                    "served accessions absent from the statement packages index: "
+                    + ", ".join(sorted(unindexed_accessions)),
+                )
+            if unreadable_trees:
+                checks.add(
+                    "statement_trees_unreadable",
+                    ticker,
+                    False,
+                    "statement trees cannot be read from the generation: "
+                    + ", ".join(sorted(unreadable_trees)),
+                )
+            # Every served accession must record its primary document — an
+            # unrecorded primary is a silent hole in the generation, not a 0.
+            missing_primary = sorted(
+                accession
+                for accession in served_accessions
+                if "sha256" not in _primary_document_row(statement_index.get(accession))
+            )
+            if not served_accessions and pub_row is not None:
+                checks.add(
+                    "primary_document_recorded",
+                    ticker,
+                    False,
+                    "published issuer has no served accession",
+                )
+            elif missing_primary:
+                checks.add(
+                    "primary_document_recorded",
+                    ticker,
+                    False,
+                    "served accessions without a recorded primary document: "
+                    + ", ".join(missing_primary),
+                )
+            else:
+                checks.add(
+                    "primary_document_recorded",
+                    ticker,
+                    True,
+                    f"{len(served_accessions)} served accessions carry a recorded primary document",
+                )
             report_refusals: dict[tuple[str, str], dict[str, Any]] = {}
             for row in statement_refusal_rows:
                 if str(row.get("cik") or "") != cik:
@@ -992,6 +1243,33 @@ def build_ledger(
                     "code": str(row.get("code") or ""),
                     "message": row.get("message"),
                 }
+            # Fail-closed census: every served accession x statement type is
+            # either served, refused by the generation, or refused by the
+            # report.  An unreadable tree or an unindexed accession leaves
+            # types unaccounted, and that is a FAILED check.
+            unaccounted = sorted(
+                f"{accession} {statement_type}"
+                for accession in served_accessions
+                for statement_type in STATEMENT_TYPES
+                if (accession, statement_type) not in gen_served
+                and (accession, statement_type) not in gen_refusals
+                and not (report_refusals.get((accession, statement_type)) or {}).get("code")
+            )
+            if unaccounted:
+                checks.add(
+                    "statement_types_accounted",
+                    ticker,
+                    False,
+                    "statement types neither served nor refused: " + ", ".join(unaccounted),
+                )
+            else:
+                checks.add(
+                    "statement_types_accounted",
+                    ticker,
+                    True,
+                    f"{len(served_accessions)} served accessions x "
+                    f"{len(STATEMENT_TYPES)} statement types accounted",
+                )
             disagreements: list[str] = []
             for key in sorted(set(gen_refusals) | set(report_refusals)):
                 gen_code = gen_refusals.get(key)
@@ -1062,13 +1340,28 @@ def build_ledger(
                 version = str(getattr(receipt, "evidence_rule_version", ""))
                 by_version[version] = by_version.get(version, 0) + 1
             lineage_receipts_total = len(receipts)
-            if pub_row is not None and isinstance(pub_row.get("lineage_receipt_count"), int):
-                if pub_row["lineage_receipt_count"] != lineage_receipts_total:
+            reported_receipt_count = (
+                pub_row.get("lineage_receipt_count") if pub_row is not None else None
+            )
+            if pub_row is not None:
+                # The census is ALWAYS answered for a published issuer: a
+                # missing or non-integer report count is a failed check, not
+                # a skipped comparison.
+                if isinstance(reported_receipt_count, bool) or not isinstance(
+                    reported_receipt_count, int
+                ):
                     checks.add(
                         "lineage_count",
                         ticker,
                         False,
-                        f"report lineage_receipt_count {pub_row['lineage_receipt_count']} "
+                        "report lineage_receipt_count is missing or not an integer",
+                    )
+                elif reported_receipt_count != lineage_receipts_total:
+                    checks.add(
+                        "lineage_count",
+                        ticker,
+                        False,
+                        f"report lineage_receipt_count {reported_receipt_count} "
                         f"differs from the generation's {lineage_receipts_total} receipts",
                     )
                 else:
@@ -1124,6 +1417,13 @@ def build_ledger(
                     recorded_at=clock,
                 )
                 universe = _period_universe(ledger, registry)
+                if not universe:
+                    # An empty universe is a kernel refusal, never the pass
+                    # row "0 matrix periods queried": no matrix period was
+                    # queried, so the engine proved nothing.
+                    raise _EmptyPeriodUniverse(
+                        "governed period universe is empty; no matrix period was queried"
+                    )
                 metrics = sorted(registry.metric_ids)
                 cells = _query_cells(
                     engine,
@@ -1211,7 +1511,11 @@ def build_ledger(
                     for slot in sorted(dict(JOURNEY_METRIC_LABELS))
                     for scope in ("annual", "quarterly")
                 ]
-                refusal_causes = {"status": "unavailable", "reason": kernel_error}
+                refusal_causes = {
+                    "status": "unavailable",
+                    "reason": kernel_error,
+                    "total_unlinked_cells": None,
+                }
             issuer_out["lineage"] = {
                 "receipts": {
                     "v1_pair": by_version.get("1", 0),
@@ -1231,20 +1535,86 @@ def build_ledger(
                 for template in BROWSER_LINKAGE_TEMPLATE
             ]
 
-            # ---- 6. fixture substitution scan (generation half) ----------
-            for hit in _fixture_locator_hits(generation):
-                fixture_hits.append(f"{ticker}: {hit}")
+        # ---- 6. no_fixture_substitution (per contract issuer) -----------
+        # Every contract issuer answers: fixture locators in its own
+        # generation roles/manifest and report rows, EDGAR-shaped accessions,
+        # the publisher's lawful outcome/clock_basis pair, and — when a local
+        # generation exists — true production provider mode.
+        issuer_fixture_problems: list[str] = []
+        for hit in _fixture_locator_hits(generation):
+            issuer_fixture_problems.append(f"fixture locator in generation {hit}")
+        for hit in _report_fixture_hits_for_cik(report, cik):
+            issuer_fixture_problems.append(f"fixture locator in {hit}")
+        if pub_row is not None:
+            bad_accessions = sorted(
+                {
+                    str(value)
+                    for value in (pub_row.get("admitted_accessions") or [])
+                    if not _EDGAR_ACCESSION_RE.fullmatch(str(value))
+                }
+                | {
+                    accession
+                    for accession in served_accessions_report
+                    if not _EDGAR_ACCESSION_RE.fullmatch(accession)
+                }
+            )
+            for value in bad_accessions:
+                issuer_fixture_problems.append(
+                    f"served accession is not an EDGAR accession: {value}"
+                )
+            outcome_clock = (str(pub_row.get("outcome")), str(pub_row.get("clock_basis")))
+            if outcome_clock not in LAWFUL_OUTCOME_CLOCK_PAIRS:
+                issuer_fixture_problems.append(
+                    "report outcome/clock_basis pair is outside the publisher vocabulary: "
+                    f"{outcome_clock[0]!r}/{outcome_clock[1]!r}"
+                )
+        if generation is not None:
+            if generation.manifest.get("schema") != PRODUCTION_DATASET_SCHEMA:
+                issuer_fixture_problems.append(
+                    "generation manifest schema is not the production dataset schema: "
+                    f"{generation.manifest.get('schema')!r}"
+                )
+            try:
+                delivery = generation.delivery()
+            except Exception as exc:  # noqa: BLE001 - a refused delivery is a typed problem
+                issuer_fixture_problems.append(
+                    f"production delivery refused ({type(exc).__name__})"
+                )
+            else:
+                if delivery.get("kind") != "production_issuer_dataset":
+                    issuer_fixture_problems.append(
+                        "production delivery kind is not production_issuer_dataset: "
+                        f"{delivery.get('kind')!r}"
+                    )
+                if delivery.get("production_issuer_service") is not True:
+                    issuer_fixture_problems.append(
+                        "production delivery is not flagged production_issuer_service"
+                    )
+                if delivery.get("dataset_generation_id") != generation.generation_id:
+                    issuer_fixture_problems.append(
+                        "production delivery dataset_generation_id differs from the generation"
+                    )
+        checks.add(
+            "no_fixture_substitution",
+            ticker,
+            not issuer_fixture_problems,
+            "; ".join(issuer_fixture_problems)
+            or "no tests/fixtures locator; production provider mode and clock basis lawful",
+        )
 
+        generation_ran = generation is not None
         coverage_table.append(
             {
                 "ticker": ticker,
                 "contract": len(contract_accessions),
-                "captured": int((cov_row or {}).get("captured") or 0),
-                "admitted": int((cov_row or {}).get("admitted") or 0),
-                "served": int((cov_row or {}).get("served") or 0),
-                "statements_served": statements_served,
-                "statement_refusals": statement_refusals,
-                "lineage_receipts": lineage_receipts_total,
+                "captured": _census_count(cov_row, "captured"),
+                "admitted": _census_count(cov_row, "admitted"),
+                "served": _census_count(cov_row, "served"),
+                # A section that never ran is "unavailable": a fake 0 would
+                # claim a census that never happened.
+                "statements_served": statements_served if generation_ran else "unavailable",
+                "statement_refusals": statement_refusals if generation_ran else "unavailable",
+                "lineage_receipts": lineage_receipts_total if generation_ran else "unavailable",
                 "lineage_refusals": _lineage_refusals_total(refusal_causes),
                 "lineage_refusal_codes": _flat_refusal_codes(refusal_causes),
                 "bridge": bridge["status"] or "dropped",
@@ -1252,32 +1622,67 @@ def build_ledger(
         )
         issuers_out.append(issuer_out)
 
-    # ---- 6. no_fixture_substitution (report half + report shape) ----------
-    report_hits = _report_locator_hits(report)
-    shape_failures: list[str] = []
-    if not isinstance(report.get("recorded_at"), str) or not report.get("recorded_at"):
-        shape_failures.append("recorded_at is missing")
-    if not isinstance(report.get("rule_clocks"), dict) or not report.get("rule_clocks"):
-        shape_failures.append("rule_clocks is missing")
-    bad_clock_basis = sorted(
-        {
-            str(row.get("clock_basis"))
-            for row in published_rows
-            if row.get("clock_basis") not in LAWFUL_CLOCK_BASES
-        }
-    )
-    if bad_clock_basis:
-        shape_failures.append(
-            "clock_basis values outside the publisher vocabulary: "
-            + ", ".join(bad_clock_basis)
+    # ---- 6b. report issuers versus the coverage contract -----------------
+    contract_ciks = {
+        str(row.get("cik") or "")
+        for row in contract_issuers
+        if str(row.get("cik") or "")
+    }
+    # (a) one cik cannot be both published and excluded.
+    published_ciks = {str(row.get("cik") or "") for row in published_rows}
+    excluded_ciks = {str(row.get("cik") or "") for row in excluded_rows}
+    for cik_text in sorted(published_ciks & excluded_ciks):
+        contract_ticker = next(
+            (
+                str(row.get("ticker") or "") or None
+                for row in contract_issuers
+                if str(row.get("cik") or "") == cik_text
+            ),
+            None,
         )
-    all_fixture_hits = fixture_hits + report_hits
+        checks.add(
+            "publish_exclusion_conflict",
+            contract_ticker,
+            False,
+            f"report cik {cik_text} appears in both published[] and excluded[]",
+        )
+    # (b) every reported cik must be a contract cik; a row without a cik is
+    # reported as "(missing)" — equally outside the contract.
+    outside_ciks: dict[str, set[str]] = {}
+    for section in _REPORT_ROW_SECTIONS:
+        for row in _issuer_rows(report.get(section)):
+            cik_text = _row_cik_text(row)
+            if cik_text in contract_ciks:
+                continue
+            outside_ciks.setdefault(cik_text, set()).add(section)
+    failed_row = _failed_row(report)
+    if failed_row is not None:
+        cik_text = _row_cik_text(failed_row)
+        if cik_text not in contract_ciks:
+            outside_ciks.setdefault(cik_text, set()).add("failed")
+    for cik_text in sorted(outside_ciks):
+        checks.add(
+            "report_issuer_outside_contract",
+            None,
+            False,
+            f"report cik {cik_text} in {', '.join(sorted(outside_ciks[cik_text]))} "
+            "is outside the coverage contract",
+        )
+
+    # ---- 6c. report shape (issuer None) ----------------------------------
+    shape_problems: list[str] = []
+    if not isinstance(report.get("recorded_at"), str) or not report.get("recorded_at"):
+        shape_problems.append("recorded_at is missing")
+    if not isinstance(report.get("rule_clocks"), dict) or not report.get("rule_clocks"):
+        shape_problems.append("rule_clocks is missing")
+    for hit in _unattributed_fixture_hits(report, contract_ciks):
+        shape_problems.append(f"fixture locator in {hit}")
     checks.add(
-        "no_fixture_substitution",
+        "production_report_shape",
         None,
-        not all_fixture_hits and not shape_failures,
-        "; ".join(shape_failures + [f"fixture locator in {hit}" for hit in all_fixture_hits])
-        or "no tests/fixtures locator in any generation role, manifest or report row; report shape lawful",
+        not shape_problems,
+        "; ".join(shape_problems)
+        or "report recorded_at and rule_clocks present; no unattributed fixture locator",
     )
 
     document = {
@@ -1291,16 +1696,32 @@ def build_ledger(
     return document
 
 
+def _census_count(row: Mapping[str, Any] | None, key: str) -> int | str:
+    """One coverage census integer, or ``"unavailable"`` when not an integer.
+
+    ``int(... or 0)`` turned a missing census into a claimed 0; a boolean
+    (an int subclass) is equally not a census.
+    """
+    value = (row or {}).get(key)
+    if isinstance(value, bool) or not isinstance(value, int):
+        return "unavailable"
+    return value
+
+
 def _lineage_refusals_total(refusal_causes: Mapping[str, Any] | None) -> int | str:
     """The lineage-refusal census total, or ``"unavailable"`` when never computed.
 
     A computed histogram always carries ``total_unlinked_cells``.  The
     unavailable object (the kernel half refused) and a generation that never
-    loaded carry none — a 0 there would claim a census that never ran.
+    loaded carry none — a 0 there would claim a census that never ran.  The
+    total must be a real int: ``None`` and ``True`` are both "unavailable".
     """
     if not isinstance(refusal_causes, Mapping) or "histogram" not in refusal_causes:
         return "unavailable"
-    return refusal_causes.get("total_unlinked_cells", 0)
+    total = refusal_causes.get("total_unlinked_cells")
+    if isinstance(total, bool) or not isinstance(total, int):
+        return "unavailable"
+    return total
 
 
 def _flat_refusal_codes(refusal_causes: Mapping[str, Any] | None) -> dict[str, int]:
@@ -1331,8 +1752,62 @@ def _parse_args(argv: Sequence[str]) -> argparse.Namespace:
     return parser.parse_args(list(argv))
 
 
+def _failure_ledger(check_id: str, detail: str) -> dict[str, Any]:
+    """The FAIL ledger a harness-level refusal writes to both out paths."""
+    return {
+        "schema": LEDGER_SCHEMA,
+        "inputs": {},
+        "checks": [
+            {"id": check_id, "issuer": None, "status": "fail", "detail": detail}
+        ],
+        "issuers": [],
+        "coverage_table": [],
+        "all_checks_passed": False,
+    }
+
+
+def _write_outputs(
+    args: argparse.Namespace, document: Mapping[str, Any], markdown: str
+) -> int | None:
+    """Write both out paths; the typed OSError exit (2) when either refuses.
+
+    ``None`` means both files were written — the caller owns the exit code.
+    """
+    for path_text, payload in (
+        (args.out_json, json.dumps(document, ensure_ascii=False, sort_keys=True, indent=2) + "\n"),
+        (args.out_md, markdown),
+    ):
+        target = Path(path_text)
+        try:
+            if target.parent and not target.parent.exists():
+                target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(payload, encoding="utf-8")
+        except OSError as exc:
+            print(
+                f"fif_a1_journey_ledger: output is unwritable: {target.name} ({exc.strerror})",
+                file=sys.stderr,
+                flush=True,
+            )
+            return 2
+    return None
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parse_args(sys.argv[1:] if argv is None else argv)
+    # Stale output never survives into this run: both out paths are unlinked
+    # before any input is read, so a later refusal cannot leave the previous
+    # run's bytes in place.
+    for path_text in (args.out_json, args.out_md):
+        try:
+            Path(path_text).unlink(missing_ok=True)
+        except OSError as exc:
+            print(
+                f"fif_a1_journey_ledger: output is unwritable: {Path(path_text).name} "
+                f"({exc.strerror})",
+                file=sys.stderr,
+                flush=True,
+            )
+            return 2
     try:
         report = _read_json_file(args.production_report, kind="production report")
         if report.get("schema") != PUBLISH_REPORT_SCHEMA:
@@ -1362,25 +1837,26 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         markdown = _render_markdown(document)
     except _UsageError as exc:
+        # An input/usage error is still a ledger: the FAIL row names the
+        # refused input, and both out paths carry it (exit 2).
+        document = _failure_ledger("harness_input", str(exc))
         print(f"fif_a1_journey_ledger: {exc}", file=sys.stderr, flush=True)
-        return 2
+        status = _write_outputs(args, document, _render_markdown(document))
+        return 2 if status is None else status
+    except Exception as exc:  # noqa: BLE001 - an internal error is a typed ledger, never a traceback
+        detail = f"{type(exc).__name__}: {exc}"
+        document = _failure_ledger("harness_internal_error", detail)
+        print(
+            f"fif_a1_journey_ledger: internal error: {detail}",
+            file=sys.stderr,
+            flush=True,
+        )
+        status = _write_outputs(args, document, _render_markdown(document))
+        return 3 if status is None else status
 
-    for path_text, payload in (
-        (args.out_json, json.dumps(document, ensure_ascii=False, sort_keys=True, indent=2) + "\n"),
-        (args.out_md, markdown),
-    ):
-        target = Path(path_text)
-        try:
-            if target.parent and not target.parent.exists():
-                target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_text(payload, encoding="utf-8")
-        except OSError as exc:
-            print(
-                f"fif_a1_journey_ledger: output is unwritable: {target.name} ({exc.strerror})",
-                file=sys.stderr,
-                flush=True,
-            )
-            return 2
+    written = _write_outputs(args, document, markdown)
+    if written is not None:
+        return written
     return 0 if document["all_checks_passed"] else 1
 
 

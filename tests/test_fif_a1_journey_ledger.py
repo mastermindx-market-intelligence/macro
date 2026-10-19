@@ -506,11 +506,18 @@ def test_unusable_inputs_exit_2(a1_store, tmp_path):
     report = _report_document(a1_store)
     report["schema"] = "something.else/v9"
     report_path, contract_path = _write_inputs(directory, report)
-    process, _json, _md = _run_cli(
+    process, out_json, _md = _run_cli(
         report_path, contract_path, a1_store["store_dir"], directory / "out"
     )
     assert process.returncode == 2
     assert process.stderr.strip().startswith("fif_a1_journey_ledger:")
+    # The usage error is still a ledger: both out paths carry the FAIL row.
+    document = json.loads(out_json.read_text(encoding="utf-8"))
+    assert document["all_checks_passed"] is False
+    assert document["inputs"] == {}
+    assert [
+        (c["id"], c["issuer"], c["status"]) for c in document["checks"]
+    ] == [("harness_input", None, "fail")]
 
     missing = directory / "missing.json"
     process2 = subprocess.run(
@@ -1125,3 +1132,808 @@ def test_precision_leaf_is_not_cascade():
     )
     assert result["cells"] == []
     assert result["histogram"][CODE_CROSS_TAXONOMY][BUCKET_CASCADE] == 0
+
+
+# ---------------------------------------------------------------------------
+# B1: the harness engine is built exactly as production builds it (r7)
+# ---------------------------------------------------------------------------
+
+
+# Clocks mirroring _make_request in
+# tests/test_fundamental_forensics_financial_query_service.py — the harness
+# policy and the production request body carry the SAME clocks.
+_FIP1_POLICY = {
+    "selection": "latest_known_as_of",
+    "source_snapshot_at": "2024-12-31T23:59:59Z",
+    "recorded_at": "2026-08-03T12:00:00Z",
+}
+_FIP1_PERIOD = {
+    "kind": "duration",
+    "start": "2023-01-01",
+    "end": "2023-12-31",
+    "label": "FY2023",
+}
+
+
+def _fip1_dataset():
+    from engine.fundamental_forensics.query_service import fip1_fixture_dataset
+
+    return fip1_fixture_dataset(ROOT)
+
+
+def _fip1_payloads(dataset):
+    """The payload mapping _build_engine reads, straight from the dataset."""
+    return {
+        "ledger": dataset.ledger,
+        "registry": dataset.registry,
+        "filing_metadata": dataset.filing_metadata,
+        "lineage_evidence": (),
+    }
+
+
+def _fip1_request_body(entity_id: str) -> bytes:
+    """The production request body, built exactly like the service test's
+    ``_make_request`` (same schema, clocks, metric and period)."""
+    obj = {
+        "schema": "fundamental_forensics.financial_query_request/v1",
+        "entity_id": entity_id,
+        "policy": dict(_FIP1_POLICY),
+        "metric_ids": ["gross_profit"],
+        "periods": [dict(_FIP1_PERIOD)],
+    }
+    return json.dumps(obj, separators=(",", ":")).encode("utf-8")
+
+
+def _fip1_production_root_node(issuer_sic_resolver):
+    """The production receipt's root node for the gross_profit FY2023 cell."""
+    from engine.fundamental_forensics.query_service import execute_financial_query
+
+    dataset = _fip1_dataset()
+
+    class _Provider:
+        def resolve(self, entity_id: str):
+            assert entity_id == dataset.binding.entity_id
+            return dataset
+
+    result = execute_financial_query(
+        body=_fip1_request_body(dataset.binding.entity_id),
+        provider=_Provider(),
+        issuer_sic_resolver=issuer_sic_resolver,
+    )
+    receipt = result.envelope["receipt"]
+    root_ids = set(receipt["root_cell_ids"])
+    nodes = [
+        node
+        for node in receipt["nodes"]
+        if node["cell_id"] in root_ids and node.get("metric_id") == "gross_profit"
+    ]
+    assert len(nodes) == 1, nodes
+    return nodes[0]
+
+
+def _fip1_harness_cell(issuer_sic_resolver=None):
+    """The harness gross_profit FY2023 cell from the SAME payloads."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+    from engine.fundamental_forensics.query import PeriodRequest, QueryPolicy
+
+    dataset = _fip1_dataset()
+    kwargs = (
+        {} if issuer_sic_resolver is None else {"issuer_sic_resolver": issuer_sic_resolver}
+    )
+    engine = ledger_module._build_engine(
+        _fip1_payloads(dataset),
+        dataset.binding.ticker,
+        dataset.binding.source_entity_id,
+        **kwargs,
+    )
+    policy = QueryPolicy(
+        selection=_FIP1_POLICY["selection"],
+        source_snapshot_at=_FIP1_POLICY["source_snapshot_at"],
+        recorded_at=_FIP1_POLICY["recorded_at"],
+    )
+    matrix = engine.query_matrix(
+        tickers=[dataset.binding.ticker],
+        metrics=["gross_profit"],
+        periods=[
+            PeriodRequest.duration(_FIP1_PERIOD["start"], _FIP1_PERIOD["end"])
+        ],
+        policy=policy,
+    )
+    cells = list(matrix.cells)
+    assert len(cells) == 1, cells
+    return cells[0]
+
+
+def test_t_b1a_bank_sic_parity_not_applicable():
+    """T-B1a: SIC 6021 on BOTH sides — not_applicable_for_issuer_class."""
+    resolver = lambda cik: "6021"  # noqa: E731 - the service tests use the same shape
+    cell = _fip1_harness_cell(resolver)
+    node = _fip1_production_root_node(resolver)
+    assert cell.state.value == "not_applicable"
+    assert cell.reason == "not_applicable_for_issuer_class"
+    assert node["state"] == "not_applicable"
+    assert node["reason"] == "not_applicable_for_issuer_class"
+
+
+def test_t_b1b_non_bank_sic_parity_value():
+    """T-B1b: SIC 3571 on BOTH sides — the same served value."""
+    from decimal import Decimal
+
+    resolver = lambda cik: "3571"  # noqa: E731
+    cell = _fip1_harness_cell(resolver)
+    node = _fip1_production_root_node(resolver)
+    assert cell.state.value == node["state"] == "value"
+    assert Decimal(str(cell.value)) == Decimal(str(node["value"]))
+
+
+def test_t_b1c_default_path_parity_guard():
+    """T-B1c (guard): no resolver on EITHER side — the production default
+    resolution (the shipped coverage contracts) produces the same state and
+    reason on both sides."""
+    cell = _fip1_harness_cell()
+    node = _fip1_production_root_node(None)
+    assert cell.state.value == node["state"]
+    assert cell.reason == node["reason"]
+
+
+def test_t_b1d_default_resolution_resolved_at_call_time(monkeypatch):
+    """T-B1d: the production default is looked up at CALL time — a monkeypatch
+    of ``scripts.fif_a1_journey_ledger.resolve_issuer_sic`` takes effect on a
+    ``_build_engine`` call that passes no resolver."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    monkeypatch.setattr(ledger_module, "resolve_issuer_sic", lambda cik, **kw: "6021")
+    cell = _fip1_harness_cell()
+    assert cell.state.value == "not_applicable"
+    assert cell.reason == "not_applicable_for_issuer_class"
+
+
+# ---------------------------------------------------------------------------
+# r7 in-process build_ledger cases: real kernel, real generation store
+# ---------------------------------------------------------------------------
+
+
+def _build_in_process(a1_store, tmp_path, report=None, *, extra_issuers=False, contract=None):
+    """Write inputs, read them back, and run build_ledger in-process so the
+    caller's monkeypatches apply (the pattern of
+    ``test_engine_construction_failure_fails_ledger``)."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    directory = tmp_path / "in-process"
+    report_path, contract_path = _write_inputs(
+        directory,
+        report if report is not None else _report_document(a1_store, extra_issuers=extra_issuers),
+        contract=contract,
+        extra_issuers=extra_issuers,
+    )
+    report_document = ledger_module._read_json_file(str(report_path), kind="production report")
+    contract_document = ledger_module._read_json_file(
+        str(contract_path), kind="coverage contract"
+    )
+    return ledger_module.build_ledger(
+        report=report_document,
+        contract=contract_document,
+        store_dir=a1_store["store_dir"],
+        archive_root=None,
+    )
+
+
+def _derived_cell_with_leaves(*leaves):
+    """A derived receipt cell refused with the incompatible-dependencies
+    reason, carrying the given dependency nodes (the SimpleNamespace shape of
+    ``test_cascade_mapping_over_synthetic_cell_records``)."""
+    return types.SimpleNamespace(
+        metric_id="gross_margin",
+        period=types.SimpleNamespace(kind="duration", start="2024-09-29", end="2025-09-27"),
+        reason=(
+            "incompatible_dependencies: gross_margin ("
+            + _UNLINKED
+            + ")"
+        ),
+        dependency_nodes=tuple(leaves),
+    )
+
+
+# ---------------------------------------------------------------------------
+# M1: strict cascade — mixed leaf sets become mixed_leaf_causes
+# ---------------------------------------------------------------------------
+
+
+def test_t_m1a_mixed_leaf_set_is_mixed_leaf_causes(registry):
+    """T-M1a: one cross-taxonomy v1_pair leaf plus one issuer_class_unknown
+    leaf is a mixed_leaf_causes row — never a cascade."""
+    from engine.fundamental_forensics.query import CellState
+    from scripts.fif_a1_lineage_causes import (
+        BUCKET_CASCADE,
+        CODE_CROSS_TAXONOMY,
+        CODE_MIXED_LEAF_CAUSES,
+        UNLINKED_VINTAGES_REASON,
+        classify_logical_key,
+    )
+
+    facts = _facts_pair()
+    uris = _uris_for(facts, {"0001": 2025, "0002": 2026})
+    verdict = classify_logical_key(facts, taxonomy_uris=uris, archive_available=True)
+    assert verdict["code"] == CODE_CROSS_TAXONOMY
+
+    cross_leaf = types.SimpleNamespace(
+        state=CellState.NOT_EVALUABLE,
+        reason=UNLINKED_VINTAGES_REASON,
+        provenance=types.SimpleNamespace(
+            source_occurrence_ids=tuple(fact.occurrence_id for fact in facts)
+        ),
+    )
+    other_leaf = types.SimpleNamespace(
+        state=CellState.NOT_EVALUABLE,
+        reason="issuer_class_unknown",
+        provenance=types.SimpleNamespace(source_occurrence_ids=()),
+    )
+    result = _classify(facts, [_derived_cell_with_leaves(cross_leaf, other_leaf)], uris, True)
+    assert len(result["cells"]) == 1
+    row = result["cells"][0]
+    assert row["code"] == CODE_MIXED_LEAF_CAUSES
+    assert row["cascade"] is False
+    assert row["bucket"] is None
+    assert row["leaf_reasons"] == ["issuer_class_unknown"]
+    assert row["accessions"] == ["0001", "0002"]
+    assert result["histogram"][CODE_MIXED_LEAF_CAUSES] == 1
+    assert result["histogram"][CODE_CROSS_TAXONOMY][BUCKET_CASCADE] == 0
+
+
+def test_t_m1b_intermediate_derived_node_never_blocks_a_cascade(registry):
+    """T-M1b (guard): an intermediate derived node (non-empty
+    dependency_cell_ids) is not a leaf — an all-cross LEAF set still cascades."""
+    from engine.fundamental_forensics.query import CellState
+    from scripts.fif_a1_lineage_causes import (
+        CODE_CROSS_TAXONOMY,
+        INCOMPATIBLE_DEPENDENCIES_PREFIX,
+        UNLINKED_VINTAGES_REASON,
+    )
+
+    facts = _facts_pair()
+    uris = _uris_for(facts, {"0001": 2025, "0002": 2026})
+    cross_leaf = types.SimpleNamespace(
+        state=CellState.NOT_EVALUABLE,
+        reason=UNLINKED_VINTAGES_REASON,
+        provenance=types.SimpleNamespace(
+            source_occurrence_ids=tuple(fact.occurrence_id for fact in facts)
+        ),
+    )
+    intermediate_node = types.SimpleNamespace(
+        state=CellState.NOT_EVALUABLE,
+        reason=f"{INCOMPATIBLE_DEPENDENCIES_PREFIX}x ({UNLINKED_VINTAGES_REASON})",
+        provenance=types.SimpleNamespace(
+            source_occurrence_ids=(), dependency_cell_ids=("x",)
+        ),
+    )
+    result = _classify(
+        facts,
+        [_derived_cell_with_leaves(cross_leaf, intermediate_node)],
+        uris,
+        True,
+    )
+    assert len(result["cells"]) == 1
+    row = result["cells"][0]
+    assert row["code"] == CODE_CROSS_TAXONOMY
+    assert row["bucket"] == "cascade"
+    assert row["cascade"] is True
+
+
+# ---------------------------------------------------------------------------
+# M2: every silent skip becomes a FAIL row
+# ---------------------------------------------------------------------------
+
+
+def test_t_m2a_unreadable_statement_index_is_a_fail_row(a1_store, tmp_path, monkeypatch):
+    """T-M2a: a statement-packages index that cannot be decoded is a FAILED
+    check, never a silent empty index."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    def _refuse(_generation):
+        raise ValueError("index bytes cannot be decoded")
+
+    monkeypatch.setattr(ledger_module, "_statement_index", _refuse)
+    document = _build_in_process(a1_store, tmp_path)
+    row = next(c for c in document["checks"] if c["id"] == "statement_index_unreadable")
+    assert row["issuer"] == "AAPL"
+    assert row["status"] == "fail"
+    assert row["detail"] == "statement packages index cannot be decoded (ValueError)"
+    assert document["all_checks_passed"] is False
+
+
+def test_t_m2b_served_accession_absent_from_index_is_a_fail_row(
+    a1_store, tmp_path, monkeypatch
+):
+    """T-M2b: a served accession missing from the statement index is a FAILED
+    check, never a silent continue."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    real_index = ledger_module._statement_index
+    dropped = a1_store["accessions"][0]
+
+    def _drop_first(generation):
+        index = real_index(generation)
+        index.pop(dropped, None)
+        return index
+
+    monkeypatch.setattr(ledger_module, "_statement_index", _drop_first)
+    document = _build_in_process(a1_store, tmp_path)
+    row = next(
+        c for c in document["checks"] if c["id"] == "served_accession_unindexed"
+    )
+    assert row["issuer"] == "AAPL"
+    assert row["status"] == "fail"
+    assert row["detail"].startswith(
+        "served accessions absent from the statement packages index: "
+    )
+    assert dropped in row["detail"]
+
+
+def test_t_m2c_unreadable_statement_trees_are_a_fail_row(a1_store, tmp_path, monkeypatch):
+    """T-M2c: trees that refuse with ProductionDatasetError are a FAILED
+    check naming the accession and the error type."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    real_trees = ledger_module.statement_trees_from_role_payload
+    target = a1_store["accessions"][0]
+
+    def _refuse(payload, accession):
+        if accession == target:
+            raise ledger_module.ProductionDatasetError("trees cannot be decoded")
+        return real_trees(payload, accession)
+
+    monkeypatch.setattr(ledger_module, "statement_trees_from_role_payload", _refuse)
+    document = _build_in_process(a1_store, tmp_path)
+    row = next(
+        c for c in document["checks"] if c["id"] == "statement_trees_unreadable"
+    )
+    assert row["issuer"] == "AAPL"
+    assert row["status"] == "fail"
+    assert f"{target} (ProductionDatasetError)" in row["detail"]
+
+
+def test_t_m2d_archive_with_empty_admitted_set_never_reports_a_match(
+    a1_store, tmp_path, monkeypatch
+):
+    """T-M2d: an empty admitted set refuses BEFORE any archive read — a match
+    over zero packages would be vacuous."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    monkeypatch.setattr(ledger_module, "read_retained_fif_packages", lambda *a, **k: [])
+    monkeypatch.setattr(
+        ledger_module, "admitted_concept_namespace_uris", lambda *a, **k: {}
+    )
+    checks = ledger_module._Checks()
+    uris, available = ledger_module._archive_taxonomy_uris(
+        archive_root=tmp_path,
+        cik=_AAPL_CIK,
+        admitted_accessions=[],
+        statement_index={},
+        ticker="AAPL",
+        checks=checks,
+    )
+    assert uris == {}
+    assert available is False
+    assert [(row["id"], row["status"], row["detail"]) for row in checks.rows] == [
+        (
+            "archive_package_mismatch",
+            "fail",
+            "no admitted accession to verify against the retained archive",
+        )
+    ]
+
+
+def test_t_m2e_published_issuer_without_coverage_row_fails(a1_store, tmp_path):
+    """T-M2e: a published issuer with no coverage[] row is a FAILED check, and
+    its coverage census is "unavailable" — never a fabricated 0."""
+    report = _report_document(a1_store)
+    report["coverage"] = []
+    document = _build_in_process(a1_store, tmp_path, report=report)
+    row = next(c for c in document["checks"] if c["id"] == "coverage_row_missing")
+    assert row["issuer"] == "AAPL"
+    assert row["status"] == "fail"
+    assert row["detail"] == "published issuer has no coverage[] row in the production report"
+    coverage = next(r for r in document["coverage_table"] if r["ticker"] == "AAPL")
+    assert coverage["captured"] == "unavailable"
+
+
+def test_t_m2f_unrecorded_primary_document_is_a_fail_row(a1_store, tmp_path, monkeypatch):
+    """T-M2f: a served accession without a recorded primary document is a
+    FAILED check, never a silent hole."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    real_index = ledger_module._statement_index
+    target = a1_store["accessions"][0]
+
+    def _blank_primary(generation):
+        index = real_index(generation)
+        row = index.get(target)
+        if row is not None:
+            row["members"] = [
+                member
+                for member in (row.get("members") or [])
+                if not (isinstance(member, dict) and member.get("role") == "primary")
+            ]
+        return index
+
+    monkeypatch.setattr(ledger_module, "_statement_index", _blank_primary)
+    document = _build_in_process(a1_store, tmp_path)
+    row = next(
+        c for c in document["checks"] if c["id"] == "primary_document_recorded"
+    )
+    assert row["issuer"] == "AAPL"
+    assert row["status"] == "fail"
+    assert row["detail"].startswith(
+        "served accessions without a recorded primary document: "
+    )
+    assert target in row["detail"]
+
+
+def test_t_m2g_unaccounted_statement_type_is_a_fail_row(a1_store, tmp_path, monkeypatch):
+    """T-M2g: a served type that is neither served nor refused anywhere is a
+    FAILED check."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    real_trees = ledger_module.statement_trees_from_role_payload
+    target = a1_store["accessions"][0]
+
+    def _drop_cash_flow(payload, accession):
+        trees = real_trees(payload, accession)
+        if accession == target:
+            trees["statements"] = [
+                statement
+                for statement in trees.get("statements") or []
+                if statement.get("statement_type") != "cash_flow"
+            ]
+        return trees
+
+    monkeypatch.setattr(ledger_module, "statement_trees_from_role_payload", _drop_cash_flow)
+    document = _build_in_process(a1_store, tmp_path)
+    row = next(
+        c for c in document["checks"] if c["id"] == "statement_types_accounted"
+    )
+    assert row["issuer"] == "AAPL"
+    assert row["status"] == "fail"
+    assert row["detail"].startswith("statement types neither served nor refused: ")
+    assert f"{target} cash_flow" in row["detail"]
+
+
+def test_t_m2h_baseline_records_primary_documents_and_statement_types(a1_match_run):
+    """T-M2h (guard): the clean baseline run carries PASS rows for both new
+    fail-closed statement checks."""
+    document = a1_match_run["document"]
+    assert document["all_checks_passed"] is True
+    for check_id in ("primary_document_recorded", "statement_types_accounted"):
+        row = next(c for c in document["checks"] if c["id"] == check_id)
+        assert row["issuer"] == "AAPL"
+        assert row["status"] == "pass"
+
+
+# ---------------------------------------------------------------------------
+# M3: an empty universe and the unlinked total are never a fake 0
+# ---------------------------------------------------------------------------
+
+
+def test_t_m3a_empty_period_universe_is_a_kernel_failure(a1_store, tmp_path, monkeypatch):
+    """T-M3a: an empty governed universe refuses the kernel half — the FAILED
+    kernel_query_engine row, a None unlinked total and an "unavailable" census."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    monkeypatch.setattr(ledger_module, "_period_universe", lambda ledger, registry: [])
+    document = _build_in_process(a1_store, tmp_path)
+    row = next(c for c in document["checks"] if c["id"] == "kernel_query_engine")
+    assert row["issuer"] == "AAPL"
+    assert row["status"] == "fail"
+    assert "period universe is empty" in row["detail"]
+    aapl = next(i for i in document["issuers"] if i["ticker"] == "AAPL")
+    causes = aapl["lineage"]["refusal_causes"]
+    assert causes["total_unlinked_cells"] is None
+    coverage = next(r for r in document["coverage_table"] if r["ticker"] == "AAPL")
+    assert coverage["lineage_refusals"] == "unavailable"
+
+
+def test_t_m3b_lineage_refusals_total_requires_a_real_int():
+    """T-M3b: the census total is "unavailable" unless it is a real int."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    assert ledger_module._lineage_refusals_total({"histogram": {}}) == "unavailable"
+    assert (
+        ledger_module._lineage_refusals_total(
+            {"histogram": {}, "total_unlinked_cells": None}
+        )
+        == "unavailable"
+    )
+    assert (
+        ledger_module._lineage_refusals_total(
+            {"histogram": {}, "total_unlinked_cells": True}
+        )
+        == "unavailable"
+    )
+    assert (
+        ledger_module._lineage_refusals_total(
+            {"histogram": {}, "total_unlinked_cells": 7}
+        )
+        == 7
+    )
+
+
+# ---------------------------------------------------------------------------
+# m-fixtures: per-issuer census, clock pairs, harness errors, journey periods
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("bad_count", [None, "130", True])
+def test_t_m1_bad_report_lineage_receipt_count_fails(a1_store, tmp_path, bad_count):
+    """T-m1: a missing, non-integer or boolean lineage_receipt_count is a
+    FAILED lineage_count row — the comparison is never silently skipped."""
+    report = _report_document(a1_store)
+    report["published"][0]["lineage_receipt_count"] = bad_count
+    document = _build_in_process(a1_store, tmp_path, report=report)
+    row = next(c for c in document["checks"] if c["id"] == "lineage_count")
+    assert row["issuer"] == "AAPL"
+    assert row["status"] == "fail"
+    assert row["detail"] == "report lineage_receipt_count is missing or not an integer"
+
+
+def test_t_m2a_unlawful_clock_pair_fails_no_fixture_substitution(a1_store, tmp_path):
+    """T-m2a: ("published", "latest_unchanged") is outside the publisher's own
+    pairing invariant — the AAPL row fails."""
+    report = _report_document(a1_store)
+    report["published"][0]["clock_basis"] = "latest_unchanged"
+    document = _build_in_process(a1_store, tmp_path, report=report)
+    row = next(
+        c
+        for c in document["checks"]
+        if c["id"] == "no_fixture_substitution" and c["issuer"] == "AAPL"
+    )
+    assert row["status"] == "fail"
+    assert "latest_unchanged" in row["detail"]
+
+
+def test_t_m2b_lawful_pairs_equal_publisher_invariant():
+    """T-m2b (guard): the harness pair set IS the publisher's own invariant."""
+    import scripts.publish_fif_production_datasets as producer
+
+    from scripts.fif_a1_journey_ledger import LAWFUL_OUTCOME_CLOCK_PAIRS
+
+    assert (
+        LAWFUL_OUTCOME_CLOCK_PAIRS == producer._IssuerPlan._VALID_OUTCOME_CLOCK_BASIS
+    )
+
+
+def test_t_m2c_baseline_fixture_and_shape_rows_pass(a1_match_run):
+    """T-m2c (guard): the baseline run carries a PASS no_fixture_substitution
+    row for AAPL and a PASS report-shape row."""
+    document = a1_match_run["document"]
+    row = next(c for c in document["checks"] if c["id"] == "no_fixture_substitution")
+    assert row["issuer"] == "AAPL"
+    assert row["status"] == "pass"
+    assert (
+        row["detail"]
+        == "no tests/fixtures locator; production provider mode and clock basis lawful"
+    )
+    shape = next(c for c in document["checks"] if c["id"] == "production_report_shape")
+    assert shape["issuer"] is None
+    assert shape["status"] == "pass"
+
+
+def test_t_m3a_usage_error_overwrites_stale_outputs(a1_store, tmp_path):
+    """T-m3a: stale out files are unlinked first, then the usage error writes
+    the harness_input FAIL ledger over them (exit 2)."""
+    directory = tmp_path / "stale"
+    report = _report_document(a1_store)
+    report["schema"] = "something.else/v9"
+    report_path, contract_path = _write_inputs(directory, report)
+    out_dir = directory / "out"
+    out_dir.mkdir(parents=True)
+    (out_dir / "ledger.json").write_text("STALE JSON", encoding="utf-8")
+    (out_dir / "ledger.md").write_text("STALE MD", encoding="utf-8")
+    process, out_json, out_md = _run_cli(
+        report_path, contract_path, a1_store["store_dir"], out_dir
+    )
+    assert process.returncode == 2
+    document = json.loads(out_json.read_text(encoding="utf-8"))
+    assert document["schema"] == "fif.a1_journey_ledger/v1"
+    assert document["inputs"] == {}
+    assert document["issuers"] == []
+    assert document["all_checks_passed"] is False
+    assert [
+        (c["id"], c["issuer"], c["status"]) for c in document["checks"]
+    ] == [("harness_input", None, "fail")]
+    assert "STALE" not in out_md.read_text(encoding="utf-8")
+
+
+def test_t_m3b_internal_error_writes_fail_ledger_exit_3(a1_store, tmp_path, monkeypatch):
+    """T-m3b: an internal error writes the harness_internal_error FAIL ledger
+    to both out paths and exits 3 — never a traceback."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    directory = tmp_path / "internal"
+    report_path, contract_path = _write_inputs(directory, _report_document(a1_store))
+
+    def _explode(**_kwargs):
+        raise RuntimeError("synthetic internal failure")
+
+    monkeypatch.setattr(ledger_module, "build_ledger", _explode)
+    exit_code = ledger_module.main(
+        [
+            "--production-report",
+            str(report_path),
+            "--store-dir",
+            str(a1_store["store_dir"]),
+            "--coverage-file",
+            str(contract_path),
+            "--out-json",
+            str(directory / "o.json"),
+            "--out-md",
+            str(directory / "o.md"),
+        ]
+    )
+    assert exit_code == 3
+    document = json.loads((directory / "o.json").read_text(encoding="utf-8"))
+    assert document["inputs"] == {}
+    assert document["all_checks_passed"] is False
+    assert [
+        (c["id"], c["issuer"], c["status"]) for c in document["checks"]
+    ] == [("harness_internal_error", None, "fail")]
+    assert document["checks"][0]["detail"].startswith(
+        "RuntimeError: synthetic internal failure"
+    )
+    assert (directory / "o.md").read_text(encoding="utf-8").strip()
+
+
+def test_t_m3c_malformed_contract_issuer_is_a_fail_row_not_a_crash(a1_store, tmp_path):
+    """T-m3c: a contract issuer with a non-digit cik is a FAILED row and a
+    skipped issuer — the run continues, AAPL is still processed, no traceback."""
+    directory = tmp_path / "malformed"
+    contract = _contract_document()
+    contract["issuers"].append(
+        {
+            "ticker": "BAD",
+            "cik": "ABC",
+            "security_master_binding": {"issuer_id": "ISS:US-XNAS-BAD"},
+            "accessions": [],
+        }
+    )
+    report_path, contract_path = _write_inputs(
+        directory, _report_document(a1_store), contract=contract
+    )
+    process, out_json, _out_md = _run_cli(
+        report_path, contract_path, a1_store["store_dir"], directory / "out"
+    )
+    assert process.returncode == 1
+    assert "Traceback" not in process.stderr
+    document = json.loads(out_json.read_text(encoding="utf-8"))
+    row = next(c for c in document["checks"] if c["id"] == "contract_issuer_malformed")
+    assert row["issuer"] == "BAD"
+    assert row["status"] == "fail"
+    assert "cik" in row["detail"]
+    assert any(i["ticker"] == "AAPL" for i in document["issuers"])
+    assert all(i["ticker"] != "BAD" for i in document["issuers"])
+
+
+def test_t_m4_unavailable_census_markers(a1_extra_run):
+    """T-m4: a section that never ran is "unavailable" in the coverage table —
+    never a fabricated 0."""
+    table = {r["ticker"]: r for r in a1_extra_run["document"]["coverage_table"]}
+    assert table["SECOND"]["statements_served"] == "unavailable"
+    assert table["SECOND"]["lineage_receipts"] == "unavailable"
+    assert table["THIRD"]["captured"] == "unavailable"
+    assert table["AAPL"]["captured"] == 2
+
+
+def test_t_m5_annual_pick_is_longest_duration_at_latest_end(registry):
+    """T-m5: the annual journey pick is the LONGEST duration at the latest end
+    (the fiscal year, not a same-end quarter); quarterly stays the shortest."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+    from engine.fundamental_forensics.query import PeriodRequest
+
+    universe = [
+        PeriodRequest.duration("2023-10-01", "2024-09-28"),
+        PeriodRequest.duration("2024-06-30", "2024-09-28"),
+        PeriodRequest.duration("2024-03-31", "2024-06-29"),
+    ]
+    metric_id = ledger_module._journey_metric_ids(registry)["revenue"]
+
+    scopes = ledger_module._journey_periods(
+        metric_id, registry, universe, {"2024-09-28"}, {"2024-06-29"}
+    )
+    assert (str(scopes["annual"].start), str(scopes["annual"].end)) == (
+        "2023-10-01",
+        "2024-09-28",
+    )
+    assert (str(scopes["quarterly"].start), str(scopes["quarterly"].end)) == (
+        "2024-03-31",
+        "2024-06-29",
+    )
+
+    # Fallback path (no statement packages): same annual rule; quarterly picks
+    # the latest-end 3-month period.
+    fallback = ledger_module._journey_periods(metric_id, registry, universe, set(), set())
+    assert (str(fallback["annual"].start), str(fallback["annual"].end)) == (
+        "2023-10-01",
+        "2024-09-28",
+    )
+    assert (str(fallback["quarterly"].start), str(fallback["quarterly"].end)) == (
+        "2024-06-30",
+        "2024-09-28",
+    )
+
+
+def test_t_m6a_publish_exclusion_conflict_fails(a1_store, tmp_path):
+    """T-m6a: one cik in both published[] and excluded[] is a FAILED row."""
+    report = _report_document(a1_store)
+    report["excluded"].append(
+        {
+            "ticker": "AAPL",
+            "cik": _AAPL_CIK,
+            "reason": "duplicate",
+            "detail": "present in both sections",
+        }
+    )
+    document = _build_in_process(a1_store, tmp_path, report=report)
+    row = next(
+        c for c in document["checks"] if c["id"] == "publish_exclusion_conflict"
+    )
+    assert row["issuer"] == "AAPL"
+    assert row["status"] == "fail"
+    assert _AAPL_CIK in row["detail"]
+
+
+def test_t_m6b_report_cik_outside_contract_fails(a1_store, tmp_path):
+    """T-m6b: a report row whose cik is outside the contract is a FAILED row
+    naming the cik and its sections."""
+    report = _report_document(a1_store)
+    report["coverage"].append(
+        {
+            "ticker": "OUTSIDER",
+            "cik": "0000000001",
+            "captured": 0,
+            "admitted": 0,
+            "served": 0,
+            "accessions": [],
+        }
+    )
+    document = _build_in_process(a1_store, tmp_path, report=report)
+    row = next(
+        c for c in document["checks"] if c["id"] == "report_issuer_outside_contract"
+    )
+    assert row["issuer"] is None
+    assert row["status"] == "fail"
+    assert "0000000001" in row["detail"]
+    assert "coverage" in row["detail"]
+
+
+def test_t_m6c_reported_commit_failure_beats_issuer_dropped(a1_store, tmp_path):
+    """T-m6c: a contract issuer absent from both sections is named by the
+    report's failed[] object — publish_commit_failed, not issuer_dropped."""
+    report = _report_document(a1_store, extra_issuers=True)
+    report["failed"] = {
+        "cik": "0000888888",
+        "ticker": "THIRD",
+        "code": "commit_refused",
+        "error": "the publish commit refused",
+    }
+    document = _build_in_process(a1_store, tmp_path, report=report, extra_issuers=True)
+    failed = {
+        (c["id"], c["issuer"]) for c in document["checks"] if c["status"] == "fail"
+    }
+    assert ("publish_commit_failed", "THIRD") in failed
+    assert ("issuer_dropped", "THIRD") not in failed
+    row = next(c for c in document["checks"] if c["id"] == "publish_commit_failed")
+    assert "commit_refused" in row["detail"]
+
+
+def test_t_m6d_reported_not_attempted_beats_issuer_dropped(a1_store, tmp_path):
+    """T-m6d: a contract issuer listed in not_attempted[] gets
+    publish_not_attempted, not issuer_dropped."""
+    report = _report_document(a1_store, extra_issuers=True)
+    report["not_attempted"] = [
+        {"ticker": "THIRD", "cik": "0000888888", "reason": "not_reached"}
+    ]
+    document = _build_in_process(a1_store, tmp_path, report=report, extra_issuers=True)
+    failed = {
+        (c["id"], c["issuer"]) for c in document["checks"] if c["status"] == "fail"
+    }
+    assert ("publish_not_attempted", "THIRD") in failed
+    assert ("issuer_dropped", "THIRD") not in failed
