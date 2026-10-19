@@ -615,8 +615,8 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
         <span class="l-zh">分析师原文研报，<span class="accent">原汁原味呈现。</span></span>
       </h1>
       <p class="rv-verdict" id="rv-verdict">
-        <span class="l-en"><b id="v-en-lead"><span class="rv-lead-snapshot">Showing the latest saved institutional reports.</span><span class="rv-lead-loading">Refreshing the latest institutional reports.</span></b> New buy-side and sell-side desk reports land here hourly — read the ones that touch what you hold.</span>
-        <span class="l-zh"><b id="v-zh-lead"><span class="rv-lead-snapshot">正在显示最近保存的机构研报。</span><span class="rv-lead-loading">正在刷新最新机构研报。</span></b>买方与卖方研究每小时更新至此 —— 挑与你持仓相关的读。</span>
+        <span class="l-en"><b id="v-en-lead"><span class="rv-lead-snapshot">Showing the latest saved institutional reports.</span><span class="rv-lead-loading">Refreshing the latest institutional reports.</span></b> New reports arrive as published — read those relevant to your holdings.</span>
+        <span class="l-zh"><b id="v-zh-lead"><span class="rv-lead-snapshot">正在显示最近保存的机构研报。</span><span class="rv-lead-loading">正在刷新最新机构研报。</span></b>机构研报陆续收录 —— 挑与你持仓相关的读。</span>
       </p>
       <span class="rv-stance">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -709,9 +709,9 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
             {{ t('Browse', '浏览') }}
           </button>
           <input type="search" id="q" aria-label="Search research"
-            data-ph-en="Search titles, summaries, and full text…"
-            data-ph-zh="搜索标题、摘要与全文…"
-            placeholder="Search titles, summaries, and full text…">
+            data-ph-en="Search titles, summaries, and indexed text…"
+            data-ph-zh="搜索标题、摘要与已索引正文…"
+            placeholder="Search titles, summaries, and indexed text…">
         </div>
         <div class="rv-facets" id="facets">
           <div class="facet-grp" data-dim="inst">
@@ -732,6 +732,7 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
         </div>
         <div class="rv-result">
           <span class="cnt">{{ t('Showing', '显示') }} <b id="cnt-n">—</b> {{ t('of', '/') }} <b id="cnt-t">—</b> {{ t('reports', '篇') }}</span>
+          <span class="rv-searching lens-term" id="rv-coverage-note" tabindex="0" role="status" aria-live="polite">{{ t('Search coverage unverified.', '搜索覆盖尚未核验。') }}</span>
           <div class="rv-active" id="active-chips"></div>
         </div>
       </div>

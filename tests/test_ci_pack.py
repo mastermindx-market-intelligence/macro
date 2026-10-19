@@ -2006,6 +2006,45 @@ def _single_run_step_job(run: str) -> object:
     )
 
 
+def test_named_suite_closure_is_traversed_once_per_command(monkeypatch) -> None:
+    suite = "tests/test_scope_fixture.py"
+    script = "scripts/scope_fixture.py"
+    monkeypatch.setattr(AUDIT, "discover_suites", lambda: [suite])
+    monkeypatch.setattr(PACK, "planner_path_is_file", lambda path: str(path) in {suite, script})
+    calls = []
+
+    def closure(path, *, pytest_command=None):
+        calls.append((path, pytest_command))
+        return DEPS.DependencyClosure(
+            (str(path), "engine/scope_fixture.py"),
+            (f"{path}:1: subprocess roots=scripts,tests",),
+        )
+
+    monkeypatch.setattr(DEPS, "suite_dependency_closure", closure)
+    command = f"python -m pytest {suite} {suite}::test_second -q && python {script}"
+    [job], _ = PACK.infer_job_scopes([_single_run_step_job(command)])
+    assert calls == [(suite, command), (script, None)]
+    assert set(job.paths) == {suite, script, "engine/scope_fixture.py"}
+    assert job.fallback_paths == ("scripts/**",)
+
+    # Reuse is confined to this command, never a stale result across calls.
+    calls.clear()
+    [again], _ = PACK.infer_job_scopes([_single_run_step_job(command)])
+    assert again == job
+    assert calls == [(suite, command), (script, None)]
+
+
+def test_opaque_pytest_target_still_refuses_before_closure_reuse(monkeypatch) -> None:
+    monkeypatch.setattr(AUDIT, "discover_suites", lambda: ["tests/test_scope_fixture.py"])
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("opaque pytest discovery must not infer a narrow closure")
+
+    monkeypatch.setattr(DEPS, "suite_dependency_closure", unexpected)
+    [job], _ = PACK.infer_job_scopes([_single_run_step_job("python -m pytest tests/")])
+    assert not job.is_scoped
+
+
 @pytest.mark.parametrize(("commented", "comment_free"), _COMMENT_QUOTE_RUN_BLOCKS)
 def test_full_line_comment_apostrophe_resolves_the_comment_free_targets(
     commented: str, comment_free: str
@@ -4284,6 +4323,10 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # Vault code-gate closure from exact tracked-tree analysis; includes runtime
+    # Jinja/page assets. Packing ceilings and suite coverage remain unchanged.
+    "research-vault",
+    "market-memory-e0-contract",  # E0 suites own their exact dependency closure.
     # BEA human/HTTP browser gate: measured literal closure, no opaque fallback smear.
     "bea-gvc-current-descriptive-consumer",
     # R2 original-intent context producer: the ten Agent OS knowledge suites
@@ -4827,6 +4870,8 @@ CURATED_EXCLUSIVE = {
     #  scripts/build_sector_central.py via ast and the T18 panel template, so inference smeared it onto
     #  scripts/build_free_content.py (135 > 134). Register the reviewed 199-path owner (rates_command_basis.py added after #9317 widened the closure); closure audits and ceilings stay fixed.
     "leadership-rotation-countercases",
+    # Fixed-runtime helpers have a separate source-only CI owner.
+    "research-codegen-runtime-qualification",
     # 2026-10-17 C19 WP22: the DHI traversal suite's app/engine imports made
     # inference select it, at the fallback tier only, on the index-template
     # (137 > 136 jobs) and build_free_content (135 > 134) packing probes;
@@ -5013,7 +5058,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_618),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5022,6 +5067,31 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-19 Research Vault full-body/producer composition: the existing
+    code-gated job gains its complete 36-suite invocation (estimated weight
+    43 -> 76). Its exact tracked-tree import/read closure is now exclusive,
+    with Jinja and committed page assets declared explicitly. This removes the
+    template probe's opaque fallback selection while preserving the real
+    scripts.build_free_content dependency reached through press.validators.
+    Hosted contract-delta39234988640 measured build_free_content 5,576 -> 5,609;
+    the scoped local probe independently measured 134 jobs / 5,609 against 5,600.
+    The protected ff1b80af refresh also adds two alert-email suites (+4),
+    producing the current measured 134 jobs / 5,613. The exact local four-case
+    audit passed declaration, complete dependency coverage and opaque-tier-only
+    removal; its sole breach was 5,613 against 5,609. Fund that final measured
+    excess only: 5,600 -> 5,613, no padding. This is retained measurement reuse,
+    not a new selector or suite change. Job counts, other weights and ten packs
+    remain fixed; current-head hosted CI must execute the updated assertion.
+    Dropping the imported validator or understating the suite weight would
+    discard coverage or hide the actual added test load.
+
+    The subsequent protected0ad974a9 integration measures 134 jobs / 5,618
+    for build_free_content; the Python3.12 affected check records that exact
+    five-unit excess over 5,613. Retained weight attribution records the
+    inherited job deltas (including dataos-identity-seams 16 -> 21). Fund
+    only the measured 5,618. Job counts, the other two weight ceilings,
+    all suites and the ten-pack ceiling remain unchanged.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py

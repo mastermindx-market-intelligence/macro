@@ -396,7 +396,7 @@ def test_unknown_schema_does_not_claim_transitive_reference_closure(bundle):
     reg["tasks_ref"] = reference(body, "unsupported.json.v1", "tasks_ref")
     objects[reg["tasks_ref"]["sha256"]] = body
     result = resolve(bundle)
-    assert result["reference_scope"] == "registration_refs_and_known_prelabel_digest_link"
+    assert result["reference_scope"] == "registration_refs_and_known_domain_digest_links"
     assert "unsupported.json.v1" in result["unparsed_reference_schemas"]
     assert child not in result["missing_references"]
     objects[child["sha256"]] = child_body
@@ -414,3 +414,350 @@ def test_explicit_prelabel_input_shares_object_and_aggregate_bounds(bundle, monk
         patch.setattr(e0, "MAX_DOMAIN_TOTAL_BYTES", sum(map(len, objects.values())) + len(prelabel) - 1)
         with pytest.raises(e0.E0ControlError, match="aggregate_domain_byte"):
             resolve(bundle)
+
+
+@pytest.fixture
+def task_bundle(bundle):
+    """Synthetic task declaration only; real metadata identities are unchanged.
+
+    This question is invented for testing. It is not an exported saved query,
+    actual study task, answerability label or permission to read evidence.
+    """
+    membership = json.loads(bundle[1][e0._FROZEN_DOMAIN_DIGESTS["membership"]])
+    row = membership["query_candidates"][0]
+    identity = {key: row[key] for key in ("query_id", "context_id", "capture_id", "packet_sha256")}
+    question = "Synthetic test question; no claim of answerability."
+    value = {"schema": e0._TASK_SCHEMA, "object_id": "synthetic-tasks-only", "authority": "display_only",
+             "protocol_sha256": e0._FROZEN_DOMAIN_DIGESTS["design"],
+             "annotation_guide_sha256": e0._FROZEN_DOMAIN_DIGESTS["annotation_guide"],
+             "membership_sha256": bundle[0]["corpus"]["membership_sha256"],
+             "tasks": [{"task_id": "synthetic-task-1", **identity, **row["subject"],
+                        "analysis_cutoff": row["first_available_for_contextual_analysis"],
+                        "mode": "historical_hypothetical", "question": question,
+                        "question_sha256": hashlib.sha256(question.encode()).hexdigest(),
+                        "required_facet_ids": ["synthetic-facet"], "k": 1,
+                        "original_evidence": [identity]}]}
+    install_tasks(bundle, value)
+    return bundle, value
+
+
+def install_tasks(bundle, value, body=None):
+    reg, objects, _prelabel = bundle
+    objects.pop(reg["tasks_ref"]["sha256"], None)
+    body = canonical(value) if body is None else body
+    reg["tasks_ref"] = reference(body, e0._TASK_SCHEMA, value["object_id"])
+    objects[reg["tasks_ref"]["sha256"]] = body
+
+
+def test_task_contract_binds_frozen_sources_and_question_bytes_without_answerability(task_bundle):
+    bundle, value = task_bundle
+    result = resolve(bundle)
+    assert result["references_complete"] is True
+    assert e0._TASK_SCHEMA not in result["unparsed_reference_schemas"]
+    assert result["task_binding_checks"] == [{"schema": e0._TASK_SCHEMA, "object_id": value["object_id"],
+        "task_count": 1, "question_bytes_bound": True, "frozen_source_bindings_checked": True,
+        "unresolved": [], "actual_task_selection_verified": False,
+        "answerability_verified": False, "usefulness_verified": False}]
+    assert result["operational_admission"] is result["domain_metadata_complete"] is False
+    assert "tasks_and_query_selection" in result["unresolved_semantics"]
+    # No supplied question/evidence bodies or fabricated interval metadata escape.
+    assert value["tasks"][0]["question"] not in json.dumps(result)
+    assert {"field": "membership.feature_support_interval", "missing_rows": 109} in result["frozen_metadata_gaps"]
+    result["task_binding_checks"][0]["task_count"] = 999
+    assert resolve(bundle)["task_binding_checks"][0]["task_count"] == 1
+
+
+@pytest.mark.parametrize("mutate,error", [
+    (lambda v: v["tasks"][0].update(question_sha256="f" * 64), "question_digest"),
+    (lambda v: v["tasks"][0].update(question=" "), "question_required"),
+    (lambda v: v["tasks"][0].update(query_id="mmquery_" + "f" * 64), "source_identity"),
+    (lambda v: v["tasks"][0].update(context_id="mmctx_" + "f" * 64), "source_identity"),
+    (lambda v: v["tasks"][0].update(capture_id="mmcapture_" + "f" * 64), "source_identity"),
+    (lambda v: v["tasks"][0].update(packet_sha256="f" * 64), "source_identity"),
+    (lambda v: v["tasks"][0].update(subject_id="mmsecurity_" + "f" * 64), "subject_identity"),
+    (lambda v: v["tasks"][0].update(instrument_id="mmsecurity_" + "f" * 64), "subject_identity"),
+    # Matching the older feature/event clock cannot backdate contextual availability.
+    (lambda v: v["tasks"][0].update(analysis_cutoff="2026-09-25T01:18:09.907914Z"), "unavailable_at_cutoff"),
+    (lambda v: v["tasks"][0].update(analysis_cutoff="2026-09-25T01:18:10Z"), "microsecond"),
+    (lambda v: v["tasks"][0]["original_evidence"][0].update(packet_sha256="f" * 64), "source_identity"),
+    (lambda v: v["tasks"].append(copy.deepcopy(v["tasks"][0])), "duplicate_task"),
+    (lambda v: v["tasks"][0].update(k=True), "task_schema"),
+    (lambda v: v["tasks"][0].update(k=9), "task_schema"),
+    (lambda v: v["tasks"][0].update(required_facet_ids=["same", "same"]), "task_schema"),
+    (lambda v: v["tasks"][0].update(task_id="bad\n"), "bounded_identifier"),
+    (lambda v: v["tasks"][0]["original_evidence"][0].update(query_id="mmquery_" + "f" * 64 + "\n"), "exact_source_identity"),
+    (lambda v: v["tasks"][0].update(answerability="answerable"), "task_schema"),
+    (lambda v: v.update(membership_sha256="f" * 64), "task_schema"),
+    (lambda v: v.update(protocol_sha256="f" * 64), "task_schema"),
+    (lambda v: v.update(annotation_guide_sha256="f" * 64), "task_schema"),
+])
+def test_task_contract_rejects_metadata_contradictions(task_bundle, mutate, error):
+    bundle, value = task_bundle
+    mutate(value)
+    install_tasks(bundle, value)
+    with pytest.raises(e0.E0ControlError, match=error):
+        resolve(bundle)
+
+
+def test_task_evidence_uses_each_original_availability_clock(task_bundle):
+    bundle, value = task_bundle
+    rows = json.loads(bundle[1][e0._FROZEN_DOMAIN_DIGESTS["membership"]])["query_candidates"]
+    later = max(rows, key=lambda row: row["first_available_for_contextual_analysis"])
+    assert later["first_available_for_contextual_analysis"] > value["tasks"][0]["analysis_cutoff"]
+    value["tasks"][0]["original_evidence"] = [{key: later[key] for key in
+        ("query_id", "context_id", "capture_id", "packet_sha256")}]
+    install_tasks(bundle, value)
+    with pytest.raises(e0.E0ControlError, match="unavailable_at_cutoff"):
+        resolve(bundle)
+    value["tasks"][0]["analysis_cutoff"] = later["first_available_for_contextual_analysis"]
+    install_tasks(bundle, value)
+    assert resolve(bundle)["task_binding_checks"][0]["frozen_source_bindings_checked"] is True
+
+
+def test_missing_membership_never_launders_supplied_tasks_as_verified_sources(task_bundle):
+    bundle, value = task_bundle
+    del bundle[1][e0._FROZEN_DOMAIN_DIGESTS["membership"]]
+    value["tasks"][0]["query_id"] = "mmquery_" + "f" * 64
+    install_tasks(bundle, value)
+    result = resolve(bundle)
+    assert result["references_complete"] is False
+    checks = result["task_binding_checks"][0]
+    assert checks["question_bytes_bound"] is True
+    assert checks["frozen_source_bindings_checked"] is False
+    assert checks["unresolved"] == ["frozen_membership_bytes"]
+    assert result["operational_admission"] is False
+
+
+def test_known_task_schema_is_role_bound_even_without_supplied_bytes(task_bundle):
+    bundle, _value = task_bundle
+    bundle[0]["reviewer_plan_ref"] = bundle[0]["tasks_ref"]
+    del bundle[1][bundle[0]["tasks_ref"]["sha256"]]
+    with pytest.raises(e0.E0ControlError, match="task_reference_role"):
+        resolve(bundle)
+
+
+@pytest.mark.parametrize("body", [b'{"schema":"research_factory.market_memory_e0_tasks.v1"}', b'null'])
+def test_known_task_schema_rejects_malformed_payloads(task_bundle, body):
+    bundle, value = task_bundle
+    install_tasks(bundle, value, body)
+    with pytest.raises(e0.E0ControlError):
+        resolve(bundle)
+
+
+def test_task_question_identity_is_not_evidence_truth_or_answerability(task_bundle):
+    bundle, value = task_bundle
+    # Deliberately unanswerable supplied text can bind bytes; no truth inference.
+    question = "合成测试：这是一个未证明可回答的问题。"
+    value["tasks"][0].update(question=question, question_sha256=hashlib.sha256(question.encode()).hexdigest())
+    install_tasks(bundle, value)
+    checks = resolve(bundle)["task_binding_checks"][0]
+    assert checks["question_bytes_bound"] is True
+    assert checks["answerability_verified"] is checks["usefulness_verified"] is False
+
+
+def test_task_parser_rejects_duplicate_keys(task_bundle):
+    bundle, value = task_bundle
+    body = canonical(value)
+    body = b'{"object_id":"duplicate",' + body[1:]
+    install_tasks(bundle, value, body)
+    with pytest.raises(e0.E0ControlError, match="invalid_domain_json"):
+        resolve(bundle)
+
+
+def test_task_bytes_are_canonical_and_guide_link_is_not_invented_prelabel_role(task_bundle, monkeypatch):
+    bundle, value = task_bundle
+    install_tasks(bundle, value, canonical(value) + b"\n")
+    with pytest.raises(e0.E0ControlError, match="noncanonical_task"):
+        resolve(bundle)
+    install_tasks(bundle, value)
+    # The task schema's exact guide digest is a supported link without prelabel input.
+    bundle = (bundle[0], bundle[1], None)
+    e0._task_validator()  # Public schema load is the only additional filesystem use.
+    def forbidden(*args, **kwargs):
+        pytest.fail("task metadata must not read stores or execute code")
+    monkeypatch.setattr(Path, "open", forbidden)
+    result = resolve(bundle)
+    assert result["task_binding_checks"][0]["frozen_source_bindings_checked"] is True
+    assert "annotation_guide" in result["frozen_artifacts_resolved"]
+    del bundle[1][e0._FROZEN_DOMAIN_DIGESTS["annotation_guide"]]
+    result = resolve(bundle)
+    assert result["references_complete"] is False
+    assert result["missing_frozen_artifacts"] == ["annotation_guide"]
+
+
+def install_reviewer_plan(bundle, value, body=None):
+    reg, objects, _prelabel = bundle
+    objects.pop(reg["reviewer_plan_ref"]["sha256"], None)
+    body = canonical(value) if body is None else body
+    reg["reviewer_plan_ref"] = reference(body, e0._REVIEWER_PLAN_SCHEMA, value["object_id"])
+    objects[reg["reviewer_plan_ref"]["sha256"]] = body
+
+
+@pytest.fixture
+def reviewer_bundle(task_bundle):
+    """Invented actors/assignments for contract testing, never real reviewers."""
+    bundle, tasks = task_bundle
+    participants = []
+    for actor in ("synthetic-reviewer-1", "synthetic-reviewer-2", "synthetic-adjudicator"):
+        participant = {}
+        for field in ("principal_ref", "qualification_ref", "independence_ref"):
+            body = canonical({"synthetic_only": True, "actor": actor, "evidence_kind": field})
+            identity = actor if field == "principal_ref" else actor + ":" + field
+            participant[field] = reference(body, "synthetic.reviewer_evidence.v1", identity)
+            bundle[1][participant[field]["sha256"]] = body
+        participants.append(participant)
+    plan = {"schema": e0._REVIEWER_PLAN_SCHEMA, "object_id": "synthetic-reviewer-plan-only",
+            "authority": "display_only", "study_id": bundle[0]["study_id"],
+            "preregistered_at": "2026-10-13T23:59:00.000000Z",
+            "protocol_sha256": e0._FROZEN_DOMAIN_DIGESTS["design"],
+            "annotation_guide_sha256": e0._FROZEN_DOMAIN_DIGESTS["annotation_guide"],
+            "membership_sha256": bundle[0]["corpus"]["membership_sha256"],
+            "tasks_ref": copy.deepcopy(bundle[0]["tasks_ref"]),
+            "reviewers": participants[:2], "adjudicator": participants[2],
+            "assignments": [{"task_id": task["task_id"],
+                "reviewer_principal_ids": [p["principal_ref"]["object_id"] for p in participants[:2]],
+                "adjudicator_principal_id": participants[2]["principal_ref"]["object_id"]}
+                for task in tasks["tasks"]],
+            "blinding": {"method_identity_suppressed": True, "provider_identity_suppressed": True,
+                "later_outcome_values_suppressed": True, "peer_provisional_ratings_visible": False,
+                "original_ratings_retained": True, "adjudication_reasons_retained": True}}
+    install_reviewer_plan(bundle, plan)
+    return bundle, plan
+
+
+def test_reviewer_plan_closes_real_frozen_guide_tasks_and_corpus_but_authenticates_no_people(reviewer_bundle):
+    bundle, plan = reviewer_bundle
+    result = resolve(bundle)
+    check = result["reviewer_plan_binding_checks"][0]
+    assert result["references_complete"] is True
+    assert check["assigned_task_count"] == check["declared_adjudicator_count"] == 1
+    assert check["declared_reviewer_count"] == 2
+    assert check["declared_principal_references_distinct"] is True
+    assert check["exact_task_coverage_checked"] is check["frozen_membership_binding_checked"] is True
+    assert check["declared_blinding_matches_guide"] is True and check["unresolved"] == []
+    for key in ("authenticated_identities_verified", "qualifications_verified", "independence_verified",
+                "packet_blinding_verified", "prelabel_timing_authenticated", "actual_assignment_executed",
+                "operational_admission"):
+        assert check[key] is False
+    assert result["domain_metadata_complete"] is result["operational_admission"] is False
+    assert "reviewer_plan_and_independence" in result["unresolved_semantics"]
+    assert "annotation_guide" in result["frozen_artifacts_resolved"]
+    assert {"field": "prelabel_binding.real_reviewer_assignment", "missing_rows": 1} in result["frozen_metadata_gaps"]
+    assert plan["reviewers"][0]["principal_ref"]["object_id"] not in json.dumps(check)
+    assert "synthetic.reviewer_evidence.v1" in result["unparsed_reference_schemas"]
+
+
+@pytest.mark.parametrize("change", [
+    lambda p: p["reviewers"].pop(),
+    lambda p: p["reviewers"].append(copy.deepcopy(p["adjudicator"])),
+    lambda p: p["reviewers"][0].pop("qualification_ref"),
+    lambda p: p["adjudicator"].pop("independence_ref"),
+    lambda p: p["reviewers"][0]["principal_ref"].update(bytes=True),
+    lambda p: p.update(authority="operational"),
+    lambda p: p.update(actual_ratings=[]),
+    lambda p: p.update(protocol_sha256="a" * 64),
+    lambda p: p.update(annotation_guide_sha256="b" * 64),
+    lambda p: p.update(membership_sha256="c" * 64),
+    *[lambda p, key=key: p["blinding"].update({key: not p["blinding"][key]})
+      for key in ("method_identity_suppressed", "provider_identity_suppressed",
+                  "later_outcome_values_suppressed", "peer_provisional_ratings_visible",
+                  "original_ratings_retained", "adjudication_reasons_retained")],
+])
+def test_reviewer_plan_requires_evidence_declared_blinding_and_no_annotation_payload(reviewer_bundle, change):
+    bundle, plan = reviewer_bundle
+    change(plan)
+    install_reviewer_plan(bundle, plan)
+    with pytest.raises(e0.E0ControlError, match="reviewer_plan_schema"):
+        resolve(bundle)
+
+
+@pytest.mark.parametrize("change,reason", [
+    (lambda p: p["reviewers"][1].update(principal_ref=copy.deepcopy(p["reviewers"][0]["principal_ref"])), "distinct_principal"),
+    (lambda p: p["adjudicator"].update(principal_ref=copy.deepcopy(p["reviewers"][0]["principal_ref"])), "distinct_principal"),
+    (lambda p: p["reviewers"][1]["principal_ref"].update(sha256=p["reviewers"][0]["principal_ref"]["sha256"]), "distinct_principal"),
+    (lambda p: p["assignments"].append(copy.deepcopy(p["assignments"][0])), "duplicate_task"),
+    (lambda p: p["assignments"][0].update(reviewer_principal_ids=["unregistered-one", "unregistered-two"]), "assignment_principal"),
+    (lambda p: p["assignments"][0].update(adjudicator_principal_id=p["reviewers"][0]["principal_ref"]["object_id"]), "assignment_principal"),
+    (lambda p: p["assignments"][0].update(task_id="unregistered-task"), "exact_task_coverage"),
+    (lambda p: p.update(study_id="another-study"), "study_mismatch"),
+    (lambda p: p.update(preregistered_at="2026-10-14T00:00:00.000001Z"), "declared_after_registration"),
+    (lambda p: p.update(preregistered_at="2026-10-13T23:59:00+00:00"), "canonical_microsecond"),
+    (lambda p: p["tasks_ref"].update(object_id="wrong-tasks"), "domain_binding"),
+])
+def test_reviewer_plan_rejects_knowable_contradictions(reviewer_bundle, change, reason):
+    bundle, plan = reviewer_bundle
+    change(plan)
+    install_reviewer_plan(bundle, plan)
+    with pytest.raises(e0.E0ControlError, match=reason):
+        resolve(bundle)
+
+
+@pytest.mark.parametrize("missing,unresolved", [
+    ("tasks", "declared_tasks_bytes"), ("membership", "frozen_membership_bytes"),
+    ("annotation_guide", "frozen_annotation_guide_bytes"),
+    ("evidence", "reviewer_identity_qualification_independence_evidence_bytes"),
+])
+def test_missing_reviewer_dependencies_remain_explicit_unknowns(reviewer_bundle, missing, unresolved):
+    bundle, plan = reviewer_bundle
+    digest = (plan["tasks_ref"]["sha256"] if missing == "tasks" else
+              plan["reviewers"][0]["qualification_ref"]["sha256"] if missing == "evidence" else
+              e0._FROZEN_DOMAIN_DIGESTS[missing])
+    del bundle[1][digest]
+    result = resolve(bundle)
+    assert result["references_complete"] is False
+    check = result["reviewer_plan_binding_checks"][0]
+    assert unresolved in check["unresolved"] and check["operational_admission"] is False
+    if missing == "tasks":
+        assert check["exact_task_coverage_checked"] is False
+    if missing == "membership":
+        assert check["frozen_membership_binding_checked"] is False
+
+
+def test_reviewer_plan_known_role_mismatch_is_rejected_before_absent_bytes(reviewer_bundle):
+    bundle, _plan = reviewer_bundle
+    ref = bundle[0]["reviewer_plan_ref"]
+    bundle[0]["source_coverage_ref"] = copy.deepcopy(ref)
+    del bundle[1][ref["sha256"]]
+    with pytest.raises(e0.E0ControlError, match="reviewer_plan_reference_role"):
+        resolve(bundle)
+
+
+def test_reviewer_evidence_cannot_smuggle_a_known_task_domain_even_without_bytes(reviewer_bundle):
+    bundle, plan = reviewer_bundle
+    plan["reviewers"][0]["qualification_ref"] = copy.deepcopy(plan["tasks_ref"])
+    del bundle[1][plan["tasks_ref"]["sha256"]]
+    install_reviewer_plan(bundle, plan)
+    with pytest.raises(e0.E0ControlError, match="task_reference_role"):
+        resolve(bundle)
+
+
+def test_reviewer_evidence_bytes_are_checked_but_not_interpreted_as_qualifications(reviewer_bundle):
+    bundle, plan = reviewer_bundle
+    old = plan["reviewers"][0]["qualification_ref"]
+    del bundle[1][old["sha256"]]
+    body = b'{invalid JSON; opaque bytes cannot certify qualifications'
+    plan["reviewers"][0]["qualification_ref"] = reference(body, "unsupported.qualification.v1", old["object_id"])
+    bundle[1][hashlib.sha256(body).hexdigest()] = body
+    install_reviewer_plan(bundle, plan)
+    check = resolve(bundle)["reviewer_plan_binding_checks"][0]
+    assert check["qualifications_verified"] is False
+    bundle[1][hashlib.sha256(body).hexdigest()] = body + b"changed"
+    with pytest.raises(e0.E0ControlError, match="domain_reference_bytes"):
+        resolve(bundle)
+
+
+def test_reviewer_plan_is_canonical_and_has_no_identity_store_or_annotation_io(reviewer_bundle, monkeypatch):
+    bundle, plan = reviewer_bundle
+    install_reviewer_plan(bundle, plan, canonical(plan) + b"\n")
+    with pytest.raises(e0.E0ControlError, match="noncanonical_reviewer_plan"):
+        resolve(bundle)
+    install_reviewer_plan(bundle, plan)
+    e0.validate_e0_registration(bundle[0])
+    e0._task_validator()
+    e0._reviewer_plan_validator()
+    def forbidden(*args, **kwargs):
+        pytest.fail("reviewer metadata cannot open identity/qualification/annotation stores")
+    monkeypatch.setattr(Path, "open", forbidden)
+    first = resolve(bundle)
+    first["reviewer_plan_binding_checks"][0]["unresolved"].append("caller-mutated")
+    assert resolve(bundle)["reviewer_plan_binding_checks"][0]["unresolved"] == []
