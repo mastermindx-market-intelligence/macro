@@ -63,6 +63,17 @@
       "required": true
     },
     {
+      "field_id": "net_write_offs",
+      "name": "Allowance for credit losses, write-offs net of recoveries (rollforward input)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
       "field_id": "loans_held_for_investment",
       "name": "Loans and leases held for investment",
       "type": "decimal",
@@ -215,7 +226,8 @@
       "kind": "rollforward",
       "operands": [
         "allowance_for_credit_losses",
-        "provision_for_credit_losses_total"
+        "credit_loss_expense_financing_receivables",
+        "net_write_offs"
       ]
     },
     {
