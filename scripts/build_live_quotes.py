@@ -32,6 +32,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import math
 import re
 import sys
 from datetime import datetime, timezone
@@ -341,17 +342,149 @@ def board_display_symbols(site_dir: Path,
 
 def display_universe(site_dir: Path) -> list[str]:
     """The same-origin ``site/live/quotes.json`` universe: the hand-kept macro
-    tiles FIRST (so a cap squeeze or a board-page surprise can never cost the
-    market strips their feed), then the scraped board leg. De-duped and
-    charset-validated exactly like build_universe()."""
+    tiles FIRST, then the existing HK heatmap members, then the scraped board
+    leg. This is the actual one-minute VPS/public endpoint: adding HK to the
+    private five-minute full-universe snapshot alone changes NO browser tiles.
+    De-duped and charset-validated exactly like build_universe()."""
     ordered: list[str] = []
     seen: set[str] = set()
-    for s in list(DISPLAY_SYMBOLS) + board_display_symbols(site_dir):
+    for s in list(DISPLAY_SYMBOLS) + heatmap_hk_symbols(site_dir) + board_display_symbols(site_dir):
         s = str(s).strip().upper()
         if s and s not in seen and _SYMBOL_RE.match(s):
             seen.add(s)
             ordered.append(s)
     return ordered
+
+
+def display_public_universe(site_dir: Path) -> list[str]:
+    """The original anonymous quote population, WITHOUT paid HK heatmap members."""
+    ordered, seen = [], set()
+    for raw in list(DISPLAY_SYMBOLS) + board_display_symbols(site_dir):
+        ticker = str(raw).strip().upper()
+        if ticker and _SYMBOL_RE.fullmatch(ticker) and ticker not in seen:
+            seen.add(ticker)
+            ordered.append(ticker)
+    return ordered
+
+
+def project_public_display_snapshot(snapshot: dict, site_dir: Path) -> dict:
+    """Do not widen /live/quotes.json when the single FAST fetch also serves HK."""
+    allow = display_public_universe(site_dir)
+    raw = snapshot.get("quotes") or {}
+    raw = raw if isinstance(raw, dict) else {}
+    out = dict(snapshot)
+    out["quotes"] = {ticker: raw[ticker] for ticker in allow if ticker in raw}
+    out["meta"] = dict(snapshot.get("meta") or {})
+    out["meta"]["requested"] = len(allow)
+    out["meta"]["resolved"] = len(out["quotes"])
+    return out
+
+
+def hk_heatmap_session(stamp_ms: int | float) -> dict:
+    """Project the incumbent HKEX calendar into the existing member sidecar.
+
+    This is a wire projection, not a new calendar or quote publication owner.
+    The browser may validate within-day bounds; it may not invent holidays.
+    """
+    from datetime import time, timedelta
+    from lib import hk_calendar
+    from lib.exchange_holidays import early_close
+
+    instant = datetime.fromtimestamp(stamp_ms / 1000, timezone.utc).astimezone(hk_calendar.HKT)
+    today = instant.date()
+    trading = hk_calendar.is_session(today)
+    half_close = early_close("HK", today) if trading else None
+    close_minute = half_close.hour * 60 + half_close.minute if half_close else 970
+    minute = instant.hour * 60 + instant.minute
+    session_day = today if trading and minute >= 570 else hk_calendar.last_session_on_or_before(today - timedelta(days=1))
+    previous = hk_calendar.last_session_on_or_before(session_day - timedelta(days=1))
+    if not trading:
+        phase = "weekend" if today.weekday() >= 5 else "holiday"
+    elif minute < 570:
+        phase = "pre_open"
+    elif minute >= close_minute:
+        phase = "post_close"
+    elif minute >= close_minute - 10:
+        phase = "closing_auction"
+    elif minute < 720:
+        phase = "morning"
+    elif minute < 780:
+        phase = "session_break"
+    else:
+        phase = "afternoon"
+    next_day = today if trading and minute < 570 else today + timedelta(days=1)
+    for _ in range(30):
+        if hk_calendar.is_session(next_day):
+            break
+        next_day += timedelta(days=1)
+    else:
+        raise ValueError("HK calendar has no next session in 30 days")
+    return {
+        "schema": "hk_heatmap_session.v1", "calendar_date": today.isoformat(),
+        "session_date": session_day.isoformat(), "previous_session": previous.isoformat(),
+        "is_session": trading, "phase": phase, "close_minute": close_minute,
+        "settled_asof": hk_calendar.expected_last_session(instant).isoformat(),
+        "next_open_at": datetime.combine(next_day, time(9, 30), hk_calendar.HKT).isoformat(),
+    }
+
+
+def _hk_quote_in_session(stamp_ms: int | float, session: dict) -> bool:
+    from lib.hk_calendar import HKT
+
+    instant = datetime.fromtimestamp(stamp_ms / 1000, timezone.utc).astimezone(HKT)
+    if not session["is_session"] or session["phase"] == "pre_open" or instant.date().isoformat() != session["session_date"]:
+        return False
+    minute = instant.hour * 60 + instant.minute + instant.second / 60 + instant.microsecond / 60000000
+    close = session["close_minute"]
+    if not 570 <= minute <= close:
+        return False
+    return close == 730 or minute <= 720 or minute >= 780
+
+
+def project_hk_heatmap_snapshot(snapshot: dict, site_dir: Path) -> dict | None:
+    """Member-gated HK quote projection from the SAME one-minute display fetch.
+
+    Original daily map is the sole ticker/session/sector authority. Never publish
+    a private provenance field, credential, nonmember or synthetic timestamp.
+    """
+    members = heatmap_hk_symbols(site_dir)
+    if not members:
+        return None
+    try:
+        baseline = json.loads((site_dir / "marketdata" / "hk_heatmap.json").read_text(encoding="utf-8"))
+        asof = baseline.get("asof")
+        if not isinstance(asof, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", asof):
+            return None
+        datetime.fromisoformat(asof)
+    except (ValueError, TypeError, OSError):
+        return None
+    if not isinstance(snapshot, dict) or snapshot.get("source") != "snapshot":
+        return None
+    ts, raw = snapshot.get("ts"), snapshot.get("quotes")
+    if type(ts) not in (int, float) or not math.isfinite(ts) or not isinstance(raw, dict):
+        return None
+    try:
+        session = hk_heatmap_session(ts)
+    except (ValueError, OverflowError, OSError):
+        return None
+    out = {}
+    allowed_fields = ("source", "basis", "price", "prevClose", "changePct", "ts")
+    for ticker in members:
+        q = raw.get(ticker)
+        if not isinstance(q, dict) or q.get("source") != "yahoo" or q.get("basis") != "regular":
+            continue
+        vals = (q.get("price"), q.get("prevClose"), q.get("ts"))
+        if any(type(v) not in (int, float) or not math.isfinite(v) or v <= 0 for v in vals):
+            continue
+        change = (q["price"] / q["prevClose"] - 1) * 100
+        if not math.isfinite(change) or q["ts"] > ts + 5000 or not _hk_quote_in_session(q["ts"], session):
+            continue
+        # Vendor percentages are not an independent return authority.
+        out[ticker] = {k: q[k] for k in allowed_fields if k != "changePct"}
+        out[ticker]["changePct"] = change
+    return {"source": "snapshot", "baseline_asof": asof, "ts": ts,
+            "quotes": out, "session": session,
+            "meta": {"requested": len(members), "resolved": len(out)}}
 
 
 def basket_member_symbols() -> list[str]:
@@ -392,6 +525,39 @@ def top_conviction(site_dir: Path, n: int) -> list[str]:
     return [r["t"] for r in rows[:n]]
 
 
+def heatmap_hk_symbols(site_dir: Path) -> list[str]:
+    """Enroll the *entire* existing HK heatmap universe in the incumbent snapshot.
+
+    The HK map is a membership consumer, not another quote collector. It can
+    render same-session changes only if most canonical tiles have current HK
+    quotes; the old page/GTAA/basket scrape included only a subset. Keep the
+    source of membership in the existing published daily-close artifact.
+    """
+    path = site_dir / "marketdata" / "hk_heatmap.json"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, UnicodeDecodeError):
+        return []
+    if not isinstance(data, dict) or data.get("market") != "hk" or data.get("map_type") != "stocks":
+        return []
+    tiles = data.get("tiles")
+    if not isinstance(tiles, list) or not (1 <= len(tiles) <= 2000):
+        return []
+    out: list[str] = []
+    seen: set[str] = set()
+    for tile in tiles:
+        if not isinstance(tile, dict):
+            continue
+        ticker = tile.get("t")
+        if not isinstance(ticker, str):
+            continue
+        symbol = ticker.strip().upper()
+        if symbol.endswith(".HK") and _SYMBOL_RE.fullmatch(symbol) and symbol not in seen:
+            seen.add(symbol)
+            out.append(symbol)
+    return out
+
+
 def build_universe(site_dir: Path, extra: list[str] | None = None,
                    cap: int = 3000, top_n: int = 120) -> list[str]:
     """CORE index/futures symbols first (never dropped by the cap), then every
@@ -415,7 +581,7 @@ def build_universe(site_dir: Path, extra: list[str] | None = None,
     the priority)."""
     ordered: list[str] = []
     seen: set[str] = set()
-    for s in (CORE_SYMBOLS + basket_member_symbols() + scrape_site_symbols(site_dir)
+    for s in (CORE_SYMBOLS + heatmap_hk_symbols(site_dir) + basket_member_symbols() + scrape_site_symbols(site_dir)
               + top_conviction(site_dir, top_n) + list(extra or [])):
         s = str(s).strip().upper()
         if s and s not in seen and _SYMBOL_RE.match(s):
@@ -575,6 +741,8 @@ def main() -> None:
     ap.add_argument("--symbols", default=None,
                     help="comma-separated EXACT universe (bypass CORE+scrape+conviction); "
                          "e.g. 'BTC-USD' for the hourly crypto-only snapshot")
+    ap.add_argument("--hk-heatmap-out", default=None,
+                    help="protected HK quotes from the same --display fetch")
     ap.add_argument("--display", action="store_true",
                     help="EXACT universe = DISPLAY_SYMBOLS (the site's glance-tier live "
                          "tiles) + the board leg scraped from DISPLAY_BOARD_PAGES — the "
@@ -591,6 +759,8 @@ def main() -> None:
         ),
     )
     args = ap.parse_args()
+    if args.hk_heatmap_out and not args.display:
+        ap.error("--hk-heatmap-out requires --display")
 
     site_dir = (Path(args.site) if args.site
                 else config.ROOT / config.load()["storage"]["site_dir"])
@@ -598,8 +768,11 @@ def main() -> None:
     symbols = [s for s in (args.symbols or "").split(",") if s.strip()] or None
     if args.display:
         symbols = display_universe(site_dir)
-        log.info("display universe: %d tiles + %d board symbols from %s",
-                 len(DISPLAY_SYMBOLS), len(symbols) - len(DISPLAY_SYMBOLS),
+        log.info("display universe: %d core tiles + %d HK heatmap members + "
+                 "%d remaining board symbols (deduplicated), boards=%s",
+                 len(DISPLAY_SYMBOLS), len(heatmap_hk_symbols(site_dir)),
+                 max(0, len(symbols) - len(DISPLAY_SYMBOLS)
+                     - len(heatmap_hk_symbols(site_dir))),
                  ", ".join(DISPLAY_BOARD_PAGES))
     snap = build(
         site_dir,
@@ -610,10 +783,20 @@ def main() -> None:
         include_private_provenance=args.private_provenance,
     )
 
+    hk_sidecar = (project_hk_heatmap_snapshot(snap, site_dir)
+                  if args.display and args.hk_heatmap_out else None)
+    if args.display:
+        snap = project_public_display_snapshot(snap, site_dir)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     # allow_nan=False: a NaN would make the JSON unparseable in the browser.
     out.write_text(json.dumps(snap, separators=(",", ":"), allow_nan=False) + "\n")
+    if hk_sidecar is not None:
+        restricted = Path(args.hk_heatmap_out)
+        restricted.parent.mkdir(parents=True, exist_ok=True)
+        restricted.write_text(json.dumps(hk_sidecar, separators=(",", ":"), allow_nan=False) + "\n")
+        log.info("member-gated HK map quotes: %d/%d", hk_sidecar["meta"]["resolved"],
+                 hk_sidecar["meta"]["requested"])
     log.info("wrote %s — %d/%d symbols resolved (polygon=%s)", out,
              snap["meta"]["resolved"], snap["meta"]["requested"],
              snap["meta"]["polygon_status"])

@@ -1,0 +1,138 @@
+{
+  "scope": "Local original-carrier integration rehearsal; not published as release, independently approved, or deployed",
+  "observed_at": "2026-10-18T12:01:49.349233+00:00",
+  "workspace": "/Users/chriswong/lanes/sol-asia-pair-oct15-rehearsal-20261015",
+  "local_head": "ef873ccfedd1330d0e883736baa4ac2eab40bcd9",
+  "local_tree": "ca6f166d2c8906baa486ad05a4feae2332d74f81",
+  "published_inputs": {
+    "live": "83b540a83eee06ee529dc7f7a4c723ab070c28d6",
+    "settled": "00eca5c41ac4a69c03b5e7afe2293039c5105496"
+  },
+  "original_staged_merge_preserved": {
+    "commit": "2b58a5025695c09702df3850d6cf785d0266b97c",
+    "tree": "6b983a2b208273a688c2d723e49b99baed4f2074",
+    "original_head": "df6e53e2c3b4ead8e0ee41ff8b562bd1be01a3cc",
+    "original_merge_head": "73d7585a357ec71de4eada4f450998e43af8b4ed"
+  },
+  "core_qualification": {
+    "head": "092cc7592917001c4998489685b000fec6b5fa92",
+    "tree": "30b1f3f3377fbf6f364f471c815ed67e1b056631",
+    "runs": [
+      {
+        "name": "python",
+        "argv": [
+          "/opt/homebrew/bin/python3.12",
+          "-m",
+          "pytest",
+          "tests/test_china_heatmap_live.py",
+          "tests/test_china_heatmap_live_deploy.py",
+          "tests/test_china_heatmap_live_health.py",
+          "tests/test_china_heatmap_live_producer.py",
+          "tests/test_china_heatmap_settled_close.py",
+          "tests/test_china_heatmap_gate.py",
+          "tests/test_china_universe_extras.py",
+          "tests/test_hk_freshness.py",
+          "tests/test_hk_heatmap_live_source.py",
+          "tests/test_live_quotes.py",
+          "tests/test_market_heatmap.py",
+          "tests/test_tushare_freshness_tripwire.py",
+          "tests/test_site_access_boundary.py",
+          "tests/test_vps_live_orchestration.py",
+          "tests/test_sp500_heatmap_intraday_clock.py",
+          "-q"
+        ],
+        "env": {},
+        "exit_code": 0,
+        "log_sha256": "461b4d15aab1566213b7c3f97541bf989ef311923500f260567f25eefae93d81",
+        "summary": "  /Users/chriswong/lanes/sol-asia-pair-oct15-rehearsal-20261015/collectors/china_universe.py:983: Pandas4Warning: Timestamp.utcnow is deprecated and will be removed in a future version. Use Timestamp.now('UTC') instead.\n    today_ts = pd.Timestamp.utcnow().tz_localize(None).normalize()\n\n../../Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102\n  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-89b39cfc-670c-41c7-957c-568f6c146c14/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:\n  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-89b39cfc-670c-41c7-957c-568f6c146c14/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n432 passed, 3 warnings in 16.62s"
+      },
+      {
+        "name": "js-template",
+        "argv": [
+          "node",
+          "--test",
+          "tests/test_china_heatmap_live_refresh.cjs",
+          "tests/test_china_heatmap_live_render.cjs",
+          "tests/test_china_heatmap_observation_refresh.cjs",
+          "tests/test_china_heatmap_observations_ui.cjs",
+          "tests/test_china_heatmap_refresh.cjs",
+          "tests/test_hk_heatmap_live.cjs"
+        ],
+        "env": {},
+        "exit_code": 0,
+        "log_sha256": "be5abfffcabe10b1323f98b1b2a198675a479073b211d26ae49767deabe5d9dd",
+        "summary": "✔ HK same-session corrections update atomically without allowing a backward daily session (0.590667ms)\n✔ member failures expose an explicit retry and preserve the public summary (0.762334ms)\nℹ tests 168\nℹ suites 0\nℹ pass 168\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 169.768209"
+      },
+      {
+        "name": "js-served",
+        "argv": [
+          "node",
+          "--test",
+          "tests/test_china_heatmap_live_refresh.cjs",
+          "tests/test_china_heatmap_live_render.cjs",
+          "tests/test_china_heatmap_observation_refresh.cjs",
+          "tests/test_china_heatmap_observations_ui.cjs",
+          "tests/test_china_heatmap_refresh.cjs",
+          "tests/test_hk_heatmap_live.cjs"
+        ],
+        "env": {
+          "REFRESH_SOURCE": "site/heatmap.js",
+          "LIVE_REFRESH_SOURCE": "site/heatmap.js",
+          "LIVE_RENDER_SOURCE": "site/heatmap.js",
+          "HK_HEATMAP_SOURCE": "site/heatmap.js"
+        },
+        "exit_code": 0,
+        "log_sha256": "b2d868714edbd8d10d63d6df34c4eccadf7b4077a921aebaad0fd753410c3387",
+        "summary": "✔ HK same-session corrections update atomically without allowing a backward daily session (0.695417ms)\n✔ member failures expose an explicit retry and preserve the public summary (0.838208ms)\nℹ tests 168\nℹ suites 0\nℹ pass 168\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 156.429084"
+      }
+    ],
+    "python_passed": 432,
+    "javascript_template_passed": 168,
+    "javascript_served_passed": 168
+  },
+  "ci_scope_repair": {
+    "head": "ef873ccfedd1330d0e883736baa4ac2eab40bcd9",
+    "source_preimage": "96f22bc6137465780811414b16932bca576c0edd5e9a08cab74d917f73f91be2",
+    "source_postimage": "310096582669cb9cdf262cb17b29ae2ea1abeee81c498b4b002d5f5ebf874caf",
+    "added_dependency_counts": {
+      "bea-gvc-current-descriptive-consumer": 2,
+      "c19-wp22-dhi-traversal": 2,
+      "china-board-breadth": 543,
+      "crypto-assistant-context": 2,
+      "research-price-panel": 2,
+      "washout-turn-organ": 202
+    },
+    "validation": {
+      "argv": [
+        "/opt/homebrew/bin/python3.12",
+        "-m",
+        "pytest",
+        "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+        "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+        "-q"
+      ],
+      "exit_code": 0,
+      "log_sha256": "457b4a53107f3f740a811a12f08cd1ac33a555f3f994d96ced63dabd29da149a",
+      "summary": "..                                                                       [100%]\n=============================== warnings summary ===============================\n../../Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102\n  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-110fdb11-8646-446d-a6c6-d52aff4df3d6/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:\n  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-110fdb11-8646-446d-a6c6-d52aff4df3d6/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n2 passed, 1 warning in 151.09s (0:02:31)"
+    },
+    "patch": "integration-ci-scope.patch",
+    "patch_sha256": "bd3e0bccffeb3879090a255a1e47ff5d20718c670b3353dc0d6ae5750fb0cbba",
+    "only_existing_paths_lists_changed": true
+  },
+  "integration_resolution": {
+    "restart_trigger_parent_matched_paths": 516,
+    "restart_trigger_dropped_paths": 0,
+    "cn_clock_and_cn_calendar_preserved": true,
+    "newer_market_memory_public_callback_assets_preserved": true,
+    "private_HK_access_unchanged": true,
+    "full_integrated_caddy_adaptation": "PASS"
+  },
+  "fixture_recovery": "Git merge re-applies the original sparse profile. Restore the exact final index test inputs after the last merge; no code, canonical data or sparse policy was changed. Missing governed PCE fixture caused historical local failures; all 82 VPS tests now pass.",
+  "reuse_boundary": "The final CI patch changes dependency-selection lists only. Runtime and renderer blobs remain byte-identical to the tested 092cc candidate. No release/whole-hosted-CI claim.",
+  "open_gates": [
+    "settled hosted reference-integrity failure for Sector Central packets; original owner macro#7646/#9592",
+    "original paid data-contract audit unknown; no replacement or retry",
+    "required independent exact-head reviews, protected merge/CI and admitted deployment",
+    "actual rights/credentials, authenticated HK and natural current-session/settled-close production proof"
+  ]
+}

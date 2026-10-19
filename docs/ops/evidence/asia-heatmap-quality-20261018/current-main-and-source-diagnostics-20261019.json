@@ -1,0 +1,703 @@
+{
+  "schema": "mastermind.asia_heatmap.source_continuation.v1",
+  "scope": "Original China/Hong Kong heatmap source continuation, current-main composition, and changed-source diagnostic evidence",
+  "recorded_at_utc": "2026-10-19T10:33:06.833325+00:00",
+  "mission_complete": false,
+  "evidence_authority": "Source and observation record only; not protected approval, RIG approval, recovered Fabric audit, deployment admission, or product acceptance",
+  "original_audit": {
+    "published_head": "96233ea000a73dfff9f707e550622a19386df0ed",
+    "path": "docs/ops/ASIA_HEATMAP_QUALITY_AUDIT_2026-10-18.md",
+    "unchanged_prefix_bytes": 17373,
+    "prior_append_preservation": {
+      "bytes": 30703,
+      "sha256": "5cd987ad62fced92cc9f10fc1b7ff293d20bb68d45fe014de3657b8062e1658c",
+      "blob": "81ec9ed2ec42432e2af0edc91f74c6b265e4c133"
+    },
+    "run_id": "heatmap-quality-audit-20261018-c1-r1",
+    "effect": "EFFECT_UNKNOWN",
+    "worker": "UNKNOWN",
+    "lineage": "UNVERIFIED",
+    "packet_sha256": "fd87d006643a6ce7b70b3a115ff1cf72b04feeb6d28276701a06d632c4397509",
+    "resubmitted": false,
+    "replaced": false
+  },
+  "protected_skillpack": {
+    "pin": "1ffe6b566b9addb58d13893bfb78e8505dce1752",
+    "compatibility": "CHECKED",
+    "schema": "mastermind.sol_skillpack.v1",
+    "version": "1.0.1",
+    "min_bootstrap_major": 1,
+    "index_blob": "339c3d810f8c74ec157a793b143fde9aeb1e4fec",
+    "index_identical_to_observed_master": "8b934d740c3d23efe2f4b089e0b942ef186a257f"
+  },
+  "source": {
+    "pinned_main": "69dd6e774cc48223005426765e74aed193d55954",
+    "settled": {
+      "commit": "f679236ba3926cd3ce3dd6ffa95d0df0d605a985",
+      "tree": "32260aaa6898cef17816ca557a02b220edfdd565",
+      "parents": [
+        "00eca5c41ac4a69c03b5e7afe2293039c5105496",
+        "69dd6e774cc48223005426765e74aed193d55954"
+      ],
+      "merge_base": "dfdd93a75da34417deb1ad328c79f0bc795cf458",
+      "workspace": "/Users/chriswong/lanes/sol-asia-heatmap-current-base-20261015",
+      "detached": true,
+      "overlap_paths": [
+        ".github/ci/legacy-jobs.yml",
+        ".github/workflows/ci.yml",
+        "tests/test_ci_pack.py"
+      ],
+      "conflicts": [],
+      "preview_equals_committed_tree": true,
+      "job_count": 327,
+      "all_job_mappings_preserved": true,
+      "workflow_and_packing_hunks_from_both_parents_preserved": true,
+      "new_ceiling_or_exemption": false,
+      "scoped_whitespace": "PASS",
+      "declaration_tests": {
+        "passed": 2,
+        "returncode": 0,
+        "finished_utc": "2026-10-19T10:13:57.064957+00:00"
+      },
+      "published": true,
+      "publication": {
+        "after": "f679236ba3926cd3ce3dd6ffa95d0df0d605a985",
+        "armed": false,
+        "before": "00eca5c41ac4a69c03b5e7afe2293039c5105496",
+        "classification": "ORIGINAL_SETTLED_SOURCE_PUBLICATION_NOT_MERGE_NOT_DEPLOY",
+        "deployed": false,
+        "finished_utc": "2026-10-19T10:16:45.958079+00:00",
+        "merged": false,
+        "original_audit_effect": "EFFECT_UNKNOWN",
+        "original_audit_run_preserved": "heatmap-quality-audit-20261018-c1-r1",
+        "original_full_rig_hold_preserved": true,
+        "pr": 7193,
+        "remote_readback": [
+          "f679236ba3926cd3ce3dd6ffa95d0df0d605a985",
+          "refs/heads/sol/china-heatmap-freshness-20260916-sol"
+        ],
+        "remote_ref": "refs/heads/sol/china-heatmap-freshness-20260916-sol",
+        "repository": "mastermindx-market-intelligence/macro",
+        "required_protected_review_and_ci_pending": true,
+        "started_utc": "2026-10-19T10:16:12.165133+00:00",
+        "status_after": "",
+        "verified": true,
+        "workspace": "/Users/chriswong/lanes/sol-asia-heatmap-current-base-20261015"
+      },
+      "pr": 7193,
+      "original_published_head": "00eca5c41ac4a69c03b5e7afe2293039c5105496"
+    },
+    "live": {
+      "workspace": "/Users/chriswong/lanes/sol-asia-heatmap-live-20261012",
+      "pr": 8144,
+      "local_branch": "sol/china-hk-live-completion-20261012",
+      "original_remote_branch": "sol/china-heatmap-live-stream-20260927",
+      "previous_published_head": "dada27c2853c066fd5fd0338bc5e06d1eacf4c3c",
+      "source_head": "8314d4287bb6f2d67a08e2e36be88cf9ffbca60d",
+      "source_tree": "97ac1a2f9b77fea3ed256d615385a2f29cb7be00",
+      "current_main_merge": {
+        "pinned_main": "69dd6e774cc48223005426765e74aed193d55954",
+        "merge_base": "b9c81d2f0a09c0d52e476082561ffcbe43a4057b",
+        "commit": "b93cf8bd5112d2b62222f5ddef3f7c6d79470ee9",
+        "tree": "8bb95bb62371f396373eb78c729cfc289e1d8fd7",
+        "parents": [
+          "dada27c2853c066fd5fd0338bc5e06d1eacf4c3c",
+          "69dd6e774cc48223005426765e74aed193d55954"
+        ],
+        "overlap_paths": [
+          ".github/ci/legacy-jobs.yml",
+          "app/deploy/update.sh",
+          "app/main.py"
+        ],
+        "sole_conflict": "app/deploy/update.sh",
+        "resolution": "Retain cn_clock and cn_calendar from original live; retain economic_context and issuer_economic_context from upstream theme_graph.",
+        "resolution_blob": "efc43e48864b865dc8383ddc2a0d61d009d5b401",
+        "full_inherited_whitespace_scan": "Timed out after45s reading unrelated inherited contents; source composition read back on same carrier; no merge retry.",
+        "scoped_whitespace": "PASS",
+        "bash_syntax": "PASS",
+        "merge_head_exists_after_commit": false,
+        "api_restart_validation": {
+          "passed": 182,
+          "failed": 0,
+          "warnings": 2,
+          "scope": "Existing API restart positive/negative cases plus full import closure",
+          "completed_at_utc": "2026-10-19T09:31:36.809297Z"
+        },
+        "published": false,
+        "release_admitted": false,
+        "root_semantic_composition": {
+          "app_main_original_additions_exactly_retained": true,
+          "app_main_upstream_additions_exactly_retained": true,
+          "curated_job_fields": {
+            "china-board-breadth": {
+              "base": [
+                "gate",
+                "if",
+                "runs-on",
+                "steps"
+              ],
+              "merged": [
+                "gate",
+                "if",
+                "paths",
+                "runs-on",
+                "scope",
+                "steps"
+              ],
+              "ours": [
+                "gate",
+                "if",
+                "paths",
+                "runs-on",
+                "scope",
+                "steps"
+              ],
+              "theirs": [
+                "gate",
+                "if",
+                "runs-on",
+                "steps"
+              ]
+            },
+            "washout-turn-organ": {
+              "base": [
+                "gate",
+                "if",
+                "paths",
+                "runs-on",
+                "scope",
+                "steps",
+                "timeout-minutes"
+              ],
+              "merged": [
+                "gate",
+                "if",
+                "paths",
+                "runs-on",
+                "scope",
+                "steps",
+                "timeout-minutes"
+              ],
+              "ours": [
+                "gate",
+                "if",
+                "paths",
+                "runs-on",
+                "scope",
+                "steps",
+                "timeout-minutes"
+              ],
+              "theirs": [
+                "gate",
+                "if",
+                "paths",
+                "runs-on",
+                "scope",
+                "steps",
+                "timeout-minutes"
+              ]
+            }
+          },
+          "curated_job_merged_exactly_ours": {
+            "china-board-breadth": true,
+            "washout-turn-organ": true
+          },
+          "disjoint_mismatches": [],
+          "job_counts": {
+            "base": 327,
+            "merged": 327,
+            "ours": 327,
+            "theirs": 327
+          },
+          "overlap": {
+            "bea-gvc-current-descriptive-consumer": {
+              "merged_path_set_exact_composition": true,
+              "non_path_fields_all_identical": true,
+              "path_delta": {
+                "ours": {
+                  "added": [
+                    "app/china_heatmap_status.py",
+                    "engine/prophet_live/cn_clock.py"
+                  ],
+                  "removed": []
+                },
+                "theirs": {
+                  "added": [
+                    "engine/theme_graph/economic_context.py",
+                    "engine/theme_graph/issuer_economic_context.py"
+                  ],
+                  "removed": []
+                }
+              },
+              "unexpected_added": [],
+              "unexpected_removed": []
+            },
+            "c19-wp22-dhi-traversal": {
+              "merged_path_set_exact_composition": true,
+              "non_path_fields_all_identical": true,
+              "path_delta": {
+                "ours": {
+                  "added": [
+                    "app/china_heatmap_status.py",
+                    "engine/prophet_live/cn_clock.py"
+                  ],
+                  "removed": []
+                },
+                "theirs": {
+                  "added": [
+                    "engine/theme_graph/economic_context.py",
+                    "engine/theme_graph/issuer_economic_context.py"
+                  ],
+                  "removed": []
+                }
+              },
+              "unexpected_added": [],
+              "unexpected_removed": []
+            },
+            "c19-wp32-integrated-answer-correction-denial-pins": {
+              "merged_path_set_exact_composition": true,
+              "non_path_fields_all_identical": true,
+              "path_delta": {
+                "ours": {
+                  "added": [
+                    "app/china_heatmap_status.py",
+                    "engine/prophet_live/cn_clock.py"
+                  ],
+                  "removed": []
+                },
+                "theirs": {
+                  "added": [
+                    "engine/theme_graph/economic_context.py",
+                    "engine/theme_graph/issuer_economic_context.py"
+                  ],
+                  "removed": []
+                }
+              },
+              "unexpected_added": [],
+              "unexpected_removed": []
+            },
+            "crypto-assistant-context": {
+              "merged_path_set_exact_composition": true,
+              "non_path_fields_all_identical": true,
+              "path_delta": {
+                "ours": {
+                  "added": [
+                    "app/china_heatmap_status.py",
+                    "engine/prophet_live/cn_clock.py"
+                  ],
+                  "removed": []
+                },
+                "theirs": {
+                  "added": [
+                    "engine/theme_graph/economic_context.py",
+                    "engine/theme_graph/issuer_economic_context.py"
+                  ],
+                  "removed": []
+                }
+              },
+              "unexpected_added": [],
+              "unexpected_removed": []
+            },
+            "fif-kernel-guards": {
+              "merged_path_set_exact_composition": true,
+              "non_path_fields_all_identical": false,
+              "path_delta": {
+                "ours": {
+                  "added": [
+                    "app/china_heatmap_status.py",
+                    "engine/prophet_live/cn_clock.py"
+                  ],
+                  "removed": []
+                },
+                "theirs": {
+                  "added": [
+                    "app/deploy/macro-api.service",
+                    "engine/theme_graph/economic_context.py",
+                    "engine/theme_graph/issuer_economic_context.py",
+                    "tests/test_fif_a0_production_mode_unit.py"
+                  ],
+                  "removed": []
+                }
+              },
+              "unexpected_added": [],
+              "unexpected_removed": []
+            },
+            "research-price-panel": {
+              "merged_path_set_exact_composition": true,
+              "non_path_fields_all_identical": true,
+              "path_delta": {
+                "ours": {
+                  "added": [
+                    "app/china_heatmap_status.py",
+                    "engine/prophet_live/cn_clock.py"
+                  ],
+                  "removed": []
+                },
+                "theirs": {
+                  "added": [
+                    "engine/theme_graph/economic_context.py",
+                    "engine/theme_graph/issuer_economic_context.py"
+                  ],
+                  "removed": []
+                }
+              },
+              "unexpected_added": [],
+              "unexpected_removed": []
+            },
+            "ticker-news-qbus": {
+              "merged_path_set_exact_composition": true,
+              "non_path_fields_all_identical": true,
+              "path_delta": {
+                "ours": {
+                  "added": [
+                    "app/china_heatmap_status.py",
+                    "engine/prophet_live/cn_clock.py"
+                  ],
+                  "removed": []
+                },
+                "theirs": {
+                  "added": [
+                    "engine/theme_graph/economic_context.py",
+                    "engine/theme_graph/issuer_economic_context.py"
+                  ],
+                  "removed": []
+                }
+              },
+              "unexpected_added": [],
+              "unexpected_removed": []
+            }
+          },
+          "upstream_brain_research_declared_jobs": [
+            "unrun-brain-gateway"
+          ]
+        }
+      },
+      "diagnostic_repair": {
+        "commit": "8314d4287bb6f2d67a08e2e36be88cf9ffbca60d",
+        "parent": "b93cf8bd5112d2b62222f5ddef3f7c6d79470ee9",
+        "files": [
+          {
+            "after_sha256": "e7af6a1830180bd0be37b585b209a5c620b7f9172a479ebf6d51ec5316f78ac9",
+            "before_sha256": "79d08ae77ae7caceca887dfd2e47d1cd76fed90ae96956e0b88c148f538cc094",
+            "blob": "26d805d65af9867f9dfc271587b1266835ac9704",
+            "path": "scripts/build_china_heatmap_live.py"
+          },
+          {
+            "after_sha256": "ca4ac7f8fa2e63b04db8d4980447c9efb97ef7c23e5e913ddebc7c640c7197ae",
+            "before_sha256": "5b7308121cf18014e05f5680775ec53187da1a799c2c16d7edc6b27662ba19c7",
+            "blob": "3436743e8ecff470a170b9723005a44bc2bac1e1",
+            "path": "tests/test_china_heatmap_live_producer.py"
+          }
+        ],
+        "scope": "One-shot diagnostic logging change only: fixed reasons and aggregate normalized/qualified/retained counts; market-data acquisition and product acceptance remain unproved.",
+        "focused_tests": {
+          "passed": 8,
+          "returncode": 0,
+          "finished_utc": "2026-10-19T10:01:06.521173+00:00",
+          "inherited_cleanup_warnings": 2
+        },
+        "source_consultation": "No concrete issue found from supplied actual implementation; no independent tooling or protected approval.",
+        "published": false
+      },
+      "publication_receipt": false,
+      "publication_note": "This record binds the committed source before its normal original-branch publication. Remote publication is verified separately; no evidence-only rerun is requested."
+    },
+    "original_pair": {
+      "workspace": "/Users/chriswong/lanes/sol-asia-pair-oct15-rehearsal-20261015",
+      "local_head": "8f752163d15c5e43519c9e588ad2ac9abc857b42",
+      "tree": "3834a6d543004bf0b1f4daa671de061d06827f88",
+      "original_rehearsal_ancestor": "ef873ccfedd1330d0e883736baa4ac2eab40bcd9",
+      "new_source_join": "PENDING",
+      "old_merge_head_recreated": false
+    }
+  },
+  "qualification": {
+    "local_current_live": {
+      "combined_attempt": {
+        "pid": 80346,
+        "timeout_seconds": 240,
+        "returncode": 1,
+        "individual_test_results": "NOT_RETURNED",
+        "status": "INCOMPLETE"
+      },
+      "isolated_declarations": {
+        "pid": 7583,
+        "child_pid": 7603,
+        "returncode": 124,
+        "timeout_seconds": 360,
+        "finished_utc": "2026-10-19T10:08:50.376751+00:00",
+        "passed_cases": [
+          "test_every_workflow_test_path_exists",
+          "test_the_curated_exclusive_set_is_actually_declared"
+        ],
+        "incomplete_case": "test_curated_exclusive_scopes_cover_their_own_import_closure",
+        "not_reached": "test_ancestor_init_census_does_not_grow",
+        "observed_stack": "selector static source/dependency analysis",
+        "status": "INCOMPLETE; required hosted gates pending"
+      },
+      "rerun_policy": "Do not repeat unchanged completed producer8, restart182, settleddeclaration2, or livepassed2; do not restart the same local broad analysis without a changed diagnostic hypothesis."
+    },
+    "focused_diagnostic": {
+      "passed": 8,
+      "returncode": 0,
+      "finished_utc": "2026-10-19T10:01:06.521173+00:00",
+      "inherited_cleanup_warnings": 2
+    },
+    "live_restart": {
+      "passed": 182,
+      "failed": 0,
+      "warnings": 2,
+      "scope": "Existing API restart positive/negative cases plus full import closure",
+      "completed_at_utc": "2026-10-19T09:31:36.809297Z"
+    },
+    "settled_declarations": {
+      "passed": 2,
+      "returncode": 0,
+      "finished_utc": "2026-10-19T10:13:57.064957+00:00"
+    },
+    "native_settled": {
+      "head": "f679236ba3926cd3ce3dd6ffa95d0df0d605a985",
+      "observed_at_utc": "2026-10-19T10:28:29Z",
+      "runs": [
+        {
+          "id": 39236316198,
+          "name": "ci",
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "id": 39236315980,
+          "name": "fences",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ],
+      "trigger": "Normal synchronization of the original settled branch",
+      "rerun_requested": false
+    },
+    "native_new_live": "PENDING_ORIGINAL_SOURCE_PUBLICATION",
+    "supplied_source_consultations": {
+      "live_merge": "no actionable concern on supplied diffs/results",
+      "diagnostic_patch": "no concrete issue on supplied implementation",
+      "settled_merge": "no concrete composition defect on supplied diffs/results",
+      "limitation": "Supplied-diff/result consultations only; no independent repository execution and no protected approval.",
+      "evidence_wording": "Append-only custody and subject attribution reviewed from supplied facts; no protected approval."
+    }
+  },
+  "observations": {
+    "previous_source_failure": {
+      "source_head": "dada27c2853c066fd5fd0338bc5e06d1eacf4c3c",
+      "started_at_utc": "2026-10-19T09:11:43.677611+00:00",
+      "finished_at_utc": "2026-10-19T09:11:54.216585+00:00",
+      "returncode": 1,
+      "output_exists": false,
+      "baseline_unchanged": true,
+      "diagnostic_limit": "Only generic RuntimeError was emitted; the refusal cause was not observed.",
+      "automatic_retry": false
+    },
+    "changed_source": {
+      "argv_mode": [
+        "--once",
+        "--base",
+        "existing retained baseline",
+        "--out",
+        "new private observation file"
+      ],
+      "baseline_asof": "2026-10-16",
+      "baseline_path": "/tmp/mmx-heatmap-quality-render-20261018/marketdata/china_heatmap.json",
+      "baseline_sha256": "f1e71066a24f1e5cbbbe458103af1c3f5979719b025f5740e671d92724250213",
+      "baseline_tiles": 1724,
+      "baseline_unchanged": true,
+      "classification": "ISOLATED_ACTUAL_CHINA_CLOSING_SOURCE_DIAGNOSTIC_OBSERVATION_NOT_DEPLOYED_NOT_AUDIT",
+      "diagnostic_events": [
+        {
+          "normalized": 0,
+          "reason": "no_normalized_quotes",
+          "requested": 1724,
+          "source": "tushare-rt-k"
+        },
+        {
+          "normalized": 1722,
+          "qualified": 0,
+          "reason": "insufficient_qualified_coverage",
+          "requested": 1724,
+          "source": "tencent"
+        },
+        {
+          "qualified": 0,
+          "reason": "no_usable_snapshot",
+          "requested": 1724,
+          "retained": 0,
+          "source": "unavailable"
+        }
+      ],
+      "finished_utc": "2026-10-19T10:12:50.540181+00:00",
+      "isolation": {
+        "ambient_secret_proxy_tls_python_loader_environment_excluded": true,
+        "automatic_retry": false,
+        "dotenv_absent": true,
+        "explicit_existing_site_packages": "/Users/chriswong/Library/Python/3.12/lib/python/site-packages",
+        "home_preserved_unchanged": true,
+        "netrc_points_to_absent_private_path": true,
+        "original_audit_not_invoked": true,
+        "python_isolated_no_site_no_bytecode": true
+      },
+      "output_exists": false,
+      "previous_observation_directory": "/tmp/mmx-heatmap-china-source-observation-20261019-qyy6g6ls/",
+      "private_directory": "/tmp/mmx-heatmap-china-diagnostic-observation-20261019-2vhgt3mv",
+      "release_or_product_proof": false,
+      "returncode": 1,
+      "source_head": "8314d4287bb6f2d67a08e2e36be88cf9ffbca60d",
+      "source_sha256": "e7af6a1830180bd0be37b585b209a5c620b7f9172a479ebf6d51ec5316f78ac9",
+      "source_unchanged": true,
+      "started_utc": "2026-10-19T10:12:39.845042+00:00",
+      "stderr_bytes": 673,
+      "stderr_sha256": "5aa47d53a29ce0308fc45869bf748ef416e521a894ce00c8c8a22f19ffcc4155",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false,
+      "workspace_head_after": "8314d4287bb6f2d67a08e2e36be88cf9ffbca60d",
+      "workspace_status_after": ""
+    },
+    "timestamp_trace": {
+      "classification": "STATIC_SOURCE_TRACE_WITH_LIMITED_CAUSAL_INFERENCE",
+      "tencent_field": 30,
+      "tencent_parse": "First 14 digits as %Y%m%d%H%M%S in Asia/Shanghai, then UTC",
+      "normalization": "Aware ISO timestamp retains timezone; normalized quote timestamp is integer epoch milliseconds",
+      "contract_window_seconds": {
+        "maximum_future": 5,
+        "maximum_age": 45
+      },
+      "expected_after_close": "Canonical eligible session close at 15:00 Asia/Shanghai",
+      "inference": "The inspected valid-quote path filters by per-stock source timestamp before the qualified count. The 1722 normalized/0 qualified result points to rejection by that window.",
+      "provider_timestamps_retained": false,
+      "root_cause": "NOT_ESTABLISHED: old, future, wrong-session or provider time-basis causes cannot be distinguished from the retained aggregate events.",
+      "acceptance_rules_changed": false,
+      "automatic_retry": false
+    }
+  },
+  "owner_boundary": {
+    "latest_delta_queries": {
+      "queries": {
+        "macro9592_since": "2026-10-19T08:57:00Z",
+        "macro7646_since": "2026-10-19T08:57:00Z",
+        "mastermind1391_since": "2026-10-19T07:54:46Z"
+      },
+      "new_comments": 0,
+      "holds_cleared": false
+    },
+    "full_rig_required": true,
+    "approved_receipt": false,
+    "original_owner_returns": [
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "number": 9592,
+        "comment_id": 6248814344,
+        "updated_at_utc": "2026-10-19T04:40:45Z"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "number": 9592,
+        "comment_id": 6261112436,
+        "created_at_utc": "2026-10-19T06:27:05Z"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "number": 7646,
+        "comment_id": 6247254582,
+        "updated_at_utc": "2026-10-19T07:56:16Z"
+      }
+    ],
+    "upstream_relocation": {
+      "observed_at_utc": "2026-10-19T09:04:46Z",
+      "merge_commit": "b91514a3a4301edff33ced2644e4cea7cdfef716",
+      "parent": "9299be24257ce1515af783f71b1bf88ff7153f0a",
+      "moves": [
+        {
+          "original_path": "research/migration_packets/MP-20261018-sector-central.md",
+          "original_blob": "f23be13d107e0d05be2dd580f2439271da6cae88",
+          "new_path": "research/redesign/SECTOR_CENTRAL_20261018_DESIGN_DRAFT.md",
+          "new_blob": "c6c556865100094f74978a31d687dfc0735262a1"
+        },
+        {
+          "original_path": "research/migration_packets/MP-20261018-sector-central-capability-crosswalk.md",
+          "original_blob": "fa2b3f3941d3757f9a18545a616003e3aa8428b3",
+          "new_path": "research/redesign/SECTOR_CENTRAL_20261018_CAPABILITY_CROSSWALK_DRAFT.md",
+          "new_blob": "9fe5ab19c5ec912ebb23f1b9f468d0ee0b0c8b63"
+        },
+        {
+          "original_path": "research/migration_packets/MP-20261018-sector-central-paper-and-acceptance.md",
+          "original_blob": "19fa4a5f9758e22294357cd10dea7520b02aa1bc",
+          "new_path": "research/redesign/SECTOR_CENTRAL_20261018_PAPER_ACCEPTANCE_DRAFT.md",
+          "new_blob": "5d2d6488592b9216557579565c56a7ed91e4865d"
+        }
+      ],
+      "substantive_requirements_retained": true,
+      "classification": "UNAPPROVED_DRAFTS",
+      "original_owner_acknowledgment": false,
+      "original_full_rig_hold": "PRESERVED",
+      "composition_is_approval": false,
+      "independent_source_consultation": "technical content preservation; not protected review or original audit"
+    },
+    "interpretation": "Already-merged draft relocation preserves substantive requirements but supplies no approved Full RIG receipt or original-owner acknowledgment. Technical source composition does not clear the hold."
+  },
+  "production": {
+    "candidate_deployment": "NOT_ESTABLISHED",
+    "candidate_quality_design_matrix": "NOT_ESTABLISHED",
+    "candidate_authenticated_natural_session_china_hk": "NOT_ESTABLISHED",
+    "prior_completed_old_renderer_observations_preserved": true,
+    "current_china_available_observation": {
+      "observed_at_utc": "2026-10-19T08:52:11.591Z",
+      "auth_indicator": "Sign out",
+      "asof": "2026-10-16",
+      "renderer": "heatmap.js?v=d76e68a7",
+      "candidate": false
+    },
+    "interpretation": "Existing authenticated production observations show the old daily-close renderer. They do not establish candidate deployment, design acceptance or current-market proof."
+  },
+  "admission": {
+    "fresh_current_head_protected_review": "PENDING",
+    "required_native_ci": "PENDING",
+    "full_rig": "HELD",
+    "original_audit": "EFFECT_UNKNOWN",
+    "merge": "NOT_ADMITTED",
+    "deployment": "NOT_ADMITTED",
+    "candidate_visual_and_product_proof": "NOT_ESTABLISHED"
+  },
+  "preserved_records": {
+    "old_settled_ci_run": 39114047414,
+    "old_failed_pack": "ci-pack-4/reference-integrity",
+    "old_passed_pack": "ci-pack-5",
+    "old_html_browser_check": "COMPLETED_SUCCESSFULLY_NOT_RERUN",
+    "previous_live_ci_run": 39204915491,
+    "previous_live_ci_terminal": "FAILURE_FULLY_CONSUMED",
+    "previous_live_ci_subject": "dada27c2853c066fd5fd0338bc5e06d1eacf4c3c",
+    "previous_live_ci_only_failed_logical_job": "reference-integrity",
+    "previous_live_ci_final_authority_gate": "authority_changed=true; authority_self_excuse_refused",
+    "predecessor_denied_recovery_comment": "NOT_RETRIED_OR_REPACKAGED",
+    "original_audit_duplicate_or_resubmit": false,
+    "source_carrier_replacement": false
+  },
+  "do_not_redo": [
+    "Do not recreate ef873's old MERGE_HEAD.",
+    "Do not rerun original settled39114047414, old passed pack5, completed old-HTML browser check, or completed f5 CI.",
+    "Do not duplicate/resubmit original audit heatmap-quality-audit-20261018-c1-r1 or infer it from another native Job.",
+    "Do not retry/repackage the platform-denied predecessor recovery-comment write.",
+    "Do not create a replacement source carrier, paid worker, controller or browser preview route.",
+    "Do not issue an evidence-only push that needlessly re-executes the unchanged global native suite.",
+    "Native CI39204915491 is now completed and fully consumed, including ci-gate117920926457. Do not rerun unchanged source or re-fetch its consumed pack/gate logs.",
+    "The isolated09:11 China source observation is complete, exited1, wrote no output, and is preserved. No automatic retry.",
+    "New diagnostic observation10:12 completed at8314:1722 Tencent normalized,0qualified,nooutput. Preserve it; no automatic retry.",
+    "Originalsettledf679 normal non-force push is confirmed; do not repeat/resubmit that publication.",
+    "Agent read-only stalled requests were reconciled; no agent patch/test was ever submitted. Do not mistake them for pending mutations or approvals.",
+    "The source-bound 182 restart checks, 8 diagnostic checks and 2 settled declaration checks are completed; no unchanged repetition.",
+    "The completed 10:12 changed-source observation wrote no output; do not automatically rerun it.",
+    "The pair result at ef873 and prior integrated JSON remain immutable historical evidence; later joins require distinct records."
+  ],
+  "next_work": [
+    "Publish the committed live source through the same original branch and consume its fresh native checks.",
+    "Advance the same original pair from 8f752 with the new original settled/live parents.",
+    "Consume current original-owner and protected-review returns without inventing approval.",
+    "Proceed to admitted deployment and actual candidate China/HK visual, authenticated and natural-session proof only when required gates admit it."
+  ]
+}

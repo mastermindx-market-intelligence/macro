@@ -1,0 +1,407 @@
+{
+  "schema": "mastermind.asia_heatmap_current_main_integration.v1",
+  "recorded_at_utc": "2026-10-19T02:36:45.753372+00:00",
+  "operation_id": "china-heatmap-live-stream-20260927",
+  "mission_complete": false,
+  "delivery_state": "BUILT_NOT_PROVEN",
+  "skillpack_pin": "1ffe6b566b9addb58d13893bfb78e8505dce1752",
+  "skillpack_compatibility_checked": true,
+  "original_published_inputs": {
+    "settled_pr": 7193,
+    "settled_head": "00eca5c41ac4a69c03b5e7afe2293039c5105496",
+    "live_pr": 8144,
+    "original_live_head": "96233ea000a73dfff9f707e550622a19386df0ed",
+    "previous_published_live_head": "96c39a8f5cc5e8f7ff93efebda9935d3c6bde2de",
+    "original_rehearsal": "ef873ccfedd1330d0e883736baa4ac2eab40bcd9"
+  },
+  "current_source": {
+    "commit": "a094dc39593c3520d9efcd738199e98e0822d37b",
+    "tree": "862ff8c52ca94119c350e6f6ccc22c1b90f3f109",
+    "parent": "c94c6e170a946c715b34aaa538c6f3b84d195d88",
+    "local_clean": true,
+    "scope_source_tree": "71ec63b71080925c86eeffb69597403a95b90728",
+    "added_paths": 556,
+    "final_china_paths": 945
+  },
+  "main_integration": {
+    "live_commit": "a892bd2b967bbdda25291b65c38db38f2acc6fed",
+    "live_tree": "5857d6ea3788fd7740d47df92deb57bcf5cce0b8",
+    "parents": [
+      "96c39a8f5cc5e8f7ff93efebda9935d3c6bde2de",
+      "b9c81d2f0a09c0d52e476082561ffcbe43a4057b"
+    ],
+    "local_clean": true,
+    "no_merge_head": true
+  },
+  "latest_main_compatibility": {
+    "head": "a094dc39593c3520d9efcd738199e98e0822d37b",
+    "main": "973dc08ad77861affff852479f8473ed22d6f192",
+    "merge_tree_exit": 0,
+    "merge_tree": "f5f735c13fc94c441f59f07242a41c1fb3390053",
+    "working_tree_unchanged": true
+  },
+  "design_source": {
+    "commit": "c94c6e170a946c715b34aaa538c6f3b84d195d88",
+    "tree": "943597a989896d6deb405db597fce24d8ac4818c",
+    "parent": "a892bd2b967bbdda25291b65c38db38f2acc6fed",
+    "renderer_sha256": "589ae2cc7fba51a7c87cd480d5c801cdd278af5b56a9aca3e19b6219d5aa5da8",
+    "local_clean": true
+  },
+  "design_repair": {
+    "parent": "a892bd2b967bbdda25291b65c38db38f2acc6fed",
+    "before_sha256": "98372feb91daf34a8cad63d3bbbc4356db3b3050220b0d2a52be6237ac41819b",
+    "after_sha256": "589ae2cc7fba51a7c87cd480d5c801cdd278af5b56a9aca3e19b6219d5aa5da8",
+    "replacement_count_per_mirror": 8,
+    "icon_source": "templates/dashboard-icons.css .dash-icon-search",
+    "token_compatibility_source": "templates/theme.css canonical radius fallback comment and --font-ui root"
+  },
+  "design_validation": {
+    "blocking_findings_before": 8,
+    "blocking_findings_after": 0,
+    "full_pr_ratcheted_result": {
+      "argv": [
+        "/opt/homebrew/bin/python3.12",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "-"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 6.81,
+      "base": "b9c81d2f0a09c0d52e476082561ffcbe43a4057b",
+      "renderer_sha256": "589ae2cc7fba51a7c87cd480d5c801cdd278af5b56a9aca3e19b6219d5aa5da8",
+      "log_sha256": "6be4241b91cb910b83c923bdea01a44794eedc5be6922a33be0a2bcf923ffee8",
+      "summary": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25377 further pre-existing, non-blocking finding(s) in the estate \u2014 run --mode report for the full census)\ndesign-system ratchet \u2014 mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25377)\n"
+    },
+    "focused_checks": [
+      {
+        "argv": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.3,
+        "summary": ""
+      },
+      {
+        "argv": [
+          "node",
+          "--check",
+          "templates/heatmap.js"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.04,
+        "summary": ""
+      },
+      {
+        "argv": [
+          "node",
+          "--check",
+          "site/heatmap.js"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.04,
+        "summary": ""
+      },
+      {
+        "argv": [
+          "node",
+          "--test",
+          "tests/test_china_heatmap_live_render.cjs"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.14,
+        "summary": "91959ms)\n\u2714 current validated daily baseline returns the normal closed label (0.766709ms)\n\u2714 unverified post-close quote heartbeat declares pending rather than settled (0.488416ms)\n\u2714 quality strip counts nulls rather than laundering them into zero returns (1.003792ms)\n\u2714 quality strip and active map share one live cohort; history stays daily (0.4875ms)\n\u2714 HK liquidity sizing is disclosed, never described as market capitalization (0.438209ms)\n\u2714 same search matches symbols, English and Chinese without a regex or quote fetch (0.441375ms)\n\u2714 new Asia controls retain source state and search on mobile with accessible targets (0.781417ms)\n\u2714 live marks recolor stable map nodes rather than rebuilding the entire treemap (0.389583ms)\n\u2714 legacy HK payloads labeled marketcap still disclose their actual turnover proxy (0.564625ms)\n\u2714 explicit turnover weighting retains identical sector arithmetic without a false cap label (1.183ms)\n\u2714 HK market-pulse clock matches the active delayed cohort rather than its daily baseline (0.598042ms)\n\u2714 overlay double-open while the data request is pending has one DOM owner (0.880792ms)\n\u2714 overlay enters focus and restores the invoking control and prior scroll lock on close (0.581292ms)\n\u2714 closing a pending overlay prevents a late fetch from creating a phantom modal (0.838458ms)\n\u2714 overlay traps Tab and escapes an external label instead of injecting markup (0.62375ms)\n\u2714 legacy Asia label disappears before data loads, including a member refusal on old HTML (0.621209ms)\n\u2139 tests 28\n\u2139 suites 0\n\u2139 pass 28\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 95.496875\n"
+      }
+    ],
+    "final_source_guards": [
+      {
+        "name": "ui-visual-evidence",
+        "argv": [
+          "/opt/homebrew/bin/python3.12",
+          "scripts/check_ui_visual_evidence.py",
+          "--diff-file",
+          "-"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.09,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "summary": ""
+      },
+      {
+        "name": "runtime-style",
+        "argv": [
+          "/opt/homebrew/bin/python3.12",
+          "scripts/check_runtime_style_injection.py"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.51,
+        "log_sha256": "8e6488a745cb002cc9797b78514e92d0577201bd7ab28b1cd139a568b0898245",
+        "summary": "runtime style injection guard OK (230 .js files scanned, 44 injecting, 88 total hits \u2014 all within frozen allowances)\n"
+      }
+    ],
+    "actual_new_browser_visual_matrix": "NOT_ESTABLISHED"
+  },
+  "integration_scope": {
+    "initial_live_main_scope_repair": {
+      "head_parent": "96c39a8f5cc5e8f7ff93efebda9935d3c6bde2de",
+      "main_parent": "b9c81d2f0a09c0d52e476082561ffcbe43a4057b",
+      "source_tree": "5857d6ea3788fd7740d47df92deb57bcf5cce0b8",
+      "paths_only": true,
+      "added_counts": {
+        "bea-gvc-current-descriptive-consumer": 2,
+        "c19-wp22-dhi-traversal": 2,
+        "c19-wp32-integrated-answer-correction-denial-pins": 2,
+        "china-board-breadth": 24,
+        "crypto-assistant-context": 2,
+        "research-price-panel": 2,
+        "washout-turn-organ": 233
+      },
+      "command_path_repair": {
+        "china-board-breadth": [
+          "tests/test_sp500_heatmap_intraday_clock.py"
+        ]
+      },
+      "legacy_jobs_before_sha256": "2c7cec0fd6388e0b651ee17424c7bd824777ba8b5fb5ddb7f4cd215c0c308777",
+      "legacy_jobs_after_sha256": "e744ae147866c36e3881e4b6f162318c075c5dbc228376b1080d784c21b693f3"
+    },
+    "initial_live_ci_validation": {
+      "argv": [
+        "/opt/homebrew/bin/python3.12",
+        "-m",
+        "pytest",
+        "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+        "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+        "-q"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 153.69,
+      "source_tree": "5857d6ea3788fd7740d47df92deb57bcf5cce0b8",
+      "log_sha256": "be2ac191bfe2bf660df7813b8995c5ba2dd75169218c3c2ae9a6c8ba8c8ae18f",
+      "summary": "2 passed, 1 warning in 151.57s (0:02:31)",
+      "log_path": "/tmp/mmx-heatmap-current-main-ci-validation-20261019.log"
+    },
+    "combined_china_scope_carried_to_original_live": {
+      "head_parent": "c94c6e170a946c715b34aaa538c6f3b84d195d88",
+      "source_tree": "862ff8c52ca94119c350e6f6ccc22c1b90f3f109",
+      "combined_source_tree": "71ec63b71080925c86eeffb69597403a95b90728",
+      "job": "china-board-breadth",
+      "added_path_count": 556,
+      "final_path_count": 945,
+      "no_paths_removed": true,
+      "nonpath_manifest_fields_unchanged": true,
+      "manifest_sha256": "95f0a50cc54e5c5cab8749248e4f4bc8a2800b2737e4d068df2bb0678e637e04",
+      "current_live_closure_count": 945,
+      "current_live_missing_paths": [],
+      "verification_elapsed_seconds": 17.3
+    },
+    "combined_scope_new_contract_paths": {
+      "source_tree": "c2c7e212ba1fa8871b8a9cba268809674046ff46",
+      "job": "china-board-breadth",
+      "missing_paths": [
+        "contracts/evidence_foundation/block.v1.schema.json",
+        "contracts/evidence_foundation/recipe.v1.schema.json",
+        "contracts/evidence_foundation/reference.v1.schema.json",
+        "contracts/evidence_foundation/vocabulary.v1.json",
+        "contracts/financial_intelligence_packet.schema.json",
+        "contracts/intelligence_workspace/datapoint_registry.schema.json",
+        "contracts/intelligence_workspace/datapoint_value.schema.json",
+        "contracts/market_os/macro_workspace_snapshot.v1.schema.json",
+        "contracts/market_os/security_state.v1.schema.json",
+        "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json",
+        "contracts/theme_graph/edges.v1.schema.json",
+        "contracts/theme_graph/membership_collection.v2.schema.json",
+        "contracts/theme_graph/ontology_neighborhood.v1.schema.json",
+        "contracts/theme_graph/probation_proposal.v1.schema.json",
+        "contracts/theme_graph/probation_relation_event.v2.schema.json",
+        "contracts/theme_graph/selection_cohort_read.v1.schema.json",
+        "contracts/theme_graph/selection_cohort_source.v1.schema.json",
+        "contracts/theme_graph/theme_state.v1.schema.json",
+        "contracts/theme_graph/theme_state.v2.schema.json",
+        "contracts/theme_graph/theme_state_generation.v1.schema.json",
+        "contracts/theme_graph/theme_state_generation_read.v1.schema.json",
+        "contracts/theme_graph/theme_state_use_read.v1.schema.json",
+        "research/REGIME_RELIABILITY_FACTOR_CROWDING_ADJUDICATION.md",
+        "research/SIGNAL_EPISODE_ATLAS_MASTERPLAN_BY_FABLE.md",
+        "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md",
+        "research/US_BOARD_MEASUREMENT.md",
+        "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md",
+        "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md",
+        "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      ],
+      "closure_count": 945,
+      "elapsed_seconds": 23.03
+    },
+    "combined_ci_validation": {
+      "argv": [
+        "/opt/homebrew/bin/python3.12",
+        "-m",
+        "pytest",
+        "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+        "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+        "-q"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 145.57,
+      "source_tree": "71ec63b71080925c86eeffb69597403a95b90728",
+      "log_sha256": "d67d044a46ba0e0b57ab2ac1ccfc27ee7e850bd81136d1819fe425bc801b7cd1",
+      "summary": "2 passed, 1 warning in 145.00s (0:02:25)"
+    }
+  },
+  "rehearsal": {
+    "commit": "7109774aa6cd4c4e49cfb0b70db2b6114043cdc8",
+    "tree": "75b17b3b129933c5bdeb8bd8bfb95a9629ef21a6",
+    "parents": [
+      "f317d8272dc7a5740f26d10e3572f255b327ee9d",
+      "a094dc39593c3520d9efcd738199e98e0822d37b"
+    ],
+    "source_live_commit": "a094dc39593c3520d9efcd738199e98e0822d37b",
+    "delta_from_ci_qualified_pair": [
+      "site/heatmap.js",
+      "templates/heatmap.js"
+    ],
+    "ci_manifest_and_test_blobs_unchanged": true,
+    "renderer_sha256": {
+      "site/heatmap.js": "589ae2cc7fba51a7c87cd480d5c801cdd278af5b56a9aca3e19b6219d5aa5da8",
+      "templates/heatmap.js": "589ae2cc7fba51a7c87cd480d5c801cdd278af5b56a9aca3e19b6219d5aa5da8"
+    },
+    "original_rehearsal_preserved": true,
+    "settled_preserved": true,
+    "local_clean": true,
+    "no_merge_head": true,
+    "published_release": false
+  },
+  "rehearsal_source_materialization": {
+    "roots": [
+      ".agents",
+      ".claude",
+      ".codex",
+      ".cursor",
+      ".grok",
+      ".warp",
+      "admin",
+      "agentos",
+      "browser",
+      "calibration",
+      "content",
+      "contracts",
+      "finviz_themes",
+      "knowledge",
+      "ops",
+      "orch",
+      "plugins",
+      "properties",
+      "reports",
+      "requirements",
+      "research",
+      "tools",
+      "ux-evidence",
+      "worker"
+    ],
+    "excluded_generated_roots_unchanged": [
+      "data",
+      "site",
+      "mockups",
+      "verify_shots"
+    ],
+    "source_tree_unchanged": "c2c7e212ba1fa8871b8a9cba268809674046ff46",
+    "protected_source_hashes_unchanged": true,
+    "original_sparse_patterns_preserved": true,
+    "added_patterns": [
+      ".agents",
+      ".claude",
+      ".codex",
+      ".cursor",
+      ".grok",
+      ".warp",
+      "admin",
+      "agentos",
+      "browser",
+      "calibration",
+      "content",
+      "contracts",
+      "finviz_themes",
+      "knowledge",
+      "ops",
+      "orch",
+      "plugins",
+      "properties",
+      "reports",
+      "requirements",
+      "research",
+      "tools",
+      "ux-evidence",
+      "worker"
+    ]
+  },
+  "source_preservation": {
+    "caddy_and_restart_blobs_reused_from_retained_rehearsal": true,
+    "caddy_sha256": "8c487fe7708e9aeac360445a9b5e74412cdd29029bc2d4059c8b1d83c7a65864",
+    "restart_sha256": "3ecee8c9706b287be3ec7cd865156b2892cf5b2f8ba5037f31fb697395f03b45",
+    "restart_parent_path_union": 518,
+    "restart_paths_dropped": 0,
+    "restart_extra_paths": 0,
+    "unrelated_ci_job_commands_and_gates_changed": false,
+    "vps_tests_reused_sha256": "947229b0c91ea971a595ea5a3f0c692d226ab0dff2d86ae2b3e5c737bd597c75",
+    "eof_normalization": {
+      "path": "app/china_heatmap_status.py",
+      "before_sha256": "57c2befc51ac131412c5c0e8dc2b15458512c85203df833a47c99b5e543e4ee5",
+      "after_sha256": "faf331b25d48e369cbdf940188ffe7900b702e38c3994cdd9d835f1888f995fc",
+      "ast_unchanged": true
+    }
+  },
+  "settled_current_main_probe": {
+    "settled_head": "00eca5c41ac4a69c03b5e7afe2293039c5105496",
+    "main": "b9c81d2f0a09c0d52e476082561ffcbe43a4057b",
+    "merge_base": "dfdd93a75da34417deb1ad328c79f0bc795cf458",
+    "merge_tree_exit": 0,
+    "tree": "31fcbdac8455fd2c8a4a10bd7c0e6a997e62f8e5",
+    "conflict_paths": [],
+    "conflict_messages": []
+  },
+  "owner_returns": {
+    "checked_at_utc": "2026-10-19T02:33:27Z",
+    "macro_9592_new_comments_since_0100": 0,
+    "macro_7646_new_comments_since_0100": 0,
+    "mastermind_1391_new_comments_since_0100": 0,
+    "sector_central_packet_blobs_on_latest_main": {
+      "research/migration_packets/MP-20261018-sector-central.md": "f23be13d107e0d05be2dd580f2439271da6cae88",
+      "research/migration_packets/MP-20261018-sector-central-capability-crosswalk.md": "fa2b3f3941d3757f9a18545a616003e3aa8428b3",
+      "research/migration_packets/MP-20261018-sector-central-paper-and-acceptance.md": "19fa4a5f9758e22294357cd10dea7520b02aa1bc"
+    }
+  },
+  "original_fabric_audit": {
+    "run_id": "heatmap-quality-audit-20261018-c1-r1",
+    "packet_sha256": "fd87d006643a6ce7b70b3a115ff1cf72b04feeb6d28276701a06d632c4397509",
+    "worker_state": "UNKNOWN",
+    "lineage": "UNVERIFIED",
+    "duplicate_or_resubmission": false,
+    "independent_approval": "NOT_ESTABLISHED",
+    "reported_status": "ACTIVE_OR_WAITING",
+    "effect_state": "EFFECT_UNKNOWN"
+  },
+  "release_gates": {
+    "settled_run_39114047414": "FAILED_REFERENCE_INTEGRITY_REMAINS_BINDING",
+    "new_live_hosted_ci": "CONSUME_NATIVE_RUN_FOR_PUBLISHED_HEAD",
+    "independent_current_head_review": "NOT_ESTABLISHED",
+    "deployment_admission": "NOT_ESTABLISHED",
+    "deployment_performed": false,
+    "authenticated_candidate_proof": "NOT_ESTABLISHED",
+    "natural_advancing_session_proof": "NOT_ESTABLISHED"
+  },
+  "reuse_boundary": "The final local pair differs from its CI-qualified parent only in the two renderer mirrors. Their new house-token/icon bytes match the 28-test-qualified live source; the integrated CI manifest and CI test blobs are unchanged. Earlier 432-Python/168-JavaScript, cache replay and old-HTML browser results remain evidence for their original inputs and were not replayed as new whole-tree proof. The visual-evidence guard is a changed-line ratchet, not an authenticated browser or screenshot-matrix approval.",
+  "do_not_redo": {
+    "original_rehearsal_history_rewritten": false,
+    "old_merge_head_recreated": false,
+    "old_settled_ci_run_rerun": false,
+    "old_ci_pack_5_pass_repeated": false,
+    "old_html_browser_check_repeated": false,
+    "original_audit_duplicated_or_resubmitted": false,
+    "denied_predecessor_recovery_comment_retried": false,
+    "browser_policy_refusal_bypassed": false,
+    "required_checks_weakened": false,
+    "source_entitlement_invented": false
+  }
+}

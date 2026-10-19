@@ -25,15 +25,7 @@
   .hm-head h1 { font-size:23px; margin:0; font-weight:800; letter-spacing:-.015em; }
   .hm-head .sub { color:var(--muted); font-size:12.5px; margin-top:5px; max-width:74ch; line-height:1.5; }
   .hm-foot { color:var(--muted); font-size:11px; margin:14px 2px 0; line-height:1.6; }
-  /* Live-feed badge: populated by live.js when LIVE_FEED_LABEL is set.
-     Hidden (no layout footprint) when the span is empty (no live feed). */
-  .hm-live-badge { display:inline-flex; align-items:center; gap:5px;
-    font-size:11px; color:var(--muted); font-weight:600;
-    background:color-mix(in srgb,#d97706 14%,transparent);
-    border:1px solid color-mix(in srgb,#d97706 35%,transparent);
-    color:var(--ink-warn, var(--warn)); border-radius:7px; padding:3px 9px; margin-top:6px;
-    white-space:nowrap; align-self:flex-end; }
-  .hm-live-badge:empty { display:none; }
+
   /* Hidden live-chg spans that live.js writes to (observer then recolors the tile) */
   .hm-live-chg { display:none !important; }
 
@@ -87,10 +79,10 @@
       <h1>{{ mk.icon }} {{ t(mk.h1_en, mk.h1_zh) }}</h1>
       <div class="sub">{{ t('Winners and losers at a glance — every name a tile, shaded by the move you pick.', '涨跌一目了然 —— 每只个股一个方块，按所选周期着色。') }}<span class="hx-help" tabindex="0" aria-label="How to read this">?<span class="hx-tip">{{ t(mk.sub_en, mk.sub_zh) }}</span></span></div>
     </div>
-    {# live.js populates [data-live-label] with the honest feed caption
-       (e.g. "≈15-min delayed (Polygon Standard / Yahoo)") when a live feed
-       is configured. Hidden via :empty CSS when no feed is wired. #}
-    <span class="hm-live-badge" data-live-label></span>
+    {# The market-data clock is rendered by heatmap.js in .hm-read-src.
+       Do not mount live.js's global mixed-provider label here: a daily
+       China/HK close, a qualified Tushare quote and a delayed Polygon quote
+       must not all carry the same blanket delay/source claim. #}
   </div>
 
 {%- if summary %}
@@ -204,8 +196,9 @@
   <div class="gate-note" id="hm-gate-note">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-    <span>{{ t('The whole map is open — every tile, every timeframe, every sector. What members add is our read on each name: where it sits and what we&#39;d do about it.',
-              '整张热力图完全开放 —— 每个方块、每个周期、每个板块。会员另可看到我们对每只个股的解读：所处位置与应对方式。') }}</span>
+    <span>{% if mk.key == 'hk' %}{{ t('The published market summary is public. The constituent map and delayed quote dataset require an eligible signed-in account.',
+              '已发布的市场摘要可公开阅读。成分股热力图与延迟行情数据需要登录具备权限的账户。') }}{% else %}{{ t('The market map is open, with every available period and sector. Missing observations stay unavailable. Members also receive the research available for each covered name.',
+              '市场热力图开放展示所有可用周期与板块；缺失观测保持不可用。会员还可阅读已覆盖个股的研究。') }}{% endif %}</span>
   </div>
 
   <div class="cta-row" id="hm-cta">
@@ -216,8 +209,9 @@
           total, membership changes nightly and a stale honest total is a
           dishonest one. #}
       {%- set n_txt = "{:,}".format(n_tiles) %}
+      {% if mk.key == 'hk' %}<span class="l-en"><b>Explore the complete Hong Kong constituent map.</b> Account permissions govern the map and quote datasets; the public summary remains accessible.</span><span class="l-zh"><b>探索完整的港股成分股热力图。</b>热力图与行情数据依账户权限开放，公开摘要仍可阅读。</span>{% else %}
       <span class="l-en"><b>The map is free, and stays free.</b> Members get our nightly read on all {{ n_txt }} names here{% if siblings %} — plus the same maps for {{ siblings.en }}{% endif %}.</span>
-      <span class="l-zh"><b>热力图免费，且将持续免费。</b>会员可获取我们对全部 {{ n_txt }} 只个股的每晚解读{% if siblings %} —— 以及{{ siblings.zh }}的同款热力图{% endif %}。</span>
+      <span class="l-zh"><b>热力图免费，且将持续免费。</b>会员可获取我们对全部 {{ n_txt }} 只个股的每晚解读{% if siblings %} —— 以及{{ siblings.zh }}的同款热力图{% endif %}。</span>{% endif %}
     </span>
     <a class="tw-btn" href="plans.html">{{ t('See plans', '查看方案') }}</a>
     <span class="tw-note">{{ t('7-day Pro trial · cancel anytime', 'Pro 7 天试用 · 随时取消') }}</span>

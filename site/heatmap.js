@@ -28,9 +28,12 @@
   var JSON_URL = 'marketdata/sp500_heatmap.json';
   var _dataPromises = {};               // url -> promise (existing snapshot owner)
 
-  // China-only coherence guard. Other market/live/theme contracts stay unchanged.
+  // Asia daily coherence guards. Other market/live/theme contracts stay unchanged.
   function isChinaHeatmapUrl(url) {
     return /(^|\/)china_heatmap\.json$/.test(String(url).split(/[?#]/)[0]);
+  }
+  function isHKHeatmapUrl(url) {
+    return /(^|\/)hk_heatmap\.json$/.test(String(url).split(/[?#]/)[0]);
   }
   function chinaDay(value) {
     if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
@@ -171,7 +174,35 @@
     }
     return stable(data, true);
   }
-  function fetchChinaSnapshot(url) {
+  function validateHKSnapshot(data) {
+    if (!chinaRecord(data) || data.market !== 'hk' || data.map_type !== 'stocks' ||
+        data.source !== 'daily-close' || !chinaDay(data.asof) || !Number.isFinite(chinaGeneration(data.generated_utc)) ||
+        !Array.isArray(data.tiles) || !data.tiles.length || data.n_tiles !== data.tiles.length ||
+        !Array.isArray(data.sectors) || !Array.isArray(data.timeframes)) throw new Error('HK daily snapshot shape invalid');
+    if (data.asof > new Date(Date.now() + 28800000).toISOString().slice(0, 10) ||
+        chinaGeneration(data.generated_utc) > Date.now() + 5 * 60000) throw new Error('HK daily snapshot has a future clock');
+    var symbols = Object.create(null), sectors = Object.create(null), frames = Object.create(null);
+    data.sectors.forEach(function (sector) {
+      if (!chinaRecord(sector) || typeof sector.key !== 'string' || !sector.key.trim() || sectors[sector.key]) throw new Error('HK sector identity invalid');
+      sectors[sector.key] = true;
+    });
+    data.timeframes.forEach(function (tf) {
+      if (!chinaRecord(tf) || typeof tf.key !== 'string' || !tf.key || frames[tf.key] || typeof tf.available !== 'boolean') throw new Error('HK timeframe invalid');
+      frames[tf.key] = true;
+    });
+    if (!frames[data.default_tf]) throw new Error('HK default timeframe invalid');
+    data.tiles.forEach(function (tile) {
+      if (!chinaRecord(tile) || typeof tile.t !== 'string' || !/^[0-9]{4,5}\.HK$/.test(tile.t) || symbols[tile.t] ||
+          !sectors[tile.sector] || !chinaNumber(tile.size) || tile.size <= 0 || !chinaRecord(tile.perf)) throw new Error('HK constituent identity or size invalid');
+      symbols[tile.t] = true;
+      Object.keys(tile.perf).forEach(function (tf) {
+        if (tile.perf[tf] !== null && !chinaNumber(tile.perf[tf])) throw new Error('HK return must be finite numeric or null');
+      });
+    });
+    chinaContentKey(data);
+    return data;
+  }
+  function fetchChinaSnapshot(url, validator) {
     // Bound the entire fetch + JSON read. A hung request cannot occupy the
     // existing refresh owner forever; late resolution cannot commit anything.
     var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
@@ -190,8 +221,8 @@
       var options = { cache: 'no-cache' };
       if (controller) options.signal = controller.signal;
       Promise.resolve().then(function () { return fetch(url, options); })
-        .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
-        .then(validateChinaSnapshot)
+        .then(function (r) { if (!r.ok) { var error = new Error('http ' + r.status); error.status = r.status; throw error; } return r.json(); })
+        .then(validator || validateChinaSnapshot)
         .then(function (data) { finish(null, data); }, function (error) { finish(error); });
     });
   }
@@ -218,8 +249,8 @@
   function loadData(url) {
     url = url || JSON_URL;
     if (!_dataPromises[url]) {
-      if (isChinaHeatmapUrl(url)) {
-        var pending = fetchChinaSnapshot(url).then(function (d) { d._url = url; return d; });
+      if (isChinaHeatmapUrl(url) || isHKHeatmapUrl(url)) {
+        var pending = fetchChinaSnapshot(url, isHKHeatmapUrl(url) ? validateHKSnapshot : validateChinaSnapshot).then(function (d) { d._url = url; return d; });
         _dataPromises[url] = pending;
         pending.catch(function () { if (_dataPromises[url] === pending) delete _dataPromises[url]; });
       } else {
@@ -230,7 +261,7 @@
     }
     return _dataPromises[url];
   }
-  // One existing owner per URL, same ten-minute visible-tab cadence. China
+  // One existing owner per URL, same ten-minute visible-tab cadence. Asia
   // serializes requests and atomically accepts content corrections; legacy
   // market/live/theme refresh semantics are deliberately unchanged.
   var REFRESH_MS = 10 * 60 * 1000;
@@ -241,11 +272,11 @@
     var inFlight = false;
     _refreshers[url] = setInterval(function () {
       if (document.hidden) return;
-      if (isChinaHeatmapUrl(url)) {
+      if (isChinaHeatmapUrl(url) || isHKHeatmapUrl(url)) {
         if (inFlight) return;
         inFlight = true;
         loadData(url).then(function (cur) {
-          return fetchChinaSnapshot(url).then(function (fresh) {
+          return fetchChinaSnapshot(url, isHKHeatmapUrl(url) ? validateHKSnapshot : validateChinaSnapshot).then(function (fresh) {
             if (commitChinaSnapshot(cur, fresh, url)) {
               try { document.dispatchEvent(new CustomEvent('hm-refresh', { detail: { url: url } })); } catch (e) { /* no-op */ }
             }
@@ -269,6 +300,504 @@
         })
         .catch(function () { /* transient — the committed payload keeps serving */ });
     }, REFRESH_MS);
+  }
+
+
+  /* ---- China current-session overlay: one state owner outside daily data ---- */
+  var CHINA_LIVE_URL = 'live/china_heatmap.json';
+  var CHINA_LIVE_RUNNING_MS = 2000;
+  var CHINA_LIVE_IDLE_MS = 30000;
+  var CHINA_LIVE_TIMEOUT_MS = 5000;
+  var CHINA_LIVE_HEARTBEAT_MS = 120000;
+  var CHINA_LIVE_SOURCE_MS = 45000;
+  var CHINA_LIVE_FUTURE_MS = 5000;
+  var _chinaLiveStates = {};
+  var _chinaLivePhases = {
+    pre_open: 'pre_open', morning: 'live', session_break: 'break',
+    afternoon: 'live', closing_auction: 'auction', post_close: 'closed',
+    closed: 'closed', holiday: 'holiday', weekend: 'weekend'
+  };
+  var _chinaLiveActive = {
+    morning: 1, session_break: 1, afternoon: 1,
+    closing_auction: 1, post_close: 1, closed: 1
+  };
+  var _chinaLiveRunning = { morning: 1, afternoon: 1, closing_auction: 1 };
+  var _chinaLiveKeys = [
+    'baseline_asof','breadth','coverage','fallback','generated_at','map_type',
+    'market','phase','quotes','requested','resolved','schema','session_date',
+    'source','source_observed_at','status','usable'
+  ];
+  var _chinaLiveQuoteKeys = [
+    'amount','changePct','high','low','open','prevClose','price','ts','vol'
+  ];
+  function chinaLiveExactKeys(value, expected) {
+    if (!chinaRecord(value)) return false;
+    var keys = Object.keys(value).sort();
+    if (keys.length !== expected.length) return false;
+    for (var i = 0; i < keys.length; i++) if (keys[i] !== expected[i]) return false;
+    return true;
+  }
+  function chinaLiveIso(value) {
+    if (typeof value !== 'string' || !/(?:Z|[+-]\d{2}:\d{2})$/.test(value)) return NaN;
+    return Date.parse(value);
+  }
+  function chinaLiveTickerSet(base) {
+    var out = Object.create(null);
+    if (!base || !Array.isArray(base.tiles)) return out;
+    base.tiles.forEach(function (tile) { out[tile.t] = 1; });
+    return out;
+  }
+  function chinaLiveContentKey(value) {
+    function stable(v, root) {
+      if (v === null || typeof v === 'string' || typeof v === 'boolean') return JSON.stringify(v);
+      if (chinaNumber(v)) return JSON.stringify(v);
+      if (Array.isArray(v)) return '[' + v.map(function (x) { return stable(x, false); }).join(',') + ']';
+      if (!chinaRecord(v)) throw new Error('China live snapshot contains non-JSON data');
+      return '{' + Object.keys(v).sort().filter(function (key) {
+        if (key === '__proto__' || key === 'constructor' || key === 'prototype') throw new Error('Unsafe live key');
+        return !(root && key === 'generated_at');
+      }).map(function (key) { return JSON.stringify(key) + ':' + stable(v[key], false); }).join(',') + '}';
+    }
+    return stable(value, true);
+  }
+  // Bounds on an already server-attested session/phase, not a holiday calendar.
+  // These mirror cn_clock's wall-clock segments; the server still owns which
+  // dates are trading sessions. A stale morning label cannot survive lunch.
+  var _chinaLiveWindows = {
+    morning: [570,690], session_break: [690,780], afternoon: [780,897],
+    closing_auction: [897,900], post_close: [900,915], closed: [915,1440]
+  };
+  function chinaLiveSourceAnchor(payload, nowMs) {
+    var window = _chinaLiveWindows[payload.phase];
+    var day = Date.parse(payload.session_date + 'T00:00:00+08:00');
+    var minute = (nowMs - day) / 60000;
+    if (!window || !isFinite(day) || minute < window[0] || minute >= window[1]) return NaN;
+    if (payload.phase === 'session_break') return day + 690 * 60000;
+    if (payload.phase === 'post_close' || payload.phase === 'closed') return day + 900 * 60000;
+    return nowMs;
+  }
+  function chinaLiveFreshRange(payload, oldest, newest, nowMs) {
+    var anchor = chinaLiveSourceAnchor(payload, nowMs);
+    return isFinite(anchor) && isFinite(oldest) && newest > 0
+      && oldest >= anchor - CHINA_LIVE_SOURCE_MS
+      && newest <= anchor + CHINA_LIVE_FUTURE_MS;
+  }
+  function validateChinaLiveSnapshot(payload, base, nowMs) {
+    nowMs = nowMs == null ? Date.now() : Number(nowMs);
+    if (!chinaLiveExactKeys(payload, _chinaLiveKeys)) throw new Error('China live field allowlist mismatch');
+    if (!base || base.market !== 'china' || base.map_type !== 'stocks' || base.source !== 'daily-close') throw new Error('China live baseline identity mismatch');
+    if (payload.schema !== 'china_heatmap_live.v1' || payload.market !== 'china' || payload.map_type !== 'stocks') throw new Error('China live identity mismatch');
+    if (payload.baseline_asof !== base.asof || !chinaDay(payload.session_date) || payload.baseline_asof > payload.session_date) throw new Error('China live baseline/session mismatch');
+    if (!_chinaLivePhases[payload.phase]) throw new Error('China live phase invalid');
+    var generated = chinaLiveIso(payload.generated_at);
+    if (!isFinite(generated) || generated > nowMs + CHINA_LIVE_FUTURE_MS || nowMs - generated > CHINA_LIVE_HEARTBEAT_MS) throw new Error('China live producer heartbeat stale');
+    if (!Array.isArray(base.tiles) || payload.requested !== base.tiles.length || payload.requested !== base.n_tiles) throw new Error('China live requested count mismatch');
+    if (!chinaRecord(payload.quotes)) throw new Error('China live quotes invalid');
+    var quoteKeys = Object.keys(payload.quotes), allowed = chinaLiveTickerSet(base);
+    if (payload.resolved !== quoteKeys.length || !chinaNumber(payload.coverage) || Math.abs(payload.coverage - quoteKeys.length / payload.requested) > 1e-12) throw new Error('China live coverage mismatch');
+    var adv = 0, dec = 0, flat = 0, maxTs = 0, minTs = Infinity;
+    quoteKeys.forEach(function (ticker) {
+      if (!/^\d{6}\.(?:SS|SZ)$/.test(ticker) || !allowed[ticker]) throw new Error('China live ticker outside baseline');
+      var quote = payload.quotes[ticker];
+      if (!chinaLiveExactKeys(quote, _chinaLiveQuoteKeys)) throw new Error('China live quote shape mismatch');
+      var price = quote.price, prev = quote.prevClose, change = quote.changePct;
+      if (!chinaNumber(price) || price <= 0 || !chinaNumber(prev) || prev <= 0 || !chinaNumber(change)) throw new Error('China live quote price invalid');
+      var expected = (price / prev - 1) * 100;
+      if (Math.abs(change - expected) > 1e-8) throw new Error('China live quote percentage mismatch');
+      if (!chinaNumber(quote.ts) || quote.ts <= 0 || Math.floor(quote.ts) !== quote.ts) throw new Error('China live quote timestamp invalid');
+      ['open','high','low'].forEach(function (key) { if (quote[key] !== null && (!chinaNumber(quote[key]) || quote[key] <= 0)) throw new Error('China live quote range invalid'); });
+      ['vol','amount'].forEach(function (key) { if (quote[key] !== null && (!chinaNumber(quote[key]) || quote[key] < 0)) throw new Error('China live quote activity invalid'); });
+      if (quote.high !== null && quote.low !== null && quote.high < quote.low) throw new Error('China live quote range inverted');
+      maxTs = Math.max(maxTs, quote.ts); minTs = Math.min(minTs, quote.ts);
+      if (change > 0.05) adv++; else if (change < -0.05) dec++; else flat++;
+    });
+    var sourceStamp = payload.source_observed_at === null ? NaN : chinaLiveIso(payload.source_observed_at);
+    if (quoteKeys.length ? (!isFinite(sourceStamp) || sourceStamp !== maxTs) : payload.source_observed_at !== null) throw new Error('China live source clock mismatch');
+    if (payload.source !== null && payload.source !== 'tushare-rt-k' && payload.source !== 'tencent') throw new Error('China live source invalid');
+    if (typeof payload.fallback !== 'boolean' || (payload.source === 'tushare-rt-k' && payload.fallback) || (payload.source === 'tencent' && !payload.fallback)) throw new Error('China live fallback disclosure invalid');
+    if (payload.source === null && (payload.fallback || quoteKeys.length)) throw new Error('Unavailable China source carries quotes');
+    var expectedStatus = payload.source === null ? 'unavailable' : _chinaLivePhases[payload.phase];
+    if (payload.status !== expectedStatus) throw new Error('China live status mismatch');
+    var breadth = payload.breadth, n = adv + dec + flat;
+    if (!chinaRecord(breadth) || breadth.n !== n || breadth.adv !== adv || breadth.dec !== dec || breadth.flat !== flat || !chinaNumber(breadth.pctUp) || Math.abs(breadth.pctUp - (n ? 100 * adv / n : 0)) > 1e-10) throw new Error('China live breadth mismatch');
+    var sourceFresh = chinaLiveFreshRange(payload, minTs, maxTs, nowMs);
+    var expectedUsable = !!payload.source && payload.coverage >= 0.95 && !!_chinaLiveActive[payload.phase] && sourceFresh;
+    if (typeof payload.usable !== 'boolean' || payload.usable !== expectedUsable) throw new Error('China live usability mismatch');
+    chinaLiveContentKey(payload);
+    return JSON.parse(JSON.stringify(payload));
+  }
+  function chinaLiveStateFor(baseUrl) {
+    return _chinaLiveStates[baseUrl] || (_chinaLiveStates[baseUrl] = {
+      base: null, data: null, owner: false, timer: null,
+      inFlight: null, generation: 0, liveUrl: CHINA_LIVE_URL,
+      sourceWatermark: 0, quoteWatermarks: Object.create(null), viewState: null,
+      oldestQuoteTs: Infinity, newestQuoteTs: 0, freshnessData: null
+    });
+  }
+  function chinaLiveViewKey(state) {
+    var meta = chinaLiveMeta(state.base);
+    return meta ? (meta.usable ? 'live:' + meta.phase : 'fallback') : 'daily';
+  }
+  function chinaLiveEmit(state) {
+    try { document.dispatchEvent(new CustomEvent('hm-live-refresh', { detail: { url: state.baseUrl } })); } catch (e) { /* no-op */ }
+  }
+  function chinaLiveNotifyExpiry(state) {
+    var next = chinaLiveViewKey(state), previous = state.viewState;
+    state.viewState = next;
+    if (previous !== null && previous !== next) chinaLiveEmit(state);
+  }
+  function commitChinaLiveSnapshot(baseUrl, payload) {
+    var state = _chinaLiveStates[baseUrl];
+    if (!state || !state.base) throw new Error('China live baseline not registered');
+    var fresh = validateChinaLiveSnapshot(payload, state.base, Date.now());
+    var current = state.data;
+    var freshSource = fresh.source_observed_at === null ? 0 : chinaLiveIso(fresh.source_observed_at);
+    if (current && chinaLiveIso(fresh.generated_at) < chinaLiveIso(current.generated_at)) return false;
+    // An explicit unavailable response is a de-escalation, not a regressive
+    // quote. Keep the quote watermarks so recovery cannot replay an older price.
+    if (freshSource && freshSource < state.sourceWatermark) return false;
+    var tickers = Object.keys(fresh.quotes), marks = state.quoteWatermarks;
+    if (tickers.some(function (ticker) { return marks[ticker] != null && fresh.quotes[ticker].ts < marks[ticker]; })) return false;
+    var changed = !current || chinaLiveContentKey(current) !== chinaLiveContentKey(fresh);
+    var previousView = state.viewState;
+    state.data = fresh; state.freshnessData = null;
+    state.sourceWatermark = Math.max(state.sourceWatermark, freshSource);
+    var allowed = chinaLiveTickerSet(state.base);
+    Object.keys(marks).forEach(function (ticker) { if (!allowed[ticker]) delete marks[ticker]; });
+    tickers.forEach(function (ticker) { marks[ticker] = fresh.quotes[ticker].ts; });
+    state.viewState = chinaLiveViewKey(state);
+    changed = changed || (previousView !== null && previousView !== state.viewState);
+    if (changed) chinaLiveEmit(state);
+    return changed;
+  }
+  function chinaLiveDelay(state) {
+    var data = state.data;
+    return data && _chinaLiveRunning[data.phase]
+      ? CHINA_LIVE_RUNNING_MS : CHINA_LIVE_IDLE_MS;
+  }
+  function chinaLiveFetch(url, generation) {
+    var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    return new Promise(function (resolve, reject) {
+      var finished = false;
+      function finish(error, data) {
+        if (finished) return;
+        finished = true;
+        clearTimeout(timeoutId);
+        if (error) reject(error); else resolve(data);
+      }
+      var timeoutId = setTimeout(function () {
+        finish(new Error('China live request timed out'));
+        if (controller) { try { controller.abort(); } catch (e) { /* complete */ } }
+      }, CHINA_LIVE_TIMEOUT_MS);
+      var sep = url.indexOf('?') >= 0 ? '&' : '?';
+      var requestUrl = url + sep + 'hm_live=' + Date.now() + '-' + generation;
+      var options = { cache: 'no-store' };
+      if (controller) options.signal = controller.signal;
+      Promise.resolve().then(function () { return fetch(requestUrl, options); })
+        .then(function (response) { if (!response.ok) throw new Error('http ' + response.status); return response.json(); })
+        .then(function (data) { finish(null, data); }, function (error) { finish(error); });
+    });
+  }
+  function chinaLiveSchedule(state, delay) {
+    if (state.timer !== null) return;
+    state.timer = setTimeout(function () {
+      state.timer = null;
+      chinaLiveTick(state);
+    }, delay);
+  }
+  function chinaLiveTick(state) {
+    if (!state.owner) return;
+    if (document.hidden) { chinaLiveSchedule(state, CHINA_LIVE_IDLE_MS); return; }
+    chinaLiveNotifyExpiry(state);
+    if (state.inFlight !== null) return;
+    var generation = ++state.generation;
+    state.inFlight = generation;
+    chinaLiveFetch(state.liveUrl, generation).then(function (payload) {
+      if (state.inFlight !== generation) return;
+      commitChinaLiveSnapshot(state.baseUrl, payload);
+    }).catch(function () { /* retain accepted state */ }).then(function () {
+      if (state.inFlight !== generation) return;
+      state.inFlight = null;
+      chinaLiveNotifyExpiry(state);
+      chinaLiveSchedule(state, chinaLiveDelay(state));
+    });
+  }
+  function startChinaLiveRefresh(base) {
+    if (!base || base.market !== 'china' || base.map_type !== 'stocks') return null;
+    var baseUrl = base._url || 'marketdata/china_heatmap.json';
+    var state = chinaLiveStateFor(baseUrl);
+    state.base = base;
+    state.baseUrl = baseUrl;
+    var configured = (typeof window !== 'undefined' && window.CHINA_HEATMAP_LIVE_URL) || CHINA_LIVE_URL;
+    state.liveUrl = configured;
+    if (!state.owner) {
+      state.owner = true;
+      chinaLiveSchedule(state, 0);
+    }
+    return state;
+  }
+  function chinaLiveMeta(base) {
+    if (!base) return null;
+    var state = _chinaLiveStates[base._url || 'marketdata/china_heatmap.json'];
+    if (!state || !state.data || state.data.baseline_asof !== base.asof) return null;
+    var generated = chinaLiveIso(state.data.generated_at), now = Date.now();
+    if (!isFinite(generated) || generated > now + CHINA_LIVE_FUTURE_MS || now - generated > CHINA_LIVE_HEARTBEAT_MS) return null;
+    if (state.data.usable) {
+      // O(n) once per accepted snapshot; all tile/sector/hover reads are O(1).
+      if (state.freshnessData !== state.data) {
+        state.oldestQuoteTs = Infinity; state.newestQuoteTs = 0;
+        Object.keys(state.data.quotes).forEach(function (ticker) {
+          var ts = state.data.quotes[ticker].ts;
+          state.oldestQuoteTs = Math.min(state.oldestQuoteTs, ts);
+          state.newestQuoteTs = Math.max(state.newestQuoteTs, ts);
+        });
+        state.freshnessData = state.data;
+      }
+      if (!chinaLiveFreshRange(state.data, state.oldestQuoteTs, state.newestQuoteTs, now)) return null;
+    }
+    return state.data;
+  }
+  function chinaLiveValue(base, tile, timeframe) {
+    if (timeframe !== '1D') return tile && tile.perf ? tile.perf[timeframe] : null;
+    var meta = chinaLiveMeta(base);
+    if (!meta || !meta.usable) return tile && tile.perf ? tile.perf[timeframe] : null;
+    var quote = meta.quotes && meta.quotes[tile.t];
+    return quote ? quote.changePct : null;
+  }
+
+  /* HK quote marks reuse the existing one-minute member quote sidecar.
+     The server projects lib.hk_calendar; the browser never invents holidays.
+     Source freshness is distinct from a newly generated heartbeat. */
+  var _hkLiveStates = Object.create(null);
+  var HK_LIVE_URL = 'live/hk_heatmap.json', HK_LIVE_POLL_MS = 60000;
+  var HK_LIVE_MAX_AGE_MS = 12 * 60000;
+  var HK_VENDOR_DELAY_MS = 15 * 60000, HK_SOURCE_SLACK_MS = 20 * 60000;
+  function hkLiveDay(ts) { return new Date(ts + 28800000).toISOString().slice(0, 10); }
+  function hkLiveMinute(ts) {
+    var d = new Date(ts + 28800000);
+    return d.getUTCHours() * 60 + d.getUTCMinutes();
+  }
+  function hkLiveDate(value) {
+    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    var n = Date.parse(value + 'T00:00:00Z');
+    return Number.isFinite(n) && new Date(n).toISOString().slice(0, 10) === value;
+  }
+  function hkSessionPhase(session, now) {
+    if (!session || hkLiveDay(now) !== session.calendar_date) return 'expired';
+    if (!session.is_session) return session.phase;
+    var m = hkLiveMinute(now), close = session.close_minute;
+    if (m < 570) return 'pre_open';
+    if (m >= close) return 'post_close';
+    if (m >= close - 10) return 'closing_auction';
+    if (m < 720) return 'morning';
+    if (m < 780) return 'session_break';
+    return 'afternoon';
+  }
+  function hkSessionContract(raw, snapshotStamp, now) {
+    if (!raw || raw.schema !== 'hk_heatmap_session.v1' || raw.is_session !== true ||
+        !hkLiveDate(raw.calendar_date) || !hkLiveDate(raw.session_date) ||
+        !hkLiveDate(raw.previous_session) || !hkLiveDate(raw.settled_asof) ||
+        (raw.close_minute !== 730 && raw.close_minute !== 970) ||
+        raw.calendar_date !== hkLiveDay(snapshotStamp) || raw.calendar_date !== hkLiveDay(now) ||
+        raw.session_date !== raw.calendar_date || raw.previous_session >= raw.session_date ||
+        raw.settled_asof > raw.session_date ||
+        ['morning','session_break','afternoon','closing_auction','post_close'].indexOf(raw.phase) < 0 ||
+        raw.phase !== hkSessionPhase(raw, snapshotStamp)) return null;
+    return { schema: raw.schema, calendar_date: raw.calendar_date, session_date: raw.session_date,
+      previous_session: raw.previous_session, settled_asof: raw.settled_asof,
+      close_minute: raw.close_minute, is_session: true, phase: raw.phase };
+  }
+  function hkSourceQualified(ts, session, now) {
+    if (!Number.isFinite(ts) || ts <= 0 || ts > now + 5000 || !session ||
+        hkSessionPhase(session, now) === 'expired' || hkSessionPhase(session, now) === 'pre_open' ||
+        !session.is_session || hkLiveDay(ts) !== session.session_date) return false;
+    var midnight = Date.parse(session.session_date + 'T00:00:00+08:00');
+    var open = midnight + 570 * 60000, noon = midnight + 720 * 60000;
+    var afternoon = midnight + 780 * 60000, close = midnight + session.close_minute * 60000;
+    if (ts < open || ts > close || (session.close_minute === 970 && ts > noon && ts < afternoon)) return false;
+    // Preserve a delayed morning observation through the lunch break and the
+    // first delayed afternoon interval. Do not age against non-trading minutes.
+    var expected = Math.max(open, Math.min(now - HK_VENDOR_DELAY_MS, close));
+    if (session.close_minute === 970 && expected > noon && expected < afternoon) expected = noon;
+    var oldest = expected - HK_SOURCE_SLACK_MS;
+    // Once the delayed closing-auction window is available, a 15:46 regular
+    // print cannot become an accepted closing mark under a new heartbeat.
+    if (now >= close + HK_VENDOR_DELAY_MS) oldest = Math.max(oldest, close - 10 * 60000);
+    return ts >= oldest;
+  }
+  function hkLiveProject(snapshot, base, now) {
+    if (!base || base.market !== 'hk' || base.map_type !== 'stocks' ||
+        !snapshot || snapshot.baseline_asof !== base.asof ||
+        !Array.isArray(base.tiles) || !base.tiles.length || !hkLiveDate(base.asof) ||
+        snapshot.source !== 'snapshot' || !snapshot.quotes ||
+        typeof snapshot.quotes !== 'object' || Array.isArray(snapshot.quotes) ||
+        !Number.isFinite(snapshot.ts) || snapshot.ts > now + 5000 ||
+        now - snapshot.ts > HK_LIVE_MAX_AGE_MS) return null;
+    var calendar = hkSessionContract(snapshot.session, snapshot.ts, now);
+    // Only the adjacent previous session may supply the structural baseline.
+    // Once the settled daily publisher catches up, it resumes price authority.
+    if (!calendar || base.asof !== calendar.previous_session) return null;
+    var quotes = Object.create(null), allowed = Object.create(null), newest = 0, oldest = Infinity, resolved = 0;
+    base.tiles.forEach(function (tile) {
+      var symbol = tile && tile.t;
+      if (typeof symbol !== 'string' || !/^[0-9]{4,5}\.HK$/.test(symbol) || allowed[symbol]) return;
+      allowed[symbol] = true;
+      var q = snapshot.quotes[symbol];
+      if (!q || q.source !== 'yahoo' || q.basis !== 'regular' ||
+          !hkSourceQualified(q.ts, calendar, now) || q.ts > snapshot.ts + 5000 ||
+          !Number.isFinite(q.price) || q.price <= 0 ||
+          !Number.isFinite(q.prevClose) || q.prevClose <= 0 || !Number.isFinite(q.changePct)) return;
+      var pc = (q.price / q.prevClose - 1) * 100;
+      if (!Number.isFinite(pc) || Math.abs(pc - q.changePct) > 0.00001 || pc < -99 || pc > 500) return;
+      quotes[symbol] = { ts: q.ts, changePct: pc };
+      newest = Math.max(newest, q.ts); oldest = Math.min(oldest, q.ts); resolved++;
+    });
+    if (!resolved) return null;
+    return { baselineAsOf: base.asof, asof: calendar.session_date, generatedAt: snapshot.ts,
+      quotes: quotes, resolved: resolved, requested: base.tiles.length,
+      usable: resolved / base.tiles.length >= 0.95, newestQuoteTs: newest,
+      oldestQuoteTs: oldest, session: calendar };
+  }
+  function hkLiveMeta(base) {
+    var state = base && _hkLiveStates[base._url || 'marketdata/hk_heatmap.json'];
+    var m = state && state.data, now = Date.now();
+    // The accepted cohort is all-or-nothing. Two extrema suffice to expire it
+    // in O(1) per value read; never perform an O(names²) scan on every paint.
+    return m && m.baselineAsOf === base.asof && m.generatedAt <= now + 5000 &&
+      now - m.generatedAt <= HK_LIVE_MAX_AGE_MS &&
+      hkSourceQualified(m.oldestQuoteTs, m.session, now) &&
+      hkSourceQualified(m.newestQuoteTs, m.session, now) ? m : null;
+  }
+  function hkLiveValue(base, tile, timeframe) {
+    if (timeframe !== '1D') return tile && tile.perf ? tile.perf[timeframe] : null;
+    var m = hkLiveMeta(base);
+    if (!m || !m.usable) return tile && tile.perf ? tile.perf[timeframe] : null;
+    var q = tile && m.quotes[tile.t];
+    return q ? q.changePct : null;
+  }
+  /* A newer asof/generation is not proof of a measured daily return.
+     The Oct 13 production China JSON had 0/1720 valid 1D observations
+     while the header still read "Daily close". Preserve the real market
+     date, but never label an empty heatmap as settled/current. Shared by
+     compact, full and embedded maps; no new quote/data state owner. */
+  function dailyIntegrityDescriptor(base) {
+    if (!base || (base.market !== 'china' && base.market !== 'hk')
+        || base.map_type !== 'stocks' || !Array.isArray(base.tiles)) return null;
+    var required = base.market === 'china' && base.observation_coverage
+      && Number.isSafeInteger(base.observation_coverage.membership_count)
+      && base.observation_coverage.membership_count > 0
+      ? base.observation_coverage.membership_count : base.tiles.length;
+    if (!required) return {
+      dot: 'degraded',
+      en: 'Daily returns unavailable · no constituent observations',
+      zh: '日线涨跌不可用 · 暂无成分股观测'
+    };
+    var actual = base.tiles.reduce(function (n, tile) {
+      var value = tile && tile.perf && tile.perf['1D'];
+      return n + (typeof value === 'number' && isFinite(value) ? 1 : 0);
+    }, 0);
+    if (base.market === 'china') {
+      var evidence = base.observation_coverage && base.observation_coverage.timeframes
+        && base.observation_coverage.timeframes['1D'];
+      if (!evidence || !Number.isSafeInteger(evidence.valid_count)
+          || !Number.isSafeInteger(evidence.denominator)
+          || evidence.denominator !== required
+          || evidence.valid_count < 0) {
+        actual = 0; // unverified historical metadata never certifies 1D
+      } else {
+        actual = Math.min(actual, evidence.valid_count);
+      }
+    }
+    if (actual / required >= 0.95) return null;
+    return {
+      dot: 'degraded',
+      en: 'Daily returns unavailable · ' + actual + '/' + required
+        + ' observed · ' + (base.asof || '—'),
+      zh: '日线涨跌不可用 · 有效观测 ' + actual + '/' + required
+        + ' · ' + (base.asof || '—')
+    };
+  }
+  function hkLiveDescriptor(base) {
+    if (!base || base.market !== 'hk' || base.map_type !== 'stocks') return null;
+    var m = hkLiveMeta(base);
+    if (!m) return dailyIntegrityDescriptor(base) || {
+      dot: '', en: 'Daily close · ' + base.asof + ' · ' + base.n_tiles + ' names',
+      zh: '日线收盘 · ' + base.asof + ' · ' + base.n_tiles + ' 只'
+    };
+    if (!m.usable) {
+      var hkDailyOK = !dailyIntegrityDescriptor(base);
+      return { dot: 'degraded',
+        en: 'HK quotes incomplete · ' + m.resolved + '/' + m.requested
+          + (hkDailyOK ? ' · Daily fallback ' : ' · Daily unavailable ') + base.asof,
+        zh: '港股行情不完整 · ' + m.resolved + '/' + m.requested
+          + (hkDailyOK ? ' · 回退日线 ' : ' · 日线不可用 ') + base.asof };
+    }
+    var stamp = new Date(m.newestQuoteTs).toLocaleTimeString('en-GB', {
+      timeZone: 'Asia/Hong_Kong', hour: '2-digit', minute: '2-digit', hour12: false
+    });
+    var phase = hkSessionPhase(m.session, Date.now());
+    var en = phase === 'post_close' ? 'HK provisional close · delayed · not settled'
+      : phase === 'session_break' ? 'HK lunch break · delayed' : 'HK delayed quotes';
+    var zh = phase === 'post_close' ? '港股临时收盘行情 · 延迟 · 尚未确认收盘'
+      : phase === 'session_break' ? '港股午间休市 · 延迟行情' : '港股延迟行情';
+    return { dot: 'delayed', breadth: null,
+      en: en + ' · ' + m.asof + ' ' + stamp + ' HKT · ' + m.resolved + '/' + m.requested + ' · 1D only',
+      zh: zh + ' · ' + m.asof + ' ' + stamp + ' 香港时间 · ' + m.resolved + '/' + m.requested + ' · 仅1日' };
+  }
+  function startHKLiveRefresh(base) {
+    if (!base || base.market !== 'hk' || base.map_type !== 'stocks') return;
+    var url = base._url || 'marketdata/hk_heatmap.json';
+    var st = _hkLiveStates[url] || (_hkLiveStates[url] = {
+      data: null, owner: false, generation: 0, inFlight: false,
+      emittedKey: 'daily'
+    });
+    st.base = base;
+    if (st.owner) return;
+    st.owner = true;
+    function viewKey() {
+      var m = hkLiveMeta(st.base);
+      return m ? m.asof + ':' + hkSessionPhase(m.session, Date.now()) + ':' + m.usable + ':' + m.resolved + ':' +
+        Object.keys(m.quotes).sort().map(function (s) {
+          return s + ':' + m.quotes[s].ts + ':' + m.quotes[s].changePct.toFixed(4);
+        }).join(',') : 'daily';
+    }
+    function publishViewChange() {
+      var nextKey = viewKey();
+      if (st.emittedKey === nextKey) return;
+      st.emittedKey = nextKey;
+      try { document.dispatchEvent(new CustomEvent('hm-live-refresh', { detail: { url: url } })); }
+      catch (e) { /* older browser */ }
+    }
+    function loop() {
+      // A quote can expire even if the next HTTP request fails. Compare
+      // against the last PAINTED state, not the already-expired value at tick.
+      publishViewChange();
+      if (document.hidden) { setTimeout(loop, HK_LIVE_POLL_MS); return; }
+      if (st.inFlight) return;
+      st.inFlight = true;
+      var generation = ++st.generation;
+      // Reuse the shared bounded no-store transport; no new source endpoint.
+      chinaLiveFetch(HK_LIVE_URL, generation).then(function (raw) {
+        var next = hkLiveProject(raw, st.base, Date.now()), prev = st.data;
+        if (next && prev && prev.baselineAsOf === next.baselineAsOf) {
+          if (next.asof < prev.asof || next.generatedAt < prev.generatedAt) return;
+          if (next.asof === prev.asof && Object.keys(next.quotes).some(function (s) {
+            return prev.quotes[s] && next.quotes[s].ts < prev.quotes[s].ts;
+          })) return;
+        }
+        st.data = next;
+      }).catch(function () { /* retain valid prior quote until its clock expires */ })
+        .then(function () {
+          if (st.generation !== generation) return;
+          st.inFlight = false;
+          publishViewChange();
+          setTimeout(loop, HK_LIVE_POLL_MS);
+        });
+    }
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) publishViewChange();
+    });
+    setTimeout(loop, 0);
   }
 
   /* ---- per-timeframe colour-scale floors (set the bin widths). 1D keeps the
@@ -472,28 +1001,128 @@
     });
     return sectors;
   }
-  function medianPc(tiles, tf) {
-    var a = []; tiles.forEach(function (t) { var v = t.perf[tf]; if (v != null && !isNaN(v)) a.push(v); });
+  function heatmapValue(data, tile, tf) {
+    if (data && data.market === 'china') return chinaLiveValue(data, tile, tf);
+    if (data && data.market === 'hk') return hkLiveValue(data, tile, tf);
+    return tile && tile.perf ? tile.perf[tf] : null;
+  }
+  function medianPc(data, tiles, tf) {
+    var a = []; tiles.forEach(function (t) { var v = heatmapValue(data, t, tf); if (v != null && !isNaN(v)) a.push(v); });
     if (!a.length) return null;
     a.sort(function (x, y) { return x - y; });
     var m = a.length >> 1; return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2;
   }
-  function weightedPc(tiles, tf) {
+  function weightedPc(data, tiles, tf) {
     var num = 0, den = 0;
-    tiles.forEach(function (t) { var v = t.perf[tf]; if (v != null && !isNaN(v)) { num += (t.size || 0) * v; den += (t.size || 0); } });
+    tiles.forEach(function (t) { var v = heatmapValue(data, t, tf); if (v != null && !isNaN(v)) { num += (t.size || 0) * v; den += (t.size || 0); } });
     return den > 0 ? num / den : null;
   }
   function sectorAgg(data, tiles, tf) {
-    return data.size_basis === 'marketcap' ? weightedPc(tiles, tf) : medianPc(tiles, tf);
+    return data.size_basis === 'marketcap' ? weightedPc(data, tiles, tf) : medianPc(data, tiles, tf);
   }
-  // Same ±0.05% dead-band as computeSummary — the two used to disagree (strict zero
-  // here, banded there), so the status strip and the breadth card printed adv/dec
-  // pairs a couple of names apart for the same timeframe on the same screen.
-  function breadth(tiles, tf) {
+  // Same ±0.05% dead-band as computeSummary — every surface reads the same
+  // accepted value, including China current-session coverage/null semantics.
+  function breadth(data, tiles, tf) {
     var adv = 0, dec = 0;
-    tiles.forEach(function (t) { var v = t.perf[tf]; if (v > 0.05) adv++; else if (v < -0.05) dec++; });
+    tiles.forEach(function (t) { var v = heatmapValue(data, t, tf); if (v > 0.05) adv++; else if (v < -0.05) dec++; });
     return { adv: adv, dec: dec };
   }
+  function chinaLiveDescriptor(data) {
+    if (!data || data.market !== 'china') return null;
+    var meta = chinaLiveMeta(data);
+    if (!meta) return dailyIntegrityDescriptor(data) || {
+      state: 'daily', dot: '',
+      en: 'Daily close · ' + (data.asof || '—'),
+      zh: '日线收盘 · ' + (data.asof || '—'), breadth: null
+    };
+    var sourceDate = meta.source_observed_at ? new Date(meta.source_observed_at) : null;
+    var clock = sourceDate && !isNaN(sourceDate.getTime())
+      ? sourceDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Shanghai' }) + ' CST'
+      : '— CST';
+    var coverage = meta.resolved + '/' + meta.requested;
+    var fallback = meta.fallback ? ' · fallback feed' : '';
+    var fallbackZh = meta.fallback ? ' · 备用行情源' : '';
+    if (!meta.usable) {
+      var dailyOK = !dailyIntegrityDescriptor(data);
+      // A vendor may emit an after-hours 16:14 heartbeat without a lawful
+      // 15:00 trade time. After filtering, zero source-current quotes must
+      // never look like a completed EOD; retain the last available daily pair.
+      var pendingClose = (meta.phase === 'post_close' || meta.phase === 'closed')
+        && meta.baseline_asof !== meta.session_date;
+      if (pendingClose) return {
+        state: 'degraded', dot: 'degraded',
+        en: 'Post-close pending · quotes unverified · ' + coverage
+          + (dailyOK ? ' · Last available daily close ' : ' · Daily unavailable ') + (data.asof || '—'),
+        zh: '收盘数据待确认 · 行情未经验证 · ' + coverage
+          + (dailyOK ? ' · 上次可用日线 ' : ' · 日线不可用 ') + (data.asof || '—'), breadth: null
+      };
+      return {
+        state: 'degraded', dot: 'degraded',
+        en: 'Live feed degraded · ' + coverage
+          + (dailyOK ? ' · Daily fallback ' : ' · Daily unavailable ') + (data.asof || '—'),
+        zh: '实时行情降级 · ' + coverage
+          + (dailyOK ? ' · 回退日线 ' : ' · 日线不可用 ') + (data.asof || '—'), breadth: null
+      };
+    }
+    var phase = meta.phase, state = 'live', enPhase = 'Live', zhPhase = '实时';
+    if (phase === 'session_break') { state = 'break'; enPhase = 'Lunch break'; zhPhase = '午间休市'; }
+    else if (phase === 'closing_auction') { state = 'auction'; enPhase = 'Closing auction'; zhPhase = '收盘集合竞价'; }
+    else if (phase === 'post_close' || phase === 'closed') {
+      state = 'closed';
+      // Source-stamped 15:00 prints may precede the canonical settled-close
+      // publisher. Do NOT describe a previous-session baseline as settled.
+      // Client trusts the server-attested session/phase/coverage and keeps
+      // using the single existing live overlay. No separate quote owner.
+      var provisional = meta.baseline_asof !== meta.session_date;
+      enPhase = provisional ? 'Provisional post-close · not yet settled' : 'Market closed';
+      zhPhase = provisional ? '盘后临时行情 · 尚未确认收盘' : '已收盘';
+    }
+    else if (phase === 'morning') { enPhase = 'Live morning'; zhPhase = '上午实时'; }
+    else if (phase === 'afternoon') { enPhase = 'Live afternoon'; zhPhase = '下午实时'; }
+    return {
+      state: state, dot: state,
+      en: enPhase + fallback + ' · ' + clock + ' · ' + coverage,
+      zh: zhPhase + fallbackZh + ' · ' + clock + ' · ' + coverage,
+      breadth: meta.breadth
+    };
+  }
+  /* HEATMAP_QUALITY_V1_START */
+  // A projection of the SAME accepted values as the map, never a second feed.
+  function heatmapQualityModel(data, tf) {
+    var tiles = data && Array.isArray(data.tiles) ? data.tiles : [];
+    var meta = tf === '1D' && data
+      ? (data.market === 'china' ? chinaLiveMeta(data) : data.market === 'hk' ? hkLiveMeta(data) : null) : null;
+    var active = !!(meta && meta.usable), valid = 0;
+    tiles.forEach(function (tile) {
+      var v = heatmapValue(data, tile, tf);
+      if (typeof v === 'number' && isFinite(v)) valid++;
+    });
+    var total = tiles.length, fraction = total ? valid / total : 0;
+    var state = tf !== '1D' ? 'historical' : fraction < 0.95 ? 'degraded' : active ? 'live' : 'daily';
+    if (active && state === 'live') {
+      if (data.market === 'hk') state = 'delayed';
+      else if (meta.phase === 'session_break') state = 'break';
+      else if (meta.phase === 'post_close' || meta.phase === 'closed') state = meta.baseline_asof !== meta.session_date ? 'provisional' : 'closed';
+    }
+    // Older HK payloads inherited the helper's marketcap enum even though
+    // their explicit label and units are turnover. Keep legacy data honest.
+    var hkTurnover = data && data.market === 'hk' && (data.size_measure === 'average_daily_turnover' || /turnover/i.test(data.size_label_en || ''));
+    var capitalized = data && data.size_basis === 'marketcap' && !hkTurnover;
+    return { total: total, valid: valid, missing: total - valid, fraction: fraction,
+      observation: active ? (meta.session_date || meta.asof) : (data && data.asof || '—'), state: state,
+      size_en: hkTurnover ? 'Average daily turnover · liquidity proxy' : capitalized ? 'Market capitalization' : (data && data.size_label_en || 'Reported tile size'),
+      size_zh: hkTurnover ? '日均成交额 · 流动性代理' : capitalized ? '市值' : (data && data.size_label_zh || '已报告的面积依据'),
+      source_en: active ? (data.market === 'hk' ? 'Delayed HK quote cohort' : meta.source || 'Qualified current-session quotes') : 'Paired daily observations',
+      source_zh: active ? (data.market === 'hk' ? '港股延迟行情集合' : meta.source || '本交易日合格行情') : '配对日线观测'
+    };
+  }
+  function heatmapMatchesQuery(tile, query) {
+    var q = String(query || '').trim().toLowerCase();
+    if (!q) return true;
+    return [tile && tile.t, tile && tile.name, tile && tile.name_zh].join(' ').toLowerCase().indexOf(q) >= 0;
+  }
+  /* HEATMAP_QUALITY_V1_END */
+
   function sectorLabels(data) {
     var m = {}; (data.sectors || []).forEach(function (s) { m[s.key] = { en: s.en, zh: s.zh }; }); return m;
   }
@@ -769,7 +1398,7 @@
   function cardBaseHtml(data, t) {
     var labs = sectorLabels(data);
     var lab = labs[t.sector] || { en: t.sector, zh: t.sector };
-    var cur = t.perf[data._tf];
+    var cur = heatmapValue(data, t, data._tf);
     var cls = cur == null ? '' : (cur >= 0 ? 'up' : 'dn');
     var cap = realSize(data) ? fmtCap(t.size, data.currency) : '';
     var px = t.px != null ? (CUR_SYM[data.currency] || '$')
@@ -778,7 +1407,7 @@
     var strip = '';
     (data.timeframes || []).forEach(function (tf) {
       if (CARD_TFS.indexOf(tf.key) === -1) return;
-      var v = t.perf[tf.key];
+      var v = heatmapValue(data, t, tf.key);
       if (v == null || isNaN(v)) return;
       var kl = CARD_TF_LAB[tf.key] || [tf.en, tf.zh];
       strip += '<div class="hm-c-m"><span class="k">' + L(kl[0], kl[1]) + '</span>'
@@ -1014,14 +1643,14 @@
     var lab = labs[sectorName] || { en: sectorName, zh: sectorName };
     var tf = data._tf, edges = edgesFor(tf), pal = binPalette();
     var agg = sectorAgg(data, tiles, tf);
-    var br = breadth(tiles, tf);
+    var br = breadth(data, tiles, tf);
     var ttl = subName
       ? L(esc(lab.en) + ' <span class="sub">— ' + esc(subName) + '</span>', esc(lab.zh) + ' <span class="sub">— ' + esc(indZh(subName)) + '</span>')
       : L(esc(lab.en), esc(lab.zh));
     var rows = tiles.slice().sort(function (a, b) { return (b.size || 0) - (a.size || 0); });
     var cap = 18, more = Math.max(0, rows.length - cap), body = '';
     rows.slice(0, cap).forEach(function (t) {
-      var pc = t.perf[tf], c = pal[binIndex(pc, edges)];
+      var pc = heatmapValue(data, t, tf), c = pal[binIndex(pc, edges)];
       var rnm = (isZh() && t.name_zh) ? t.name_zh : t.name;
       body += '<div class="hm-mem-row">'
         + '<span class="hm-mem-pc" style="background-color:' + rgb(c) + ';color:' + fgFor(c) + '">' + fmtPc(pc) + '</span>'
@@ -1043,23 +1672,23 @@
     var lab = labs[tile.sector] || { en: tile.sector, zh: tile.sector };
     var tf = data._tf, edges = edgesFor(tf), pal = binPalette();
     var members = (tile.members || []).map(function (m) { return { t: m.t, perf: m.perf || {} }; });
-    var br = breadth(members, tf);
+    var br = breadth(data, members, tf);
     var subLabel = tile.name + (tile.desc && tile.desc !== tile.name ? ' · ' + tile.desc : '');
     var ttl = L(esc(lab.en) + ' <span class="sub">— ' + esc(subLabel) + '</span>',
                 esc(lab.zh) + ' <span class="sub">— ' + esc(subLabel) + '</span>');
     var rows = members.slice().sort(function (a, b) {
-      var av = a.perf[tf], bv = b.perf[tf];
+      var av = heatmapValue(data, a, tf), bv = heatmapValue(data, b, tf);
       return (bv == null ? -1e9 : bv) - (av == null ? -1e9 : av);
     });
     var cap = 22, more = Math.max(0, rows.length - cap), body = '';
     rows.slice(0, cap).forEach(function (m) {
-      var pc = m.perf[tf], c = pal[binIndex(pc, edges)];
+      var pc = heatmapValue(data, m, tf), c = pal[binIndex(pc, edges)];
       body += '<div class="hm-mem-row">'
         + '<span class="hm-mem-pc" style="background-color:' + rgb(c) + ';color:' + fgFor(c) + '">' + fmtPc(pc) + '</span>'
         + '<span class="hm-mem-t">' + esc(m.t) + '</span></div>';
     });
     if (more) body += '<div class="hm-mem-more">+' + more + ' ' + L('more', '更多') + '</div>';
-    memShow(key, memShellHtml(ttl, tile.perf[tf], members.length, br, 'members', '成员', body), cx, cy);
+    memShow(key, memShellHtml(ttl, heatmapValue(data, tile, tf), members.length, br, 'members', '成员', body), cx, cy);
   }
   // Themes: a theme header → its subsectors (name · move · member count).
   function showThemeSubs(data, themeName, subTiles, cx, cy) {
@@ -1069,14 +1698,14 @@
     var lab = labs[themeName] || { en: themeName, zh: themeName };
     var tf = data._tf, edges = edgesFor(tf), pal = binPalette();
     var agg = sectorAgg(data, subTiles, tf);
-    var br = breadth(subTiles, tf);
+    var br = breadth(data, subTiles, tf);
     var rows = subTiles.slice().sort(function (a, b) {
-      var av = a.perf[tf], bv = b.perf[tf];
+      var av = heatmapValue(data, a, tf), bv = heatmapValue(data, b, tf);
       return (bv == null ? -1e9 : bv) - (av == null ? -1e9 : av);
     });
     var body = '';
     rows.forEach(function (t) {
-      var pc = t.perf[tf], c = pal[binIndex(pc, edges)];
+      var pc = heatmapValue(data, t, tf), c = pal[binIndex(pc, edges)];
       body += '<div class="hm-mem-row">'
         + '<span class="hm-mem-pc" style="background-color:' + rgb(c) + ';color:' + fgFor(c) + '">' + fmtPc(pc) + '</span>'
         + '<span class="hm-mem-t">' + esc(t.name) + '</span>'
@@ -1096,6 +1725,7 @@
     // Flat Sector → stock treemap (CN / HK / CA): no curated sub-industry level,
     // so one band per sector with stock tiles directly — TradingView's HSI/TSX look.
     var IS_STOCKS = data.map_type === 'stocks';
+    var IS_ASIA = IS_STOCKS && (data.market === 'china' || data.market === 'hk');
     // Name the breadth denominator only where the map is knowably a SAMPLE of a bigger
     // board. China is measured: ~1,510 tiles of ~5,200 沪深 names. HK/CA/US carry no
     // whole-board count yet, so they keep the plain card rather than assert a coverage
@@ -1103,6 +1733,7 @@
     var HAS_SAMPLE_SCOPE = data.market === 'china';
     var STOCK_URL = data.stock_url || 'stock.html#';
     root.classList.add('hm-scope', 'hm-view');
+    if (IS_ASIA) root.classList.add('hm-asia');
     if (IS_THEMES) root.classList.add('hm-themes');
     var hint = IS_THEMES
       ? L('Hover a subsector for its member tickers · hover a theme header for its subsectors · pick a timeframe above',
@@ -1128,14 +1759,17 @@
       if (_ssr && _ssr.parentNode) _ssr.parentNode.removeChild(_ssr);
     }
     root.innerHTML = ''
+      + (IS_ASIA ? qualityShell() : '')
       + (SHOW_DASH ? '<div class="hx-pulse" aria-live="polite"></div><div class="hx-stats"></div>' : '')
       + '<div class="hm-bar">'
       +   '<div class="hm-tfs" role="tablist" aria-label="Timeframe"></div>'
-      +   (SHOW_DASH ? '<label class="hm-search"><span class="mag" aria-hidden="true">🔎</span><input type="text" autocomplete="off" spellcheck="false" aria-label="Filter tiles" placeholder="' + (isZh() ? '筛选个股…' : 'Filter…') + '"></label>' : '')
+      +   (SHOW_DASH || IS_ASIA ? '<label class="hm-search"><span class="mag" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" focusable="false"><circle cx="10.5" cy="10.5" r="6.2"/><path d="m15 15 4.8 4.8"/></svg></span><input type="text" autocomplete="off" spellcheck="false" aria-label="Filter tiles" placeholder="' + (isZh() ? '筛选个股…' : 'Filter…') + '"></label>' : '')
+      +   (IS_ASIA ? '<div class="hm-view-toggle" role="group" aria-label="Map or complete list"><button type="button" data-hm-view="map" aria-pressed="true">' + L('Map', '地图') + '</button><button type="button" data-hm-view="list" aria-pressed="false">' + L('List', '列表') + '</button></div>' : '')
       +   '<div class="hm-legend"></div>'
       +   '<div class="hm-grow"></div>'
       +   '<div class="hm-read"></div>'
       + '</div>'
+      + (IS_ASIA ? '<div class="hm-query-count" role="status" aria-live="polite"></div>' : '')
       + '<div class="hm-sort" role="group" aria-label="Sort"></div>'
       + '<div class="hm-tm-wrap"><div class="hm-tm"></div></div>'
       + '<div class="hm-hint">' + hint + '</div>'
@@ -1151,7 +1785,10 @@
     var statsEl = root.querySelector('.hx-stats');
     var boardsEl = root.querySelector('.hx-boards');
     var searchEl = root.querySelector('.hm-search input');
-    var _q = '';
+    var _q = '', manualList = false;
+    var queryCountEl = root.querySelector('.hm-query-count');
+    var viewToggleEl = root.querySelector('.hm-view-toggle');
+    var qualityEl = root.querySelector('.hm-quality');
     var firstLayout = true;
     var REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     function mapHeight() {
@@ -1182,9 +1819,14 @@
     function buildTabs() {
       tfsEl.innerHTML = '';
       (data.timeframes || []).forEach(function (tf) {
+        if (IS_ASIA && tf.group === 'intraday' && !tf.available) return;
         var b = document.createElement('button');
         b.className = 'hm-tf' + (tf.key === TF ? ' on' : '') + (tf.available ? '' : ' off');
         b.type = 'button';
+        b.disabled = !tf.available;
+        b.setAttribute('role', 'tab');
+        b.setAttribute('aria-selected', tf.key === TF ? 'true' : 'false');
+        b.tabIndex = tf.key === TF && tf.available ? 0 : -1;
         b.innerHTML = L(tf.en, tf.zh);
         b.setAttribute('data-tf', tf.key);
         if (!tf.available) b.title = isZh() ? '接入实时/分钟级数据后启用' : 'Lights up with a live feed';
@@ -1193,16 +1835,17 @@
       });
     }
     function buildSort() {
-      var opts = [['cap', 'Market cap', '市值'], ['move', 'Biggest move', '涨跌幅'], ['az', 'A–Z', '字母']];
+      var opts = [['cap', IS_ASIA ? 'Size' : 'Market cap', IS_ASIA ? '面积依据' : '市值'], ['move', 'Biggest move', '涨跌幅'], ['az', 'A–Z', '字母']];
       sortEl.innerHTML = '<span class="hm-sort-lab">' + L('Sort', '排序') + '</span>';
       opts.forEach(function (o) {
         var b = document.createElement('button'); b.type = 'button';
         b.className = 'hm-sortb' + (o[0] === SORT ? ' on' : '');
         b.innerHTML = L(o[1], o[2]); b.setAttribute('data-s', o[0]);
+        b.setAttribute('aria-pressed', o[0] === SORT ? 'true' : 'false');
         b.addEventListener('click', function () {
           if (SORT === o[0]) return; SORT = o[0];
           Array.prototype.forEach.call(sortEl.querySelectorAll('.hm-sortb'),
-            function (x) { x.classList.toggle('on', x.getAttribute('data-s') === SORT); });
+            function (x) { var on = x.getAttribute('data-s') === SORT; x.classList.toggle('on', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); });
           layoutList();
         });
         sortEl.appendChild(b);
@@ -1211,7 +1854,9 @@
     function setTf(key) {
       if (key === TF) return; TF = key; data._tf = TF;
       Array.prototype.forEach.call(tfsEl.children, function (b) {
-        b.classList.toggle('on', b.getAttribute('data-tf') === key);
+        var on = b.getAttribute('data-tf') === key;
+        b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false');
+        b.tabIndex = on && !b.disabled ? 0 : -1;
       });
       hideCard(); hideMembers();
       if (mode === 'tree') recolor(); else layoutList();
@@ -1231,24 +1876,28 @@
         + '<span class="hm-lg-step">' + L('bins', '分档') + ' ±' + edgeFmt(e[0]) + '/' + edgeFmt(e[1]) + '/' + edgeFmt(e[2]) + '</span>';
     }
     function updateRead() {
-      // Same rule as the breadth card: quote the whole board when the payload carries
-      // it for this session, else the tiles. Two adv/dec pairs on one page disagreeing
-      // by 3x is how the sample-vs-board confusion reads to a user.
+      updateQuality();
+      var descriptor = TF === '1D' ? (chinaLiveDescriptor(data) || hkLiveDescriptor(data)) : null;
+      var liveBreadth = descriptor && descriptor.breadth;
       var b = data.board_breadth;
-      var br = (b && b.n > 0 && TF === (data.default_tf || '1D'))
-        ? { adv: b.adv, dec: b.dec }
-        : breadth(data.tiles, TF);
+      var br = liveBreadth
+        ? { adv: liveBreadth.adv, dec: liveBreadth.dec }
+        : ((b && b.n > 0 && TF === (data.default_tf || '1D'))
+          ? { adv: b.adv, dec: b.dec }
+          : breadth(data, data.tiles, TF));
       var live = data.source === 'polygon-live';
       var when = live ? (fmtUpdated(data) || data.asof || '—') : (data.asof || '—');
-      var srcEn, srcZh;
-      if (IS_THEMES) {
+      var srcEn, srcZh, dot = live ? 'live' : '';
+      if (descriptor) {
+        srcEn = descriptor.en; srcZh = descriptor.zh; dot = descriptor.dot;
+      } else if (IS_THEMES) {
         srcEn = 'Themes · ' + (data.asof || '—');
         srcZh = '主题 · ' + (data.asof || '—');
       } else {
         srcEn = (live ? 'Live · 15-min delayed' : 'Daily close') + ' · ' + when;
         srcZh = (live ? '实时 · 延迟15分钟' : '日线收盘') + ' · ' + when;
       }
-      readEl.innerHTML = '<span class="hm-dot ' + (live ? 'live' : '') + '"></span>'
+      readEl.innerHTML = '<span class="hm-dot ' + dot + '"></span>'
         + '<span class="hm-read-src">' + L(srcEn, srcZh) + '</span>'
         + '<span class="hm-read-br"><b class="up">' + fmtInt(br.adv) + ' ▲</b> <b class="dn">' + fmtInt(br.dec) + ' ▼</b></span>';
     }
@@ -1259,7 +1908,7 @@
       // readable size — never clipped, never squeezed below legibility. Tiles
       // too small for that are pure colour (their name lives in the hover card
       // and the sector member list).
-      var pc = t.perf[TF];
+      var pc = heatmapValue(data, t, TF);
       // CN/HK maps opt into a company-name label (data.tile_label==='name') — a
       // bare 601398 / 0700 code is meaningless at a glance. Prefer the Chinese
       // name, fall back to the English name, then the ticker. US / Canada leave
@@ -1355,7 +2004,7 @@
 
     /* ----- themes treemap (theme → subsector-leaf tile) ----- */
     function tileLabelThemes(t, tw, th) {
-      var pc = t.perf[TF];
+      var pc = heatmapValue(data, t, TF);
       var showName = tw >= 30 && th >= 16;
       if (!showName) return '';
       var nameF = Math.max(8.5, Math.min(tw / 6.2, th * 0.34, 15));
@@ -1434,7 +2083,7 @@
     var _liveObserver = null;  // MutationObserver watching .nb-chg[data-sym] mutations
 
     // Live market-id for each market key (matches live.js regionOf() logic).
-    var _LIVE_MKT = { hk: 'hk', china: 'cn', canada: 'ca' };
+    var _LIVE_MKT = { canada: 'ca' };
 
     function _parsePc(text) {
       // Parse live.js chg% text like "+1.23%" or "-0.45%" -> float, or null.
@@ -1571,14 +2220,14 @@
     function recolor() {
       var edges = edgesFor(TF), pal = binPalette();
       tileEls.forEach(function (rec) {
-        // On 1D, prefer the live chg% already painted by live.js (if any) over the
-        // stale EOD value; other timeframes always use the EOD close data.
-        var livePc = null;
-        if (TF === '1D' && rec.el) {
+        var pc = heatmapValue(data, rec.t, TF);
+        // HK/Canada retain the existing live.js overlay. China has its own
+        // full-universe, atomically validated current-session contract.
+        if (data.market !== 'china' && data.market !== 'hk' && TF === '1D' && rec.el) {
           var chgSpan = rec.el.querySelector('.nb-chg.hm-live-chg[data-sym]');
-          if (chgSpan && chgSpan.textContent) livePc = _parsePc(chgSpan.textContent);
+          var legacyPc = chgSpan && chgSpan.textContent ? _parsePc(chgSpan.textContent) : null;
+          if (legacyPc != null) pc = legacyPc;
         }
-        var pc = (livePc != null) ? livePc : rec.t.perf[TF];
         var c = pal[binIndex(pc, edges)];
         rec.el.style.backgroundColor = rgb(c);
         rec.el.style.color = fgFor(c);
@@ -1596,6 +2245,7 @@
 
     /* ----- mobile list ----- */
     function layoutList() {
+      tileEls = [];
       mode = 'list'; root.classList.add('hm-mobile');
       wrap.style.height = 'auto'; tm.style.height = 'auto';
       var edges = edgesFor(TF), pal = binPalette();
@@ -1604,8 +2254,9 @@
       var html = [];
       secKeys.forEach(function (k) {
         var s = sectors[k], lab = labs[k] || { en: k, zh: k };
+        if (IS_ASIA && _q && !s.tiles.some(function (t) { return heatmapMatchesQuery(t, _q); })) return;
         var agg = sectorAgg(data, s.tiles, TF);
-        var br = breadth(s.tiles, TF), tot = Math.max(1, br.adv + br.dec);
+        var br = breadth(data, s.tiles, TF), tot = Math.max(1, br.adv + br.dec);
         html.push('<div class="hm-mgrp">'
           + '<div class="hm-mhd"><span class="nm">' + L(esc(lab.en), esc(lab.zh)) + '</span>'
           + '<span class="pc ' + (agg == null ? '' : agg >= 0 ? 'up' : 'dn') + '">' + fmtPc(agg) + '</span>'
@@ -1614,13 +2265,14 @@
         var rows = s.tiles.slice().sort(function (a, b) {
           if (SORT === 'az') return a.t < b.t ? -1 : a.t > b.t ? 1 : 0;
           if (SORT === 'move') {
-            var av = a.perf[TF], bv = b.perf[TF];
+            var av = heatmapValue(data, a, TF), bv = heatmapValue(data, b, TF);
             return (bv == null ? -1e9 : bv) - (av == null ? -1e9 : av);
           }
           return (b.size || 0) - (a.size || 0);
         });
         rows.forEach(function (t) {
-          var pc = t.perf[TF], c = pal[binIndex(pc, edges)];
+          if (IS_ASIA && !heatmapMatchesQuery(t, _q)) return;
+          var pc = heatmapValue(data, t, TF), c = pal[binIndex(pc, edges)];
           if (IS_THEMES) {
             // subsector row: name + a member count / description (no per-stock page)
             var det = t.members && t.members.length
@@ -1641,7 +2293,7 @@
             ? dispT(t.t)
             : (t.industry && t.industry !== t.sector ? t.industry
                : ((isZh() && t.name_zh) ? t.name_zh : t.name));
-          html.push('<a class="hm-mrow" href="' + STOCK_URL + encodeURIComponent(t.t) + '">'
+          html.push('<a class="hm-mrow" data-hm-symbol="' + esc(t.t) + '" href="' + STOCK_URL + encodeURIComponent(t.t) + '">'
             + '<span class="hm-mpc' + inkCls(c) + '" style="background-color:' + rgb(c) + ';color:' + fgFor(c) + '">' + fmtPc(pc) + '</span>'
             + '<span class="hm-mid"><b>' + esc(primary) + '</b><span>' + esc(sub) + '</span></span>'
             + '<span class="hm-mgo">›</span></a>');
@@ -1649,6 +2301,7 @@
         html.push('</div>');
       });
       tm.innerHTML = html.join('');
+      updateQueryCount();
     }
 
     /* ----- hover / click on the treemap ----- */
@@ -1700,12 +2353,32 @@
     tm.addEventListener('mouseleave', onLeave);
     tm.addEventListener('click', onClick);
 
-    function layout() { if (isMobile()) layoutList(); else if (IS_THEMES) layoutThemes(); else if (IS_STOCKS) layoutStocksFlat(); else layoutTree(); }
+    function layout() {
+      if (isMobile() || (IS_ASIA && manualList)) layoutList();
+      else if (IS_THEMES) layoutThemes(); else if (IS_STOCKS) layoutStocksFlat(); else layoutTree();
+      if (viewToggleEl) Array.prototype.forEach.call(viewToggleEl.querySelectorAll('button'), function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-hm-view') === (mode === 'list' ? 'list' : 'map') ? 'true' : 'false'); });
+      updateQueryCount();
+    }
 
     var rt;
     function onResize() { clearTimeout(rt); rt = setTimeout(function () { hideCard(); hideMembers(); layout(); }, 150); }
     function onTheme() { hideCard(); hideMembers(); if (mode === 'tree') recolor(); else layoutList(); updateLegend(); updateRead(); }
     function onLang() { buildTabs(); buildSort(); updateLegend(); updateRead(); if (searchEl) searchEl.placeholder = isZh() ? '筛选个股…' : 'Filter…'; hideCard(); hideMembers(); layout(); renderDash(); }
+    function onLiveRefresh(e) {
+      if ((e.detail && e.detail.url !== (data._url || JSON_URL)) || TF !== '1D') return;
+      // Price ticks do not change membership or sizes: preserve the map DOM,
+      // control focus and the open integrity details instead of rebuilding.
+      if (mode === 'tree') recolor();
+      else {
+        var active = document.activeElement, symbol = active && active.getAttribute && active.getAttribute('data-hm-symbol');
+        layoutList();
+        if (symbol) Array.prototype.some.call(tm.querySelectorAll('[data-hm-symbol]'), function (el) {
+          if (el.getAttribute('data-hm-symbol') !== symbol) return false;
+          el.focus({ preventScroll: true }); return true;
+        });
+      }
+      updateRead(); renderDash();
+    }
     function onRefresh(e) {
       if (e.detail && e.detail.url !== (data._url || JSON_URL)) return;
       hideCard(); hideMembers();
@@ -1721,6 +2394,7 @@
     document.addEventListener('themechange', onTheme);
     document.addEventListener('langchange', onLang);
     document.addEventListener('hm-refresh', onRefresh);
+    document.addEventListener('hm-live-refresh', onLiveRefresh);
 
     /* ---------------------------------------------------------------- */
     /*  DASHBOARD CHROME — market pulse · breadth stats · movers board   */
@@ -1736,10 +2410,10 @@
       return l ? L(esc(l.en), esc(l.zh)) : esc(name);
     }
     function computeSummary(tf) {
-      var ts = data.tiles.filter(function (t) { var v = t.perf[tf]; return v != null && !isNaN(v); });
+      var ts = data.tiles.filter(function (t) { var v = heatmapValue(data, t, tf); return v != null && !isNaN(v); });
       var adv = 0, dec = 0, flat = 0;
-      ts.forEach(function (t) { var v = t.perf[tf]; if (v > 0.05) adv++; else if (v < -0.05) dec++; else flat++; });
-      var sorted = ts.slice().sort(function (a, b) { return b.perf[tf] - a.perf[tf]; });
+      ts.forEach(function (t) { var v = heatmapValue(data, t, tf); if (v > 0.05) adv++; else if (v < -0.05) dec++; else flat++; });
+      var sorted = ts.slice().sort(function (a, b) { return heatmapValue(data, b, tf) - heatmapValue(data, a, tf); });
       var byS = {};
       ts.forEach(function (t) { (byS[t.sector] || (byS[t.sector] = [])).push(t); });
       var secs = Object.keys(byS).map(function (k) {
@@ -1749,7 +2423,7 @@
       var sm = {
         n: ts.length, adv: adv, dec: dec, flat: flat,
         pctUp: ts.length ? adv / ts.length * 100 : 0,
-        med: medianPc(ts, tf),
+        med: medianPc(data, ts, tf),
         gainers: sorted.slice(0, 5),
         losers: sorted.slice(-5).reverse(),
         secs: secs
@@ -1767,14 +2441,28 @@
     // snapshot with no history behind it. Every other timeframe keeps the tile count
     // and says so, via scopeOf() below.
     function applyBoard(sm, tf) {
+      if (tf !== (data.default_tf || '1D')) return sm;
+      var liveMeta = chinaLiveMeta(data);
+      if (liveMeta && liveMeta.usable && liveMeta.breadth) {
+        var lb = liveMeta.breadth;
+        sm.n = lb.n; sm.adv = lb.adv; sm.dec = lb.dec; sm.flat = lb.flat;
+        sm.pctUp = lb.pctUp;
+        sm.scope = {
+          whole: true, n: lb.n,
+          en: 'Live coverage ' + liveMeta.resolved + '/' + liveMeta.requested,
+          zh: '实时覆盖 ' + liveMeta.resolved + '/' + liveMeta.requested
+        };
+        return sm;
+      }
       var b = data.board_breadth;
-      if (!b || tf !== (data.default_tf || '1D') || !(b.n > 0)) return sm;
+      if (!b || !(b.n > 0)) return sm;
       sm.n = b.n; sm.adv = b.adv; sm.dec = b.dec; sm.flat = b.flat;
       sm.pctUp = b.pct_up;
       if (b.med_pct != null) sm.med = b.med_pct;
       sm.scope = { whole: true, n: b.n, en: b.scope_en, zh: b.scope_zh };
       return sm;
     }
+
     // The denominator, in plain words — the piece that was missing. Whole-board when
     // we have it; otherwise name the map's own sample rather than let a partial count
     // read as the market's.
@@ -1827,7 +2515,10 @@
     function renderPulse(sm) {
       if (!pulseEl) return;
       var st = stanceOf(sm);
-      var when = (data.source === 'polygon-live' ? (fmtUpdated(data) || data.asof) : data.asof) || '—';
+      var liveDescriptor = TF === '1D' ? (chinaLiveDescriptor(data) || hkLiveDescriptor(data)) : null;
+      var when = liveDescriptor
+        ? L(esc(liveDescriptor.en), esc(liveDescriptor.zh))
+        : esc((data.source === 'polygon-live' ? (fmtUpdated(data) || data.asof) : data.asof) || '—');
       var pctUp = Math.round(sm.pctUp), medTxt = fmtPc(sm.med);
       var lead = _leadPhrase(sm);
       var read = lz(pctUp + '% of names advancing · median ' + medTxt + '. ',
@@ -1838,7 +2529,7 @@
         + '<div class="hx-pulse-top">'
         +   '<span class="hx-stance"><span class="ic"></span>' + L(esc(st.en), esc(st.zh)) + '</span>'
         +   '<span class="hx-pulse-lab">' + L('Market pulse', '市场脉搏') + '</span>'
-        +   '<span class="hx-pulse-when">' + esc(when) + '</span>'
+        +   '<span class="hx-pulse-when">' + when + '</span>'
         + '</div>'
         + '<div class="hx-pulse-read">' + read + '</div>';
     }
@@ -1878,7 +2569,7 @@
       if (!boardsEl) return;
       var linkable = !IS_THEMES;
       function moverRow(t, maxAbs, dir) {
-        var v = t.perf[TF];
+        var v = heatmapValue(data, t, TF);
         var nm = (data.tile_label === 'name') ? (t.name_zh || t.name || dispT(t.t)) : (t.name || dispT(t.t));
         var w = maxAbs > 0 ? Math.max(6, Math.min(100, Math.abs(v) / maxAbs * 100)) : 0;
         var col = dir > 0 ? 'var(--up)' : 'var(--down)';
@@ -1891,8 +2582,8 @@
           : '<div class="hx-row">' + inner + '</div>';
       }
       function amax(arr, f) { return arr.length ? Math.max.apply(null, arr.map(f)) : 0; }
-      var gMax = amax(sm.gainers, function (t) { return Math.abs(t.perf[TF]); });
-      var lMax = amax(sm.losers, function (t) { return Math.abs(t.perf[TF]); });
+      var gMax = amax(sm.gainers, function (t) { return Math.abs(heatmapValue(data, t, TF)); });
+      var lMax = amax(sm.losers, function (t) { return Math.abs(heatmapValue(data, t, TF)); });
       var secMax = amax(sm.secs, function (s) { return Math.abs(s.agg); });
       function secRow(s) {
         var w = secMax > 0 ? Math.max(4, Math.abs(s.agg) / secMax * 100) : 0;
@@ -1928,24 +2619,72 @@
     // In-map filter: dim every tile whose ticker / EN name / ZH name doesn't match.
     function applyFilter() {
       if (!tm) return;
+      updateQueryCount();
       if (!_q) { tm.classList.remove('hm-filtering'); return; }
       tm.classList.add('hm-filtering');
       tileEls.forEach(function (rec) {
         if (!rec.el) return;
-        var hay = (String(rec.t.t) + ' ' + (rec.t.name || '') + ' ' + (rec.t.name_zh || '')).toLowerCase();
-        rec.el.classList.toggle('hm-match', hay.indexOf(_q) >= 0);
+        rec.el.classList.toggle('hm-match', heatmapMatchesQuery(rec.t, _q));
       });
     }
     if (searchEl) {
       searchEl.addEventListener('input', function () {
         _q = (searchEl.value || '').trim().toLowerCase();
-        applyFilter();
+        if (IS_ASIA && mode === 'list') layoutList(); else applyFilter();
       });
     }
+
+    function qualityShell() {
+      return '<details class="hm-quality"><summary><span class="hm-quality-label">' + L('Data integrity', '数据质量')
+        + '</span><span data-hm-q="state"></span><strong data-hm-q="coverage"></strong><span class="hm-quality-caret" aria-hidden="true">⌄</span></summary>'
+        + '<div class="hm-quality-body"><dl>'
+        + '<div><dt>' + L('Observation session', '观测交易日') + '</dt><dd data-hm-q="observation"></dd></div>'
+        + '<div><dt>' + L('Price basis', '价格依据') + '</dt><dd data-hm-q="source"></dd></div>'
+        + '<div><dt>' + L('Unavailable returns', '缺失涨跌幅') + '</dt><dd data-hm-q="missing"></dd></div>'
+        + '<div><dt>' + L('Tile area', '方块面积') + '</dt><dd data-hm-q="size"></dd></div></dl>'
+        + '<p>' + L('Coverage describes this configured universe, not every listing on the exchange. Missing observations stay unavailable; a refreshed file is not a new market price. Intraday-history periods appear only when data is available.', '覆盖率指本图成分范围，并非交易所全部上市股票。缺失观测保持不可用；文件更新不代表新的市场价格。分钟级历史仅在数据可用时显示。')
+        + '</p></div></details>';
+    }
+    function updateQuality() {
+      if (!qualityEl) return;
+      var q = heatmapQualityModel(data, TF), zh = isZh();
+      var labels = { daily: ['Settled baseline', '日线基准'], historical: ['Daily history', '日线历史'],
+        live: ['Current-session quotes', '本交易日行情'], delayed: ['Delayed quotes', '延迟行情'],
+        degraded: ['Coverage incomplete', '覆盖不完整'], provisional: ['Provisional · not settled', '临时行情 · 未确认收盘'],
+        break: ['Lunch break', '午间休市'], closed: ['Market closed', '已收盘'] };
+      var fields = { state: (labels[q.state] || labels.degraded)[zh ? 1 : 0],
+        coverage: q.valid + ' / ' + q.total + (zh ? ' 有效 · ' : ' valid · ') + (q.fraction * 100).toFixed(2) + '%',
+        observation: q.observation, source: zh ? q.source_zh : q.source_en,
+        missing: String(q.missing), size: zh ? q.size_zh : q.size_en };
+      Object.keys(fields).forEach(function (key) { var el = qualityEl.querySelector('[data-hm-q="' + key + '"]'); if (el) el.textContent = fields[key]; });
+      qualityEl.setAttribute('data-quality-state', q.state);
+    }
+    function updateQueryCount() {
+      if (!queryCountEl) return;
+      var n = data.tiles.filter(function (t) { return heatmapMatchesQuery(t, _q); }).length;
+      queryCountEl.textContent = _q
+        ? (isZh() ? n + ' / ' + data.tiles.length + ' 匹配。列表可查看全部匹配；市场与板块统计不受筛选影响。' : n + ' / ' + data.tiles.length + ' matches. List includes every match; market and sector statistics stay unfiltered.')
+        : (isZh() ? '共 ' + data.tiles.length + ' 只 · 列表可访问所有小方块或缺失观测股票。' : data.tiles.length + ' names · List includes every name, including tiny tiles and missing observations.');
+    }
+    if (viewToggleEl) viewToggleEl.addEventListener('click', function (e) {
+      var b = e.target.closest && e.target.closest('button[data-hm-view]');
+      if (!b) return; manualList = b.getAttribute('data-hm-view') === 'list';
+      hideCard(); hideMembers(); layout();
+    });
+    tfsEl.addEventListener('keydown', function (e) {
+      if (['ArrowLeft','ArrowRight','Home','End'].indexOf(e.key) < 0) return;
+      var tabs = Array.prototype.filter.call(tfsEl.querySelectorAll('button'), function (b) { return !b.disabled; });
+      if (!tabs.length) return;
+      var current = tabs.indexOf(document.activeElement), next = e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1
+        : (Math.max(0, current) + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length;
+      e.preventDefault(); setTf(tabs[next].getAttribute('data-tf')); tabs[next].focus();
+    });
 
     data._tf = TF;
     buildTabs(); buildSort(); updateLegend(); updateRead(); layout(); renderDash();
     startAutoRefresh(data._url || JSON_URL);
+    startChinaLiveRefresh(data);
+    startHKLiveRefresh(data);
 
     return {
       destroy: function () {
@@ -1953,6 +2692,7 @@
         document.removeEventListener('themechange', onTheme);
         document.removeEventListener('langchange', onLang);
         document.removeEventListener('hm-refresh', onRefresh);
+        document.removeEventListener('hm-live-refresh', onLiveRefresh);
         tm.removeEventListener('mousemove', onMove);
         tm.removeEventListener('mouseleave', onLeave);
         tm.removeEventListener('click', onClick);
@@ -1996,12 +2736,15 @@
     root.querySelector('.hm-sc-exp').addEventListener('click', openOverlay);
 
     function paintMeta() {
+      var descriptor = chinaLiveDescriptor(data) || hkLiveDescriptor(data);
       var live = data.source === 'polygon-live';
       var when = live ? (fmtUpdated(data) || data.asof || '—') : (data.asof || '—');
-      root.querySelector('.hm-sc-meta').innerHTML = '<span class="hm-dot ' + (live ? 'live' : '') + '"></span>'
-        + L((live ? 'Live · 15-min delayed' : 'Daily close') + ' · ' + when + ' · ' + data.n_tiles + ' names',
-            (live ? '实时 · 延迟15分钟' : '日线收盘') + ' · ' + when + ' · ' + data.n_tiles + ' 只');
+      var dot = descriptor ? descriptor.dot : (live ? 'live' : '');
+      var en = descriptor ? descriptor.en : (live ? 'Live · 15-min delayed' : 'Daily close') + ' · ' + when + ' · ' + data.n_tiles + ' names';
+      var zh = descriptor ? descriptor.zh : (live ? '实时 · 延迟15分钟' : '日线收盘') + ' · ' + when + ' · ' + data.n_tiles + ' 只';
+      root.querySelector('.hm-sc-meta').innerHTML = '<span class="hm-dot ' + dot + '"></span>' + L(en, zh);
     }
+
 
     var mapBox = root.querySelector('.hm-sc-map');
     var tm = root.querySelector('.hm-sc-tm');
@@ -2036,7 +2779,7 @@
       if (symF < (cjk ? 10 : 11)) return '';
       var s = '<span class="sym' + (symF < 13 ? ' sm' : '') + '" style="font-size:' + symF.toFixed(1) + 'px">' + esc(sym) + '</span>';
       if (tw >= 46 && th >= 30) {
-        var pcText = fmtPc(t.perf[TF]);
+        var pcText = fmtPc(heatmapValue(data, t, TF));
         var pcF = Math.min(tw / 5.6, th * 0.32, fitTextFont(tw, pcText, 0.62, 11, 12));
         if (pcF >= 11) s += '<span class="pc" style="font-size:' + pcF.toFixed(1) + 'px">' + pcText + '</span>';
       }
@@ -2089,7 +2832,7 @@
           var t = tr.ref;
           var tw = tr.w - TILE_GAP, th = tr.h - TILE_GAP;
           if (tw < 1.5 || th < 1.5) return;
-          var c = pal[binIndex(t.perf[TF], edges)];
+          var c = pal[binIndex(heatmapValue(data, t, TF), edges)];
           var cls = 'hm-tile' + inkCls(c);
           if (tw >= 88 && th >= 50) cls += ' big';
           if (animate) cls += ' hm-in';
@@ -2113,13 +2856,17 @@
         + '<span class="hm-lg-end">+' + edgeFmt(e[2]) + '%</span>';
     }
     function paintBreadth() {
-      var br = breadth(data.tiles, TF), tot = Math.max(1, br.adv + br.dec);
+      var descriptor = chinaLiveDescriptor(data) || hkLiveDescriptor(data);
+      var lb = descriptor && descriptor.breadth;
+      var br = lb ? { adv: lb.adv, dec: lb.dec } : breadth(data, data.tiles, TF);
+      var tot = Math.max(1, br.adv + br.dec);
       root.querySelector('.hm-sc-breadth').innerHTML =
         '<span class="hm-sc-blab">' + L('Breadth', '涨跌广度') + '</span>'
         + '<span class="hm-sc-bar"><i class="up" style="width:' + (100 * br.adv / tot) + '%"></i>'
         + '<i class="dn" style="width:' + (100 * br.dec / tot) + '%"></i></span>'
         + '<span class="hm-sc-bn"><b class="up">' + br.adv + '▲</b> <b class="dn">' + br.dec + '▼</b></span>';
     }
+
 
     /* ----- hover (desktop only) / tap-through ----- */
     function onMove(e) {
@@ -2165,50 +2912,93 @@
     window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(function () { hideCard(); hideMembers(); paint(); }, 160); });
     document.addEventListener('themechange', function () { hideCard(); hideMembers(); paint(); });
     document.addEventListener('langchange', function () { hideCard(); hideMembers(); paint(); });
-    document.addEventListener('hm-refresh', function (e) {
+    function onScoreRefresh(e) {
       if (e.detail && e.detail.url !== (data._url || JSON_URL)) return;
       hideCard(); hideMembers(); paint();
-    });
+    }
+    document.addEventListener('hm-refresh', onScoreRefresh);
+    document.addEventListener('hm-live-refresh', onScoreRefresh);
     startAutoRefresh(data._url || JSON_URL);
+    startChinaLiveRefresh(data);
+    startHKLiveRefresh(data);
   }
 
   /* ====================================================================== */
   /*  OVERLAY                                                                */
   /* ====================================================================== */
   var _ov = null, _ovView = null;
-  // openOverlay([jsonUrl, label]) — zero-arg = S&P 500 default (existing behaviour).
-  // Called externally via MMHeatmap.openOverlayFor(jsonUrl, label).
-  // The overlay is appended to document.body so it escapes any parent
-  // backdrop-filter containing block (e.g. a dialog that embeds the scorecard).
+  // Reserve the existing overlay DOM synchronously: two clicks must not create
+  // two dialogs while a shared data request is unresolved. No second loader.
   function openOverlay(jsonUrl, label) {
     if (_ov) return;
     var url = (typeof jsonUrl === 'string' && jsonUrl) ? jsonUrl : null;
-    var title = (typeof label === 'string' && label) ? label : L('S&amp;P 500 Heatmap', 'S&amp;P 500 热力图');
-    loadData(url).then(function (data) {
-      _ov = document.createElement('div');
-      _ov.className = 'hm-ov hm-scope';
-      _ov.innerHTML = '<div class="hm-ov-scrim"></div>'
-        + '<div class="hm-ov-panel" role="dialog" aria-modal="true" aria-label="' + esc(title) + '">'
-        +   '<div class="hm-ov-head"><span class="t">' + title + '</span>'
-        +     '<button type="button" class="hm-ov-x" aria-label="Close">✕</button></div>'
-        +   '<div class="hm-ov-body"><div class="hm-ov-full"></div></div>'
-        + '</div>';
-      document.body.appendChild(_ov);
-      document.body.style.overflow = 'hidden';
-      _ovView = createFullView(_ov.querySelector('.hm-ov-full'), data);
-      requestAnimationFrame(function () { requestAnimationFrame(function () { if (_ov) _ov.classList.add('open'); }); });
-      _ov.querySelector('.hm-ov-x').addEventListener('click', closeOverlay);
-      _ov.querySelector('.hm-ov-scrim').addEventListener('click', closeOverlay);
-      document.addEventListener('keydown', onKey);
-    });
+    var title = (typeof label === 'string' && label) ? label : lz('S&P 500 Heatmap', 'S&P 500 热力图');
+    var node = document.createElement('div');
+    node.className = 'hm-ov hm-scope';
+    node._hmReturnFocus = document.activeElement;
+    node._hmPreviousOverflow = document.body.style.overflow;
+    node.innerHTML = '<div class="hm-ov-scrim"></div>'
+      + '<div class="hm-ov-panel" role="dialog" aria-modal="true" tabindex="-1" aria-label="' + esc(title) + '">'
+      + '<div class="hm-ov-head"><span class="t">' + esc(title) + '</span>'
+      + '<button type="button" class="hm-ov-x" aria-label="Close">✕</button></div>'
+      + '<div class="hm-ov-body"><div class="hm-ov-full"></div></div></div>';
+    _ov = node;
+    document.body.appendChild(node);
+    document.body.style.overflow = 'hidden';
+    node.querySelector('.hm-ov-x').addEventListener('click', closeOverlay);
+    node.querySelector('.hm-ov-scrim').addEventListener('click', closeOverlay);
+    document.addEventListener('keydown', onKey);
+    node.querySelector('.hm-ov-x').focus();
+    requestAnimationFrame(function () { requestAnimationFrame(function () {
+      if (_ov === node && !node._hmClosing) node.classList.add('open');
+    }); });
+    function load() {
+      var host = node.querySelector('.hm-ov-full');
+      host.innerHTML = _emptyHtml(L('Loading heatmap…', '正在加载热力图…'));
+      return loadData(url).then(function (data) {
+        if (_ov !== node || node._hmClosing || !node.isConnected) return;
+        _ovView = createFullView(host, data);
+      }).catch(function (error) {
+        if (_ov !== node || node._hmClosing || !node.isConnected) return;
+        host.innerHTML = heatmapLoadError(error, url || JSON_URL);
+        var retry = host.querySelector('[data-hm-retry]');
+        if (retry) retry.addEventListener('click', load);
+      });
+    }
+    return load();
   }
-  function onKey(e) { if (e.key === 'Escape') closeOverlay(); }
+  function onKey(e) {
+    if (!_ov || _ov._hmClosing) return;
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      if (e.stopImmediatePropagation) e.stopImmediatePropagation(); else e.stopPropagation();
+      closeOverlay(); return;
+    }
+    if (e.key !== 'Tab') return;
+    var nodes = Array.prototype.filter.call(_ov.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])'), function (el) {
+      return (el.tabIndex == null || el.tabIndex >= 0) && el.getClientRects().length && getComputedStyle(el).visibility !== 'hidden';
+    });
+    var first = nodes[0], last = nodes[nodes.length - 1], active = document.activeElement;
+    if (!first) { e.preventDefault(); _ov.querySelector('.hm-ov-panel').focus(); }
+    else if (!_ov.contains(active) || (e.shiftKey ? active === first : active === last)) {
+      e.preventDefault(); (e.shiftKey ? last : first).focus();
+    }
+  }
   function closeOverlay() {
-    if (!_ov) return;
-    var node = _ov, view = _ovView; _ov = null; _ovView = null;
+    if (!_ov || _ov._hmClosing) return;
+    var node = _ov, view = _ovView;
+    node._hmClosing = true;
     document.removeEventListener('keydown', onKey);
     node.classList.remove('open');
-    var done = function () { if (view) view.destroy(); node.remove(); document.body.style.overflow = ''; };
+    var done = function () {
+      if (view) view.destroy();
+      node.remove();
+      if (_ov !== node) return;
+      _ov = null; _ovView = null;
+      document.body.style.overflow = node._hmPreviousOverflow;
+      var trigger = node._hmReturnFocus;
+      if (trigger && trigger.isConnected && typeof trigger.focus === 'function') trigger.focus({ preventScroll: true });
+    };
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce) done(); else setTimeout(done, 280);
   }
@@ -2280,6 +3070,11 @@
       + '.hm-read-br{font-variant-numeric:tabular-nums;font-weight:700;}'
       + '.hm-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);display:inline-block;}'
       + '.hm-dot.live{background:var(--ok);box-shadow:0 0 0 3px var(--ring-ok);}'
+      + '.hm-dot.break{background:var(--warn);box-shadow:none;}'
+      + '.hm-dot.delayed{background:var(--warn);box-shadow:none;}'
+      + '.hm-dot.auction{background:var(--act);box-shadow:none;}'
+      + '.hm-dot.closed{background:var(--muted);box-shadow:none;}'
+      + '.hm-dot.degraded{background:var(--warn);box-shadow:none;}'
       + '.hm-sort{display:none;align-items:center;gap:6px;margin:-2px 0 12px;font-size:11px;}'
       + '.hm-sort-lab{color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700;font-size:10px;}'
       + '.hm-sortb{font:600 12px Inter,sans-serif;color:var(--muted);background:var(--panel2);border:1px solid var(--line);padding:5px 11px;border-radius:8px;cursor:pointer;}'
@@ -2529,6 +3324,43 @@
       + '@media (max-width:900px){.hx-stats{grid-template-columns:1fr 1fr;} .hx-boards{grid-template-columns:1fr;}}'
       + '@media (max-width:560px){.hx-stats{grid-template-columns:1fr 1fr;gap:7px;} .hm-search{display:none;} .hx-pulse-read{font-size:13px;}}'
       + '.hm-mobile .hm-search{display:none;}';
+
+    // Scoped refinement: no site-wide palette, data or auth changes.
+    css += '.hm-asia .hm-bar{padding:12px;gap:10px;border-radius:var(--r-card,12px);background:var(--panel);box-shadow:none;}'
+      + '.hm-asia .hm-tfs{max-width:100%;flex-wrap:wrap;background:transparent;border:0;padding:0;gap:4px;}'
+      + '.hm-asia .hm-tf,.hm-asia .hm-sortb,.hm-asia .hm-view-toggle button{min-height:36px;padding:7px 11px;font-size:12px;line-height:20px;border-radius:var(--r-ctl,8px);}'
+      + '.hm-asia .hm-tf.on{background:var(--text);color:var(--bg);box-shadow:none;}'
+      + '.hm-asia .hm-tf:disabled{opacity:.4;cursor:not-allowed;}'
+      + '.hm-asia .hm-search,.hm-asia.hm-mobile .hm-search{display:flex;min-height:38px;max-width:100%;flex:1 1 180px;}'
+      + '.hm-asia .hm-search input{min-height:36px;width:100%;min-width:0;font-size:13px;}'
+      + '.hm-asia .hm-read{flex-basis:100%;padding-top:8px;border-top:1px solid var(--line);line-height:1.65;}'
+      + '.hm-asia.hm-mobile .hm-read-src{display:inline;overflow-wrap:anywhere;}'
+      + '.hm-asia .hm-view-toggle{display:flex;gap:3px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:2px;}'
+      + '.hm-asia .hm-view-toggle button{font-size:12px;font-weight:600;font-family:var(--font-ui);border:0;background:transparent;color:var(--muted);cursor:pointer;}'
+      + '.hm-asia .hm-view-toggle button[aria-pressed=true]{background:var(--panel2);color:var(--text);}'
+      + '.hm-asia .hm-query-count{font-size:11px;line-height:1.6;color:var(--muted);margin:0 3px 12px;}'
+      + '.hm-quality{border:1px solid var(--line);background:var(--panel);border-radius:var(--r-card,12px);margin:0 0 12px;font-size:12px;}'
+      + '.hm-quality summary{display:flex;align-items:center;gap:12px;min-height:48px;padding:11px 15px;cursor:pointer;list-style:none;flex-wrap:wrap;}'
+      + '.hm-quality summary::-webkit-details-marker{display:none;}'
+      + '.hm-quality-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted);}'
+      + '.hm-quality [data-hm-q=state]{color:var(--text);font-weight:600;}'
+      + '.hm-quality [data-hm-q=coverage]{margin-left:auto;font-variant-numeric:tabular-nums;font-size:12px;color:var(--text);}'
+      + '.hm-quality-caret{color:var(--muted);transition:transform .15s;}'
+      + '.hm-quality[open] .hm-quality-caret{transform:rotate(180deg);}'
+      + '.hm-quality-body{padding:0 15px 13px;border-top:1px solid var(--line);}'
+      + '.hm-quality dl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:15px 0;}'
+      + '.hm-quality dt{font-size:10px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;}'
+      + '.hm-quality dd{margin:0;font-weight:600;color:var(--text);overflow-wrap:anywhere;}'
+      + '.hm-quality p{font-size:11px;line-height:1.7;color:var(--muted);margin:0;max-width:105ch;}'
+      + '.hm-asia .hx-pulse,.hm-asia .hx-pulse.up,.hm-asia .hx-pulse.down{border-color:var(--line);}'
+      + '.hm-asia :is(button,input,summary,a):focus-visible{outline:2px solid var(--text);outline-offset:3px;}'
+      + '.hm-asia .hm-mrow{min-height:52px;} .hm-asia .hm-mgrp{break-inside:avoid;}'
+      + '.hm-asia .hm-mrow:hover{background:var(--panel2);}'
+      + '.hm-asia .hx-pulse::after{animation:none!important;opacity:.12;} .hm-asia .hx-stance .ic{animation:none!important;}'
+      + '@media(min-width:900px){.hm-asia.hm-mobile .hm-tm{columns:2;column-gap:14px;}}'
+      + '@media(max-width:560px){.hm-asia .hm-view-toggle{display:none;}.hm-quality summary{gap:7px 10px;padding:11px 12px;}.hm-quality [data-hm-q=coverage]{margin-left:0;}.hm-quality dl{grid-template-columns:repeat(2,minmax(0,1fr));}.hm-asia .hm-read-br{display:none;}}';
+    css += '.hm-load-state{padding:22px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel);color:var(--muted);font-size:13px;line-height:1.7;}.hm-load-state p{max-width:75ch;margin:0 0 12px;}.hm-load-state button{min-height:40px;padding:8px 16px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2);color:var(--text);font:inherit;cursor:pointer;}';
+    css += '.hm-ov-x{min-width:40px;min-height:40px;}.hm-ov-x:focus-visible{outline:2px solid var(--text);outline-offset:3px;}';
     var st = document.createElement('style');
     st.id = 'mm-heatmap-style';
     st.textContent = css;
@@ -2538,6 +3370,21 @@
   /* ====================================================================== */
   /*  BOOT                                                                   */
   /* ====================================================================== */
+  function removeLegacyAsiaLabel(url) {
+    if (!isChinaHeatmapUrl(url) && !isHKHeatmapUrl(url)) return;
+    // Cached pre-release HTML can outlive the template update. Do not let its
+    // global provider caption misrepresent this map, even if HK returns 401.
+    Array.prototype.forEach.call(document.querySelectorAll('.hm-head .hm-live-badge[data-live-label]'), function (node) { node.remove(); });
+  }
+  function heatmapLoadError(error, url) {
+    var member = isHKHeatmapUrl(url), status = error && error.status;
+    var text = member && status === 401
+      ? L('Sign in to load the Hong Kong constituent map. The public summary remains available. After signing in through the navigation, try again.', '登录后可加载港股成分股热力图。公开摘要仍可阅读。请从导航栏登录，再重试。')
+      : member && status === 403
+      ? L('This session cannot access the member dataset. Check account access, then try again. The public summary remains available.', '此会话无权访问会员数据。请检查账户权限后重试；公开摘要仍可阅读。')
+      : L('The price dataset could not be loaded or verified. The last published summary remains available; no new prices are being claimed.', '价格数据未能加载或通过验证。上次发布的摘要仍可阅读；此处不声称有新的行情。');
+    return '<div class="hm-load-state" role="status"><p>' + text + '</p><button type="button" data-hm-retry>' + L('Try again', '重试') + '</button></div>';
+  }
   function _emptyHtml(msg) {
     return '<div class="hm-empty" style="padding:48px;text-align:center;color:var(--muted)">' + msg + '</div>';
   }
@@ -2563,6 +3410,7 @@
     function select(m) {
       if (curKey === m.key) return;
       curKey = m.key;
+      removeLegacyAsiaLabel(m.url);
       Object.keys(btns).forEach(function (k) {
         var on = k === m.key;
         btns[k].classList.toggle('on', on); btns[k].setAttribute('aria-selected', on ? 'true' : 'false');
@@ -2576,7 +3424,8 @@
         curView = createFullView(host, data);
       }).catch(function (e) {
         if (curKey !== m.key) return;
-        host.innerHTML = _emptyHtml(L('Could not load heatmap data.', '无法加载热力图数据。'));
+        host.innerHTML = heatmapLoadError(e, m.url);
+        host.querySelector('[data-hm-retry]').addEventListener('click', function () { curKey = null; select(m); });
         if (window.console) console.error('heatmap load failed', e);
       });
     }
@@ -2600,11 +3449,13 @@
     if (full && full.getAttribute('data-hm-maps')) {
       mountMulti(full);
     } else if (full) {
+      removeLegacyAsiaLabel(JSON_URL);
       loadData().then(function (data) {
         if (!data.tiles || !data.tiles.length) full.innerHTML = _emptyHtml(L('No heatmap data available.', '暂无热力图数据。'));
         else createFullView(full, data);
       }).catch(function (e) {
-        full.innerHTML = _emptyHtml(L('Could not load heatmap data.', '无法加载热力图数据。'));
+        full.innerHTML = heatmapLoadError(e, JSON_URL);
+        full.querySelector('[data-hm-retry]').addEventListener('click', boot);
         if (window.console) console.error('heatmap load failed', e);
       });
     }

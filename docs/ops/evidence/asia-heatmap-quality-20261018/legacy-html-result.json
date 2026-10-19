@@ -1,0 +1,20 @@
+{
+  "scope": "REAL production HTML and anonymous data responses with LOCAL candidate JS; not deployment or authenticated member proof",
+  "completed": true,
+  "results": [
+    {
+      "market": "china",
+      "legacyBadgeNodes": 0,
+      "source": "Daily close · 2026-10-16",
+      "memberMessage": null,
+      "summaryRetained": false
+    },
+    {
+      "market": "hk",
+      "legacyBadgeNodes": 0,
+      "source": null,
+      "memberMessage": "Sign in to load the Hong Kong constituent map. The public summary remains available. After signing in through the navigation, try again.\n\nTry again",
+      "summaryRetained": true
+    }
+  ]
+}

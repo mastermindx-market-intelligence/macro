@@ -717,6 +717,9 @@ PUBLIC_EXACT = frozenset({
     # contain presentation and a bounded API client only. All analytical
     # payloads remain behind the paid /api/market-memory/v1/* routes.
     "/market_memory.html", "/market_memory.css", "/market_memory.js",
+    "/finance_intelligence.html", "/finance_intelligence.css", "/finance_intelligence.js",
+    "/ontology.css", "/ontology.js", "/stock-dashboard.css",
+    "/hk-stock-v36.js", "/canada-stock-v36.js",
     # BioCatalyst follows the same split. Its shell, stylesheet and fetch client
     # contain no trial rows; every registry payload remains behind the
     # site_full-enforced /api/biocatalyst/v1/* routes.
@@ -735,7 +738,7 @@ PUBLIC_EXACT = frozenset({
     # it runs on anonymous visitors before auth resolves (AD_CENTRAL_MASTERPLAN §2).
     "/adtest.js",
     "/nav_market.js", "/supabase.js", "/data_base.js", "/live.js", "/live_config.js",
-    "/live/quotes.json", "/live/breadth.json",
+    "/live/quotes.json", "/live/china_heatmap.json", "/live/breadth.json",
     # The two Intraday Flow board inputs (#6105, 2026-08-20). Public BY DECISION
     # — ratified here on this set's own standard, not synced in because
     # site_access.yml already said so.

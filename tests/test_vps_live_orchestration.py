@@ -2490,3 +2490,14 @@ def test_deadman_ages_pulse_and_board_quotes_from_source_clocks():
     ):
         failures = evaluate_live_health(stale, now=when)
         assert _no_source_clock_failure(failures), (when.isoformat(), failures)
+def test_api_status_calls_the_shared_projection() -> None:
+    from pathlib import Path
+    import ast
+    tree = ast.parse((Path(__file__).resolve().parents[1] / "app/main.py").read_text())
+    imported = [n for n in ast.walk(tree) if isinstance(n, ast.ImportFrom)
+                and n.module == "app.china_heatmap_status"]
+    assert any(a.name == "status_projection" and a.asname == "_china_heatmap_live_status_projection"
+               for node in imported for a in node.names)
+    status = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "status")
+    assert any(isinstance(n, ast.Call) and isinstance(n.func, ast.Name)
+               and n.func.id == "_china_heatmap_live_status_projection" for n in ast.walk(status))

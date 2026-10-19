@@ -1,0 +1,598 @@
+from __future__ import annotations
+
+from datetime import date, datetime, timezone
+import json
+import logging
+import stat
+
+import pandas as pd
+import pytest
+
+from engine import china_heatmap_live as contract
+from scripts import build_china_heatmap_live as producer
+
+
+NOW = datetime(2026, 9, 28, 2, 15, 40, tzinfo=timezone.utc)
+
+
+def baseline_payload(asof: str = "2026-09-24") -> dict:
+    return {
+        "market": "china", "map_type": "stocks", "source": "daily-close",
+        "asof": asof, "n_tiles": 2,
+        "tiles": [
+            {"t": "600519.SS", "sector": "Consumer", "size": 100.0, "perf": {"1D": 1.0}},
+            {"t": "000001.SZ", "sector": "Financial", "size": 50.0, "perf": {"1D": -1.0}},
+        ],
+    }
+
+
+def live_quotes(observed: datetime = datetime(2026, 9, 28, 2, 15, 30, tzinfo=timezone.utc)) -> dict:
+    ts = int(observed.timestamp() * 1000)
+    return {
+        "600519.SS": {"price": 1412.8, "prevClose": 1398.0, "changePct": (1412.8 / 1398.0 - 1) * 100, "ts": ts, "open": 1399.5, "high": 1418.0, "low": 1390.1, "vol": 10, "amount": 100.0},
+        "000001.SZ": {"price": 11.1, "prevClose": 11.2, "changePct": (11.1 / 11.2 - 1) * 100, "ts": ts - 1000, "open": 11.2, "high": 11.25, "low": 11.0, "vol": 20, "amount": 200.0},
+    }
+
+
+def pin_clock(monkeypatch, expected: datetime = NOW) -> None:
+    monkeypatch.setattr(contract.cn_clock, "session_date", lambda now=None: date(2026, 9, 28))
+    monkeypatch.setattr(contract.cn_clock, "last_completed_session", lambda now=None: "2026-09-24")
+    monkeypatch.setattr(contract.cn_clock, "expected_latest_quote_time", lambda now=None: expected)
+
+
+def test_fetch_tushare_snapshot_uses_one_whole_market_rt_k_call(monkeypatch) -> None:
+    baseline = contract.validate_baseline(baseline_payload())
+    seen = {}
+
+    def query(api_name, fields="", **kwargs):
+        seen.update(api_name=api_name, fields=fields, kwargs=kwargs)
+        return pd.DataFrame([
+            {"ts_code": "600519.SH", "pre_close": 1398.0, "close": 1412.8,
+             "open": 1399.5, "high": 1418.0, "low": 1390.1, "vol": 10,
+             "amount": 100.0, "trade_time": "2026-09-28 10:15:30"},
+        ])
+
+    monkeypatch.setattr(producer.tushare_client, "query", query)
+    quotes = producer.fetch_tushare_snapshot(baseline)
+    assert quotes and quotes["600519.SS"]["price"] == 1412.8
+    assert seen["api_name"] == "rt_k"
+    assert seen["kwargs"]["ts_code"] == "6*.SH,3*.SZ,0*.SZ"
+    assert seen["kwargs"]["_timeout"] == 5.0
+    assert seen["kwargs"]["_retries"] == 0
+    assert seen["kwargs"]["_return_empty"] is True
+    assert "trade_time" in seen["fields"].split(",")
+
+
+@pytest.mark.parametrize("answer", [None, pd.DataFrame(columns=["ts_code", "trade_time"])])
+def test_empty_or_unavailable_tushare_response_is_a_miss(monkeypatch, answer) -> None:
+    baseline = contract.validate_baseline(baseline_payload())
+    monkeypatch.setattr(producer.tushare_client, "query", lambda *a, **k: answer)
+    assert producer.fetch_tushare_snapshot(baseline) is None
+
+
+def test_one_shot_step_publishes_valid_atomic_payload(tmp_path, monkeypatch) -> None:
+    pin_clock(monkeypatch)
+    base = tmp_path / "china_heatmap.json"
+    out = tmp_path / "live" / "china_heatmap.json"
+    base.write_text(json.dumps(baseline_payload()), encoding="utf-8")
+    instance = producer.ChinaHeatmapLiveProducer(
+        base_path=base, out_path=out,
+        tushare_fetch=lambda baseline: live_quotes(),
+        tencent_fetch=lambda baseline: pytest.fail("fallback must not run"),
+        phase_fn=lambda now: "morning",
+    )
+    payload = instance.step(NOW, require_usable=True)
+    assert json.loads(out.read_text(encoding="utf-8")) == payload
+    assert payload["source"] == "tushare-rt-k" and payload["usable"] is True
+    assert stat.S_IMODE(out.stat().st_mode) == 0o644
+    assert not list(out.parent.glob(f".{out.name}.*"))
+
+
+def test_one_shot_failure_never_replaces_last_accepted_file(tmp_path) -> None:
+    base = tmp_path / "china_heatmap.json"
+    out = tmp_path / "china_heatmap_live.json"
+    base.write_text("{}", encoding="utf-8")
+    out.write_text('{"accepted":true}\n', encoding="utf-8")
+    instance = producer.ChinaHeatmapLiveProducer(
+        base_path=base, out_path=out,
+        tushare_fetch=lambda baseline: live_quotes(),
+        tencent_fetch=lambda baseline: {},
+        phase_fn=lambda now: "morning",
+    )
+    with pytest.raises(contract.LiveContractError):
+        instance.step(NOW, require_usable=True)
+    assert out.read_text(encoding="utf-8") == '{"accepted":true}\n'
+
+
+def test_fallback_is_throttled_and_reuses_original_source_clock(tmp_path, monkeypatch) -> None:
+    pin_clock(monkeypatch)
+    base = tmp_path / "china_heatmap.json"
+    out = tmp_path / "china_heatmap_live.json"
+    base.write_text(json.dumps(baseline_payload()), encoding="utf-8")
+    calls = []
+
+    def fallback(baseline):
+        calls.append(True)
+        return live_quotes()
+
+    instance = producer.ChinaHeatmapLiveProducer(
+        base_path=base, out_path=out,
+        tushare_fetch=lambda baseline: None,
+        tencent_fetch=fallback,
+        phase_fn=lambda now: "morning",
+        fallback_interval=15,
+    )
+    first = instance.step(NOW)
+    second = instance.step(NOW.replace(second=45))
+    third = instance.step(NOW.replace(second=56))
+    assert len(calls) == 2
+    assert first["source"] == second["source"] == third["source"] == "tencent"
+    assert first["source_observed_at"] == second["source_observed_at"]
+    assert first["generated_at"] != second["generated_at"]
+
+
+def test_failed_fallback_retains_last_good_without_restamping(tmp_path, monkeypatch) -> None:
+    pin_clock(monkeypatch)
+    base = tmp_path / "china_heatmap.json"
+    out = tmp_path / "china_heatmap_live.json"
+    base.write_text(json.dumps(baseline_payload()), encoding="utf-8")
+    answers = iter([live_quotes(), {}])
+    instance = producer.ChinaHeatmapLiveProducer(
+        base_path=base, out_path=out,
+        tushare_fetch=lambda baseline: None,
+        tencent_fetch=lambda baseline: next(answers),
+        phase_fn=lambda now: "morning",
+        fallback_interval=15,
+    )
+    first = instance.step(NOW)
+    later = datetime(2026, 9, 28, 2, 15, 56, tzinfo=timezone.utc)
+    second = instance.step(later)
+    assert second["source"] == "tencent" and second["fallback"] is True
+    assert second["source_observed_at"] == first["source_observed_at"]
+
+
+@pytest.mark.parametrize("phase", ["session_break", "pre_open", "weekend", "holiday"])
+def test_nontrading_phases_never_call_vendors(tmp_path, monkeypatch, phase: str) -> None:
+    pin_clock(monkeypatch)
+    base = tmp_path / "china_heatmap.json"
+    out = tmp_path / "china_heatmap_live.json"
+    base.write_text(json.dumps(baseline_payload()), encoding="utf-8")
+    calls = []
+    instance = producer.ChinaHeatmapLiveProducer(
+        base_path=base, out_path=out,
+        tushare_fetch=lambda baseline: calls.append("tushare") or live_quotes(),
+        tencent_fetch=lambda baseline: calls.append("tencent") or live_quotes(),
+        phase_fn=lambda now: phase,
+    )
+    payload = instance.step(NOW)
+    assert calls == []
+    assert payload["usable"] is False and payload["source"] is None
+
+
+def test_run_forever_uses_two_second_trading_cadence(tmp_path, monkeypatch) -> None:
+    pin_clock(monkeypatch)
+    base = tmp_path / "china_heatmap.json"
+    out = tmp_path / "china_heatmap_live.json"
+    base.write_text(json.dumps(baseline_payload()), encoding="utf-8")
+    sleeps = []
+    instance = None
+
+    def sleeper(seconds):
+        sleeps.append(seconds)
+        instance.request_stop()
+
+    instance = producer.ChinaHeatmapLiveProducer(
+        base_path=base, out_path=out,
+        tushare_fetch=lambda baseline: live_quotes(),
+        tencent_fetch=lambda baseline: {},
+        phase_fn=lambda now: "morning", clock=lambda: NOW,
+        sleeper=sleeper, interval=2,
+    )
+    instance.run_forever()
+    assert sleeps == [2.0]
+    assert json.loads(out.read_text())["source"] == "tushare-rt-k"
+
+
+def test_run_forever_uses_heartbeat_cadence_off_tape(tmp_path, monkeypatch) -> None:
+    pin_clock(monkeypatch)
+    base = tmp_path / "china_heatmap.json"
+    out = tmp_path / "china_heatmap_live.json"
+    base.write_text(json.dumps(baseline_payload()), encoding="utf-8")
+    sleeps = []
+    instance = None
+
+    def sleeper(seconds):
+        sleeps.append(seconds)
+        instance.request_stop()
+
+    instance = producer.ChinaHeatmapLiveProducer(
+        base_path=base, out_path=out,
+        tushare_fetch=lambda baseline: pytest.fail("vendor must not run"),
+        tencent_fetch=lambda baseline: pytest.fail("vendor must not run"),
+        phase_fn=lambda now: "session_break", clock=lambda: NOW,
+        sleeper=sleeper, heartbeat_interval=30,
+    )
+    instance.run_forever()
+    assert sleeps == [30.0]
+
+
+def test_run_forever_stops_cleanly_on_keyboard_interrupt(tmp_path, monkeypatch) -> None:
+    pin_clock(monkeypatch)
+    base = tmp_path / "china_heatmap.json"
+    out = tmp_path / "china_heatmap_live.json"
+    base.write_text(json.dumps(baseline_payload()), encoding="utf-8")
+    instance = producer.ChinaHeatmapLiveProducer(
+        base_path=base, out_path=out,
+        tushare_fetch=lambda baseline: live_quotes(),
+        tencent_fetch=lambda baseline: {},
+        phase_fn=lambda now: "morning", clock=lambda: NOW,
+        sleeper=lambda seconds: (_ for _ in ()).throw(KeyboardInterrupt()),
+    )
+    instance.run_forever()
+    assert instance.stopped is True
+
+
+def test_baseline_is_reloaded_after_atomic_replacement(tmp_path, monkeypatch) -> None:
+    completed = {"day": "2026-09-24"}
+    monkeypatch.setattr(contract.cn_clock, "session_date", lambda now=None: date(2026, 9, 28))
+    monkeypatch.setattr(contract.cn_clock, "last_completed_session", lambda now=None: completed["day"])
+    monkeypatch.setattr(contract.cn_clock, "expected_latest_quote_time", lambda now=None: NOW)
+    base = tmp_path / "china_heatmap.json"
+    out = tmp_path / "china_heatmap_live.json"
+    base.write_text(json.dumps(baseline_payload()), encoding="utf-8")
+    seen = []
+
+    def fetch(baseline):
+        seen.append(baseline.asof)
+        return live_quotes()
+
+    instance = producer.ChinaHeatmapLiveProducer(
+        base_path=base, out_path=out, tushare_fetch=fetch,
+        tencent_fetch=lambda baseline: {}, phase_fn=lambda now: "morning",
+    )
+    first = instance.step(NOW)
+    replacement = tmp_path / "replacement.json"
+    replacement.write_text(json.dumps(baseline_payload("2026-09-25")), encoding="utf-8")
+    replacement.replace(base)
+    completed["day"] = "2026-09-25"
+    second = instance.step(NOW)
+    assert seen == ["2026-09-24", "2026-09-25"]
+    assert first["baseline_asof"] == "2026-09-24"
+    assert second["baseline_asof"] == "2026-09-25"
+
+
+def test_transient_fetch_exception_keeps_valid_last_good_output(tmp_path, monkeypatch) -> None:
+    pin_clock(monkeypatch)
+    base = tmp_path / "china_heatmap.json"
+    out = tmp_path / "china_heatmap_live.json"
+    base.write_text(json.dumps(baseline_payload()), encoding="utf-8")
+    answers = iter([live_quotes(), RuntimeError("temporary")])
+
+    def fetch(baseline):
+        answer = next(answers)
+        if isinstance(answer, Exception):
+            raise answer
+        return answer
+
+    instance = producer.ChinaHeatmapLiveProducer(
+        base_path=base, out_path=out, tushare_fetch=fetch,
+        tencent_fetch=lambda baseline: {}, phase_fn=lambda now: "morning",
+        fallback_interval=60,
+    )
+    first = instance.step(NOW)
+    second = instance.step(NOW.replace(second=41))
+    assert second["source_observed_at"] == first["source_observed_at"]
+    assert contract.validate_live_payload(second, contract.validate_baseline(baseline_payload()), now=NOW.replace(second=41)) == second
+
+
+def test_low_coverage_primary_falls_through_to_full_fallback(tmp_path, monkeypatch, caplog) -> None:
+    pin_clock(monkeypatch)
+    base = tmp_path / "china_heatmap.json"
+    out = tmp_path / "china_heatmap_live.json"
+    base.write_text(json.dumps(baseline_payload()), encoding="utf-8")
+    partial = {"600519.SS": live_quotes()["600519.SS"]}
+    instance = producer.ChinaHeatmapLiveProducer(
+        base_path=base, out_path=out,
+        tushare_fetch=lambda baseline: partial,
+        tencent_fetch=lambda baseline: live_quotes(),
+        phase_fn=lambda now: "morning",
+    )
+    with caplog.at_level(logging.INFO, logger=producer.log.name):
+        payload = instance.step(NOW, require_usable=True)
+    assert payload["source"] == "tencent"
+    assert payload["fallback"] is True
+    assert payload["coverage"] == 1.0 and payload["usable"] is True
+    assert _one_shot_rejections(caplog) == [{
+        "source": "tushare-rt-k", "reason": "insufficient_qualified_coverage",
+        "requested": 2, "normalized": 1, "qualified": 1,
+    }]
+
+
+def test_publication_clock_is_sampled_after_network(tmp_path, monkeypatch) -> None:
+    from datetime import timedelta
+    pin_clock(monkeypatch)
+    monkeypatch.setattr(contract.cn_clock, "expected_latest_quote_time", lambda now=None: now)
+    base = tmp_path / "base.json"; base.write_text(json.dumps(baseline_payload()))
+    wall = {"now": NOW}
+    def fetch(_baseline):
+        wall["now"] = NOW + timedelta(seconds=10)
+        return live_quotes(wall["now"])
+    instance = producer.ChinaHeatmapLiveProducer(base_path=base, out_path=tmp_path / "live.json",
+        tushare_fetch=fetch, tencent_fetch=lambda _: {}, phase_fn=lambda _: "morning",
+        clock=lambda: wall["now"])
+    payload = instance.step()
+    assert payload["usable"] is True
+    assert payload["generated_at"] == wall["now"].isoformat()
+
+
+def test_restart_at_lunch_recovers_same_atomic_artifact(tmp_path, monkeypatch) -> None:
+    close = datetime(2026, 9, 28, 3, 30, tzinfo=timezone.utc)
+    before = datetime(2026, 9, 28, 3, 29, 58, tzinfo=timezone.utc)
+    lunch = datetime(2026, 9, 28, 4, 0, tzinfo=timezone.utc)
+    pin_clock(monkeypatch, close)
+    base = tmp_path / "base.json"; base.write_text(json.dumps(baseline_payload()))
+    out = tmp_path / "live.json"
+    first = producer.ChinaHeatmapLiveProducer(base_path=base, out_path=out,
+        tushare_fetch=lambda _: live_quotes(before), tencent_fetch=lambda _: {},
+        phase_fn=lambda _: "morning").step(before)
+    def no_network(_):
+        pytest.fail("lunch restart must reuse the last accepted atomic artifact")
+    restarted = producer.ChinaHeatmapLiveProducer(base_path=base, out_path=out,
+        tushare_fetch=no_network, tencent_fetch=no_network, phase_fn=lambda _: "session_break")
+    payload = restarted.step(lunch)
+    assert payload["usable"] is True and payload["status"] == "break"
+    assert payload["source_observed_at"] == first["source_observed_at"]
+    assert payload["generated_at"] == lunch.isoformat()
+
+
+def test_a_newer_batch_cannot_regress_one_stock(tmp_path, monkeypatch, caplog) -> None:
+    from datetime import timedelta
+    pin_clock(monkeypatch)
+    base = tmp_path / "base.json"; base.write_text(json.dumps(baseline_payload()))
+    first = live_quotes()
+    second = live_quotes(NOW)
+    second["000001.SZ"]["ts"] = first["000001.SZ"]["ts"] - 1000
+    second["000001.SZ"]["price"] = 11.0
+    second["000001.SZ"]["changePct"] = (11.0 / 11.2 - 1) * 100
+    queue = iter([first, second])
+    instance = producer.ChinaHeatmapLiveProducer(base_path=base, out_path=tmp_path / "live.json",
+        tushare_fetch=lambda _: next(queue), tencent_fetch=lambda _: {}, phase_fn=lambda _: "morning")
+    accepted = instance.step(NOW)
+    with caplog.at_level(logging.INFO, logger=producer.log.name):
+        after = instance.step(NOW + timedelta(seconds=2), require_usable=True)
+    assert after["quotes"] == accepted["quotes"]
+    assert after["usable"] is True
+    assert _one_shot_rejections(caplog) == [
+        {"source": "tushare-rt-k", "reason": "source_timestamp_regression",
+         "requested": 2, "normalized": 2, "qualified": 2},
+        {"source": "tencent", "reason": "no_normalized_quotes",
+         "requested": 2, "normalized": 0},
+    ]
+
+
+def _tencent_source_quote(symbol: str, when: datetime = NOW) -> dict:
+    from datetime import timedelta
+    return {
+        "price": 100.0, "prev_close": 99.0,
+        "quote_ts": when.isoformat(),
+        "price_basis": "trade",
+        "source": "tencent",
+        "day_open": 99.5, "day_high": 100.5,
+        "day_low": 99.0, "day_volume": 10,
+    }
+
+
+def test_tencent_snapshot_repairs_only_transport_failed_names(monkeypatch):
+    baseline = contract.validate_baseline(baseline_payload())
+    calls = []
+    initial = {"600519.SS": _tencent_source_quote("600519.SS", NOW)}
+    restored = {"000001.SZ": _tencent_source_quote("000001.SZ", NOW)}
+    def tencent(symbols, **opts):
+        calls.append((symbols, opts))
+        if len(calls) == 1:
+            return initial, ["000001.SZ"], "partial"
+        return restored, [], "ok"
+    monkeypatch.setattr(producer.live_quotes, "fetch_tencent_cn", tencent)
+    result = producer.fetch_tencent_snapshot(baseline)
+    assert set(result) == {"600519.SS", "000001.SZ"}
+    assert len(calls) == 2
+    assert calls[0][1] == {"batch_size": 30, "max_workers": 6, "timeout": 5, "retries": 0}
+    assert calls[1] == (
+        ["000001.SZ"],
+        {"batch_size": 15, "max_workers": 8, "timeout": 5, "retries": 0},
+    )
+    assert result["000001.SZ"]["ts"] == int(NOW.timestamp() * 1000)
+    assert result["600519.SS"]["price"] == 100.0
+
+
+def test_tencent_snapshot_does_not_retry_true_no_trade_or_retime_quotes(monkeypatch):
+    baseline = contract.validate_baseline(baseline_payload())
+    calls = []
+    observed = datetime(2026, 9, 28, 2, 11, tzinfo=timezone.utc)
+    def tencent(symbols, **opts):
+        calls.append(symbols)
+        return {"600519.SS": _tencent_source_quote("600519.SS", observed)}, [], "ok"
+    monkeypatch.setattr(producer.live_quotes, "fetch_tencent_cn", tencent)
+    result = producer.fetch_tencent_snapshot(baseline)
+    assert len(calls) == 1
+    assert set(result) == {"600519.SS"}
+    assert result["600519.SS"]["ts"] == int(observed.timestamp() * 1000)
+
+
+def test_tencent_snapshot_recovery_is_one_wave_with_partial_failure(monkeypatch):
+    baseline = contract.validate_baseline(baseline_payload())
+    calls = []
+    def partial(symbols, **opts):
+        calls.append(symbols)
+        return {}, ["600519.SS", "000001.SZ"], "partial"
+    monkeypatch.setattr(producer.live_quotes, "fetch_tencent_cn", partial)
+    result = producer.fetch_tencent_snapshot(baseline)
+    assert result == {}
+    assert len(calls) == 2
+    assert calls[1] == ["600519.SS", "000001.SZ"]
+
+
+def test_tencent_snapshot_refuses_unbounded_recovery_or_unadmitted_keys(monkeypatch):
+    baseline = contract.validate_baseline(baseline_payload())
+    calls = []
+    def broken(symbols, **opts):
+        calls.append(symbols)
+        return {}, ["600519.SS"] * 500 + ["SPY"], "partial"
+    monkeypatch.setattr(producer.live_quotes, "fetch_tencent_cn", broken)
+    result = producer.fetch_tencent_snapshot(baseline)
+    assert result == {}
+    # Duplicate/bogus symbols cannot multiply bounded attempts.
+    assert len(calls) == 2
+    assert calls[1] == ["600519.SS"]
+
+
+def test_pending_settled_close_uses_one_bounded_poll_lane_then_yields_to_daily(
+    tmp_path,
+) -> None:
+    from datetime import timedelta
+    at_1705 = datetime(2026, 10, 15, 9, 5, tzinfo=timezone.utc)
+    traded_at = datetime(2026, 10, 15, 7, 0, tzinfo=timezone.utc)
+    base = tmp_path / "china_heatmap.json"
+    out = tmp_path / "live/china_heatmap.json"
+    base.write_text(json.dumps(baseline_payload("2026-10-14")))
+    calls = []
+    def qualified(_baseline):
+        calls.append(True)
+        return live_quotes(traded_at)
+    publisher = producer.ChinaHeatmapLiveProducer(
+        base_path=base, out_path=out,
+        tushare_fetch=qualified,
+        tencent_fetch=lambda _: pytest.fail("healthy primary never needs vendor fallback"),
+    )
+    assert producer.should_poll_pending_close(
+        contract.validate_baseline(baseline_payload("2026-10-14")),
+        at_1705, "closed",
+    )
+    first = publisher.step(at_1705, require_usable=True)
+    assert first["usable"] is True and first["baseline_asof"] == "2026-10-14"
+    assert first["session_date"] == "2026-10-15"
+    second = publisher.step(at_1705 + timedelta(seconds=60), require_usable=True)
+    assert second["source_observed_at"] == first["source_observed_at"]
+    assert len(calls) == 1  # no second full-universe request after one minute
+    publisher.step(at_1705 + timedelta(seconds=121), require_usable=True)
+    assert len(calls) == 2  # one new poll after two minutes
+
+    base.write_text(json.dumps(baseline_payload("2026-10-15")))
+    after_publish = publisher.step(at_1705 + timedelta(seconds=122))
+    assert after_publish["baseline_asof"] == "2026-10-15"
+    assert not after_publish["usable"] and after_publish["source"] is None
+    assert len(calls) == 2
+    assert json.loads(out.read_text())["baseline_asof"] == "2026-10-15"
+
+
+def test_pending_settled_close_expires_and_never_polls_on_weekends() -> None:
+    baseline = contract.validate_baseline(baseline_payload("2026-10-14"))
+    for time_value in [
+        datetime(2026, 10, 15, 11, 30, tzinfo=timezone.utc),
+        datetime(2026, 10, 17, 9, 5, tzinfo=timezone.utc),
+        datetime(2026, 10, 16, 9, 5, tzinfo=timezone.utc),
+    ]:
+        assert not producer.should_poll_pending_close(baseline, time_value, "closed")
+
+
+def _one_shot_rejections(caplog) -> list[dict]:
+    prefix = "China heatmap one-shot rejection: "
+    return [
+        json.loads(record.getMessage()[len(prefix):])
+        for record in caplog.records
+        if record.name == producer.log.name and record.getMessage().startswith(prefix)
+    ]
+
+
+@pytest.mark.parametrize("case,reason,normalized,qualified", [
+    ("empty", "no_normalized_quotes", 0, None),
+    ("coverage", "insufficient_qualified_coverage", 1, 1),
+    ("stale", "insufficient_qualified_coverage", 2, 0),
+    ("contract", "contract_rejected", 2, None),
+    ("fetch", "fetch_exception", None, None),
+])
+def test_one_shot_rejection_diagnostics_preserve_output_and_redact_source_data(
+    tmp_path, monkeypatch, caplog, case, reason, normalized, qualified,
+) -> None:
+    from datetime import timedelta
+
+    pin_clock(monkeypatch)
+    base = tmp_path / "base.json"
+    out = tmp_path / "live.json"
+    base.write_text(json.dumps(baseline_payload()), encoding="utf-8")
+    previous_bytes = b"pre-existing artifact must survive\n"
+    out.write_bytes(previous_bytes)
+    marker = "PRIVATE_DIAGNOSTIC_MARKER"
+    calls = []
+    candidate = live_quotes()
+    if case == "empty":
+        candidate = {}
+    elif case == "coverage":
+        candidate.pop("000001.SZ")
+    elif case == "stale":
+        candidate = live_quotes(NOW - timedelta(minutes=2))
+    elif case == "contract":
+        candidate["600519.SS"]["private_provider_note"] = marker
+
+    def primary(_baseline):
+        calls.append("tushare")
+        if case == "fetch":
+            raise RuntimeError("https://private.example/?token=" + marker)
+        return candidate
+
+    def fallback(_baseline):
+        calls.append("tencent")
+        if case == "fetch":
+            raise RuntimeError("https://private.example/?token=" + marker)
+        return {}
+
+    instance = producer.ChinaHeatmapLiveProducer(
+        base_path=base, out_path=out, tushare_fetch=primary,
+        tencent_fetch=fallback, phase_fn=lambda _: "morning",
+    )
+    with caplog.at_level(logging.INFO, logger=producer.log.name):
+        with pytest.raises(RuntimeError, match="snapshot is not usable"):
+            instance.step(NOW, require_usable=True)
+    assert calls == ["tushare", "tencent"]
+    assert out.read_bytes() == previous_bytes
+    expected = {"source": "tushare-rt-k", "reason": reason, "requested": 2}
+    if normalized is not None:
+        expected["normalized"] = normalized
+    if qualified is not None:
+        expected["qualified"] = qualified
+    fallback_event = {"source": "tencent", "reason": "fetch_exception", "requested": 2}
+    if case != "fetch":
+        fallback_event.update(reason="no_normalized_quotes", normalized=0)
+    assert _one_shot_rejections(caplog) == [
+        expected, fallback_event,
+        {"source": "unavailable", "reason": "no_usable_snapshot",
+         "requested": 2, "retained": 0, "qualified": 0},
+    ]
+    for private_value in (marker, "private_provider_note", "https://", "600519.SS", "000001.SZ", "1412.8"):
+        assert private_value not in caplog.text
+
+
+def test_loop_rejections_do_not_emit_one_shot_diagnostics(tmp_path, monkeypatch, caplog) -> None:
+    pin_clock(monkeypatch)
+    base = tmp_path / "base.json"
+    out = tmp_path / "live.json"
+    base.write_text(json.dumps(baseline_payload()), encoding="utf-8")
+    calls = []
+    sleeps = []
+
+    def sleeper(seconds):
+        sleeps.append(seconds)
+        instance.request_stop()
+
+    instance = producer.ChinaHeatmapLiveProducer(
+        base_path=base, out_path=out,
+        tushare_fetch=lambda _: calls.append("tushare") or {"600519.SS": live_quotes()["600519.SS"]},
+        tencent_fetch=lambda _: calls.append("tencent") or {},
+        phase_fn=lambda _: "morning", clock=lambda: NOW, sleeper=sleeper,
+    )
+    with caplog.at_level(logging.INFO, logger=producer.log.name):
+        instance.run_forever()
+    assert calls == ["tushare", "tencent"]
+    assert sleeps == [2.0]
+    assert json.loads(out.read_text())["usable"] is False
+    assert _one_shot_rejections(caplog) == []

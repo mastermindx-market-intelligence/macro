@@ -1,0 +1,867 @@
+{
+  "schema": "asia_heatmap_hosted_ci_correction/v1",
+  "recorded_at_utc": "2026-10-19T05:25:07.220314+00:00",
+  "mission": "SAME original Chairman MastermindX China/Hong Kong live and settled-close heatmap mission, including quality/design revamp",
+  "mission_complete": false,
+  "release_admitted": false,
+  "original_custody": {
+    "settled_pr": 7193,
+    "settled_head": "00eca5c41ac4a69c03b5e7afe2293039c5105496",
+    "live_pr": 8144,
+    "original_live_head": "96233ea000a73dfff9f707e550622a19386df0ed",
+    "original_rehearsal": "ef873ccfedd1330d0e883736baa4ac2eab40bcd9",
+    "settled_workspace": "/Users/chriswong/lanes/sol-asia-heatmap-current-base-20261015",
+    "live_workspace": "/Users/chriswong/lanes/sol-asia-heatmap-live-20261012",
+    "rehearsal_workspace": "/Users/chriswong/lanes/sol-asia-pair-oct15-rehearsal-20261015",
+    "recorded_at_utc": "2026-10-19T05:01:06.929Z",
+    "owner_return_read_at_utc": "2026-10-19T04:29:52.716Z",
+    "owner_comment_queries": {
+      "macro_9592": {
+        "since": "2026-10-19T03:06:17Z",
+        "new_comments": 0
+      },
+      "macro_7646": {
+        "since": "2026-10-19T03:06:17Z",
+        "new_comments": 0
+      },
+      "mastermind_1391": {
+        "since": "2026-10-19T03:06:17Z",
+        "new_comments": 0
+      }
+    },
+    "bounded_principal_patch_consultation": {
+      "status": "INCOMPLETE",
+      "independent_patch_inspection_established": false,
+      "concrete_defect_established": false,
+      "reason": "The scoped diff read returned no patch content before the consultation was stopped.",
+      "not_a_fabric_audit_or_release_approval": true
+    },
+    "original_audit": {
+      "run_id": "heatmap-quality-audit-20261018-c1-r1",
+      "reported_status": "ACTIVE_OR_WAITING",
+      "effect_state": "EFFECT_UNKNOWN",
+      "worker_state": "UNKNOWN",
+      "lineage": "UNVERIFIED",
+      "packet_sha256": "fd87d006643a6ce7b70b3a115ff1cf72b04feeb6d28276701a06d632c4397509",
+      "recovery_owner": "Mastermind #1391",
+      "resubmitted": false,
+      "replacement_created": false
+    },
+    "original_skillpack": {
+      "pin": "1ffe6b566b9addb58d13893bfb78e8505dce1752",
+      "compatibility_checked": true
+    },
+    "invocation_notes": [
+      {
+        "action": "bulk shell source edit",
+        "outcome": "NOT_APPLIED",
+        "tool_result": "INVALID_ARGUMENT: Command not allowed",
+        "effect_check": "Original live working tree remained clean.",
+        "resolution": "Authorized exact file replacements were accepted through the explicit file-edit API; no security configuration changed."
+      },
+      {
+        "action": "claims sparse-policy precondition",
+        "outcome": "NO_MUTATION",
+        "reason": "Original live checkout uses cone mode; a non-cone precondition assertion stopped before changing its selection."
+      },
+      {
+        "action": "optional data-size census",
+        "outcome": "STOPPED_NOT_ACCEPTED",
+        "command": "git ls-tree -r -l -z HEAD -- data",
+        "reason": "The optional read emitted repeated Git auto-packing messages and was stopped after97.72seconds; no size-census result was accepted.",
+        "completion": "Owned command terminated with SIGTERM and parent exit1.",
+        "do_not_repeat": true
+      }
+    ],
+    "preservation": {
+      "denied_predecessor_recovery_comment": "not retried or republished",
+      "original_rehearsal": "ef873ccf preserved; its old MERGE_HEAD was not recreated",
+      "old_html_browser_check": "not rerun",
+      "original_settled_ci": "39114047414 not rerun; old passed ci-pack-5 preserved",
+      "original_followup": "preserved unchanged"
+    },
+    "latest_owner_return_read_at_utc": "2026-10-19T05:26:09.151Z"
+  },
+  "completed_previous_native_ci": {
+    "run_id": 39191442324,
+    "subject_head": "f5b1440836615cbb609717e362e948326aa8084e",
+    "tested_merge_commit": "0f188d86e9020ecc39d3a092b5e614f8efd9a19a",
+    "tested_base": "973dc08ad77861affff852479f8473ed22d6f192",
+    "conclusion": "failure",
+    "plan": {
+      "sha256": "9ae5a28600813e4db10a407748963cdec3f412e656e2c2de2c8ceb763033cb83",
+      "artifact_id": 12160351131,
+      "code_jobs": 255,
+      "selected_jobs": 255,
+      "pack_count": 12,
+      "global_invalidator": ".github/workflows/deploy-china-heatmap-live.yml"
+    },
+    "failures": [
+      {
+        "pack": 0,
+        "job_id": 117865198834,
+        "logical_job": "ci-control-plane-contracts",
+        "tests": [
+          "test_every_workflow_test_path_exists",
+          "test_ancestor_init_census_does_not_grow"
+        ],
+        "observed": [
+          "standalone live manifest names absent tests/test_china_heatmap_settled_close.py",
+          "356 total undeclared ancestor pairs exceeds unchanged ceiling344"
+        ],
+        "head_summary": "2 failed,690 passed,1 skipped",
+        "complete_native_base_result_established": false
+      },
+      {
+        "pack": 5,
+        "run_id": 39191442324,
+        "job_id": 117865198843,
+        "subject_head": "f5b1440836615cbb609717e362e948326aa8084e",
+        "tested_merge": "0f188d86e9020ecc39d3a092b5e614f8efd9a19a",
+        "tested_base": "973dc08ad77861affff852479f8473ed22d6f192",
+        "failed_logical_jobs": [
+          "reference-integrity"
+        ],
+        "head_finding_count": 3,
+        "base_finding_count": 3,
+        "identical_frozen_packet_findings": true,
+        "log_utf8_bytes": 286314,
+        "log_sha256": "31f4802c5d36cdff5d918dc35c3c0f4b2a0c2ff89d8520dd1cf99a49812e6125",
+        "authority": "bounded principal log triage; not approval or replacement audit"
+      },
+      {
+        "pack": 8,
+        "job_id": 117865198920,
+        "logical_jobs": [
+          "validated-claims-source",
+          "wri-risk-core"
+        ],
+        "observed": [
+          "one unearned affirmative Chinese validated claim at templates/heatmap.js:1057",
+          "watchlist serving assertion incorrectly requires watchstore in shared integer cache matcher"
+        ],
+        "native_base_summaries": [
+          "check_validated_claims: OK",
+          "415 passed,2 skipped"
+        ],
+        "log_utf8_bytes": 281863,
+        "log_sha256": "1f18cf1dace04a3f36f59118a5e08079ad631c553526f9a6987c0e989a05bec2"
+      },
+      {
+        "pack": 11,
+        "job_id": 117865198925,
+        "logical_job": "prophet-lab",
+        "observed": [
+          "known final safe fixed-rewrite proxy expected at793, actual804; other six proxy positions unchanged"
+        ],
+        "head_summary": "1 failed,493 passed",
+        "native_base_summary": "494 passed",
+        "log_utf8_bytes": 523737,
+        "log_sha256": "47ec75e76c11dbc5010a0afeaedf2f8c6263849843dee02b84d6504275e2de41"
+      }
+    ],
+    "china": {
+      "run_id": 39191442324,
+      "job_id": 117865198879,
+      "head": "f5b1440836615cbb609717e362e948326aa8084e",
+      "tested_merge": "0f188d86e9020ecc39d3a092b5e614f8efd9a19a",
+      "base": "973dc08ad77861affff852479f8473ed22d6f192",
+      "plan_sha256": "9ae5a28600813e4db10a407748963cdec3f412e656e2c2de2c8ceb763033cb83",
+      "python_groups": [
+        77,
+        112
+      ],
+      "javascript_summary": [
+        "2026-10-19T03:03:40.2011944Z # tests 79",
+        "2026-10-19T03:03:40.2012581Z # pass 79",
+        "2026-10-19T03:03:40.2012890Z # fail 0",
+        "2026-10-19T03:03:40.2013563Z # skipped 0",
+        "2026-10-19T03:03:40.4512094Z # tests 79",
+        "2026-10-19T03:03:40.4512753Z # pass 79",
+        "2026-10-19T03:03:40.4513117Z # fail 0",
+        "2026-10-19T03:03:40.4513807Z # skipped 0"
+      ],
+      "pack_conclusion": "success",
+      "artifact_id": 12161046433
+    },
+    "completed_supporting_runs": [
+      {
+        "name": "fences",
+        "run_id": 39191442313,
+        "conclusion": "success"
+      },
+      {
+        "name": "ci-authority",
+        "run_id": 39191439085,
+        "conclusion": "success",
+        "active_context": "ci-authority/main",
+        "inactive_pilot_status": "inactive_base_context; not an active main approval"
+      }
+    ],
+    "final_gate": {
+      "job_id": 117877281631,
+      "conclusion": "failure"
+    },
+    "scope_limit": "Native receipts belong to f5b144 and its tested merge; they are not hosted qualification of the subsequent correction."
+  },
+  "correction_source": {
+    "source_commit": "a58c4a150cbae97af1d1a8820028f94553afb481",
+    "source_tree": "6877ad74251821a8be5ababe6df87d95137535f7",
+    "parent": "f5b1440836615cbb609717e362e948326aa8084e",
+    "files": [
+      ".github/ci/legacy-jobs.yml",
+      "templates/heatmap.js",
+      "site/heatmap.js",
+      "tests/test_china_heatmap_live_render.cjs",
+      "tests/test_caddy_hub_boundary.py",
+      "tests/test_watchlist_workspace_js.py"
+    ],
+    "clean": true,
+    "committed_at": "2026-10-19T04:36:17.641689+00:00"
+  },
+  "correction_scope": {
+    "base_head": "f5b1440836615cbb609717e362e948326aa8084e",
+    "files": {
+      ".github/ci/legacy-jobs.yml": {
+        "before_sha256": "95f0a50cc54e5c5cab8749248e4f4bc8a2800b2737e4d068df2bb0678e637e04",
+        "after_sha256": "5c78f602bad8ff9ebbfda30cb67717d35fdd3ee4feba4c5b6df466ab9ca2bf6b"
+      },
+      "templates/heatmap.js": {
+        "before_sha256": "589ae2cc7fba51a7c87cd480d5c801cdd278af5b56a9aca3e19b6219d5aa5da8",
+        "after_sha256": "437d832068e0f2227db961f02e02b59fd85068e05a94da1e9df67d43ce947494"
+      },
+      "site/heatmap.js": {
+        "before_sha256": "589ae2cc7fba51a7c87cd480d5c801cdd278af5b56a9aca3e19b6219d5aa5da8",
+        "after_sha256": "437d832068e0f2227db961f02e02b59fd85068e05a94da1e9df67d43ce947494"
+      },
+      "tests/test_china_heatmap_live_render.cjs": {
+        "before_sha256": "3c8efbac1f470a7b0c2bce8a259ad90a7265ba359b641b85afd7e84c99fc7667",
+        "after_sha256": "f38a5650a3fd7019a790907e93295fd5f0d0081bb374fe908ec6a5a4c5543841"
+      },
+      "tests/test_caddy_hub_boundary.py": {
+        "before_sha256": "d3d0b5872b860692f62e0a5c7cae5efc6dd439d1a6285353f42cf3b43692feb5",
+        "after_sha256": "78382b1d21d4e7793a2672dcf9dda030a4b2cb9fcaba347fe832d39627baf8aa"
+      },
+      "tests/test_watchlist_workspace_js.py": {
+        "before_sha256": "a14dddcb11f1b3b77ecb522fe52552f547cac229f4fb87edefea04496d1a8313",
+        "after_sha256": "2ac0414be24b1ca1ab03fadc6bff4ab0ef33664a666361ae4c25666589257200"
+      }
+    },
+    "manifest_job_count": 327,
+    "manifest_non_path_fields_preserved": true,
+    "manifest_deltas": {
+      "china-board-breadth": {
+        "added": [
+          "app/__init__.py",
+          "engine/capital_structure/__init__.py",
+          "engine/codex_lane/__init__.py",
+          "engine/earnings_narrative/__init__.py",
+          "engine/earnings_release/__init__.py",
+          "engine/fundamental_forensics/__init__.py",
+          "engine/government_revenue/__init__.py",
+          "engine/intelligence_workspace/__init__.py",
+          "engine/intelligence_workspace/adapters/__init__.py",
+          "engine/market_os/__init__.py",
+          "engine/press/__init__.py",
+          "engine/research_vault/__init__.py",
+          "engine/seasonality/__init__.py",
+          "engine/sector_intelligence/__init__.py",
+          "engine/signal_foundry/__init__.py",
+          "tests/__init__.py"
+        ],
+        "removed": [
+          "tests/test_china_heatmap_settled_close.py"
+        ]
+      },
+      "washout-turn-organ": {
+        "added": [
+          "collectors/biocatalyst/__init__.py",
+          "engine/biocatalyst/__init__.py",
+          "engine/context_index/__init__.py",
+          "engine/market_ontology/__init__.py"
+        ],
+        "removed": []
+      }
+    },
+    "census": {
+      "before_total": 356,
+      "before_substantive": 145,
+      "after_total": 336,
+      "after_substantive": 131,
+      "total_ceiling": 344,
+      "substantive_ceiling": 138
+    },
+    "caddy_source_unchanged": true,
+    "diff_check": "PASS"
+  },
+  "correction_explanation": [
+    "Remove only the absent standalone settled test path declaration; the original combined rehearsal retains its existing settled selector and command.",
+    "Declare all twenty newly introduced ancestor dependency pairs across the existing China and washout jobs. Preserve all 327 jobs and every non-path field; keep both census ceilings and all gates unchanged.",
+    "Replace the unsupported affirmative daily fallback wording in both renderer mirrors with Last available daily close / 上次可用日线. Preserve underlying integrity checks and add the Chinese fallback date assertion.",
+    "Check exact public access membership separately from integer and content-hash cache membership in the existing watchlist serving assertion. Preserve the gated set and the dedicated cache-policy predicates.",
+    "Update the existing final fixed-proxy expected line from 793 to 804 for the eleven added cache-policy lines. Preserve the other six positions, all seven proxy classifications and boundary mutation checks. Caddy source is unchanged."
+  ],
+  "focused_validation": {
+    "resolved_state": "PASS_AFTER_EXACT_CHECKOUT_INPUT_RESTORE",
+    "initial_attempt_preserved": {
+      "source_parent": "f5b1440836615cbb609717e362e948326aa8084e",
+      "renderer_sha256": "437d832068e0f2227db961f02e02b59fd85068e05a94da1e9df67d43ce947494",
+      "checks": [
+        {
+          "name": "validated-source",
+          "argv": [
+            "/opt/homebrew/bin/python3.12",
+            "-m",
+            "scripts.check_validated_claims",
+            "--scope",
+            "source"
+          ],
+          "env_overrides": {},
+          "exit_code": 1,
+          "elapsed_seconds": 0.07,
+          "log_path": "/tmp/mmx-heatmap-hosted-validated-source-20261019.log",
+          "log_sha256": "3e667b7653dd2dd73e98199040abd8434c393c60486d43c2564a1e73d0b90dae",
+          "log_bytes": 311,
+          "summary": "::error title=allowlist-missing::data/regime/validated_claims_allowlist.json is absent — this checkout cannot answer which 'validated' claims are backed. That is a CHECKOUT fault (partial/sparse tree), NOT a wave of new unearned claims: restore the file, do not rewrite the copy a full-tree run would report.\n"
+        },
+        {
+          "name": "renderer-template",
+          "argv": [
+            "node",
+            "--test",
+            "tests/test_china_heatmap_live_render.cjs"
+          ],
+          "env_overrides": {},
+          "exit_code": 0,
+          "elapsed_seconds": 0.14,
+          "log_path": "/tmp/mmx-heatmap-hosted-renderer-template-20261019.log",
+          "log_sha256": "ddfe5fc9dc675aa035f9dc37d231d5aa414be66048079614b3df2911d296bea5",
+          "log_bytes": 2766,
+          "summary": "gible for China and HK (0.74125ms)\n✔ Hong Kong no-live view discloses insufficient daily return coverage (0.994292ms)\n✔ post-close source on a prior baseline cannot pretend to be a settled EOD (13.43575ms)\n✔ current validated daily baseline returns the normal closed label (0.724125ms)\n✔ unverified post-close quote heartbeat declares pending rather than settled (0.468042ms)\n✔ quality strip counts nulls rather than laundering them into zero returns (1.226541ms)\n✔ quality strip and active map share one live cohort; history stays daily (0.733709ms)\n✔ HK liquidity sizing is disclosed, never described as market capitalization (0.594833ms)\n✔ same search matches symbols, English and Chinese without a regex or quote fetch (0.494292ms)\n✔ new Asia controls retain source state and search on mobile with accessible targets (0.980083ms)\n✔ live marks recolor stable map nodes rather than rebuilding the entire treemap (0.379334ms)\n✔ legacy HK payloads labeled marketcap still disclose their actual turnover proxy (0.635417ms)\n✔ explicit turnover weighting retains identical sector arithmetic without a false cap label (1.207375ms)\n✔ HK market-pulse clock matches the active delayed cohort rather than its daily baseline (0.673375ms)\n✔ overlay double-open while the data request is pending has one DOM owner (1.117416ms)\n✔ overlay enters focus and restores the invoking control and prior scroll lock on close (0.628792ms)\n✔ closing a pending overlay prevents a late fetch from creating a phantom modal (0.758ms)\n✔ overlay traps Tab and escapes an external label instead of injecting markup (0.811583ms)\n✔ legacy Asia label disappears before data loads, including a member refusal on old HTML (0.806041ms)\nℹ tests 28\nℹ suites 0\nℹ pass 28\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 94.018625\n"
+        },
+        {
+          "name": "renderer-served",
+          "argv": [
+            "node",
+            "--test",
+            "tests/test_china_heatmap_live_render.cjs"
+          ],
+          "env_overrides": {
+            "LIVE_RENDER_SOURCE": "site/heatmap.js"
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 0.14,
+          "log_path": "/tmp/mmx-heatmap-hosted-renderer-served-20261019.log",
+          "log_sha256": "7045a12c47e1cb3299814c4ac11cb50adc323039eda2165ef2c6317d1e734a00",
+          "log_bytes": 2769,
+          "summary": "ligible for China and HK (0.683708ms)\n✔ Hong Kong no-live view discloses insufficient daily return coverage (0.876125ms)\n✔ post-close source on a prior baseline cannot pretend to be a settled EOD (14.079917ms)\n✔ current validated daily baseline returns the normal closed label (1.047042ms)\n✔ unverified post-close quote heartbeat declares pending rather than settled (0.628083ms)\n✔ quality strip counts nulls rather than laundering them into zero returns (1.3665ms)\n✔ quality strip and active map share one live cohort; history stays daily (0.551459ms)\n✔ HK liquidity sizing is disclosed, never described as market capitalization (0.446333ms)\n✔ same search matches symbols, English and Chinese without a regex or quote fetch (0.428583ms)\n✔ new Asia controls retain source state and search on mobile with accessible targets (0.799ms)\n✔ live marks recolor stable map nodes rather than rebuilding the entire treemap (0.362958ms)\n✔ legacy HK payloads labeled marketcap still disclose their actual turnover proxy (0.6475ms)\n✔ explicit turnover weighting retains identical sector arithmetic without a false cap label (0.992083ms)\n✔ HK market-pulse clock matches the active delayed cohort rather than its daily baseline (0.519333ms)\n✔ overlay double-open while the data request is pending has one DOM owner (0.777958ms)\n✔ overlay enters focus and restores the invoking control and prior scroll lock on close (0.540708ms)\n✔ closing a pending overlay prevents a late fetch from creating a phantom modal (0.728208ms)\n✔ overlay traps Tab and escapes an external label instead of injecting markup (0.553833ms)\n✔ legacy Asia label disappears before data loads, including a member refusal on old HTML (0.578666ms)\nℹ tests 28\nℹ suites 0\nℹ pass 28\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 94.289792\n"
+        },
+        {
+          "name": "syntax-template",
+          "argv": [
+            "node",
+            "--check",
+            "templates/heatmap.js"
+          ],
+          "env_overrides": {},
+          "exit_code": 0,
+          "elapsed_seconds": 0.04,
+          "log_path": "/tmp/mmx-heatmap-hosted-syntax-template-20261019.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "log_bytes": 0,
+          "summary": ""
+        },
+        {
+          "name": "syntax-served",
+          "argv": [
+            "node",
+            "--check",
+            "site/heatmap.js"
+          ],
+          "env_overrides": {},
+          "exit_code": 0,
+          "elapsed_seconds": 0.05,
+          "log_path": "/tmp/mmx-heatmap-hosted-syntax-served-20261019.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "log_bytes": 0,
+          "summary": ""
+        },
+        {
+          "name": "serving-boundaries",
+          "argv": [
+            "/opt/homebrew/bin/python3.12",
+            "-m",
+            "pytest",
+            "-q",
+            "tests/test_watchlist_workspace_js.py::test_every_watchlist_page_script_is_served_or_deliberately_gated",
+            "tests/test_site_access_boundary.py::test_watchstore_versioned_cache_preserves_legacy_integer_urls",
+            "tests/test_site_access_boundary.py::test_immutable_cache_list_never_widens_the_access_boundary",
+            "tests/test_caddy_hub_boundary.py"
+          ],
+          "env_overrides": {},
+          "exit_code": 0,
+          "elapsed_seconds": 3.89,
+          "log_path": "/tmp/mmx-heatmap-hosted-serving-boundaries-20261019.log",
+          "log_sha256": "c6f4ccb6ed5b3076c555fb60dc54f9915aa6003e9fc57924706c44f59179da47",
+          "log_bytes": 1049,
+          "summary": "......................                                                   [100%]\n=============================== warnings summary ===============================\n../../Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102\n  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-1542be41-e0f4-4920-9d7e-cd7a1d0927dc/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:\n  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-1542be41-e0f4-4920-9d7e-cd7a1d0927dc/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n22 passed, 1 warning in 3.06s\n"
+        },
+        {
+          "name": "ci-declarations",
+          "argv": [
+            "/opt/homebrew/bin/python3.12",
+            "-m",
+            "pytest",
+            "-q",
+            "tests/test_ci_pack.py::test_every_workflow_test_path_exists",
+            "tests/test_ci_pack.py::test_ancestor_init_census_does_not_grow",
+            "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+            "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure"
+          ],
+          "env_overrides": {},
+          "exit_code": 0,
+          "elapsed_seconds": 176.18,
+          "log_path": "/tmp/mmx-heatmap-hosted-ci-declarations-20261019.log",
+          "log_sha256": "bf67a08d5dfdaf9f5ea134a83c715279a7f6bf4f7bee459c76c1b94f80b33e80",
+          "log_bytes": 1060,
+          "summary": "....                                                                     [100%]\n=============================== warnings summary ===============================\n../../Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102\n  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-3cff9506-0ea7-4ce3-997d-0f0428691938/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:\n  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-3cff9506-0ea7-4ce3-997d-0f0428691938/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n4 passed, 1 warning in 175.39s (0:02:55)\n"
+        }
+      ],
+      "state": "FAIL"
+    },
+    "checkout_fault_resolution": {
+      "path": "data/regime/validated_claims_allowlist.json",
+      "source_head": "f5b1440836615cbb609717e362e948326aa8084e",
+      "git_blob": "0fcfa15663937c4caaee4db3b805c38678795b9f",
+      "command": [
+        "git",
+        "restore",
+        "--source=HEAD",
+        "--worktree",
+        "--ignore-skip-worktree-bits",
+        "--",
+        "data/regime/validated_claims_allowlist.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.07,
+      "sparse_policy_unchanged": true,
+      "file_matches_exact_head": true,
+      "file_bytes": 94204,
+      "file_sha256": "f252221c9b6ef40f7ac49fd0503c4c10e68b7b01557d2c324ddfea1d9188c0fc",
+      "protected_dirty_sources_unchanged": true,
+      "working_diff_paths": [
+        ".github/ci/legacy-jobs.yml",
+        "site/heatmap.js",
+        "templates/heatmap.js",
+        "tests/test_caddy_hub_boundary.py",
+        "tests/test_china_heatmap_live_render.cjs",
+        "tests/test_watchlist_workspace_js.py"
+      ]
+    },
+    "claims_guard_final": {
+      "name": "validated-source-materialized",
+      "exit_code": 0,
+      "elapsed_seconds": 17.94,
+      "log_path": "/tmp/mmx-heatmap-hosted-validated-source-materialized-20261019.log",
+      "log_sha256": "b68abaa8622383e451c7bc5d9aea75115eb94b4d99e701f96c265c8f9d8ab23f",
+      "log_bytes": 161,
+      "summary": "check_validated_claims: OK [scope=source: engine/, lib/, scripts/build_*.py, scripts/render_*.py, templates/] — every affirmative 'validated' claim is backed.\n"
+    },
+    "negative_membership_experiment": {
+      "source_file_sha256": "2ac0414be24b1ca1ab03fadc6bff4ab0ef33664a666361ae4c25666589257200",
+      "caddy_source_sha256": "8c487fe7708e9aeac360445a9b5e74412cdd29029bc2d4059c8b1d83c7a65864",
+      "mode": "existing assertion with in-memory read substitution only",
+      "mutation_count": 7,
+      "all_rejected": true,
+      "source_unchanged": true,
+      "cases": [
+        {
+          "mutation": "remove /watchstore.js from @reg_asset",
+          "rejected": true,
+          "caddy_reads": 1,
+          "reason": "watchlist.html.j2 references scripts absent from the anonymous-access exclusions or public static matcher: {'watchstore.js': ['reg_asset']}. Restore the reviewed public membership; adding to GATED requires an authority decision."
+        },
+        {
+          "mutation": "remove /watchstore.js from @reg_asset_err",
+          "rejected": true,
+          "caddy_reads": 1,
+          "reason": "watchlist.html.j2 references scripts absent from the anonymous-access exclusions or public static matcher: {'watchstore.js': ['reg_asset_err']}. Restore the reviewed public membership; adding to GATED requires an authority decision."
+        },
+        {
+          "mutation": "remove /watchstore.js from @public_static",
+          "rejected": true,
+          "caddy_reads": 1,
+          "reason": "watchlist.html.j2 references scripts absent from the anonymous-access exclusions or public static matcher: {'watchstore.js': ['public_static']}. Restore the reviewed public membership; adding to GATED requires an authority decision."
+        },
+        {
+          "mutation": "remove /watchstore.js from @public_versioned",
+          "rejected": true,
+          "caddy_reads": 1,
+          "reason": "versioned public scripts lack their cache branches: {'watchstore.js': ['public_versioned']}"
+        },
+        {
+          "mutation": "remove /watchstore.js from @watchstore_legacy_versioned",
+          "rejected": true,
+          "caddy_reads": 1,
+          "reason": "expected one path directive in @watchstore_legacy_versioned"
+        },
+        {
+          "mutation": "remove /portfolio_state.js from @watchlist_shell_versioned",
+          "rejected": true,
+          "caddy_reads": 1,
+          "reason": "versioned public scripts lack their cache branches: {'portfolio_state.js': ['watchlist_shell_versioned']}"
+        },
+        {
+          "mutation": "duplicate @reg_asset matcher",
+          "rejected": true,
+          "caddy_reads": 1,
+          "reason": "expected exactly one @reg_asset matcher, found 2"
+        }
+      ]
+    },
+    "interpretation": "The initial source-claims failure was a missing sparse-checkout input, not an accepted pass. Restoring the exact existing HEAD allowlist made the unchanged guard pass; no allowlist content or policy was changed.",
+    "test_totals": {
+      "live_ci_declaration_tests": 4,
+      "serving_and_caddy_tests": 22,
+      "renderer_tests_per_mirror": 28
+    },
+    "warning": "Selected Python tests passed with a pre-existing PermissionError warning while pytest tried to remove an old Chromium temporary fixture. Unrelated temporary files were not removed.",
+    "no_addition_to_historical_totals": true
+  },
+  "combined_rehearsal": {
+    "commit": {
+      "commit": "8f752163d15c5e43519c9e588ad2ac9abc857b42",
+      "tree": "3834a6d543004bf0b1f4daa671de061d06827f88",
+      "parents": [
+        "7109774aa6cd4c4e49cfb0b70db2b6114043cdc8",
+        "a58c4a150cbae97af1d1a8820028f94553afb481"
+      ],
+      "ancestors_preserved": {
+        "ef873ccfedd1330d0e883736baa4ac2eab40bcd9": true,
+        "00eca5c41ac4a69c03b5e7afe2293039c5105496": true,
+        "96233ea000a73dfff9f707e550622a19386df0ed": true,
+        "a58c4a150cbae97af1d1a8820028f94553afb481": true
+      },
+      "clean": true,
+      "merge_head_present": false,
+      "local_only": true,
+      "committed_at": "2026-10-19T04:56:55.281726+00:00"
+    },
+    "qualification": {
+      "pair_parent": "7109774aa6cd4c4e49cfb0b70db2b6114043cdc8",
+      "source_parent": "a58c4a150cbae97af1d1a8820028f94553afb481",
+      "qualified_staged_tree": "3834a6d543004bf0b1f4daa671de061d06827f88",
+      "manifest_non_path_fields_preserved": true,
+      "manifest_deltas": {
+        "china-board-breadth": {
+          "added": [
+            "app/__init__.py",
+            "engine/capital_structure/__init__.py",
+            "engine/codex_lane/__init__.py",
+            "engine/earnings_narrative/__init__.py",
+            "engine/earnings_release/__init__.py",
+            "engine/fundamental_forensics/__init__.py",
+            "engine/government_revenue/__init__.py",
+            "engine/intelligence_workspace/__init__.py",
+            "engine/intelligence_workspace/adapters/__init__.py",
+            "engine/market_os/__init__.py",
+            "engine/press/__init__.py",
+            "engine/research_vault/__init__.py",
+            "engine/seasonality/__init__.py",
+            "engine/sector_intelligence/__init__.py",
+            "engine/signal_foundry/__init__.py",
+            "tests/__init__.py"
+          ],
+          "removed": []
+        },
+        "washout-turn-organ": {
+          "added": [
+            "collectors/biocatalyst/__init__.py",
+            "engine/biocatalyst/__init__.py",
+            "engine/context_index/__init__.py",
+            "engine/market_ontology/__init__.py"
+          ],
+          "removed": []
+        }
+      },
+      "china_path_count": 961,
+      "settled_test_selector_retained": true,
+      "source_identity_reuse": {
+        "templates/heatmap.js": "437d832068e0f2227db961f02e02b59fd85068e05a94da1e9df67d43ce947494",
+        "site/heatmap.js": "437d832068e0f2227db961f02e02b59fd85068e05a94da1e9df67d43ce947494",
+        "tests/test_china_heatmap_live_render.cjs": "f38a5650a3fd7019a790907e93295fd5f0d0081bb374fe908ec6a5a4c5543841",
+        "templates/market_heatmap.html.j2": "d32697aa8b61edcf06065634aba46c0de1f9e8b71d0c083add9b42e162a63f94",
+        "app/deploy/Caddyfile": "8c487fe7708e9aeac360445a9b5e74412cdd29029bc2d4059c8b1d83c7a65864",
+        "tests/test_caddy_hub_boundary.py": "78382b1d21d4e7793a2672dcf9dda030a4b2cb9fcaba347fe832d39627baf8aa",
+        "tests/test_watchlist_workspace_js.py": "2ac0414be24b1ca1ab03fadc6bff4ab0ef33664a666361ae4c25666589257200",
+        "tests/test_site_access_boundary.py": "fa9a77ff4d094a1697ecfbb8a69788ef67830fa583d25f49f83ec90044dbf57c",
+        "scripts/check_caddy_hub_boundary.py": "405987c8bf982e2f7c2c6c936cd99177b229aa7d7479db586af40742fffe087c"
+      },
+      "staged_paths": [
+        ".github/ci/legacy-jobs.yml",
+        "docs/ops/ASIA_HEATMAP_QUALITY_AUDIT_2026-10-18.md",
+        "docs/ops/evidence/asia-heatmap-quality-20261018/current-main-integration-20261019.json",
+        "site/heatmap.js",
+        "templates/heatmap.js",
+        "tests/test_caddy_hub_boundary.py",
+        "tests/test_china_heatmap_live_render.cjs",
+        "tests/test_watchlist_workspace_js.py"
+      ],
+      "validation": {
+        "argv": [
+          "/opt/homebrew/bin/python3.12",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_ci_pack.py::test_every_workflow_test_path_exists",
+          "tests/test_ci_pack.py::test_ancestor_init_census_does_not_grow",
+          "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+          "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 730.24,
+        "log_path": "/tmp/mmx-heatmap-correction-pair-ci-20261019.log",
+        "log_bytes": 1060,
+        "log_sha256": "5a77610669eac6ba8ebcea5d2eac746d742c496578df2e54644d1ae15aedc41e",
+        "summary": "....                                                                     [100%]\n=============================== warnings summary ===============================\n../../Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102\n  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-11d6b6e0-d198-4060-aa12-59129f5263b9/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:\n  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-11d6b6e0-d198-4060-aa12-59129f5263b9/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n4 passed, 1 warning in 723.23s (0:12:03)\n"
+      }
+    },
+    "scope_limit": "This local-only rehearsal contains source a58c4a150cbae97af1d1a8820028f94553afb481. It does not include this later evidence-only publication commit. Four CI declaration tests passed on its exact tree; identical component bytes reuse the focused live receipts. No new whole-pair 432-test or 168-JavaScript-test sweep is claimed."
+  },
+  "current_main_compatibility_probe": {
+    "source_commit": "a58c4a150cbae97af1d1a8820028f94553afb481",
+    "main": "80f270c44bcdf11f5e71dacc05b11a0875a01d7f",
+    "exit_code": 0,
+    "output": "bc535f612e52dc99dff7bf05fa82c7c993413268\n",
+    "non_mutating": true
+  },
+  "current_production_session_observation": {
+    "recorded_at_utc": "2026-10-19T04:56:47.172Z",
+    "browser": "Chrome, existing selected extension session",
+    "prior_task_tab": {
+      "id": "1065716849",
+      "current_url": "https://www.mastermind-x.com/us_stocks.html",
+      "actor_of_navigation": "not established; no credential entry by this continuation"
+    },
+    "hong_kong": {
+      "tab_id": "1065716862",
+      "url": "https://www.mastermind-x.com/hk_heatmap.html",
+      "title": "Hong Kong Stock Heatmap — Sector Map — MastermindX",
+      "sign_in_wall_visible": false,
+      "authenticated_control_observed": "Account panel contains Sign out; panel closed after read",
+      "renderer_reference": "heatmap.js?v=d76e68a7",
+      "active_period": "1 day",
+      "source_label": "Daily close · 2026-10-16",
+      "pulse_source_date": "2026-10-16",
+      "advance_percent": 63,
+      "advancers": 99,
+      "decliners": 54,
+      "median_percent": 0.67,
+      "legacy_banner": "≈15-min delayed (Polygon Standard / Yahoo)",
+      "new_candidate_served": false,
+      "proof_scope": "current production authenticated daily snapshot only",
+      "task_tab_mark": "handoff"
+    },
+    "china": {
+      "tab_id": "1065716864",
+      "url": "https://www.mastermind-x.com/china_heatmap.html",
+      "navigation_tool_result": "Page.navigate timeout after10000ms",
+      "navigation_reconciliation": "same-browser tab listing and exact returned tab read; no navigation retry",
+      "visible_result": "This page isn’t working — HTTP ERROR 524",
+      "loaded_heatmap_proof": false
+    },
+    "limits": [
+      "No credential or token was read, entered, copied, or transferred.",
+      "No alternate browser, preview host, tunnel, raw CDP control, or data URL was used.",
+      "The new candidate remains undeployed and lacks its own authenticated or natural-session proof.",
+      "New visual composition matrix remains NOT_ESTABLISHED; historical completed old-HTML browser check was not rerun."
+    ]
+  },
+  "production_limits": {
+    "current_hk_authenticated_access_established": true,
+    "candidate_authenticated_proof_established": false,
+    "candidate_natural_session_proof_established": false,
+    "candidate_visual_matrix": "NOT_ESTABLISHED",
+    "candidate_renderer_sha256": "437d832068e0f2227db961f02e02b59fd85068e05a94da1e9df67d43ce947494",
+    "production_renderer_sha256_from_retained_asset_receipt": "d76e68a77449ace9630b37ffca8b6e6d9abb0dfa2853301f3e709a41db8dc352",
+    "hong_kong_cash_market_date": "2026-10-19 closed for the day following Chung Yeung Festival; next ordinary session 2026-10-20",
+    "calendar_source": "https://www.hkex.com.hk/-/media/HKEX-Market/Services/Circulars-and-Notices/Participant-and-Members-Circulars/SEHK/2025/ce_SEHK_CT_075_2025.pdf",
+    "browser_cleanup_readback": "Same selected browser tab listing retained HK task tab 1065716862 and showed China error tab 1065716864 closed after the observation. The prior US Stocks tab was left alone."
+  },
+  "rig_owner_boundary": {
+    "issues": [
+      "macro#9592",
+      "macro#7646"
+    ],
+    "return_read": {
+      "macro_9592": {
+        "since": "2026-10-19T03:06:17Z",
+        "new_comments": 0
+      },
+      "macro_7646": {
+        "since": "2026-10-19T03:06:17Z",
+        "new_comments": 0
+      },
+      "mastermind_1391": {
+        "since": "2026-10-19T03:06:17Z",
+        "new_comments": 0
+      }
+    },
+    "read_at_utc": "2026-10-19T04:29:52.716Z",
+    "packets_main_ref": "80f270c44bcdf11f5e71dacc05b11a0875a01d7f",
+    "packet_blobs": {
+      "research/migration_packets/MP-20261018-sector-central.md": "f23be13d107e0d05be2dd580f2439271da6cae88",
+      "research/migration_packets/MP-20261018-sector-central-capability-crosswalk.md": "fa2b3f3941d3757f9a18545a616003e3aa8428b3",
+      "research/migration_packets/MP-20261018-sector-central-paper-and-acceptance.md": "19fa4a5f9758e22294357cd10dea7520b02aa1bc"
+    },
+    "native_head_and_base_findings": "The previous run found the same three packet-without-rig-receipt findings on its tested PR merge and tested base 973dc08ad77861affff852479f8473ed22d6f192.",
+    "approval_established": false,
+    "receipts_fabricated_or_foreign_packets_modified": false,
+    "latest_owner_returns": {
+      "read_at_utc": "2026-10-19T05:26:09.151Z",
+      "updated_existing_comments": [
+        {
+          "id": 6248814344,
+          "html_url": "https://github.com/mastermindx-market-intelligence/macro/pull/9592#issuecomment-6248814344",
+          "created_at": "2026-10-18T10:35:03Z",
+          "updated_at": "2026-10-19T04:40:45Z",
+          "owner": "rig9592",
+          "observed_body_sha256": "fd8af39b6b221fca72934126fa6a228a10bcd98e9d437785e751032abc53a403"
+        },
+        {
+          "id": 6247254582,
+          "html_url": "https://github.com/mastermindx-market-intelligence/macro/issues/7646#issuecomment-6247254582",
+          "created_at": "2026-10-18T07:42:30Z",
+          "updated_at": "2026-10-19T04:30:24Z",
+          "owner": "rig7646",
+          "observed_body_sha256": "76a1ee5ef93dc43592e0b5da9b007a2f991b1877e50d7297580ccee035e542c1"
+        }
+      ],
+      "full_rig_owner_classification": "The owner classifies the changed capability hierarchy as Full RIG. It requires frozen production-before/proposal-after evidence, the complete capability manifest, independent product-regression and visual/taste two-pass reviews with first-pass rationale quarantine, and the designated authority verdict before a genuine approved receipt can be cited in all three original packets.",
+      "sector_product_owner_report": "The #7646 owner reports actual native Paper variants and draft Terminal PR1055 at3331396f2d65151c15e1521cf9e3fca295283260. That separate native product progress explicitly preserves the original Macro RIG gates and does not supply an approved receipt.",
+      "approved_receipt_supplied": false,
+      "mastermind_1391_new_or_updated_comments": 0
+    }
+  },
+  "open_gates": [
+    "Native protected CI for the newly published correction head",
+    "Original Sector Central Full RIG reviews and approved receipts for the three unchanged packet blobs",
+    "Original Fabric audit terminal receipt and verified lineage on heatmap-quality-audit-20261018-c1-r1",
+    "Fresh independent review bound to the admitted source heads",
+    "Protected merge and deployment admission",
+    "Actual new candidate visual composition matrix and authenticated China/HK browser proof",
+    "Natural market-session proof for both markets on the admitted candidate"
+  ],
+  "publication_at_record_creation": {
+    "state": "PENDING",
+    "original_pr": 8144,
+    "target_branch": "sol/china-heatmap-live-stream-20260927",
+    "expected_remote_head": "f5b1440836615cbb609717e362e948326aa8084e",
+    "qualified_source": "a58c4a150cbae97af1d1a8820028f94553afb481",
+    "containing_commit_binding": "The Git commit that contains this receipt is the later evidence-only publication head; it descends from the qualified source.",
+    "correction_native_ci": "NOT_ESTABLISHED_AT_RECORD_CREATION",
+    "draft_preserved": true,
+    "armed": false,
+    "auto_merge": false,
+    "protected_pr_merge_or_deployment_performed": false
+  },
+  "preserved_published_evidence": {
+    "previous_published_head": "f5b1440836615cbb609717e362e948326aa8084e",
+    "audit_prefix_bytes": 24171,
+    "audit_prefix_sha256": "5d3cd455e54e5507669f7eab222bb0daebcfabba12a2f4030bcfb9039df577a4",
+    "audit_prefix_git_blob": "b53f1a993a52bbf4a5a851b8a9881e8aba07e151",
+    "prior_receipt_blobs": {
+      "docs/ops/evidence/asia-heatmap-quality-20261018/browser-pulse-result.json": "4827d2a88a910a49a6091b03b9288420a7660750",
+      "docs/ops/evidence/asia-heatmap-quality-20261018/browser-two-poll-result.json": "967b72e23d4cd9b5a005e08e3b305e4e957e65b8",
+      "docs/ops/evidence/asia-heatmap-quality-20261018/cache-compatibility-result.json": "a28aa6ab6009d75e1ab9cc03fe15ec12cc3c26b7",
+      "docs/ops/evidence/asia-heatmap-quality-20261018/china-desktop.png": "686511ddf05351f601cc92aa60f072f45738ecf8",
+      "docs/ops/evidence/asia-heatmap-quality-20261018/china-mobile.png": "210388d579f6f0fd53837e827156d8d0d5b2e95e",
+      "docs/ops/evidence/asia-heatmap-quality-20261018/current-main-integration-20261019.json": "aa182e44e6df0ed478e2436090abbb878011d81c",
+      "docs/ops/evidence/asia-heatmap-quality-20261018/embedded-overlay-result.json": "1e3485f529669a69dbd8a6d8e6f9a46497b3c13f",
+      "docs/ops/evidence/asia-heatmap-quality-20261018/hk-synthetic.png": "219a3476534f917476cebbc7969cdf258ef00bec",
+      "docs/ops/evidence/asia-heatmap-quality-20261018/integrated-rehearsal-result.json": "983d324bf577a8e8c0b8776722900d7dd250898d",
+      "docs/ops/evidence/asia-heatmap-quality-20261018/integration-ci-scope.patch": "05f44cc371f434efef04fb7e962c064d36328935",
+      "docs/ops/evidence/asia-heatmap-quality-20261018/legacy-html-result.json": "412361f6b112f4e790432e1da9220da04a72192d",
+      "docs/ops/evidence/asia-heatmap-quality-20261018/manifest.json": "a5af7a054a1c6f648e2bce2cf99666a2d3e82d0c",
+      "docs/ops/evidence/asia-heatmap-quality-20261018/neutral-border-followup-20261019.json": "db3319bb9828e7ce56e6c3866c5ba5fbeea2f18e"
+    },
+    "prior_receipts_rewritten": false
+  },
+  "do_not_redo": [
+    "Do not recreate the old ef873ccf MERGE_HEAD or rerun its already published follow-up.",
+    "Do not resubmit or duplicate heatmap-quality-audit-20261018-c1-r1, or infer its terminal state from another run.",
+    "Do not retry or repackage the platform-denied predecessor recovery-comment write.",
+    "Do not rerun original settled CI 39114047414 or its unchanged passed pack; do not confuse that old pack numbering with the new run.",
+    "Do not rerun the completed old-HTML browser check, the completed f5 native CI, or unchanged focused checks.",
+    "Do not repeat rejected data-URL preview or route around browser, tunnel, authentication or source-custody fences.",
+    "Do not repeat the stopped optional git ls-tree size census over the partial-clone data tree."
+  ],
+  "evidence_input_custody": {
+    "source": {
+      "file": "/tmp/mmx-heatmap-hosted-correction-source-commit-20261019.json",
+      "bytes": 488,
+      "sha256": "16c59a46b0dd212e2d44b9ffb537d649ab4ba9352bd1c74ec2daae8e81fac30e"
+    },
+    "corrections": {
+      "file": "/tmp/mmx-heatmap-hosted-ci-corrections-20261019.json",
+      "bytes": 2889,
+      "sha256": "bbd6ab0eaa38d7290a99b6202b9d892f157a8f0b9f1f7d56e523998eb4343431"
+    },
+    "initial_validation": {
+      "file": "/tmp/mmx-heatmap-hosted-ci-focused-validation-20261019.json",
+      "bytes": 10410,
+      "sha256": "cdecc3ae410a0b41e5f172a1d9b966e6e6322a6b089273148392fea156f9e5d7"
+    },
+    "restored_claims_validation": {
+      "file": "/tmp/mmx-heatmap-hosted-validated-source-materialized-20261019.json",
+      "bytes": 462,
+      "sha256": "64fbcfb2702253c11922327fd04e2ddead1c2ed629bc01b722dc484e77016c71"
+    },
+    "allowlist_materialization": {
+      "file": "/tmp/mmx-heatmap-claims-allowlist-materialization-20261019.json",
+      "bytes": 874,
+      "sha256": "497f24e62c464f31e960a48eadfabd180658e796f7892c6c08e77a2692c3d86e"
+    },
+    "negative_membership": {
+      "file": "/tmp/mmx-heatmap-watchlist-negative-membership-20261019.json",
+      "bytes": 2363,
+      "sha256": "fbc33b8efd36b880df141c1de729618c719c48552b57449094a5004157a42d74"
+    },
+    "main_probe": {
+      "file": "/tmp/mmx-heatmap-hosted-correction-main-probe-20261019.json",
+      "bytes": 220,
+      "sha256": "6e4835d41f08f461faefc49ce6996e32ee0cf4e113ed6d4456bc088830b2774b"
+    },
+    "pair_qualification": {
+      "file": "/tmp/mmx-heatmap-correction-pair-qualification-20261019.json",
+      "bytes": 4521,
+      "sha256": "7247ac8e1dd61ca3fa32e83679cb39d1bb066f5a47ddc0a926190d5000cbc555"
+    },
+    "pair_commit": {
+      "file": "/tmp/mmx-heatmap-correction-pair-final-20261019.json",
+      "bytes": 599,
+      "sha256": "a5cbfbd3e2feac2b8d644ff078f295dd1c183488548e43d101c318f4b7c200f4"
+    },
+    "previous_native_ci": {
+      "file": "/tmp/mmx-heatmap-native-ci-terminal-20261019.json",
+      "bytes": 4256,
+      "sha256": "79045b39e51b2a760bef1d0a9908a7075cd5e859ba755f3b4519c34a07f1166b"
+    },
+    "production": {
+      "file": "/tmp/mmx-heatmap-current-production-session-proof-20261019.json",
+      "bytes": 1899,
+      "sha256": "31f188139c20f17fb5b5ead70d83dbd733a3d0a5deac6025df07b1bee1e19522"
+    },
+    "custody": {
+      "file": "/tmp/mmx-heatmap-correction-custody-metadata-20261019.json",
+      "bytes": 2661,
+      "sha256": "6b32ee72235cb9bba0814a0c888996e7ce60f121110185eae4fc82c519238d6d"
+    },
+    "latest_owner_returns": {
+      "file": "/tmp/mmx-heatmap-owner-returns-prepublication-20261019.json",
+      "bytes": 24356,
+      "sha256": "bcfff1cd3d5be402140f3755d6846d26c60b904225dd5149091c4449057e9839"
+    }
+  },
+  "updated_at_utc": "2026-10-19T05:28:13.347737+00:00"
+}
