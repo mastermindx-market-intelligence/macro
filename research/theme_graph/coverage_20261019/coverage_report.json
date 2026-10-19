@@ -1,0 +1,2197 @@
+{
+ "activity": {
+  "cn": {
+   "denominator": {
+    "eligible_issuers_resolved": 0,
+    "eligible_securities_unresolved_issuer": 1019,
+    "issuer_count_bounds": [
+     1,
+     1019
+    ]
+   },
+   "numerator_issuers": 0,
+   "proposals_seen": {
+    "a1_schema_rows": 0,
+    "forbidden_label_rows": 0,
+    "proposed": 0,
+    "ratified_valid": 0,
+    "rejected": 0,
+    "scope_stale": 0,
+    "total_rows": 236
+   },
+   "ratio_lower_bound_denominator": {
+    "denominator": 1019,
+    "numerator": 0,
+    "ratio": "0.0000"
+   },
+   "ratio_upper_bound_denominator": {
+    "denominator": 1,
+    "numerator": 0,
+    "ratio": "0.0000"
+   },
+   "remainder_by_reason": {
+    "IDENTITY_NOT_QUALIFIED": 1019
+   }
+  },
+  "us": {
+   "denominator": {
+    "eligible_issuers_resolved": 1925,
+    "eligible_securities_unresolved_issuer": 6,
+    "issuer_count_bounds": [
+     1926,
+     1931
+    ]
+   },
+   "numerator_issuers": 0,
+   "proposals_seen": {
+    "a1_schema_rows": 0,
+    "forbidden_label_rows": 0,
+    "proposed": 0,
+    "ratified_valid": 0,
+    "rejected": 0,
+    "scope_stale": 0,
+    "total_rows": 236
+   },
+   "ratio_lower_bound_denominator": {
+    "denominator": 1931,
+    "numerator": 0,
+    "ratio": "0.0000"
+   },
+   "ratio_upper_bound_denominator": {
+    "denominator": 1926,
+    "numerator": 0,
+    "ratio": "0.0000"
+   },
+   "remainder_by_reason": {
+    "IDENTITY_NOT_QUALIFIED": 726,
+    "NO_ACTIVITY_EVIDENCE": 4,
+    "VENDOR_MEMBERSHIP_ONLY": 1201
+   }
+  }
+ },
+ "alias_groups": [
+  {
+   "node_ids": [
+    "co:us:FI",
+    "co:us:FISV"
+   ],
+   "security_id": "SEC:US-XNAS-FISV"
+  },
+  {
+   "node_ids": [
+    "co:us:ECHO",
+    "co:us:SATS"
+   ],
+   "security_id": "SEC:US-XNAS-SATS"
+  },
+  {
+   "node_ids": [
+    "co:us:EQR",
+    "co:us:VMRK"
+   ],
+   "security_id": "SEC:US-XNYS-EQR"
+  }
+ ],
+ "gates": [
+  {
+   "dimension": "Denominator honesty",
+   "measured": {
+    "core_markets": {
+     "cn": {
+      "eligibility_counts_sum": 1019,
+      "eligible_securities": 1019,
+      "exclusions_listed": 0,
+      "identity_status_counts_sum": 1019,
+      "issuer_and_security_counts_separate": true,
+      "issuers_resolved_distinct_eligible": 0,
+      "securities_total": 1019
+     },
+     "us": {
+      "eligibility_counts_sum": 1939,
+      "eligible_securities": 1935,
+      "exclusions_listed": 4,
+      "identity_status_counts_sum": 1935,
+      "issuer_and_security_counts_separate": true,
+      "issuers_resolved_distinct_eligible": 1925,
+      "securities_total": 1939
+     }
+    },
+    "issuer_security_counts_separate_keys": true
+   },
+   "threshold": "100% of the frozen universe has explicit coverage/status for each promised dimension; issuer/security/activity counts and exclusions are published separately. No arbitrary all-graph denominator.",
+   "verdict": "PASS"
+  },
+  {
+   "dimension": "Principal activity coverage",
+   "measured": {
+    "denominator_lower_bound": 1926,
+    "denominator_upper_bound": 1931,
+    "market": "us",
+    "numerator_issuers": 0,
+    "ratio_lower_bound_denominator": "0.0000",
+    "ratio_upper_bound_denominator": "0.0000"
+   },
+   "threshold": "At least 95% of eligible core U.S./China issuers have a current source-backed principal activity and qualified identity; every remainder has a specific reason and source/owner next step. Assess each market separately.",
+   "verdict": "FAIL"
+  },
+  {
+   "dimension": "Principal activity coverage",
+   "measured": {
+    "denominator_lower_bound": 1,
+    "denominator_upper_bound": 1019,
+    "market": "cn",
+    "numerator_issuers": 0,
+    "ratio_lower_bound_denominator": "0.0000",
+    "ratio_upper_bound_denominator": "0.0000"
+   },
+   "threshold": "At least 95% of eligible core U.S./China issuers have a current source-backed principal activity and qualified identity; every remainder has a specific reason and source/owner next step. Assess each market separately.",
+   "verdict": "FAIL"
+  },
+  {
+   "dimension": "Taxonomy coverage",
+   "measured": {
+    "declared_micro_count": 68,
+    "discrepancy": null,
+    "micros_without_scope_version": 0,
+    "observed_micro_count": 68,
+    "owner_reviewed": false
+   },
+   "threshold": "All 68 currently adopted micros have versioned scope and an owner-reviewed coverage disposition. No forced constituent minimum or parent inheritance to inflate a sparse theme.",
+   "verdict": "FAIL"
+  },
+  {
+   "dimension": "Correctness",
+   "measured": null,
+   "threshold": "Zero hard identity merges, fabricated named anonymous customers, unauthorized source promotion, future leakage, failed-fetch removals, or magnitude/species conflations in release controls.",
+   "verdict": "NOT_IN_THIS_LANE"
+  },
+  {
+   "dimension": "Automatic admission",
+   "measured": null,
+   "threshold": "No automatic positive admission until a per-relation/per-source evaluation supports a one-sided 95% lower confidence bound of at least 95% precision. 59 independent all-correct cases reach approximately 0.9505; correlated disclosures require an adjusted design, not this shortcut.",
+   "verdict": "NOT_IN_THIS_LANE"
+  },
+  {
+   "dimension": "Freshness",
+   "measured": null,
+   "threshold": "At least 95% of accessible material filing/corporate-action changes are observed and routed within 48 hours; visible stale/unavailable status is mandatory when source cadence or rights prevent refresh. Validity and retrieval freshness remain separate.",
+   "verdict": "NOT_IN_THIS_LANE"
+  },
+  {
+   "dimension": "Corrections",
+   "measured": null,
+   "threshold": "Material confirmed errors are withheld or corrected by the next ordinary publication; the original view remains reproducible and correction latency is measured.",
+   "verdict": "NOT_IN_THIS_LANE"
+  },
+  {
+   "dimension": "Product usefulness",
+   "measured": null,
+   "threshold": "At least 90% success on predefined investor explanation tasks, measured separately for EN/ZH and supported desktop/mobile views; exact ID/status/date parity on every release journey.",
+   "verdict": "NOT_IN_THIS_LANE"
+  },
+  {
+   "dimension": "Predictive claims",
+   "measured": null,
+   "threshold": "No prediction/allocation promotion from descriptive acceptance. The existing evaluator must separately judge PIT baselines, leakage, costs, robustness, calibration and the specific intended use.",
+   "verdict": "NOT_IN_THIS_LANE"
+  }
+ ],
+ "graph_side_ledger": {
+  "ca": {
+   "NOT_IN_MASTER/canonical": 167
+  },
+  "cn": {
+   "NOT_IN_MASTER/canonical": 2,
+   "RESOLVED/canonical": 1019
+  },
+  "global": {},
+  "hk": {
+   "RESOLVED/canonical": 147
+  },
+  "intl": {
+   "UNSUPPORTED_MARKET/canonical": 233
+  },
+  "us": {
+   "DEFERRED_IDENTITY_EXCEPTION/canonical": 1,
+   "DEFERRED_IDENTITY_EXCEPTION/retired": 1,
+   "ENTITY_TYPE_CONFLICT/retired": 1,
+   "NOT_IN_MASTER/canonical": 24,
+   "RESOLVED/canonical": 1213,
+   "RESOLVED/merged": 1
+  }
+ },
+ "identity_coverage": {
+  "cn": {
+   "by_identity_status": {
+    "NO_ISSUER_EVIDENCE": 1019
+   },
+   "eligible_securities": 1019,
+   "qualified_securities": 0,
+   "ratio_qualified_over_eligible": {
+    "denominator": 1019,
+    "numerator": 0,
+    "ratio": "0.0000"
+   }
+  },
+  "us": {
+   "by_identity_status": {
+    "DEFERRED_IDENTITY_EXCEPTION": 1,
+    "ISSUER_EVIDENCE_CONFLICT": 2,
+    "NOT_IN_GRAPH": 721,
+    "NO_ISSUER_EVIDENCE": 3,
+    "QUALIFIED": 1208
+   },
+   "eligible_securities": 1935,
+   "qualified_securities": 1208,
+   "ratio_qualified_over_eligible": {
+    "denominator": 1935,
+    "numerator": 1208,
+    "ratio": "0.6243"
+   }
+  }
+ },
+ "inputs": [
+  {
+   "bytes": 63574,
+   "git_blob_sha1": "48348268f5113350b7c12073708b8fa70ead1b9b",
+   "path": "config/theme_crosswalk.yml",
+   "role": "hierarchy"
+  },
+  {
+   "bytes": 92726,
+   "git_blob_sha1": "e7803a1893cf9cdb73959b7643e618a300864478",
+   "path": "research/theme_graph/micro_member_research_addendum_20261016/research_addendum.json",
+   "role": "research_record"
+  },
+  {
+   "bytes": 249234,
+   "git_blob_sha1": "eaeefaa420403c4afe77aed31b42dddc92f73cb4",
+   "path": "research/theme_graph/microtheme_membership_candidates_2026-10-08.json",
+   "role": "research_record"
+  },
+  {
+   "bytes": 106439,
+   "git_blob_sha1": "452fe313fa8d1904539128edbc8fb2fdd7d861d1",
+   "path": "data/reference/security_master.parquet",
+   "role": "security_master"
+  },
+  {
+   "bytes": 38295,
+   "git_blob_sha1": "ea0104419a926d263cdcf8bdf11e434ca2790cd8",
+   "path": "data/reference/_receipt.json",
+   "role": "security_master_receipt"
+  },
+  {
+   "bytes": 306908,
+   "git_blob_sha1": "0cec4f063690419d1e24332c8d493c26b1096f4b",
+   "path": "data/theme_graph/edges.parquet",
+   "role": "store_edges"
+  },
+  {
+   "bytes": 249787,
+   "git_blob_sha1": "c088b40deda56eb85d4d20112c1190f33fc504a3",
+   "path": "data/theme_graph/identity_resolution.parquet",
+   "role": "store_identity_resolution"
+  },
+  {
+   "bytes": 3694,
+   "git_blob_sha1": "28c1d1d3481f62780e9744b584f5b88eea522fd5",
+   "path": "data/theme_graph/_meta.json",
+   "role": "store_meta"
+  },
+  {
+   "bytes": 8802,
+   "git_blob_sha1": "b246f37d43ddbfed09446a0e5602da782783aea4",
+   "path": "data/theme_graph/node_lifecycle.parquet",
+   "role": "store_node_lifecycle"
+  },
+  {
+   "bytes": 143707,
+   "git_blob_sha1": "ab9a578135b71637bd4e5c114de4117c1300bab9",
+   "path": "data/theme_graph/nodes.parquet",
+   "role": "store_nodes"
+  },
+  {
+   "bytes": 219615,
+   "git_blob_sha1": "58d8d8722d7834f30df55dd8b1e571ee20f7b773",
+   "path": "data/theme_graph/probation/proposals.jsonl",
+   "role": "store_probation_proposals"
+  },
+  {
+   "bytes": 364063,
+   "git_blob_sha1": "ebbbe7595f844aa034b2d446b81d13d057c5f5b4",
+   "path": "data/symbol_directory/snapshots/2026-10-15.parquet",
+   "role": "symbol_directory"
+  },
+  {
+   "bytes": 235,
+   "git_blob_sha1": "0306f3bd7b0474cdef3f5c19dae1683c5e175d43",
+   "path": "data/symbol_directory/manifest.json",
+   "role": "symbol_directory_manifest"
+  }
+ ],
+ "manifest_version": "2373df79e9418057828ab6cbf7f6fd4055e96b5d9fc66e3de72fa10854a782d5",
+ "owners": {
+  "ACTIVITY_REJECTED_BY_CURATOR|*": {
+   "next_step": "native fact -> build_activity_membership_evidence -> make_activity_membership_proposal -> named curator ratification",
+   "owner": "engine.company_intelligence.issuer_disclosure_owner + named GMI curator"
+  },
+  "ADMITTED_SCOPE_STALE|*": {
+   "next_step": "native fact -> build_activity_membership_evidence -> make_activity_membership_proposal -> named curator ratification",
+   "owner": "engine.company_intelligence.issuer_disclosure_owner + named GMI curator"
+  },
+  "CN_LISTED_COUNTS_NOT_AVAILABLE|cn": {
+   "next_step": "install a market-wide listed-count owner for mainland China",
+   "owner": "Data OS"
+  },
+  "DEFERRED_IDENTITY_EXCEPTION|*": {
+   "next_step": "resolve the recorded identity exception",
+   "owner": "Data OS identity-exception owner"
+  },
+  "DEFERRED|*": {
+   "next_step": "resolve the deferred identity",
+   "owner": "GMI identity_resolution owner"
+  },
+  "ENTITY_TYPE_CONFLICT|*": {
+   "next_step": "confirm instrument kind; exclude or re-type",
+   "owner": "GMI identity_resolution owner"
+  },
+  "EXCLUDED_ENTITY_TYPE_CONFLICT|*": {
+   "next_step": "kept outside the company denominator; own count preserved",
+   "owner": "Data OS security master"
+  },
+  "EXCLUDED_ETF_KIND|*": {
+   "next_step": "kept outside the company denominator; own count preserved",
+   "owner": "Data OS security master"
+  },
+  "EXCLUDED_NON_COMMON_INSTRUMENT|*": {
+   "next_step": "kept outside the company denominator; own count preserved",
+   "owner": "Data OS security master"
+  },
+  "EXCLUDED_SUPERSEDED_DUPLICATE_MINT|*": {
+   "next_step": "kept outside the company denominator; own count preserved",
+   "owner": "Data OS security master"
+  },
+  "IDENTITY_NOT_QUALIFIED|*": {
+   "next_step": "native fact -> build_activity_membership_evidence -> make_activity_membership_proposal -> named curator ratification",
+   "owner": "engine.company_intelligence.issuer_disclosure_owner + named GMI curator"
+  },
+  "ISSUER_EVIDENCE_CONFLICT|*": {
+   "next_step": "adjudicate the conflicting issuer evidence",
+   "owner": "Data OS security master"
+  },
+  "NOT_IN_GRAPH|*": {
+   "next_step": "decide node admission from the master; never inferred",
+   "owner": "GMI graph population / engine.theme_graph.identity_resolution owner"
+  },
+  "NOT_IN_MASTER|*": {
+   "next_step": "decide master admission for the listing",
+   "owner": "Data OS security master"
+  },
+  "NO_ACTIVITY_EVIDENCE|*": {
+   "next_step": "native fact -> build_activity_membership_evidence -> make_activity_membership_proposal -> named curator ratification",
+   "owner": "engine.company_intelligence.issuer_disclosure_owner + named GMI curator"
+  },
+  "NO_ISSUER_EVIDENCE|cn": {
+   "next_step": "china_hk issuer admission via CNInfo evidence",
+   "owner": "Data OS security master (scripts/build_security_master.py)"
+  },
+  "NO_ISSUER_EVIDENCE|us": {
+   "next_step": "attach issuer evidence (SEC CIK) for the security",
+   "owner": "Data OS security master (scripts/build_security_master.py)"
+  },
+  "PROPOSED_NOT_ADMITTED|*": {
+   "next_step": "native fact -> build_activity_membership_evidence -> make_activity_membership_proposal -> named curator ratification",
+   "owner": "engine.company_intelligence.issuer_disclosure_owner + named GMI curator"
+  },
+  "UNSUPPORTED_MARKET|*": {
+   "next_step": "no installed universe owner for this market",
+   "owner": "Data OS universe owner"
+  },
+  "VENDOR_MEMBERSHIP_ONLY|*": {
+   "next_step": "native fact -> build_activity_membership_evidence -> make_activity_membership_proposal -> named curator ratification",
+   "owner": "engine.company_intelligence.issuer_disclosure_owner + named GMI curator"
+  }
+ },
+ "remainders": [
+  {
+   "count": 167,
+   "market": "ca",
+   "next_step": "decide master admission for the listing",
+   "owner": "Data OS security master",
+   "reason": "NOT_IN_MASTER"
+  },
+  {
+   "count": 1019,
+   "market": "cn",
+   "next_step": "install a market-wide listed-count owner for mainland China",
+   "owner": "Data OS",
+   "reason": "CN_LISTED_COUNTS_NOT_AVAILABLE"
+  },
+  {
+   "count": 1019,
+   "market": "cn",
+   "next_step": "native fact -> build_activity_membership_evidence -> make_activity_membership_proposal -> named curator ratification",
+   "owner": "engine.company_intelligence.issuer_disclosure_owner + named GMI curator",
+   "reason": "IDENTITY_NOT_QUALIFIED"
+  },
+  {
+   "count": 1019,
+   "market": "cn",
+   "next_step": "china_hk issuer admission via CNInfo evidence",
+   "owner": "Data OS security master (scripts/build_security_master.py)",
+   "reason": "NO_ISSUER_EVIDENCE"
+  },
+  {
+   "count": 233,
+   "market": "intl",
+   "next_step": "no installed universe owner for this market",
+   "owner": "Data OS universe owner",
+   "reason": "UNSUPPORTED_MARKET"
+  },
+  {
+   "count": 1,
+   "market": "us",
+   "next_step": "resolve the recorded identity exception",
+   "owner": "Data OS identity-exception owner",
+   "reason": "DEFERRED_IDENTITY_EXCEPTION"
+  },
+  {
+   "count": 1,
+   "market": "us",
+   "next_step": "kept outside the company denominator; own count preserved",
+   "owner": "Data OS security master",
+   "reason": "EXCLUDED_ENTITY_TYPE_CONFLICT"
+  },
+  {
+   "count": 2,
+   "market": "us",
+   "next_step": "kept outside the company denominator; own count preserved",
+   "owner": "Data OS security master",
+   "reason": "EXCLUDED_ETF_KIND"
+  },
+  {
+   "count": 1,
+   "market": "us",
+   "next_step": "kept outside the company denominator; own count preserved",
+   "owner": "Data OS security master",
+   "reason": "EXCLUDED_SUPERSEDED_DUPLICATE_MINT"
+  },
+  {
+   "count": 726,
+   "market": "us",
+   "next_step": "native fact -> build_activity_membership_evidence -> make_activity_membership_proposal -> named curator ratification",
+   "owner": "engine.company_intelligence.issuer_disclosure_owner + named GMI curator",
+   "reason": "IDENTITY_NOT_QUALIFIED"
+  },
+  {
+   "count": 2,
+   "market": "us",
+   "next_step": "adjudicate the conflicting issuer evidence",
+   "owner": "Data OS security master",
+   "reason": "ISSUER_EVIDENCE_CONFLICT"
+  },
+  {
+   "count": 721,
+   "market": "us",
+   "next_step": "decide node admission from the master; never inferred",
+   "owner": "GMI graph population / engine.theme_graph.identity_resolution owner",
+   "reason": "NOT_IN_GRAPH"
+  },
+  {
+   "count": 4,
+   "market": "us",
+   "next_step": "native fact -> build_activity_membership_evidence -> make_activity_membership_proposal -> named curator ratification",
+   "owner": "engine.company_intelligence.issuer_disclosure_owner + named GMI curator",
+   "reason": "NO_ACTIVITY_EVIDENCE"
+  },
+  {
+   "count": 3,
+   "market": "us",
+   "next_step": "attach issuer evidence (SEC CIK) for the security",
+   "owner": "Data OS security master (scripts/build_security_master.py)",
+   "reason": "NO_ISSUER_EVIDENCE"
+  },
+  {
+   "count": 1201,
+   "market": "us",
+   "next_step": "native fact -> build_activity_membership_evidence -> make_activity_membership_proposal -> named curator ratification",
+   "owner": "engine.company_intelligence.issuer_disclosure_owner + named GMI curator",
+   "reason": "VENDOR_MEMBERSHIP_ONLY"
+  }
+ ],
+ "report_version": "0cd3e3374c17e213606f0e30fa7ad125bea95d6f3d6a93d5bea7e2a0fddb26bb",
+ "schema": "gmi.coverage_report/v1",
+ "source_commit": "0221d6e171751c15b24d9f0bea27056aeab2716c",
+ "store_meta": {
+  "belief_time": "2026-10-18",
+  "computed_at": "2026-10-18T06:18:44Z"
+ },
+ "taxonomy": {
+  "declared_micro_count": 68,
+  "discrepancy": null,
+  "micros": [
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:aerospace_components_aftermarket",
+    "name_en": "Aerospace components and aftermarket",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:defense_aerospace>theme:aerospace_components_aftermarket"
+    ],
+    "route_kinds": [],
+    "scope_version": "2c804fe8fb37875f92bbc07dccabe006405c49f31cc3f9b937f08a5c14cc2b2f"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 4
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:ai_interconnect_silicon",
+    "name_en": "AI cluster interconnect silicon",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:semiconductors_hardware>theme:ai_semiconductors>theme:ai_interconnect_silicon",
+     "theme:technology_software>theme:ai_semiconductors>theme:ai_interconnect_silicon"
+    ],
+    "route_kinds": [],
+    "scope_version": "b3947368615b0cc304dd7e548fb7d76d4c876886c35e1074de0472b800579d0c"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:autonomous_systems_counter_uas",
+    "name_en": "Autonomy, drones and counter-UAS",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:defense_aerospace>theme:autonomous_systems_counter_uas"
+    ],
+    "route_kinds": [],
+    "scope_version": "1f23493ee9f25819fbe40b1d76e00c8a8d2e02ab211408a549f668c6e1a7658f"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:cardiorenal_metabolic_indications",
+    "name_en": "Cardiorenal and metabolic indications",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:healthcare_lifesciences>theme:glp1_obesity>theme:cardiorenal_metabolic_indications"
+    ],
+    "route_kinds": [],
+    "scope_version": "0f6cd9aaeaa9ec5687b6b510a49b7eee49ad5c8cb3ecd4027b87aec553839b36"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:cloud_security",
+    "name_en": "Cloud security",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:technology_software>theme:cybersecurity>theme:cloud_security"
+    ],
+    "route_kinds": [],
+    "scope_version": "51af3fb0738a1a9586d69b8c695eeb9c31c205799c64d69f18f408d1432e1151"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:collaborative_robot_arms",
+    "name_en": "Collaborative robot arms",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:robotics_automation>theme:collaborative_robot_arms",
+     "theme:industrials_defense>theme:robotics_automation>theme:robot_arm_systems>theme:collaborative_robot_arms"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "2e5712bc7ad26d4e505837721d4c928b6043a612fcc66784e9cdbc8455fa8219"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 3
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:conventional_dram",
+    "name_en": "Conventional DRAM (non-HBM)",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:semiconductors_hardware>theme:memory_storage>theme:conventional_dram"
+    ],
+    "route_kinds": [],
+    "scope_version": "9754e97b089846195b7f2fd84d7f3b6fb2279341f160c82151874ebd81f795e6"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:copper_mining",
+    "name_en": "Copper mining",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:copper_steel_electrify>theme:copper_mining",
+     "theme:industrials_defense>theme:copper_steel_electrify>theme:copper_supply_chain>theme:copper_mining",
+     "theme:materials_mining>theme:copper_steel_electrify>theme:copper_mining",
+     "theme:materials_mining>theme:copper_steel_electrify>theme:copper_supply_chain>theme:copper_mining"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "8659b1d358b42ba8d7cf04b5d254050edecbb7a6033f94ff46d4d5bcbc6c62d7"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:copper_wire_cable",
+    "name_en": "Copper wire and cable",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:copper_steel_electrify>theme:copper_supply_chain>theme:copper_wire_cable",
+     "theme:industrials_defense>theme:copper_steel_electrify>theme:copper_wire_cable",
+     "theme:materials_mining>theme:copper_steel_electrify>theme:copper_supply_chain>theme:copper_wire_cable",
+     "theme:materials_mining>theme:copper_steel_electrify>theme:copper_wire_cable"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "64779253d42bb3f1fe33b47ef3fbf2f5f1b851930ff27c74303f3866d2385a35"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:critical_mineral_mining_development",
+    "name_en": "Critical-mineral mining and development",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:materials_mining>theme:rare_earth_critical_min>theme:critical_mineral_mining_development"
+    ],
+    "route_kinds": [],
+    "scope_version": "aaf42d65c27249364c9b91de3c2cc560fa8503b276d7cadfe3e77a8356946a3e"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:custom_asic_silicon",
+    "name_en": "Custom ASIC accelerators",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:semiconductors_hardware>theme:ai_semiconductors>theme:ai_compute_silicon>theme:custom_asic_silicon",
+     "theme:semiconductors_hardware>theme:ai_semiconductors>theme:custom_asic_silicon",
+     "theme:technology_software>theme:ai_semiconductors>theme:ai_compute_silicon>theme:custom_asic_silicon",
+     "theme:technology_software>theme:ai_semiconductors>theme:custom_asic_silicon"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "977a5d5ded3928a01d919e47ebed6484d970ee00e2e8040a8d4c1be0036aca87"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:defense_sensors_electronics_c2",
+    "name_en": "Defense sensors, electronics and C2",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:defense_aerospace>theme:defense_sensors_electronics_c2"
+    ],
+    "route_kinds": [],
+    "scope_version": "ddd27d1c6a8fd26aa0084071c77bfea078a31c81a66835ebb991fd06dcc2a61c"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:diagnostic_reagents_kits",
+    "name_en": "Diagnostic reagents and kits",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:healthcare_lifesciences>theme:diagnostics_lifesci>theme:diagnostic_reagents_kits"
+    ],
+    "route_kinds": [],
+    "scope_version": "e185f88416540eef539bd0c4210681ae9dd17ff77cd6a475e6daa48a51536e9b"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:direct_to_device_connectivity",
+    "name_en": "Direct-to-device satellite connectivity",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:space_satellite>theme:direct_to_device_connectivity",
+     "theme:industrials_defense>theme:space_satellite>theme:satellite_connectivity_services>theme:direct_to_device_connectivity"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "b58b336f6865e72756eea27ff5efc3861b62575a0e310e1930b54d059fbfeb86"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:earth_observation",
+    "name_en": "Earth observation",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:space_satellite>theme:earth_observation"
+    ],
+    "route_kinds": [],
+    "scope_version": "a1e8f9fbaf366ef686dd9af74f4ebf8bd0a990a72e6ff4a8289bf1e2fb4a9cb2"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:endpoint_security",
+    "name_en": "Endpoint security",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:technology_software>theme:cybersecurity>theme:endpoint_security"
+    ],
+    "route_kinds": [],
+    "scope_version": "9b5c3dbc19a1b1db3cc1d9f60f9a3d21261a48525ec07ec86838eceecb3218b3"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 3,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:etch_deposition_equipment",
+    "name_en": "Etch & deposition equipment",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:semiconductors_hardware>theme:semicap_equipment>theme:etch_deposition_equipment",
+     "theme:semiconductors_hardware>theme:semicap_equipment>theme:wfe_process_tools>theme:etch_deposition_equipment"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "9a5ae1906ff3ec95e18042b5b9795a2b8f042be8cc97a5eb26d3c25b32d59762"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:fill_finish_delivery_devices",
+    "name_en": "Fill-finish and drug-delivery devices",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:healthcare_lifesciences>theme:glp1_obesity>theme:fill_finish_delivery_devices",
+     "theme:healthcare_lifesciences>theme:glp1_obesity>theme:glp1_supply_chain>theme:fill_finish_delivery_devices"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "9b0fde7f3ad78e12a76c26d98b3cb56ed50a969a1b794f70e83bdc8bb97ef0d2"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:fuel_cycle",
+    "name_en": "Fuel cycle",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:energy_power>theme:nuclear_power>theme:fuel_cycle"
+    ],
+    "route_kinds": [],
+    "scope_version": "3c2716940a6dd76be3857d887e1141cdbce5c2cd9dea43f541d7cb4167e9f37e"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:gallium_germanium_supply_chain",
+    "name_en": "Gallium and germanium supply chain",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:materials_mining>theme:rare_earth_critical_min>theme:gallium_germanium_supply_chain"
+    ],
+    "route_kinds": [],
+    "scope_version": "47044b14471602546e19cea1b3348ccd8d52d137d68cec8ee670ab09818a50d4"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:genomic_sequencing",
+    "name_en": "Genomic sequencing (NGS)",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:healthcare_lifesciences>theme:diagnostics_lifesci>theme:genomic_sequencing",
+     "theme:healthcare_lifesciences>theme:diagnostics_lifesci>theme:multi_omics_platforms>theme:genomic_sequencing"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "5943f8f400c821d77e24e601fcd5bf29c5fe6cae53b29f1282ba722c5dab8d72"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2,
+      "research_addendum.json": 4
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:glp1_api_manufacturing",
+    "name_en": "GLP-1 API manufacturing",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:healthcare_lifesciences>theme:glp1_obesity>theme:glp1_api_manufacturing",
+     "theme:healthcare_lifesciences>theme:glp1_obesity>theme:glp1_supply_chain>theme:glp1_api_manufacturing"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "72481bff0221f6943e3b77cd0ae696c41ea5010c5e43acea5bc3cc54c25ca869"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:glp1_incretin_therapies",
+    "name_en": "GLP-1 incretin therapies",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:healthcare_lifesciences>theme:glp1_obesity>theme:glp1_incretin_therapies",
+     "theme:healthcare_lifesciences>theme:glp1_obesity>theme:glp1_therapy_products>theme:glp1_incretin_therapies"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "b7c98979b4f0705d169cb115b4342b9db2e612ebdaab614c55b85a8f225fdaf2"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:gpu_merchant_accelerators",
+    "name_en": "GPUs & merchant accelerators",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:semiconductors_hardware>theme:ai_semiconductors>theme:ai_compute_silicon>theme:gpu_merchant_accelerators",
+     "theme:semiconductors_hardware>theme:ai_semiconductors>theme:gpu_merchant_accelerators",
+     "theme:technology_software>theme:ai_semiconductors>theme:ai_compute_silicon>theme:gpu_merchant_accelerators",
+     "theme:technology_software>theme:ai_semiconductors>theme:gpu_merchant_accelerators"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "650bfac874523220eefe5370981f8d39c16be81b868469014f3d072088beeefa"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:grid_distribution_automation",
+    "name_en": "Grid distribution automation",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:energy_power>theme:grid_electrification>theme:grid_distribution_automation"
+    ],
+    "route_kinds": [],
+    "scope_version": "d2e6f365799a0de6a17db5ad7fc7c91fd46bcc0f22cc8beb6909df76b7d1f1d2"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 8,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:hbm_packaging",
+    "name_en": "HBM & advanced packaging",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:semiconductors_hardware>theme:ai_semiconductors>theme:hbm_packaging",
+     "theme:semiconductors_hardware>theme:memory_storage>theme:hbm_packaging",
+     "theme:technology_software>theme:ai_semiconductors>theme:hbm_packaging"
+    ],
+    "route_kinds": [],
+    "scope_version": "7b6bd278681b3ac55030fea6a3341e4bf9122b010c8fc947be17913cc128c1eb"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:hv_transformers_switchgear",
+    "name_en": "HV transformers & switchgear",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:energy_power>theme:data_center_power>theme:hv_transformers_switchgear",
+     "theme:energy_power>theme:grid_electrification>theme:hv_transformers_switchgear",
+     "theme:technology_software>theme:data_center_power>theme:hv_transformers_switchgear"
+    ],
+    "route_kinds": [],
+    "scope_version": "310607ab5a3a4305d6eefde801826befe2b4718eabf61bdfb38c2847e1c3bb58"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 3
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:identity_access_management",
+    "name_en": "Identity and access management",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:technology_software>theme:cybersecurity>theme:identity_access_management"
+    ],
+    "route_kinds": [],
+    "scope_version": "89f4de9b394ece59ef91dfe903f612db6db9fcf28b1875c4e1b7a4c24047abd6"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:industrial_motion_controls",
+    "name_en": "Industrial controls and motion control",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:robotics_automation>theme:industrial_motion_controls"
+    ],
+    "route_kinds": [],
+    "scope_version": "5b63e0b640f660bd089dfc4e359b20bea934f2f725d2c739a3b626b24a224726"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:industrial_robot_arms",
+    "name_en": "Industrial robot arms",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:robotics_automation>theme:industrial_robot_arms",
+     "theme:industrials_defense>theme:robotics_automation>theme:robot_arm_systems>theme:industrial_robot_arms"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "a6dd9e074466c5a17bcbbdf23f3e80d87e6a988b33f53c02a94ea7f4b6cefe21"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:launch_services",
+    "name_en": "Launch services",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:space_satellite>theme:launch_services"
+    ],
+    "route_kinds": [],
+    "scope_version": "be0ab871d197482145e9613c570840501a5a81d2ec38a6da52782ccc88f5dec9"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:life_science_lab_instruments",
+    "name_en": "Life-science laboratory instruments",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:healthcare_lifesciences>theme:diagnostics_lifesci>theme:life_science_lab_instruments"
+    ],
+    "route_kinds": [],
+    "scope_version": "55127a55a976a56f1d46cbcf2e67aebd319b7089134341a347d012627f27d414"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:liquid_biopsy_assays",
+    "name_en": "Liquid biopsy assays",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:healthcare_lifesciences>theme:diagnostics_lifesci>theme:liquid_biopsy_assays",
+     "theme:healthcare_lifesciences>theme:diagnostics_lifesci>theme:multi_omics_platforms>theme:liquid_biopsy_assays"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "4b457f0f17814bfc17e4545cf239dd03f32a7d1e29c60962e9c6846eeea221d6"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:liquid_cooling_thermal",
+    "name_en": "Liquid cooling & thermal management",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:energy_power>theme:data_center_power>theme:liquid_cooling_thermal",
+     "theme:technology_software>theme:data_center_power>theme:liquid_cooling_thermal"
+    ],
+    "route_kinds": [],
+    "scope_version": "ade92a568068c09c0e0089bb6bfd4f136cbb72551944bf06cd2ecb046865a7db"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2,
+      "research_addendum.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:lithography_tools",
+    "name_en": "Lithography tools",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:semiconductors_hardware>theme:semicap_equipment>theme:lithography_tools",
+     "theme:semiconductors_hardware>theme:semicap_equipment>theme:wfe_process_tools>theme:lithography_tools"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "48fb6b9c5b7ed4fa9dcfe8e7673a7e7c4fc48ea5fe0cc5e304c0fad9dc802e30"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:machine_vision",
+    "name_en": "Machine vision",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:robotics_automation>theme:machine_vision"
+    ],
+    "route_kinds": [],
+    "scope_version": "a39db127a120295df301fc808dcbf6fee3e8324b41a8d8f6828942c33a684b5c"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:medical_imaging",
+    "name_en": "Medical imaging systems",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:healthcare_lifesciences>theme:medical_devices>theme:ai_clinical_data_devices>theme:medical_imaging",
+     "theme:healthcare_lifesciences>theme:medical_devices>theme:medical_imaging"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "e19ac4ebfec8e27650b805066d39a5b322de39c40c0e2af8ed45e6096b2ba9f3"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:military_space_communications",
+    "name_en": "Military space and satellite communications",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:defense_aerospace>theme:military_space_communications",
+     "theme:industrials_defense>theme:space_satellite>theme:military_space_communications"
+    ],
+    "route_kinds": [],
+    "scope_version": "cbd6d0a3506c2fd559751ba63de6876c73c24fd7a163da9d98d24d023cf6b79f"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:missile_propulsion_supply",
+    "name_en": "Missile and munition propulsion supply",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:defense_aerospace>theme:missile_munition_chain>theme:missile_propulsion_supply",
+     "theme:industrials_defense>theme:defense_aerospace>theme:missile_propulsion_supply"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "732cf16c34b142a3200a49af27bd2ac0a431f9ac42a6f479f481dd432bf13ada"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:missiles_munitions_effects",
+    "name_en": "Missiles, munitions and effects",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:defense_aerospace>theme:missile_munition_chain>theme:missiles_munitions_effects",
+     "theme:industrials_defense>theme:defense_aerospace>theme:missiles_munitions_effects"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "3991a030892ecab11266fc5b74186ec13b1a9676377b10df8d36b1bbf92989fd"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 3,
+      "research_addendum.json": 4
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:nand_enterprise_storage",
+    "name_en": "NAND & enterprise storage",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:semiconductors_hardware>theme:memory_storage>theme:nand_enterprise_storage"
+    ],
+    "route_kinds": [],
+    "scope_version": "7238482db4f636da20b61043f383ad904ebca545a27b698f41f351eff9eba9b1"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:naval_shipbuilding",
+    "name_en": "Naval and nuclear shipbuilding",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:defense_aerospace>theme:naval_shipbuilding"
+    ],
+    "route_kinds": [],
+    "scope_version": "b27279cbdcef94f20a4faf185582476dedf13ef1a34fd894ff4e111d08b1dd5c"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:ndfeb_permanent_magnets",
+    "name_en": "NdFeB permanent magnets",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:materials_mining>theme:rare_earth_critical_min>theme:ndfeb_permanent_magnets",
+     "theme:materials_mining>theme:rare_earth_critical_min>theme:rare_earth_processing_magnets>theme:ndfeb_permanent_magnets"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "1254e86d15a6ccfef8e3c7e3d5bf55e397a094efea7bf210a670aabc25e7d85b"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:network_security",
+    "name_en": "Network security",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:technology_software>theme:cybersecurity>theme:network_security"
+    ],
+    "route_kinds": [],
+    "scope_version": "2cb03bd93993a2c5e565704c1f09942ac0644de479949fe8f6deb57b5f2c5234"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:nitrogen_fertilizer_production",
+    "name_en": "Nitrogen fertilizer production",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:materials_mining>theme:ag_fertilizer>theme:nitrogen_fertilizer_production"
+    ],
+    "route_kinds": [],
+    "scope_version": "8ce6bbd94e12a5626c5fa12989e971500dad000ee17e029e84d27eca7f6fd898"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:nuclear_components",
+    "name_en": "Nuclear components",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:energy_power>theme:nuclear_power>theme:nuclear_components"
+    ],
+    "route_kinds": [],
+    "scope_version": "6051a89f0cc065935b6726f28a4dae7cd0b75e337d7909e05549af391f935f41"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:oral_glp1_formulations",
+    "name_en": "Oral GLP-1 formulations",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:healthcare_lifesciences>theme:glp1_obesity>theme:glp1_therapy_products>theme:oral_glp1_formulations",
+     "theme:healthcare_lifesciences>theme:glp1_obesity>theme:oral_glp1_formulations"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "7e0a430543ee268b976fc3d220dee30b9b4d330514bf5046edfd87e93fc6a62c"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:polysilicon_solar_feedstock",
+    "name_en": "Polysilicon solar feedstock",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:energy_power>theme:solar>theme:polysilicon_solar_feedstock",
+     "theme:energy_power>theme:solar>theme:pv_manufacturing_chain>theme:polysilicon_solar_feedstock"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "292747bc925711d3bdd6402727babe01203267fe846ade0b301c8cf8e31e521b"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:potash_phosphate_nutrients",
+    "name_en": "Potash and phosphate nutrients",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:materials_mining>theme:ag_fertilizer>theme:potash_phosphate_nutrients"
+    ],
+    "route_kinds": [],
+    "scope_version": "034d731d8d930e7c34c9cf6722c3a7dba2a30ac5a25b8688c7833065f5ec4d20"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2,
+      "research_addendum.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:precision_actuators_servo_motors",
+    "name_en": "Precision actuators and servo motors",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:robotics_automation>theme:precision_actuators_servo_motors"
+    ],
+    "route_kinds": [],
+    "scope_version": "00d8c20e901c941814895b8c33dd8c431dd9024b54e9f2e2adfc2e32160bc86d"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:precision_agriculture_platforms",
+    "name_en": "Precision agriculture platforms",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:materials_mining>theme:ag_fertilizer>theme:precision_agriculture_platforms"
+    ],
+    "route_kinds": [],
+    "scope_version": "7bd38760292f36cb78330841cb13e1c0a418d84a618cc070c7643feadd5a3cb8"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2,
+      "research_addendum.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:process_metrology_inspection",
+    "name_en": "Process metrology & inspection",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:semiconductors_hardware>theme:semicap_equipment>theme:process_metrology_inspection",
+     "theme:semiconductors_hardware>theme:semicap_equipment>theme:wfe_process_tools>theme:process_metrology_inspection"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "ace060b0986bd9e279ffe9452d9880f037d87567a7c58f931592a821cb34fac2"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 3,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:proteomics_discovery_platforms",
+    "name_en": "Proteomics discovery platforms",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:healthcare_lifesciences>theme:diagnostics_lifesci>theme:multi_omics_platforms>theme:proteomics_discovery_platforms",
+     "theme:healthcare_lifesciences>theme:diagnostics_lifesci>theme:proteomics_discovery_platforms"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "b635005f36c767d5c1b701ba29c4083d2649f0b7e067fdcc3b150dade8d2cf2d"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:pv_cell_module_manufacturing",
+    "name_en": "Photovoltaic cell and module manufacturing",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:energy_power>theme:solar>theme:pv_cell_module_manufacturing",
+     "theme:energy_power>theme:solar>theme:pv_manufacturing_chain>theme:pv_cell_module_manufacturing"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "5a8d4ef8e0953265c781cf8d668460af2f3c5f50494a69e26cc91e20c7fea68c"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:rare_earth_separation_refining",
+    "name_en": "Rare-earth separation & refining",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:materials_mining>theme:rare_earth_critical_min>theme:rare_earth_processing_magnets>theme:rare_earth_separation_refining",
+     "theme:materials_mining>theme:rare_earth_critical_min>theme:rare_earth_separation_refining"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "b37d097a758270eeb8b103f5e9e3c1f5b71f67a2c87364ec36913304702bc1d3"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:reactor_technology",
+    "name_en": "Reactor technology",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:energy_power>theme:nuclear_power>theme:reactor_technology"
+    ],
+    "route_kinds": [],
+    "scope_version": "2e61d094f56904063c98bd8018a67a7286abbdc243af07f9900e5038c1a2529d"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:refined_copper",
+    "name_en": "Refined copper (cathode)",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:copper_steel_electrify>theme:copper_supply_chain>theme:refined_copper",
+     "theme:industrials_defense>theme:copper_steel_electrify>theme:refined_copper",
+     "theme:materials_mining>theme:copper_steel_electrify>theme:copper_supply_chain>theme:refined_copper",
+     "theme:materials_mining>theme:copper_steel_electrify>theme:refined_copper"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "c83797dce791c98d2ec8b1a8c4b9ac8b88b2b6f69934b7d35f08bac040be3907"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:remote_patient_monitoring",
+    "name_en": "Remote patient monitoring",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:healthcare_lifesciences>theme:medical_devices>theme:ai_clinical_data_devices>theme:remote_patient_monitoring",
+     "theme:healthcare_lifesciences>theme:medical_devices>theme:remote_patient_monitoring"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "a71f00e9894c33e4fdecf7db13585fac797c4c3b0c2357eb271110559bb08174"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:satellite_broadband_services",
+    "name_en": "Satellite broadband services",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:space_satellite>theme:satellite_broadband_services",
+     "theme:industrials_defense>theme:space_satellite>theme:satellite_connectivity_services>theme:satellite_broadband_services"
+    ],
+    "route_kinds": [
+     "intermediate"
+    ],
+    "scope_version": "1ce60a7fa8c38a4c7881c8ebb5c9398a43bd9439dad93dc6eb10e14ef70e137c"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:satellite_ground_terminals",
+    "name_en": "Satellite ground terminals and equipment",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:space_satellite>theme:satellite_ground_terminals"
+    ],
+    "route_kinds": [],
+    "scope_version": "752a46ccb5fe8162fd489ab9220a15550cda7e50617cd7358df2c665bd0597e3"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 3
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:solar_inverters",
+    "name_en": "Solar inverters",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:energy_power>theme:solar>theme:solar_inverters"
+    ],
+    "route_kinds": [],
+    "scope_version": "24f4b5239a1f784da2ad73b5e9e47f60316b800ea35f378bf682693cfc203a05"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:solar_trackers_bos",
+    "name_en": "Solar trackers & balance-of-system",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:energy_power>theme:solar>theme:solar_trackers_bos"
+    ],
+    "route_kinds": [],
+    "scope_version": "cc23aa3f49887452831cf17f27a43a3b746fca5ac43188f8d1e8b3d5b0bd996a"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:structural_steel_electrification",
+    "name_en": "Structural steel for electrification build-out",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:industrials_defense>theme:copper_steel_electrify>theme:structural_steel_electrification",
+     "theme:materials_mining>theme:copper_steel_electrify>theme:structural_steel_electrification"
+    ],
+    "route_kinds": [],
+    "scope_version": "91c29fc6ad610626b7d7921f8a8e9593b21a4ac2bbd9e15bcac3536de2e8878c"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:surgical_implants_instruments",
+    "name_en": "Surgical implants and instruments",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:healthcare_lifesciences>theme:medical_devices>theme:surgical_implants_instruments"
+    ],
+    "route_kinds": [],
+    "scope_version": "82144aa26fe38e57d4d01f7dd5caefa2c7dc77d5416034df6c458b9ad8d4661f"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:surgical_robotics_systems",
+    "name_en": "Surgical robotics systems",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:healthcare_lifesciences>theme:medical_devices>theme:surgical_robotics_systems",
+     "theme:industrials_defense>theme:robotics_automation>theme:surgical_robotics_systems"
+    ],
+    "route_kinds": [],
+    "scope_version": "c7d0b16c839a6f54d3304e5e19590807daacc1fa1d9f86e0b882ac7a3435e86e"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:transmission_hvdc_cabling",
+    "name_en": "Transmission & HVDC cabling",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:energy_power>theme:grid_electrification>theme:transmission_hvdc_cabling"
+    ],
+    "route_kinds": [],
+    "scope_version": "83b1598db60ee2a418077ee85645a95b3060b7917042f20b2ec436cacea8b836"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 2
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:ups_power_conversion",
+    "name_en": "UPS & power conversion",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:energy_power>theme:data_center_power>theme:ups_power_conversion",
+     "theme:technology_software>theme:data_center_power>theme:ups_power_conversion"
+    ],
+    "route_kinds": [],
+    "scope_version": "ea2d95295e3ad0899be59d37985f2a490a27812f73961e35615f243a8e603d8e"
+   },
+   {
+    "asserted_on": "2026-10-08",
+    "counts": {
+     "admitted": 0,
+     "proposed": 0,
+     "rejected": 0,
+     "research_records": {
+      "microtheme_membership_candidates_2026-10-08.json": 1,
+      "research_addendum.json": 3
+     },
+     "vendor_expressing_routes": 0,
+     "vendor_member_companies": 0
+    },
+    "disposition": "RESEARCH_UNADMITTED",
+    "id": "theme:wafer_fab_subsystems",
+    "name_en": "Wafer-fab subsystems & components",
+    "owner_reviewed": false,
+    "parent_paths": [
+     "theme:semiconductors_hardware>theme:semicap_equipment>theme:wafer_fab_subsystems"
+    ],
+    "route_kinds": [],
+    "scope_version": "d90fccdf57dc03d63576c98c5a16738a56d2da54edd792351d8b4c18301fa3c1"
+   }
+  ],
+  "observed_micro_count": 68,
+  "unknown_research_micro_ids": []
+ },
+ "vendor_membership_not_principal_activity": {
+  "cn": {
+   "eligible_issuers_with_current_member_of": 0,
+   "eligible_securities_with_current_member_of": 1019,
+   "member_of_edges_by_dst_kind": {
+    "basket": 3811
+   },
+   "member_of_edges_by_source_class": {
+    "curated": 285,
+    "scrape": 3526
+   }
+  },
+  "us": {
+   "eligible_issuers_with_current_member_of": 1202,
+   "eligible_securities_with_current_member_of": 1206,
+   "member_of_edges_by_dst_kind": {
+    "basket": 1015,
+    "ltheme": 2333
+   },
+   "member_of_edges_by_source_class": {
+    "curated": 1015,
+    "scrape": 2333
+   }
+  }
+ }
+}
