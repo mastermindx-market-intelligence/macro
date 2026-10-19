@@ -323,3 +323,14 @@ There is a separate PR Completion compatibility issue. The shipped all-check pol
 The connected Browser plugin again reported no connected originating browser instance at the latest resume check. Local repository browser fixtures remain usable. Public fresh-session browser verification and the signed-in DNS provider action remain pending through an available authorized browser surface; no fallback was attempted. Paper's existing write-catalog qualification remains false. The accessible-file design census and source programme remain the available design records.
 
 Continue with final source/evidence publication, observed CI and legitimate landing, generated Macro publication, qualified isolated beta installation and namespace/rollback checks, then beta DNS/TLS and real desktop/tablet/mobile acceptance. Preserve every unresolved effect and existing carrier; a local build or passing fixture cannot close the programme.
+
+
+## 2026-10-19 qualification update
+
+Actual browser qualification found and corrected two integration defects: host navigation sampled a prior pathname during a committed Next transition, and About's body-level Main marketing navbar was outside the existing shell suppression selectors. The Terminal navigation correction is committed at 4717376dc582f69ffadc17026dd2eb99c9cb60fb and retained by the current 9c3e29fbac0891a2e15eee6a2cd3e33faa9a33fe candidate. All 17 current Terminal release checks passed at 2026-10-19T03:37:09Z. These checks do not substitute for the new R7 desktop, tablet, mobile and CSS-failure/retry run.
+
+The About stylesheet fix has meaningful failing-before/passing-after tests and actual canonical publication proof. See the generated-publication contract and its versioned evidence directory for exact identities, all 34 Python/all 70 Node results, 129 template/site pairs and the full 13,028-document/11-fragment publisher boundary.
+
+The proposed October Sector standalone reference received two actual independent BLOCK reviews. Its separate authority decision is REVISE; it is not an approved replacement for the existing Sector page. The Shared Shell beta retains existing native content under the Chairman's gradual-migration intent. The three Sector migration packets require a substantive, independently reviewed phase amendment and an applicable reference binding before their repository gate can close. Neither successful fixture captures nor older reference approval certifies the deficient new design or today's native runtime.
+
+No beta service installation, DNS cutover or public acceptance is claimed by this update.

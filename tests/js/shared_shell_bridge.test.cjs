@@ -358,7 +358,10 @@ test('valid INIT: chrome suppression, context, READY shape', () => {
   assert.ok(css.indexOf('.public-nav') !== -1 && css.indexOf('.landing-nav') !== -1);
   assert.ok(css.indexOf('--nav-offset: 0px') !== -1 && css.indexOf('--nav-height: 0px') !== -1);
   assert.ok(css.indexOf('header') === -1);
-  assert.ok(!/(^|[\s,>])nav(\s|\{|,|\.|$)/m.test(css)); // no generic nav tag selector
+  const mainNav = 'body > nav.nav[aria-label="Main"]';
+  assert.ok(css.includes('html[data-mmx-shared-shell="1"] ' + mainNav + ','));
+  // Only this body-level public component may use a nav tag selector.
+  assert.ok(!/(^|[\s,>])nav(\s|\{|,|\.|$)/m.test(css.replace(mainNav, '')));
   const ready = ctx.lastOf('READY');
   assert.ok(ready);
   assert.deepStrictEqual(Object.keys(ready).sort(), ENV3.concat(READY_FIELDS).sort());

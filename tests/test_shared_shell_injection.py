@@ -1,5 +1,6 @@
 """Critical HTML compatibility checks: placement, depth, fragments and upgrades."""
 import hashlib
+import re
 
 import pytest
 
@@ -77,6 +78,31 @@ def test_both_assets_publish_through_the_canonical_copy_owner_with_independent_d
     owner.copy_shared_shell_asset(site)
     assert owner.asset_version(site) == js_version
     assert owner.stylesheet_version(site) != css_version
+
+
+def test_about_public_nav_css_publishes_and_restamps_only_the_owned_block(tmp_path):
+    from lib import shared_shell as owner
+
+    source = (owner.ROOT / "templates" / "about.html").read_text(encoding="utf-8")
+    # This global marketing component is separate from the page's own landmarks.
+    assert re.search(r'<body>\s*<nav class="nav" aria-label="Main">', source)
+    assert '<nav class="ab-crumb" aria-label="Breadcrumb">' in source
+    assert '<main class="ab-main">' in source
+    assert '<header class="ab-sec ab-mast">' in source
+
+    owner.copy_shared_shell_asset(tmp_path)
+    css = (tmp_path / owner.STYLESHEET_NAME).read_bytes()
+    assert css == (owner.ROOT / "templates" / owner.STYLESHEET_NAME).read_bytes()
+    assert b'html[data-mmx-shared-shell="1"] body > nav.nav[aria-label="Main"],' in css
+    js_version, css_version = owner.asset_version(tmp_path), owner.stylesheet_version(tmp_path)
+    assert css_version == hashlib.sha256(css).hexdigest()[:8]
+    prior = inject_shared_shell_text(source, version=js_version, css_version="00000000")
+    result = inject_shared_shell_text(prior, site_dir=tmp_path)
+    assert result == prior.replace('href="shared_shell.css?v=00000000"',
+                                   'href="shared_shell.css?v=' + css_version + '"')
+    assert owner.BLOCK.sub("", result, count=1) == owner.BLOCK.sub("", source, count=1)
+    assert result.index("shared_shell.css") < result.index("shared_shell_bridge.js")
+    assert inject_shared_shell_text(result, site_dir=tmp_path) == result
 
 
 @pytest.mark.parametrize("missing", ["shared_shell.css", "shared_shell_bridge.js"])
