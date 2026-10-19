@@ -34,6 +34,7 @@ BASELINE = 'research/defense_intelligence/e2e_20261011/PUBLISHER_RECOVERY_BASELI
 CASE = 'govrev-candidate-proof.run-case.json'
 CHECKPOINT = 'govrev-candidate-proof.preflight.json'
 SOURCE_PATHS = ('scripts/ci/govrev_publisher_preflight.py', 'scripts/ci/govrev_candidate_proof.py',
+                'scripts/ci/fms_persist.py',
                 '.github/workflows/government-revenue-live.yml', '.github/workflows/daily.yml',
                 '.github/workflows/fms-acquire.yml')
 

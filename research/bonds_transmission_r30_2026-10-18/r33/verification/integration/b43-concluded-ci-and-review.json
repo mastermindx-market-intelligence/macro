@@ -1,0 +1,66 @@
+{
+  "schema": "mastermind.bonds_r33.b43_release_preflight.v1",
+  "source_head": "b43c084b0bb9c45213a133287f92e24e6dfdc0ad",
+  "recorded_at": "2026-10-19T23:36:43.190459+00:00",
+  "historical_concluded_workflows": [
+    {
+      "name": "ci",
+      "run_id": 39253553654,
+      "head_sha": "b43c084b0bb9c45213a133287f92e24e6dfdc0ad",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "run_started_at": "2026-10-19T12:37:49Z",
+      "updated_at": "2026-10-19T13:47:10Z",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39253553654"
+    },
+    {
+      "name": "fences",
+      "run_id": 39253553776,
+      "head_sha": "b43c084b0bb9c45213a133287f92e24e6dfdc0ad",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "run_started_at": "2026-10-19T12:37:49Z",
+      "updated_at": "2026-10-19T12:49:49Z",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39253553776"
+    }
+  ],
+  "contract_delta": {
+    "job_id": 118063055432,
+    "tested_merge": "05051d09f1ab08cbf9a27582d185b03f0a96aa61",
+    "tested_base": "1de0410dfae7b1bb36f0dd172667276abcbe9401",
+    "selected_raw_log_lines": [
+      "2026-10-19T12:54:16.5855611Z HEAD is now at 05051d09 Merge b43c084b0bb9c45213a133287f92e24e6dfdc0ad into 1de0410dfae7b1bb36f0dd172667276abcbe9401",
+      "2026-10-19T12:54:25.6085865Z   EXPECTED_PR_HEAD: b43c084b0bb9c45213a133287f92e24e6dfdc0ad",
+      "2026-10-19T12:54:26.1779692Z ##[group]Run python scripts/check_contract_delta.py --base 1de0410dfae7b1bb36f0dd172667276abcbe9401",
+      "2026-10-19T13:08:40.1035574Z contract-delta: probe templates/index.html: head 135 jobs / 5,783 s / 10 packs; base 136 jobs / 5,793 s / 10 packs; ceilings 136 / 5,803 / 10",
+      "2026-10-19T13:08:40.1037484Z contract-delta: probe scripts/build_free_content.py: head 134 jobs / 5,580 s / 10 packs; base 134 jobs / 5,580 s / 10 packs; ceilings 134 / 5,600 / 10",
+      "2026-10-19T13:08:40.1039035Z contract-delta: probe engine/prophet/plan_book.py: head 129 jobs / 5,542 s / 10 packs; base 129 jobs / 5,542 s / 10 packs; ceilings 130 / 5,600 / 10",
+      "2026-10-19T13:08:40.1042525Z contract-delta: 0 introduced, 0 inherited (base 1de0410dfae7)"
+    ]
+  },
+  "final_c7ad_review": {
+    "response_sha256": "e3a0cf91991ad472bbad0b078a3c0e2066343922522694fe918e22e3686d0b5e",
+    "response_bytes": 5026,
+    "raw_response": "independent-repair-review-c7ad.txt",
+    "acceptance": {
+      "schema": "mastermind.fabric_mcp.v1",
+      "action": "fabric_accept",
+      "run_id": "r33-repair-final-source-review-20261019-c4",
+      "root_id": "bonds-transmission-r30-20261018-sol001",
+      "accepted": true,
+      "accepted_by": "reviewer",
+      "reviewed_response_sha256": "e3a0cf91991ad472bbad0b078a3c0e2066343922522694fe918e22e3686d0b5e",
+      "verification_summary": "Accepted c7ad bounded source review. Parent bound both visual guards to b43 source/tree and exit 0; runtime bytes match. CSS changes covered by regenerated receipts. Current hosted CI, release and production remain unproven.",
+      "legacy_acceptance_not_atomic_attestation": true,
+      "retry_allowed": false
+    }
+  },
+  "current_status_owner": "PR #9578 conversation and exact current head",
+  "production_origin_observed": false,
+  "production_acceptance": false,
+  "mission_complete": false,
+  "b43_release_preflight_receipt": "b43-arm-preflight.json",
+  "source_bound_visual_gates": "b43-source-bound-visual-gates.json"
+}
