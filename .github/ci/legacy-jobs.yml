@@ -37,6 +37,9 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "app/__init__.py"
       - "app/account_actions.py"
       - "app/account_prefs.py"
@@ -1781,6 +1784,9 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "tests/test_c19_wp32_correction.py"
       - "tests/test_c19_wp32_denial_cache.py"
@@ -2588,6 +2594,9 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
@@ -5744,6 +5753,13 @@ jobs:
     # fails until it does.
     scope: exclusive
     paths:
+      - config/dataset_registry.yml
+      - engine/__init__.py
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
       - "engine/classification_axes/**"
@@ -6236,6 +6252,8 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -8496,6 +8514,9 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
@@ -15357,6 +15378,10 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       # Connected Research Factory import closure (PR9463).
       - engine/company_intelligence/issuer_disclosures.py
       - engine/company_intelligence/issuer_disclosure_selection.py
@@ -17875,6 +17900,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # Connected Research Factory import closure (PR9463).
@@ -18633,6 +18660,8 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -20621,6 +20650,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - contracts/theme_graph/activity_membership_proposal.v1.schema.json
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
@@ -22963,6 +22995,8 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -24055,6 +24089,10 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
@@ -25382,6 +25420,9 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
       # Connected Research Factory import closure (PR9463).
@@ -28047,6 +28088,10 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "tests/test_energy_economic_change_non_regression.py"
       - "tests/fixtures/energy_non_regression/**"
@@ -28337,6 +28382,8 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -28821,6 +28868,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
@@ -31121,6 +31170,12 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/__init__.py
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - .github/ci/legacy-jobs.yml
       - .github/workflows/ci.yml
       - config/dataset_registry.yml
@@ -31422,6 +31477,10 @@ jobs:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
     gate: code
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - engine/neuralweb/market_memory_history_transcripts.py
       - engine/neuralweb/market_memory_history_filings.py
       - engine/earnings_release/filing_key.py
@@ -31676,6 +31735,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
@@ -33115,6 +33177,9 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
@@ -34038,6 +34103,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
       - engine/theme_graph/issuer_economic_context.py
