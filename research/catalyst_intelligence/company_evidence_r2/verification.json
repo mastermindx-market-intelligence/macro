@@ -1,0 +1,55 @@
+{
+  "recorded_at": "2026-10-19T07:23:33.107367+00:00",
+  "operation_id": "catalyst-company-evidence-r2-20261019",
+  "base_head": "ec5c2e2544576f20348c6eadf834fe3cefae8039",
+  "status": "draft_source_implementation_hold",
+  "scope": "Synthetic contract, source-byte, correction and actual API-handler witnesses; not native source admission or deployed authentication/publication proof",
+  "verification": [
+    {
+      "command": "python -m pytest -q tests/test_company_catalyst_public_evidence.py tests/test_company_intelligence_catalyst_event.py tests/test_biocatalyst_what_matters_next.py tests/test_first_party_import_names.py",
+      "result": "104 passed, 1 dependency deprecation warning",
+      "duration_seconds": 142.02,
+      "exit_code": 0,
+      "process_receipt_pid": 43555
+    },
+    {
+      "command": "python -m pytest --collect-only -q tests/test_company_catalyst_public_evidence.py tests/test_company_intelligence_catalyst_event.py tests/test_biocatalyst_what_matters_next.py tests/test_first_party_import_names.py",
+      "result": "104 tests collected",
+      "duration_seconds": 4.56,
+      "exit_code": 0
+    },
+    {
+      "check": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "check": "legacy CI manifest validation",
+      "result": "214 jobs validated; existing biocatalyst-contracts job reused; no packing or gate changes"
+    }
+  ],
+  "source_sha256": {
+    "engine/company_intelligence/catalyst_evidence.py": "b269fc88716c4c3f003182a39ad74a67dfcabb1d2cec8c2d8d31264746ff47b5",
+    "engine/company_intelligence/contracts.py": "25df454e918f60ee3315e37d6599e3aad77ab2cb9248654560dcb7ee545e23e9",
+    "engine/biocatalyst/what_matters_next.py": "8cf2b6fa8e10d368a4bff72d771e7a0c6c362e0d2f69b1b61c4274ca1cb8ca60",
+    "contracts/company_intelligence/company_catalyst_public_evidence.v1.schema.json": "4994b51df52dd89d3c9b6b57e2e2198f037b2fba6321ca3f413784652d0341b7",
+    "contracts/company_intelligence/company_catalyst_event.v1_1.schema.json": "e4549f728d0af96c0aab1e36dbd0cecfb7aaca40b568839b821105e8195aab43",
+    "tests/test_company_catalyst_public_evidence.py": "e2a19690436daf6b2c809074ac8cd3fbb9c9529d777ca2bd7a407e602d46b774",
+    ".github/ci/legacy-jobs.yml": "9b8a5e8a40516588e1ddd5daa43d326a79da3252933c0d11f0c6d7d01c34a7a9"
+  },
+  "authority": {
+    "source_admission": false,
+    "entitled_runtime_verified": false,
+    "production_publication_verified": false,
+    "activation": false,
+    "trade_authority": false
+  },
+  "review": {
+    "state": "C3 source review pending",
+    "release_hold": true
+  },
+  "custody": {
+    "legacy_checkout_preserved": true,
+    "source_base_pr": 6712,
+    "wmn_hunk": "Company evidence value only; no incumbent timing, identity or publication repairs adopted"
+  }
+}

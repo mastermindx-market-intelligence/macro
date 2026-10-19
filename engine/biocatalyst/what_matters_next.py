@@ -225,7 +225,7 @@ def compose_company_event_rows(
         "assets": [],
         "relationships": [],
         "economic_exposure_state": "unresolved",
-        "evidence": [],
+        "evidence": owner["public_evidence"],
         "revision_summary": {
             "revision_ref": owner["event_revision_ref"],
             "revision_is_current": owner["revision_is_current"],

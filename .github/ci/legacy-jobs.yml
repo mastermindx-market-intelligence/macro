@@ -8392,6 +8392,8 @@ jobs:
           tests/test_biocatalyst_dataos_cik_reader.py
           tests/test_biocatalyst_research_priority.py
           tests/test_biocatalyst_what_matters_next.py
+          tests/test_company_intelligence_catalyst_event.py
+          tests/test_company_catalyst_public_evidence.py
           tests/test_sector_intelligence_ownership.py -q
       - name: BioCatalyst D0a finite reference integrity
         run: python scripts/verify_biocatalyst_d0a_references.py --reference-integrity
