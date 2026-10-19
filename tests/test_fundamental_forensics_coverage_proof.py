@@ -2314,6 +2314,7 @@ def test_blocker1_label_refusals_carry_their_codes() -> None:
         (na_key, qualified(), "label_on_non_present_cell"),
         (na_key, composed(), "label_on_non_present_cell"),
         (present_key, {"qualifier": "", "qualifier_policy": QUALIFIER_POLICY}, "qualifier_shape"),
+        (present_key, {"qualifier": " \t", "qualifier_policy": QUALIFIER_POLICY}, "qualifier_shape"),
         (present_key, {"qualifier": "cover_date_as_of"}, "qualifier_policy_missing"),
         (
             present_key,
@@ -2376,6 +2377,7 @@ def _assert_label_invariants(report: dict) -> None:
             fields["not_applicable"]
         )
         assert block["complete_strict"] <= block["bands"]["complete"]
+        assert block["complete_strict"] <= block["pass"]
         assert sum(block["qualifier_policies"].values()) == fields["present_qualified"]
         assert sum(block["derivation_policies"].values()) == fields["present_composed"]
 
@@ -2426,3 +2428,41 @@ def test_blocker1_reports_conform_to_contract() -> None:
     jsonschema.validate(run_wide(ruling_case_manifest()[0]), contract)
     jsonschema.validate(run_wide(composed_case_manifest()[0]), contract)
     jsonschema.validate(run_proof(deep_component_case_manifest()[0]), contract)
+
+
+# ---------------------------------------------------------------------------
+# 21. Seat ruling V1A-S1 (2026-10-19): complete_strict requires the tier pass
+# ---------------------------------------------------------------------------
+
+
+def test_v1a_s1_strict_requires_the_tier_pass() -> None:
+    members = standard_members()
+    first_deep = members[0]["cik"]
+    # A missing packet cell fails deep while the metric band stays complete
+    # and no cell carries a label.
+    manifest = build_manifest(members, drop=frozenset({(first_deep, "A2", "package:label")}))
+    report = run_proof(manifest)
+    deep = report["tiers"]["deep"]
+    assert deep["bands"]["complete"] == 2
+    assert deep["pass"] == 1
+    assert deep["complete_strict"] == 1
+    entry = entry_for(report, first_deep)
+    assert entry["band"] == "complete"
+    assert entry["deep_pass"] is False and entry["core_pass"] is True
+    assert entry["complete_strict"] is False
+    core = report["tiers"]["core"]
+    assert core["pass"] == 3 and core["complete_strict"] == 3
+    _assert_label_invariants(report)
+
+    # Core needs no second case: the thresholds law pins the complete band
+    # at rate 1.0, so a core issuer in that band has no failed metric field
+    # and core strictness already equals core pass on every fixture.
+
+
+def test_v1a_s1_policy_maps_never_carry_a_zero_count() -> None:
+    contract = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
+    assert contract["$defs"]["policy_count_map"]["additionalProperties"]["minimum"] == 1
+    for tier in ("core_tier", "deep_tier"):
+        for key in ("qualifier_policies", "derivation_policies"):
+            block = contract["$defs"][tier]["properties"][key]
+            assert block == {"$ref": "#/$defs/policy_count_map"}

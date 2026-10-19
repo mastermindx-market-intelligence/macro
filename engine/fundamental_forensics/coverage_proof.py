@@ -94,10 +94,11 @@ Over each tier's metric scope the proof counts ``present_strict``,
 ``na_not_presented`` and ``na_class`` (a cell with both present labels
 counts in both labelled counts, never in strict), plus, for the deep tier,
 ``component_labelled`` over the deep component cells.  An issuer is
-``complete_strict`` for a tier when its band is ``complete`` and it has no
-qualified, composed, not-presented or class-policy cell (and, for deep, no
-labelled component).  ``complete_strict`` is reported per tier and per
-issuer and printed beside ``complete``.  It is reporting only: a labelled
+``complete_strict`` for a tier when it passes that tier (band ``complete``
+and no failed field; seat ruling V1A-S1) and it has no qualified, composed,
+not-presented or class-policy cell (and, for deep, no labelled component).
+``complete_strict`` is reported per tier and per issuer and printed beside
+``complete``; per tier it never exceeds ``pass``.  It is reporting only: a labelled
 present cell is present exactly as before, an N/A of any basis leaves the
 applicable denominator exactly as before, and pass, target, band, rate,
 failed fields and every acceptance blocker are unchanged.
@@ -814,7 +815,7 @@ def _check_cell_labels(cell: Mapping[str, Any], status: str, position: int) -> N
                 f"cells[{position}] has status {status!r} but carries {label} "
                 f"{value!r}; only a present cell may carry one",
             )
-        if not isinstance(value, str) or not value:
+        if not isinstance(value, str) or not value.strip():
             raise CoverageProofError(
                 f"{label}_shape",
                 f"cells[{position}] {label} must be a non-empty string; got {value!r}",
@@ -1261,8 +1262,13 @@ def prove_coverage(
         # list is empty; a ``no_applicable_fields`` band never passes.
         core_band = thresholds.band_for_rate(core_scope["rate"])
         core_pass = not core_scope["failed"] and core_band == COMPLETE_BAND
-        # Seat ruling BLOCKER-1: complete with no labelled scope cell.
-        core_strict = core_band == COMPLETE_BAND and scope_unlabelled(core_scope)
+        # Seat ruling BLOCKER-1: complete with no labelled scope cell; ruling
+        # V1A-S1 (fail-closed): only an issuer that passes the tier.
+        core_strict = (
+            core_pass
+            and core_band == COMPLETE_BAND
+            and scope_unlabelled(core_scope)
+        )
         entry: dict[str, Any] = {
             "cik": cik,
             "ticker": issuer.get("ticker") if isinstance(issuer.get("ticker"), str) else "",
@@ -1276,7 +1282,8 @@ def prove_coverage(
             deep_band = thresholds.band_for_rate(deep_scope["rate"])
             deep_pass = not deep_labels and deep_band == COMPLETE_BAND
             deep_strict = (
-                deep_band == COMPLETE_BAND
+                deep_pass
+                and deep_band == COMPLETE_BAND
                 and scope_unlabelled(deep_scope)
                 and component_labelled == 0
             )
@@ -1403,6 +1410,12 @@ def prove_coverage(
             raise AssertionError(
                 "complete_strict must not exceed the complete band: "
                 f"{complete_strict} > {bands[COMPLETE_BAND]}"
+            )
+        # Seat ruling V1A-S1: strict-complete issuers are a subset of passes.
+        if complete_strict > pass_count:
+            raise AssertionError(
+                "complete_strict must not exceed pass: "
+                f"{complete_strict} > {pass_count}"
             )
         rate = (fields["present"] / fields["applicable"]) if fields["applicable"] else None
         block = {

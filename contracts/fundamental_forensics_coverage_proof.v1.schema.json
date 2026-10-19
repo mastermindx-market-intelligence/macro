@@ -394,6 +394,13 @@
         "minimum": 0
       }
     },
+    "policy_count_map": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 1
+      }
+    },
     "declared_identity": {
       "type": "object",
       "additionalProperties": false,
@@ -622,10 +629,10 @@
           "minimum": 0
         },
         "qualifier_policies": {
-          "$ref": "#/$defs/count_map"
+          "$ref": "#/$defs/policy_count_map"
         },
         "derivation_policies": {
-          "$ref": "#/$defs/count_map"
+          "$ref": "#/$defs/policy_count_map"
         }
       }
     },
@@ -681,10 +688,10 @@
           "minimum": 0
         },
         "qualifier_policies": {
-          "$ref": "#/$defs/count_map"
+          "$ref": "#/$defs/policy_count_map"
         },
         "derivation_policies": {
-          "$ref": "#/$defs/count_map"
+          "$ref": "#/$defs/policy_count_map"
         },
         "component_labelled": {
           "type": "integer",
