@@ -148,6 +148,21 @@ STATEMENT_REFUSAL_SLUGS = frozenset(
 _STATEMENT_REFUSAL_PIN_PATH = (
     _ROOT / "config" / "fundamental_forensics" / "statement_refusals.v1.json"
 )
+# R-B3: an all-refused issuer's exclusion reason is its first refusal in
+# (accession, income/balance/cash_flow) order, and its detail list is in the
+# same order — never alphabetical by statement type.
+_STATEMENT_TYPE_ORDER = {"income_statement": 0, "balance_sheet": 1, "cash_flow": 2}
+
+
+def _refusal_row_order(row: Mapping[str, Any]) -> tuple[str, int, str]:
+    statement_type = str(row["statement_type"])
+    return (
+        str(row["accession"]),
+        _STATEMENT_TYPE_ORDER.get(statement_type, len(_STATEMENT_TYPE_ORDER)),
+        statement_type,
+    )
+
+
 PUBLISHER_ERROR_CODES = frozenset(
     {
         "contract_malformed",
@@ -224,10 +239,22 @@ def _load_statement_refusal_pin() -> tuple[
     golden_accessions = frozenset(
         str(item) for item in (document.get("golden_accessions") or []) if str(item)
     )
+    if not golden_accessions:
+        # A pin without the golden set must never silently disable the
+        # golden_accession rule. The producer stays off the golden layer, so
+        # it refuses here; the pin-to-fixture equality is asserted in tests.
+        _fail("statement refusal pin lacks golden_accessions", code="publish_failed")
     return by_pair, triples, golden_accessions
 
 
 def _refusal_message_for_statement(package: Any, statement_type: str, registry: Any) -> str:
+    """Re-run one refused statement to recover the kernel's message text.
+
+    Declared cost: one primary-document re-parse plus one reconstruction per
+    refused statement (12 today, one per pinned refusal), on report rows only. The
+    stored refusal entry carries the code but not the message, so this is the
+    only lawful source of the text; it never runs for reconstructed statements.
+    """
     from engine.fundamental_forensics.statement_graph import reconstruct_statement  # noqa: PLC0415
 
     primary = package.manifest["primary_document"]
@@ -277,7 +304,8 @@ def _classify_statement_refusal(
             admitted = set(latest.statement_accessions())
         except Exception as exc:  # noqa: BLE001
             raise PublisherError(
-                f"latest generation statement accessions unreadable for {cik}: {exc}",
+                f"latest generation statement accessions unreadable for {cik} "
+                f"(latest_accessions_unreadable): {exc}",
                 code="statement_refusal_unpinned",
             ) from exc
         if accession in admitted:
@@ -285,7 +313,8 @@ def _classify_statement_refusal(
                 entry = _latest_entry_for_statement(latest, accession, statement_type)
             except Exception as exc:  # noqa: BLE001
                 raise PublisherError(
-                    f"latest generation statement trees unreadable for {cik} {accession}: {exc}",
+                    f"latest generation statement trees unreadable for {cik} {accession} "
+                    f"(latest_entry_unreadable): {exc}",
                     code="statement_refusal_unpinned",
                 ) from exc
             if entry is not None and not _statement_is_refusal_entry(entry):
@@ -320,7 +349,8 @@ def _classify_statement_refusal(
         admitted = set(latest.statement_accessions())
     except Exception as exc:  # noqa: BLE001
         raise PublisherError(
-            f"latest generation statement accessions unreadable for {cik}: {exc}",
+            f"latest generation statement accessions unreadable for {cik} "
+            f"(latest_accessions_unreadable): {exc}",
             code="statement_refusal_unpinned",
         ) from exc
     if accession not in admitted:
@@ -329,7 +359,8 @@ def _classify_statement_refusal(
         entry = _latest_entry_for_statement(latest, accession, statement_type)
     except Exception as exc:  # noqa: BLE001
         raise PublisherError(
-            f"latest generation statement trees unreadable for {cik} {accession}: {exc}",
+            f"latest generation statement trees unreadable for {cik} {accession} "
+            f"(latest_entry_unreadable): {exc}",
             code="statement_refusal_unpinned",
         ) from exc
     if entry is not None and _statement_is_refusal_entry(entry):
@@ -1888,10 +1919,8 @@ def _run_publish(args: argparse.Namespace) -> int:
                 issuer_rows = _readback_issuer_refusals(
                     scratch_store, plan, registry=registry
                 )
-                first = sorted(
-                    issuer_rows,
-                    key=lambda row: (row["accession"], row["statement_type"]),
-                )[0]
+                ordered = sorted(issuer_rows, key=_refusal_row_order)
+                first = ordered[0]
                 reason = f"{EXCLUSION_STATEMENT_RECONSTRUCTION_REFUSED}:{first['code']}"
                 excluded.append(
                     {
@@ -1904,17 +1933,23 @@ def _run_publish(args: argparse.Namespace) -> int:
                                 "statement_type": row["statement_type"],
                                 "code": row["code"],
                             }
-                            for row in sorted(
-                                issuer_rows,
-                                key=lambda row: (
-                                    row["accession"],
-                                    row["statement_type"],
-                                ),
-                            )
+                            for row in ordered
                         ],
                     }
                 )
                 refused[binding.cik] = reason
+                print(
+                    "::warning title=fif_production_datasets-"
+                    f"{EXCLUSION_STATEMENT_RECONSTRUCTION_REFUSED}::"
+                    + _annotation_message(
+                        f"{binding.ticker} ({first['code']}): every statement refused; "
+                        f"first {first['accession']} {first['statement_type']}; "
+                        f"{len(ordered)} statement(s) across "
+                        f"{len({row['accession'] for row in ordered})} filing(s)"
+                    ),
+                    file=sys.stderr,
+                    flush=True,
+                )
                 continue
             issuer_rows = _readback_issuer_refusals(scratch_store, plan, registry=registry)
             seen_triples = {
