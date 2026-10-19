@@ -21,6 +21,8 @@ from __future__ import annotations
 import json
 import logging
 import random
+import sys
+import types
 from datetime import date
 from pathlib import Path
 
@@ -30,6 +32,62 @@ import pytest
 
 import engine.thetadata_store as ets
 import scripts.build_live_flow_baselines as bl
+
+
+def test_configured_universe_uses_consumer_resolver(sb, monkeypatch):
+    sb.prebind()
+    cfg = {"etf_anchors": ["SOXX"], "top_names": 1}
+    seen = []
+    monkeypatch.setitem(sys.modules, "scripts.live_flow_poller", types.SimpleNamespace(
+        _cfg=lambda: cfg, _resolve_universe=lambda c: seen.append(c) or ["SOXX", "XLC"]))
+    calls = []
+    monkeypatch.setattr(bl, "run", lambda roots, **kw: calls.append((roots, kw)))
+    with pytest.raises(_HardExit) as ex:
+        bl.main(["--poll-universe", "--dry-run"])
+    assert ex.value.code == 0
+    assert seen == [cfg]
+    assert calls[0][0] == ["SOXX", "XLC"]
+
+
+@pytest.mark.parametrize("kind", ["missing", "stale", "future", "constant", "nonfinite"])
+def test_strict_maintenance_preserves_old_bytes_on_any_unready_root(sb, monkeypatch, kind):
+    sb.prebind()
+    old = sb.write_existing_artifact({"SPY": {"mean": 1}, "QQQ": {"mean": 9}})
+    good = {"mean": 100, "std": 20, "n_obs": 252, "source_session_end": "2026-10-16"}
+    bad = dict(good)
+    if kind == "missing": bad = None
+    elif kind == "stale": bad["source_session_end"] = "2026-10-15"
+    elif kind == "future": bad["source_session_end"] = "2026-10-19"
+    elif kind == "constant": bad["std"] = 0
+    else: bad["mean"] = float("nan")
+    monkeypatch.setattr(bl, "compute_baseline", lambda root, **kw: good if root == "SPY" else bad)
+    with pytest.raises(RuntimeError, match="QQQ"):
+        bl.run(["SPY", "QQQ"], require_source_session=date(2026, 10, 16))
+    assert sb.out_path().read_text() == old
+    assert list(sb.out_path().parent.iterdir()) == [sb.out_path()]
+
+
+def test_strict_complete_build_reaches_consumer_output_atomically(sb, monkeypatch):
+    sb.prebind()
+    sb.write_existing_artifact({"NO_LONGER_POLLED": {"mean": 42}})
+    value = {"mean": 100, "std": 20, "n_obs": 252, "source_session_end": "2026-10-16"}
+    calls = []
+    monkeypatch.setattr(bl, "compute_baseline", lambda root, **kw: calls.append(root) or dict(value))
+    result = bl.run(["spy", "SPY", "QQQ"], require_source_session=date(2026, 10, 16))
+    assert calls == ["SPY", "QQQ"]
+    assert sb.read_artifact() == result
+    assert set(result) == {"SPY", "QQQ"}
+    assert not list(sb.out_path().parent.glob(".baselines-*.tmp"))
+
+
+def test_expected_store_mismatch_refuses_before_computation_or_output(sb, monkeypatch):
+    sb.prebind()
+    old = sb.write_existing_artifact({"OLD": {"mean": 7}})
+    monkeypatch.setattr(bl, "run", lambda *a, **kw: pytest.fail("must refuse before build"))
+    with pytest.raises(_HardExit) as ex:
+        bl.main(["--roots", "SPY", "--expected-store", str(sb.store / "different")])
+    assert ex.value.code == 1
+    assert sb.out_path().read_text() == old
 
 
 class _HardExit(Exception):

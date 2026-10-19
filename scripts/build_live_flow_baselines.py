@@ -33,8 +33,8 @@ in chronological order — not the first 252 and not all history.  n_obs
 reflects the selected window, and the per-root log line reports that
 selected window's source range as `source=<first>..<last>`.
 
-FC-R7 (FLOW_CONTINUITY_MASTERPLAN): extended from 18 ETF roots to the full
-poll universe (~375 roots) with chunked, bounded-memory processing.
+The --poll-universe mode uses the actual consumer configuration and native
+universe resolver in the current environment, not a second static root list.
 
 NEVER writes into data/tape_flow — that is a separate, mixed-source store.
 
@@ -64,7 +64,9 @@ import argparse
 import gc
 import json
 import logging
+import math
 import sys
+import tempfile
 from datetime import date, datetime
 from pathlib import Path
 
@@ -94,32 +96,6 @@ DEFAULT_ANCHORS = [
     "SPY", "QQQ", "IWM", "GLD", "SLV", "TLT", "HYG", "XLF", "XLE",
     "XLU", "XLK", "XLV", "XLI", "XLB", "XLY", "XLP", "XLRE",
     "KRE", "SMH", "XBI", "ARKK", "DIA",
-]
-
-# FC-R7: full live-poller universe (Mag7 + memory-storage + the ETF anchors above).
-# These are the "prem baselines" — enables prem_z for single names, not just ETFs.
-# Use --poll-universe to run for this set.
-POLL_UNIVERSE_ANCHORS = [
-    # ETF anchors (same as DEFAULT_ANCHORS)
-    "SPY", "QQQ", "IWM", "GLD", "SLV", "TLT", "HYG", "XLF", "XLE",
-    "XLU", "XLK", "XLV", "XLI", "XLB", "XLY", "XLP", "XLRE",
-    "KRE", "SMH", "XBI", "ARKK", "DIA",
-    # Mag7 (prem_z previously null for all of these)
-    "AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA",
-    # Memory-storage (FC-R7 explicit requirement)
-    "MU", "WDC", "STX", "SNDK",
-    # High-premium single names commonly in top-40
-    "AMD", "INTC", "QCOM", "AVGO", "ARM", "AMAT", "LRCX", "KLAC", "MRVL",
-    "PLTR", "COIN", "MSTR", "RBLX", "SNAP", "LYFT", "UBER", "ABNB",
-    "GS", "JPM", "BAC", "MS", "C", "WFC",
-    "XOM", "CVX", "OXY", "SLB",
-    "BA", "CAT", "GE", "RTX",
-    "UNH", "LLY", "PFE", "MRNA", "BNTX",
-    "AMGN", "GILD", "REGN",
-    "NFLX", "DIS", "CMCSA",
-    "SHOP", "SQ", "PYPL",
-    "F", "GM", "RIVN",
-    "BTC-USD",  # will silently skip if absent in store
 ]
 
 # Chunk size for bounded-memory processing (roots per batch)
@@ -252,7 +228,7 @@ def compute_baseline(root: str, store: Path | None = None) -> dict | None:
 
 
 def run(roots: list[str], dry_run: bool = False, chunk_size: int = CHUNK_SIZE,
-        *, store: Path | None = None) -> dict:
+        *, store: Path | None = None, require_source_session: date | None = None) -> dict:
     """Compute baselines for given roots and write/merge into baselines.json.
 
     FC-R7: processes roots in chunks of chunk_size to bound memory usage.
@@ -264,10 +240,14 @@ def run(roots: list[str], dry_run: bool = False, chunk_size: int = CHUNK_SIZE,
     # abort the run before any load/merge/write — never degrade to a
     # merge-only artifact published as healthy.
     bound_store = store if store is not None else bind_store()
+    roots = list(dict.fromkeys(root.upper() for root in roots))
+    if not roots or chunk_size < 1:
+        raise ValueError("baselines: nonempty roots and positive chunk size required")
     existing = _load_existing()
     updated = dict(existing)
 
     n_ok = n_skip = n_err = 0
+    refreshed = {}
     n_roots = len(roots)
     log.info("baselines: processing %d roots in chunks of %d", n_roots, chunk_size)
 
@@ -283,6 +263,7 @@ def run(roots: list[str], dry_run: bool = False, chunk_size: int = CHUNK_SIZE,
                     n_skip += 1
                 else:
                     updated[root] = result
+                    refreshed[root] = result
                     n_ok += 1
             except Exception as e:  # noqa: BLE001
                 log.error("baselines: error for %s: %s", root, e)
@@ -293,15 +274,47 @@ def run(roots: list[str], dry_run: bool = False, chunk_size: int = CHUNK_SIZE,
     log.info("baselines: done — ok=%d skip=%d err=%d, total_roots=%d",
              n_ok, n_skip, n_err, len(updated))
 
+    # Natural maintenance must not publish a mixed fresh/retained universe.
+    # A root skipped this invocation cannot be rescued by its old JSON entry.
+    if require_source_session is not None:
+        bad = []
+        for root in roots:
+            entry = refreshed.get(root, {})
+            try:
+                valid = (
+                    MIN_SESSIONS <= entry["n_obs"] <= EOD_WINDOW
+                    and math.isfinite(entry["mean"]) and entry["mean"] > 0
+                    and math.isfinite(entry["std"]) and entry["std"] > 0
+                    and date.fromisoformat(entry["source_session_end"]) == require_source_session
+                )
+            except (KeyError, TypeError, ValueError):
+                valid = False
+            if not valid:
+                bad.append(root)
+        if bad:
+            raise RuntimeError("baselines: incomplete current universe; preserving prior artifact: "
+                               + ",".join(bad))
+        updated = {root: refreshed[root] for root in roots}
+
     if dry_run:
         log.info("baselines: [DRY RUN] would write %d root entries to %s", len(updated), _out_path())
         return updated
 
     out_path = _out_path()
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = out_path.with_suffix(".tmp.json")
-    tmp.write_text(json.dumps(updated, indent=2, sort_keys=True))
-    tmp.rename(out_path)
+    # Unique staging file prevents concurrent standalone diagnostics/builds from
+    # sharing a partial pathname. Replacement remains atomic for the reader.
+    tmp = None
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", dir=out_path.parent,
+                                         prefix=".baselines-", suffix=".tmp",
+                                         delete=False) as fh:
+            tmp = Path(fh.name)
+            fh.write(json.dumps(updated, indent=2, sort_keys=True, allow_nan=False))
+        tmp.replace(out_path)
+    finally:
+        if tmp is not None:
+            tmp.unlink(missing_ok=True)
     log.info("baselines: wrote %d root entries to %s", len(updated), out_path)
     return updated
 
@@ -317,12 +330,14 @@ def main(argv: list[str] | None = None) -> int:
                           help="All roots present in the thetadata_eod/eod/ store")
     root_grp.add_argument("--poll-universe", action="store_true",
                           help=(
-                              "FC-R7: full live-poller universe (ETF anchors + Mag7 + "
-                              "memory-storage names + high-premium singles); enables "
-                              "prem_z for single names, not just ETFs"
+                              "Use the actual live-flow configuration and universe resolver"
                           ))
     parser.add_argument("--dry-run", action="store_true",
                         help="Print results without writing")
+    parser.add_argument("--require-source-session", type=date.fromisoformat,
+                        help="Require every requested root to have current, finite statistics; otherwise preserve output")
+    parser.add_argument("--expected-store", type=Path,
+                        help="Refuse if the consumer environment resolves a different source store")
     parser.add_argument("--chunk-size", type=int, default=CHUNK_SIZE,
                         help=f"Roots per processing chunk (default {CHUNK_SIZE}); "
                              "reduce to lower peak memory on large universes")
@@ -339,6 +354,8 @@ def main(argv: list[str] | None = None) -> int:
     # share this invocation's canonical binding.
     try:
         store = bind_store()
+        if args.expected_store is not None and store.resolve() != args.expected_store.resolve():
+            raise RuntimeError("consumer and daily maintainer resolve different source stores")
     except Exception as e:  # noqa: BLE001
         log.error("baselines: store binding refused: %s", e)
         hard_exit(1)
@@ -351,9 +368,11 @@ def main(argv: list[str] | None = None) -> int:
             hard_exit(1)
             return 1
     elif args.poll_universe:
-        roots = [r.upper() for r in POLL_UNIVERSE_ANCHORS]
-        log.info("baselines: --poll-universe mode (%d roots, incl. Mag7 + memory names)",
-                 len(roots))
+        # Resolve in THIS environment, exactly as the actual consumer does.
+        # Importing these pure helpers does not run a poller cycle.
+        from scripts.live_flow_poller import _cfg, _resolve_universe
+        roots = _resolve_universe(_cfg())
+        log.info("baselines: configured poll universe (%d roots)", len(roots))
     elif args.roots:
         roots = [r.upper() for r in args.roots]
     else:
@@ -361,7 +380,13 @@ def main(argv: list[str] | None = None) -> int:
 
     log.info("baselines: computing for %d roots, dry_run=%s chunk_size=%d",
              len(roots), args.dry_run, args.chunk_size)
-    run(roots, dry_run=args.dry_run, chunk_size=args.chunk_size, store=store)
+    try:
+        run(roots, dry_run=args.dry_run, chunk_size=args.chunk_size, store=store,
+            require_source_session=args.require_source_session)
+    except Exception as e:  # noqa: BLE001
+        log.error("baselines: build refused: %s", e)
+        hard_exit(1)
+        return 1
 
     # hard_exit required: parquet reads in _daily_gross_premium via thetadata_store
     # can trigger PyArrow ThreadPool deadlock at interpreter shutdown.

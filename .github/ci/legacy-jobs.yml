@@ -6770,6 +6770,7 @@ jobs:
       # AD-1T1 (2026-08-22): full-universe incremental T1 daily maintainer —
       # legacy characterization (F17), the --daily hostile suite, and the
       # launchd scheduler suite.
+      - "scripts/build_live_flow_baselines.py"
       - "tests/test_topup_thetadata_legacy.py"
       - "tests/test_topup_thetadata_daily.py"
       - "tests/test_topup_thetadata_scheduler.py"
