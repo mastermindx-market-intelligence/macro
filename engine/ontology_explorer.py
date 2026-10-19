@@ -519,8 +519,12 @@ def _build(definition: dict, state_doc: dict, episodes_raw: bytes | None, *,
         "exposure_screens": exposure_screens,
         # Membership is carried once, on the existing exposure screens. This
         # metadata binds their common owner clocks and identity read receipt.
-        "company_exposure": {key: value for key, value in company_exposure.items()
-                             if key != "channels"},
+        "company_exposure": {
+            **{key: value for key, value in company_exposure.items() if key != "channels"},
+            "refusals": [{"channel_id": channel["id"], "reason": channel["reason"]}
+                         for channel in company_exposure["channels"]
+                         if channel["status"] != "available"],
+        },
         "display_permission": {
             "status": "not_determined_here",
             "policy": "site_full entitlement, enforced at the transport layer",

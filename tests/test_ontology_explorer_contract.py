@@ -1303,6 +1303,18 @@ def test_additive_membership_has_no_rank_private_state_or_new_href(tmp_path):
     assert snap["company_exposure"]["authority_ceiling"] == "research_display_only"
 
 
+def test_undeclared_channel_refusal_survives_snapshot_projection(tmp_path):
+    root = _exposure_root(tmp_path)
+    path = root / "data/transmission/chain_state.json"
+    owner = json.loads(path.read_text())
+    owner["chains"][0]["blast"]["synthetic_unknown"] = {}
+    path.write_text(json.dumps(owner))
+    snap = explorer.compose_snapshot(root, chain=fx.SLUG)
+    assert snap["company_exposure"]["refusals"] == [
+        {"channel_id": "synthetic_unknown", "reason": "channel_not_declared"}]
+    assert [screen["id"] for screen in snap["exposure_screens"]] == ["synthetic_screen"]
+
+
 # Synthetic pure-projection cases authored by the admitted Fabric leaf and
 # aligned here to the final Macro identity-pair contract.
 _project_company_exposure = explorer._project_company_exposure
