@@ -3132,3 +3132,75 @@ def test_native_v2_population_calendar_bytes_and_denominator_bound(v2_population
     (kwargs["experience_root"] / ".v2_install_verified").write_text("2000-01-01T00:00:00Z\n")
     with pytest.raises(census.PopulationV2Error, match="work bound"):
         census.read_population_v2(**kwargs)
+
+
+def _v2_operator_fixture(v2_population_owner, monkeypatch):
+    from scripts import diagnose_market_memory_population_v2 as cli
+    census, kwargs, *_ = v2_population_owner
+    roots = (ROOT, kwargs["experience_root"], kwargs["source_root"], kwargs["technicals_v2_root"])
+    monkeypatch.setattr(cli, "_ROOTS", roots)
+    checks = []
+    def verify(root, **kw):
+        assert root == ROOT and kw["extra_inputs"] == cli._CLOSURE
+        checks.append(root)
+        return "a" * 40
+    monkeypatch.setattr(cli.installed, "_verified_repository_commit", verify)
+    args = dict(repository_root=roots[0], experience_root=roots[1], source_root=roots[2],
+                technicals_v2_root=roots[3], through_session="2026-08-21")
+    return cli, args, checks
+
+
+def test_native_v2_operator_cli_uses_real_reader_and_never_writes(v2_population_owner, monkeypatch):
+    cli, args, checks = _v2_operator_fixture(v2_population_owner, monkeypatch)
+    from scripts import accrue_market_memory_spy_experience_v2 as writer
+    before = {p: p.read_bytes() for p in args["experience_root"].parent.rglob("*") if p.is_file()}
+    monkeypatch.setattr(writer, "accrue_spy_experience_v2", lambda *a, **k: pytest.fail("operator accrued"))
+    monkeypatch.setattr(writer, "_write_install_marker", lambda *a, **k: pytest.fail("operator installed"))
+    result = cli.diagnose_population_v2(**args)
+    assert result["deployed_commit"] == "a" * 40
+    assert result["scope"] == "internal_operator_outcome_blind_v2_census"
+    assert result["operational_study_admission"] is False
+    assert result["manifest"]["counts"]["admitted"] == 1
+    assert len(checks) == 3
+    assert before == {p: p.read_bytes() for p in args["experience_root"].parent.rglob("*") if p.is_file()}
+
+
+@pytest.mark.parametrize("changed", ["repository_root", "experience_root", "source_root", "technicals_v2_root"])
+def test_native_v2_operator_refuses_other_roots_before_source_or_owner(v2_population_owner, monkeypatch, changed):
+    cli, args, checks = _v2_operator_fixture(v2_population_owner, monkeypatch)
+    args[changed] = Path("/other")
+    with pytest.raises(cli.installed.MarketMemoryExperienceCliError, match="exact installed"):
+        cli.diagnose_population_v2(**args)
+    assert checks == []
+
+
+@pytest.mark.parametrize("changed", ["executing_cli", "imported_reader"])
+def test_native_v2_operator_refuses_detached_execution_or_imports(v2_population_owner, monkeypatch, changed):
+    cli, args, checks = _v2_operator_fixture(v2_population_owner, monkeypatch)
+    if changed == "executing_cli": monkeypatch.setattr(cli, "_ROOT", Path("/other"))
+    else: monkeypatch.setattr(v2_population_owner[0], "__file__", "/other/market_memory_population_v2.py")
+    with pytest.raises(cli.installed.MarketMemoryExperienceCliError):
+        cli.diagnose_population_v2(**args)
+    assert checks == []
+
+
+@pytest.mark.parametrize("when", [2, 3])
+def test_native_v2_operator_current_installed_source_rechecked(v2_population_owner, monkeypatch, when):
+    cli, args, _ = _v2_operator_fixture(v2_population_owner, monkeypatch)
+    from engine.neuralweb import market_memory_population as population
+    calls = []
+    def changed(*a, **k):
+        calls.append(True)
+        return ("b" if len(calls) == when else "a") * 40
+    monkeypatch.setattr(cli.installed, "_verified_repository_commit", changed)
+    with pytest.raises(population.MarketMemoryPopulationAccessError):
+        cli.diagnose_population_v2(**args)
+
+
+@pytest.mark.parametrize("flag", ["--write-install-marker", "--session", "--diagnose-population"])
+def test_native_v2_operator_has_no_writer_or_legacy_mode(v2_population_owner, monkeypatch, flag):
+    cli, _, _ = _v2_operator_fixture(v2_population_owner, monkeypatch)
+    monkeypatch.setattr(cli, "diagnose_population_v2", lambda *a, **k: pytest.fail("unknown mode ran"))
+    with pytest.raises(SystemExit) as error:
+        cli.main(["--through-session", "2026-08-21", flag])
+    assert error.value.code == 2
