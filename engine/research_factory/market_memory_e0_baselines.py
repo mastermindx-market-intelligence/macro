@@ -24,6 +24,9 @@ from engine.neuralweb import market_memory_retained_context_cohort as cohort
 _TOKEN = object()
 _SOURCE_SHA256 = sha256(Path(__file__).read_bytes()).hexdigest()
 _MAX_BYTES = 2 * 1024 * 1024
+# Existing E0 task grammar and descriptive accounting share this bound. The
+# general retrieval owner's larger product limit is not this study's budget.
+MAX_K = 8
 
 
 class E0BaselineError(ValueError):
@@ -49,6 +52,8 @@ class E0ConditionSelections:
 def build_condition_selections(population, query, *, policy: object, k: int,
                                method: retrieval.RetainedContextMethodSpec) -> E0ConditionSelections:
     """Prepare the three frozen conditions; no caller-supplied ranks or rows."""
+    if type(k) is not int or not 1 <= k <= MAX_K:
+        raise E0BaselineError("e0_task_k_bound_required")
     original = retrieval.retrieve_retained_contexts(population, query, policy=policy, k=k, method=method)
     fixed = retrieval.disclose_episode_retrieval(original, policy=policy)
     source = cohort.disclose_retained_context_cohort(population, policy=policy)

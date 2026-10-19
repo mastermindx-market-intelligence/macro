@@ -55,7 +55,7 @@ def test_same_population_distinct_recency_and_fixed_choices(tmp_path, monkeypatc
 
 def test_revision_and_missing_coordinates_never_expand_recency_population(tmp_path, monkeypatch):
     population, query, older, newer = build_inputs(tmp_path, monkeypatch, masked=True)
-    _, value = result(population, query, k=32)
+    _, value = result(population, query, k=8)
     assert value["denominator"]["expected_captures"] == 5
     assert value["denominator"]["eligible_representatives"] == 1
     for condition in value["conditions"][1:]:
@@ -126,7 +126,15 @@ def test_final_recheck_after_selection_and_no_outcome_interface(tmp_path, monkey
         baselines.build_condition_selections(population, query, policy=Policy(), k=1, method=METHOD, outcomes=[])
 
 
-@pytest.mark.parametrize("k", [True, 0, 33])
+@pytest.mark.parametrize("k", [True, 0, 9, 32, 33])
 def test_invalid_budget_refuses_before_population_access(k):
-    with pytest.raises(retrieval.EpisodeRetrievalError, match="finite_positive_k"):
+    with pytest.raises(baselines.E0BaselineError, match="e0_task_k_bound"):
         baselines.build_condition_selections(None, None, policy=None, k=k, method=METHOD)
+
+
+def test_budget_matches_existing_e0_tasks_and_accounting():
+    import json
+    from pathlib import Path
+    from engine.research_factory.market_memory_evidence_accounting import MAX_RETRIEVED_PER_OBSERVATION
+    schema = json.loads((Path(__file__).resolve().parents[1] / "contracts/market_memory/e0_tasks.v1.schema.json").read_bytes())
+    assert baselines.MAX_K == MAX_RETRIEVED_PER_OBSERVATION == schema["properties"]["tasks"]["items"]["properties"]["k"]["maximum"]

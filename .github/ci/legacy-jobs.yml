@@ -11794,6 +11794,7 @@ jobs:
           tests/test_market_memory_e0_control_records.py
           tests/test_market_memory_e0_reservations.py
           tests/test_market_memory_e0_baselines.py
+          tests/test_market_memory_e0_allocation.py
           tests/test_market_memory_evidence_accounting.py
           tests/test_market_memory_evidence_accounting_parent.py
           tests/test_research_factory_market_memory_evidence.py
