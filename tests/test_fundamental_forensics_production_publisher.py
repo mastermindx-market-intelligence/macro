@@ -15,6 +15,7 @@ import ast
 import gzip
 import hashlib
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -523,6 +524,106 @@ def test_publishes_names_generation_and_reuses_capture_clocks(
     assert report2["published"][0]["admitted_at"] == row["admitted_at"]
     assert latest_path.read_bytes() == latest_before
     assert len(mint_calls) == 2  # once per publish run, still one issuer
+
+
+# ---------------------------------------------------------------------------
+# FIF publish phase timing (2026-10-19): ::notice observation lines on STDERR.
+# The nightly cancellation showed a 1,988 s plan-phase gap with NO per-phase
+# evidence; these notices are the measurement, so they must never touch the
+# stdout JSON report (D8 — stdout may be $(...)-captured by callers).
+# ---------------------------------------------------------------------------
+
+#: ``::notice title=fif_publish_timing::<phase> <ticker> <seconds with 1 decimal>s``
+_TIMING_NOTICE_RE = re.compile(
+    r"^::notice title=fif_publish_timing::(\S+) (\S+) (\d+\.\d)s$"
+)
+
+
+def _timing_notice_phases(err: str) -> list[tuple[str, str]]:
+    """Phases of every timing notice on stderr, each checked against the
+    exact wire format (phase, ticker-or-``-``, one-decimal seconds)."""
+    phases: list[tuple[str, str]] = []
+    for line in err.splitlines():
+        if not line.startswith("::notice title=fif_publish_timing::"):
+            continue
+        match = _TIMING_NOTICE_RE.match(line)
+        assert match is not None, f"malformed timing notice: {line!r}"
+        phases.append((match.group(1), match.group(2)))
+    return phases
+
+
+def test_publish_timing_notices_land_on_stderr_and_stdout_report_is_unchanged(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    """(a) A passing publish run emits the timing notices on stderr, and its
+    stdout stays exactly the JSON report: it still parses and carries the same
+    keys/values the incumbent happy-path test asserts."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    store = tmp_path / "store"
+    report_path = tmp_path / "publish_report.json"
+
+    assert _capture_cli(lane, contract) == 0
+    capsys.readouterr()  # drop the capture subcommand's own streams
+    assert _publish_cli(lane, contract, store, report_path) == 0
+    captured = capsys.readouterr()
+
+    phases = _timing_notice_phases(captured.err)
+    assert phases, "expected fif_publish_timing notices on stderr"
+    assert any(phase == "plan" for phase, _ in phases)
+    assert ("total_plan", "-") in phases
+    # First publication over an empty store: no comparison build, one
+    # authoritative build, then classification and a real commit — so every
+    # other phase family is observed here too.
+    for expected in (
+        "plan_convert",
+        "plan_lineage",
+        "plan_build",
+        "refusal_check",
+        "commit",
+        "total_commit",
+    ):
+        assert any(phase == expected for phase, _ in phases), expected
+    # Ticker field is the fixture issuer's own ticker (never a literal here).
+    assert {ticker for _, ticker in phases} <= {identity["ticker"], "-"}
+
+    # stdout is STILL the report: it parses, equals the --report-path file,
+    # and keeps the exact keys the happy-path test pins.
+    report = json.loads(captured.out)
+    assert report == json.loads(report_path.read_text(encoding="utf-8"))
+    assert [row["ticker"] for row in report["published"]] == [identity["ticker"]]
+    assert report["excluded"] == []
+    row = report["published"][0]
+    assert datetime.fromisoformat(
+        row["admitted_at"].replace("Z", "+00:00")
+    ) == datetime(2026, 10, 13, 2, 31, tzinfo=timezone.utc)
+    assert row["admitted_accessions"] == sorted(identity["accessions"])
+
+
+def test_publish_timing_never_appears_on_stdout(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    """(b) No timing line ever rides stdout — the run must actually have
+    emitted notices (else this would pass vacuously) and none may be on the
+    stdout that carries the JSON report."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    store = tmp_path / "store"
+    report_path = tmp_path / "publish_report.json"
+
+    assert _capture_cli(lane, contract) == 0
+    capsys.readouterr()
+    assert _publish_cli(lane, contract, store, report_path) == 0
+    captured = capsys.readouterr()
+
+    assert _timing_notice_phases(captured.err)
+    assert "fif_publish_timing" not in captured.out
+    assert not any(
+        line.startswith("::notice") for line in captured.out.splitlines()
+    )
+    assert json.loads(captured.out)["published"]
 
 
 def test_future_clock_refusal_writes_nothing(tmp_path, monkeypatch, offline_collector, capsys) -> None:
