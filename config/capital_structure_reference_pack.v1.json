@@ -327,7 +327,8 @@
       "bytes": 2269,
       "cik": "0001380106",
       "consumers": [
-        "test_capital_structure_g0_reference.py"
+        "test_capital_structure_g0_reference.py",
+        "test_capital_structure_g0_verification.py"
       ],
       "details": {
         "canonical_url": "https://www.sec.gov/Archives/edgar/data/1380106/000110465926063928/tm2614072-1_424b5.htm",
@@ -351,7 +352,17 @@
       "path": "tests/fixtures/capital_structure/reference/g0/held_out_pattern_witness_rpid_424b5.txt",
       "provenance": "real_edgar_g0",
       "sealed": true,
-      "sha256": "945085ad29cf03405cbae64e9c2561ddeec09d022321aa71923e743bc62511ca"
+      "sha256": "945085ad29cf03405cbae64e9c2561ddeec09d022321aa71923e743bc62511ca",
+      "held_out_result": {
+        "outcome": "typed_unavailable",
+        "reason": "before_first_bound_event",
+        "difference": null,
+        "conditional_arithmetic": "not_run",
+        "sealed_sha256": "6b0513dc75d7ea5578ed5dc3b960b20d3a5d580372ef74135f539e4a71c02b47",
+        "verified_on": "2026-10-19",
+        "verified_by": "tests/test_capital_structure_g0_verification.py",
+        "cutoff_instant": "2026-05-19T23:59:59Z"
+      }
     }
   ],
   "identities": [
