@@ -617,7 +617,6 @@
     "tests/test_policy_summary.py",
     "tests/test_portfolio.py",
     "tests/test_postcross.py",
-    "tests/test_power_scarcity.py",
     "tests/test_prediction_markets.py",
     "tests/test_price_ladder.py",
     "tests/test_prophet_integrity.py",
