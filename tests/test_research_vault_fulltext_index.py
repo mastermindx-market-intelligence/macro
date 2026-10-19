@@ -241,3 +241,14 @@ def test_distinct_qualified_extractor_must_be_explicit_and_is_not_relabelled(env
     binding = json.loads(conn.execute("SELECT fulltext_binding FROM documents").fetchone()[0])
     assert (binding["extractor_name"], binding["extractor_version"]) == ("pdftotext-layout", "26.06.0")
     assert index.discovery_coverage(conn, cat, {"report-a"}) == "FULL_TEXT"
+
+
+def test_unchanged_full_body_does_not_rebuild_fts_at_each_checkpoint(env):
+    conn, cat, text = env
+    records = {'report-a': record(text)}
+    stage(conn, cat, records)
+    before = conn.total_changes
+    stage(conn, cat, records)
+    # Only the publication descriptor is refreshed; no body/FTS row rewrites.
+    assert conn.total_changes - before == 1
+    assert hits(conn, 'originaltail') == ['report-a']

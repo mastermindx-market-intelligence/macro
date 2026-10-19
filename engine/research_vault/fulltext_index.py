@@ -136,7 +136,8 @@ def stage(conn, document, *, record_loader: Callable, source_digest_reader: Call
                     result["budget_skipped"] += 1
             else:
                 result["unavailable"] += 1
-            conn.execute("UPDATE documents SET body=?,fulltext_binding=? WHERE doc_id=?", (body, binding, rid))
+            if body != row['body'] or binding != row['fulltext_binding']:
+                conn.execute("UPDATE documents SET body=?,fulltext_binding=? WHERE doc_id=?", (body, binding, rid))
         publication = {"schema": "research_vault.fulltext_index_publication.v1",
             "extractor_identity": list(extractor_identity),
             "catalog_payload_sha256": compute_catalog_payload_digest(document),

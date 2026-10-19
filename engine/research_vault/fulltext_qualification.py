@@ -80,7 +80,7 @@ def _read_only(store, *, deadline, clock):
     return reads
 
 
-def run(store, *, scratch_root, max_seconds=600, clock=time.monotonic):
+def run(store, *, scratch_root, max_seconds=750, clock=time.monotonic):
     root = Path(scratch_root)
     info = root.stat(follow_symlinks=False)
     if (not root.is_absolute() or root.is_symlink()
@@ -88,7 +88,7 @@ def run(store, *, scratch_root, max_seconds=600, clock=time.monotonic):
             or not stat.S_ISDIR(info.st_mode) or info.st_uid != os.getuid()
             or info.st_mode & 0o077):
         raise ValueError('existing private scratch root required')
-    if type(max_seconds) is not int or not 1 <= max_seconds <= 600:
+    if type(max_seconds) is not int or not 1 <= max_seconds <= 750:
         raise ValueError('finite qualification deadline required')
     if shutil.disk_usage(root).free < 2 * 1024**3:
         raise ValueError('insufficient private scratch capacity')
@@ -105,8 +105,6 @@ def run(store, *, scratch_root, max_seconds=600, clock=time.monotonic):
         if selected is None:
             raise ValueError('canonical catalog absent')
         doc = catalog.parse_strict(selected.data, check_future_clock=False)
-        t = clock();initial = _census(store, doc)
-        result['phase_seconds']['begin_census'] = clock() - t
         blob = store.get_bytes_strict_bounded(contract.CORPUS_KEY, contract.CORPUS_MAX_BYTES)
         if blob is None:
             raise ValueError('canonical corpus absent')
@@ -118,13 +116,28 @@ def run(store, *, scratch_root, max_seconds=600, clock=time.monotonic):
             result['original_corpus_bytes'] = len(blob)
             result['original_corpus_sha256'] = hashlib.sha256(blob).hexdigest()
             del blob
-            from engine.research_vault.fulltext_publication import stage_from_store
+            from engine.research_vault.producer_read_cache import CorpusReadCache
+            cache = CorpusReadCache(p, doc)
+            t = clock()
+            try:
+                initial = cache.inherited_members(doc, doc.get(contract.GENERATION_FIELD), store,
+                    producer_commit=os.environ.get('GITHUB_SHA'))
+                result['starting_cut_inherited'] = initial is not None
+                if initial is None:
+                    cache.reset()
+                    initial = _census(store, doc, read_cache=cache)
+                cache.seal(initial)
+            finally:
+                cache.close()
+            result['phase_seconds']['begin_census'] = clock() - t
+            result['initial_classifications'] = dict(Counter(row['layer'] for row in initial))
             conn = corpus.open_db(p)
             try:
                 t = clock()
-                staged = stage_from_store(conn, doc, store, [],
+                staged = cache.stage(conn, doc, [],
                     max_rows=10000, max_body_bytes=256 * 1024 * 1024)
-                record_fulltext_source_cut(conn, doc, staged['source_digests'])
+                record_fulltext_source_cut(conn, doc, staged['source_digests'],
+                    receipt_digests=staged['receipt_digests'], record_digests=staged['record_digests'])
                 conn.commit()
                 result['phase_seconds']['full_body_stage'] = clock() - t
             finally:
@@ -138,7 +151,6 @@ def run(store, *, scratch_root, max_seconds=600, clock=time.monotonic):
             observed = store.get_bytes_strict_bounded_versioned(catalog.CATALOG_KEY, contract.CATALOG_MAX_BYTES)
             result['catalog_fence_unchanged'] = (observed is not None and
                 observed.data == selected.data and observed.version == selected.version)
-            result['initial_classifications'] = dict(Counter(row['layer'] for row in initial))
             result['final_classifications'] = dict(Counter(row['layer'] for row in final))
             if not result['catalog_fence_unchanged'] or not result['source_cut_unchanged']:
                 result['state'] = 'OBSERVATION_CHANGED'

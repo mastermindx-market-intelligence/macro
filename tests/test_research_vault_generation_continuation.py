@@ -196,3 +196,46 @@ def test_original_continuation_checks_published_fulltext_source_cut(original, tm
         assert json.loads(result['catalog_bytes'])[contract.GENERATION_FIELD]['state'] == 'COMPLETE'
         assert [call[0] for call in calls] == [catalog.CATALOG_KEY]
     assert path.read_bytes() == before
+
+
+@pytest.mark.parametrize('changed_record', [False, True])
+def test_original_continuation_checks_used_canonical_hash_with_same_pdf(original, tmp_path, monkeypatch, changed_record):
+    from engine.research_vault import corpus, fulltext, fulltext_index, fulltext_store
+    from engine.research_vault.producer_generation_writer import record_fulltext_source_cut
+    document = {'schema': catalog.SCHEMA, 'generated_at': NOW.isoformat(), 'count': 2,
+        'institutions': ['Desk'], 'items': [
+            {'id': rid, 'title': 'Synthetic ' + rid, 'institution': 'Desk'}
+            for rid in ('report-a', 'report-b')]}
+    digests = {rid: hashlib.sha256(rid.encode()).hexdigest() for rid in ('report-a', 'report-b')}
+    records = {rid: fulltext.build_extracted_text(report_id=rid, source_pdf_sha256=digests[rid],
+        text='canonical original ' * 100, extractor_name=fulltext_store.EXTRACTOR_NAME,
+        extractor_version=fulltext_store.EXTRACTOR_VERSION, page_count=1, text_layer_state='full')
+        for rid in digests}
+    blobs = {rid: fulltext_store.encode_record(value) for rid, value in records.items()}
+    receipts = {rid: json.dumps({'id': rid, 'content_sha256': digests[rid]}).encode() for rid in digests}
+    p = tmp_path / 'bound-canonical.sqlite';conn = corpus.open_db(p)
+    for item in document['items']:
+        corpus.upsert(conn, item, records[item['id']]['text'], facts={'content_sha256': digests[item['id']]})
+    fulltext_index.stage(conn, document, record_loader=records.get, source_digest_reader=digests.get,
+        max_rows=2, max_body_bytes=1000000)
+    record_fulltext_source_cut(conn, document, digests,
+        receipt_digests={rid: hashlib.sha256(raw).hexdigest() for rid, raw in receipts.items()},
+        record_digests={rid: hashlib.sha256(raw).hexdigest() for rid, raw in blobs.items()})
+    conn.commit();conn.close()
+    path, digest, _, _, store = original.fixture(issued=2, promote=True, corpus_bytes=p.read_bytes())
+    for rid, raw in blobs.items():
+        store.put_bytes(fulltext_store.derivative_key(rid, digests[rid]), raw)
+    if changed_record:
+        altered = fulltext.build_extracted_text(report_id='report-a', source_pdf_sha256=digests['report-a'],
+            text='changed canonical source', extractor_name=fulltext_store.EXTRACTOR_NAME,
+            extractor_version=fulltext_store.EXTRACTOR_VERSION, page_count=1, text_layer_state='full')
+        store.put_bytes(fulltext_store.derivative_key('report-a', digests['report-a']), fulltext_store.encode_record(altered))
+    before = path.read_bytes();calls, _ = count_writes(monkeypatch, store)
+    if changed_record:
+        with pytest.raises(OriginalContinuationUnavailable):invoke(path, digest, store)
+        assert calls == []
+    else:
+        result = invoke(path, digest, store)
+        assert json.loads(result['catalog_bytes'])[contract.GENERATION_FIELD]['state'] == 'COMPLETE'
+        assert [call[0] for call in calls] == [catalog.CATALOG_KEY]
+    assert path.read_bytes() == before

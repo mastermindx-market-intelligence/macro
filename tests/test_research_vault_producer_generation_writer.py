@@ -793,21 +793,18 @@ def test_actual_generation_refuses_pdf_revision_change_after_body_publication(se
     assert json.loads(store.get_bytes(catalog.CATALOG_KEY))['producer_generation']['state'] == 'BUILDING'
 
 
-def test_actual_generation_staging_read_failure_does_not_publish_candidate_body(seeded, tmp_path, monkeypatch):
+def test_actual_generation_staging_cache_read_failure_does_not_publish_candidate_body(seeded, tmp_path, monkeypatch):
+    from engine.research_vault.producer_read_cache import CorpusReadCache
     store, doc = seeded
-    _, digest = _seed_discovery_record(store, doc, tmp_path)
+    _seed_discovery_record(store, doc, tmp_path)
     before = store.get_bytes(contract.CORPUS_KEY)
-    real = store.get_bytes_strict_bounded
-    reads = 0
-    def failing_stage(key, bound):
-        nonlocal reads
-        if key == fulltext_store.derivative_key(RID, digest):
-            reads += 1
-            if reads == 2:  # after successful BEGIN census, during body stage
-                raise OSError('synthetic staging read failed')
-        return real(key, bound)
-    monkeypatch.setattr(store, 'get_bytes_strict_bounded', failing_stage)
-    with pytest.raises(OSError, match='synthetic staging read failed'):
+    real = CorpusReadCache._entry
+    def failing_stage(self, rid, **kwargs):
+        if self.conn is None and not kwargs.get('receipt_only'):
+            raise OSError('synthetic staging cache read failed')
+        return real(self, rid, **kwargs)
+    monkeypatch.setattr(CorpusReadCache, '_entry', failing_stage)
+    with pytest.raises(OSError, match='synthetic staging cache read failed'):
         ingest.run(store, tmp_path / 'working.sqlite', now=NOW,
                    generation_identity=IDENTITY)
     assert store.get_bytes(contract.CORPUS_KEY) == before

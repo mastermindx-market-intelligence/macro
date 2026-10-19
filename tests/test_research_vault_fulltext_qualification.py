@@ -41,8 +41,8 @@ def test_probe_uses_actual_index_census_and_retains_no_source_bytes(tmp_path):
     assert result['source_cut_unchanged'] is True
     assert result['writer_qualified'] is False
     assert result['production_accepted'] is False
-    assert result['read_calls']['derivative'] == 3
-    assert result['read_calls']['receipt'] == 4
+    assert result['read_calls']['derivative'] == 2
+    assert result['read_calls']['receipt'] == 2
     assert not list(scratch.iterdir())
     raw = json.dumps(result)
     assert 'resource-tail-marker' not in raw and 'host-resource-note' not in raw

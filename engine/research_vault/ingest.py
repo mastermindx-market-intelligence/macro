@@ -220,7 +220,7 @@ def _receipt_read_workers(store, concurrency: int) -> int:
 
 
 def _processed_index(
-    store, *, concurrency: int = 4
+    store, *, concurrency: int = 4, read_cache=None
 ) -> tuple[set[str], dict[str, str]]:
     """Read every receipt once → ``(done_pdf_keys, {doc_id: pdf_key})``.
 
@@ -251,12 +251,16 @@ def _processed_index(
     """
     done: set[str] = set()
     by_id: dict[str, str] = {}
+    def read_receipt(key):
+        cached = None if read_cache is None else read_cache.processed_receipt(key)
+        return store.get_bytes(key) if cached is None else cached
+    reader = store.get_bytes if read_cache is None else read_receipt
     workers = _receipt_read_workers(store, concurrency)
     if workers < 2:
         for rk in store.list_prefix(PROCESSED_PREFIX):
             if not rk.endswith(".json"):
                 continue
-            _absorb_receipt(store.get_bytes(rk), done, by_id)
+            _absorb_receipt(reader(rk), done, by_id)
         return done, by_id
 
     keys = (rk for rk in store.list_prefix(PROCESSED_PREFIX) if rk.endswith(".json"))
@@ -272,7 +276,7 @@ def _processed_index(
                     rk = next(keys)
                 except StopIteration:
                     break
-                inflight.append((pool.submit(store.get_bytes, rk), rk))
+                inflight.append((pool.submit(reader, rk), rk))
             if not inflight or first_error is not None:
                 break
             fut, _rk = inflight.popleft()
@@ -1149,6 +1153,30 @@ def _corpus_row_count(corpus_path: str | Path) -> int:
         return 0
 
 
+def _stage_generation_body(conn, cat, session, read_cache, pending_receipts, now):
+    from engine.research_vault import fulltext_index, fulltext_store
+    from engine.research_vault.fulltext_publication import _pending
+    from engine.research_vault.producer_generation_writer import record_fulltext_source_cut
+    catalog_mod.prepare_publication(cat, now=now)
+    known = {key: value for key, value in session._confirmed_writes.items()
+             if key.startswith(fulltext_store.RECEIPT_PREFIX)}
+    known.update(_pending(fulltext_index._cohort(cat), pending_receipts))
+    accounting = read_cache.total, dict(read_cache.sizes)
+    conn.execute('SAVEPOINT rv_generation_body')
+    try:
+        staged = read_cache.stage(conn, cat, list(known.items()),
+            max_rows=fulltext_index.MAX_ROWS, max_body_bytes=fulltext_index.MAX_BODY_BYTES)
+        record_fulltext_source_cut(conn, cat, staged['source_digests'],
+            receipt_digests=staged['receipt_digests'], record_digests=staged['record_digests'])
+        conn.execute('RELEASE SAVEPOINT rv_generation_body')
+        return staged['counts']
+    except BaseException:
+        read_cache.total, read_cache.sizes = accounting
+        conn.execute('ROLLBACK TO SAVEPOINT rv_generation_body')
+        conn.execute('RELEASE SAVEPOINT rv_generation_body')
+        raise
+
+
 def run(store, corpus_path: str | Path, now: datetime | None = None,
         dry_run: bool = False, checkpoint_every: int = CHECKPOINT_EVERY,
         generation_identity: dict | None = None, generation_clock=None,
@@ -1340,6 +1368,7 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
     # precedes every remote mutable write; an interrupted BUILDING remains owned
     # by its original operation. This does not establish all-writer settlement.
     generation_session = None
+    read_cache = None
     if generation_evidence is not None and (dry_run or generation_identity is None):
         summary["error"] = "generation_evidence_requires_explicit_producer"
         return summary
@@ -1351,10 +1380,15 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
             try:
                 from engine.research_vault.producer_generation_writer import (
                     ProducerGenerationSession, FencedProducerStore)
+                from engine.research_vault.producer_read_cache import CorpusReadCache
+                read_cache = CorpusReadCache(corpus_path, cat)
                 generation_session = ProducerGenerationSession.begin(
-                    store, cat, generation_identity, now=now, evidence=generation_evidence)
+                    store, cat, generation_identity, now=now, evidence=generation_evidence,
+                    read_cache=read_cache)
                 store = FencedProducerStore(store, generation_session)
             except Exception as exc:
+                if read_cache is not None:
+                    read_cache.close()
                 summary["error"] = "generation_start_failed"
                 summary["generation_error"] = type(exc).__name__ + ": " + str(exc)
                 return summary
@@ -1377,7 +1411,8 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
         summary["titles_unresolved"] = len(rep["unresolved"])
 
         _t = time.monotonic()
-        done_pdf_keys, id_to_pdf_key = _processed_index(store)
+        done_pdf_keys, id_to_pdf_key = (_processed_index(store) if read_cache is None
+            else _processed_index(store, read_cache=read_cache))
         timing_s["processed_index_s"] = time.monotonic() - _t
         _t = time.monotonic()
 
@@ -1469,6 +1504,11 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
             # fails the receipts stay pending so the docs retry next run.
             if (not dry_run and checkpoint_every > 0
                     and summary["ingested"] % checkpoint_every == 0):
+                if generation_session is not None:
+                    _fulltext_t = time.monotonic()
+                    summary['fulltext_discovery'] = _stage_generation_body(
+                        conn, cat, generation_session, read_cache, pending_receipts, now)
+                    timing_s['fulltext_discovery_s'] = timing_s.get('fulltext_discovery_s', 0) + time.monotonic() - _fulltext_t
                 conn.commit()
                 publication_kwargs = {}
                 if generation_session is not None:
@@ -1548,17 +1588,10 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
         # Derivatives created by the later bounded materializer join the next
         # image; they cannot retroactively upgrade this published body snapshot.
         if generation_session is not None:
-            from engine.research_vault import fulltext_index, fulltext_publication
-            from engine.research_vault.producer_generation_writer import record_fulltext_source_cut
-            catalog_mod.prepare_publication(cat, now=now)
             _fulltext_t = time.monotonic()
-            staged = fulltext_publication.stage_from_store(
-                conn, cat, store, pending_receipts,
-                max_rows=fulltext_index.MAX_ROWS,
-                max_body_bytes=fulltext_index.MAX_BODY_BYTES)
-            record_fulltext_source_cut(conn, cat, staged["source_digests"])
-            summary["fulltext_discovery"] = staged["counts"]
-            timing_s["fulltext_discovery_s"] = time.monotonic() - _fulltext_t
+            summary['fulltext_discovery'] = _stage_generation_body(
+                conn, cat, generation_session, read_cache, pending_receipts, now)
+            timing_s['fulltext_discovery_s'] = timing_s.get('fulltext_discovery_s', 0) + time.monotonic() - _fulltext_t
 
         # Catalog: a dry run serializes only (nothing is published anywhere). The
         # real publish happens AFTER the corpus, below, once the connection is
