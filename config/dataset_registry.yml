@@ -1651,8 +1651,9 @@ datasets:
       market: US
       venues: [XNYS, XNAS, XASE, ARCX]
       universe: US tickers present in the Macro deep store data/stocks/<T>.parquet
-        (this registry's equity.bars.daily.stocks universe), last MAX_BARS=3900
-        (~15y) daily bars kept per ticker
+        (last MAX_BARS=3900) and existing Terminal flagship daily histories whose
+        store and yahoo_fetch aliases resolve to the same supported US listing;
+        direct Yahoo history is bounded by the observed per-file coverage
     clocks: [derived]          # a DERIVED profile carries no clock of its own (D00.D1)
     point_in_time_corporate_actions: false
     rights:
@@ -1686,6 +1687,20 @@ datasets:
       the XASE difference is recorded as a GAP. No lineage edge in `inputs:`: the
       in-repo DAG is in-repo lineage, and a cross-repo build is named here, not
       graphed as an in-repo pipeline.
+      2026-10-19 direct-source integration: the existing Terminal producer
+      ingest/build_polygon_universe.py may bind its own fresh Yahoo max/1d
+      auto_adjust observation through lib/dataos/terminal_materialization.py.
+      This explicit source variant closes the basis gap only for its bound
+      per-symbol materializations, using the actual requested yahoo_fetch alias,
+      canonical store identity, source/module versions, exact reference-file
+      hashes and dataos.terminal_ohlc.rows.v1 digest of all published OHLCV rows.
+      It does not claim the Macro parquet as an upstream dependency. Reused
+      documents retain their original observation; any mixed-source append or
+      content change invalidates the active binding until a full rebind.
+      CURRENT TRADJ is a non-executable vendor total-return proxy; historical
+      availability, action revisions and unattested identity generations remain
+      explicit. No rights or PROPOSED status change is implied. Contract and
+      acceptance limits: research/TERMINAL_YAHOO_MATERIALIZATION_2026-10-19.md.
 
   # ── R00 consumer C (D00.D6, 2026-10-13): basket membership PIT histories ────
   # One row per suite — three suites, two lanes (engine/basket_membership_pit.py

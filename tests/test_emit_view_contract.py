@@ -296,3 +296,187 @@ def test_C04_emit_reads_no_parquet_in_the_store(tmp_path):
     store = tmp_path / "stocks"
     for name in ("ZQXA", "ZQXB", "ZQXC"):
         assert (store / f"{name}.parquet").read_bytes() == b"PAR1"
+
+
+# Direct source materialization is defined by Data OS, not inferred in Terminal.
+from copy import deepcopy  # noqa: E402
+import hashlib  # noqa: E402
+from lib.dataos.identity import VendorAliasTable, parse_listing_key  # noqa: E402
+from lib.dataos import terminal_materialization as tdm  # noqa: E402
+
+
+def _tdm_case(symbol="ZQXA", requested=None):
+    requested = requested or symbol
+    rows = [["2026-10-15", 100.0, 101.5, 99.5, 101.0, 0],
+            ["2026-10-16", 101.0, 103.0, 100.75, 102.125, 12000]]
+    document = {
+        "t": symbol, "src": "yahoo", "bar_quality": "real_ohlc", "bars": rows,
+        "source_observation": {
+            "producer": tdm.PRODUCER_PATH, "provider": "yahoo",
+            "observed_at": "2026-10-17T00:00:00+00:00",
+            "request": {"adapter": "yfinance", "period": "max", "interval": "1d",
+                        "auto_adjust": True, "symbol": requested,
+                        "session_dates": "exchange_local", "index_timezone": "America/New_York"},
+            "adapter_version": "fixture-1",
+            "coverage": {"first": rows[0][0], "last": rows[-1][0], "rows": len(rows)},
+            "digest_codec": "python.json.compact.v1",
+            "bars_sha256": hashlib.sha256(json.dumps(rows, separators=(",", ":")).encode()).hexdigest(),
+            "qualification": "OBSERVATION_ONLY", "historical_availability": "UNATTESTED",
+        },
+    }
+    listing = "US-XNYS-" + symbol
+    security = "SEC:" + listing
+    aliases = [{"vendor": vendor, "vendor_symbol": value, "security_id": security}
+               for vendor, value in (("store", symbol), ("yahoo_fetch", requested))]
+    arguments = {
+        "alias_table": VendorAliasTable.from_records(aliases),
+        "master_records": [{"security_id": security, "listing_key": listing,
+                            "country": "US", "mic": "XNYS", "superseded_by": None}],
+        "parse_listing_key": parse_listing_key,
+        "producer_version": {"repository": "mastermindx-market-intelligence/mastermind-terminal",
+                             "commit": None, "files_sha256": {p: "a"*64 for p in tdm.PRODUCER_FILES}},
+        "owner_version": {"repository": "mastermindx-market-intelligence/macro", "commit": "b"*40,
+                          "files_sha256": {p: "c"*64 for p in (tdm.OWNER_PATH, tdm.IDENTITY_PATH)}},
+        "reference": {"files_sha256": {p: "d"*64 for p in tdm.REFERENCE_FILES},
+                      "read_at": "2026-10-17T00:00:01Z",
+                      "generation_id": None, "generation_attested": False},
+    }
+    return document, arguments, aliases
+
+
+def test_TDM_fresh_observation_binds_real_output_without_macro_store_lineage():
+    document, arguments, _ = _tdm_case()
+    before = deepcopy(document)
+    result = tdm.bind_terminal_yahoo_materialization(document, **arguments)
+    assert result["status"] == "bound", result
+    assert document == before
+    view = result["view"]
+    contract = view["contract"]
+    assert contract["evidence_mode"]["registry_row"] is None
+    assert contract["evidence_mode"]["output_registry_row"] == "terminal.bars.daily.ohlc_json"
+    assert contract["materialization"]["bars_sha256"] == tdm.terminal_rows_sha256(document["bars"])
+    assert contract["materialization"]["symbol"] == document["t"]
+    assert contract["materialization"]["historical_availability"] == "UNATTESTED"
+    assert contract["evidence_mode"]["generation_attested"] is False
+    assert contract["adjustment_reference"]["action_revision_set_id"] is None
+    assert contract["adjustment_reference"]["executable"] is False
+    assert contract["adjustment_reference"]["basis"] == "tradj"
+    assert view["listing"]["security_id"] == "SEC:US-XNYS-ZQXA"
+    # A caller mutation must not leak into the next binding.
+    view["contract"]["coverage"]["rows"] = 999
+    again = tdm.bind_terminal_yahoo_materialization(document, **arguments)
+    assert again["view"]["contract"]["coverage"]["rows"] == 2
+    assert "materialization" not in terminal_daily_ohlc_contract_v1()
+
+
+def test_TDM_class_share_request_uses_both_canonical_namespaces():
+    document, arguments, _ = _tdm_case("BRK.B", "BRK-B")
+    result = tdm.bind_terminal_yahoo_materialization(document, **arguments)
+    assert result["status"] == "bound", result
+    assert result["view"]["contract"]["materialization"]["requested_symbol"] == "BRK-B"
+
+
+@pytest.mark.parametrize("fault,code", [
+    ("old_vendor_label", "MATERIALIZATION_OBSERVATION_ABSENT"),
+    ("prior_view", "MATERIALIZATION_REUSE_NOT_FRESH"),
+    ("reused", "MATERIALIZATION_REUSE_NOT_FRESH"),
+    ("different_source", "MATERIALIZATION_SOURCE_UNSUPPORTED"),
+    ("unadjusted", "MATERIALIZATION_SOURCE_UNSUPPORTED"),
+    ("wrong_interval", "MATERIALIZATION_SOURCE_UNSUPPORTED"),
+    ("no_timezone", "MATERIALIZATION_SOURCE_UNSUPPORTED"),
+    ("no_adapter_version", "MATERIALIZATION_SOURCE_UNSUPPORTED"),
+    ("bad_digest", "MATERIALIZATION_OBSERVATION_MISMATCH"),
+    ("changed_open", "MATERIALIZATION_OBSERVATION_MISMATCH"),
+    ("append", "MATERIALIZATION_OBSERVATION_MISMATCH"),
+    ("coverage", "MATERIALIZATION_OBSERVATION_MISMATCH"),
+    ("future_bars", "MATERIALIZATION_CLOCK_INVALID"),
+    ("unaware_clock", "MATERIALIZATION_CLOCK_INVALID"),
+    ("wrong_namespace", "MATERIALIZATION_IDENTITY_UNRESOLVED"),
+    ("wrong_security", "MATERIALIZATION_IDENTITY_MISMATCH"),
+    ("missing_alias", "MATERIALIZATION_IDENTITY_UNRESOLVED"),
+    ("ambiguous_listing", "MATERIALIZATION_LISTING_AMBIGUOUS"),
+    ("superseded_listing", "MATERIALIZATION_LISTING_AMBIGUOUS"),
+    ("wrong_mic", "VENUE_OUT_OF_SCOPE"),
+    ("unattested_code", "MATERIALIZATION_CODE_UNATTESTED"),
+    ("missing_reference", "MATERIALIZATION_REFERENCE_UNAVAILABLE"),
+    ("invented_generation", "MATERIALIZATION_REFERENCE_UNAVAILABLE"),
+])
+def test_TDM_refusal_matrix(fault, code):
+    document, arguments, aliases = _tdm_case()
+    observation = document["source_observation"]
+    if fault == "old_vendor_label": del document["source_observation"]
+    elif fault == "prior_view": document["view"] = {"contract": {"basis": "tradj"}}
+    elif fault == "reused": arguments["reused"] = True
+    elif fault == "different_source": document["src"] = "polygon"
+    elif fault == "unadjusted": observation["request"]["auto_adjust"] = False
+    elif fault == "wrong_interval": observation["request"]["interval"] = "1h"
+    elif fault == "no_timezone": observation["request"]["index_timezone"] = None
+    elif fault == "no_adapter_version": observation["adapter_version"] = None
+    elif fault == "bad_digest": observation["bars_sha256"] = "0"*64
+    elif fault == "changed_open": document["bars"][0][1] += 0.125
+    elif fault == "append":
+        document["bars"].append(["2026-10-19", 102, 104, 101, 103, 50])
+        observation["observed_at"] = "2026-10-20T00:00:00Z"
+    elif fault == "coverage": observation["coverage"]["rows"] = 3
+    elif fault == "future_bars": observation["observed_at"] = "2026-10-15T01:00:00Z"
+    elif fault == "unaware_clock": observation["observed_at"] = "2026-10-17T00:00:00"
+    elif fault == "wrong_namespace": aliases[1]["vendor"] = "yahoo"
+    elif fault == "wrong_security": aliases[1]["security_id"] = "SEC:US-XNYS-ZQXB"
+    elif fault == "missing_alias": aliases.pop()
+    elif fault == "ambiguous_listing": arguments["master_records"] *= 2
+    elif fault == "superseded_listing": arguments["master_records"][0]["superseded_by"] = "SEC:US-XNYS-OLD"
+    elif fault == "wrong_mic": arguments["master_records"][0]["mic"] = "XNAS"
+    elif fault == "unattested_code": arguments["producer_version"]["files_sha256"] = {}
+    elif fault == "missing_reference": arguments["reference"]["files_sha256"] = {}
+    elif fault == "invented_generation": arguments["reference"]["generation_attested"] = True
+    arguments["alias_table"] = VendorAliasTable.from_records(aliases)
+    result = tdm.bind_terminal_yahoo_materialization(document, **arguments)
+    assert result == {"status": "refused", "view": None, "refusal_reasons": [code]}
+
+
+@pytest.mark.parametrize("fault", ["empty", "duplicate", "reverse", "bad_date", "string",
+                                  "boolean", "nan", "infinity", "bad_bounds", "negative",
+                                  "fractional_volume", "unsafe_volume", "extra_column"])
+def test_TDM_row_codec_rejects_ambiguous_or_invalid_values(fault):
+    document, _, _ = _tdm_case()
+    rows = document["bars"]
+    if fault == "empty": rows.clear()
+    elif fault == "duplicate": rows.append(deepcopy(rows[-1]))
+    elif fault == "reverse": rows.reverse()
+    elif fault == "bad_date": rows[0][0] = "2026-02-30"
+    elif fault == "string": rows[0][4] = "101"
+    elif fault == "boolean": rows[0][5] = True
+    elif fault == "nan": rows[0][4] = float("nan")
+    elif fault == "infinity": rows[0][4] = float("inf")
+    elif fault == "bad_bounds": rows[0][2] = 90
+    elif fault == "negative": rows[0][4] = -1
+    elif fault == "fractional_volume": rows[0][5] = 1.5
+    elif fault == "unsafe_volume": rows[0][5] = 2**53
+    elif fault == "extra_column": rows[0].append(0)
+    with pytest.raises(tdm.MaterializationRefusal, match="MATERIALIZATION_ROWS_INVALID"):
+        tdm.encode_terminal_rows(rows)
+
+
+def test_TDM_codec_numeric_equivalence_and_non_close_mutation():
+    document, _, _ = _tdm_case()
+    rows = document["bars"]
+    digest = tdm.terminal_rows_sha256(rows)
+    rows[0][1] = 100
+    rows[0][5] = -0.0
+    assert tdm.terminal_rows_sha256(rows) == digest
+    rows[0][2] += 0.125
+    assert tdm.terminal_rows_sha256(rows) != digest
+
+
+def test_TDM_portable_golden_values_and_owner_contract():
+    golden = json.loads((ROOT / "tests/terminal_materialization_golden.json").read_text())
+    assert golden["fixture"] is True
+    for rows, encoded, digest in [
+        (golden["document"]["bars"], golden["encoded_hex"], golden["bars_sha256"]),
+        (golden["portable_rows"], golden["portable_encoded_hex"], golden["portable_sha256"]),
+    ]:
+        assert tdm.encode_terminal_rows(rows).hex() == encoded
+        assert tdm.terminal_rows_sha256(rows) == digest
+    document, arguments, _ = _tdm_case()
+    result = tdm.bind_terminal_yahoo_materialization(document, **arguments)
+    assert result["view"] == golden["document"]["view"]
