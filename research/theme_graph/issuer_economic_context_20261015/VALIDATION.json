@@ -1,0 +1,133 @@
+{
+  "scope": "native single-pass issuer context source proof; isolated synthetic state only",
+  "parent_pr": 9423,
+  "parent_source": "a474d289db007117d12e32f421ae7c46bcc163e8",
+  "native_tests": {
+    "tests": 575,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "new_issuer_cases": 51,
+  "legacy_http_api_tests": {
+    "tests": 90,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "ci_scope_tests": {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "new_fault_controls": [
+    {
+      "mutation": "missing_pre_io_field_restriction",
+      "control": "passed",
+      "fault": "detected"
+    },
+    {
+      "mutation": "missing_final_selection_check",
+      "control": "passed",
+      "fault": "detected"
+    },
+    {
+      "mutation": "missing_final_admission_check",
+      "control": "passed",
+      "fault": "detected"
+    },
+    {
+      "mutation": "duplicate_native_fact_read",
+      "control": "passed",
+      "fault": "detected"
+    }
+  ],
+  "parent_fault_controls": [
+    {
+      "mutation": "removed_field_permission_gate",
+      "control": "passed",
+      "fault": "detected"
+    },
+    {
+      "mutation": "removed_admission_pin",
+      "control": "passed",
+      "fault": "detected"
+    },
+    {
+      "mutation": "collapsed_fact_known_clock",
+      "control": "passed",
+      "fault": "detected"
+    },
+    {
+      "mutation": "invented_graph_edge",
+      "control": "passed",
+      "fault": "detected"
+    }
+  ],
+  "native_conservation": {
+    "parent": "a474d289db007117d12e32f421ae7c46bcc163e8",
+    "all_original_native_validators_ast_preserved": true,
+    "all_original_selection_gates_and_io_order_preserved": true,
+    "legacy_response_return_ast_preserved": true,
+    "parent_per_fact_renderer_ast_preserved": true,
+    "single_pass_counts": [
+      {
+        "selected_facts": 1,
+        "native_metadata_path": {
+          "owner": 2,
+          "admission": 4,
+          "artifact_reads": 4,
+          "store_constructions": 1
+        },
+        "economic_context_path": {
+          "owner": 2,
+          "admission": 4,
+          "artifact_reads": 4,
+          "store_constructions": 1
+        },
+        "read_time_writes": 0
+      },
+      {
+        "selected_facts": 2,
+        "native_metadata_path": {
+          "owner": 2,
+          "admission": 8,
+          "artifact_reads": 8,
+          "store_constructions": 1
+        },
+        "economic_context_path": {
+          "owner": 2,
+          "admission": 8,
+          "artifact_reads": 8,
+          "store_constructions": 1
+        },
+        "read_time_writes": 0
+      }
+    ]
+  },
+  "only_ci_execution_change": "append the new issuer suite to existing company-relationship-candidates owner",
+  "all_other_jobs_unchanged": true,
+  "hosted_ci": "NOT_TRIGGERED: stacked branch is not main; main-only workflow filter is preserved",
+  "source_sha256": {
+    "engine/company_intelligence/issuer_disclosure_selection.py": "d33945733eb99a2eea823c2ab9ddd08d5f6a404d22b51051532ca3fcac413d5f",
+    "engine/theme_graph/economic_context.py": "105fa22696d32ca96f5e7be5c29f861dc3b4798a211cf7dbeec3d9e7280570e2",
+    "engine/theme_graph/issuer_economic_context.py": "0c5f4c8d1fe8eda9e5d0431a3b33ed620690f3331bc15d57d2f01cdacf1702fe",
+    "tests/test_gmi_issuer_economic_context.py": "2ef4075801cc309cad0d5ef44c375e01bcad7a8d81090196c5c5494d33502307",
+    "research/theme_graph/issuer_economic_context_20261015/verify_mutations.py": "4985ccc52a0c4208060a2c6e9cf7b0010c361c2a57447d5c7baa44d80d9ffdba"
+  },
+  "evidence_sha256": {
+    "full-native-tests.xml": "9342a4f2a29358ee95d439ba8ecc99a58e8d1499a6ed8045c2c24a6b9b00f4ee",
+    "full-native-tests.log": "7b63e7e0a5da89d78b9663f5da938dd7a27ba944ddfb690f35996301334547f4",
+    "api-compatibility.xml": "ab7f08e9475609b01cff988ec32e511f54bdda6e78a4d5465313d45b6f78d788",
+    "api-compatibility.log": "bc265bcbc4bcdbdb122ae246ce93743381250dcf8b27f097dd9b67ade766a8b9",
+    "ci-scope-tests.xml": "9bff299c1147ea219fb766b4b24216795d5ed2073a2a58f0ae19faafd654fd07",
+    "mutation-results.json": "311eec5c20459516fc72ac207473b82c74071258f32661bce9d3213ac3b3f265",
+    "parent-mutation-results.json": "4122a3a1fbb151d04bdcf09140e5a61fb3c3577089c538f88dc54356c729ad55",
+    "conservation-and-io.json": "96647db320805184547c386b624479c41fe4147abbbbe3dd1987a69ff79eab5a"
+  },
+  "production_api_or_store_access": false,
+  "new_identity_registry_publisher_or_graph": false,
+  "financial_or_predictive_promotion": false,
+  "api_deprecation_warnings": 5
+}
