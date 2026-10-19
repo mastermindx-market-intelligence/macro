@@ -304,6 +304,32 @@ def test_cli_absent_ledger_returns_read_error(tmp_path):
     assert "READ_ERROR" in rc.stderr
 
 
+def test_load_ledger_reads_synchronously_without_changing_rows(tmp_path, monkeypatch):
+    """Preserve the CLI exit code by avoiding Arrow read-worker teardown.
+
+    The adjacent accrual verifier already requires synchronous reads for the
+    same SIGABRT signature. Read a real ledger here and retain its exact rows.
+    """
+    mod = _load_audit()
+    ledger = _write_ledger(tmp_path / "snapshots.parquet", [
+        {"date": "2026-09-15", "underlying": "SPY", "skew": 0.05,
+         "source": "thetadata"},
+    ])
+    real_read = pd.read_parquet
+    expected = real_read(ledger, use_threads=False)
+    calls = []
+
+    def synchronous_read(*args, **kwargs):
+        calls.append(kwargs)
+        assert kwargs.get("use_threads") is False
+        return real_read(*args, **kwargs)
+
+    monkeypatch.setattr(pd, "read_parquet", synchronous_read)
+    actual = mod._load_ledger(ledger)
+    assert len(calls) == 1
+    pd.testing.assert_frame_equal(actual, expected)
+
+
 def test_cli_no_legacy_rows_returns_no_legacy(tmp_path):
     """An all-thetadata ledger has nothing to compare against — the audit
     reports it and exits EXIT_NO_LEGACY_ROWS (2) rather than emitting a

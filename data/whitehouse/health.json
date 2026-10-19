@@ -1,10 +1,23 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-19T07:45:42.200172+00:00",
-  "posts_seen": 7,
-  "seen_total": 297,
-  "evaluated": 0,
+  "as_of": "2026-10-19T15:35:47.221479+00:00",
+  "posts_seen": 8,
+  "seen_total": 299,
+  "evaluated": 2,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": []
+  "gate_scores": [
+    {
+      "id": "wh-2026-10-19-advancing-womens-health-to-improve-outcomes-in-all-phases-of-life",
+      "importance": 30,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-10-19-fact-sheet-president-donald-j-trump-and-first-lady-melania-trump-advance-womens-",
+      "importance": 35,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    }
+  ]
 }
