@@ -6614,6 +6614,7 @@ jobs:
           git add data/neuralweb/causal_feature_inventory.json 2>/dev/null || true
           git add data/neuralweb/causal_edges.jsonl data/neuralweb/causal_nulls.jsonl 2>/dev/null || true
           git add data/neuralweb/causal_mechanisms.jsonl 2>/dev/null || true
+          git add data/neuralweb/causal_filing_budget.jsonl 2>/dev/null || true  # M3 ISO-week filing budget (never trial_ledger.jsonl)
           git add data/neuralweb/causal_frontier.json data/neuralweb/causal_surprise_queue.jsonl 2>/dev/null || true
           git add data/neuralweb/causal_confluence_audit.json 2>/dev/null || true
           git add data/neuralweb/causal_lab_state.json site/neuralwebdata/causal_lab_state.json 2>/dev/null || true

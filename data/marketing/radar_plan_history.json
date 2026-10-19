@@ -2,6 +2,30 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-10-19",
+      "tickers": [
+        "AFG",
+        "INGR",
+        "LOPE",
+        "OMC",
+        "PINS",
+        "WWD"
+      ]
+    },
+    {
+      "as_of": "2026-10-18",
+      "tickers": [
+        "ATR",
+        "GFI",
+        "IFF",
+        "LLY",
+        "LOPE",
+        "OKLO",
+        "QDEL",
+        "SMR"
+      ]
+    },
+    {
       "as_of": "2026-10-17",
       "tickers": [
         "ACMR",
@@ -127,41 +151,6 @@
         "SBRA",
         "SFM",
         "VNO"
-      ]
-    },
-    {
-      "as_of": "2026-10-12",
-      "tickers": [
-        "AMG",
-        "AVGO",
-        "BKH",
-        "CCOI",
-        "CGNX",
-        "CTVA",
-        "ELF",
-        "FLO",
-        "GAP",
-        "JBGS",
-        "PLG",
-        "SEZL",
-        "ST",
-        "SYF",
-        "TBBK",
-        "ULS",
-        "VMI"
-      ]
-    },
-    {
-      "as_of": "2026-10-11",
-      "tickers": [
-        "AIG",
-        "GIS",
-        "IDA",
-        "KRC",
-        "LLY",
-        "OMC",
-        "RYAN",
-        "SPY"
       ]
     }
   ]
