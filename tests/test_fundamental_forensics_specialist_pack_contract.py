@@ -599,6 +599,43 @@ _FROZEN_PACKS = {
             "filer_category_unbound",
         ),
     },
+    "PK07": {
+        "digest": "31b2eff2da7702b983246eeb04192c47a49f4fe25d551cc570381f07b9606174",
+        "fields": (
+            "goodwill",
+            "intangible_assets_net",
+            "indefinite_lived_intangibles",
+            "goodwill_acquired",
+            "goodwill_disposals",
+            "goodwill_fx_other",
+            "goodwill_impairment_loss",
+            "intangible_impairment_loss",
+            "business_combination_consideration",
+            "acquisition_date",
+            "purchase_accounting_note_span",
+            "impairment_testing_note_span",
+        ),
+        "required": (
+            "goodwill",
+            "intangible_assets_net",
+        ),
+        "checks": (
+            "goodwill_rollforward_closed",
+            "impairment_vs_carrying",
+            "acquisition_scope_stated",
+        ),
+        "reason_codes": (
+            "applicability_rule_satisfied",
+            "form_outside_pack_forms",
+            "missing_standard_fact",
+            "extension_concept_unaliased",
+            "disallowed_dimension",
+            "missing_dependency",
+            "unit_mismatch",
+            "numeric_value_in_narrative_only",
+        ),
+        "pack_specific_codes": (),
+    },
 }
 _FROZEN_IDS = sorted(_FROZEN_PACKS)
 
