@@ -911,6 +911,14 @@ def test_selected_house_refuses_unqualified_edge_evidence(mutation):
 # ETF009 remains a graph-native TRACKS reference, never a Data OS ETF join.
 def _selected_etf_view(*, second=False):
     view = _selected_house_view(second=second)
+    for edge in view._edges:
+        if edge['type'] == 'MEMBER_OF' and edge['dst'] == 'basket:baskets:solar':
+            edge.update(evidence_refs=['ev:membership'], confidence_basis='membership_doc.v1',
+                        date_provenance='seed_constant')
+    view._evidence.append({**{c: None for c in store.EVIDENCE_COLUMNS},
+        'evidence_id': 'ev:membership', 'kind': 'operator_curation',
+        'source_ref': 'data/baskets/membership.json', 'published_at': '2024-01-01',
+        'computed_at': STAMP, 'licensing_display_ok': True})
     view._nodes.append(_blank_node(node_id='etf:AAAETF', kind='etf',
         provenance='membership_doc:baskets', market_scope='us',
         external_ids=json.dumps({'symbol': 'AAAETF'})))
@@ -945,7 +953,56 @@ def test_selected_etf_keeps_native_reference_clocks_and_no_fund_claim():
     assert not any(out['authority'].values())
     assert rights.family_for_node_id('etf:AAAETF') is None
     encoded = json.dumps(out)
-    assert 'name_en' not in encoded and 'source_ref' not in encoded and 'PRIVATE' not in encoded
+    assert ref['membership']['basket']['node_id'] == 'basket:baskets:solar'
+    assert 'name_en' not in ref and 'source_ref' not in encoded and 'PRIVATE' not in encoded
+
+
+def test_selected_etf_native_membership_survives_missing_theme_hierarchy():
+    view = _selected_etf_view()
+    view._edges = [e for e in view._edges if e['type'] not in {'EXPRESSES', 'PARENT_OF'}]
+    result = _selected_hierarchy(view=view)
+    assert result['availability']['state'] == 'NO_QUALIFIED_HOUSE_PATH'
+    assert result['bindings'][0]['paths'] == []
+    ref, = result['etf_tracking']['references']
+    assert ref['membership']['relationship'] == 'MEMBER_OF'
+    assert ref['membership']['edge_id'] == 'member'
+    assert ref['membership']['evidence'][0]['evidence_id'] == 'ev:membership'
+    assert ref['etf_node_id'] == 'etf:AAAETF'
+
+
+def test_selected_etf_normalizes_native_parquet_null_clocks():
+    view = _selected_etf_view()
+    for edge in view._edges:
+        if edge['edge_id'] in {'member','tracks'}:
+            edge['valid_to'] = float('nan')
+    result = _selected_hierarchy(view=view)
+    ref, = result['etf_tracking']['references']
+    assert ref['clocks']['valid_to'] is None
+    assert ref['membership']['clocks']['valid_to'] is None
+    json.dumps(result,allow_nan=False)
+
+
+@pytest.mark.parametrize('mutation', ['missing','closed','future','undated','vendor','denied',
+    'future_receipt','no_receipt','wrong_basis','duplicate_basket','retired_basket','retired_company'])
+def test_selected_etf_membership_is_independently_qualified(mutation):
+    view = _selected_etf_view()
+    view._edges = [e for e in view._edges if e['type'] not in {'EXPRESSES', 'PARENT_OF'}]
+    member = next(e for e in view._edges if e['edge_id']=='member')
+    receipt = next(e for e in view._evidence if e['evidence_id']=='ev:membership')
+    basket = next(n for n in view._nodes if n['node_id']=='basket:baskets:solar')
+    if mutation == 'missing': view._edges.remove(member)
+    elif mutation == 'closed': member['valid_to'] = ASOF
+    elif mutation == 'future': member['belief_time'] = '2025-01-01'
+    elif mutation == 'undated': member['computed_at'] = None
+    elif mutation == 'vendor': receipt['source_ref'] = 'finviz_themes/private'
+    elif mutation == 'denied': receipt['licensing_display_ok'] = False
+    elif mutation == 'future_receipt': receipt['published_at'] = '2025-01-01'
+    elif mutation == 'no_receipt': receipt['published_at'] = None
+    elif mutation == 'wrong_basis': member['confidence_basis'] = 'crosswalk.v1'
+    elif mutation == 'duplicate_basket': view._nodes.append(copy.deepcopy(basket))
+    elif mutation == 'retired_basket': basket['status'] = 'retired'
+    else: next(n for n in view._nodes if n['node_id']=='co:us:AAA')['status'] = 'retired'
+    assert _selected_hierarchy(view=view)['etf_tracking']['references'] == []
 
 
 @pytest.mark.parametrize('mutation', ['vendor', 'unmapped', 'missing', 'snapshot_false',

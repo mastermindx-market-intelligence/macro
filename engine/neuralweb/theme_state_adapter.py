@@ -958,6 +958,11 @@ def _production_record(name, row, position, fact, source, effective_at, known_at
     clocks["emitted_at"] = row.get("generated_at", row.get("emitted_at",
                               root_fact.get("generated_at", root_fact.get("emitted_at"))))
     declared = {key: key in row or key in root_fact for key in ("known_at", "available_at", "recorded_at")}
+    if name == "divergence_log" and "recorded_at" not in row and "ts" in row:
+        # _append_divergence_ledger stamps actual UTC append time as ts. It is
+        # neither source availability nor historical publication/known_at.
+        clocks["recorded_at"] = row["ts"]
+        declared["recorded_at"] = True
     declared["effective_at"] = any(key in row or key in root_fact for key in ("as_of", "asof"))
     declared["emitted_at"] = any(key in row or key in root_fact for key in ("generated_at", "emitted_at"))
     clocks = {key: production.clock_slot(value, declared=declared[key]) for key, value in clocks.items()}
@@ -973,6 +978,64 @@ def _production_record(name, row, position, fact, source, effective_at, known_at
         "scenario": declared_field("scenario"),
         "compatibility_aliases": {"accel_z": copy.deepcopy(row.get("z_accel"))} if name == "subsector_rotation" else {},
         "usable_at_query": not reasons, "reason_codes": sorted(set(reasons))}
+
+
+def capture_native_divergence_leg(root: Path, *, node_id: str, effective_at: str, known_at=None):
+    """Bounded read of the incumbent specialist leg, not a partial OwnerBundle.
+
+    No graph, security identity, membership, prices, returns or publication are
+    read. The complete native ledger is captured before exact native-theme
+    scoping by _production_leg. Bounds refuse the whole read, never truncate the
+    population. Only actual observation supplies current read knowledge.
+    """
+    root = Path(root).resolve()
+    _clock(effective_at)
+    if config.data_dir().resolve() != (root / "data").resolve():
+        raise ValueError("configured owner data root differs from captured root")
+    paths = {"theme_crosswalk": SOURCE_PATHS["theme_crosswalk"],
+             "divergence_log": SOURCE_PATHS["divergence_log"], "rights_registry": "config/theme_sources.yml"}
+
+    def bounded_source(path):
+        try:
+            with (root / path).open("rb") as stream:
+                raw = stream.read(8 * 1024 * 1024 + 1)
+        except FileNotFoundError:
+            return {"path": path, "availability": "UNAVAILABLE", "null_reason": "SOURCE_MISSING",
+                    "sha256": None, "bytes_b64": None}
+        if len(raw) > 8 * 1024 * 1024:
+            raise ValueError("native divergence read resource bound exceeded")
+        return {"path": path, "availability": "AVAILABLE", "null_reason": None,
+                "sha256": _sha(raw), "bytes_b64": base64.b64encode(raw).decode()}
+
+    sources = {key: bounded_source(path) for key, path in paths.items()}
+    crosswalk = _decode(sources["theme_crosswalk"])
+    if not isinstance(crosswalk, dict) or not isinstance(crosswalk.get("themes"), list):
+        raise ValueError("native crosswalk unavailable")
+    ids = [identity.theme_node_id(row["id"]) for row in crosswalk["themes"]]
+    if len(ids) != len(set(ids)) or node_id not in ids:
+        raise ValueError("exact canonical native theme required")
+    ledger = _decode(sources["divergence_log"])
+    if ledger is not None and (not isinstance(ledger, list) or len(ledger) > 20000):
+        raise ValueError("native divergence population resource bound exceeded")
+    source_rights = _bound_rights_read(root, sources["rights_registry"],
+        rights.family_for_source_ref(paths["divergence_log"]))
+    for key, path in paths.items():
+        if bounded_source(path) != sources[key]:
+            raise ValueError("native divergence source changed during read")
+    observed_at = dt.datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z")
+    known_at = observed_at if known_at is None else known_at
+    if (_clock(known_at, precise=True) != _clock(observed_at, precise=True)
+            or _clock(effective_at).date() > _clock(observed_at, precise=True).date()):
+        raise ValueError("native retrospective read requires actual observation cutoff and nonfuture effective date")
+    query = {"effective_at": effective_at, "known_at": known_at}
+    snapshot = {"sources": sources, "observed_at": observed_at, "query": query,
+                "specialist_rights": {"divergence_log": source_rights}}
+    cfg = crosswalk["themes"][ids.index(node_id)]
+    leg = _production_leg("divergence_log", {"kind": "canonical_theme", "basket": None},
+        cfg, snapshot, {}, {"observations": {}})
+    return {"subject_id": node_id, "query": query, "observed_at": observed_at, "leg": leg,
+            "input_refs": {key: {field: source[field] for field in ("path", "sha256", "availability")}
+                           for key, source in sources.items()}}
 
 
 def _production_leg(name, subject, cfg, snapshot, qualified, owner_subject):

@@ -50,6 +50,26 @@ MIN_THEMES_FOR_RANK = 6
 NARRATIVE_HI_THRESHOLD = 0.60
 MONEY_HI_THRESHOLD = 0.60
 
+# The incumbent catch-up claim uses calendar days, separately from return grading.
+CATCHUP_DAYS = 60
+
+
+def catchup_observed(flag_asof, theme_rows):
+    """The unchanged native catch-up predicate, without grading/price I/O.
+
+    Rows must already belong to the flag's theme. This intentionally retains the
+    grader's any()/short-circuit and timestamp behavior; it asserts no coverage,
+    episode independence, constant cohort, causality or calibrated prediction.
+    """
+    import pandas as pd
+    flag_ts = pd.Timestamp(flag_asof)
+    cutoff = flag_ts + pd.Timedelta(days=CATCHUP_DAYS)
+    return any(
+        e.get("quadrant") == "confirmed"
+        for e in theme_rows
+        if e.get("asof") and flag_ts < pd.Timestamp(e["asof"]) <= cutoff
+    )
+
 # Heartbeat: re-log for hidden-opportunity even when unchanged if this many days old.
 # Mirrors _HEARTBEAT_DAYS=7 in foresight_cascade.py.
 _HEARTBEAT_DAYS = 7
@@ -584,7 +604,6 @@ def grade_divergence_ledger(
             continue
 
     today_ts = pd.Timestamp(today) if today else pd.Timestamp.now(tz='UTC').tz_localize(None).normalize()
-    CATCHUP_DAYS = 60
     RETURN_DAYS = 90
 
     # Index all rows by theme for catch-up detection
@@ -614,13 +633,8 @@ def grade_divergence_ledger(
 
         # Catch-up grade (60-day horizon)
         if days_elapsed >= CATCHUP_DAYS:
-            cutoff = flag_ts + pd.Timedelta(days=CATCHUP_DAYS)
             theme_rows = by_theme.get(r["theme"], [])
-            caught_up = any(
-                e.get("quadrant") == "confirmed"
-                for e in theme_rows
-                if e.get("asof") and flag_ts < pd.Timestamp(e["asof"]) <= cutoff
-            )
+            caught_up = catchup_observed(flag_ts, theme_rows)
             catchup_results.append({
                 "theme": r["theme"],
                 "flag_date": r["asof"],

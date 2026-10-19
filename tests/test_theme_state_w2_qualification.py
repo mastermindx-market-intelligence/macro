@@ -104,6 +104,63 @@ def test_identity_aliases_do_not_create_independent_issuers(native_pilot):
     assert result['status']=='UNAVAILABLE'
 
 
+@pytest.mark.parametrize('generated_at',[None,'2026-10-01T05:05:32','invalid','2026-10-05T00:00:00Z'])
+def test_unknown_or_future_native_identity_clock_is_typed_unavailable(native_pilot,generated_at):
+    path=native_pilot/'data/reference/_receipt.json'
+    receipt=json.loads(path.read_text());receipt['generated_at']=generated_at
+    path.write_text(json.dumps(receipt))
+    result=qualification.qualify_w2_beta_h1(*bound(native_pilot))
+    assert result['status']=='UNAVAILABLE'
+    assert result['reason_codes']==['IDENTITY_KNOWLEDGE_UNPROVEN']
+    assert result['coverage'] is None
+    assert result['semantics']['historical_availability']=='UNPROVEN; current capture is an upper bound only'
+
+
+def test_bound_master_producer_naive_utc_is_decoded_without_restamping(native_pilot):
+    path=native_pilot/'data/reference/_receipt.json'
+    receipt=json.loads(path.read_text());receipt.update(generated_at='2026-10-02T09:00:00',
+        producer='scripts/build_security_master.py',code_version=qualification.NAIVE_UTC_MASTER_REVISION,
+        dataset_ids=['reference.security_master','reference.vendor_aliases'])
+    raw=json.dumps(receipt);path.write_text(raw)
+    result=qualification.qualify_w2_beta_h1(*bound(native_pilot))
+    assert result['status']=='COMPUTABLE',result['reason_codes']
+    clock=result['binding']['identity_clock']
+    assert clock['raw']=='2026-10-02T09:00:00'
+    assert clock['comparison_clock']=='2026-10-02T09:00:00+00:00'
+    assert clock['interpretation']=='BOUND_NATIVE_MASTER_PRODUCER_NAIVE_UTC_SECONDS'
+    assert clock['receipt_sha256']==qualification._sha(raw.encode())
+    assert path.read_text()==raw
+    assert result['semantics']['historical_availability']=='UNPROVEN; current capture is an upper bound only'
+
+
+@pytest.mark.parametrize('change',[lambda r:r.update(producer='other'),lambda r:r.update(code_version='invalid'),
+    lambda r:r.update(code_version='d'*40),
+    lambda r:r.update(generated_at='2026-10-02T09:00:00.123'),lambda r:r.update(generated_at='2026-10-02'),
+    lambda r:r.update(dataset_ids=['reference.security_master']),lambda r:r.update(dataset_ids=[{}])])
+def test_naive_master_decoder_is_producer_revision_and_exact_format_bound(change):
+    receipt=dict(generated_at='2026-10-02T09:00:00',producer='scripts/build_security_master.py',
+                 code_version=qualification.NAIVE_UTC_MASTER_REVISION,dataset_ids=['reference.security_master','reference.vendor_aliases'])
+    row=dict(master_generated_at=receipt['generated_at'],master_code_version=receipt['code_version'])
+    change(receipt)
+    assert qualification._native_master_clock(row,receipt) is None
+
+
+def test_naive_master_decoder_refuses_same_stamp_different_generation():
+    receipt=dict(generated_at='2026-10-02T09:00:00',producer='scripts/build_security_master.py',
+                 code_version=qualification.NAIVE_UTC_MASTER_REVISION,dataset_ids=['reference.security_master','reference.vendor_aliases'])
+    assert qualification._native_master_clock(dict(master_generated_at=receipt['generated_at'],master_code_version='d'*40),receipt) is None
+
+
+def test_bound_producer_naive_future_clock_does_not_advance_cutoff(native_pilot):
+    path=native_pilot/'data/reference/_receipt.json'
+    receipt=json.loads(path.read_text());receipt.update(generated_at='2026-10-05T09:00:00',
+        producer='scripts/build_security_master.py',code_version=qualification.NAIVE_UTC_MASTER_REVISION,
+        dataset_ids=['reference.security_master','reference.vendor_aliases'])
+    path.write_text(json.dumps(receipt))
+    result=qualification.qualify_w2_beta_h1(*bound(native_pilot))
+    assert result['status']=='UNAVAILABLE' and result['reason_codes']==['IDENTITY_KNOWLEDGE_UNPROVEN']
+
+
 def test_capture_after_bundle_cutoff_refuses(native_pilot):
     bundle,inputs=bound(native_pilot)
     payload=inputs.snapshot();payload['observed_at']='2026-10-05T12:00:00Z'

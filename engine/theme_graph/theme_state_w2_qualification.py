@@ -31,6 +31,9 @@ POLICY_PATH = "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
 PROBE_PATH = "scripts/probe_theme_exposure_axes.py"
 POLICY_SHA256 = "fa5237922bcc112e6c97e61593f634a3db959f69dbee64bbc66f8ac6311b2eb3"
 PROBE_SHA256 = "09f97d72fefe1d2c9d9fec400d79d8637ef8ac010ffe25f0355e043cd238e744"
+# Exact retained producer revision whose _iso_now/receipt path declares naive
+# UTC seconds. Unknown revisions do not inherit that legacy interpretation.
+NAIVE_UTC_MASTER_REVISION = "cdbcd143dcfa419ab0637bc11dd4c80368143e2e"
 BOUND_PATHS = {
     "graph/nodes.parquet": "data/theme_graph/nodes.parquet",
     "graph/edges.parquet": "data/theme_graph/edges.parquet",
@@ -43,6 +46,44 @@ _SYMBOL = re.compile(r"[A-Z0-9][A-Z0-9._^-]*\Z")
 
 def _sha(raw):
     return hashlib.sha256(raw).hexdigest()
+
+
+def _native_master_clock(row, receipt):
+    """Decode only the bound master producer's documented naive UTC convention.
+
+    build_security_master._iso_now intentionally strips UTC offset for its native
+    parquet datetime64[ns] representation; the receipt reuses that same value.
+    Preserve the raw stamp and interpretation. This is generation time, never
+    historical publication/arrival or proof of a historical alias.
+    """
+    raw = row.get("master_generated_at")
+    if (type(receipt) is not dict or raw != receipt.get("generated_at")
+            or row.get("master_code_version") != receipt.get("code_version")):
+        return None
+    try:
+        theme_state._clock(raw)
+        return {"raw": raw, "comparison_clock": raw, "interpretation": "NATIVE_EXPLICIT_CLOCK"}
+    except (ValueError, TypeError):
+        pass
+    if (type(raw) is not str or not re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}", raw)
+            or receipt.get("producer") != "scripts/build_security_master.py"
+            or type(receipt.get("code_version")) is not str
+            or not re.fullmatch(r"[a-f0-9]{40}", receipt["code_version"])
+            or receipt["code_version"] != NAIVE_UTC_MASTER_REVISION
+            or row.get("master_code_version") != receipt["code_version"]
+            or receipt.get("generated_at") != raw
+            or type(receipt.get("dataset_ids")) is not list
+            or any(type(dataset) is not str for dataset in receipt["dataset_ids"])
+            or not {"reference.security_master", "reference.vendor_aliases"} <= set(receipt["dataset_ids"])):
+        return None
+    try:
+        interpreted = dt.datetime.fromisoformat(raw).replace(tzinfo=dt.timezone.utc).isoformat()
+    except ValueError:
+        return None
+    return {"raw": raw, "comparison_clock": interpreted,
+        "interpretation": "BOUND_NATIVE_MASTER_PRODUCER_NAIVE_UTC_SECONDS",
+        "producer": receipt["producer"], "code_version": receipt["code_version"],
+        "semantic_role": "GENERATION_TIME_ONLY_NOT_HISTORICAL_AVAILABILITY"}
 
 
 class _FrozenPath:
@@ -198,6 +239,10 @@ def qualify_w2_beta_h1(bundle: adapter.OwnerBundle, inputs: W2BetaInputs) -> dic
             return refuse("NATIVE_OWNER_GENERATION_MISMATCH")
     sources = {path: None if source["bytes_b64"] is None else base64.b64decode(source["bytes_b64"])
                for path, source in capture["sources"].items()}
+    try:
+        master_receipt = json.loads(sources[BOUND_PATHS["identity/_receipt.json"]])
+    except (ValueError, TypeError):
+        return refuse("IDENTITY_KNOWLEDGE_UNPROVEN")
     lb = _native(owner.load_membership, sources)(_FrozenPath(sources, BOUND_PATHS["graph/edges.parquet"]))
     symbols = _native(owner.node_symbols, sources)(_FrozenPath(sources, BOUND_PATHS["graph/nodes.parquet"]))
     members = sorted(set(owner.all_slot_members(lb, [BASKET])["src"]))
@@ -213,9 +258,17 @@ def qualify_w2_beta_h1(bundle: adapter.OwnerBundle, inputs: W2BetaInputs) -> dic
             return refuse("PILOT_IDENTITY_UNRESOLVED_OR_SYMBOL_MISMATCH")
         if row["issuer_id"] in issuers or row["security_id"] in securities or symbol in symbols_seen:
             return refuse("OWNER_HAS_NO_DUPLICATE_ISSUER_AGGREGATION_RULE")
-        clock = row.get("master_generated_at")
-        if not isinstance(clock, str) or not theme_state._proven_by(clock, state["query"]["known_at"]):
+        clock = _native_master_clock(row, master_receipt)
+        try:
+            identity_known = clock is not None and theme_state._proven_by(clock["comparison_clock"], state["query"]["known_at"])
+        except (ValueError, TypeError):
+            # An unknown producer convention remains unproven. Only the exact
+            # native decoder above may interpret the documented UTC format.
+            identity_known = False
+        if not identity_known:
             return refuse("IDENTITY_KNOWLEDGE_UNPROVEN")
+        result["binding"]["identity_clock"] = {**clock,
+            "receipt_sha256": capture["sources"][BOUND_PATHS["identity/_receipt.json"]]["sha256"]}
         issuers.add(row["issuer_id"]); securities.add(row["security_id"]); symbols_seen.add(symbol)
         ids[node] = {"issuer_id": row["issuer_id"], "security_id": row["security_id"], "symbol": symbol}
     prices, unjoined = _native(owner.load_us_closes, sources)(sorted(symbols_seen), {})

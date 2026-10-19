@@ -206,7 +206,7 @@ ETF_DISPLAY_SCHEMA = "gmi.theme_etf_tracking_display/v1"
 
 def compose_etf_tracking(store_view, bindings, evidence_rows, *, asof,
                          knowledge_cutoff, source_policy=None) -> dict:
-    """House TRACKS references on already-qualified selected-company baskets.
+    """House TRACKS references on qualified native selected-company memberships.
 
     Permission belongs to each tracking relationship's dated source evidence,
     never to an ``etf:`` prefix. Symbols are verbatim native node references, not
@@ -251,19 +251,6 @@ def compose_etf_tracking(store_view, bindings, evidence_rows, *, asof,
         result["reason"] = "HOUSE_DISPLAY_PERMISSION_UNAVAILABLE"
         return result
 
-    targets = {}
-    for binding in bindings:
-        resolution = binding["resolution"]
-        for path in binding["paths"]:
-            for hop in path["via"]:
-                n = hop["node"]
-                if (hop["type"] == "MEMBER_OF" and n["kind"] == "basket"
-                        and rights.family_for_node_id(n["node_id"]) == "mastermind_curated"
-                        and n["rights"]["public_display_allowed"] is True):
-                    key = (resolution["node_id"], resolution["security_id"], n["node_id"])
-                    targets[key] = None
-    if not targets:
-        return result
     nodes = _records(store_view.read_nodes())
     counts = Counter(n.get("node_id") for n in nodes)
     visible = _nodes_as_known(nodes, _records(store_view.read_node_lifecycle()),
@@ -271,15 +258,82 @@ def compose_etf_tracking(store_view, bindings, evidence_rows, *, asof,
     evidence = {e.get("evidence_id"): e for e in _records(evidence_rows)}
     if len(evidence) != len(_records(evidence_rows)):
         raise ValueError("duplicate graph evidence")
+    raw_edges = _records(store_view.read_edges())
+
+    def relation_record(edge):
+        # Both halves of the association need their own dated house evidence.
+        # A missing theme hierarchy neither grants nor revokes a native basket
+        # membership. Never manufacture an EXPRESSES or PARENT_OF edge here.
+        if (edge.get("source_class") != "curated"
+                or edge.get("confidence_basis") != "membership_doc.v1"
+                or edge.get("era") not in {"observed", "reconstruction"}
+                or edge.get("date_provenance") not in {"seed_constant", "curated_changelog"}
+                or not all(known(edge.get(k), k) for k in
+                           ("computed_at", "evidence_time", "belief_time"))
+                or _is_null(edge.get("valid_from"))):
+            return None
+        refs = _string_list(edge.get("evidence_refs"))
+        if not refs or len(refs) > 32 or len(set(refs)) != len(refs):
+            return None
+        receipts = []
+        for eid in sorted(refs):
+            receipt = evidence.get(eid)
+            if (not receipt or receipt.get("licensing_display_ok") is not True
+                    or rights.family_for_source_ref(receipt.get("source_ref")) != "mastermind_curated"
+                    or not known(receipt.get("published_at"), "published_at")
+                    or not known(receipt.get("computed_at"), "computed_at")):
+                return None
+            receipts.append({key: receipt[key] for key in
+                             ("evidence_id", "published_at", "computed_at")})
+        return dict(relationship=edge["type"], edge_id=edge["edge_id"],
+            clocks=_clean({key: edge.get(key) for key in
+                    ("valid_from", "valid_to", "evidence_time", "belief_time", "computed_at")}),
+            era=edge["era"], date_provenance=edge["date_provenance"], evidence=receipts)
+
+    targets = {}
+    for binding in bindings:
+        resolution = binding["resolution"]
+        subject = visible.get(resolution["node_id"])
+        if (not subject or subject.get("kind") != "company" or counts[subject["node_id"]] != 1
+                or subject.get("status") in RETIRED_LIKE_STATUSES
+                or not known(subject.get("computed_at"), "computed_at")):
+            continue
+        live, _ = _collapse_relevant_edges(raw_edges, node_id=subject["node_id"],
+            asof=effective, knowledge_cutoff=cutoff)
+        for edge in live:
+            if edge.get("type") != "MEMBER_OF" or edge.get("src") != subject["node_id"]:
+                continue
+            basket = visible.get(edge["dst"])
+            try:
+                if (not basket or basket.get("kind") != "basket" or counts[basket["node_id"]] != 1
+                        or basket.get("status") in RETIRED_LIKE_STATUSES
+                        or rights.family_for_node_id(basket["node_id"]) != "mastermind_curated"
+                        or not known(basket.get("computed_at"), "computed_at")):
+                    continue
+                membership = relation_record(edge)
+                if membership is None:
+                    continue
+                membership['subject_node_id'] = subject['node_id']
+                membership["basket"] = dict(node_id=basket["node_id"], kind="basket", tier=None,
+                    name_en=None if _is_null(basket.get("name_en")) else basket["name_en"],
+                    name_zh=None if _is_null(basket.get("name_zh")) else basket["name_zh"],
+                    rights=dict(family="mastermind_curated", rights_class=house["rights_class"],
+                                public_display_allowed=True))
+                targets[(subject["node_id"], resolution["security_id"], basket["node_id"], edge["edge_id"])] = membership
+            except (ValueError, TypeError, KeyError):
+                continue
+    if not targets:
+        return result
     by_basket = {}
-    for edge in _records(store_view.read_edges()):
+    for edge in raw_edges:
         if edge.get("type") == "TRACKS":
             by_basket.setdefault(edge.get("dst"), []).append(edge)
     live_by_basket = {}
     for basket_id in sorted({key[2] for key in targets}):
         live_by_basket[basket_id], _ = _collapse_relevant_edges(
             by_basket.get(basket_id, []), node_id=basket_id, asof=effective, knowledge_cutoff=cutoff)
-    for binding_node, security_id, basket_id in sorted(targets):
+    for target, membership in sorted(targets.items()):
+        binding_node, security_id, basket_id, _membership_id = target
         for edge in sorted(live_by_basket[basket_id], key=lambda e: e["edge_id"]):
             etf = visible.get(edge["src"])
             try:
@@ -314,8 +368,9 @@ def compose_etf_tracking(store_view, bindings, evidence_rows, *, asof,
                 else:
                     result["references"].append(dict(binding_node_id=binding_node, selected_security_id=security_id,
                         basket_node_id=basket_id, etf_node_id=edge["src"], symbol=symbol,
+                        membership=copy.deepcopy(membership),
                         relationship="TRACKS", edge_id=edge["edge_id"],
-                        clocks={key: edge.get(key) for key in ("valid_from", "valid_to", "evidence_time", "belief_time", "computed_at")},
+                        clocks=_clean({key: edge.get(key) for key in ("valid_from", "valid_to", "evidence_time", "belief_time", "computed_at")}),
                         era=edge["era"], date_provenance=edge["date_provenance"], evidence=receipts,
                         relationship_rights=dict(family="mastermind_curated", rights_class=house["rights_class"],
                             public_display_allowed=True)))

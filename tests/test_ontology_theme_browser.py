@@ -20,7 +20,7 @@ CHAIN='oil_inflation_duration_derate'
 def theme_reading(tmp_path):
     return native_theme_reading(tmp_path)
 
-def native_theme_reading(tmp_path, *, etf=False, etf_identity=False, monkeypatch=None, chain=CHAIN):
+def native_theme_reading(tmp_path, *, etf=False, etf_identity=False, monkeypatch=None, chain=CHAIN, hierarchy=True):
     root=_theme_owner_root(tmp_path)
     fx.build_root(root,slug=chain)
     if etf:
@@ -31,6 +31,8 @@ def native_theme_reading(tmp_path, *, etf=False, etf_identity=False, monkeypatch
             view,sources,*_=_etf_adoption_inputs(tmp_path/'listing',monkeypatch)
             for rel,raw in sources.items():
                 path=root/rel;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(raw)
+        if not hierarchy:
+            view._edges = [e for e in view._edges if e['type'] not in {'EXPRESSES','PARENT_OF'}]
         for name, rows in [('nodes',view._nodes),('edges',view._edges),('evidence',view._evidence)]:
             parquet.write_table(arrow.Table.from_pylist(rows),root/'data/theme_graph'/f'{name}.parquet')
     path=root/'data/theme_graph/nodes.parquet'
@@ -44,8 +46,47 @@ def native_theme_reading(tmp_path, *, etf=False, etf_identity=False, monkeypatch
     payload=dict(schema='ontology_theme_request.v1',chain=chain,source_manifest_hash=snapshot['source']['source_manifest_hash'],
                  identity_kind='security',identity_id='SEC:US-XNAS-AAA')
     result=ontology_theme.compose_theme_continuation(root,payload)
-    assert result['theme_map']['availability']['state']=='AVAILABLE'
+    assert result['theme_map']['availability']['state']==('AVAILABLE' if hierarchy else 'NO_QUALIFIED_HOUSE_PATH')
     return snapshot,result
+
+
+@pytest.mark.parametrize('width,theme,language',[(1440,'dark','en'),(390,'light','zh')])
+def test_unmapped_basket_keeps_qualified_etf_without_inventing_hierarchy(browser,tmp_path,monkeypatch,width,theme,language):
+    reading = native_theme_reading(tmp_path,etf=True,etf_identity=True,monkeypatch=monkeypatch,hierarchy=False)
+    ctx,page,seen,errors=start(browser,reading,width=width,theme=theme,language=language)
+    try:
+        page.locator('[data-theme-read]').click()
+        card=page.locator('[data-etf-reference]')
+        card.wait_for()
+        text=page.locator('[data-theme-result]').inner_text()
+        assert ('No house path is qualified' if language=='en' else '暂无合格的自有主题路径') in text
+        assert ('does not require a complete theme hierarchy' if language=='en' else '不要求完整的主题层级') in text
+        assert ('does not prove that the fund holds' if language=='en' else '不证明基金持有') in text
+        card.locator('summary').click()
+        assert 'SEC:US-XNAS-DIFFERENT' in card.inner_text()
+        assert not errors
+    finally:
+        ctx.close()
+
+
+@pytest.mark.parametrize('mutation',[
+    'delete r.membership', 'r.membership.subject_node_id="co:us:OTHER"',
+    'r.membership.relationship="EXPRESSES"', 'r.membership.basket.node_id="basket:baskets:OTHER"',
+    'r.membership.basket.rights.public_display_allowed=false',
+    'r.membership.clocks.valid_to=x.theme_map.asof', 'r.membership.clocks.belief_time="2099-01-01"',
+    'r.membership.evidence=[]', 'r.membership.evidence[0].published_at=null',
+])
+def test_etf_decoder_requires_own_selected_membership_evidence(browser,etf_identity_reading,mutation):
+    ctx,page,seen,errors=start(browser,etf_identity_reading)
+    try:
+        rejected=page.evaluate("""async ({v,reading})=>{
+          const x=structuredClone(v),r=x.theme_map.etf_tracking.references[0];"""+mutation+""";
+          const m=await import('/ontology-theme.js');
+          try{await m.decodeTheme(x,reading,{identity_kind:'security',identity_id:'SEC:US-XNAS-AAA'});return false}catch{return true}
+        }""",{'v':etf_identity_reading[1],'reading':etf_identity_reading[0]['source']})
+        assert rejected
+    finally:
+        ctx.close()
 
 @pytest.fixture
 def etf_reading(tmp_path):
@@ -76,6 +117,24 @@ def etf_identity_reading(tmp_path,monkeypatch):
     result=native_theme_reading(tmp_path,etf=True,etf_identity=True,monkeypatch=monkeypatch)
     assert result[1]['theme_map']['etf_tracking']['security_identity']['status']=='available'
     return result
+
+@pytest.mark.parametrize('era,provenance',[('reconstruction','curated_changelog'),('observed','seed_constant')])
+@pytest.mark.parametrize('width,theme,language',[(1440,'dark','en'),(390,'light','zh')])
+def test_etf_observed_tracking_preserves_membership_date_limits(browser,etf_identity_reading,era,provenance,width,theme,language):
+    ref=etf_identity_reading[1]['theme_map']['etf_tracking']['references'][0]
+    ref.update(era='observed',date_provenance='curated_changelog')
+    ref['membership'].update(era=era,date_provenance=provenance)
+    ctx,page,seen,errors=start(browser,etf_identity_reading,width=width,theme=theme,language=language)
+    try:
+        page.locator('[data-theme-read]').click();settled(page,'ready')
+        card=page.locator('[data-etf-reference]')
+        assert ('seed date' if language=='en' else '种子日期') in card.inner_text()
+        card.locator('summary').click()
+        assert era+' / '+provenance in card.inner_text()
+        assert ('Membership era / date provenance' if language=='en' else '成员关系时期 / 日期来源') in card.inner_text()
+        assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+        assert len(seen)==1 and not errors
+    finally:ctx.close()
 
 @pytest.mark.parametrize('width,theme,language',[(1440,'dark','en'),(390,'light','zh')])
 def test_etf_native_identity_stays_distinct_from_symbol_holdings_and_graph_clock(browser,etf_identity_reading,width,theme,language):

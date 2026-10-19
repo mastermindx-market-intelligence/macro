@@ -79,6 +79,21 @@ function decodeEtfIdentity(v, sources) {
   return true;
 }
 function decodeTracking(tracking, map, selected, sources) {
+  function relation(v, relationship) {
+    const c=v?.clocks;
+    if(v?.relationship!==relationship || !str(v.edge_id) || !['observed','reconstruction'].includes(v.era)
+        || !['seed_constant','curated_changelog'].includes(v.date_provenance)
+        || !c || !day(c.valid_from) || c.valid_from>map.asof
+        || !(c.valid_to===null || day(c.valid_to) && c.valid_to>map.asof)
+        || !['evidence_time','belief_time','computed_at'].every(k=>knownClock(c[k],map.knowledge_cutoff))
+        || !Array.isArray(v.evidence) || !v.evidence.length || v.evidence.length>32) fail();
+    const seen=new Set();
+    for(const receipt of v.evidence) {
+      if(!str(receipt?.evidence_id) || seen.has(receipt.evidence_id)
+          || !knownClock(receipt.published_at,map.knowledge_cutoff) || !knownClock(receipt.computed_at,map.knowledge_cutoff)) fail();
+      seen.add(receipt.evidence_id);
+    }
+  }
   const powers = ['can_rank','can_gate','can_size','can_trade','can_originate','can_escalate'];
   if (tracking?.schema !== 'gmi.theme_etf_tracking_display/v1' || tracking.exhaustive !== false
       || tracking.meaning !== 'curated_tracking_reference_not_holdings' || tracking.authority_ceiling !== 'display_only'
@@ -94,7 +109,7 @@ function decodeTracking(tracking, map, selected, sources) {
   const seen = new Set(); let resolved = 0;
   for (const ref of tracking.references) {
     const binding = map.bindings.find(b => b.resolution.node_id === ref?.binding_node_id);
-    const basket = binding?.paths.flatMap(p => p.via).find(h => h.type === 'MEMBER_OF' && h.node.kind === 'basket' && h.node.node_id === ref.basket_node_id);
+    const basket = ref?.membership?.basket;
     const c = ref?.clocks, permission = ref?.relationship_rights;
     if (!binding || !basket || ref.selected_security_id !== selected.identity_id || ref.selected_security_id !== binding.resolution.security_id
         || ref.relationship !== 'TRACKS' || !str(ref.edge_id) || !str(ref.symbol,24) || !/^[A-Z0-9][A-Z0-9._-]*$/.test(ref.symbol)
@@ -106,8 +121,12 @@ function decodeTracking(tracking, map, selected, sources) {
         || !(c.valid_to === null || day(c.valid_to) && c.valid_to > map.asof)
         || !['evidence_time','belief_time','computed_at'].every(k => knownClock(c[k],map.knowledge_cutoff))
         || !Array.isArray(ref.evidence) || !ref.evidence.length || ref.evidence.length > 32) fail();
+    relation(ref.membership,'MEMBER_OF'); house(basket);
+    if(ref.membership.subject_node_id!==binding.resolution.node_id
+        || basket.kind!=='basket' || basket.node_id!==ref.basket_node_id
+        || basket.rights.rights_class!==permission.rights_class) fail();
     if (decodeEtfIdentity(ref.security_identity,sources)) resolved++;
-    const key = JSON.stringify([ref.binding_node_id, ref.basket_node_id, ref.edge_id]);
+    const key = JSON.stringify([ref.binding_node_id, ref.basket_node_id, ref.membership.edge_id, ref.edge_id]);
     if (seen.has(key)) fail(); seen.add(key);
     const evidence = new Set();
     for (const receipt of ref.evidence) {
@@ -242,14 +261,16 @@ export function mountTheme(root) {
     const tracking = v.theme_map.etf_tracking;
     if (!tracking.references.length) output.append(note('No ETF tracking reference is qualified for this reading. Coverage is incomplete.', '本次读数暂无合格的 ETF 跟踪引用。覆盖范围并不完整。'));
     for (const ref of tracking.references) {
-      const basket = v.theme_map.bindings.find(b=>b.resolution.node_id===ref.binding_node_id).paths.flatMap(p=>p.via)
-        .find(h=>h.type==='MEMBER_OF' && h.node.node_id===ref.basket_node_id).node;
+      const basket = ref.membership.basket;
       const card=node('article','ox-card'); card.dataset.etfReference='';
       card.append(node('h4','',ref.symbol+' · tracking reference',ref.symbol+' · 跟踪引用'));
       const link=node('p','ox-note');link.append(words('Tracks curated basket: ','跟踪自有组合：'),label(basket));card.append(link);
+      card.append(note('The selected company has a separately recorded membership in this basket. This tracking reference does not require a complete theme hierarchy.',
+        '所选公司在该组合中另有成员记录。此跟踪引用不要求完整的主题层级。'));
       card.append(note('Effective from '+ref.clocks.valid_from+(ref.clocks.valid_to?' until '+ref.clocks.valid_to:'; no recorded end date')+'.',
         '生效起始：'+ref.clocks.valid_from+(ref.clocks.valid_to?'；结束：'+ref.clocks.valid_to:'；未记录结束日期')+'。'));
-      if(ref.era==='reconstruction' || ref.date_provenance==='seed_constant') card.append(note(
+      if(ref.era==='reconstruction' || ref.date_provenance==='seed_constant'
+          || ref.membership.era==='reconstruction' || ref.membership.date_provenance==='seed_constant') card.append(note(
         'Reconstructed relationship or seed date; not proof of an observation made on that date.', '此关系为重建记录或使用种子日期，不证明该日期当时已有观测。'));
       const identity = ref.security_identity;
       if (identity.status === 'available') card.append(note(
@@ -265,6 +286,13 @@ export function mountTheme(root) {
         field(list,'Instrument type known at','工具类型获知时刻',identity.listing_known_at);
       }
       field(list,'Selected security','所选证券',ref.selected_security_id);field(list,'Graph edge','图谱边',ref.edge_id);
+      field(list,'Company membership edge','公司成员关系边',ref.membership.edge_id);
+      field(list,'Membership era / date provenance','成员关系时期 / 日期来源',
+        ref.membership.era+' / '+ref.membership.date_provenance);
+      field(list,'Membership effective / known / computed','成员关系生效 / 获知 / 计算',
+        ref.membership.clocks.valid_from+' / '+ref.membership.clocks.belief_time+' / '+ref.membership.clocks.computed_at);
+      for(const receipt of ref.membership.evidence) field(list,'Membership evidence / publication / computation','成员凭证 / 发布 / 计算',
+        receipt.evidence_id+' / '+receipt.published_at+' / '+receipt.computed_at);
       field(list,'Evidence time','证据时间',ref.clocks.evidence_time);field(list,'Knowledge time','知识时间',ref.clocks.belief_time);
       field(list,'Computation','计算时刻',ref.clocks.computed_at);field(list,'Era','时期',ref.era);field(list,'Date provenance','日期来源',ref.date_provenance);
       for(const receipt of ref.evidence) field(list,'Evidence reference / publication / computation','凭证引用 / 发布 / 计算',
