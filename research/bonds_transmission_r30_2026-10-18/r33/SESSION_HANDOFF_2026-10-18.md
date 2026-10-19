@@ -1,5 +1,25 @@
 # MastermindX — Bonds × Forex Transmission R33
-## Detailed successor handoff and canonical checkpoint · 18 October 2026
+## Current cumulative handoff · 19 October 2026
+
+## Current receiver delta · 19 October 2026
+
+**MISSION_COMPLETE: false. Current capability: R33 production-path source integration BUILT_NOT_PROVEN.**
+
+The existing Macro publisher now emits the exact same companion bytes into the existing protected site boundary, and the existing Bonds template mounts the strict adapter and source inspector. The source implementation and the actual-template HTTP candidate pass **49 new browser integration checks and 5 focused pytest checks**. This is not a deployed-origin, entitlement-session, saved-case, alert or forecast receipt.
+
+Read [the current integration record](PRODUCTION_INTEGRATION_2026-10-19.md), [build receipt](verification/integration/build-receipt.json) and [browser receipt](verification/integration/browser-receipt.json) before the historical checkpoint below. The accepted 19ef offline source/reference remains unchanged; the 65+26 old journeys were not rerun.
+
+- Recovered PR head was `c434ef33928f96e5678c6ebe7098066879c13e15`; the original clean M2 worktree was fast-forwarded before editing. Continue on PR #9578 and its original branch. No exclusive lease or live source writer is manufactured by this handoff.
+- Protected compatible procedure pin: `dc816f498f7cffa19cc82210ca8d73643fa5f156`. Macro compatibility/input pin: `80f270c44bcdf11f5e71dacc05b11a0875a01d7f`. Fresh Terminal owner read: `fb0dacd4e4b88041a095971f6de50a38d33a55a7`.
+- Source path: `scripts/build_macro_context.py` → `site/macro-context-data/decision_workspaces.json` → the existing `templates/bonds.html.j2` dialog. Caddy/default-deny and the current feature-flagged paywall remain intact. No public-payload exception, render DAG, hub schema or Forex/CDI change.
+- Dates remain actual owner component dates: rates/credit 2026-10-16, funding 2026-10-17; validation 2026-10-18, build 2026-10-19 UTC. Exact observation/availability times remain unsupplied.
+- Both preceding Fabric returns are terminal and not accepted as complete; the parent repaired the implementation and verified the retained candidate. No watcher was armed and no modifying effect is currently unknown.
+- **Current next action:** complete independent review and required checks at the exact candidate head, then only the existing Macro release owner may authorize merge/deploy and production-origin proof. Browser proof also requires a permitted connected session; the attempted cloud recovery route was explicitly policy-blocked.
+- Investigation v2, Terminal Alerts, source admission, compound evaluation, model calibration and trade authority retain their actual owner gates. No parallel system was created.
+
+**Supersession:** this section replaces only the old “not mounted / locate the consumer next” implementation status and old current receiver/procedure/input pins. All eight routes, fifteen tool families, source/state contracts, protected design boundaries and withheld capability laws below remain controlling.
+
+## Preserved 18 October checkpoint — historical recovery evidence
 
 **Mission state:** MISSION_COMPLETE: false for the larger production-capable Bonds × Forex Transmission programme. The **bounded native redesign and implementation-ready offline reference are complete and verified**. R33 adds tested publisher and source-inspector code but neither live consumer mounting nor production event/alert authority is proven. Maintain the separation.
 

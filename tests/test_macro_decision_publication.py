@@ -76,6 +76,11 @@ def test_main_publishes_same_vm_and_preserves_five_key_hub(tmp_path, monkeypatch
     assert m.main() == 0
     hub = json.loads((data / "macro_context/latest.json").read_text())
     result = json.loads((data / "macro_context/decision_workspaces.json").read_text())
+    # The existing publisher owns both locations; serving must not rebuild or
+    # infer a projection from whichever Bonds build happens to run first.
+    assert (tmp_path / "site/macro-context-data/decision_workspaces.json").read_bytes() == (
+        data / "macro_context/decision_workspaces.json"
+    ).read_bytes()
     assert len(calls) == 1
     assert set(hub) == {"asof", "macro_context_id", "n_transitions_14d", "headline_en", "headline_zh"}
     assert hub == result["hub"]

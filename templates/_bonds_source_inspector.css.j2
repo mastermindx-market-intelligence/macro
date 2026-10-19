@@ -1,0 +1,258 @@
+/* Scoped source inspector styles for #bonds-source-dialog / #bonds-source-open.
+   Tokens resolve against host :root tokens (--bg/--panel/--panel2/--line/--text/--muted/--link/--font-ui/--font-mono)
+   so dark/light theme switches inherited from theme.css work without redefinition here. */
+#bonds-source-open{
+  min-height:44px;
+  padding:10px 16px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--panel2);
+  color:var(--text);
+  font:inherit;
+  font-family:var(--font-ui,-apple-system,BlinkMacSystemFont,Inter,"Segoe UI",Roboto,sans-serif);
+  cursor:pointer;
+}
+#bonds-source-open:hover{background:color-mix(in srgb,var(--text) 8%,var(--panel2))}
+#bonds-source-open:focus-visible{outline:3px solid var(--link);outline-offset:2px}
+#bonds-source-open[aria-expanded=true]{background:color-mix(in srgb,var(--link) 24%,var(--panel2));border-color:var(--link)}
+
+#bonds-source-dialog{
+  border:0;
+  padding:0;
+  margin:auto;
+  background:var(--panel);
+  color:var(--text);
+  font-family:var(--font-ui,-apple-system,BlinkMacSystemFont,Inter,"Segoe UI",Roboto,sans-serif);
+  border-radius:14px;
+  width:min(640px,calc(100vw - 24px));
+  max-height:min(90dvh,820px);
+  overflow:hidden;
+  box-shadow:var(--popover-shadow);
+}
+#bonds-source-dialog::backdrop{background:rgba(0,0,0,.55)}
+
+#bonds-source-dialog .bonds-source-header{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 18px;border-bottom:1px solid var(--line);
+}
+#bonds-source-dialog .bonds-source-title{
+  margin:0;font-size:17px;font-weight:700;
+  font-family:var(--font-ui,-apple-system,BlinkMacSystemFont,Inter,"Segoe UI",Roboto,sans-serif);
+  overflow-wrap:anywhere;
+}
+#bonds-source-dialog .bonds-source-close{
+  min-width:44px;min-height:44px;border-radius:10px;
+  border:1px solid var(--line);
+  background:transparent;color:var(--text);
+  font-size:18px;line-height:1;cursor:pointer;flex-shrink:0;
+}
+#bonds-source-dialog .bonds-source-close:hover{background:var(--panel2)}
+#bonds-source-dialog .bonds-source-close:focus-visible{outline:3px solid var(--link);outline-offset:2px}
+
+#bonds-source-content{
+  padding:18px;
+  overflow:auto;
+  max-height:calc(min(90dvh,820px) - 64px);
+  font-size:14px;
+  scrollbar-color:var(--line) transparent;
+}
+
+#bonds-source-dialog .stack{display:flex;flex-direction:column;gap:14px}
+#bonds-source-dialog .row{display:flex;align-items:center;gap:10px}
+#bonds-source-dialog .row.spread{justify-content:space-between}
+#bonds-source-dialog .chip{
+  display:inline-block;padding:4px 10px;border-radius:999px;
+  background:var(--panel2);color:var(--muted);font-size:12px;
+}
+#bonds-source-dialog .label{color:var(--muted);font-size:12px}
+#bonds-source-dialog .muted{color:var(--muted);font-size:13px;line-height:1.5}
+#bonds-source-dialog .small{font-size:12px}
+#bonds-source-dialog h3{margin:8px 0;font-size:16px;font-weight:700}
+#bonds-source-dialog p{margin:6px 0;font-size:13px;line-height:1.5}
+#bonds-source-dialog details{border-top:1px solid var(--line);padding-top:10px;font-size:13px}
+#bonds-source-dialog details summary{cursor:pointer;color:var(--muted);min-height:44px;display:flex;align-items:center}
+
+#bonds-source-dialog button{
+  min-height:44px;padding:10px 14px;border-radius:10px;
+  border:1px solid var(--line);
+  background:var(--panel2);
+  color:var(--text);
+  font:inherit;cursor:pointer;
+}
+#bonds-source-dialog button:hover{background:color-mix(in srgb,var(--text) 8%,var(--panel2))}
+#bonds-source-dialog button:focus-visible{outline:3px solid var(--link);outline-offset:2px}
+#bonds-source-dialog button.primary{background:color-mix(in srgb,var(--link) 28%,var(--panel2));border-color:var(--link);color:var(--text)}
+#bonds-source-dialog button.primary:hover{background:color-mix(in srgb,var(--link) 40%,var(--panel2))}
+#bonds-source-dialog button:disabled{opacity:.6;cursor:not-allowed}
+
+#bonds-source-dialog .source-tabs{
+  display:flex;gap:8px;border-bottom:1px solid var(--line);
+  padding-bottom:10px;overflow-x:auto;
+}
+#bonds-source-dialog .source-tab{
+  border:0;border-radius:8px;background:transparent;
+  color:var(--muted);padding:10px 14px;min-height:44px;
+  white-space:nowrap;font-weight:600;cursor:pointer;
+}
+#bonds-source-dialog .source-tab[aria-pressed=true]{
+  color:var(--link);
+  background:color-mix(in srgb,var(--link) 16%,transparent);
+}
+#bonds-source-dialog .source-tab:focus-visible{outline:3px solid var(--link);outline-offset:2px}
+
+#bonds-source-dialog .source-summary{display:flex;align-items:center;justify-content:space-between;gap:24px}
+#bonds-source-dialog .source-heading{font-size:22px;font-weight:700;line-height:1.25;margin:8px 0}
+#bonds-source-dialog .source-summary-meta{display:flex;flex-direction:column;text-align:right;min-width:100px;flex-shrink:0}
+#bonds-source-dialog .source-summary-meta>strong{font-size:22px}
+
+#bonds-source-dialog .source-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+#bonds-source-dialog .source-metric{
+  display:flex;flex-direction:column;gap:10px;text-align:left;padding:18px;
+  border:1px solid var(--line);border-radius:12px;
+  background:var(--panel2);color:var(--text);
+  min-width:0;min-height:44px;cursor:pointer;font:inherit;text-align:left;
+}
+#bonds-source-dialog .source-metric:hover{background:color-mix(in srgb,var(--text) 6%,var(--panel2))}
+#bonds-source-dialog .source-metric:focus-visible{outline:3px solid var(--link);outline-offset:2px}
+#bonds-source-dialog .source-metric>strong{font-size:24px;line-height:1.2;font-weight:700}
+#bonds-source-dialog .source-metric-link{font-size:12px;font-weight:600;color:var(--link)}
+
+#bonds-source-dialog .source-date-note{
+  padding:14px 16px;border:1px solid var(--line);border-radius:10px;
+  background:var(--panel2);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:13px;
+}
+#bonds-source-dialog .source-date-note button{flex-shrink:0}
+#bonds-source-dialog .source-next{
+  padding:18px 0;display:flex;align-items:center;justify-content:space-between;gap:24px;
+  border-bottom:1px solid var(--line);
+}
+#bonds-source-dialog .source-next p{font-size:13px;max-width:470px}
+
+#bonds-source-dialog .source-change-list{display:flex;flex-direction:column;gap:12px;padding:12px 0}
+#bonds-source-dialog .source-change-list>div{display:grid;grid-template-columns:110px 1fr 1fr;gap:15px;font-size:13px;align-items:center}
+
+#bonds-source-dialog .source-loadbar{
+  display:flex;align-items:center;gap:12px;
+  border-top:1px solid var(--line);
+  padding-top:18px;margin-top:4px;flex-wrap:wrap;
+}
+#bonds-source-dialog .source-loadbar>div:first-child{margin-right:auto;min-width:0}
+#bonds-source-dialog .source-file-label{
+  position:relative;overflow:hidden;cursor:pointer;flex-shrink:0;
+  display:inline-flex;align-items:center;min-height:46px;padding:8px 14px;
+  border:1px solid var(--line);border-radius:10px;background:var(--panel2);
+}
+#bonds-source-dialog .source-file-label input{
+  position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;
+}
+#bonds-source-dialog .source-file-label:focus-within{outline:3px solid var(--link);outline-offset:3px}
+
+#bonds-source-dialog .source-field-list{display:flex;flex-direction:column}
+#bonds-source-dialog .source-field-row{
+  display:grid;grid-template-columns:minmax(180px,1.4fr) minmax(100px,1fr) 20px;
+  align-items:center;gap:18px;text-align:left;padding:14px 4px;
+  color:var(--text);background:transparent;border:0;
+  border-bottom:1px solid var(--line);
+  min-height:60px;cursor:pointer;font:inherit;
+}
+#bonds-source-dialog .source-field-row[hidden]{display:none}
+#bonds-source-dialog .source-field-row>span:first-child{display:flex;flex-direction:column;gap:5px;min-width:0}
+#bonds-source-dialog .source-field-row small{font-size:12px;color:var(--muted)}
+#bonds-source-dialog .source-field-value{text-align:right;overflow-wrap:anywhere;font-size:13px;min-width:0}
+#bonds-source-dialog .source-field-row>span:last-child{color:var(--link)}
+#bonds-source-dialog .source-field-row:focus-visible{outline:3px solid var(--link);outline-offset:-3px}
+
+#bonds-source-dialog .source-clock-list{display:flex;flex-direction:column}
+#bonds-source-dialog .source-clock{
+  padding:14px 0;display:flex;align-items:center;justify-content:space-between;gap:20px;
+  border-bottom:1px solid var(--line);font-size:13px;
+}
+#bonds-source-dialog .source-clock>div{display:flex;flex-direction:column;gap:5px;min-width:0}
+#bonds-source-dialog .source-clock>div:last-child{text-align:right}
+#bonds-source-dialog .source-clock small{font-size:12px;color:var(--muted)}
+
+#bonds-source-dialog .source-identity{display:grid;grid-template-columns:160px minmax(0,1fr);gap:12px;font-size:12px}
+#bonds-source-dialog .source-identity dt{color:var(--muted)}
+#bonds-source-dialog .source-identity dd{margin:0;overflow-wrap:anywhere;font-family:var(--font-mono,ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono",monospace)}
+
+#bonds-source-dialog .source-need{
+  border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+}
+#bonds-source-dialog .source-need-top{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+#bonds-source-dialog .source-need-top .chip{margin-left:auto}
+#bonds-source-dialog .source-need p{font-size:13px;line-height:1.6}
+#bonds-source-dialog .source-need details{font-size:12px}
+
+#bonds-source-dialog .source-detail-heading{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+#bonds-source-dialog .source-detail-value{font-size:26px;line-height:1.45;overflow-wrap:anywhere;max-width:100%}
+#bonds-source-dialog .source-empty{padding:25px 0 35px}
+
+#bonds-source-dialog .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+#bonds-source-dialog .soft-panel{
+  padding:14px 16px;border:1px solid var(--line);border-radius:10px;
+  background:var(--panel2);
+}
+#bonds-source-dialog .receipt{
+  font-family:var(--font-mono,ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono",monospace);
+  font-size:12px;background:var(--bg);color:var(--text);
+  padding:12px;border-radius:8px;overflow:auto;max-height:260px;
+  white-space:pre-wrap;overflow-wrap:anywhere;margin-top:8px;
+}
+#bonds-source-dialog .field{display:flex;flex-direction:column;gap:6px}
+#bonds-source-dialog input[type=search]{
+  min-height:44px;padding:10px 12px;border-radius:10px;
+  border:1px solid var(--line);
+  background:var(--bg);color:var(--text);
+  font:inherit;
+}
+#bonds-source-dialog input[type=search]:focus-visible{outline:3px solid var(--link);outline-offset:2px}
+
+#bonds-source-dialog .bonds-source-banner{
+  padding:12px 14px;border:1px solid var(--line);border-radius:10px;
+  background:var(--panel2);font-size:13px;line-height:1.5;
+}
+#bonds-source-dialog .bonds-source-banner.cautious{
+  border-color:color-mix(in srgb,var(--link) 55%,var(--line));
+}
+
+@media (max-width:760px){
+  #bonds-source-dialog{width:calc(100vw - 16px);max-height:92dvh;border-radius:12px}
+  #bonds-source-content{max-height:calc(92dvh - 60px);padding:14px}
+  #bonds-source-dialog .source-summary{align-items:flex-start;gap:14px;flex-direction:column}
+  #bonds-source-dialog .source-summary-meta{min-width:70px}
+  #bonds-source-dialog .source-metrics{grid-template-columns:1fr;gap:10px}
+  #bonds-source-dialog .source-metric{display:grid;grid-template-columns:1fr auto;gap:7px 12px;padding:15px 16px}
+  #bonds-source-dialog .source-metric>strong{font-size:25px;grid-column:2;grid-row:1 / span 2;text-align:right;align-self:center}
+  #bonds-source-dialog .source-metric-link{grid-column:1 / -1}
+  #bonds-source-dialog .source-date-note,#bonds-source-dialog .source-next{align-items:flex-start;flex-direction:column;gap:10px}
+  #bonds-source-dialog .source-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible;gap:4px}
+  #bonds-source-dialog .source-tab{padding:10px 11px;font-size:13px}
+  #bonds-source-dialog .source-field-row{grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr) 14px;gap:10px}
+  #bonds-source-dialog .source-change-list>div{grid-template-columns:1fr;gap:4px;border-bottom:1px solid var(--line);padding-bottom:10px}
+  #bonds-source-dialog .source-identity{grid-template-columns:1fr;gap:5px}
+  #bonds-source-dialog .source-identity dd{margin-bottom:10px}
+  #bonds-source-dialog .source-detail-value{font-size:22px}
+  #bonds-source-dialog .grid2{grid-template-columns:1fr}
+  #bonds-source-dialog .source-loadbar>div:first-child{flex-basis:100%}
+}
+@media (max-width:390px){
+  #bonds-source-dialog{width:calc(100vw - 8px);max-height:94dvh}
+  #bonds-source-content{padding:12px}
+  #bonds-source-dialog .source-metric>strong{font-size:22px}
+}
+@media (prefers-reduced-motion: reduce){
+  #bonds-source-dialog,#bonds-source-dialog *{transition:none!important;animation:none!important}
+}
+#bonds-source-dialog .source-filename{overflow-wrap:anywhere;margin-top:8px}
+#bonds-source-dialog .source-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+#bonds-source-content:focus-visible{outline:2px solid var(--link);outline-offset:-3px}
+#bonds-source-dialog,#bonds-source-dialog *{box-sizing:border-box}
+
+#bonds-source-dialog summary:focus-visible{outline:3px solid var(--link);outline-offset:2px}
+#bonds-source-dialog .source-summary>div{min-width:0}
+#bonds-source-dialog .source-heading,#bonds-source-dialog .source-metric strong,#bonds-source-dialog .source-clock strong,#bonds-source-dialog .source-field-row strong,#bonds-source-dialog .chip{overflow-wrap:anywhere;max-width:100%}
+@media (max-width:760px){
+  #bonds-source-dialog .source-summary-meta{flex-direction:row;gap:8px;align-items:baseline;text-align:left}
+  #bonds-source-dialog .source-summary-meta>strong{font-size:17px}
+}

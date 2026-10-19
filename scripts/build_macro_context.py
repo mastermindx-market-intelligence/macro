@@ -1935,7 +1935,15 @@ def main() -> int:
     )
     publication_text = json.dumps(publication, indent=2, ensure_ascii=False, allow_nan=False)
     (hub_dir / "decision_workspaces.json").write_text(publication_text, encoding="utf-8")
-    log.info("wrote data/macro_context/decision_workspaces.json — content=%s",
+    # The render lane ships site/, not data/. Mirror these exact publisher bytes
+    # under the existing default-deny static payload boundary. Do not inline the
+    # publication into a public HTML shell or the public presentation-asset tree.
+    # Bonds reads this at inspection time, so its independent build order cannot
+    # select an earlier cycle or create a second projection owner.
+    publication_dir = site / "macro-context-data"
+    publication_dir.mkdir(parents=True, exist_ok=True)
+    (publication_dir / "decision_workspaces.json").write_text(publication_text, encoding="utf-8")
+    log.info("wrote data/macro_context and site/macro-context-data/decision_workspaces.json — content=%s",
              publication["publication"]["content_sha256"])
     return 0
 
