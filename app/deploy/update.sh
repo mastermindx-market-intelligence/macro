@@ -1213,6 +1213,11 @@ fi
 #                          capacity/rule/share-basis kernels they load. All stay
 #                          pinned until macro-api restarts. Named narrowly so
 #                          nightly-only compilers do not blip the serving plane.
+#                          U1a state-bundle API (2026-10-19): app/capital_structure.py
+#                          also imports state_bundle, issuer_state_contracts, the
+#                          rule-applicability and registration-integration kernels and
+#                          the verified-generation reader at module load; their
+#                          capacity/reference/collector helpers are pinned too.
 #   government_revenue/*   app/government_revenue.py imports workspace through
 #                          the non-inert package __init__, which loads the award,
 #                          dossier, exact entity-resolution, federation,
