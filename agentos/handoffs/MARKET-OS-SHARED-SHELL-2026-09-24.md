@@ -1,157 +1,159 @@
 ---
-workstream: "WS:MARKET-OS"
+workstream: WS:MARKET-OS
 session: sol/market-os-shared-shell-design-20260924
 model: sol
 ended_because: ci_handoff
-mission: >
-  Deliver instantly understandable shared navigation with advanced depth and long-page
-  reading. All tools is mega-menu first; full directory browsing remains available.
-state_before: >
-  R38 preserved native work and added unexecuted browser checks. R39 found that
-  source section headings were omitted from topic search and long bilingual text
-  truncated later search fields. Paper catalog writes remain held.
+mission: Continue the original Shared Shell commission through protected Macro publication and isolated
+  beta acceptance using the existing Terminal and Macro owners. Preserve six-view Sector Central while
+  Paper remains REVISE.
+state_before: 'Terminal #859 was merged and browser-qualified at e45bde2cac07ac3b29285ff70c40d68900fad62c.
+  Macro''s original remote b84eeee5976bf3f315c55ea286157f77b11e8ee3 and clean local ad65b00bb0330ccdaa3042ce3a7697cc1cc85554
+  were reconciled before the existing branch was published at ad65. Beta had a failed source-provisioned
+  bootstrap with exit 65 and no accepted runtime. Historical sections remain provenance; this snapshot
+  supersedes their current-status claims only.'
 changed:
-  - path: "templates/nav_market.js + site/nav_market.js"
-    what: >
-      R39 includes source-authored English/Chinese section headings in topic search
-      and normalizes each public field separately. URL safety, source ordering,
-      selected market, persistence, pilot scope and CSS are unchanged.
-  - path: "paired theme/account assets + release-contract tests"
-    what: >
-      The source-only search change advances the existing dynamic asset key to
-      20261001-all-tools-topics and redacted nav/account digest to 28d0c024.
-  - path: "research/market_os/all_tools_adoption/tests"
-    what: >
-      Seven new projection/search regressions passed in the production-byte suite.
-      Three later DOM scenarios are authored but unexecuted. The historical
-      reference-source synchronization and four-module validation were refused
-      before dispatch; the reference remains unchanged and this exact action held.
-  - path: "research/market_os/all_tools_adoption/browser/pilot.spec.cjs"
-    what: >
-      Added nine R38 narrow-screen, landscape and double-typography scenarios while
-      preserving the original eight cases. The new invocation was blocked before
-      dispatch; these scenarios are authored but NOT EXECUTED or accepted.
-  - path: "implementation commit 02793e6d59df0d377a15366b0d92370789f1e3a4"
-    what: >
-      Closed the remaining known exact-head source/test gates on the same PR branch:
-      strict default-off shared-nav loading, incumbent radius-token use, current CSS
-      cache stamp, current-main credit fixture join, honest sign-out event assertion,
-      existing CI-owner registration, P0B receipt remint and refreshed browser evidence.
-  - path: "templates/_site_nav.html.j2 + tests/test_macro_command_shell.py"
-    what: >
-      The All tools helper is loaded only for the exact boolean opt-in. The false path
-      preserves the historical rendered newline exactly. The Macro Command G7 guard
-      permits only that one reviewed additive host and still requires every other shared
-      chrome byte to match current origin/main.
-  - path: "templates/site navigation-refresh.css + three pilot pages"
-    what: >
-      Replaced eleven literal All tools corner decisions with existing r-btn, r-card and
-      r-ctl tokens. Template/site CSS remain byte-identical at cache digest cdac6d7c;
-      exactly macro, Sector Central and Reports carry that digest in preload and stylesheet.
-  - path: "mockups/evidence/prophet-p0b-zero-fouc"
-    what: >
-      Re-rendered the exact HK/Canada fixtures and reminted both seven-state browser
-      receipts against the changed shared chrome. The closure gate now passes.
-  - path: "research/market_os/all_tools_adoption/evidence/r35-browser"
-    what: >
-      Added a new exact-tree six-screenshot browser evidence epoch instead of rewriting
-      historical R33 evidence. The accompanying receipt binds implementation, environment,
-      source checks, hashes and explicit non-production limits.
-  - path: ".github/ci/legacy-jobs.yml"
-    what: >
-      Registered tests/test_all_tools_menu.py under the incumbent unrun-nav-chrome owner;
-      no new workflow, job, catalogue, router or navigation owner was created.
+- path: templates/shared_shell.css; site/shared_shell.css; tests/js/shared_shell_bridge.test.cjs
+  what: Source commit cd00da8f433f512baf471dfef4517a838cbef145 removes two unused navigation-offset custom
+    properties and their literal-only assertion. CSS readiness, selectors, protocol, history and authentication
+    behavior remain unchanged.
+- path: 37 site HTML outputs and three plain-copy templates
+  what: The original injector restamped 40 retained shell blocks to CSS b1918cca. Full publisher proof
+    was retained before 12,991 generated-only files were restored to their exact source bytes; the existing
+    renderer still owns full publication.
+- path: research/market_os/evidence/shared-shell-continuation-20261019
+  what: Persisted original source, host, bootstrap-failure, release-arm and preview-cleanup receipts with
+    hashes, plus explicit CI failure and Browser connection-block records. The error screenshot supplies
+    no application acceptance.
+- path: agentos/handoffs/MARKET-OS-SHARED-SHELL-2026-09-24.md
+  what: Refreshed the existing handoff's current frontmatter and appended this continuation while preserving
+    the historical body, original identities and global workstream ownership.
 verified:
-  - claim: R39 section-topic search and its release stamp passed their owning contracts.
-    command: >
-      pytest tests/test_all_tools_menu.py tests/test_nav_hover_bridge.py
-      tests/test_account_actions.py -q --tb=short
-    result: >
-      Initial controller RED 99 passed/5 failed out of 104; integration 1 failed/9 passed.
-      After the source fix, only the release digest failed: 1 failed/139 passed.
-      After the key/digest change, 140 passed with four existing deprecation warnings.
-      This predates the three subsequently authored DOM cases and is not their proof.
-  - claim: R39 source and test files parse; changes contain no whitespace errors.
-    command: node --check on six paired assets and two test files; git diff --check
-    result: All eight syntax checks and the diff check returned zero.
-  - claim: Historical R35 changed-source checks passed; later hosted failures remain unresolved.
-    command: >
-      diff check; validated-claims source; design-system enforce-added; template/site sync;
-      P0B closure; changed-contract pytest; production-controller Node suite; mutation suite.
-    result: >
-      All commands passed. Controller 97/97; mutations 12/12; template/site 105 pairs;
-      HK and Canada P0B receipts report pass=true; changed-contract tests pass.
-  - claim: Current CI registration introduces no differential control-plane defect.
-    command: >
-      scripts/run_ci_pack.py --validate-only; scripts/check_contract_delta.py --base origin/main.
-    result: >
-      Manifest validated 166 jobs. Contract delta against base 3c3f31909661 reported
-      0 introduced / 0 inherited; all three packing probes remained at their ceilings or below.
-  - claim: The admitted pilots remain usable after the token/cache repair.
-    command: >
-      Serve the exact local site tree and run the bounded Chrome 154 / Playwright 1.62 matrix.
-    result: >
-      8 passed / 0 failed across desktop dark EN and mobile light ZH on all three pilots,
-      plus modal-stacking refusal and live source-withdrawal fail-closed behavior. Six new
-      R35 screenshots were visually reviewed.
-  - claim: Macro Command compatibility is closed without hiding sparse evidence requirements.
-    command: >
-      Materialize only macro-command-p3/p4/p5 evidence; run the full owning group, then
-      the exact remaining copy-law module after its allowlist became available.
-    result: >
-      Full group reached 514 passed / 1 evidence-path failure / 39 skipped; the owning
-      copy-law module then passed 108 / skipped 34 after the existing P5 allowlist was
-      materialized. A duplicate full-group rerun was platform-blocked before dispatch,
-      so no fabricated one-shot 515-pass claim is made.
+- claim: The original source correction passes the focused source gates.
+  command: .venv-shared-shell/bin/python scripts/check_design_system.py --mode enforce-added --diff-file
+    /tmp/shared-shell-unused-offsets-design-20261019.diff; node --test tests/js/shared_shell_bridge.test.cjs;
+    .venv-shared-shell/bin/python -m pytest tests/test_shared_shell_injection.py tests/test_check_design_system.py
+    -q; .venv-shared-shell/bin/python scripts/check_template_site_sync.py; git diff --check
+  result: Design ratchet zero blocking; 70 Node passed, zero skipped; 131 Python passed with two existing
+    cleanup warnings; 129 template/site pairs passed; whitespace passed. The separate visual guard failed
+    and is not waived.
+- claim: The actual existing full publisher and byte-preservation audit ran.
+  command: Canonical scripts/inject_shared_shell.py run, full-site check and 13,042-path byte audit; original
+    receipt retained as shared-shell-unused-nav-offsets-publication-20261019.json.gz.
+  result: 13,039 HTML files, 13,028 documents, 11 fragments; full check required zero changes; all outside-block
+    bytes preserved. Exactly 12,991 generated-only outputs restored; 40 existing blocks retained. This
+    does not prove rendered-main or served-tree publication.
+- claim: Terminal repair candidate bd158 passed the observed hosted CI and was armed through its incumbent
+    owner.
+  command: GitHub workflow-run jobs read for Terminal run 39213825821; native protected-branch arm recorded
+    in shared-shell-beta-repair-merge-arm-20261019.json.
+  result: At 08:34 all 13 jobs, including required aggregate, succeeded. Candidate remained OPEN/behind,
+    Ready, merge-on-green and squash auto-merge enabled. The existing controller, not this record, owns
+    refresh and final protected landing.
+- claim: The exact partial beta state and released production hold were observed without mutation.
+  command: Read-only Python through the original M2 SSH owner; shared-shell-beta-custody-20261019T085108Z.json
+    records observed_at 08:51:09.898796 UTC.
+  result: Beta inactive PID0, original e45 source receipt, no accepted-runtime/release-pending, esbuild
+    pair still nlink2. Shared hold absent and no release owner found. Production PID1635719 active/enabled.
+    Root free3365433344 bytes; mount free13834047488 bytes. External changes are not programme cleanup
+    or production effects.
+- claim: The failed browser preview was reconciled and cleaned up.
+  command: Selected Browser goto and one reload; native HTTP read; original local-launcher cleanup and
+    listener checks recorded in preview-cleanup-receipt.json.
+  result: Browser returned ERR_SOCKET_NOT_CONNECTED despite native HTTP200. Macro fixture generation timed
+    out at 90 seconds with no manifest or server. Original Terminal child group stopped, ports3100/3110
+    free, no helper remained. No application visual acceptance.
+- claim: 'The original controller refreshed #1062 without changing the reviewed owner bytes.'
+  command: Direct GitHub commit and ops/terminal-build.sh blob reads at43bc48091225effdd8193a8ca6de584809b17f97;
+    jobs read for its existing CI39224380821.
+  result: Parents bd158476d6ba1394b2867fa09db6faa762473158 and f5689344ba3257efce2ecb7f4bf8aa98578e046f;
+    owner blob016d6744123764a9f55c80cf761c6e2d63f4a5a4 unchanged. At08:50 two jobs passed, four running,
+    six queued. New-head protected admission remains pending.
+- claim: The updated handoff and retained site references passed their owning validators.
+  command: .venv-shared-shell/bin/python scripts/agentos.py validate; .venv-shared-shell/bin/python scripts/check_site_asset_refs.py;
+    git diff --check
+  result: AgentOS zero errors,142 advisory warnings; zero missing asset references and zero unrendered
+    ticker links; whitespace passed. Original log156bb5d64d0e78832d0cd9cc0736b9c8e45f0664d049127d93fe5fbb185f742d
+    is preserved as gzip.
 unverified:
-  - claim: The R39 reference component and expanded 107-case controller qualification.
-    what_would_verify: >
-      Recover the exact refused R39 reference-source synchronization/four-module
-      validation through an approved permission recovery. No replay, split or
-      alternate carrier was used; no final 107-case or site-assets pass is claimed.
-  - claim: R38 narrow-screen browser behavior.
-    what_would_verify: >
-      The nine authored scenarios must run through a permitted recovery. Node syntax
-      and unchanged-prefix checks do not prove clipping, scrolling or focus behavior.
-  - claim: Native Paper write compatibility with the new full catalog.
-    what_would_verify: >
-      Existing Mastermind 1129/1110 owners qualify and release the exact catalog;
-      current ac18857 differs from accepted 8cd2748 and writes remain unqualified.
-  - claim: Hosted exact-head merge-ref CI and independent review for the final pushed head.
-    what_would_verify: >
-      Verify remote identity, consume the new fences/CI runs and an independent reviewer
-      verdict. Repair only branch-owned failures while preserving Draft/HOLD.
-  - claim: Deployment, CDN immutable-cache, physical-device and assistive-technology acceptance.
-    what_would_verify: >
-      Only after source admission and release authorization, verify served asset identities
-      plus any owed Safari/Firefox, physical-device, screen-reader and 200-percent-text paths.
-  - claim: Permanent resolution of the historical Paper capacity warning.
-    what_would_verify: >
-      Supported provider/file diagnostics establish saved-state health and the applicable
-      limit; later successful writes do not independently root-cause the earlier warning.
+- claim: Fresh active-frame CSS visual evidence.
+  what_would_verify: Restore reachability of the authorized selected Browser to the existing preview,
+    then use the existing capture owner to produce committed actual desktop/mobile x EN/ZH x dark/light
+    cells and a valid EVIDENCE.yml owning templates/shared_shell.css. No DOM activation, alternate carrier
+    or fabricated telemetry.
+- claim: Current-head Macro CI, review, landing and generated publication.
+  what_would_verify: 'Consume actual new-head merge-ref CI and independent review on #7949, including
+    UI evidence and real upstream SNI/RIG reconciliation. Land through the existing owner, observe its
+    original renderer''s generated-main commit, then verify the actual served tree and asset identities.'
+- claim: Protected Terminal repair R and safe beta re-entry.
+  what_would_verify: Observe the existing controller's actual protected merge and verify the final owner
+    blob/hash. After the production hold clears, refresh host identity, source receipt, dependency custody
+    and disk budget. Stage only the protected R script with the canonical A policy bundle, targeting beta
+    bootstrap A=e45.
+- claim: Beta runtime, public route, authentication and rollback acceptance.
+  what_would_verify: Require actual accepted runtime identity, inactive-to-active unit proof, namespace
+    and production-isolation evidence, original-owner DNS/TLS configuration, auth/fresh-session public
+    Browser journeys, error/retry and a truthful first-install rollback boundary.
+- claim: Sector redesign and inherited CI-dependency resolution.
+  what_would_verify: 'Original Sector owners must reconcile the separately landed #7100 draft withdrawal
+    and provide Full RIG before any consuming migration. Existing #9548 owns SNI repair and retained two-case
+    regeneration evidence. Current CI must establish which upstream failures remain; historical ad65 results
+    do not prove current main.'
 unresolved:
-  - CI36820246152 fails packs3 and6; fences succeeds. Two stock receipt assertions reproduced red locally.
-  - Research Screener cache/bake mismatch and stale stock fixture/manifest bindings remain release blockers.
-  - Three R38 action-specific platform refusals remain held; no alternate-carrier replay is permitted.
-  - PR7949 remains Draft/HOLD; exact final-head hosted CI, review and deployed-edge proof are owed.
-  - Current main c62a4e08128c07b29c2dc4a12aa9f79cc23ebd4b intersects five historical candidate paths. Merge-tree is conflict-free; the test fixture is byte-identical to main, while generated pages and manifest movement still require hosted merge-ref proof.
-  - The full Macro Command group was not rerun a fourth time after the sole evidence-path failure cleared because an equivalent command was explicitly blocked before dispatch. Module and changed-path evidence are green.
-  - R18/R19 and PR7129 persistence-before-rebind obligations remain separate.
+- 'Programme incomplete. Macro #7949 remains open and unarmed; source checks do not satisfy its missing
+  visual evidence or hosted admission.'
+- 'ad65 CI run39206399458 failed: CSS PR regression, historical inherited RIG, SNI UNKNOWN and unrun downstream
+  proof; authority_self_excuse_refused remains binding for that run.'
+- 'Terminal #1062 was refreshed by its original controller to43bc48091225effdd8193a8ca6de584809b17f97
+  with unchanged reviewed owner bytes. Its fresh CI39224380821 and protected landing remain pending; no
+  blind beta retry or production mutation.'
+- The08:51 host receipt records no hold or release owner and a new active production PID1635719. Refresh
+  that exact baseline, beta custody and capacity before any later beta effect.
+- Selected Browser cannot reach the original local preview; DNS provider is at sign-in and strict public
+  beta TLS hostname acceptance remains failed.
+- 'Sector''s three October documents moved on main through #7100 as unapproved planning drafts, not Full
+  RIG approval. Separate #9648''s exact ruling does not approve #7100 bytes.'
+- Session Bridge target lookup returned backend_unavailable; no active execution worker or new watcher
+  is claimed.
 next_actions:
-  - Preserve R39 source/stamp changes and the exact refused reference-sync/validation action; recover permission before executing it.
-  - Qualify the nine R38 scenarios only after the action-specific permission boundary is recovered.
-  - Resolve existing receipt and Research Screener gates through permitted owner recovery; preserve assertions and historical evidence.
-  - Consume the existing Paper 1129/1110 catalog return before native edits; preserve boards54-58 and their map.
-  - Keep PR7949 Draft/HOLD until exact-head CI and independent review conclude; no merge or deployment claim.
+- 'Consume original #7949 current-head CI and review after this source/evidence publication; repair only
+  demonstrated owned failures and retain unarmed state until all actual admission gates pass.'
+- 'Let the existing Terminal merge controller complete #1062 freshness and protected landing; reconcile
+  the resulting script bytes before adoption.'
+- After the existing production owner releases its hold, refresh the exact partial beta state and disk
+  budget, then use only the reviewed protected script R with application A=e45 through the original release
+  owner.
+- Recover the selected Browser's local reachability and DNS-provider sign-in boundary, then produce actual
+  owed visual, public TLS/auth, isolation and rollback proof.
+- 'Land and publish Macro through its existing render/update owners after admission, verify full generated
+  and served-tree identity, and append/read back the cumulative checkpoint in #7949.'
 do_not_redo:
-  - Keep PR7949, branch sol/market-os-shared-shell-design-20260924 and the existing source workspace.
-  - Preserve the incumbent catalogue/header/assets, strict default-OFF three-pilot boundary, Paper boards 45–50 and historical R33 evidence.
-  - Do not replace the guarded include with unconditional helper loading, restore literal radii, overwrite historical browser evidence, create a parallel CI job, or replay settled P0B receipts without an input change.
-  - Do not merge protected main merely to reduce ancestry distance, create a replacement PR/branch, force-push, widen pilots or treat local Chrome proof as production acceptance.
+- 'Terminal #859 at e45bde2cac07ac3b29285ff70c40d68900fad62c is merged and browser-qualified; do not rerun
+  or reopen its completed qualification.'
+- 'Continue original root market-os-shared-shell-design-20260924-sol-001, attended parent shared-shell-production-20261018-c1,
+  original #7949 branch and shared-shell-r27 worktree.'
+- Preserve all six Sector Central views and nested sector-to-basket behavior while Paper remains REVISE.
+  C4 comments6255134033 through6255716294 and the driver metadata proposal remain SPEC_ONLY/UNAPPLIED/UNRUN.
+- Do not create another PR, renderer, source carrier, watcher or substitute execution worker; do not arm
+  Macro before its final admitted source.
+- Do not blindly retry bootstrap, mutate production, steal/delete shared holds, erase unknown disk contents,
+  rewrite source receipts, or treat a source marker as accepted runtime.
+- 'Do not modify/adopt/retire the separately existing #1063 presentation candidate or unpublished shared-shell-beta-hardlinks
+  registration without their owner reconciliation.'
+- Preserve the historical body, existing global WS owner, active status and cross-programme source/approval
+  boundaries.
 danger_areas:
-  - Main moves frequently through generated/data publication. Latest-base integration proof is distinct from semantic source proof.
-  - Sparse evidence paths were deliberately materialized only for tests; sparse configuration is worktree-local and not a product change.
-  - The duplicate full-suite command was refused before dispatch; EFFECT_NONE, not an unknown test/source effect.
+- Production identity and disk capacity changed externally between observations; historical PID or free-space
+  values cannot serve as a fresh isolation baseline.
+- Application A, protected repair script R, raw policy hash and semantic receipt digest are distinct identities.
+  A script-only R must preserve the canonical A bundle/path.
+- Original generated-source inventory remains below the trusted authority ceiling; full emission belongs
+  to the existing renderer after source landing.
+- Prior hosted semantic failure is binding at its tested source. Upstream draft withdrawal, partial source
+  tests and old browser receipts cannot manufacture current admission.
+- Initial installation has no prior accepted runtime to restore. The source-provisioned receipt and failed-build
+  quarantine do not prove rollback acceptance.
+prs:
+- 7949
 ---
 
 # R39 — source topic discovery; native refinement frontier
@@ -680,3 +682,193 @@ The independent bridge review and exact-source correction closure are now record
 ## 2026-10-18 14:48 UTC — reviewed source and generated publication boundary
 
 Current main advanced to 8dc33f6df0a48df4492a16350fa849bbd0b49423. The integration joined that content, resolved seven generated conflicts from exact incoming blobs, and reapplied four reviewed adapters. The CI inventory refusal was traced to the unchanged 3,000-file API ceiling. After exact comparison, 12,988 files containing only the generated capability/stamp delta were returned to incoming-main bytes; all 32 behavior/content HTML deltas and all three required plain-copy pairs remain. The source diff is now bounded, and the existing trusted renderer owns the mass document emission. Full generator projection passed for 13,028 documents plus 11 unchanged fragments. Source checks and registry coverage passed in the existing validation environment. See SHARED_SHELL_GENERATED_PUBLICATION_2026-10-18.md for the required rendered-commit and actual served-tree gates before beta exposure. No source-only or local-fixture proof is public-beta acceptance.
+
+
+## 2026-10-19 08:44 UTC — source and recovery checkpoint
+
+**Programme remains incomplete.** This section and the current frontmatter
+supersede earlier status claims only; all historical sections remain evidence.
+Continue original root **market-os-shared-shell-design-20260924-sol-001** and
+attended parent **shared-shell-production-20261018-c1** on **WS:MARKET-OS**.
+The protected Skillpack INDEX and required laws were read from one compatible
+pin, **dc816f498f7cffa19cc82210ca8d73643fa5f156**. No new programme, source
+carrier, renderer or watcher was created.
+
+### Exact source and hosted admission
+
+Terminal **#859 is already merged and browser-qualified** at application
+**A=e45bde2cac07ac3b29285ff70c40d68900fad62c**. Do not repeat that qualification.
+
+Macro's original remote **b84eeee5976bf3f315c55ea286157f77b11e8ee3** and clean
+M2 **ad65b00bb0330ccdaa3042ce3a7697cc1cc85554** were reconciled before the
+original branch was normally published at ad65. Its hosted run
+**39206399458**, tested merge **07e2f327112ef3ab794f8d0503bc31ce95bbe876**,
+base **af9854fe19796f15e2f30a69fbc6c39f60306336**, failed binding admission:
+541 passes, one inherited-base failure, one PR regression and four unknown
+results; **authority_self_excuse_refused**. The CSS literals were a real
+branch regression. SNI remained **UNKNOWN**; downstream unrun proof was
+not success. Preserve the exact semantic record rather than relabeling it.
+
+The actual source correction is committed as
+**cd00da8f433f512baf471dfef4517a838cbef145**, parent ad65. It removes the two
+unused CSS custom properties and their literal-only assertion; canonical
+readiness and protocol behavior remain. CSS SHA-256 is
+**b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e**;
+bridge SHA-256 remains
+**048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d**.
+
+The original full publisher ran over 13,039 HTML files, produced 13,028
+documents and preserved 11 fragments. Its check required zero changes.
+The 13,042-path audit proved unchanged bytes outside the owned block.
+All 12,991 generated-only outputs were restored to their exact source
+bytes after retaining the actual run evidence; 40 existing block restamps
+remain. The 43-file source commit does not replace full publication by
+the incumbent renderer.
+
+Focused source verification passed: design-system enforce-added with zero
+blocking findings; **70 Node tests, zero skipped; 131 Python tests; 129
+template/site pairs; whitespace**. The actual **UI visual-evidence guard
+failed** because templates/shared_shell.css has no valid committed
+EVIDENCE.yml. No receipt or exemption was fabricated. #7949 stays OPEN and
+unarmed until actual current-head admission and review pass.
+
+### Partial beta effect and repair ownership
+
+The original ENOSPC exit-65 bootstrap left the source-provisioned receipt,
+no accepted runtime and an inactive beta service. Once independent capacity
+improvement and explicit preconditions were observed, one guarded unmodified
+A-owner resume ran at **05:33–05:41**. It provisioned the accepted archive,
+installed dependencies and completed Next compilation, then the original
+runtime publisher refused the actual esbuild hardlink pair at **nlink=2**.
+The failed runtime was quarantined; beta remained source-provisioned and
+inactive. This is a reconciled partial effect, not installation success.
+
+The existing fix-forward Terminal **#1062**, candidate
+**bd158476d6ba1394b2867fa09db6faa762473158**, repairs dependency preparation
+and puts the beta source archive on the mounted volume under the original
+shared-lock owner. It retains the original single-link runtime guard and
+exact source/policy authority. Independent bounded source reviews were
+nonblocking. Local dependency evidence spans 222 selected cases across
+actual runs; ten focused archive cases passed across nine-plus-one runs.
+The final timed/adoption and archive logs are preserved.
+
+At the **08:34** GitHub observation, all **13 jobs** in **39213825821**,
+including the required aggregate, were SUCCESS. #1062 was Ready,
+merge-on-green and armed for normal squash auto-merge, but still OPEN and
+behind protected master. The existing controller alone owns any freshness
+update and resulting CI. Its later completed sweep **39223409352** refreshed
+the older #1054 and stopped as designed; existing continuation
+**39224133105** was running at the bounded read. No #1062 refusal or manual
+controller intervention was established.
+
+Protected repair **R** must be the actual landed artifact. The reviewed owner
+blob is **016d6744123764a9f55c80cf761c6e2d63f4a5a4**, SHA-256
+**6d05d3d5745e0e0a29262c89ba61cf881c2605201cce5b0fc85a52bde0e42ec8**.
+Stage only the R script privately and use A's canonical source-audit bundle
+and policy path. The application target remains A. Do not install R into
+the global production owner or copy a relocated complete ops bundle.
+
+### New production baseline and browser block
+
+Latest preserved host receipt was observed at **08:25:25 UTC** (its filename
+contains 0827). Beta remained inactive/dead/disabled PID0, source A, original
+source receipt SHA-256
+**9aac8ec8c132eecf4d2664d8f1e18e8a6bffce5f6d7176e4021b15d6d953cfa4**,
+no accepted-runtime/release-pending pointers and the same esbuild inode pair.
+An existing **production** release owner, PID1619773 targeting protected
+**f5689344ba3257efce2ecb7f4bf8aa98578e046f**, held the shared build lock.
+Production was active at PID1562152. Root had **3,542,413,312 bytes** free;
+the Terminal mount had **13,589,045,248 bytes** free. These production and
+capacity changes occurred externally; this programme performed no cleanup
+or production mutation.
+
+The installed owner hash
+**4d1b7c05d975a30be21de9556cc9eef964d07f30ba468f88abd0b40a61a84247**
+matches canonical A and f568 bytes; it lacks R's repairs. The incoming f568
+file set does not overlap R. Re-entry still requires the actual protected
+R identity, release of the existing production hold and fresh host/source/
+receipt/dependency/capacity observations.
+
+The selected Browser could not reach the existing local preview:
+**ERR_SOCKET_NOT_CONNECTED**, including one reload after native M2 HTTP200.
+The attempted preview reused the already-existing #1063 candidate at
+**4bfca4043e1779b1bf74dd388e40783e3c4000e4** without adopting it into A.
+The original Macro fixture generator timed out after 90 seconds; no
+manifest or Macro server was produced. The original Terminal launcher
+finished cleanup at **08:24:22 UTC**, its owned group was gone and ports
+3100/3110 were free. The preserved JPEG is the actual browser error page,
+not application evidence. The capture-driver metadata proposal remains
+SPEC_ONLY / UNAPPLIED / UNRUN.
+
+### Upstream holds and next release boundary
+
+The ad65 RIG failure is historical at its tested source. Subsequently,
+**#7100** landed **b91514a3a4301edff33ced2644e4cea7cdfef716** at
+08:21:41 UTC, moving the three Sector October documents to
+research/redesign/ as explicitly unapproved planning drafts. At observed
+main **9079f2c16a359c7cd0b94d7a2f1870e74bde669e**, their old admitted paths
+are absent. This is documentation withdrawal, not Full RIG completion.
+Separate #9648's exact byte-preserving proposal/ruling cannot be transferred
+to #7100's different bytes. The original #9592/#7646 consuming-migration
+hold remains. Preserve the six views and nested sector-to-basket behavior;
+Paper stays **REVISE**.
+
+Existing **#9548** owns the SNI repair at
+**2e017f066e102c698f711db0eb2eee0138232c5f**. Its reported 60-pass local
+result still lacks retained exact two-regeneration-case output and required
+input-pin presence. No duplicate source fix or borrowed proof is authorized.
+
+The separate #1063 and dirty unpublished shared-shell-beta-hardlinks
+registrations were observed, not adopted or retired. Session Bridge
+session_targets again returned backend_unavailable. The principal continued
+already-owned source work under PRINCIPAL_JUDGMENT /
+LOWER_TOTAL_OVERHEAD / CRITICAL_PATH_SHORTCUT /
+NO_ELIGIBLE_PRE_EFFECT_WORKER; native advisers supplied bounded judgment
+only, not execution-worker receipts.
+
+Persisted proof is in
+**research/market_os/evidence/shared-shell-continuation-20261019/MANIFEST.json**
+and its README. The existing original handoff, #7949 checkpoint and Git
+publication remain the continuity records. Required next outcomes are:
+current-head Macro CI/review and genuine visual evidence; protected R and
+gated beta recovery; ordinary Macro rendered-main and actual served-tree
+publication; beta namespace/isolation, DNS/TLS, auth/fresh-session public
+browser, error/retry and truthful rollback acceptance. First install has
+no prior accepted generation to claim restored.
+
+C4 #7949 comments **6255134033 through 6255716294** remain
+**SPEC_ONLY / UNAPPLIED / UNRUN**. No blind bootstrap retry, production
+mutation, duplicate owner or mission-complete claim is made.
+
+### 2026-10-19 08:55 UTC — controller refresh, released hold and final validators
+
+The incumbent controller refreshed Terminal #1062 to
+**43bc48091225effdd8193a8ca6de584809b17f97** (parents bd158 and f568).
+Direct GitHub reads confirm unchanged owner blob **016d6744…** and the
+previously reviewed bytes. New-head CI **39224380821** was active at08:50:
+two jobs passed, four running and six queued. No new dispatch or watcher
+was created; actual protected landing remains pending.
+
+Fresh host observation **08:51:09.898796 UTC**, receipt
+**shared-shell-beta-custody-20261019T085108Z.json**, SHA-256
+**510091ba936622c424a0f195802db3caf5b4ca84adac57c6e3ed2c8a9a7f78d7**,
+records **no shared hold or release owner**. Production is active/enabled
+at **PID1635719**, start-monotonic7499599865545. Beta remains inactive PID0
+with the exact same original source receipt, A source and nlink2 pair;
+no pending or accepted pointer exists. Root has **3,365,433,344 bytes**
+free and the Terminal mount **13,834,047,488 bytes**. No programme cleanup
+or production effect occurred. Revalidate this baseline immediately before
+a later beta effect after protected R admission.
+
+AgentOS validation passed with **zero errors /142 advisory warnings**.
+The actual site asset-reference guard passed with **zero missing references
+and zero unrendered ticker links**. Whitespace passed. Their original log
+SHA-256 **156bb5d64d0e78832d0cd9cc0736b9c8e45f0664d049127d93fe5fbb185f742d**
+is preserved. Raw logs containing terminal whitespace are stored as
+deterministic gzip with original decompressed hashes, without rewriting
+their evidence bytes. The original exit65 receipt/log, pre-entry
+owner_invoked=false refusal and real later resume result are also retained.
+
+This amendment advances observation and source documentation only.
+Visual evidence, current-head admission, protected R adoption and the
+public/rollback outcome remain incomplete.

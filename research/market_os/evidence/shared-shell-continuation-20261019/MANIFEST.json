@@ -1,0 +1,247 @@
+{
+  "record_type": "attended_source_and_recovery_evidence",
+  "version": 1,
+  "packaged_at": "2026-10-19T08:38:12.633028+00:00",
+  "programme": "WS:MARKET-OS",
+  "original_root": "market-os-shared-shell-design-20260924-sol-001",
+  "attended_parent": "shared-shell-production-20261018-c1",
+  "macro_source_head": "cd00da8f433f512baf471dfef4517a838cbef145",
+  "terminal_application_A": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+  "terminal_repair_candidate_R": "bd158476d6ba1394b2867fa09db6faa762473158",
+  "visual_acceptance": "BLOCKED; no canonical EVIDENCE.yml or application screenshots",
+  "files": [
+    {
+      "file": "shared-shell-unused-nav-offsets-publication-20261019.json.gz",
+      "source": "/tmp/shared-shell-unused-nav-offsets-publication-20261019.json",
+      "bytes": 1274187,
+      "sha256": "19e844836b0016fc9af5a57c6e99a8b838565f5a0a10dcc7cc0f18da6904335a",
+      "original_bytes": 4201542,
+      "original_sha256": "867519b4923885dcedc2a5ef5c5b571b8343c485eba738ec272e6e8b60a0074c",
+      "encoding": "gzip"
+    },
+    {
+      "file": "shared-shell-unused-offsets-tests-20261019.log.gz",
+      "source": "/tmp/shared-shell-unused-offsets-tests-20261019.log",
+      "bytes": 3751,
+      "sha256": "a4b63e05789c388d9eddd9854eac3179bef1e40b6d64e8ef82bde2c5a1f284ba",
+      "original_bytes": 9695,
+      "original_sha256": "7e862ee193b0d765e45e712bf7dd7f7abc474128c78b13cc8603d861df1b05b0",
+      "encoding": "gzip"
+    },
+    {
+      "file": "shared-shell-unused-offsets-local-commit-20261019.json",
+      "source": "/tmp/shared-shell-unused-offsets-local-commit-20261019.json",
+      "bytes": 3476,
+      "sha256": "dd9c41354a4135593431dc2c161fd1fa1e1b452a3ec35257516605ba834ee16f",
+      "original_bytes": 3476,
+      "original_sha256": "dd9c41354a4135593431dc2c161fd1fa1e1b452a3ec35257516605ba834ee16f",
+      "encoding": "identity"
+    },
+    {
+      "file": "shared-shell-beta-custody-20261019T0827.json",
+      "source": "/tmp/shared-shell-beta-custody-20261019T0827.json",
+      "bytes": 5052,
+      "sha256": "c758398c848e9caab2e8e1337f3ca0b41cd12c977c41ee0a11a8261322625389",
+      "original_bytes": 5052,
+      "original_sha256": "c758398c848e9caab2e8e1337f3ca0b41cd12c977c41ee0a11a8261322625389",
+      "encoding": "identity"
+    },
+    {
+      "file": "shared-shell-beta-prerelease-custody-20261019T0646.json",
+      "source": "/tmp/shared-shell-beta-prerelease-custody-20261019T0646.json",
+      "bytes": 5553,
+      "sha256": "24f7a33aa71b497d357bfed8868abc77e990e8b8b0d815eac993e0b8a7ac74ff",
+      "original_bytes": 5553,
+      "original_sha256": "24f7a33aa71b497d357bfed8868abc77e990e8b8b0d815eac993e0b8a7ac74ff",
+      "encoding": "identity"
+    },
+    {
+      "file": "shared-shell-beta-repair-merge-arm-20261019.json",
+      "source": "/tmp/shared-shell-beta-repair-merge-arm-20261019.json",
+      "bytes": 1039,
+      "sha256": "9b664a335d9bed722de48988a176e48aaeffb96d65998ea73655282bf30220df",
+      "original_bytes": 1039,
+      "original_sha256": "9b664a335d9bed722de48988a176e48aaeffb96d65998ea73655282bf30220df",
+      "encoding": "identity"
+    },
+    {
+      "file": "shared-shell-beta-archive-green-20261019.log",
+      "source": "/tmp/shared-shell-beta-archive-green-20261019.log",
+      "bytes": 109,
+      "sha256": "0a04b1ef75e1693372c982f41b28789063fca13d3c3e79814ff73ec223cfd42c",
+      "original_bytes": 109,
+      "original_sha256": "0a04b1ef75e1693372c982f41b28789063fca13d3c3e79814ff73ec223cfd42c",
+      "encoding": "identity"
+    },
+    {
+      "file": "shared-shell-beta-archive-trees-green-20261019.log",
+      "source": "/tmp/shared-shell-beta-archive-trees-green-20261019.log",
+      "bytes": 98,
+      "sha256": "575690a5639de04ae9a6d4575296b449effeac490274d9bf98464b261868c026",
+      "original_bytes": 98,
+      "original_sha256": "575690a5639de04ae9a6d4575296b449effeac490274d9bf98464b261868c026",
+      "encoding": "identity"
+    },
+    {
+      "file": "shared-shell-beta-dependency-two-timed-cases-20261019.log",
+      "source": "/tmp/shared-shell-beta-dependency-two-timed-cases-20261019.log",
+      "bytes": 99,
+      "sha256": "2b21feb50ff75c21897b0cfd24592ab76bba618b9cdcbbb132462c9508cff9ab",
+      "original_bytes": 99,
+      "original_sha256": "2b21feb50ff75c21897b0cfd24592ab76bba618b9cdcbbb132462c9508cff9ab",
+      "encoding": "identity"
+    },
+    {
+      "file": "shared-shell-beta-dependency-adoption-20261019.log",
+      "source": "/tmp/shared-shell-beta-dependency-adoption-20261019.log",
+      "bytes": 114,
+      "sha256": "563379048b3244fdf8b42e8113ec2c9388692fbc38d37f38fded9db33929d98e",
+      "original_bytes": 114,
+      "original_sha256": "563379048b3244fdf8b42e8113ec2c9388692fbc38d37f38fded9db33929d98e",
+      "encoding": "identity"
+    },
+    {
+      "file": "preview-terminal-launch.json",
+      "source": "/tmp/shared-shell-css-visual-20261019/terminal-launch.json",
+      "bytes": 2123,
+      "sha256": "a53b6553b7eaf00e18e75330856b2bb18d36bab487137541b85afc26ad8fbf49",
+      "original_bytes": 2123,
+      "original_sha256": "a53b6553b7eaf00e18e75330856b2bb18d36bab487137541b85afc26ad8fbf49",
+      "encoding": "identity"
+    },
+    {
+      "file": "preview-cleanup-receipt.json",
+      "source": "/tmp/shared-shell-css-visual-20261019/cleanup-receipt.json",
+      "bytes": 599,
+      "sha256": "318ec13c5d2a4405ba8a0c14d35dcf467b5490f40676a15c711c6d7b634ba193",
+      "original_bytes": 599,
+      "original_sha256": "318ec13c5d2a4405ba8a0c14d35dcf467b5490f40676a15c711c6d7b634ba193",
+      "encoding": "identity"
+    },
+    {
+      "file": "shared-shell-beta-e45-guarded-resume-20261019T0534.log.gz",
+      "source": "/tmp/shared-shell-beta-e45-guarded-resume-20261019T0534.log",
+      "bytes": 3837,
+      "sha256": "e055a1c97b276b5829f1c6b7ac66896fcb72bc509454033abc70a0c0c7c0d97a",
+      "original_bytes": 10270,
+      "original_sha256": "08cd8f73c244aa557653c0abea4dbe29030a17cdbc3cf7feb7984ba44a234c03",
+      "encoding": "gzip"
+    },
+    {
+      "file": "shared-shell-macro-ad65-native-publication-20261019.json",
+      "source": "/tmp/shared-shell-macro-ad65-native-publication-20261019.json",
+      "bytes": 726,
+      "sha256": "d75a2771c80a68bff46dc69da1b4d58506d0e1ddf38dbede054456951842bfc1",
+      "original_bytes": 726,
+      "original_sha256": "d75a2771c80a68bff46dc69da1b4d58506d0e1ddf38dbede054456951842bfc1",
+      "encoding": "identity"
+    },
+    {
+      "file": "browser-connection-block.jpg",
+      "source": "Browser screenshot of ERR_SOCKET_NOT_CONNECTED, not application visual evidence",
+      "bytes": 19355,
+      "sha256": "74d85226ebc971e251514530ce5f319cb406f5b5d247204801dd90498ec85a6e",
+      "encoding": "identity",
+      "actual_media_type": "image/jpeg"
+    },
+    {
+      "file": "terminal-ci-bd158-observation.json",
+      "source": "Parsed GitHub job/PR observations at 08:34 UTC; no later landing claim",
+      "bytes": 2599,
+      "sha256": "734be837640493a06671022e55e0808009f1ded635a44cdec4f2cecefab38358",
+      "encoding": "identity"
+    },
+    {
+      "file": "browser-connection-observation.json",
+      "source": "Attended Browser error and original local-preview cleanup, 08:18\u201308:24 UTC",
+      "bytes": 1907,
+      "sha256": "fd877a68a6066ebbf525bc58f389d36761a7353c329459d87155a22cb9b43839",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-owner-source-review.json",
+      "source": "Accepted bounded read-only counsel return; source review only",
+      "bytes": 1697,
+      "sha256": "6bef2a66ad5b4ca191fab1f81362990b02c1f65f369ff2e56bd5c07a121bd678",
+      "encoding": "identity"
+    },
+    {
+      "file": "macro-ad65-semantic-evidence.json",
+      "source": "Parsed original hosted admission record; reserialization is not original byte identity",
+      "bytes": 238333,
+      "sha256": "1d2155fe774a2d066aa2227ac0f46c43f1896a11953d61701935b7df78e4bde1",
+      "encoding": "identity"
+    },
+    {
+      "file": "README.md",
+      "source": "Attended synthesis; exact observations and limitations are distinguished",
+      "bytes": 14853,
+      "sha256": "2044aed039ae3120ecadcbe2417b5d7535dd750565efde9a7abcd19fdc710bc1",
+      "encoding": "identity"
+    },
+    {
+      "file": "shared-shell-beta-e45bde2c-canonical-bootstrap-20261019.json",
+      "source": "/tmp/shared-shell-beta-e45bde2c-canonical-bootstrap-20261019.json",
+      "bytes": 748,
+      "sha256": "5265eb56b9da16b458fe17211ccd5291b154f1d7fde7589516c0b4e84bc5e39c",
+      "original_bytes": 748,
+      "original_sha256": "5265eb56b9da16b458fe17211ccd5291b154f1d7fde7589516c0b4e84bc5e39c",
+      "encoding": "identity"
+    },
+    {
+      "file": "shared-shell-beta-e45bde2c-canonical-bootstrap-20261019.log",
+      "source": "/tmp/shared-shell-beta-e45bde2c-canonical-bootstrap-20261019.log",
+      "bytes": 2012,
+      "sha256": "2b8c4aea2e7bd25707be00b7214a2944d8b484e46f6027ce6dac81c01a534765",
+      "original_bytes": 2012,
+      "original_sha256": "2b8c4aea2e7bd25707be00b7214a2944d8b484e46f6027ce6dac81c01a534765",
+      "encoding": "identity"
+    },
+    {
+      "file": "shared-shell-beta-e45-guarded-resume-20261019T0529.json",
+      "source": "/tmp/shared-shell-beta-e45-guarded-resume-20261019T0529.json",
+      "bytes": 640,
+      "sha256": "266e09f6b5095696d6212d182c64f024458d85bb3e48e95f8259c50c3956390d",
+      "original_bytes": 640,
+      "original_sha256": "266e09f6b5095696d6212d182c64f024458d85bb3e48e95f8259c50c3956390d",
+      "encoding": "identity"
+    },
+    {
+      "file": "shared-shell-beta-e45-guarded-resume-20261019T0534.json",
+      "source": "/tmp/shared-shell-beta-e45-guarded-resume-20261019T0534.json",
+      "bytes": 461,
+      "sha256": "c784ce0814b7f5b40a04c9f7f3a8d226a87cc037b1e9d614dc0bf8daeec2c709",
+      "original_bytes": 461,
+      "original_sha256": "c784ce0814b7f5b40a04c9f7f3a8d226a87cc037b1e9d614dc0bf8daeec2c709",
+      "encoding": "identity"
+    },
+    {
+      "file": "shared-shell-beta-custody-20261019T085108Z.json",
+      "source": "/tmp/shared-shell-beta-custody-20261019T085108Z.json",
+      "bytes": 4857,
+      "sha256": "510091ba936622c424a0f195802db3caf5b4ca84adac57c6e3ed2c8a9a7f78d7",
+      "original_bytes": 4857,
+      "original_sha256": "510091ba936622c424a0f195802db3caf5b4ca84adac57c6e3ed2c8a9a7f78d7",
+      "encoding": "identity"
+    },
+    {
+      "file": "shared-shell-continuation-validation-20261019.log.gz",
+      "source": "/tmp/shared-shell-continuation-validation-20261019.log",
+      "bytes": 3821,
+      "sha256": "a8e844e879534145960866c8c4206efea52969d810755316438d48a92af2575f",
+      "original_bytes": 28583,
+      "original_sha256": "156bb5d64d0e78832d0cd9cc0736b9c8e45f0664d049127d93fe5fbb185f742d",
+      "encoding": "gzip"
+    },
+    {
+      "file": "terminal-refresh-43bc-observation.json",
+      "source": "Direct GitHub commit/blob and existing CI observations; no new dispatch",
+      "bytes": 2948,
+      "sha256": "21e398e561c10a8681b92efa655de766dccec40375f716ef4d5d53bd7cd559da",
+      "encoding": "identity"
+    }
+  ],
+  "indexed_at": "2026-10-19T08:56:39.260151+00:00",
+  "current_terminal_repair_candidate": "43bc48091225effdd8193a8ca6de584809b17f97",
+  "latest_host_observed_at": "2026-10-19T08:51:09.898796+00:00"
+}
