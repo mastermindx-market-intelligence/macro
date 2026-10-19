@@ -249,9 +249,8 @@ jobs:
             fi
             bundle="/Volumes/Mastermind/runtime/research-producer/releases/$PRODUCER_RELEASE"
             pinned_python="/Volumes/Mastermind/runtime/research-producer/dependencies/0c43d2132a6afaba75e5b5720c234d1b565679b650d7c04c024a1a12d711206a/venv/bin/python"
-            launcher="$bundle/mastermind/ops/research_producer/launch.py"
             if [ -f "$bundle/manifest.json" ] && [ -f "$bundle/producer.json" ] \
-               && [ -f "$launcher" ] && [ -x "$pinned_python" ]; then
+               && [ -x "$pinned_python" ]; then
               if command -v shasum >/dev/null 2>&1; then
                 manifest_digest="$(shasum -a 256 "$bundle/manifest.json" 2>/dev/null | awk '{print $1}')"
               elif command -v sha256sum >/dev/null 2>&1; then
@@ -260,10 +259,47 @@ jobs:
                 manifest_digest=""
               fi
               if [ "$manifest_digest" = "$PRODUCER_RELEASE" ]; then
-                "$pinned_python" -I -B "$launcher" --config "$bundle/producer.json" --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" --execute
-                pinned_rc=$?
-                if [ "$pinned_rc" != "0" ]; then
-                  echo "::error title=research-ingest::pinned producer launch FAILED (rc=$pinned_rc); legacy fallback is not permitted"
+                # Verified archives live under commit-named roots, as required
+                # by the incumbent verifier. Resolve only a bounded manifest's
+                # strict commit identifier; never source config or fall back.
+                mastermind_commit="$("$pinned_python" -I -B - "$bundle/manifest.json" <<'PYCOMMIT'
+          import json, re, sys
+          def unique(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise ValueError()
+                  result[key] = value
+              return result
+          try:
+              with open(sys.argv[1], 'rb') as stream:
+                  raw = stream.read(4 * 1024 * 1024 + 1)
+              if len(raw) > 4 * 1024 * 1024:
+                  raise ValueError()
+              document = json.loads(raw, object_pairs_hook=unique)
+              if (type(document) is not dict
+                      or document.get('schema') != 'mastermind.research_read_stage.v1'
+                      or document.get('state') != 'INERT_CANDIDATE'):
+                  raise ValueError()
+              commit = document.get('mastermind_commit')
+              if type(commit) is not str or re.fullmatch(r'[0-9a-f]{40}', commit) is None:
+                  raise ValueError()
+              print(commit)
+          except Exception:
+              raise SystemExit(1)
+          PYCOMMIT
+          )"
+                preparation_rc=$?
+                launcher="$bundle/mastermind/$mastermind_commit/ops/research_producer/launch.py"
+                if [ "$preparation_rc" = "0" ] && [ "${#mastermind_commit}" -eq 40 ] \
+                   && [ -f "$launcher" ]; then
+                  "$pinned_python" -I -B "$launcher" --config "$bundle/producer.json" --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" --execute
+                  pinned_rc=$?
+                  if [ "$pinned_rc" != "0" ]; then
+                    echo "::error title=research-ingest::pinned producer launch FAILED (rc=$pinned_rc); legacy fallback is not permitted"
+                  fi
+                else
+                  echo "::error title=research-ingest::pinned producer release preparation refused; nothing was ingested and legacy mode is not permitted"
                 fi
               else
                 echo "::error title=research-ingest::pinned producer release preparation refused; nothing was ingested and legacy mode is not permitted"

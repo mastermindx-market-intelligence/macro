@@ -6,9 +6,9 @@ mode-admission step and of the `ingest` step. Only the fixed installation
 prefix (``/Volumes/Mastermind/runtime/research-producer``) is rewritten to a
 temporary stub root inside the extracted test copy; every stub is a temporary
 executable or manifest created under ``tmp_path``. No real launcher, store,
-credential, network or service is ever invoked: the "interpreter" is a shell
-stub that records its argv and exits with a configurable code, and the legacy
-`python` is a stub resolved through PATH.
+credential, network or service is ever invoked. The interpreter stub proxies
+only the isolated stdlib manifest resolver to the test interpreter; launcher
+calls are recorded without execution. The legacy `python` remains a PATH stub.
 
 Fail-closed contract under test:
   * an empty selector keeps the unchanged legacy / materialize modes;
@@ -26,6 +26,9 @@ from __future__ import annotations
 import hashlib
 import os
 import subprocess
+import sys
+import shlex
+import json
 from pathlib import Path
 
 import pytest
@@ -37,10 +40,11 @@ INTERPRETER_SUBPATH = (
     "dependencies/0c43d2132a6afaba75e5b5720c234d1b565679b650d7c04c024a1a12d711206a"
     "/venv/bin/python"
 )
-LAUNCHER_SUBPATH = "mastermind/ops/research_producer/launch.py"
+MASTERMIND_COMMIT = "a" * 40
+LAUNCHER_SUBPATH = f"mastermind/{MASTERMIND_COMMIT}/ops/research_producer/launch.py"
 # The valid selector is the REAL SHA-256 of the stub manifest bytes, so the
 # workflow's digest verification passes against the stub bundle.
-MANIFEST_BYTES = b'{"producer": "research-producer", "test_fixture": true}\n'
+MANIFEST_BYTES = json.dumps({"schema": "mastermind.research_read_stage.v1", "state": "INERT_CANDIDATE", "mastermind_commit": MASTERMIND_COMMIT}).encode()
 VALID_DIGEST = hashlib.sha256(MANIFEST_BYTES).hexdigest()
 RUN_ID = "8675309"
 RUN_ATTEMPT = "4"
@@ -156,7 +160,7 @@ def _make_bundle(
 ) -> Path:
     root = _install_root(tmp_path)
     bundle = root / "releases" / digest
-    (bundle / "mastermind" / "ops" / "research_producer").mkdir(parents=True)
+    (bundle / LAUNCHER_SUBPATH).parent.mkdir(parents=True)
     if with_manifest:
         payload = manifest_bytes if manifest_bytes is not None else MANIFEST_BYTES
         (bundle / "manifest.json").write_bytes(payload)
@@ -166,6 +170,11 @@ def _make_bundle(
         interpreter = root / INTERPRETER_SUBPATH
         interpreter.parent.mkdir(parents=True, exist_ok=True)
         _write_stub(interpreter, "PINNED_STUB_ARGV_LOG")
+        stub = interpreter.read_text()
+        parser = ('#!/bin/bash\n'
+            'if [ "$1" = "-I" ] && [ "$2" = "-B" ] && [ "$3" = "-" ]; then\n'
+            '  exec ' + shlex.quote(sys.executable) + ' "$@"\nfi\n')
+        interpreter.write_text(parser + stub.split('\n', 1)[1])
     return bundle
 
 
@@ -602,7 +611,10 @@ def test_ingest_step_pinned_branch_is_fixed_and_scoped():
     launch_line = [
         line for line in run.splitlines() if "--execute" in line
     ]
-    assert 'launcher="$bundle/mastermind/ops/research_producer/launch.py"' in run
+    assert 'launcher="$bundle/mastermind/$mastermind_commit/ops/research_producer/launch.py"' in run
+    assert run.index('[ "$manifest_digest" = "$PRODUCER_RELEASE" ]') < run.index('mastermind_commit=')
+    assert "stream.read(4 * 1024 * 1024 + 1)" in run
+    assert "object_pairs_hook=unique" in run
     assert '[ -f "$launcher" ]' in run
     assert len(launch_line) == 1
     assert launch_line[0].strip() == (
@@ -613,7 +625,7 @@ def test_ingest_step_pinned_branch_is_fixed_and_scoped():
 
     # Refusals record a nonzero rc and never fall back; the fixed refusal text
     # carries no private config or log body.
-    assert run.count(PREPARATION_REFUSAL) == 2
+    assert run.count(PREPARATION_REFUSAL) == 3
     assert 'echo "rc=$pinned_rc" >> "$GITHUB_OUTPUT"' in run
     assert "legacy fallback is not permitted" in run
     assert FIXED_PREFIX not in PREPARATION_REFUSAL
@@ -656,3 +668,40 @@ def test_selector_rejects_collating_unicode_in_caller_locale(tmp_path, locale_na
     assert proc.returncode != 0
     assert "exactly 64 lowercase hex" in proc.stdout
     assert _argv_calls(Path(env["PINNED_STUB_ARGV_LOG"])) == []
+
+
+@pytest.mark.parametrize('payload', [
+    b'[]', b'{}', b'{broken',
+    json.dumps({'schema': 'wrong', 'state': 'INERT_CANDIDATE', 'mastermind_commit': MASTERMIND_COMMIT}).encode(),
+    json.dumps({'schema': 'mastermind.research_read_stage.v1', 'state': 'ACTIVE', 'mastermind_commit': MASTERMIND_COMMIT}).encode(),
+    *[json.dumps({'schema': 'mastermind.research_read_stage.v1', 'state': 'INERT_CANDIDATE', 'mastermind_commit': value}).encode()
+      for value in (None, 123, 'A' * 40, 'a' * 39, '../outside', '$(touch marker)')],
+    ('{"schema":"mastermind.research_read_stage.v1","state":"INERT_CANDIDATE",'
+     '"mastermind_commit":"' + MASTERMIND_COMMIT + '","mastermind_commit":"' + MASTERMIND_COMMIT + '"}').encode(),
+    MANIFEST_BYTES + b' ' * (4 * 1024 * 1024),
+])
+def test_matching_digest_with_invalid_locator_manifest_never_launches(tmp_path, payload):
+    digest = hashlib.sha256(payload).hexdigest()
+    _make_bundle(tmp_path, digest=digest, manifest_bytes=payload)
+    env = _make_env(tmp_path, producer_release=digest)
+    proc = _run_ingest(tmp_path, env)
+    assert proc.returncode == 0
+    assert PREPARATION_REFUSAL in proc.stdout
+    assert _output_rcs(env) == ['1']
+    assert _argv_calls(Path(env['PINNED_STUB_ARGV_LOG'])) == []
+    assert _argv_calls(Path(env['LEGACY_STUB_ARGV_LOG'])) == []
+    assert not (tmp_path / 'marker').exists()
+
+
+def test_old_flat_launcher_is_never_a_layout_fallback(tmp_path):
+    bundle = _make_bundle(tmp_path)
+    (bundle / LAUNCHER_SUBPATH).unlink()
+    flat = bundle / 'mastermind/ops/research_producer/launch.py'
+    flat.parent.mkdir(parents=True)
+    flat.write_text('# obsolete unverified flat entry\n')
+    env = _make_env(tmp_path, producer_release=VALID_DIGEST)
+    proc = _run_ingest(tmp_path, env)
+    assert PREPARATION_REFUSAL in proc.stdout
+    assert _output_rcs(env) == ['1']
+    assert _argv_calls(Path(env['PINNED_STUB_ARGV_LOG'])) == []
+    assert _argv_calls(Path(env['LEGACY_STUB_ARGV_LOG'])) == []
