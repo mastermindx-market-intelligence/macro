@@ -303,7 +303,7 @@ danger_areas:
 ---
 
 # Meta-CEO rotation / Prophet recovery — canonical successor handoff
-**Canonical handoff date:** 2026-10-17; latest continuation 2026-10-18 after the 07:56 UTC public evidence cut  
+**Canonical handoff date:** 2026-10-17; latest continuation 2026-10-19 after the 00:31 UTC CI evidence cut  
 **Mission:** Chairman's October defensive-rotation failure review and end-to-end Mastermind/Prophet rehabilitation.  
 **Original research operation:** rotation-intelligence-architecture-20261012.  
 **Original research carrier:** Macro draft PR #9035, branch sol/web-rotation-intelligence-architecture-20261012.  
