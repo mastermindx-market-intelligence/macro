@@ -71,6 +71,10 @@ KERNEL_CODE_MAP = {
     "disallowed_dimension": "disallowed_dimension",
     "division_by_zero": "division_by_zero",
     "not_applicable_for_issuer_class": "NOT_APPLICABLE",
+    # Runtime refusal (query.py:5981) for raw facts with no minted lineage. The
+    # mint-time cause differs per cell, so each defect records it in
+    # kernel_observation.typed_cause; this code stays general.
+    "unlinked source vintages require an explicit typed revision lineage": "unlinked_source_vintages",
 }
 
 VALUE_CATEGORIES = frozenset(
@@ -680,7 +684,7 @@ def _defect_gold_drift(
             problems.append(
                 f"{name}: record.gold.code={recorded.get('code')!r}, gold cell {gold.get('code')!r}"
             )
-        if (recorded.get("source_accession") or "") != (gold.get("source_accession") or ""):
+        if recorded.get("source_accession") != gold.get("source_accession"):
             problems.append(f"{name}: record.gold.source_accession differs from the gold cell")
     return problems
 
@@ -721,6 +725,21 @@ def test_defect_gold_drift_negative() -> None:
     assert _defect_gold_drift(entry(same), {})
     absent = {"value_exact": None, "code": None, "source_accession": None}
     assert _defect_gold_drift(entry(absent), {}) == []
+    # a null accession is not an empty one
+    view_b = {"view": VIEW_B, "source_accession": None, "metric_id": "m", "period_key": period}
+    cell_b = {**view_b, "value_exact": "100", "code": None}
+    by_key_b = {_gold_key(cell_b): cell_b}
+    entry_b = {"id": "D-3", "row_keys": [view_b], "comparison": "value"}
+    same_b = {"value_exact": "100", "code": None, "source_accession": None}
+    assert _defect_gold_drift({**entry_b, "record": {"gold": same_b}}, by_key_b) == []
+    assert _defect_gold_drift({**entry_b, "record": {"gold": {**same_b, "source_accession": ""}}}, by_key_b)
+    # every row key is bound: a second key whose gold cell differs is reported
+    other = {**key, "period_key": ["instant", "2024-04-30"]}
+    other_cell = {**other, "value_exact": "7", "code": None}
+    both = {**gold_by_key, _gold_key(other_cell): other_cell}
+    two = {"id": "D-4", "row_keys": [key, other], "comparison": "value", "record": {"gold": same}}
+    assert _defect_gold_drift(two, both)
+    assert _defect_gold_drift({**two, "row_keys": [key]}, both) == []
 
 
 def test_this_file_names_no_issuer() -> None:
