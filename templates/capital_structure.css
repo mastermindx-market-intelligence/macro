@@ -321,6 +321,8 @@ body.cs-page.cs-modal-open { overflow: hidden; }
 .cs-latest-grid > div + div { padding-left: 12px; border-left: 1px solid var(--cs-line); }
 .cs-latest-grid span { display: block; color: var(--cs-muted); font-size: 9px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
 .cs-latest-grid strong { display: block; margin-top: 4px; overflow: hidden; font-family: var(--font-mono); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.cs-covenant-room .cs-latest-grid strong { overflow: visible; white-space: normal; overflow-wrap: anywhere; }
+.cs-covenant-room .cs-latest-grid strong > span { color: inherit; font: inherit; letter-spacing: normal; text-transform: none; }
 
 .cs-change-list { display: grid; gap: 7px; }
 .cs-change { display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; align-items: center; padding: 8px 0; border-top: 1px solid var(--cs-line); gap: 9px; }
