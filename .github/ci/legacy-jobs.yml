@@ -17282,10 +17282,15 @@ jobs:
       # suite is wired here in the SAME commit per the W1 contract-delta lesson
       # (a new test file without a path gate is an unwired suite).
       - "engine/global_liquidity_outlook.py"
+      # GLT T10 (W2, 2026-10-19): the measurement-only regional scenario map
+      # imports the accounting and T08 outlook modules above; its suite is wired
+      # here in the SAME commit (a new test file without a path gate is an unwired suite).
+      - "engine/global_liquidity_regional_scenarios.py"
       - "engine/global_liquidity_transmission.py"
       - "tests/test_global_liquidity_accounting.py"
       - "tests/test_global_liquidity_knowledge_time.py"
       - "tests/test_global_liquidity_outlook.py"
+      - "tests/test_global_liquidity_regional_scenarios.py"
       - "tests/test_global_liquidity_sources_v2.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
@@ -17296,8 +17301,8 @@ jobs:
           python-version: "3.12"
       - name: install GLT contract test dependencies
         run: pip install pytest pandas numpy pyyaml
-      - name: global liquidity T03–T05 + T08 contracts — source manifest, knowledge time, monetary accounting, component outlook
-        run: python -m pytest tests/test_global_liquidity_accounting.py tests/test_global_liquidity_knowledge_time.py tests/test_global_liquidity_sources_v2.py tests/test_global_liquidity_outlook.py -q
+      - name: global liquidity T03–T05 + T08 + T10 contracts — source manifest, knowledge time, monetary accounting, component outlook, regional scenario map
+        run: python -m pytest tests/test_global_liquidity_accounting.py tests/test_global_liquidity_knowledge_time.py tests/test_global_liquidity_sources_v2.py tests/test_global_liquidity_outlook.py tests/test_global_liquidity_regional_scenarios.py -q
 
   ric-d0-fed-path-provenance:
     if: ${{ false }}
