@@ -377,6 +377,10 @@ def _publish_r2(payload_json: str) -> bool:
 # This is a last-trade display, never an NBBO, close, or executable quote.
 BOATS_MAX_AGE_S = 30
 BOATS_PUBLISH_S = 5
+# Hard public coverage ceiling shared by the frame reducer and the public
+# allowlist. Sized for the currently observed 8,395 valid tickers with
+# headroom; no publisher or validator may invent its own bound.
+MAX_BOATS_SYMBOLS = 10_000
 
 
 def boats_session_date(now: datetime) -> str | None:
@@ -434,16 +438,17 @@ def public_boats_payload(payload: dict, now: datetime | None = None) -> dict:
             or payload["session_date"] != boats_session_date(published)):
         raise ValueError("invalid publication clock or session")
     symbols = payload["coverage_symbols"]
-    if (not isinstance(symbols, list) or not 1 <= len(symbols) <= 500
+    if (not isinstance(symbols, list) or not 1 <= len(symbols) <= MAX_BOATS_SYMBOLS
             or any(not isinstance(s, str) or not re.fullmatch(r"[A-Z0-9][A-Z0-9.:-]{0,31}", s) for s in symbols)
             or len(set(symbols)) != len(symbols)):
         raise ValueError("invalid coverage identity")
+    covered = frozenset(symbols)
     rows = payload["quotes"]
     if not isinstance(rows, dict) or (status != "connected" and rows):
         raise ValueError("inactive stream cannot publish trades")
     approved = {}
     for symbol, row in rows.items():
-        if symbol not in symbols or not isinstance(row, dict) or set(row) != set(row_keys):
+        if symbol not in covered or not isinstance(row, dict) or set(row) != set(row_keys):
             raise ValueError("unapproved row fields or symbol")
         if (row["extSource"] != "tiingo_boats" or row["extVenue"] != "BOATS"
                 or row["extPriceKind"] != "LAST_TRADE" or row["extBasis"] != "LIVE"
@@ -474,13 +479,16 @@ class BoatsLastTrade:
 
     def __init__(self, symbols: list[str], capture_id: str):
         from collectors.tiingo_archive import symbol_path
-        if not symbols or len(symbols) > 500 or len(set(symbols)) != len(symbols):
+        if not symbols or len(symbols) > MAX_BOATS_SYMBOLS or len(set(symbols)) != len(symbols):
             raise ValueError("bounded unique symbol coverage required")
         for symbol in symbols:
             symbol_path(symbol)
             if symbol != symbol.upper():
                 raise ValueError("uppercase display coverage keys required")
         self.symbols = tuple(symbols)
+        # Stable coverage ordering stays in self.symbols; the hot consume path
+        # tests membership against this constant-time view instead.
+        self.covered = frozenset(self.symbols)
         self.capture_id = capture_id
         self.connection = 0
         self.status = "disconnected"
@@ -519,7 +527,7 @@ class BoatsLastTrade:
         # Tiingo BOATS emits lowercase ticker strings. Map ASCII case only
         # into the accepted display coverage; the raw/decoded identity stays exact.
         symbol = vendor_symbol.upper()
-        if symbol not in self.symbols:
+        if symbol not in self.covered:
             return
         try:
             event = decode_boats(message, received_at)
