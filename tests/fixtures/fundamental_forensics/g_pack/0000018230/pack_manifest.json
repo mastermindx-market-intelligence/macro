@@ -1,0 +1,1502 @@
+{
+ "schema": "fif.g_pack/v1",
+ "cik10": "0000018230",
+ "entity_id": "ISS:US-XNYS-CAT",
+ "legal_name": "Caterpillar Inc.",
+ "security_ids": [
+  "SEC:US-XNYS-CAT"
+ ],
+ "listing_keys": [
+  "US-XNYS-CAT"
+ ],
+ "issuer_class": "industrial",
+ "attested": false,
+ "historical_attestation": "unavailable_until_d2_admission",
+ "admission_state": "admitted",
+ "admitted_accessions": [
+  "0000018230-26-000046",
+  "0000018230-26-000021",
+  "0000018230-26-000008",
+  "0000018230-25-000008"
+ ],
+ "packet_basis": {
+  "view": "as_filed",
+  "source_accession": "0000018230-26-000046",
+  "knowledge_time": "2026-08-05T12:43:40.000Z",
+  "knowledge_time_source": "sec_submissions_witness.json:acceptanceDateTime"
+ },
+ "gold_source": {
+  "lane": "fif-g-gr-cat-20261019a/r3",
+  "files": {
+   "CAT/CAT_gold_sheet.md": "a4ba794dfbaa54d92e9d1a2a7d3975d3400bafdbc79d0461fd66b4a83ca9fd6c",
+   "CAT/expected_financial_intelligence_packet_v1.draft.json": "e8fc261157b767e0caa30280bf81ac7bc770be3e6716a3bf717f961e9f229a0b",
+   "CAT/expected_run_v1.draft.json": "3f28cc7bbcf9007f13035621c5460b150e87f954dc88dd267808c4fdb206cc58",
+   "CAT/gold_corrections_r3.json": "722fdefaebbf6672dfe4bec71a22633ce9929290dd83af26c8981757ac15c25c",
+   "CAT/gold_facts.jsonl": "3b97704528e82ecfe49d25f187f69e9cfab672e6c11c2c02162759ed7064e9b8",
+   "CAT/statement_roles.json": "7319db15fe97aa173ac6f12cc17d5db05ddb9bf41d695822108e6e39496d2909",
+   "CAT/tagged_facts.jsonl": "43118f734288840de4c40432aeb8d7fbab72df8ef07eb1cc1f2a6633f959abec"
+  }
+ },
+ "pins": [
+  {
+   "type": "scope_label",
+   "ruling": "ERRATA-1 E4 (G_CENSUS_ERRATA.md:30-34); spec §5 A31",
+   "statement_families": [
+    "cash_flow_statement",
+    "debt"
+   ],
+   "family_basis": {
+    "cash_flow_statement": {
+     "metrics": {
+      "depreciation_depletion_amortization": "metric_catalog.yaml:186-192",
+      "net_cash_from_operating_activities": "metric_catalog.yaml:193-199",
+      "net_cash_from_investing_activities": "metric_catalog.yaml:200-206",
+      "net_cash_from_financing_activities": "metric_catalog.yaml:207-213",
+      "capital_expenditures": "metric_catalog.yaml:214-220",
+      "cash_dividends_paid": "metric_catalog.yaml:221-227",
+      "common_stock_repurchases": "metric_catalog.yaml:228-234"
+     },
+     "family_source": "config/fundamental_forensics/metrics/v1/metric_catalog.yaml:36-41 (cash_flow_statement anchor) and per-metric lines"
+    },
+    "debt": {
+     "metrics": {
+      "short_term_debt": "metric_catalog.yaml:346-352 (balance_sheet)",
+      "long_term_debt_current": "metric_catalog.yaml:353-359 (balance_sheet)",
+      "long_term_debt": "metric_catalog.yaml:360-366 (balance_sheet)",
+      "total_debt": "metric_catalog.yaml:367-373 + formulas/core.yaml:20-25",
+      "cash_to_total_debt": "metric_catalog.yaml:467-478 + formulas/core.yaml:32-37",
+      "net_debt": "metric_catalog.yaml:479-490 + formulas/core.yaml:38-43",
+      "debt_to_equity": "metric_catalog.yaml:503-514 + formulas/core.yaml:50-55"
+     },
+     "family_source": "balance_sheet debt line items (metric_catalog.yaml:43-48) plus the derived debt formulas (formulas/core.yaml:20-25, 32-43, 50-55)"
+    },
+    "e4_additions": {
+     "metrics": {
+      "free_cash_flow": "metric_catalog.yaml:491-502 (category cash_flow; formulas/core.yaml:44-49 dependencies are the two cash-flow metrics)",
+      "share_based_compensation_expense": "metric_catalog.yaml:179-185 (income_statement; labelled by E4's own SBC ruling)"
+     },
+     "family_source": "free_cash_flow is cash-flow derived (formulas/core.yaml:44-49); SBC is scoped by E4's own ruling"
+    }
+   },
+   "label": "consolidated (including Financial Products)",
+   "evidence": {
+    "r2_family_cells": 672,
+    "r2_family_cells_with_scope_label": 672,
+    "r2_cells_lacking_scope_label": [],
+    "scope_label_counts": {
+     "distinct_labels": [
+      "consolidated (including Financial Products)"
+     ],
+     "total_rows_with_label": 672
+    },
+    "mpe_only_figures_are_pk01_not_gold": "The FY2025 filing names the former ME&T column 'Machinery, Power & Energy' (MP&E); MP&E-only figures are K analytic PK01, never gold cells. No r2 cell trace resolves to a context carrying a group axis member (MP&E or Financial Products); every traced context is undimensioned.",
+    "group_axis_member_cells_in_r2": [],
+    "income_statement_mpe_fp_columns_present_in_bytes": {
+     "mp&e_revenues_c-5": {
+      "member_file": "cat-20251231.htm",
+      "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+      "byte_offset": 2284633,
+      "raw_text": "63,980",
+      "concept": "us-gaap:Revenues",
+      "contextRef": "c-5",
+      "unitRef": "usd",
+      "decimals": "-6",
+      "scale": "6",
+      "sign": null,
+      "value_exact": "63980000000",
+      "period": {
+       "kind": "duration",
+       "start": "2025-01-01",
+       "end": "2025-12-31"
+      },
+      "dimensions": [
+       "srt:ProductOrServiceAxis=cat:MachineryPowerEnergyMember"
+      ]
+     },
+     "financial_products_revenues_c-8": {
+      "member_file": "cat-20251231.htm",
+      "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+      "byte_offset": 2287050,
+      "raw_text": "3,609",
+      "concept": "us-gaap:Revenues",
+      "contextRef": "c-8",
+      "unitRef": "usd",
+      "decimals": "-6",
+      "scale": "6",
+      "sign": null,
+      "value_exact": "3609000000",
+      "period": {
+       "kind": "duration",
+       "start": "2025-01-01",
+       "end": "2025-12-31"
+      },
+      "dimensions": [
+       "srt:ProductOrServiceAxis=cat:FinancialProductsMember"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "type": "errata_absence",
+   "ruling": "ERRATA-1 E4 (G_CENSUS_ERRATA.md:34); r1 MISSING_CONCEPT",
+   "errata": "E4",
+   "metric_id": "share_based_compensation_expense",
+   "code": "missing_standard_fact",
+   "r1_code": "MISSING_CONCEPT",
+   "candidate_concept": "us-gaap:ShareBasedCompensation",
+   "evidence": {
+    "occurrences_per_package": {
+     "0000018230-26-000008": 0,
+     "0000018230-25-000008": 0,
+     "0000018230-26-000046": 0,
+     "0000018230-26-000021": 0,
+     "0000018230-25-000040": 0
+    },
+    "admitted_packages_expected_zero": true,
+    "capture_only_0000018230-25-000040": 0,
+    "gold_cell": {
+     "view": "as_filed",
+     "source_accession": "0000018230-26-000008",
+     "metric_id": "share_based_compensation_expense",
+     "period_key": [
+      "duration",
+      "2025-01-01",
+      "2025-12-31"
+     ],
+     "state": "typed_absence_verified",
+     "code": "missing_standard_fact"
+    },
+    "note": "Only a methodology-difference SBC line exists in the filing; it is never aliased."
+   }
+  },
+  {
+   "type": "errata_absence",
+   "ruling": "spec §5 (G_PACK_FROZEN_SPEC.md:266) + §0 gate 5 (no derivation); G_CENSUS_ERRATA.md:8",
+   "errata": "spec §5 CAT typed absences",
+   "metric_id": "gross_profit",
+   "code": "missing_standard_fact",
+   "r1_code": "MISSING_CONCEPT",
+   "candidate_concept": "us-gaap:GrossProfit",
+   "evidence": {
+    "occurrences_per_package": {
+     "0000018230-26-000008": 0,
+     "0000018230-25-000008": 0,
+     "0000018230-26-000046": 0,
+     "0000018230-26-000021": 0,
+     "0000018230-25-000040": 0
+    },
+    "gold_cell": {
+     "view": "as_filed",
+     "source_accession": "0000018230-26-000008",
+     "metric_id": "gross_profit",
+     "period_key": [
+      "duration",
+      "2025-01-01",
+      "2025-12-31"
+     ],
+     "state": "typed_absence_verified",
+     "code": "missing_standard_fact"
+    },
+    "no_derivation": "CAT reports cost_of_revenue (us-gaap:CostOfRevenue 44,752M) and revenue (67,589M) but no gross profit line; arithmetic the issuer did not perform is forbidden (§0 gate 5)."
+   }
+  },
+  {
+   "type": "errata_absence",
+   "ruling": "ERRATA-1 E2 (G_CENSUS_ERRATA.md:21-24)",
+   "errata": "E2",
+   "metric_id": "total_debt",
+   "code": "missing_dependency",
+   "r1_code": "MISSING_DEPENDENCY",
+   "missing_input": "long_term_debt_current",
+   "evidence": {
+    "long_term_debt_resolves_under_its_own_label": {
+     "view": "as_filed",
+     "source_accession": "0000018230-26-000008",
+     "metric_id": "long_term_debt",
+     "period_key": [
+      "instant",
+      "2025-12-31"
+     ],
+     "value_exact": "30696000000",
+     "bytes": {
+      "member_file": "cat-20251231.htm",
+      "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+      "byte_offset": 4950784,
+      "raw_text": "30,696",
+      "concept": "us-gaap:LongTermDebtNoncurrent",
+      "contextRef": "c-4",
+      "unitRef": "usd",
+      "decimals": "-6",
+      "scale": "6",
+      "sign": null,
+      "value_exact": "30696000000",
+      "period": {
+       "kind": "instant",
+       "end": "2025-12-31"
+      },
+      "dimensions": []
+     },
+     "rendered_row_label": "Total long-term debt due after one year"
+    },
+    "long_term_debt_current_absent": {
+     "metric_id": "long_term_debt_current",
+     "candidate_concept": "us-gaap:LongTermDebtCurrent",
+     "occurrences_per_package": {
+      "0000018230-26-000008": 0,
+      "0000018230-25-000008": 0,
+      "0000018230-26-000046": 0,
+      "0000018230-26-000021": 0
+     },
+     "state": "typed_absence_verified",
+     "code": "missing_standard_fact"
+    },
+    "total_debt_cell": {
+     "view": "as_filed",
+     "source_accession": "0000018230-26-000008",
+     "metric_id": "total_debt",
+     "period_key": [
+      "instant",
+      "2025-12-31"
+     ],
+     "state": "typed_absence_verified",
+     "code": "missing_dependency",
+     "missing_inputs": [
+      {
+       "dependency": "long_term_debt_current",
+       "code": "missing_standard_fact"
+      }
+     ],
+     "formula": "short_term_debt + long_term_debt_current + long_term_debt (formulas/core.yaml:20-25)",
+     "resolved_components_as_filed": {
+      "short_term_debt": "5514000000",
+      "long_term_debt": "30696000000"
+     }
+    },
+    "never_derived_from_partial_inputs": true,
+    "component_prints_under_its_own_label": true
+   }
+  },
+  {
+   "type": "errata_absence",
+   "ruling": "R3 (G_PACK_BUILD_SPEC.md §2 / G_CENSUS_ERRATA.md:8); spec G0-f table rows on ProfitLoss",
+   "errata": "R3",
+   "metric_id": "net_income_loss",
+   "code": "missing_standard_fact",
+   "r1_code": "MISSING_CONCEPT",
+   "evidence": {
+    "catalog_concept_occurrences_per_package": {
+     "0000018230-26-000008": 0,
+     "0000018230-25-000008": 0,
+     "0000018230-26-000046": 0,
+     "0000018230-26-000021": 0
+    },
+    "never_aliased_candidates": [
+     {
+      "candidate_concept": "us-gaap:ProfitLoss",
+      "why_not_identical": "includes noncontrolling interest (A29 splice risk)",
+      "fy2025_bytes": {
+       "member_file": "cat-20251231.htm",
+       "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+       "byte_offset": 2322497,
+       "raw_text": "8,882",
+       "concept": "us-gaap:ProfitLoss",
+       "contextRef": "c-1",
+       "unitRef": "usd",
+       "decimals": "-6",
+       "scale": "6",
+       "sign": null,
+       "value_exact": "8882000000",
+       "period": {
+        "kind": "duration",
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+       },
+       "dimensions": []
+      },
+      "occurrences_per_package": {
+       "0000018230-26-000008": 18,
+       "0000018230-25-000008": 18,
+       "0000018230-26-000046": 19,
+       "0000018230-26-000021": 11
+      }
+     },
+     {
+      "candidate_concept": "cat:ProfitOfConsolidatedCompanies",
+      "why_not_identical": "custom cat: concept outside ALLOWED_TAXONOMIES (metric_registry.py:53); no verified identity with us-gaap:NetIncomeLoss",
+      "fy2025_bytes": {
+       "member_file": "cat-20251231.htm",
+       "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+       "byte_offset": 2317330,
+       "raw_text": "8,773",
+       "concept": "cat:ProfitOfConsolidatedCompanies",
+       "contextRef": "c-1",
+       "unitRef": "usd",
+       "decimals": "-6",
+       "scale": "6",
+       "sign": null,
+       "value_exact": "8773000000",
+       "period": {
+        "kind": "duration",
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+       },
+       "dimensions": []
+      },
+      "occurrences_per_package": {
+       "0000018230-26-000008": 3,
+       "0000018230-25-000008": 3,
+       "0000018230-26-000046": 4,
+       "0000018230-26-000021": 2
+      }
+     }
+    ],
+    "gold_cells_stay": "typed_absence_verified (missing_standard_fact) in every view/package; r2 records 0 valued net_income_loss rows."
+   }
+  },
+  {
+   "type": "errata_absence",
+   "ruling": "R3 (G_PACK_BUILD_SPEC.md §2); spec G0-f table row on StockholdersEquityIncludingPortion... (G_PACK_FROZEN_SPEC.md:163-164)",
+   "errata": "R3",
+   "metric_id": "stockholders_equity",
+   "code": "missing_standard_fact",
+   "r1_code": "MISSING_CONCEPT",
+   "evidence": {
+    "catalog_concept_occurrences_per_package": {
+     "0000018230-26-000008": 0,
+     "0000018230-25-000008": 0,
+     "0000018230-26-000046": 0,
+     "0000018230-26-000021": 0
+    },
+    "never_aliased_candidate": {
+     "candidate_concept": "us-gaap:StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest",
+     "why_not_identical": "includes the noncontrolling-interest portion (A29 splice risk)",
+     "instant_2025-12-31_bytes": {
+      "member_file": "cat-20251231.htm",
+      "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+      "byte_offset": 2442663,
+      "raw_text": "21,318",
+      "concept": "us-gaap:StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest",
+      "contextRef": "c-4",
+      "unitRef": "usd",
+      "decimals": "-6",
+      "scale": "6",
+      "sign": null,
+      "value_exact": "21318000000",
+      "period": {
+       "kind": "instant",
+       "end": "2025-12-31"
+      },
+      "dimensions": []
+     },
+     "occurrences_per_package": {
+      "0000018230-26-000008": 59,
+      "0000018230-25-000008": 59,
+      "0000018230-26-000046": 86,
+      "0000018230-26-000021": 44
+     }
+    },
+    "gold_cells_stay": "typed_absence_verified (missing_standard_fact) in every view/package."
+   }
+  },
+  {
+   "type": "negative_mapping",
+   "ruling": "spec §5 A31 trap (G_PACK_FROZEN_SPEC.md:273-275); G_CENSUS_ERRATA.md:8",
+   "metric_id": "inventory_net",
+   "forbidden_concept": "cat:WholesaleInventoryReceivables",
+   "evidence": {
+    "no_gold_cell_cites_forbidden_concept": {
+     "row_concepts": [
+      "us-gaap:InventoryNet"
+     ],
+     "occurrence_concepts": [
+      "us-gaap:InventoryNet"
+     ],
+     "forbidden_citations": 0,
+     "proof": "every valued inventory_net row cites us-gaap:InventoryNet (12 rows); the string 'cat:WholesaleInventoryReceivables' appears nowhere in r2 CAT gold_facts.jsonl."
+    },
+    "inventory_net_fact_used_by_newest_10k_cell": {
+     "view": "as_filed",
+     "source_accession": "0000018230-26-000008",
+     "metric_id": "inventory_net",
+     "period_key": [
+      "instant",
+      "2025-12-31"
+     ],
+     "value_exact": "18135000000",
+     "bytes": {
+      "member_file": "cat-20251231.htm",
+      "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+      "byte_offset": 2385105,
+      "raw_text": "18,135",
+      "concept": "us-gaap:InventoryNet",
+      "contextRef": "c-4",
+      "unitRef": "usd",
+      "decimals": "-6",
+      "scale": "6",
+      "sign": null,
+      "value_exact": "18135000000",
+      "period": {
+       "kind": "instant",
+       "end": "2025-12-31"
+      },
+      "dimensions": []
+     }
+    },
+    "forbidden_concept_bytes_exist_but_are_dimensional_cat_financial": {
+     "member_file": "cat-20251231.htm",
+     "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+     "byte_offset": 5351156,
+     "raw_text": "1,931",
+     "concept": "cat:WholesaleInventoryReceivables",
+     "contextRef": "c-851",
+     "unitRef": "usd",
+     "decimals": "-6",
+     "scale": "6",
+     "sign": null,
+     "value_exact": "1931000000",
+     "period": {
+      "kind": "instant",
+      "end": "2025-12-31"
+     },
+     "dimensions": [
+      "us-gaap:FairValueByMeasurementBasisAxis=us-gaap:CarryingReportedAmountFairValueDisclosureMember"
+     ]
+    },
+    "why_forbidden": "cat:WholesaleInventoryReceivables is a Cat Financial dealer-floorplan receivable (fair-value note, dimensioned), not inventory; cat: customs are outside ALLOWED_TAXONOMIES (metric_registry.py:53)."
+   }
+  },
+  {
+   "type": "segment_as_filed",
+   "ruling": "spec §5 A31 segment math as filed + R6 (segments served as filed behind the A31 no-sum fence; G_PACK_FROZEN_SPEC.md:267-270, §2 R6); ERRATA E4 MP&E naming",
+   "period_key": [
+    "duration",
+    "2025-01-01",
+    "2025-12-31"
+   ],
+   "period_label": "FY2025",
+   "source_accession": "0000018230-26-000008",
+   "segments": [
+    {
+     "member": "cat:ConstructionIndustriesMember",
+     "member_label": "ConstructionIndustriesMember",
+     "axis": "us-gaap:StatementBusinessSegmentsAxis",
+     "value": "25060000000",
+     "row_kind": "segment total as filed (external + intersegment)",
+     "trace": {
+      "member_file": "cat-20251231.htm",
+      "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+      "byte_offset": 5537759,
+      "raw_text": "25,060",
+      "contextRef": "c-878",
+      "unitRef": "usd",
+      "decimals": "-6"
+     },
+     "as_filed_breakdown": {
+      "external_sales_excl_intersegment": {
+       "member_file": "cat-20251231.htm",
+       "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+       "byte_offset": 5536018,
+       "raw_text": "24,800",
+       "concept": "us-gaap:Revenues",
+       "contextRef": "c-876",
+       "unitRef": "usd",
+       "decimals": "-6",
+       "scale": "6",
+       "sign": null,
+       "value_exact": "24800000000",
+       "period": {
+        "kind": "duration",
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+       },
+       "dimensions": [
+        "srt:ConsolidationItemsAxis=cat:OperatingSegmentsExcludingIntersegmentEliminationMember",
+        "us-gaap:StatementBusinessSegmentsAxis=cat:ConstructionIndustriesMember"
+       ]
+      },
+      "intersegment_sales": {
+       "member_file": "cat-20251231.htm",
+       "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+       "byte_offset": 5536900,
+       "raw_text": "260",
+       "concept": "us-gaap:Revenues",
+       "contextRef": "c-877",
+       "unitRef": "usd",
+       "decimals": "-6",
+       "scale": "6",
+       "sign": "-",
+       "value_exact": "-260000000",
+       "period": {
+        "kind": "duration",
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+       },
+       "dimensions": [
+        "srt:ConsolidationItemsAxis=us-gaap:IntersegmentEliminationMember",
+        "us-gaap:StatementBusinessSegmentsAxis=cat:ConstructionIndustriesMember"
+       ]
+      }
+     }
+    },
+    {
+     "member": "cat:ResourceIndustriesMember",
+     "member_label": "ResourceIndustriesMember",
+     "axis": "us-gaap:StatementBusinessSegmentsAxis",
+     "value": "12474000000",
+     "row_kind": "segment total as filed (external + intersegment)",
+     "trace": {
+      "member_file": "cat-20251231.htm",
+      "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+      "byte_offset": 5542765,
+      "raw_text": "12,474",
+      "contextRef": "c-885",
+      "unitRef": "usd",
+      "decimals": "-6"
+     },
+     "as_filed_breakdown": {
+      "external_sales_excl_intersegment": {
+       "member_file": "cat-20251231.htm",
+       "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+       "byte_offset": 5541426,
+       "raw_text": "12,185",
+       "concept": "us-gaap:Revenues",
+       "contextRef": "c-883",
+       "unitRef": "usd",
+       "decimals": "-6",
+       "scale": "6",
+       "sign": null,
+       "value_exact": "12185000000",
+       "period": {
+        "kind": "duration",
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+       },
+       "dimensions": [
+        "srt:ConsolidationItemsAxis=cat:OperatingSegmentsExcludingIntersegmentEliminationMember",
+        "us-gaap:StatementBusinessSegmentsAxis=cat:ResourceIndustriesMember"
+       ]
+      },
+      "intersegment_sales": {
+       "member_file": "cat-20251231.htm",
+       "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+       "byte_offset": 5542107,
+       "raw_text": "289",
+       "concept": "us-gaap:Revenues",
+       "contextRef": "c-884",
+       "unitRef": "usd",
+       "decimals": "-6",
+       "scale": "6",
+       "sign": "-",
+       "value_exact": "-289000000",
+       "period": {
+        "kind": "duration",
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+       },
+       "dimensions": [
+        "srt:ConsolidationItemsAxis=us-gaap:IntersegmentEliminationMember",
+        "us-gaap:StatementBusinessSegmentsAxis=cat:ResourceIndustriesMember"
+       ]
+      }
+     }
+    },
+    {
+     "member": "cat:PowerEnergyMember",
+     "member_label": "PowerEnergyMember",
+     "axis": "us-gaap:StatementBusinessSegmentsAxis",
+     "value": "32201000000",
+     "row_kind": "segment total as filed (external + intersegment)",
+     "trace": {
+      "member_file": "cat-20251231.htm",
+      "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+      "byte_offset": 5547802,
+      "raw_text": "32,201",
+      "contextRef": "c-892",
+      "unitRef": "usd",
+      "decimals": "-6"
+     },
+     "as_filed_breakdown": {
+      "external_sales_excl_intersegment": {
+       "member_file": "cat-20251231.htm",
+       "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+       "byte_offset": 5546432,
+       "raw_text": "27,143",
+       "concept": "us-gaap:Revenues",
+       "contextRef": "c-890",
+       "unitRef": "usd",
+       "decimals": "-6",
+       "scale": "6",
+       "sign": null,
+       "value_exact": "27143000000",
+       "period": {
+        "kind": "duration",
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+       },
+       "dimensions": [
+        "srt:ConsolidationItemsAxis=cat:OperatingSegmentsExcludingIntersegmentEliminationMember",
+        "us-gaap:StatementBusinessSegmentsAxis=cat:PowerEnergyMember"
+       ]
+      },
+      "intersegment_sales": {
+       "member_file": "cat-20251231.htm",
+       "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+       "byte_offset": 5547113,
+       "raw_text": "5,058",
+       "concept": "us-gaap:Revenues",
+       "contextRef": "c-891",
+       "unitRef": "usd",
+       "decimals": "-6",
+       "scale": "6",
+       "sign": "-",
+       "value_exact": "-5058000000",
+       "period": {
+        "kind": "duration",
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+       },
+       "dimensions": [
+        "srt:ConsolidationItemsAxis=us-gaap:IntersegmentEliminationMember",
+        "us-gaap:StatementBusinessSegmentsAxis=cat:PowerEnergyMember"
+       ]
+      }
+     }
+    },
+    {
+     "member": "cat:FinancialProductsSegmentMember",
+     "member_label": "FinancialProductsSegmentMember",
+     "axis": "us-gaap:StatementBusinessSegmentsAxis",
+     "value": "4220000000",
+     "row_kind": "segment total as filed (external + intersegment)",
+     "trace": {
+      "member_file": "cat-20251231.htm",
+      "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+      "byte_offset": 5553015,
+      "raw_text": "4,220",
+      "contextRef": "c-899",
+      "unitRef": "usd",
+      "decimals": "-6"
+     },
+     "as_filed_breakdown": {
+      "external_sales_excl_intersegment": {
+       "member_file": "cat-20251231.htm",
+       "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+       "byte_offset": 5551383,
+       "raw_text": "4,220",
+       "concept": "us-gaap:Revenues",
+       "contextRef": "c-897",
+       "unitRef": "usd",
+       "decimals": "-6",
+       "scale": "6",
+       "sign": null,
+       "value_exact": "4220000000",
+       "period": {
+        "kind": "duration",
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+       },
+       "dimensions": [
+        "srt:ConsolidationItemsAxis=cat:OperatingSegmentsExcludingIntersegmentEliminationMember",
+        "us-gaap:StatementBusinessSegmentsAxis=cat:FinancialProductsSegmentMember"
+       ]
+      },
+      "intersegment_sales": null
+     }
+    }
+   ],
+   "consolidated": {
+    "value": "67589000000",
+    "concept": "us-gaap:Revenues",
+    "trace": {
+     "member_file": "cat-20251231.htm",
+     "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+     "byte_offset": 2289084,
+     "raw_text": "67,589",
+     "concept": "us-gaap:Revenues",
+     "contextRef": "c-1",
+     "unitRef": "usd",
+     "decimals": "-6",
+     "scale": "6",
+     "sign": null,
+     "value_exact": "67589000000",
+     "period": {
+      "kind": "duration",
+      "start": "2025-01-01",
+      "end": "2025-12-31"
+     },
+     "dimensions": []
+    },
+    "also_rendered_in_segment_note_at": 5572475,
+    "note": "the filing's own undimensioned consolidated fact; the kernel never sums segments"
+   },
+   "reconciling_items": [
+    {
+     "label": "intersegment sales included in reportable segments",
+     "value": "-5607000000",
+     "trace": {
+      "member_file": "cat-20251231.htm",
+      "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+      "byte_offset": 5557702,
+      "raw_text": "5,607",
+      "concept": "us-gaap:Revenues",
+      "contextRef": "c-905",
+      "unitRef": "usd",
+      "decimals": "-6",
+      "scale": "6",
+      "sign": "-",
+      "value_exact": "-5607000000",
+      "period": {
+       "kind": "duration",
+       "start": "2025-01-01",
+       "end": "2025-12-31"
+      },
+      "dimensions": [
+       "srt:ConsolidationItemsAxis=us-gaap:IntersegmentEliminationMember",
+       "us-gaap:StatementBusinessSegmentsAxis=us-gaap:ReportableSegmentAggregationBeforeOtherOperatingSegmentMember"
+      ]
+     }
+    },
+    {
+     "label": "All Other segment total",
+     "value": "327000000",
+     "trace": {
+      "member_file": "cat-20251231.htm",
+      "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+      "byte_offset": 5563349,
+      "raw_text": "327",
+      "concept": "us-gaap:Revenues",
+      "contextRef": "c-912",
+      "unitRef": "usd",
+      "decimals": "-6",
+      "scale": "6",
+      "sign": null,
+      "value_exact": "327000000",
+      "period": {
+       "kind": "duration",
+       "start": "2025-01-01",
+       "end": "2025-12-31"
+      },
+      "dimensions": [
+       "srt:ConsolidationItemsAxis=us-gaap:OperatingSegmentsMember",
+       "us-gaap:StatementBusinessSegmentsAxis=us-gaap:AllOtherSegmentsMember"
+      ]
+     }
+    },
+    {
+     "label": "corporate items and eliminations",
+     "value": "-6693000000",
+     "trace": {
+      "member_file": "cat-20251231.htm",
+      "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+      "byte_offset": 5567519,
+      "raw_text": "6,693",
+      "concept": "us-gaap:Revenues",
+      "contextRef": "c-919",
+      "unitRef": "usd",
+      "decimals": "-6",
+      "scale": "6",
+      "sign": "-",
+      "value_exact": "-6693000000",
+      "period": {
+       "kind": "duration",
+       "start": "2025-01-01",
+       "end": "2025-12-31"
+      },
+      "dimensions": [
+       "srt:ConsolidationItemsAxis=cat:EliminationsAndReconcilingItemsMember"
+      ]
+     },
+     "components": {
+      "corporate_items": {
+       "member_file": "cat-20251231.htm",
+       "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+       "byte_offset": 5566416,
+       "raw_text": "805",
+       "concept": "us-gaap:Revenues",
+       "contextRef": "c-917",
+       "unitRef": "usd",
+       "decimals": "-6",
+       "scale": "6",
+       "sign": "-",
+       "value_exact": "-805000000",
+       "period": {
+        "kind": "duration",
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+       },
+       "dimensions": [
+        "srt:ConsolidationItemsAxis=us-gaap:CorporateNonSegmentMember"
+       ]
+      },
+      "intersegment_eliminations": {
+       "member_file": "cat-20251231.htm",
+       "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+       "byte_offset": 5566952,
+       "raw_text": "5,888",
+       "concept": "us-gaap:Revenues",
+       "contextRef": "c-918",
+       "unitRef": "usd",
+       "decimals": "-6",
+       "scale": "6",
+       "sign": "-",
+       "value_exact": "-5888000000",
+       "period": {
+        "kind": "duration",
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+       },
+       "dimensions": [
+        "srt:ConsolidationItemsAxis=us-gaap:IntersegmentEliminationMember"
+       ]
+      }
+     }
+    },
+    {
+     "label": "sum of reportable segments (check only, as filed)",
+     "value": "73955000000",
+     "trace": {
+      "member_file": "cat-20251231.htm",
+      "member_sha256": "4777564fdc7b0b9e28317e484a3fa9a4be6f15e108851dca9f72b3223e548482",
+      "byte_offset": 5558449,
+      "raw_text": "73,955",
+      "concept": "us-gaap:Revenues",
+      "contextRef": "c-906",
+      "unitRef": "usd",
+      "decimals": "-6",
+      "scale": "6",
+      "sign": null,
+      "value_exact": "73955000000",
+      "period": {
+       "kind": "duration",
+       "start": "2025-01-01",
+       "end": "2025-12-31"
+      },
+      "dimensions": [
+       "srt:ConsolidationItemsAxis=us-gaap:OperatingSegmentsMember",
+       "us-gaap:StatementBusinessSegmentsAxis=us-gaap:ReportableSegmentAggregationBeforeOtherOperatingSegmentMember"
+      ]
+     },
+     "check": "differs from consolidated and reconciles as filed"
+    }
+   ],
+   "checks": {
+    "sum_of_segment_values": "73955000000",
+    "filing_reportable_total": "73955000000",
+    "sum_equals_filing_reportable_total": true,
+    "reconciliation_as_filed": "73955000000 + 327000000 + (-6693000000) = 67589000000",
+    "reconciles_to_consolidated": true,
+    "consolidated_is_undimensioned_fact": true
+   }
+  }
+ ],
+ "gold_corrections": [
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2024-01-01",
+     "2024-03-31"
+    ]
+   },
+   "field": "code",
+   "op": "set",
+   "r2_value": "missing_standard_fact",
+   "corrected_value": "disallowed_dimension",
+   "evidence": {
+    "kr_ids": [
+     "CAT-C6_cat_25_000008_period_attribution-0640"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0000018230-25-000008",
+       "member_file": "cat-20241231.htm",
+       "contextRef": "c-674",
+       "members": {
+        "srt:ShareRepurchaseProgramAxis": "cat:ASRAgreementsMember"
+       },
+       "byte_offset": 5065365
+      },
+      {
+       "accession": "0000018230-25-000008",
+       "member_file": "cat-20241231.htm",
+       "contextRef": "c-674",
+       "members": {
+        "srt:ShareRepurchaseProgramAxis": "cat:ASRAgreementsMember"
+       },
+       "byte_offset": 5065594
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2024-01-01",
+     "2024-03-31"
+    ]
+   },
+   "field": "r1_code",
+   "op": "set",
+   "r2_value": "MISSING_CONCEPT",
+   "corrected_value": "NOT_EVALUABLE_DIMENSION",
+   "evidence": {
+    "kr_ids": [
+     "CAT-C6_cat_25_000008_period_attribution-0640"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0000018230-25-000008",
+       "member_file": "cat-20241231.htm",
+       "contextRef": "c-674",
+       "members": {
+        "srt:ShareRepurchaseProgramAxis": "cat:ASRAgreementsMember"
+       },
+       "byte_offset": 5065365
+      },
+      {
+       "accession": "0000018230-25-000008",
+       "member_file": "cat-20241231.htm",
+       "contextRef": "c-674",
+       "members": {
+        "srt:ShareRepurchaseProgramAxis": "cat:ASRAgreementsMember"
+       },
+       "byte_offset": 5065594
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2024-01-01",
+     "2024-03-31"
+    ]
+   },
+   "field": "detail",
+   "op": "set",
+   "r2_value": "zero-hit search across every admitted package: no dimension-free fact for any mapped concept of common_stock_repurchases for this period (concepts searched: us-gaap:PaymentsForRepurchaseOfCommonStock)",
+   "corrected_value": "facts exist only on dimensioned contexts in this package; G0-c allowed axes do not apply to the headline cell",
+   "evidence": {
+    "kr_ids": [
+     "CAT-C6_cat_25_000008_period_attribution-0640"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0000018230-25-000008",
+       "member_file": "cat-20241231.htm",
+       "contextRef": "c-674",
+       "members": {
+        "srt:ShareRepurchaseProgramAxis": "cat:ASRAgreementsMember"
+       },
+       "byte_offset": 5065365
+      },
+      {
+       "accession": "0000018230-25-000008",
+       "member_file": "cat-20241231.htm",
+       "contextRef": "c-674",
+       "members": {
+        "srt:ShareRepurchaseProgramAxis": "cat:ASRAgreementsMember"
+       },
+       "byte_offset": 5065594
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2024-01-01",
+     "2024-03-31"
+    ]
+   },
+   "field": "axes_seen",
+   "op": "add",
+   "corrected_value": [
+    "srt:ShareRepurchaseProgramAxis"
+   ],
+   "evidence": {
+    "kr_ids": [
+     "CAT-C6_cat_25_000008_period_attribution-0640"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0000018230-25-000008",
+       "member_file": "cat-20241231.htm",
+       "contextRef": "c-674",
+       "members": {
+        "srt:ShareRepurchaseProgramAxis": "cat:ASRAgreementsMember"
+       },
+       "byte_offset": 5065365
+      },
+      {
+       "accession": "0000018230-25-000008",
+       "member_file": "cat-20241231.htm",
+       "contextRef": "c-674",
+       "members": {
+        "srt:ShareRepurchaseProgramAxis": "cat:ASRAgreementsMember"
+       },
+       "byte_offset": 5065594
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2024-04-01",
+     "2024-06-30"
+    ]
+   },
+   "field": "code",
+   "op": "set",
+   "r2_value": "missing_standard_fact",
+   "corrected_value": "disallowed_dimension",
+   "evidence": {
+    "kr_ids": [
+     "CAT-C6_cat_25_000008_period_attribution-0642"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0000018230-25-000008",
+       "member_file": "cat-20241231.htm",
+       "contextRef": "c-675",
+       "members": {
+        "srt:ShareRepurchaseProgramAxis": "cat:ASRAgreementsMember"
+       },
+       "byte_offset": 5066361
+      },
+      {
+       "accession": "0000018230-25-000008",
+       "member_file": "cat-20241231.htm",
+       "contextRef": "c-675",
+       "members": {
+        "srt:ShareRepurchaseProgramAxis": "cat:ASRAgreementsMember"
+       },
+       "byte_offset": 5066590
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2024-04-01",
+     "2024-06-30"
+    ]
+   },
+   "field": "r1_code",
+   "op": "set",
+   "r2_value": "MISSING_CONCEPT",
+   "corrected_value": "NOT_EVALUABLE_DIMENSION",
+   "evidence": {
+    "kr_ids": [
+     "CAT-C6_cat_25_000008_period_attribution-0642"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0000018230-25-000008",
+       "member_file": "cat-20241231.htm",
+       "contextRef": "c-675",
+       "members": {
+        "srt:ShareRepurchaseProgramAxis": "cat:ASRAgreementsMember"
+       },
+       "byte_offset": 5066361
+      },
+      {
+       "accession": "0000018230-25-000008",
+       "member_file": "cat-20241231.htm",
+       "contextRef": "c-675",
+       "members": {
+        "srt:ShareRepurchaseProgramAxis": "cat:ASRAgreementsMember"
+       },
+       "byte_offset": 5066590
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2024-04-01",
+     "2024-06-30"
+    ]
+   },
+   "field": "detail",
+   "op": "set",
+   "r2_value": "zero-hit search across every admitted package: no dimension-free fact for any mapped concept of common_stock_repurchases for this period (concepts searched: us-gaap:PaymentsForRepurchaseOfCommonStock)",
+   "corrected_value": "facts exist only on dimensioned contexts in this package; G0-c allowed axes do not apply to the headline cell",
+   "evidence": {
+    "kr_ids": [
+     "CAT-C6_cat_25_000008_period_attribution-0642"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0000018230-25-000008",
+       "member_file": "cat-20241231.htm",
+       "contextRef": "c-675",
+       "members": {
+        "srt:ShareRepurchaseProgramAxis": "cat:ASRAgreementsMember"
+       },
+       "byte_offset": 5066361
+      },
+      {
+       "accession": "0000018230-25-000008",
+       "member_file": "cat-20241231.htm",
+       "contextRef": "c-675",
+       "members": {
+        "srt:ShareRepurchaseProgramAxis": "cat:ASRAgreementsMember"
+       },
+       "byte_offset": 5066590
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2024-04-01",
+     "2024-06-30"
+    ]
+   },
+   "field": "axes_seen",
+   "op": "add",
+   "corrected_value": [
+    "srt:ShareRepurchaseProgramAxis"
+   ],
+   "evidence": {
+    "kr_ids": [
+     "CAT-C6_cat_25_000008_period_attribution-0642"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0000018230-25-000008",
+       "member_file": "cat-20241231.htm",
+       "contextRef": "c-675",
+       "members": {
+        "srt:ShareRepurchaseProgramAxis": "cat:ASRAgreementsMember"
+       },
+       "byte_offset": 5066361
+      },
+      {
+       "accession": "0000018230-25-000008",
+       "member_file": "cat-20241231.htm",
+       "contextRef": "c-675",
+       "members": {
+        "srt:ShareRepurchaseProgramAxis": "cat:ASRAgreementsMember"
+       },
+       "byte_offset": 5066590
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "short_term_debt",
+    "period_key": [
+     "instant",
+     "2026-03-31"
+    ]
+   },
+   "field": "code",
+   "op": "set",
+   "r2_value": "missing_standard_fact",
+   "corrected_value": "disallowed_dimension",
+   "evidence": {
+    "kr_ids": [
+     "CAT-C4b_dimension_vs_missing-0849",
+     "BAC-C4b_dimension_vs_missing-0960"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0000018230-26-000021",
+       "member_file": "cat-20260331.htm",
+       "contextRef": "c-13",
+       "members": {
+        "srt:ProductOrServiceAxis": "cat:FinancialProductsMember"
+       },
+       "byte_offset": 445398
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "short_term_debt",
+    "period_key": [
+     "instant",
+     "2026-03-31"
+    ]
+   },
+   "field": "r1_code",
+   "op": "set",
+   "r2_value": "MISSING_CONCEPT",
+   "corrected_value": "NOT_EVALUABLE_DIMENSION",
+   "evidence": {
+    "kr_ids": [
+     "CAT-C4b_dimension_vs_missing-0849",
+     "BAC-C4b_dimension_vs_missing-0960"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0000018230-26-000021",
+       "member_file": "cat-20260331.htm",
+       "contextRef": "c-13",
+       "members": {
+        "srt:ProductOrServiceAxis": "cat:FinancialProductsMember"
+       },
+       "byte_offset": 445398
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "short_term_debt",
+    "period_key": [
+     "instant",
+     "2026-03-31"
+    ]
+   },
+   "field": "detail",
+   "op": "set",
+   "r2_value": "zero-hit search across every admitted package: no dimension-free fact for any mapped concept of short_term_debt for this period (concepts searched: us-gaap:ShortTermBorrowings)",
+   "corrected_value": "facts exist only on dimensioned contexts in this package; G0-c allowed axes do not apply to the headline cell",
+   "evidence": {
+    "kr_ids": [
+     "CAT-C4b_dimension_vs_missing-0849",
+     "BAC-C4b_dimension_vs_missing-0960"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0000018230-26-000021",
+       "member_file": "cat-20260331.htm",
+       "contextRef": "c-13",
+       "members": {
+        "srt:ProductOrServiceAxis": "cat:FinancialProductsMember"
+       },
+       "byte_offset": 445398
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "short_term_debt",
+    "period_key": [
+     "instant",
+     "2026-03-31"
+    ]
+   },
+   "field": "axes_seen",
+   "op": "add",
+   "corrected_value": [
+    "srt:ProductOrServiceAxis"
+   ],
+   "evidence": {
+    "kr_ids": [
+     "CAT-C4b_dimension_vs_missing-0849",
+     "BAC-C4b_dimension_vs_missing-0960"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0000018230-26-000021",
+       "member_file": "cat-20260331.htm",
+       "contextRef": "c-13",
+       "members": {
+        "srt:ProductOrServiceAxis": "cat:FinancialProductsMember"
+       },
+       "byte_offset": 445398
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "total_debt",
+    "period_key": [
+     "instant",
+     "2026-03-31"
+    ]
+   },
+   "field": "missing_inputs",
+   "op": "set",
+   "r2_value": [
+    {
+     "dependency": "short_term_debt",
+     "state": "typed_absence_verified",
+     "code": "missing_standard_fact",
+     "dep_period": [
+      "instant",
+      "2026-03-31"
+     ]
+    },
+    {
+     "dependency": "long_term_debt_current",
+     "state": "typed_absence_verified",
+     "code": "missing_standard_fact",
+     "dep_period": [
+      "instant",
+      "2026-03-31"
+     ]
+    },
+    {
+     "dependency": "long_term_debt",
+     "state": "typed_absence_verified",
+     "code": "missing_standard_fact",
+     "dep_period": [
+      "instant",
+      "2026-03-31"
+     ]
+    }
+   ],
+   "corrected_value": [
+    {
+     "dependency": "short_term_debt",
+     "state": "typed_absence_verified",
+     "code": "disallowed_dimension",
+     "dep_period": [
+      "instant",
+      "2026-03-31"
+     ]
+    },
+    {
+     "dependency": "long_term_debt_current",
+     "state": "typed_absence_verified",
+     "code": "missing_standard_fact",
+     "dep_period": [
+      "instant",
+      "2026-03-31"
+     ]
+    },
+    {
+     "dependency": "long_term_debt",
+     "state": "typed_absence_verified",
+     "code": "missing_standard_fact",
+     "dep_period": [
+      "instant",
+      "2026-03-31"
+     ]
+    }
+   ],
+   "evidence": {
+    "dependency_rows": [
+     {
+      "view": "latest_known_as_of",
+      "source_accession": null,
+      "metric_id": "short_term_debt",
+      "period_key": [
+       "instant",
+       "2026-03-31"
+      ]
+     }
+    ]
+   },
+   "reason": "the named dependency cell is corrected under R-G-2 to disallowed_dimension; the formula's missing-input record follows the dependency cell (the formula stays missing_dependency: E2, never derived from a partial input set)",
+   "ruling": "R-G-2"
+  }
+ ],
+ "packet_corrections": [],
+ "defects": []
+}
