@@ -1577,7 +1577,9 @@ def _write_shims(shim_dir, real_git):
     """Write the `git`, `python`, `python3` shims used by the harness. The
     `git` shim is pass-through except for the FIRST `git push` it sees, when
     it also publishes the racer's racing-lane.txt (clean-race injection). The
-    counter file lives next to the shim dir, so each test starts at zero."""
+    counter file lives next to the shim dir, so each test starts at zero.
+    SHIM_RESTORE_MODE (unset = pass-through) faults `git restore`: `refuse`
+    exits 74 without calling git; `noop` exits 0 without calling git."""
     shim_dir.mkdir(exist_ok=True)
     counter_file = shim_dir.parent / "push_count"
     counter_file.write_text("0")
@@ -1588,6 +1590,18 @@ def _write_shims(shim_dir, real_git):
         "counter_file=\"${SHIM_COUNTER:?SHIM_COUNTER not set}\"\n"
         "racer_dir=\"${SHIM_RACER_DIR:-}\"\n"
         "real_git=\"${SHIM_REAL_GIT:?SHIM_REAL_GIT not set}\"\n"
+        "restore_mode=\"${SHIM_RESTORE_MODE:-}\"\n"
+        "if [ -n \"$restore_mode\" ]; then\n"
+        "  for a in \"$@\"; do\n"
+        "    if [ \"$a\" = \"restore\" ]; then\n"
+        "      if [ \"$restore_mode\" = \"refuse\" ]; then\n"
+        "        echo \"shim: git restore refused (simulated park failure)\" >&2\n"
+        "        exit 74\n"
+        "      fi\n"
+        "      exit 0\n"
+        "    fi\n"
+        "  done\n"
+        "fi\n"
         "is_push=0\n"
         "for a in \"$@\"; do\n"
         "  if [ \"$a\" = \"push\" ]; then is_push=1; break; fi\n"
@@ -1612,6 +1626,18 @@ def _write_shims(shim_dir, real_git):
         (shim_dir / py_name).chmod(0o755)
 
 
+def _read_step_outputs(path):
+    """Parse a GITHUB_OUTPUT file of key=value lines (last write wins;
+    missing file -> {}), mirroring the parser in _run_market_commit."""
+    outputs: dict[str, str] = {}
+    if path.exists():
+        for line in path.read_text().splitlines():
+            if "=" in line:
+                k, v = line.split("=", 1)
+                outputs[k] = v
+    return outputs
+
+
 def _git_env(repo=None):
     """Minimal env for real-git helper calls that don't go through the shim."""
     env = {"GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"}
@@ -1631,9 +1657,10 @@ def _git(repo, *args, **kw):
     )
 
 
-def _run_carve_publish(tmp_path, collect_steps, monkeypatch, race):
+def _run_carve_publish(tmp_path, collect_steps, monkeypatch, race, park_mode=None):
     """Build the carve-custody harness. Returns a namespace dict with the repo,
-    racer, origin, deferred/HEAD blob ids, step procs and outputs."""
+    racer, origin, deferred/HEAD blob ids, step procs and outputs. park_mode
+    (refuse | noop) faults `git restore` in the park step only."""
     # 1. Cleanup parent env so a contaminated host cannot leak into the steps.
     for k in list(os.environ):
         if k.startswith("GIT_") or k.startswith("PUSH_") or k in ("BASH_ENV", "ENV"):
@@ -1653,7 +1680,8 @@ def _run_carve_publish(tmp_path, collect_steps, monkeypatch, race):
 
     # 3. Step bodies.
     commit_run = str(collect_steps[_index_of(collect_steps, MARKET_COMMIT_STEP)]["run"])
-    push_run = str(collect_steps[_index_of(collect_steps, MARKET_PUSH_STEP)]["run"])
+    push_step = collect_steps[_index_of(collect_steps, MARKET_PUSH_STEP)]
+    push_run = str(push_step["run"])
     park_run = _carve_step_body(collect_steps, QLEDGER_PARK_STEP)
     restore_run = _carve_step_body(collect_steps, QLEDGER_RESTORE_STEP)
 
@@ -1779,13 +1807,19 @@ def _run_carve_publish(tmp_path, collect_steps, monkeypatch, race):
         env["GITHUB_OUTPUT"] = str(tmp_path / f"output_{name}")
         return env
 
-    # 9. Run PARK / PUSH / RESTORE in workflow order, honouring the gates.
+    # 9. Run PARK / PUSH / RESTORE in workflow order, honouring the REAL gates.
     procs = {}
 
     if park_run and commit_outputs.get("committed") == "true" and snapshot:
-        procs["park"] = _run_step(park_run, repo, step_env_for("park"))
+        park_env = step_env_for("park")
+        if park_mode:
+            park_env["SHIM_RESTORE_MODE"] = park_mode
+        procs["park"] = _run_step(park_run, repo, park_env)
+    park_outputs = _read_step_outputs(tmp_path / "output_park")
 
-    if commit_outputs.get("committed") == "true":
+    if _eval_commitdata_gate(
+        push_step.get("if"), commit_outputs, cancelled=False, park_outputs=park_outputs,
+    ):
         procs["push"] = _run_step(push_run, repo, step_env_for("push"))
 
     if restore_run and snapshot:
@@ -1808,6 +1842,7 @@ def _run_carve_publish(tmp_path, collect_steps, monkeypatch, race):
         "snapshot": snapshot,
         "summary_path": summary_path,
         "procs": procs,
+        "park_outputs": park_outputs,
         "real_git": real_git,
     }
 
@@ -1828,6 +1863,10 @@ def test_qledger_carve_custody_survives_the_market_push(
     SIGNAL for clean — autostash re-applies cleanly when origin hasn't touched
     the carved paths)."""
     h = _run_carve_publish(tmp_path, collect_steps, monkeypatch, race)
+    assert h["park_outputs"].get("parked") == "true", (
+        f"park did not verify its parked state: {h['park_outputs']!r}"
+    )
+    assert "push" in h["procs"], "verified park must open the push gate"
 
     # 1. pushdata rc == 0 and `published` == "true".
     push = h["procs"].get("push")
@@ -2088,6 +2127,10 @@ def test_qledger_carve_custody_steps_are_wired(collect_steps):
 
     park_step = collect_steps[park_idx]
     restore_step = collect_steps[restore_idx]
+    assert park_step.get("id") == "park", (
+        "park must carry `id: park` so the push and salvage gates can read "
+        "steps.park.outputs.parked (#9556 review 5570764032)"
+    )
 
     # Gate text — EXACTLY the strings in Edits B / C.
     expected_park_if = (
@@ -2303,13 +2346,19 @@ def test_qledger_carve_custody_restores_on_a_deferred_only_night(
 _WITHHELD_ERROR = "::error title=market publication withheld (qledger carve snapshot failed)::"
 
 
-def _eval_commitdata_gate(cond, outputs, *, cancelled):
-    """Evaluate a collect-step `if:` that reads ONLY commitdata outputs plus
-    always()/cancelled(). Fails loudly if the gate grew any other reference."""
+def _eval_commitdata_gate(cond, outputs, *, cancelled, park_outputs=None):
+    """Evaluate a collect-step `if:` that reads ONLY commitdata and park outputs
+    plus always()/cancelled(). Fails loudly if the gate grew any other reference."""
+    park_outputs = park_outputs or {}
     expr = re.sub(
         r"steps\.commitdata\.outputs\.([A-Za-z0-9_]+)",
         lambda m: repr(outputs.get(m.group(1), "")),
         str(cond),
+    )
+    expr = re.sub(
+        r"steps\.park\.outputs\.([A-Za-z0-9_]+)",
+        lambda m: repr(park_outputs.get(m.group(1), "")),
+        expr,
     )
     expr = (
         expr.replace("always()", "True")
@@ -2416,3 +2465,98 @@ def test_qledger_carve_snapshot_failure_withholds_market_publication(
     assert "### Market publication withheld: qledger carve snapshot failed" in summary, (
         f"step summary missing the withheld block: {summary!r}"
     )
+
+
+# ── Negative control: a park it cannot VERIFY must fail CLOSED on publication ──
+# (#9556 review 5570764032). The park step used to warn and exit 0 when `git
+# restore` failed, so `push market data` and its cancel salvage still fetched,
+# rebased --autostash and pushed against the dirty carved qledger bytes.
+
+_PARK_WITHHELD_ERROR = "::error title=market publication withheld (qledger park failed)::"
+_PUBLISHER_MARKERS = ("git push", "push_do", "git pull", "git fetch")
+
+
+@pytest.mark.parametrize("park_mode", ["refuse", "noop"])
+def test_qledger_carve_park_failure_withholds_market_publication(
+    tmp_path, collect_steps, monkeypatch, park_mode,
+):
+    """#9556 review 5570764032: a failed park must open NO publisher step. Real
+    git, real commitdata + park + restore bodies; the shim faults only the park
+    step's `git restore`. refuse = the restore exits 74 (I/O refusal); noop = the
+    restore exits 0 but changes nothing (a restore that lies), so only a VERIFIED
+    parked state may open the push and salvage gates. The market commit stays
+    local, origin is untouched, and the carved bytes survive for the restore step."""
+    h = _run_carve_publish(
+        tmp_path, collect_steps, monkeypatch, race="clean", park_mode=park_mode,
+    )
+    procs = h["procs"]
+    park_outputs = h["park_outputs"]
+
+    # 1. No publisher step executed on a failed park.
+    assert "push" not in procs, (
+        f"push market data ran although the park failed ({park_mode}); it fetched/"
+        f"rebased/pushed against dirty carved qledger bytes. park_outputs={park_outputs!r}"
+    )
+    # 2-3. The park reported failure and did not fail the job.
+    assert park_outputs.get("parked") != "true", f"park claimed success: {park_outputs!r}"
+    park = procs.get("park")
+    assert park is not None, "park step did not run"
+    assert park.returncode == 0, (
+        f"park must never fail the job: stdout={park.stdout!r} stderr={park.stderr!r}"
+    )
+
+    # 4. Neither publisher gate opens on these outputs; both open on a verified park.
+    for name, cancelled in ((MARKET_PUSH_STEP, False), (SALVAGE_PUSH_STEP, True)):
+        cond = collect_steps[_index_of(collect_steps, name)].get("if")
+        assert not _eval_commitdata_gate(
+            cond, h["commit_outputs"], cancelled=cancelled, park_outputs=park_outputs,
+        ), f"{name!r} would run after a failed park: if={cond!r}"
+        assert _eval_commitdata_gate(
+            cond, h["commit_outputs"], cancelled=cancelled, park_outputs={"parked": "true"},
+        ), f"evaluator sanity: {name!r} should open on a verified park: if={cond!r}"
+
+    # 5. Every publisher after the park is one of the two gated steps.
+    park_idx = _index_of(collect_steps, QLEDGER_PARK_STEP)
+    publishers = {
+        str(step.get("name") or "")
+        for step in collect_steps[park_idx + 1:]
+        if any(marker in str(step.get("run") or "") for marker in _PUBLISHER_MARKERS)
+    }
+    gated = {
+        str(collect_steps[_index_of(collect_steps, MARKET_PUSH_STEP)].get("name")),
+        str(collect_steps[_index_of(collect_steps, SALVAGE_PUSH_STEP)].get("name")),
+    }
+    assert publishers == gated, (
+        f"publisher steps after the park must be exactly the gated push + salvage; "
+        f"got {sorted(publishers)!r}"
+    )
+
+    # 6. Nothing reached origin; the market commit stays runner-local.
+    origin_main = subprocess.run(
+        ["git", "rev-parse", "refs/heads/main"], cwd=h["origin"], env=_git_env(),
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+    assert origin_main == h["base_sha"], f"origin main moved: {origin_main} != {h['base_sha']}"
+    assert (tmp_path / "push_count").read_text().strip() == "0", "a git push ran"
+    assert _git(h["repo"], "rev-parse", "HEAD").stdout.strip() == h["head_sha"]
+
+    # 7. Loud and honest: the ::error and the summary name BOTH planes.
+    assert _PARK_WITHHELD_ERROR in park.stdout, f"park withheld ::error missing: {park.stdout!r}"
+    assert "NEITHER market data NOR data/qledger + site/qledger is published" in park.stdout
+    summary = h["summary_path"].read_text() if h["summary_path"].exists() else ""
+    assert "### Market publication withheld: qledger park failed" in summary, (
+        f"step summary missing the park-withheld block: {summary!r}"
+    )
+
+    # 8. The restore step ran and the carved bytes are preserved byte-identical.
+    restore = procs.get("restore")
+    assert restore is not None, "restore step did not run"
+    restore_text = (restore.stdout or "") + (restore.stderr or "")
+    assert "qledger carve custody LOST" not in restore_text, restore_text
+    for rel, want in (
+        ("data/qledger/claims.jsonl", h["deferred_claims"]),
+        ("site/qledger/track_record.json", h["deferred_twin"]),
+    ):
+        have = _git(h["repo"], "hash-object", "--no-filters", "--", rel).stdout.strip()
+        assert have == want, f"{rel} bytes changed after a failed park ({want} -> {have})"
+    assert (h["repo"] / "data" / "qledger" / "claims.jsonl").stat().st_size == _LIMIT + 4096

@@ -887,19 +887,38 @@ jobs:
       # paths sit the push out at HEAD's committed bytes (the autostash carries what
       # it carried before the carve-out existed) and part 2 below restores them
       # byte-identical from commitdata's snapshot. Only when that snapshot exists;
-      # never fails the job.
+      # never fails the job. A park it cannot VERIFY (#9556 review 5570764032)
+      # writes parked=false and withholds the push and its cancel salvage: no
+      # fetch, rebase or push may run against dirty carved bytes.
       - name: park carved qledger bytes outside the push autostash
+        id: park
         if: always() && steps.commitdata.outputs.committed == 'true' && steps.commitdata.outputs.qledger_snapshot != ''
         env:
           QLEDGER_SNAPSHOT: ${{ steps.commitdata.outputs.qledger_snapshot }}
         run: |
           if ! git diff --quiet HEAD -- data/qledger site/qledger; then
-            git restore --source=HEAD --worktree -- data/qledger site/qledger \
-              || echo "::warning title=qledger carve isolation failed::could not park data/qledger + site/qledger at HEAD before the push; they ride --autostash and snapshot $QLEDGER_SNAPSHOT still holds their bytes for the restore step."
+            git restore --source=HEAD --worktree -- data/qledger site/qledger || true
           fi
+          # Verify the parked state itself; a restore exit code is not evidence.
+          if git diff --quiet HEAD -- data/qledger site/qledger && git diff --cached --quiet -- data/qledger site/qledger; then
+            echo "parked=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "parked=false" >> "$GITHUB_OUTPUT"
+            echo "::error title=market publication withheld (qledger park failed)::could not park data/qledger + site/qledger at HEAD before the push; NEITHER market data NOR data/qledger + site/qledger is published by this run. The market commit stays runner-local and unpushed (no fetch, rebase or push runs against the dirty carved bytes); snapshot $QLEDGER_SNAPSHOT and the collected bytes stay in this runner workspace (runner-local; gone at the next clean checkout). Owner: qledger publication program."
+            if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+              {
+                echo "### Market publication withheld: qledger park failed"
+                echo ""
+                echo "- market data: committed locally but NOT pushed by this run"
+                echo "- data/qledger + site/qledger: NOT published; restored from snapshot \`$QLEDGER_SNAPSHOT\` by the restore step (runner-local)"
+                echo "- owner: qledger publication program"
+              } >> "$GITHUB_STEP_SUMMARY" || true
+            fi
+          fi
+      # A carved night publishes only after a verified park (#9556 review 5570764032).
       - name: push market data (survives a job-cap cancel; alarm-bounded git ops)
         id: pushdata
-        if: always() && steps.commitdata.outputs.committed == 'true'
+        if: always() && steps.commitdata.outputs.committed == 'true' && (steps.commitdata.outputs.qledger_carved != 'true' || steps.park.outputs.parked == 'true')
         run: |
           echo "published=false" >> "$GITHUB_OUTPUT"
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
@@ -957,8 +976,9 @@ jobs:
       # Last-ditch publish if the job was CANCELLED mid-push (cap timeout): one bounded
       # attempt inside the post-cancel grace window. The commit already exists locally;
       # losing it costs the whole night's collections (2026-07-16 incident).
+      # Same verified-park gate as the push above (#9556 review 5570764032).
       - name: salvage push (job cancelled mid-publish — one bounded attempt)
-        if: cancelled() && steps.commitdata.outputs.committed == 'true'
+        if: cancelled() && steps.commitdata.outputs.committed == 'true' && (steps.commitdata.outputs.qledger_carved != 'true' || steps.park.outputs.parked == 'true')
         run: |
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
           perl -e 'alarm 90; exec @ARGV or die' -- git fetch origin main || true
