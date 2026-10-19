@@ -39,6 +39,11 @@ here; a later run's roll-forward completes it on the same store. The reader
 never lists a prefix: it reads HEAD, then batches ``1..HEAD.sequence`` by
 their deterministic keys, verifying canonical bytes, the hash chain and
 strictly increasing batch clocks. No unconditional put is ever issued.
+
+Visibility law: the HEAD commit is the visibility point. A batch left by an
+EFFECT_UNKNOWN or orphaned write keeps its writer's ``recorded_at`` but
+becomes visible only when a later run rolls it forward, so a replay for a
+past cutoff is stable only once the writing run has settled.
 """
 from __future__ import annotations
 
@@ -61,6 +66,7 @@ HARD_MAX_BATCH_BYTES = 8 * 1024 * 1024
 HARD_MAX_BATCHES = 5000
 _HEAD_READ_BOUND = 64 * 1024
 _HEX64 = re.compile(r"[0-9a-f]{64}")
+_CIK_IDENTITY_TEXT = re.compile(r"[0-9]{10}")
 
 _KINDS = ("workbench", "kernel")
 _STATUSES = ("present", "withdrawn")
@@ -280,7 +286,9 @@ def workbench_rows_from_state(state: Mapping[str, Any]) -> tuple[list[dict[str, 
     """
     if not isinstance(state, Mapping):
         raise FindingJudgmentError("workbench state must be an object", code="state_shape")
-    clock = _require_aware_utc(state.get("generated_at"), code="recorded_at_required", label="generated_at")
+    clock = _require_aware_utc(
+        state.get("generated_at"), code="source_generated_at_required", label="generated_at"
+    )
     companies = state.get("companies")
     if not isinstance(companies, Mapping):
         raise FindingJudgmentError("workbench state companies must be an object", code="state_shape")
@@ -455,6 +463,26 @@ def _load_head(store: Any) -> tuple[int | None, str | None, str | None]:
     if _canonical_json_bytes(body) != payload:
         raise _chain_error("judgment HEAD bytes are not canonical", code="head_schema")
     return sequence, tip_sha256, observed.version
+
+
+def _observed_head_sequence(payload: bytes | None) -> int | None:
+    """Best-effort parse of an observed HEAD body; ``None`` when unparseable.
+
+    Unlike ``_load_head`` this never raises: a HEAD the writer cannot parse
+    while settling its own failed compare-and-swap is simply a conflict.
+    """
+    if payload is None:
+        return None
+    try:
+        body = json.loads(payload.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    if not isinstance(body, dict) or body.get("schema") != JUDGMENT_HEAD_SCHEMA:
+        return None
+    sequence = body.get("sequence")
+    if isinstance(sequence, bool) or not isinstance(sequence, int):
+        return None
+    return sequence
 
 
 def _read_batch_bytes(store: Any, sequence: int) -> bytes | None:
@@ -643,15 +671,25 @@ def _write_batch(store: Any, key: str, payload: bytes) -> None:
     )
 
 
-def _write_head(store: Any, view: LedgerView, new_head_bytes: bytes) -> None:
+def _write_head(
+    store: Any,
+    view: LedgerView,
+    new_head_bytes: bytes,
+    *,
+    sequence: int,
+    batch_payload: bytes,
+) -> None:
     """Advance HEAD by one compare-and-swap on the version the writer loaded.
 
-    A ``False`` or a raise is settled by one strict re-read: HEAD already
-    holding the new bytes proves completion (a concurrent roll-forward or
-    our own committed write); HEAD unchanged after a ``False`` is a conflict;
-    HEAD unchanged after a raise, or an unreadable HEAD, is EFFECT_UNKNOWN —
-    the batch exists and the next run's roll-forward completes it on the
-    same store. Nothing is retried here.
+    A ``False`` or a raise is settled by one strict re-read, never a retry:
+    HEAD already holding the new bytes proves completion (a concurrent
+    roll-forward or our own committed write); HEAD still holding exactly the
+    predecessor the writer loaded is EFFECT_UNKNOWN — the batch exists and
+    the next run's roll-forward completes it on the same store; a different
+    observed HEAD that parses at a sequence at or beyond ours proves a later
+    writer rolled our batch forward and kept appending, so our write is
+    committed once our batch bytes are still exactly our own. Anything else
+    is a conflict.
     """
     raised: Exception | None = None
     try:
@@ -683,9 +721,16 @@ def _write_head(store: Any, view: LedgerView, new_head_bytes: bytes) -> None:
             raise FindingJudgmentEffectUnknownError(
                 f"judgment HEAD write failed without a settled outcome: {raised}", code="effect_unknown"
             ) from raised
-        raise FindingJudgmentError(
-            "a concurrent writer advanced the judgment HEAD", code="head_conflict"
+        raise FindingJudgmentEffectUnknownError(
+            "judgment HEAD compare-and-swap returned False without advancing the judgment HEAD",
+            code="effect_unknown",
         )
+    observed_sequence = _observed_head_sequence(observed.data)
+    if observed_sequence is not None and observed_sequence >= sequence:
+        # A later writer rolled our batch forward and appended after it: our
+        # batch is committed while its bytes are still exactly our own.
+        if _read_batch_bytes(store, sequence) == batch_payload:
+            return
     raise FindingJudgmentError(
         "judgment HEAD holds unexpected bytes after a failed compare-and-swap", code="head_conflict"
     )
@@ -736,11 +781,23 @@ def _roll_forward(store: Any, view: LedgerView) -> LedgerView:
         "sequence": next_sequence,
         "tip_sha256": hashlib.sha256(payload).hexdigest(),
     })
-    _write_head(store, view, new_head)
+    _write_head(store, view, new_head, sequence=next_sequence, batch_payload=payload)
     reloaded = load_ledger(store)
-    if _read_batch_bytes(store, reloaded.head_sequence + 1) is not None:
-        raise _chain_error(
-            f"judgment ledger holds an orphan chain beyond sequence {reloaded.head_sequence}", code="orphan_chain"
+    successor = _read_batch_bytes(store, reloaded.head_sequence + 1)
+    if successor is not None:
+        try:
+            _verify_batch(
+                successor, sequence=reloaded.head_sequence + 1, predecessor_sha256=reloaded.tip_sha256
+            )
+        except FindingJudgmentError as exc:
+            raise _chain_error(
+                f"judgment ledger holds an orphan chain beyond sequence {reloaded.head_sequence}",
+                code="orphan_chain",
+            ) from exc
+        raise FindingJudgmentError(
+            f"a concurrent writer appended judgment batch {_batch_key(reloaded.head_sequence + 1)} "
+            f"while the HEAD advanced to {reloaded.head_sequence}",
+            code="head_conflict",
         )
     return reloaded
 
@@ -750,6 +807,38 @@ def _last_present_record(chain: tuple[dict[str, Any], ...]) -> dict[str, Any] | 
         if record["status"] == "present":
             return record
     return None
+
+
+def _refuse_dropped_cik_identity(view: LedgerView, rows: list[dict[str, Any]]) -> None:
+    """Refuse symbol-identified rows whose finding was recorded under a CIK.
+
+    A state that stops carrying a company's CIK would record that company's
+    findings under the symbol identity while the CIK-keyed subjects stay
+    present forever: the run's withdrawal scope no longer names them, so two
+    present beliefs appear beside each other. Subjects are matched to the
+    run's rows by finding ref, the only symbol-to-CIK link the ledger holds.
+    The CIK is never inferred or copied from history into the state; the run
+    is refused before any write.
+    """
+    symbol_rows = [row for row in rows if str(row["entity_ref"]).startswith("symbol:")]
+    if not symbol_rows:
+        return
+    for chain in view.chains.values():
+        prior = chain[0]
+        if prior["kind"] != "workbench":
+            continue
+        prior_cik = prior["entity_ref"]
+        if not _CIK_IDENTITY_TEXT.fullmatch(prior_cik):
+            continue
+        for row in symbol_rows:
+            if row["finding_ref"] != prior["finding_ref"]:
+                continue
+            symbol = row["entity_ref"][len("symbol:"):]
+            raise FindingJudgmentError(
+                f"workbench symbol {symbol} carries no cik but its prior recorded subjects "
+                f"hold the cik identity {prior_cik}",
+                code="cik_dropped",
+            )
 
 
 def record_judgments(
@@ -798,6 +887,7 @@ def record_judgments(
             )
         seen.add(row["subject_key"])
     view = _roll_forward(store, load_ledger(store))
+    _refuse_dropped_cik_identity(view, normalized)
     latest = view.latest_recorded_at
     if latest is not None and clock < parse_utc(latest, field="recorded_at"):
         raise FindingJudgmentError(
@@ -935,7 +1025,7 @@ def record_judgments(
         "sequence": sequence,
         "tip_sha256": hashlib.sha256(payload).hexdigest(),
     })
-    _write_head(store, view, new_head)
+    _write_head(store, view, new_head, sequence=sequence, batch_payload=payload)
     report["sequence"] = sequence
     report["batch_key"] = key
     return report
@@ -999,6 +1089,8 @@ def replay_then_known(
     return {
         "schema": JUDGMENT_REPLAY_SCHEMA,
         "recorded_cutoff": utc_text(cutoff),
+        "head_sequence": view.head_sequence,
+        "head_tip_sha256": view.tip_sha256,
         "subjects": subjects,
     }
 
