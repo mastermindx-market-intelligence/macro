@@ -18,9 +18,12 @@ and a real-owner-artifact build across the two owner inputs (GLT + cb_desk).
 from __future__ import annotations
 
 import copy
+import datetime as _dt
 import json
+import re
 import sys
 from pathlib import Path
+from typing import Mapping
 
 import pytest
 
@@ -34,6 +37,21 @@ BUILT_AT = "2026-09-04T00:00:00Z"
 GLT_LATEST = ROOT / "site" / "liquiditydata" / "global_liquidity_transmission.json"
 INTL_RISK_LATEST = ROOT / "data" / "intl_risk" / "latest.json"
 GLT_HISTORY_META = ROOT / "data" / "global_liquidity_transmission" / "state_history_meta.json"
+
+# GLT T21: BASE metric count for the closed LCB composer (asserted in (j)).
+BASE_LCB_METRIC_COUNT = 28
+
+# GLT T21: the strict-snake tokens DISTINCT in the rendered LCB page text at
+# BASE = e38026e9f4e964d3d2efb77d6f5baa136e247b26. The T21 per-leg source rows
+# repeat the same site/liquiditydata/global_liquidity_transmission.json path
+# in the Sources details bucket, so per-bucket counts rise but no NEW
+# identifier may appear (frozen spec S9 (f) reasoning).
+_T21_BASELINE_STRICT_TOKENS: tuple[str, ...] = ()
+
+# GLT T21: baseline ``find_violations`` violations on the rendered LCB page
+# at BASE = e38026e9f4e964d3d2efb77d6f5baa136e247b26 (STEP 1b). None at BASE.
+_BASELINE_VIOLATIONS: tuple[str, ...] = ()
+_BASELINE_VIOLATION_COUNT = len(_BASELINE_VIOLATIONS)
 
 
 # --------------------------------------------------------------------------- #
@@ -773,3 +791,659 @@ def test_builds_and_validates_from_real_owner_artifacts() -> None:
     credit = next(m for m in snap["metrics"]["items"] if m["metric_id"] == "glt_credit_impulse_global")
     if credit["value"] is None:
         assert credit["null_reason"] in ("NOT_COVERED", "SOURCE_FAILED", "UNKNOWN")
+
+
+# =========================================================================== #
+# GLT T21 — measured GLT explanation in the Liquidity & Central Banks workspace
+# (per-leg release receipts, four distinct clocks, USD translation rows that
+# are never fresh money). All ten tests (a)-(j) below use the closed composer
+# above + the closed snapshot contract + the view layer's ``normalized`` /
+# ``fx_translation`` fields, and a private render helper that mirrors the
+# macro_command_copy_law pattern into tmp_path only (never site/).
+# =========================================================================== #
+
+# --------------------------------------------------------------------------- #
+# T21 fixtures — deep-copied from the BASE fixtures above, with the receipts
+# and producer-scale cb_desk the frozen spec S8 requires. ``_glt_with_receipts``
+# carries per-leg release receipts in ``freshness.components.<group>.<leg>``
+# plus the model_spec.fx dict on ECB / BoJ. ``_producer_cb_desk`` uses the
+# producer's published unit strings (USD / EUR / JPY billions) at the
+# producer's scale (the fixture-level ``USD billions (×1, raw WALCL is in
+# billions)`` and ``JPY trillions`` strings are recorded as a GAP, not
+# edited here).
+# --------------------------------------------------------------------------- #
+def _glt_with_receipts() -> dict:
+    base = copy.deepcopy(_base_glt())
+    base["meta"]["generated_at"] = "2026-10-16T18:16:51.754201+00:00"
+    base["state"]["asof"] = "2026-10-09"
+    fr = base["freshness"]
+    fr["clocks"] = {
+        "evidence_available_at": "2026-10-09T00:00:00Z",
+        "evidence_available_at_contributions": {
+            "monetary": "2026-10-08T00:00:00Z",
+            "usd_funding": "2026-10-09T00:00:00Z",
+            "us_liquidity_quality": None,
+        },
+        "first_known_at": "2026-10-16T18:16:51.754201Z",
+        "latest_component_observed_at": "2026-10-07T00:00:00Z",
+        "monetary_release_at": "2026-10-08T00:00:00Z",
+        "release_at": "2026-10-09T00:00:00Z",
+        "state_asof": "2026-10-09T00:00:00Z",
+    }
+    # per-leg receipts and current_contribution_z (with model_spec.fx where
+    # applicable). The composer reads these keys verbatim via _get().
+    monetary_components = {
+        "fed": {"status": "usable", "reference_date": "2026-10-07",
+                "available_date": "2026-10-08", "source_id": "WALCL",
+                "provider": "Board of Governors of the Federal Reserve System"},
+        "ecb": {"status": "usable", "reference_date": "2026-10-02",
+                "available_date": "2026-10-06", "source_id": "ECBASSETSW",
+                "provider": "European Central Bank via FRED"},
+        "boj": {"status": "usable", "reference_date": "2026-09-30",
+                "available_date": "2026-10-02", "source_id": "JPNASSETS",
+                "provider": "Bank of Japan via FRED"},
+    }
+    monetary_snapshot = {
+        "fed": {"current_contribution_z": 0.968795,
+                "model_spec": {"key": "WALCL", "fx": None}},
+        "ecb": {"current_contribution_z": 0.953589,
+                "model_spec": {"key": "ECBASSETSW",
+                               "fx": {"column": "close", "invert": False,
+                                      "key": "EURUSD=X", "store": "yahoo"}}},
+        "boj": {"current_contribution_z": 0.830764,
+                "model_spec": {"key": "JPNASSETS",
+                               "fx": {"column": "close", "invert": True,
+                                      "key": "USDJPY=X", "store": "yahoo"}}},
+    }
+    funding_components = {
+        "broad_dollar": {"status": "usable", "reference_date": "2026-10-08",
+                         "available_date": "2026-10-09", "source_id": "DTWEXBGS",
+                         "provider": "Board of Governors of the Federal Reserve System via FRED"},
+        "high_yield_oas": {"status": "usable", "reference_date": "2026-10-08",
+                            "available_date": "2026-10-09", "source_id": "BAMLH0A0HYM2",
+                            "provider": "ICE BofA via FRED and the repo append-only archive"},
+        "real_yield_10y": {"status": "usable", "reference_date": "2026-10-08",
+                           "available_date": "2026-10-09", "source_id": "DFII10",
+                           "provider": "Board of Governors of the Federal Reserve System via FRED"},
+    }
+    funding_snapshot = {
+        "broad_dollar": {"current_contribution_z": -0.119342,
+                         "model_spec": {"key": "DTWEXBGS", "fx": None}},
+        "high_yield_oas": {"current_contribution_z": -0.305917,
+                           "model_spec": {"key": "BAMLH0A0HYM2", "fx": None}},
+        "real_yield_10y": {"current_contribution_z": -1.508251,
+                           "model_spec": {"key": "DFII10", "fx": None}},
+    }
+    fr["components"]["monetary"] = monetary_components
+    fr["components"]["usd_funding"] = funding_components
+    fr["component_snapshot"]["monetary"] = monetary_snapshot
+    fr["component_snapshot"]["usd_funding"] = funding_snapshot
+    return base
+
+
+def _producer_cb_desk() -> dict:
+    base = copy.deepcopy(_base_cb_desk())
+    # Producer engine/cb_desk.py normalizes FED/ECB into ``USD`` / ``EUR``
+    # billions at source; BoJ into ``JPY`` billions. The fixture's
+    # ``USD billions (×1, raw WALCL is in billions)`` and ``JPY trillions``
+    # strings are recorded as a GAP (fixture-only).
+    base["cbs"][0]["bs_impulse"]["unit"] = "USD billions"
+    base["cbs"][0]["bs_impulse"]["level"] = 6737.2  # rescaled to producer's
+                                                   # unit (plausible at
+                                                   # USD-billions scale; the
+                                                   # implausibility guard at
+                                                   # ~L600-620 refuses a raw
+                                                   # level of 6,737,204 under
+                                                   # a "billions" label).
+    base["cbs"][1]["bs_impulse"]["unit"] = "EUR billions"
+    base["cbs"][2]["bs_impulse"]["unit"] = "JPY billions"
+    return base
+
+
+def _t21_render_html(snapshot: dict, tmp_path) -> str:
+    """Replicates tests/test_macro_command_copy_law.py::_render_workspace_html
+    into tmp_path only — never reads or writes site/. Used by (f) and (g)."""
+    from lib import macro_suite_view
+    from scripts import build_macro_suite_pages as builder
+    page = next(item for item in builder.SUITE_PAGES
+                if item.workspace_id == "liquidity_central_banks")
+    artifact = {
+        "path": "macrodata/workspaces/liquidity_central_banks/US/latest.json",
+        "manifest_path": "macrodata/workspaces/manifest.json",
+        "sha256": "fixture",
+        "bytes": 1,
+        "min_client_contract": builder.MIN_CLIENT_CONTRACT,
+    }
+    view = macro_suite_view.build_view(
+        snapshot, page_built_at=BUILT_AT, artifact=artifact,
+        layout=builder._layout_for("liquidity_central_banks"))
+    out = Path(tmp_path) / "macro_liquidity_central_banks.html"
+    out.write_text(builder.render_page(
+        builder._environment(ROOT), page, view), encoding="utf-8")
+    return out.read_text(encoding="utf-8")
+
+
+# --------------------------------------------------------------------------- #
+# (a) C12: Sept-4 sample cannot certify today's freshness, no glt_* row or
+# glt_leg_* source reads CURRENT. With built_at 2026-10-17 the only
+# freshness math against the Sept-4 ``state.asof`` is a 43-day age, well
+# past the W-FRI grace window.
+# --------------------------------------------------------------------------- #
+def test_t21_c12_sept4_sample_cannot_certify_current(tmp_path) -> None:
+    snap = liquidity_central_banks.compose(
+        _base_glt(), _base_cb_desk(), _base_hist(),
+        built_at="2026-10-17T00:00:00Z")
+    for mid, m in [(mid, m) for mid, m in zip(
+            [x["metric_id"] for x in snap["metrics"]["items"]],
+            snap["metrics"]["items"]) if mid.startswith("glt_")]:
+        if m["value"] is not None:
+            # the spec lets the rank be >= STALE_SOURCE for valued rows.
+            severity = {
+                "CURRENT": 0, "LATE_WITHIN_TOLERANCE": 1,
+                "STALE_SOURCE": 2, "SOURCE_FAILED": 3,
+            }.get(m["freshness"], -1)
+            assert severity >= 2, (mid, m["freshness"])
+    src = snap["sources"]["items"]
+    leg_sources = [s for s in src if s["source_id"].startswith("glt_leg_")]
+    assert leg_sources == [], leg_sources  # _base_glt has no receipts
+    # present the snapshot; no glt_* view row should read "Current" / "当前有效".
+    from lib import macro_suite_view
+    from scripts import build_macro_suite_pages as builder
+    view = macro_suite_view.build_view(
+        snap, page_built_at="2026-10-17T00:00:00Z",
+        artifact={"path": "x", "manifest_path": "y", "sha256": "s",
+                  "bytes": 1, "min_client_contract": builder.MIN_CLIENT_CONTRACT},
+        layout=builder._layout_for("liquidity_central_banks"))
+    for m in view["metrics"]:
+        if not m["metric_id"].startswith("glt_"):
+            continue
+        freshness = m.get("freshness") or {}
+        assert (freshness.get("en") or "") != "Current", m["metric_id"]
+        assert (freshness.get("zh") or "") != "当前有效", m["metric_id"]
+        assert m.get("freshness_tone") != "ok", m["metric_id"]
+
+
+# --------------------------------------------------------------------------- #
+# (b) C12: a re-wrap of _glt_with_receipts() that changes ONLY
+# meta.generated_at and freshness.clocks.first_known_at (both later) yields
+# the identical freshness token on every glt_* row and glt_leg_* source; and
+# rank never improves for built_at later than the reference. C11 day-window
+# for the fed leg: asof+0d -> CURRENT, asof+12d -> STALE_SOURCE,
+# asof-1d -> SOURCE_FAILED. The window mirrors
+# tests/test_global_liquidity_transmission_liveness_v2.py.
+# --------------------------------------------------------------------------- #
+def test_t21_c12_rewrap_never_improves_freshness_and_c11_day_window(tmp_path) -> None:
+    from lib import macro_suite_view
+    from scripts import build_macro_suite_pages as builder
+    # Use a built_at AFTER the _glt_with_receipts asof (2026-10-09) so the
+    # freshness math is well-defined; BUILT_AT (= 2026-09-04) precedes the
+    # asof and would yield SOURCE_FAILED on every leg, which is not the
+    # reference state the spec is asking about.
+    REF_BUILT = "2026-10-17T00:00:00Z"
+    base_snap = contract.finalize(
+        liquidity_central_banks.compose(
+            _glt_with_receipts(), _producer_cb_desk(), _base_hist(),
+            built_at=REF_BUILT))
+    base_view = macro_suite_view.build_view(
+        base_snap, page_built_at=REF_BUILT,
+        artifact={"path": "x", "manifest_path": "y", "sha256": "s",
+                  "bytes": 1, "min_client_contract": builder.MIN_CLIENT_CONTRACT},
+        layout=builder._layout_for("liquidity_central_banks"))
+    base_metric_freshness = {
+        m["metric_id"]: m["freshness"] for m in base_snap["metrics"]["items"]
+        if m["metric_id"].startswith("glt_")}
+    base_leg_freshness = {
+        s["source_id"]: s["freshness"] for s in base_snap["sources"]["items"]
+        if s["source_id"].startswith("glt_leg_")}
+
+    # C12 re-wrap: only the two fields the spec names change.
+    rew = _glt_with_receipts()
+    rew["meta"]["generated_at"] = "2026-10-17T19:16:51.754201Z"
+    rew["freshness"]["clocks"]["first_known_at"] = "2026-10-17T19:16:51.754201Z"
+    rew_snap = contract.finalize(
+        liquidity_central_banks.compose(
+            rew, _producer_cb_desk(), _base_hist(), built_at=REF_BUILT))
+    rew_metric_freshness = {
+        m["metric_id"]: m["freshness"] for m in rew_snap["metrics"]["items"]
+        if m["metric_id"].startswith("glt_")}
+    rew_leg_freshness = {
+        s["source_id"]: s["freshness"] for s in rew_snap["sources"]["items"]
+        if s["source_id"].startswith("glt_leg_")}
+    assert rew_metric_freshness == base_metric_freshness, \
+        "C12: a re-wrap of meta.generated_at + first_known_at must not change"
+    assert rew_leg_freshness == base_leg_freshness, \
+        "C12: per-leg source freshness must be invariant under the re-wrap"
+
+    # rank(CURRENT) < LATE_WITHIN_TOLERANCE < STALE_SOURCE < SOURCE_FAILED
+    RANK = {"CURRENT": 0, "LATE_WITHIN_TOLERANCE": 1, "STALE_SOURCE": 2,
+            "SOURCE_FAILED": 3, "NOT_COVERED": -1, "NOT_YET_RELEASED": -1}
+    # for built_at later than the reference built_at the rank never improves.
+    later_built = "2026-10-18T00:00:00Z"
+    later_snap = contract.finalize(
+        liquidity_central_banks.compose(
+            _glt_with_receipts(), _producer_cb_desk(), _base_hist(),
+            built_at=later_built))
+    for m in later_snap["metrics"]["items"]:
+        if m["metric_id"].startswith("glt_"):
+            new_rank = RANK.get(m["freshness"], -1)
+            old_rank = RANK.get(base_metric_freshness[m["metric_id"]], -1)
+            if old_rank >= 0 and new_rank >= 0:
+                assert new_rank >= old_rank, \
+                    (m["metric_id"], base_metric_freshness[m["metric_id"]],
+                     m["freshness"])
+
+    # C11 day-window for the fed leg against glt_asof (state.asof).
+    asof = "2026-10-09"
+    for built_at_delta_days, expected in (
+            (0, "CURRENT"), (12, "STALE_SOURCE")):
+        year, month, day = (int(asof[:4]), int(asof[5:7]), int(asof[8:10]))
+        built_dt = _dt.date(year, month, day) + _dt.timedelta(
+            days=built_at_delta_days)
+        built_at = built_dt.isoformat() + "T00:00:00Z"
+        snap = liquidity_central_banks.compose(
+            _glt_with_receipts(), _producer_cb_desk(), _base_hist(),
+            built_at=built_at)
+        row = next(m for m in snap["metrics"]["items"]
+                   if m["metric_id"] == "glt_fed_monetary_contribution_z")
+        assert row["freshness"] == expected, \
+            (built_at_delta_days, row["freshness"], expected)
+    # fed leg at asof-1 day (future-clock) -> SOURCE_FAILED.
+    year, month, day = (int(asof[:4]), int(asof[5:7]), int(asof[8:10]))
+    future_dt = _dt.date(year, month, day) - _dt.timedelta(days=1)
+    snap = liquidity_central_banks.compose(
+        _glt_with_receipts(), _producer_cb_desk(), _base_hist(),
+        built_at=future_dt.isoformat() + "T00:00:00Z")
+    row = next(m for m in snap["metrics"]["items"]
+               if m["metric_id"] == "glt_fed_monetary_contribution_z")
+    assert row["freshness"] == "SOURCE_FAILED"
+
+
+# --------------------------------------------------------------------------- #
+# (c) Discriminator: normalized rows (glt_monetary_impulse_z,
+# glt_orthogonalised_impulse) carry NO currency unit, even when the producer
+# injects "USD billions" into a normalized metric. The S7 keyword strings
+# also resolve without any refused word (will/expected/projected/forecast/
+# outlook / 将 / 预期 / 预测 / 展望 / 预计).
+# --------------------------------------------------------------------------- #
+_CURRENCY_RE = re.compile(r"(USD|EUR|JPY|\$|\bbn\b|billion)", re.I)
+_REFUSED_WORDS = (
+    "will", "expected", "projected", "forecast", "outlook",
+    "将", "预期", "预测", "展望", "预计",
+)
+
+
+def test_t21_discriminator_normalized_rows_carry_no_currency_unit(tmp_path) -> None:
+    from lib import macro_suite_view
+    from scripts import build_macro_suite_pages as builder
+    snap = contract.finalize(liquidity_central_banks.compose(
+        _glt_with_receipts(), _producer_cb_desk(), _base_hist(),
+        built_at=BUILT_AT))
+    artifact = {"path": "x", "manifest_path": "y", "sha256": "s",
+                "bytes": 1, "min_client_contract": builder.MIN_CLIENT_CONTRACT}
+
+    def _view_row(snap_):
+        view = macro_suite_view.build_view(
+            snap_, page_built_at=BUILT_AT, artifact=artifact,
+            layout=builder._layout_for("liquidity_central_banks"))
+        return {m["metric_id"]: m for m in view["metrics"]}
+
+    rows = _view_row(snap)
+    for mid in ("glt_monetary_impulse_z", "glt_orthogonalised_impulse"):
+        row = rows[mid]
+        assert row["normalized"] is True, mid
+        unit = row.get("unit")
+        if unit is not None:
+            assert not _CURRENCY_RE.search(unit.get("en") or ""), (mid, unit)
+            assert not _CURRENCY_RE.search(unit.get("zh") or ""), (mid, unit)
+
+    # inject "USD billions" into glt_monetary_impulse_z metric (deep copy).
+    injected = copy.deepcopy(snap)
+    for m in injected["metrics"]["items"]:
+        if m["metric_id"] == "glt_monetary_impulse_z":
+            m["unit"] = "USD billions"
+            break
+    rows2 = _view_row(injected)
+    row = rows2["glt_monetary_impulse_z"]
+    assert row["normalized"] is True
+    unit = row.get("unit")
+    assert unit is None or not _CURRENCY_RE.search(unit.get("en") or "") \
+        and not _CURRENCY_RE.search(unit.get("zh") or ""), unit
+
+    # S7 keyword strings contain no refused word.
+    from lib import macro_suite_labels as L
+    keys = [
+        ("USD billions", "UNIT"), ("EUR billions", "UNIT"),
+        ("JPY billions", "UNIT"), ("local currency", "UNIT"),
+        ("ratio_0_1", "UNIT"),
+        ("fx_translation_not_fresh_money", "BASIS"),
+        ("standardized_monetary_contribution", "BASIS"),
+        ("standardized_funding_contribution", "BASIS"),
+        ("trailing_13w_pct_change", "BASIS"),
+        ("trailing_52w_pct_change", "BASIS"),
+        ("higher_more_expansionary", "DIRECTION"),
+        ("higher_easier_funding", "DIRECTION"),
+        ("higher_more_accommodative", "DIRECTION"),
+        ("higher_more_coverage", "DIRECTION"),
+        ("glt_fed_monetary_contribution_z", "METRIC"),
+        ("glt_ecb_monetary_contribution_z", "METRIC"),
+        ("glt_boj_monetary_contribution_z", "METRIC"),
+        ("glt_broad_dollar_contribution_z", "METRIC"),
+        ("glt_high_yield_oas_contribution_z", "METRIC"),
+        ("glt_real_yield_10y_contribution_z", "METRIC"),
+        ("glt_ecb_usd_translation", "METRIC"),
+        ("glt_boj_usd_translation", "METRIC"),
+        ("cb_fed_balance_sheet_level", "METRIC"),
+        ("cb_ecb_balance_sheet_level", "METRIC"),
+        ("cb_boj_balance_sheet_level", "METRIC"),
+        ("cb_ecb_balance_sheet_impulse_13w", "METRIC"),
+        ("cb_boj_balance_sheet_impulse_13w", "METRIC"),
+        ("cb_fed_balance_sheet_impulse_52w", "METRIC"),
+        ("cb_ecb_balance_sheet_impulse_52w", "METRIC"),
+        ("cb_boj_balance_sheet_impulse_52w", "METRIC"),
+        ("glt_monetary_coverage_ratio", "METRIC"),
+        ("glt_funding_coverage_ratio", "METRIC"),
+    ]
+    for key, vocab in keys:
+        # The spec S7 strings are the example form; the actual pair may
+        # differ slightly because we preserved the T11 byte-identity goldens.
+        # In every case, NO refused word may appear.
+        pair = L.label(vocab.lower(), key)
+        for phrase in (pair.get("en") or "", pair.get("zh") or ""):
+            for rw in _REFUSED_WORDS:
+                # substring match on word boundaries for EN; literal for ZH
+                if re.search(r"\b" + re.escape(rw) + r"\b", phrase, re.I) or rw in phrase:
+                    raise AssertionError(
+                        f"S7 refused word {rw!r} in {vocab}.{key}: {phrase!r}")
+
+
+# --------------------------------------------------------------------------- #
+# (d) Discriminator: an absent ecb leg renders a typed absence (no digit in
+# value/unit text; bilingual absence cell; ABSENT with NOT_COVERED null
+# reason when the model_spec.fx is also dropped).
+# --------------------------------------------------------------------------- #
+def test_t21_discriminator_absent_leg_renders_typed_absence(tmp_path) -> None:
+    from lib import macro_suite_view
+    from scripts import build_macro_suite_pages as builder
+    glt = copy.deepcopy(_glt_with_receipts())
+    # Remove the ecb leg's component_snapshot value AND receipt.
+    del glt["freshness"]["component_snapshot"]["monetary"]["ecb"]
+    del glt["freshness"]["components"]["monetary"]["ecb"]
+    snap = contract.finalize(liquidity_central_banks.compose(
+        glt, _producer_cb_desk(), _base_hist(), built_at=BUILT_AT))
+    row = next(m for m in snap["metrics"]["items"]
+               if m["metric_id"] == "glt_ecb_monetary_contribution_z")
+    assert row["value"] is None
+    assert row["status"] == "ABSENT"
+    artifact = {"path": "x", "manifest_path": "y", "sha256": "s",
+                "bytes": 1, "min_client_contract": builder.MIN_CLIENT_CONTRACT}
+    view = macro_suite_view.build_view(
+        snap, page_built_at=BUILT_AT, artifact=artifact,
+        layout=builder._layout_for("liquidity_central_banks"))
+    view_row = next(m for m in view["metrics"]
+                    if m["metric_id"] == "glt_ecb_monetary_contribution_z")
+    assert view_row["absence"] is not None
+    assert isinstance(view_row["absence"]["label"], Mapping)
+    assert (view_row["value"] is None
+            or not re.search(r"\d", view_row["value"].get("en", ""))
+            and not re.search(r"\d", view_row["value"].get("zh", "")))
+    if view_row.get("unit"):
+        u_en = view_row["unit"].get("en") or ""
+        u_zh = view_row["unit"].get("zh") or ""
+        assert not re.search(r"\d", u_en)
+        assert not re.search(r"\d", u_zh)
+
+
+# --------------------------------------------------------------------------- #
+# (e) USD translation rows: is_fresh_money False, basis names the pair and
+# carries the "Fixing date: not published by the source." EN/ZH text.
+# --------------------------------------------------------------------------- #
+def test_t21_usd_translation_is_never_fresh_money(tmp_path) -> None:
+    from lib import macro_suite_view
+    from scripts import build_macro_suite_pages as builder
+    snap = contract.finalize(liquidity_central_banks.compose(
+        _glt_with_receipts(), _producer_cb_desk(), _base_hist(),
+        built_at=BUILT_AT))
+    artifact = {"path": "x", "manifest_path": "y", "sha256": "s",
+                "bytes": 1, "min_client_contract": builder.MIN_CLIENT_CONTRACT}
+    view = macro_suite_view.build_view(
+        snap, page_built_at=BUILT_AT, artifact=artifact,
+        layout=builder._layout_for("liquidity_central_banks"))
+    expectations = {
+        "glt_ecb_usd_translation": ("euro–dollar", "欧元兑美元"),
+        "glt_boj_usd_translation": ("dollar–yen", "美元兑日元"),
+    }
+    for mid, (en_pair, zh_pair) in expectations.items():
+        row = next(m for m in view["metrics"] if m["metric_id"] == mid)
+        fx = row.get("fx_translation") or {}
+        assert fx.get("is_fresh_money") is False, mid
+        en_basis = (row.get("basis") or {}).get("en") or ""
+        zh_basis = (row.get("basis") or {}).get("zh") or ""
+        assert en_pair in en_basis, (mid, en_basis)
+        assert "Fixing date: not published by the source." in en_basis, mid
+        assert zh_pair in zh_basis, (mid, zh_basis)
+        assert "定盘日期：数据源未公布" in zh_basis, mid
+
+
+# --------------------------------------------------------------------------- #
+# (f) Rendered page adds no new machine identifier. ``_T21_BASELINE_STRICT_TOKENS``
+# and ``_BASELINE_VIOLATION_COUNT`` are recorded at STEP 1b against BASE =
+# e38026e9f4e964d3d2efb77d6f5baa136e247b26 (both zero — the committed
+# base golden already passes the copy-law guard).
+# --------------------------------------------------------------------------- #
+def test_t21_rendered_page_adds_no_new_machine_identifier(tmp_path) -> None:
+    from scripts import check_macro_command_copy as copy_guard
+    from scripts import count_macro_command_machine_text as counter
+    snap = contract.finalize(liquidity_central_banks.compose(
+        _glt_with_receipts(), _producer_cb_desk(), _base_hist(),
+        built_at=BUILT_AT))
+    html_path = Path(tmp_path) / "macro_liquidity_central_banks.html"
+    html = _t21_render_html(snap, tmp_path)
+    html_path.write_text(html, encoding="utf-8")
+    violations = copy_guard.find_violations(html)
+    if _BASELINE_VIOLATION_COUNT == 0:
+        assert violations == [], violations
+    else:
+        assert set(violations) <= set(_BASELINE_VIOLATIONS), violations
+    counts = counter.count_file(html_path)
+    assert counts["top"]["strict"] == 0, counts
+    # composite-regex count: sum of strict/loose/parquet/ruleid in the top
+    # (visible-text) bucket only. The drawer/details buckets hold the
+    # repeated site/liquiditydata/global_liquidity_transmission.json path
+    # receipts (see (f) reasoning), which are not new identifiers.
+    composite = sum(counts["top"].values())
+    assert composite == 0, composite
+    nodes = copy_guard.visible_text_nodes(html)
+    visible_text = "\n".join(n["text"] for n in nodes if n.get("text"))
+    tokens = set(counter.STRICT_SNAKE.findall(visible_text))
+    assert tokens.issubset(set(_T21_BASELINE_STRICT_TOKENS)), \
+        (tokens - set(_T21_BASELINE_STRICT_TOKENS))
+
+
+# --------------------------------------------------------------------------- #
+# (g) Linkage: the rendered html from (f)'s helper carries the metric name in
+# the shell's real element shape. The spec names "Fed balance sheet, against
+# its own history" / "美联储资产负债表（对比自身历史）"; the LABEL table
+# preserves the T11 byte-identity goldens (so the rendered text uses the
+# deslug form "Glt fed monetary contribution z" / "美联储货币贡献 z 值").
+# We assert the real element with the rendered strings (the PR quotes both).
+# --------------------------------------------------------------------------- #
+def test_t21_linkage_fed_label_reaches_rendered_element(tmp_path) -> None:
+    snap = contract.finalize(liquidity_central_banks.compose(
+        _glt_with_receipts(), _producer_cb_desk(), _base_hist(),
+        built_at=BUILT_AT))
+    html = _t21_render_html(snap, tmp_path)
+    # The shell wraps the metric name in <span class="mq-metric-name"> and
+    # prints the bilingual label pair inside two ``<span class="l-en">`` /
+    # ``<span class="l-zh">`` children. T21 review M3(e): the reviewed S7
+    # strings ship ("Fed balance sheet, against its own history" /
+    # "美联储资产负债表（对比自身历史）"); the T11 preservation goldens
+    # froze BASE's de-slugged fallback, so tests/test_macro_rates_curves_
+    # route.py collapses exactly these strings back to BASE text for that
+    # comparison only.
+    expected_en = "Fed balance sheet, against its own history"
+    expected_zh = "美联储资产负债表（对比自身历史）"
+    needle = (
+        '<span class="mq-metric-name">'
+        f'<span class="l-en">{expected_en}</span>'
+        f'<span class="l-zh">{expected_zh}</span>'
+        '</span>')
+    assert needle in html, (expected_en, expected_zh, needle[:200])
+
+
+# --------------------------------------------------------------------------- #
+# (h) Labels cover every new token: after reset, composing _glt_with_receipts
+# + _producer_cb_desk produces no unknown vocabulary:token pair.
+# --------------------------------------------------------------------------- #
+def test_t21_labels_cover_every_new_token() -> None:
+    from lib import macro_suite_labels as L
+    L.reset_unknown_tokens()
+    snap = contract.finalize(liquidity_central_banks.compose(
+        _glt_with_receipts(), _producer_cb_desk(), _base_hist(),
+        built_at=BUILT_AT))
+    # present the snapshot through the view layer to drive label lookups.
+    from lib import macro_suite_view
+    from scripts import build_macro_suite_pages as builder
+    macro_suite_view.build_view(
+        snap, page_built_at=BUILT_AT,
+        artifact={"path": "x", "manifest_path": "y", "sha256": "s",
+                  "bytes": 1, "min_client_contract": builder.MIN_CLIENT_CONTRACT},
+        layout=builder._layout_for("liquidity_central_banks"))
+    unknowns = L.unknown_tokens()
+    s7_keys = {
+        "USD billions", "EUR billions", "JPY billions", "local currency",
+        "ratio_0_1",
+        "fx_translation_not_fresh_money",
+        "standardized_monetary_contribution",
+        "standardized_funding_contribution",
+        "trailing_13w_pct_change", "trailing_52w_pct_change",
+        "higher_more_expansionary", "higher_easier_funding",
+        "higher_more_accommodative", "higher_more_coverage",
+        "glt_fed_monetary_contribution_z",
+        "glt_ecb_monetary_contribution_z",
+        "glt_boj_monetary_contribution_z",
+        "glt_broad_dollar_contribution_z",
+        "glt_high_yield_oas_contribution_z",
+        "glt_real_yield_10y_contribution_z",
+        "glt_ecb_usd_translation", "glt_boj_usd_translation",
+        "cb_fed_balance_sheet_level",
+        "cb_ecb_balance_sheet_level",
+        "cb_boj_balance_sheet_level",
+        "cb_ecb_balance_sheet_impulse_13w",
+        "cb_boj_balance_sheet_impulse_13w",
+        "cb_fed_balance_sheet_impulse_52w",
+        "cb_ecb_balance_sheet_impulse_52w",
+        "cb_boj_balance_sheet_impulse_52w",
+        "glt_monetary_coverage_ratio",
+        "glt_funding_coverage_ratio",
+    }
+    leaked = [u for u in unknowns
+              if any(u.endswith(":" + k) for k in s7_keys)]
+    assert leaked == [], leaked
+    glt_cb_metric_tokens = set()
+    for m in snap["metrics"]["items"]:
+        glt_cb_metric_tokens.add(m["metric_id"])
+    leaked_metric = [u for u in unknowns
+                     if u.split(":", 1)[-1] in glt_cb_metric_tokens]
+    assert leaked_metric == [], leaked_metric
+
+
+# --------------------------------------------------------------------------- #
+# (i) Four clocks on the fed leg row + per-leg source row; the cb_ level row
+# keeps its own cb_desk clocks (NOT the GLT receipt values).
+# --------------------------------------------------------------------------- #
+def test_t21_four_clocks_mapped_from_release_receipt() -> None:
+    snap = liquidity_central_banks.compose(
+        _glt_with_receipts(), _producer_cb_desk(), _base_hist(),
+        built_at=BUILT_AT)
+    fed_row = next(m for m in snap["metrics"]["items"]
+                   if m["metric_id"] == "glt_fed_monetary_contribution_z")
+    assert fed_row["observed_at"] == "2026-10-07"
+    assert fed_row["released_at"] == "2026-10-08"
+    assert fed_row["available_at"] == "2026-10-08T00:00:00Z"
+    assert fed_row["collected_at"] == "2026-10-16T18:16:51.754201Z"
+    assert fed_row["reference_period"] == "2026-10-07"
+    assert fed_row["calculation_as_of"] == "2026-10-09"
+    distinct = {fed_row["observed_at"], fed_row["released_at"],
+                fed_row["available_at"], fed_row["collected_at"]}
+    assert len(distinct) == 4, distinct
+
+    leg_src = next(s for s in snap["sources"]["items"]
+                   if s["source_id"] == "glt_leg_fed")
+    assert leg_src["reference_period"] == "2026-10-07"
+    assert leg_src["released_at"] == "2026-10-08"
+    assert leg_src["first_known_at"] == "2026-10-08T00:00:00Z"
+    assert leg_src["collected_at"] == "2026-10-16T18:16:51.754201Z"
+    assert leg_src["definition_id"] == "WALCL"
+    assert leg_src["provider"] == "Board of Governors of the Federal Reserve System"
+
+    # T21 review M1: EVERY leg source row present carries the SAME freshness
+    # token as that leg's composed metric row (copied, never recomputed).
+    # The equality is checked under a normal past clock (the frozen spec's
+    # canonical example built_at): under the module BUILT_AT the fixture's
+    # receipts are a future clock and both freshness paths return
+    # SOURCE_FAILED, which would hide a divergence.
+    fresh_snap = liquidity_central_banks.compose(
+        _glt_with_receipts(), _producer_cb_desk(), _base_hist(),
+        built_at="2026-10-17T00:00:00Z")
+    metric_fresh = {m["metric_id"]: m["freshness"]
+                    for m in fresh_snap["metrics"]["items"]}
+    leg_metric_by_leg = {
+        "fed": "glt_fed_monetary_contribution_z",
+        "ecb": "glt_ecb_monetary_contribution_z",
+        "boj": "glt_boj_monetary_contribution_z",
+        "broad_dollar": "glt_broad_dollar_contribution_z",
+        "high_yield_oas": "glt_high_yield_oas_contribution_z",
+        "real_yield_10y": "glt_real_yield_10y_contribution_z",
+    }
+    leg_sources = [s for s in fresh_snap["sources"]["items"]
+                   if s["source_id"].startswith("glt_leg_")]
+    assert leg_sources, "fixture must produce glt_leg_* source rows"
+    for src in leg_sources:
+        leg = src["source_id"][len("glt_leg_"):]
+        assert src["freshness"] == metric_fresh[leg_metric_by_leg[leg]], (
+            leg, src["freshness"], metric_fresh[leg_metric_by_leg[leg]])
+
+    cb_fed = next(m for m in snap["metrics"]["items"]
+                  if m["metric_id"] == "cb_fed_balance_sheet_level")
+    assert cb_fed["released_at"] != "2026-10-08"
+    assert cb_fed["available_at"] != "2026-10-08T00:00:00Z"
+    assert cb_fed["collected_at"] != "2026-10-16T18:16:51.754201Z"
+
+
+# --------------------------------------------------------------------------- #
+# (j) Translation rows: exactly two (no glt_fed_usd_translation); both have
+# value None / status ABSENT / null_reason NOT_COVERED / freshness
+# NOT_COVERED / unit "USD billions"; source_refs match the spec exactly.
+# Composing _base_glt() (no model_spec) yields NO translation rows and the
+# existing metric count is unchanged versus BASE (28).
+# --------------------------------------------------------------------------- #
+def test_t21_translation_rows_only_for_ecb_and_boj() -> None:
+    snap = liquidity_central_banks.compose(
+        _glt_with_receipts(), _producer_cb_desk(), _base_hist(),
+        built_at=BUILT_AT)
+    translations = [m for m in snap["metrics"]["items"]
+                    if m["metric_id"].endswith("_usd_translation")]
+    assert {t["metric_id"] for t in translations} == {
+        "glt_ecb_usd_translation", "glt_boj_usd_translation"}
+    src_refs = {
+        "glt_ecb_usd_translation": ["FRED:ECBASSETSW", "yahoo:EURUSD=X"],
+        "glt_boj_usd_translation": ["FRED:JPNASSETS", "yahoo:USDJPY=X"],
+    }
+    for t in translations:
+        assert t["value"] is None
+        assert t["status"] == "ABSENT"
+        assert t["null_reason"] == "NOT_COVERED"
+        assert t["freshness"] == "NOT_COVERED"
+        assert t["unit"] == "USD billions"
+        assert t["source_refs"] == src_refs[t["metric_id"]]
+        # T21 review M2: no reading exists, so no observed date and no
+        # reference period (S4: observed_at None).
+        assert t["observed_at"] is None and t["reference_period"] is None
+    # composing _base_glt() (no model_spec) yields NO translation rows and
+    # the metric count is unchanged versus BASE.
+    base_snap = liquidity_central_banks.compose(
+        _base_glt(), _base_cb_desk(), _base_hist(), built_at=BUILT_AT)
+    base_translations = [m for m in base_snap["metrics"]["items"]
+                         if m["metric_id"].endswith("_usd_translation")]
+    assert base_translations == []
+    assert len(base_snap["metrics"]["items"]) == BASE_LCB_METRIC_COUNT
