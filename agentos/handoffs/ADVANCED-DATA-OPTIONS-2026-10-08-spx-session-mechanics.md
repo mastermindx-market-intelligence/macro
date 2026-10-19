@@ -139,3 +139,36 @@ The exact next coordination action is to send the tested Macro #8684 / Terminal
 permission question. In parallel, source qualification resumes only when the
 incumbent service can supply a natural per-contract sample with genuine clocks.
 No request for the full commission is outstanding; it was recovered and read.
+
+
+## October 19 suite integration
+
+The current full-suite commission resumes this existing carrier under original
+Fable root `01a10340-ddc1-7e41-9b42-9c8543c28c3d`. The October 9 closure above is
+historical: the old writer is completed, M1 is reachable, and the authorized
+Options account has since passed authenticated product checks. No pending peer
+message or historical owner acknowledgement is a prerequisite for source work.
+
+Main `f4098574290136f1a3e8aa01d55fb54a6d4ec2f9` was integrated as `d71857d0c1d41fab1fcd5b4287c902264a400597`.
+The reviewed scenario engine, CLI and scenario tests remain byte-identical to
+`4e7e44bfcce3bf1292978266b813633bd6bbe5db`. Main changed the incumbent pricing
+and store dependencies; the combined scenario, intraday Greek, collector, store
+and daily-topup suites passed **553 tests**, exit 0 (294.89 seconds). The existing
+CI manifest already enrolls these paths and checks. No review of unchanged source
+was repeated or represented as newly independent.
+
+Read-only M1 parquet metadata establishes SPX/SPXW EOD and Greeks through October
+15 and OI through October 16. Those historical Greek files do not contain captured
+intraday availability. The existing `com.mastermind.chainsnapshots` job reports
+exit 126 and `Operation not permitted` at its external-volume worktree; executable
+bits, mount flags and ACL/attribute metadata do not establish an ordinary file-mode
+repair. The exact OS access cause remains unqualified. Its physical source/data
+bindings, job, quarantine and original source effects were preserved; no forced
+poller, relocated producer or launchd reload was used.
+
+This PR is ready for protected **source delivery** of the pure calculation and
+clock-preserving parser. Source merge does not authorize a live producer install,
+market-data publication, predictive use or trading. Source-to-browser integration
+continues through the existing Terminal consumer #870; the exact typed view and
+transport still need composition with real admitted inputs. F1/F2/F3, ES and
+participant evidence remain unqualified; #8555 and #7328 retain their holds.
