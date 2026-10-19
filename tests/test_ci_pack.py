@@ -5057,7 +5057,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_618),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_641),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5066,6 +5066,12 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    The refreshed protected base measures 5,618 for build_free_content.
+    Held F11 raises the research-vault-api job weight 7 -> 30 (+23); the
+    actual combined probe measured 134 jobs / 5,641. Fund exactly 5,641,
+    with no extra headroom or other ceiling changes. Fresh hosted checks
+    remain necessary before release.
 
     2026-10-19 Research Vault full-body/producer composition: the existing
     code-gated job gains its complete 36-suite invocation (estimated weight
