@@ -283,6 +283,30 @@ def test_actual_fixed_owner_refuses_before_directory_or_purpose_io(monkeypatch):
             persistence.initialize_registered_fit_accounting()
 
 
+def test_entitlement_origin_loads_cold_and_refuses_substitution_before_owner_io(monkeypatch):
+    # A fresh interpreter proves the actual lazy entitlement import is loaded
+    # by this check; its installed-root stand-in is the repository, no controls.
+    repository = Path(__file__).resolve().parents[1]
+    script = '''
+from pathlib import Path
+import sys
+from engine.research_factory import market_memory_fitted_persistence as p
+assert "app.paywall" not in sys.modules
+p.owner.INSTALLED_ROOT=Path(sys.argv[1])
+p._verify_site_source()
+assert Path(sys.modules["app.paywall"].__file__).resolve()==p.owner.INSTALLED_ROOT/"app/paywall.py"
+'''
+    result = subprocess.run([sys.executable, "-c", script, str(repository)],
+        cwd=repository, capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stderr[-2000:]
+    from app import paywall
+    monkeypatch.setattr(persistence.owner, "INSTALLED_ROOT", repository)
+    monkeypatch.setattr(paywall, "__file__", str(repository / "wrong/paywall.py"))
+    monkeypatch.setattr(owner, "_directory", lambda *a, **k: pytest.fail("private IO before origin"))
+    with pytest.raises(persistence.PersistedFitError, match="installed_site_entitlement_source_required"):
+        persistence._verify_site_source()
+
+
 def test_query_before_retained_fit_observation_refuses_before_accounting(retained_owner, native_training, monkeypatch):
     retained = persistence.persist_registered_fit(policy=Policy())
     population, query, *_ = native_training
@@ -507,8 +531,32 @@ def test_actual_exact_generation_house_policies_support_a_later_query(retained_o
         query_cutoff=now[0], mode=template["binding"]["mode"])
     with pytest.raises(persistence.PersistedFitError, match="same_current_house_principal_and_source_required"):
         persistence._comparison_policy(retained, another)
+    # Each original identity component is checked before actual policy I/O.
+    for name, changed in (("root", tmp_path / "another-root"), ("mode", "current"),
+                          ("registration_sha256", "f" * 64), ("policy_id", "another-source")):
+        before = getattr(query_policy, name)
+        setattr(query_policy, name, changed)
+        with pytest.raises(persistence.PersistedFitError, match="same_current_house_principal_and_source_required"):
+            combined.check("read_retained_generation_metadata", query_policy.expected)
+        setattr(query_policy, name, before)
+    for name, changed in (("store_id", "different-store"), ("subject_id", "different-subject")):
+        before = query_policy.expected[name]
+        query_policy.expected[name] = changed
+        with pytest.raises(persistence.PersistedFitError, match="same_registered_training_site_scope_required"):
+            persistence._training_policy(retained_owner[3](), query_policy)
+        query_policy.expected[name] = before
+    query_policy.mode = "current"
+    with pytest.raises(persistence.PersistedFitError, match="same_registered_training_site_scope_required"):
+        persistence._training_policy(retained_owner[3](), query_policy)
+    query_policy.mode = template["binding"]["mode"]
+    monkeypatch.setattr(persistence.owner, "INSTALLED_ROOT", tmp_path / "different-installation")
+    with pytest.raises(persistence.PersistedFitError, match="installed_house_source_owner_required"):
+        persistence._training_policy(retained_owner[3](), query_policy)
+    monkeypatch.setattr(persistence.owner, "INSTALLED_ROOT", tmp_path)
     # Actual source registration changes revoke both scopes before disclosure.
     registration["revoked_capture_ids"] = [later.capture_receipt["capture_id"]]
     registration_path.write_text(json.dumps(registration))
+    with pytest.raises(house.RetainedUseError, match="^source_use_registration_changed$"):
+        combined.check("read_retained_generation_metadata", query_policy.expected)
     with pytest.raises(Exception, match="source_usage_not_admitted"):
         persistence.retrieval.disclose_fitted_retrieval(reproduced, policy=combined)

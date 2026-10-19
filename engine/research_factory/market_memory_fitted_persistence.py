@@ -146,6 +146,7 @@ def _load_context(original=None):
         "installed_fit_owner_required")
     purpose, purpose_body = use._purpose(owner.INSTALLED_ROOT)
     from engine.neuralweb import market_memory_retained_use  # Fixed owner, never generic native core.
+    _verify_site_source()
     owner._verify_loaded_sources(paths=_SOURCES)
     _require(len(purpose["allowed_subject_ids"]) == 1, "single_registered_fit_subject_required")
     directory = owner.CONTROL_ROOT / sha256(purpose["selected_study_id"].encode()).hexdigest()
@@ -157,6 +158,16 @@ def _load_context(original=None):
     body, binding, maximum, original_body = values
     window = use.TrainingWindowCapability(body, selection, _key=use._TOKEN)
     return _Context(window, directory, binding, maximum, purpose["allowed_subject_ids"][0], original_body)
+
+
+def _verify_site_source():
+    # The existing loaded-source verifier deliberately checks engine modules
+    # only. This fixed application owner also executes the entitlement module.
+    from app import paywall
+    origin = getattr(paywall, "__file__", None)
+    _require(type(origin) is str
+        and Path(origin).resolve() == owner.INSTALLED_ROOT / "app/paywall.py",
+        "installed_site_entitlement_source_required")
 
 
 def _store(context):
@@ -270,7 +281,7 @@ class _ExactHouseScopes:
             if (all(resource.get(k) == scope[k] for k in
                     ("store_id", "generation_id", "generation_sha256", "query_cutoff"))
                     and resource.get("subject_id", resource.get("requested_subject_id")) == scope["subject_id"]):
-                policy.check(action, resource)  # Actual current rights, including every source/capture revoke.
+                policy.check(action, resource)  # Actual current entitlement and source-registration checks.
                 matched = True
         _require(matched, "only_original_training_or_exact_query_scope_allowed")
 
@@ -458,6 +469,8 @@ def reproduce_registered_fitted_query(reference, *, policy):
     This never initializes/reserves, refits, replaces a generation, or calls an
     original effect loader. Newly minted native caps authenticate the original
     query/index content under current rights; no serialized dict gains authority.
+    Return the genuine retrieval cap and owner-made policy limited to the exact
+    original training and query scopes, both checked against the same principal.
     """
     _require(type(reference) is dict and set(reference) ==
         {"operation_id", "intent", "sha256", "bytes", "value"}, "retained_query_reference_required")
