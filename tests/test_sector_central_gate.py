@@ -491,6 +491,9 @@ def test_us_market_internals_scope_is_not_mislabeled_full_sp1500():
     assert 'id="si-breadth-scope"' in html
     assert "Current US breadth here covers S&P 500 members only" in html
     assert "S&P 400/600 aggregate participation is not yet qualified" in html
+    assert "Historical membership is not point-in-time verified." in html
+    assert "Moving-average percentages exclude members without sufficient history" in html
+    assert "eligible counts are not yet published" in html
 
 
 def test_market_internals_dont_invent_mixed_on_missing_or_cross_vintage_breadth():
