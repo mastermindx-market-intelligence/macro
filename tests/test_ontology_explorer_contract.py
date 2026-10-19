@@ -1207,6 +1207,7 @@ def test_a_malformed_node_collection_is_a_typed_source_failure(tmp_path):
     assert "malformed_nodes" in str(excinfo.value)
 
 
+<<<<<<< HEAD
 # Additive TXI membership: exact source bytes and dated identity, all synthetic.
 def _exposure_root(tmp_path):
     state = fx.chain_state(state="arming")
@@ -1560,3 +1561,188 @@ def test_stale_reverse_alias_mismatch_never_links():
     assert companies["n_linked"] == 0
     assert {"symbol": "SYNA", "reason": "stale_alias"} in companies["unlinked"]
     assert companies["identity_unavailable"] is False
+=======
+# X2 is ephemeral composition over the native TXI grammar, separate from X1.
+@pytest.fixture
+def x2_inputs():
+    import pandas as pd
+    import yaml
+    from engine.ontology_scenario import SeriesBaseline
+    chain = yaml.safe_load((Path(__file__).resolve().parents[1] / 'knowledge/transmission/oil_inflation_duration_derate.yaml').read_text())
+    history = pd.bdate_range('2025-01-01', periods=90)
+    future = pd.bdate_range(history[-1] + pd.Timedelta(days=1), periods=63)
+    effective = str(history[-1].date())
+    cutoff = effective + 'T23:00:00Z'
+    snapshot = {'schema': SCHEMA_ID, 'source': {'chain': chain['chain'], 'rev': chain['rev'],
+                'asof': effective, 'built': cutoff, 'source_manifest_hash': 'sha256:' + 'a' * 64}}
+    baseline = SeriesBaseline(pd.Series(100.0, index=history), tuple(str(d.date()) for d in future),
+                              'synthetic-owner-calendar', 'synthetic-v1', 'synthetic-generation',
+                              snapshot['source']['source_manifest_hash'], effective, cutoff,
+                              'sha256:' + 'b' * 64)
+    assumption = {'schema': 'ontology_scenario_assumption.v1', 'node_ref': 'yahoo:CL=F',
+                  'shock_definition': 'terminal_change_over_horizon', 'magnitude': 30,
+                  'unit': 'percent', 'horizon': '60d', 'path_shape': 'linear_sessions',
+                  'origin_class': 'supply', 'baseline_effective_at': effective,
+                  'baseline_knowledge_cutoff': cutoff}
+    return snapshot, chain, baseline, assumption
+
+
+def _x2_run(values):
+    from engine.ontology_scenario import evaluate_scenario
+    snapshot, chain, baseline, assumption = values
+    return evaluate_scenario(assumption, snapshot=snapshot, chain=chain, baseline=baseline,
+                             evaluated_at=baseline.knowledge_cutoff)
+
+
+def test_x2_linear_uses_native_root_only_and_has_no_owner_effects(x2_inputs, monkeypatch):
+    import copy
+    import pandas as pd
+    from engine import transmission_chains as txi
+    snapshot, chain, baseline, assumption = x2_inputs
+    before = copy.deepcopy((snapshot, chain, assumption)); series_before = baseline.series.copy()
+    original = txi.eval_node
+    calls = []
+    def native(*args):
+        calls.append(args[1]); return original(*args)
+    monkeypatch.setattr(txi, 'eval_node', native)
+    def forbidden(*args, **kwargs): raise AssertionError('owner write/state machine called')
+    for name in ['run', 'evaluate_chain', 'build_chain_state', '_append_transitions']:
+        monkeypatch.setattr(txi, name, forbidden)
+    result = _x2_run(x2_inputs)
+    assert calls == ['oil_shock']
+    assert result['root_evaluation']['status'] == 'ROOT_THRESHOLD_MET'
+    assert result['root_evaluation']['method_class'] == 'THRESHOLD_STATE_ONLY'
+    assert result['combined_estimate'] is None
+    assert all(h['value'] is None and h['reason'] == 'DOWNSTREAM_NOT_ASSUMED' for h in result['hop_evaluations'])
+    assert all(v == 0 for v in result['side_effect_receipt'].values())
+    assert result['authority'] == {'can_rank': False, 'can_gate': False, 'can_size': False, 'can_trade': False}
+    assert before == (snapshot, chain, assumption)
+    pd.testing.assert_series_equal(series_before, baseline.series)
+
+
+@pytest.mark.parametrize('magnitude,status,threshold', [(20, 'SCENARIO_NOT_ARMED', False), (30, 'PARTIAL_UNKNOWN', True)])
+def test_x2_terminal_never_infers_ma_path(x2_inputs, magnitude, status, threshold, monkeypatch):
+    from engine import transmission_chains as txi
+    x2_inputs[3].update(magnitude=magnitude, path_shape='terminal_only')
+    original = txi._series_metric
+    def native(adapter, test):
+        assert test['metric'] == 'ret'; return original(adapter, test)
+    monkeypatch.setattr(txi, '_series_metric', native)
+    root = _x2_run(x2_inputs)['root_evaluation']
+    assert root['status'] == status and root['confirmed'] is None
+    assert root['threshold_evaluation']['confirmed'] is threshold
+    assert root['path_condition'] == 'UNDETERMINED'
+
+
+def test_x2_three_months_is_not_silently_sixty_sessions(x2_inputs):
+    x2_inputs[3]['horizon'] = '3m'
+    assert _x2_run(x2_inputs)['root_evaluation']['reason'] == 'HORIZON_INCOMPATIBLE'
+
+
+@pytest.mark.parametrize('field,value', [('unit', 'bp'), ('path_shape', 'custom_points'),
+    ('magnitude', float('nan')), ('magnitude', True), ('origin_class', 'invented'), ('user_id', 'private')])
+def test_x2_rejects_ambiguous_or_unbounded_input(x2_inputs, field, value):
+    from engine.ontology_scenario import ScenarioInputError
+    x2_inputs[3][field] = value
+    with pytest.raises(ScenarioInputError): _x2_run(x2_inputs)
+
+
+def test_x2_duplicate_json_params_are_rejected(x2_inputs):
+    from engine.ontology_scenario import parse_assumption, ScenarioInputError
+    raw = json.dumps(x2_inputs[3])
+    assert parse_assumption(raw.encode())['magnitude'] == 30
+    with pytest.raises(ScenarioInputError): parse_assumption((raw[:-1] + ',"magnitude":20}').encode())
+
+
+@pytest.mark.parametrize('mutation', ['calendar', 'generation', 'rights', 'clock', 'future_history', 'short_calendar'])
+def test_x2_missing_owner_tuple_abstains_instead_of_substitution(x2_inputs, mutation):
+    from dataclasses import replace
+    import pandas as pd
+    snapshot, chain, baseline, assumption = x2_inputs
+    changes = {'calendar': {'calendar_version': ''}, 'generation': {'generation': ''},
+               'rights': {'rights_ref': None}, 'clock': {'knowledge_cutoff': '2000-01-01T00:00:00Z'},
+               'future_history': {'series': pd.concat([baseline.series, pd.Series([100.0], index=[pd.Timestamp(baseline.future_sessions[0])])])},
+               'short_calendar': {'future_sessions': baseline.future_sessions[:3]}}[mutation]
+    result = _x2_run((snapshot, chain, replace(baseline, **changes), assumption))
+    assert result['root_evaluation']['status'] == 'UNAVAILABLE'
+    assert result['root_evaluation']['confirmed'] is None
+    assert result['combined_estimate'] is None
+
+
+def test_x2_reproducibility_binds_owner_calendar_series_and_method(x2_inputs):
+    from dataclasses import replace
+    snapshot, chain, baseline, assumption = x2_inputs
+    first = _x2_run(x2_inputs)
+    assert first == _x2_run(x2_inputs)
+    for key, value in [('generation', 'new-generation'), ('calendar_version', 'new-calendar')]:
+        changed = _x2_run((snapshot, chain, replace(baseline, **{key:value}), assumption))
+        assert changed['scenario_eval_id'] != first['scenario_eval_id']
+    changed = baseline.series.copy(); changed.iloc[-2] += 1
+    assert _x2_run((snapshot, chain, replace(baseline, series=changed), assumption))['scenario_eval_id'] != first['scenario_eval_id']
+    assert 'created_at' not in first['assumption']
+
+
+def test_x2_real_rate_refuses_absent_native_estimation_metadata(x2_inputs):
+    x2_inputs[3].update(node_ref='transmission:real10y_chg63', shock_definition='absolute_change_bp_over_horizon',
+                        magnitude=50, unit='bp', horizon='63d', path_shape='step_at_start')
+    root = _x2_run(x2_inputs)['root_evaluation']
+    assert root['method_class'] == 'UNAVAILABLE'
+    assert root['reason'] == 'NUMERIC_OWNER_METADATA_UNAVAILABLE'
+    assert root['confirmed'] is None
+
+
+def test_x2_step_path_matches_native_and_threshold_is_strict(x2_inputs):
+    x2_inputs[3]['path_shape'] = 'step_at_start'
+    root = _x2_run(x2_inputs)['root_evaluation']
+    # A step held for60sessions has a flat final MA50; the native slope
+    # condition fails even though its endpoint return exceeds25percent.
+    assert root['confirmed'] is False
+    assert root['receipts'][0]['passed'] is True
+    assert root['receipts'][1]['passed'] is False
+    x2_inputs[3]['path_shape'] = 'linear_sessions'
+    x2_inputs[3]['magnitude'] = 25
+    assert _x2_run(x2_inputs)['root_evaluation']['confirmed'] is False
+
+
+def test_x2_zero_normalization_and_clock_do_not_change_logical_identity(x2_inputs):
+    from engine.ontology_scenario import evaluate_scenario
+    snapshot, chain, baseline, assumption = x2_inputs
+    assumption['magnitude'] = -0.0
+    first = _x2_run(x2_inputs)
+    assumption['magnitude'] = 0
+    second = evaluate_scenario(assumption, snapshot=snapshot, chain=chain, baseline=baseline,
+                               evaluated_at='2026-12-31T23:00:00Z')
+    assert first['assumption_id'] == second['assumption_id']
+    assert first['scenario_eval_id'] == second['scenario_eval_id']
+
+
+def test_x2_changed_owner_root_is_unqualified_not_a_new_grammar(x2_inputs):
+    x2_inputs[1]['nodes']['oil_shock']['test']['all'][0]['window'] = 59
+    assert _x2_run(x2_inputs)['root_evaluation']['reason'] == 'EPHEMERAL_REPLAY_UNAVAILABLE'
+
+
+def test_x2_native_txi_build_clock_and_equivalent_instants_are_supported(x2_inputs):
+    from dataclasses import replace
+    snapshot, chain, baseline, assumption = x2_inputs
+    first = _x2_run(x2_inputs)
+    native = baseline.effective_at + ' 23:00 UTC'
+    snapshot['source']['built'] = native
+    equivalent = replace(baseline, knowledge_cutoff=native)
+    assert _x2_run((snapshot, chain, equivalent, assumption))['root_evaluation']['confirmed'] is True
+    assumption['baseline_knowledge_cutoff'] = baseline.effective_at + 'T23:00:00+00:00'
+    assert _x2_run(x2_inputs)['assumption_id'] == _x2_run((snapshot, chain, equivalent, assumption))['assumption_id']
+
+
+def test_x2_missing_method_bytes_abstain(x2_inputs, monkeypatch):
+    from engine import ontology_scenario as scenario
+    def absent(*args): raise OSError('no retained source bytes')
+    monkeypatch.setattr(scenario.inspect, 'getsource', absent)
+    assert _x2_run(x2_inputs)['root_evaluation']['reason'] == 'EPHEMERAL_REPLAY_UNAVAILABLE'
+
+
+def test_x2_does_not_reject_irrelevant_negative_native_history(x2_inputs):
+    from dataclasses import replace
+    snapshot, chain, baseline, assumption = x2_inputs
+    values = baseline.series.copy(); values.iloc[0] = -1.0
+    assert _x2_run((snapshot, chain, replace(baseline, series=values), assumption))['root_evaluation']['confirmed'] is True
+>>>>>>> 37ea28d6df7e (Compose ephemeral WTI counterfactual through native TXI evaluator)
