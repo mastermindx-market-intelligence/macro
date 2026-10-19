@@ -88,6 +88,7 @@ _RECORD_FIELDS = (
     "kind",
     "subject_key",
     "entity_ref",
+    "symbol",
     "finding_ref",
     "content_sha256",
     "content",
@@ -215,6 +216,7 @@ def kernel_row(row: Mapping[str, Any]) -> dict[str, Any]:
     return {
         "subject_key": stable_id("fjsubject", "kernel", str(row["detector_id"]), entity_cik, *sorted(period_ends)),
         "entity_ref": entity_cik,
+        "symbol": None,
         "finding_ref": str(row["finding_id"]),
         "content": content,
         "content_sha256": _content_digest(content),
@@ -237,10 +239,14 @@ def _normalize_row(kind: str, row: Any) -> dict[str, Any]:
     content = row["content"]
     if not isinstance(content, Mapping):
         raise FindingJudgmentError("workbench finding row content must be an object", code="row_shape")
+    symbol = row.get("symbol")
+    if not isinstance(symbol, str) or not symbol:
+        raise FindingJudgmentError("workbench finding row symbol must be a non-empty string", code="row_shape")
     source_ready_at = row.get("source_ready_at")
     return {
         "subject_key": str(row["subject_key"]),
         "entity_ref": str(row["entity_ref"]),
+        "symbol": symbol,
         "finding_ref": str(row["finding_ref"]),
         "content": dict(content),
         "content_sha256": _content_digest(content),
@@ -265,15 +271,22 @@ def _cik_identity(value: Any) -> str | None:
     raise FindingJudgmentError(f"workbench company cik must be an int or a digit string: {value!r}", code="state_shape")
 
 
-def _symbol_identity(symbol: Any) -> str:
+def _normalized_symbol(symbol: Any) -> str:
     text = str(symbol).strip().upper()
     if not text:
         raise FindingJudgmentError("workbench company symbol must be non-empty", code="state_shape")
-    return f"symbol:{text}"
+    return text
 
 
-def workbench_rows_from_state(state: Mapping[str, Any]) -> tuple[list[dict[str, Any]], set[str], datetime]:
-    """Derive workbench rows, the run's entity scope, and the state's clock.
+def _symbol_identity(symbol: Any) -> str:
+    return f"symbol:{_normalized_symbol(symbol)}"
+
+
+def workbench_rows_and_companies_from_state(
+    state: Mapping[str, Any],
+) -> tuple[list[dict[str, Any]], set[str], datetime, list[tuple[str, str | None]]]:
+    """Derive workbench rows, the run's entity scope, the state's clock and
+    the companies' identity bases.
 
     The returned clock is ``state["generated_at"]`` (missing or naive values
     are refused); the caller records it as the run's ``source_generated_at``,
@@ -282,7 +295,12 @@ def workbench_rows_from_state(state: Mapping[str, Any]) -> tuple[list[dict[str, 
     null. ``entity_ref`` uses the same basis, and the scope holds BOTH the
     CIK identity and the symbol identity for every company, so a subject
     recorded under the symbol one night and under the CIK the next is
-    withdrawn instead of staying present forever.
+    withdrawn instead of staying present forever. Every workbench row carries
+    the company's normalized symbol, and the fourth value holds one
+    ``(normalized symbol, cik identity or None)`` pair per company in state
+    order: the recording run refuses a company whose CIK is null while a
+    CIK-keyed subject of the same symbol stays present, whatever that night's
+    finding ids are.
     """
     if not isinstance(state, Mapping):
         raise FindingJudgmentError("workbench state must be an object", code="state_shape")
@@ -294,14 +312,17 @@ def workbench_rows_from_state(state: Mapping[str, Any]) -> tuple[list[dict[str, 
         raise FindingJudgmentError("workbench state companies must be an object", code="state_shape")
     rows: list[dict[str, Any]] = []
     scope_entities: set[str] = set()
+    company_identities: list[tuple[str, str | None]] = []
     for symbol, company in companies.items():
         if not isinstance(company, Mapping):
             raise FindingJudgmentError(f"workbench company {symbol!r} must be an object", code="state_shape")
+        symbol_text = _normalized_symbol(symbol)
         symbol_ref = _symbol_identity(symbol)
         cik_ref = _cik_identity(company.get("cik"))
         identity = cik_ref if cik_ref is not None else symbol_ref
         scope_entities.add(identity)
         scope_entities.add(symbol_ref)
+        company_identities.append((symbol_text, cik_ref))
         findings = company.get("findings")
         if findings is None:
             findings = []
@@ -316,11 +337,25 @@ def workbench_rows_from_state(state: Mapping[str, Any]) -> tuple[list[dict[str, 
             rows.append({
                 "subject_key": stable_id("fjsubject", "workbench", identity, finding_id),
                 "entity_ref": identity,
+                "symbol": symbol_text,
                 "finding_ref": finding_id,
                 "content": dict(finding),
                 "content_sha256": _content_digest(finding),
                 "source_ready_at": None,
             })
+    return rows, scope_entities, clock, company_identities
+
+
+def workbench_rows_from_state(state: Mapping[str, Any]) -> tuple[list[dict[str, Any]], set[str], datetime]:
+    """Derive workbench rows, the run's entity scope, and the state's clock.
+
+    The three-value adapter over ``workbench_rows_and_companies_from_state``;
+    callers that also need each company's identity basis — to refuse a
+    dropped CIK even on a night with no findings for the company — call the
+    four-value function and thread its fourth value into
+    ``record_judgments``.
+    """
+    rows, scope_entities, clock, _company_identities = workbench_rows_and_companies_from_state(state)
     return rows, scope_entities, clock
 
 
@@ -370,6 +405,11 @@ def _validate_record(
         raise _chain_error(f"judgment record carries an unexpected schema: {record['schema']!r}", code="record_schema")
     if record["kind"] not in _KINDS:
         raise _chain_error(f"judgment record carries an unknown kind: {record['kind']!r}", code="record_shape")
+    if record["kind"] == "workbench":
+        if not isinstance(record["symbol"], str) or not record["symbol"]:
+            raise _chain_error("a workbench judgment must carry a non-empty symbol", code="record_shape")
+    elif record["symbol"] is not None:
+        raise _chain_error("a kernel judgment must carry a null symbol", code="record_shape")
     if record["status"] not in _STATUSES:
         raise _chain_error(f"judgment record carries an unknown status: {record['status']!r}", code="record_shape")
     if record["relation"] not in _RELATIONS:
@@ -463,26 +503,6 @@ def _load_head(store: Any) -> tuple[int | None, str | None, str | None]:
     if _canonical_json_bytes(body) != payload:
         raise _chain_error("judgment HEAD bytes are not canonical", code="head_schema")
     return sequence, tip_sha256, observed.version
-
-
-def _observed_head_sequence(payload: bytes | None) -> int | None:
-    """Best-effort parse of an observed HEAD body; ``None`` when unparseable.
-
-    Unlike ``_load_head`` this never raises: a HEAD the writer cannot parse
-    while settling its own failed compare-and-swap is simply a conflict.
-    """
-    if payload is None:
-        return None
-    try:
-        body = json.loads(payload.decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError):
-        return None
-    if not isinstance(body, dict) or body.get("schema") != JUDGMENT_HEAD_SCHEMA:
-        return None
-    sequence = body.get("sequence")
-    if isinstance(sequence, bool) or not isinstance(sequence, int):
-        return None
-    return sequence
 
 
 def _read_batch_bytes(store: Any, sequence: int) -> bytes | None:
@@ -685,9 +705,9 @@ def _write_head(
     HEAD already holding the new bytes proves completion (a concurrent
     roll-forward or our own committed write); HEAD still holding exactly the
     predecessor the writer loaded is EFFECT_UNKNOWN — the batch exists and
-    the next run's roll-forward completes it on the same store; a different
-    observed HEAD that parses at a sequence at or beyond ours proves a later
-    writer rolled our batch forward and kept appending, so our write is
+    the next run's roll-forward completes it on the same store; a ledger that
+    fully reloads without error at a sequence at or beyond ours proves a
+    later writer rolled our batch forward and kept appending, so our write is
     committed once our batch bytes are still exactly our own. Anything else
     is a conflict.
     """
@@ -725,10 +745,14 @@ def _write_head(
             "judgment HEAD compare-and-swap returned False without advancing the judgment HEAD",
             code="effect_unknown",
         )
-    observed_sequence = _observed_head_sequence(observed.data)
-    if observed_sequence is not None and observed_sequence >= sequence:
-        # A later writer rolled our batch forward and appended after it: our
-        # batch is committed while its bytes are still exactly our own.
+    try:
+        settled = load_ledger(store)
+    except FindingJudgmentError:
+        settled = None
+    if settled is not None and settled.head_sequence >= sequence:
+        # A later writer rolled our batch forward and kept appending: a full
+        # reload that verifies HEAD's tip against the batch bytes proves our
+        # batch committed while its bytes are still exactly our own.
         if _read_batch_bytes(store, sequence) == batch_payload:
             return
     raise FindingJudgmentError(
@@ -809,34 +833,45 @@ def _last_present_record(chain: tuple[dict[str, Any], ...]) -> dict[str, Any] | 
     return None
 
 
-def _refuse_dropped_cik_identity(view: LedgerView, rows: list[dict[str, Any]]) -> None:
-    """Refuse symbol-identified rows whose finding was recorded under a CIK.
+def _refuse_dropped_cik_identity(
+    view: LedgerView,
+    rows: list[dict[str, Any]],
+    company_identities: list[tuple[str, str | None]],
+) -> None:
+    """Refuse companies whose CIK dropped while their CIK subjects stay present.
 
     A state that stops carrying a company's CIK would record that company's
     findings under the symbol identity while the CIK-keyed subjects stay
     present forever: the run's withdrawal scope no longer names them, so two
-    present beliefs appear beside each other. Subjects are matched to the
-    run's rows by finding ref, the only symbol-to-CIK link the ledger holds.
-    The CIK is never inferred or copied from history into the state; the run
-    is refused before any write.
+    present beliefs appear beside each other. Detection is company-scoped and
+    never matches finding ids: every company known to be CIK-less this run —
+    named by ``company_identities``, and by a symbol-identified row when the
+    caller did not thread the companies — is refused while some workbench
+    chain's tip is a present CIK identity recorded under the same normalized
+    symbol, even when the company has no findings that night. A withdrawn CIK
+    subject, or a CIK subject recorded for a different symbol, never triggers
+    the refusal. The CIK is never inferred or copied from history into the
+    state; the run is refused before any write.
     """
-    symbol_rows = [row for row in rows if str(row["entity_ref"]).startswith("symbol:")]
-    if not symbol_rows:
+    null_cik_symbols = {
+        row["symbol"] for row in rows if str(row["entity_ref"]).startswith("symbol:")
+    }
+    null_cik_symbols.update(symbol for symbol, cik_ref in company_identities if cik_ref is None)
+    if not null_cik_symbols:
         return
-    for chain in view.chains.values():
-        prior = chain[0]
-        if prior["kind"] != "workbench":
-            continue
-        prior_cik = prior["entity_ref"]
-        if not _CIK_IDENTITY_TEXT.fullmatch(prior_cik):
-            continue
-        for row in symbol_rows:
-            if row["finding_ref"] != prior["finding_ref"]:
+    for symbol in sorted(null_cik_symbols):
+        for chain in view.chains.values():
+            tip = chain[-1]
+            if tip["kind"] != "workbench" or tip["status"] != "present":
                 continue
-            symbol = row["entity_ref"][len("symbol:"):]
+            entity_ref = str(tip["entity_ref"])
+            if not _CIK_IDENTITY_TEXT.fullmatch(entity_ref):
+                continue
+            if tip["symbol"] != symbol:
+                continue
             raise FindingJudgmentError(
-                f"workbench symbol {symbol} carries no cik but its prior recorded subjects "
-                f"hold the cik identity {prior_cik}",
+                f"workbench symbol {symbol} carries no cik but its prior recorded subject "
+                f"holds the cik identity {entity_ref}",
                 code="cik_dropped",
             )
 
@@ -849,14 +884,18 @@ def record_judgments(
     recorded_at: Any,
     source_generated_at: Any = None,
     scope_entities: Any = None,
+    company_identities: Any = None,
 ) -> dict[str, Any]:
     """Append one batch of judgments for a recording run.
 
     Per subject: no prior tip appends an original; a present tip with the
     same content digest appends nothing; anything else appends a correction
     superseding the tip. Subjects of in-scope entities with no row this run
-    and a present tip are withdrawn. When nothing is appended, no batch is
-    written. The clock is caller-supplied and ledger-wide: it may never
+    and a present tip are withdrawn. ``company_identities`` (threaded from
+    ``workbench_rows_and_companies_from_state``) names every state company's
+    identity basis, so a company whose CIK dropped is refused even on a
+    night that carries no findings for it. When nothing is appended, no batch
+    is written. The clock is caller-supplied and ledger-wide: it may never
     precede the latest batch's clock, and an equal clock is legal only for
     a run that appends nothing.
     """
@@ -886,8 +925,26 @@ def record_judgments(
                 f"subject {row['subject_key']} appears twice in one recording run", code="duplicate_subject"
             )
         seen.add(row["subject_key"])
+    companies: list[tuple[str, str | None]] = []
+    if company_identities is not None:
+        if isinstance(company_identities, (str, bytes)) or not isinstance(company_identities, (list, tuple)):
+            raise FindingJudgmentError(
+                "company_identities must be a list of (symbol, cik) pairs", code="state_shape"
+            )
+        for entry in company_identities:
+            if (
+                not isinstance(entry, (list, tuple))
+                or len(entry) != 2
+                or not isinstance(entry[0], str)
+                or not entry[0]
+                or not (entry[1] is None or (isinstance(entry[1], str) and entry[1]))
+            ):
+                raise FindingJudgmentError(
+                    "company_identities must be a list of (symbol, cik) pairs", code="state_shape"
+                )
+            companies.append((entry[0], entry[1]))
     view = _roll_forward(store, load_ledger(store))
-    _refuse_dropped_cik_identity(view, normalized)
+    _refuse_dropped_cik_identity(view, normalized, companies)
     latest = view.latest_recorded_at
     if latest is not None and clock < parse_utc(latest, field="recorded_at"):
         raise FindingJudgmentError(
@@ -908,6 +965,7 @@ def record_judgments(
                 "kind": kind,
                 "subject_key": subject_key,
                 "entity_ref": row["entity_ref"],
+                "symbol": row["symbol"],
                 "finding_ref": row["finding_ref"],
                 "content_sha256": sha,
                 "content": row["content"],
@@ -939,6 +997,7 @@ def record_judgments(
             "kind": kind,
             "subject_key": subject_key,
             "entity_ref": row["entity_ref"],
+            "symbol": row["symbol"],
             "finding_ref": row["finding_ref"],
             "content_sha256": sha,
             "content": row["content"],
@@ -966,6 +1025,7 @@ def record_judgments(
                 "kind": kind,
                 "subject_key": subject_key,
                 "entity_ref": tip["entity_ref"],
+                "symbol": tip["symbol"],
                 "finding_ref": tip["finding_ref"],
                 "content_sha256": None,
                 "content": None,
@@ -1119,5 +1179,6 @@ __all__ = [
     "load_ledger",
     "record_judgments",
     "replay_then_known",
+    "workbench_rows_and_companies_from_state",
     "workbench_rows_from_state",
 ]

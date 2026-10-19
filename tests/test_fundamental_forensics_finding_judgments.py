@@ -74,6 +74,20 @@ def _record_kernel(store, rows, clock, **kwargs):
     return FJ.record_judgments(store, kind="kernel", rows=rows, recorded_at=clock, **kwargs)
 
 
+def _record_workbench(store, state, clock):
+    """Record a workbench state threading the companies' identity bases."""
+    rows, scope, generated, company_identities = FJ.workbench_rows_and_companies_from_state(state)
+    return FJ.record_judgments(
+        store,
+        kind="workbench",
+        rows=rows,
+        recorded_at=clock,
+        source_generated_at=generated,
+        scope_entities=scope,
+        company_identities=company_identities,
+    )
+
+
 def _wfinding(fid, detector, **overrides):
     finding = {
         "id": fid,
@@ -200,6 +214,7 @@ def _correction_record(subject, content, supersedes, clock):
         "kind": subject["kind"],
         "subject_key": subject["subject_key"],
         "entity_ref": subject["entity_ref"],
+        "symbol": subject.get("symbol"),
         "finding_ref": subject["finding_ref"],
         "content_sha256": sha,
         "content": content,
@@ -957,6 +972,29 @@ def test_overtaken_head_cas_still_counts_as_committed() -> None:
     assert chain[1]["content"]["derived_values"] == {"growth": "-0.55"}
 
 
+def test_overtaken_head_cas_with_wrong_tip_is_head_conflict() -> None:
+    backend = InMemoryStrictConditionalStore()
+    rows_night1 = [_kernel_row()]
+    rows_night2 = [_kernel_row(derived_values={"growth": "-0.55"})]
+
+    def writer_b_then_wrong_tip():
+        _record_kernel(backend, rows_night2, NIGHT2)
+        # A HEAD whose sequence is at or beyond writer A's but whose tip does
+        # not match the final batch bytes: an unverified sequence alone must
+        # never prove A's write committed.
+        backend.raw_put(HEAD_KEY, _canonical({
+            "schema": FJ.JUDGMENT_HEAD_SCHEMA,
+            "sequence": 2,
+            "tip_sha256": "0" * 64,
+        }))
+
+    writer_a = _OvertakenHeadStore(backend, writer_b_then_wrong_tip)
+    with pytest.raises(FJ.FindingJudgmentError) as excinfo:
+        _record_kernel(writer_a, rows_night1, NIGHT1)
+    assert _expect_code(excinfo) == "head_conflict"
+    assert type(excinfo.value) is FJ.FindingJudgmentError  # a retryable refusal, not chain corruption
+
+
 # ---------------------------------------------------------------------------
 # 10. Effect-unknown: one write attempt, no retry
 # ---------------------------------------------------------------------------
@@ -1261,33 +1299,207 @@ def test_cik_dropped_refuses_before_any_write() -> None:
         {"FXA": _company(1111111, [_wfinding("rev-collapse:q2-2026", "revenue_collapse")])},
         utc_text(NIGHT1),
     )
-    rows1, scope1, generated1 = FJ.workbench_rows_from_state(state_night1)
-    FJ.record_judgments(
-        store, kind="workbench", rows=rows1, recorded_at=NIGHT1,
-        source_generated_at=generated1, scope_entities=scope1,
-    )
+    _record_workbench(store, state_night1, NIGHT1)
     writes = list(store.conditional_writes)
 
-    # Night 2 drops FXA's CIK: recording under symbol:FXA would leave the
-    # CIK-keyed subject present forever beside a new symbol-keyed subject.
+    # Night 2 drops FXA's CIK and carries a brand-new finding id: only the
+    # same-symbol rule — never a finding-id match — can refuse the run before
+    # recording under symbol:FXA would leave the CIK-keyed subject present
+    # forever beside a new symbol-keyed subject.
     state_night2 = _workbench_state(
-        {"FXA": _company(None, [_wfinding("rev-collapse:q2-2026", "revenue_collapse")])},
+        {"FXA": _company(None, [_wfinding("rev-collapse:q3-2026", "revenue_collapse")])},
         utc_text(NIGHT2),
     )
-    rows2, scope2, generated2 = FJ.workbench_rows_from_state(state_night2)
     with pytest.raises(FJ.FindingJudgmentError) as excinfo:
-        FJ.record_judgments(
-            store, kind="workbench", rows=rows2, recorded_at=NIGHT2,
-            source_generated_at=generated2, scope_entities=scope2,
-        )
+        _record_workbench(store, state_night2, NIGHT2)
     assert _expect_code(excinfo) == "cik_dropped"
     message = str(excinfo.value)
     assert "FXA" in message and "0001111111" in message
     assert store.conditional_writes == writes  # nothing was written
     view = FJ.load_ledger(store)
     assert view.head_sequence == 1  # HEAD unchanged
-    symbol_subject = stable_id("fjsubject", "workbench", "symbol:FXA", "rev-collapse:q2-2026")
+    symbol_subject = stable_id("fjsubject", "workbench", "symbol:FXA", "rev-collapse:q3-2026")
     assert FJ.history(store, symbol_subject) == ()
+
+
+def test_shared_finding_id_with_a_cik_less_company_records_successfully() -> None:
+    store = InMemoryStrictConditionalStore()
+    state_night1 = _workbench_state(
+        {"AAPL": _company(1111111, [_wfinding("receivables_stretch:q2-2026", "receivables_stretch")])},
+        utc_text(NIGHT1),
+    )
+    _record_workbench(store, state_night1, NIGHT1)
+
+    # Night 2 adds NEWCO, which never had a CIK, carrying the same finding id
+    # as AAPL's CIK-keyed subject: the finding id is not company-scoped, so
+    # only a symbol-scoped check lets the run through.
+    state_night2 = _workbench_state(
+        {
+            "AAPL": _company(1111111, [_wfinding("receivables_stretch:q2-2026", "receivables_stretch")]),
+            "NEWCO": _company(None, [_wfinding("receivables_stretch:q2-2026", "receivables_stretch")]),
+        },
+        utc_text(NIGHT2),
+    )
+    report = _record_workbench(store, state_night2, NIGHT2)
+    assert report["originals"] == 1 and report["unchanged"] == 1
+    newco_subject = stable_id("fjsubject", "workbench", "symbol:NEWCO", "receivables_stretch:q2-2026")
+    newco_chain = FJ.history(store, newco_subject)
+    assert [record["status"] for record in newco_chain] == ["present"]
+    assert newco_chain[0]["entity_ref"] == "symbol:NEWCO"
+    assert newco_chain[0]["symbol"] == "NEWCO"
+    aapl_subject = stable_id("fjsubject", "workbench", "0001111111", "receivables_stretch:q2-2026")
+    aapl_chain = FJ.history(store, aapl_subject)
+    assert [record["relation"] for record in aapl_chain] == ["original"]  # AAPL is unchanged
+    assert aapl_chain[0]["symbol"] == "AAPL"
+
+
+def test_cik_dropped_with_new_finding_ids_is_refused_before_any_write() -> None:
+    store = InMemoryStrictConditionalStore()
+    state_night1 = _workbench_state(
+        {"AAPL": _company(1111111, [_wfinding("a:q1", "revenue_collapse")])}, utc_text(NIGHT1)
+    )
+    _record_workbench(store, state_night1, NIGHT1)
+    writes = list(store.conditional_writes)
+
+    # The CIK drops while the night carries only brand-new finding ids: the
+    # CIK-keyed subjects would stay present forever because no row and no
+    # withdrawal scope names them.
+    state_night2 = _workbench_state(
+        {"AAPL": _company(None, [_wfinding("b:q2", "revenue_collapse")])}, utc_text(NIGHT2)
+    )
+    with pytest.raises(FJ.FindingJudgmentError) as excinfo:
+        _record_workbench(store, state_night2, NIGHT2)
+    assert _expect_code(excinfo) == "cik_dropped"
+    message = str(excinfo.value)
+    assert "AAPL" in message and "0001111111" in message
+    assert store.conditional_writes == writes  # nothing was written
+    view = FJ.load_ledger(store)
+    assert view.head_sequence == 1  # HEAD unchanged
+    assert FJ.history(store, stable_id("fjsubject", "workbench", "symbol:AAPL", "b:q2")) == ()
+
+
+def test_cik_dropped_with_zero_findings_is_refused_before_any_write() -> None:
+    store = InMemoryStrictConditionalStore()
+    state_night1 = _workbench_state(
+        {"AAPL": _company(1111111, [_wfinding("a:q1", "revenue_collapse")])}, utc_text(NIGHT1)
+    )
+    _record_workbench(store, state_night1, NIGHT1)
+    writes = list(store.conditional_writes)
+
+    # The CIK drops on a night with no findings at all: the refusal must fire
+    # even though the run holds no row to match on.
+    state_night2 = _workbench_state({"AAPL": _company(None, [])}, utc_text(NIGHT2))
+    with pytest.raises(FJ.FindingJudgmentError) as excinfo:
+        _record_workbench(store, state_night2, NIGHT2)
+    assert _expect_code(excinfo) == "cik_dropped"
+    message = str(excinfo.value)
+    assert "AAPL" in message and "0001111111" in message
+    assert store.conditional_writes == writes  # nothing was written
+    assert FJ.load_ledger(store).head_sequence == 1  # HEAD unchanged
+
+
+def test_withdrawn_cik_subject_does_not_refuse_a_later_symbol_run() -> None:
+    store = InMemoryStrictConditionalStore()
+    state_night1 = _workbench_state(
+        {"AAPL": _company(1111111, [_wfinding("a:q1", "revenue_collapse")])}, utc_text(NIGHT1)
+    )
+    _record_workbench(store, state_night1, NIGHT1)
+
+    # Night 2 keeps the CIK but drops the finding, so a:q1 is withdrawn.
+    state_night2 = _workbench_state({"AAPL": _company(1111111, [])}, utc_text(NIGHT2))
+    report2 = _record_workbench(store, state_night2, NIGHT2)
+    assert report2["withdrawals"] == 1
+
+    # Night 3 loses the CIK: the CIK-keyed subject's tip is withdrawn, not
+    # present, so no stale present belief survives and the run records.
+    state_night3 = _workbench_state(
+        {"AAPL": _company(None, [_wfinding("c:q3", "revenue_collapse")])}, utc_text(NIGHT3)
+    )
+    report3 = _record_workbench(store, state_night3, NIGHT3)
+    assert report3["originals"] == 1
+    cik_chain = FJ.history(store, stable_id("fjsubject", "workbench", "0001111111", "a:q1"))
+    assert [record["status"] for record in cik_chain] == ["present", "withdrawn"]
+    symbol_chain = FJ.history(store, stable_id("fjsubject", "workbench", "symbol:AAPL", "c:q3"))
+    assert [record["status"] for record in symbol_chain] == ["present"]
+
+
+def test_symbol_to_cik_upgrade_still_withdraws_the_symbol_subject() -> None:
+    store = InMemoryStrictConditionalStore()
+    state_night1 = _workbench_state(
+        {"NEWCO": _company(None, [_wfinding("x:q1", "revenue_collapse")])}, utc_text(NIGHT1)
+    )
+    report1 = _record_workbench(store, state_night1, NIGHT1)
+    assert report1["originals"] == 1
+
+    state_night2 = _workbench_state(
+        {"NEWCO": _company(320193, [_wfinding("x:q1", "revenue_collapse")])}, utc_text(NIGHT2)
+    )
+    report2 = _record_workbench(store, state_night2, NIGHT2)
+    assert report2["withdrawals"] == 1 and report2["originals"] == 1
+
+    symbol_subject = stable_id("fjsubject", "workbench", "symbol:NEWCO", "x:q1")
+    chain = FJ.history(store, symbol_subject)
+    assert [record["status"] for record in chain] == ["present", "withdrawn"]
+    assert chain[1]["symbol"] == "NEWCO"
+    cik_subject = stable_id("fjsubject", "workbench", "0000320193", "x:q1")
+    cik_chain = FJ.history(store, cik_subject)
+    assert [record["status"] for record in cik_chain] == ["present"]
+    assert cik_chain[0]["relation"] == "original"
+    assert cik_chain[0]["symbol"] == "NEWCO"
+
+
+def test_records_carry_symbol_and_a_bad_symbol_is_refused_on_load() -> None:
+    store = InMemoryStrictConditionalStore()
+    state = _workbench_state(
+        {"FXA": _company(1111111, [_wfinding("a:q1", "revenue_collapse")])}, utc_text(NIGHT1)
+    )
+    rows, scope, generated, company_identities = FJ.workbench_rows_and_companies_from_state(state)
+    assert company_identities == [("FXA", "0001111111")]
+    FJ.record_judgments(
+        store, kind="workbench", rows=rows, recorded_at=NIGHT1,
+        source_generated_at=generated, scope_entities=scope,
+        company_identities=company_identities,
+    )
+    kernel_store = InMemoryStrictConditionalStore()
+    _record_kernel(kernel_store, [_kernel_row()], NIGHT1)
+    assert _all_records(store)[0]["symbol"] == "FXA"
+    assert _all_records(kernel_store)[0]["symbol"] is None
+
+    def hostile_after(mutation):
+        hostile = InMemoryStrictConditionalStore()
+        seed_state = _workbench_state(
+            {"FXA": _company(1111111, [_wfinding("a:q1", "revenue_collapse")])}, utc_text(NIGHT1)
+        )
+        seed_rows, _, seed_generated = FJ.workbench_rows_from_state(seed_state)
+        FJ.record_judgments(
+            hostile, kind="workbench", rows=seed_rows, recorded_at=NIGHT1,
+            source_generated_at=seed_generated,
+        )
+        body = json.loads(_read_batch(hostile, 1).decode("utf-8"))
+        mutation(body["records"][0])
+        payload = _canonical(body)
+        hostile.raw_put(_batch_key(1), payload)
+        _seed_head(hostile, 1, hashlib.sha256(payload).hexdigest())
+        return hostile
+
+    for mutation in (
+        lambda record: record.__setitem__("symbol", None),
+        lambda record: record.pop("symbol"),
+    ):
+        with pytest.raises(FJ.FindingJudgmentChainError) as excinfo:
+            FJ.load_ledger(hostile_after(mutation))
+        assert _expect_code(excinfo) == "record_shape"
+
+    kernel_hostile = InMemoryStrictConditionalStore()
+    _record_kernel(kernel_hostile, [_kernel_row()], NIGHT1)
+    body = json.loads(_read_batch(kernel_hostile, 1).decode("utf-8"))
+    body["records"][0]["symbol"] = "FXA"
+    payload = _canonical(body)
+    kernel_hostile.raw_put(_batch_key(1), payload)
+    _seed_head(kernel_hostile, 1, hashlib.sha256(payload).hexdigest())
+    with pytest.raises(FJ.FindingJudgmentChainError) as excinfo:
+        FJ.load_ledger(kernel_hostile)
+    assert _expect_code(excinfo) == "record_shape"
 
 
 def test_malformed_cik_or_symbol_is_refused() -> None:
@@ -1656,6 +1868,48 @@ def test_cli_cik_dropped_exits_two(monkeypatch, capsys, tmp_path) -> None:
         json.dumps(
             _workbench_state(
                 {"FXA": _company(None, [_wfinding("rev-collapse:q2-2026", "revenue_collapse")])},
+                utc_text(NIGHT2),
+            )
+        ),
+        encoding="utf-8",
+    )
+    code = cli.main(
+        [
+            "record-state",
+            "--state",
+            str(state_path),
+            "--recorded-at",
+            utc_text(NIGHT2),
+            "--local-store",
+            str(tmp_path / "store"),
+        ]
+    )
+    assert code == 2
+    document = json.loads(capsys.readouterr().out)
+    assert document["ok"] is False
+    assert document["error"]["code"] == "cik_dropped"
+    assert len(store.conditional_writes) == writes
+    assert FJ.load_ledger(store).head_sequence == 1
+
+
+def test_cli_cik_dropped_with_new_finding_ids_exits_two(monkeypatch, capsys, tmp_path) -> None:
+    cli = _load_cli()
+    store = InMemoryStrictConditionalStore()
+    state_night1 = _workbench_state(
+        {"AAPL": _company(1111111, [_wfinding("a:q1", "revenue_collapse")])}, utc_text(NIGHT1)
+    )
+    rows1, scope1, generated1 = FJ.workbench_rows_from_state(state_night1)
+    FJ.record_judgments(
+        store, kind="workbench", rows=rows1, recorded_at=NIGHT1,
+        source_generated_at=generated1, scope_entities=scope1,
+    )
+    writes = len(store.conditional_writes)
+    monkeypatch.setattr(cli, "build_production_dataset_store", lambda root: store)
+    state_path = tmp_path / "state-night2.json"
+    state_path.write_text(
+        json.dumps(
+            _workbench_state(
+                {"AAPL": _company(None, [_wfinding("b:q2", "revenue_collapse")])},
                 utc_text(NIGHT2),
             )
         ),
