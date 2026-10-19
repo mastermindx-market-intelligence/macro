@@ -50,6 +50,7 @@ from tests.test_capital_structure_state_api import (  # noqa: E402
     built,
     client,
     inputs_suite,
+    pack,
     served,
     with_inputs,
 )
