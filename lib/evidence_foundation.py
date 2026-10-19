@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from datetime import date, datetime, timezone
+from functools import lru_cache
 from hashlib import sha256
 import json
 from pathlib import Path
@@ -1089,12 +1090,24 @@ def semantic_violations(reference: Mapping[str, Any]) -> tuple[str, ...]:
     return tuple(dict.fromkeys(violations))
 
 
+@lru_cache(maxsize=8)
+def _check_contract_schema(raw: str) -> None:
+    """Memoize only successful meta-schema checks of the exact contract text.
+
+    Keep payload verdicts, parsed schemas and validator instances out of the
+    cache. Each call below still reads the current file and validates its own
+    payload; changed or unreadable contracts cannot reuse a path/mtime verdict.
+    """
+    Draft202012Validator.check_schema(json.loads(raw))
+
+
 def _contract_schema_violations(
     value: Mapping[str, Any], *, path: Path, label: str
 ) -> tuple[str, ...]:
     try:
-        schema = json.loads(path.read_text(encoding="utf-8"))
-        Draft202012Validator.check_schema(schema)
+        raw = path.read_text(encoding="utf-8")
+        _check_contract_schema(raw)
+        schema = json.loads(raw)
     except (
         OSError,
         UnicodeDecodeError,

@@ -1478,3 +1478,77 @@ def test_k1_changed_file_inventory_creates_no_physical_mesh_store() -> None:
         changed.update(result.stdout.splitlines())
     forbidden_prefixes = ("data/evidence_mesh/", "data/evidence_foundation/", "engine/evidence_mesh/")
     assert not [path for path in sorted(changed) if any(path.startswith(prefix) for prefix in forbidden_prefixes)]
+
+
+def test_contract_schema_check_reused_but_every_payload_is_validated(tmp_path, monkeypatch):
+    from lib import evidence_foundation as ef
+
+    path = tmp_path / "contract.json"
+    path.write_text(json.dumps({"$comment": "payload isolation regression", "type": "object",
+        "properties": {"stamp": {"type": "string", "format": "date"}},
+        "required": ["stamp"], "additionalProperties": False}))
+    calls = []
+    original = ef.Draft202012Validator.check_schema
+    monkeypatch.setattr(ef.Draft202012Validator, "check_schema",
+                        lambda schema: (calls.append(schema), original(schema))[-1])
+    value = {"stamp": "2026-01-01"}
+    assert ef._contract_schema_violations(value, path=path, label="test") == ()
+    value["stamp"] = "invalid-date"
+    assert ef._contract_schema_violations(value, path=path, label="test") == ("json_schema:stamp:format",)
+    value["stamp"] = "2026-01-01"
+    value["private_body"] = "not permitted"
+    assert ef._contract_schema_violations(value, path=path, label="test") == ("json_schema:$:additionalProperties",)
+    assert len(calls) == 1  # The schema is checked once, never the payload verdict.
+
+
+def test_contract_schema_change_is_detected_even_with_same_size_and_mtime(tmp_path):
+    import os
+    from lib import evidence_foundation as ef
+
+    path = tmp_path / "contract.json"
+    path.write_text('{"$comment":"byte identity regression","const":"before"}')
+    stat = path.stat()
+    assert ef._contract_schema_violations("before", path=path, label="test") == ()
+    path.write_text('{"$comment":"byte identity regression","const":"after!"}')
+    os.utime(path, ns=(stat.st_atime_ns, stat.st_mtime_ns))
+    assert path.stat().st_size == stat.st_size and path.stat().st_mtime_ns == stat.st_mtime_ns
+    assert ef._contract_schema_violations("before", path=path, label="test") == ("json_schema:$:const",)
+    assert ef._contract_schema_violations("after!", path=path, label="test") == ()
+
+
+@pytest.mark.parametrize("failure", ["missing", "json", "schema", "encoding"])
+def test_contract_schema_warm_check_does_not_hide_unreadable_current_file(tmp_path, failure):
+    from lib import evidence_foundation as ef
+
+    path = tmp_path / "contract.json"
+    path.write_text('{"$comment":"warm read regression","type":"integer"}')
+    assert ef._contract_schema_violations(1, path=path, label="before") == ()
+    if failure == "missing":
+        path.unlink()
+    else:
+        path.write_bytes({"json": b"{", "schema": b'{"type":"not-a-type"}', "encoding": b"\xff"}[failure])
+    with pytest.raises(EvidenceFoundationError, match="^after_schema_unreadable$"):
+        ef._contract_schema_violations(1, path=path, label="after")
+    path.write_text('{"$comment":"warm read regression","type":"integer"}')
+    assert ef._contract_schema_violations(1, path=path, label="recovered") == ()
+
+
+def test_contract_schema_failed_check_is_not_cached(tmp_path, monkeypatch):
+    from lib import evidence_foundation as ef
+
+    path = tmp_path / "contract.json"
+    path.write_text('{"$comment":"failed check regression","type":"integer"}')
+    calls = []
+    original = ef.Draft202012Validator.check_schema
+
+    def transient_failure(schema):
+        calls.append(schema)
+        if len(calls) == 1:
+            raise ef.SchemaError("synthetic schema-check failure")
+        return original(schema)
+
+    monkeypatch.setattr(ef.Draft202012Validator, "check_schema", transient_failure)
+    with pytest.raises(EvidenceFoundationError, match="^first_schema_unreadable$"):
+        ef._contract_schema_violations(1, path=path, label="first")
+    assert ef._contract_schema_violations(1, path=path, label="second") == ()
+    assert len(calls) == 2
