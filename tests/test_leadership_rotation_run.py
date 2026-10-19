@@ -1606,3 +1606,83 @@ def test_v3_candidate_accepts_existing_p0_generator_without_market_access():
         assert -41 <= result["h1_delay_advantage_sessions"] <= 41
     else:
         assert result["reason"] == "NO_QUALIFYING_ONSETS"
+
+
+
+def test_v3_h2_p0_prior_control_matches_only_pre_alarm_matured_opportunities():
+    from scripts.leadership_rotation_v3_candidate import (
+        SyntheticPriorControl as E, candidate_h2_prior_control_match as match,
+    )
+
+    def e(t, *, pair="pair-a", q=2, active=False, feature=None, warmup=None):
+        return E(pair, t, q, t if feature is None else feature,
+                 active, t if warmup is None else warmup)
+
+    a1 = e(380, active=True)
+    controls = [
+        e(359, active=True),     # nearer but A1 active: must not be B1
+        e(360),                  # 20 sessions before A1: outcome not matured
+        e(390),                  # future origin, cannot be a historical control
+        e(345),                  # eligible 35 sessions back
+        e(356),                  # eligible 24 sessions back: deterministic winner
+        e(317),                  # eligible boundary 63 sessions back
+        e(357, q=1),             # different pre-origin volatility quintile
+        e(358, pair="pair-b"),   # other registered pair
+        e(356, warmup=240, q=4), # underwarmed mismatched candidate
+    ]
+    result = match(a1, controls)
+    assert result == match(a1, list(reversed(controls)))
+    assert result["status"] == "MATCHED"
+    assert result["scope"] == "P0_SYNTHETIC_ONLY"
+    assert result["control_t"] == 356
+    assert result["control_age_sessions"] == 24
+    assert result["control_forward20_matured_before_a1"] is True
+    assert result["v3_preregistered"] is False
+    assert result["size_or_power_proven"] is False
+
+
+def test_v3_h2_p0_selector_cannot_read_or_choose_future_y20_or_cross_pair():
+    from dataclasses import FrozenInstanceError
+    from scripts.leadership_rotation_v3_candidate import (
+        SyntheticPriorControl as E, candidate_h2_prior_control_match as match,
+    )
+
+    a1 = E("pair-a", 380, 2, 380, True, 380)
+    cross_pair = E("pair-b", 358, 2, 358, False, 358)
+    future = E("pair-a", 382, 2, 382, False, 382)
+    too_close = E("pair-a", 360, 2, 360, False, 360)
+    unmatched = match(a1, [cross_pair, future, too_close])
+    assert unmatched["status"] == "UNMATCHED"
+    assert unmatched["control_t"] is None
+    assert unmatched["reason"] == "NO_PRIOR_COMPARABLE_CONTROL"
+    assert unmatched["size_or_power_proven"] is False
+
+    # No outcome field in this frozen selector's input contract. Both features
+    # and matching decisions are fixed before any new forward-20 label.
+    with pytest.raises(TypeError):
+        E("pair-a", 350, 2, 350, False, 350, y20=999)
+    with pytest.raises(FrozenInstanceError):
+        a1.origin = 390
+
+
+def test_v3_h2_p0_selector_rejects_leaky_features_duplicates_and_bad_warmup():
+    from scripts.leadership_rotation_v3_candidate import (
+        SyntheticPriorControl as E, candidate_h2_prior_control_match as match,
+    )
+
+    a1 = E("pair-a", 380, 2, 380, True, 380)
+    prior = E("pair-a", 350, 2, 350, False, 350)
+    with pytest.raises(ValueError, match="LOOKAHEAD_FEATURE_DATE"):
+        match(a1, [E("pair-a", 350, 2, 351, False, 350)])
+    with pytest.raises(ValueError, match="LOOKAHEAD_FEATURE_DATE"):
+        match(E("pair-a", 380, 2, 381, True, 380), [prior])
+    with pytest.raises(ValueError, match="AMBIGUOUS_DUPLICATE_CONTROL"):
+        match(a1, [prior, prior])
+    with pytest.raises(ValueError, match="must have A1 active"):
+        match(E("pair-a", 380, 2, 380, False, 380), [prior])
+    with pytest.raises(ValueError, match="quintile must be 0..4"):
+        match(E("pair-a", 380, 5, 380, True, 380), [prior])
+
+    no_warmup = match(E("pair-a", 280, 2, 280, True, 200), [])
+    assert no_warmup["status"] == "NOT_EXECUTABLE"
+    assert no_warmup["reason"] == "A1_WARMUP_UNAVAILABLE"
