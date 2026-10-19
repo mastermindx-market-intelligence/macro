@@ -138,7 +138,7 @@ def test_publishing_failure_is_machine_readable_and_final_invalidation_separate(
  monkeypatch.setattr(builder,'_publish_r2',lambda _:next(delivered))
  result=builder.publish_boats_stream(publish=True)
  assert result['publication_ok'] is False
- assert result['publication']=={'requested':True,'attempted':2,'succeeded':1,'failed':1,'final_invalidation_delivered':False}
+ assert result['publication']=={'requested':True,'attempted':2,'succeeded':1,'failed':1,'final_invalidation_delivered':False,'access_denied':False}
 
 def test_requested_publication_success_requires_terminal_empty_delivery(monkeypatch):
  import scripts.build_ext_quotes as builder
@@ -215,7 +215,8 @@ def test_approved_empty_invalidation_uses_same_object_and_disables_cache(monkeyp
 
 
 @pytest.mark.parametrize('status,code',[(401,'Unauthorized'),(403,'AccessDenied'),
-                                      (400,'InvalidAccessKeyId'),(400,'SignatureDoesNotMatch')])
+                                      (400,'InvalidAccessKeyId'),(400,'SignatureDoesNotMatch'),
+                                      (None,'403'),(None,'Forbidden'),(None,'AccessForbidden')])
 def test_storage_denial_blocks_later_callbacks_without_interrupting_cleanup(monkeypatch,caplog,status,code):
  import scripts.build_ext_quotes as builder
  import scripts.tiingo_ingest as ing
@@ -244,6 +245,7 @@ def test_storage_denial_blocks_later_callbacks_without_interrupting_cleanup(monk
  assert result['publication_ok'] is False
  assert result['publication']=={'requested':True,'attempted':1,'succeeded':0,'failed':1,
                                'final_invalidation_delivered':False,'access_denied':True}
+ assert 'publication stopped for this invocation' in caplog.text
  assert 'SECRET_PROVIDER_BODY' not in caplog.text
 
 
@@ -316,3 +318,35 @@ def test_invalid_identity_is_refused_before_case_mapping(symbol):
  r=reducer();consume(r,frame())
  consume(r,frame(offset=1,symbol=symbol),1)
  assert r.snapshot(NOW+timedelta(seconds=1))['quotes']=={}
+
+
+@pytest.mark.parametrize('denied', [True, False])
+def test_client_initialization_failure_is_scrubbed_and_denial_stops_callbacks(monkeypatch, caplog, denied):
+ import sys, types
+ import scripts.build_ext_quotes as builder
+ import scripts.tiingo_ingest as ing
+ calls=[]
+ class Failure(Exception):
+  response={'Error':{'Code':'Forbidden' if denied else 'ServiceUnavailable'}}
+ def client(*args,**kwargs):
+  calls.append(True)
+  raise Failure('SECRET_PROVIDER_BODY')
+ monkeypatch.setitem(sys.modules,'boto3',types.SimpleNamespace(client=client))
+ monkeypatch.setitem(sys.modules,'botocore.config',types.SimpleNamespace(Config=lambda **kwargs:object()))
+ for name in ('R2_ENDPOINT','R2_ACCESS_KEY_ID','R2_SECRET_ACCESS_KEY'):
+  monkeypatch.setenv(name,'offline-fixture')
+ if not denied:
+  assert builder._r2_client() is None
+  assert 'R2 client build failed (Failure)' in caplog.text
+ else:
+  def stream(**kwargs):
+   for kind,payload in [('connected',{'connection':1}),('tick',{}),('ended',{})]:
+    kwargs['observer'](kind,payload)
+   return {'raw_messages':0,'segments':0}
+  monkeypatch.setattr(ing,'boats_stream',stream)
+  result=builder.publish_boats_stream(publish=True)
+  assert result['publication']['access_denied'] is True
+  assert result['publication']['final_invalidation_delivered'] is False
+  assert 'publication stopped for this invocation' in caplog.text
+ assert calls==[True]
+ assert 'SECRET_PROVIDER_BODY' not in caplog.text
