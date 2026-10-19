@@ -5083,7 +5083,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_630),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_638),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5123,6 +5123,23 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     twelve estimator units. Fund only the affected build_free_content probe's
     5,618 -> 5,630 increase. Job counts, other probe ceilings, selectors and
     the ten-pack bound remain unchanged; ordinary Brain F11 suites remain held.
+
+    Retained SEC13D research composition (2026-10-19, PR9789) adds three
+    explicit SEC suites to dataos-identity-seams: estimator weight21 ->27.
+    Hosted contract-delta39318414980/job118285830478 measured the same134
+    selected jobs and ten packs, base5628 -> head5634, with no new entrant.
+    Fresh canonical-main composition235b8704/6cb3ba9 independently measures
+    exactly134 jobs /5634 weight /10 packs. Fund only the four-unit excess
+    over5630, to5634. Every suite, selector, job/pack bound and both other
+    probe weight ceilings remain unchanged; no coverage is dropped.
+
+    Seasonality style-card suite (2026-10-19, PR9793) adds
+    tests/test_seasonality_now_call_strip.py to unrun-builders-render.
+    The local probe on main 8df5aee4 measures build_free_content 134 jobs
+    / 5,634; on the PR merged into that main, the same 134 job ids / 5,638
+    (index.html and plan_book also +4, both under their ceilings). No new
+    entrant. Fund only the four-unit excess: 5,634 -> 5,638. Every suite,
+    selector, job/pack bound and both other probe ceilings stay unchanged.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py
