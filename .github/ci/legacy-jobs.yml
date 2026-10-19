@@ -9905,6 +9905,8 @@ jobs:
           tests/test_capital_structure_scenario_inputs.py
           tests/test_capital_structure_state_changes.py
           tests/test_capital_structure_saved_scenarios.py
+          tests/test_capital_structure_saved_scenario_api.py
+          tests/test_capital_structure_saved_scenario_monitor.py
           tests/test_capital_structure_scenario_export.py
           tests/test_capital_structure_v0_recovery.py
           tests/test_capital_structure_a1_served_properties.py
