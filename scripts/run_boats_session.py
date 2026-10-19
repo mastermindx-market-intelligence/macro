@@ -9,13 +9,11 @@ arithmetic, single-writer exclusion, start receipts and terminal reasons.
 All stream, archive, reduction and publication logic remains in the
 incumbent publisher and is called unmodified.
 
-LAUNCH CONTRACT. The existing ``com.macro.extquotes`` launchd label fires the
-wrapper (``ops/launchd/run_ext_quotes_loop.sh``) once per evening at 17:00
-America/Vancouver (= 20:00 America/New_York; both zones observe DST, so the
-3-hour offset holds year-round). This module validates that expected host
-offset equivalence and refuses a mismatched host timezone before any effect.
-It never changes the OS timezone, never reschedules itself, and there is no
-retry, catch-up queue or persistent daemon: one launch is one finite run.
+LAUNCH CONTRACT. Two local calendar candidates (17:00 and 18:00 Vancouver)
+cover both B.C.'s permanent UTC-7 from March 2026 and older host timezone data.
+Only the candidate in the first 15 minutes after 20:00 New York is admitted
+with --scheduled. The real NYSE session and immutable start receipt remain
+mandatory. No OS timezone change, interval relaunch or retry is performed.
 
 BOUNDS (all enforced before and during the run):
   * at most 8 wall-clock hours and at most 32 segments per session;
@@ -117,7 +115,7 @@ class StartReceiptBlocked(SessionRefused):
 
 
 class HostTimezoneError(SessionRefused):
-    """Host timezone does not match the 17:00 Vancouver / 20:00 New York contract."""
+    """Host timezone does not match the configured Vancouver calendar carrier."""
 
 
 class SessionInterrupted(RuntimeError):
@@ -139,8 +137,11 @@ class SessionConfig:
     max_segments: int = MAX_SEGMENTS
     segment_max_seconds: int = PER_SEGMENT_MAX_SECONDS
     total_max_seconds: int = MAX_TOTAL_SECONDS
+    scheduled: bool = False
 
     def __post_init__(self) -> None:
+        if type(self.scheduled) is not bool:
+            raise SessionRefused("scheduled must be a boolean")
         if type(self.total_max_messages) is not int or not 1 <= self.total_max_messages <= MAX_TOTAL_MESSAGES:
             raise SessionRefused(
                 f"total message budget must be an integer in 1..{MAX_TOTAL_MESSAGES}")
@@ -192,17 +193,12 @@ def _host_zone_name() -> str:
 
 
 def validate_host_timezone(now_utc: datetime, local_tz: Any = None) -> dict[str, Any]:
-    """Validate the launchd/host timezone contract before any effect.
+    """Require the configured host zone and a supported Vancouver clock.
 
-    The plist fires at 17:00 in the Mac's real timezone. That instant equals
-    20:00 ET only while the host zone sits exactly 3 hours behind New York
-    and is the zone the deployment was built for (America/Vancouver). Both
-    zones observe DST, so the offset difference is -3h year-round, including
-    across DST transitions. A zone whose *name* is discoverable must be the
-    expected one, so a same-offset wrong zone (an Etc/GMT+7 alias) cannot
-    silently stand in for the configured host. Never changes the OS timezone.
-    ``local_tz`` defaults to the process timezone (production); tests inject
-    the zone under test without touching the OS.
+    B.C. keeps UTC-7 after March 2026; older host tzdata may still use UTC-8
+    in winter. Finite calendar candidates cover either representation, while
+    the New York entry gate decides whether this invocation may start.
+    Never change the OS clock or infer the market window from a fixed delta.
     """
     if local_tz is None:
         zone = _host_zone_name()
@@ -213,19 +209,24 @@ def validate_host_timezone(now_utc: datetime, local_tz: Any = None) -> dict[str,
     et = now_utc.astimezone(ET)
     offset = local.utcoffset() - et.utcoffset()
     zone = _zone_name(local.tzinfo)
-    expected = timedelta(hours=-3)
-    checks = {"offset_ok": offset == expected,
+    checks = {"offset_ok": local.utcoffset() in {timedelta(hours=-7), timedelta(hours=-8)},
               "zone_ok": True if not zone else zone == "America/Vancouver"}
     result = {"host_zone": zone, "local_offset_vs_et_seconds": int(offset.total_seconds()),
-              "expected_offset_seconds": int(expected.total_seconds()),
+              "supported_host_utc_offsets_seconds": [-28800, -25200],
               "host_timezone_ok": all(checks.values()), **checks,
               "now_local": local.isoformat(), "now_et": et.isoformat()}
     if not result["host_timezone_ok"]:
         raise HostTimezoneError(
             "host timezone does not match the deployment contract "
             f"(zone={zone or 'unknown'}, offset vs ET={int(offset.total_seconds())}s, "
-            "expected America/Vancouver at ET-3h): refusing to start")
+            "expected America/Vancouver with a UTC-7 or UTC-8 host clock): refusing to start")
     return result
+
+
+def scheduled_session_due(now_utc: datetime) -> bool:
+    """One market-open admission window, independent of host clock changes."""
+    local = now_utc.astimezone(ET)
+    return local.hour == 20 and local.minute < 15 and boats_session_date(now_utc) is not None
 
 
 def overnight_boundary_et(now_utc: datetime) -> datetime:
@@ -463,6 +464,9 @@ def run_session(config: SessionConfig, *, clock: Optional[_Clock] = None,
     result["host_timezone_ok"] = tz["host_timezone_ok"]
     result["host_zone"] = tz["host_zone"]
 
+    if config.scheduled and not scheduled_session_due(started_at):
+        return finish("scheduled_candidate_not_due", outside=True)
+
     # 2. Real overnight window (holidays/DST via the incumbent calendar).
     session = boats_session_date(started_at)
     result["session_date"] = session
@@ -590,6 +594,8 @@ def build_parser() -> argparse.ArgumentParser:
         description="One finite overnight BOATS session over bounded incumbent segments.")
     parser.add_argument("--publish", action="store_true",
                         help="Run the real bounded session (default is a dry-run plan).")
+    parser.add_argument("--scheduled", action="store_true",
+                        help="Admit a calendar candidate only just after 20:00 New York.")
     parser.add_argument("--symbols-file",
                         help="Bounded line-oriented BOATS coverage (required for --publish).")
     parser.add_argument("--archive-root",
@@ -623,7 +629,7 @@ def main(argv: list[str] | None = None) -> int:
             publish=args.publish, symbols_file=args.symbols_file or "",
             archive_root=args.archive_root or "", total_max_messages=total,
             max_segments=args.max_segments,
-            segment_max_seconds=args.segment_max_seconds)
+            segment_max_seconds=args.segment_max_seconds, scheduled=args.scheduled)
     except SessionRefused as exc:
         log.error("refusing to start: %s", exc)
         return 2
@@ -652,7 +658,7 @@ def main(argv: list[str] | None = None) -> int:
         if reason in {"segment_cap_reached", "message_budget_exhausted", "time_budget_exhausted"}:
             log.warning("bounded run ended before window completion: %s", reason)
             return 5
-        if reason not in {"overnight_window_closed", "outside_overnight_window"}:
+        if reason not in {"overnight_window_closed", "outside_overnight_window", "scheduled_candidate_not_due"}:
             return 1
     return 0
 

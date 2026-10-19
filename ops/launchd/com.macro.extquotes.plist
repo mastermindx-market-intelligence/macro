@@ -4,18 +4,13 @@
 <!--
   com.macro.extquotes.plist — launchd agent for the overnight BOATS session runner.
 
-  Fires ONCE per evening at 17:00 in the Mac's real timezone (America/Vancouver),
-  which is exactly 20:00 America/New_York (both zones observe DST, so the 3-hour
-  offset holds year-round, including across DST transitions).  Sunday through
-  Thursday evenings — those open the overnight sessions tied to Monday through
-  Friday's US cash sessions.  The wrapper (run_ext_quotes_loop.sh) execs the
-  bounded Python runner scripts.run_boats_session in publish mode, which covers one
-  real overnight session (20:00→04:00 ET) as sequential bounded incumbent
-  publish_boats_stream segments and then exits.  launchd fires the next session
-  at the next StartCalendarInterval; there is no KeepAlive, no RunAtLoad and no
-  StartInterval, so a failed process is not respawned. launchd may coalesce a missed
-  calendar event at wake; the runner still requires the current overnight window
-  and an unused session start receipt.
+  Candidate launches at 17:00 and 18:00 America/Vancouver cover permanent
+  UTC-7 and older host timezone databases. Only the candidate just after
+  20:00 America/New_York passes the scheduled entry guard, with an unused session receipt.
+  B.C. no longer changes clocks in November 2026:
+  https://news.gov.bc.ca/releases/2026CITZ0009-001073
+  One admitted invocation covers the finite 20:00-04:00 ET session. There is
+  no KeepAlive, RunAtLoad, StartInterval or retry after a failed process.
 
   The Python runner validates the expected host timezone/offset equivalence and
   the real NYSE calendar (holidays, DST) before any effect, takes a nonblocking
@@ -85,28 +80,20 @@
   <key>WorkingDirectory</key>
   <string>/Users/chriswong/flow-ops-wt</string>
 
-  <!--
-    Fire ONCE at 17:00 in the Mac's real timezone (America/Vancouver) = 20:00 ET,
-    opening the overnight session tied to the NEXT US cash session.  Sunday
-    evening opens Monday's session ... Thursday evening opens Friday's.  Friday
-    and Saturday evenings would target non-sessions, so they are absent; the
-    Python runner independently re-checks the real NYSE calendar (holidays,
-    DST) and exits outside a real overnight window.  launchd Weekday: 0=Sunday.
-    System timezone must remain America/Vancouver (the runner refuses a
-    mismatched host timezone instead of guessing).
-  -->
+  <!-- Two finite host-clock candidates; the runner admits only 20:00 ET.
+       Sunday-Thursday target the next real US cash session. -->
   <key>StartCalendarInterval</key>
   <array>
-    <!-- Sunday evening → Monday overnight session -->
     <dict><key>Weekday</key><integer>0</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>0</integer></dict>
-    <!-- Monday evening → Tuesday overnight session -->
+    <dict><key>Weekday</key><integer>0</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
     <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>0</integer></dict>
-    <!-- Tuesday evening → Wednesday overnight session -->
+    <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
     <dict><key>Weekday</key><integer>2</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>0</integer></dict>
-    <!-- Wednesday evening → Thursday overnight session -->
+    <dict><key>Weekday</key><integer>2</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
     <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>0</integer></dict>
-    <!-- Thursday evening → Friday overnight session -->
+    <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
     <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
   </array>
 
   <key>EnvironmentVariables</key>

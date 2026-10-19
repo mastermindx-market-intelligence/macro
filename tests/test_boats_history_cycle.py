@@ -110,11 +110,11 @@ def test_daily_calendar_is_one_postclose_fire_without_restart_loop():
     source = Path(__file__).resolve().parents[1]/"ops/launchd/com.macro.boats-history.plist"
     job = plistlib.loads(source.read_bytes())
     assert job["StartCalendarInterval"] == [
-        {"Weekday": day, "Hour": 1, "Minute": 10} for day in range(1, 6)]
+        {"Weekday": day, "Hour": hour, "Minute": 10} for day in range(1, 6) for hour in (1,2)]
     assert job["RunAtLoad"] is False and job["KeepAlive"] is False and "StartInterval" not in job
     assert job["ProgramArguments"][:3] == ["/usr/bin/caffeinate", "-i", "-s"]
     assert job["WorkingDirectory"].startswith("/Volumes/Mastermind/")
-    assert "--execute" in job["ProgramArguments"]
+    assert "--execute" in job["ProgramArguments"] and "--scheduled" in job["ProgramArguments"]
 
 
 def test_cycle_uses_real_assembler_with_producer_manifest(tmp_path):
@@ -138,3 +138,24 @@ def test_cycle_uses_real_assembler_with_producer_manifest(tmp_path):
     result = run_cycle(cfg, now=NOW, refresh=refresh, publish=publish,
         host_check=lambda now:None, session_check=lambda day:True)
     assert result["status"] == "selected"
+
+
+@pytest.mark.parametrize("day,host_offset,expected_hour", [
+    ("2026-10-19", -7, 1), ("2026-11-02", -7, 2), ("2026-11-02", -8, 1),
+    ("2027-01-05", -7, 2), ("2027-01-05", -8, 1)])
+def test_daily_candidates_select_exactly_one_postclose_hour(tmp_path, day, host_offset, expected_hour):
+    from datetime import timedelta
+    from zoneinfo import ZoneInfo
+    due = []
+    cfg = CycleConfig(tmp_path/"not-provisioned", tmp_path, "root@example.test", tmp_path/"key", 1, 1,
+        scheduled=True)
+    for hour in (1,2):
+        now = datetime.fromisoformat(day).replace(hour=hour, minute=10,
+            tzinfo=timezone(timedelta(hours=host_offset)))
+        if now.astimezone(ZoneInfo("America/New_York")).hour == 4:
+            due.append(hour)
+        else:
+            result = run_cycle(cfg, now=now, host_check=lambda now:None, session_check=lambda date:True)
+            assert result["status"] == "scheduled_candidate_not_due" and result["provider_requests"] == 0
+            assert not cfg.state_dir.exists()
+    assert due == [expected_hour]

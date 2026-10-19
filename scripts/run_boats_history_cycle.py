@@ -39,6 +39,7 @@ class CycleConfig:
     max_requests: int
     max_total_bytes: int
     max_response_bytes: int = 1024**2
+    scheduled: bool = False
 
 
 def private_directory(path: Path) -> None:
@@ -92,6 +93,8 @@ def run_cycle(config: CycleConfig, *, now: datetime | None = None,
     session = local.date().isoformat()
     if not session_check(session):
         return {"status":"closed_calendar", "session":session, "provider_requests":0}
+    if config.scheduled and local.hour != 4:
+        return {"status":"scheduled_candidate_not_due", "session":session, "provider_requests":0}
     if not 4 <= local.hour < 12:
         raise ValueError("post-close cycle requires 04:00 through 11:59 ET")
     if (type(config.max_requests) is not int or not 1 <= config.max_requests <= 20000
@@ -178,12 +181,13 @@ def main(argv=None) -> int:
     parser.add_argument("--ssh-target", required=True)
     parser.add_argument("--max-requests", type=int, required=True)
     parser.add_argument("--max-total-bytes", type=int, required=True)
+    parser.add_argument("--scheduled", action="store_true")
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args(argv)
     if not args.execute:
         parser.error("explicit --execute required; no capture or publication started")
     config = CycleConfig(args.state_dir, args.archive_root, args.ssh_target, args.ssh_key,
-                         args.max_requests, args.max_total_bytes)
+                         args.max_requests, args.max_total_bytes, scheduled=args.scheduled)
     print(json.dumps(run_cycle(config)))
     return 0
 

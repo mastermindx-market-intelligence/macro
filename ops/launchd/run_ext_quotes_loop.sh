@@ -1,11 +1,10 @@
 #!/bin/sh
 # ops/launchd/run_ext_quotes_loop.sh — one finite overnight BOATS session runner.
 #
-# Called by com.macro.extquotes.plist (via run_with_env.sh) ONCE per evening at
-# 17:00 in the Mac's real timezone (America/Vancouver), which is 20:00 ET.  It
-# execs the bounded Python session runner (scripts.run_boats_session), which
-# covers one real overnight session (20:00→04:00 ET) as sequential bounded
-# incumbent publish_boats_stream segments and then exits.
+# Calendar candidates at 17:00 and 18:00 Vancouver cover permanent UTC-7
+# and older host timezone data. --scheduled admits only the candidate just
+# after 20:00 New York; it cannot relaunch a failed or completed session.
+# One admitted run covers the finite 20:00-04:00 ET overnight window.
 #
 # There is deliberately NO polling loop and NO self-rescheduling here: launchd
 # fires the next session at the next StartCalendarInterval.  A crashed or
@@ -61,7 +60,7 @@ cd "$REPO_ROOT" || fail_closed "cannot enter repo root"
 log "starting one bounded overnight BOATS session (messages=$BOATS_TOTAL_MAX_MESSAGES)"
 # Hold the power assertion only for this bounded command; no power settings change.
 PYTHONPATH="$REPO_ROOT${PYTHONPATH:+:$PYTHONPATH}" exec /usr/bin/caffeinate -i -s "$PYTHON" -m "$MODULE" \
-    --publish \
+    --publish --scheduled \
     --symbols-file "$BOATS_SYMBOLS_FILE" \
     --archive-root "$BOATS_ARCHIVE_ROOT" \
     --total-max-messages "$BOATS_TOTAL_MAX_MESSAGES" \

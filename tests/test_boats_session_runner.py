@@ -158,25 +158,36 @@ class WindowAndCalendarTests(Harness):
 
 
 class TimezoneTests(Harness):
-    def test_offset_equivalence_holds_across_dst(self):
-        # Both deployment zones observe DST in lock-step, so the host sits
-        # exactly 3h behind ET year-round. Modelled with fixed offsets so the
-        # assertion depends on the calendar contract, not this container's
-        # per-zone tz files (this container's America/Vancouver file is
-        # corrupt after the 2026 fall-back; production Macs are not).
-        PDT, PST = timezone(timedelta(hours=-7)), timezone(timedelta(hours=-8))
-        pre = datetime(2026, 10, 18, 17, 0, tzinfo=PDT)   # 20:00 EDT
-        post = datetime(2026, 11, 1, 17, 0, tzinfo=PST)   # 20:00 EST
-        for moment in (pre, post):
-            checked = validate_host_timezone(moment.astimezone(timezone.utc),
-                                             local_tz=moment.tzinfo)
-            self.assertTrue(checked["host_timezone_ok"])
-            self.assertTrue(checked["offset_ok"])
-        self.assertEqual(post.astimezone(ET).hour, 20)
-        self.assertEqual(pre.astimezone(ET).hour, 20)
+    def test_market_open_candidates_cover_bc_permanent_time_and_older_hosts(self):
+        # B.C. remains UTC-7 after March 2026. Older Mac databases may still
+        # expose winter UTC-8. Exactly one candidate must reach 20:00 ET.
+        from scripts.run_boats_session import scheduled_session_due
+        for date, host_offset, expected_hour in (("2026-10-18", -7, 17),
+                ("2026-11-01", -7, 18), ("2026-11-01", -8, 17),
+                ("2027-01-03", -7, 18), ("2027-01-03", -8, 17)):
+            host = timezone(timedelta(hours=host_offset))
+            admitted = []
+            for hour in (17, 18):
+                moment = datetime.fromisoformat(date).replace(hour=hour, tzinfo=host)
+                checked = validate_host_timezone(moment.astimezone(timezone.utc), local_tz=host)
+                self.assertTrue(checked["host_timezone_ok"])
+                if scheduled_session_due(moment): admitted.append(hour)
+            self.assertEqual(admitted, [expected_hour])
+
+    def test_scheduled_candidate_outside_market_open_has_no_archive_effect(self):
+        from dataclasses import replace
+        for moment in (et(2026, 10, 18, 19, 0), et(2026, 10, 18, 21, 0),
+                       et(2026, 10, 18, 20, 15)):
+            clock = FakeClock(moment.astimezone(timezone.utc))
+            result = run_session(replace(self.config(), scheduled=True), clock=clock,
+                archive_prep=lambda root: self.fail("scheduled no-op opened archive"),
+                segment_runner=lambda **kw: self.fail("scheduled no-op opened stream"),
+                local_tz=VANCOUVER)
+            self.assertEqual(result["terminal_reason"], "scheduled_candidate_not_due")
+            self.assertFalse((self.archive/"run-receipts").exists())
 
     def test_vancouver_zone_name_is_accepted_when_discoverable(self):
-        # 2025 dates: intact PST data on this container (see note above).
+        # Historical Vancouver zone identity remains supported.
         moment = datetime(2025, 11, 2, 17, 0, tzinfo=VANCOUVER).astimezone(timezone.utc)
         checked = validate_host_timezone(moment, local_tz=VANCOUVER)
         self.assertTrue(checked["host_timezone_ok"])
@@ -533,3 +544,13 @@ class ReviewRegressionTests(Harness):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_quote_calendar_candidates_require_new_york_entry_guard():
+    import plistlib
+    root = Path(__file__).resolve().parents[1]
+    job = plistlib.loads((root/"ops/launchd/com.macro.extquotes.plist").read_bytes())
+    assert job["StartCalendarInterval"] == [
+        {"Weekday": day, "Hour": hour, "Minute": 0} for day in range(5) for hour in (17,18)]
+    assert not job.get("KeepAlive") and not job.get("RunAtLoad") and "StartInterval" not in job
+    assert "--publish --scheduled" in (root/"ops/launchd/run_ext_quotes_loop.sh").read_text()
