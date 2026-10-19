@@ -692,8 +692,8 @@ def serialize(catalog: dict, now: datetime | None = None) -> bytes:
     return (json.dumps(catalog, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
 
 
-# Dedicated-read preview matches the historical public app rule. Ordinary app
-# delegation remains in the held full F11 consumer slice.
+# The public catalog preview. One owner: app.research._catalog_preview delegates
+# item selection here, and the read service's preview_selector is preview_ids.
 PUBLIC_PREVIEW_COUNT = 3
 
 

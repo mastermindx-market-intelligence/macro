@@ -314,6 +314,27 @@ def build_selector_prompt(identity: dict[str, Any], body: str, *, _work_budget=N
         + "\n\nOUTPUT SHAPE:\n" + json.dumps(
             _selector_output_shape(identity, catalog), ensure_ascii=False
         )
+        + "\n\nOPTIONAL SELECTION ANNOTATION TYPES:\n"
+        + "numbers must be an array of at most 12 nonempty strings, each at most "
+        + "300 characters; use source text such as [\"12.8%\", \"2027\"], "
+        + "never JSON numbers such as [12.8, 2027]. Preserve the source's units "
+        + "and wording; do not invent annotations. entities must be an array of "
+        + "at most 20 nonempty strings, each at most 120 characters. horizon "
+        + "must be a string of at most 160 characters. explicit must be a JSON "
+        + "boolean, never a string or number. Omit unsupported optional annotations "
+        + "or use [] for numbers/entities and an empty string for horizon."
+        + "\n\nSELECTED CLAIM SUPPORT:\n"
+        + "The DOCUMENT BODY and unselected catalog units are navigation context, "
+        + "not additional support for analysis. Every named subject, sector, "
+        + "comparison and causal assertion in analysis must be established by "
+        + "the selected claims cited for that assertion. A sentence with an "
+        + "unstated subject or antecedent does not establish that subject merely "
+        + "because it appears elsewhere in the body. Select an admitted unit "
+        + "establishing the antecedent and cite both claims, or omit the "
+        + "interpretation. If no admitted unit provides that context, abstain; "
+        + "never recover excluded context by rewriting a quotation or importing "
+        + "it into analysis. Empty optional analysis fields are preferable to "
+        + "unsupported specificity."
         + "\n\nEVIDENCE CATALOG:\n" + json.dumps(prompt_catalog, ensure_ascii=False, sort_keys=True)
         + "\n\nSOURCE CONTEXT:\n" + json.dumps(context, ensure_ascii=False, sort_keys=True)
         + "\n\nDOCUMENT BODY:\n" + body

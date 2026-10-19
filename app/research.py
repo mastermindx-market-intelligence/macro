@@ -65,7 +65,7 @@ _UPGRADE_URL = "/plans.html"
 # full search, view, and download surfaces require PRO — essential/free/unknown all
 # stay on the preview or resolve to 402 paid_required. Fails CLOSED.
 _VIEW_TIERS = frozenset({"pro"})
-_PUBLIC_PREVIEW_COUNT = 3
+_PUBLIC_PREVIEW_COUNT = catalog_mod.PUBLIC_PREVIEW_COUNT
 
 # ── doc_id validation ──────────────────────────────────────────────────────
 # The slug shape produced by sidecar.slug (lowercase alnum + hyphens, first char
@@ -481,19 +481,13 @@ def _safe_filename(doc_id: str, title: str) -> str:
 def _catalog_preview(catalog: dict, limit: int = _PUBLIC_PREVIEW_COUNT) -> dict:
     """Return only the newest summary-ready reports while retaining total count."""
     items = list(catalog.get("items") or [])
-    ready = [
-        item for item in items
-        if any(str(point or "").strip() for point in ((item or {}).get("summary_points") or []))
-    ]
-    preview = ready[:limit]
-    selected = {str((item or {}).get("id") or "") for item in preview}
-    if len(preview) < limit:
-        preview.extend(
-            item for item in items
-            if str((item or {}).get("id") or "") not in selected
-        )
+    preview = catalog_mod.preview_items(catalog, limit)
     public = dict(catalog)
-    public["items"] = preview[:limit]
+    # Internal-only generation block (producer/report cohort + content hashes):
+    # popped from the SHALLOW copy so it can never leave through a public
+    # preview; the canonical catalog this was copied from keeps the field.
+    public.pop("producer_generation", None)
+    public["items"] = preview
     public["count"] = len(items)
     public["preview"] = True
     public["summary"] = catalog.get("summary") or catalog_mod.public_summary(catalog)
@@ -516,6 +510,11 @@ def research_catalog(
     prior copy exists; 503 only if never fetched. No PDF bytes are returned.
     """
     catalog = dict(_load_catalog())
+    # Same internal-only block _catalog_preview strips: the authenticated FULL
+    # catalog is still a public API response, so it is popped here for BOTH
+    # tiers, from this per-request copy — the cached canonical keeps its exact
+    # field and bytes.
+    catalog.pop("producer_generation", None)
     catalog["preview"] = False
     catalog["summary"] = catalog_mod.public_summary(catalog)
     return catalog if _can_view(_optional_tier(authorization)) else _catalog_preview(catalog)

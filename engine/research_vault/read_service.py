@@ -206,6 +206,16 @@ class ResearchReadService:
         self._clock = clock or (lambda: datetime.now(timezone.utc))
         self._comparison_owners = comparison_owners
 
+    def comparison_view(self, *, caller_context: Any, request: Any) -> Mapping[str, Any]:
+        """Private Brain seam; the four public ReadPort tools are unchanged."""
+        from engine.research_vault.comparison import failure, view
+        gated = self._gate_context(caller_context, "find_evidence")
+        if not isinstance(gated, ServerReadContext) or self._entitle_report(gated) is not None:
+            return failure("REPORT_NOT_ENTITLED", denied=True)
+        if gated.surface != "brain":
+            return failure("COMPARISON_SURFACE_UNAVAILABLE", denied=True)
+        return view(self, gated, request, self._comparison_owners)
+
     def _now(self) -> datetime:
         return self._clock()
 

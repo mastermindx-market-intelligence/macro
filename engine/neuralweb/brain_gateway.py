@@ -5455,7 +5455,7 @@ def _dispatch_brain_tool(
                     "The research vault is an Essential/Pro capability. This user is on "
                     f"the '{_tier}' tier — explain the gate; do not fabricate research.")}
             _mode = str(tool_params.get("mode") or "search").strip().lower()
-            if _mode == "report":
+            if _mode in {"report", "compare"}:
                 # Analyst OS W4 (operator ruling 2026-07-31): full-report content is
                 # PRO-only, mirroring the vault product's own view gate
                 # (app/research._VIEW_TIERS). Essential keeps summaries/clusters.
@@ -5465,6 +5465,9 @@ def _dispatch_brain_tool(
                         "Full report content is a Pro capability — Essential gets the "
                         "summaries. Explain the upgrade; keep answering from the "
                         "summary you already have.")}
+            if _mode == "compare" and (type(tool_params) is not dict
+                    or set(tool_params) - {"query", "limit", "mode", "report_id", "comparison"}):
+                return {"error": "invalid_request"}
             from engine.neuralweb import brain_market_intel as _bmi  # noqa: PLC0415
             return _bmi.search_research(
                 root,
@@ -5472,7 +5475,8 @@ def _dispatch_brain_tool(
                 limit=tool_params.get("limit", 5),
                 mode=_mode,
                 report_id=str(tool_params.get("report_id") or ""),
-                user_ctx={"user_id": user_id} if _mode == "report" else None,
+                user_ctx={"user_id": user_id} if _mode in {"report", "compare"} else None,
+                **({"comparison": tool_params.get("comparison")} if _mode == "compare" else {}),
             )
         if tool_name == "get_retained_market_catalog":
             from app.market_memory import retained_catalog_for_user

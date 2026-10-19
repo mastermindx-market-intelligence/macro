@@ -5083,7 +5083,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_638),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_655),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5092,6 +5092,38 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    Fresh protected-main 55362545 integration (2026-10-19): retain the
+    protected FIF and seasonality additions plus all F11 consumer coverage.
+    ONE canonical merged-manifest measurement records 135/5780, 134/5655
+    and 128/5529 jobs/weight, all ten packs. Fund only the sole actual
+    excess, build_free_content 5651 -> 5655. Every job-count, other weight
+    and pack ceiling stays fixed; the full three rows are retained in the
+    existing Vault integration evidence. No selector or test is removed.
+
+    Fresh protected-main d1d95cea integration (2026-10-19): preserve the
+    retained SEC13D job's added suites as well as the Vault qualification
+    and quota suites. The canonical merged-manifest probe reproduces one
+    breach only: build_free_content 5651 against 5645, with 134 jobs and
+    ten packs. Fund exactly 5645 -> 5651; no job/pack or other weight
+    ceiling changes. The preimage measurement is retained in the existing
+    Vault integration evidence; no selector or suite is removed.
+
+    I03 concrete comparison composition (2026-10-19): extend the existing
+    F11 API invocation with its qualification, sealed-policy and atomic-meter
+    suites. Canonical measurement is 135/5770, 134/5645 and 128/5519
+    jobs/weight, all at 10 packs. Fund only build_free_content 5639 -> 5645;
+    all job-count, other weight and pack ceilings remain unchanged. The
+    measured manifest is retained with the source integration evidence.
+
+    Full F11 consumer reconciliation on protected 521306fe (2026-10-19):
+    keep the protected 42 Vault suites and 2 API suites, then add only the 5
+    remaining consumer suites to the API job. All 49 unique suites run once;
+    the API estimator changes 7 -> 18. Canonical measurement records 135/5764,
+    134/5639 and 128/5513 jobs/weight for the three probes, all at 10 packs.
+    Fund only the sole actual breach, build_free_content 5630 -> 5639. Other
+    ceilings, job counts, selectors and suite coverage remain unchanged.
+    This replaces neither tests nor required exact-head hosted execution.
 
     2026-10-19 Research Vault full-body/producer composition: the existing
     code-gated job gains its complete 36-suite invocation (estimated weight

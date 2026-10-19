@@ -62,6 +62,13 @@ def build_read_service(**overrides: Any) -> ResearchReadService:
         "source_classifier": _source_classifier(),
     }
     built.update(overrides)
+    if "comparison_owners" not in built:
+        from engine.research_vault.comparison_runtime import build_comparison_owners
+        from engine.research_intelligence.comparison_policy import SealedQualificationPolicy
+        authority = built.get("qualification_authority")
+        if "qualification_authority" not in built:
+            authority = SealedQualificationPolicy().authority()
+        built["comparison_owners"] = build_comparison_owners(built["catalog_store"], authority=authority)
     clock = {}
     if "clock" in built:
         clock["clock"] = built["clock"]

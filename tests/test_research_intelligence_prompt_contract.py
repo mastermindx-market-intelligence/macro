@@ -49,6 +49,32 @@ def test_accessor_has_no_independent_enum(monkeypatch):
     assert schema.thesis_direction_values() == ("synthetic-only",)
 
 
+def test_numeric_annotation_guidance_preserves_the_stored_system_contract():
+    system, user = extractor.build_prompt(DOCUMENT, BODY)
+    assert 'never JSON numbers such as [12.8, 2027]' in user
+    assert 'entities must be an array' in user
+    assert 'explicit must be a JSON boolean' in user
+    # Existing immutable RIO receipts retain the same system-contract identity.
+    assert hashlib.sha256((extractor.PROMPT_VERSION + "\n" + system).encode()).hexdigest() == (
+        '016966d49fbf7cde70b71b27885796ba2f7ab0580ab1723fbba3d513c4c81f4f'
+    )
+
+
+@pytest.mark.parametrize("number", [12.8, 2027, True, {"value": "12%"}])
+def test_observed_numeric_annotation_is_rejected_without_coercion(number):
+    from engine.research_intelligence import selection
+    identity = extractor._identity(DOCUMENT, BODY)
+    catalog = selection.build_selection_catalog(identity, BODY)
+    payload = {
+        "selector": selection.SELECTOR_VERSION, "document": identity,
+        "catalog_sha256": catalog["catalog_sha256"],
+        "selections": [{"evidence_id": catalog["units"][0]["evidence_id"], "numbers": [number]}],
+        "analysis": _rio("unclear")["analysis"],
+    }
+    with pytest.raises(ValueError, match=r"numbers items must be nonempty strings"):
+        selection.parse_selector_output(json.dumps(payload), identity, BODY)
+
+
 def test_observed_unsupported_direction_still_rejected():
     with pytest.raises(ValueError, match="unsupported analysis.thesis.direction"):
         _parse(_rio("cautiously constructive"))
