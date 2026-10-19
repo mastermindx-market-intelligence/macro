@@ -757,8 +757,9 @@ def test_c2b_digest_and_order_determinism() -> None:
         _record(without_record(first, "state_id"))
     )
 
-    # Reversing the ACTION order: both records are sorted, so nothing moves but
-    # the scenario id, which digests the order the operator supplied.
+    # Reversing the ACTION order: both records are sorted and the scenario stores
+    # its actions as a keyed set, so nothing moves, the scenario id included
+    # (masterplan A22: row order does not change results; SPEC_S0 section 11 item 6).
     reordered, _, _ = evaluate_with_actions(list(reversed(actions)), **kwargs)
     assert reordered.inputs["non_capacity_actions"] == first.inputs["non_capacity_actions"]
     assert reordered.inputs["actions_applied"] == first.inputs["actions_applied"]
@@ -770,8 +771,9 @@ def test_c2b_digest_and_order_determinism() -> None:
     assert sha256_of(_record(without_record(reordered))) == sha256_of(
         _record(without_record(first))
     )
-    assert reordered.inputs["scenario_id"] != first.inputs["scenario_id"]
-    assert reordered.envelope.receipt.input_digest != first.envelope.receipt.input_digest
+    assert reordered.inputs["scenario_id"] == first.inputs["scenario_id"]
+    assert reordered.envelope.receipt.input_digest == first.envelope.receipt.input_digest
+    assert reordered.envelope.as_record() == first.envelope.as_record()
 
 
 # ---------------------------------------------------------------------------

@@ -213,6 +213,16 @@ def test_no_history_at_all_still_answers_and_still_flags(data_root):
     assert "no PIT history yet" in got["note"]
 
 
+def test_coverage_of_a_corrupt_store_raises_never_reports_empty(data_root):
+    """Q02-F1 gap A1: an existing but unreadable store is not an empty one."""
+    assert pit.coverage(THS)["snapshots"] == 0          # absent = honest empty
+    p = pit.history_path(THS)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_bytes(b"not a parquet file")
+    with pytest.raises(pit.HistoryIntegrityError):
+        pit.coverage(THS)
+
+
 def test_unknown_basket_is_not_reported_as_an_authoritative_empty(data_root):
     """An empty member list with pit=True would read as 'this basket was empty
     that day'. A typo must not be able to say that."""
