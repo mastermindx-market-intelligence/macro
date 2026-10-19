@@ -4984,6 +4984,10 @@ def test_unrun_picks_boards_owns_macro_risk_dialog_locale_token_source() -> None
 
 @pytest.mark.parametrize("dependency", [
     'app/ontology_explorer.py',  # ci-trigger-closure: data — a changed path name, not a read
+    'engine/price_pressure/research.py',  # ci-trigger-closure: data — selection probe
+    'data/price_pressure/latest.json',  # ci-trigger-closure: data — native dynamic read
+    'templates/ontology-research.js',  # ci-trigger-closure: data — browser module
+    'site/ontology-research.js',  # ci-trigger-closure: data — emitted browser module
     'engine/transmission_company_continuation.py',  # ci-trigger-closure: data — a changed path name, not a read
     'knowledge/transmission/dollar_spike_em_multinational.yaml',  # ci-trigger-closure: data — a changed path name, not a read
     'config/theme_sources.yml',  # ci-trigger-closure: data — a changed path name, not a read

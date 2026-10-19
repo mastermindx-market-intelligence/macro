@@ -418,6 +418,20 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
     <div data-theme-result aria-live="polite" aria-busy="false"></div>
   </section>
 
+  <details id="ox-research" class="ox-company ox-detail ox-detail--flush">
+    <summary><span class="l-en">Inspect a native price-pressure event</span><span class="l-zh">查看原生价格压力事件</span></summary>
+    <p class="ox-note"><span class="l-en">Open a retrospective research case from one exact observed event. Its relationship to the transmission path above is not established.</span><span class="l-zh">从一个确切的已观测事件打开回溯研究案例。该事件与上方传导路径的关系尚未确立。</span></p>
+    <p><a class="ox-action" href="stocks/index.html#pressure"><span class="l-en">Find an event in Pressure Watch</span><span class="l-zh">在个股承压中查找事件</span></a></p>
+    <form class="ox-company-form" autocomplete="off">
+      <label class="ox-company-label"><span class="l-en">Event date</span><span class="l-zh">事件日期</span><input type="date" name="date" required></label>
+      <label class="ox-company-label"><span class="l-en">Symbol</span><span class="l-zh">代码</span><input type="text" name="ticker" maxlength="15" spellcheck="false" autocapitalize="characters" required></label>
+      <label class="ox-company-label"><span class="l-en">Residual side</span><span class="l-zh">残差方向</span><select name="side"><option value="down" data-en="Negative residual" data-zh="负残差">Negative residual</option><option value="up" data-en="Positive residual" data-zh="正残差">Positive residual</option></select></label>
+      <button class="ox-cta" type="submit"><span class="l-en">Inspect event</span><span class="l-zh">查看事件</span></button>
+      <button class="ox-cta secondary" type="button" data-research-clear><span class="l-en">Clear reading</span><span class="l-zh">清除读数</span></button>
+    </form>
+    <div data-research-result aria-live="polite" aria-busy="false"></div>
+  </details>
+
   <noscript>
     <section class="ox-gate">
       <h2><span class="l-en">This page needs JavaScript</span><span class="l-zh">本页面需要 JavaScript</span></h2>
@@ -441,5 +455,6 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 <script type="module" src="ontology-scenario.js"></script>
 <script type="module" src="ontology-company.js"></script>
 <script type="module" src="ontology-theme.js"></script>
+<script type="module" src="ontology-research.js"></script>
 </body>
 </html>

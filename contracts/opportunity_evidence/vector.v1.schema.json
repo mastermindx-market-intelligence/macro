@@ -152,13 +152,14 @@
         },
         "grain": {"enum": ["date", "datetime"]},
         "t0_source": {
-          "description": "The decision date must come from an existing PIT object, never optimized after seeing forward returns (E0 §4.1). Every source is authenticated by t0_evidence_ref against the registry t0_sources pins (semantic K3E_R021). The retired caller_named_pit_object free string is replaced by owner_pit_reference, which additionally REQUIRES a known native_digest immutability receipt (Sol REQUEST_CHANGES 2026-08-25 item 1). The four named sources are validation-checkable: the registry pins their owner_store and recorded clock class. owner_pit_reference is NOT — its store, clock class and referenced bytes are all caller-declared — so it is an accountability receipt rather than a verification, and the registry restricts it to t0_mode 'retrospective_research' (Sol REQUEST_CHANGES 2026-08-26 item A). No source on this wire is 'fully authenticated' in the sense of validation reading the owner's bytes; this contract holds no owner I/O.",
+          "description": "The decision date must come from an existing PIT object, never optimized after seeing forward returns (E0 §4.1). Every source is authenticated by t0_evidence_ref against the registry t0_sources pins (semantic K3E_R021). The retired caller_named_pit_object free string is replaced by owner_pit_reference, which additionally REQUIRES a known native_digest immutability receipt (Sol REQUEST_CHANGES 2026-08-25 item 1). The four named sources are validation-checkable: the registry pins their owner_store and recorded clock class. owner_pit_reference is NOT — its store, clock class and referenced bytes are all caller-declared — so it is an accountability receipt rather than a verification, and the registry restricts it to t0_mode 'retrospective_research' (Sol REQUEST_CHANGES 2026-08-26 item A). No source on this wire is 'fully authenticated' in the sense of validation reading the owner's bytes; this contract holds no owner I/O. DRL event-session time is retired as a decision origin; drl_captured_read binds present-day retrospective inspection only.",
           "enum": [
             "winner_case_t0_hypothesis",
             "drl_event_date",
             "prophet_stamp_date",
             "radar_observed_at",
-            "owner_pit_reference"
+            "owner_pit_reference",
+            "drl_captured_read"
           ]
         },
         "t0_mode": {
@@ -540,6 +541,9 @@
           "type": ["string", "null"],
           "maxLength": 160,
           "description": "Why this slot is excluded from composition (e.g. lookahead_known_at_after_asof, identity_unresolved). Required non-null when included_in_composition is false."
+        },
+        "captured_read": {
+          "$ref": "#/$defs/capturedRead"
         }
       },
       "allOf": [
@@ -820,6 +824,52 @@
         "unknown": {"type": "integer", "minimum": 0}
       },
       "description": "Every aggregate prints its denominator. Counts are the ONLY lawful aggregate arithmetic in this contract: no weighted value, sum of slot values, or cross-family numeric combination exists anywhere on this wire."
+    },
+    "capturedRead": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "snapshot_sha256",
+        "captured_at",
+        "event_date",
+        "ticker",
+        "side",
+        "historical_availability"
+      ],
+      "properties": {
+        "schema": {
+          "const": "drl_captured_read.v1"
+        },
+        "snapshot_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "captured_at": {
+          "$ref": "#/$defs/utcInstant"
+        },
+        "event_date": {
+          "$ref": "#/$defs/isoDate"
+        },
+        "ticker": {
+          "type": "string",
+          "pattern": "^[A-Z0-9][A-Z0-9.-]{0,14}$"
+        },
+        "side": {
+          "enum": [
+            "up",
+            "down"
+          ]
+        },
+        "historical_availability": {
+          "const": "unknown"
+        },
+        "harvested_asof": {
+          "oneOf": [{"type": "null"}, {"$ref": "#/$defs/isoDate"}],
+          "description": "Native harvest as-of session only; never an observed/arrival/availability clock."
+        },
+        "engine_version": {"type": ["string", "null"], "minLength": 1, "maxLength": 128}
+      }
     }
   }
 }

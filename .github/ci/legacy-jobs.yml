@@ -37,6 +37,9 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "engine/price_pressure/research.py"
+      - "lib/opportunity_case.py"
+      - "lib/opportunity_evidence.py"
       - "contracts/theme_graph/identity_resolution.v1.schema.json"
       - "contracts/theme_graph/ontology_neighborhood.v1.schema.json"
       - "engine/ontology_theme.py"
@@ -1792,6 +1795,9 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "engine/price_pressure/research.py"
+      - "lib/opportunity_case.py"
+      - "lib/opportunity_evidence.py"
       - "contracts/theme_graph/identity_resolution.v1.schema.json"
       - "contracts/theme_graph/ontology_neighborhood.v1.schema.json"
       - "engine/ontology_theme.py"
@@ -2611,6 +2617,9 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "engine/price_pressure/research.py"
+      - "lib/opportunity_case.py"
+      - "lib/opportunity_evidence.py"
       - "contracts/theme_graph/identity_resolution.v1.schema.json"
       - "contracts/theme_graph/ontology_neighborhood.v1.schema.json"
       - "engine/ontology_theme.py"
@@ -6285,6 +6294,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/price_pressure/research.py"
       - "engine/ontology_theme.py"
       - "engine/transmission_chains.py"
       - "scripts/calibrate_rate_inflation.py"
@@ -8552,6 +8562,9 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/price_pressure/research.py"
+      - "lib/opportunity_case.py"
+      - "lib/opportunity_evidence.py"
       - "contracts/theme_graph/identity_resolution.v1.schema.json"
       - "contracts/theme_graph/ontology_neighborhood.v1.schema.json"
       - "engine/ontology_theme.py"
@@ -11794,6 +11807,8 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "data/price_pressure/latest.json"
+      - "engine/price_pressure/__init__.py"
       - "app/__init__.py"
       - "app/account_actions.py"
       - "app/account_prefs.py"
@@ -12826,6 +12841,12 @@ jobs:
       - "tests/test_symbol_directory_completion_receipts.py"
       - "tests/test_theme_graph_hierarchy_paths.py"
       - "tests/test_transmission_chains.py"
+      - "engine/price_pressure/research.py"
+      - "templates/ontology-research.js"
+      - "site/ontology-research.js"
+      - "tests/test_price_pressure_research.py"
+      - "tests/test_ontology_research_transport.py"
+      - "tests/test_ontology_research_browser.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -12840,11 +12861,13 @@ jobs:
       - name: ontology explorer — composer contract, owner episode, receipts
         run: python -m pytest tests/test_ontology_explorer_contract.py -q
       - name: ontology explorer — identity, private transport, public shell
-        run: python -m pytest tests/test_ontology_explorer_identity.py tests/test_ontology_explorer_transport.py tests/test_ontology_explorer_shell.py -q
+        run: python -m pytest tests/test_ontology_explorer_identity.py tests/test_ontology_explorer_transport.py tests/test_ontology_explorer_shell.py tests/test_ontology_research_transport.py -q
       - name: ontology research case — native evidence and existing live episode projection
         run: python -m pytest tests/test_opportunity_evidence_vector_contract.py tests/test_entry_radar_w4_live.py -k 'opportunity_case or research_case' -q
+      - name: captured native DRL event and evidence composition
+        run: python -m pytest tests/test_price_pressure_research.py -q
       - name: ontology explorer — real browser, selected context, responsive and failure states
-        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_ontology_explorer_brain_browser.py tests/test_ontology_company_browser.py tests/test_ontology_company_controller.py tests/test_ontology_exposure_company_browser.py tests/test_ontology_theme_browser.py -q
+        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_ontology_explorer_brain_browser.py tests/test_ontology_company_browser.py tests/test_ontology_company_controller.py tests/test_ontology_exposure_company_browser.py tests/test_ontology_theme_browser.py tests/test_ontology_research_browser.py -q
 
   research-factory-authority:
     if: ${{ false }}
@@ -18998,6 +19021,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/price_pressure/research.py"
       - "engine/ontology_theme.py"
       - "engine/transmission_chains.py"
       - "scripts/calibrate_rate_inflation.py"
@@ -19763,6 +19787,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/price_pressure/research.py"
       - "engine/ontology_theme.py"
       - "engine/transmission_chains.py"
       - "scripts/calibrate_rate_inflation.py"
@@ -21762,6 +21787,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/price_pressure/research.py"
+      - "lib/opportunity_case.py"
+      - "lib/opportunity_evidence.py"
       - "contracts/theme_graph/identity_resolution.v1.schema.json"
       - "contracts/theme_graph/ontology_neighborhood.v1.schema.json"
       - "engine/ontology_theme.py"
@@ -23343,6 +23371,7 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "engine/price_pressure/research.py"
       - "scripts/calibrate_rate_inflation.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
@@ -24118,6 +24147,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/price_pressure/research.py"
       - "engine/ontology_theme.py"
       - "engine/transmission_chains.py"
       - "scripts/calibrate_rate_inflation.py"
@@ -29501,6 +29531,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/price_pressure/research.py"
       - "engine/ontology_theme.py"
       - "engine/transmission_chains.py"
       - "scripts/calibrate_rate_inflation.py"
@@ -29992,6 +30023,9 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/price_pressure/research.py"
+      - "lib/opportunity_case.py"
+      - "lib/opportunity_evidence.py"
       - "contracts/theme_graph/identity_resolution.v1.schema.json"
       - "contracts/theme_graph/ontology_neighborhood.v1.schema.json"
       - "engine/ontology_theme.py"
@@ -32855,6 +32889,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/price_pressure/research.py"
+      - "lib/opportunity_case.py"
+      - "lib/opportunity_evidence.py"
       - "contracts/theme_graph/identity_resolution.v1.schema.json"
       - "contracts/theme_graph/ontology_neighborhood.v1.schema.json"
       - "engine/ontology_theme.py"

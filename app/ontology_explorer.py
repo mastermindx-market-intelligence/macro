@@ -66,7 +66,8 @@ _PRIVATE_HEADERS = {
 
 _PRIVATE_POST_PATHS = frozenset({'/api/ontology/explorer/scenario/v1',
                                  '/api/ontology/explorer/portfolio/v1',
-                                 '/api/ontology/explorer/theme/v1'})
+                                 '/api/ontology/explorer/theme/v1',
+                                 '/api/ontology/explorer/research/v1'})
 _POST_HEADERS = {**_PRIVATE_HEADERS, 'Vary': 'Authorization, Cookie'}
 
 _CHAIN_PARAM_RE = re.compile(r"[a-z0-9][a-z0-9_]{0,80}")
@@ -383,6 +384,53 @@ async def read_private_theme(request: Request,
 
 @router.api_route('/theme/v1', methods=['GET','HEAD','PUT','PATCH','DELETE','OPTIONS'], include_in_schema=False)
 def _theme_method_not_allowed(_user: dict = Depends(require_site_full_user)) -> Response:
+    error = _post_error(405, 'method_not_allowed')
+    error.headers['Allow'] = 'POST'
+    raise error
+
+
+def read_drl_research(root: Path, selection: dict) -> dict:
+    """Capture once through the native reader, then compose without another read."""
+    from engine.price_pressure.research import capture_event, compose_captured_evidence
+    from lib.opportunity_case import compose_case
+    captured = capture_event(root, event_date=selection['date'],
+                             ticker=selection['ticker'], side=selection['side'])
+    case = compose_case(**compose_captured_evidence(captured))
+    return {'schema': 'ontology_drl_research.v1', 'capture': captured, 'case': case}
+
+
+@router.post('/research/v1')
+async def read_private_drl_research(request: Request,
+                                   _user: dict = Depends(require_site_full_user)) -> Response:
+    payload = await _private_post_body(request)
+    from datetime import date
+    try:
+        if (set(payload) != {'schema', 'date', 'ticker', 'side'}
+                or payload['schema'] != 'ontology_drl_research_request.v1'
+                or type(payload['date']) is not str
+                or date.fromisoformat(payload['date']).isoformat() != payload['date']
+                or type(payload['ticker']) is not str
+                or re.fullmatch(r'[A-Z0-9][A-Z0-9.-]{0,14}', payload['ticker']) is None
+                or type(payload['side']) is not str or payload['side'] not in {'up', 'down'}):
+            raise ValueError
+    except (TypeError, ValueError, KeyError):
+        raise _post_error(400, 'invalid_event_selection') from None
+    from engine.price_pressure.research import CaptureUnavailable
+    try:
+        result = await run_in_threadpool(read_drl_research, _repo_root(),
+            {k: payload[k] for k in ('date', 'ticker', 'side')})
+    except CaptureUnavailable as exc:
+        if str(exc) == 'event_not_found':
+            raise _post_error(404, 'event_not_found') from None
+        raise _post_error(503, 'research_unavailable') from None
+    except Exception:
+        log.error('ontology research failed unexpectedly')
+        raise _post_error(503, 'research_unavailable') from None
+    return _bounded_post_response(result)
+
+
+@router.api_route('/research/v1', methods=['GET','HEAD','PUT','PATCH','DELETE','OPTIONS'], include_in_schema=False)
+def _research_method_not_allowed(_user: dict = Depends(require_site_full_user)) -> Response:
     error = _post_error(405, 'method_not_allowed')
     error.headers['Allow'] = 'POST'
     raise error

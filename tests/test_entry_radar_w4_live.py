@@ -155,7 +155,7 @@ def test_research_case_is_read_after_native_pass_without_changing_lifecycle_or_p
     row = next(r for r in result.payload["episodes"] if r["episode_id"] == episode.episode_id)
     projection = row["research_case"]
     assert projection["case_ref"]["case_id"] == case["case_id"]
-    assert projection["inferred"]["slots"][0]["value_or_null"] == {"resid_z": 1.25}
+    assert projection["inferred"]["slots"] == []  # uncaptured DRL is not historically available
     assert result.payload["research_priority"] == first.payload["research_priority"]
     assert {e.episode_id: e.canonical for e in ledger.episodes} == before
     assert result.delta.empty

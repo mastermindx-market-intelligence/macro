@@ -43,6 +43,58 @@ def _hash(value: Any) -> str:
     return sha256(ef.canonical_json_bytes(value)).hexdigest()
 
 
+def _captured_drl_identity(recipe: dict, blocks: list[dict], refs: dict, vector: dict) -> dict | None:
+    """Bind a single native event without claiming canonical security identity.
+
+    Capture time and mutable snapshot versions belong in content lineage, not
+    the stable event key. Both slots must point at the same one K1 reference.
+    """
+    if vector['asof']['t0_source'] != 'drl_captured_read':
+        return None
+    origin = vector['asof']['t0_evidence_ref']
+    identity = origin['native_identity']
+    expected_subject = {'key_type': 'drl_event_key', 'key': json.dumps(
+        [identity[k] for k in ('date', 'ticker', 'side')], separators=(',', ':'))}
+    if (recipe['recipe_name'] != 'drl_event_research.v1'
+            or recipe['subject_instance'] != expected_subject
+            or recipe['identity_joins'] or len(blocks) != 1 or len(refs) != 1
+            or len(recipe['block_specs']) != 1
+            or recipe['block_specs'][0]['block_key'] != 'drl_event_research'
+            or recipe['block_specs'][0]['output_fields'] != ['reality.drl_event']
+            or recipe['output_mappings'] != [{'output_field': 'reality.drl_event',
+                 'block_key': 'drl_event_research', 'when_unavailable': 'refuse'}]
+            or blocks[0]['block_key'] != 'drl_event_research'
+            or vector['subject']['subject_type'] != 'us_listing_symbol'
+            or vector['subject']['value'] != identity['ticker']
+            or vector['subject']['identity_state'] != 'single_owner_native'
+            or vector['subject']['identity_bridge'] is not None):
+        raise OpportunityCaseError('case_native_event_binding_invalid')
+    ref_id, ref = next(iter(refs.items()))
+    captured = origin['recorded_clock']['value']
+    if (ref['owner_store'] != 'price_pressure.event' or ref['native_identity'] != identity
+            or ref['subject'] != expected_subject or ref['secondary_subjects']
+            or ref['native_digest'] != origin['native_digest']
+            or ref['coverage_class'] != 'source_release_snapshot_only'
+            or blocks[0]['reference_ids'] != [ref_id]
+            or not any(c['class'] == 'system_recorded' and c['field'] == 'capture.captured_at'
+                       and c['value_state'] == 'known' and c['value'] == captured
+                       for c in ref['clocks'])):
+        raise OpportunityCaseError('case_native_event_reference_mismatch')
+    slots = vector['slots']
+    if {s['construct'] for s in slots} != {'drl_resid_shock', 'drl_filing_coverage'}:
+        raise OpportunityCaseError('case_native_event_scope_invalid')
+    for slot in slots:
+        capture = slot.get('captured_read', {})
+        if (slot['owner_ref']['evidence_ref_id'] != ref_id
+                or capture.get('captured_at') != captured
+                or capture.get('snapshot_sha256') != ref['native_digest']['sha256']
+                or any(capture.get(field) != identity[key] for field, key in
+                       [('event_date', 'date'), ('ticker', 'ticker'), ('side', 'side')])):
+            raise OpportunityCaseError('case_native_event_slot_mismatch')
+    return {'identity_contract': 'drl_native_event.v1',
+            'owner_store': 'price_pressure.event', 'native_identity': identity}
+
+
 def compose_case(*, recipe: dict, blocks: list[dict], references: dict[str, dict],
                  vector: dict, evaluation_reference_ids: list[str] | None = None) -> dict:
     """Compose substantive native legs without converting unknowns to scores.
@@ -108,15 +160,18 @@ def compose_case(*, recipe: dict, blocks: list[dict], references: dict[str, dict
     exact_subject = (subject["subject_type"] == "dataos_security_id"
                      and checked_recipe["subject_instance"] == {
                          "key_type": "security_id", "key": subject["value"]})
-    joined = exact_subject and receipt["state"] in {"complete", "partial", "corrected"}
+    native_event = _captured_drl_identity(checked_recipe, checked_blocks, refs, vector)
+    if native_event is not None and receipt['state'] not in {'complete', 'partial', 'corrected'}:
+        raise OpportunityCaseError('case_native_event_evidence_unavailable')
+    joined = (exact_subject or native_event is not None) and receipt["state"] in {"complete", "partial", "corrected"}
     # This is binding state, not a claim that native evidence is absent. K1 v1
     # currently refuses multi-owner joins lacking a validated canonical key.
-    binding = "exact_native_subject" if joined else "identity_unresolved"
+    binding = "exact_owner_native_event" if native_event is not None else "exact_native_subject" if joined else "identity_unresolved"
     by_key = {b["block_key"]: b for b in checked_blocks}
     admitted_ids = set(receipt["block_ids"]) if joined else set()
     context = {}
     for leg in _CONTEXT_LEGS:
-        keys = [m["block_key"] for m in checked_recipe["output_mappings"]
+        keys = [] if native_event is not None else [m["block_key"] for m in checked_recipe["output_mappings"]
                 if m["output_field"] == leg]
         selected = [by_key[k] for k in dict.fromkeys(keys) if k in by_key]
         usable = [b for b in selected if b["evidence_block_id"] in admitted_ids
@@ -147,6 +202,8 @@ def compose_case(*, recipe: dict, blocks: list[dict], references: dict[str, dict
                 "asof": {k: vector["asof"][k]
                 for k in ("value", "grain", "t0_source")},
                 "origin": {k: origin[k] for k in ("owner_store", "native_identity")}}
+    if native_event is not None:
+        identity = native_event
     case = {
         "schema": SCHEMA, "case_id": "opc_" + _hash(identity),
         "subject": subject, "asof": vector["asof"], "generated_at": vector["generated_at"],
@@ -167,17 +224,17 @@ def compose_case(*, recipe: dict, blocks: list[dict], references: dict[str, dict
         "entry_availability": projection["entry_availability"],
         "economic_cause_hypothesis": vector["economic_cause_hypothesis"],
         "evaluation_refs": [refs[i] for i in sorted(evaluation_ids)],
-        "research_state": "partial" if not joined or receipt["state"] != "complete"
+        "research_state": "partial" if native_event is not None or not joined or receipt["state"] != "complete"
                           or vector["compilation_state"] != "complete" else "complete",
         "evidence_binding": {"state": binding, "recipe_receipt": receipt,
-                             "scope": "exact_canonical_subject" if joined else "native_subjects_only"},
+                             "scope": "single_owner_event" if native_event is not None else "exact_canonical_subject" if joined else "native_subjects_only"},
         "denominators": {"evidence": receipt["denominator"], "vector": vector["denominator"]},
         "dominant_degradation": {"evidence": receipt["dominant_degradation"],
                                  "vector": vector["dominant_degradation"]},
         "calibrated": {"state": "unavailable", "opportunity_score": None,
                        "confidence": None, "probability": None, "impact": None},
         "authority": dict(ef.ALL_FALSE_AUTHORITY),
-        "permitted_consumers": ["research_session", "entry_radar_research_projection"],
+        "permitted_consumers": ["research_session"] if native_event is not None else ["research_session", "entry_radar_research_projection"],
         "owner_io_performed": False,
     }
     case["content_sha256"] = _hash(case)

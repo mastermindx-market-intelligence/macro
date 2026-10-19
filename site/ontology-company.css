@@ -11,6 +11,9 @@ html[data-theme="light"] .ox-company{background:var(--panel);box-shadow:var(--ca
   color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:var(--r-ctl,8px);
   font:inherit}
 .ox-company input{text-transform:uppercase}
+/* Native date-picker controls follow the same two form art directions. */
+html[data-theme="dark"] .ox-company input[type="date"]{color-scheme:dark}
+html[data-theme="light"] .ox-company input[type="date"]{color-scheme:light}
 .ox-company button{min-height:44px;cursor:pointer}
 .ox-company-identity,.ox-company-choices{display:flex;flex-wrap:wrap;gap:var(--space-3,12px);align-items:center;margin:var(--space-4,16px) 0}
 .ox-company-current{color:var(--muted);font-size:var(--fs-sm)}

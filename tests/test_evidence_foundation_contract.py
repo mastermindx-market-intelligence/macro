@@ -32,6 +32,9 @@ MANIFEST_PATH = FIXTURE_DIR / "manifest.json"
 
 
 EXPECTED_OWNER_BINDINGS = {
+    "price_pressure.event": {"identity": ("date", "ticker", "side"),
+        "clocks": {"native_identity.date": ("world_valid", ("date",)), "source.generated_utc": ("belief_or_build", ("datetime",)), "capture.captured_at": ("system_recorded", ("datetime",))},
+        "reader": ("engine.price_pressure.research.capture_event", "direct")},
     "theme_graph.evidence": {
         "identity": ("evidence_id",),
         "clocks": {
@@ -175,6 +178,7 @@ EXPECTED_OWNER_BINDINGS = {
 }
 
 EXPECTED_COVERAGE_REPLAY = {
+    "price_pressure.event": (["source_release_snapshot_only"], {"live": ["unavailable"], "retrospective_research": ["owner_native"]}),
     "theme_graph.evidence": (
         ["append_only_bitemporal"],
         {"live": ["owner_native"], "historical_replay": ["owner_native"]},
@@ -239,6 +243,7 @@ EXPECTED_COVERAGE_REPLAY = {
 }
 
 EXPECTED_NATIVE_IDENTITY_GRAMMARS = {
+    "price_pressure.event": {"date": {"kind": "date"}, "ticker": {"kind": "regex", "pattern": "^[A-Z0-9][A-Z0-9.-]{0,14}$"}, "side": {"kind": "enum", "values": ["up", "down"]}},
     "theme_graph.evidence": {
         "evidence_id": {"kind": "regex", "pattern": "^ev:[a-f0-9]{16}$"},
     },
@@ -327,6 +332,7 @@ EXPECTED_NATIVE_IDENTITY_GRAMMARS = {
 }
 
 EXPECTED_SUBJECT_NATIVE_PARITY = {
+    "price_pressure.event": {"drl_event_key": {"kind": "drl_event_tuple"}},
     "theme_graph.evidence": {
         "theme_evidence_id": {"kind": "native_field_equal", "field": "evidence_id"}
     },
@@ -377,6 +383,7 @@ EXPECTED_SUBJECT_NATIVE_PARITY = {
 }
 
 VALID_NATIVE_IDENTITIES = {
+    "price_pressure.event": {"date": "2026-10-15", "ticker": "ACWI", "side": "down"},
     "theme_graph.evidence": {"evidence_id": "ev:" + "a" * 16},
     "theme_graph.edge_belief": {
         "edge_id": "member_of:co:us:AAPL->basket:baskets:demo@2026-08-23",
@@ -420,6 +427,7 @@ VALID_NATIVE_IDENTITIES = {
 }
 
 ALTERNATE_FIRST_IDENTITY_VALUE = {
+    "price_pressure.event": "2026-10-14",
     "theme_graph.evidence": "ev:" + "b" * 16,
     "theme_graph.edge_belief": "member_of:co:us:MSFT->basket:baskets:demo@2026-08-23",
     "fif.raw_occurrence": "rawfact_" + "b" * 64,
@@ -436,6 +444,7 @@ ALTERNATE_FIRST_IDENTITY_VALUE = {
 }
 
 VALID_SUBJECT_VALUES = {
+    "drl_event_key": '["2026-10-15","ACWI","down"]',
     "cik": "0000320193",
     "issuer_id": "ISS:US-XNAS-AAPL",
     "security_id": "SEC:US-XNAS-AAPL",
@@ -557,6 +566,14 @@ def _owner_reference(name: str, owner: dict, clock_classes: list[str]) -> dict:
         },
         "authority": dict(ALL_FALSE_AUTHORITY),
     }
+    if name == "price_pressure.event":
+        payload["rights"] = {"state": "unknown", "policy_id": None}
+        payload["native_digest"] = {"state": "known", "sha256": "a" * 64}
+        for clock in payload["clocks"]:
+            clock.update(value_state="known", value="2026-10-15" if clock["grain"] == "date" else "2026-10-19T12:00:00Z")
+        payload["replay"].update(mode="retrospective_research", vintage_state="owner_native", input_digest="a" * 64)
+        for clock_class in ("world_valid", "system_recorded", "belief_or_build"):
+            payload["replay"]["cutoffs"][clock_class] = {"state": "known", "value": "2026-10-20", "grain": "date"}
     return _with_id(payload)
 
 
@@ -581,7 +598,7 @@ def test_contract_and_vocabulary_are_frozen_v1(schema: dict, vocabulary: dict) -
     assert schema["properties"]["version"]["const"] == "1.0.0"
     assert vocabulary["schema"] == "evidence_foundation.vocabulary.v1"
     assert vocabulary["version"] == "1.0.0"
-    assert len(vocabulary["owner_stores"]) == 13
+    assert len(vocabulary["owner_stores"]) == 14
     assert set(vocabulary["owner_stores"]) == set(EXPECTED_OWNER_BINDINGS)
     assert "reference.security_master" not in vocabulary["owner_stores"]
     assert "earnings.company_event" not in vocabulary["owner_stores"]
