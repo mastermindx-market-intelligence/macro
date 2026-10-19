@@ -491,3 +491,92 @@ def test_us_market_internals_scope_is_not_mislabeled_full_sp1500():
     assert 'id="si-breadth-scope"' in html
     assert "Current US breadth here covers S&P 500 members only" in html
     assert "S&P 400/600 aggregate participation is not yet qualified" in html
+
+
+def test_market_internals_dont_invent_mixed_on_missing_or_cross_vintage_breadth():
+    """Execute the actual embedded renderer, not just grep its copy.
+
+    The page and the S&P500 tape are independently produced; no synthetic
+    data, stale vintage or unverified universe may impersonate a measured
+    'Mixed' verdict. The original row data stays source-owned.
+    """
+    import shutil
+    import subprocess
+
+    js = PAGE_TPL.read_text(encoding="utf-8")
+    marker = "// ── Market internals (breadth) from THEME.market_concentration ──"
+    assert js.count(marker) == 1
+    fragment = js.split(marker, 1)[1].split("\nfunction boot(){", 1)[0]
+    assert "function renderInternals()" in fragment
+    assert "sourceDate===serverDate" in fragment
+    assert "sourceDate===basketDate" in fragment
+    assert "sp500_current_constituents" in fragment
+
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("JavaScript runtime unavailable; static source guard above passed")
+    preamble = """
+let currentServer = '', currentBasket = '', currentTheme = null, zh = false;
+let nodes = {};
+function nodeFor(id){
+  if(!nodes[id]){
+    let text = 'STALE', html = 'STALE';
+    const n = {style:{width:'82%',color:'red'}};
+    Object.defineProperty(n,'textContent',{get(){return text},set(v){text=String(v);html=String(v)}});
+    Object.defineProperty(n,'innerHTML',{get(){return html},set(v){html=String(v);text=String(v)}});
+    nodes[id]=n;
+  }
+  return nodes[id];
+}
+const document = {
+  getElementById: (id)=>nodeFor(id),
+  querySelector: (selector)=>selector==='.rvx-hero[data-si-as-of]'
+    ? {getAttribute:(key)=>key==='data-si-as-of'?currentServer:''}
+    : null
+};
+let BASKETS = null, THEME = null;
+function isZh(){return zh;}
+"""
+    cases = r"""
+function run(server, basket, mc, language=false){
+  currentServer=server;currentBasket=basket;currentTheme=mc;zh=language;nodes={};
+  BASKETS={as_of:currentBasket};THEME={market_concentration:currentTheme};
+  renderInternals();
+  return {
+    verdict:nodeFor('mkt-breadth').textContent,
+    note:nodeFor('mkt-breadth-sub').innerHTML,
+    ad:nodeFor('mkt-ad').innerHTML,
+    breadth200:nodeFor('mkt-above').innerHTML,
+    bar:nodeFor('mkt-ad-bar').style.width
+  };
+}
+const source={source_as_of:'2026-10-16',source_universe:'sp500_current_constituents',
+  verdict:'broad',adv:200,dec:150,ad_ratio:1.33,nh:11,nl:5,pct_above_200:65.2};
+const absent=run('2026-10-16','2026-10-16',{});
+const lag=run('2026-10-16','2026-10-16',{...source,source_as_of:'2026-10-14'});
+const badUniverse=run('2026-10-16','2026-10-16',{...source,source_universe:'sp1500'});
+const noPageDate=run('','2026-10-16',source);
+const staleBasket=run('2026-10-16','2026-10-14',source);
+const observed=run('2026-10-16','2026-10-16',source);
+const emptyVerdict=run('2026-10-16','2026-10-16',{...source,verdict:null});
+const zhUnknown=run('2026-10-16','2026-10-16',{},true);
+for(const x of [absent,lag,badUniverse,noPageDate,staleBasket]){
+  if(x.verdict!=='—'||x.bar!=='0%'||!x.note.includes('Not measured')){
+    throw Error('unverified market got positive condition: '+JSON.stringify(x));
+  }
+}
+if(observed.verdict!=='Broad'||!observed.ad.includes('200')||!observed.breadth200.includes('65%')){
+  throw Error('legitimate same-date observation disappeared: '+JSON.stringify(observed));
+}
+if(emptyVerdict.verdict!=='—'||!emptyVerdict.note.includes('No measured breadth verdict')){
+  throw Error('missing verdict silently minted mixed: '+JSON.stringify(emptyVerdict));
+}
+if(zhUnknown.verdict!=='—'||!zhUnknown.note.includes('未测')){
+  throw Error('Chinese missingness disclosure absent: '+JSON.stringify(zhUnknown));
+}
+"""
+    result = subprocess.run(
+        [node, "-e", preamble + fragment + cases],
+        capture_output=True, text=True, timeout=15,
+    )
+    assert result.returncode == 0, result.stderr
