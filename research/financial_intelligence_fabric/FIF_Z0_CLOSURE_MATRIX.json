@@ -869,19 +869,20 @@
       "condition": "Evidence source click from number, change or finding",
       "required_behavior": "Resolve to relevant authorized source span and occurrence/version, not a generic home page.",
       "verdict": "PARTIAL",
-      "evidence": [],
+      "evidence": [
+        "tests/fundamental_forensics_a44_span.test.mjs::the workbench carries no generic EDGAR fallback destination",
+        "tests/fundamental_forensics_a44_span.test.mjs::statement tree: a cell with no recorded span renders the disabled unavailable control",
+        "tests/fundamental_forensics_a44_span.test.mjs::statement tree: a recorded span on the same cell renders the live control",
+        "tests/fundamental_forensics_a44_span.test.mjs::evidence drawer: a control with no span says so and links nowhere"
+      ],
       "obligations": [
-        {
-          "kind": "test_gap",
-          "owner": "FIF seat",
-          "next_action": "Assert that a missing source span renders the explicit unavailable state, never a generic EDGAR home page."
-        },
         {
           "kind": "human_gate",
           "owner": "Chairman (signed-in browser)",
           "next_action": "A signed-in witness of the source click needs an existing logged-in Chrome profile."
         }
-      ]
+      ],
+      "note": "A missing or malformed span renders a disabled bilingual unavailable control and a drawer that links nowhere; the source carries no EDGAR fallback destination (mutation-checked)."
     },
     {
       "id": "A45",
@@ -1078,15 +1079,18 @@
       "verdict": "PARTIAL",
       "evidence": [
         "tests/test_fundamental_forensics_query_exports.py::test_a54_identical_csv_posts_are_byte_identical",
-        "tests/test_fundamental_forensics_query_exports.py::test_a54_reissue_without_auth_is_401_and_skips_provider"
+        "tests/test_fundamental_forensics_query_exports.py::test_a54_identical_parquet_posts_are_byte_identical",
+        "tests/test_fundamental_forensics_query_exports.py::test_a54_reissue_without_auth_is_401_and_skips_provider",
+        "tests/test_fundamental_forensics_query_exports.py::test_a54_reissue_after_a_new_generation_binds_the_new_receipt"
       ],
       "obligations": [
         {
           "kind": "design_ruling",
           "owner": "FIF seat",
-          "next_action": "No export job owner exists, so export is stateless re-issue with re-authorization. Remaining: a re-issue after a source change carries the new generation identity, and cancellation is a client abort with no server lifecycle."
+          "next_action": "No export job owner exists, so export is a synchronous stateless re-issue with no second lifecycle and cancellation is a client abort. Z1 independent acceptance must ratify that this satisfies 'resume'; otherwise an async owner is needed."
         }
-      ]
+      ],
+      "note": "Re-issue re-authorizes (401 without auth, provider untouched) and, after a new generation publishes, binds the new receipt: X-FIF-Receipt-SHA256 names the JSON receipt that carries dataset_generation_id."
     }
   ]
 }
