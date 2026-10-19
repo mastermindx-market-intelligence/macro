@@ -11705,6 +11705,7 @@ jobs:
     # re-select the job on nearly every change in the repository, which is the
     # opposite of what exclusive scoping is for. `gate: code` keeps these
     # suites ON the merge gate: they are this feature's entire proof.
+    # Declared additions retain inference and must also cover every named suite.
     # Python invokes this Node suite; name its non-Python dependency explicitly.
     paths:
       - "tests/ontology_company_controller.test.mjs"
