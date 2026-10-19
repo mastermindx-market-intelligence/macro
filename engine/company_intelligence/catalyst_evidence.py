@@ -19,6 +19,7 @@ from .contracts import (
     CATALYST_SOURCE_FACT_AUTHORITY,
     ContractError,
     _strict_knowledge_timestamp,
+    _catalyst_public_timestamp,
     validate_catalyst_public_evidence,
     validate_company_catalyst_event,
 )
@@ -31,6 +32,22 @@ def _clock(value: object, *, field: str) -> str:
     # Retain subsecond knowledge when the existing owner supplies it.
     _literal, instant = _strict_knowledge_timestamp(value.isoformat(), field=field)
     return instant.isoformat().replace("+00:00", "Z")
+
+
+def _event_for_source_context(event: object, *, generation_cutoff: object) -> dict[str, Any]:
+    """Keep the old contract intact while selecting the explicit new version.
+
+    Validate a v1.0 record before its internal version upgrade, so an otherwise
+    forbidden nonempty port cannot bypass that original contract. Preserve the
+    original supplied clock literals for the v1.1 precision checks.
+    """
+    if not isinstance(event, Mapping):
+        raise ContractError("public evidence requires an existing Company event")
+    selected = dict(event)
+    if selected.get("schema_version") == "1.0.0":
+        validate_company_catalyst_event(selected, generation_cutoff=generation_cutoff)
+        selected["schema_version"] = "1.1.0"
+    return validate_company_catalyst_event(selected, generation_cutoff=generation_cutoff)
 
 
 def project_catalyst_public_evidence(
@@ -49,8 +66,8 @@ def project_catalyst_public_evidence(
     Excerpts remain null: public accessibility and a profile label do not grant
     this new port permission to redistribute source text.
     """
-    owner = validate_company_catalyst_event(event, generation_cutoff=generation_cutoff)
-    _literal, cutoff = _strict_knowledge_timestamp(generation_cutoff, field="generation_cutoff")
+    owner = _event_for_source_context(event, generation_cutoff=generation_cutoff)
+    _literal, cutoff = _catalyst_public_timestamp(generation_cutoff, field="generation_cutoff")
     if not owner["revision_is_current"] or owner["occurrence"] in {"cancelled", "withdrawn"}:
         raise ContractError("public evidence projection requires a current usable event revision")
     if (
@@ -189,8 +206,8 @@ def attach_catalyst_public_evidence(
     attachment requires the same declared cut; subsequent validated reads may
     consume the retained projection at a later cutoff without rewriting clocks.
     """
-    owner = validate_company_catalyst_event(event, generation_cutoff=generation_cutoff)
-    _literal, cutoff = _strict_knowledge_timestamp(generation_cutoff, field="generation_cutoff")
+    owner = _event_for_source_context(event, generation_cutoff=generation_cutoff)
+    _literal, cutoff = _catalyst_public_timestamp(generation_cutoff, field="generation_cutoff")
     if not isinstance(evidence, (list, tuple)) or len(evidence) > 128:
         raise ContractError("public evidence attachment must be a bounded sequence")
     records = []
@@ -200,7 +217,7 @@ def attach_catalyst_public_evidence(
             issuer_cik=owner["issuer_cik"], document_refs=owner["document_refs"],
             event_observed_at=owner["observed_at"], generation_cutoff=generation_cutoff,
         )
-        _literal, evidence_cut = _strict_knowledge_timestamp(record["projection_cutoff"], field="projection_cutoff")
+        _literal, evidence_cut = _catalyst_public_timestamp(record["projection_cutoff"], field="projection_cutoff")
         if evidence_cut != cutoff:
             raise ContractError("public evidence attachment requires the same owner projection cut")
         records.append(record)

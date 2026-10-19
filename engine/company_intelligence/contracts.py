@@ -893,16 +893,19 @@ def validate_company_catalyst_event(
         raise ContractError("occurrence invalid")
     timing = _validate_catalyst_timing(item.get("timing"))
 
-    source_available_at, source_available_time = _strict_knowledge_timestamp(
+    # The explicit evidence version preserves the selected owner's subsecond
+    # knowledge. The original v1.0 normalization remains unchanged.
+    parse_clock = _catalyst_public_timestamp if schema_version == "1.1.0" else _strict_knowledge_timestamp
+    source_available_at, source_available_time = parse_clock(
         item.get("source_available_at"), field="source_available_at"
     )
-    observed_at, observed_time = _strict_knowledge_timestamp(
+    observed_at, observed_time = parse_clock(
         item.get("observed_at"), field="observed_at"
     )
     if observed_time < source_available_time:
         raise ContractError("observed_at precedes source_available_at")
     if generation_cutoff is not None:
-        _cutoff_text, cutoff_time = _strict_knowledge_timestamp(
+        _cutoff_text, cutoff_time = parse_clock(
             generation_cutoff, field="generation_cutoff"
         )
         if source_available_time > cutoff_time or observed_time > cutoff_time:
@@ -991,6 +994,14 @@ _SEC_PUBLIC_DOCUMENT_RE = re.compile(
     r"(?P<cik>[1-9][0-9]*)/(?P<accession>[0-9]{18})/"
     r"[A-Za-z0-9][A-Za-z0-9_.-]{0,255}\.(?:htm|html|txt)$"
 )
+
+
+def _catalyst_public_timestamp(value: object, *, field: str) -> tuple[str, datetime]:
+    """Retain the new port's UTC knowledge without truncating precision."""
+    if not isinstance(value, str) or not _PUBLIC_EVIDENCE_TIME_RE.fullmatch(value):
+        raise ContractError(f"{field} requires UTC with at most six fractional digits")
+    _literal, instant = _strict_knowledge_timestamp(value, field=field)
+    return instant.isoformat().replace("+00:00", "Z"), instant
 
 
 def validate_catalyst_source_url(value: object, *, issuer_cik: str, accession: str) -> str:
@@ -1083,18 +1094,15 @@ def validate_catalyst_public_evidence(
         raise ContractError("public evidence filing date invalid")
     clocks = {}
     for key in ("source_available_at", "observed_at", "projection_cutoff"):
-        value = item.get(key)
-        if not isinstance(value, str) or not _PUBLIC_EVIDENCE_TIME_RE.fullmatch(value):
-            raise ContractError("public evidence clocks require UTC with at most six fractional digits")
-        _literal, instant = _strict_knowledge_timestamp(value, field=key)
+        _literal, instant = _catalyst_public_timestamp(item.get(key), field=key)
         clocks[key] = instant
-    _literal, event_observed = _strict_knowledge_timestamp(event_observed_at, field="event_observed_at")
+    _literal, event_observed = _catalyst_public_timestamp(event_observed_at, field="event_observed_at")
     if not clocks["source_available_at"] <= clocks["observed_at"] <= event_observed <= clocks["projection_cutoff"]:
         raise ContractError("public evidence clocks do not bind the selected event cut")
     if filed_on is not None and parse_date(filed_on, field="filed_on") > clocks["projection_cutoff"].date():
         raise ContractError("public evidence filing date exceeds its projection cut")
     if generation_cutoff is not None:
-        _literal, cutoff = _strict_knowledge_timestamp(generation_cutoff, field="generation_cutoff")
+        _literal, cutoff = _catalyst_public_timestamp(generation_cutoff, field="generation_cutoff")
         if clocks["projection_cutoff"] > cutoff:
             raise ContractError("public evidence projection exceeds generation cutoff")
     authority = item.get("authority")

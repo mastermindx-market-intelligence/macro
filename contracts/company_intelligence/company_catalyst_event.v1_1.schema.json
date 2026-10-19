@@ -75,10 +75,12 @@
       "$ref": "#/$defs/timing"
     },
     "source_available_at": {
-      "$ref": "#/$defs/knowledgeTimestamp"
+      "$ref": "#/$defs/knowledgeTimestamp",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?Z$"
     },
     "observed_at": {
-      "$ref": "#/$defs/knowledgeTimestamp"
+      "$ref": "#/$defs/knowledgeTimestamp",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?Z$"
     },
     "document_refs": {
       "type": "array",

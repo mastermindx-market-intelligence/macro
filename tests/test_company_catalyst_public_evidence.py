@@ -425,3 +425,65 @@ def test_fresh_projection_does_not_admit_a_retired_event_revision(change):
     event = {**case[0], **change}
     with pytest.raises(ContractError, match="current usable event"):
         _project(case, event=event)
+
+
+@pytest.mark.parametrize("field,value", [
+    ("source_available_at", "2026-10-18T16:00:00.0000001Z"),
+    ("observed_at", "2026-10-18T16:02:00.0000001Z"),
+    ("observed_at", "2026-10-19T00:00:00.0000001Z"),
+])
+def test_r2_cannot_round_an_unsupported_parent_event_clock_into_the_cut(field, value):
+    case = _case()
+    event = {**case[0], field: value}
+    with pytest.raises(ContractError, match="six fractional digits"):
+        _project(case, event=event)
+
+
+@pytest.mark.parametrize("cutoff", [
+    "2026-10-19T00:00:00.0000001Z",
+    "2026-10-19T00:00:00+00:00",
+])
+def test_r2_generation_cut_is_checked_before_precision_or_encoding_is_lost(cutoff):
+    with pytest.raises(ContractError, match="six fractional digits"):
+        _project(_case(), generation_cutoff=cutoff)
+
+
+def test_v1_1_preserves_same_second_source_and_event_knowledge_through_real_api(monkeypatch):
+    import app.biocatalyst as api
+    from tests.test_biocatalyst_wmn_api import _app, _projection
+
+    case = _case()
+    event = {**case[0], "observed_at": "2026-10-18T16:01:00.200001Z"}
+    document = replace(case[1], fetched_at=datetime(
+        2026, 10, 18, 16, 1, 0, 100001, tzinfo=timezone.utc
+    ))
+    # The old version's behavior remains explicit; R2 uses its new version.
+    assert validate_company_catalyst_event(
+        event, generation_cutoff=CUTOFF
+    )["observed_at"] == "2026-10-18T16:01:00Z"
+    evidence = _project(case, event=event, document_chain=DocumentRevisionChain((document,)))
+    enriched = attach_catalyst_public_evidence(event, [evidence], generation_cutoff=CUTOFF)
+    assert enriched["observed_at"] == event["observed_at"]
+    assert evidence["observed_at"] == "2026-10-18T16:01:00.100001Z"
+    assert validate_company_catalyst_event(enriched, generation_cutoff=CUTOFF) == enriched
+    assert event["schema_version"] == "1.0.0"
+    monkeypatch.setattr(api, "_wmn_now", lambda: datetime(2026, 10, 19, tzinfo=timezone.utc))
+    with _app(lambda: (_projection(_api_inputs(enriched)), {})) as client:
+        response = client.get("/api/biocatalyst/v1/what-matters-next")
+    assert response.status_code == 200
+    assert response.json()["rows"][0]["evidence"] == [evidence]
+
+
+def test_v1_1_parent_observation_one_microsecond_after_cut_is_refused():
+    event = {**_case()[0], "schema_version": "1.1.0",
+             "observed_at": "2026-10-19T00:00:00.000001Z"}
+    with pytest.raises(ContractError, match="exceeds generation cutoff"):
+        validate_company_catalyst_event(event, generation_cutoff=CUTOFF)
+
+
+def test_internal_upgrade_cannot_smuggle_nonempty_evidence_through_v1_0():
+    case = _case()
+    evidence = _project(case)
+    event = {**case[0], "public_evidence": [evidence]}
+    with pytest.raises(ContractError, match="not admitted in the first producer slice"):
+        attach_catalyst_public_evidence(event, [evidence], generation_cutoff=CUTOFF)

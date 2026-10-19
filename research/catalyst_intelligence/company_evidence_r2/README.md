@@ -1,6 +1,6 @@
 # Catalyst Intelligence — Company source context R2
 
-Status: implemented for review; source admission, production publication and activation are not claimed.
+Status: implemented with bounded C3 source acceptance; DRAFT / HOLD. Source admission, production publication and activation remain unestablished.
 
 Operation: catalyst-company-evidence-r2-20261019  
 Source base: ec5c2e2544576f20348c6eadf834fe3cefae8039, the retained open draft BioCatalyst #6712.  
@@ -63,7 +63,9 @@ The function is internal to the source owner and must not become a public eviden
 
 The filing calendar date remains a date. It is not promoted to a guessed publication instant. Source availability and fetch/observation clocks come from the selected Company document record and are kept distinct from the event's observation and the evidence projection cutoff.
 
-The evidence wire uses explicit UTC timestamps with at most six fractional digits. Subsecond knowledge is retained; longer fractions are refused instead of being silently rounded backward by a parser.
+The evidence wire and explicit Company v1.1 event use UTC timestamps with at most six fractional digits. Subsecond source and parent-event knowledge is retained; longer fractions are refused instead of being silently rounded backward by a parser. The new port checks its generation cutoff with the same rule. The original v1.0 clock normalization remains unchanged.
+
+When this port consumes a v1.0 event, it first validates the original empty-evidence contract, then validates a detached internal selection under v1.1 using the original supplied clock literals. This cannot smuggle nonempty evidence through v1.0 or recover precision that an upstream owner has already discarded. A same-second observation witness preserves the source's 100001-microsecond and event's 200001-microsecond timestamps through attachment and the real API.
 
 For the admitted source-context record:
 
