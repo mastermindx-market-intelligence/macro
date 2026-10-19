@@ -32722,6 +32722,11 @@ jobs:
       - "tests/fixtures/macro_workspace_prior_publication/**"
       # Literal site artifact reference in the closure (liquidity composer).
       - "site/liquiditydata/global_liquidity_transmission.json"
+      # GLT T21 (#9657): the liquidity suite imports the Macro Command copy
+      # guard and machine-text counter to pin the Now view's measured copy.
+      - "scripts/__init__.py"
+      - "scripts/check_macro_command_copy.py"
+      - "scripts/count_macro_command_machine_text.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
