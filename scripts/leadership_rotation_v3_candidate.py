@@ -22,7 +22,7 @@ from typing import Sequence
 
 from scripts import leadership_rotation_episodes as ep
 
-__all__ = ["candidate_h1_synthetic_comparison", "SyntheticPriorControl", "candidate_h2_prior_control_match", "SyntheticH3Event", "candidate_h3_synthetic_interaction"]
+__all__ = ["candidate_h1_synthetic_comparison", "SyntheticPriorControl", "candidate_h2_prior_control_match", "SyntheticH3Event", "candidate_h3_synthetic_interaction", "candidate_v3_p0_pair_diagnostic"]
 
 MATCH_WINDOW = 40
 MISS_DELAY = MATCH_WINDOW + 1
@@ -338,3 +338,144 @@ def candidate_h3_synthetic_interaction(
             fmean(measured_differences[False])
         )
     return result
+
+
+
+def candidate_v3_p0_pair_diagnostic(ps, *, start: int, end: int) -> dict:
+    """Run ALL three proposed contrasts through original frozen P0 arms.
+
+    Explicit synthetic PairSeries supplied by the caller; no store, config,
+    production reader, input file, network, ledger or publication imports.
+    This smoke exercise is NOT a preregistered family test, a size/power result,
+    a synthetic-generator claim, or a permission to read P1/P2/P3 market data.
+    """
+    import numpy as np
+    from scripts import leadership_rotation_study as st
+    from scripts.leadership_rotation_run import PairSeries, _evaluate_pair_core
+
+    if type(ps) is not PairSeries or type(start) is not int or type(end) is not int:
+        raise TypeError("P0 diagnostic needs an explicit PairSeries and integer window")
+    if not 0 <= start <= end < len(ps.spy):
+        raise ValueError("invalid synthetic formation window")
+    if len(ps.num) != len(ps.spy) or len(ps.den) != len(ps.spy):
+        raise ValueError("P0 synthetic legs must have the same calendar length")
+    if not np.all(np.isfinite(ps.num)) or not np.all(np.isfinite(ps.den)) or not np.all(np.isfinite(ps.spy)):
+        raise ValueError("P0 diagnostic requires measured synthetic prices")
+    if np.any(ps.num <= 0) or np.any(ps.den <= 0) or np.any(ps.spy <= 0):
+        raise ValueError("invalid synthetic price basis")
+
+    core = _evaluate_pair_core(ps, start=start, end=end)
+    if not core["formation"]["eligible"]:
+        return {
+            "scope": "P0_SYNTHETIC_ONLY", "status": "NOT_EXECUTABLE",
+            "reason": "NO_SYNTHETIC_FORMATION", "pair_id": ps.pair_id,
+            "v3_preregistered": False, "size_or_power_proven": False,
+        }
+    actual_start = int(core["formation"]["start"])
+    R = np.asarray(core["R"], dtype=float)
+    n = len(R)
+    if any(int(x) < actual_start or int(x) > end
+           for x in core["a1_kept"] + core["b2_kept"] + core["b3_kept"]):
+        raise ValueError("frozen arm entries escaped synthetic formation")
+
+    h1 = candidate_h1_synthetic_comparison(
+        core["phases"], core["a1_kept"], core["b2_kept"],
+        measured_sessions=n,
+    )
+    # Exact history-at-date rank of rolling 63-observation relative volatility.
+    # Even the rolling-vol quintile map is computed from past dates only:
+    # no full-sample threshold/normalizer may contaminate a P0 match.
+    changes = np.diff(R)
+    vols = np.full(n, np.nan)
+    for t in range(63, n):
+        win = changes[t - 63:t]
+        if np.all(np.isfinite(win)):
+            vols[t] = np.std(win, ddof=1)
+    quintile: dict[int, int] = {}
+    for t in range(max(actual_start, 313), end + 1):
+        window = vols[max(63, t - 251):t + 1]
+        finite = window[np.isfinite(window)]
+        if len(finite) < 200 or not np.isfinite(vols[t]):
+            continue
+        q = min(4, int(5 * float(np.sum(finite < vols[t])) / len(finite)))
+        quintile[t] = q
+
+    a1_state, _, _ = st.arm_a1(R)
+    controls = [
+        SyntheticPriorControl(
+            ps.pair_id, int(t), quintile[t], int(t),
+            bool(a1_state[t]), int(t),
+        )
+        for t in core["b1_days"] if int(t) in quintile
+    ]
+    h2 = {
+        "total_a1": len(core["a1_kept"]),
+        "feature_unavailable": 0,
+        "matched": 0,
+        "unmatched": 0,
+        "control_dates": [],
+        "status": "DIAGNOSTIC_ONLY",
+    }
+    for t in core["a1_kept"]:
+        if t not in quintile:
+            h2["feature_unavailable"] += 1
+            continue
+        event = SyntheticPriorControl(
+            ps.pair_id, int(t), quintile[t], int(t), bool(a1_state[t]), int(t),
+        )
+        selection = candidate_h2_prior_control_match(event, controls)
+        if selection["status"] == "MATCHED":
+            h2["matched"] += 1
+            h2["control_dates"].append((int(t), selection["control_t"]))
+        else:
+            h2["unmatched"] += 1
+
+    log_numspy = np.log(ps.num / ps.spy)
+    log_denspy = np.log(ps.den / ps.spy)
+
+    def h3_events(rows, arm):
+        out: list[SyntheticH3Event] = []
+        unavailable = 0
+        for rec in rows:
+            t = int(rec["t"])
+            if t not in quintile or t < 20:
+                unavailable += 1
+                continue
+            den_move = float(log_denspy[t] - log_denspy[t - 20])
+            recv_move = float(log_numspy[t] - log_numspy[t - 20])
+            if not np.isfinite(den_move) or not np.isfinite(recv_move):
+                unavailable += 1
+                continue
+            future = rec["y_res_20"]
+            label = (
+                float(future["y"])
+                if future["state"] == "MATURED" and future["y"] is not None
+                else None
+            )
+            out.append(SyntheticH3Event(
+                pair_id=ps.pair_id, origin=t, arm=arm,
+                donor_weak=den_move < 0,
+                receiver_spy_sign=int(np.sign(recv_move)),
+                volatility_quintile=quintile[t], feature_asof=t,
+                warmup_sessions=t, residual_y20=label,
+                matured_at=(t + 20) if label is not None else None,
+            ))
+        return out, unavailable
+
+    a1, omitted_a1 = h3_events(core["a1_out"], "A1")
+    b3, omitted_b3 = h3_events(core["b3_out"], "B3")
+    h3 = candidate_h3_synthetic_interaction(a1, b3)
+    return {
+        "scope": "P0_SYNTHETIC_ONLY",
+        "status": "DIAGNOSTIC_ONLY",
+        "pair_id": ps.pair_id,
+        "group": ps.group,
+        "window": [actual_start, int(end)],
+        "h1": h1,
+        "h2": h2,
+        "h3": h3,
+        "h3_feature_unavailable": {"a1": omitted_a1, "b3": omitted_b3},
+        "v3_preregistered": False,
+        "size_or_power_proven": False,
+        "predictive_capability_qualified": False,
+    }
