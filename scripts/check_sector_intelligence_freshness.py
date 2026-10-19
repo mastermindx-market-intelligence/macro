@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+from math import isfinite
 from html.parser import HTMLParser
 import sys
 from datetime import date, datetime, timezone
@@ -173,6 +174,56 @@ def _check_hash(
         )
 
 
+def _validate_breadth_measurements(breadth: dict[str, Any], errors: list[str]) -> None:
+    """Prevent semantically impossible numbers from receiving release authority.
+
+    Missing fields remain unmeasured; no S&P 1500 membership, price or MA
+    denominator is inferred from this source-only S&P 500 sample.
+    """
+    prefix = "UNVERIFIED SECTOR INTELLIGENCE BREADTH MEASUREMENT"
+
+    def check(field: str, *, integer: bool = False, ceiling: float | None = None):
+        value = breadth.get(field)
+        if value is None:
+            return None
+        valid_type = type(value) is int if integer else type(value) in (int, float)
+        valid = valid_type and isfinite(value) and value >= 0
+        if valid and ceiling is not None:
+            valid = value <= ceiling
+        if not valid:
+            errors.append(f"{prefix}: {field} has invalid count/range {value!r}")
+            return None
+        return value
+
+    observed = check("observed_members", integer=True)
+    adv = check("adv", integer=True)
+    dec = check("dec", integer=True)
+    nh = check("nh", integer=True)
+    nl = check("nl", integer=True)
+    above50 = check("pct_above_50", ceiling=100)
+    check("pct_above_200", ceiling=100)
+    ratio = check("ad_ratio")
+    for field in ("ad_3d", "ad_w", "ad_m"):
+        check(field)
+
+    if observed is not None:
+        if adv is not None and dec is not None and adv + dec > observed:
+            errors.append(f"{prefix}: adv + dec exceeds observed_members")
+        if nh is not None and nh > observed:
+            errors.append(f"{prefix}: nh exceeds observed_members")
+        if nl is not None and nl > observed:
+            errors.append(f"{prefix}: nl exceeds observed_members")
+    if dec == 0 and ratio is not None:
+        errors.append(f"{prefix}: ad_ratio is defined while declines are zero")
+    verdict = breadth.get("verdict")
+    if verdict is not None:
+        if verdict not in ("narrow", "broad", "mixed"):
+            errors.append(f"{prefix}: unregistered verdict {verdict!r}")
+        if (observed is None or observed == 0 or adv is None or
+                dec is None or dec == 0 or above50 is None):
+            errors.append(f"{prefix}: claimed verdict has unmeasured prerequisite")
+
+
 def evaluate(
     root: Path,
     *,
@@ -223,6 +274,7 @@ def evaluate(
                         "embedded US concentration must identify its observed S&P 500 source; "
                         "it does not qualify S&P 1500 participation"
                     )
+                _validate_breadth_measurements(breadth, errors)
     if action is not None:
         _require_date("site/basketdata/action_board.json:as_of", action.get("as_of"), errors, dates)
         board = action.get("action_board")
