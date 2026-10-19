@@ -22,6 +22,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import sys
 import tempfile
 import time
@@ -85,6 +86,16 @@ def _write_shadow_graph_state(root: Path, generated_at: str | None) -> bool:
         phase_started = time.perf_counter()
         emitted_at = generated_at or datetime.now(timezone.utc).isoformat()
         state = adapter.compose_state_only_from_owner_bundle(bundle, generated_at=emitted_at)
+        if os.environ.get("GMI_THEME_STATE_OWNER_READERS") == "1":  # GMI A3 opt-in; unset = unchanged path
+            try:  # the reader-free state above is the fallback; a reader failure never loses the shadow
+                from engine.theme_graph.theme_state_owner_readers import StateQualificationReader
+                qualified = adapter.capture_owner_bundle(root, owner_readers=StateQualificationReader(root),
+                                                         effective_at=known_at[:10], known_at=generated_at)
+                candidate = adapter.compose_state_only_from_owner_bundle(qualified, generated_at=emitted_at)
+                theme_state.validate_state(candidate)
+                state = candidate
+            except Exception as exc:  # noqa: BLE001
+                print(f"::warning title=gmi-shadow-owner-readers::{type(exc).__name__}", flush=True)
         compose_s = time.perf_counter() - phase_started
 
         phase_started = time.perf_counter()
