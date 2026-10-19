@@ -1,4 +1,4 @@
-/* Private Portfolio membership on Macro. Explicit reads only; no sync, writes,
+/* Private Portfolio and Watchlist membership on Macro. Explicit reads only; no sync, writes,
  * holdings in URLs, telemetry, browser persistence or a second portfolio model. */
 const LIMIT = 262144;
 const BUDGET_MS = 15000;
@@ -100,6 +100,17 @@ export function mountPortfolio(root) {
   const output = root.querySelector('[data-portfolio-result]');
   const button = root.querySelector('[data-portfolio-read]');
   const clearButton = root.querySelector('[data-portfolio-clear]');
+  const kindButtons = [...root.querySelectorAll('[data-private-kind]')];
+  const listLabel = root.querySelector('[data-watchlist-picker]');
+  const listSelect = root.querySelector('[data-watchlist-select]');
+  let kind = 'portfolio';
+  function resetLists() { if (listSelect) listSelect.replaceChildren(); }
+  function controls() {
+    if (listLabel) listLabel.hidden = kind !== 'watchlist' || !listSelect?.options.length;
+    for (const b of kindButtons) b.setAttribute('aria-pressed', String(b.dataset.privateKind === kind));
+    button.replaceChildren(words(...(kind === 'portfolio' ? ['Read my Portfolio', '读取我的投资组合']
+      : listSelect?.value ? ['Compare selected Watchlist', '对照所选观察列表'] : ['Read my Watchlists', '读取我的观察列表'])));
+  }
   let reading = null, operation = null, epoch = 0, disposed = false, subscription = null;
   const messages = {
     idle: ['Read your saved Portfolio against this path’s dated screen membership.', '将已保存的投资组合与该路径的历史筛选成员进行对照。'],
@@ -112,9 +123,25 @@ export function mountPortfolio(root) {
     empty: ['Your saved Portfolio has no open positions.', '已保存的投资组合没有未平仓持仓。'],
   };
   function status(state) {
+    if (['signed_out', 'forbidden', 'no_reading'].includes(state)) resetLists();
     output.replaceChildren(); output.dataset.state = state;
     output.setAttribute('aria-busy', state === 'loading' ? 'true' : 'false');
     output.append(node('p', 'ox-note', ...(messages[state] || messages.unavailable)));
+    if (kind === 'watchlist') {
+      const copy = {
+        idle: ['Read your saved Watchlists, then select one to compare with this path.', '先读取已保存的观察列表，再选择一个与此路径对照。'],
+        no_reading: ['Load a current path reading before reading your Watchlists.', '请先加载当前路径读数，再读取观察列表。'],
+        choose_list: ['Choose a Watchlist, then request its membership comparison.', '请选择观察列表，再请求成员对照。'],
+        loading: ['Reading your Watchlist…', '正在读取观察列表…'],
+        signed_out: ['Sign in to read your private Watchlists.', '登录后读取您的私有观察列表。'],
+        unavailable: ['The complete Watchlist reading is unavailable. No partial list is substituted.', '完整观察列表读数不可用；不会以部分列表替代。'],
+        empty_lists: ['You have no saved Watchlists.', '您尚未保存观察列表。'],
+        empty: ['This saved Watchlist has no symbols.', '此观察列表尚无证券代码。'],
+        changed: ['The selected path changed. Read your Watchlist again against the new reading.', '所选路径已更新，请依据新读数重新读取观察列表。'],
+      };
+      if (copy[state]) output.replaceChildren(node('p', 'ox-note', ...copy[state]));
+    }
+    controls();
     button.disabled = state === 'loading' || !reading;
   }
   function stop() {
@@ -125,7 +152,7 @@ export function mountPortfolio(root) {
       clearTimeout(old.timer); old.reject(new Error('PORTFOLIO_CANCELLED'));
     }
   }
-  function clear() { stop(); status(reading ? 'idle' : 'no_reading'); }
+  function clear() { stop(); resetLists(); status(reading ? 'idle' : 'no_reading'); }
   function invalidate() { reading = null; clear(); }
   function authChanged() {
     // A same-owner token refresh clears private rows, but need not strand the
@@ -134,7 +161,8 @@ export function mountPortfolio(root) {
   }
   function check(op) {
     if (disposed || op.id !== epoch || op.abort.signal.aborted || performance.now() >= op.deadline
-        || reading !== op.reading || canonical() !== op.owner) fail();
+        || reading !== op.reading || canonical() !== op.owner || op.kind !== kind
+        || (kind === 'watchlist' && (listSelect?.value || null) !== op.listId)) fail();
   }
   async function checked(op, promise) { const value = await promise; check(op); return value; }
   // Bind the incumbent SDK's change signal, without initializing WatchStore sync.
@@ -181,16 +209,24 @@ export function mountPortfolio(root) {
       try { reader.releaseLock(); } catch (_) { /* an abandoned read may still be pending */ }
     }
   }
-  function render(rows, result, readAt) {
+  function render(rows, result, readAt, listName = '') {
     output.replaceChildren(); output.dataset.state = 'ready'; output.setAttribute('aria-busy', 'false');
     const open = rows.filter(r => r.status === 'open'), closed = rows.length - open.length;
-    output.append(node('p', 'ox-note',
+    if (kind === 'watchlist') {
+      const title = node('strong'); title.textContent = listName; output.append(title);
+      output.append(node('p', 'ox-note', `${open.length} saved symbols. Read in this browser at ${readAt}. Screen membership ${result.membership_asof}; security identity checked for ${result.identity_valid_on}.`,
+        `${open.length} 个已保存代码。本浏览器读取时间 ${readAt}。筛选成员日期 ${result.membership_asof}；证券身份核实日期 ${result.identity_valid_on}。`));
+    } else output.append(node('p', 'ox-note',
       `${open.length} open positions; ${closed} closed positions excluded. Read in this browser at ${readAt}. Screen membership ${result.membership_asof}; security identity checked for ${result.identity_valid_on}.`,
       `${open.length} 个未平仓持仓；已排除 ${closed} 个已平仓持仓。本浏览器读取时间 ${readAt}。筛选成员日期 ${result.membership_asof}；证券身份核实日期 ${result.identity_valid_on}。`));
+    const coverage = result.counts;
+    output.append(node('p', 'ox-note',
+      `Distinct saved symbols: ${coverage.covered} matched; ${coverage.not_in_available_screens} outside available screens; ${coverage.identity_unresolved} unresolved identities; ${coverage.membership_unavailable} with unavailable membership.`,
+      `去重代码覆盖：${coverage.covered} 个匹配；${coverage.not_in_available_screens} 个不在可用筛选名单；${coverage.identity_unresolved} 个身份未核实；${coverage.membership_unavailable} 个成员信息不可用。`));
     if (result.unresolved_channels.length) output.append(node('p', 'ox-note',
       'Some screens or company identities are unavailable. This is partial membership coverage, not a complete exposure estimate.',
       '部分筛选结果或公司身份不可用。这是部分成员覆盖，并非完整敞口估计。'));
-    const books = portfolioBooks(rows, result, window.PS);
+    const books = kind === 'watchlist' ? { reason: null, books: [] } : portfolioBooks(rows, result, window.PS);
     const map = new Map(result.rows.map(r => [r.symbol, r]));
     const labels = new Map(reading.channels.map(c => [c.id, c.label]));
     if (books.reason) output.append(node('p', 'ox-note',
@@ -205,7 +241,10 @@ export function mountPortfolio(root) {
           : [`${book.currency}: weights unavailable for this book.`, `${book.currency}：该币种组合的权重不可用。`];
       output.append(node('p', 'ox-note', ...copy));
     }
-    output.append(node('p', 'ox-note',
+    if (kind === 'watchlist') output.append(node('p', 'ox-note',
+      'Watchlist membership is not a holding or a weight. No position sizing, sensitivity, return or P&L is inferred; missing membership does not mean zero economic exposure.',
+      '观察列表成员并非持仓或权重。不会推断持仓数量、敏感度、回报或损益；未出现在成员名单中不表示经济敞口为零。'));
+    else output.append(node('p', 'ox-note',
       'Currencies are kept separate. Membership does not estimate sensitivity, return or P&L; missing membership does not mean zero economic exposure.',
       '不同币种分别计算。成员关系不估计敏感度、回报或损益；未出现在成员名单中不表示经济敞口为零。'));
     const list = node('ul', 'ox-portfolio-rows');
@@ -238,7 +277,9 @@ export function mountPortfolio(root) {
         list.append(item);
       }
       shown = next; more.hidden = shown >= open.length;
-      more.replaceChildren(words(`Show more positions (${shown} of ${open.length} shown)`, `显示更多持仓（已显示 ${shown}/${open.length}）`));
+      more.replaceChildren(kind === 'watchlist'
+        ? words(`Show more symbols (${shown} of ${open.length} shown)`, `显示更多代码（已显示 ${shown}/${open.length}）`)
+        : words(`Show more positions (${shown} of ${open.length} shown)`, `显示更多持仓（已显示 ${shown}/${open.length}）`));
     }
     more.addEventListener('click', appendPage);
     output.append(list, more); appendPage(); button.disabled = !reading;
@@ -249,7 +290,7 @@ export function mountPortfolio(root) {
     if (!reading) { status('no_reading'); return; }
     const owner = canonical();
     if (!owner || reading.owner_id !== owner) { status('signed_out'); return; }
-    const op = { id: epoch, owner, reading, abort: new AbortController(), reader: null,
+    const op = { id: epoch, owner, reading, kind, listId: kind === 'watchlist' ? (listSelect?.value || null) : null, abort: new AbortController(), reader: null,
       deadline: performance.now() + BUDGET_MS };
     const cancellation = new Promise((_, reject) => { op.reject = reject; });
     operation = op;
@@ -258,13 +299,43 @@ export function mountPortfolio(root) {
     try {
       await Promise.race([(async () => {
         const token = await session(op);
-        if (typeof window.WatchStore?.portfolio?.readOnly !== 'function') fail();
-        const portfolio = await checked(op, window.WatchStore.portfolio.readOnly({ signal: op.abort.signal }));
-        if (portfolio?.schema !== 'portfolio_read.v1' || portfolio.authority !== 'cloud'
-            || portfolio.state !== 'ready' || portfolio.owner_id !== owner || !Array.isArray(portfolio.rows)
-            || portfolio.rows.length > 500 || !day(portfolio.last_good_at?.slice(0, 10))) fail();
-        const rows = portfolio.rows;
-        if (rows.some(r => !r || !['open', 'closed'].includes(r.status) || !SYMBOL.test(r.ticker))) fail();
+        let rows, readAt, listName = '';
+        if (op.kind === 'watchlist') {
+          if (!listSelect || typeof window.WatchStore?.lists?.readOnly !== 'function') fail();
+          const options = { signal: op.abort.signal };
+          if (op.listId) options.listId = op.listId;
+          const watch = await checked(op, window.WatchStore.lists.readOnly(options));
+          if (watch?.schema !== 'watchlist_read.v1' || watch.authority !== 'cloud' || watch.state !== 'ready'
+              || watch.owner_id !== owner || !day(watch.last_good_at?.slice(0, 10))
+              || !Array.isArray(watch.lists) || watch.lists.length > 100
+              || watch.lists.some(l => !l || typeof l.id !== 'string' || !l.id || l.id.length > 128
+                || typeof l.name !== 'string' || l.name.length > 256)
+              || new Set(watch.lists.map(l => l.id)).size !== watch.lists.length) fail();
+          await session(op, token);
+          if (!op.listId) {
+            if (watch.list_id !== null || watch.rows !== null) fail();
+            resetLists();
+            if (watch.lists.length) {
+              const placeholder = document.createElement('option'); placeholder.value = ''; placeholder.textContent = 'Choose Watchlist / 选择观察列表'; listSelect.append(placeholder);
+              for (const l of watch.lists) { const o = document.createElement('option'); o.value = l.id; o.textContent = l.name; listSelect.append(o); }
+            }
+            status(watch.lists.length ? 'choose_list' : 'empty_lists'); return;
+          }
+          if (watch.list_id !== op.listId || watch.lists.length !== 1 || watch.lists[0].id !== op.listId
+              || !Array.isArray(watch.rows) || watch.rows.length > 500
+              || watch.rows.some(r => !r || typeof r.symbol !== 'string' || !SYMBOL.test(r.symbol))
+              || new Set(watch.rows.map(r => r.symbol)).size !== watch.rows.length) fail();
+          rows = watch.rows.map(r => ({ ticker: r.symbol, status: 'open' }));
+          readAt = watch.last_good_at; listName = watch.lists[0].name;
+        } else {
+          if (typeof window.WatchStore?.portfolio?.readOnly !== 'function') fail();
+          const portfolio = await checked(op, window.WatchStore.portfolio.readOnly({ signal: op.abort.signal }));
+          if (portfolio?.schema !== 'portfolio_read.v1' || portfolio.authority !== 'cloud'
+              || portfolio.state !== 'ready' || portfolio.owner_id !== owner || !Array.isArray(portfolio.rows)
+              || portfolio.rows.length > 500 || !day(portfolio.last_good_at?.slice(0, 10))) fail();
+          rows = portfolio.rows; readAt = portfolio.last_good_at;
+          if (rows.some(r => !r || !['open', 'closed'].includes(r.status) || !SYMBOL.test(r.ticker))) fail();
+        }
         const symbols = [...new Set(rows.filter(r => r.status === 'open').map(r => r.ticker))];
         await session(op, token);
         if (!symbols.length) { status('empty'); return; }
@@ -282,10 +353,10 @@ export function mountPortfolio(root) {
         }
         const result = decodeMembership(await checked(op, body(op, response)), symbols, reading);
         await session(op, token); check(op);
-        render(rows, result, portfolio.last_good_at);
+        render(rows, result, readAt, listName);
       })(), cancellation]);
     } catch (_) {
-      if (!disposed && epoch === op.id) status(canonical() === owner ? 'unavailable' : 'signed_out');
+      if (!disposed && epoch === op.id) { resetLists(); status(canonical() === owner ? 'unavailable' : 'signed_out'); }
     } finally {
       op.abort.abort(); if (op.reader) quietCancel(op.reader); clearTimeout(op.timer);
       if (operation === op) operation = null;
@@ -306,12 +377,22 @@ export function mountPortfolio(root) {
   root.addEventListener('ontology-source-changed', invalidate);
   window.addEventListener('mdx-auth', authChanged);
   window.addEventListener('pagehide', invalidate);
+  function changeKind(event) {
+    const selected = event.currentTarget.dataset.privateKind;
+    if (!['portfolio', 'watchlist'].includes(selected)) return;
+    kind = selected; clear();
+  }
+  function selectList() { stop(); status(reading ? 'choose_list' : 'no_reading'); }
+  for (const b of kindButtons) b.addEventListener('click', changeKind);
+  listSelect?.addEventListener('change', selectList);
   button.addEventListener('click', read); clearButton.addEventListener('click', clear);
   status('no_reading');
   root.dispatchEvent(new CustomEvent('ontology-consumer-ready'));
   return { clear, dispose() { disposed = true; stop(); output.replaceChildren();
     root.removeEventListener('ontology-reading', receive); root.removeEventListener('ontology-source-changed', invalidate);
     window.removeEventListener('mdx-auth', authChanged); window.removeEventListener('pagehide', invalidate);
+    for (const b of kindButtons) b.removeEventListener('click', changeKind);
+    listSelect?.removeEventListener('change', selectList); resetLists();
     button.removeEventListener('click', read); clearButton.removeEventListener('click', clear); subscription?.unsubscribe();
   } };
 }

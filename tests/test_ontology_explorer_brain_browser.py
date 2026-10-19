@@ -924,3 +924,111 @@ def test_chinese_first_blocker_name_does_not_split_at_the_heading_edge(browser, 
         assert len(set(rects)) == 1
     finally:
         context.close()
+
+
+def test_x2_same_owner_refresh_keeps_selected_reading_but_clears_private_assumption(browser):
+    ctx,page,seen,errors,_ = _scenario_browser(browser,qualified=True)
+    try:
+        _scenario_submit(page)
+        page.wait_for_function("document.querySelector('[data-scenario-result]').dataset.state==='ready'")
+        page.evaluate("token='rotated';window.dispatchEvent(new CustomEvent('mdx-auth',{detail:{user:{id:owner},event:'TOKEN_REFRESHED'}}))")
+        assert page.locator('[data-scenario-result]').get_attribute('data-state')=='idle'
+        assert page.locator('[name=magnitude]').input_value()=='' and len(seen)==1
+        assert page.locator('[type=submit]').is_enabled()
+        _scenario_submit(page)
+        page.wait_for_function("document.querySelector('[data-scenario-result]').dataset.state==='ready'")
+        assert len(seen)==2 and errors==[]
+    finally:ctx.close()
+
+
+def _numeric_browser_client(monkeypatch, tmp_path):
+    from tests.test_ontology_explorer_contract import x2_inputs
+    from tests.test_ontology_explorer_transport import _rates_scenario_client
+    from tests.test_rate_inflation_transmission import _native_scenario_calibration
+    import pandas as pd
+    inputs = x2_inputs.__wrapped__()
+    client, root, path, _ = _rates_scenario_client(monkeypatch, tmp_path, inputs)
+    earlier = (pd.Timestamp(inputs[2].effective_at) - pd.offsets.BDay(1)).date().isoformat()
+    cal, _ = _native_scenario_calibration(monkeypatch, asof=earlier)
+    path.write_text(json.dumps(cal))
+    return client, cal
+
+
+def test_x2_numeric_native_http_to_browser_keeps_method_samples_and_separate_clocks(browser, monkeypatch, tmp_path):
+    client, cal = _numeric_browser_client(monkeypatch, tmp_path)
+    ctx, page, seen, errors, _ = _scenario_browser(browser)
+    delivered = []
+    try:
+        with client:
+            snapshot = client.get('/api/ontology/explorer/v1').json()
+            reading = {**snapshot['source'], 'owner_id': 'owner-a'}
+            def numeric(r):
+                response = client.post('/api/ontology/explorer/scenario/v1', content=r.request.post_data,
+                  headers={'Content-Type': 'application/json'})
+                assert response.status_code == 200
+                delivered.append(response.json())
+                r.fulfill(status=response.status_code, headers=dict(response.headers), body=response.text)
+            page.route('**/api/ontology/explorer/scenario/v1', numeric)
+            page.evaluate("r=>document.getElementById('ox-scenario').dispatchEvent(new CustomEvent('ontology-reading',{detail:r}))", reading)
+            page.locator('[name=node]').select_option('transmission:real10y_chg63')
+            assert page.locator('[name=shape]').is_disabled()
+            page.locator('[name=magnitude]').fill('50'); page.locator('[type=submit]').click()
+            page.wait_for_function("document.querySelector('[data-scenario-result]').dataset.state==='ready'")
+        output = page.locator('[data-scenario-result]').inner_text()
+        assert len(delivered) == 1 and delivered[0]['root_evaluation']['status'] == 'NUMERIC_ILLUSTRATION'
+        assert 'Historical same-window illustration' in output and 'not forecasts or causal estimates' in output
+        assert '637 overlapping paired observations' in output and 'effective independent sample size are not provided' in output
+        assert '2 of 2 calibrated assets shown' in output and 'SPY' in output and 'TLT' in output
+        assert cal['scenario_beta_metadata']['generated_at'] in output and snapshot['source']['built'] in output
+        assert cal['meta']['asof'] != snapshot['source']['asof']
+        assert 'moving-average path' not in output and 'Assumed root threshold met' not in output
+        assert '历史同窗示意' in output and '重叠观测不等同于独立事件' in output
+        page.evaluate("document.documentElement.dataset.lang='zh';document.dispatchEvent(new Event('langchange'))")
+        assert page.locator('[name=node] option:checked').inner_text() == '10年期实际收益率变化'
+        assert page.evaluate('[localStorage.length,sessionStorage.length]') == [0, 0] and not errors and seen == []
+        page.locator('[name=magnitude]').fill('51')
+        assert page.locator('[data-scenario-result]').get_attribute('data-state') == 'idle'
+        assert 'SPY' not in page.locator('[data-scenario-result]').inner_text()
+    finally: ctx.close()
+
+
+def test_x2_numeric_decoder_refuses_cross_owner_clock_coverage_and_measurement_claims(browser, monkeypatch, tmp_path):
+    import copy
+    from tests.test_ontology_explorer_transport import _rates_payload
+    client, _ = _numeric_browser_client(monkeypatch, tmp_path)
+    with client:
+        snapshot = client.get('/api/ontology/explorer/v1').json()
+        response = client.post('/api/ontology/explorer/scenario/v1', json=_rates_payload(snapshot))
+    assert response.status_code == 200 and response.json()['root_evaluation']['status'] == 'NUMERIC_ILLUSTRATION'
+    value = response.json(); reading = {**snapshot['source'], 'owner_id': 'owner-a'}
+    assumption = _rates_payload(snapshot)['assumption']
+    ctx, page, _, errors, _ = _scenario_browser(browser)
+    try:
+        def decode(v):
+            return page.evaluate("([v,a,r])=>{try{scenario.decodeEvaluation(v,a,v.snapshot_id,r);return true;}catch(_){return false;}}", [v, assumption, reading])
+        assert decode(value)
+        for path, replacement in [
+            (['root_evaluation','confirmed'], True),
+            (['root_evaluation','method_class'], 'CAUSAL_RESPONSE'),
+            (['root_evaluation','scenario','shock_bp'], 51),
+            (['root_evaluation','horizon','unit'], 'calendar_days'),
+            (['root_evaluation','calibration','generated_at'], '2099-01-01T00:00:00Z'),
+            (['root_evaluation','samples','SPY','n'], True),
+            (['root_evaluation','samples','SPY','effective_n'], 637),
+            (['root_evaluation','samples','SPY','end'], '2099-01-01'),
+            (['root_evaluation','coverage','displayed_assets'], ['SPY']),
+            (['root_evaluation','coverage','not_displayed'], [{'asset':'TLT','reason':'hidden'}]),
+            (['root_evaluation','uncertainty'], 'CONFIDENT'),
+            (['owner_receipt','source_manifest_hash'], 'sha256:'+'f'*64),
+            (['owner_receipt','generation'], 'sha256:'+'f'*64),
+            (['owner_receipt','selected_knowledge_cutoff'], '2099-01-01T00:00:00Z'),
+            (['owner_receipt','knowledge_cutoff'], reading['built']),
+            (['owner_receipt','historical_vintage_claim'], True),
+            (['owner_receipt','publication_contract'], 'can_trade'),
+        ]:
+            changed = copy.deepcopy(value); cursor = changed
+            for key in path[:-1]: cursor = cursor[key]
+            cursor[path[-1]] = replacement
+            assert not decode(changed), path
+        assert not errors
+    finally: ctx.close()

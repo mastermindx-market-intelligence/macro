@@ -63,11 +63,23 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
   </div>
 
 
+  <section id="ox-scenario" class="ox-company" aria-labelledby="ox-scenario-title">
+    <h2 id="ox-scenario-title">{{ t('Explicit scenario assumption', '明确情景假设') }}</h2>
+    <p class="ox-note">{{ t('Live Trace remains observed. This separate evaluation uses your assumption.', '实时路径仍表示观测结果。此独立评估使用您的假设。') }}</p>
+    <form class="ox-company-form" data-scenario-form autocomplete="off"></form>
+    <div data-scenario-result aria-live="polite" aria-busy="false"></div>
+  </section>
+
   <section id="ox-portfolio" class="ox-company" aria-labelledby="ox-portfolio-title">
-    <h2 id="ox-portfolio-title">{{ t('Your Portfolio in this path', '此路径中的投资组合') }}</h2>
-    <p class="ox-note">{{ t('Compare your saved open positions with dated owner screen membership. Your holdings stay private; this view never edits your Portfolio.',
-      '将已保存的未平仓持仓与来源筛选的历史成员名单对照。持仓保持私有；此视图不会修改投资组合。') }}</p>
+    <h2 id="ox-portfolio-title">{{ t('Your Portfolio and Watchlists in this path', '此路径中的投资组合与观察列表') }}</h2>
+    <p class="ox-note">{{ t('Compare saved open positions or a selected Watchlist with dated screen membership. Reads are private and explicit; this view never edits your saved data.',
+      '将已保存的未平仓持仓或所选观察列表与历史筛选成员名单对照。读取保持私有且须明确请求；此视图不会修改已保存的数据。') }}</p>
+    <div class="ox-company-choices" role="group" aria-label="{{ 'Saved data / 已保存的数据' }}">
+      <button class="ox-cta secondary" type="button" data-private-kind="portfolio" aria-pressed="true">{{ t('Portfolio', '投资组合') }}</button>
+      <button class="ox-cta secondary" type="button" data-private-kind="watchlist" aria-pressed="false">{{ t('Watchlist', '观察列表') }}</button>
+    </div>
     <div class="ox-company-form">
+      <label class="ox-company-label" data-watchlist-picker hidden>{{ t('Saved Watchlist', '已保存的观察列表') }}<select data-watchlist-select></select></label>
       <button class="ox-cta" type="button" data-portfolio-read disabled>{{ t('Read my Portfolio', '读取我的投资组合') }}</button>
       <button class="ox-cta secondary" type="button" data-portfolio-clear>{{ t('Clear reading', '清除读数') }}</button>
     </div>
@@ -126,6 +138,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 <script src="{{ nav_prefix|default('') }}watchstore.js" defer></script>
 <script src="{{ nav_prefix|default('') }}ontology.js" defer></script>
 <script type="module" src="{{ nav_prefix|default('') }}ontology-portfolio.js"></script>
+<script type="module" src="{{ nav_prefix|default('') }}ontology-scenario.js"></script>
 <script type="module" src="{{ nav_prefix|default('') }}ontology-company.js"></script>
 </body>
 </html>

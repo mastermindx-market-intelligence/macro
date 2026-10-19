@@ -1,6 +1,6 @@
 {
   "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
-  "generated_at": "2026-10-19T07:43:13Z",
+  "generated_at": "2026-10-19T08:34:48Z",
   "metric_notes": {
     "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
     "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
@@ -19,23 +19,28 @@
         "asof_present": false,
         "by_viewport": {
           "desktop": {
-            "document_height_px": 1102,
+            "document_height_px": 1484,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 1362,
+            "document_height_px": 2155,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "tablet": {
+            "document_height_px": 1703,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           }
         },
         "console_error_count": 0,
-        "document_height_px": 1102,
+        "document_height_px": 1484,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
         "heading_counts": {
           "h1": 0,
-          "h2": 4,
+          "h2": 5,
           "h3": 0,
           "h4": 0,
           "h5": 0,
@@ -46,20 +51,20 @@
         "measured_in": {
           "access": "anonymous",
           "locale": "en",
-          "theme": "dark",
+          "theme": "light",
           "viewport": "desktop"
         },
         "panel_count": 0,
-        "payload_bytes_total": 291749,
+        "payload_bytes_total": 456127,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
-        "request_count": 26,
+        "request_count": 27,
         "screenshot_completion": 1.0,
-        "section_count": 5,
+        "section_count": 6,
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 202
+        "visible_word_count": 277
       },
       "page_id": "ontology.html",
       "route": "/ontology.html"
@@ -70,7 +75,7 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/f04-portfolio-readonly-d96deae8ee5820f3",
-    "resolved_sha_or_none": "26ba7f747e799f7f9c2f5c68eb32800b5be5c482",
+    "resolved_sha_or_none": "b76aecc95a915fd6cc4cc2972db4ebe4e188cd2a",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/f04-portfolio-readonly-d96deae8ee5820f3 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
     "site_dir": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/f04-portfolio-readonly-d96deae8ee5820f3/site"
   },

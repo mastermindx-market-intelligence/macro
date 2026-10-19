@@ -7,9 +7,10 @@ html[data-theme="light"] .ox-company{background:var(--panel);box-shadow:var(--ca
 .ox-company h2{margin:0 0 var(--space-2,8px);font-size:var(--fs-h2)}
 .ox-company-form{display:flex;flex-wrap:wrap;align-items:end;gap:var(--space-3,12px);margin:var(--space-5,20px) 0}
 .ox-company-label{display:flex;flex-direction:column;gap:var(--space-2,8px);flex:1 1 220px;min-width:0;font-size:var(--fs-sm)}
-.ox-company input{box-sizing:border-box;width:100%;min-height:44px;padding:var(--space-3,12px);
+.ox-company input,.ox-company select{box-sizing:border-box;width:100%;min-height:44px;padding:var(--space-3,12px);
   color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:var(--r-ctl,8px);
-  font:inherit;text-transform:uppercase}
+  font:inherit}
+.ox-company input{text-transform:uppercase}
 .ox-company button{min-height:44px;cursor:pointer}
 .ox-company-identity,.ox-company-choices{display:flex;flex-wrap:wrap;gap:var(--space-3,12px);align-items:center;margin:var(--space-4,16px) 0}
 .ox-company-current{color:var(--muted);font-size:var(--fs-sm)}

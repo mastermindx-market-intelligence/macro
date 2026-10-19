@@ -213,15 +213,23 @@ _PORTFOLIO_AUTH = """
 window.pOwner='owner-a';window.pToken='fixture-token';window.pCalls={queries:0,sessions:0,writes:0};
 window.pRows=[{id:'a',user_id:'owner-a',ticker:'AAA',shares:2,entry_price:30,status:'open',entry_date:null,created_at:null},
  {id:'b',user_id:'owner-a',ticker:'BBB',shares:1,entry_price:40,status:'open',entry_date:null,created_at:null}];
+window.wLists=[{id:'wl-a',user_id:'owner-a',name:'Energy <private>',position:0,created_at:null}];
+window.wSymbols=[{watchlist_id:'wl-a',symbol:'AAA',position:0,created_at:null},
+ {watchlist_id:'wl-a',symbol:'BBB',position:1,created_at:null},{watchlist_id:'wl-a',symbol:'AAA',position:2,created_at:null}];
 window.pCallbacks=[];
 window.pClient={auth:{getSession:async()=>{pCalls.sessions++;if(window.pSessionHook)return pSessionHook();
  return{data:{session:pOwner?{user:{id:pOwner},access_token:pToken}:null}};},
  onAuthStateChange:fn=>{pCallbacks.push(fn);return{data:{subscription:{unsubscribe(){}}}};}},
- from:table=>{pCalls.queries++;if(table!=='portfolio_positions')throw Error('wrong table');
- let q={select:(cols,opts)=>{if(cols.includes('notes')||opts.count!=='exact')throw Error('private scope');return q;},
- eq:(key,owner)=>{if(key!=='user_id'||owner!==pOwner)throw Error('wrong owner');return q;},
- order:()=>q,limit:()=>q,abortSignal:()=>q,
- then:(ok,no)=>(window.pQueryGate||Promise.resolve({data:pRows,count:pRows.length,error:null})).then(ok,no)};return q;}};
+ from:table=>{pCalls.queries++;(pCalls.tables||(pCalls.tables=[])).push(table);
+ if(!['portfolio_positions','watchlists','watchlist_symbols'].includes(table))throw Error('wrong table');
+ const filters={};let q={select:(cols,opts)=>{if(cols.includes('notes')||opts.count!=='exact')throw Error('private scope');return q;},
+ eq:(key,value)=>{filters[key]=value;return q;},order:()=>q,limit:()=>q,abortSignal:()=>q,
+ then:(ok,no)=>{let rows;
+ if(table==='portfolio_positions'){if(filters.user_id!==pOwner)throw Error('wrong owner');
+ return(window.pQueryGate||Promise.resolve({data:pRows,count:pRows.length,error:null})).then(ok,no);}
+ if(table==='watchlists'){if(filters.user_id!==pOwner)throw Error('wrong owner');rows=wLists.filter(r=>!filters.id||r.id===filters.id);}
+ else {if(!filters.watchlist_id)throw Error('missing list');rows=wSymbols;}
+ return(window.wQueryGate||Promise.resolve({data:rows,count:window.wCount===undefined?rows.length:wCount,error:null})).then(ok,no);}};return q;}};
 window.MDXAuth={user:()=>pOwner?{id:pOwner}:null,client:async()=>pClient};
 """
 
@@ -241,7 +249,10 @@ def portfolio_start(browser, synthetic_snapshot, *, width=1440, theme='dark', la
     <link rel="stylesheet" href="/ontology-company.css">
     <main class="ox-wrap"><div id="ox-root" aria-busy="true"></div>
     <section id="ox-portfolio" class="ox-company"><h2><span class="l-en">Your Portfolio in this path</span><span class="l-zh">此路径中的投资组合</span></h2>
-    <div class="ox-company-form"><button type="button" class="ox-cta" data-portfolio-read disabled>Read / 读取</button>
+    <div class="ox-company-choices"><button type="button" data-private-kind="portfolio" aria-pressed="true">Portfolio</button>
+    <button type="button" data-private-kind="watchlist" aria-pressed="false">Watchlist</button></div>
+    <div class="ox-company-form"><label class="ox-company-label" data-watchlist-picker hidden>Saved Watchlist<select data-watchlist-select></select></label>
+    <button type="button" class="ox-cta" data-portfolio-read disabled>Read / 读取</button>
     <button type="button" class="ox-cta secondary" data-portfolio-clear>Clear / 清除</button></div>
     <div data-portfolio-result aria-live="polite"></div></section></main>
     <script src="/portfolio_state.js"></script><script src="/watchstore.js"></script><script src="/ontology.js"></script>
@@ -312,6 +323,7 @@ def test_portfolio_private_macro_read_with_explicit_membership_and_weights(brows
         assert 'AAA' in text and 'BBB' in text and '2026-01-01' in text
         assert ('entry-cost' if language=='en' else '建仓成本') in text
         assert ('not current market' if language=='en' else '并非当前市值') in text
+        assert ('1 matched; 1 outside' if language=='en' else '1 个匹配；1 个不在') in text
         assert page.evaluate('[localStorage.length,sessionStorage.length]')==[0,0]
         assert page.url=='https://macro.example/ontology.html'
         assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
@@ -459,4 +471,89 @@ def test_portfolio_full_macro_shell_uses_actual_owner_without_sync_enrollment(br
         assert len(seen)==1 and page.evaluate('pCalls.queries')==1
         assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
         assert errors==[]
+    finally:ctx.close()
+
+
+@pytest.mark.parametrize('width,language', [(1440,'en'),(390,'zh')])
+def test_watchlist_explicit_read_reuses_membership_without_weights_or_writes(browser,synthetic_snapshot,width,language):
+    ctx,page,seen,errors=portfolio_start(browser,synthetic_snapshot,width=width,language=language,full_shell=True)
+    try:
+        page.locator('[data-private-kind=watchlist]').click()
+        assert page.evaluate('pCalls.queries')==0 and seen==[]
+        page.locator('[data-portfolio-read]').click();portfolio_settled(page,'choose_list')
+        assert page.evaluate('pCalls.tables')==['watchlists'] and seen==[]
+        assert 'Energy <private>' in page.locator('[data-watchlist-select]').inner_text()
+        page.locator('[data-watchlist-select]').select_option('wl-a')
+        assert page.evaluate('pCalls.queries')==1
+        page.evaluate("()=>{PS.computeSnapshot=()=>{throw Error('watchlist must not calculate weights')};}")
+        page.locator('[data-portfolio-read]').click();portfolio_settled(page,'ready')
+        assert page.evaluate('pCalls.tables')==['watchlists','watchlists','watchlist_symbols']
+        assert len(seen)==1 and seen[0]['request']['symbols']==['AAA','BBB']
+        assert set(seen[0]['request'])=={'schema','chain','source_manifest_hash','symbols'}
+        assert page.locator('.ox-portfolio-row').count()==2
+        assert '%' not in page.locator('.ox-portfolio-rows').inner_text()
+        assert ('not a holding' if language=='en' else '并非持仓') in page.locator('[data-portfolio-result]').inner_text()
+        assert page.locator('[data-portfolio-result] private').count()==0
+        assert page.evaluate('pCalls.writes')==0 and errors==[]
+        assert '?' not in page.url and page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+        page.locator('[data-private-kind=portfolio]').click();portfolio_settled(page,'idle')
+        assert page.locator('[data-watchlist-select] option').count()==0
+        assert page.locator('.ox-portfolio-row').count()==0 and len(seen)==1
+    finally:ctx.close()
+
+
+@pytest.mark.parametrize('phase,change',[
+  ('enumerate', "pOwner='other';pCallbacks.forEach(fn=>fn('SIGNED_IN',{user:{id:pOwner}}))"),
+  ('enumerate', "document.querySelector('[data-private-kind=portfolio]').click()"),
+  ('members', "window.dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true}))"),
+  ('members', "document.querySelector('#ox-portfolio').dispatchEvent(new CustomEvent('ontology-source-changed'))"),
+])
+def test_watchlist_late_reads_cannot_repopulate_private_names_or_rows(browser,synthetic_snapshot,phase,change):
+    ctx,page,seen,errors=portfolio_start(browser,synthetic_snapshot)
+    try:
+        page.locator('[data-private-kind=watchlist]').click()
+        if phase=='members':
+            page.locator('[data-portfolio-read]').click();portfolio_settled(page,'choose_list')
+            page.locator('[data-watchlist-select]').select_option('wl-a')
+        page.evaluate('()=>{window.wQueryGate=new Promise(resolve=>window.finishWatch=resolve);}')
+        before=page.evaluate('pCalls.queries');page.locator('[data-portfolio-read]').click()
+        page.wait_for_function('n=>pCalls.queries>n',arg=before)
+        page.evaluate(change);page.evaluate('finishWatch({data:wLists,count:wLists.length,error:null})')
+        page.evaluate('()=>new Promise(r=>setTimeout(r,20))')
+        assert page.locator('[data-watchlist-select] option').count()==0
+        assert page.locator('.ox-portfolio-row').count()==0 and seen==[] and errors==[]
+    finally:ctx.close()
+
+
+@pytest.mark.parametrize('setup,state',[("wLists=[]",'empty_lists'),("wLists[0].user_id='other'",'unavailable'),("wCount=2",'unavailable')])
+def test_watchlist_empty_is_distinct_from_private_or_truncated_read(browser,synthetic_snapshot,setup,state):
+    ctx,page,seen,errors=portfolio_start(browser,synthetic_snapshot)
+    try:
+        page.evaluate(setup);page.locator('[data-private-kind=watchlist]').click()
+        page.locator('[data-portfolio-read]').click();portfolio_settled(page,state)
+        assert page.locator('[data-watchlist-select] option').count()==0 and seen==[] and errors==[]
+    finally:ctx.close()
+
+
+@pytest.mark.parametrize('width',[390,1440])
+def test_scenario_full_macro_shell_binds_selected_source_and_clears_private_inputs(browser,synthetic_snapshot,width):
+    ctx,page,seen,errors=portfolio_start(browser,synthetic_snapshot,width=width,full_shell=True)
+    calls=[]
+    def refusal(r):
+        calls.append(json.loads(r.request.post_data))
+        r.fulfill(status=503,headers={'Content-Type':'application/json','Cache-Control':'private, no-store','Vary':'Authorization, Cookie'},
+          body=json.dumps({'detail':{'schema':'ontology_explorer_error.v1','code':'source_unavailable'}}))
+    try:
+        page.route('**/api/ontology/explorer/scenario/v1',refusal)
+        page.wait_for_function("document.querySelector('[data-scenario-result]').dataset.state==='idle'")
+        assert calls==[] and seen==[] and page.evaluate('pCalls.queries')==0
+        page.locator('[data-scenario-form] [name=magnitude]').fill('30')
+        page.locator('[data-scenario-form] [type=submit]').click()
+        page.wait_for_function("document.querySelector('[data-scenario-result]').dataset.state==='unavailable'")
+        assert len(calls)==1 and set(calls[0])=={'schema','source_manifest_hash','assumption'}
+        assert calls[0]['assumption']['magnitude']==30
+        page.evaluate("window.dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true}))")
+        assert page.locator('[data-scenario-form] [name=magnitude]').input_value()==''
+        assert page.locator('[data-scenario-result]').get_attribute('data-state')=='no_reading'
+        assert page.evaluate('document.documentElement.scrollWidth<=innerWidth') and errors==[]
     finally:ctx.close()

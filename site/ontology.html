@@ -58,7 +58,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="theme.css?v=2e861147">
 <link rel="stylesheet" href="ontology.css?v=61b69acc">
-<link rel="stylesheet" href="ontology-company.css?v=493b80ac">
+<link rel="stylesheet" href="ontology-company.css?v=7b0e28f9">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="navigation-refresh.css?v=ef068fe1">
 <style>
@@ -367,10 +367,22 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
   </div>
 
 
+  <section id="ox-scenario" class="ox-company" aria-labelledby="ox-scenario-title">
+    <h2 id="ox-scenario-title"><span class="l-en">Explicit scenario assumption</span><span class="l-zh">明确情景假设</span></h2>
+    <p class="ox-note"><span class="l-en">Live Trace remains observed. This separate evaluation uses your assumption.</span><span class="l-zh">实时路径仍表示观测结果。此独立评估使用您的假设。</span></p>
+    <form class="ox-company-form" data-scenario-form autocomplete="off"></form>
+    <div data-scenario-result aria-live="polite" aria-busy="false"></div>
+  </section>
+
   <section id="ox-portfolio" class="ox-company" aria-labelledby="ox-portfolio-title">
-    <h2 id="ox-portfolio-title"><span class="l-en">Your Portfolio in this path</span><span class="l-zh">此路径中的投资组合</span></h2>
-    <p class="ox-note"><span class="l-en">Compare your saved open positions with dated owner screen membership. Your holdings stay private; this view never edits your Portfolio.</span><span class="l-zh">将已保存的未平仓持仓与来源筛选的历史成员名单对照。持仓保持私有；此视图不会修改投资组合。</span></p>
+    <h2 id="ox-portfolio-title"><span class="l-en">Your Portfolio and Watchlists in this path</span><span class="l-zh">此路径中的投资组合与观察列表</span></h2>
+    <p class="ox-note"><span class="l-en">Compare saved open positions or a selected Watchlist with dated screen membership. Reads are private and explicit; this view never edits your saved data.</span><span class="l-zh">将已保存的未平仓持仓或所选观察列表与历史筛选成员名单对照。读取保持私有且须明确请求；此视图不会修改已保存的数据。</span></p>
+    <div class="ox-company-choices" role="group" aria-label="Saved data / 已保存的数据">
+      <button class="ox-cta secondary" type="button" data-private-kind="portfolio" aria-pressed="true"><span class="l-en">Portfolio</span><span class="l-zh">投资组合</span></button>
+      <button class="ox-cta secondary" type="button" data-private-kind="watchlist" aria-pressed="false"><span class="l-en">Watchlist</span><span class="l-zh">观察列表</span></button>
+    </div>
     <div class="ox-company-form">
+      <label class="ox-company-label" data-watchlist-picker hidden><span class="l-en">Saved Watchlist</span><span class="l-zh">已保存的观察列表</span><select data-watchlist-select></select></label>
       <button class="ox-cta" type="button" data-portfolio-read disabled><span class="l-en">Read my Portfolio</span><span class="l-zh">读取我的投资组合</span></button>
       <button class="ox-cta secondary" type="button" data-portfolio-clear><span class="l-en">Clear reading</span><span class="l-zh">清除读数</span></button>
     </div>
@@ -411,9 +423,10 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 <script src="supabase.js?v=8596965f" defer></script>
 <script src="theme.js?v=46939917" defer></script>
 <script src="portfolio_state.js?v=846cea2c" defer></script>
-<script src="watchstore.js?v=912a8704" defer></script>
-<script src="ontology.js?v=8179a246" defer></script>
-<script type="module" src="ontology-portfolio.js?v=76b59fcd"></script>
+<script src="watchstore.js?v=bf3ca074" defer></script>
+<script src="ontology.js?v=b607bd60" defer></script>
+<script type="module" src="ontology-portfolio.js?v=d33aab03"></script>
+<script type="module" src="ontology-scenario.js?v=4a29e8c8"></script>
 <script type="module" src="ontology-company.js?v=0f93164d"></script>
 </body>
 </html>

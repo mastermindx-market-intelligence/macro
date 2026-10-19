@@ -28,6 +28,7 @@
   var readingEpoch = 0;
   var activeRequest = null;
   var portfolioReading = null;
+  var scenarioReading = null;
   var canonicalOwner = null;
   try { canonicalOwner = window.MDXAuth && window.MDXAuth.user && window.MDXAuth.user(); }
   catch (e) { canonicalOwner = null; }
@@ -38,6 +39,9 @@
     if (activeRequest) activeRequest.abort();
     activeRequest = null;
     portfolioReading = null;
+    scenarioReading = null;
+    var scenario = document.getElementById("ox-scenario");
+    if (scenario) scenario.dispatchEvent(new CustomEvent("ontology-source-changed"));
     var portfolio = document.getElementById("ox-portfolio");
     if (portfolio) portfolio.dispatchEvent(new CustomEvent("ontology-source-changed"));
     selectedPathRef = null;
@@ -1385,6 +1389,11 @@
     return d;
   }
 
+  var scenarioRoot = document.getElementById("ox-scenario");
+  function deliverScenarioReading() {
+    if (scenarioRoot && scenarioReading) scenarioRoot.dispatchEvent(new CustomEvent("ontology-reading", { detail: scenarioReading }));
+  }
+  if (scenarioRoot) scenarioRoot.addEventListener("ontology-consumer-ready", deliverScenarioReading);
   var portfolioRoot = document.getElementById("ox-portfolio");
   function deliverPortfolioReading() {
     if (portfolioRoot && portfolioReading) portfolioRoot.dispatchEvent(new CustomEvent("ontology-reading", { detail: portfolioReading }));
@@ -1490,6 +1499,8 @@
         channels: (snapshot.exposure_screens || []).map(function (s) { return {id:s.id, label:s.label}; })
       };
       deliverPortfolioReading();
+      scenarioReading = Object.assign({}, snapshot.source, { owner_id: auth.identity.id });
+      deliverScenarioReading();
       focusFromHash();
     } catch (error) {
       if (epoch === readingEpoch) gateForFailure("request_failed");

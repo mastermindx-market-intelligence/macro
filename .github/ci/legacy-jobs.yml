@@ -37,6 +37,9 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "engine/ontology_portfolio.py"
+      - "engine/ontology_scenario.py"
+      - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "app/__init__.py"
       - "app/account_actions.py"
@@ -1781,6 +1784,9 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "engine/ontology_portfolio.py"
+      - "engine/ontology_scenario.py"
+      - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "tests/test_c19_wp32_correction.py"
       - "tests/test_c19_wp32_denial_cache.py"
@@ -2588,6 +2594,9 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "engine/ontology_portfolio.py"
+      - "engine/ontology_scenario.py"
+      - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
@@ -6235,6 +6244,9 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/ontology_portfolio.py"
+      - "engine/ontology_scenario.py"
+      - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
@@ -8496,6 +8508,9 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/ontology_portfolio.py"
+      - "engine/ontology_scenario.py"
+      - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
@@ -17863,6 +17878,9 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/ontology_portfolio.py"
+      - "engine/ontology_scenario.py"
+      - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
@@ -18622,6 +18640,9 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/ontology_portfolio.py"
+      - "engine/ontology_scenario.py"
+      - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
@@ -20610,6 +20631,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/ontology_portfolio.py"
+      - "engine/ontology_scenario.py"
+      - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
@@ -22950,6 +22974,9 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/ontology_portfolio.py"
+      - "engine/ontology_scenario.py"
+      - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
@@ -28314,6 +28341,9 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/ontology_portfolio.py"
+      - "engine/ontology_scenario.py"
+      - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
@@ -28799,6 +28829,9 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/ontology_portfolio.py"
+      - "engine/ontology_scenario.py"
+      - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
@@ -31639,6 +31672,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/ontology_portfolio.py"
+      - "engine/ontology_scenario.py"
+      - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
