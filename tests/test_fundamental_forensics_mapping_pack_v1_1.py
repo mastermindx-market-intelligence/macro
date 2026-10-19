@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import replace
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 import hashlib
 from pathlib import Path
 
@@ -229,6 +229,41 @@ def test_a53_no_hindsight_bundle_before_rule_clock_equals_base_bundle() -> None:
         assert definition is not None
         assert definition.rule.rule_id == "definition.intangible_assets_net/v1"
         assert definition.scope.startswith("Finite-lived intangible assets")
+
+
+# Seat ruling R-9761-CLK (a)/(d): the three new rules share one clock, set after
+# the 2026-10-20 production publish so no generation admitted before it can see them.
+R_9761_CLK_RULE_CLOCK = datetime(2026, 10, 21, 0, 0, 0, tzinfo=timezone.utc)
+
+
+def test_a53_every_new_rule_carries_the_r_9761_clk_clock_and_is_cutoff_gated() -> None:
+    registry = load_core_metric_registry(ROOT)
+    clocks = {
+        mapping.rule.rule_id: mapping.rule.available_at
+        for metric_id in ("total_assets", "common_shares_outstanding")
+        for mapping in registry.metric(metric_id).mappings
+        if mapping.rule.rule_id in NEW_MAPPING_RULE_IDS
+    }
+    rule_clock = _alias_rule_clock(registry)
+    at_clock = registry.governance_bundle_at(rule_clock)
+    definition = at_clock.metric("intangible_assets_net").definition
+    clocks[definition.rule.rule_id] = definition.rule.available_at
+    assert clocks == {
+        TOTAL_ASSETS_ALIAS_RULE: R_9761_CLK_RULE_CLOCK,
+        SHARES_ALIAS_RULE: R_9761_CLK_RULE_CLOCK,
+        "definition.intangible_assets_net/v1": R_9761_CLK_RULE_CLOCK,
+    }
+    assert rule_clock == R_9761_CLK_RULE_CLOCK
+
+    before = registry.governance_bundle_at(rule_clock - timedelta(seconds=1))
+    for bundle, visible in ((before, False), (at_clock, True)):
+        rule_ids = {
+            mapping.rule.rule_id
+            for metric_id in ("total_assets", "common_shares_outstanding")
+            for mapping in bundle.mappings_for(metric_id)
+        }
+        assert (rule_ids & NEW_MAPPING_RULE_IDS) == (NEW_MAPPING_RULE_IDS if visible else set())
+        assert (bundle.metric("intangible_assets_net").definition is not None) is visible
 
 
 def test_identity_alias_yields_value_after_rule_clock_and_base_state_before() -> None:

@@ -4,7 +4,7 @@ mapping_pack_version: 1.1.0
 available_at: "2026-08-02T00:00:00Z"
 default_taxonomy_version_start: 2009
 default_taxonomy_version_end: 2026
-content_sha256: e1d8e925c58e202c6ec2b49b4d3a3990d55b87f9c6a0ca93b7e5c9de48b4dfc0
+content_sha256: 61e40289c028b8495eaf47045cface91dafae7ce7318bbf50ddfed7d6511daa4
 
 mappings:
   - metric_id: revenue
@@ -128,7 +128,7 @@ mappings:
     taxonomy_concept_aliases:
       - {taxonomy: us-gaap, concept: Assets, priority: 10}
   - metric_id: total_assets
-    rule: {rule_id: mapping.total_assets.alias_liabilities_and_stockholders_equity/v1, version: 1.0.0, available_at: "2026-10-20T00:00:00Z", confidence: A}
+    rule: {rule_id: mapping.total_assets.alias_liabilities_and_stockholders_equity/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: A}
     taxonomy_concept_aliases:
       - {taxonomy: us-gaap, concept: LiabilitiesAndStockholdersEquity, priority: 20}
   - metric_id: short_term_debt
@@ -168,7 +168,7 @@ mappings:
     taxonomy_concept_aliases:
       - {taxonomy: dei, concept: EntityCommonStockSharesOutstanding, priority: 10}
   - metric_id: common_shares_outstanding
-    rule: {rule_id: mapping.common_shares_outstanding.alias_common_stock_shares_outstanding/v1, version: 1.0.0, available_at: "2026-10-20T00:00:00Z", confidence: A}
+    rule: {rule_id: mapping.common_shares_outstanding.alias_common_stock_shares_outstanding/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: A}
     taxonomy_concept_aliases:
       - {taxonomy: us-gaap, concept: CommonStockSharesOutstanding, priority: 5}
   - metric_id: basic_earnings_per_share
