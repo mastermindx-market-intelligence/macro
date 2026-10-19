@@ -1686,3 +1686,114 @@ def test_v3_h2_p0_selector_rejects_leaky_features_duplicates_and_bad_warmup():
     no_warmup = match(E("pair-a", 280, 2, 280, True, 200), [])
     assert no_warmup["status"] == "NOT_EXECUTABLE"
     assert no_warmup["reason"] == "A1_WARMUP_UNAVAILABLE"
+
+
+
+def _h3_synthetic_event(t, arm, *, weak, y, pair="pair-a",
+                        q=2, sign=1, feature=None):
+    from scripts.leadership_rotation_v3_candidate import SyntheticH3Event as E
+    return E(
+        pair_id=pair, origin=t, arm=arm, donor_weak=weak,
+        receiver_spy_sign=sign, volatility_quintile=q,
+        feature_asof=t if feature is None else feature, warmup_sessions=t,
+        residual_y20=y, matured_at=t + 20 if y is not None else None,
+    )
+
+
+def test_v3_h3_p0_effect_modifier_is_zero_without_planted_interaction():
+    from scripts.leadership_rotation_v3_candidate import (
+        candidate_h3_synthetic_interaction as check,
+    )
+    a1 = [
+        _h3_synthetic_event(380, "A1", weak=True, y=.013),
+        _h3_synthetic_event(450, "A1", weak=False, y=.009),
+    ]
+    b3 = [
+        _h3_synthetic_event(355, "B3", weak=True, y=.009),
+        _h3_synthetic_event(425, "B3", weak=False, y=.005),
+    ]
+    null = check(a1, b3)
+    assert null["status"] == "DESCRIPTIVE"
+    assert abs(null["delta_log_units"]) < 1e-12
+    assert null["n_weak"] == null["n_not_weak"] == 1
+    assert null["v3_preregistered"] is False
+    assert null["size_or_power_proven"] is False
+    assert null["matching_and_cluster_inference_proven"] is False
+
+    # A planted, synthetic donor-weakness-specific uplift changes the
+    # arithmetic but never the source dates selected or grants significance.
+    planted = check([
+        _h3_synthetic_event(380, "A1", weak=True, y=.020),
+        a1[1],
+    ], b3)
+    assert abs(planted["delta_log_units"] - .007) < 1e-12
+    assert planted["selected_dates"] == null["selected_dates"]
+    negative = check([
+        _h3_synthetic_event(380, "A1", weak=True, y=.006), a1[1],
+    ], b3)
+    assert negative["delta_log_units"] < 0
+
+
+def test_v3_h3_p0_controls_selected_by_past_dates_not_best_future_y():
+    from scripts.leadership_rotation_v3_candidate import (
+        candidate_h3_synthetic_interaction as check,
+    )
+    a1 = [
+        _h3_synthetic_event(380, "A1", weak=True, y=.020),
+        _h3_synthetic_event(450, "A1", weak=False, y=.010),
+    ]
+    controls = [
+        _h3_synthetic_event(350, "B3", weak=True, y=.020),
+        _h3_synthetic_event(355, "B3", weak=True, y=-.200),
+        _h3_synthetic_event(425, "B3", weak=False, y=.006),
+        _h3_synthetic_event(378, "B3", weak=True, y=.999),  # future outcome not matured by A1
+        _h3_synthetic_event(360, "B3", weak=True, y=.999),  # only 20 sessions before A1
+        _h3_synthetic_event(357, "B3", weak=True, y=.999, pair="different"),
+    ]
+    first = check(a1, controls)
+    second = check(a1, list(reversed(controls)))
+    assert first == second
+    assert first["n_selected"] == 2
+    assert first["selected_dates"][0]["b3_t"] == 355
+    assert first["selected_dates"][1]["b3_t"] == 425
+    assert first["status"] == "DESCRIPTIVE"
+    # The selected control remains the latest eligible event when every Y20
+    # label is altered; controls are selected before outcomes are read.
+    shifted = [__import__("dataclasses").replace(x, residual_y20=100.0)
+               for x in controls]
+    assert check(a1, shifted)["selected_dates"] == first["selected_dates"]
+
+
+def test_v3_h3_p0_fails_closed_on_missing_stratum_missing_outcome_or_bad_time():
+    from scripts.leadership_rotation_v3_candidate import (
+        candidate_h3_synthetic_interaction as check,
+    )
+    weak = _h3_synthetic_event(380, "A1", weak=True, y=.010)
+    control = _h3_synthetic_event(355, "B3", weak=True, y=.002)
+    no_stratum = check([weak], [control])
+    assert no_stratum["status"] == "NOT_EXECUTABLE"
+    assert no_stratum["delta_log_units"] is None
+    assert no_stratum["n_not_weak"] == 0
+
+    missing = check([
+        weak,
+        _h3_synthetic_event(450, "A1", weak=False, y=None),
+    ], [
+        control,
+        _h3_synthetic_event(425, "B3", weak=False, y=.003),
+    ])
+    assert missing["status"] == "NOT_EXECUTABLE"
+    assert missing["n_unmeasured"] == 1
+    assert missing["delta_log_units"] is None
+
+    with pytest.raises(ValueError, match="LOOKAHEAD_FEATURE_DATE"):
+        check([_h3_synthetic_event(380, "A1", weak=True, y=.010,
+                                  feature=381)], [control])
+    with pytest.raises(ValueError, match="exact future-only maturity"):
+        from dataclasses import replace
+        check([replace(weak, matured_at=400 + 1)], [control])
+    with pytest.raises(ValueError, match="AMBIGUOUS_DUPLICATE_H3_EVENT"):
+        check([weak], [control, control])
+    with pytest.raises(ValueError, match="donor_weak must be boolean"):
+        from dataclasses import replace
+        check([replace(weak, donor_weak=None)], [control])
