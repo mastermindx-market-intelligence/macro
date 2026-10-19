@@ -1763,7 +1763,7 @@
       + (SHOW_DASH ? '<div class="hx-pulse" aria-live="polite"></div><div class="hx-stats"></div>' : '')
       + '<div class="hm-bar">'
       +   '<div class="hm-tfs" role="tablist" aria-label="Timeframe"></div>'
-      +   (SHOW_DASH || IS_ASIA ? '<label class="hm-search"><span class="mag" aria-hidden="true">🔎</span><input type="text" autocomplete="off" spellcheck="false" aria-label="Filter tiles" placeholder="' + (isZh() ? '筛选个股…' : 'Filter…') + '"></label>' : '')
+      +   (SHOW_DASH || IS_ASIA ? '<label class="hm-search"><span class="mag" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" focusable="false"><circle cx="10.5" cy="10.5" r="6.2"/><path d="m15 15 4.8 4.8"/></svg></span><input type="text" autocomplete="off" spellcheck="false" aria-label="Filter tiles" placeholder="' + (isZh() ? '筛选个股…' : 'Filter…') + '"></label>' : '')
       +   (IS_ASIA ? '<div class="hm-view-toggle" role="group" aria-label="Map or complete list"><button type="button" data-hm-view="map" aria-pressed="true">' + L('Map', '地图') + '</button><button type="button" data-hm-view="list" aria-pressed="false">' + L('List', '列表') + '</button></div>' : '')
       +   '<div class="hm-legend"></div>'
       +   '<div class="hm-grow"></div>'
@@ -3326,20 +3326,20 @@
       + '.hm-mobile .hm-search{display:none;}';
 
     // Scoped refinement: no site-wide palette, data or auth changes.
-    css += '.hm-asia .hm-bar{padding:12px;gap:10px;border-radius:14px;background:var(--panel);box-shadow:none;}'
+    css += '.hm-asia .hm-bar{padding:12px;gap:10px;border-radius:var(--r-card,12px);background:var(--panel);box-shadow:none;}'
       + '.hm-asia .hm-tfs{max-width:100%;flex-wrap:wrap;background:transparent;border:0;padding:0;gap:4px;}'
-      + '.hm-asia .hm-tf,.hm-asia .hm-sortb,.hm-asia .hm-view-toggle button{min-height:36px;padding:7px 11px;font-size:12px;line-height:20px;border-radius:8px;}'
+      + '.hm-asia .hm-tf,.hm-asia .hm-sortb,.hm-asia .hm-view-toggle button{min-height:36px;padding:7px 11px;font-size:12px;line-height:20px;border-radius:var(--r-ctl,8px);}'
       + '.hm-asia .hm-tf.on{background:var(--text);color:var(--bg);box-shadow:none;}'
       + '.hm-asia .hm-tf:disabled{opacity:.4;cursor:not-allowed;}'
       + '.hm-asia .hm-search,.hm-asia.hm-mobile .hm-search{display:flex;min-height:38px;max-width:100%;flex:1 1 180px;}'
       + '.hm-asia .hm-search input{min-height:36px;width:100%;min-width:0;font-size:13px;}'
       + '.hm-asia .hm-read{flex-basis:100%;padding-top:8px;border-top:1px solid var(--line);line-height:1.65;}'
       + '.hm-asia.hm-mobile .hm-read-src{display:inline;overflow-wrap:anywhere;}'
-      + '.hm-asia .hm-view-toggle{display:flex;gap:3px;border:1px solid var(--line);border-radius:10px;padding:2px;}'
-      + '.hm-asia .hm-view-toggle button{font-size:12px;font-weight:600;font-family:inherit;border:0;background:transparent;color:var(--muted);cursor:pointer;}'
+      + '.hm-asia .hm-view-toggle{display:flex;gap:3px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:2px;}'
+      + '.hm-asia .hm-view-toggle button{font-size:12px;font-weight:600;font-family:var(--font-ui);border:0;background:transparent;color:var(--muted);cursor:pointer;}'
       + '.hm-asia .hm-view-toggle button[aria-pressed=true]{background:var(--panel2);color:var(--text);}'
       + '.hm-asia .hm-query-count{font-size:11px;line-height:1.6;color:var(--muted);margin:0 3px 12px;}'
-      + '.hm-quality{border:1px solid var(--line);background:var(--panel);border-radius:13px;margin:0 0 12px;font-size:12px;}'
+      + '.hm-quality{border:1px solid var(--line);background:var(--panel);border-radius:var(--r-card,12px);margin:0 0 12px;font-size:12px;}'
       + '.hm-quality summary{display:flex;align-items:center;gap:12px;min-height:48px;padding:11px 15px;cursor:pointer;list-style:none;flex-wrap:wrap;}'
       + '.hm-quality summary::-webkit-details-marker{display:none;}'
       + '.hm-quality-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted);}'
@@ -3359,7 +3359,7 @@
       + '.hm-asia .hx-pulse::after{animation:none!important;opacity:.12;} .hm-asia .hx-stance .ic{animation:none!important;}'
       + '@media(min-width:900px){.hm-asia.hm-mobile .hm-tm{columns:2;column-gap:14px;}}'
       + '@media(max-width:560px){.hm-asia .hm-view-toggle{display:none;}.hm-quality summary{gap:7px 10px;padding:11px 12px;}.hm-quality [data-hm-q=coverage]{margin-left:0;}.hm-quality dl{grid-template-columns:repeat(2,minmax(0,1fr));}.hm-asia .hm-read-br{display:none;}}';
-    css += '.hm-load-state{padding:22px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--muted);font-size:13px;line-height:1.7;}.hm-load-state p{max-width:75ch;margin:0 0 12px;}.hm-load-state button{min-height:40px;padding:8px 16px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text);font:inherit;cursor:pointer;}';
+    css += '.hm-load-state{padding:22px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel);color:var(--muted);font-size:13px;line-height:1.7;}.hm-load-state p{max-width:75ch;margin:0 0 12px;}.hm-load-state button{min-height:40px;padding:8px 16px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2);color:var(--text);font:inherit;cursor:pointer;}';
     css += '.hm-ov-x{min-width:40px;min-height:40px;}.hm-ov-x:focus-visible{outline:2px solid var(--text);outline-offset:3px;}';
     var st = document.createElement('style');
     st.id = 'mm-heatmap-style';
