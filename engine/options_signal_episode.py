@@ -40,6 +40,9 @@ import json
 import math
 import os
 import re
+from collections import OrderedDict
+from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass
 from decimal import Decimal
 from datetime import date, datetime, timedelta, timezone
@@ -148,12 +151,83 @@ def _schema_validator(filename: str) -> Draft202012Validator:
     return Draft202012Validator(schema, format_checker=FormatChecker())
 
 
+class _SchemaValidationMemo:
+    """Bounded successful schema checks; keys retain exact bytes, not row IDs/hashes."""
+
+    def __init__(self, max_bytes: int, max_entries: int):
+        self.max_bytes = max_bytes
+        self.max_entries = max_entries
+        self.bytes = 0
+        self.rows: OrderedDict[tuple[str, int, bytes], object] = OrderedDict()
+
+    def remember(self, key: tuple[str, int, bytes], validator: object) -> None:
+        size = len(key[2])
+        if size > self.max_bytes or self.max_entries <= 0:
+            return
+        while self.rows and (
+            self.bytes + size > self.max_bytes or len(self.rows) >= self.max_entries
+        ):
+            old, _ = self.rows.popitem(last=False)
+            self.bytes -= len(old[2])
+        self.rows[key] = validator  # Retain identity: an object ID cannot be recycled.
+        self.bytes += size
+
+
+_schema_validation_memo: ContextVar[_SchemaValidationMemo | None] = ContextVar(
+    "options_episode_schema_validation_memo", default=None,
+)
+
+
+@contextmanager
+def schema_validation_session(*, max_bytes: int = 128 * 1024 * 1024,
+                              max_entries: int = 100_000):
+    """Reuse successful schema checks within one build, including locked rereads.
+
+    Semantics, joins, duplicate detection and append byte comparisons always run.
+    Each invocation gets a new context-local bounded LRU, reset even on exceptions;
+    standalone validators keep their original behavior. Validators are the existing
+    process-local compiled contracts and are retained by identity with each entry.
+    """
+    token = _schema_validation_memo.set(_SchemaValidationMemo(max_bytes, max_entries))
+    try:
+        yield
+    finally:
+        _schema_validation_memo.reset(token)
+
+
+def _native_json(value: object) -> bool:
+    # json.dumps also accepts tuples, integer keys and subclasses. Their schema
+    # meaning can differ from the corresponding JSON list/string/number, so none
+    # may borrow a native JSON success. Unknown values use the original validator.
+    kind = type(value)
+    if kind is dict:
+        return all(type(key) is str and _native_json(item) for key, item in value.items())
+    if kind is list:
+        return all(_native_json(item) for item in value)
+    return kind in (str, int, float, bool, type(None))
+
+
 def _validate_json_schema(row: dict[str, Any], filename: str) -> None:
-    errors = sorted(_schema_validator(filename).iter_errors(row), key=lambda e: list(e.path))
+    validator = _schema_validator(filename)
+    memo = _schema_validation_memo.get()
+    key = None
+    if memo is not None:
+        try:
+            if _native_json(row):
+                key = (filename, id(validator), _canonical_bytes(row))
+        except (TypeError, ValueError, OverflowError, RecursionError, UnicodeError):
+            # Cache eligibility must not change validation or exception behavior.
+            pass
+        if key is not None and key in memo.rows:
+            memo.rows.move_to_end(key)
+            return
+    errors = sorted(validator.iter_errors(row), key=lambda e: list(e.path))
     if errors:
         error = errors[0]
         location = ".".join(str(part) for part in error.path) or "<root>"
         raise ContractError(f"schema validation failed at {location}: {error.message}")
+    if memo is not None and key is not None:
+        memo.remember(key, validator)
 
 
 def _stable_id(prefix: str, *parts: object) -> str:

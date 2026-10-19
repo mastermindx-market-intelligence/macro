@@ -15,6 +15,9 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
+from jsonschema import Draft202012Validator
+
+from engine import options_signal_episode as engine
 
 from engine.options_signal_episode import (
     CAMPAIGN_FALSE_AUTHORITY,
@@ -48,6 +51,7 @@ from engine.options_signal_episode import (
 from engine.session_digest import session_window_et
 from lib import nyse_calendar
 from scripts import audit_options_market_memory_context as options_context_audit
+from scripts import build_options_signal_episode as builder
 from scripts import workflow_run_source
 
 
@@ -7011,3 +7015,182 @@ def test_seam_does_not_share_across_runs(monkeypatch, tmp_path: Path) -> None:
     # internally because the seam is run-scoped, never module-global.
     assert summary_a["outcomes_appended"] == 1
     assert summary_b["outcomes_appended"] == 0
+
+
+class CountingValidator:
+    def __init__(self):
+        self.calls = 0
+        self.delegate = Draft202012Validator({
+            'type': 'object', 'required': ['nested'],
+            'properties': {'nested': {'type': 'array', 'items': {'type': 'integer'}}},
+        })
+
+    def iter_errors(self, row):
+        self.calls += 1
+        return self.delegate.iter_errors(row)
+
+
+def test_schema_memo_reuses_exact_bytes_but_revalidates_nested_edits(monkeypatch):
+    validator = CountingValidator()
+    monkeypatch.setattr(engine, '_schema_validator', lambda _: validator)
+    row = {'nested': [1, 2]}
+    with engine.schema_validation_session():
+        engine._validate_json_schema(row, 'test')
+        engine._validate_json_schema(copy.deepcopy(row), 'test')
+        assert validator.calls == 1
+        row['nested'][1] = 'bad'
+        for _ in range(2):
+            with pytest.raises(engine.ContractError, match='schema validation'):
+                engine._validate_json_schema(row, 'test')
+        assert validator.calls == 3  # Failures never become cached successes.
+    engine._validate_json_schema({'nested': [1, 2]}, 'test')
+    assert validator.calls == 4
+
+
+def test_schema_memo_binds_validator_identity_and_filename(monkeypatch):
+    validator = CountingValidator()
+    monkeypatch.setattr(engine, '_schema_validator', lambda _: validator)
+    with engine.schema_validation_session():
+        engine._validate_json_schema({'nested': [1]}, 'a')
+        engine._validate_json_schema({'nested': [1]}, 'b')
+        assert validator.calls == 2
+        validator = CountingValidator()
+        engine._validate_json_schema({'nested': [1]}, 'a')
+        assert validator.calls == 1
+
+
+@pytest.mark.parametrize('value', [(1,), [Decimal('1')]])
+def test_non_native_json_cannot_collide_with_prior_native_success(monkeypatch, value):
+    validator = CountingValidator()
+    monkeypatch.setattr(engine, '_schema_validator', lambda _: validator)
+    with engine.schema_validation_session():
+        engine._validate_json_schema({'nested': [1]}, 'test')
+        try:
+            engine._validate_json_schema({'nested': value}, 'test')
+        except engine.ContractError:
+            pass
+        assert validator.calls == 2
+
+
+def test_schema_memo_bounds_payload_and_entry_count(monkeypatch):
+    validator = CountingValidator()
+    monkeypatch.setattr(engine, '_schema_validator', lambda _: validator)
+    with engine.schema_validation_session(max_bytes=32, max_entries=1):
+        engine._validate_json_schema({'nested': [1]}, 'test')
+        engine._validate_json_schema({'nested': [2]}, 'test')
+        engine._validate_json_schema({'nested': [1]}, 'test')
+        assert validator.calls == 3
+        oversized = {'nested': list(range(50))}
+        engine._validate_json_schema(oversized, 'test')
+        engine._validate_json_schema(oversized, 'test')
+        assert validator.calls == 5
+
+
+def test_builder_invocation_resets_memo_after_exception(monkeypatch):
+    def fail():
+        assert engine._schema_validation_memo.get() is not None
+        raise RuntimeError('deliberate config failure')
+    monkeypatch.setattr(builder.config, 'load', fail)
+    with pytest.raises(RuntimeError, match='deliberate config failure'):
+        builder.run()
+    assert engine._schema_validation_memo.get() is None
+
+
+def test_schema_memo_never_memoizes_semantics_joins_or_append_drift(tmp_path, monkeypatch):
+    episode = _episode()
+    outcome = _campaign_h60_outcome(episode)
+    other = _episode(id='different-source-event')
+    monkeypatch.setenv('COLLECT_LANE', 'nightly')
+    path = tmp_path / 'episodes.jsonl'
+    with engine.schema_validation_session():
+        validate_episode(episode)
+        validate_outcome_against_episode(outcome, episode)
+        # Both rows are schema-valid and warmed, but this join is always invalid.
+        validate_episode(other)
+        for _ in range(2):
+            with pytest.raises(ContractError, match='different episode'):
+                validate_outcome_against_episode(outcome, other)
+        invalid = copy.deepcopy(episode)
+        invalid['episode_id'] = 'osep_' + 'a' * 24
+        engine._validate_json_schema(invalid, 'options.signal_episode.v1.schema.json')
+        for _ in range(2):
+            with pytest.raises(ContractError):
+                validate_episode(invalid)
+        assert append_episodes(path, [episode]) == 1
+        assert append_episodes(path, [copy.deepcopy(episode)]) == 0
+        original = path.read_bytes()
+        drift = copy.deepcopy(episode)
+        drift['feature_snapshot']['premium_usd'] += 1
+        validate_episode(drift)  # Valid shape and semantics still cannot rewrite an ID.
+        with pytest.raises(ContractError, match='conflicting append payload'):
+            append_episodes(path, [drift])
+        assert path.read_bytes() == original
+        # A changed row encountered on the under-lock reread must be checked too.
+        broken = copy.deepcopy(episode)
+        broken['decision']['authority']['may_trade'] = True
+        path.write_text(json.dumps(broken) + '\n')
+        with pytest.raises(ContractError):
+            append_episodes(path, [episode])
+
+
+def test_schema_memo_nested_sessions_restore_outer_and_threads_are_isolated(monkeypatch):
+    validator = CountingValidator()
+    monkeypatch.setattr(engine, '_schema_validator', lambda _: validator)
+    row = {'nested': [1]}
+    with engine.schema_validation_session():
+        engine._validate_json_schema(row, 'test')
+        with pytest.raises(RuntimeError):
+            with engine.schema_validation_session():
+                engine._validate_json_schema(row, 'test')
+                raise RuntimeError('inner')
+        engine._validate_json_schema(row, 'test')
+        assert validator.calls == 2
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            pool.submit(engine._validate_json_schema, row, 'test').result()
+        assert validator.calls == 3
+    assert engine._schema_validation_memo.get() is None
+
+
+def test_schema_memo_session_outcomes_still_check_nested_values_and_joins():
+    episode = _episode()
+    row = derive_session_outcome(
+        episode, 'eod', _session_bars(episode, 'eod'),
+        computed_at=datetime(2026, 7, 2, 21, 0, tzinfo=timezone.utc),
+        price_source='fixture/TEST.parquet', bar_seconds=1800, price_delay_minutes=15,
+    )
+    other = _episode(id='different-session-source')
+    with engine.schema_validation_session():
+        validate_session_outcome_against_episode(row, episode)
+        validate_episode(other)
+        for _ in range(2):
+            with pytest.raises(ContractError, match='different episode'):
+                validate_session_outcome_against_episode(row, other)
+        changed = copy.deepcopy(row)
+        changed['underlying']['ret'] += 0.1
+        for _ in range(2):
+            with pytest.raises(ContractError):
+                validate_session_outcome(changed)
+        row['underlying']['evidence']['observation_count'] = 'wrong-type'
+        with pytest.raises(ContractError, match='schema validation'):
+            validate_session_outcome(row)
+
+
+@pytest.mark.parametrize('row', [
+    {'nested': [1], 1: 'non-string key'},
+    {'nested': [float('nan')]},
+    {'nested': [float('inf')]},
+])
+def test_schema_memo_unrepresentable_values_keep_original_validator_behavior(monkeypatch, row):
+    validator = CountingValidator()
+    monkeypatch.setattr(engine, '_schema_validator', lambda _: validator)
+    def outcome():
+        try:
+            engine._validate_json_schema(row, 'test')
+        except Exception as exc:
+            return type(exc), str(exc)
+        return None
+    expected = outcome()
+    with engine.schema_validation_session():
+        assert outcome() == expected
+        assert outcome() == expected
+    assert validator.calls == 3
