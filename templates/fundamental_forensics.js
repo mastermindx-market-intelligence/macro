@@ -2680,6 +2680,12 @@
         'The qualifying group is smaller than the minimum, so no rank or average is computed.',
         '符合条件的公司数量低于最小值，因此不计算排名或平均值。', '▦'
       );
+    } else if (String(emission.emission_state || '') === 'anchor_unavailable') {
+      includedNode.innerHTML = selector + emptyState(
+        'No comparable reference for this company', '本公司无可比基准',
+        'This company has no usable value for this metric, so peers are not ranked against it.',
+        '本公司在此指标上没有可用数值，因此不对同业排名。', '▦'
+      );
     } else {
       var anchorId = anchorIssuerId(cohort);
       var rows = Array.isArray(emission.rows) ? emission.rows.filter(objectValue) : [];
