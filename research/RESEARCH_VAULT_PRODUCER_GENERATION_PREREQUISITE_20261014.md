@@ -90,7 +90,9 @@ in the first admission step. A selected but missing or mismatched installation,
 or a failed launcher, records failure without falling back to the legacy writer.
 
 The bundle contains `producer.json` and the staged `mastermind/` and `macro/`
-source trees. The workflow invokes `mastermind/ops/research_producer/launch.py`
+source trees under their commit-named roots. The workflow verifies the bounded
+manifest bytes against the selected digest before reading its strict Mastermind
+commit identifier, then invokes `mastermind/<commit>/ops/research_producer/launch.py`
 with the separately prepared, fixed dependency interpreter, isolated Python
 flags and the original GitHub run ID and attempt. The secure producer config
 binds the exact source commits, trees and manifest, the actual runner checkout
