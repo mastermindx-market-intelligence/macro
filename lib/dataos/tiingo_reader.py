@@ -61,7 +61,8 @@ def _hashed_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def _unique_raw_context(base: Path, source: str, day: str, digest: str, *, receipt_id: str | None = None) -> dict[str, Any]:
+def _unique_raw_context(base: Path, source: str, day: str, digest: str, *, receipt_id: str | None = None,
+                        receipt_path: Path | None = None) -> dict[str, Any]:
     """Quarantine v1 content-key collisions; do not repair or rewrite source data.
 
     The current producer uses content-only output names. Until that producer is
@@ -71,10 +72,20 @@ def _unique_raw_context(base: Path, source: str, day: str, digest: str, *, recei
     parent = base / "receipts" / source / day
     contexts: dict[tuple[Any, ...], dict[str, Any]] = {}
     matching = 0
-    files = list(parent.glob(f"*{digest[:24]}*.json"))
-    if not files:
-        # Exact receipt IDs can also select a retained legacy content path.
-        files = parent.glob("*.json")
+    if receipt_path is not None:
+        # A hint is valid only for an exact content-addressed receipt selection.
+        # It cannot narrow a raw-digest query and hide conflicting contexts.
+        if receipt_id is None or not SHA.fullmatch(receipt_id):
+            raise TiingoViewRefusal("receipt path requires exact receipt identity")
+        if (receipt_path.is_symlink() or receipt_path.parent.resolve() != parent.resolve()
+                or not receipt_path.is_file()):
+            raise TiingoViewRefusal("receipt hint is outside the selected source day")
+        files = [receipt_path]
+    else:
+        files = list(parent.glob(f"*{digest[:24]}*.json"))
+        if not files:
+            # Exact receipt IDs can also select a retained legacy content path.
+            files = parent.glob("*.json")
     for file in files:
         if not file.resolve().is_relative_to(base.resolve()) or file.stat().st_size > 1_000_000:
             raise TiingoViewRefusal("source receipt escapes bounded archive evidence")
@@ -114,7 +125,8 @@ def read_research_view(source: str, day: str, sha256: str, *,
                        purpose: str = "INSPECTION",
                        acknowledge_hindsight: bool = False,
                        max_rows: int = 20_000,
-                       check_mount: bool = True) -> TiingoView:
+                       check_mount: bool = True,
+                       receipt_path: Path | None = None) -> TiingoView:
     if source not in SOURCES and source != "boats-firehose":
         raise TiingoViewRefusal("unsupported vendor source ID")
     try:
@@ -140,7 +152,11 @@ def read_research_view(source: str, day: str, sha256: str, *,
             lookup_digest, selected_receipt = direct.get("source_sha256"), sha256
             if not isinstance(lookup_digest, str) or not SHA.fullmatch(lookup_digest):
                 raise TiingoViewRefusal("source view content/manifest integrity mismatch")
-    context = _unique_raw_context(base, source, day, lookup_digest, receipt_id=selected_receipt)
+    if receipt_path is not None:
+        # With a hint, the public selector is always the exact receipt ID.
+        selected_receipt = sha256
+    context = _unique_raw_context(base, source, day, lookup_digest,
+                                  receipt_id=selected_receipt, receipt_path=receipt_path)
     identity = receipt_identity(context)
     raw_digest = context["raw_sha256"]
     artifact_id = sha256
