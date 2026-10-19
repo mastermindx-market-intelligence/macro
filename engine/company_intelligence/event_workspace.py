@@ -239,6 +239,8 @@ def production_registry() -> IssuerRegistry:
     """
     from .issuer_profiles import dhi_issuer, kbh_issuer, on_issuer, phm_issuer, tol_issuer, tsm_issuer
 
+    from .defense_profiles import DEFENSE_TICKERS, defense_issuer
+    from .gd_profile import gd_issuer
     return IssuerRegistry([
         apple_issuer(),
         dhi_issuer(),
@@ -247,6 +249,8 @@ def production_registry() -> IssuerRegistry:
         tol_issuer(),
         tsm_issuer(),
         on_issuer(),
+        *(defense_issuer(ticker) for ticker in DEFENSE_TICKERS),
+        gd_issuer(),
     ])
 
 
@@ -539,6 +543,13 @@ def _generation_clocks(cleaned: Mapping[str, Mapping[str, Any]]) -> tuple[str, s
             raise WorkspaceError(f"{event_id}: observed_at precedes source_available_at")
         latest_observed = observed_dt if latest_observed is None else max(latest_observed, observed_dt)
         latest_source = source_dt if latest_source is None else max(latest_source, source_dt)
+        for source in row.get('sources') or []:
+            if isinstance(source, Mapping) and source.get('kind') == 'issuer_supplement':
+                from .issuer_supplements import validate_supplement_source
+                supplemental_observed, supplemental_available = validate_supplement_source(source, event_id=event_id)
+                latest_observed = max(latest_observed, supplemental_observed)
+                latest_source = max(latest_source, supplemental_available)
+
     if latest_observed is None or latest_source is None:
         raise WorkspaceError("write_workspace_generation requires at least one workspace")
     return _iso(_ceil_second(latest_observed)), _iso(_ceil_second(latest_source))
@@ -628,6 +639,15 @@ def validate_generation_clocks(manifest: Mapping[str, Any], rows: Mapping[str, M
             raise WorkspaceError(
                 f"{event_id}: generated_at must be >= observed_at >= source_available_at"
             )
+        for source in row.get('sources') or []:
+            if isinstance(source, Mapping) and source.get('kind') == 'issuer_supplement':
+                from .issuer_supplements import validate_supplement_source
+                supplemental_observed, supplemental_available = validate_supplement_source(source, event_id=event_id)
+                if generated_dt < supplemental_observed:
+                    raise WorkspaceError(f"{event_id}: generation predates supplemental source observation")
+                if _utc(manifest['source_clock'], field_name='source_clock') < supplemental_available:
+                    raise WorkspaceError(f"{event_id}: source_clock predates supplemental source availability")
+
 
 
 def preview_generation_identity(

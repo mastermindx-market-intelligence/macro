@@ -523,8 +523,8 @@ def test_a07g_blank_supersedes_treated_as_absent():
 def test_a07g_duplicate_exact_only_no_folding():
     items = [_item(fact_id="SYN-FACT-1"), _item(fact_id="SYN-FACT-1 ")]
     view = _view(items)
-    _assert_allowed(view)
-    assert view.included == ("SYN-FACT-1", "SYN-FACT-1 ")
+    # FAMILY TEXT RULE v2: a padded fact_id is ABSENT, never a different valid id.
+    _assert_refused(view, "FACT_ID_MISSING")
 
 
 def test_a07g_fail_closed_validation_with_excludable_items():

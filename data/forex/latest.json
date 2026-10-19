@@ -1,6 +1,6 @@
 {
-  "date": "Oct 14, 2026",
-  "asof": "2026-10-14",
+  "date": "Oct 17, 2026",
+  "asof": "2026-10-17",
   "regime": "Risk-off haven bid",
   "favored": [
     "USD",
@@ -11,128 +11,128 @@
   "pairs": {
     "EURUSD": {
       "label": "EUR/USD",
-      "quote": 1.1211,
-      "chg": -2.8,
-      "action": "FLAT",
-      "score": -8.0,
-      "headline": "Risk-context: net neutral EUR (-8)",
-      "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aEUR \u51c0\u4e2d\u6027\uff08-8\uff09",
-      "sub": "Led by trend (idiosyncratic), carry (rate diff).",
-      "sub_zh": "\u4e3b\u5bfc\u56e0\u7d20\uff1a\u8d8b\u52bf\uff08\u7279\u5f02\uff09\u3001\u5957\u606f\uff08\u5229\u5dee\uff09\u3002",
+      "quote": 1.1244,
+      "chg": -2.0,
+      "action": "SHORT",
+      "score": -21.2,
+      "headline": "Risk-context: net short EUR (-21)",
+      "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aEUR \u51c0\u504f\u7a7a\uff08-21\uff09",
+      "sub": "Led by positioning (cot), risk index.",
+      "sub_zh": "\u4e3b\u5bfc\u56e0\u7d20\uff1a\u6301\u4ed3\uff08COT\uff09\u3001\u98ce\u9669\u6307\u6570\u3002",
       "shock_state": "normal",
       "cycle_position": null,
       "reliable": true,
-      "headline_zh": "\u98ce\u9669\u80cc\u666f\uff1aEUR \u51c0\u4e2d\u6027\uff08-8\uff09"
+      "headline_zh": "\u98ce\u9669\u80cc\u666f\uff1aEUR \u51c0\u504f\u7a7a\uff08-21\uff09"
     },
     "GBPUSD": {
       "label": "GBP/USD",
-      "quote": 1.3273,
-      "chg": -0.6,
+      "quote": 1.333,
+      "chg": -0.3,
       "action": "FLAT",
-      "score": -10.0,
-      "headline": "Risk-context: net neutral GBP (-10)",
-      "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aGBP \u51c0\u4e2d\u6027\uff08-10\uff09",
-      "sub": "Led by residual shock, value (reer).",
-      "sub_zh": "\u4e3b\u5bfc\u56e0\u7d20\uff1a\u6b8b\u5dee\u51b2\u51fb\u3001\u4f30\u503c\uff08REER\uff09\u3002",
-      "shock_state": "normal",
+      "score": -2.7,
+      "headline": "Risk-context: net neutral GBP (-3)",
+      "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aGBP \u51c0\u4e2d\u6027\uff08-3\uff09",
+      "sub": "Led by positioning (cot), residual shock.",
+      "sub_zh": "\u4e3b\u5bfc\u56e0\u7d20\uff1a\u6301\u4ed3\uff08COT\uff09\u3001\u6b8b\u5dee\u51b2\u51fb\u3002",
+      "shock_state": "exogenous_bid",
       "cycle_position": null,
       "reliable": true,
-      "headline_zh": "\u98ce\u9669\u80cc\u666f\uff1aGBP \u51c0\u4e2d\u6027\uff08-10\uff09"
+      "headline_zh": "\u98ce\u9669\u80cc\u666f\uff1aGBP \u51c0\u4e2d\u6027\uff08-3\uff09"
     },
     "USDJPY": {
       "label": "USD/JPY",
-      "quote": 158.52,
-      "chg": 1.6,
+      "quote": 157.987,
+      "chg": 0.6,
       "action": "FLAT",
-      "score": -15.3,
-      "headline": "Risk-context: net neutral JPY (-15)",
-      "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aJPY \u51c0\u4e2d\u6027\uff08-15\uff09",
-      "sub": "Led by value (reer), risk appetite. In the MoF intervention watch zone (~150\u2013162); conviction capped.",
-      "sub_zh": "\u4e3b\u5bfc\u56e0\u7d20\uff1a\u4f30\u503c\uff08REER\uff09\u3001\u98ce\u9669\u504f\u597d\u3002 \u5904\u4e8e\u8d22\u52a1\u7701\u5e72\u9884\u89c2\u5bdf\u533a\uff08\u7ea6150\u2013162\uff09\uff1b\u4fe1\u5fc3\u53d7\u9650\u3002",
+      "score": -7.6,
+      "headline": "Risk-context: net neutral JPY (-8)",
+      "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aJPY \u51c0\u4e2d\u6027\uff08-8\uff09",
+      "sub": "Led by value (reer), positioning (cot). In the MoF intervention watch zone (~150\u2013162); conviction capped.",
+      "sub_zh": "\u4e3b\u5bfc\u56e0\u7d20\uff1a\u4f30\u503c\uff08REER\uff09\u3001\u6301\u4ed3\uff08COT\uff09\u3002 \u5904\u4e8e\u8d22\u52a1\u7701\u5e72\u9884\u89c2\u5bdf\u533a\uff08\u7ea6150\u2013162\uff09\uff1b\u4fe1\u5fc3\u53d7\u9650\u3002",
       "shock_state": "normal",
       "cycle_position": null,
       "reliable": true,
-      "headline_zh": "\u98ce\u9669\u80cc\u666f\uff1aJPY \u51c0\u4e2d\u6027\uff08-15\uff09"
+      "headline_zh": "\u98ce\u9669\u80cc\u666f\uff1aJPY \u51c0\u4e2d\u6027\uff08-8\uff09"
     },
     "USDCHF": {
       "label": "USD/CHF",
-      "quote": 0.8341,
-      "chg": 2.1,
+      "quote": 0.8236,
+      "chg": -0.2,
       "action": "FLAT",
-      "score": 16.4,
-      "headline": "Risk-context: net neutral CHF (+16)",
-      "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aCHF \u51c0\u4e2d\u6027\uff08+16\uff09",
+      "score": 3.9,
+      "headline": "Risk-context: net neutral CHF (+4)",
+      "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aCHF \u51c0\u4e2d\u6027\uff08+4\uff09",
       "sub": "Led by carry (rate diff), price structure. SNB has historically capped CHF (2015 floor gapped ~20%).",
       "sub_zh": "\u4e3b\u5bfc\u56e0\u7d20\uff1a\u5957\u606f\uff08\u5229\u5dee\uff09\u3001\u4ef7\u683c\u7ed3\u6784\u3002 \u745e\u58eb\u592e\u884c\u5386\u53f2\u4e0a\u8bbe\u8fc7\u4e0b\u9650\uff082015\u5e74\u8df3\u7a7a\u7ea620%\uff09\u3002",
-      "shock_state": "normal",
+      "shock_state": "exogenous_bid",
       "cycle_position": null,
       "reliable": true,
-      "headline_zh": "\u98ce\u9669\u80cc\u666f\uff1aCHF \u51c0\u4e2d\u6027\uff08+16\uff09"
+      "headline_zh": "\u98ce\u9669\u80cc\u666f\uff1aCHF \u51c0\u4e2d\u6027\uff08+4\uff09"
     },
     "AUDUSD": {
       "label": "AUD/USD",
-      "quote": 0.7004,
-      "chg": -1.7,
+      "quote": 0.6949,
+      "chg": -2.4,
       "action": "SHORT",
-      "score": -29.9,
-      "headline": "Risk-context: net short AUD (-30)",
-      "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aAUD \u51c0\u504f\u7a7a\uff08-30\uff09",
+      "score": -33.7,
+      "headline": "Risk-context: net short AUD (-34)",
+      "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aAUD \u51c0\u504f\u7a7a\uff08-34\uff09",
       "sub": "Led by risk index, value (reer).",
       "sub_zh": "\u4e3b\u5bfc\u56e0\u7d20\uff1a\u98ce\u9669\u6307\u6570\u3001\u4f30\u503c\uff08REER\uff09\u3002",
       "shock_state": "normal",
       "cycle_position": null,
       "reliable": true,
-      "headline_zh": "\u98ce\u9669\u80cc\u666f\uff1aAUD \u51c0\u504f\u7a7a\uff08-30\uff09"
+      "headline_zh": "\u98ce\u9669\u80cc\u666f\uff1aAUD \u51c0\u504f\u7a7a\uff08-34\uff09"
     },
     "USDCAD": {
       "label": "USD/CAD",
-      "quote": 1.428,
-      "chg": 2.1,
+      "quote": 1.4137,
+      "chg": 0.7,
       "action": "FLAT",
-      "score": 17.6,
-      "headline": "Risk-context: net neutral CAD (+18)",
-      "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aCAD \u51c0\u4e2d\u6027\uff08+18\uff09",
+      "score": -3.4,
+      "headline": "Risk-context: net neutral CAD (-3)",
+      "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aCAD \u51c0\u4e2d\u6027\uff08-3\uff09",
       "sub": "Led by carry (rate diff), price structure.",
       "sub_zh": "\u4e3b\u5bfc\u56e0\u7d20\uff1a\u5957\u606f\uff08\u5229\u5dee\uff09\u3001\u4ef7\u683c\u7ed3\u6784\u3002",
       "shock_state": "normal",
       "cycle_position": null,
       "reliable": true,
-      "headline_zh": "\u98ce\u9669\u80cc\u666f\uff1aCAD \u51c0\u4e2d\u6027\uff08+18\uff09"
+      "headline_zh": "\u98ce\u9669\u80cc\u666f\uff1aCAD \u51c0\u4e2d\u6027\uff08-3\uff09"
     },
     "USDMXN": {
       "label": "USD/MXN",
-      "quote": 18.3884,
-      "chg": 7.2,
+      "quote": 18.479,
+      "chg": 7.3,
       "action": "LONG",
-      "score": 28.6,
-      "headline": "Risk-context: net long MXN (+29)",
-      "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aMXN \u51c0\u504f\u591a\uff08+29\uff09",
+      "score": 32.4,
+      "headline": "Risk-context: net long MXN (+32)",
+      "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aMXN \u51c0\u504f\u591a\uff08+32\uff09",
       "sub": "Led by price structure, residual shock.",
       "sub_zh": "\u4e3b\u5bfc\u56e0\u7d20\uff1a\u4ef7\u683c\u7ed3\u6784\u3001\u6b8b\u5dee\u51b2\u51fb\u3002",
       "shock_state": "exogenous_pressure",
       "cycle_position": null,
       "reliable": true,
-      "headline_zh": "\u98ce\u9669\u80cc\u666f\uff1aMXN \u51c0\u504f\u591a\uff08+29\uff09"
+      "headline_zh": "\u98ce\u9669\u80cc\u666f\uff1aMXN \u51c0\u504f\u591a\uff08+32\uff09"
     },
     "USDBRL": {
       "label": "USD/BRL",
-      "quote": 5.0264,
-      "chg": -1.9,
+      "quote": 5.0693,
+      "chg": -1.4,
       "action": "FLAT",
-      "score": -10.5,
-      "headline": "Risk-context: net neutral BRL (-10)",
-      "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aBRL \u51c0\u4e2d\u6027\uff08-10\uff09",
-      "sub": "Led by trend (idiosyncratic), residual shock.",
-      "sub_zh": "\u4e3b\u5bfc\u56e0\u7d20\uff1a\u8d8b\u52bf\uff08\u7279\u5f02\uff09\u3001\u6b8b\u5dee\u51b2\u51fb\u3002",
+      "score": -5.0,
+      "headline": "Risk-context: net neutral BRL (-5)",
+      "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aBRL \u51c0\u4e2d\u6027\uff08-5\uff09",
+      "sub": "Led by trend (idiosyncratic), positioning (cot).",
+      "sub_zh": "\u4e3b\u5bfc\u56e0\u7d20\uff1a\u8d8b\u52bf\uff08\u7279\u5f02\uff09\u3001\u6301\u4ed3\uff08COT\uff09\u3002",
       "shock_state": "exogenous_bid",
       "cycle_position": null,
       "reliable": true,
-      "headline_zh": "\u98ce\u9669\u80cc\u666f\uff1aBRL \u51c0\u4e2d\u6027\uff08-10\uff09"
+      "headline_zh": "\u98ce\u9669\u80cc\u666f\uff1aBRL \u51c0\u4e2d\u6027\uff08-5\uff09"
     },
     "USDCNH": {
       "label": "USD/CNH",
-      "quote": 6.663,
-      "chg": -0.7,
+      "quote": 6.659,
+      "chg": -0.2,
       "action": "FLAT",
       "score": 15.0,
       "headline": "Risk-context: net neutral CNH (+15)",
@@ -143,13 +143,13 @@
       "cycle_position": null,
       "reliable": false,
       "headline_zh": "\u98ce\u9669\u80cc\u666f\uff1aCNH \u51c0\u4e2d\u6027\uff08+15\uff09",
-      "cnh_basis_bps": -61.0,
+      "cnh_basis_bps": -49.0,
       "cnh_basis_state": "neutral"
     },
     "DXY": {
       "label": "DXY",
-      "quote": 102.11,
-      "chg": 1.9
+      "quote": 101.78,
+      "chg": 1.5
     }
   },
   "dollar_desk": {
@@ -159,9 +159,9 @@
     "lean_n": 3,
     "real_rate_regime": "Restrictive real yields",
     "real_rate_z": 1.0,
-    "fed_path_bps": 72.0,
+    "fed_path_bps": 70.0,
     "fed_path_lean": "steady",
-    "usd_pos_pctile": 72.0,
+    "usd_pos_pctile": 68.0,
     "usd_pos_state": "neutral",
     "usd_reer_gap_pct": 0.7,
     "usd_valuation": "fair",
@@ -171,10 +171,10 @@
     "smile_confidence": "medium",
     "triple_red": false,
     "smile_decomp": {
-      "beta": 0.0231,
-      "r2": 0.161,
-      "residual_20d": 0.01132,
-      "residual_20d_z": 0.868,
+      "beta": 0.0229,
+      "r2": 0.153,
+      "residual_20d": 0.00798,
+      "residual_20d_z": 0.609,
       "regime": "rates-driven",
       "regime_60d": "rates-driven",
       "safety_bid_today": false,
@@ -193,19 +193,19 @@
       "weights_note": "DXY basket weights: EUR 57.6%, JPY 13.6%, GBP 11.9% (ICE benchmark). Re-weighted to available 2y series: EUR 69.3%, JPY 16.4%, GBP 14.3%. CAD/SEK/CHF excluded (no 2y in store). Actual weights after re-norm: {'eur2y': 0.693, 'jpy2y': 0.164, 'gbp2y': 0.143}.",
       "gaps": [],
       "display_only": true,
-      "built": "2026-10-14T08:38:37.471098+00:00"
+      "built": "2026-10-18T06:04:36.432325+00:00"
     }
   },
   "transmission": {
-    "usd_dir": "flat",
+    "usd_dir": "strengthening",
     "corr": {
-      "GC=F": -0.52,
-      "EEM": -0.47,
-      "SPY": -0.45,
-      "HG=F": -0.41,
-      "BTC": -0.35,
-      "UST10": -0.26,
-      "CL=F": 0.2
+      "GC=F": -0.49,
+      "EEM": -0.48,
+      "SPY": -0.43,
+      "HG=F": -0.35,
+      "BTC": -0.32,
+      "UST10": -0.24,
+      "CL=F": 0.14
     },
     "headwind_for": [
       "US equities",
@@ -221,43 +221,43 @@
     "unstable": [],
     "assets": {
       "GC=F": {
-        "corr_fast": -0.52,
+        "corr_fast": -0.49,
         "corr_slow": -0.5,
         "effect": "headwind",
         "stability": "stable"
       },
       "EEM": {
-        "corr_fast": -0.47,
+        "corr_fast": -0.48,
         "corr_slow": -0.47,
         "effect": "headwind",
         "stability": "stable"
       },
       "SPY": {
-        "corr_fast": -0.45,
+        "corr_fast": -0.43,
         "corr_slow": -0.39,
         "effect": "headwind",
         "stability": "stable"
       },
       "HG=F": {
-        "corr_fast": -0.41,
+        "corr_fast": -0.35,
         "corr_slow": -0.49,
         "effect": "headwind",
         "stability": "stable"
       },
       "BTC": {
-        "corr_fast": -0.35,
-        "corr_slow": -0.2,
+        "corr_fast": -0.32,
+        "corr_slow": -0.21,
         "effect": "headwind",
         "stability": "stable"
       },
       "UST10": {
-        "corr_fast": -0.26,
-        "corr_slow": -0.24,
+        "corr_fast": -0.24,
+        "corr_slow": -0.25,
         "effect": "headwind",
         "stability": "stable"
       },
       "CL=F": {
-        "corr_fast": 0.2,
+        "corr_fast": 0.14,
         "corr_slow": 0.38,
         "effect": "tailwind",
         "stability": "stable"
@@ -269,74 +269,74 @@
     "horizons": {
       "1w": [
         {
-          "ccy": "AUD",
-          "ccy_zh": "\u6fb3\u5143",
+          "ccy": "CHF",
+          "ccy_zh": "\u745e\u90ce",
           "em": false,
-          "strength": 0.496,
-          "vs_usd_pct": 0.6
+          "strength": 0.513,
+          "vs_usd_pct": 0.9
         },
         {
-          "ccy": "CNH",
-          "ccy_zh": "\u79bb\u5cb8\u4eba\u6c11\u5e01",
-          "em": true,
-          "strength": 0.271,
-          "vs_usd_pct": 0.2
+          "ccy": "CAD",
+          "ccy_zh": "\u52a0\u5143",
+          "em": false,
+          "strength": 0.435,
+          "vs_usd_pct": 0.8
         },
         {
           "ccy": "GBP",
           "ccy_zh": "\u82f1\u9551",
           "em": false,
-          "strength": 0.205,
+          "strength": 0.356,
+          "vs_usd_pct": 0.7
+        },
+        {
+          "ccy": "EUR",
+          "ccy_zh": "\u6b27\u5143",
+          "em": false,
+          "strength": 0.129,
+          "vs_usd_pct": 0.3
+        },
+        {
+          "ccy": "CNH",
+          "ccy_zh": "\u79bb\u5cb8\u4eba\u6c11\u5e01",
+          "em": true,
+          "strength": 0.064,
+          "vs_usd_pct": 0.2
+        },
+        {
+          "ccy": "JPY",
+          "ccy_zh": "\u65e5\u5143",
+          "em": false,
+          "strength": 0.001,
           "vs_usd_pct": 0.0
         },
         {
           "ccy": "USD",
           "ccy_zh": "\u7f8e\u5143",
           "em": false,
-          "strength": 0.179,
+          "strength": -0.027,
           "vs_usd_pct": 0.0
-        },
-        {
-          "ccy": "BRL",
-          "ccy_zh": "\u5df4\u897f\u96f7\u4e9a\u5c14",
-          "em": true,
-          "strength": 0.099,
-          "vs_usd_pct": -0.1
-        },
-        {
-          "ccy": "JPY",
-          "ccy_zh": "\u65e5\u5143",
-          "em": false,
-          "strength": -0.018,
-          "vs_usd_pct": -0.4
-        },
-        {
-          "ccy": "CHF",
-          "ccy_zh": "\u745e\u90ce",
-          "em": false,
-          "strength": -0.02,
-          "vs_usd_pct": -0.4
-        },
-        {
-          "ccy": "EUR",
-          "ccy_zh": "\u6b27\u5143",
-          "em": false,
-          "strength": -0.034,
-          "vs_usd_pct": -0.4
-        },
-        {
-          "ccy": "CAD",
-          "ccy_zh": "\u52a0\u5143",
-          "em": false,
-          "strength": -0.088,
-          "vs_usd_pct": -0.5
         },
         {
           "ccy": "MXN",
           "ccy_zh": "\u58a8\u897f\u54e5\u6bd4\u7d22",
           "em": true,
-          "strength": -1.0,
-          "vs_usd_pct": -2.3
+          "strength": -0.215,
+          "vs_usd_pct": -0.3
+        },
+        {
+          "ccy": "AUD",
+          "ccy_zh": "\u6fb3\u5143",
+          "em": false,
+          "strength": -0.344,
+          "vs_usd_pct": -0.6
+        },
+        {
+          "ccy": "BRL",
+          "ccy_zh": "\u5df4\u897f\u96f7\u4e9a\u5c14",
+          "em": true,
+          "strength": -0.913,
+          "vs_usd_pct": -1.5
         }
       ],
       "1m": [
@@ -344,70 +344,70 @@
           "ccy": "BRL",
           "ccy_zh": "\u5df4\u897f\u96f7\u4e9a\u5c14",
           "em": true,
-          "strength": 0.605,
-          "vs_usd_pct": 1.9
+          "strength": 0.456,
+          "vs_usd_pct": 1.4
+        },
+        {
+          "ccy": "CHF",
+          "ccy_zh": "\u745e\u90ce",
+          "em": false,
+          "strength": 0.242,
+          "vs_usd_pct": 0.2
         },
         {
           "ccy": "CNH",
           "ccy_zh": "\u79bb\u5cb8\u4eba\u6c11\u5e01",
           "em": true,
-          "strength": 0.386,
-          "vs_usd_pct": 0.7
+          "strength": 0.233,
+          "vs_usd_pct": 0.2
         },
         {
           "ccy": "USD",
           "ccy_zh": "\u7f8e\u5143",
           "em": false,
-          "strength": 0.268,
+          "strength": 0.204,
           "vs_usd_pct": 0.0
         },
         {
           "ccy": "GBP",
           "ccy_zh": "\u82f1\u9551",
           "em": false,
-          "strength": 0.157,
-          "vs_usd_pct": -0.6
+          "strength": 0.149,
+          "vs_usd_pct": -0.3
         },
         {
           "ccy": "JPY",
           "ccy_zh": "\u65e5\u5143",
           "em": false,
-          "strength": -0.011,
-          "vs_usd_pct": -1.6
-        },
-        {
-          "ccy": "AUD",
-          "ccy_zh": "\u6fb3\u5143",
-          "em": false,
-          "strength": -0.023,
-          "vs_usd_pct": -1.7
+          "strength": 0.097,
+          "vs_usd_pct": -0.6
         },
         {
           "ccy": "CAD",
           "ccy_zh": "\u52a0\u5143",
           "em": false,
-          "strength": -0.091,
-          "vs_usd_pct": -2.1
-        },
-        {
-          "ccy": "CHF",
-          "ccy_zh": "\u745e\u90ce",
-          "em": false,
-          "strength": -0.102,
-          "vs_usd_pct": -2.1
+          "strength": 0.071,
+          "vs_usd_pct": -0.7
         },
         {
           "ccy": "EUR",
           "ccy_zh": "\u6b27\u5143",
           "em": false,
-          "strength": -0.235,
-          "vs_usd_pct": -2.9
+          "strength": -0.164,
+          "vs_usd_pct": -2.0
+        },
+        {
+          "ccy": "AUD",
+          "ccy_zh": "\u6fb3\u5143",
+          "em": false,
+          "strength": -0.23,
+          "vs_usd_pct": -2.4
         },
         {
           "ccy": "MXN",
           "ccy_zh": "\u58a8\u897f\u54e5\u6bd4\u7d22",
           "em": true,
-          "strength": -0.956,
+          "strength": -1.0,
           "vs_usd_pct": -7.0
         }
       ],
@@ -416,71 +416,71 @@
           "ccy": "JPY",
           "ccy_zh": "\u65e5\u5143",
           "em": false,
-          "strength": 0.652,
-          "vs_usd_pct": 2.8
-        },
-        {
-          "ccy": "CNH",
-          "ccy_zh": "\u79bb\u5cb8\u4eba\u6c11\u5e01",
-          "em": true,
-          "strength": 0.38,
-          "vs_usd_pct": 1.3
+          "strength": 0.706,
+          "vs_usd_pct": 3.6
         },
         {
           "ccy": "BRL",
           "ccy_zh": "\u5df4\u897f\u96f7\u4e9a\u5c14",
           "em": true,
-          "strength": 0.301,
-          "vs_usd_pct": 0.9
+          "strength": 0.338,
+          "vs_usd_pct": 1.5
+        },
+        {
+          "ccy": "CNH",
+          "ccy_zh": "\u79bb\u5cb8\u4eba\u6c11\u5e01",
+          "em": true,
+          "strength": 0.304,
+          "vs_usd_pct": 1.3
         },
         {
           "ccy": "USD",
           "ccy_zh": "\u7f8e\u5143",
           "em": false,
-          "strength": 0.133,
+          "strength": 0.088,
           "vs_usd_pct": 0.0
-        },
-        {
-          "ccy": "GBP",
-          "ccy_zh": "\u82f1\u9551",
-          "em": false,
-          "strength": 0.113,
-          "vs_usd_pct": -0.1
-        },
-        {
-          "ccy": "AUD",
-          "ccy_zh": "\u6fb3\u5143",
-          "em": false,
-          "strength": 0.023,
-          "vs_usd_pct": -0.6
-        },
-        {
-          "ccy": "EUR",
-          "ccy_zh": "\u6b27\u5143",
-          "em": false,
-          "strength": -0.202,
-          "vs_usd_pct": -1.8
-        },
-        {
-          "ccy": "CAD",
-          "ccy_zh": "\u52a0\u5143",
-          "em": false,
-          "strength": -0.213,
-          "vs_usd_pct": -1.9
         },
         {
           "ccy": "CHF",
           "ccy_zh": "\u745e\u90ce",
           "em": false,
-          "strength": -0.349,
-          "vs_usd_pct": -2.6
+          "strength": -0.036,
+          "vs_usd_pct": -0.7
+        },
+        {
+          "ccy": "CAD",
+          "ccy_zh": "\u52a0\u5143",
+          "em": false,
+          "strength": -0.067,
+          "vs_usd_pct": -0.9
+        },
+        {
+          "ccy": "GBP",
+          "ccy_zh": "\u82f1\u9551",
+          "em": false,
+          "strength": -0.107,
+          "vs_usd_pct": -1.1
+        },
+        {
+          "ccy": "AUD",
+          "ccy_zh": "\u6fb3\u5143",
+          "em": false,
+          "strength": -0.152,
+          "vs_usd_pct": -1.4
+        },
+        {
+          "ccy": "EUR",
+          "ccy_zh": "\u6b27\u5143",
+          "em": false,
+          "strength": -0.168,
+          "vs_usd_pct": -1.5
         },
         {
           "ccy": "MXN",
           "ccy_zh": "\u58a8\u897f\u54e5\u6bd4\u7d22",
           "em": true,
-          "strength": -0.838,
-          "vs_usd_pct": -5.3
+          "strength": -0.905,
+          "vs_usd_pct": -5.8
         }
       ]
     },
@@ -499,7 +499,7 @@
     "basis": "currency_vs_usd",
     "positive_direction": "currency_appreciation_vs_usd",
     "positive_direction_scope": "literal_returns_only",
-    "table_as_of": "2026-10-14",
+    "table_as_of": "2026-10-16",
     "date_basis": "producer_max_index",
     "freshness": "unknown",
     "metric_dates_available": false,
@@ -582,13 +582,13 @@
       {
         "ccy": "EUR",
         "values": {
-          "return_short": 0.45,
-          "return_medium": -0.38,
-          "return_long": -2.83,
-          "velocity_z": -0.45,
-          "acceleration_z": 0.37,
+          "return_short": 0.43,
+          "return_medium": 0.27,
+          "return_long": -2.03,
+          "velocity_z": 0.53,
+          "acceleration_z": 0.86,
           "volatility_percentile": 0.3,
-          "residual_return": -0.38
+          "residual_return": 0.27
         },
         "availability": {
           "return_short": "available",
@@ -609,13 +609,13 @@
           "residual_return": null
         },
         "calculated_through": {
-          "return_short": "2026-10-14",
-          "return_medium": "2026-10-14",
-          "return_long": "2026-10-14",
-          "velocity_z": "2026-10-14",
-          "acceleration_z": "2026-10-14",
-          "volatility_percentile": "2026-10-14",
-          "residual_return": "2026-10-14"
+          "return_short": "2026-10-16",
+          "return_medium": "2026-10-16",
+          "return_long": "2026-10-16",
+          "velocity_z": "2026-10-16",
+          "acceleration_z": "2026-10-16",
+          "volatility_percentile": "2026-10-16",
+          "residual_return": "2026-10-16"
         },
         "index_relation": {
           "return_short": "at_table_date",
@@ -627,15 +627,15 @@
           "residual_return": "at_table_date"
         },
         "normalized_input_dates": {
-          "close": "2026-10-14",
-          "residual_return": "2026-10-14"
+          "close": "2026-10-16",
+          "residual_return": "2026-10-16"
         },
         "clock_issues": [],
         "residual_adjustment": {
           "status": "adjusted",
           "window_observations": 5,
-          "window_start": "2026-10-08",
-          "window_end": "2026-10-14",
+          "window_start": "2026-10-12",
+          "window_end": "2026-10-16",
           "counts": {
             "adjusted": 5,
             "raw_fallback": 0,
@@ -649,97 +649,21 @@
           "reason": null,
           "return_metric": "return_medium",
           "window_observations": 5,
-          "calculated_through": "2026-10-14",
-          "return_state": "fell",
-          "momentum_state": "below_baseline",
+          "calculated_through": "2026-10-16",
+          "return_state": "rose",
+          "momentum_state": "above_baseline",
           "value_basis": "displayed_producer_values"
         }
       },
       {
         "ccy": "JPY",
         "values": {
-          "return_short": -0.2,
-          "return_medium": -0.35,
-          "return_long": -2.61,
-          "velocity_z": -0.21,
-          "acceleration_z": -0.08,
-          "volatility_percentile": 0.0,
-          "residual_return": -0.35
-        },
-        "availability": {
-          "return_short": "available",
-          "return_medium": "available",
-          "return_long": "available",
-          "velocity_z": "available",
-          "acceleration_z": "available",
-          "volatility_percentile": "available",
-          "residual_return": "available"
-        },
-        "observed_at": {
-          "return_short": null,
-          "return_medium": null,
-          "return_long": null,
-          "velocity_z": null,
-          "acceleration_z": null,
-          "volatility_percentile": null,
-          "residual_return": null
-        },
-        "calculated_through": {
-          "return_short": "2026-10-13",
-          "return_medium": "2026-10-13",
-          "return_long": "2026-10-13",
-          "velocity_z": "2026-10-13",
-          "acceleration_z": "2026-10-13",
-          "volatility_percentile": "2026-10-14",
-          "residual_return": "2026-10-13"
-        },
-        "index_relation": {
-          "return_short": "before_table_date",
-          "return_medium": "before_table_date",
-          "return_long": "before_table_date",
-          "velocity_z": "before_table_date",
-          "acceleration_z": "before_table_date",
-          "volatility_percentile": "at_table_date",
-          "residual_return": "before_table_date"
-        },
-        "normalized_input_dates": {
-          "close": "2026-10-13",
-          "residual_return": "2026-10-13"
-        },
-        "clock_issues": [],
-        "residual_adjustment": {
-          "status": "adjusted",
-          "window_observations": 5,
-          "window_start": "2026-10-07",
-          "window_end": "2026-10-13",
-          "counts": {
-            "adjusted": 5,
-            "raw_fallback": 0,
-            "zero_filled": 0,
-            "unavailable": 0
-          },
-          "carried_driver_observations": 5
-        },
-        "movement_comparison": {
-          "status": "calculation_dates_match",
-          "reason": null,
-          "return_metric": "return_medium",
-          "window_observations": 5,
-          "calculated_through": "2026-10-13",
-          "return_state": "fell",
-          "momentum_state": "below_baseline",
-          "value_basis": "displayed_producer_values"
-        }
-      },
-      {
-        "ccy": "GBP",
-        "values": {
-          "return_short": 0.48,
+          "return_short": -0.02,
           "return_medium": 0.05,
-          "return_long": -1.49,
-          "velocity_z": 0.12,
-          "acceleration_z": 0.28,
-          "volatility_percentile": 0.18,
+          "return_long": -1.18,
+          "velocity_z": 0.17,
+          "acceleration_z": -0.03,
+          "volatility_percentile": 0.1,
           "residual_return": 0.05
         },
         "availability": {
@@ -761,13 +685,13 @@
           "residual_return": null
         },
         "calculated_through": {
-          "return_short": "2026-10-14",
-          "return_medium": "2026-10-14",
-          "return_long": "2026-10-14",
-          "velocity_z": "2026-10-14",
-          "acceleration_z": "2026-10-14",
-          "volatility_percentile": "2026-10-14",
-          "residual_return": "2026-10-14"
+          "return_short": "2026-10-16",
+          "return_medium": "2026-10-16",
+          "return_long": "2026-10-16",
+          "velocity_z": "2026-10-16",
+          "acceleration_z": "2026-10-16",
+          "volatility_percentile": "2026-10-16",
+          "residual_return": "2026-10-16"
         },
         "index_relation": {
           "return_short": "at_table_date",
@@ -779,15 +703,15 @@
           "residual_return": "at_table_date"
         },
         "normalized_input_dates": {
-          "close": "2026-10-14",
-          "residual_return": "2026-10-14"
+          "close": "2026-10-16",
+          "residual_return": "2026-10-16"
         },
         "clock_issues": [],
         "residual_adjustment": {
           "status": "adjusted",
           "window_observations": 5,
-          "window_start": "2026-10-08",
-          "window_end": "2026-10-14",
+          "window_start": "2026-10-12",
+          "window_end": "2026-10-16",
           "counts": {
             "adjusted": 5,
             "raw_fallback": 0,
@@ -801,7 +725,83 @@
           "reason": null,
           "return_metric": "return_medium",
           "window_observations": 5,
-          "calculated_through": "2026-10-14",
+          "calculated_through": "2026-10-16",
+          "return_state": "rose",
+          "momentum_state": "above_baseline",
+          "value_basis": "displayed_producer_values"
+        }
+      },
+      {
+        "ccy": "GBP",
+        "values": {
+          "return_short": 0.33,
+          "return_medium": 0.33,
+          "return_long": -0.64,
+          "velocity_z": 0.56,
+          "acceleration_z": 0.54,
+          "volatility_percentile": 0.09,
+          "residual_return": 0.33
+        },
+        "availability": {
+          "return_short": "available",
+          "return_medium": "available",
+          "return_long": "available",
+          "velocity_z": "available",
+          "acceleration_z": "available",
+          "volatility_percentile": "available",
+          "residual_return": "available"
+        },
+        "observed_at": {
+          "return_short": null,
+          "return_medium": null,
+          "return_long": null,
+          "velocity_z": null,
+          "acceleration_z": null,
+          "volatility_percentile": null,
+          "residual_return": null
+        },
+        "calculated_through": {
+          "return_short": "2026-10-16",
+          "return_medium": "2026-10-16",
+          "return_long": "2026-10-16",
+          "velocity_z": "2026-10-16",
+          "acceleration_z": "2026-10-16",
+          "volatility_percentile": "2026-10-16",
+          "residual_return": "2026-10-16"
+        },
+        "index_relation": {
+          "return_short": "at_table_date",
+          "return_medium": "at_table_date",
+          "return_long": "at_table_date",
+          "velocity_z": "at_table_date",
+          "acceleration_z": "at_table_date",
+          "volatility_percentile": "at_table_date",
+          "residual_return": "at_table_date"
+        },
+        "normalized_input_dates": {
+          "close": "2026-10-16",
+          "residual_return": null
+        },
+        "clock_issues": [],
+        "residual_adjustment": {
+          "status": "adjusted",
+          "window_observations": 5,
+          "window_start": "2026-10-12",
+          "window_end": "2026-10-16",
+          "counts": {
+            "adjusted": 5,
+            "raw_fallback": 0,
+            "zero_filled": 0,
+            "unavailable": 0
+          },
+          "carried_driver_observations": 5
+        },
+        "movement_comparison": {
+          "status": "calculation_dates_match",
+          "reason": null,
+          "return_metric": "return_medium",
+          "window_observations": 5,
+          "calculated_through": "2026-10-16",
           "return_state": "rose",
           "momentum_state": "above_baseline",
           "value_basis": "displayed_producer_values"
@@ -810,13 +810,13 @@
       {
         "ccy": "CHF",
         "values": {
-          "return_short": -0.5,
-          "return_medium": -0.36,
-          "return_long": -2.04,
-          "velocity_z": -0.32,
-          "acceleration_z": -0.24,
-          "volatility_percentile": 0.0,
-          "residual_return": -0.36
+          "return_short": 0.97,
+          "return_medium": 0.94,
+          "return_long": 0.15,
+          "velocity_z": 1.2,
+          "acceleration_z": 1.36,
+          "volatility_percentile": 0.21,
+          "residual_return": 0.94
         },
         "availability": {
           "return_short": "available",
@@ -837,89 +837,13 @@
           "residual_return": null
         },
         "calculated_through": {
-          "return_short": "2026-10-13",
-          "return_medium": "2026-10-13",
-          "return_long": "2026-10-13",
-          "velocity_z": "2026-10-13",
-          "acceleration_z": "2026-10-13",
-          "volatility_percentile": "2026-10-14",
-          "residual_return": "2026-10-13"
-        },
-        "index_relation": {
-          "return_short": "before_table_date",
-          "return_medium": "before_table_date",
-          "return_long": "before_table_date",
-          "velocity_z": "before_table_date",
-          "acceleration_z": "before_table_date",
-          "volatility_percentile": "at_table_date",
-          "residual_return": "before_table_date"
-        },
-        "normalized_input_dates": {
-          "close": "2026-10-13",
-          "residual_return": "2026-10-13"
-        },
-        "clock_issues": [],
-        "residual_adjustment": {
-          "status": "adjusted",
-          "window_observations": 5,
-          "window_start": "2026-10-07",
-          "window_end": "2026-10-13",
-          "counts": {
-            "adjusted": 5,
-            "raw_fallback": 0,
-            "zero_filled": 0,
-            "unavailable": 0
-          },
-          "carried_driver_observations": 5
-        },
-        "movement_comparison": {
-          "status": "calculation_dates_match",
-          "reason": null,
-          "return_metric": "return_medium",
-          "window_observations": 5,
-          "calculated_through": "2026-10-13",
-          "return_state": "fell",
-          "momentum_state": "below_baseline",
-          "value_basis": "displayed_producer_values"
-        }
-      },
-      {
-        "ccy": "AUD",
-        "values": {
-          "return_short": 0.69,
-          "return_medium": 0.31,
-          "return_long": -1.71,
-          "velocity_z": 0.22,
-          "acceleration_z": 0.87,
-          "volatility_percentile": 0.31,
-          "residual_return": -0.1
-        },
-        "availability": {
-          "return_short": "available",
-          "return_medium": "available",
-          "return_long": "available",
-          "velocity_z": "available",
-          "acceleration_z": "available",
-          "volatility_percentile": "available",
-          "residual_return": "available"
-        },
-        "observed_at": {
-          "return_short": null,
-          "return_medium": null,
-          "return_long": null,
-          "velocity_z": null,
-          "acceleration_z": null,
-          "volatility_percentile": null,
-          "residual_return": null
-        },
-        "calculated_through": {
-          "return_short": "2026-10-14",
-          "return_medium": "2026-10-14",
-          "return_long": "2026-10-14",
-          "velocity_z": "2026-10-14",
-          "acceleration_z": "2026-10-14",
-          "volatility_percentile": "2026-10-14",
-          "residual_return": "2026-10-14"
+          "return_short": "2026-10-16",
+          "return_medium": "2026-10-16",
+          "return_long": "2026-10-16",
+          "velocity_z": "2026-10-16",
+          "acceleration_z": "2026-10-16",
+          "volatility_percentile": "2026-10-16",
+          "residual_return": "2026-10-16"
         },
         "index_relation": {
           "return_short": "at_table_date",
@@ -931,15 +855,15 @@
           "residual_return": "at_table_date"
         },
         "normalized_input_dates": {
-          "close": "2026-10-14",
-          "residual_return": "2026-10-14"
+          "close": "2026-10-16",
+          "residual_return": "2026-10-16"
         },
         "clock_issues": [],
         "residual_adjustment": {
           "status": "adjusted",
           "window_observations": 5,
-          "window_start": "2026-10-08",
-          "window_end": "2026-10-14",
+          "window_start": "2026-10-12",
+          "window_end": "2026-10-16",
           "counts": {
             "adjusted": 5,
             "raw_fallback": 0,
@@ -953,22 +877,22 @@
           "reason": null,
           "return_metric": "return_medium",
           "window_observations": 5,
-          "calculated_through": "2026-10-14",
+          "calculated_through": "2026-10-16",
           "return_state": "rose",
           "momentum_state": "above_baseline",
           "value_basis": "displayed_producer_values"
         }
       },
       {
-        "ccy": "CAD",
+        "ccy": "AUD",
         "values": {
-          "return_short": -0.15,
-          "return_medium": -0.12,
-          "return_long": -2.67,
-          "velocity_z": -0.13,
-          "acceleration_z": -0.24,
-          "volatility_percentile": 0.0,
-          "residual_return": 0.08
+          "return_short": -0.42,
+          "return_medium": -0.14,
+          "return_long": -2.34,
+          "velocity_z": -0.31,
+          "acceleration_z": -0.65,
+          "volatility_percentile": 0.16,
+          "residual_return": -0.55
         },
         "availability": {
           "return_short": "available",
@@ -989,33 +913,33 @@
           "residual_return": null
         },
         "calculated_through": {
-          "return_short": "2026-10-13",
-          "return_medium": "2026-10-13",
-          "return_long": "2026-10-13",
-          "velocity_z": "2026-10-13",
-          "acceleration_z": "2026-10-13",
-          "volatility_percentile": "2026-10-14",
-          "residual_return": "2026-10-13"
+          "return_short": "2026-10-16",
+          "return_medium": "2026-10-16",
+          "return_long": "2026-10-16",
+          "velocity_z": "2026-10-16",
+          "acceleration_z": "2026-10-16",
+          "volatility_percentile": "2026-10-16",
+          "residual_return": "2026-10-16"
         },
         "index_relation": {
-          "return_short": "before_table_date",
-          "return_medium": "before_table_date",
-          "return_long": "before_table_date",
-          "velocity_z": "before_table_date",
-          "acceleration_z": "before_table_date",
+          "return_short": "at_table_date",
+          "return_medium": "at_table_date",
+          "return_long": "at_table_date",
+          "velocity_z": "at_table_date",
+          "acceleration_z": "at_table_date",
           "volatility_percentile": "at_table_date",
-          "residual_return": "before_table_date"
+          "residual_return": "at_table_date"
         },
         "normalized_input_dates": {
-          "close": "2026-10-13",
-          "residual_return": "2026-10-13"
+          "close": "2026-10-16",
+          "residual_return": "2026-10-16"
         },
         "clock_issues": [],
         "residual_adjustment": {
           "status": "adjusted",
           "window_observations": 5,
-          "window_start": "2026-10-07",
-          "window_end": "2026-10-13",
+          "window_start": "2026-10-12",
+          "window_end": "2026-10-16",
           "counts": {
             "adjusted": 5,
             "raw_fallback": 0,
@@ -1029,9 +953,85 @@
           "reason": null,
           "return_metric": "return_medium",
           "window_observations": 5,
-          "calculated_through": "2026-10-13",
+          "calculated_through": "2026-10-16",
           "return_state": "fell",
           "momentum_state": "below_baseline",
+          "value_basis": "displayed_producer_values"
+        }
+      },
+      {
+        "ccy": "CAD",
+        "values": {
+          "return_short": 0.54,
+          "return_medium": 0.61,
+          "return_long": -1.04,
+          "velocity_z": 0.95,
+          "acceleration_z": 0.75,
+          "volatility_percentile": 0.37,
+          "residual_return": 0.81
+        },
+        "availability": {
+          "return_short": "available",
+          "return_medium": "available",
+          "return_long": "available",
+          "velocity_z": "available",
+          "acceleration_z": "available",
+          "volatility_percentile": "available",
+          "residual_return": "available"
+        },
+        "observed_at": {
+          "return_short": null,
+          "return_medium": null,
+          "return_long": null,
+          "velocity_z": null,
+          "acceleration_z": null,
+          "volatility_percentile": null,
+          "residual_return": null
+        },
+        "calculated_through": {
+          "return_short": "2026-10-16",
+          "return_medium": "2026-10-16",
+          "return_long": "2026-10-16",
+          "velocity_z": "2026-10-16",
+          "acceleration_z": "2026-10-16",
+          "volatility_percentile": "2026-10-16",
+          "residual_return": "2026-10-16"
+        },
+        "index_relation": {
+          "return_short": "at_table_date",
+          "return_medium": "at_table_date",
+          "return_long": "at_table_date",
+          "velocity_z": "at_table_date",
+          "acceleration_z": "at_table_date",
+          "volatility_percentile": "at_table_date",
+          "residual_return": "at_table_date"
+        },
+        "normalized_input_dates": {
+          "close": "2026-10-16",
+          "residual_return": "2026-10-16"
+        },
+        "clock_issues": [],
+        "residual_adjustment": {
+          "status": "adjusted",
+          "window_observations": 5,
+          "window_start": "2026-10-12",
+          "window_end": "2026-10-16",
+          "counts": {
+            "adjusted": 5,
+            "raw_fallback": 0,
+            "zero_filled": 0,
+            "unavailable": 0
+          },
+          "carried_driver_observations": 5
+        },
+        "movement_comparison": {
+          "status": "calculation_dates_match",
+          "reason": null,
+          "return_metric": "return_medium",
+          "window_observations": 5,
+          "calculated_through": "2026-10-16",
+          "return_state": "rose",
+          "momentum_state": "above_baseline",
           "value_basis": "displayed_producer_values"
         }
       },
@@ -1039,12 +1039,12 @@
         "ccy": "CNH",
         "values": {
           "return_short": 0.08,
-          "return_medium": 0.14,
-          "return_long": 0.67,
-          "velocity_z": 0.01,
+          "return_medium": 0.06,
+          "return_long": -0.11,
+          "velocity_z": -0.27,
           "acceleration_z": -0.23,
           "volatility_percentile": 0.0,
-          "residual_return": 0.17
+          "residual_return": 0.24
         },
         "availability": {
           "return_short": "available",
@@ -1066,25 +1066,25 @@
         },
         "calculated_through": {
           "return_short": "2026-10-09",
-          "return_medium": "2026-10-09",
-          "return_long": "2026-10-09",
-          "velocity_z": "2026-10-09",
+          "return_medium": "2026-10-16",
+          "return_long": "2026-10-16",
+          "velocity_z": "2026-10-16",
           "acceleration_z": "2026-10-09",
-          "volatility_percentile": "2026-10-14",
+          "volatility_percentile": "2026-10-16",
           "residual_return": "2026-10-09"
         },
         "index_relation": {
           "return_short": "before_table_date",
-          "return_medium": "before_table_date",
-          "return_long": "before_table_date",
-          "velocity_z": "before_table_date",
+          "return_medium": "at_table_date",
+          "return_long": "at_table_date",
+          "velocity_z": "at_table_date",
           "acceleration_z": "before_table_date",
           "volatility_percentile": "at_table_date",
           "residual_return": "before_table_date"
         },
         "normalized_input_dates": {
-          "close": "2026-10-09",
-          "residual_return": "2026-10-09"
+          "close": "2026-10-16",
+          "residual_return": "2026-10-16"
         },
         "clock_issues": [],
         "residual_adjustment": {
@@ -1098,29 +1098,29 @@
             "zero_filled": 0,
             "unavailable": 0
           },
-          "carried_driver_observations": 5
+          "carried_driver_observations": 1
         },
         "movement_comparison": {
           "status": "calculation_dates_match",
           "reason": null,
           "return_metric": "return_medium",
           "window_observations": 5,
-          "calculated_through": "2026-10-09",
+          "calculated_through": "2026-10-16",
           "return_state": "rose",
-          "momentum_state": "above_baseline",
+          "momentum_state": "below_baseline",
           "value_basis": "displayed_producer_values"
         }
       },
       {
         "ccy": "MXN",
         "values": {
-          "return_short": -0.69,
-          "return_medium": -2.28,
-          "return_long": -6.75,
-          "velocity_z": -1.64,
-          "acceleration_z": -1.38,
-          "volatility_percentile": 0.77,
-          "residual_return": -1.2
+          "return_short": 0.12,
+          "return_medium": -1.38,
+          "return_long": -6.93,
+          "velocity_z": -1.02,
+          "acceleration_z": 1.49,
+          "volatility_percentile": 0.76,
+          "residual_return": -0.29
         },
         "availability": {
           "return_short": "available",
@@ -1141,13 +1141,13 @@
           "residual_return": null
         },
         "calculated_through": {
-          "return_short": "2026-10-14",
-          "return_medium": "2026-10-14",
-          "return_long": "2026-10-14",
-          "velocity_z": "2026-10-14",
-          "acceleration_z": "2026-10-14",
-          "volatility_percentile": "2026-10-14",
-          "residual_return": "2026-10-14"
+          "return_short": "2026-10-16",
+          "return_medium": "2026-10-16",
+          "return_long": "2026-10-16",
+          "velocity_z": "2026-10-16",
+          "acceleration_z": "2026-10-16",
+          "volatility_percentile": "2026-10-16",
+          "residual_return": "2026-10-16"
         },
         "index_relation": {
           "return_short": "at_table_date",
@@ -1159,15 +1159,15 @@
           "residual_return": "at_table_date"
         },
         "normalized_input_dates": {
-          "close": "2026-10-14",
-          "residual_return": "2026-10-14"
+          "close": "2026-10-16",
+          "residual_return": null
         },
         "clock_issues": [],
         "residual_adjustment": {
           "status": "adjusted",
           "window_observations": 5,
-          "window_start": "2026-10-08",
-          "window_end": "2026-10-14",
+          "window_start": "2026-10-12",
+          "window_end": "2026-10-16",
           "counts": {
             "adjusted": 5,
             "raw_fallback": 0,
@@ -1181,7 +1181,7 @@
           "reason": null,
           "return_metric": "return_medium",
           "window_observations": 5,
-          "calculated_through": "2026-10-14",
+          "calculated_through": "2026-10-16",
           "return_state": "fell",
           "momentum_state": "below_baseline",
           "value_basis": "displayed_producer_values"
@@ -1190,13 +1190,13 @@
       {
         "ccy": "BRL",
         "values": {
-          "return_short": -0.82,
-          "return_medium": -0.9,
-          "return_long": 2.32,
-          "velocity_z": -0.62,
-          "acceleration_z": -0.81,
+          "return_short": -0.59,
+          "return_medium": -1.02,
+          "return_long": 1.08,
+          "velocity_z": -0.7,
+          "acceleration_z": -0.46,
           "volatility_percentile": 0.9,
-          "residual_return": -1.41
+          "residual_return": -1.53
         },
         "availability": {
           "return_short": "available",
@@ -1217,13 +1217,13 @@
           "residual_return": null
         },
         "calculated_through": {
-          "return_short": "2026-10-14",
-          "return_medium": "2026-10-14",
-          "return_long": "2026-10-14",
-          "velocity_z": "2026-10-14",
-          "acceleration_z": "2026-10-14",
-          "volatility_percentile": "2026-10-14",
-          "residual_return": "2026-10-14"
+          "return_short": "2026-10-16",
+          "return_medium": "2026-10-16",
+          "return_long": "2026-10-16",
+          "velocity_z": "2026-10-16",
+          "acceleration_z": "2026-10-16",
+          "volatility_percentile": "2026-10-16",
+          "residual_return": "2026-10-16"
         },
         "index_relation": {
           "return_short": "at_table_date",
@@ -1235,15 +1235,15 @@
           "residual_return": "at_table_date"
         },
         "normalized_input_dates": {
-          "close": "2026-10-14",
-          "residual_return": "2026-10-14"
+          "close": "2026-10-16",
+          "residual_return": "2026-10-16"
         },
         "clock_issues": [],
         "residual_adjustment": {
           "status": "adjusted",
           "window_observations": 5,
-          "window_start": "2026-10-08",
-          "window_end": "2026-10-14",
+          "window_start": "2026-10-12",
+          "window_end": "2026-10-16",
           "counts": {
             "adjusted": 5,
             "raw_fallback": 0,
@@ -1257,7 +1257,7 @@
           "reason": null,
           "return_metric": "return_medium",
           "window_observations": 5,
-          "calculated_through": "2026-10-14",
+          "calculated_through": "2026-10-16",
           "return_state": "fell",
           "momentum_state": "below_baseline",
           "value_basis": "displayed_producer_values"
@@ -1270,36 +1270,33 @@
     ]
   },
   "regime_radar": {
-    "as_of": "2026-10-14",
-    "dominant": "em_crisis_capital_flight",
-    "active": [
-      "dollar_wrecking_ball",
-      "em_crisis_capital_flight"
-    ],
+    "as_of": "2026-10-16",
+    "dominant": null,
+    "active": [],
     "intensity": {
-      "carry_unwind": 5.8,
-      "dollar_wrecking_ball": 46.2,
-      "em_crisis_capital_flight": 61.2,
-      "haven_flight_risk_off": 0.0,
-      "reflation_risk_on": 1.7,
-      "intervention_risk": 34.7
+      "carry_unwind": 6.7,
+      "dollar_wrecking_ball": 51.0,
+      "em_crisis_capital_flight": 26.9,
+      "haven_flight_risk_off": 8.1,
+      "reflation_risk_on": 1.3,
+      "intervention_risk": 3.6
     },
     "scenarios": [
       {
         "key": "carry_unwind",
         "name_en": "Carry Unwind / Yen-Funded Deleveraging",
         "name_zh": "\u5957\u606f\u5e73\u4ed3 / \u65e5\u5143\u878d\u8d44\u53bb\u6760\u6746",
-        "intensity": 5.8,
+        "intensity": 6.7,
         "active": false,
         "illustrative": false,
         "prob": {
           "status": "ok",
-          "p_cond": 0.1179,
-          "base_rate": 0.105,
-          "wilson_lo": 0.0837,
-          "wilson_hi": 0.1636,
-          "n_raw": 2519,
-          "n_eff": 251.9,
+          "p_cond": 0.1178,
+          "base_rate": 0.1049,
+          "wilson_lo": 0.082,
+          "wilson_hi": 0.1663,
+          "n_raw": 2259,
+          "n_eff": 225.9,
           "N": 10
         }
       },
@@ -1307,17 +1304,17 @@
         "key": "dollar_wrecking_ball",
         "name_en": "Broad-Dollar Wrecking Ball / Global Tightening",
         "name_zh": "\u5e7f\u4e49\u7f8e\u5143\u538b\u8def\u673a / \u5168\u7403\u7d27\u7f29",
-        "intensity": 46.2,
-        "active": true,
+        "intensity": 51.0,
+        "active": false,
         "illustrative": false,
         "prob": {
           "status": "ok",
-          "p_cond": 0.1799,
-          "base_rate": 0.1316,
-          "wilson_lo": 0.0879,
-          "wilson_hi": 0.3331,
-          "n_raw": 728,
-          "n_eff": 36.4,
+          "p_cond": 0.1852,
+          "base_rate": 0.1315,
+          "wilson_lo": 0.0844,
+          "wilson_hi": 0.3594,
+          "n_raw": 583,
+          "n_eff": 29.1,
           "N": 20
         }
       },
@@ -1325,17 +1322,17 @@
         "key": "em_crisis_capital_flight",
         "name_en": "EM Crisis / Capital Flight",
         "name_zh": "\u65b0\u5174\u5e02\u573a\u5371\u673a / \u8d44\u672c\u5916\u9003",
-        "intensity": 61.2,
-        "active": true,
+        "intensity": 26.9,
+        "active": false,
         "illustrative": true,
         "prob": {
-          "status": "insufficient",
-          "p_cond": 0.3933,
-          "base_rate": 0.2804,
-          "wilson_lo": 0.1066,
-          "wilson_hi": 0.7789,
-          "n_raw": 89,
-          "n_eff": 4.5,
+          "status": "ok",
+          "p_cond": 0.2904,
+          "base_rate": 0.2807,
+          "wilson_lo": 0.1708,
+          "wilson_hi": 0.4484,
+          "n_raw": 761,
+          "n_eff": 38.0,
           "N": 20
         }
       },
@@ -1343,17 +1340,17 @@
         "key": "haven_flight_risk_off",
         "name_en": "Acute Safe-Haven Flight / Risk-Off",
         "name_zh": "\u6025\u6027\u907f\u9669 / \u98ce\u9669\u89c4\u907f",
-        "intensity": 0.0,
+        "intensity": 8.1,
         "active": false,
         "illustrative": false,
         "prob": {
           "status": "ok",
-          "p_cond": 0.0761,
-          "base_rate": 0.0761,
-          "wilson_lo": 0.0562,
-          "wilson_hi": 0.1022,
-          "n_raw": 7717,
-          "n_eff": 514.5,
+          "p_cond": 0.1333,
+          "base_rate": 0.076,
+          "wilson_lo": 0.0968,
+          "wilson_hi": 0.1808,
+          "n_raw": 3782,
+          "n_eff": 252.1,
           "N": 15
         }
       },
@@ -1361,17 +1358,17 @@
         "key": "reflation_risk_on",
         "name_en": "Reflation / Risk-On Melt-Up",
         "name_zh": "\u518d\u901a\u80c0 / \u98ce\u9669\u504f\u597d\u4e0a\u884c",
-        "intensity": 1.7,
+        "intensity": 1.3,
         "active": false,
         "illustrative": false,
         "prob": {
           "status": "ok",
-          "p_cond": 0.06,
-          "base_rate": 0.0607,
-          "wilson_lo": 0.0368,
-          "wilson_hi": 0.0964,
-          "n_raw": 5048,
-          "n_eff": 252.4,
+          "p_cond": 0.0602,
+          "base_rate": 0.0605,
+          "wilson_lo": 0.037,
+          "wilson_hi": 0.0963,
+          "n_raw": 5120,
+          "n_eff": 256.0,
           "N": 20
         }
       },
@@ -1379,17 +1376,17 @@
         "key": "intervention_risk",
         "name_en": "FX Intervention Risk (BoJ/MoF \u00b7 SNB)",
         "name_zh": "\u5916\u6c47\u5e72\u9884\u98ce\u9669\uff08\u65e5\u94f6/\u8d22\u52a1\u7701 \u00b7 \u745e\u58eb\u592e\u884c\uff09",
-        "intensity": 34.7,
+        "intensity": 3.6,
         "active": false,
         "illustrative": true,
         "prob": {
           "status": "ok",
-          "p_cond": 0.0216,
+          "p_cond": 0.0265,
           "base_rate": 0.0352,
-          "wilson_lo": 0.0023,
-          "wilson_hi": 0.1768,
-          "n_raw": 232,
-          "n_eff": 23.2,
+          "wilson_lo": 0.0144,
+          "wilson_hi": 0.0483,
+          "n_raw": 3702,
+          "n_eff": 370.2,
           "N": 10
         }
       }
@@ -1400,43 +1397,43 @@
       "current": "Risk-off haven bid",
       "prev": "Global reflation",
       "changed_on": "2026-10-05",
-      "days_in_state": 10
+      "days_in_state": 13
     },
     "lean": {
       "current": "mixed backdrop",
       "prev": "dollar-supportive backdrop",
       "changed_on": "2026-10-09",
-      "days_in_state": 6
+      "days_in_state": 9
     },
     "risk": {
       "current": "risk-off",
       "prev": "risk-on",
       "changed_on": "2026-09-30",
-      "days_in_state": 15
+      "days_in_state": 18
     },
     "fed_path_lean": {
       "current": "steady",
       "prev": "hawkish_repricing",
       "changed_on": "2026-10-07",
-      "days_in_state": 8
+      "days_in_state": 11
     },
     "liquidity_dir": {
       "current": "soft",
       "prev": "supportive",
       "changed_on": "2026-10-09",
-      "days_in_state": 6
+      "days_in_state": 9
     },
     "trend": {
       "current": "up",
       "prev": "mixed",
       "changed_on": "2026-10-05",
-      "days_in_state": 10
+      "days_in_state": 13
     },
     "triple_red": {
       "current": false,
       "prev": true,
       "changed_on": "2026-09-18",
-      "days_in_state": 27
+      "days_in_state": 30
     },
     "cnh_basis_state": {
       "current": "neutral",
@@ -1445,10 +1442,10 @@
       "days_in_state": null
     },
     "regime_radar_dominant": {
-      "current": "em_crisis_capital_flight",
-      "prev": "dollar_wrecking_ball",
-      "changed_on": "2026-10-09",
-      "days_in_state": 6
+      "current": null,
+      "prev": "em_crisis_capital_flight",
+      "changed_on": "2026-10-16",
+      "days_in_state": 2
     }
   },
   "schema_note": "MSX-1 additive-only enrichment: do not rename/remove existing keys. new keys: dollar_desk.smile_decomp, strength, regime_radar.scenarios, pairs.<KEY>.{headline,head_zh,sub,sub_zh,shock_state,cycle_position}, pairs.USDCNH.{cnh_basis_bps,cnh_basis_state}, state_changes.",
@@ -1458,14 +1455,14 @@
     "dir": "up"
   },
   "em": {
-    "cnh_basis_bps": -61.0,
+    "cnh_basis_bps": -49.0,
     "cnh_basis_state": "neutral",
-    "risk_off_composite": 0.056
+    "risk_off_composite": 0.17
   },
   "stance": {
-    "word_en": "Get ready",
-    "word_zh": "\u505a\u597d\u51c6\u5907",
-    "tone": "alert",
+    "word_en": "Watch \u2014 don't chase",
+    "word_zh": "\u89c2\u671b\uff0c\u522b\u8ffd",
+    "tone": "calm",
     "headline_en": "Dollar strong",
     "headline_zh": "\u7f8e\u5143\u504f\u5f3a",
     "sentence_en": "A firm dollar is leaning on US stocks and EM stocks.",
@@ -1476,10 +1473,7 @@
     "dollar_dir": "up",
     "dollar_day_flag": false,
     "risk_word": "risk-off",
-    "active_scenarios": [
-      "dollar_wrecking_ball",
-      "em_crisis_capital_flight"
-    ],
+    "active_scenarios": [],
     "cnh_basis_state": "neutral",
     "transmission_effects": {
       "GC=F": "headwind",
@@ -1497,6 +1491,20 @@
         "headline_en": "Triple-red cleared: safe-haven function may be restoring",
         "headline_zh": "\u4e09\u91cd\u4e0b\u8dcc\u89e3\u9664\uff1a\u907f\u9669\u529f\u80fd\u53ef\u80fd\u6062\u590d",
         "severity": "info"
+      },
+      {
+        "type": "triple_red",
+        "asset": "dollar",
+        "headline_en": "Triple-red cleared: safe-haven function may be restoring",
+        "headline_zh": "\u4e09\u91cd\u4e0b\u8dcc\u89e3\u9664\uff1a\u907f\u9669\u529f\u80fd\u53ef\u80fd\u6062\u590d",
+        "severity": "info"
+      },
+      {
+        "type": "residual_shock",
+        "asset": "GBPUSD",
+        "headline_en": "GBP/USD: Unusual move the dollar and rates don't explain (up)",
+        "headline_zh": "GBP/USD\uff1a\u51fa\u73b0\u7f8e\u5143\u4e0e\u5229\u7387\u65e0\u6cd5\u89e3\u91ca\u7684\u5f02\u5e38\u4e0a\u884c",
+        "severity": "high"
       }
     ]
   }

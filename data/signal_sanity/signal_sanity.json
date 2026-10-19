@@ -1,42 +1,40 @@
 {
-  "ok": true,
-  "fail_reasons": [],
-  "warnings": [
-    "standouts: as_of 2026-10-08 is 6d old (> 5d)"
+  "ok": false,
+  "fail_reasons": [
+    "news: CONTENT FROZEN — as_of advanced 2026-10-17→2026-10-18 but signal values are byte-identical to the prior vintage (builder did not recompute)"
   ],
+  "warnings": [],
   "surfaces": {
     "standouts": {
       "key": "standouts",
       "label": "engine buy-board",
       "ok": true,
       "fails": [],
-      "warns": [
-        "standouts: as_of 2026-10-08 is 6d old (> 5d)"
-      ],
-      "as_of": "2026-10-08",
-      "n": 107,
-      "coverage": 107,
+      "warns": [],
+      "as_of": "2026-10-14",
+      "n": 101,
+      "coverage": 101,
       "row": {
-        "run_date": "2026-10-14",
+        "run_date": "2026-10-18",
         "surface": "standouts",
-        "as_of": "2026-10-08",
-        "n_records": 107,
-        "coverage": 107,
-        "fingerprint": "eebc6fd3ecd47836",
+        "as_of": "2026-10-14",
+        "n_records": 101,
+        "coverage": 101,
+        "fingerprint": "b7acdffd6d448e26",
         "scores": {
           "conviction.composite_z": {
-            "n_sub": 107,
-            "pop": 107,
-            "uniq": 104,
-            "mean": -0.12642056074766356,
-            "std": 0.4470264379349052
+            "n_sub": 101,
+            "pop": 101,
+            "uniq": 96,
+            "mean": -0.014485148514851484,
+            "std": 0.5120051557185764
           },
           "alpha": {
-            "n_sub": 107,
-            "pop": 107,
-            "uniq": 97,
-            "mean": -0.26504672897196263,
-            "std": 1.0408132817830629
+            "n_sub": 101,
+            "pop": 101,
+            "uniq": 87,
+            "mean": -0.19237623762376238,
+            "std": 0.9967354123375103
           }
         }
       }
@@ -47,30 +45,30 @@
       "ok": true,
       "fails": [],
       "warns": [],
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-17",
       "n": 25,
       "coverage": 25,
       "row": {
-        "run_date": "2026-10-14",
+        "run_date": "2026-10-18",
         "surface": "briefing",
-        "as_of": "2026-10-14",
+        "as_of": "2026-10-17",
         "n_records": 25,
         "coverage": 25,
-        "fingerprint": "05231d96adbac96f",
+        "fingerprint": "10ad1528e8c851b8",
         "scores": {
           "priority": {
             "n_sub": 25,
             "pop": 25,
-            "uniq": 18,
-            "mean": 0.31584,
-            "std": 0.12030018453851182
+            "uniq": 23,
+            "mean": 0.28443999999999997,
+            "std": 0.12552197576520216
           },
           "strength": {
             "n_sub": 25,
             "pop": 25,
-            "uniq": 16,
-            "mean": 0.4016,
-            "std": 0.15008477604340822
+            "uniq": 17,
+            "mean": 0.3896,
+            "std": 0.15683060925724926
           }
         }
       }
@@ -81,23 +79,23 @@
       "ok": true,
       "fails": [],
       "warns": [],
-      "as_of": "2026-10-14",
-      "n": 253,
-      "coverage": 253,
+      "as_of": "2026-10-17",
+      "n": 215,
+      "coverage": 215,
       "row": {
-        "run_date": "2026-10-14",
+        "run_date": "2026-10-18",
         "surface": "radar",
-        "as_of": "2026-10-14",
-        "n_records": 253,
-        "coverage": 253,
-        "fingerprint": "4cdc2052fcc8eb5a",
+        "as_of": "2026-10-17",
+        "n_records": 215,
+        "coverage": 215,
+        "fingerprint": "be49c8c7401e0b19",
         "scores": {
           "edge_score": {
-            "n_sub": 241,
-            "pop": 241,
-            "uniq": 30,
-            "mean": 7.518672199170124,
-            "std": 10.158528901384514
+            "n_sub": 204,
+            "pop": 204,
+            "uniq": 28,
+            "mean": 5.882352941176471,
+            "std": 10.941729903776515
           }
         }
       }
@@ -108,30 +106,30 @@
       "ok": true,
       "fails": [],
       "warns": [],
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-18",
       "n": 30,
       "coverage": 30,
       "row": {
-        "run_date": "2026-10-14",
+        "run_date": "2026-10-18",
         "surface": "altdata",
-        "as_of": "2026-10-14",
+        "as_of": "2026-10-18",
         "n_records": 30,
         "coverage": 30,
-        "fingerprint": "6c9d53b27aad3c18",
+        "fingerprint": "95fb70145332ccb5",
         "scores": {
           "signal_score": {
             "n_sub": 30,
             "pop": 30,
-            "uniq": 22,
-            "mean": 43.4,
-            "std": 14.531804200901323
+            "uniq": 20,
+            "mean": 38.9,
+            "std": 11.602729563914403
           },
           "weighted_score": {
             "n_sub": 30,
             "pop": 30,
-            "uniq": 19,
-            "mean": 1.2583333333333333,
-            "std": 0.49042215375010223
+            "uniq": 16,
+            "mean": 1.1783333333333335,
+            "std": 0.445099863950652
           }
         }
       }
@@ -139,33 +137,35 @@
     "news": {
       "key": "news",
       "label": "news flow",
-      "ok": true,
-      "fails": [],
+      "ok": false,
+      "fails": [
+        "news: CONTENT FROZEN — as_of advanced 2026-10-17→2026-10-18 but signal values are byte-identical to the prior vintage (builder did not recompute)"
+      ],
       "warns": [],
-      "as_of": "2026-10-14",
-      "n": 1231,
-      "coverage": 1154,
+      "as_of": "2026-10-18",
+      "n": 1193,
+      "coverage": 1067,
       "row": {
-        "run_date": "2026-10-14",
+        "run_date": "2026-10-18",
         "surface": "news",
-        "as_of": "2026-10-14",
-        "n_records": 1231,
-        "coverage": 1154,
-        "fingerprint": "3d9305ff334f8972",
+        "as_of": "2026-10-18",
+        "n_records": 1193,
+        "coverage": 1067,
+        "fingerprint": "6209fb3fd3d4af9f",
         "scores": {
           "n_recent": {
-            "n_sub": 1154,
-            "pop": 1154,
+            "n_sub": 1067,
+            "pop": 1067,
             "uniq": 6,
-            "mean": 1.7131715771230502,
-            "std": 1.2300610065142024
+            "mean": 1.6110590440487347,
+            "std": 1.059428814330516
           },
           "sentiment_score": {
-            "n_sub": 1154,
-            "pop": 1154,
-            "uniq": 8,
-            "mean": 0.3587001733102253,
-            "std": 0.7309765614077692
+            "n_sub": 1067,
+            "pop": 1067,
+            "uniq": 6,
+            "mean": 0.34497656982193065,
+            "std": 0.7559289390135115
           }
         }
       }
@@ -176,37 +176,37 @@
       "ok": true,
       "fails": [],
       "warns": [],
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-17",
       "n": 30,
       "coverage": 30,
       "row": {
-        "run_date": "2026-10-14",
+        "run_date": "2026-10-18",
         "surface": "intel_hub",
-        "as_of": "2026-10-14",
+        "as_of": "2026-10-17",
         "n_records": 30,
         "coverage": 30,
-        "fingerprint": "9bad81e5401980cc",
+        "fingerprint": "1fa7918d4efb0174",
         "scores": {
           "composite_conviction": {
             "n_sub": 30,
             "pop": 30,
-            "uniq": 28,
-            "mean": 37.96666666666667,
-            "std": 13.143879014794512
+            "uniq": 29,
+            "mean": 35.88,
+            "std": 14.325441238114331
           },
           "opportunity_score": {
             "n_sub": 30,
             "pop": 30,
-            "uniq": 20,
-            "mean": 24.813333333333333,
-            "std": 7.597093011292031
+            "uniq": 19,
+            "mean": 21.970000000000002,
+            "std": 4.8511270168212794
           },
           "edge_remaining": {
             "n_sub": 30,
             "pop": 30,
-            "uniq": 20,
-            "mean": 0.6324666666666666,
-            "std": 0.13340957820020102
+            "uniq": 21,
+            "mean": 0.5979333333333333,
+            "std": 0.1391397219424497
           }
         }
       }
@@ -221,5 +221,5 @@
     "intel_hub"
   ],
   "missing": [],
-  "evaluated_at": "2026-10-14T09:22:05.654403+00:00"
+  "evaluated_at": "2026-10-18T07:03:08.550133+00:00"
 }

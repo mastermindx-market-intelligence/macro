@@ -100,7 +100,6 @@ _TIMEOUT = 30
 _TRACE_CANDIDATE_LIMIT = 24
 _EX99_TYPE = re.compile(r"^EX-99\.1(?:\b|$)", re.I)
 _EX99_NAME = re.compile(r"ex[-_]?99[-_.]?1", re.I)
-_EX99_BARE_TYPE = re.compile(r"^EX-99$", re.I)
 
 # T05b — semiconductor earnings intake (operation
 # gmi-semiconductors-fable-ceo-e2e-20260923-chairman-001).  The per-ticker
@@ -241,16 +240,16 @@ def _select_exhibit_99_1(manifest: list[tuple[str, str]]) -> str | None:
     prefixed = [name for kind, name in textish if _EX99_TYPE.match(kind)]
     if prefixed:
         return prefixed[0]
+    # RTX/NOC publish their Item-2.02 earnings release as a generic EX-99.
+    # Multiple generic exhibits remain ambiguous even when a filename hints
+    # at 99.1; document order or name similarity cannot resolve them.
+    generic = [name for kind, name in textish if kind == "EX-99"]
+    if len(generic) > 1:
+        return None
     hinted = [name for _, name in textish if _EX99_NAME.search(name)]
     if hinted:
         return hinted[0]
-    # Some domestic filers type their single results press release as a bare
-    # ``EX-99`` (onsemi's Q2-2026 results 8-K 0001140361-26-030989 does). That
-    # is admitted ONLY when it is the sole EX-99* text exhibit in the manifest;
-    # two or more bare/unnumbered exhibits are ambiguous and are refused rather
-    # than guessed at.
-    bare = [name for kind, name in textish if _EX99_BARE_TYPE.match(kind)]
-    return bare[0] if len(bare) == 1 else None
+    return generic[0] if len(generic) == 1 else None
 
 
 # T05b — calendar-quarter-end PRE-FILTER for 6-K candidate rows.  An 8-K
@@ -562,7 +561,7 @@ def _manifest_exhibit_count(header_body: bytes) -> int:
     manifest = _parse_sgml_manifest(header_body.decode("utf-8", errors="replace"))
     return sum(
         1 for kind, filename in manifest
-        if filename.lower().endswith((".htm", ".html", ".txt")) and _EX99_TYPE.match(kind)
+        if filename.lower().endswith((".htm", ".html", ".txt")) and (_EX99_TYPE.match(kind) or kind == "EX-99")
     )
 
 
@@ -1588,10 +1587,14 @@ def discover_new_homebuilder_revisions(
     Both extensions key ONLY on issuer external_ids strings, never on
     ticker literals.
     """
+    from engine.company_intelligence.industrial_sources import (
+        SOURCE_OWNER_TICKERS, source_owner_issuer, source_owner_profile, source_owner_fiscal_period,
+    )
+    is_defense = ticker in SOURCE_OWNER_TICKERS
     if issuer is None:
-        issuer = issuer_for_ticker(ticker)
+        issuer = source_owner_issuer(ticker) if is_defense else issuer_for_ticker(ticker)
     if profile is None:
-        profile = profile_for_ticker(ticker)
+        profile = source_owner_profile(ticker) if is_defense else profile_for_ticker(ticker)
     if issuer is None or profile is None:
         # Fail closed, exactly as before T05b: an identity without its own
         # profile must never be built (``build_event_workspace`` defaults a
@@ -1602,6 +1605,32 @@ def discover_new_homebuilder_revisions(
     loader = chain_state_loader or (lambda event_id: _event_known_revisions(event_id, base_url=base_url))
     six_k_issuer = str(issuer.external_ids.get("results_form") or "").strip().upper() == "6-K"
     candidates = _fetch_submissions_candidates(issuer.cik, issuer=issuer, http_get=http_get)
+
+    initial_resolved = {}
+    if is_defense and discovery_boundary is None:
+        # Initial context means the newest QUALIFIED release revision. A
+        # newer Item-2.02 filing without an addressable segment/period must
+        # not hide the latest usable results exhibit. No historical backfill.
+        from engine.earnings_release.binding import bind_release_document
+        selected_candidates = []
+        for candidate in reversed(candidates):
+            try:
+                resolved = _resolve_exhibit_for_row(candidate, cik=issuer.cik, http_get=http_get)
+                if resolved is None:
+                    continue
+                bound = bind_release_document(body=str(resolved['exhibit_body']),
+                    **{k:resolved[k] for k in ('cik','accession','form','filing_date','acceptance_datetime','report_date','exhibit_url')})
+                period = source_owner_fiscal_period(bound, ticker)
+                current_year = (today if today is not None else datetime.now(timezone.utc).date()).year
+                if period.year not in {current_year-1,current_year}:
+                    continue
+            except Exception as exc:
+                print(f"::warning title=event-workspaces-discovery-skip::{ticker}: candidate did not qualify ({type(exc).__name__})", flush=True)
+                continue
+            selected_candidates = [candidate]
+            initial_resolved[str(candidate.get('accessionNumber') or '')] = resolved
+            break
+        candidates = selected_candidates
 
     resolved_today = today if today is not None else datetime.now(timezone.utc).date()
     # First-ever-discovery bound: current + immediately prior fiscal year,
@@ -1651,8 +1680,21 @@ def discover_new_homebuilder_revisions(
         anchor_date = report_date
         if six_k_issuer:
             anchor_date = str(row.get("filingDate") or "") or report_date
+        resolved_row = initial_resolved.get(row_accession)
         try:
-            fiscal_period = fiscal_period_for_report_date(anchor_date, issuer.fiscal_year_end_month)
+            if is_defense:
+                resolved_row = resolved_row or _resolve_exhibit_for_row(row, cik=issuer.cik, http_get=http_get)
+                if resolved_row is None:
+                    print(f"::warning title=event-workspaces-discovery-skip::{ticker}: no usable primary exhibit", flush=True)
+                    continue
+                from engine.earnings_release.binding import bind_release_document
+                bound = bind_release_document(body=str(resolved_row['exhibit_body']),
+                    **{k:resolved_row[k] for k in ('cik','accession','form','filing_date','acceptance_datetime','report_date','exhibit_url')})
+                fiscal_period = source_owner_fiscal_period(bound, ticker)
+            else:
+                fiscal_period = fiscal_period_for_report_date(
+                    anchor_date, issuer.fiscal_year_end_month,
+                )
         except Exception as exc:  # noqa: BLE001 - an unresolvable period is a per-row skip, not a refusal
             print(
                 "::warning title=event-workspaces-discovery-skip::"
@@ -1714,9 +1756,10 @@ def discover_new_homebuilder_revisions(
         if row_accession in represented_accessions:
             continue  # B2: already represented in the chain
 
-        resolved_row = _resolve_exhibit_for_row(
-            row, cik=issuer.cik, http_get=http_get, issuer=issuer,
-        )
+        if resolved_row is None:
+            resolved_row = _resolve_exhibit_for_row(
+                row, cik=issuer.cik, http_get=http_get, issuer=issuer,
+            )
         if resolved_row is None:
             print(
                 "::warning title=event-workspaces-discovery-skip::"
@@ -1732,13 +1775,19 @@ def discover_new_homebuilder_revisions(
         # (6) for an issuer declaring ``external_ids["fiscal_calendar"] ==
         # "52_53_week"``.  A 10-day drift is still rejected, even for a
         # 52/53-week issuer — outside the tolerance.
-        tolerance_days = _fiscal_period_tolerance_days(issuer)
+        # A defense source owner's period comes from its bound release
+        # (``source_owner_fiscal_period``; calendar_end is None) — there is no
+        # derived calendar end to compare, so neither the refusal nor the
+        # stated-end adoption below applies to it.
+        tolerance_days = 0 if is_defense else _fiscal_period_tolerance_days(issuer)
         ambiguity_note = ""
         stated_drift = (
-            None if stated_end is None
+            None if is_defense or stated_end is None
             else abs((stated_end - fiscal_period.calendar_end).days)
         )
-        if tolerance_days and (stated_drift is None or stated_drift > tolerance_days):
+        if not is_defense and tolerance_days and (
+            stated_drift is None or stated_drift > tolerance_days
+        ):
             # 52/53-week issuers only: the first period-end phrase may head a
             # multi-quarter table whose columns run oldest-first (onsemi's
             # Q2-2026 free-cash-flow table names October 3, 2025 first). The
@@ -1754,7 +1803,7 @@ def discover_new_homebuilder_revisions(
                 stated_drift = abs((stated_end - fiscal_period.calendar_end).days)
             elif len(within) > 1:
                 ambiguity_note = f"; ambiguous: {len(within)} named period ends within tolerance"
-        if stated_drift is None or stated_drift > tolerance_days:
+        if not is_defense and (stated_drift is None or stated_drift > tolerance_days):
             print(
                 "::warning title=event-workspaces-discovery-skip::"
                 f"{ticker}: accession {row_accession} computed fiscal quarter end "
@@ -2165,7 +2214,9 @@ def refresh(
     # unchanged.
     discover = homebuilder_discovery or discover_new_homebuilder_revisions
     sequences: dict[str, list[tuple[str, dict[str, Any]]]] = {}
-    for ticker in DISCOVERY_TICKERS:
+    from engine.company_intelligence.industrial_sources import SOURCE_OWNER_TICKERS, refresh_lhx_supplements
+    refresh_tickers = (*DISCOVERY_TICKERS, *SOURCE_OWNER_TICKERS)
+    for ticker in refresh_tickers:
         try:
             current_prior = homebuilder_carry_forward_loader(ticker)
         except Exception as carry_exc:  # noqa: BLE001
@@ -2218,6 +2269,23 @@ def refresh(
             log.info("%s: discovery failed; carry-forward already applied above (%s)", ticker, exc)
             continue
 
+        if ticker == 'LHX':
+            # Supplemental source observation can advance a generation even
+            # when no NEW EX99 revision exists. Original EX99 clocks remain.
+            target_revision = new_revisions[-1] if new_revisions else None
+            supplement_base = target_revision[1] if target_revision else current_prior
+            if supplement_base is not None:
+                try:
+                    enriched = refresh_lhx_supplements(supplement_base, http_get=http_get, prior=current_prior)
+                    if enriched != supplement_base:
+                        if target_revision:
+                            new_revisions[-1] = (target_revision[0], enriched)
+                        else:
+                            new_revisions = [(enriched['event_id'], enriched)]
+                except Exception as exc:
+                    print(f"::warning title=event-workspaces-supplement::LHX: qualified source carry-forward preserved ({type(exc).__name__})", flush=True)
+                    if current_prior and not new_revisions:
+                        workspaces[current_prior['event_id']] = dict(current_prior)
         if new_revisions:
             sequences[ticker] = new_revisions
 
@@ -2232,7 +2300,7 @@ def refresh(
     # OTHER ticker's slot, the very FIRST write below already contains a
     # complete nest — no promoted marker can ever transiently omit a
     # ticker Phase 1 has already resolved (NEW-BLOCKER-16).
-    for ticker in DISCOVERY_TICKERS:
+    for ticker in refresh_tickers:
         for event_id, hb_payload in sequences.get(ticker, []):
             workspaces[event_id] = hb_payload
             generation_dir = write_workspace_generation(

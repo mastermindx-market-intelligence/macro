@@ -72,7 +72,6 @@
     },
     "site/theme.js": {
       "create_style": 10,
-      "style_markup": 1,
       "style_text": 1
     },
     "site/theme_addons.js": {
@@ -157,6 +156,6 @@
       "create_style": 1
     }
   },
-  "generated_from": "feec1fe60c4eb00fb5211636fe389a56974ef3fa",
+  "generated_from": "d9af0853114c32ef4e8d1cd8959eb228641ef61a",
   "schema": "mastermind.runtime_style_allowlist.v1"
 }

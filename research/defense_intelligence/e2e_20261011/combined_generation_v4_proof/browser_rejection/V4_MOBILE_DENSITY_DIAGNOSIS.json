@@ -1,0 +1,324 @@
+{
+  "state": "MOBILE_DENSITY_RED_CAUSE_PROVEN_VISUAL_GATE_UNACCEPTED",
+  "scope": "Unmodifiedfrozenv4;actualwarmASGIlocaltestprincipal;actualviewportPNGnoimagecrop;noCSS/DOM/sourcechange;no timingacceptance",
+  "source_head": "d9af0853114c32ef4e8d1cd8959eb228641ef61a",
+  "diagnostic_original": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4/RESULT.json",
+  "settled_actual500row_diagnostic": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4-settled/RESULT.json",
+  "actual_populated_mobile_cells": [
+    {
+      "cell": "390-en-dark",
+      "height": 68529,
+      "queue": {
+        "rows": 500,
+        "height": 52889.34375,
+        "width": 364,
+        "scroll_height": 52889,
+        "overflow_y": "auto",
+        "css_height": "52889.3px",
+        "min_height": "530px",
+        "max_height": "none",
+        "firstrow": {
+          "height": 105.0625,
+          "font_size": "15px",
+          "line_height": "21.75px"
+        },
+        "active_mode": "changes"
+      },
+      "workspace_wait_failure": null,
+      "imagepaths": [
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4-settled/390-en-dark/top.png",
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4-settled/390-en-dark/investor-axes.png",
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4-settled/390-en-dark/first-theme.png",
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4-settled/390-en-dark/last-theme.png",
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4-settled/390-en-dark/workspace.png"
+      ]
+    },
+    {
+      "cell": "390-en-light",
+      "height": 68479,
+      "queue": {
+        "rows": 500,
+        "height": 52889.34375,
+        "width": 364,
+        "scroll_height": 52889,
+        "overflow_y": "auto",
+        "css_height": "52889.3px",
+        "min_height": "530px",
+        "max_height": "none",
+        "firstrow": {
+          "height": 105.0625,
+          "font_size": "15px",
+          "line_height": "21.75px"
+        },
+        "active_mode": "changes"
+      },
+      "workspace_wait_failure": null,
+      "imagepaths": [
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4-settled/390-en-light/top.png",
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4-settled/390-en-light/investor-axes.png",
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4-settled/390-en-light/first-theme.png",
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4-settled/390-en-light/last-theme.png",
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4-settled/390-en-light/workspace.png"
+      ]
+    },
+    {
+      "cell": "390-zh-dark",
+      "height": 65976,
+      "queue": {
+        "rows": 500,
+        "height": 52785.4375,
+        "width": 364,
+        "scroll_height": 52785,
+        "overflow_y": "auto",
+        "css_height": "52785.4px",
+        "min_height": "530px",
+        "max_height": "none",
+        "firstrow": {
+          "height": 105.0625,
+          "font_size": "15px",
+          "line_height": "21.75px"
+        },
+        "active_mode": "changes"
+      },
+      "workspace_wait_failure": null,
+      "imagepaths": [
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4-settled/390-zh-dark/top.png",
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4-settled/390-zh-dark/investor-axes.png",
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4-settled/390-zh-dark/first-theme.png",
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4-settled/390-zh-dark/last-theme.png",
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4-settled/390-zh-dark/workspace.png"
+      ]
+    }
+  ],
+  "desktop": [
+    {
+      "cell": "1440-en-dark",
+      "height": 8363,
+      "modules": [
+        {
+          "body": {
+            "width": 1440,
+            "height": 8362.546875,
+            "document_top": 0,
+            "grid_template_columns": "none"
+          }
+        },
+        {
+          "#defenseInvestorHost": {
+            "width": 1398,
+            "height": 1720.703125,
+            "document_top": 358.546875,
+            "grid_template_columns": "none"
+          }
+        },
+        {
+          "#defenseInvestor": {
+            "width": 1398,
+            "height": 1720.703125,
+            "document_top": 358.546875,
+            "grid_template_columns": "none"
+          }
+        },
+        {
+          ".gr-investor-axes": {
+            "width": 1360,
+            "height": 880.421875,
+            "document_top": 909.359375,
+            "grid_template_columns": "674px 674px"
+          }
+        },
+        {
+          "#themeContextHost": {
+            "width": 1398,
+            "height": 5299.65625,
+            "document_top": 2095.25,
+            "grid_template_columns": "none"
+          }
+        },
+        {
+          "#programThemeContext": {
+            "width": 1398,
+            "height": 5299.65625,
+            "document_top": 2095.25,
+            "grid_template_columns": "none"
+          }
+        },
+        {
+          ".gr-theme-grid": {
+            "width": 1360,
+            "height": 5052.5625,
+            "document_top": 2230.59375,
+            "grid_template_columns": "674px 674px"
+          }
+        },
+        {
+          "#gov-workspace": {
+            "width": 1398,
+            "height": 724.59375,
+            "document_top": 7509.640625,
+            "grid_template_columns": "none"
+          }
+        },
+        {
+          ".company-filmstrip": {
+            "width": 1398,
+            "height": 82.734375,
+            "document_top": 7410.90625,
+            "grid_template_columns": "351.953px 1005.05px"
+          }
+        },
+        {
+          "#inspector": {
+            "width": 520.578125,
+            "height": 1495.640625,
+            "document_top": 7595.234375,
+            "grid_template_columns": "none"
+          }
+        }
+      ],
+      "imagepaths": [
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4/1440-en-dark/top.png",
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4/1440-en-dark/investor-axes.png",
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4/1440-en-dark/first-theme.png",
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4/1440-en-dark/last-theme.png",
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4/1440-en-dark/workspace.png"
+      ]
+    },
+    {
+      "cell": "1440-en-light",
+      "height": 8330,
+      "modules": [
+        {
+          "body": {
+            "width": 1440,
+            "height": 8329.953125,
+            "document_top": 0,
+            "grid_template_columns": "none"
+          }
+        },
+        {
+          "#defenseInvestorHost": {
+            "width": 1398,
+            "height": 1720.703125,
+            "document_top": 358.546875,
+            "grid_template_columns": "none"
+          }
+        },
+        {
+          "#defenseInvestor": {
+            "width": 1398,
+            "height": 1720.703125,
+            "document_top": 358.546875,
+            "grid_template_columns": "none"
+          }
+        },
+        {
+          ".gr-investor-axes": {
+            "width": 1360,
+            "height": 878.421875,
+            "document_top": 909.359375,
+            "grid_template_columns": "674px 674px"
+          }
+        },
+        {
+          "#themeContextHost": {
+            "width": 1398,
+            "height": 5296.65625,
+            "document_top": 2095.25,
+            "grid_template_columns": "none"
+          }
+        },
+        {
+          "#programThemeContext": {
+            "width": 1398,
+            "height": 5296.65625,
+            "document_top": 2095.25,
+            "grid_template_columns": "none"
+          }
+        },
+        {
+          ".gr-theme-grid": {
+            "width": 1360,
+            "height": 5049.5625,
+            "document_top": 2230.59375,
+            "grid_template_columns": "674px 674px"
+          }
+        },
+        {
+          "#gov-workspace": {
+            "width": 1398,
+            "height": 695,
+            "document_top": 7506.640625,
+            "grid_template_columns": "none"
+          }
+        },
+        {
+          ".company-filmstrip": {
+            "width": 1398,
+            "height": 82.734375,
+            "document_top": 7407.90625,
+            "grid_template_columns": "351.953px 1005.05px"
+          }
+        },
+        {
+          "#inspector": {
+            "width": 520.578125,
+            "height": 1495.640625,
+            "document_top": 7562.640625,
+            "grid_template_columns": "none"
+          }
+        }
+      ],
+      "imagepaths": [
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4/1440-en-light/top.png",
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4/1440-en-light/investor-axes.png",
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4/1440-en-light/first-theme.png",
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4/1440-en-light/last-theme.png",
+        "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/density-v4/1440-en-light/workspace.png"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "cause": "Mobilequeueunboundedall500rows",
+      "evidence": "390ENdark/light queueList500rows52889.34px height;firstrow105.06px;width364px;computedheight52889.3px;max-heightnone;min-height530px;overflow-yauto withoutboundedheight doesnotcontainlist",
+      "source": "templates/government_revenue.html.j2:38 desktopheight585pxoverflowauto;:53 max980pxoverrideheightauto/max-heightnone",
+      "contribution_to_ENdark_document_height_percent": 77.17804688526026
+    },
+    {
+      "cause": "Allsixlongthemeresearchnarrativesunfoldedbeforeworkspace",
+      "evidence": "390ENdarkprogramThemeContext11311.72px;themegrid10914.63px;single328pxcolumn;cards1237/2143/1962/1546/1365/2601px;known/missing/next storyDL951-1350px/card;sourceblocks148-1112px/card",
+      "source": "templates/government-revenue-theme-context.js:42 emitsallsixfullknown/missing/next+sourceHtml; CSSmobilethemegridonecolumn; railsdetailsclosedbutbodyproseopen"
+    },
+    {
+      "cause": "Investorcontextalsooccupiesmultiplemobileviewports",
+      "evidence": "390ENdarkinvestor3376.94px;fouraxes2164.30px,issuercontextlargestaxis1000.42px;workspacebeginning15361.95px(18.2x844pxviewports)",
+      "source": "Investor/theme/sourcepackaging functionalproofdoesnotqualifymobilecomposition"
+    }
+  ],
+  "ruled_out": [
+    "Themegridwidthcollapse:328pxcolumn within366pxpanel",
+    "Onecharacterwordbreak:normalword-break;15pxbody/21.75pxlineheight;no longvisibletextblocks<80pxwide",
+    "Horizontaloverflow absent;doesnotboundedverticaldensity",
+    "InitialENlight/ZHwarmfirstpass~16k/~13kheightwasunloadedworkspace andisnotlowerdensityproof;explicit500rowwaitreproduced68479/65976px"
+  ],
+  "visual_observation": "Actualworkspaceviewportshows~6governedrowsandbottominspectbar;500rowsdominate~63screens. Firstthemeviewportisfilledbymultipleparagraphsofsourceclock/marketmethodology/known+missing prose, evenbeforeotherfivecards. FullpagefunctionalPASS retainedbutvisualacceptanceunaccepted.",
+  "lawful_repair_direction": "Rootmaydesignboundedmobilequeue/paginationorviewportcontainment retainingfull500recorddata andfilter/selection/backbehavior;compressdefaultsix-themecomposition throughgovernedprogressivedisclosure retainingallsource/intelligence/caveats inreachableexplicitdetails. NoCSSorcontentauthoredbycoordinator.",
+  "stability": {
+    "before_after_exact_equal": true,
+    "inputs_n": 220,
+    "source_head_unchanged": true
+  },
+  "server": {
+    "session_id": 82390,
+    "port": 58744,
+    "graceful_stop": true,
+    "listener_active": false
+  },
+  "evidence_hashes": {
+    "density-v4/RESULT.json": "4d63a81b1677cdaa9ff965cc4e6459d6c0eefaafdf89f2d1f37d724a83ee9d0d",
+    "density-v4-settled/RESULT.json": "1e0cf7ee35c5495e5f2b9a06d7a822bfc57524c259cedad7192b300524859f58",
+    "DENSITY_BEFORE_INPUTS_V4.json": "d54f9184af21826f7c722c062ac9a1f6518062065d3a9272737ebba6c61984a3",
+    "DENSITY_AFTER_INPUTS_V4.json": "d54f9184af21826f7c722c062ac9a1f6518062065d3a9272737ebba6c61984a3"
+  }
+}

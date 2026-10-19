@@ -48,6 +48,7 @@
     epoch: 0,
     authEpoch: 0,
     authBlocked: false,
+    notice: null,           /* closed presentation state; locale changes never replay transitions */
     catalog: null,          /* normalized catalog { subject, generation, methods, entries, selection, requestClock } */
     catalogPages: 0,
     selected: null,         /* normalized catalog entry the user explicitly chose */
@@ -332,7 +333,7 @@
   /* A-PLAYBACK: exact original capture binding. A saved-output read is only
    * committed when the returned IDs (and declared packet digest / ETag when
    * the catalog published them) match the selected catalog entry exactly. */
-  function normalizePlayback(entry, payload, etagHeader, intent) {
+  function normalizePlayback(entry, payload, etagHeader, intent, contentEncoding) {
     var body = requireObject(payload, 'saved_envelope');
     if (body.schema !== 'market_memory.retained_saved_output.v1' || body.mode !== 'retained_actual_output' || body.status !== 'AVAILABLE') throw ContractError('saved_schema');
     var generation = requireObject(body.generation, 'saved_generation'), selected = requireObject(body.selection, 'saved_selection');
@@ -356,7 +357,14 @@
         || refs.source.raw_sha256 !== receipt.source_evidence.raw_source_sha256 || refs.source.raw_bytes !== receipt.source_evidence.raw_source_bytes) throw ContractError('saved_original_refs');
     requireSha(refs.packet.sha256, 'saved_packet_sha'); requireSha(refs.feature.sha256, 'saved_feature_sha'); requireSha(refs.source.raw_sha256, 'saved_source_sha');
     [refs.packet.bytes, refs.feature.bytes, refs.source.raw_bytes].forEach(function (n) { requireCount(n, 'saved_original_bytes'); if (!n) throw ContractError('saved_original_bytes'); });
-    if (etagHeader && etagHeader !== '"' + entry.packetSha256 + '"') throw ContractError('saved_etag');
+    // The edge's gzip/zstd representation suffix is not part of the packet
+    // identity. Accept only the exact digest with its matching wire encoding;
+    // all envelope, source and packet checks above still apply unchanged.
+    var encoding = typeof contentEncoding === 'string' ? contentEncoding.trim().toLowerCase() : '';
+    var packetTag = '"' + entry.packetSha256 + '"';
+    var encodedTag = (encoding === 'gzip' || encoding === 'zstd')
+      ? '"' + entry.packetSha256 + '-' + encoding + '"' : null;
+    if (etagHeader && etagHeader !== packetTag && (!encodedTag || etagHeader !== encodedTag)) throw ContractError('saved_etag');
     var clocks = requireObject(body.clocks, 'saved_clocks'), latest = '';
     ['captured_at','raw_source_built_at','raw_source_observed_at','feature_as_of','event_time','as_known_at','knowledge_cutoff'].forEach(function (key) {
       var clock = exactUtc(clocks[key], 'saved_clock'); if (clock > latest) latest = clock;
@@ -535,6 +543,18 @@
       })
       .catch(function () { return headers; });
   }
+  /* Fixed per-request deadline. The whole exchange — auth session lookup,
+   * fetch and body decoding — must complete inside it; a stage that stalls
+   * is aborted and the request settles as an ordinary unavailable failure
+   * with a manual retry. The bound is a module constant, never a
+   * caller-supplied limit. */
+  var REQUEST_DEADLINE_MS = 120000;
+  function deadlineError() {
+    var error = new Error('request_deadline_exceeded');
+    error.name = 'MMRetainedDeadlineError';
+    error.deadline = true;
+    return error;
+  }
   function apiFetch(path, params, kind) {
     var dispatchSlot = { epoch: state.epoch, authEpoch: state.authEpoch };
     var query = '';
@@ -544,13 +564,21 @@
       return encodeURIComponent(key) + '=' + encodeURIComponent(String(params[key]));
     }).join('&');
     if (query) query = '?' + query;
-    return withAuth({ Accept: 'application/json' }).then(function (headers) {
+    var storeKey = kind === 'catalog' ? 'catalogAbort' : (kind === 'playback' ? 'sourceAbort' : 'abort');
+    var controller = null;
+    var timer = null;
+    var expired = false;
+    function clearDeadline() {
+      if (timer !== null) { clearTimeout(timer); timer = null; }
+    }
+    var request = withAuth({ Accept: 'application/json' }).then(function (headers) {
       if (commitGate(dispatchSlot, state)) { var stale = new Error('superseded'); stale.name = 'AbortError'; throw stale; }
+      /* A session that resolved after the deadline must not dispatch. */
+      if (expired) throw deadlineError();
       /* Main-result requests and source-inspection requests get separate
        * abort slots so inspecting a case never cancels a results load. */
-      var storeKey = kind === 'catalog' ? 'catalogAbort' : (kind === 'playback' ? 'sourceAbort' : 'abort');
       if (state[storeKey]) { try { state[storeKey].abort(); } catch (error) { /* already gone */ } }
-      var controller = new AbortController();
+      controller = new AbortController();
       state[storeKey] = controller;
       return fetch(apiBase() + API + path + query, {
         credentials: 'same-origin',
@@ -559,6 +587,7 @@
         signal: controller.signal
       }).then(function (response) {
         var etag = response.headers && typeof response.headers.get === 'function' ? response.headers.get('ETag') : null;
+        var contentEncoding = response.headers && typeof response.headers.get === 'function' ? response.headers.get('Content-Encoding') : null;
         var retryAfter = response.headers && typeof response.headers.get === 'function' ? response.headers.get('Retry-After') : null;
         return response.json().catch(function () { return {}; }).then(function (payload) {
           if (!response.ok) {
@@ -571,9 +600,30 @@
             error.etag = etag;
             throw error;
           }
-          return { payload: payload, etag: etag };
+          return { payload: payload, etag: etag, contentEncoding: contentEncoding };
         });
       });
+    });
+    /* One fixed deadline covers the entire exchange above. On expiry the
+     * deadline settles first, then any started fetch is aborted, so the
+     * request surfaces as an ordinary unavailable failure and a late
+     * response or body can never commit. The timer clears on either
+     * settlement and the losing branch stays handled — no unhandled
+     * rejection and no revival. */
+    var deadline = new Promise(function (resolve, reject) {
+      timer = setTimeout(function () {
+        timer = null;
+        expired = true;
+        reject(deadlineError());
+        if (controller) { try { controller.abort(); } catch (error) { /* already gone */ } }
+      }, REQUEST_DEADLINE_MS);
+    });
+    return Promise.race([request, deadline]).then(function (result) {
+      clearDeadline();
+      return result;
+    }, function (error) {
+      clearDeadline();
+      throw error;
     });
   }
 
@@ -586,6 +636,7 @@
   }
   function beginIntent() {
     state.epoch += 1;
+    state.notice = null;
     state.committed = null; state.sourceCase = null;
     if (state.catalogAbort) { try { state.catalogAbort.abort(); } catch (error) { /* settled */ } }
     state.catalogAbort = null;
@@ -602,6 +653,7 @@
     if (!error) return 'unavailable';
     if (error.contractCode) return 'unavailable';
     if (error.name === 'AbortError') return 'aborted';
+    if (error.deadline) return 'unavailable';
     var status = error.status;
     if (status === 401) return 'auth_required';
     if (status === 402) return 'subscription';
@@ -646,7 +698,7 @@
     state.committed = null;
     state.sourceCase = null;
     state.selected = null;
-    ui.status.setAttribute('data-mmr-state', 'loading');
+    renderLoading();
     ui.resultBody.innerHTML = skeletonMarkup();
     ui.sourceBody.innerHTML = '';
     if (ui.sourceHeading) ui.sourceHeading.classList.remove('is-open');
@@ -802,7 +854,7 @@
    * analysis, no legacy recomputed substitution, ever. */
   function runSaved(intent) {
     var intentSlot = beginIntent();
-    ui.status.setAttribute('data-mmr-state', 'loading');
+    renderLoading();
     ui.resultBody.innerHTML = skeletonMarkup();
     ui.sourceBody.innerHTML = '';
     ui.sourceHeading.classList.remove('is-open');
@@ -814,7 +866,7 @@
       if (commitGate(intentSlot, state)) return;
       var playback;
       try {
-        playback = normalizePlayback(entry, result.payload, result.etag, intent);
+        playback = normalizePlayback(entry, result.payload, result.etag, intent, result.contentEncoding);
       } catch (contract) {
         return renderTypedUnavailable('playback_binding', contract.contractCode);
       }
@@ -831,7 +883,7 @@
    * the server refuses unsupported cutoffs and the UI never shifts one. */
   function runCompare(intent) {
     var intentSlot = beginIntent();
-    ui.status.setAttribute('data-mmr-state', 'loading');
+    renderLoading();
     ui.resultBody.innerHTML = skeletonMarkup();
     ui.sourceBody.innerHTML = '';
     ui.sourceHeading.classList.remove('is-open');
@@ -903,12 +955,36 @@
       esc(copy(labelEn, labelZh)) + '</button>';
   }
 
+  function renderLoading() {
+    state.notice = { kind: 'loading' };
+    renderNotice();
+  }
+
+  function renderNotice() {
+    var notice = state.notice;
+    if (!notice) return;
+    if (notice.kind === 'typed') renderTypedUnavailableNotice(notice.code);
+    else if (notice.kind === 'request') renderRequestFailureNotice(notice);
+    else if (notice.kind === 'signed_out') renderSignedOutNotice(notice);
+    else if (notice.kind === 'prompt') renderCatalogPromptNotice();
+    else if (notice.kind === 'loading') {
+      ui.status.setAttribute('data-mmr-state', 'loading');
+      ui.status.textContent = copy('Loading saved evidence', '正在加载已保存依据');
+    }
+  }
+
   function renderTypedUnavailable(kind, internalCode) {
     beginIntent(); state.referenceInvalid = true;
     state.selected = null; state.catalog = null;
     ui.sourceBody.innerHTML = ''; closeSourcePanel();
     ui.originalClock.hidden = true; ui.originalClock.innerHTML = '';
     renderCatalogDependentControls();
+    state.notice = { kind: 'typed', code: kind };
+    renderNotice();
+    try { if (window.console && console.info) console.info('[mm-retained]', kind, internalCode || ''); } catch (e) { /* noop */ }
+  }
+
+  function renderTypedUnavailableNotice(kind) {
     ui.status.setAttribute('data-mmr-state', 'error');
     ui.status.textContent = copy('Saved evidence unavailable', '已保存依据不可用');
     if (kind === 'oauth_return_unavailable') {
@@ -938,8 +1014,6 @@
         actionLink('Retry this reference', '重试此引用', 'retry') +
         actionLink('Browse available captures', '浏览可用记录', 'focus-capture-select'));
     }
-    if (state.selected) { /* the explicit selection intent is preserved, never replaced */ }
-    try { if (window.console && console.info) console.info('[mm-retained]', kind, internalCode || ''); } catch (e) { /* noop */ }
   }
 
   function renderRequestFailure(error, options) {
@@ -949,12 +1023,25 @@
     if (kind === 'auth_required' || kind === 'rights_blocked' || kind === 'subscription') {
       state.catalog = null; state.selected = null; ui.originalClock.hidden = true; ui.originalClock.innerHTML = ''; renderCatalogDependentControls();
     }
+    if (kind === 'auth_required') state.authBlocked = true;
+    if (kind === 'missing_exact_capture') {
+      return renderTypedUnavailable('missing_exact_capture', (error && error.reason) || 'http_404');
+    }
+    var seconds = Number(error && error.retryAfter);
+    state.notice = { kind: 'request', code: kind,
+      signinHref: kind === 'auth_required' ? retainedSigninHref() : null,
+      wait: Number.isFinite(seconds) && seconds > 0 ? Math.min(Math.ceil(seconds), 60) : 0,
+      retry: !!(options && typeof options.retry === 'function') };
+    renderNotice();
+  }
+
+  function renderRequestFailureNotice(notice) {
+    var kind = notice.code;
     var actions;
     if (kind === 'auth_required') {
-      state.authBlocked = true;
       ui.status.setAttribute('data-mmr-state', 'error');
       ui.status.textContent = copy('Sign in required', '需要登录');
-      var signInTarget = retainedSigninHref();
+      var signInTarget = noticeSigninHref(notice);
       ui.resultBody.innerHTML = banner('auth_required',
         'Sign in to open saved evidence', '登录以查看已保存依据',
         'Use your existing account to continue.' + oauthStorageWarning(false),
@@ -964,8 +1051,7 @@
     }
     ui.status.setAttribute('data-mmr-state', 'error');
     if (kind === 'busy') {
-      var seconds = Number(error.retryAfter);
-      var wait = Number.isFinite(seconds) && seconds > 0 ? Math.min(Math.ceil(seconds), 60) : 0;
+      var wait = notice.wait;
       ui.status.textContent = copy('Evidence is busy', '依据查询繁忙');
       ui.resultBody.innerHTML = banner('busy',
         'Evidence is busy', '依据查询繁忙',
@@ -999,12 +1085,8 @@
         actionLink('Browse available captures', '浏览可用记录', 'focus-capture-select'));
       return;
     }
-    if (kind === 'missing_exact_capture') {
-      ui.status.textContent = copy('Capture unavailable', '记录不可用');
-      return renderTypedUnavailable('missing_exact_capture', (error && error.reason) || 'http_404');
-    }
     ui.status.textContent = copy('Saved evidence unavailable', '已保存依据不可用');
-    actions = options && typeof options.retry === 'function'
+    actions = notice.retry
       ? actionLink('Retry this reference', '重试此引用', 'retry')
       : '';
     ui.resultBody.innerHTML = banner('unavailable',
@@ -1015,6 +1097,11 @@
   }
 
   function renderCatalogPrompt() {
+    state.notice = { kind: 'prompt' };
+    renderNotice();
+  }
+
+  function renderCatalogPromptNotice() {
     ui.status.setAttribute('data-mmr-state', 'idle');
     ui.status.textContent = copy('Catalog loaded', '目录已加载');
     ui.resultBody.innerHTML = banner('prompt',
@@ -1026,12 +1113,16 @@
   function renderCatalogDependentControls() {
     var catalog = state.catalog;
     if (!catalog) {
-      ui.captureSelect.innerHTML = '<option value="">' + esc(copy('Sign in to list saved captures', '登录后列出已保存记录')) + '</option>';
+      ui.captureSelect.innerHTML = '<option value="">' + esc(copy('Saved captures not loaded', '已保存记录尚未加载')) + '</option>';
       ui.captureSelect.setAttribute('disabled', 'disabled');
       ui.cutoffSelect.innerHTML = '<option value="">' + esc(copy('—', '—')) + '</option>';
       ui.cutoffSelect.setAttribute('disabled', 'disabled');
       ui.loadMoreButton.hidden = true;
       ui.scopeLine.textContent = copy('Saved house macro readings associated with SPY.', '与 SPY 关联的已保存内部宏观解读。');
+      /* No catalog is presented: a prior current-mode explanation must not
+       * survive sign-out, refusal or an invalid selection in any locale. */
+      ui.cutoffNote.hidden = true;
+      ui.cutoffNote.textContent = '';
       return;
     }
     var options = catalog.entries.map(function (entry) {
@@ -1107,6 +1198,7 @@
   }
 
   function renderCommitted() {
+    state.notice = null;
     ui.status.setAttribute('data-mmr-state', 'ok');
     ui.status.textContent = state.committed.kind === 'saved'
       ? copy('Saved output loaded', '原始输出已加载')
@@ -1508,16 +1600,32 @@
     state.committed = null;
     state.sourceCase = null;
     renderCatalogDependentControls();
+    state.notice = { kind: 'signed_out', signinHref: retainedSigninHref() };
+    renderNotice();
+    ui.sourceBody.innerHTML = '';
+    ui.originalClock.hidden = true; ui.originalClock.innerHTML = '';
+    closeSourcePanel();
+  }
+
+  function renderSignedOutNotice(notice) {
     ui.status.setAttribute('data-mmr-state', 'error');
     ui.status.textContent = copy('Sign in required', '需要登录');
     ui.resultBody.innerHTML = banner('auth_required',
       'Sign in to open saved evidence', '登录以查看已保存依据',
       'Authenticated saved evidence, counts and sources are cleared when you sign out.',
       '退出登录后，已保存依据、计数与来源将被清除。',
-      '<a class="gbtn gbtn-quiet mmr-action" href="' + esc(retainedSigninHref()) + '" data-mmr-action="signin">' + esc(copy('Sign in', '登录')) + ' →</a>');
-    ui.sourceBody.innerHTML = '';
-    ui.originalClock.hidden = true;
-    closeSourcePanel();
+      '<a class="gbtn gbtn-quiet mmr-action" href="' + esc(noticeSigninHref(notice)) + '" data-mmr-action="signin">' + esc(copy('Sign in', '登录')) + ' →</a>');
+  }
+
+  function noticeSigninHref(notice) {
+    /* The owner target builder validates the current reference without writing
+     * the OAuth capsule. Persisting the real sign-in transition remains separate. */
+    if (!window.MarketMemoryIntent || typeof window.MarketMemoryIntent.target !== 'function') return notice.signinHref;
+    var target = window.MarketMemoryIntent.target({ language: isZh() ? 'zh' : 'en' });
+    if (!target.ok) return '#mmr-status';
+    var params = new URLSearchParams();
+    params.set('signin', '1'); params.set('ret', target.target);
+    return '/?' + params.toString();
   }
 
   function retainedSigninHref() {
@@ -1637,10 +1745,12 @@
     ui.root.addEventListener('click', onActionClick);
     window.addEventListener('popstate', onPopState);
     document.addEventListener('langchange', function () {
-      /* Locale switches re-render the committed intent only; they never
-       * refetch, never change selection, and never resurrect redacted data. */
+      /* Translate the current presentation without replaying its transition:
+       * no refetch, epoch change, abort, selection change or private-data revival. */
       if (state.committed) renderCommitted();
+      else renderNotice();
       renderCatalogDependentControls();
+      renderModeButtons();
       if (state.sourceCase) renderSourcePanel();
     });
     if (window.MDXAuth && typeof window.MDXAuth.onChange === 'function') {
