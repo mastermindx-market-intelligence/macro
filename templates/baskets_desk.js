@@ -614,13 +614,20 @@ function renderConcentration(){
   const sec=document.getElementById('concentration-section'); if(!THEME){ if(sec) sec.style.display='none'; return; }
   const mc=THEME.market_concentration||{};
   const vmap={narrow:['var(--down)','narrow','狭窄'],broad:['var(--up)','broad','广泛'],mixed:['var(--warn)','mixed','中性']};
-  const vv=vmap[mc.verdict]||vmap.mixed;
+  // A missing or older tape cannot inherit the theme snapshot clock.
+  // In particular, a S&P 500 sample is not an observed S&P 1500 population.
+  const knownSources=['sp500_current_constituents','china_breadth','hk_breadth','canada_breadth','intl_breadth'];
+  const sourceOK=!!(mc.source_as_of&&mc.source_as_of===THEME.as_of&&knownSources.includes(mc.source_universe));
+  const observed=sourceOK?mc:{};
+  const verdictOK=sourceOK&&Object.prototype.hasOwnProperty.call(vmap,mc.verdict);
+  const vv=verdictOK?vmap[mc.verdict]:['var(--muted)','not measured','未测'];
   const adc=(en,zh,v)=>`<div class="adc"><div class="k">${L(en,zh)}</div><div class="v ${v==null?'muted':(v<1?'neg':'pos')}">${v==null?'—':(+v).toFixed(2)}</div></div>`;
   const narrow=`<div class="panel pad" style="border-left:3px solid ${vv[0]}">
     <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:center">
-      <div><span class="muted sm">${L((THEME.bench_label||'S&P')+' breadth',(THEME.bench_label_zh||'标普')+'广度')}</span><div style="font-size:18px;font-weight:740;color:${vv[0]}">${L(vv[1],vv[2])}</div></div>
-      <div class="adgrid">${adc('A/D today','今日',mc.ad_ratio)}${adc('3-day','3日',mc.ad_3d)}${adc('weekly','周',mc.ad_w)}${adc('monthly','月',mc.ad_m)}</div>
-      <div class="muted sm">${L('above 50d','站上50日')} <b>${mc.pct_above_50!=null?mc.pct_above_50+'%':'—'}</b> · ${L('above 200d','站上200日')} <b>${mc.pct_above_200!=null?mc.pct_above_200+'%':'—'}</b> · ${L('new hi/lo','新高/低')} <b class="pos">${mc.nh}</b>/<b class="neg">${mc.nl}</b></div>
+      <div><span class="muted sm">${L((sourceOK&&mc.source_universe==='sp500_current_constituents'?'S&P 500 sampled':(THEME.bench_label||'Benchmark'))+' breadth',(sourceOK&&mc.source_universe==='sp500_current_constituents'?'标普500样本':(THEME.bench_label_zh||'基准'))+'广度')}</span><div style="font-size:18px;font-weight:740;color:${vv[0]}">${L(vv[1],vv[2])}</div></div>
+      <div class="adgrid">${adc('A/D today','今日',observed.ad_ratio)}${adc('3-day','3日',observed.ad_3d)}${adc('weekly','周',observed.ad_w)}${adc('monthly','月',observed.ad_m)}</div>
+      <div class="muted sm">${L('above 50d','站上50日')} <b>${observed.pct_above_50!=null?observed.pct_above_50+'%':'—'}</b> · ${L('above 200d','站上200日')} <b>${observed.pct_above_200!=null?observed.pct_above_200+'%':'—'}</b> · ${L('new hi/lo','新高/低')} <b class="pos">${observed.nh==null?'—':observed.nh}</b>/<b class="neg">${observed.nl==null?'—':observed.nl}</b></div>
+    ${sourceOK?'':`<div class="muted sm" style="margin-top:8px">${L("Source session or coverage unverified","数据来源交易日或覆盖范围未核验")}</div>`}
     </div></div>`;
   // pulse lookup for heat dots on breadth leaders/laggards
   const cPulseById = {};
