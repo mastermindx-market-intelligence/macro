@@ -30140,6 +30140,18 @@ jobs:
       - research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md
       - tests/test_dataos_prospective_reference.py
       - tests/test_dataos_direct_registrant.py
+      # Initial-only receipt promotion reuses the R12 reader and R23 decoder.
+      - engine/__init__.py
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/market_memory_identity_candidate.py
+      - tests/__init__.py
+      - tests/conftest.py
+      - tests/test_dataos_identity.py
+      - tests/test_market_memory_identity_candidate.py
+      - tests/test_dataos_initial_reference_publication.py
       # Tiingo raw-vintage/read-only research proofs; no live provider calls.
       - .github/workflows/ci.yml
       - collectors/__init__.py
@@ -30182,6 +30194,7 @@ jobs:
         run: >-
           python -m pytest tests/test_dataos_prospective_reference.py
           tests/test_dataos_direct_registrant.py
+          tests/test_dataos_initial_reference_publication.py
           tests/test_tiingo_archive.py tests/test_tiingo_views.py
           tests/test_tiingo_reader.py tests/test_tiingo_history.py
           tests/test_tiingo_research_query.py tests/test_tiingo_boats_tape.py
