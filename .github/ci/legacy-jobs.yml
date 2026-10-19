@@ -37,6 +37,7 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "engine/research_intelligence/__init__.py"
       # F11 composition: exact newly reached import closure.
       - "engine/qual_extraction.py"
       - "engine/research_intelligence/extractor.py"
@@ -1895,6 +1896,7 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "engine/research_intelligence/__init__.py"
       # F11 composition: exact newly reached import closure.
       - "engine/qual_extraction.py"
       - "engine/research_intelligence/extractor.py"
@@ -2813,6 +2815,7 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "engine/research_intelligence/__init__.py"
       # F11 composition: exact newly reached import closure.
       - "engine/qual_extraction.py"
       - "engine/research_intelligence/extractor.py"
@@ -6575,6 +6578,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/comparison_policy.py"
       - "engine/research_intelligence/comparison_qualification.py"
       - "engine/institutional_census/__init__.py"
@@ -8857,6 +8861,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/research_intelligence/__init__.py"
       # F11 composition: exact newly reached import closure.
       - "engine/research_vault/fulltext_index.py"
       - "engine/research_vault/producer_generation.py"
@@ -18939,6 +18944,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/comparison_policy.py"
       - "engine/research_intelligence/comparison_qualification.py"
       - "engine/institutional_census/__init__.py"
@@ -19714,6 +19720,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/comparison_policy.py"
       - "engine/research_intelligence/comparison_qualification.py"
       - "engine/institutional_census/__init__.py"
@@ -21719,6 +21726,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/research_intelligence/__init__.py"
       # F11 composition: exact newly reached import closure.
       - "engine/research_vault/fulltext_index.py"
       - "engine/research_vault/producer_generation.py"
@@ -23401,6 +23409,7 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/comparison_policy.py"
       - "engine/research_intelligence/comparison_qualification.py"
       - "engine/institutional_census/__init__.py"
@@ -24197,6 +24206,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/comparison_policy.py"
       - "engine/research_intelligence/comparison_qualification.py"
       - "engine/institutional_census/__init__.py"
@@ -29600,6 +29610,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/comparison_policy.py"
       - "engine/research_intelligence/comparison_qualification.py"
       - "engine/institutional_census/__init__.py"
@@ -30101,6 +30112,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/research_intelligence/__init__.py"
       # F11 composition: exact newly reached import closure.
       - "engine/research_vault/fulltext_index.py"
       - "engine/research_vault/producer_generation.py"
@@ -33099,6 +33111,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/research_intelligence/__init__.py"
       # F11 composition: exact newly reached import closure.
       - "engine/research_vault/fulltext_index.py"
       - "engine/research_vault/producer_generation.py"
