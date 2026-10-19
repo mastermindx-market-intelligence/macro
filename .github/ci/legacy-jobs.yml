@@ -365,6 +365,7 @@ jobs:
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
       - "engine/fundamental_forensics/health.py"
+      - "engine/fundamental_forensics/issuer_sic.py"
       - "engine/fundamental_forensics/ixbrl_extraction.py"
       - "engine/fundamental_forensics/ixbrl_raw_ledger.py"
       - "engine/fundamental_forensics/lineage_evidence.py"
@@ -2108,6 +2109,7 @@ jobs:
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
       - "engine/fundamental_forensics/health.py"
+      - "engine/fundamental_forensics/issuer_sic.py"
       - "engine/fundamental_forensics/ixbrl_extraction.py"
       - "engine/fundamental_forensics/ixbrl_raw_ledger.py"
       - "engine/fundamental_forensics/lineage_evidence.py"
@@ -2934,6 +2936,7 @@ jobs:
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
       - "engine/fundamental_forensics/health.py"
+      - "engine/fundamental_forensics/issuer_sic.py"
       - "engine/fundamental_forensics/ixbrl_extraction.py"
       - "engine/fundamental_forensics/ixbrl_raw_ledger.py"
       - "engine/fundamental_forensics/lineage_evidence.py"
@@ -8675,6 +8678,7 @@ jobs:
       - "contracts/evidence_foundation/recipe.v1.schema.json"
       - "contracts/evidence_foundation/reference.v1.schema.json"
       - "contracts/evidence_foundation/vocabulary.v1.json"
+      - "contracts/excel/fif_financial_query.pq"
       - "contracts/financial_intelligence_packet.schema.json"
       - "contracts/fundamental_forensics_attestation_admission.schema.json"
       - "contracts/fundamental_forensics_broad_sec_issuer_manifest.schema.json"
@@ -9241,6 +9245,7 @@ jobs:
       - "scripts/check_stretch_oracle_contract.py"
       - "scripts/fif_a1_journey_ledger.py"
       - "scripts/fif_a1_lineage_causes.py"
+      - "scripts/fif_excel_refresh_harness.py"
       - "scripts/fundamental_forensics_disclosure_bundle.py"
       - "scripts/publish_company_disclosure.py"
       - "scripts/publish_fif_production_datasets.py"
@@ -9268,6 +9273,7 @@ jobs:
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_fif_a1_journey_ledger.py"
+      - "tests/test_fif_excel_refresh_harness.py"
       - "tests/test_fif_gsrc_capture.py"
       - "tests/test_fif_p2_evidence_capture.py"
       - "tests/test_fif_publication_workflow_shape.py"
@@ -9348,6 +9354,7 @@ jobs:
         run: >
           python -m pytest
           tests/test_fif_a1_journey_ledger.py
+          tests/test_fif_excel_refresh_harness.py
           tests/test_fif_gsrc_capture.py
           tests/test_fif_publication_workflow_shape.py
           tests/test_fif_se_receipts.py
@@ -9385,6 +9392,7 @@ jobs:
           tests/test_fundamental_forensics_financial_query_service.py
           tests/test_fundamental_forensics_financial_revision_api.py
           tests/test_fundamental_forensics_financial_revision_service.py
+          tests/test_fundamental_forensics_five_issuer_sic_contract.py
           tests/test_fundamental_forensics_health.py
           tests/test_fundamental_forensics_held_out_isolation.py
           tests/test_fundamental_forensics_ingest.py
@@ -11809,6 +11817,71 @@ jobs:
           tests/test_holdout_vault.py
           tests/test_promotion_gate.py
           -q
+
+  research-codegen-runtime-qualification:
+    if: ${{ false }}
+    gate: code
+    # These hermetic suites exercise the fixed runtime helpers and read the
+    # canonical transport source. Keep the fixed-runtime suites on their own owner so
+    # unrelated UI changes do not inherit their weight through the broader
+    # research-factory-authority job. Physical qualification is a separate act.
+    scope: exclusive
+    paths:
+      - "tests/test_research_codegen_containment_workloads.py"
+      - "scripts/research_codegen_qualification/runtime/**"
+      - "scripts/research_codegen_qualification/w*.py"
+      - "engine/research_codegen/__init__.py"
+      - "engine/research_codegen/transport.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install runtime source-test dependency
+        run: pip install pytest
+      - name: fixed runtime qualification source tests (no Docker or host effects)
+        run: >-
+          python -m pytest -q
+          scripts/research_codegen_qualification/runtime/tests/test_archive_member_order.py
+          scripts/research_codegen_qualification/runtime/tests/test_build_capsule.py
+          scripts/research_codegen_qualification/runtime/tests/test_canary_bootstrap.py
+          scripts/research_codegen_qualification/runtime/tests/test_canary_carrier.py
+          scripts/research_codegen_qualification/runtime/tests/test_canary_integration.py
+          scripts/research_codegen_qualification/runtime/tests/test_cgroup_observer.py
+          scripts/research_codegen_qualification/runtime/tests/test_cgroup_review_guards.py
+          scripts/research_codegen_qualification/runtime/tests/test_fixed_workload_plans.py
+          scripts/research_codegen_qualification/runtime/tests/test_fixed_workload_engine.py
+          scripts/research_codegen_qualification/runtime/tests/test_cli29_source_guards.py
+          scripts/research_codegen_qualification/runtime/tests/test_cli_join.py
+          scripts/research_codegen_qualification/runtime/tests/test_cli_version.py
+          scripts/research_codegen_qualification/runtime/tests/test_derived_guards.py
+          scripts/research_codegen_qualification/runtime/tests/test_fixed_canary.py
+          scripts/research_codegen_qualification/runtime/tests/test_fixed_image_phase.py
+          scripts/research_codegen_qualification/runtime/tests/test_host_identity.py
+          scripts/research_codegen_qualification/runtime/tests/test_image_preparation_gate.py
+          scripts/research_codegen_qualification/runtime/tests/test_mountinfo_contract.py
+          scripts/research_codegen_qualification/runtime/tests/test_mountinfo_root_guards.py
+          scripts/research_codegen_qualification/runtime/tests/test_parent_return_discriminators.py
+          scripts/research_codegen_qualification/runtime/tests/test_permission_cleanup_probe.py
+          scripts/research_codegen_qualification/runtime/tests/test_phase_budget.py
+          scripts/research_codegen_qualification/runtime/tests/test_pinned_archive_phase.py
+          scripts/research_codegen_qualification/runtime/tests/test_proc_observer.py
+          scripts/research_codegen_qualification/runtime/tests/test_qualification_manifest.py
+          scripts/research_codegen_qualification/runtime/tests/test_qualification_smoke.py
+          scripts/research_codegen_qualification/runtime/tests/test_receipt_freeze_guards.py
+          scripts/research_codegen_qualification/runtime/tests/test_root_audit_findings.py
+          scripts/research_codegen_qualification/runtime/tests/test_root_budget_discriminators.py
+          scripts/research_codegen_qualification/runtime/tests/test_root_guards.py
+          scripts/research_codegen_qualification/runtime/tests/test_root_receipt_freeze.py
+          scripts/research_codegen_qualification/runtime/tests/test_runsc_install.py
+          scripts/research_codegen_qualification/runtime/tests/test_runtime_projection.py
+          scripts/research_codegen_qualification/runtime/tests/test_service_reload_format.py
+          scripts/research_codegen_qualification/runtime/tests/test_verify_canary_return.py
+      # The smoke suite loads an isolated transport module under its CLI name.
+      # Keep the payload unit suite in its own process, as on the combined carrier.
+      - name: fixed workload source tests (no host effects)
+        run: python -m pytest -q tests/test_research_codegen_containment_workloads.py
 
   cycle-pattern-authority:
     if: ${{ false }}
@@ -15538,6 +15611,7 @@ jobs:
       - "collectors/yahoo.py"
       - "lib/stooq.py"
       - research/prophet_v4/d2/D2B3_FROZEN_CONTRACT_2026-08-21.md
+      - research/theme_graph/GMI_PROGRAM_RECOVERY_2026-10-16.md
       - scripts/__init__.py
       - scripts/build_company_theme_exposure.py
       - scripts/build_dt_contra_state.py
@@ -15545,6 +15619,7 @@ jobs:
       - scripts/build_theme_graph.py
       - scripts/ci/daily_engine_regional_desk_builders.sh
       - scripts/correct_gmi_identity_lineage.py
+      - scripts/gmi_coverage_proof.py
       - scripts/publish_company_disclosure.py
       - scripts/publish_company_theme_exposure_r2.py
       - scripts/seed_china_ths_baskets.py
@@ -15554,7 +15629,9 @@ jobs:
       - tests/test_company_theme_exposure_successor.py
       - tests/test_dt_contra_state.py
       - tests/test_gmi_activity_membership_admission.py
+      - tests/test_gmi_coverage_proof.py
       - tests/test_gmi_history_integrity.py
+      - tests/test_gmi_operating_proof.py
       - tests/test_publish_company_theme_exposure_r2.py
       - tests/test_theme_graph_activity_membership_history.py
       - tests/test_theme_graph_selection_cohort.py
@@ -15873,6 +15950,7 @@ jobs:
       - engine/fundamental_forensics/filing_attestation.py
       - engine/fundamental_forensics/filing_package.py
       - engine/fundamental_forensics/financial_intelligence_packet.py
+      - engine/fundamental_forensics/issuer_sic.py
       - engine/fundamental_forensics/ixbrl_extraction.py
       - engine/fundamental_forensics/lineage_evidence.py
       - engine/fundamental_forensics/metric_registry.py
@@ -16464,7 +16542,7 @@ jobs:
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_operating_proof.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
@@ -16486,6 +16564,8 @@ jobs:
           TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort.py tests/test_theme_graph_selection_cohort_reads.py tests/test_theme_graph_selection_cohort_reads_pit.py tests/test_theme_graph_selection_cohort_projection.py -q
       - name: GMI finalized cohort publication and unchanged owner serialization
         run: TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort_publication.py tests/test_theme_graph_selection_cohort_reads_wiring.py tests/test_china_standouts_serialization.py tests/test_build_china_library_more_actionable_guard.py tests/test_us_standouts_cascade_gate.py -q
+      - name: GMI step-7 coverage proof (measurement only; refuses data/ and site/ output)
+        run: TZ=UTC python -m pytest tests/test_gmi_coverage_proof.py -q
 
   sa-w4-improvement-lanes:
     if: ${{ false }}
@@ -20981,6 +21061,7 @@ jobs:
       - engine/fundamental_forensics/filing_package.py
       - engine/fundamental_forensics/financial_intelligence_packet.py
       - engine/fundamental_forensics/health.py
+      - engine/fundamental_forensics/issuer_sic.py
       - engine/fundamental_forensics/ixbrl_extraction.py
       - engine/fundamental_forensics/ixbrl_raw_ledger.py
       - engine/fundamental_forensics/lineage_evidence.py
@@ -24379,6 +24460,7 @@ jobs:
       - "engine/fundamental_forensics/filing_attestation.py"
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
+      - "engine/fundamental_forensics/issuer_sic.py"
       - "engine/fundamental_forensics/ixbrl_extraction.py"
       - "engine/fundamental_forensics/lineage_evidence.py"
       - "engine/fundamental_forensics/metric_registry.py"
@@ -29287,6 +29369,7 @@ jobs:
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
       - "engine/fundamental_forensics/health.py"
+      - "engine/fundamental_forensics/issuer_sic.py"
       - "engine/fundamental_forensics/ixbrl_extraction.py"
       - "engine/fundamental_forensics/ixbrl_raw_ledger.py"
       - "engine/fundamental_forensics/lineage_evidence.py"
@@ -31101,7 +31184,27 @@ jobs:
       - scripts/tiingo_ingest.py
       - scripts/build_ext_quotes.py
       - tests/test_tiingo_boats_display.py
+      - tests/test_boats_session_runner.py
+      - tests/test_boats_delivery_regressions.py
+      - scripts/run_boats_session.py
+      - scripts/refresh_boats_history.py
+      - tests/test_boats_history_refresh.py
+      - scripts/boats_history_window.py
+      - tests/test_boats_history_window.py
+      - scripts/boats_history_delivery.py
+      - scripts/publish_boats_history.py
+      - scripts/run_boats_history_cycle.py
+      - tests/test_boats_history_delivery.py
+      - tests/test_boats_history_publish.py
+      - tests/test_boats_history_cycle.py
+      - ops/launchd/com.macro.boats-history.plist
+      - ops/launchd/run_ext_quotes_loop.sh
+      - ops/launchd/com.macro.extquotes.plist
       - tests/test_tiingo_boats_coverage_cli.py
+      - scripts/boats_history_bridge.py
+      - scripts/refresh_boats_live_history.py
+      - ops/launchd/com.macro.boats-live-history.plist
+      - tests/test_boats_live_history_refresh.py
       - tests/test_build_ext_quotes.py
       - scripts/tiingo_materialize.py
       - scripts/tiingo_vendor_cohort.py
@@ -31144,7 +31247,15 @@ jobs:
           tests/test_tiingo_research_query.py tests/test_tiingo_boats_tape.py
           tests/test_tiingo_boats_stream_chain.py tests/test_tiingo_vendor_cohort.py
           tests/test_tiingo_boats_display.py tests/test_build_ext_quotes.py
+          tests/test_boats_session_runner.py
+          tests/test_boats_delivery_regressions.py
+          tests/test_boats_history_refresh.py
+          tests/test_boats_history_window.py
+          tests/test_boats_history_delivery.py
+          tests/test_boats_history_publish.py
+          tests/test_boats_history_cycle.py
           tests/test_tiingo_boats_coverage_cli.py
+          tests/test_boats_live_history_refresh.py
           tests/test_tiingo_ingestion_integrity.py
           tests/test_tiingo_reference_audit.py tests/test_tiingo_planning.py
           tests/test_tiingo_corpus_audit.py tests/test_tiingo_additional_history.py
@@ -31624,6 +31735,10 @@ jobs:
       - config/delisted_symbols.yml
       - data/reference/**
       - lib/dataos/identity.py
+      - lib/dataos/sec_filing_identity.py
+      - lib/dataos/sec_cusip_binding.py
+      - tests/test_sec_filing_identity.py
+      - tests/test_dataos_sec_cusip.py
       # M01 (DATA-OS-COMPLETION): the frozen market support matrix. Its suite reads the
       # committed US/HK/CN stores and the HK Connect roster (pyarrow) and pins the record
       # research/data_os_completion/2026-10-13/M01_SUPPORT_MATRIX.md to the code, so it
@@ -31688,6 +31803,10 @@ jobs:
         # pandas+pyarrow: the suite reads the committed security_master/vendor_aliases
         # parquet through lib.dataos.identity.VendorAliasTable. pyyaml: the registry itself.
         run: pip install pytest pyyaml pandas pyarrow
+      - name: retained SEC filing CUSIP identity and cutoff contracts (hermetic)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_sec_filing_identity.py tests/test_dataos_sec_cusip.py -q -rs
       - name: basket composition read binds membership, identity and price to one request (U04)
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
@@ -32081,6 +32200,7 @@ jobs:
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
       - "engine/fundamental_forensics/health.py"
+      - "engine/fundamental_forensics/issuer_sic.py"
       - "engine/fundamental_forensics/ixbrl_extraction.py"
       - "engine/fundamental_forensics/ixbrl_raw_ledger.py"
       - "engine/fundamental_forensics/lineage_evidence.py"

@@ -396,7 +396,7 @@ def test_unknown_schema_does_not_claim_transitive_reference_closure(bundle):
     reg["tasks_ref"] = reference(body, "unsupported.json.v1", "tasks_ref")
     objects[reg["tasks_ref"]["sha256"]] = body
     result = resolve(bundle)
-    assert result["reference_scope"] == "registration_refs_and_known_prelabel_digest_link"
+    assert result["reference_scope"] == "registration_refs_and_known_domain_digest_links"
     assert "unsupported.json.v1" in result["unparsed_reference_schemas"]
     assert child not in result["missing_references"]
     objects[child["sha256"]] = child_body
@@ -414,3 +414,172 @@ def test_explicit_prelabel_input_shares_object_and_aggregate_bounds(bundle, monk
         patch.setattr(e0, "MAX_DOMAIN_TOTAL_BYTES", sum(map(len, objects.values())) + len(prelabel) - 1)
         with pytest.raises(e0.E0ControlError, match="aggregate_domain_byte"):
             resolve(bundle)
+
+
+@pytest.fixture
+def task_bundle(bundle):
+    """Synthetic task declaration only; real metadata identities are unchanged.
+
+    This question is invented for testing. It is not an exported saved query,
+    actual study task, answerability label or permission to read evidence.
+    """
+    membership = json.loads(bundle[1][e0._FROZEN_DOMAIN_DIGESTS["membership"]])
+    row = membership["query_candidates"][0]
+    identity = {key: row[key] for key in ("query_id", "context_id", "capture_id", "packet_sha256")}
+    question = "Synthetic test question; no claim of answerability."
+    value = {"schema": e0._TASK_SCHEMA, "object_id": "synthetic-tasks-only", "authority": "display_only",
+             "protocol_sha256": e0._FROZEN_DOMAIN_DIGESTS["design"],
+             "annotation_guide_sha256": e0._FROZEN_DOMAIN_DIGESTS["annotation_guide"],
+             "membership_sha256": bundle[0]["corpus"]["membership_sha256"],
+             "tasks": [{"task_id": "synthetic-task-1", **identity, **row["subject"],
+                        "analysis_cutoff": row["first_available_for_contextual_analysis"],
+                        "mode": "historical_hypothetical", "question": question,
+                        "question_sha256": hashlib.sha256(question.encode()).hexdigest(),
+                        "required_facet_ids": ["synthetic-facet"], "k": 1,
+                        "original_evidence": [identity]}]}
+    install_tasks(bundle, value)
+    return bundle, value
+
+
+def install_tasks(bundle, value, body=None):
+    reg, objects, _prelabel = bundle
+    objects.pop(reg["tasks_ref"]["sha256"], None)
+    body = canonical(value) if body is None else body
+    reg["tasks_ref"] = reference(body, e0._TASK_SCHEMA, value["object_id"])
+    objects[reg["tasks_ref"]["sha256"]] = body
+
+
+def test_task_contract_binds_frozen_sources_and_question_bytes_without_answerability(task_bundle):
+    bundle, value = task_bundle
+    result = resolve(bundle)
+    assert result["references_complete"] is True
+    assert e0._TASK_SCHEMA not in result["unparsed_reference_schemas"]
+    assert result["task_binding_checks"] == [{"schema": e0._TASK_SCHEMA, "object_id": value["object_id"],
+        "task_count": 1, "question_bytes_bound": True, "frozen_source_bindings_checked": True,
+        "unresolved": [], "actual_task_selection_verified": False,
+        "answerability_verified": False, "usefulness_verified": False}]
+    assert result["operational_admission"] is result["domain_metadata_complete"] is False
+    assert "tasks_and_query_selection" in result["unresolved_semantics"]
+    # No supplied question/evidence bodies or fabricated interval metadata escape.
+    assert value["tasks"][0]["question"] not in json.dumps(result)
+    assert {"field": "membership.feature_support_interval", "missing_rows": 109} in result["frozen_metadata_gaps"]
+    result["task_binding_checks"][0]["task_count"] = 999
+    assert resolve(bundle)["task_binding_checks"][0]["task_count"] == 1
+
+
+@pytest.mark.parametrize("mutate,error", [
+    (lambda v: v["tasks"][0].update(question_sha256="f" * 64), "question_digest"),
+    (lambda v: v["tasks"][0].update(question=" "), "question_required"),
+    (lambda v: v["tasks"][0].update(query_id="mmquery_" + "f" * 64), "source_identity"),
+    (lambda v: v["tasks"][0].update(context_id="mmctx_" + "f" * 64), "source_identity"),
+    (lambda v: v["tasks"][0].update(capture_id="mmcapture_" + "f" * 64), "source_identity"),
+    (lambda v: v["tasks"][0].update(packet_sha256="f" * 64), "source_identity"),
+    (lambda v: v["tasks"][0].update(subject_id="mmsecurity_" + "f" * 64), "subject_identity"),
+    (lambda v: v["tasks"][0].update(instrument_id="mmsecurity_" + "f" * 64), "subject_identity"),
+    # Matching the older feature/event clock cannot backdate contextual availability.
+    (lambda v: v["tasks"][0].update(analysis_cutoff="2026-09-25T01:18:09.907914Z"), "unavailable_at_cutoff"),
+    (lambda v: v["tasks"][0].update(analysis_cutoff="2026-09-25T01:18:10Z"), "microsecond"),
+    (lambda v: v["tasks"][0]["original_evidence"][0].update(packet_sha256="f" * 64), "source_identity"),
+    (lambda v: v["tasks"].append(copy.deepcopy(v["tasks"][0])), "duplicate_task"),
+    (lambda v: v["tasks"][0].update(k=True), "task_schema"),
+    (lambda v: v["tasks"][0].update(k=9), "task_schema"),
+    (lambda v: v["tasks"][0].update(required_facet_ids=["same", "same"]), "task_schema"),
+    (lambda v: v["tasks"][0].update(task_id="bad\n"), "bounded_identifier"),
+    (lambda v: v["tasks"][0]["original_evidence"][0].update(query_id="mmquery_" + "f" * 64 + "\n"), "exact_source_identity"),
+    (lambda v: v["tasks"][0].update(answerability="answerable"), "task_schema"),
+    (lambda v: v.update(membership_sha256="f" * 64), "task_schema"),
+    (lambda v: v.update(protocol_sha256="f" * 64), "task_schema"),
+    (lambda v: v.update(annotation_guide_sha256="f" * 64), "task_schema"),
+])
+def test_task_contract_rejects_metadata_contradictions(task_bundle, mutate, error):
+    bundle, value = task_bundle
+    mutate(value)
+    install_tasks(bundle, value)
+    with pytest.raises(e0.E0ControlError, match=error):
+        resolve(bundle)
+
+
+def test_task_evidence_uses_each_original_availability_clock(task_bundle):
+    bundle, value = task_bundle
+    rows = json.loads(bundle[1][e0._FROZEN_DOMAIN_DIGESTS["membership"]])["query_candidates"]
+    later = max(rows, key=lambda row: row["first_available_for_contextual_analysis"])
+    assert later["first_available_for_contextual_analysis"] > value["tasks"][0]["analysis_cutoff"]
+    value["tasks"][0]["original_evidence"] = [{key: later[key] for key in
+        ("query_id", "context_id", "capture_id", "packet_sha256")}]
+    install_tasks(bundle, value)
+    with pytest.raises(e0.E0ControlError, match="unavailable_at_cutoff"):
+        resolve(bundle)
+    value["tasks"][0]["analysis_cutoff"] = later["first_available_for_contextual_analysis"]
+    install_tasks(bundle, value)
+    assert resolve(bundle)["task_binding_checks"][0]["frozen_source_bindings_checked"] is True
+
+
+def test_missing_membership_never_launders_supplied_tasks_as_verified_sources(task_bundle):
+    bundle, value = task_bundle
+    del bundle[1][e0._FROZEN_DOMAIN_DIGESTS["membership"]]
+    value["tasks"][0]["query_id"] = "mmquery_" + "f" * 64
+    install_tasks(bundle, value)
+    result = resolve(bundle)
+    assert result["references_complete"] is False
+    checks = result["task_binding_checks"][0]
+    assert checks["question_bytes_bound"] is True
+    assert checks["frozen_source_bindings_checked"] is False
+    assert checks["unresolved"] == ["frozen_membership_bytes"]
+    assert result["operational_admission"] is False
+
+
+def test_known_task_schema_is_role_bound_even_without_supplied_bytes(task_bundle):
+    bundle, _value = task_bundle
+    bundle[0]["reviewer_plan_ref"] = bundle[0]["tasks_ref"]
+    del bundle[1][bundle[0]["tasks_ref"]["sha256"]]
+    with pytest.raises(e0.E0ControlError, match="task_reference_role"):
+        resolve(bundle)
+
+
+@pytest.mark.parametrize("body", [b'{"schema":"research_factory.market_memory_e0_tasks.v1"}', b'null'])
+def test_known_task_schema_rejects_malformed_payloads(task_bundle, body):
+    bundle, value = task_bundle
+    install_tasks(bundle, value, body)
+    with pytest.raises(e0.E0ControlError):
+        resolve(bundle)
+
+
+def test_task_question_identity_is_not_evidence_truth_or_answerability(task_bundle):
+    bundle, value = task_bundle
+    # Deliberately unanswerable supplied text can bind bytes; no truth inference.
+    question = "合成测试：这是一个未证明可回答的问题。"
+    value["tasks"][0].update(question=question, question_sha256=hashlib.sha256(question.encode()).hexdigest())
+    install_tasks(bundle, value)
+    checks = resolve(bundle)["task_binding_checks"][0]
+    assert checks["question_bytes_bound"] is True
+    assert checks["answerability_verified"] is checks["usefulness_verified"] is False
+
+
+def test_task_parser_rejects_duplicate_keys(task_bundle):
+    bundle, value = task_bundle
+    body = canonical(value)
+    body = b'{"object_id":"duplicate",' + body[1:]
+    install_tasks(bundle, value, body)
+    with pytest.raises(e0.E0ControlError, match="invalid_domain_json"):
+        resolve(bundle)
+
+
+def test_task_bytes_are_canonical_and_guide_link_is_not_invented_prelabel_role(task_bundle, monkeypatch):
+    bundle, value = task_bundle
+    install_tasks(bundle, value, canonical(value) + b"\n")
+    with pytest.raises(e0.E0ControlError, match="noncanonical_task"):
+        resolve(bundle)
+    install_tasks(bundle, value)
+    # The task schema's exact guide digest is a supported link without prelabel input.
+    bundle = (bundle[0], bundle[1], None)
+    e0._task_validator()  # Public schema load is the only additional filesystem use.
+    def forbidden(*args, **kwargs):
+        pytest.fail("task metadata must not read stores or execute code")
+    monkeypatch.setattr(Path, "open", forbidden)
+    result = resolve(bundle)
+    assert result["task_binding_checks"][0]["frozen_source_bindings_checked"] is True
+    assert "annotation_guide" in result["frozen_artifacts_resolved"]
+    del bundle[1][e0._FROZEN_DOMAIN_DIGESTS["annotation_guide"]]
+    result = resolve(bundle)
+    assert result["references_complete"] is False
+    assert result["missing_frozen_artifacts"] == ["annotation_guide"]
