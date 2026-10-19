@@ -427,5 +427,197 @@ def test_overview_hero_discloses_exact_source_generation():
         action_board_sha256="b" * 64,
     )
     assert 'data-si-as-of="2026-09-14"' in html
+    # A static/anonymous shell must disclose the actual last validated source date,
+    # even before client JS or premium data authorization can hydrate.
+    assert '<span id="asof">2026-09-14</span>' in html
+    assert 'Snapshot session: 2026-09-14.' in html
+    assert '“Today” on this board refers to that session' in html
     assert f'data-si-baskets-sha256="{"a" * 64}"' in html
     assert f'data-si-action-board-sha256="{"b" * 64}"' in html
+
+
+def test_hero_asof_is_bound_on_the_context_rich_render_too():
+    # The normal theme-context hero is a separate branch from the fallback
+    # used in the generation test above. Both must display the same baked date.
+    ctx = {
+        "leadership": {
+            "state": "steady",
+            "trailing_leader": {"id": "theme-1", "name": "Former Lead", "name_zh": "旧领涨"},
+            "stance_en": "Stay selective",
+            "stance_zh": "保持审慎",
+            "days_in_state": 0,
+            "strength": [],
+        },
+        "migration": {"note_en": "", "note_zh": ""},
+        "state_changes": {},
+    }
+    html = _env().get_template(PAGE_TPL.name).render(
+        flows_html=None,
+        pgate=None,
+        bottoming=None,
+        theme_context=ctx,
+        factor_season=None,
+        flow=None,
+        basket_member_syms=[],
+        action_board=_board(),
+        generated_utc="2026-10-15T06:00:00Z",
+        source_as_of="2026-10-14",
+    )
+    assert 'data-si-as-of="2026-10-14"' in html
+    assert '<span id="asof">2026-10-14</span>' in html
+    assert html.count('id="asof"') == 1
+
+
+def test_hero_never_mints_a_date_when_no_source_asof_is_available():
+    html = _render_page(_board())
+    assert '<span id="asof">—</span>' in html
+    assert 'Source session unverified.' in html
+    # Client hydration is allowed to fill an unknown date, but never to
+    # overwrite the server-pinned market session with a different cache vintage.
+    assert "ao.textContent.trim()==='—'" in html
+
+
+def test_intraday_panel_never_claims_the_unqualified_fixed_minute_horizons():
+    html = _render_page(_board())
+    assert "Interval = change between two verified observations" in html
+    assert "not a fixed 5/15/30/60-minute return or a forecast" in html
+    assert 'id="si-intraday"' in html
+
+
+def test_us_market_internals_scope_is_not_mislabeled_full_sp1500():
+    # Incumbent basket_score.market_concentration("us") reads data/breadth,
+    # the S&P 500 BreadthAdapter, not the 400/600 union. No backfilled scope.
+    html = _render_page(_board())
+    assert 'id="si-breadth-scope"' in html
+    assert "Current US breadth here covers S&P 500 members only" in html
+    assert "S&P 400/600 aggregate participation is not yet qualified" in html
+    assert "Historical membership is not point-in-time verified." in html
+    assert "Moving-average percentages exclude members without sufficient history" in html
+    assert "eligible counts are not yet published" in html
+
+
+def test_market_internals_dont_invent_mixed_on_missing_or_cross_vintage_breadth():
+    """Execute the actual embedded renderer, not just grep its copy.
+
+    The page and the S&P500 tape are independently produced; no synthetic
+    data, stale vintage or unverified universe may impersonate a measured
+    'Mixed' verdict. The original row data stays source-owned.
+    """
+    import shutil
+    import subprocess
+
+    js = PAGE_TPL.read_text(encoding="utf-8")
+    marker = "// ── Market internals (breadth) from THEME.market_concentration ──"
+    assert js.count(marker) == 1
+    fragment = js.split(marker, 1)[1].split("\nfunction boot(){", 1)[0]
+    assert "function renderInternals()" in fragment
+    assert "sourceDate===serverDate" in fragment
+    assert "sourceDate===basketDate" in fragment
+    assert "sp500_current_constituents" in fragment
+
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("JavaScript runtime unavailable; static source guard above passed")
+    preamble = """
+let currentServer = '', currentBasket = '', currentTheme = null, zh = false;
+let nodes = {};
+function nodeFor(id){
+  if(!nodes[id]){
+    let text = 'STALE', html = 'STALE';
+    const n = {style:{width:'82%',color:'red'}};
+    Object.defineProperty(n,'textContent',{get(){return text},set(v){text=String(v);html=String(v)}});
+    Object.defineProperty(n,'innerHTML',{get(){return html},set(v){html=String(v);text=String(v)}});
+    nodes[id]=n;
+  }
+  return nodes[id];
+}
+const document = {
+  getElementById: (id)=>nodeFor(id),
+  querySelector: (selector)=>selector==='.rvx-hero[data-si-as-of]'
+    ? {getAttribute:(key)=>key==='data-si-as-of'?currentServer:''}
+    : null
+};
+let BASKETS = null, THEME = null;
+function isZh(){return zh;}
+"""
+    cases = r"""
+function run(server, basket, mc, language=false, keepNodes=false){
+  currentServer=server;currentBasket=basket;currentTheme=mc;zh=language;if(!keepNodes)nodes={};
+  BASKETS={as_of:currentBasket};THEME={market_concentration:currentTheme};
+  renderInternals();
+  return {
+    verdict:nodeFor('mkt-breadth').textContent,
+    note:nodeFor('mkt-breadth-sub').innerHTML,
+    ad:nodeFor('mkt-ad').innerHTML,
+    hilo:nodeFor('mkt-hilo').innerHTML,
+    hiloBar:nodeFor('mkt-hilo-bar').style.width,
+    aboveBar:nodeFor('mkt-above-bar').style.width,
+    breadth200:nodeFor('mkt-above').innerHTML,
+    bar:nodeFor('mkt-ad-bar').style.width
+  };
+}
+const source={source_as_of:'2026-10-16',source_universe:'sp500_current_constituents',
+  verdict:'broad',adv:200,dec:150,ad_ratio:1.33,nh:11,nl:5,pct_above_50:63.0,pct_above_200:65.2};
+const absent=run('2026-10-16','2026-10-16',{});
+const lag=run('2026-10-16','2026-10-16',{...source,source_as_of:'2026-10-14'});
+const badUniverse=run('2026-10-16','2026-10-16',{...source,source_universe:'sp1500'});
+const noPageDate=run('','2026-10-16',source);
+const staleBasket=run('2026-10-16','2026-10-14',source);
+const observed=run('2026-10-16','2026-10-16',source);
+const emptyVerdict=run('2026-10-16','2026-10-16',{...source,verdict:null});
+const zhUnknown=run('2026-10-16','2026-10-16',{},true);
+for(const x of [absent,lag,badUniverse,noPageDate,staleBasket]){
+  if(x.verdict!=='—'||x.bar!=='0%'||!x.note.includes('Not measured')){
+    throw Error('unverified market got positive condition: '+JSON.stringify(x));
+  }
+}
+if(observed.verdict!=='Broad'||!observed.ad.includes('200')||!observed.breadth200.includes('65%')){
+  throw Error('legitimate same-date observation disappeared: '+JSON.stringify(observed));
+}
+if(emptyVerdict.verdict!=='—'||!emptyVerdict.note.includes('No measured breadth verdict')){
+  throw Error('missing verdict silently minted mixed: '+JSON.stringify(emptyVerdict));
+}
+if(zhUnknown.verdict!=='—'||!zhUnknown.note.includes('未测')){
+  throw Error('Chinese missingness disclosure absent: '+JSON.stringify(zhUnknown));
+}
+// A same-vintage partial refresh must clear the previously displayed numbers,
+// not leave stale colored bars or a literal string "null" in the UI.
+run('2026-10-16','2026-10-16',source);
+const partial=run('2026-10-16','2026-10-16',
+  {...source,adv:null,nl:null,pct_above_200:null},false,true);
+if(partial.ad!=='—'||partial.hilo!=='—'||partial.breadth200!=='—'||
+   partial.bar!=='0%'||partial.hiloBar!=='0%'||partial.aboveBar!=='0%'||
+   partial.verdict!=='—'||!partial.note.includes('No measured breadth verdict')){
+  throw Error('partial measured tape retained stale numeric cards: '+JSON.stringify(partial));
+}
+const invalid=run('2026-10-16','2026-10-16',
+  {...source,adv:-1,nh:-2,pct_above_200:121});
+if(invalid.verdict!=='—'||invalid.ad!=='—'||invalid.hilo!=='—'||
+   invalid.breadth200!=='—'){
+  throw Error('physically invalid source counts qualified: '+JSON.stringify(invalid));
+}
+"""
+    result = subprocess.run(
+        [node, "-e", preamble + fragment + cases],
+        capture_output=True, text=True, timeout=15,
+    )
+    assert result.returncode == 0, result.stderr
+
+
+
+def test_stale_snapshot_copy_has_no_current_clock_promises():
+    # Static readers may see the page long after its source session; even an
+    # inaccessible JS payload must not imply a live feed or a nightly refresh.
+    fallback = _render_page(None)
+    assert "Action board unavailable until a coherent, source-verified snapshot" in fallback
+    assert "No current calls." in fallback
+    assert "Only source-verified lanes carry graded calls." in fallback
+
+    src = PAGE_TPL.read_text(encoding="utf-8")
+    assert "LAST RECORDED HANDOFF" in src
+    assert "awaiting a source-verified session" in src
+    assert "No qualifying early reading in this snapshot." in src
+    assert "acceleration over the measured session window ending at this snapshot" in src
+    assert "check back after tonight" not in src.lower()
+    assert "awaiting tonight" not in src.lower()
+    assert "No early reading to show today" not in src

@@ -6718,8 +6718,14 @@ def main() -> int:
     try:
         _ab_json = site / "basketdata" / "action_board.json"
         _ab_json.parent.mkdir(parents=True, exist_ok=True)
-        _ab_json.write_text(json.dumps({"action_board": _ab}, ensure_ascii=False),
-                            encoding="utf-8")
+        # Legacy broad-render compatibility writer, distinct from the focused
+        # dated Sector publisher. Never emit Python NaN/Infinity extensions:
+        # browsers reject the entire JSON instead of treating one leg unknown.
+        from engine.json_strict import sanitize_non_finite as _sanitize_non_finite
+        _ab_json.write_text(json.dumps(
+            _sanitize_non_finite({"action_board": _ab}),
+            ensure_ascii=False, allow_nan=False,
+        ), encoding="utf-8")
     except Exception as _abe:  # noqa: BLE001 — additive persistence, never fatal
         log.warning("action_board.json persist failed (%s)", _abe)
 

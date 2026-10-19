@@ -330,6 +330,9 @@ def _write_sector_intelligence_generation(
     root: Path,
     *,
     baskets_asof: str = "2026-09-14",
+    breadth_asof: str | None = None,
+    breadth_scope: str = "sp500_current_constituents",
+    breadth_metrics: dict | None = None,
     theme_asof: str | None = None,
     action_asof: str | None = None,
     sector_asof: str | None = None,
@@ -348,6 +351,16 @@ def _write_sector_intelligence_generation(
         "theme_intel": {"as_of": theme_asof},
         "baskets": [{"id": "theme-a"}],
     }
+    if breadth_asof is not None:
+        baskets["theme_intel"]["market_concentration"] = {
+            "adv": 251,
+            "dec": 240,
+            "source_as_of": breadth_asof,
+            "source_universe": breadth_scope,
+            "directional": False,
+        }
+        if breadth_metrics is not None:
+            baskets["theme_intel"]["market_concentration"].update(breadth_metrics)
     baskets_path = site / "basketdata" / "baskets.json"
     baskets_path.write_bytes(_json_bytes(baskets))
     baskets_sha = hashlib.sha256(baskets_path.read_bytes()).hexdigest()
@@ -368,8 +381,12 @@ def _write_sector_intelligence_generation(
     action_path.write_bytes(_json_bytes(action))
     action_sha = hashlib.sha256(action_path.read_bytes()).hexdigest()
 
-    (site / "sectordata" / "sector_central.json").write_bytes(
-        _json_bytes({"as_of": sector_asof, "sectors": [{"ticker": "XLK"}]})
+    sector_json = _json_bytes(
+        {"as_of": sector_asof, "sectors": [{"ticker": "XLK"}]}
+    )
+    (site / "sectordata" / "sector_central.json").write_bytes(sector_json)
+    (site / "sector_central_data.js").write_bytes(
+        b"window.SECTOR_CENTRAL=" + sector_json + b";\n"
     )
     premium = {
         "schema": "tier_payload.v1",
@@ -404,6 +421,133 @@ def test_semantic_freshness_accepts_one_session_lag(tmp_path: Path) -> None:
     assert report["ok"] is True, report
     assert report["facts"]["as_of"] == "2026-09-14"
     assert report["facts"]["sessions_behind"] == 1
+
+
+def test_natural_october_sunday_rejects_stale_breadth_without_faking_a_market_day(
+    tmp_path: Path,
+) -> None:
+    """On Sunday Oct 18 the latest completed US session was Fri Oct 16.
+
+    These are synthetic date-labelled coherent fixtures, NOT observations or a
+    repair to the missing actual QLedger/S&P1500 market-data publication.
+    """
+    from scripts.check_sector_intelligence_freshness import evaluate
+
+    sunday_utc = datetime(2026, 10, 18, 12, tzinfo=timezone.utc)
+    _write_sector_intelligence_generation(
+        tmp_path, baskets_asof="2026-10-14", action_asof="2026-10-14"
+    )
+    stale = evaluate(tmp_path, now=sunday_utc, max_sessions_behind=1)
+    assert stale["ok"] is False, stale
+    assert stale["facts"]["as_of"] == "2026-10-14"
+    assert stale["facts"]["sessions_behind"] == 2
+    assert any("STALE SECTOR INTELLIGENCE" in err for err in stale["errors"])
+
+    # Date-only synthetic counterfactual: a truly coherent Friday generation
+    # is admissible over the weekend, without inventing a Sunday market session.
+    _write_sector_intelligence_generation(
+        tmp_path, baskets_asof="2026-10-16", action_asof="2026-10-16"
+    )
+    friday = evaluate(tmp_path, now=sunday_utc, max_sessions_behind=1)
+    assert friday["ok"] is True, friday
+    assert friday["facts"]["as_of"] == "2026-10-16"
+    assert friday["facts"]["sessions_behind"] == 0
+
+
+@pytest.mark.parametrize(
+    ("fabricated_asof", "expected_error"),
+    [
+        ("2026-10-17", "INVALID SECTOR INTELLIGENCE MARKET SESSION"),
+        ("2026-10-18", "INVALID SECTOR INTELLIGENCE MARKET SESSION"),
+        ("2026-10-19", "FUTURE SECTOR INTELLIGENCE"),
+    ],
+)
+def test_future_or_weekend_sector_date_cannot_pass_with_zero_missing_sessions(
+    tmp_path: Path, fabricated_asof: str, expected_error: str,
+) -> None:
+    """A fabricated source date is NOT made fresh by sessions_behind == 0."""
+    from scripts.check_sector_intelligence_freshness import evaluate
+
+    _write_sector_intelligence_generation(
+        tmp_path, baskets_asof=fabricated_asof, action_asof=fabricated_asof
+    )
+    result = evaluate(
+        tmp_path, now=datetime(2026, 10, 18, 12, tzinfo=timezone.utc),
+        max_sessions_behind=1,
+    )
+    assert result["ok"] is False
+    assert any(expected_error in err for err in result["errors"]), result
+    assert result["facts"]["sessions_behind"] is None
+
+
+@pytest.mark.parametrize(
+    ("breadth_session", "scope", "expected_error"),
+    [
+        ("2026-09-14", "sp500_current_constituents", None),
+        ("2026-09-11", "sp500_current_constituents", "VINTAGE SPLIT"),
+        ("", "sp500_current_constituents", "carries no usable as_of"),
+        ("2026-09-14", "unverified_sp1500", "UNVERIFIED SECTOR INTELLIGENCE BREADTH"),
+    ],
+)
+def test_sector_gate_binds_embedded_breadth_source_session_and_population(
+    tmp_path: Path, breadth_session: str, scope: str, expected_error: str | None,
+) -> None:
+    """Full payload hashes stay consistent while the embedded source can differ."""
+    _write_sector_intelligence_generation(
+        tmp_path,
+        action_asof="2026-09-14",
+        breadth_asof=breadth_session,
+        breadth_scope=scope,
+    )
+    report = _evaluate_sector_intelligence(tmp_path)
+    if expected_error is None:
+        assert report["ok"] is True, report
+        assert report["facts"]["dates"][
+            "site/basketdata/baskets.json:theme_intel.market_concentration.source_as_of"
+        ] == "2026-09-14"
+    else:
+        assert report["ok"] is False
+        assert any(expected_error in err for err in report["errors"]), report
+
+
+@pytest.mark.parametrize(
+    ("advances", "declines", "claimed_ratio", "expected_error"),
+    [
+        (251, 240, 1.05, None),
+        (251, 240, 1.04, "contradicts measured advances and declines"),
+        (251, 240, 9.0, "contradicts measured advances and declines"),
+        (251, None, 1.05, "ad_ratio has unmeasured A/D prerequisites"),
+        (251, 0, 1.05, "ad_ratio has unmeasured A/D prerequisites"),
+    ],
+)
+def test_sector_gate_cannot_publish_an_inconsistent_ad_ratio(
+    tmp_path: Path,
+    advances: int,
+    declines: int | None,
+    claimed_ratio: float,
+    expected_error: str | None,
+) -> None:
+    # All component clocks and byte digests are coherent; this isolates
+    # source arithmetic rather than merely proving a hash or vintage refusal.
+    _write_sector_intelligence_generation(
+        tmp_path,
+        action_asof="2026-09-14",
+        breadth_asof="2026-09-14",
+        breadth_metrics={
+            "observed_members": 500,
+            "adv": advances,
+            "dec": declines,
+            "ad_ratio": claimed_ratio,
+            "pct_above_50": 56.0,
+            "verdict": "mixed",
+        },
+    )
+    report = _evaluate_sector_intelligence(tmp_path)
+    if expected_error is None:
+        assert report["ok"] is True, report
+    else:
+        assert report["ok"] is False
+        assert any(expected_error in e for e in report["errors"]), report
 
 
 def test_semantic_freshness_rejects_individually_fresh_vintage_split(
@@ -559,6 +703,71 @@ def test_focused_action_builder_uses_fresh_baskets_and_canonical_board_logic(
         (site / "basketdata" / "action_board.json").read_text()
     )
     assert written == payload
+
+
+def test_sector_action_board_writer_outputs_browser_strict_nulls_without_mutating_sources(
+    tmp_path: Path,
+) -> None:
+    import math
+    from scripts.build_sector_action_board import write_action_board
+
+    source = tmp_path / "basketdata" / "baskets.json"
+    source.parent.mkdir(parents=True)
+    source.write_bytes(_json_bytes({
+        "as_of": "2026-10-16",
+        "theme_intel": {"as_of": "2026-10-16"},
+    }))
+    canonical = {
+        "total": 1,
+        "buy_now": [{
+            "ticker": "XLK",
+            "factor_z": float("nan"),
+            "signed_exposure": float("inf"),
+            "risk_skew": -float("inf"),
+            "honest_count": 0,
+        }],
+    }
+    target = tmp_path / "basketdata" / "action_board.json"
+    result = write_action_board(
+        target, baskets_path=source, action_board=canonical,
+        generated_utc="2026-10-17T00:00:00Z",
+    )
+    raw = target.read_text(encoding="utf-8")
+    assert "NaN" not in raw and "Infinity" not in raw
+    # parse_constant is how we emulate browser JSON.parse's strict RFC8259 rules.
+    def forbidden_number(value: str):
+        raise AssertionError(f"browser-invalid JSON number {value}")
+    decoded = json.loads(raw, parse_constant=forbidden_number)
+    assert decoded == result
+    row = decoded["action_board"]["buy_now"][0]
+    assert row["factor_z"] is None and row["signed_exposure"] is None
+    assert row["risk_skew"] is None and row["honest_count"] == 0
+    assert math.isnan(canonical["buy_now"][0]["factor_z"])
+    assert math.isinf(canonical["buy_now"][0]["signed_exposure"])
+    assert result["as_of"] == "2026-10-16"
+
+
+@pytest.mark.parametrize("bad_token", ["NaN", "Infinity", "-Infinity"])
+def test_sector_publish_refuses_non_rfc8259_json_even_when_source_time_agrees(
+    tmp_path: Path, bad_token: str,
+) -> None:
+    """Python's permissive json.loads must not bless a browser-invalid payload."""
+    from scripts.check_sector_intelligence_freshness import evaluate
+    _write_sector_intelligence_generation(
+        tmp_path, baskets_asof="2026-10-16", action_asof="2026-10-16"
+    )
+    path = tmp_path / "site" / "basketdata" / "action_board.json"
+    obj = json.loads(path.read_text())
+    obj["action_board"]["buy_now"][0]["factor_z"] = float(bad_token)
+    path.write_text(json.dumps(obj, allow_nan=True), encoding="utf-8")
+    result = evaluate(
+        tmp_path,
+        now=datetime(2026, 10, 18, 12, tzinfo=timezone.utc),
+        max_sessions_behind=1,
+    )
+    assert result["ok"] is False
+    assert any("action_board.json is not valid JSON" in err for err in result["errors"])
+    assert any("nonstandard JSON number" in err for err in result["errors"])
 
 
 def test_focused_basket_build_fails_closed_when_engine_raises(monkeypatch) -> None:
@@ -904,3 +1113,92 @@ def test_unclosed_html_comment_hides_data_si_attrs(tmp_path: Path) -> None:
     assert any(
         "missing data-si-as-of" in error for error in report["errors"]
     ), report
+
+
+
+def test_publication_stamps_must_belong_to_the_served_hero(tmp_path: Path) -> None:
+    _write_sector_intelligence_generation(tmp_path, action_asof="2026-09-14")
+    path = tmp_path / "site" / "sector_central.html"
+    genuine = path.read_text(encoding="utf-8")
+    # A stale visible hero cannot be rescued by a valid time string in a
+    # separate hidden or decorative node inserted ahead of the real section.
+    path.write_text(
+        '<div data-si-as-of="2026-09-14"></div>' +
+        genuine.replace('data-si-as-of="2026-09-14"',
+                        'data-si-as-of="2026-09-15"'),
+        encoding="utf-8",
+    )
+    result = _evaluate_sector_intelligence(tmp_path)
+    assert not result["ok"], result
+    assert any("VINTAGE SPLIT" in error for error in result["errors"])
+    assert result["facts"]["dates"]["site/sector_central.html:data-si-as-of"] == "2026-09-15"
+
+
+def test_publication_stamp_on_unrelated_node_is_not_a_hero_stamp(tmp_path: Path) -> None:
+    _write_sector_intelligence_generation(tmp_path, action_asof="2026-09-14")
+    path = tmp_path / "site" / "sector_central.html"
+    genuine = path.read_text(encoding="utf-8")
+    stamp = genuine.split('data-si-baskets-sha256="', 1)[1].split('"', 1)[0]
+    path.write_text(
+        f'<div data-si-baskets-sha256="{stamp}"></div>' +
+        genuine.replace(f'data-si-baskets-sha256="{stamp}"', ''),
+        encoding="utf-8",
+    )
+    result = _evaluate_sector_intelligence(tmp_path)
+    assert not result["ok"], result
+    assert any("missing data-si-baskets-sha256" in x for x in result["errors"])
+
+
+def test_publication_rejects_ambiguous_or_duplicate_hero_metadata(tmp_path: Path) -> None:
+    _write_sector_intelligence_generation(tmp_path, action_asof="2026-09-14")
+    path = tmp_path / "site" / "sector_central.html"
+    genuine = path.read_text(encoding="utf-8")
+    path.write_text(genuine + genuine, encoding="utf-8")
+    duplicate = _evaluate_sector_intelligence(tmp_path)
+    assert not duplicate["ok"], duplicate
+    assert any("exactly one rvx-hero" in x for x in duplicate["errors"])
+
+    path.write_text(
+        genuine.replace('data-si-as-of="2026-09-14"',
+                        'data-si-as-of="2026-09-14" data-si-as-of="2026-09-15"'),
+        encoding="utf-8",
+    )
+    duplicate_attribute = _evaluate_sector_intelligence(tmp_path)
+    assert not duplicate_attribute["ok"], duplicate_attribute
+    assert any("ambiguous data-si-as-of" in x
+               for x in duplicate_attribute["errors"])
+
+
+
+def test_semantic_publish_matches_actual_sector_browser_js(tmp_path: Path) -> None:
+    _write_sector_intelligence_generation(tmp_path, action_asof="2026-09-14")
+    passed = _evaluate_sector_intelligence(tmp_path)
+    assert passed["ok"] is True, passed
+    facts = passed["facts"]
+    assert facts["sector_json_sha256"]
+    assert facts["sector_js_sha256"]
+
+    script = tmp_path / "site" / "sector_central_data.js"
+    source = script.read_bytes()
+    assert b"2026-09-14" in source
+    script.write_bytes(source.replace(b"2026-09-14", b"2026-09-15"))
+    stale = _evaluate_sector_intelligence(tmp_path)
+    assert stale["ok"] is False, stale
+    assert any("CLIENT-DATA SPLIT" in x for x in stale["errors"])
+    assert stale["facts"]["sector_js_sha256"] != facts["sector_js_sha256"]
+
+
+def test_missing_sector_client_asset_cannot_pass_json_only(tmp_path: Path) -> None:
+    _write_sector_intelligence_generation(tmp_path, action_asof="2026-09-14")
+    js = tmp_path / "site" / "sector_central_data.js"
+    js.unlink()
+    missing = _evaluate_sector_intelligence(tmp_path)
+    assert not missing["ok"], missing
+    assert any("RUNTIME ASSET MISSING" in x for x in missing["errors"])
+
+    # A syntactically valid but unrelated JS payload is still a different
+    # source generation and must not be accepted via the JSON-side stamp.
+    js.write_text("window.SECTOR_CENTRAL={};\n", encoding="utf-8")
+    empty = _evaluate_sector_intelligence(tmp_path)
+    assert not empty["ok"], empty
+    assert any("CLIENT-DATA SPLIT" in x for x in empty["errors"])

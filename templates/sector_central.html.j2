@@ -2299,7 +2299,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
     <div class="rvx-eyebrow">
       <span>{{ t('US Sector Intelligence 🇺🇸', '美国行业情报 🇺🇸') }}</span>
       <span class="rvx-mut" id="hero-count"></span>
-      <span class="as-of">{{ t('as of', '截至') }} <span id="asof">—</span></span>
+      <span class="as-of">{{ t('as of', '截至') }} <span id="asof">{{ source_as_of | default("—", true) | e }}</span></span>
     </div>
     <div class="rvx-hgrid">
       <div>
@@ -2316,7 +2316,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
         </div>
       </div>
       <div class="rvx-hocard">
-        <div class="cap">{{ t("THIS WEEK'S HANDOFF", '本周交棒') }}</div>
+        <div class="cap">{{ t("LAST RECORDED HANDOFF", '最近一次已记录的交棒') }}</div>
         <div class="rvx-handoff">
           <div class="rvx-hocol out">
             <div class="lbl">{{ t('Losing the lead', '失去领先') }}</div>
@@ -2350,7 +2350,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
            data-si-as-of="{{ source_as_of | default('', true) }}"
            data-si-baskets-sha256="{{ baskets_sha256 | default('', true) }}"
            data-si-action-board-sha256="{{ action_board_sha256 | default('', true) }}">
-    <div class="rvx-eyebrow"><span>{{ t('US Sector Intelligence 🇺🇸', '美国行业情报 🇺🇸') }}</span><span class="rvx-mut" id="hero-count"></span><span class="as-of">{{ t('as of', '截至') }} <span id="asof">—</span></span></div>
+    <div class="rvx-eyebrow"><span>{{ t('US Sector Intelligence 🇺🇸', '美国行业情报 🇺🇸') }}</span><span class="rvx-mut" id="hero-count"></span><span class="as-of">{{ t('as of', '截至') }} <span id="asof">{{ source_as_of | default("—", true) | e }}</span></span></div>
     <div class="rvx-vword">{{ t('Thematic', '主题') }} <span class="ac">{{ t('baskets', '篮子') }}</span></div>
     <p class="rvx-vsub" id="story">{{ t('Equal-weight US theme baskets measured against the S&P 500. Use them to see which themes are leading or fading.', '等权重美国主题篮子，对标标普 500。用于观察哪些主题在走强或走弱。') }}</p>
     <div class="rvx-chips ctx" style="margin-top:12px">
@@ -2383,8 +2383,17 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
      client-rendered 4-lane themes-only board (renderActBoard, removed). #grader is retained:
      its self-grader scorecard JS reads D.grader independently of the board. ══ #}
   <section class="rvx-sec rvx-reveal" id="actnow-section" style="animation-delay:.05s">
-    {% if action_board %}{% include "_us_act_now_board.html.j2" %}{% else %}<p class="rvx-sec-sub muted">{{ t('Refreshing the action board — check back after tonight’s close.', '正在刷新操作板 — 今晚收盘后再查看。') }}</p>{% endif %}
-    <div class="rvx-sec-sub si-lane-foot">{{ t('Lanes are the only gated, graded calls on this page — everything below is context, measured nightly.', '操作清单是本页唯一的门控与自评分判断 — 下方内容均为背景信息，每晚计算。') }}
+    {# Keep time-relative action verbs tied to their BAKED session, even when an
+       old static page remains served or a gated client asset cannot hydrate. #}
+    <p class="rvx-sec-sub si-lane-foot" id="si-action-asof-note">
+      {% if source_as_of is defined and source_as_of %}
+      {{ t('Snapshot session: ' ~ source_as_of ~ '. “Today” on this board refers to that session, not the current clock. Check freshness before acting.', '快照交易日：' ~ source_as_of ~ '。本页“今日”仅指该交易日，并非当前时刻；行动前请核验数据时效。') }}
+      {% else %}
+      {{ t('Source session unverified. Treat all action rows as historical context, not current calls.', '源数据交易日尚未核验。所有操作列表仅供历史参考，并非当前操作建议。') }}
+      {% endif %}
+    </p>
+    {% if action_board %}{% include "_us_act_now_board.html.j2" %}{% else %}<p class="rvx-sec-sub muted">{{ t('Action board unavailable until a coherent, source-verified snapshot is published. No current calls.', '操作清单暂不可用：需等待同交易日且来源可核验的快照发布；当前无有效操作建议。') }}</p>{% endif %}
+    <div class="rvx-sec-sub si-lane-foot">{{ t('Only source-verified lanes carry graded calls. Everything below is dated context, not a live updating feed.', '仅来源已核验的操作清单才包含评级判断。下方均为带日期的背景信息，并非实时数据流。') }}
       {# the funnel it drills into is the #confluence view on this page now, not a page away #}
       <a href="#confluence" style="color:var(--ink-link, var(--link))">{{ t('Drill to stocks →', '下钻到个股 →') }}</a></div>
     <div id="grader" class="grader grader-inboard" hidden></div>
@@ -2458,7 +2467,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
         <button class="sc-tab on" data-fam="baskets" role="tab">🧺 <span class="l-en">Themes</span><span class="l-zh">主题</span> <i id="sc-tab-n-bsk"></i></button>
       </div>
     </div>
-    <p class="rvx-sec-sub">{{ t('Right = strong vs the S&P. Up = gaining speed this week. Leaders sweep from Leading into Weakening as they tire; laggards turn up through Improving. Hover any dot — click through for members.', '右 = 相对标普强。上 = 本周加速。领涨者会从「领先」滑向「走弱」；落后者经「改善」重新转强。悬停查看，点击进入成分页。') }}</p>
+    <p class="rvx-sec-sub">{{ t('Right = relative strength vs the S&P. Up = acceleration over the measured session window ending at this snapshot. Leaders move toward Weakening as they tire; laggards turn toward Improving. Hover any dot — click through for members.', '右 = 相对标普强弱。上 = 截至本次快照所覆盖交易日窗口的加速。领涨者走弱时移向「走弱」；落后者转强时移向「改善」。悬停查看，点击进入成分页。') }}</p>
     <div class="rvx-map-wrap">
       <div class="rvx-card rvx-map-card">
         <svg class="rvx-rmap" id="rvx-rmap" viewBox="0 0 600 480" aria-label="Rotation map"></svg>
@@ -2578,7 +2587,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   <section class="si-view" data-view="moving">
   <!-- intraday-observation:markup-start -->
   <section id="si-intraday" class="si-intra" aria-labelledby="si-intraday-title">
-    <div class="si-intra-head"><div><h2 id="si-intraday-title"><span class="l-en">Intraday relative moves</span><span class="l-zh">&#30424;&#20013;&#30456;&#23545;&#24378;&#24369;&#21464;&#21270;</span></h2><p><span class="l-en">Recent relative moves can differ from today's returns.</span><span class="l-zh">&#36817;&#26399;&#30456;&#23545;&#24378;&#24369;&#65292;&#21487;&#33021;&#19982;&#20840;&#22825;&#28072;&#36300;&#19981;&#21516;&#12290;</span></p></div><button id="si-intraday-refresh" type="button"><span class="l-en">Refresh</span><span class="l-zh">&#21047;&#26032;</span></button></div>
+    <div class="si-intra-head"><div><h2 id="si-intraday-title"><span class="l-en">Intraday relative moves</span><span class="l-zh">&#30424;&#20013;&#30456;&#23545;&#24378;&#24369;&#21464;&#21270;</span></h2><p><span class="l-en">Interval = change between two verified observations, not a fixed 5/15/30/60-minute return or a forecast.</span><span class="l-zh">区间为两次已核验观测之间的变化，不是固定5/15/30/60分钟收益率，也非预测。</span></p></div><button id="si-intraday-refresh" type="button"><span class="l-en">Refresh</span><span class="l-zh">&#21047;&#26032;</span></button></div>
     <div id="si-intraday-body" tabindex="-1" aria-live="polite"></div>
     <button id="si-intraday-more" type="button" aria-controls="si-intraday-body" aria-expanded="false" hidden></button>
     <p class="si-intra-foot"><span class="l-en">Watch, don't chase; measured price changes are not fund flows.</span><span class="l-zh">&#20808;&#35266;&#23519;&#65292;&#21247;&#36861;&#28072;&#65307;&#20215;&#26684;&#21464;&#21270;&#19981;&#31561;&#20110;&#36164;&#37329;&#27969;&#20837;&#12290;</span></p>
@@ -2609,6 +2618,9 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   <section class="rvx-sec rvx-reveal" id="internals-section" style="animation-delay:.15s">
     <div class="rvx-sec-h"><h2>{{ t('Under the hood', '市场内部') }}</h2><span class="q">{{ t('— is the whole market participating?', '— 整个市场都在参与吗？') }}</span></div>
     <p class="rvx-sec-sub" id="internals-sub">{{ t('Breadth tells you whether the rotation is a broad tide or a narrow few. Be selective when it is narrow.', '广度告诉你这是全面上涨还是少数领涨。领涨面窄时应精挑细选。') }}</p>
+    {# Source scope is S&P 500 in engine.basket_score.market_concentration("us"),
+       not a full verified S&P 1500 union of large, mid and small members. #}
+    <p class="rvx-sec-sub" id="si-breadth-scope">{{ t('Current US breadth here covers S&P 500 members only; S&P 400/600 aggregate participation is not yet qualified. Historical membership is not point-in-time verified. Moving-average percentages exclude members without sufficient history; their eligible counts are not yet published.', '此处美国市场广度目前仅覆盖标普500成分股；标普400/600合并参与度尚未经核验。历史成分股名单未完成时点验证；均线以上占比仅涵盖具备足够历史数据的股票，合格样本数尚未发布。') }}</p>
     <div class="rvx-internals">
       <div class="rvx-gcard verdict"><div class="gl">{{ t('MARKET BREADTH', '市场广度') }}</div><div class="gbig" id="mkt-breadth">—</div><div class="gm" id="mkt-breadth-sub"></div></div>
       <div class="rvx-gcard"><div class="gl">{{ t('Advancers / Decliners', '上涨 / 下跌') }}</div><div class="gv" id="mkt-ad">—</div><div class="gm" id="mkt-ad-sub"></div><div class="rvx-minibar"><i id="mkt-ad-bar"></i></div></div>
@@ -3256,23 +3268,61 @@ function rvxSet(id,html){const e=document.getElementById(id);if(e)e.innerHTML=ht
 function rvxBar(id,pct,col){const e=document.getElementById(id);if(e){e.style.width=Math.max(2,Math.min(100,pct))+'%';e.style.background=col;}}
 function renderInternals(){
   const mc=(THEME&&THEME.market_concentration)||{}; const zh=isZh();
+  const hero=document.querySelector('.rvx-hero[data-si-as-of]');
+  const serverDate=hero?(hero.getAttribute('data-si-as-of')||''):'';
+  const basketDate=(BASKETS&&BASKETS.as_of)||'';
+  const sourceDate=mc.source_as_of||'';
+  // The independently sourced S&P 500 breadth tape cannot inherit the
+  // render clock, a different basket vintage, or a made-up S&P 1500 scope.
+  const measured=mc.source_universe==='sp500_current_constituents' &&
+    sourceDate && sourceDate===serverDate && sourceDate===basketDate;
+  if(!measured){
+    ['mkt-breadth','mkt-ad','mkt-hilo','mkt-above'].forEach(id=>{
+      const el=document.getElementById(id);if(el)el.textContent='—';
+    });
+    ['mkt-ad-bar','mkt-hilo-bar','mkt-above-bar'].forEach(id=>{
+      const el=document.getElementById(id);if(el)el.style.width='0%';
+    });
+    const note=zh?'未测 — 数据源交易日或覆盖范围未核验':
+      'Not measured — source session or coverage unverified';
+    ['mkt-breadth-sub','mkt-ad-sub','mkt-hilo-sub','mkt-above-sub'].forEach(id=>rvxSet(id,note));
+    return;
+  }
+  const goodCount=v=>typeof v==='number'&&Number.isInteger(v)&&v>=0;
+  const goodPct=v=>typeof v==='number'&&Number.isFinite(v)&&v>=0&&v<=100;
+  const resetMetric=(id,sub,bar)=>{
+    const el=document.getElementById(id);if(el)el.textContent='—';
+    rvxSet(sub,zh?'未测':'Not measured');
+    if(bar){const el=document.getElementById(bar);if(el)el.style.width='0%';}
+  };
+  const adMeasured=goodCount(mc.adv)&&goodCount(mc.dec);
   const vmap={narrow:[zh?'狭窄':'Narrow','var(--down)'],broad:[zh?'广泛':'Broad','var(--up)'],mixed:[zh?'中性':'Mixed','var(--warn)']};
-  const vv=vmap[mc.verdict]||vmap.mixed;
-  const be=document.getElementById('mkt-breadth'); if(be){be.textContent=vv[0]; be.style.color=vv[1];}
-  rvxSet('mkt-breadth-sub', mc.verdict==='broad'?(zh?'广泛参与 — 全面上涨。':'Broad participation — a risk-on tide.'):mc.verdict==='narrow'?(zh?'狭窄 — 少数个股主导。':'Narrow — a few names carry it.'):(zh?'无明显共识，领涨面较窄。':'No strong consensus. Leadership is narrow.'));
-  if(mc.adv!=null&&mc.dec!=null){ rvxSet('mkt-ad', mc.adv+'<span class="rvx-mut" style="font-size:13px"> / </span>'+mc.dec);
-    rvxSet('mkt-ad-sub', (zh?'涨跌比 ':'A/D ')+(mc.ad_ratio!=null?(+mc.ad_ratio).toFixed(2):'—'));
-    rvxBar('mkt-ad-bar', mc.adv/((mc.adv+mc.dec)||1)*100, (mc.ad_ratio||0)>=1?'var(--up)':'var(--warn)'); }
-  if(mc.nh!=null){ rvxSet('mkt-hilo', '<span class="rvx-up">'+mc.nh+'</span><span class="rvx-mut" style="font-size:13px"> / </span><span class="rvx-dn">'+mc.nl+'</span>');
+  const verdictQualified=adMeasured&&mc.dec>0&&goodPct(mc.pct_above_50);
+  const vv=verdictQualified?(vmap[mc.verdict]||null):null;
+  const be=document.getElementById('mkt-breadth'); if(be){be.textContent=vv?vv[0]:'—'; be.style.color=vv?vv[1]:'var(--muted)';}
+  rvxSet('mkt-breadth-sub',(zh?'标普500样本 — ':'S&P 500 sampled — ')+(vv?(mc.verdict==='broad'?(zh?'广泛参与':'Broad participation'):mc.verdict==='narrow'?(zh?'狭窄参与':'Narrow participation'):(zh?'中性参与':'Mixed participation')):(zh?'尚无可靠的广度判断':'No measured breadth verdict')));
+  if(adMeasured){ rvxSet('mkt-ad', mc.adv+'<span class="rvx-mut" style="font-size:13px"> / </span>'+mc.dec);
+    const adRatio=mc.dec>0?mc.adv/mc.dec:null;
+    rvxSet('mkt-ad-sub', (zh?'涨跌比 ':'A/D ')+(adRatio!=null?adRatio.toFixed(2):'—'));
+    rvxBar('mkt-ad-bar', mc.adv/((mc.adv+mc.dec)||1)*100, adRatio!=null&&adRatio>=1?'var(--up)':'var(--warn)'); }
+  else resetMetric('mkt-ad','mkt-ad-sub','mkt-ad-bar');
+  if(goodCount(mc.nh)&&goodCount(mc.nl)){ rvxSet('mkt-hilo', '<span class="rvx-up">'+mc.nh+'</span><span class="rvx-mut" style="font-size:13px"> / </span><span class="rvx-dn">'+mc.nl+'</span>');
     rvxSet('mkt-hilo-sub', (mc.nh>=mc.nl)?(zh?'新高多于新低':'more highs than lows'):(zh?'新低多于新高':'more lows than highs'));
-    rvxBar('mkt-hilo-bar', mc.nh/(((mc.nh||0)+(mc.nl||0))||1)*100, (mc.nh>=mc.nl)?'var(--up)':'var(--down)'); }
-  if(mc.pct_above_200!=null){ rvxSet('mkt-above', Math.round(mc.pct_above_200)+'<span style="font-size:13px">%</span>');
+    rvxBar('mkt-hilo-bar', mc.nh/((mc.nh+mc.nl)||1)*100, (mc.nh>=mc.nl)?'var(--up)':'var(--down)'); }
+  else resetMetric('mkt-hilo','mkt-hilo-sub','mkt-hilo-bar');
+  if(goodPct(mc.pct_above_200)){ rvxSet('mkt-above', Math.round(mc.pct_above_200)+'<span style="font-size:13px">%</span>');
     rvxSet('mkt-above-sub', mc.pct_above_200>=60?(zh?'健康多数':'healthy majority'):mc.pct_above_200>=40?(zh?'中性':'mixed'):(zh?'偏弱':'weak'));
     rvxBar('mkt-above-bar', mc.pct_above_200, mc.pct_above_200>=60?'var(--up)':mc.pct_above_200>=40?'var(--warn)':'var(--down)'); }
+  else resetMetric('mkt-above','mkt-above-sub','mkt-above-bar');
 }
 
 function boot(){
-  const ao=document.getElementById('asof'); if(ao) ao.textContent=BASKETS.as_of||'—';
+  // Preserve the server-pinned snapshot date: client baskets can hydrate from
+  // a different cache generation, and their as_of must never advance the hero.
+  const ao=document.getElementById('asof');
+  if(ao && (!ao.textContent || ao.textContent.trim()==='—')){
+    ao.textContent=(typeof BASKETS!=='undefined' && BASKETS && BASKETS.as_of)||'—';
+  }
   try{ renderVerdictHero(); }catch(e){ console.warn('rvx hero',e); }
   try{ renderRotationMap(); renderRotBoard(); wireRotFilters(); }catch(e){ console.warn('rvx map',e); }
   try{ renderInternals(); }catch(e){ console.warn('rvx internals',e); }
@@ -3569,7 +3619,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     } else if(rot===null){
       // Rotation artifact absent — first wired nightly hasn't run yet.
       ftRail='<div class="ft-rail ft-await"><span class="ft-rank">'+L('fast lens','快线')+'</span>'
-        +'<span class="ft-state">'+L('awaiting tonight\'s data','等待今晚数据')+'</span></div>';
+        +'<span class="ft-state">'+L('awaiting a source-verified session','等待已核验来源的交易日数据')+'</span></div>';
     }
     if(c.confluence) chips.push('<span class="chip2">'+L('confluence','共振')+' <b>'+c.confluence.agree+'/'+c.confluence.of+'</b></span>');
     if(c.early) chips.push('<span class="chip2 early">'+L('early','偏早')+'</span>');
@@ -4150,7 +4200,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
               '早期观察 — 仅作背景，尚未成为已记录事件 · 截至 ')) + esc(EC.as_of) + '</p>';
       var m = (EC.state != null && Object.prototype.hasOwnProperty.call(EARLY_MAP, EC.state)) ? EARLY_MAP[EC.state] : null;
       if (m) out += '<p class="mr-early-clause">' + esc(L(m[0], m[1])) + '</p>';
-      else out += '<p class="mr-early-cov">' + esc(L('No early reading to show today.', '今日没有可显示的早期读数。')) + '</p>';
+      else out += '<p class="mr-early-cov">' + esc(L('No qualifying early reading in this snapshot.', '本次快照没有符合条件的早期读数。')) + '</p>';
       var cov = EC.coverage || {};
       if (num(cov.evaluable_2s) && num(cov.registered_pairs)) {
         var partial = false, rcs = EC.reason_codes || [], i;
