@@ -16986,9 +16986,9 @@ jobs:
       - name: unsubscribe page + per-matcher serving boundary (templates/unsubscribe.html.j2)
         run: python -m pytest tests/test_unsubscribe_page.py -v
       - name: pinned alert email message type (app/mailer.py alert template)
-        run: python -m pytest tests/test_mailer_alert_template.py -v
+        run: python -m pytest tests/test_mailer_alert_template.py tests/test_mailer_held_material.py -v
       - name: alert outbox delivery drain (engine/alert_delivery_drain.py, scripts/drain_alert_outbox.py)
-        run: python -m pytest tests/test_alert_delivery_drain.py -v
+        run: python -m pytest tests/test_alert_delivery_drain.py tests/test_held_material_entitlement.py -v
       - name: post-SMTP effect boundary (app/mailer.py write-ahead marker x drain quarantine)
         run: python -m pytest tests/test_alert_delivery_effect_boundary.py -v
 
@@ -26583,6 +26583,8 @@ jobs:
       - "tests/test_foresight_health.py"
       - "tests/test_foresight_score.py"
       - "tests/test_foresight_sizing.py"
+      - "engine/power_scarcity.py"
+      - "tests/test_power_scarcity.py"
       - "tests/test_fda_shortages_generation.py"
       - "tests/test_fda_supply_probes.py"
       - "tests/test_fda_supply_probes_t02r.py"
@@ -26649,7 +26651,7 @@ jobs:
       - name: install deps for the FDA supply suites
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests
       - name: FDA foresight cascade and qualified observation suites
-        run: python -m pytest tests/test_foresight_cascade.py tests/test_fda_shortages_generation.py -q
+        run: python -m pytest tests/test_foresight_cascade.py tests/test_fda_shortages_generation.py tests/test_power_scarcity.py -q
       - name: Foresight health, score and sizing suites
         run: python -m pytest tests/test_foresight_health.py tests/test_foresight_score.py tests/test_foresight_sizing.py -q
       - name: FDA supply acceptance probes

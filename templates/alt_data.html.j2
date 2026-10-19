@@ -402,9 +402,13 @@
       {% endif %}
 
       {% if pipeline_counts and pipeline_counts.rows %}
+      {% set wd = pipeline_counts.window_days %}
+      {% set shown = pipeline_counts.rows|length %}
+      {% set tot = pipeline_counts.total %}
       <div class="sid-card"><h3>{{ t('Federal pipeline counts','联邦项目管线数量') }}
-        <span class="mut" style="font-size:11px;">{{ t('90d vs prior 90d',
-          '近90天 vs 前90天') }}</span></h3>
+        <span class="mut" style="font-size:11px;">
+          <span class="l-en">{{ wd }}d vs prior {{ wd }}d</span>
+          <span class="l-zh">近{{ wd }}天 vs 前{{ wd }}天</span></span></h3>
         <table class="sid-t"><thead><tr><th>{{ t('Theme','主题') }}</th>
           <th class="num">{{ t('SAM now','SAM 近期') }}</th>
           <th class="num">{{ t('SAM prior','SAM 前期') }}</th>
@@ -417,6 +421,12 @@
           <td class="num">{{ r.foa_recent if r.foa_recent is not none else '—' }}</td>
           <td class="num">{{ r.foa_prior if r.foa_prior is not none else '—' }}</td>
           <td class="mut">{{ r.sam_as_of or '—' }}</td></tr>{% endfor %}</tbody></table>
+        {% if tot and tot > shown %}
+        <p><span class="mut" style="font-size:11px;">
+        <span class="l-en">Showing the top {{ shown }} of {{ tot }} themes by recent count.</span>
+        <span class="l-zh">按近期计数显示前{{ shown }}个主题（共{{ tot }}个）。</span>
+        </span></p>
+        {% endif %}
         <p><span class="mut" style="font-size:11px;">{{
           t('Source: SAM.gov opportunity and Grants.gov FOA counts per theme. Display only.',
             '来源：SAM.gov 采购机会与 Grants.gov 资助公告的主题计数。仅供展示。') }}</span></p></div>
