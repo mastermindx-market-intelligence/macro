@@ -808,16 +808,28 @@ def _contract_members(contract: Mapping[str, Any]) -> list[dict[str, Any]]:
         cik10 = _cik10(issuer.get("cik"))
         if not ticker or cik10 is None:
             continue
-        accessions = [
-            row.get("accession")
-            for row in issuer.get("accessions") or []
-            if isinstance(row, dict) and isinstance(row.get("accession"), str)
-        ]
+        accession_periods: dict[str, str] = {}
+        accessions: list[str] = []
+        for row in issuer.get("accessions") or []:
+            if not isinstance(row, dict):
+                continue
+            accession = row.get("accession")
+            if not isinstance(accession, str):
+                continue
+            accessions.append(accession)
+            period = row.get("period_of_report")
+            if isinstance(period, str):
+                try:
+                    date.fromisoformat(period)
+                except ValueError:
+                    continue
+                accession_periods[accession] = period
         members.append({
             "ticker": ticker,
             "cik10": cik10,
             "sic": issuer.get("sic"),
             "accessions": accessions,
+            "accession_periods": accession_periods,
         })
     return members
 
@@ -864,6 +876,7 @@ def _tree_metric_observations(
     metric_ids: tuple[str, ...],
     not_applicable: Mapping[str, frozenset[str]],
     ticker: str,
+    accession_periods: Mapping[str, str],
 ) -> dict[str, MetricObservation] | None:
     """Project the latest available cell per metric from the precomputed trees.
 
@@ -876,6 +889,8 @@ def _tree_metric_observations(
     excluded_metrics = not_applicable.get(ticker, frozenset())
     latest: dict[str, MetricObservation] = {}
     latest_end: dict[str, str] = {}
+    metric_statement_types: dict[str, set[str]] = {}
+    refused: set[tuple[str, str]] = set()
     readable = False
     for accession in accessions:
         try:
@@ -884,10 +899,17 @@ def _tree_metric_observations(
             continue
         readable = True
         for statement in tree.get("statements") or []:
+            if not isinstance(statement, dict):
+                continue
+            statement_type = statement.get("statement_type")
+            if statement.get("refusal") and isinstance(statement_type, str):
+                refused.add((accession, statement_type))
             for tree_row in statement.get("rows") or []:
                 metric_id = tree_row.get("standardized_metric_id")
                 if not isinstance(metric_id, str) or metric_id not in wanted:
                     continue
+                if isinstance(statement_type, str):
+                    metric_statement_types.setdefault(metric_id, set()).add(statement_type)
                 for cell in tree_row.get("cells") or []:
                     value_text = cell.get("value")
                     if not isinstance(value_text, str):
@@ -910,6 +932,32 @@ def _tree_metric_observations(
                         period_basis=str(period.get("kind") or ""),
                         applicable=metric_id not in excluded_metrics,
                     )
+    for metric_id, observation in list(latest.items()):
+        statement_types = metric_statement_types.get(metric_id, set())
+        if not statement_types:
+            continue
+        rm_dates: list[date] = []
+        for refused_accession, refused_type in refused:
+            if refused_type not in statement_types:
+                continue
+            period_text = accession_periods.get(refused_accession)
+            if not isinstance(period_text, str):
+                continue
+            try:
+                rm_dates.append(date.fromisoformat(period_text))
+            except ValueError:
+                continue
+        if not rm_dates:
+            continue
+        rm = max(rm_dates)
+        if observation.period_end is not None and observation.period_end < rm:
+            latest[metric_id] = MetricObservation(
+                value=None,
+                period_end=rm,
+                period_basis=observation.period_basis,
+                applicable=observation.applicable,
+                withheld=True,
+            )
     return latest if readable else None
 
 
@@ -996,7 +1044,7 @@ def _compose_peer_cohort(
             continue
         observations = _tree_metric_observations(
             generation, member["accessions"], metric_ids, not_applicable,
-            member["ticker"],
+            member["ticker"], member.get("accession_periods") or {},
         )
         if observations is None:
             exclusions.append(_member_exclusion(

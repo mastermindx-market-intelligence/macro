@@ -1,7 +1,7 @@
 {
   "schema": "transmission_chains.v1",
   "asof": "2026-10-16",
-  "built": "2026-10-17 17:51 UTC",
+  "built": "2026-10-18 06:05 UTC",
   "chains": [
     {
       "chain": "credit_spreads_refinancing",
@@ -145,15 +145,15 @@
         "en": "Dollar spike → EM & multinational-EPS headwind",
         "zh": "美元飙升 → 新兴市场与跨国企业盈利承压"
       },
-      "state": "expressed",
+      "state": "arming",
       "state_label": {
-        "en": "Expressed",
-        "zh": "已兑现"
+        "en": "Arming",
+        "zh": "触发中"
       },
-      "hop": 2,
+      "hop": 0,
       "n_hops": 2,
       "armable": true,
-      "episode_id": "dollar_spike_em_multinational@r3:2026-10-15",
+      "episode_id": "dollar_spike_em_multinational@r3:2026-10-16",
       "hops": [
         {
           "id": "dollar_spike->usd_transmission_on",
@@ -163,8 +163,8 @@
             0,
             20
           ],
-          "confirmed": true,
-          "asof": "2026-10-16",
+          "confirmed": false,
+          "asof": null,
           "value_receipt": [
             {
               "path": "transmission.usd_dir",
@@ -203,8 +203,8 @@
             0,
             90
           ],
-          "confirmed": true,
-          "asof": "2026-10-16",
+          "confirmed": false,
+          "asof": null,
           "value_receipt": [
             {
               "series": "FXI",
@@ -370,7 +370,7 @@
           },
           "n": 127,
           "cuts": {},
-          "unevaluable": 2660,
+          "unevaluable": 2661,
           "names": [
             "A",
             "AAPL",
@@ -513,7 +513,7 @@
           },
           "n": 419,
           "cuts": {},
-          "unevaluable": 1985,
+          "unevaluable": 1986,
           "names": [
             "A",
             "AA",
@@ -950,7 +950,7 @@
           "cuts": {
             "financials.debt_to_assets": 32.6
           },
-          "unevaluable": 2383,
+          "unevaluable": 2384,
           "names": [
             "ATNI",
             "AVGO",
@@ -1580,7 +1580,7 @@
           "cuts": {
             "valuation.forward_pe": 26.4
           },
-          "unevaluable": 2162,
+          "unevaluable": 2163,
           "names": [
             "A",
             "AA",
@@ -2309,7 +2309,7 @@
           "cuts": {
             "financials.debt_to_assets": 32.6
           },
-          "unevaluable": 1785,
+          "unevaluable": 1786,
           "names": [
             "ACCO",
             "ACDC",
@@ -2711,7 +2711,7 @@
           },
           "n": 6,
           "cuts": {},
-          "unevaluable": 1671,
+          "unevaluable": 1672,
           "names": [
             "ACMR",
             "AVAV",
@@ -2733,7 +2733,7 @@
           },
           "n": 336,
           "cuts": {},
-          "unevaluable": 810,
+          "unevaluable": 811,
           "names": [
             "AAMI",
             "AAP",
@@ -3910,7 +3910,7 @@
           },
           "n": 692,
           "cuts": {},
-          "unevaluable": 1491,
+          "unevaluable": 1492,
           "names": [
             "A",
             "AA",
@@ -4645,12 +4645,12 @@
         "en": "Vol-regime shift → systematic deleveraging → high-beta unwind",
         "zh": "波动率状态转变 → 系统性去杠杆 → 高贝塔平仓"
       },
-      "state": "propagating",
+      "state": "expressed",
       "state_label": {
-        "en": "Propagating",
-        "zh": "传导中"
+        "en": "Expressed",
+        "zh": "已兑现"
       },
-      "hop": 1,
+      "hop": 2,
       "n_hops": 2,
       "armable": true,
       "episode_id": "vol_regime_deleveraging@r2:2026-10-16",
@@ -4689,8 +4689,8 @@
             0,
             42
           ],
-          "confirmed": false,
-          "asof": null,
+          "confirmed": true,
+          "asof": "2026-10-16",
           "value_receipt": [
             {
               "series": "SPHB",
@@ -4837,7 +4837,7 @@
             "en": "High-beta (vol proxy)",
             "zh": "高贝塔（波动率代理）"
           },
-          "n": 589,
+          "n": 591,
           "cuts": {
             "risk_sizing.vol_ann_pct": 51.8
           },
@@ -4851,7 +4851,6 @@
             "ACHV",
             "ACRS",
             "ADCT",
-            "ADPT",
             "AEHR",
             "AEVA",
             "AFRM",
@@ -4867,6 +4866,7 @@
             "ALAB",
             "ALEC",
             "ALHC",
+            "ALKT",
             "ALM",
             "ALMS",
             "ALMU",
@@ -4884,7 +4884,6 @@
             "AMSC",
             "AMTX",
             "ANGI",
-            "ANGO",
             "ANGPY",
             "ANRO",
             "ANTX",
@@ -4954,6 +4953,7 @@
             "CCCC",
             "CCI",
             "CCOI",
+            "CCSI",
             "CD",
             "CDNA",
             "CDXS",
@@ -5095,6 +5095,7 @@
             "HLLY",
             "HNRG",
             "HOV",
+            "HPK",
             "HPP",
             "HROW",
             "HRTX",
@@ -5178,7 +5179,6 @@
             "MAX",
             "MAZE",
             "MDB",
-            "MEC",
             "MEI",
             "METC",
             "MGNI",
@@ -5208,9 +5208,9 @@
             "NCNO",
             "NERV",
             "NEXT",
-            "NG",
             "NGNE",
             "NKTR",
+            "NKTX",
             "NMAX",
             "NMRA",
             "NN",
@@ -5298,6 +5298,7 @@
             "RCAT",
             "RCKT",
             "RDW",
+            "REAL",
             "REAX",
             "RENT",
             "REPL",
@@ -5348,16 +5349,16 @@
             "SRPT",
             "SRZN",
             "SSP",
-            "SSRM",
             "SSTK",
             "STOK",
             "STRL",
             "STRO",
+            "STRZ",
             "STTK",
-            "SVC",
+            "SVCO",
             "SVV",
-            "TAYD",
             "TBCH",
+            "TCX",
             "TDOC",
             "TDUP",
             "TE",
@@ -5383,6 +5384,7 @@
             "TXG",
             "TYGO",
             "U",
+            "UAMY",
             "UCTT",
             "UEC",
             "ULCC",
@@ -5449,7 +5451,7 @@
             "smart_money.ownership_hhi": 1.0,
             "positioning.short.pct_float": 9.45
           },
-          "unevaluable": 2034,
+          "unevaluable": 2035,
           "names": [
             "AA",
             "AAL",
@@ -6244,7 +6246,7 @@
           "cuts": {
             "tech.dollar_vol_20d": 314022500.0
           },
-          "unevaluable": 2699,
+          "unevaluable": 2700,
           "names": [
             "ADM",
             "AEE",
@@ -6324,7 +6326,7 @@
   ],
   "display_only": true,
   "substrate": {
-    "universe": 2949,
+    "universe": 2950,
     "substrate_asof": {
       "min": "2026-05-07",
       "max": "2026-10-17"

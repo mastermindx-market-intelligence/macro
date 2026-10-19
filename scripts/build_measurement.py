@@ -1280,7 +1280,7 @@ def _dash_if_none(value):
 
 
 def build_thesis_monitor_broken() -> dict:
-    """Load thesis_monitor.json and list ONLY the BROKEN theses (display only).
+    """Load thesis_monitor.json: BROKEN rows plus an INTACT sibling list.
 
     engine/thesis_monitor.py owns the deterministic kill logic; this reader
     re-evaluates nothing and recomputes nothing — n_broken / n_weakening pass
@@ -1315,8 +1315,20 @@ def build_thesis_monitor_broken() -> dict:
         return {"available": False}
 
     rows: list[dict] = []
+    intact_rows: list[dict] = []
     for entry in monitored:
-        if not isinstance(entry, dict) or entry.get("status") != "BROKEN":
+        if not isinstance(entry, dict):
+            continue
+        status = entry.get("status")
+        if status == "INTACT":
+            intact_rows.append({
+                "theme": _or_dash(entry.get("theme")),
+                # deterministic rows write "opened"; LLM-only rows "opened_asof"
+                "opened": entry.get("opened") or entry.get("opened_asof") or "",
+                "stage_at_open": entry.get("stage_at_open") or "",
+            })
+            continue
+        if status != "BROKEN":
             continue
         fired: list[dict] = []
         if entry.get("source") == "llm":
@@ -1354,13 +1366,21 @@ def build_thesis_monitor_broken() -> dict:
                     "kind": crit.get("kind", ""),
                     "detail": crit.get("detail", ""),
                 })
-        rows.append({
+        row = {
             "theme": _or_dash(entry.get("theme")),
             # deterministic rows write "opened"; LLM-only rows "opened_asof"
             "opened": entry.get("opened") or entry.get("opened_asof") or "",
             "stage_at_open": entry.get("stage_at_open") or "",
             "fired": fired,
-        })
+        }
+        # the producer folds an LLM overlay onto some deterministic rows
+        # (engine/thesis_monitor.py:673-682) without recording which LLM
+        # condition fired: pass the written keys through when present and
+        # add no cause label (design D3).
+        for key in ("llm_status", "llm_heat_at_open", "llm_heat_now"):
+            if key in entry:
+                row[key] = _dash_if_none(entry[key])
+        rows.append(row)
 
     # a present-but-null value must not render as the literal "None"; counts
     # keep their type when present
@@ -1370,6 +1390,7 @@ def build_thesis_monitor_broken() -> dict:
         "n_broken": _dash_if_none(raw.get("n_broken")),
         "n_weakening": _dash_if_none(raw.get("n_weakening")),
         "rows": rows,
+        "intact_rows": intact_rows,
     }
 
 
