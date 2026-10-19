@@ -399,24 +399,139 @@ def test_inference_matches_stage_or_lane_prefix() -> None:
     }
 
 
-def test_inference_zero_matches_measured_zero_with_note() -> None:
+def test_inference_zero_matches_is_unmeasured_absent() -> None:
     lines = [json.dumps({"stage": "altdata_brain", "lane": "unknown", "est_cost_usd": 9.0})]
     quantity = inference_quantity_from_usage(lines, _ROW_FILTER)
-    assert quantity.value == 0.0
-    assert quantity.status == MEASURED
-    assert "no_matching_rows" in quantity.notes
+    assert quantity.value is None
+    assert quantity.status == UNMEASURED
+    assert "inference_rows_absent" in quantity.notes
     assert quantity.counts["window"] is None
+    ledger = _build_ledger(quantities={**_base_quantities(), "inference": quantity})
+    component = ledger["components"]["inference"]
+    assert component["quantity_value"] is None
+    assert component["cost_usd"] is None
+    assert component["cost_status"] == "incomplete"
+    assert component["incomplete_reason"] == "inference_rows_absent"
+    assert "inference" in ledger["totals"]["one_time"]["incomplete_components"]
 
 
-def test_inference_uncosted_row_gives_estimated() -> None:
+def test_inference_uncosted_row_is_unmeasured_uncosted() -> None:
     lines = [
         json.dumps({"stage": "fif_capture", "est_cost_usd": 1.5, "ts": "2026-10-01T00:00:00Z"}),
         json.dumps({"stage": "fif_capture", "est_cost_usd": None, "ts": "2026-10-02T00:00:00Z"}),
     ]
     quantity = inference_quantity_from_usage(lines, _ROW_FILTER)
-    assert quantity.value == pytest.approx(1.5)
-    assert quantity.status == ESTIMATED
+    assert quantity.value is None
+    assert quantity.status == UNMEASURED
+    assert "inference_rows_uncosted" in quantity.notes
+    assert quantity.counts["rows_matched"] == 2
     assert quantity.counts["rows_uncosted"] == 1
+    ledger = _build_ledger(quantities={**_base_quantities(), "inference": quantity})
+    component = ledger["components"]["inference"]
+    assert component["quantity_value"] is None
+    assert component["cost_usd"] is None
+    assert component["cost_status"] == "incomplete"
+    assert component["incomplete_reason"] == "inference_rows_uncosted"
+    assert "inference" in ledger["totals"]["one_time"]["incomplete_components"]
+
+
+def test_inference_empty_filter_is_unmeasured_filter_empty() -> None:
+    lines = [json.dumps({"stage": "fif_capture", "est_cost_usd": 1.5})]
+    quantity = inference_quantity_from_usage(
+        lines, {"stage_prefixes": [], "lane_prefixes": []}
+    )
+    assert quantity.value is None
+    assert quantity.status == UNMEASURED
+    assert "inference_filter_empty" in quantity.notes
+    quantity = inference_quantity_from_usage(lines, {})
+    assert quantity.status == UNMEASURED
+    assert "inference_filter_empty" in quantity.notes
+    ledger = _build_ledger(quantities={**_base_quantities(), "inference": quantity})
+    component = ledger["components"]["inference"]
+    assert component["cost_status"] == "incomplete"
+    assert component["incomplete_reason"] == "inference_filter_empty"
+    assert "inference" in ledger["totals"]["one_time"]["incomplete_components"]
+
+
+def test_inference_fully_costed_rows_stay_measured() -> None:
+    lines = [
+        json.dumps({"stage": "fif_capture", "est_cost_usd": 1.5, "ts": "2026-10-01T00:00:00Z"}),
+        json.dumps({"stage": "other", "lane": "fundamental_forensics_v1", "est_cost_usd": 1.0}),
+    ]
+    quantity = inference_quantity_from_usage(lines, _ROW_FILTER)
+    assert quantity.value == pytest.approx(2.5)
+    assert quantity.status == MEASURED
+    ledger = _build_ledger(quantities={**_base_quantities(), "inference": quantity})
+    component = ledger["components"]["inference"]
+    assert component["cost_status"] == "measured"
+    assert component["cost_usd"] == pytest.approx(2.5)
+    assert component["incomplete_reason"] is None
+    assert "inference" not in ledger["totals"]["one_time"]["incomplete_components"]
+
+
+def test_probe_base_reported_uncosted_inference_as_declared_or_measured() -> None:
+    # Probe for the reviewed BASE defect: an uncosted matched row used to give
+    # status estimated, and with the verified inference rate build_cost_ledger
+    # promoted it to cost_status declared (an empty filter or absent rows gave
+    # measured 0.0) — so inference never reached incomplete_components.
+    lines = [json.dumps({"stage": "fif_capture", "est_cost_usd": None})]
+    quantity = inference_quantity_from_usage(lines, _ROW_FILTER)
+    ledger = _build_ledger(quantities={**_base_quantities(), "inference": quantity})
+    component = ledger["components"]["inference"]
+    assert component["cost_status"] == "incomplete"
+    assert component["cost_usd"] is None
+    assert component["quantity_value"] is None
+    assert component["incomplete_reason"] == "inference_rows_uncosted"
+
+
+# ── 4b. inference window tied to the queries window (F2) ─────────────────────
+
+
+_QUERIES_WINDOW = {"start": "2026-10-01T00:00:00Z", "end": "2026-10-02T00:00:00Z"}
+
+
+def test_inference_rows_outside_window_excluded_and_counted() -> None:
+    lines = [
+        # before the window start
+        json.dumps({"stage": "fif_capture", "est_cost_usd": 5.0, "ts": "2026-09-30T23:59:59Z"}),
+        # inside [start, end)
+        json.dumps({"stage": "fif_capture", "est_cost_usd": 1.5, "ts": "2026-10-01T12:00:00Z"}),
+        # exactly at end — excluded, the window is half-open
+        json.dumps({"stage": "fif_capture", "est_cost_usd": 7.0, "ts": "2026-10-02T00:00:00Z"}),
+        # matched but no ts: cannot be tied to the window, so never included
+        json.dumps({"stage": "fif_capture", "est_cost_usd": 2.0}),
+    ]
+    quantity = inference_quantity_from_usage(lines, _ROW_FILTER, window=_QUERIES_WINDOW)
+    assert quantity.value == pytest.approx(1.5)
+    assert quantity.status == MEASURED
+    assert quantity.counts["rows_matched"] == 4
+    assert quantity.counts["inference_rows_outside_window"] == 3
+    assert quantity.counts["window"] == {
+        "min": "2026-10-01T12:00:00Z",
+        "max": "2026-10-01T12:00:00Z",
+    }
+
+
+def test_missing_queries_window_refuses_cost_per_query() -> None:
+    denominators = _denominators(
+        queries={"value": 10, "source": "coverage proof", "window": None},
+    )
+    ledger = _build_ledger(denominators=denominators)
+    entry = ledger["per_unit"]["queries"]
+    assert entry["one_time_usd"] is None
+    assert entry["per_month_usd"] is None
+    assert entry["complete"] is False
+    assert entry["reason"] == "queries_window_absent"
+
+
+def test_declared_queries_window_lets_cost_per_query_compute() -> None:
+    denominators = _denominators(
+        queries={"value": 10, "source": "coverage proof", "window": _QUERIES_WINDOW},
+    )
+    ledger = _build_ledger(denominators=denominators)
+    entry = ledger["per_unit"]["queries"]
+    assert entry["reason"] != "queries_window_absent"
+    assert entry["one_time_usd"] == pytest.approx(0.25)
 
 
 # ── 5. operator-burden ledger ────────────────────────────────────────────────
@@ -515,13 +630,42 @@ def test_missing_burden_file_is_unmeasured_never_zero() -> None:
     assert quantity.value is None
     assert quantity.status == UNMEASURED
     assert "no_burden_file" in quantity.notes
+    assert "burden_ledger_empty" in quantity.notes
+    ledger = _build_ledger(
+        quantities={**_base_quantities(), "review": quantity}, burden_rows=None
+    )
+    assert ledger["components"]["review"]["incomplete_reason"] == "burden_ledger_empty"
+    assert "review" in ledger["totals"]["one_time"]["incomplete_components"]
 
 
-def test_empty_burden_file_is_measured_zero() -> None:
+def test_empty_burden_ledger_is_unmeasured_never_zero() -> None:
     quantity = review_quantity_from_burden_rows([])
+    assert quantity.value is None
+    assert quantity.status == UNMEASURED
+    assert "burden_ledger_empty" in quantity.notes
+    assert quantity.counts["events"] == 0
+    ledger = _build_ledger(
+        quantities={**_base_quantities(), "review": quantity}, burden_rows=[]
+    )
+    burden = ledger["operator_burden"]
+    assert burden["status"] == UNMEASURED
+    assert burden["minutes_total"] is None
+    assert burden["events"] == 0
+    assert burden["notes"] == ["burden_ledger_empty"]
+    review = ledger["components"]["review"]
+    assert review["quantity_value"] is None
+    assert review["incomplete_reason"] == "burden_ledger_empty"
+    assert "review" in ledger["totals"]["one_time"]["incomplete_components"]
+
+
+def test_burden_entries_summing_to_zero_stay_measured_zero() -> None:
+    # read_burden refuses minutes <= 0, so such rows cannot come from a ledger
+    # file; the guard pinned here is that emptiness demotes, a zero sum does not.
+    rows = [_burden_row(minutes=0.0), _burden_row(event_id="evt-2", minutes=0.0)]
+    quantity = review_quantity_from_burden_rows(rows)
     assert quantity.value == 0.0
     assert quantity.status == MEASURED
-    assert "empty_ledger" in quantity.notes
+    assert quantity.counts["events"] == 2
 
 
 def test_naive_built_at_refused() -> None:
@@ -559,6 +703,31 @@ def test_unverified_storage_rate_is_declared_unverified() -> None:
     assert ledger["totals"]["per_month"]["complete"] is True
     assert ledger["totals"]["per_month"]["incomplete_components"] == []
     assert ledger["totals"]["per_month"]["known_usd"] == pytest.approx(0.03)
+
+
+def test_estimated_storage_lower_bound_makes_per_month_incomplete() -> None:
+    csv_text = _packages_csv([{}, {"label_bytes": "False"}])
+    storage = storage_quantity_from_deep_packages(csv_text)
+    assert storage.status == ESTIMATED
+    quantities = _base_quantities()
+    quantities["storage"] = storage
+    ledger = _build_ledger(quantities=quantities)
+    entry = ledger["components"]["storage"]
+    assert entry["incomplete_reason"] == "storage_lower_bound"
+    assert "storage" in ledger["totals"]["per_month"]["incomplete_components"]
+    assert ledger["totals"]["per_month"]["complete"] is False
+    # The numeric total is still reported, labelled as a lower bound.
+    assert ledger["totals"]["per_month"]["known_usd"] == pytest.approx(
+        storage.value * 0.015
+    )
+    assert ledger["complete"] is False
+
+
+def test_measured_storage_keeps_per_month_complete() -> None:
+    ledger = _build_ledger()
+    assert ledger["components"]["storage"]["incomplete_reason"] is None
+    assert ledger["totals"]["per_month"]["complete"] is True
+    assert "storage" not in ledger["totals"]["per_month"]["incomplete_components"]
 
 
 def test_no_incomplete_component_ever_has_cost_usd() -> None:
@@ -643,12 +812,19 @@ def test_design_comparison_uses_c2_freeze_constants() -> None:
 
 def test_per_unit_null_denominator_is_denominator_unmeasured() -> None:
     ledger = _build_ledger(denominators=_denominators())
-    for key in ("qualified_filings", "qualified_issuers_deep", "qualified_issuers_core", "queries"):
+    for key in ("qualified_filings", "qualified_issuers_deep", "qualified_issuers_core"):
         entry = ledger["per_unit"][key]
         assert entry["one_time_usd"] is None
         assert entry["per_month_usd"] is None
         assert entry["reason"] == "denominator_unmeasured"
         assert entry["complete"] is False
+    # The queries entry declares no window either, and the absent-window
+    # refusal leads: cost-per-query is refused before any denominator check.
+    queries = ledger["per_unit"]["queries"]
+    assert queries["one_time_usd"] is None
+    assert queries["per_month_usd"] is None
+    assert queries["reason"] == "queries_window_absent"
+    assert queries["complete"] is False
 
 
 def test_per_unit_zero_denominator_is_denominator_zero() -> None:

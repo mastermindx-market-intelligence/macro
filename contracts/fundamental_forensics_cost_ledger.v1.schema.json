@@ -143,7 +143,7 @@
       "required": [
         "quantity_value", "quantity_unit", "quantity_status", "usd_per_unit",
         "rate_status", "rate_verified", "basis_period", "cost_usd", "cost_status",
-        "notes", "counts"
+        "incomplete_reason", "notes", "counts"
       ],
       "properties": {
         "quantity_value": {"type": ["null", "number"]},
@@ -156,6 +156,20 @@
         "cost_usd": {"type": ["null", "number"]},
         "cost_status": {
           "enum": ["measured", "declared", "declared_unverified", "incomplete"]
+        },
+        "incomplete_reason": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "enum": [
+                "inference_rows_uncosted",
+                "inference_rows_absent",
+                "inference_filter_empty",
+                "storage_lower_bound",
+                "burden_ledger_empty"
+              ]
+            }
+          ]
         },
         "notes": {"type": "array", "items": {"type": "string"}},
         "counts": {"type": "object"}
@@ -200,7 +214,8 @@
               "enum": [
                 "denominator_unmeasured",
                 "denominator_zero",
-                "components_incomplete"
+                "components_incomplete",
+                "queries_window_absent"
               ]
             }
           ]

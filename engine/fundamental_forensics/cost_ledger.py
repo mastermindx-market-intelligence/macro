@@ -11,7 +11,11 @@ is ``unmeasured``, never ``0``.  A total or per-unit figure assembled from
 incomplete components says so, in the same object, every time: the totals
 carry ``complete`` plus ``incomplete_components``, the per-unit quotients
 carry ``complete`` plus a ``reason``, and ``render_print`` prints the tokens
-``UNMEASURED`` / ``INCOMPLETE`` instead of any blank or zero.
+``UNMEASURED`` / ``INCOMPLETE`` instead of any blank or zero.  A component
+kept in ``incomplete_components`` carries a typed ``incomplete_reason`` —
+e.g. ``inference_rows_uncosted``, ``storage_lower_bound``,
+``burden_ledger_empty`` — and cost-per-query is refused outright when the
+queries counting window is absent (``queries_window_absent``).
 
 Purity
 ------
@@ -388,10 +392,54 @@ def storage_quantity_from_deep_packages(csv_text: str) -> Quantity:
     return Quantity(six_role_bytes / 1e9, "gb", status, tuple(notes), counts)
 
 
+def _parse_instant(text: Any) -> datetime | None:
+    """Parse a strict ISO instant; anything else (naive, malformed) is None."""
+    if not isinstance(text, str) or not text:
+        return None
+    try:
+        moment = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if moment.tzinfo is None or moment.utcoffset() is None:
+        return None
+    return moment
+
+
+def _window_bounds(window: Any) -> tuple[datetime, datetime] | None:
+    """Half-open ``[start, end)`` bounds of a queries counting window.
+
+    A window that is absent, not an object, missing a bound, or carrying an
+    unparseable bound is not a declared window (``None``): rows are then not
+    filtered and cost-per-query is refused with ``queries_window_absent``.
+    """
+    if not isinstance(window, dict):
+        return None
+    start = _parse_instant(window.get("start"))
+    end = _parse_instant(window.get("end"))
+    if start is None or end is None:
+        return None
+    return start, end
+
+
 def inference_quantity_from_usage(
-    lines: Iterable[str], row_filter: Mapping[str, Any]
+    lines: Iterable[str],
+    row_filter: Mapping[str, Any],
+    window: Mapping[str, Any] | None = None,
 ) -> Quantity:
-    """Sum est_cost_usd over ai_costs.usage.v1 rows this lane caused."""
+    """Sum est_cost_usd over ai_costs.usage.v1 rows this lane caused.
+
+    When a queries counting window is declared the matched rows are tied to
+    the same half-open ``[start, end)`` interval: rows outside it — including
+    matched rows whose ``ts`` cannot be placed — are excluded from the sum and
+    counted as ``inference_rows_outside_window``, never silently included.
+
+    The honesty rule: matched rows whose cost is missing or undecodable, zero
+    matching rows, or an empty or absent filter all make the quantity
+    ``unmeasured`` with a typed reason (``inference_rows_uncosted``,
+    ``inference_rows_absent``, ``inference_filter_empty``) — the value is
+    ``None``, never a measured or estimated zero.  Only a set in which every
+    matched row decodes with a cost is ``measured``.
+    """
     if row_filter is None:
         row_filter = {}
     if not isinstance(row_filter, dict):
@@ -402,10 +450,12 @@ def inference_quantity_from_usage(
     lane_prefixes = [
         prefix.lower() for prefix in (row_filter.get("lane_prefixes") or []) if prefix
     ]
+    bounds = _window_bounds(window)
     rows_read = 0
     rows_matched = 0
     rows_undecodable = 0
     rows_uncosted = 0
+    rows_outside_window = 0
     total = 0.0
     stamps: list[str] = []
     for line in lines:
@@ -432,29 +482,36 @@ def inference_quantity_from_usage(
         if not (stage_hit or lane_hit):
             continue
         rows_matched += 1
-        stamp = row.get("ts")
-        if isinstance(stamp, str) and stamp:
-            stamps.append(stamp)
+        raw_ts = row.get("ts")
+        moment = _parse_instant(raw_ts)
+        if bounds is not None and (moment is None or not bounds[0] <= moment < bounds[1]):
+            rows_outside_window += 1
+            continue
+        if isinstance(raw_ts, str) and raw_ts:
+            stamps.append(raw_ts)
         cost = row.get("est_cost_usd")
         if not _is_number(cost) or not math.isfinite(cost):
             rows_uncosted += 1
         else:
             total += float(cost)
-    window = {"min": min(stamps), "max": max(stamps)} if stamps else None
-    notes: tuple[str, ...] = ()
-    if rows_matched == 0:
-        notes = ("no_matching_rows",)
+    window_summary = {"min": min(stamps), "max": max(stamps)} if stamps else None
+    if not stage_prefixes and not lane_prefixes:
+        status, value, notes = UNMEASURED, None, ("inference_filter_empty",)
+    elif rows_matched == 0:
+        status, value, notes = UNMEASURED, None, ("inference_rows_absent",)
     elif rows_uncosted:
-        notes = ("uncosted_rows_excluded",)
+        status, value, notes = UNMEASURED, None, ("inference_rows_uncosted",)
+    else:
+        status, value, notes = MEASURED, total, ()
     counts = {
         "rows_read": rows_read,
         "rows_matched": rows_matched,
         "rows_undecodable": rows_undecodable,
         "rows_uncosted": rows_uncosted,
-        "window": window,
+        "inference_rows_outside_window": rows_outside_window,
+        "window": window_summary,
     }
-    status = ESTIMATED if rows_uncosted else MEASURED
-    return Quantity(total, "usd", status, notes, counts)
+    return Quantity(value, "usd", status, notes, counts)
 
 
 def parse_quantity(parse_cpu_seconds: float | None = None) -> Quantity:
@@ -482,12 +539,24 @@ def licence_quantity(issuers: int | None = None) -> Quantity:
 
 
 def review_quantity_from_burden_rows(burden_rows: list[dict] | None) -> Quantity:
-    """Review-minutes quantity from the burden ledger state."""
+    """Review-minutes quantity from the burden ledger state.
+
+    An empty or absent ledger is ``unmeasured`` with the typed reason
+    ``burden_ledger_empty`` — a null value, never a measured zero.  A ledger
+    with entries is ``measured`` even when the minutes sum to 0: emptiness
+    demotes, a zero sum does not.
+    """
     if burden_rows is None:
-        return Quantity(None, "minute", UNMEASURED, notes=("no_burden_file",), counts={})
+        return Quantity(
+            None,
+            "minute",
+            UNMEASURED,
+            notes=("no_burden_file", "burden_ledger_empty"),
+            counts={},
+        )
     if not burden_rows:
         return Quantity(
-            0.0, "minute", MEASURED, notes=("empty_ledger",), counts={"events": 0}
+            None, "minute", UNMEASURED, notes=("burden_ledger_empty",), counts={"events": 0}
         )
     minutes = float(sum(row["minutes"] for row in burden_rows))
     return Quantity(minutes, "minute", MEASURED, counts={"events": len(burden_rows)})
@@ -646,7 +715,17 @@ def _burden_summary(burden_rows: list[dict] | None) -> dict:
             "by_act_kind": {},
             "by_actor_role": {},
             "window": None,
-            "notes": ["no_burden_file"],
+            "notes": ["no_burden_file", "burden_ledger_empty"],
+        }
+    if not burden_rows:
+        return {
+            "status": UNMEASURED,
+            "minutes_total": None,
+            "events": 0,
+            "by_act_kind": {},
+            "by_actor_role": {},
+            "window": None,
+            "notes": ["burden_ledger_empty"],
         }
     by_act_kind: dict[str, float] = {}
     by_actor_role: dict[str, float] = {}
@@ -655,9 +734,6 @@ def _burden_summary(burden_rows: list[dict] | None) -> dict:
         by_actor_role[row["actor_role"]] = by_actor_role.get(row["actor_role"], 0.0) + float(
             row["minutes"]
         )
-    notes: list[str] = []
-    if not burden_rows:
-        notes.append("empty_ledger")
     return {
         "status": MEASURED,
         "minutes_total": float(sum(row["minutes"] for row in burden_rows)),
@@ -667,10 +743,8 @@ def _burden_summary(burden_rows: list[dict] | None) -> dict:
         "window": {
             "first": burden_rows[0]["recorded_at"],
             "last": burden_rows[-1]["recorded_at"],
-        }
-        if burden_rows
-        else None,
-        "notes": notes,
+        },
+        "notes": [],
     }
 
 
@@ -695,6 +769,31 @@ def _design_comparison(quantities: Mapping[str, Quantity]) -> dict | None:
         "cold_deep_gets_receipt_estimate": fleet_estimate,
         "cold_deep_gets_ratio_receipt_to_design": fleet_ratio,
     }
+
+
+# Typed reasons a component stays in incomplete_components even when its
+# cost_status alone would not say so (F1/F3/F4 review rulings, 2026-10-19).
+_COMPONENT_REASON_NOTES = {
+    "inference": frozenset(
+        {"inference_rows_uncosted", "inference_rows_absent", "inference_filter_empty"}
+    ),
+    "review": frozenset({"burden_ledger_empty"}),
+}
+
+
+def _incomplete_reason(component: str, quantity: Quantity) -> str | None:
+    """The typed reason a component belongs in incomplete_components."""
+    if component == "storage":
+        # A lower bound: unparseable cells were excluded, or primary bytes
+        # are known understated — the sum is reported but never complete.
+        if quantity.status == ESTIMATED or "primary_bytes_understated" in quantity.notes:
+            return "storage_lower_bound"
+        return None
+    allowed = _COMPONENT_REASON_NOTES.get(component, frozenset())
+    for note in quantity.notes:
+        if note in allowed:
+            return note
+    return None
 
 
 def build_cost_ledger(
@@ -730,6 +829,8 @@ def build_cost_ledger(
         if quantity.value is not None and rate["status"] == "declared_rate":
             cost_usd = quantity.value * float(rate["usd_per_unit"])
         if quantity.status == UNMEASURED or rate["status"] == "unmeasured":
+            # An unmeasured component is never promoted to measured or
+            # declared, whatever its rate says.
             cost_status = "incomplete"
         elif rate["verified"] is False:
             cost_status = "declared_unverified"
@@ -747,6 +848,7 @@ def build_cost_ledger(
             "basis_period": rate["basis_period"],
             "cost_usd": cost_usd,
             "cost_status": cost_status,
+            "incomplete_reason": _incomplete_reason(component, quantity),
             "notes": list(quantity.notes),
             "counts": quantity.counts,
         }
@@ -760,7 +862,10 @@ def build_cost_ledger(
     for period, members in periods.items():
         known = [entry["cost_usd"] for _, entry in members if entry["cost_usd"] is not None]
         incomplete = sorted(
-            component for component, entry in members if entry["cost_status"] == "incomplete"
+            component
+            for component, entry in members
+            if entry["cost_status"] == "incomplete"
+            or entry["incomplete_reason"] is not None
         )
         totals[period] = {
             "known_usd": sum(known) if known else None,
@@ -769,6 +874,9 @@ def build_cost_ledger(
         }
     complete = totals["one_time"]["complete"] and totals["per_month"]["complete"]
 
+    queries_window_declared = (
+        _window_bounds(checked_denominators["queries"].get("window")) is not None
+    )
     per_unit: dict[str, dict] = {}
     for key in _DENOMINATOR_KEYS:
         denominator = checked_denominators[key]["value"]
@@ -779,7 +887,12 @@ def build_cost_ledger(
             "complete": both_complete,
             "reason": None,
         }
-        if denominator is None:
+        if key == "queries" and not queries_window_declared:
+            # Cost-per-query is refused outright when the queries counting
+            # window is absent: the inference rows cannot be tied to the
+            # counted queries, so no quotient is honest.
+            entry["reason"] = "queries_window_absent"
+        elif denominator is None:
             entry["reason"] = "denominator_unmeasured"
         elif denominator == 0:
             entry["reason"] = "denominator_zero"
@@ -838,11 +951,12 @@ def render_print(ledger: Mapping[str, Any]) -> str:
     for component in COMPONENTS:
         entry = ledger["components"][component]
         notes = ",".join(entry["notes"])
+        reason = entry.get("incomplete_reason") or "none"
         lines.append(
             f"component {component}: cost_usd={_fmt(entry['cost_usd'])}"
             f" status={entry['cost_status']}"
             f" qty={_fmt(entry['quantity_value'])} {entry['quantity_unit']}"
-            f" notes=[{notes}]"
+            f" notes=[{notes}] reason={reason}"
         )
     for period in ("one_time", "per_month"):
         period_totals = ledger["totals"][period]

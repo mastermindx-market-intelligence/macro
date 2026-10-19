@@ -114,10 +114,21 @@ def _cmd_build(args: argparse.Namespace) -> int:
     else:
         quantities["storage"] = _omitted_quantity("gb")
 
+    if args.denominators:
+        denominators = _load_json(args.denominators, "denominators_shape")
+    else:
+        denominators = _default_denominators()
+
+    # The inference rows are tied to the queries counting window, the same
+    # window the queries denominator declares; without it the rows are not
+    # filtered and cost-per-query is refused (queries_window_absent).
+    queries_entry = denominators.get("queries") if isinstance(denominators, dict) else None
+    queries_window = queries_entry.get("window") if isinstance(queries_entry, dict) else None
+
     if args.ai_usage:
         usage_text = read_text_bounded(args.ai_usage)
         quantities["inference"] = inference_quantity_from_usage(
-            usage_text.splitlines(), rates["inference_row_filter"]
+            usage_text.splitlines(), rates["inference_row_filter"], window=queries_window
         )
     else:
         quantities["inference"] = _omitted_quantity("usd")
@@ -134,11 +145,6 @@ def _cmd_build(args: argparse.Namespace) -> int:
         # review minutes are unmeasured, never zero.
         burden_rows = None
     quantities["review"] = review_quantity_from_burden_rows(burden_rows)
-
-    if args.denominators:
-        denominators = _load_json(args.denominators, "denominators_shape")
-    else:
-        denominators = _default_denominators()
 
     built_at = _parse_built_at(args.built_at)
     ledger = build_cost_ledger(
