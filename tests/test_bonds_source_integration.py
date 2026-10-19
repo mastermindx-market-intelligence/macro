@@ -31,6 +31,15 @@ def test_publication_uses_the_existing_default_deny_access_boundary():
     assert "rewrite /api/regwall/check" in handler
     assert "rewrite /api/paywall/check" in handler
     assert 'header Cache-Control "private, no-store"' in handler
+    # This path uses the canonical served tree, not the live-data overlay.
+    external = re.search(r"@vps_external\s*\{\s*path ([^\n]+)", caddy)
+    assert external
+    assert not any(fnmatch.fnmatchcase(PAYLOAD, pattern)
+                   for pattern in shlex.split(external.group(1)))
+    assert "root * /opt/macro/site.served" in caddy
+    update = (ROOT / "app/deploy/update.sh").read_text()
+    assert 'flock -n 9 || exit 0' in update
+    assert 'rsync -a --delete --min-size=1 "$APP_DIR/site/" "$APP_DIR/site.served/"' in update
 
 
 def test_source_mount_is_additive_to_the_existing_bonds_consumer():

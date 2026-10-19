@@ -8,7 +8,7 @@ Before this delta, the accepted R33 generator wrote only a data-side companion a
 
 This delta connects the same publication to the existing Bonds template. The existing Macro publisher writes identical serialized bytes to `data/macro_context/decision_workspaces.json` and `site/macro-context-data/decision_workspaces.json`. The existing `bonds.html` page opens a scoped **Transmission sources** dialog and reads that protected path on demand. There is one projection owner, one schema and one existing five-key hub.
 
-The candidate is implemented and passes bounded source and browser checks. No merge, deployment, production-origin receipt, real entitlement session, retained case, active monitor or empirical forecast is claimed. Independent source review is pending at this checkpoint.
+The candidate is implemented and passes bounded source and browser checks. Independent review of the original mount commit `43eafbbbe601221f658a64471b33166477f716e8` returned zero P0/P1 defects and six P2 observations; the [root adjudication](verification/integration/source-review-adjudication.json) records four fixes and two serving-path corrections. Its source-review receipt is accepted. Recover binding CI and any subsequent exact-head delta-review status from the current PR receipt. No merge, deployment, production-origin receipt, real entitlement session, retained case, active monitor or empirical forecast is claimed.
 
 ## Source ownership and recovery
 
@@ -41,13 +41,13 @@ The `.j2` suffix is deliberate: these are included render inputs, not a second s
 
 The client uses exactly `GET /macro-context-data/decision_workspaces.json`, with same-origin credentials, no-store cache policy and redirects rejected. It never embeds the publication in public HTML or places it under the public presentation asset prefixes.
 
-At the inspected source pin, `app.paywall.classify_path` classifies this path as **premium**. It is absent from Caddy's public exclusions and passes the existing registration check and feature-flagged paywall check; the handler uses private/no-store responses. No Caddy policy, public allowlist, tier, admission rule, CI workflow or render DAG was changed. This is source-policy verification, not a production entitlement test. Existing owners retain the actual feature-flag and release policy.
+At the inspected source pin, `app.paywall.classify_path` classifies this path as **premium**. It is absent from Caddy's public exclusions and passes the existing registration check and feature-flagged paywall check; the handler uses private/no-store responses. No Caddy policy, public allowlist, tier, admission rule or render DAG was changed. CI registration is limited to the existing `ccw-w4-credit-desk` job: both R33 pytest suites, their actual FastAPI import dependency and bounded source/serving paths. No new job, waiver or release policy was added. This is source-policy verification, not a production entitlement test. Existing owners retain the actual feature-flag and release policy.
 
 The transport streams at most 1,500,000 UTF-8 bytes, requires `application/json`, rejects malformed text/schema/lineage and distinguishes access, missing publication, network/redirect and timeout states. Local import remains unverified, tab-local display context. Pending or rejected reads clear sourced values; there is no captured fallback. A generation counter and abort controller prevent late reads from replacing a newer import/reload or a reopened dialog.
 
 ## Actual source dating and proof limits
 
-[Build receipt](verification/integration/build-receipt.json) records the exact committed raw input paths, Git blobs and SHA-256 digests. The Macro generator ran in an isolated root against six committed owner inputs at `80f270c44bcdf11f5e71dacc05b11a0875a01d7f`, including the existing snapshot, world state, regime, parsed transitions, bond-health snapshot and calibration file.
+[Build receipt](verification/integration/build-receipt.json) records the exact committed raw input paths, Git blobs and SHA-256 digests. The isolated candidate build used six committed owner inputs at `80f270c44bcdf11f5e71dacc05b11a0875a01d7f`: Macro `main()` loaded the snapshot, world state, regime and parsed transitions; the existing Bonds view model used the bond-health snapshot and calibration file.
 
 The candidate source publication is [retained here](verification/integration/candidate-owner-publication.json), **for evidence only**. The production client contains no path to this retained candidate or the older captured sample.
 
@@ -63,16 +63,22 @@ The ordinary Macro `main()` ran with real pinned JSON inputs; missing auxiliary 
 
 ## Verification
 
-- [Browser receipt](verification/integration/browser-receipt.json): **49 passed / 0 failed**, Chromium **129.0.6668.29**, isolated HTTP Bonds route. No page errors, external requests or non-GET requests were observed. First dialog load was **159 ms in this local rehearsal**, not a production latency claim.
+- [Browser receipt](verification/integration/browser-receipt.json): **53 passed / 0 failed**, Chromium **129.0.6668.29**, isolated HTTP Bonds route. No page errors, external requests or non-GET requests were observed. First dialog load was **160 ms in this local rehearsal**, not a production latency claim.
 - Widths **1440, 1024, 768, 390**, both light/dark and EN/ZH; all sixteen combinations fit. Field/date/missing views also fit at 390.
 - Accessible dialog name and localized labels, keyboard cycling, Escape/focus return, filter/detail/back, pending-read close/reopen, explicit reload and late-file suppression.
 - Minimum measured visible control size: **44 px**. Minimum measured text contrast: **5.33:1** across the sampled inspector text nodes. These checks do not constitute a complete assistive-technology or cross-browser audit.
 - Guarded 401/403/404/503, redirects, disconnection, timeouts, wrong media type, oversized streaming UTF-8 body without Content-Length, unknown schema, invalid import, null, zero, escaped HTML, future component and assessment clocks.
-- [Pytest receipt](verification/integration/pytest.xml): **5 passed**, proving present/missing generator output identity, five-key hub preservation, unchanged adapter bytes, existing default-deny classification and host mounting.
+- [Existing Bonds CI-owner rehearsal](verification/integration/ci-owner-pytest.xml): **176 passed**, including both registered R33 suites and the existing Bonds VM/copy/explanation regressions. It verifies present/missing generator output identity, the five-key hub, unchanged adapter bytes, serving/access routing and host mounting. The [initial five-test subset](verification/integration/pytest.xml) remains historical evidence at 43eaf; it is not an additional non-overlapping total. The initial PR contract-delta failure was two introduced unwired test suites, not inherited debt; the source registration corrects that failure without a waiver.
 - Eight screenshots are indexed by hash in the browser receipt. [Desktop light EN](verification/integration/1440-light-en.png), [mobile light ZH](verification/integration/390-light-zh.png), [mobile dark EN](verification/integration/390-dark-en.png).
 - The original R33 reference remains byte-identical to 19ef: SHA-256 `6565f567302e39d16a9849609532f669b122045fd059a3c5e084b8caef0fc15f`.
 
 Review repaired a missing binding call, cancellation/controller races, a character-only network limit, an independent language toggle, a 42px inner file target and native keyboard-cycle escape before these final receipts. Validation harness corrections were kept distinct from product fixes. An old failed-trial image was excluded from the successful screenshot manifest; only the eight successful matrix images are retained here.
+
+## Serving-path review resolution
+
+The source configuration resolves `storage.site_dir` to `site`. Caddy inherits `/opt/macro/site.served` for this payload; its nested `/var/lib/macro-live/public` root applies only to the explicit `@vps_external` matcher, which excludes `/macro-context-data/decision_workspaces.json`. The existing `app/deploy/update.sh` holds `macro-update.lock` and publishes `site/` into `site.served/` using per-file atomic rsync. This resolves the review's asserted live-write tear and ambiguous-root concerns at source level. The existing serving mechanism stays intact; actual deployed filesystem/response proof is still required.
+
+The four accepted display findings are fixed and exercised: escaped date banners, localized owner stale flags, fatal UTF-8 import with distinct read/decode errors, and preservation of the keyboard loadbar control across re-render. The final strict inspector source hash is `dcafda815a349afa39b74512c6a099485d4b22b0a475574351ed3324cb343ce8`.
 
 ## Review and effects
 
@@ -95,4 +101,4 @@ Terminal owner paths were refreshed read-only at **`fb0dacd4e4b88041a095971f6de5
 | Existing model/evaluation owner | Target/horizon and point-in-time qualification, out-of-time evaluation, calibration and abstention before probabilities. Forecast and trade authority remain withheld. |
 | Real browser session / release proof | Local Browser plugin reported no originating extension context. Cloud navigation to `https://www.mastermind-x.com/bonds.html` timed out; observing its recovery blank tab was explicitly blocked by URL policy. That route was not retried or worked around. A permitted connected production session is required after release. |
 
-**Primary next action:** independent exact-source review of this PR candidate, then the governed Macro release gate and real production publisher-to-Bonds browser receipt. Existing owner admission and model work remains behind its own gates. Do not restart the Paper redesign or accepted offline suites.
+**Primary next action:** recover the current PR's exact-head CI and final delta-review receipts, resolve any actual introduced failure, then follow the existing Macro release gate and obtain the real production publisher-to-Bonds browser receipt. Existing owner admission and model work remains behind its own gates. Do not restart the Paper redesign or accepted offline suites.

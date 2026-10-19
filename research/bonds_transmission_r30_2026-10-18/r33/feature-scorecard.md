@@ -1,6 +1,8 @@
 # R33 source interaction scorecard
 
-R33 extends I01/I03 inside the accepted eight-workspace, fifteen-family design. This is the current implementation map for the added source surface. The complete R32 tool scorecard remains in ../r32/feature-scorecard.md.
+R33 extends I01/I03 inside the accepted eight-workspace, fifteen-family design. The table below records the accepted offline reference. The complete R32 tool scorecard remains in ../r32/feature-scorecard.md.
+
+The [19 October integration record](PRODUCTION_INTEGRATION_2026-10-19.md) adds the existing `/bonds.html` source mount and protected publisher read: 53 new HTTP browser checks and 176 existing Bonds owner pytest checks pass. It covers source/import identity, byte limits, access/network rejection, cancellation, source dates, keyboard behavior and 16 responsive/theme/language combinations. This is an isolated actual-template candidate receipt, not deployed-origin acceptance. Existing offline restore behavior remains in the reference; the production-template port uses explicit site reload without a captured fallback.
 
 | Feature | Trigger and useful result | State / return behavior | Acceptance evidence |
 | --- | --- | --- | --- |
@@ -24,4 +26,4 @@ R33 extends I01/I03 inside the accepted eight-workspace, fifteen-family design. 
 
 ## Build state
 
-Native specification and offline behavior are verified. Publisher and consumer code are built. Production feed/consumer integration, qualified event inputs, retained research, calibrated likelihood and compound monitoring remain the named existing-owner dependencies. A supplied-field count is not a readiness score for those capabilities.
+Native specification and offline behavior are verified and unchanged. Publisher and existing Bonds consumer source integration are built and locally checked. The initial mount's independent review is accepted with the recorded parent adjudication. The exact resulting head's CI and follow-up review receipt, actual release gate and deployed-origin browser proof remain explicit next steps in the cumulative handoff. Qualified event inputs, retained research, calibrated likelihood and compound monitoring retain their named existing-owner gates. A supplied-field count is not a readiness score for those capabilities.

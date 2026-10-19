@@ -1,6 +1,8 @@
 # Bonds × Transmission — current R33 design and implementation handoff
 
-**The requested native revamp and working offline reference are complete. R33 also builds the source publication and inspector needed to begin integration.** The design uses Mastermind light surfaces, eight focused workspaces, fifteen tool families and progressive detail. Production integration remains explicitly unproven.
+**The native revamp and working offline reference are complete. The R33 publisher and strict source inspector are now mounted in the existing Bonds source template.** The actual-template HTTP candidate passes 53 new browser checks and 176 existing Bonds owner pytest checks; deployment and production acceptance remain unproven. The eight workspaces, fifteen tool families and protected Forex/CDI boundaries remain intact.
+
+Read the [current cumulative handoff](r33/SESSION_HANDOFF_2026-10-18.md) and [19 October production integration record](r33/PRODUCTION_INTEGRATION_2026-10-19.md) first. They supersede only the earlier unmounted status and next action. The accepted Paper redesign and 65+26 offline journeys were not repeated.
 
 ## Open the current work
 
@@ -47,9 +49,9 @@ The same existing Macro builder now writes an additive companion JSON from its e
 
 The strict adapter preserves missing and invalid data, shows dated context honestly and leaves scenario/evaluator state unchanged. Broad HY spread, a calm funding proxy and selected label changes cannot become matched peer changes, admitted funding observations or a continuation probability.
 
-The inspector supports local JSON import, pending/rejected states, explicit restore, search/focus restoration, Chinese mobile labels and optional dark theme. It makes no HTTP request and performs no real save or monitor action.
+The offline reference supports local JSON import, pending/rejected states, explicit restore, search/focus restoration, Chinese mobile labels and optional dark theme. That retained reference makes no HTTP request. The new existing-page integration instead reads the protected site publication on demand; it has explicit reload, no captured fallback, and no save or monitor action.
 
-## Verification
+## Historical design/reference verification at 19ef
 
 | Verification | Result |
 | --- | --- |
@@ -67,7 +69,7 @@ See [validation](r33/validation.json), [publisher results](r33/verification/publ
 
 ## Implementation and source continuity
 
-The source changes are limited to `scripts/build_macro_context.py`, `tests/test_macro_decision_publication.py` and this existing handoff folder. The current handoff stays on draft PR #9578 and its original branch. CI, DAG, render-input and production Bonds/Forex templates are not changed.
+The current source delta includes the existing Macro builder, the existing Bonds template, three scoped include-only render inputs and focused tests. The tests are registered in the existing Bonds `ccw-w4-credit-desk` CI job, with its required import dependency and paths; no new CI job, waiver, release policy or render-DAG change is introduced. The existing handoff stays on draft PR #9578 and its original branch. Forex templates and CDI designs remain unchanged.
 
 [R33 native exports](r33/native/) supersede the matching S01, S05 and START exports in the existing [native baseline](jsx/). S04 only moves on the canvas to clear the expanded S01. Unchanged R32 exports, contracts and tools remain applicable. The R33 reference itself is complete and requires no manual patching.
 
@@ -75,7 +77,7 @@ R31's repaired transient Forex attachment remains documented in its historical v
 
 ## Exact next integration action
 
-The Macro owner should review and integrate the additive companion, then mount the adapter in the existing Bonds consumer under normal source review and repository checks. The status is **BUILT_NOT_PROVEN** until that actual production path is verified.
+The companion's protected site mirror and existing Bonds mount are implemented. Complete independent source review and binding repository checks, then satisfy the actual existing Macro release gate and obtain the deployed generator → protected response → Bonds browser receipt. The status remains **BUILT_NOT_PROVEN**. A permitted connected production browser session is still required; a local candidate or CI result cannot substitute for it.
 
 Qualified instrument observations, source availability clocks, matched peers and funding evidence must come from the existing owners before event evaluation is enabled. Terminal Investigation v2 owns admitted retention and exact reads; Terminal Alerts owns compound-rule admission, evaluation and receipts. Empirical likelihood additionally needs a defined target/horizon, point-in-time data, out-of-time validation, calibration and abstention.
 

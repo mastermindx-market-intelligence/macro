@@ -2,7 +2,7 @@
   "schema": "r33.bonds_source_integration_browser.v1",
   "acceptance": "BUILT_NOT_PROVEN",
   "kind": "isolated_http_bonds_route_from_pinned_owner_inputs",
-  "route": "http://127.0.0.1:61486/bonds.html",
+  "route": "http://127.0.0.1:54521/bonds.html",
   "production_origin_observed": false,
   "input_commit": "80f270c44bcdf11f5e71dacc05b11a0875a01d7f",
   "publication_content_sha256": "a4e86189a25a92fd9f6ee44cc40569a9ac698b3c2807c2122ca111fb49dbc2bb",
@@ -10,7 +10,7 @@
     "scripts/build_macro_context.py": "4370a17da646c4c31d4dc32ea3dbf38775da05421fd51c1a4eaf3562960cfeac",
     "templates/bonds.html.j2": "edffe64e9374ea683ff880caa3b0ff2cd525e1ecab16f644343b760ae344565d",
     "templates/_bonds_source_adapter.js.j2": "eddd3b84b90a58c17333cdab6972d0a223e38f62b1f45aecefb189a8c511a5a2",
-    "templates/_bonds_source_inspector.js.j2": "a668dcb47b1589ff918445980cb0d6a3ab6fab2e1e65b3719bae25306482ebac",
+    "templates/_bonds_source_inspector.js.j2": "dcafda815a349afa39b74512c6a099485d4b22b0a475574351ed3324cb343ce8",
     "templates/_bonds_source_inspector.css.j2": "72c4ac77315d414b47f3274423d1b7e7b47dd3748f14fc168c9d720b3089e746"
   },
   "results": [
@@ -22,17 +22,17 @@
     {
       "name": "Actual generator bytes reach three dated metric cards on Bonds",
       "pass": true,
-      "seconds": 0.074
+      "seconds": 0.071
     },
     {
       "name": "UTC build and owner assessment remain visibly distinct",
       "pass": true,
-      "seconds": 0.013
+      "seconds": 0.011
     },
     {
       "name": "Identity view exposes declared digest and real component clocks",
       "pass": true,
-      "seconds": 0.017
+      "seconds": 0.019
     },
     {
       "name": "Field detail returns to the filtered result and keyboard invoker",
@@ -42,7 +42,7 @@
     {
       "name": "Missing evidence preserves the three independent existing-owner gates",
       "pass": true,
-      "seconds": 0.01
+      "seconds": 0.013
     },
     {
       "name": "HTTP 401 withholds old values",
@@ -52,7 +52,7 @@
     {
       "name": "HTTP 403 withholds old values",
       "pass": true,
-      "seconds": 0.011
+      "seconds": 0.013
     },
     {
       "name": "HTTP 404 withholds old values",
@@ -72,37 +72,57 @@
     {
       "name": "Wrong media type is unavailable without fallback",
       "pass": true,
-      "seconds": 0.011
+      "seconds": 0.01
     },
     {
       "name": "Oversized response is unavailable without fallback",
       "pass": true,
-      "seconds": 0.016
+      "seconds": 0.012
     },
     {
       "name": "Redirected sign-in response is unavailable without fallback",
       "pass": true,
-      "seconds": 0.01
+      "seconds": 0.012
     },
     {
       "name": "Unknown schema import clears prior site context",
       "pass": true,
-      "seconds": 0.012
+      "seconds": 0.014
+    },
+    {
+      "name": "Malformed UTF-8 import is rejected with the precise text error",
+      "pass": true,
+      "seconds": 0.017
+    },
+    {
+      "name": "File read failure stays distinct from invalid UTF-8",
+      "pass": true,
+      "seconds": 0.017
+    },
+    {
+      "name": "Import and reload preserve the keyboard loadbar control",
+      "pass": true,
+      "seconds": 0.1
+    },
+    {
+      "name": "Owner stale true false and null remain distinct in Chinese",
+      "pass": true,
+      "seconds": 0.017
     },
     {
       "name": "Local import preserves numeric zero and unverified origin",
       "pass": true,
-      "seconds": 0.01
+      "seconds": 0.011
     },
     {
       "name": "Missing scalar stays unavailable within an otherwise valid projection",
       "pass": true,
-      "seconds": 0.016
+      "seconds": 0.014
     },
     {
       "name": "Imported strings and filename cannot execute markup",
       "pass": true,
-      "seconds": 0.011
+      "seconds": 0.01
     },
     {
       "name": "Future source clock remains a disclosed limitation",
@@ -112,37 +132,37 @@
     {
       "name": "Failed import stays unavailable until explicit site reload",
       "pass": true,
-      "seconds": 0.012
+      "seconds": 0.011
     },
     {
       "name": "A late file read cannot replace an explicit site reload",
       "pass": true,
-      "seconds": 0.013
+      "seconds": 0.014
     },
     {
       "name": "Disconnected source clears values and remains unavailable",
       "pass": true,
-      "seconds": 0.01
+      "seconds": 0.011
     },
     {
       "name": "Stream byte cap rejects a multibyte body without Content-Length",
       "pass": true,
-      "seconds": 0.018
+      "seconds": 0.02
     },
     {
       "name": "Future owner assessment is disclosed against the viewer UTC clock",
       "pass": true,
-      "seconds": 0.008
+      "seconds": 0.006
     },
     {
       "name": "Closing a pending fetch permits a clean reopen and ignores the old response",
       "pass": true,
-      "seconds": 0.016
+      "seconds": 0.015
     },
     {
       "name": "Closing a pending import prevents its late result from changing the reopened source",
       "pass": true,
-      "seconds": 0.011
+      "seconds": 0.015
     },
     {
       "name": "A stalled source request becomes an explicit timeout",
@@ -152,97 +172,97 @@
     {
       "name": "1440px light en inspector fits",
       "pass": true,
-      "seconds": 0.087
+      "seconds": 0.136
     },
     {
       "name": "1440px light zh inspector fits",
       "pass": true,
-      "seconds": 0.17
+      "seconds": 0.122
     },
     {
       "name": "1440px dark en inspector fits",
       "pass": true,
-      "seconds": 0.127
+      "seconds": 0.115
     },
     {
       "name": "1440px dark zh inspector fits",
       "pass": true,
-      "seconds": 0.109
+      "seconds": 0.1
     },
     {
       "name": "1024px light en inspector fits",
       "pass": true,
-      "seconds": 0.116
+      "seconds": 0.118
     },
     {
       "name": "1024px light zh inspector fits",
       "pass": true,
-      "seconds": 0.093
+      "seconds": 0.111
     },
     {
       "name": "1024px dark en inspector fits",
       "pass": true,
-      "seconds": 0.13
+      "seconds": 0.109
     },
     {
       "name": "1024px dark zh inspector fits",
       "pass": true,
-      "seconds": 0.091
+      "seconds": 0.104
     },
     {
       "name": "768px light en inspector fits",
       "pass": true,
-      "seconds": 0.103
+      "seconds": 0.109
     },
     {
       "name": "768px light zh inspector fits",
       "pass": true,
-      "seconds": 0.098
+      "seconds": 0.092
     },
     {
       "name": "768px dark en inspector fits",
       "pass": true,
-      "seconds": 0.1
+      "seconds": 0.114
     },
     {
       "name": "768px dark zh inspector fits",
       "pass": true,
-      "seconds": 0.091
+      "seconds": 0.097
     },
     {
       "name": "390px light en inspector fits",
       "pass": true,
-      "seconds": 0.106
+      "seconds": 0.11
     },
     {
       "name": "390px light zh inspector fits",
       "pass": true,
-      "seconds": 0.085
+      "seconds": 0.083
     },
     {
       "name": "390px dark en inspector fits",
       "pass": true,
-      "seconds": 0.104
+      "seconds": 0.098
     },
     {
       "name": "390px dark zh inspector fits",
       "pass": true,
-      "seconds": 0.087
+      "seconds": 0.088
     },
     {
       "name": "390px fields progressive view fits",
       "pass": true,
-      "seconds": 0.047
+      "seconds": 0.051
     },
     {
       "name": "390px dates progressive view fits",
       "pass": true,
-      "seconds": 0.061
+      "seconds": 0.043
     },
     {
       "name": "390px missing progressive view fits",
       "pass": true,
-      "seconds": 0.048
+      "seconds": 0.046
     },
     {
       "name": "All visible inspector controls provide 44px targets",
@@ -252,7 +272,7 @@
     {
       "name": "Native dialog traps focus and Escape returns to the Bonds trigger",
       "pass": true,
-      "seconds": 0.018
+      "seconds": 0.011
     },
     {
       "name": "Source inspection leaves host content, saved storage and write authority unchanged",
@@ -260,10 +280,10 @@
       "seconds": 0.0
     }
   ],
-  "passed": 49,
+  "passed": 53,
   "failed": 0,
   "browser": "129.0.6668.29",
-  "first_open_ms": 159,
+  "first_open_ms": 160,
   "baseline_page_errors": [],
   "new_page_errors": [],
   "baseline_external_blocked": [],
@@ -271,159 +291,167 @@
   "requests": [
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/bonds.html"
+      "url": "http://127.0.0.1:54521/bonds.html"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/illus.css"
+      "url": "http://127.0.0.1:54521/illus.css"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/product-nav-icons.css"
+      "url": "http://127.0.0.1:54521/product-nav-icons.css"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/navigation-refresh.css"
+      "url": "http://127.0.0.1:54521/navigation-refresh.css"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/logo_config.js"
+      "url": "http://127.0.0.1:54521/logo_config.js"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/stock-logos.js"
+      "url": "http://127.0.0.1:54521/stock-logos.js"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/live_config.js"
+      "url": "http://127.0.0.1:54521/live_config.js"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/live.js"
+      "url": "http://127.0.0.1:54521/live.js"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/theme.js"
+      "url": "http://127.0.0.1:54521/theme.js"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/illus.js"
+      "url": "http://127.0.0.1:54521/illus.js"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/fonts/Inter-400.woff2"
+      "url": "http://127.0.0.1:54521/fonts/Inter-400.woff2"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/account.js?v=20261015-mm-return-language"
+      "url": "http://127.0.0.1:54521/account.js?v=20261015-mm-return-language"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/fonts/Inter-500.woff2"
+      "url": "http://127.0.0.1:54521/fonts/Inter-500.woff2"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/fonts/Inter-800.woff2"
+      "url": "http://127.0.0.1:54521/fonts/Inter-800.woff2"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/fonts/Inter-600.woff2"
+      "url": "http://127.0.0.1:54521/fonts/Inter-600.woff2"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/fonts/Inter-700.woff2"
+      "url": "http://127.0.0.1:54521/fonts/Inter-700.woff2"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/nav_market.js?v=20261015-mm-return-language"
+      "url": "http://127.0.0.1:54521/nav_market.js?v=20261015-mm-return-language"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/terminal_overlay.js"
+      "url": "http://127.0.0.1:54521/terminal_overlay.js"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:61486/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
     }
   ],
   "server_requests": [
@@ -498,6 +526,14 @@
     {
       "method": "GET",
       "path": "/terminal_overlay.js"
+    },
+    {
+      "method": "GET",
+      "path": "/macro-context-data/decision_workspaces.json"
+    },
+    {
+      "method": "GET",
+      "path": "/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
@@ -777,35 +813,35 @@
   "screenshots": [
     {
       "path": "1440-dark-en.png",
-      "sha256": "749e9e34be5d4d2c717c1976b8cc60bd9b9deb44bca0c8cc6d59628536fdbe16"
+      "sha256": "4785ec97bb7574cdb9dca462ab369072d6f00b1a4bcbd15969a04c65de0381c4"
     },
     {
       "path": "1440-dark-zh.png",
-      "sha256": "fb994d2375107a45d68bdc26856f7bfcb0d0bbb7eaaa1d8fbcc67104a9d8121d"
+      "sha256": "2a9825f15f5105b3e06f6c49ec9c5bec7ecfb1e770a854175120c2176a34f911"
     },
     {
       "path": "1440-light-en.png",
-      "sha256": "c926b86a3dbe9493ea92392b88cae935b32453619bda52dbb99091d67524fa7a"
+      "sha256": "7e95693389f9d67a20405b9ab5f7a59a2d9c4159157c50aa794e8a6b1c52481b"
     },
     {
       "path": "1440-light-zh.png",
-      "sha256": "56559d24ec4ad58dc5d46513572f0dcc97fad8dbfab48836750ec76c7bcd4e74"
+      "sha256": "56171bf1f484c78e812bd08819106ab456faaaad1e6dc13dc7f3788924930c4d"
     },
     {
       "path": "390-dark-en.png",
-      "sha256": "67e75bdd9ca28c5c28f16b7a9bf6c069859559722092d07dbafb5eab3f30b507"
+      "sha256": "72cca3859b689f97da8163f9006937de42a80a8ec0df2f462a676d83ec935495"
     },
     {
       "path": "390-dark-zh.png",
-      "sha256": "b67e4627cbb1637c3d6faf9024f068d407e066db5663ed671fd5f80320d0b2d5"
+      "sha256": "0a68c7c705487a8d27ca1538f905d997065818c62f3a18e5d349b7768dbc5b60"
     },
     {
       "path": "390-light-en.png",
-      "sha256": "bbd8d5833201de9fe147739679d059489addc22c6f8ecfb1ead72c6f5a590c24"
+      "sha256": "41ef089870fe2e172dddef78200a77465018a33e15e8f6ffe00176d59e4aae63"
     },
     {
       "path": "390-light-zh.png",
-      "sha256": "bd8a34a4573947a71477acf11a062ca51d402edae86ebb58eff36ae36646ee35"
+      "sha256": "689bcfc3d08234de1402c9c56d63ff6d465061cb2aecaee4407cccfe90b9b19c"
     }
   ]
 }

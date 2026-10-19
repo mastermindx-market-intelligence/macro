@@ -2,8 +2,12 @@
 
 ## Producer
 
-**Path:** `data/macro_context/decision_workspaces.json`  
-**Schema:** `macro_context.decision_publication.v1`  
+**Data path:** `data/macro_context/decision_workspaces.json`
+
+**Protected site mirror:** `site/macro-context-data/decision_workspaces.json` — the same serialization, byte for byte; added 19 October for the existing Bonds consumer.
+
+**Schema:** `macro_context.decision_publication.v1`
+
 **Producer:** the existing `scripts/build_macro_context.py` main function.
 
 The existing `data/macro_context/latest.json` remains exactly five keys: `asof`, `macro_context_id`, `n_transitions_14d`, `headline_en`, `headline_zh`.

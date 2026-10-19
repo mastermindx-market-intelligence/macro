@@ -2,9 +2,9 @@
   "schema": "r33.bonds_source_integration_build.v1",
   "acceptance": "BUILT_NOT_PROVEN",
   "kind": "isolated_candidate_from_committed_owner_inputs",
-  "source_head_before_delta": "c434ef33928f96e5678c6ebe7098066879c13e15",
+  "source_head_before_delta": "43eafbbbe601221f658a64471b33166477f716e8",
   "input_commit": "80f270c44bcdf11f5e71dacc05b11a0875a01d7f",
-  "generated_at": "2026-10-19T05:46:03.345951+00:00",
+  "generated_at": "2026-10-19T06:25:10.094607+00:00",
   "inputs": [
     {
       "path": "data/macro_snapshots/latest.json",
@@ -53,7 +53,7 @@
     "scripts/build_macro_context.py": "4370a17da646c4c31d4dc32ea3dbf38775da05421fd51c1a4eaf3562960cfeac",
     "templates/bonds.html.j2": "edffe64e9374ea683ff880caa3b0ff2cd525e1ecab16f644343b760ae344565d",
     "templates/_bonds_source_adapter.js.j2": "eddd3b84b90a58c17333cdab6972d0a223e38f62b1f45aecefb189a8c511a5a2",
-    "templates/_bonds_source_inspector.js.j2": "a668dcb47b1589ff918445980cb0d6a3ab6fab2e1e65b3719bae25306482ebac",
+    "templates/_bonds_source_inspector.js.j2": "dcafda815a349afa39b74512c6a099485d4b22b0a475574351ed3324cb343ce8",
     "templates/_bonds_source_inspector.css.j2": "72c4ac77315d414b47f3274423d1b7e7b47dd3748f14fc168c9d720b3089e746"
   },
   "publisher": {
@@ -730,7 +730,7 @@
     "clock_policy": "component_dates_do_not_establish_observation_time_availability_or_vendor_freshness",
     "invalid_values": [],
     "content_sha256": "a4e86189a25a92fd9f6ee44cc40569a9ac698b3c2807c2122ca111fb49dbc2bb",
-    "built_at": "2026-10-19T05:46:03Z"
+    "built_at": "2026-10-19T06:25:09Z"
   },
   "hub_keys": [
     "asof",
@@ -742,16 +742,16 @@
   "data_site_bytes_identical": true,
   "artifacts": {
     "bonds.html": {
-      "bytes": 255537,
-      "sha256": "7ce2a393ba7653d2e313ef2366da2dfc16e294a8d46daed33d53690219ee8299"
+      "bytes": 256032,
+      "sha256": "1ac7d9d0ba77a5211b4764b9a366dc039b98a0cabd39a17e4cf1f9c3b841c670"
     },
     "macro_context.html": {
       "bytes": 244056,
-      "sha256": "32d93d323f03694bf2a0bfea4974b30bbb3d8bac1d123cb5dbd586bd7571f8b1"
+      "sha256": "cc1e40c180e4f8b00fd4a8eb93c5922fa882d98193842a6ebc39236573052b32"
     },
     "macro-context-data/decision_workspaces.json": {
       "bytes": 31622,
-      "sha256": "451234b57f28a79ab8d006a03d6ce332d31888b79771b09c385b29f399b917ac"
+      "sha256": "66d06b31ec825662f517437dab15ecd85fd0720dcc7038214ae0ebb0d5908f82"
     }
   },
   "scope_limits": [

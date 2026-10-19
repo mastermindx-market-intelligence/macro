@@ -1,0 +1,109 @@
+{
+  "schema": "mastermind.bonds_r33.source_review_adjudication.v1",
+  "acceptance": "BOUNDED_SOURCE_REVIEW_ACCEPTED",
+  "production_acceptance": false,
+  "mission_complete": false,
+  "reviewed_commit": "43eafbbbe601221f658a64471b33166477f716e8",
+  "root_id": "bonds-transmission-r30-20261018-sol001",
+  "run_id": "r33-bonds-integration-review-20261019-c4",
+  "response_sha256": "ec5db06cfcabe3fc268a33b825a0a7522eefa3c31f85720329ca5e2a8ff7029b",
+  "raw_response": "independent-source-review-43eaf.txt",
+  "fabric_acceptance": {
+    "schema": "mastermind.fabric_mcp.v1",
+    "action": "fabric_accept",
+    "run_id": "r33-bonds-integration-review-20261019-c4",
+    "root_id": "bonds-transmission-r30-20261018-sol001",
+    "accepted": true,
+    "accepted_by": "reviewer",
+    "reviewed_response_sha256": "ec5db06cfcabe3fc268a33b825a0a7522eefa3c31f85720329ca5e2a8ff7029b",
+    "verification_summary": "Bounded source review of 43eaf: zero P0/P1. Parent fixed four P2s; 53 browser and 176 owner pytest checks pass. Two serving concerns resolved from Caddy and atomic deploy source. Scope limits retained. No production, CI, merge or deployment acceptance.",
+    "legacy_acceptance_not_atomic_attestation": true,
+    "retry_allowed": false
+  },
+  "reviewed_return": {
+    "verdict": "PASS_BOUNDED_SOURCE_REVIEW",
+    "p0_p1": 0,
+    "p2": 6
+  },
+  "final_inspector_sha256": "dcafda815a349afa39b74512c6a099485d4b22b0a475574351ed3324cb343ce8",
+  "adjudications": [
+    {
+      "finding": 1,
+      "state": "NOT_APPLICABLE_TO_CANONICAL_SERVING_PATH",
+      "reason": "The reviewer assumed the generator writes the live served file. config.yml storage.site_dir is site. Caddy's inherited root is /opt/macro/site.served; @vps_external covers only /live/*, /marketdata/sp500_heatmap.json and /am_edition.json, excluding this payload. update.sh serializes deploy refresh with flock and atomically publishes site/ to site.served/ per file using rsync. No new generator atomic-write mechanism is needed for the asserted browser tear risk.",
+      "source": [
+        "config.yml:storage.site_dir",
+        "app/deploy/Caddyfile:82-88",
+        "app/deploy/Caddyfile:221-230",
+        "app/deploy/Caddyfile:348-378",
+        "app/deploy/update.sh:10-17",
+        "app/deploy/update.sh:298-302"
+      ],
+      "production_mapping_observed": false
+    },
+    {
+      "finding": 2,
+      "state": "FIXED",
+      "change": "Escape validationDate with X(v) in all four banner concatenations. The unchanged adapter still enforces exact ISO calendar dates."
+    },
+    {
+      "finding": 3,
+      "state": "FIXED",
+      "change": "Render owner stale true/false/null with distinct localized labels; never turn not-flagged into a claim of current market freshness.",
+      "receipt": "Owner stale true false and null remain distinct in Chinese"
+    },
+    {
+      "finding": 4,
+      "state": "FIXED",
+      "change": "Use File.arrayBuffer plus fatal UTF-8 decoding. Preserve the byte cap and distinguish file_read_failed from invalid_utf8. Late-read tests now delay the actual arrayBuffer operation.",
+      "receipt": [
+        "Malformed UTF-8 import is rejected with the precise text error",
+        "File read failure stays distinct from invalid UTF-8"
+      ]
+    },
+    {
+      "finding": 5,
+      "state": "FIXED",
+      "change": "Preserve the active Choose JSON or Reload site publication control across pending and completed re-renders.",
+      "receipt": "Import and reload preserve the keyboard loadbar control"
+    },
+    {
+      "finding": 6,
+      "state": "SOURCE_MAPPING_RESOLVED_PRODUCTION_STILL_UNOBSERVED",
+      "reason": "The reviewer incorrectly treated the nested @vps_external root as the unconditional root. The exact canonical source map is repository site/ -> locked atomic rsync -> /opt/macro/site.served -> Caddy default file_server after registration and feature-flagged paywall. Real release filesystem, entitlement and browser proof remain gated."
+    }
+  ],
+  "verification": {
+    "browser": {
+      "passed": 53,
+      "failed": 0,
+      "receipt": "browser-receipt.json",
+      "production_origin_observed": false
+    },
+    "owner_pytest": {
+      "passed": 176,
+      "failed": 0,
+      "receipt": "ci-owner-pytest.xml"
+    },
+    "initial_focused_pytest": {
+      "passed": 5,
+      "receipt": "pytest.xml",
+      "note": "Historical initial integration subset, not an additional non-overlapping total."
+    }
+  },
+  "ci_registration": {
+    "initial_head": "43eafbbbe601221f658a64471b33166477f716e8",
+    "initial_run": 39207201517,
+    "initial_failure": "contract-delta: two introduced unwired pytest suites, zero inherited",
+    "fix": "Register tests/test_macro_decision_publication.py and tests/test_bonds_source_integration.py in the existing gate:code ccw-w4-credit-desk job, with the actual FastAPI import dependency and bounded source/serving paths. No new job or waiver.",
+    "binding_result_owner": "PR #9578 exact final-head workflow and review receipts; local pytest is not binding CI."
+  },
+  "scope_limits": [
+    "Source review covers the integration delta over c434; historical 19ef redesign and 65+26 offline journeys were not repeated.",
+    "The review return's sole-writer wording does not create an exclusive lease. Actual custody must be recovered from current PR/worktree state.",
+    "No production-origin, entitlement, source-admission, saved-case, alert, calibration, merge, deploy or trade acceptance.",
+    "Original source review omitted unchanged publisher helper bodies and some existing host bodies, as disclosed in the raw return; accepted earlier baseline remains distinct.",
+    "Two invalid-argument acceptance attempts had no acceptance effect on status readback; final corrected call accepted the same response digest. No worker was retried."
+  ],
+  "current_status_owner": "Existing PR #9578 and SESSION_HANDOFF_2026-10-18.md; no watcher or new owner registry."
+}

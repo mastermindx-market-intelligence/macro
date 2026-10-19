@@ -2,7 +2,9 @@
 
 ## Capability and scope
 
-R32 completed the requested light design, eight product workspaces, fifteen tool families and progressive analytical tools. R33 adds a working source inspector and an additive publication in the existing Macro builder. The result is **BUILT_NOT_PROVEN** for production: the publisher, strict consumer and offline interaction path are built and tested; the deployed feed and production component mounting remain owner integration work.
+R32 completed the requested light design, eight product workspaces, fifteen tool families and progressive analytical tools. R33 adds a working source inspector and an additive publication in the existing Macro builder. The 19 October delta mounts the strict adapter and inspector in the existing Bonds template and publishes an exact-byte mirror behind the existing site access boundary. The result remains **BUILT_NOT_PROVEN** for production: 53 new actual-template HTTP browser checks and 176 existing Bonds owner pytest checks pass, while release and deployed-origin proof remain gated.
+
+Read [PRODUCTION_INTEGRATION_2026-10-19.md](PRODUCTION_INTEGRATION_2026-10-19.md) and the [current cumulative handoff](SESSION_HANDOFF_2026-10-18.md) for the current source path, receipts, source dates and existing-owner next actions. The reference journey below is retained baseline documentation; its 65+26 offline journeys were not rerun.
 
 Before R33, the offline reference could explain source requirements but had no working route from the existing decision-workspace projection to inspectable field origins. After R33, the user can inspect a pinned captured publication, trace 22 displayed fields, compare component dates, identify the next missing evidence, and test a local publication without changing the surrounding research case.
 
@@ -23,9 +25,9 @@ The inspector reuses I01/I03 and the existing dialog family. It adds no product 
 
 Repository change: `scripts/build_macro_context.py`.
 
-The existing `_build_view_model` remains the sole projection builder. The main function still writes the exact five-key `data/macro_context/latest.json` hub. It then passes that same view model and the already-loaded inputs to `_build_decision_publication` and writes `data/macro_context/decision_workspaces.json`.
+The existing `_build_view_model` remains the sole projection builder. The main function still writes the exact five-key `data/macro_context/latest.json` hub. It passes that same view model and the already-loaded inputs to `_build_decision_publication`, serializes once, and writes identical bytes to `data/macro_context/decision_workspaces.json` and `site/macro-context-data/decision_workspaces.json`.
 
-The companion adds display provenance; it does not introduce a market selector, event engine, signal policy, persistence service or monitoring service. No CI, DAG, render-input or production Bonds/Forex template is changed.
+The companion adds display provenance; it does not introduce a market selector, event engine, signal policy, persistence service or monitoring service. The existing Bonds template now includes the strict adapter and scoped presentation/controller sources. The existing Bonds CI owner registers both relevant test suites. No new CI job, waiver, render DAG, access policy, Forex template or CDI change is introduced.
 
 The loaded inputs are the Macro snapshot, NeuralWeb world state, regime data and the existing loader's last 60 parsed transition rows. Hashes describe those loaded values, including nonfinite-value diagnostics. They do not reread files after the view model was selected.
 
@@ -37,7 +39,7 @@ See [data_contract.md](data_contract.md) for the exact meaning and limits of clo
 
 The inspector keeps separate state from the accepted case, rule, observation and evaluation state. Its capabilities to evaluate, forecast, retain or monitor remain false. Imported strings are escaped before rendering. Known descriptive enum labels are translated for readability; their original values remain inspectable.
 
-The browser consumer displays the publisher-declared content digest. It does not claim to authenticate the publisher or recompute Python's canonical JSON hash. Import is local and tab-scoped; no HTTP request or backend write is part of this path.
+The browser consumer displays the publisher-declared content digest. It does not claim to authenticate the publisher or recompute Python's canonical JSON hash. Import is local and tab-scoped. The retained offline reference makes no HTTP request; the production-template port uses only an on-demand same-origin GET of `/macro-context-data/decision_workspaces.json`, with no captured fallback or backend write.
 
 ## Native Paper
 
@@ -68,6 +70,6 @@ The font asset uses a renamed, openly licensed Noto CJK subset. Its provenance a
 
 ## Exact integration continuation
 
-The Macro owner should integrate the additive companion and mount the display adapter in the existing Bonds consumer after current-base review and normal repository checks. Preserve the hub contract and v1 display-only limits. This handoff is on the existing draft PR #9578, with no replacement branch.
+The additive companion is connected to the existing Bonds source template. Complete independent exact-source review and required checks, then follow the actual existing release gate and prove the deployed generator, protected publication and production Bonds browser behavior. Preserve the five-key hub and v1 display-only limits. The existing draft PR #9578 and original branch remain the carrier.
 
 Qualified instrument/quote/availability evidence remains the prerequisite for actual event evaluation. Terminal Investigation v2 remains the owner for admitted retained research and exact reads. Terminal Alerts remains the owner for compound-rule admission, evaluation, dry runs and receipts. Calibrated likelihood requires a defined target, horizon, point-in-time history, out-of-time performance and abstention. These capabilities are not made live by this source inspector.

@@ -278,6 +278,55 @@ def run(candidate: Path, output: Path) -> dict:
             check("Unknown schema import clears prior site context", unavailable)
             normal()
             reload()
+            body.locator("[data-source-file]").set_input_files(
+                {"name": "bad-utf8.json", "mimeType": "application/json", "buffer": b'{"value":"\xff"}'}
+            )
+            idle()
+            check("Malformed UTF-8 import is rejected with the precise text error", lambda: (
+                unavailable(), expect(body).to_contain_text("UTF-8"),
+            ))
+            page.evaluate("""() => {
+                window.r33OriginalFileBuffer=File.prototype.arrayBuffer;
+                File.prototype.arrayBuffer=function(){return Promise.reject(new Error('test read failure'));};
+            }""")
+            try:
+                body.locator("[data-source-file]").set_input_files(
+                    {"name": "unreadable.json", "mimeType": "application/json", "buffer": b"{}"}
+                )
+                idle()
+            finally:
+                page.evaluate("() => { File.prototype.arrayBuffer=window.r33OriginalFileBuffer; }")
+            check("File read failure stays distinct from invalid UTF-8", lambda: (
+                unavailable(), expect(body.locator(".source-empty h3")).to_have_text("Could not read the imported file"),
+            ))
+            def loadbar_focus():
+                body.locator("[data-source-file]").focus()
+                import_obj(pub)
+                expect(body.locator("[data-source-file]")).to_be_focused()
+                reload()
+                expect(action("reload-site")).to_be_focused()
+            check("Import and reload preserve the keyboard loadbar control", loadbar_focus)
+            flags = deepcopy(pub)
+            for key, flag in zip(list(flags["publication"]["related_vintages"])[:3], (True, False, None)):
+                flags["publication"]["related_vintages"][key]["reported"]["stale"] = flag
+            import_obj(flags)
+            page.evaluate("""() => {
+                document.documentElement.dataset.lang='zh';
+                document.dispatchEvent(new CustomEvent('langchange',{detail:'zh'}));
+            }""")
+            section("dates")
+            body.get_by_text("相关宏观序列日期", exact=True).click()
+            check("Owner stale true false and null remain distinct in Chinese", lambda: (
+                expect(body).to_contain_text("上游已标记"),
+                expect(body).to_contain_text("未标记"),
+                expect(body).to_contain_text("未提供"),
+            ))
+            page.evaluate("""() => {
+                document.documentElement.dataset.lang='en';
+                document.dispatchEvent(new CustomEvent('langchange',{detail:'en'}));
+            }""")
+            normal()
+            reload()
             zero = deepcopy(pub)
             zero["decision_workspaces"]["bonds"]["transmission"]["equities"]["hy_oas"] = 0
             import_obj(zero)
@@ -311,8 +360,8 @@ def run(candidate: Path, output: Path) -> dict:
             normal()
             reload()
             page.evaluate("""() => {
-                window.r33OriginalFileText=File.prototype.text;
-                File.prototype.text=function(){return new Promise(r=>{window.r33ResolveFile=r;});};
+                window.r33OriginalFileBuffer=File.prototype.arrayBuffer;
+                File.prototype.arrayBuffer=function(){return new Promise(r=>{window.r33ResolveFile=r;});};
             }""")
             body.locator("[data-source-file]").set_input_files(
                 {"name": "delayed.json", "mimeType": "application/json", "buffer": b"{}"}
@@ -320,8 +369,8 @@ def run(candidate: Path, output: Path) -> dict:
             expect(metrics()).to_have_count(0)
             action("reload-site").click()
             idle()
-            page.evaluate("(text)=>window.r33ResolveFile(text)", json.dumps(zero))
-            page.evaluate("() => { File.prototype.text=window.r33OriginalFileText; }")
+            page.evaluate("(text)=>window.r33ResolveFile(new TextEncoder().encode(text).buffer)", json.dumps(zero))
+            page.evaluate("() => { File.prototype.arrayBuffer=window.r33OriginalFileBuffer; }")
             check("A late file read cannot replace an explicit site reload", lambda: (
                 expect(body).to_contain_text("Site publication"),
                 expect(metrics().first).not_to_contain_text("0.00"),
@@ -367,8 +416,8 @@ def run(candidate: Path, output: Path) -> dict:
                 expect(body).to_contain_text("Site publication"),
             ))
             page.evaluate("""() => {
-                window.r33OriginalFileText=File.prototype.text;
-                File.prototype.text=function(){return new Promise(r=>{window.r33ResolveFile=r;});};
+                window.r33OriginalFileBuffer=File.prototype.arrayBuffer;
+                File.prototype.arrayBuffer=function(){return new Promise(r=>{window.r33ResolveFile=r;});};
             }""")
             body.locator("[data-source-file]").set_input_files(
                 {"name":"close-during-read.json","mimeType":"application/json","buffer":b"{}"}
@@ -376,8 +425,8 @@ def run(candidate: Path, output: Path) -> dict:
             page.keyboard.press("Escape")
             assert not page.evaluate("window.MMXSourceInspector.getState().pending")
             open_sources()
-            page.evaluate("(text)=>window.r33ResolveFile(text)", json.dumps(zero))
-            page.evaluate("() => { File.prototype.text=window.r33OriginalFileText; }")
+            page.evaluate("(text)=>window.r33ResolveFile(new TextEncoder().encode(text).buffer)", json.dumps(zero))
+            page.evaluate("() => { File.prototype.arrayBuffer=window.r33OriginalFileBuffer; }")
             check("Closing a pending import prevents its late result from changing the reopened source", lambda: (
                 expect(body).to_contain_text("Site publication"),
                 expect(metrics().first).not_to_contain_text("0.00"),

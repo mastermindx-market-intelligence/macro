@@ -15042,9 +15042,12 @@ jobs:
           python-version: "3.12"
       - name: install deps
         # plotly: test file imports scripts.build_bonds, which imports plotly.graph_objects
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly
+        # fastapi: the source integration checks the actual app.paywall classifier.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly fastapi
       - name: CCW-W4 credit desk vm tests
         run: python -m pytest tests/test_bonds_corp_credit_vm.py tests/test_bonds_divergence_gate.py tests/test_bonds_glance_copy.py tests/test_bonds_explanation_view.py -v
+      - name: R33 publisher-to-Bonds source contract
+        run: python -m pytest tests/test_macro_decision_publication.py tests/test_bonds_source_integration.py -q
     # T10 moved to unrun-macro-panels (gate: data). That job already installs
     # pandas/numpy/pyarrow/jinja2/plotly; T10's verdict can flip on a nightly
     # data commit, so it must not live on this gate: code job.
@@ -15053,9 +15056,21 @@ jobs:
       - "tests/test_bonds_divergence_gate.py"
       - "tests/test_bonds_glance_copy.py"
       - "tests/test_bonds_explanation_view.py"
+      - "tests/test_bonds_source_integration.py"
+      - "tests/test_macro_decision_publication.py"
       - "lib/bonds_explanation_view.py"
       - "scripts/build_bonds.py"
+      - "scripts/build_macro_context.py"
       - "templates/bonds.html.j2"
+      - "templates/_bonds_source_adapter.js.j2"
+      - "templates/_bonds_source_inspector.js.j2"
+      - "templates/_bonds_source_inspector.css.j2"
+      - "research/bonds_transmission_r30_2026-10-18/r33/source-adapter.js"
+      - "app/paywall.py"
+      - "app/deploy/Caddyfile"
+      - "app/deploy/update.sh"
+      - "config/site_access.yml"
+      - "lib/tiers.py"
       - "lib/macro_suite_view.py"
       - "templates/_curve_panel.html.j2"
       - "templates/_macro_suite_shell.html.j2"
