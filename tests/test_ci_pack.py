@@ -4284,6 +4284,8 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # F04 exact import/read closure; all suites retained, no homepage fallback.
+    "ontology-explorer",
     # BEA human/HTTP browser gate: measured literal closure, no opaque fallback smear.
     "bea-gvc-current-descriptive-consumer",
     # R2 original-intent context producer: the ten Agent OS knowledge suites
@@ -4978,6 +4980,48 @@ def test_unrun_picks_boards_owns_macro_risk_dialog_locale_token_source() -> None
     assert [item.job_id for item in selected] == [job.job_id], reason
     match = PACK._job_diff_match(job, ["site/theme.css"])  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     assert match and match[1] == "declared", match
+
+
+@pytest.mark.parametrize("dependency", [
+    'app/ontology_explorer.py',  # ci-trigger-closure: data — a changed path name, not a read
+    'engine/transmission_company_continuation.py',  # ci-trigger-closure: data — a changed path name, not a read
+    'knowledge/transmission/dollar_spike_em_multinational.yaml',  # ci-trigger-closure: data — a changed path name, not a read
+    'config/theme_sources.yml',  # ci-trigger-closure: data — a changed path name, not a read
+    'data/transmission/chain_state.json',  # ci-trigger-closure: data — a changed path name, not a read
+    'data/reference/vendor_aliases.parquet',  # ci-trigger-closure: data — a changed path name, not a read
+    'templates/_site_nav.html.j2',  # ci-trigger-closure: data — a changed path name, not a read
+    'templates/data_base.js',  # ci-trigger-closure: data — a changed path name, not a read
+    'templates/ontology-company-controller.js',  # ci-trigger-closure: data — a changed path name, not a read
+    'site/theme.css',  # ci-trigger-closure: data — a changed path name, not a read
+    'site/mm_brain.js',  # ci-trigger-closure: data — a changed path name, not a read
+    'site/fonts/Inter-400.woff2',  # ci-trigger-closure: data — a changed path name, not a read
+    'site/policy_watch.html',  # ci-trigger-closure: data — a changed path name, not a read
+    'site/ontology-new-consumer.map',  # ci-trigger-closure: data — a changed path name, not a read
+    'site/premiumdata/ontology_future.json',  # ci-trigger-closure: data — a changed path name, not a read
+    'tests/fixtures/evidence_foundation/new_native_event.json',  # ci-trigger-closure: data — a changed path name, not a read
+    'tests/ontology_company_controller.test.mjs',  # ci-trigger-closure: data — a changed path name, not a read
+])
+def test_ontology_explorer_exclusive_scope_keeps_runtime_inputs(dependency: str) -> None:
+    """Dynamic browser, native data and Jinja reads remain explicit CI owners.
+
+    This includes new files matched by the existing artifact families and a
+    linked page deletion: the closure analyzer alone cannot see those inputs.
+    """
+    job = next(j for j in PACK.load_legacy_jobs(MANIFEST)
+               if j.job_id == "ontology-explorer")
+    assert job.exclusive
+    selected, reason = PACK.select_jobs([job], [dependency])
+    assert [j.job_id for j in selected] == [job.job_id], reason
+    match = PACK._job_diff_match(job, [dependency])
+    assert match and match[1] == "declared", match
+
+
+def test_ontology_explorer_does_not_claim_unrelated_homepage_bytes() -> None:
+    """Homepage source is neither imported nor loaded by the Ontology tests."""
+    job = next(j for j in PACK.load_legacy_jobs(MANIFEST)
+               if j.job_id == "ontology-explorer")
+    selected, _reason = PACK.select_jobs([job], ["templates/index.html"])  # ci-trigger-closure: data
+    assert not selected
 
 
 def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
