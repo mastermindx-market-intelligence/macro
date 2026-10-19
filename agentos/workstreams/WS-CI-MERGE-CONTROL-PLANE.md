@@ -259,9 +259,11 @@ waves:
       A twelve-pack replay of all 255 measured job costs supports a bounded
       FIF/earnings weight calibration: modeled maximum command time
       2085.4 to 1532.3 seconds, excluding install/checkout/queue effects.
-      Trial PR9763 hit the existing Defense eight-minute timeout on both
-      candidate and base. Landed heal PR9758 is being incorporated for fresh
-      normal hosted validation; no blind rerun or new timeout change.
+      Trial PR9763 incorporated landed Defense heal PR9758. The next run
+      passed Defense but found a missing schema identifier from PR9765 on
+      both candidate and base. A one-field schema registry repair reproduces
+      three failures before and passes181 affected tests after; hosted proof
+      remains required. No blind rerun, gate suppression or speculative shards.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.

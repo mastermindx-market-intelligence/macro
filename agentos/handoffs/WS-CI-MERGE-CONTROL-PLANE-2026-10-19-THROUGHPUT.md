@@ -16,6 +16,8 @@ changed:
     what: Landed duplicate-traversal repair; next trial calibrates only FIF/earnings weights.
   - path: tests/test_ci_pack.py
     what: Add calibrated assignment, complete coverage and unchanged execution-proof regression.
+  - path: contracts/market_memory/e0_reviewer_plan.v1.schema.json
+    what: Add the missing canonical schema identifier to repair the reproduced population registry failure.
   - path: research/ci_pack_throughput_20261019/README.md
     what: Measured baseline, ranked architectures, shard simulations, limits and rollback.
 verified:
@@ -42,6 +44,9 @@ verified:
   - claim: The bounded independent review is accepted through its original carrier.
     command: fabric_task.py result and accept ci-pack-20261019-01a153e8-review --by reviewer
     result: PASS; real closure-root and filter assumptions checked; ACCEPTED / VALIDATED_OUTCOME. Manifest validate-only also passed for 255 jobs.
+  - claim: The schema identifier repair fixes the complete owning test battery without weakening its rules.
+    command: Three failing population tests; both population/reviewer-plan modules; exact research-price-panel pytest command from manifest
+    result: Before3 failed; after181 affected tests passed and full owning battery1345 tests plus429 subtests passed. Removing the added identifier reproduces the original parsed schema exactly.
 unverified:
   - Comparable post-merge natural-traffic latency improvement.
 unresolved:
@@ -58,84 +63,51 @@ danger_areas:
   - Local green and one hosted run do not prove the fleet p95 target.
 ---
 
-Current frontier: first trial **PR 9722 merged** as
-`7736fd72895fc24e55bf2d4bbc7b1f4e94203414` at 13:13:09Z. All 255 logical jobs,
-twelve packs, gate, authority and fences passed. Source/test landing verified.
-Original observer 44369 is settled and consumed; never recreate it. Release result:
-https://github.com/mastermindx-market-intelligence/macro/pull/9722#issuecomment-6268117245
+Workspace: `/Volumes/Mastermind/agent-workspaces/codex/ffcf/macro-main`.
+Branch: `claude/ci-pack-throughput-evidence-20261019`; original root
+`01a153e8-3c85-7bb2-af63-7f477b570512`.
+Raw evidence: `/Volumes/Mastermind/ci-pack-throughput-20261019/`.
+Report: `research/ci_pack_throughput_20261019/README.md`.
 
-Workspace `/Volumes/Mastermind/agent-workspaces/codex/ffcf/macro-main`, branch
-`claude/ci-pack-throughput-evidence-20261019`, refreshed to main
-`c375959f69cf757a5edbf517ecd3b1d848836a55` while preserving report edits.
-Raw evidence `/Volumes/Mastermind/ci-pack-throughput-20261019/`; source report
-`research/ci_pack_throughput_20261019/README.md`. Original root remains
-`01a153e8-3c85-7bb2-af63-7f477b570512`. Separate PR 8094 is not adopted.
+PR9722 merged as7736fd72895fc24e55bf2d4bbc7b1f4e94203414 with full hosted proof.
+Reuse accepted scope/CPU/tests/review evidence. Its observer44369 is consumed.
+No causal fleet gain/30% target is established. The first full trial took78.1min,
+including825sec final-gate queueing. Do not re-download its retained logs.
 
-First hosted run 39247388552 took 78.1 min and 337.38 summed job wall minutes,
-including 825 sec final-gate queueing for a 12-sec gate. Control-plane inner group
-740.414 sec versus historical median847.738 is descriptive only; local CPU median
-fell51.6%. Neither proves fleet p95 improvement. Accepted first-trial scope/plan
-parity,327 affected tests and200 authority tests are retained; do not repeat them
-without a relevant change.
+Current carrier: https://github.com/mastermindx-market-intelligence/macro/pull/9763
+Two balancing estimates1630/1070, twelve packs and all proof/isolation controls
+unchanged. One optional Fabric weight review was denied before execution
+(canonical_source_unreadable); no verdict/bypass. PR8094 remains separate.
 
-Natural snapshot15:51Z:43 runs,16 pending,5 cancelled,1 rerun excluded;
-21 verified first-attempt completions(18 success/3 failure), all scoped.
-Exact planner blob and base ancestry verified; zero baseline selected-set or
-execution-proof matches. Success p50/p95 2106/3565 sec vs3265.5/4074 historic;
-completion-conditioned and different work, no causal or30% target claim.
-`postmerge-runs-1551.json`, `post-*` captures and `natural-comparison-latest.json`
-retain raw facts. One502 jobs capture was recovered through the same API after
-cooldown; original error retained. `compare_natural.py` accepts a snapshot path.
+Trial39282678531 failed Defense's eight-minute deadline on candidate and base.
+Existing landed heal PR9758 was incorporated; observer70423 consumed rc1.
+Recovery39290075936 (head67377ec633cf3e797ebe61a0453ccd2b44b18b35) passed Defense
+but failed three population tests in research-price-panel on candidate AND base.
+Observer57835 is now consumed rc1; do not recreate it. Full log retained as
+weight-recovery-full.log, exact plan in weight-recovery-plan/ci-plan.json.
+Tested tree2b12ec85550ac49c3e17f15627335cb22737d8dd; baseaee0f40a6b40e8b9287d3ffee9cf988d2a641434;
+257 selected jobs; plan4bf52141b3d0106616678078ca620b7c498eab66bc10dadd3ec054161474f591.
+Both failed runs include extra base replay and are not successful latency samples.
 
-Second trial: only two balancing estimates, FIF1630 and earnings1070; unchanged
-algorithm, twelve packs, selectors, commands, proofs and hosted isolation.
-`trial-full.log` is now complete:255 measured jobs,14219.792 command seconds.
-`calibrated-weight-simulation.json` reproduces exact original pack assignments and
-models max command work2085.4->1532.3sec(-26.5%). Conservative1400/900 gives same
-result; FIF alone only-3.2%.42 scope replays:13 improve,0worse,median0; unknown jobs
-excluded explicitly. Installation/reuse,checkout,queue,artifacts are outside model.
-Earnings has one observation; real hosted cost remains required.
+Cause: PR9765 added e0_reviewer_plan.v1.schema.json without the $id required by
+the existing population schema registry. Main b2bf0b63a1eae8fc894dd2290ec62bd2f7d00a68
+still lacks it.500 open PRs checked; no competing repair on this schema, and the
+original schema worktree has no dirty edit on the path. Add only canonical $id;
+all other parsed schema contents identical. Three failures reproduced before;
+181 affected tests pass after; full exact research-price-panel pytest command
+passes1345 tests and429 subtests in116.29s (45 inherited warnings). All52 schema
+identifiers complete/unique. Logs: schema-id-before.log, schema-id-after.log,
+schema-owner-battery.log. No validation constraint, timeout or selector changed.
 
-Candidate checks:7 targeted packing/coverage/hash/curation tests passed in135.76s;
-200 authority/negative controls passed in58.43s,42 existing pytest-cleanup warnings.
-No ceiling or gate weakened. Optional same-ID Fabric weight review
-`ci-pack-20261019-01a153e8-weight-review` returnedrc78 before reviewer execution:
-`admission_denied reason=canonical_source_unreadable`; no verdict/no acceptance,
-no alternate provider. Initial dedup review remains accepted for its original scope.
+Natural16:50 cohort:57 runs,37 verified first attempts,9 pending,9 cancelled,
+2 reruns; two selected-set matches but zero execution-proof matches. Scoped
+success p50/p95 1920/3511 seconds remains descriptive. Reuse cached captures.
+Heavy successful groups in failed recovery: FIF1969.43sec total, earnings577.05;
+FIF checkout800.22sec. No additional weight/shard decision follows from this.
 
-Current delivery: PR https://github.com/mastermindx-market-intelligence/macro/pull/9763
-remains open and armed. Trial head aebcbe276560553b306ada6b467444cd2d446fe9
-failed CI39282678531 in defense-rail-laws: eight-minute timeout on candidate AND
-isolated base replay. Eleven packs, authority, fences and contract-delta passed;
-semantic gate correctly refused. Observer70423 settled rc1 and was consumed.
-Never recreate it. `weight-trial-full.log` and `weight-failed-trial.json` retain
-failure evidence; no successful-run cost claim may include this failed replay.
-
-Exact hosted plan: merge tree0e42e3232b0bc9b297ab8e6d7114df2ae6a30c4f,
-base2f1fd99a8ae295c4aeec2ca3726aa498a7545e97,256 selected code jobs,
-plan4d7c321994a54dfda5ab05976e2f93b55b313109a3b0fe40fe9727fc06aa0419.
-Published assignment reproduced and all256 execution/step proofs checked against
-exact tested manifest. Main added one job and changed seven definitions versus
-first full trial. See weight-hosted-plan-verification.json and weight-plan-comparison.json.
-
-The existing heal PR9758 merged at16:46:22Z as
-bee22730967cf12d6aabbc18b79a37135f9b3c01 after all required checks passed.
-It changes only defense-rail-laws timeout8->12 minutes. Landed fix incorporated
-through main d559d17ef53e13a4a4fe6b64fa1169efe1306cff, merge commit
-df6e8866620dabc20348353db5a8466def6867c1. Trial source remains unchanged;
-calibration regression passed (1 test,4.94s), Agent OS0 errors/123 inherited
-warnings. Push the batched evidence update once for normal CI. No extra timeout
-edit or blind rerun is justified.
-
-Natural16:50 snapshot:57 runs,9 pending,9 cancelled,2 reruns excluded;
-37 identity-verified first attempts (30 success/7 failure), including one global
-success with257 jobs. Two selected-set matches but ZERO execution-proof matches.
-Scoped success p50/p95 1920/3511 sec (29 observations) remains descriptive only.
-Raw post-* captures and natural-comparison-latest.json retained; report updated.
-
-Next: finish source refresh, run affected calibration check, push and consume one
-new-head CI observer through required checks and normal merge. Record its actual
-head/run/handle after successful launch. After success collect stage costs once,
-respecting300-second same-run cooldown and separating replay/queue/install effects.
-No artificial CI, peer messages, new coordinator/control plane, extra shards or
-unrelated deploy. Preserve original root and all unresolved effects.
+Next: push the schema repair and batched evidence to this same PR, then retain
+ONE verified observer for the new head/run. Required hosted checks and normal
+merge remain owed. At completed-run boundary collect full logs before other
+same-run reads; respect300sec cooldown with no alternate reader/reset.
+Preserve this checkpoint, active writers and unknown effects. No artificial CI,
+peer messages, new coordinator/control plane, extra shards or unrelated deploy.
