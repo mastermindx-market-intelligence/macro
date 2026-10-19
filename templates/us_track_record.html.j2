@@ -278,7 +278,21 @@
       <div class="tr-clock-icon">⏳</div>
       <div class="tr-clock-body">
         <b>{{ t('Trend verdicts unlock later.', '趋势判断稍后开放。') }}</b>
-        {{ t('First full 5-day report cards are already in — weekly trend unlocks once 4+ independent entry weeks have graded results. First 21-day grades arrive around mid-August 2026; trend conclusions on 21-day outcomes ~September 2026.', '5日成绩单已陆续出炉——需累计4个以上独立入场周方可作出每周趋势判断。21日成绩单约于2026年8月中旬出现；21日结果的趋势结论约于2026年9月形成。') }}
+        {% set _en = clock_h21.effective_n if clock_h21 and clock_h21.raw_n else none %}
+        {% if _en is not none and _en < 3 %}
+        {% set _ck = '21-day grades so far come from only ' ~ _en %}
+        {% set _ck = _ck ~ ' independent entry windows; a trend needs at least 3.' %}
+        {% set _cz = '21日成绩目前仅来自' ~ _en ~ '个独立入场窗口；趋势判断至少需要3个。' %}
+        {% elif _en is not none %}
+        {% set _ck = '21-day grades come from ' ~ _en ~ ' independent entry windows.' %}
+        {% set _cz = '21日成绩来自' ~ _en ~ '个独立入场窗口。' %}
+        {% else %}
+        {% set _ck = '21-day grades are still accruing.' %}
+        {% set _cz = '21日成绩仍在积累中。' %}
+        {% endif %}
+        {{ t('First full 5-day report cards are already in — weekly trend unlocks once 4+ '
+             'independent entry weeks have graded results. ' ~ _ck,
+             '5日成绩单已陆续出炉——需累计4个以上独立入场周方可作出每周趋势判断。' ~ _cz) }}
       </div>
     </div>
 
@@ -296,6 +310,15 @@
     <div class="tr-chart-legend">
       <span><span class="dot" style="background:var(--link,#4c8bf5)"></span>{{ t('10-day win rate', '10日胜率') }}</span>
     </div>
+    {% if board_buy_span %}
+    {% set _bb = board_buy_span %}
+    <p style="font-size:11px;color:var(--muted);margin:6px 0 0">{{
+      t('Buy board size: ' ~ _bb.first_n ~ ' names on ' ~ _bb.first_as_of ~ ' → '
+        ~ _bb.last_n ~ ' on ' ~ _bb.last_as_of ~ ', across ' ~ _bb.snapshots
+        ~ ' board snapshots.', '买入榜规模：' ~ _bb.first_as_of ~ ' ' ~ _bb.first_n
+        ~ '个 → ' ~ _bb.last_as_of ~ ' ' ~ _bb.last_n ~ '个，共'
+        ~ _bb.snapshots ~ '次榜单快照。') }}</p>
+    {% endif %}
   </div>
 
   <!-- ── Section 3: Horizon ladder ── -->
@@ -336,7 +359,7 @@
           <td class="n-col" data-tip-en="Raw observations = {{ row.raw_n }} rows; independent entry-date windows = {{ row.effective_n }} (used for interval estimation)" data-tip-zh="原始样本={{ row.raw_n }}行；独立入场日窗口={{ row.effective_n }}（用于区间估计）">
             {{ row.raw_n }} / {{ row.effective_n }}
           </td>
-          <td><span class="accruing-chip" style="border-color:color-mix(in srgb,var(--up) 50%,var(--line));color:var(--ink-up, var(--up));background:color-mix(in srgb,var(--up) 10%,transparent)">{{ t('LIVE', '实时') }}</span></td>
+          <td><span class="accruing-chip" style="--warn:var(--up);--ink-warn:var(--ink-up, var(--up));">{{ t('GRADED', '已出结果') }}</span></td>
           {% endif %}
         </tr>
         {% endfor %}
@@ -347,14 +370,36 @@
     </table>
     </div>
     <p style="font-size:11px;color:var(--muted);margin:6px 0 0">{{ t('Observations = raw count / independent entry-date windows. Interval uses cluster-unit estimation to account for overlapping windows.', '样本数 = 原始计数 / 独立入场日窗口数。区间采用集群单元估计以修正重叠窗口影响。') }}</p>
+    {% if horizon_ladder | selectattr('lane', 'equalto', 'buy') | list %}
+    <p style="font-size:11px;color:var(--muted);margin:6px 0 0">
+      {{ t('Win rate, range and excess count buy-board names only. All board lanes '
+           'together:', '胜率、区间与超额仅统计买入榜标的。全部榜单合计：') }}
+      {% for row in horizon_ladder | selectattr('lane', 'equalto', 'buy') | list %}
+      {% if row.all_n and row.all_hit_rate is not none %}{{ ' · ' if not loop.first }}
+      {{ row.horizon }}{{ t('-day', '日') }}
+      {{ (row.all_hit_rate * 100)|round|int }}% {{ t('of', '／') }} {{ row.all_n }}
+      {% endif %}
+      {% endfor %}</p>
+    {% endif %}
   </div>
 
   <!-- ── Section 4: Per-pick outcomes table ── -->
   <div class="tr-section">
     <div class="tr-section-hd">{{ t('Recent board exits', '近期离榜标的') }}</div>
     <div class="tr-section-sub">
-      {{ t('Names that left the buy board — their price since first surfacing.', '已离开买入榜的标的——自首次上榜以来的价格变化。') }}
-      {% if outcomes_rows | length > 0 %}{{ t('Showing', '显示') }} {{ outcomes_rows | length }} {{ t('names.', '个标的。') }}{% endif %}
+      {{ t('Names that left the buy board — return from entry to the close on the '
+           'day they left.', '已离开买入榜的标的——自入场至离榜当日收盘的收益。') }}
+      {% if outcomes_rows | length > 0 %}
+      {% set _shok = n_running is not none and n_stopped is not none and n_flat is not none %}
+      {% if n_total_exits and _shok %}
+      {{ t('Showing ' ~ outcomes_rows|length ~ ' of ' ~ n_total_exits ~ ': ' ~ n_running
+           ~ ' above +2%, ' ~ n_stopped ~ ' below −2%, ' ~ n_flat ~ ' within ±2%.',
+           '显示' ~ n_total_exits ~ '个中的' ~ outcomes_rows|length ~ '个：' ~ n_running
+           ~ '个高于+2%，' ~ n_stopped ~ '个低于−2%，' ~ n_flat ~ '个在±2%以内。') }}
+      {% else %}
+      {{ t('Showing', '显示') }} {{ outcomes_rows | length }} {{ t('names.', '个标的。') }}
+      {% endif %}
+      {% endif %}
     </div>
     <!-- W2: pick_autopsies join -->
     {% if outcomes_rows %}
@@ -364,6 +409,8 @@
         <th>{{ t('Stock', '个股') }}</th>
         <th>{{ t('Sector', '行业') }}</th>
         <th>{{ t('Surfaced', '上榜日') }}</th>
+        <th>{{ t('Days on board', '在榜天数') }}</th>
+        <th>{{ t('Left board', '离榜日') }}</th>
         <th>{{ t('Return', '涨跌') }}</th>
         <th>{{ t('Status', '状态') }}</th>
         <th>{{ t('Notes', '备注') }}</th>
@@ -374,12 +421,19 @@
         <td class="tk-cell"><a href="stock.html#{{ oc.ticker }}" data-tip-en="Open {{ oc.ticker }} stock page" data-tip-zh="打开{{ oc.ticker }}个股页面">{{ oc.ticker }}</a></td>
         <td class="neu" style="font-size:11px">{{ td(oc.get('sector','—')) }}</td>
         <td class="neu" style="font-size:11.5px">{{ oc.get('first_surfaced','—') }}</td>
+        {% set _d = oc.get('days_on_board') %}{% set _e = oc.get('exit_date') %}
+        <td class="neu" style="font-size:11.5px">{{ _d if _d is not none else '—' }}</td>
+        <td class="neu" style="font-size:11.5px">{{ _e or '—' }}</td>
         <td data-sort="{{ oc.pct_since if (oc.pct_since is defined and oc.pct_since is not none) else 0 }}">
           <span class="{{ 'pos' if (oc.pct_since is defined and oc.pct_since is not none and oc.pct_since > 0) else ('neg' if (oc.pct_since is defined and oc.pct_since is not none and oc.pct_since < 0) else 'neu') }}">
             {% if oc.pct_since is defined and oc.pct_since is not none %}{{ '%+.1f'|format(oc.pct_since) }}%{% else %}—{% endif %}
           </span>
         </td>
-        <td><span class="oc-dot {{ oc.get('status','flat') }}"></span></td>
+        <td><span class="oc-dot {{ oc.get('status','flat') }}"></span>
+          {% if oc.get('status') == 'running' %}{{ t('above +2%', '高于+2%') }}
+          {% elif oc.get('status') == 'stopped' %}{{ t('below −2%', '低于−2%') }}
+          {% elif oc.get('status') == 'flat' %}{{ t('within ±2%', '±2%以内') }}{% endif %}
+        </td>
         <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
       </tr>
       {% endfor %}
@@ -395,20 +449,38 @@
 
   <!-- ── Section 5: Failure-mode mix ── -->
   <div class="tr-section">
-    <div class="tr-section-hd">{{ t('Why names stopped out', '标的止损原因分析') }}</div>
-    <div class="tr-section-sub">{{ t('Attribution of stopped-out names by category — what drove the loss.', '止损标的的原因归因——亏损的驱动因素。') }}</div>
+    <div class="tr-section-hd">{{ t('What drove each exit', '每次离榜的驱动因素') }}</div>
+    <div class="tr-section-sub">{{ t('Attribution of graded exits, winners and losers alike: '
+      'the main driver of each result, and a check of the process.',
+      '已评级离榜标的的归因（含盈利与亏损）：每个结果的主要驱动因素，以及流程检查。') }}</div>
     {% if failure_mix_data_gap %}
     <div class="tr-gap-block">
       {{ t('Attribution data accruing — this section fills in as more exits are graded.', '归因数据积累中——随着更多标的被评级，本节将逐步填充。') }}
     </div>
     {% else %}
+    {% set _fms = {
+      'idio_break': ['Company-specific weakness', '个股自身走弱'],
+      'idio_alpha': ['Company-specific strength', '个股自身走强'],
+      'sector_rotated_out': ['Sector rotated out', '板块轮出'],
+      'macro_headwind': ['Market headwind', '大盘逆风'],
+      'beta_tailwind': ['Market tailwind', '大盘顺风'],
+      'mixed': ['Mixed', '混合'], 'data_fault': ['Data problem', '数据问题'],
+      'clean': ['No process fault', '流程无误'],
+      'signaled_too_late': ['Flagged too late', '信号过晚'],
+      'premature_stop_noise': ['Stopped out on noise', '噪音触发止损'],
+    } %}
+    {% set _fmc = {'outcome_cause': ['What drove the result', '结果的驱动因素'],
+      'process_fault': ['Process check', '流程检查']} %}
     <div class="tr-row-grid">
       {% for col, vc in failure_mix.items() %}
       <div class="tr-card">
-        <div class="tr-card-title">{{ col.replace('_',' ').title() }}</div>
+        <div class="tr-card-title">
+          {% set _ct = _fmc.get(col) %}{{ t(_ct[0], _ct[1]) if _ct else
+          col.replace('_',' ').title() }}</div>
         {% for k, v in vc.items() %}
         <div style="display:flex;justify-content:space-between;font-size:12px;padding:2px 0">
-          <span class="neu">{{ k }}</span><span>{{ v }}</span>
+          <span class="neu">{% set _ks = _fms.get(k) %}{% if _ks %}
+          {{ t(_ks[0], _ks[1]) }}{% else %}{{ k }}{% endif %}</span><span>{{ v }}</span>
         </div>
         {% endfor %}
       </div>
@@ -465,7 +537,10 @@
     <b>{{ t('Notes', '说明') }}</b> ·
     {{ t('Entry prices are the next session\'s close after the name first appeared on the board (next-bar realism). Returns are total-return (dividend-adjusted).', '入场价为标的首次上榜后下一交易日的收盘价（次日收盘入场）。收益为全收益（含股息调整）。') }}
     {% if n_skipped %} · {{ n_skipped }} {{ t('names excluded for missing prices (likely delisted).', '个标的因缺少价格被排除（可能已退市）。') }}{% endif %}
-    · {{ t('Trend verdicts unlock once enough independent holding-period windows accrue — first full 21-day grades around mid-August 2026; trend conclusions on 21-day results around September 2026. Display-only throughout.', '趋势判断需积累足量独立持有期窗口后方可开放——21日完整成绩单约于2026年8月中旬出现；21日结果的趋势结论约于2026年9月形成。全程仅供展示参考。') }}
+    {% set _fe = 'Trend verdicts unlock once at least 3 independent entry windows have ' %}
+    {% set _fe = _fe ~ 'graded results for a holding period. Display-only throughout.' %}
+    {% set _fz = '每个持有周期需至少3个独立入场窗口出结果后方可开放趋势判断。全程仅供展示参考。' %}
+    · {{ t(_fe, _fz) }}
   </div>
 
 </div><!-- end .tr-wrap -->

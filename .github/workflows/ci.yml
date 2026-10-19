@@ -209,6 +209,9 @@ on:
       - "tests/test_research_vault.py"
       - "tests/test_research_vault_strict_store.py"
       - "tests/test_research_vault_generation_evidence.py"
+      - "tests/test_research_vault_producer_transport.py"
+      - "tests/test_research_vault_generation_recovery.py"
+      - "tests/test_research_vault_generation_continuation.py"
       # Research Vault (RV W2) serving API + download gate: quota ledger, view
       # rate-limit, watermark, the app/research.py router + its security tests.
       - "app/research.py"
