@@ -321,3 +321,315 @@ def test_cli_is_an_actual_replay_consumer():
                             input=json.dumps(request), text=True, capture_output=True, timeout=30)
     assert result.returncode == 0, result.stderr
     assert json.loads(result.stdout) == build_stock_assessment(request)
+
+
+# V2: independent company context and explicit current/history separation.
+from engine.catalyst_intelligence import assessment_v2 as A2
+from engine.news_impact import thesis as NEWS
+
+
+def owner_request_v2():
+    old = owner_request()
+    return {
+        "schema": A2.INPUT_SCHEMA,
+        "focal": deepcopy(old["peer_inputs"]["focal"]),
+        "decision_at": old["peer_inputs"]["decision_at"],
+        "peer_inputs": old["peer_inputs"], "entry": old["entry"],
+        "news": {"fact_log": old["news"]["fact_log"],
+                 "current_owners": old["news"]["current_owners"],
+                 "comparison": {"since_at": old["news"]["since_at"],
+                                "prior_owners": old["news"]["prior_owners"]}},
+    }
+
+
+def _v2_prior_at(request, at="2026-09-28T14:10:00Z"):
+    comp = request["news"]["comparison"]
+    comp["since_at"] = at
+    cut = comp["prior_owners"]
+    cut["as_of"] = cut["known_at"] = at
+    cut["payload"]["decision_cut"] = at
+    cut["payload_digest"] = digest(cut["payload"])
+
+
+def test_v2_no_peers_preserves_independent_current_news_and_entry():
+    request = owner_request_v2()
+    expected = A2.build_stock_assessment_v2(request)
+    request["peer_inputs"] = None
+    out = A2.build_stock_assessment_v2(request)
+    assert out["peer_context"] == {
+        "state": "UNAVAILABLE", "reason_code": "PEER_INPUT_NOT_SUPPLIED", "context": None}
+    assert out["entry_context"] == expected["entry_context"]
+    assert out["news_context"] == expected["news_context"]
+    assert not any(out["authority"].values())
+    assert not out["source_admission_established"]
+    assert all(v["value"] is None for v in out["advanced_estimates"].values())
+
+
+@pytest.mark.parametrize("defect", ["missing", "late"])
+def test_v2_current_news_survives_unavailable_historical_snapshot(defect):
+    request = owner_request_v2()
+    expected_current = A2.build_stock_assessment_v2(request)["news_context"]["current"]
+    if defect == "missing":
+        request["news"]["comparison"]["prior_owners"] = None
+        reason = "PRIOR_OWNER_INPUT_NOT_SUPPLIED"
+    else:
+        cut = request["news"]["comparison"]["prior_owners"]
+        cut["known_at"] = cut["as_of"].replace("00Z", "00.000001Z")
+        reason = "PRIOR_OWNER_NOT_KNOWN_AT_CUT"
+    out = A2.build_stock_assessment_v2(request)["news_context"]
+    assert out["current"] == expected_current
+    assert out["current"]["views"]
+    assert out["comparison"]["state"] == "UNAVAILABLE"
+    assert out["comparison"]["reason_code"] == reason
+    assert out["comparison"]["pairs"] is None
+    assert out["comparison"]["prior_views"] is None
+
+
+def test_v2_unrequested_comparison_does_not_replay_current_owners_as_prior(monkeypatch):
+    request = owner_request_v2()
+    request["news"]["comparison"] = None
+    real = A2.project_news_theses
+    calls = []
+    def observe(*args, **kwargs):
+        calls.append(kwargs)
+        return real(*args, **kwargs)
+    monkeypatch.setattr(A2, "project_news_theses", observe)
+    out = A2.build_stock_assessment_v2(request)["news_context"]
+    assert out["current"]["state"] == "PROJECTED"
+    assert out["comparison"]["state"] == "NOT_REQUESTED"
+    assert len(calls) == 1
+    assert "prior_owners" not in calls[0] and "prior_as_of_utc" not in calls[0]
+
+
+@pytest.mark.parametrize("defect", ["missing", "late"])
+def test_v2_missing_current_does_not_display_prior_as_current(defect):
+    request = owner_request_v2()
+    if defect == "missing":
+        request["news"]["current_owners"] = None
+        reason = "CURRENT_OWNER_INPUT_NOT_SUPPLIED"
+    else:
+        request["news"]["current_owners"]["known_at"] = DECISION.replace("08Z", "08.000001Z")
+        reason = "CURRENT_OWNER_NOT_KNOWN_AT_CUT"
+    out = A2.build_stock_assessment_v2(request)
+    assert out["news_context"]["current"]["views"] is None
+    assert out["news_context"]["comparison"]["pairs"] is None
+    assert out["news_context"]["current"]["reason_code"] == reason
+    assert out["entry_context"]["state"] == "OWNER_PROJECTION_ATTACHED"
+
+
+def test_v2_empty_projected_news_is_distinct_from_missing_news():
+    request = owner_request_v2()
+    request["peer_inputs"] = request["entry"] = None
+    request["focal"]["company_id"] = "cik:0000000001"
+    empty = A2.build_stock_assessment_v2(request)["news_context"]
+    assert empty["current"]["state"] == "PROJECTED"
+    assert empty["current"]["views"] == []
+    assert empty["comparison"]["state"] == "PROJECTED"
+    assert empty["comparison"]["pairs"] == []
+    request["news"] = None
+    missing = A2.build_stock_assessment_v2(request)["news_context"]
+    assert missing["current"]["state"] == "UNAVAILABLE"
+    assert missing["current"]["views"] is None
+
+
+def test_v2_supplied_peer_owner_context_is_preserved():
+    request = owner_request_v2()
+    out = A2.build_stock_assessment_v2(request)
+    assert out["peer_context"]["context"] == build_peer_context(request["peer_inputs"])
+
+
+@pytest.mark.parametrize("field", ["security_id", "company_id", "identity_epoch", "identity_source_ref"])
+def test_v2_peer_identity_mismatch_refuses_instead_of_becoming_missing(field):
+    request = owner_request_v2()
+    request["peer_inputs"]["focal"][field] = "different"
+    with pytest.raises(ContextError, match="peer focal"):
+        A2.build_stock_assessment_v2(request)
+
+
+@pytest.mark.parametrize("field", ["security_id", "company_id", "identity_epoch", "identity_source_ref"])
+def test_v2_explicit_identity_is_validated_without_peers(field):
+    request = owner_request_v2()
+    request["peer_inputs"] = None
+    request["focal"][field] = " "
+    with pytest.raises(ContextError):
+        A2.build_stock_assessment_v2(request)
+
+
+@pytest.mark.parametrize("value", [{}, [], False, 0])
+def test_v2_malformed_optional_peers_are_not_absence(value):
+    request = owner_request_v2()
+    request["peer_inputs"] = value
+    with pytest.raises(ContextError):
+        A2.build_stock_assessment_v2(request)
+
+
+@pytest.mark.parametrize("at", [
+    "2026-09-28T20:00Z", "2026-09-28T20:00:08.0000001Z",
+    "20260928T20:00:08Z", "2026-09-28 20:00:08Z",
+    "2026-09-28T20:00:08+00:00", "2026-09-28T20:00:08,1Z",
+])
+def test_v2_unsupported_composition_clock_is_refused(at):
+    request = owner_request_v2()
+    request["decision_at"] = at
+    with pytest.raises(ContextError, match="complete UTC clock"):
+        A2.build_stock_assessment_v2(request)
+
+
+def test_v2_equivalent_clock_spelling_preserves_all_owner_evidence():
+    request = owner_request_v2()
+    original = deepcopy(request)
+    before = A2.build_stock_assessment_v2(request)
+    request["decision_at"] = DECISION.replace("08Z", "08.000000Z")
+    after = A2.build_stock_assessment_v2(request)
+    assert after["entry_context"] == before["entry_context"]
+    assert after["news_context"] == before["news_context"]
+    assert after["peer_context"] == before["peer_context"]
+    assert after["input_digest"] != before["input_digest"]
+    assert request["news"] == original["news"] and request["entry"] == original["entry"]
+
+
+def test_v2_one_microsecond_peer_cut_mismatch_refuses():
+    request = owner_request_v2()
+    request["peer_inputs"]["decision_at"] = DECISION.replace("08Z", "08.000001Z")
+    with pytest.raises(ContextError, match="peer decision"):
+        A2.build_stock_assessment_v2(request)
+
+
+@pytest.mark.parametrize("which", ["current", "prior"])
+def test_v2_owner_evidence_timestamp_spelling_is_not_rewritten(which):
+    request = owner_request_v2()
+    cut = (request["news"]["current_owners"] if which == "current"
+           else request["news"]["comparison"]["prior_owners"])
+    cut["as_of"] = cut["as_of"][:-1] + ".000Z"
+    with pytest.raises(ContextError, match="explicit decision_cut"):
+        A2.build_stock_assessment_v2(request)
+
+
+@pytest.mark.parametrize("which", ["current", "prior", "entry"])
+def test_v2_overprecision_source_cut_is_refused(which):
+    request = owner_request_v2()
+    cut = (request["entry"] if which == "entry" else request["news"]["current_owners"]
+           if which == "current" else request["news"]["comparison"]["prior_owners"])
+    cut["known_at"] = cut["known_at"][:-1] + ".0000001Z"
+    with pytest.raises(ContextError, match="complete UTC clock"):
+        A2.build_stock_assessment_v2(request)
+
+
+def test_v2_bad_prior_digest_is_refused_even_when_current_is_absent():
+    request = owner_request_v2()
+    request["news"]["current_owners"] = None
+    request["news"]["comparison"]["prior_owners"]["payload"]["decision_cut"] = DECISION
+    with pytest.raises(ContextError, match="digest"):
+        A2.build_stock_assessment_v2(request)
+
+
+def test_v2_nonpreceding_comparison_is_refused():
+    request = owner_request_v2()
+    request["news"]["comparison"]["since_at"] = DECISION
+    with pytest.raises(ContextError, match="must precede"):
+        A2.build_stock_assessment_v2(request)
+
+
+def test_v2_malformed_fact_log_is_not_hidden_by_missing_owner_input():
+    request = owner_request_v2()
+    request["news"]["current_owners"] = None
+    request["news"]["fact_log"] = {"schema": "invalid"}
+    with pytest.raises(ContextError, match="fact log"):
+        A2.build_stock_assessment_v2(request)
+
+
+def test_v2_multiple_propositions_pair_by_company_and_original_fact():
+    request = owner_request_v2()
+    _v2_prior_at(request)
+    log = request["news"]["fact_log"]
+    new = deepcopy(log["records"][0])
+    new.update(log_seq=max(r["log_seq"] for r in log["records"]) + 1,
+               fact_id="fact_" + "d" * 24, cluster_id="ev2_" + "d" * 16,
+               document_id="doc_synthetic_second_proposition",
+               observed_at="2026-09-28T19:00:00Z", source_available_at="2026-09-28T18:59:00Z")
+    new["fact_key"]["slot"]["horizon_token"] = "FY2030"
+    new["provenance"].update(origin_document_id=new["document_id"],
+                            origin_claim_id="claim_synthetic_second",
+                            root_family_id="root_synthetic_second")
+    new["evidence"].update(document_id=new["document_id"], span_id="span_" + "d" * 20)
+    new["owner_claim_ids"] = ["claim_synthetic_second"]
+    log["records"].append(new)  # The public projector validates this synthetic log.
+    out = A2.build_stock_assessment_v2(request)["news_context"]
+    pairs = out["comparison"]["pairs"]
+    assert len(pairs) == 2
+    indexed = {p["view_key"]["original_proposition_fact_id"]: p for p in pairs}
+    assert indexed[log["records"][0]["fact_id"]]["presence"] == "BOTH_CUTS"
+    assert indexed[new["fact_id"]]["presence"] == "CURRENT_ONLY"
+    assert all(p["view_key"]["company_id"] == request["focal"]["company_id"] for p in pairs)
+    owner = NEWS.project(log, request["news"]["current_owners"]["payload"], DECISION,
+                         prior_as_of_utc=request["news"]["comparison"]["since_at"],
+                         prior_owners=request["news"]["comparison"]["prior_owners"]["payload"],
+                         decision_cut=DECISION)
+    expected = {v["original_proposition_fact_id"]: v["material_delta_triggers"] for v in owner}
+    assert {k: p["material_delta_triggers"] for k, p in indexed.items()} == expected
+
+
+@pytest.mark.parametrize("stage", ["current", "prior", "compared"])
+def test_v2_duplicate_owner_keys_refuse(stage, monkeypatch):
+    request = owner_request_v2()
+    _v2_prior_at(request)
+    real = A2.project_news_theses
+    def duplicate(*args, **kwargs):
+        views = real(*args, **kwargs)
+        actual = ("compared" if "prior_owners" in kwargs else
+                  "current" if args[2] == DECISION else "prior")
+        return views + (deepcopy(views[0]),) if stage == actual and views else views
+    monkeypatch.setattr(A2, "project_news_theses", duplicate)
+    with pytest.raises(ContextError, match="duplicate proposition"):
+        A2.build_stock_assessment_v2(request)
+
+
+@pytest.mark.parametrize("defect", ["keys", "payload", "triggers"])
+def test_v2_disagreeing_owner_comparison_is_refused(defect, monkeypatch):
+    request = owner_request_v2()
+    real = A2.project_news_theses
+    def corrupt(*args, **kwargs):
+        views = real(*args, **kwargs)
+        if "prior_owners" in kwargs:
+            if defect == "keys":
+                return ()
+            views = tuple(deepcopy(v) for v in views)
+            if defect == "payload":
+                views[0]["as_of_utc"] = "2026-09-28T20:00:08.000001Z"
+            else:
+                views[0]["material_delta_triggers"] = None
+        return views
+    monkeypatch.setattr(A2, "project_news_theses", corrupt)
+    with pytest.raises(ContextError, match="NewsImpact"):
+        A2.build_stock_assessment_v2(request)
+
+
+def test_v2_prior_only_is_not_invented_as_withdrawal_or_empty_current_change(monkeypatch):
+    request = owner_request_v2()
+    _v2_prior_at(request)
+    real = A2.project_news_theses
+    def historical_only(*args, **kwargs):
+        views = real(*args, **kwargs)
+        return () if args[2] == DECISION else views
+    monkeypatch.setattr(A2, "project_news_theses", historical_only)
+    out = A2.build_stock_assessment_v2(request)["news_context"]
+    assert out["current"]["views"] == []
+    assert len(out["comparison"]["prior_views"]) == 1
+    assert out["comparison"]["pairs"][0]["presence"] == "PRIOR_ONLY"
+    assert out["comparison"]["pairs"][0]["material_delta_triggers"] is None
+
+
+def test_v2_immutable_replay_and_cli_preserve_v1_frozen_output():
+    request = owner_request_v2()
+    original = deepcopy(request)
+    packet = A2.build_stock_assessment_v2(request)
+    assert request == original
+    assert packet == A2.build_stock_assessment_v2(original)
+    for req, expected in [
+        (request, packet),
+        (owner_request(), json.loads((FIXTURES / "owner_assessment.json").read_text())),
+    ]:
+        result = subprocess.run([sys.executable, "-m", "engine.catalyst_intelligence"], cwd=ROOT,
+                                input=json.dumps(req), text=True, capture_output=True, timeout=30)
+        assert result.returncode == 0, result.stderr
+        assert json.loads(result.stdout) == expected
