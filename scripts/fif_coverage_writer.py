@@ -61,8 +61,7 @@ from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping
 
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT))
 
 from engine.fundamental_forensics.metric_registry import load_core_metric_registry  # noqa: E402
 
@@ -84,6 +83,10 @@ COVER_DATE_POLICY: dict[str, str] = {
 }
 COVER_DATE_FORMS = frozenset({"10-K", "10-Q"})
 QUALIFIER_KEYS = ("qualifier", "as_of", "qualifier_policy")
+# A present cell carrying a non-null value under either key is labelled, never strict.
+LABEL_KEYS = ("qualifier", "derivation")
+# Keys a re-evaluated cell drops before it takes its fresh result.
+REEVALUATED_KEYS = (*QUALIFIER_KEYS, "derivation")
 ROLLUP_BASIS: dict[str, str] = {
     "present_cells": "any_basis",
     "core_pass": "any_basis",
@@ -492,12 +495,17 @@ def _rollup_cells_for_issuer(cells, tier_assigned):
         yield period_id, field_id, status
 
 
+def _is_labelled(cell: Mapping[str, Any]) -> bool:
+    """True when the cell carries a non-null value under any ``LABEL_KEYS`` key."""
+    return any(cell.get(key) is not None for key in LABEL_KEYS)
+
+
 def _strict_status(cell: Mapping[str, Any]) -> str:
     """The cell's status on the strict basis: a present cell carrying a non-null
     qualifier or derivation becomes the internal token ``present_labelled``,
     which no rollup counts as present.  The token is never written."""
     status = str(cell.get("status", ""))
-    if status == "present" and (cell.get("qualifier") is not None or cell.get("derivation") is not None):
+    if status == "present" and _is_labelled(cell):
         return "present_labelled"
     return status
 
@@ -606,7 +614,7 @@ def rewrite_manifest(
             cells_out.append(new)
             continue
         result = evaluate_cell(spec, specs, loaded_facts, slot, counters, recorded_at=recorded_at)
-        for key in QUALIFIER_KEYS:
+        for key in REEVALUATED_KEYS:
             new.pop(key, None)
         new.update(result)
         _bump(counters, "cells_rewritten")
@@ -615,7 +623,7 @@ def rewrite_manifest(
         for scope in scopes:
             by_reason[scope][key] = by_reason[scope].get(key, 0) + 1
             if new["status"] == "present":
-                if "qualifier" in new:
+                if _is_labelled(new):
                     present_qualified[scope] += 1
                 else:
                     present_strict[scope] += 1
