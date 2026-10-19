@@ -19,7 +19,7 @@ from engine.neuralweb import market_memory_episode_features as features
 from engine.neuralweb import market_memory_retained_context_cohort as cohort
 from engine.research_factory import market_memory_fitted_use as use
 from engine.research_factory import market_memory_contextual_registration as control
-from tests.test_market_memory_episode_retrieval import corpus
+from tests.test_market_memory_episode_retrieval import corpus, METHOD
 from tests.test_market_memory_retained_context_cohort import capture, owner, load, CUTOFF
 from tests.test_market_memory_episode_features import Policy
 from tests.test_market_memory_e0_control_records import records, bundle, task_bundle
@@ -60,7 +60,8 @@ def native_training(tmp_path, monkeypatch):
             "feature_support_interval": 3, "label_support_interval": 3}},
         {"unresolved": ["declared_session_episode_and_full_support_spans"],
          "exact_task_bindings_checked": True, "declared_dispositions": {"unknown": 0}})
-    body = cohort.canonical({"binding": binding, "tasks": tasks[:2], "coverage": coverage,
+    body = cohort.canonical({"binding": binding, "eligibility_method_spec": METHOD.disclosure(),
+        "tasks": tasks[:2], "coverage": coverage,
         "partition_tasks": [{**t, "disposition": "development" if i < 2 else "excluded"}
                             for i, t in enumerate(tasks)],
         "chronological_partition": {"boundaries": {"development_end_exclusive": CUTOFF,
@@ -172,7 +173,9 @@ def test_no_caller_dictionary_can_grant_training_or_construct_fit(native_trainin
 
 
 def test_public_owner_is_fixed_and_shipped_purpose_is_dormant():
-    assert "engine/neuralweb/market_memory_exact_index.py" in use._SOURCE_PATHS
+    assert {"engine/neuralweb/market_memory_exact_index.py",
+            "engine/neuralweb/market_memory_fitted_retrieval.py",
+            "engine/neuralweb/market_memory_fitted_distance.py"} <= set(use._SOURCE_PATHS)
     if not (use.sys.platform == "linux" and use.os.geteuid() == 0 and
             Path(use.__file__).resolve() == use.owner.INSTALLED_ROOT / use._MODULE_PATH):
         with pytest.raises(use.FittedUseError, match="installed_training_administrator"):

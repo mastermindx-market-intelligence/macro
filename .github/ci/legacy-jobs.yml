@@ -30602,6 +30602,8 @@ jobs:
       - "contracts/market_memory/fitted_use_binding.v2.schema.json"
       - "engine/research_factory/market_memory_fitted_use.py"
       - "engine/neuralweb/market_memory_fitted_normalization.py"
+      - "engine/neuralweb/market_memory_fitted_distance.py"
+      - "engine/neuralweb/market_memory_fitted_retrieval.py"
       - "engine/neuralweb/market_memory_exact_index.py"
       - "engine/neuralweb/market_memory_episode_features.py"
       - "engine/neuralweb/market_memory_episode_retrieval.py"
@@ -30956,6 +30958,8 @@ jobs:
       - "tests/test_market_memory.py"
       - "tests/test_market_memory_episode_comparison.py"
       - "tests/test_market_memory_fitted_normalization.py"
+      - "tests/test_market_memory_fitted_distance.py"
+      - "tests/test_market_memory_fitted_retrieval.py"
       - "tests/test_market_memory_e0_domains.py"
       - "tests/test_market_memory_exact_index.py"
       - "tests/test_market_memory_episode_features.py"
@@ -31077,6 +31081,8 @@ jobs:
           tests/test_market_memory_m0d_v2.py
           tests/test_market_memory_population.py
           tests/test_market_memory_fitted_normalization.py
+          tests/test_market_memory_fitted_distance.py
+          tests/test_market_memory_fitted_retrieval.py
           tests/test_market_memory_exact_index.py
           tests/test_market_memory_episode_features.py
           tests/test_market_memory_episode_comparison.py

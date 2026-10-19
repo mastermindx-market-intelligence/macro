@@ -271,6 +271,7 @@ def fit_authenticated_training_sources(sources, *, policy):
         "binding_id": binding["binding_id"], "fit_cutoff": binding["fit_cutoff"],
         "registered_query_lower_bound": binding["eligible_use_from"], "source_owner": original,
         "mode": binding["mode"], "qualification_report": source["qualification_report"],
+        "eligibility_method_spec": declared["eligibility_method_spec"],
         "subject_id": source["subject_id"],
         "training_manifest": manifest, "training_manifest_sha256": sha256(cohort.canonical(manifest)).hexdigest(),
         "parameters": parameters, "categorical_descriptor": features.fixed_comparison_descriptor()["coordinates"][2:],

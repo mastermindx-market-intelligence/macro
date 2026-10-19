@@ -33,6 +33,8 @@ _MODULE_PATH = "engine/research_factory/market_memory_fitted_use.py"
 _SOURCE_PATHS = owner._TASK_SOURCE_PATHS + (
     _MODULE_PATH, PURPOSE_PATH, "engine/neuralweb/market_memory_fitted_normalization.py",
     "engine/neuralweb/market_memory_exact_index.py",
+    "engine/neuralweb/market_memory_fitted_retrieval.py",
+    "engine/neuralweb/market_memory_fitted_distance.py",
     BASELINE_PURPOSE_PATH, AUTHORITY_RECORD,
     "engine/research_factory/market_memory_e0_domains.py",
     "contracts/market_memory/e0_source_coverage.v1.schema.json",
@@ -212,7 +214,7 @@ def _prepare(descriptor, selected, records, registration_body, purpose):
     body = control._domain_snapshot({"schema": "market_memory.selected_training_inputs.v2",
         "purpose_sha256": sha256(control._domain_snapshot(purpose)[1]).hexdigest(),
         "selection_sha256": sha256(control._domain_snapshot(selected)[1]).hexdigest(),
-        "binding": binding, "tasks": selected_tasks,
+        "binding": binding, "eligibility_method_spec": method.disclosure(), "tasks": selected_tasks,
         "partition_tasks": [{**task, "disposition": partitions[task["task_id"]]}
                             for task in manifest["tasks"]],
         "chronological_partition": {"boundaries": split["boundaries"],
@@ -246,7 +248,7 @@ def prepare_registered_training_window():
         and Path(__file__).resolve() == owner.INSTALLED_ROOT / _MODULE_PATH,
         "installed_training_administrator_required")
     purpose, purpose_body = _purpose(owner.INSTALLED_ROOT)
-    from engine.neuralweb import market_memory_fitted_normalization
+    from engine.neuralweb import market_memory_fitted_normalization, market_memory_fitted_retrieval
     owner._verify_loaded_sources(paths=_SOURCE_PATHS)
     directory = owner.CONTROL_ROOT / sha256(purpose["selected_study_id"].encode()).hexdigest()
     body, selection = owner._load_selected_control(directory, purpose["selected_study_id"],
