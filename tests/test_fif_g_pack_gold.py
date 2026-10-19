@@ -831,6 +831,9 @@ def check_packet_agreement(pack: dict) -> list[str]:
         seen_cells.add(key)
         row = rows_by_period.get(key)
         if row is None:
+            # M5: a packet cell whose join key has no gold row is a problem,
+            # not a silent skip -- the packet must not exceed the gold.
+            problems.append(f"packet cell {key} has no gold row")
             continue
         if cell.get("provenance_kind") == "direct":
             trace = row.get("trace") or {}
@@ -844,6 +847,87 @@ def check_packet_agreement(pack: dict) -> list[str]:
         else:
             if cell.get("value") is not None:
                 problems.append(f"packet cell {key} is valued while the gold cell is not")
+    return problems
+
+
+# M7: the closed correction-basis rule set. Each ruling maps to the evidence
+# alternatives that satisfy it (outer tuple = alternatives, inner = conjuncts).
+_CORRECTION_EVIDENCE_RULES: dict[str, tuple[tuple[str, ...], ...]] = {
+    "R-G-2": (("byte_reread",), ("dependency_rows",)),
+    "R-G-4": (("catalog", "coverage"),),
+    "R-G-5": (("byte_confirm", "filed_location"),),
+}
+_NUMERIC_CORRECTION_FIELDS = frozenset({"value_exact", "value"})
+
+
+def _correction_metric(entry: dict):
+    """row_key.metric_id for gold corrections, cell.metric_id for packet ones."""
+    row_key = entry.get("row_key")
+    if isinstance(row_key, dict) and row_key.get("metric_id"):
+        return row_key.get("metric_id")
+    cell = entry.get("cell")
+    if isinstance(cell, dict):
+        return cell.get("metric_id")
+    return None
+
+
+def check_correction_basis(pack: dict) -> list[str]:
+    """M7: every gold/packet correction needs an admissible ruling basis.
+
+    R-G-2 needs a byte reread or the dependency rows; R-G-4 (class closure)
+    needs the catalog policy and the coverage contract, may never correct a
+    numeric field, must set verification_state to not_applicable_verified,
+    and its metric must be one the catalog refuses for the manifest issuer
+    class (checked against the shipped catalog, not trusted from prose);
+    R-G-5 needs a byte confirm plus the filed location. An R-G-4
+    evidence.kernel_observation / evidence.kernel value is a classification
+    input only -- it never satisfies the rule on its own.
+    """
+    problems: list[str] = []
+    applicability = _metric_applicability()
+    issuer_class = pack["manifest"].get("issuer_class")
+    for list_name in ("gold_corrections", "packet_corrections"):
+        for entry in pack["manifest"].get(list_name) or []:
+            if not isinstance(entry, dict):
+                problems.append(f"{list_name} entry is not an object")
+                continue
+            ruling = entry.get("ruling")
+            label = f"{ruling!r} on {_correction_metric(entry)!r}.{entry.get('field')}"
+            alternatives = _CORRECTION_EVIDENCE_RULES.get(ruling)
+            if alternatives is None:
+                problems.append(f"correction {label} carries an unknown ruling")
+                continue
+            evidence = entry.get("evidence")
+            if not isinstance(evidence, dict):
+                evidence = {}
+            if not any(
+                all(evidence.get(key) for key in required) for required in alternatives
+            ):
+                problems.append(
+                    f"correction {label} lacks the evidence its ruling requires "
+                    f"({' or '.join(' and '.join(required) for required in alternatives)})"
+                )
+            if ruling == "R-G-4":
+                field = entry.get("field")
+                if field in _NUMERIC_CORRECTION_FIELDS:
+                    problems.append(
+                        f"correction {label} is class-closure only but corrects "
+                        f"the numeric field {field!r}"
+                    )
+                if field == "verification_state" and entry.get(
+                    "corrected_value"
+                ) != "not_applicable_verified":
+                    problems.append(
+                        f"correction {label} must set verification_state to "
+                        "not_applicable_verified"
+                    )
+                if not _class_refuses(
+                    applicability.get(_correction_metric(entry)), issuer_class
+                ):
+                    problems.append(
+                        f"correction {label} is not refused by the catalog for "
+                        f"issuer class {issuer_class!r}"
+                    )
     return problems
 
 
@@ -862,6 +946,7 @@ def _all_pack_problems(pack: dict) -> list[str]:
     problems += check_pending_and_not_gold(pack)
     problems += check_pins(pack, _metric_statement_families())
     problems += check_packet_agreement(pack)
+    problems += check_correction_basis(pack)
     return problems
 
 
@@ -1305,6 +1390,7 @@ def test_synthetic_pack_passes_every_hermetic_rule() -> None:
     assert not check_no_specialist(pack)
     assert not check_pins(pack, _metric_statement_families())
     assert not check_packet_agreement(pack)
+    assert not check_correction_basis(pack)
     problems = check_pending_and_not_gold(pack)
     assert not problems, problems
 
@@ -1623,6 +1709,161 @@ def test_negative_packet_agreement() -> None:
     packet["cells"][1]["value"] = "7"
     problems = check_packet_agreement(_synthetic_pack(packet=packet))
     assert any("is valued while the gold cell is not" in p for p in problems)
+    # M5: a packet cell whose join key has no gold row is a problem.
+    packet = _synthetic_packet()
+    packet["cells"].append(
+        {
+            "metric_id": "operating_income",
+            "period": {
+                "label": "FY2026",
+                "kind": "duration",
+                "start": "2026-01-01",
+                "end": "2026-12-31",
+            },
+            "provenance_kind": "direct",
+            "value": "310",
+        }
+    )
+    problems = check_packet_agreement(_synthetic_pack(packet=packet))
+    assert any("has no gold row" in p for p in problems)
+
+
+def _class_refused_metric() -> tuple[str, str]:
+    """A catalog metric and a class its own policy refuses (data, no literals)."""
+    applicability = _metric_applicability()
+    metric, policy = next(
+        (m, p)
+        for m, p in sorted(applicability.items())
+        if p["excluded_classes"] and not p["applicable_classes"]
+    )
+    return metric, policy["excluded_classes"][0]
+
+
+def _syn_gold_correction(
+    ruling: str, field: str, corrected, evidence: dict, metric: str
+) -> dict:
+    return {
+        "row_key": {
+            "view": "as_filed",
+            "source_accession": _SYN_A,
+            "metric_id": metric,
+            "period_key": ["duration", "2026-01-01", "2026-12-31"],
+        },
+        "field": field,
+        "op": "set",
+        "r2_value": "prior",
+        "corrected_value": corrected,
+        "evidence": evidence,
+        "ruling": ruling,
+    }
+
+
+def _correction_basis_problems(
+    gold: list[dict], packet_corr: list[dict] | None = None, issuer_class: str | None = None
+) -> list[str]:
+    manifest = _synthetic_manifest()
+    if issuer_class is not None:
+        manifest["issuer_class"] = issuer_class
+    manifest["gold_corrections"] = gold
+    manifest["packet_corrections"] = packet_corr or []
+    return check_correction_basis(_synthetic_pack(manifest=manifest))
+
+
+def test_negative_correction_basis() -> None:
+    """M7: every correction needs an admissible ruling + evidence basis."""
+    metric, refused = _class_refused_metric()
+    inert = next(
+        m for m, p in sorted(_metric_applicability().items()) if not any(p.values())
+    )
+
+    def entry(ruling, field, corrected, evidence, metric_id=metric):
+        return _syn_gold_correction(ruling, field, corrected, evidence, metric_id)
+
+    problems = _correction_basis_problems(
+        [entry("R-G-9", "code", "x", {"byte_reread": "r"})]
+    )
+    assert any("unknown ruling" in p for p in problems)
+    # R-G-2 with only kr_ids: neither a byte reread nor dependency rows.
+    problems = _correction_basis_problems(
+        [entry("R-G-2", "code", "x", {"kr_ids": ["kr"]})]
+    )
+    assert any("lacks the evidence" in p for p in problems)
+    # R-G-4 missing coverage; a kernel observation never substitutes for it.
+    problems = _correction_basis_problems(
+        [entry("R-G-4", "code", "NOT_APPLICABLE",
+               {"catalog": "policy", "kernel_observation": "kr"})],
+        issuer_class=refused,
+    )
+    assert any("lacks the evidence" in p for p in problems)
+    # R-G-4 is class-closure only: it may never correct a numeric field.
+    problems = _correction_basis_problems(
+        [entry("R-G-4", "value_exact", "5", {"catalog": "p", "coverage": "c"})],
+        issuer_class=refused,
+    )
+    assert any("numeric field" in p for p in problems)
+    # R-G-4 whose metric the catalog does not refuse for the class.
+    problems = _correction_basis_problems(
+        [entry("R-G-4", "verification_state", "not_applicable_verified",
+               {"catalog": "p", "coverage": "c"}, metric_id=inert)],
+        issuer_class=refused,
+    )
+    assert any("not refused by the catalog" in p for p in problems)
+    # R-G-4 on verification_state must set not_applicable_verified.
+    problems = _correction_basis_problems(
+        [entry("R-G-4", "verification_state", "typed_absence_verified",
+               {"catalog": "p", "coverage": "c"})],
+        issuer_class=refused,
+    )
+    assert any("not_applicable_verified" in p for p in problems)
+    # R-G-5 missing filed_location.
+    problems = _correction_basis_problems(
+        [entry("R-G-5", "value_exact", "5", {"byte_confirm": "bytes"})]
+    )
+    assert any("lacks the evidence" in p for p in problems)
+
+
+def test_correction_basis_accepts_each_ruling() -> None:
+    """M7 positive: one admissible entry of each ruling passes, packet side too."""
+    metric, refused = _class_refused_metric()
+    manifest = _synthetic_manifest()
+    manifest["issuer_class"] = refused
+    manifest["gold_corrections"] = [
+        _syn_gold_correction(
+            "R-G-2", "code", "disallowed_dimension",
+            {"byte_reread": "staged reread", "kr_ids": ["kr"]}, metric,
+        ),
+        _syn_gold_correction(
+            "R-G-4", "verification_state", "not_applicable_verified",
+            {"catalog": "policy", "coverage": "contract", "kernel": "classification input"},
+            metric,
+        ),
+        _syn_gold_correction(
+            "R-G-5", "value_exact", "4",
+            {"byte_confirm": "bytes", "filed_location": {"member_file": "doc-alpha.htm"}},
+            metric,
+        ),
+    ]
+    manifest["packet_corrections"] = [
+        {
+            "cell": {
+                "metric_id": metric,
+                "kind": "duration",
+                "start": "2026-01-01",
+                "end": "2026-12-31",
+            },
+            "field": "non_value_state",
+            "op": "set",
+            "r2_value": "missing_dependency",
+            "corrected_value": "not_applicable",
+            "evidence": {
+                "catalog": "policy",
+                "coverage": "contract",
+                "kernel": "classification input",
+            },
+            "ruling": "R-G-4",
+        }
+    ]
+    assert not check_correction_basis(_synthetic_pack(manifest=manifest))
 
 
 def test_negative_unknown_pin_type() -> None:
@@ -1642,7 +1883,7 @@ class _InlineXbrlFinder(HTMLParser):
 
     Nested wrappers (the basic-equals-diluted rendering pattern) inherit the
     innermost element's text. Attribute names arrive lowercased from
-    html.parser.
+    html.parser, so unitRef/xsi:nil are read as unitref/xsi:nil.
     """
 
     def __init__(self) -> None:
@@ -1656,9 +1897,12 @@ class _InlineXbrlFinder(HTMLParser):
             entry = {
                 "name": attrs_dict.get("name"),
                 "ctx": attrs_dict.get("contextref"),
+                "unitref": attrs_dict.get("unitref"),
+                "decimals": attrs_dict.get("decimals"),
                 "scale": attrs_dict.get("scale"),
                 "sign": attrs_dict.get("sign"),
                 "format": attrs_dict.get("format"),
+                "xsi:nil": attrs_dict.get("xsi:nil"),
                 "text": [],
                 "kids": [],
             }
@@ -1693,9 +1937,14 @@ def _effective_text(entry: dict) -> str:
 
 
 def _ix_value(entry: dict) -> Decimal:
+    # A nil fact carries no value at all (xsi:nil compares case-insensitively;
+    # html.parser lowercases the attribute name to xsi:nil).
+    if str(entry.get("xsi:nil") or "").strip().lower() == "true":
+        raise ValueError("nil fact")
     # ixt:fixed-zero states an explicit filed zero whatever glyph is displayed
     # (Inline XBRL Transformation Registry); it is a filed value, not an
-    # absence. Any other non-numeric text still fails Decimal parsing.
+    # absence. Any other non-numeric text -- including empty text -- still
+    # fails Decimal parsing.
     if (entry.get("format") or "").rsplit(":", 1)[-1] == "fixed-zero":
         return Decimal(0)
     text = (
@@ -1708,7 +1957,7 @@ def _ix_value(entry: dict) -> Decimal:
     )
     if text.startswith("(") and text.endswith(")"):
         text = "-" + text[1:-1]
-    value = Decimal(text or "0")
+    value = Decimal(text)
     if entry.get("scale"):
         value = value * (Decimal(10) ** int(entry["scale"]))
     if entry.get("sign") == "-":
@@ -1729,6 +1978,48 @@ def test_ix_value_fixed_zero_transform_only() -> None:
         _ix_value(dash)
 
 
+def test_ix_value_nil_fact_has_no_value() -> None:
+    """M3: a nil element never reads as zero, whatever text it renders."""
+    import decimal
+
+    nil_entry = {"text": ["0"], "kids": [], "scale": None, "sign": None, "xsi:nil": "true"}
+    with pytest.raises(ValueError, match="nil fact"):
+        _ix_value(nil_entry)
+    # The comparison is case-insensitive.
+    with pytest.raises(ValueError, match="nil fact"):
+        _ix_value({**nil_entry, "xsi:nil": "TRUE"})
+    # Nil wins even under the fixed-zero transform: there is no filed value.
+    with pytest.raises(ValueError, match="nil fact"):
+        _ix_value({**nil_entry, "format": "ixt:fixed-zero"})
+    # An empty element (no text of its own and no nested text) is not zero
+    # either; only the fixed-zero transform may state a bare zero.
+    empty = {"text": [], "kids": [], "scale": None, "sign": None}
+    with pytest.raises(decimal.InvalidOperation):
+        _ix_value(empty)
+    with pytest.raises(decimal.InvalidOperation):
+        _ix_value({**empty, "text": ["   "]})
+    assert _ix_value({**empty, "format": "ixt:fixed-zero"}) == Decimal(0)
+
+
+def test_inline_finder_records_nil_unitref_and_decimals() -> None:
+    """M3/M4 groundwork: the parser keeps xsi:nil, unitref and decimals."""
+    html = (
+        '<ix:nonFraction name="us-gaap:Revenues" contextRef="c-1" unitRef="usd" '
+        'decimals="-3" scale="3" sign="-" format="ixt:num-dot-decimal" '
+        'xsi:nil="true">0</ix:nonFraction>'
+    )
+    finder = _InlineXbrlFinder()
+    finder.feed(html)
+    finder.close()
+    assert len(finder.matches) == 1
+    entry = finder.matches[0]
+    assert entry["unitref"] == "usd"
+    assert entry["decimals"] == "-3"
+    assert entry["xsi:nil"] == "true"
+    with pytest.raises(ValueError, match="nil fact"):
+        _ix_value(entry)
+
+
 def _parse_member(path: Path) -> dict[tuple[str, str], list[dict]]:
     parser = _InlineXbrlFinder()
     parser.feed(path.read_bytes().decode("utf-8", "replace"))
@@ -1737,6 +2028,112 @@ def _parse_member(path: Path) -> dict[tuple[str, str], list[dict]]:
     for entry in parser.matches:
         index[(entry["name"], entry["ctx"])].append(entry)
     return index
+
+
+def _trace_attr_matches(entry_value, trace_value) -> bool:
+    """Attribute agreement between a staged element and the gold trace.
+
+    A null trace value matches an attribute the element does not carry; any
+    other value must be equal (compared as strings: scale/decimals may be
+    recorded as int or text on either side).
+    """
+    if trace_value is None:
+        return entry_value is None
+    if entry_value is None:
+        return False
+    return str(entry_value) == str(trace_value)
+
+
+def _byte_candidates_agree(index: dict, trace: dict, want: Decimal) -> str | None:
+    """M4: the staged bytes must agree with the gold value on the traced fact.
+
+    The candidate set is the elements indexed under (trace.concept,
+    trace.contextRef) whose unitref, decimals, scale, sign and format all
+    equal the trace's values. The check passes only when that set is
+    non-empty and every candidate's value equals ``want`` -- inline XBRL
+    legitimately repeats a fact, so equal duplicates are fine, but an
+    unequal duplicate in the same concept, context and unit is a problem.
+    Returns the problem message, or None when the bytes agree.
+    """
+    candidates = [
+        entry
+        for entry in index.get((trace.get("concept"), trace.get("contextRef")), [])
+        if _trace_attr_matches(entry.get("unitref"), trace.get("unitRef"))
+        and _trace_attr_matches(entry.get("decimals"), trace.get("decimals"))
+        and _trace_attr_matches(entry.get("scale"), trace.get("scale"))
+        and _trace_attr_matches(entry.get("sign"), trace.get("sign"))
+        and _trace_attr_matches(entry.get("format"), trace.get("format"))
+    ]
+    where = (
+        f"{trace.get('concept')} @ {trace.get('contextRef')} unit "
+        f"{trace.get('unitRef')} decimals {trace.get('decimals')} scale "
+        f"{trace.get('scale')} sign {trace.get('sign')} format {trace.get('format')}"
+    )
+    if not candidates:
+        return f"no staged element matches {where}"
+    values = [_ix_value(entry) for entry in candidates]
+    if any(value != want for value in values):
+        distinct = sorted({str(value) for value in values})
+        return f"staged values {distinct} at {where} disagree with the gold value {want}"
+    return None
+
+
+def _syn_ix_entry(text: str, **attrs) -> dict:
+    """A staged-element record shaped exactly like _InlineXbrlFinder output."""
+    entry = {
+        "name": "us-gaap:Revenues",
+        "ctx": "c-1",
+        "unitref": "usd",
+        "decimals": "-3",
+        "scale": "0",
+        "sign": None,
+        "format": "ixt:num-dot-decimal",
+        "xsi:nil": None,
+        "text": [text],
+        "kids": [],
+    }
+    entry.update(attrs)
+    return entry
+
+
+_SYN_TRACE = {
+    "concept": "us-gaap:Revenues",
+    "contextRef": "c-1",
+    "unitRef": "usd",
+    "decimals": "-3",
+    "scale": "0",
+    "sign": None,
+    "format": "ixt:num-dot-decimal",
+}
+
+
+def _syn_index(*entries: dict) -> dict:
+    return {("us-gaap:Revenues", "c-1"): list(entries)}
+
+
+def test_byte_candidates_agree_ignores_wrong_unit_or_decimals() -> None:
+    """M4: only the traced fact counts -- a same-value wrong-unit element does not."""
+    wrong_unit = _syn_index(_syn_ix_entry("700", unitref="usdPerShare"))
+    problem = _byte_candidates_agree(wrong_unit, _SYN_TRACE, Decimal("700"))
+    assert problem is not None and "no staged element matches" in problem
+    wrong_decimals = _syn_index(_syn_ix_entry("700", decimals="-6"))
+    problem = _byte_candidates_agree(wrong_decimals, _SYN_TRACE, Decimal("700"))
+    assert problem is not None and "no staged element matches" in problem
+
+
+def test_byte_candidates_agree_rejects_inconsistent_duplicate() -> None:
+    """M4: an unequal duplicate under the same concept, context and unit fails."""
+    inconsistent = _syn_index(_syn_ix_entry("700"), _syn_ix_entry("800"))
+    problem = _byte_candidates_agree(inconsistent, _SYN_TRACE, Decimal("700"))
+    assert problem is not None
+    assert "700" in problem and "800" in problem
+
+
+def test_byte_candidates_agree_accepts_consistent_duplicate() -> None:
+    """M4: inline XBRL legitimately repeats a fact; equal duplicates agree."""
+    consistent = _syn_index(_syn_ix_entry("700"), _syn_ix_entry("700.0"))
+    assert _byte_candidates_agree(consistent, _SYN_TRACE, Decimal("700")) is None
+    assert _byte_candidates_agree(_syn_index(_syn_ix_entry("700")), _SYN_TRACE, Decimal("700")) is None
 
 
 @pytest.mark.data_gate
@@ -1771,11 +2168,10 @@ def test_staged_bytes_match_gold_cells_and_pins() -> None:
             key = (trace["accession"], trace["member_file"])
             if key not in parsed:
                 parsed[key] = _parse_member(member_path)
-            candidates = parsed[key].get((trace["concept"], trace["contextRef"]), [])
             want = Decimal(row["value_exact"])
-            assert any(_ix_value(entry) == want for entry in candidates), (
-                f"gold value {row['value_exact']} for {row['metric_id']} "
-                f"({trace['concept']} @ {trace['contextRef']}) not found in the staged bytes"
+            problem = _byte_candidates_agree(parsed[key], trace, want)
+            assert problem is None, (
+                f"{row['metric_id']} / {row.get('period_key')}: {problem}"
             )
         for pin in manifest.get("pins") or []:
             if pin.get("type") == "kpi_vintages":

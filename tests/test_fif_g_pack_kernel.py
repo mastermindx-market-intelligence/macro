@@ -29,7 +29,9 @@ the comparisons it names into an expected failure: a named comparison that
 still fails is reported as the defect (strict expected-failure semantics), an
 entry that no longer reproduces fails the suite, and every unnamed comparison
 must match. Row-presence mismatches (a row on one side only) are treated as a
-failed comparison of the kind the entry names for that row.
+failed comparison of the kind the entry names for that row. Each entry's
+``record.gold`` must still equal the current gold cell (value, code, source
+accession), so a gold edit on a defect row cannot hide behind the defect.
 
 Byte-level work needs the staged SEC bytes, so the gate skips unless
 ``FIF_GSRC_STAGE_ROOT`` names the stage root.
@@ -146,7 +148,7 @@ def _convert_package(cik10: str, accession: str, stage: Path):
     occurrences, metadata, _receipt = convert_parsed_filing(
         parsed=parsed, package=admitted
     )
-    return occurrences, metadata
+    return occurrences, metadata, admitted
 
 
 def _period_universe(occurrences: Sequence[Any], governed: frozenset[str]):
@@ -186,10 +188,23 @@ def _run_clock(
     """A cutoff after every acceptance, governance clock and staged capture
     clock, all read from data (the recorded cutoff gates the retained packages'
     fixture_recorded_at clocks too)."""
+    from engine.fundamental_forensics.lineage_evidence import (
+        CONFIRMATION_CHAIN_RULE_AVAILABLE_AT,
+        CONFIRMATION_RULE_AVAILABLE_AT,
+    )
+
     registry = _registry()
     stamps = [str(row["knowledge_time"]) for row in gold_rows if row.get("knowledge_time")]
     stamps.extend(
         contract.available_at.isoformat() for contract in registry.contracts
+    )
+    # The lineage mint's rule clocks are governance clocks too: the cutoff must
+    # sit at or above both floors for the receipts to be mintable and visible.
+    stamps.extend(
+        (
+            CONFIRMATION_RULE_AVAILABLE_AT.isoformat(),
+            CONFIRMATION_CHAIN_RULE_AVAILABLE_AT.isoformat(),
+        )
     )
     for accession in admitted:
         manifest = json.loads(
@@ -215,7 +230,7 @@ def _registry():
     return _REGISTRY_CACHE
 
 
-_KERNEL_CACHE: dict[tuple[str, str], tuple[Any, Any]] = {}
+_KERNEL_CACHE: dict[tuple[str, str], tuple[Any, Any, Any]] = {}
 _ROWS_CACHE: dict[tuple[str, tuple[str, ...], str], list[dict[str, Any]]] = {}
 
 
@@ -224,12 +239,15 @@ def _kernel_rows(cik10: str, admitted: Sequence[str], stage: Path, clock: str) -
     if cached is not None:
         return cached
 
+    from engine.fundamental_forensics.production_lineage import (
+        mint_production_lineage_evidence,
+    )
     from engine.fundamental_forensics.query import (
         BitemporalMetricQueryEngine,
         QueryEntity,
         QueryPolicy,
     )
-    from engine.fundamental_forensics.raw_ledger import RawFactLedger
+    from engine.fundamental_forensics.raw_ledger import RawFactLedger, parse_utc
 
     registry = _registry()
     governed = _governed_concepts(registry)
@@ -241,12 +259,14 @@ def _kernel_rows(cik10: str, admitted: Sequence[str], stage: Path, clock: str) -
     metrics = tuple(sorted(contract.metric_id for contract in registry.contracts))
 
     packages: dict[str, tuple[Any, Any, list[Any]]] = {}
+    admitted_packages: list[Any] = []
     for accession in admitted:
         converted = _KERNEL_CACHE.get((cik10, accession))
         if converted is None:
             converted = _convert_package(cik10, accession, stage)
             _KERNEL_CACHE[(cik10, accession)] = converted
-        occurrences, metadata = converted
+        occurrences, metadata, package = converted
+        admitted_packages.append(package)
         packages[accession] = (
             occurrences,
             metadata,
@@ -255,12 +275,13 @@ def _kernel_rows(cik10: str, admitted: Sequence[str], stage: Path, clock: str) -
 
     rows: list[dict[str, Any]] = []
 
-    def _cells(occurrences, metadata, periods, selection):
+    def _cells(occurrences, metadata, periods, selection, lineage_evidence=()):
         engine = BitemporalMetricQueryEngine(
             RawFactLedger(occurrences),
             registry,
             entities=(entity,),
             filing_metadata=metadata,
+            lineage_evidence=lineage_evidence,
         )
         policy = QueryPolicy(
             source_snapshot_at=clock, recorded_at=clock, selection=selection
@@ -289,7 +310,20 @@ def _kernel_rows(cik10: str, admitted: Sequence[str], stage: Path, clock: str) -
             if key not in seen:
                 seen.add(key)
                 union.append(period)
-    cells = _cells(all_occurrences, all_metadata, union, "latest_known_as_of")
+    # The union view runs the way production serves it: receipts minted by the
+    # one lawful mint (R-S2P-1) over the admitted ledger, handed to the engine
+    # as lineage_evidence.  A LineageEvidenceError propagates; there is never a
+    # fallback to an empty bundle.  The per-accession views above stay exactly
+    # as they are: one accession, no receipts.
+    ledger = RawFactLedger(all_occurrences)
+    receipts = mint_production_lineage_evidence(
+        ledger,
+        admitted_packages,
+        system_available_at=parse_utc(clock, field_name="run_clock"),
+    )
+    cells = _cells(
+        all_occurrences, all_metadata, union, "latest_known_as_of", receipts
+    )
     rows.extend(_cell_rows(VIEW_B, cells, None))
     _ROWS_CACHE[(cik10, tuple(admitted), clock)] = rows
     return rows
@@ -613,6 +647,80 @@ def test_pack_defects_name_real_rows() -> None:
                 assert len(period) == (2 if period[0] == "instant" else 3), row_key
                 if view == VIEW_A:
                     assert str(row_key.get("source_accession")) in admitted, row_key
+
+
+def _defect_gold_drift(
+    entry: Mapping[str, Any], gold_by_key: Mapping[tuple, Mapping[str, Any]]
+) -> list[str]:
+    """Where a defect's recorded gold side no longer equals the gold cell.
+
+    A defect turns a failed comparison into an expected failure, so a gold edit
+    on a defect row would otherwise pass unseen; binding ``record.gold`` (value,
+    code, source accession) to the current cell makes such an edit fail here.
+    A row key with no gold cell is lawful only for a recorded all-null side.
+    """
+    record = entry.get("record")
+    recorded = record.get("gold") if isinstance(record, Mapping) else None
+    name = str(entry.get("id"))
+    if not isinstance(recorded, Mapping):
+        return [f"{name}: no record.gold"]
+    problems = []
+    for row_key in entry.get("row_keys", ()):
+        gold = gold_by_key.get(_defect_key(row_key))
+        if gold is None:
+            if recorded.get("value_exact") is not None or recorded.get("code") is not None:
+                problems.append(f"{name}: record.gold is set but no gold cell has its key")
+            continue
+        want, have = recorded.get("value_exact"), gold.get("value_exact")
+        if (want is None) != (have is None) or (
+            want is not None and Decimal(str(want)) != Decimal(str(have))
+        ):
+            problems.append(f"{name}: record.gold.value_exact={want!r}, gold cell {have!r}")
+        if recorded.get("code") != gold.get("code"):
+            problems.append(
+                f"{name}: record.gold.code={recorded.get('code')!r}, gold cell {gold.get('code')!r}"
+            )
+        if (recorded.get("source_accession") or "") != (gold.get("source_accession") or ""):
+            problems.append(f"{name}: record.gold.source_accession differs from the gold cell")
+    return problems
+
+
+def test_pack_defect_records_match_gold_cells() -> None:
+    """Every defect's recorded gold side is the pack's current gold cell."""
+    packs = _pack_dirs()
+    if not packs:
+        pytest.skip("no g_pack fixtures committed yet")
+    for pack_dir in packs:
+        manifest, gold_rows = _load_pack(pack_dir)
+        gold_by_key = {_gold_key(row): row for row in gold_rows}
+        problems = [
+            problem
+            for entry in manifest.get("defects", ())
+            for problem in _defect_gold_drift(entry, gold_by_key)
+        ]
+        assert not problems, f"{pack_dir.name}: " + "; ".join(problems[:20])
+
+
+def test_defect_gold_drift_negative() -> None:
+    """A changed value, code or accession on a defect row is reported."""
+    period = ["instant", "2024-01-31"]
+    key = {"view": VIEW_A, "source_accession": "acc-1", "metric_id": "m", "period_key": period}
+    cell = {**key, "value_exact": "100", "code": None}
+    gold_by_key = {_gold_key(cell): cell}
+
+    def entry(gold: Any) -> dict[str, Any]:
+        return {"id": "D-1", "row_keys": [key], "comparison": "value", "record": {"gold": gold}}
+
+    same = {"value_exact": "100.0", "code": None, "source_accession": "acc-1"}
+    assert _defect_gold_drift(entry(same), gold_by_key) == []
+    assert _defect_gold_drift(entry({**same, "value_exact": "101"}), gold_by_key)
+    assert _defect_gold_drift(entry({**same, "value_exact": None}), gold_by_key)
+    assert _defect_gold_drift(entry({**same, "code": "missing_standard_fact"}), gold_by_key)
+    assert _defect_gold_drift(entry({**same, "source_accession": "acc-2"}), gold_by_key)
+    assert _defect_gold_drift({"id": "D-2", "row_keys": [key]}, gold_by_key)
+    assert _defect_gold_drift(entry(same), {})
+    absent = {"value_exact": None, "code": None, "source_accession": None}
+    assert _defect_gold_drift(entry(absent), {}) == []
 
 
 def test_this_file_names_no_issuer() -> None:
