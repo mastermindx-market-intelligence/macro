@@ -160,7 +160,7 @@ export function createCompanyController({ fetchImpl, getSession, onState, decode
     }
     return run(async op => {
       const raw = await read(op, 'product-integrations/' + encodeURIComponent(factId), retained.identity);
-      const fact = decoder.decodePrivateProductIntegration(raw, factId);
+      const fact = await checked(op, decoder.decodePrivateDisclosure(raw, factId));
       decoder.assertPrivateComposition(retained.selection, entry, fact);
       await owner(op, retained.identity);
       check(op);

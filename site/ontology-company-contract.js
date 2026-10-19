@@ -1,10 +1,11 @@
-/* Projection decoder reused from mastermind-terminal@98b9e664a0a3387a72f7bf360f5159235c1d8eb6, terminal/lib/companyIntelligencePrivate.ts. Node stripTypeScriptTypes removes types only; owner admission remains server-side. */
+/* The original planned-integration decoder was reused from mastermind-terminal@98b9e664a0a3387a72f7bf360f5159235c1d8eb6, terminal/lib/companyIntelligencePrivate.ts. The SEC supplier projection is a Macro extension of the native company-intelligence contract. Owner admission remains server-side. */
 /**
  * Company Intelligence private projection decoder - pure and browser-safe.
  *
  * This module performs no I/O, imports nothing server-only, and never calls fetch. It
  * only decides whether a value that the private server helper has already bounded and
- * parsed has the exact shape of the published source contract at 0de7a9ca (private wire v2)
+ * parsed matches the original planned-integration contract at 0de7a9ca (private wire v2)
+ * or the separately qualified SEC disclosed-supplier contract
  * (engine/company_intelligence/issuer_disclosures.py, issuer_disclosure_selection.py,
  * app/company_disclosures.py).
  *
@@ -24,6 +25,9 @@ export const PRIVATE_ISSUER_SELECTIONS_SCHEMA = 'company_intelligence.private_is
 export const PRIVATE_COMPANY_CONTEXT_SCHEMA = 'company_intelligence.private_company_context/v1';
 export const PRIVATE_IDENTITY_RECEIPT_SCHEMA = 'company_intelligence.current_issuer_identity/v1';
 export const PRIVATE_PRODUCT_INTEGRATION_SCHEMA = 'company_intelligence.private_product_integration/v2';
+export const PRIVATE_SUPPLIER_SCHEMA = 'company_intelligence.private_disclosed_supplier/v1';
+export const PRIVATE_SUPPLIER_FACT_SCHEMA = 'company_intelligence.disclosed_supplier_fact/v1';
+export const PRIVATE_SEC_EDITION_SCHEMA = 'company_intelligence.sec_disclosure_edition/v1';
 export const PRIVATE_ERROR_SCHEMA = 'company_intelligence.private_error/v1';
 export const PRIVATE_FACT_SCHEMA = 'company_intelligence.product_integration_fact/v1';
 export const PRIVATE_EDITION_SCHEMA = 'company_intelligence.issuer_disclosure_edition/v1';
@@ -529,12 +533,12 @@ function sameSelectionEntry(left                       , right                  
     && left.lifecycle === right.lifecycle;
 }
 
-function decodeFactFields(value         )                    {
+function decodeFactFields(value, supplier = false)                    {
   const fact = subsetObject(value, FACT_MANDATORY_KEYS, FACT_OPTIONAL_KEYS);
-  if (fact.kind !== PRIVATE_KIND || fact.lifecycle !== PRIVATE_LIFECYCLE) throw new PrivateDecodeError('VALUE');
-  const draft
-
-    = { fact_id: nativeFactId(fact.fact_id), kind: PRIVATE_KIND, lifecycle: PRIVATE_LIFECYCLE };
+  const kind = supplier ? 'disclosed_supplier' : PRIVATE_KIND;
+  const lifecycle = supplier ? 'reported_use' : PRIVATE_LIFECYCLE;
+  if (fact.kind !== kind || fact.lifecycle !== lifecycle) throw new PrivateDecodeError('VALUE');
+  const draft = { fact_id: nativeFactId(fact.fact_id), kind, lifecycle };
   if ('revision' in fact) draft.revision = boundedInteger(fact.revision, 1, PRIVATE_MAX_REVISION);
   if ('subject_id' in fact) draft.subject_id = nativeIdentifier(fact.subject_id);
   if ('object_id' in fact) draft.object_id = nativeIdentifier(fact.object_id);
@@ -562,9 +566,10 @@ function decodeSelectionEntries(value         )                                 
   for (const [index, element] of value.entries()) {
     const record = closedObject(element, ['fact_id', 'fact_reference', 'edition_reference', 'kind', 'lifecycle']);
     const factId = nativeFactId(record.fact_id);
-    if (record.kind !== PRIVATE_KIND || record.lifecycle !== PRIVATE_LIFECYCLE) throw new PrivateDecodeError('VALUE');
-    const factReference = decodeNativeReference(record.fact_reference, PRIVATE_FACT_SCHEMA);
-    const editionReference = decodeNativeReference(record.edition_reference, PRIVATE_EDITION_SCHEMA);
+    const supplier = record.kind === 'disclosed_supplier' && record.lifecycle === 'reported_use';
+    if (!supplier && (record.kind !== PRIVATE_KIND || record.lifecycle !== PRIVATE_LIFECYCLE)) throw new PrivateDecodeError('VALUE');
+    const factReference = decodeNativeReference(record.fact_reference, supplier ? PRIVATE_SUPPLIER_FACT_SCHEMA : PRIVATE_FACT_SCHEMA);
+    const editionReference = decodeNativeReference(record.edition_reference, supplier ? PRIVATE_SEC_EDITION_SCHEMA : PRIVATE_EDITION_SCHEMA);
     // Sorted and unique is the source ordering contract: it also refuses duplicates.
     if (index > 0 && !(factId > previous)) throw new PrivateDecodeError('ORDER');
     previous = factId;
@@ -572,8 +577,8 @@ function decodeSelectionEntries(value         )                                 
       fact_id: factId,
       fact_reference: factReference,
       edition_reference: editionReference,
-      kind: PRIVATE_KIND,
-      lifecycle: PRIVATE_LIFECYCLE,
+      kind: record.kind,
+      lifecycle: record.lifecycle,
     }));
   }
   return Object.freeze(entries);
@@ -634,6 +639,60 @@ export function decodePrivateProductIntegration(value         , expectedFactId  
     generation,
     authority: PRIVATE_AUTHORITY,
   });
+}
+
+/** Decode the independently qualified SEC species, never reinterpret a plan. */
+export async function decodePrivateDisclosure(value, expectedFactId) {
+  if (value?.schema !== PRIVATE_SUPPLIER_SCHEMA) return decodePrivateProductIntegration(value, expectedFactId);
+  const root = closedObject(value, ['schema','fact','reference','edition','source_timing','generation','authority','supplier_binding']);
+  if (root.authority !== PRIVATE_AUTHORITY) throw new PrivateDecodeError('VALUE');
+  closedObject(root.fact, [...FACT_MANDATORY_KEYS, ...FACT_OPTIONAL_KEYS]);
+  const fact = decodeFactFields(root.fact, true);
+  canonicalIssuerIdentifier(fact.subject_id); canonicalIssuerIdentifier(fact.object_id);
+  if (fact.fact_id !== expectedFactId || fact.platform !== 'foundry_services') throw new PrivateDecodeError('BINDING');
+  const reference = decodeNativeReference(root.reference, PRIVATE_SUPPLIER_FACT_SCHEMA);
+  const edition = decodeNativeReference(root.edition, PRIVATE_SEC_EDITION_SCHEMA);
+  const generation = nativeIdentifier(root.generation);
+  const timing = closedObject(root.source_timing, ['published_date','published_at','publication_precision','known_at','sec_source']);
+  const baseTiming = decodeSourceTiming(Object.fromEntries(['published_date','published_at','publication_precision','known_at'].map(k => [k,timing[k]])));
+  if (baseTiming.publication_precision !== 'date') throw new PrivateDecodeError('TIMING');
+  const source = closedObject(timing.sec_source, ['snapshot_id','snapshot_at','manifest_key','document_id','accession',
+    'issuer_cik','archive_url','accepted_at','retrieved_at','recorded_at','retrieval_receipt_id','span_start_byte','span_end_byte','span_sha256']);
+  for (const key of Object.keys(source)) {
+    if (key === 'span_start_byte' || key === 'span_end_byte') continue;
+    if (typeof source[key] !== 'string' || !source[key].length || source[key].length > 700 || /[\x00-\x1f]/.test(source[key])) throw new PrivateDecodeError('VALUE');
+  }
+  const cik = evidencedCik(source.issuer_cik);
+  if (!/^ffsecsrc_[a-f0-9]{64}$/.test(source.snapshot_id) || !/^sec_document_[a-f0-9]{64}$/.test(source.document_id)
+      || !/^[0-9]{10}-[0-9]{2}-[0-9]{6}$/.test(source.accession)
+      || !/^sec_archive_receipt_[a-f0-9]{64}$/.test(source.retrieval_receipt_id)
+      || !new RegExp('^manifests/'+cik+'/'+source.accession+'/ffsec_manifest_[a-f0-9]{64}\\.json$').test(source.manifest_key)) throw new PrivateDecodeError('BINDING');
+  let url; try { url = new URL(source.archive_url); } catch (_) { throw new PrivateDecodeError('BINDING'); }
+  const prefix = '/Archives/edgar/data/'+String(BigInt(cik))+'/'+source.accession.replaceAll('-','')+'/';
+  if (url.origin !== 'https://www.sec.gov' || url.username || url.password || url.search || url.hash
+      || !url.pathname.startsWith(prefix) || !/^[A-Za-z0-9_.-]+\.html?$/.test(url.pathname.slice(prefix.length))
+      || url.href !== source.archive_url) throw new PrivateDecodeError('BINDING');
+  const start = boundedInteger(source.span_start_byte, 0, 4*1024*1024);
+  const end = boundedInteger(source.span_end_byte, start+1, 4*1024*1024);
+  nativeDigest(source.span_sha256);
+  const binding = closedObject(root.supplier_binding, ['direction','identity_mode','identity_observed_at','adopted_at',
+    'evidence_revision','span','subject_identity','object_identity','current_subject_identity','current_object_identity']);
+  if (binding.direction !== 'object_supplies_subject' || binding.identity_mode !== 'current') throw new PrivateDecodeError('VALUE');
+  const span = closedObject(binding.span, ['start_byte','end_byte','text_sha256']);
+  if (span.start_byte !== start || span.end_byte !== end || span.text_sha256 !== source.span_sha256) throw new PrivateDecodeError('BINDING');
+  nativeDigest(binding.evidence_revision);nativeDigest(binding.subject_identity);nativeDigest(binding.object_identity);
+  nativeDigest(binding.current_subject_identity);nativeDigest(binding.current_object_identity);
+  const instant = value => { const n = typeof value === 'string' && timingInstantToEpochMicroseconds(value);
+    if (n === false || n === null || n > BigInt(Date.now())*BigInt(1000)) throw new PrivateDecodeError('TIMING'); return n; };
+  const clocks = [source.accepted_at,source.retrieved_at,source.recorded_at,source.snapshot_at,baseTiming.known_at,binding.adopted_at].map(instant);
+  if (clocks.some((v,i) => i && v < clocks[i-1]) || instant(binding.identity_observed_at) > clocks.at(-1)
+      || baseTiming.published_date !== source.accepted_at.slice(0,10)) throw new PrivateDecodeError('TIMING');
+  const bytes = new TextEncoder().encode(canonicalReceiptJson(source));
+  const digest = [...new Uint8Array(await globalThis.crypto.subtle.digest('SHA-256',bytes))].map(v=>v.toString(16).padStart(2,'0')).join('');
+  if (digest !== binding.evidence_revision) throw new PrivateDecodeError('DIGEST');
+  return Object.freeze({schema:PRIVATE_SUPPLIER_SCHEMA,fact,reference,edition,generation,authority:PRIVATE_AUTHORITY,
+    source_timing:Object.freeze({...baseTiming,sec_source:Object.freeze({...source})}),
+    supplier_binding:Object.freeze({...binding,span:Object.freeze({...span})})});
 }
 
 /** Status-bound allowlist mirrored from the mounted transport in app/company_disclosures.py. */
@@ -702,6 +761,8 @@ export function assertPrivateComposition(
   if (!sameReference(fact.reference, entry.fact_reference)) throw new PrivateDecodeError('COMPOSITION');
   if (!sameReference(fact.edition, entry.edition_reference)) throw new PrivateDecodeError('COMPOSITION');
   if (fact.generation !== selection.generation) throw new PrivateDecodeError('COMPOSITION');
+  if (fact.schema === PRIVATE_SUPPLIER_SCHEMA && (fact.source_timing.sec_source.issuer_cik !== selection.issuer_binding.evidenced_cik
+      || fact.supplier_binding.current_subject_identity !== selection.issuer_binding.identity_snapshot_reference.sha256)) throw new PrivateDecodeError('COMPOSITION');
   if (entry.kind !== fact.fact.kind || entry.lifecycle !== fact.fact.lifecycle) {
     throw new PrivateDecodeError('COMPOSITION');
   }

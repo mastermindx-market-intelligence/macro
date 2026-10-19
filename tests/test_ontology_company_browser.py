@@ -338,3 +338,109 @@ def test_restored_page_rereads_canonical_owner_despite_stale_sdk(page, canonical
     assert len(seen) == 2
     assert page.locator("#ox-company .ox-company-choices button").count() == 0
     assert errors == []
+
+
+
+def supplier_fixtures():
+    context, selection, fact = fixtures()
+    entry = selection['selections'][0]
+    entry.update(kind='disclosed_supplier', lifecycle='reported_use')
+    entry['fact_reference']['schema'] = 'company_intelligence.disclosed_supplier_fact/v1'
+    entry['edition_reference']['schema'] = 'company_intelligence.sec_disclosure_edition/v1'
+    fact['schema'] = 'company_intelligence.private_disclosed_supplier/v1'
+    fact['fact'].update(kind='disclosed_supplier', lifecycle='reported_use', revision=1,
+        object_id='ISS:US-XNYS-OTHER', product='SYNTHETIC SUPPLIER WAFERS', platform='foundry_services', economic_share=None)
+    source = {'snapshot_id':'ffsecsrc_'+'1'*64, 'snapshot_at':'2026-01-02T09:00:00Z',
+        'manifest_key':'manifests/0000000001/0000000001-26-000001/ffsec_manifest_'+'2'*64+'.json',
+        'document_id':'sec_document_'+'3'*64,'accession':'0000000001-26-000001','issuer_cik':'0000000001',
+        'archive_url':'https://www.sec.gov/Archives/edgar/data/1/000000000126000001/synthetic.htm',
+        'accepted_at':'2025-12-31T16:00:00Z','retrieved_at':'2026-01-02T08:00:00Z','recorded_at':'2026-01-02T08:30:00Z',
+        'retrieval_receipt_id':'sec_archive_receipt_'+'4'*64,'span_start_byte':10,'span_end_byte':50,'span_sha256':'5'*64}
+    fact['source_timing']['sec_source'] = source
+    fact['supplier_binding'] = {'direction':'object_supplies_subject','identity_mode':'current',
+        'identity_observed_at':'2026-01-03T08:00:00Z','adopted_at':'2026-01-03T09:00:00Z',
+        'evidence_revision':hashlib.sha256(json.dumps(source,sort_keys=True,separators=(',',':')).encode()).hexdigest(),
+        'span':{'start_byte':10,'end_byte':50,'text_sha256':'5'*64},
+        'subject_identity':context['issuer_binding']['identity_snapshot_reference']['sha256'],'object_identity':'6'*64,
+        'current_subject_identity':context['issuer_binding']['identity_snapshot_reference']['sha256'],'current_object_identity':'6'*64}
+    return context, selection, fact
+
+
+@pytest.mark.parametrize('theme,language,width', [('dark','en',1440),('light','zh',390)])
+def test_supplier_has_distinct_role_attribution_and_clocks_without_plan_or_effect(page, theme, language, width):
+    context, selection, fact = supplier_fixtures()
+    page.set_viewport_size({'width':width,'height':1000})
+    seen, errors = start(page,context=context,selection=selection,fact=fact)
+    page.evaluate('([t,l])=>{document.documentElement.dataset.theme=t;document.documentElement.dataset.lang=l}',[theme,language])
+    lookup(page); settled(page,'ready')
+    assert len(seen)==2
+    button=page.locator('#ox-company .ox-company-choices button')
+    assert 'Disclosed supplier' in button.get_attribute('aria-label')
+    button.click(); page.get_by_text('SYNTHETIC SUPPLIER WAFERS',exact=True).wait_for()
+    card=page.locator('.ox-company-fact'); text=card.inner_text()
+    assert '2026-01-03T09:00:00Z' in text and '2026-01-02T08:00:00Z' in text
+    assert 'ISS:US-XNYS-OTHER' in text
+    assert not card.get_by_text('An announced plan',exact=True).count()
+    assert card.locator('a').get_attribute('href') == fact['source_timing']['sec_source']['archive_url']
+    assert card.locator('a').get_attribute('rel') == 'noopener noreferrer'
+    assert len(seen)==3 and errors==[]
+    assert page.evaluate('[localStorage.length,sessionStorage.length]')==[0,0]
+    assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
+    page.evaluate("window.testSession=null;window.changeAuth('SIGNED_OUT',null)")
+    settled(page,'idle');assert 'SYNTHETIC SUPPLIER WAFERS' not in page.content()
+
+
+@pytest.mark.parametrize('change', ['plan_relabel','wrong_schema','wrong_edition','direction','historical','future_adoption',
+    'identity_after_adoption','retrieval_reversed','wrong_cik','wrong_subject_receipt','span','evidence_digest',
+    'source_url','source_body','quantity','missing_object'])
+def test_supplier_malformed_or_misbound_projection_is_never_rendered(page, change):
+    context, selection, fact = supplier_fixtures()
+    source=fact['source_timing']['sec_source']; binding=fact['supplier_binding']
+    if change=='plan_relabel':fact['fact']['kind']='product_integration'
+    if change=='wrong_schema':fact['schema']='company_intelligence.private_product_integration/v2'
+    if change=='wrong_edition':fact['edition']={**fact['edition'],'schema':'company_intelligence.issuer_disclosure_edition/v1'}
+    if change=='direction':binding['direction']='subject_supplies_object'
+    if change=='historical':binding['identity_mode']='historical'
+    if change=='future_adoption':binding['adopted_at']='9999-01-01T00:00:00Z'
+    if change=='identity_after_adoption':binding['identity_observed_at']='2026-01-04T00:00:00Z'
+    if change=='retrieval_reversed':source['retrieved_at']='2025-12-30T00:00:00Z'
+    if change=='wrong_cik':source['issuer_cik']='0000000002'
+    if change=='wrong_subject_receipt':binding['current_subject_identity']='7'*64
+    if change=='span':binding['span']['end_byte']=51
+    if change=='evidence_digest':binding['evidence_revision']='8'*64
+    if change=='source_url':source['archive_url']='https://www.sec.gov.evil.invalid/Archives/fake.htm'
+    if change=='source_body':source['body']='SECRET_BODY'
+    if change=='quantity':fact['fact']['economic_share']=0.5
+    if change=='missing_object':del fact['fact']['object_id']
+    seen,errors=start(page,context=context,selection=selection,fact=fact)
+    lookup(page);settled(page,'ready');page.locator('#ox-company .ox-company-choices button').click()
+    settled(page,'unavailable')
+    assert 'SYNTHETIC SUPPLIER WAFERS' not in page.content() and 'SECRET_BODY' not in page.content()
+    assert len(seen)==3 and errors==[]
+
+
+def test_actual_native_supplier_wire_reaches_macro_consumer(page, tmp_path):
+    """Exercise the implemented native publisher/reader, not a hand-written wire fixture."""
+    from tests.test_sec_supplier_adoption import case as supplier_case, publish_synthetic
+    from engine.company_intelligence import issuer_disclosure_owner as owner
+    from engine.company_intelligence import issuer_disclosure_selection as selections
+    from engine.company_intelligence import issuer_disclosures as native
+    c = supplier_case.__wrapped__(tmp_path)
+    publish_synthetic(c)
+    authority = owner.CurrentDisclosureOwner(c.source, c.state)
+    fact = native.read_disclosure(c.artifacts, authority,
+        native.Request(c.spec['fact']['fact_id'], owner.PURPOSE, owner.AUDIENCE))
+    selection = selections.read_issuer_selection(authority, authority, lambda:c.artifacts,
+        c.spec['fact']['subject_id'], purpose=owner.PURPOSE, audience=owner.AUDIENCE)
+    receipt = c.identities['subject']
+    context = {'schema':'company_intelligence.private_company_context/v1','identity_mode':'current',
+        'query':{'namespace':'store','symbol':'ALPHA'},'security_id':'SEC:US-XNAS-ALPHA',
+        'issuer_binding':selection['issuer_binding'],'identity_receipt':receipt}
+    seen, errors = start(page,context=context,selection=selection,fact=fact,full_shell=True)
+    page.locator('#ox-company input').fill('ALPHA')
+    page.locator('#ox-company button[type=submit]').click();settled(page,'ready')
+    page.locator('#ox-company .ox-company-choices button').click()
+    page.get_by_text('Widget',exact=True).wait_for()
+    assert len(seen)==3 and errors==[]
+    assert 'ISS:US-XNAS-BETA' in page.locator('.ox-company-fact').inner_text()
+    assert c.body.decode() not in page.content()

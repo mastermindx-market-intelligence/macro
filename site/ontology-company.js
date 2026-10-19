@@ -1,7 +1,7 @@
 /* Macro's private company inspector. Nothing is loaded until the reader asks.
  * Owner responses live only in this view; never in URLs, telemetry or storage. */
-import * as decoder from './ontology-company-contract.js?v=cd777fff';
-import { createCompanyController } from './ontology-company-controller.js?v=49f6e9a9';
+import * as decoder from './ontology-company-contract.js?v=e28cac59';
+import { createCompanyController } from './ontology-company-controller.js?v=9206df0e';
 
 function words(en, zh) {
   const fragment = document.createDocumentFragment();
@@ -113,12 +113,12 @@ export function mountCompanyResearch(root) {
     output.dataset.state = state.status;
     output.setAttribute('aria-busy', state.status === 'loading' ? 'true' : 'false');
     const messages = {
-      idle: ['Choose a company to inspect its source-announced plans.', '选择一家公司，查看其来源披露的计划。'],
+      idle: ['Choose a company to inspect its source disclosures.', '选择一家公司，查看其来源披露。'],
       loading: ['Reading the company’s current disclosure selection…', '正在读取该公司的当前披露列表…'],
       signed_out: ['Sign in to inspect private company disclosures.', '登录后查看私有公司披露。'],
       forbidden: ['This account does not include private company disclosures.', '此账户未包含私有公司披露权限。'],
       unavailable: ['Company disclosures are unavailable for this reading.', '本次公司披露读数暂不可用。'],
-      empty: ['No planned integrations are available for this company.', '该公司目前没有可读取的计划整合事项。'],
+      empty: ['No qualified disclosures are available in this selection.', '本次列表中没有可读取的合格披露。'],
     };
     if (messages[state.status]) {
       const message = element('p', 'ox-note', ...messages[state.status]);
@@ -149,12 +149,13 @@ export function mountCompanyResearch(root) {
     if (state.status !== 'empty') {
       const choices = element('div', 'ox-company-choices');
       choices.setAttribute('role', 'group');
-      choices.setAttribute('aria-label', 'Planned integrations / 计划整合');
+      choices.setAttribute('aria-label', 'Source disclosures / 来源披露');
       selection.selections.forEach((entry, index) => {
+        const supplier = entry.kind === 'disclosed_supplier';
         const button = element('button', 'ox-action',
-          'Read planned integration', '读取计划整合');
+          supplier ? 'Read disclosed supplier' : 'Read planned integration', supplier ? '读取披露的供应商' : '读取计划整合');
         button.type = 'button';
-        button.setAttribute('aria-label', 'Planned integration ' + (index + 1) + ' / 计划整合 ' + (index + 1));
+        button.setAttribute('aria-label', (supplier ? 'Disclosed supplier ' : 'Planned integration ') + (index + 1) + (supplier ? ' / 披露的供应商 ' : ' / 计划整合 ') + (index + 1));
         button.setAttribute('aria-pressed', state.selectedFactId === entry.fact_id ? 'true' : 'false');
         button.addEventListener('click', () => { void controller.selectFact(entry.fact_id); });
         choices.append(button);
@@ -165,25 +166,47 @@ export function mountCompanyResearch(root) {
     if (state.fact) {
       const value = state.fact;
       const card = element('article', 'ox-card ox-company-fact');
-      card.append(element('h3', '', 'An announced plan', '一项已披露的计划'));
-      card.append(element('p', 'ox-note',
-        'This is a planned integration. Delivery, revenue and economic exposure are not established by this disclosure.',
-        '这是一项计划中的整合。该披露并不证明已交付、产生收入或构成经济敞口。'));
+      const supplier = value.schema === decoder.PRIVATE_SUPPLIER_SCHEMA;
       const fields = element('dl', 'ox-company-fields');
-      field(fields, 'Product', '产品', value.fact.product);
-      field(fields, 'Platform', '平台', value.fact.platform);
-      field(fields, 'Announcement date', '公告日期', value.source_timing.published_date);
-      field(fields, 'Announcement instant', '公告时刻', value.source_timing.published_at);
-      field(fields, 'Source observation', '来源观测时刻', value.source_timing.known_at);
-      card.append(fields);
-      card.append(element('p', 'ox-note',
-        'Source dates retain their original precision. The observation timestamp is separate from the announcement date and does not establish that the plan is still current.',
-        '来源日期保留原始精度。观测时间与公告日期分列，也不证明该计划至今仍然有效。'));
+      if (supplier) {
+        const source = value.source_timing.sec_source, binding = value.supplier_binding;
+        card.append(element('h3', '', 'A disclosed supplier role', '一项披露的供应商角色'));
+        card.append(element('p', 'ox-note',
+          'The selected filing reports that this company uses the named supplier for the stated product. It does not establish the relationship today, deliveries, quantities, economic sensitivity or a second-order effect.',
+          '所选文件披露该公司就所列产品使用该供应商。这不确立当前关系、交付、数量、经济敏感度或二阶影响。'));
+        field(fields, 'Reporting customer', '披露方客户', context.query.symbol);
+        field(fields, 'Supplier issuer', '供应商发行人', value.fact.object_id);
+        field(fields, 'Product scope', '产品范围', value.fact.product);
+        field(fields, 'Filing date', '申报日期', value.source_timing.published_date);
+        field(fields, 'SEC acceptance', 'SEC 接收时刻', source.accepted_at);
+        field(fields, 'Retained source retrieval', '留存来源读取时刻', source.retrieved_at);
+        field(fields, 'Identity observed for adoption', '采纳所用身份观测', binding.identity_observed_at);
+        field(fields, 'Fact adoption', '事实采纳时刻', binding.adopted_at);
+        card.append(fields);
+        const citation = element('a', 'ox-action', 'Read the original SEC filing', '阅读 SEC 原始申报');
+        citation.href = source.archive_url; citation.target = '_blank'; citation.rel = 'noopener noreferrer';
+        card.append(citation, element('p', 'ox-note',
+          'Source: public issuer filing on SEC.gov. Current identity is used; filing acceptance does not establish historical availability in this system. No supplier amount or economic weight is assigned.',
+          '来源：SEC.gov 上的发行人公开申报。此处使用当前身份；申报接收时刻不代表本系统的历史可用时刻。未赋予供应量或经济权重。'));
+      } else {
+        card.append(element('h3', '', 'An announced plan', '一项已披露的计划'));
+        card.append(element('p', 'ox-note',
+          'This is a planned integration. Delivery, revenue and economic exposure are not established by this disclosure.',
+          '这是一项计划中的整合。该披露并不证明已交付、产生收入或构成经济敞口。'));
+        field(fields, 'Product', '产品', value.fact.product);
+        field(fields, 'Platform', '平台', value.fact.platform);
+        field(fields, 'Announcement date', '公告日期', value.source_timing.published_date);
+        field(fields, 'Announcement instant', '公告时刻', value.source_timing.published_at);
+        field(fields, 'Source observation', '来源观测时刻', value.source_timing.known_at);
+        card.append(fields, element('p', 'ox-note',
+          'Source dates retain their original precision. The observation timestamp is separate from the announcement date and does not establish that the plan is still current.',
+          '来源日期保留原始精度。观测时间与公告日期分列，也不证明该计划至今仍然有效。'));
+      }
       output.append(card);
     } else if (state.status === 'ready') {
       output.append(element('p', 'ox-note',
-        'Select a planned integration to read its disclosure. Selection metadata alone does not establish the fact.',
-        '选择一项计划整合以读取披露内容。仅凭列表元数据无法确立事实。'));
+        'Select a disclosure to read its source-qualified fact. Selection metadata alone does not establish the fact.',
+        '选择一项披露以读取经来源核验的事实。仅凭列表元数据无法确立事实。'));
     }
     const detail = element('details', 'ox-detail');
     detail.append(element('summary', '', 'Identity and source references', '身份与来源引用'));
@@ -195,6 +218,12 @@ export function mountCompanyResearch(root) {
     if (state.fact) {
       field(refs, 'Fact reference', '事实引用', state.fact.reference.sha256);
       field(refs, 'Edition reference', '版本引用', state.fact.edition.sha256);
+      if (state.fact.schema === decoder.PRIVATE_SUPPLIER_SCHEMA) {
+        const source = state.fact.source_timing.sec_source;
+        field(refs, 'Filing accession', '申报编号', source.accession);
+        field(refs, 'Source recorded', '来源入库时刻', source.recorded_at);
+        field(refs, 'Pinned snapshot', '固定快照时刻', source.snapshot_at);
+      }
     }
     detail.append(refs);
     output.append(detail);

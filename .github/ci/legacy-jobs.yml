@@ -37,6 +37,10 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - engine/fundamental_forensics/pipeline.py
+      - engine/fundamental_forensics/sec_companyfacts.py
+      - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
+      - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "engine/entry_radar/research_read.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/entry_radar/readings.py"
@@ -316,6 +320,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_supplier_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -1817,6 +1822,10 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - engine/fundamental_forensics/pipeline.py
+      - engine/fundamental_forensics/sec_companyfacts.py
+      - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
+      - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "engine/entry_radar/research_read.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/entry_radar/readings.py"
@@ -2101,6 +2110,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_supplier_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -2661,6 +2671,10 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - engine/fundamental_forensics/pipeline.py
+      - engine/fundamental_forensics/sec_companyfacts.py
+      - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
+      - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "engine/entry_radar/research_read.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/entry_radar/readings.py"
@@ -2948,6 +2962,7 @@ jobs:
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/industrial_sources.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_supplier_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -6363,6 +6378,8 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
+      - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "engine/entry_radar/research_read.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/entry_radar/readings.py"
@@ -8647,6 +8664,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
+      - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "engine/entry_radar/research_read.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/entry_radar/readings.py"
@@ -8987,6 +9006,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_supplier_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -11914,6 +11934,16 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - engine/company_intelligence/pinned_relationship_candidates.py
+      - engine/company_intelligence/relationship_candidates.py
+      - engine/fundamental_forensics/pipeline.py
+      - engine/fundamental_forensics/sec_companyfacts.py
+      - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
+      - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
+      - tests/test_company_disclosure_owner.py
+      - tests/test_company_disclosure_preflight.py
+      - tests/test_company_pinned_relationship_candidates.py
+      - tests/test_sec_supplier_adoption.py
       - "tests/test_entry_radar_earnings_context_producer.py"
       - "scripts/entry_radar_live.py"
       - "engine/entry_radar/earnings_context.py"
@@ -12178,6 +12208,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_supplier_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -16649,6 +16680,12 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - engine/fundamental_forensics/__init__.py
+      - engine/fundamental_forensics/pipeline.py
+      - engine/fundamental_forensics/sec_companyfacts.py
+      - engine/research_vault/__init__.py
+      - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
+      - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "collectors/symbol_directory.py"
       - "tests/__init__.py"
       - "tests/test_symbol_directory_completion_receipts.py"
@@ -16660,6 +16697,7 @@ jobs:
       - engine/company_intelligence/issuer_disclosure_publication.py
       - engine/company_intelligence/issuer_disclosure_preflight.py
       - engine/company_intelligence/issuer_disclosure_owner.py
+      - engine/company_intelligence/sec_supplier_adoption.py
       - engine/company_intelligence/current_context_runtime.py
       - engine/company_intelligence/current_company_context.py
       - contracts/theme_graph/activity_membership_proposal.v1.schema.json
@@ -19197,6 +19235,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
+      - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "engine/entry_radar/research_read.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/entry_radar/readings.py"
@@ -19979,6 +20019,8 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
+      - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "engine/entry_radar/research_read.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/entry_radar/readings.py"
@@ -21995,6 +22037,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/fundamental_forensics/__init__.py
+      - engine/fundamental_forensics/pipeline.py
+      - engine/fundamental_forensics/sec_companyfacts.py
+      - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
+      - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "engine/entry_radar/research_read.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/entry_radar/readings.py"
@@ -22279,6 +22326,7 @@ jobs:
       - engine/company_intelligence/health.py
       - engine/company_intelligence/identity.py
       - engine/company_intelligence/issuer_disclosure_owner.py
+      - engine/company_intelligence/sec_supplier_adoption.py
       - engine/company_intelligence/issuer_disclosure_preflight.py
       - engine/company_intelligence/issuer_disclosure_publication.py
       - engine/company_intelligence/issuer_disclosure_selection.py
@@ -23601,6 +23649,8 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
+      - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "engine/price_pressure/research.py"
       - "scripts/calibrate_rate_inflation.py"
       - "tests/__init__.py"
@@ -24383,6 +24433,8 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
+      - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "engine/entry_radar/research_read.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/entry_radar/readings.py"
@@ -29795,6 +29847,8 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
+      - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "engine/entry_radar/research_read.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/entry_radar/readings.py"
@@ -30303,6 +30357,10 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/fundamental_forensics/pipeline.py
+      - engine/fundamental_forensics/sec_companyfacts.py
+      - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
+      - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "engine/entry_radar/research_read.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/entry_radar/readings.py"
@@ -30671,6 +30729,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_supplier_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -33214,6 +33273,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/fundamental_forensics/__init__.py
+      - engine/fundamental_forensics/pipeline.py
+      - engine/fundamental_forensics/sec_companyfacts.py
+      - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
+      - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "engine/entry_radar/research_read.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/entry_radar/readings.py"
@@ -34065,6 +34129,7 @@ jobs:
       - "engine/options_signal_episode_contract.py"
       - "lib/live_flow_event_stage.py"
       - engine/company_intelligence/issuer_disclosure_owner.py
+      - engine/company_intelligence/sec_supplier_adoption.py
       - engine/company_intelligence/issuer_disclosure_publication.py
       - scripts/publish_company_disclosure.py
       - engine/company_intelligence/issuer_disclosure_preflight.py
@@ -35617,6 +35682,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "tests/test_sec_supplier_adoption.py"
+      - "tests/test_sec_supplier_publisher_composition.py"
+      - "tests/test_company_disclosure_additive_current.py"
+      - "config/theme_sources.yml"
+      - "research/theme_graph/sec_supplier_20261019/**"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
       - engine/theme_graph/issuer_economic_context.py
@@ -35713,6 +35783,7 @@ jobs:
       - engine/company_intelligence/current_company_context.py
       - engine/company_intelligence/current_context_runtime.py
       - engine/company_intelligence/issuer_disclosure_owner.py
+      - engine/company_intelligence/sec_supplier_adoption.py
       - engine/company_intelligence/issuer_disclosure_publication.py
       - engine/company_intelligence/issuer_disclosure_selection.py
       - lib/delisted_symbols.py
@@ -35731,7 +35802,7 @@ jobs:
       - name: install candidate inspection test dependencies
         run: pip install pytest pyyaml requests
       - name: File, pinned-source, observation and native disclosure contracts
-        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py tests/test_company_issuer_disclosures.py tests/test_company_disclosure_owner.py tests/test_company_disclosure_identity_continuity.py tests/test_company_disclosure_preflight.py tests/test_gmi_native_economic_context.py tests/test_gmi_issuer_economic_context.py -q
+        run: python -m pytest tests/test_sec_supplier_adoption.py tests/test_sec_supplier_publisher_composition.py tests/test_company_disclosure_additive_current.py tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py tests/test_company_issuer_disclosures.py tests/test_company_disclosure_owner.py tests/test_company_disclosure_identity_continuity.py tests/test_company_disclosure_preflight.py tests/test_gmi_native_economic_context.py tests/test_gmi_issuer_economic_context.py -q
 
   gmi-source-diagnostic-kernel:
     # WP02 deterministic artificial research model and structural-only refusals.

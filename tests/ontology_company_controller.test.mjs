@@ -15,7 +15,7 @@ const decoder = {
   decodePrivateCompanyContext: async v => {assert.equal(v.type,'context');return context;},
   decodePrivateIssuerSelections: v => {assert.equal(v.type,'selection');return selection;},
   assertPrivateContextSelection: (c,s)=>{assert.equal(c,context);assert.equal(s,selection);},
-  decodePrivateProductIntegration: (v,id)=>{assert.equal(v.id,id);return v;},
+  decodePrivateDisclosure: (v,id)=>{assert.equal(v.id,id);return v;},
   assertPrivateComposition: (s,e,f)=>{assert.equal(s,selection);assert.equal(e.fact_id,f.id);assert.equal(f.generation,s.generation);},
   decodePrivateError: ()=>{throw new Error('closed');},
 };
@@ -155,4 +155,14 @@ test('dated exposure identity must join before explicit fact selection',async()=
   await controller.lookup('ONE','SEC:DATED');
   assert.equal(calls,2);assert.equal(states.at(-1).status,'ready');
   assert.ok(!states.at(-1).fact);controller.dispose();
+});
+
+
+test('async supplier digest cannot publish after account replacement',async()=>{
+  const held=deferred();let calls=0;let current=session();
+  const {controller,states}=setup(async()=>{calls++;return response(calls===1?{type:'context'}:calls===2?{type:'selection'}:{id:'fact-one',generation:'one'});},
+    async()=>current,{...decoder,decodePrivateDisclosure:async()=>held.promise});
+  await controller.lookup('ONE');const read=controller.selectFact('fact-one');await turn();
+  current={user:{id:'owner-two'},access_token:'other'};held.resolve({id:'fact-one',generation:'one'});await read;
+  assert.equal(states.at(-1).status,'signed_out');assert.ok(!states.at(-1).fact);controller.dispose();
 });
