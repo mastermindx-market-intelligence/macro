@@ -17,11 +17,12 @@ call the REAL kernel guards — ``evaluate_confirmation`` and
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 import sys
 import types
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -379,6 +380,28 @@ def test_bridge_match_all_checks_pass_exit_0(a1_match_run):
     assert aapl["statement_counts"]["served"] == 6
     assert aapl["lineage"]["receipts"]["v1_pair"] == 130
 
+    # R1/R4: a clean run proves the kernel, coverage and statement-consistency
+    # checks RAN for the published issuer — pass rows are emitted, not skipped.
+    check_rows = {c["id"]: c for c in document["checks"]}
+    kernel_row = check_rows["kernel_query_engine"]
+    assert kernel_row["issuer"] == "AAPL"
+    assert kernel_row["status"] == "pass"
+    assert re.fullmatch(
+        r"production query engine built; \d+ matrix periods queried",
+        kernel_row["detail"],
+    )
+    served_row = check_rows["coverage_served"]
+    assert served_row["issuer"] == "AAPL"
+    assert served_row["status"] == "pass"
+    assert served_row["detail"] == "issuer published by the production run"
+    consistency_row = check_rows["statement_refusal_consistency"]
+    assert consistency_row["issuer"] == "AAPL"
+    assert consistency_row["status"] == "pass"
+    assert (
+        consistency_row["detail"]
+        == "generation and report agree on 0 statement refusals"
+    )
+
 
 def test_bridge_mismatch_reports_fail_and_writes_outputs(a1_store, tmp_path):
     directory = tmp_path / "mismatch"
@@ -525,6 +548,110 @@ def test_byte_determinism(a1_store, tmp_path):
     assert out_json_a.read_bytes() == out_json_b.read_bytes()
     assert out_md_a.read_bytes() == out_md_b.read_bytes()
     assert out_json_a.read_bytes().endswith(b"\n")
+
+
+def test_engine_construction_failure_fails_ledger(
+    a1_store, registry, tmp_path, monkeypatch
+):
+    """One issuer whose generation cannot build the production query engine
+    is a FAILED ``kernel_query_engine`` check, never a silent all-clear.
+
+    The real kernel must raise: one ``filing_metadata`` entry for a ledger
+    accession gets its ``filed_at`` moved past that accession's fact
+    acceptance (the kernel's own bitemporal guard then refuses the engine at
+    construction, engine/fundamental_forensics/query.py:4694-4696); no
+    ``_build_engine`` stand-in is involved.  The harness reports the failure
+    (exit-1 semantics via ``all_checks_passed`` false), keeps the carried
+    journey codes and the unavailable causes object, renders the coverage
+    census as ``unavailable`` instead of a never-computed 0, and resolves the
+    journey metric ids so no ``None`` reaches the MD metric column.
+    """
+    import dataclasses
+
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    directory = tmp_path / "engine-fail"
+    report_path, contract_path = _write_inputs(directory, _report_document(a1_store))
+    report = ledger_module._read_json_file(str(report_path), kind="production report")
+    contract = ledger_module._read_json_file(str(contract_path), kind="coverage contract")
+
+    real_load = ledger_module.load_query_dataset_payloads
+    target_accession = a1_store["accessions"][0]
+
+    def _poison_filed_at(generation):
+        payloads = real_load(generation)
+        accepted = [
+            event.accepted_at
+            for event in payloads["ledger"].events
+            if event.source.accession == target_accession
+            and event.accepted_at is not None
+        ]
+        assert accepted, "fixture ledger has no accepted_at for the target accession"
+        late_filed_at = max(accepted).date() + timedelta(days=1)
+        entry = payloads["filing_metadata"][target_accession]
+        if dataclasses.is_dataclass(entry):
+            # content_sha256 is re-derived in __post_init__; passing None lets
+            # the frozen dataclass recompute it over the moved filed_at.
+            # available_at is untouched.
+            payloads["filing_metadata"][target_accession] = dataclasses.replace(
+                entry, filed_at=late_filed_at, content_sha256=None
+            )
+        else:
+            moved = dict(entry)
+            moved["filed_at"] = late_filed_at.isoformat()
+            payloads["filing_metadata"][target_accession] = moved
+        return payloads
+
+    monkeypatch.setattr(
+        ledger_module, "load_query_dataset_payloads", _poison_filed_at
+    )
+
+    document = ledger_module.build_ledger(
+        report=report,
+        contract=contract,
+        store_dir=a1_store["store_dir"],
+        archive_root=None,
+    )
+
+    # R1: the whole-issuer engine failure is a failed check — and the only one.
+    assert document["all_checks_passed"] is False
+    failed = {
+        (c["id"], c["issuer"]) for c in document["checks"] if c["status"] == "fail"
+    }
+    assert failed == {("kernel_query_engine", "AAPL")}
+    kernel_row = next(
+        c for c in document["checks"] if c["id"] == "kernel_query_engine"
+    )
+    assert kernel_row["issuer"] == "AAPL"
+    assert kernel_row["status"] == "fail"
+    assert kernel_row["detail"].startswith("QueryValidationError")
+    assert kernel_row["detail"] == (
+        "QueryValidationError: filing metadata filed_at follows source acceptance"
+    )
+
+    # R1/R3: the carried journey codes and unavailable causes are unchanged,
+    # and every journey row resolves its metric id from the pinned catalog.
+    aapl = next(i for i in document["issuers"] if i["ticker"] == "AAPL")
+    causes = aapl["lineage"]["refusal_causes"]
+    assert causes["status"] == "unavailable"
+    assert "histogram" not in causes
+    assert causes["reason"] == kernel_row["detail"]
+    journeys = aapl["query_journeys"]
+    assert journeys
+    expected_ids = ledger_module._journey_metric_ids(registry)
+    for journey in journeys:
+        assert journey["status"] == "refused"
+        assert journey["code"].startswith("query_engine_unavailable (")
+        assert journey["metric_id"] == expected_ids[journey["metric"]]
+        assert journey["metric_id"] is not None
+
+    # R2: no fake 0 census for a histogram that never computed.
+    coverage = next(r for r in document["coverage_table"] if r["ticker"] == "AAPL")
+    assert coverage["lineage_refusals"] == "unavailable"
+
+    markdown = ledger_module._render_markdown(document)
+    assert "| unavailable |" in markdown
+    assert "| None |" not in markdown
 
 
 def test_edgar_index_url_rule():

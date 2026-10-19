@@ -544,12 +544,19 @@ def _render_markdown(document: Mapping[str, Any]) -> str:
                     if period
                     else ""
                 )
+                # An unresolved id (the registry itself could not load) renders
+                # the slot name — the literal None never reaches the column.
+                metric_cell = (
+                    str(journey["metric_id"])
+                    if journey.get("metric_id") is not None
+                    else str(journey["metric"])
+                )
                 if journey["status"] == "served":
                     lines.append(
                         "| "
                         + " | ".join(
                             [
-                                str(journey["metric_id"]),
+                                metric_cell,
                                 str(journey["scope"]),
                                 period_text,
                                 "served",
@@ -566,7 +573,7 @@ def _render_markdown(document: Mapping[str, Any]) -> str:
                         "| "
                         + " | ".join(
                             [
-                                str(journey["metric_id"]),
+                                metric_cell,
                                 str(journey["scope"]),
                                 period_text,
                                 "refused",
@@ -797,6 +804,12 @@ def build_ledger(
         }
         basis: str | None = None
         if pub_row is not None:
+            checks.add(
+                "coverage_served",
+                ticker,
+                True,
+                "issuer published by the production run",
+            )
             bridge["production_generation_id"] = pub_row.get("generation_id")
             bridge["production_outcome"] = pub_row.get("outcome")
             bridge["production_clock_basis"] = pub_row.get("clock_basis")
@@ -994,6 +1007,13 @@ def build_ledger(
                     False,
                     "; ".join(disagreements),
                 )
+            elif pub_row is not None:
+                checks.add(
+                    "statement_refusal_consistency",
+                    ticker,
+                    True,
+                    f"generation and report agree on {len(gen_refusals)} statement refusals",
+                )
             for accession in sorted(
                 {key[0] for key in set(gen_refusals) | set(report_refusals)}
             ):
@@ -1082,9 +1102,11 @@ def build_ledger(
             # refusal) is a journey fact, never a crash — the refusal is
             # carried with its typed reason.
             kernel_error: str | None = None
+            journey_ids: dict[str, str] = {}
             try:
                 payloads = load_query_dataset_payloads(generation)
                 registry = payloads["registry"]
+                journey_ids = _journey_metric_ids(registry)
                 ledger = payloads["ledger"]
                 engine = _build_engine(
                     payloads, ticker, generation.binding.source_entity_id
@@ -1129,7 +1151,6 @@ def build_ledger(
                 ) + (sum(cross.values()) if isinstance(cross, Mapping) else 0)
 
                 # ---- 5. query journeys ----------------------------------
-                journey_ids = _journey_metric_ids(registry)
                 annual_ends, quarterly_ends = _filing_period_ends(statement_index)
                 journey_periods: list[tuple[str, str, PeriodRequest | None]] = []
                 for slot, metric_id in sorted(journey_ids.items()):
@@ -1165,12 +1186,23 @@ def build_ledger(
                     )
                     journeys.append(_journey_row(slot, metric_id, scope, cell, period))
                 issuer_out["query_journeys"] = journeys
+                # A whole-issuer kernel failure is a FAILED check, not an
+                # accepted journey; a per-cell refusal stays a carried fact.
+                # <N> is the governed period universe the kernel matrix was
+                # queried over.
+                checks.add(
+                    "kernel_query_engine",
+                    ticker,
+                    True,
+                    f"production query engine built; {len(universe)} matrix periods queried",
+                )
             except Exception as exc:  # noqa: BLE001 - a typed kernel refusal is carried
                 kernel_error = f"{type(exc).__name__}: {exc}"
+                checks.add("kernel_query_engine", ticker, False, kernel_error)
                 issuer_out["query_journeys"] = [
                     {
                         "metric": slot,
-                        "metric_id": None,
+                        "metric_id": journey_ids.get(slot),
                         "scope": scope,
                         "period": None,
                         "status": "refused",
@@ -1213,11 +1245,7 @@ def build_ledger(
                 "statements_served": statements_served,
                 "statement_refusals": statement_refusals,
                 "lineage_receipts": lineage_receipts_total,
-                "lineage_refusals": (
-                    refusal_causes.get("total_unlinked_cells", 0)
-                    if refusal_causes
-                    else 0
-                ),
+                "lineage_refusals": _lineage_refusals_total(refusal_causes),
                 "lineage_refusal_codes": _flat_refusal_codes(refusal_causes),
                 "bridge": bridge["status"] or "dropped",
             }
@@ -1261,6 +1289,18 @@ def build_ledger(
         "all_checks_passed": checks.all_passed,
     }
     return document
+
+
+def _lineage_refusals_total(refusal_causes: Mapping[str, Any] | None) -> int | str:
+    """The lineage-refusal census total, or ``"unavailable"`` when never computed.
+
+    A computed histogram always carries ``total_unlinked_cells``.  The
+    unavailable object (the kernel half refused) and a generation that never
+    loaded carry none — a 0 there would claim a census that never ran.
+    """
+    if not isinstance(refusal_causes, Mapping) or "histogram" not in refusal_causes:
+        return "unavailable"
+    return refusal_causes.get("total_unlinked_cells", 0)
 
 
 def _flat_refusal_codes(refusal_causes: Mapping[str, Any] | None) -> dict[str, int]:
