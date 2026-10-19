@@ -9695,6 +9695,7 @@ jobs:
           tests/test_fundamental_forensics_no_request_time_sec.py
           tests/test_fundamental_forensics_normalize.py
           tests/test_fundamental_forensics_p0_view_contract.py
+          tests/test_fundamental_forensics_pack_evaluation.py
           tests/test_fundamental_forensics_page.py
           tests/test_fundamental_forensics_peer_cohort.py
           tests/test_fundamental_forensics_periods.py
