@@ -418,6 +418,12 @@ OBSERVED_COMMAND_SECONDS = {
     # render-lane contracts and the options/sparse suites: about 90 s including
     # its data-stack install.
     "ci-control-plane-contracts": 1400,
+    # Hosted command groups, 2026-10-19: FIF historical kernel median 1618 s
+    # plus ~13 s guards (nine runs); earnings 1071 s in full trial 39247388552.
+    # These calibrate balancing only; install/checkout/queue are excluded.
+    # Evidence and sensitivity replay: research/ci_pack_throughput_20261019/.
+    "fif-kernel-guards": 1630,
+    "earnings-economic-dossier": 1070,
     "workflow-yaml": 90,
     "market-memory-contract": 416,
     "unrun-government-revenue-grader": 322,

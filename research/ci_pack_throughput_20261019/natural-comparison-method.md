@@ -1,0 +1,9 @@
+Comparison method fixed after the first hosted trial, before observing completed treated runs.
+
+Include naturally occurring ci.yml pull_request first attempts created after 2026-10-19T13:13:09Z. Retain cancelled/rerun/pending strata separately. Time eligibility is not treatment proof: require the tested merge-tree scripts/run_ci_pack.py blob to match the landed optimization and record base ancestry. Exclude or separate later modifications to this mechanism. Preserve original test/proof failures in their strata.
+
+Record canonical selected logical IDs, per-job execution digests, scope reason, authority_changed, runner/runtime identity, changed paths, and inner test counts where available. Compare exact selected-job/execution-digest matches first; report scoped and global cohorts separately. Definition-digest equality is not proof that all test inputs are identical, so retain source and coverage differences and avoid causal language without an actual matched design.
+
+Reuse the original job/step timestamp definitions: run-created-to-gate (push proxy), first failed-step completion (actionable-red proxy), summed job wall minutes (not invoice), pack queue/checkout/setup/execution, last pack end to gate start, and aggregate execution. Include still-pending counts to expose completion conditioning. Use nearest-rank p95 and show N, not a confidence claim from a tiny sample.
+
+Target 20 concluded eligible first attempts for the first descriptive comparison, subject to actual traffic; no artificial CI dispatch. If exact coverage matches are scarce, report that limitation and broader strata separately rather than inventing equivalence. One broad first trial is not a treated fleet cohort. Expansion requires a measured remaining bottleneck, preserved authority and a bounded correctness/equivalence test, not a favorable percentage alone.
