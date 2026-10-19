@@ -117,7 +117,6 @@
     "tests/test_canada_regime.py",
     "tests/test_capacity_model.py",
     "tests/test_capital_allocation.py",
-    "tests/test_capital_structure_registration_lifecycle.py",
     "tests/test_capital_structure_share_count_head_v4_contracts.py",
     "tests/test_capital_structure_share_count_head_v4_runtime.py",
     "tests/test_catalyst_stock.py",

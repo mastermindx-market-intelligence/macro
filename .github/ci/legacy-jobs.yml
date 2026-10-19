@@ -9850,6 +9850,7 @@ jobs:
           tests/test_capital_structure_instrument_resolution.py
           tests/test_c19_wp14_capital_observation_pins.py
           tests/test_capital_structure_event_spine.py
+          tests/test_capital_structure_registration_lifecycle.py
           tests/test_capital_structure_graph.py
           tests/test_capital_structure_legacy_compat.py
           tests/test_capital_structure_pit.py
