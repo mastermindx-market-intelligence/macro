@@ -5057,7 +5057,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_613),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_618),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5084,6 +5084,13 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     remain fixed; current-head hosted CI must execute the updated assertion.
     Dropping the imported validator or understating the suite weight would
     discard coverage or hide the actual added test load.
+
+    The subsequent protected0ad974a9 integration measures 134 jobs / 5,618
+    for build_free_content; the Python3.12 affected check records that exact
+    five-unit excess over 5,613. Retained weight attribution records the
+    inherited job deltas (including dataos-identity-seams 16 -> 21). Fund
+    only the measured 5,618. Job counts, the other two weight ceilings,
+    all suites and the ten-pack ceiling remain unchanged.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py

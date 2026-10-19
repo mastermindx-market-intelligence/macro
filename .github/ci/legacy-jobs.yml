@@ -17945,6 +17945,7 @@ jobs:
       - "engine/company_intelligence/pg_profile.py"
       - "engine/company_intelligence/qa_exchange.py"
       - "engine/company_intelligence/qa_reconstruction.py"
+      - "engine/company_intelligence/rms_segment_profile.py"
       - "engine/company_intelligence/views.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
