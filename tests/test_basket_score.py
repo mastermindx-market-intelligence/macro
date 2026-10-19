@@ -422,3 +422,58 @@ if(!chinese.includes('未测')||!chinese.includes('数据来源交易日或覆�
         capture_output=True, text=True, timeout=15,
     )
     assert done.returncode == 0, done.stderr
+
+
+
+def test_market_concentration_cannot_invent_participation_from_bad_counts(
+    monkeypatch, tmp_path,
+):
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    base = {
+        "n_members": 500.0, "adv": 350.0, "dec": 150.0,
+        "pct_above_50": 62.0, "pct_above_200": 60.0,
+        "nh": 20.0, "nl": 10.0,
+    }
+    state = {"last": base.copy()}
+
+    def source(_path):
+        return pd.DataFrame(
+            [state["last"]], index=pd.DatetimeIndex(["2026-10-16"])
+        )
+
+    monkeypatch.setattr(bs.pd, "read_parquet", source)
+    valid = bs.market_concentration("us")
+    assert valid["observed_members"] == 500
+    assert valid["verdict"] == "broad"
+    assert valid["nh"] == 20 and valid["nl"] == 10
+
+    # Advancers/decliners exceed the observed universe, NH exceeds
+    # members, negatives are impossible, and 140% is never participation.
+    state["last"] = {
+        **base, "n_members": 50.0, "nh": 200.0, "nl": -2.0,
+        "pct_above_50": 140.0, "pct_above_200": -1.0,
+    }
+    invalid = bs.market_concentration("us")
+    assert invalid["source_as_of"] == "2026-10-16"
+    assert invalid["observed_members"] == 50
+    assert invalid["adv"] is None and invalid["dec"] is None
+    assert invalid["ad_ratio"] is None
+    assert invalid["nh"] is None and invalid["nl"] is None
+    assert invalid["pct_above_50"] is None
+    assert invalid["pct_above_200"] is None
+    assert invalid.get("verdict") is None
+
+    # Fractional or non-finite member counts never become rounded integers
+    # that suggest a measured count; retain legitimate percent endpoints.
+    state["last"] = {
+        **base, "n_members": float("nan"), "adv": 1.5,
+        "dec": float("inf"), "pct_above_50": 0, "pct_above_200": 100,
+    }
+    sparse = bs.market_concentration("us")
+    assert sparse["observed_members"] is None
+    assert sparse["adv"] is None and sparse["dec"] is None
+    assert sparse["pct_above_50"] == 0
+    assert sparse["pct_above_200"] == 100
+    assert sparse.get("verdict") is None
