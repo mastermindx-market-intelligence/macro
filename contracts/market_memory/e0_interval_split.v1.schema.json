@@ -1,5 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "research_factory.market_memory_e0_interval_split.v1",
   "title": "Market Memory E0 temporal interval split (display-only declarations)",
   "description": "Declared metadata only for the market-memory E0 temporal interval split. Declarations only: the parent verifies exact tasks and membership agreement, provenance, chronological ordering, same cluster/session/revision sibling consistency, and half-open interval overlaps. This schema executes no split and carries no numbers of episodes, no effective N, and no operational admission fields. Null means undeclared; no dates are chosen and no defaults are supplied.",
   "type": "object",
