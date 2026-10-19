@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Deliver current date-role fix4864e85c and reviewed exact-draft workflow promotion through one protected PR. Crop revision3 has deterministic/editorialPASS with0manualedits; three calls14208of24000tokens, full prior histories preserved. Chris autonomous-completion directive supersedes the old retry approval stop. Publish exact reviewed bytes; then continue issuer-linked story qualification. No new article live yet.
+next_action: Deliver exact-draft promotion, accepted Crop bundle and three-file CNDT Research landing through one normal protected PR; controller cap applies automatic refreshes, not initial PR creation. CNDT pair is known-complete and ingest39209343602 committedc9a475c;205uniform holds preserve ranking. After protected install publish only exact reviewed Crop bytes, then qualify actual CNDT packet for one bounded writer. Publication/cutoverfalse; no discretionary writer approval is missing.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9464
   - https://github.com/mastermindx-market-intelligence/macro/pull/9455
