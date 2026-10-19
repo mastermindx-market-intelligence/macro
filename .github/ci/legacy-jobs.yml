@@ -17753,6 +17753,7 @@ jobs:
       - "config/theme_crosswalk.yml"
       - "config/theme_graph_identity_breaks.yml"
       - "config/theme_sources.yml"
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "contracts/theme_graph/membership_collection.v2.schema.json"
       - "contracts/theme_graph/probation_proposal.v1.schema.json"
       - "contracts/theme_graph/probation_relation_event.v2.schema.json"
