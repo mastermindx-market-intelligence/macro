@@ -667,17 +667,33 @@ def test_a1_boundary_ib6_threshold_one_cent_either_side(
 def test_a1_boundary_zero_headroom(
     client: Any, served: Any, built: Any, with_inputs: Any
 ) -> None:
-    """Exactly-zero headroom reads ``binding``; one cent reads ``slack``.
+    """Exactly-zero headroom serves bound 0; one cent serves bound 0.01.
 
-    The contract (:func:`baby_shelf_pool`, rule_applicability.py:1088-1089):
-    gap == 0 is ``binding``, gap > 0 is ``slack``.  A float of $30,000,000 caps
-    the pool at exactly $10,000,000.00 (one third, no rounding remnant).
+    Two contracts meet at this boundary, and the A1 ruling (seat a9559a4c,
+    2026-10-19) keeps them apart:
+
+    * POOL-LOCAL (:func:`baby_shelf_pool`, rule_applicability.py:1088-1089):
+      gap == 0 is ``binding``, gap > 0 is ``slack``.  Tested directly on the
+      rule function below, at the exact cent.
+    * SERVED (capacity.py ``_constraints``): ``Constraint.status`` says whether
+      the pool binds the JOINT optimum (masterplan §3: "The share constraint is
+      not binding in that example").  It is ``binding``/``slack`` only when the
+      joint solution is determined, the pool is active and its bound is known;
+      otherwise it is ``unknown``.  The fixture world has no active route, so
+      the served envelope names ``no_active_route`` and both statuses are
+      ``unknown`` — the pool-local exhaustion is still served exactly, through
+      the known bound ``0``.
+
+    A float of $30,000,000 caps the pool at exactly $10,000,000.00 (one third,
+    no rounding remnant).  Proving the served binding/slack flip needs a
+    fixture with an active route; that gap is carried to A1-1.
     """
     cases = [
         ("binding", format(Decimal(_ZERO_HEADROOM_LIMIT), "f")),
         ("slack", format(Decimal(_ZERO_HEADROOM_LIMIT) - _ONE_CENT, "f")),
     ]
     observed: dict[str, dict[str, Any]] = {}
+    blockers: dict[str, list[str]] = {}
     for expected_status, sold_value in cases:
         body = _scenario_body()
         body["unknown_resolutions"] = [
@@ -691,20 +707,65 @@ def test_a1_boundary_zero_headroom(
             f"{json.dumps(_envelope(answer), sort_keys=True)[:800]}"
         )
         observed[expected_status] = pools[0]
+        blockers[expected_status] = list(_envelope(answer).get("blockers") or ())
     #: The exact headroom is served either way: gap == 0 serves bound ``0``,
     #: the one-cent gap serves bound ``0.01``.
+    for case in ("binding", "slack"):
+        assert observed[case]["bound"]["status"] == "known", (
+            f"{case}: the pool bound must be known: {observed[case]!r}"
+        )
     assert Decimal(observed["binding"]["bound"]["value"]) == Decimal("0"), (
         "the zero gap must serve bound 0"
     )
     assert Decimal(observed["slack"]["bound"]["value"]) == _ONE_CENT, (
         "the one-cent gap must serve bound 0.01"
     )
-    assert observed["binding"]["status"] == "binding", (
-        f"a zero gap must read binding: {observed['binding']!r}"
+    #: Joint semantics: with no active route the joint solution is not
+    #: determined, so the served status is ``unknown`` and the envelope says why.
+    for case in ("binding", "slack"):
+        assert "no_active_route" in blockers[case], (
+            f"{case}: expected the envelope to name no_active_route, got "
+            f"{blockers[case]!r}"
+        )
+        assert observed[case]["status"] == "unknown", (
+            f"{case}: with no active route the joint status must be unknown, "
+            f"got {observed[case]!r}"
+        )
+
+
+@pytest.mark.parametrize(
+    ("sold", "expected_status", "expected_headroom"),
+    [
+        ("20000000.00", "binding", Decimal("0")),
+        ("19999999.99", "slack", _ONE_CENT),
+    ],
+)
+def test_a1_boundary_zero_headroom_pool_local(
+    pack: Any, sold: str, expected_status: str, expected_headroom: Decimal
+) -> None:
+    """The pool-local contract at the exact cent (rule_applicability.py:1088-1089).
+
+    A $60,000,000 float caps the one-third pool at exactly $20,000,000.00, so
+    sold == limit leaves a zero gap (``binding``) and one cent less leaves a
+    one-cent gap (``slack``).  This is the boundary the served joint status
+    cannot show without an active route (see the test above).
+    """
+    from engine.capital_structure import rule_applicability as ra
+    from engine.capital_structure.issuer_state_contracts import Quantity
+
+    pool = ra.baby_shelf_pool(
+        pack,
+        public_float=Quantity.known("60000000", "usd"),
+        float_measured_on="2026-09-01",
+        sold_trailing=Quantity.known(sold, "usd"),
+        sold_window=("2025-10-15", "2026-10-14"),
+        sale_date="2026-10-14",
+        form="S-3",
     )
-    assert observed["slack"]["status"] == "slack", (
-        f"a one-cent gap must read slack: {observed['slack']!r}"
-    )
+    assert pool.constraint.status == expected_status, pool.as_record()
+    assert pool.headroom.status == "known", pool.as_record()
+    assert Decimal(pool.headroom.value) == expected_headroom, pool.as_record()
+    assert Decimal(pool.overrun.value) == Decimal("0"), pool.as_record()
 
 
 def test_a1_boundary_trailing_window_day_365_and_366(
