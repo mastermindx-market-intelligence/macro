@@ -829,6 +829,52 @@
       </div>
     </div>{% endif %}{% endfor %}
   </div>
+  {# Discovery leads (W20-L2): how each feed's past leads did against SPY. Context only. #}
+  {% set fd_src = ((TR.horizons or {}).get('21') or {}).get('by_source') or {} %}
+  {% if fd_src %}
+  {% set fd_tip_en = "How each feed's Discovery leads did against SPY afterwards. "
+    ~ 'Every day a name sits on the list is scored once, so long-listed names count '
+    ~ 'many times. Context only: it does not reorder the Discovery list.' %}
+  {% set fd_tip_zh = '各来源的发掘线索之后相对标普的表现。标的每在列表上一天即计分一次，'
+    ~ '因此长期在列的标的会被多次计入。仅作参考，不改变发掘列表的排序。' %}
+  {% set fd_cell_en = 'Average return against SPY 21 trading days after this feed listed '
+    ~ 'a name. Above zero = its leads beat SPY on average.' %}
+  {% set fd_cell_zh = '该来源列出标的后 21 个交易日相对标普的平均收益。大于零 = 其线索平均跑赢标普。' %}
+  <div class="card trc trsrc">
+    <div class="th"><span class="h">{{ t('Discovery leads · 21d', '发掘线索 · 21天') }}</span>
+      <span class="chip" data-tip-en="{{ fd_tip_en }}" data-tip-zh="{{ fd_tip_zh }}">
+        {{- t('context', '参考') -}}</span></div>
+    <div class="trg">
+      {% for fd_name, s in fd_src|dictsort %}
+      {% if s.get('n') and s.get('mean_fwd_rel') is not none %}
+      {% set fd_v = s.mean_fwd_rel * 100 %}
+      <div class="trcell" data-tip-en="{{ fd_cell_en }}" data-tip-zh="{{ fd_cell_zh }}">
+        <span class="trlab">{{ fd_name|replace('_', ' ')|e }}</span>
+        <b class="trval {{ 'pos' if fd_v > 0 else 'neg' if fd_v < 0 else '' }}">
+          {{- '%+.1f'|format(fd_v) }}%</b>
+        <span class="trans {{ 'ok' if fd_v > 0 else 'bad' if fd_v < 0 else '' }}">
+          {{- t('beat SPY', '跑赢标普') if fd_v > 0 else t('lagged SPY', '跑输标普')
+            if fd_v < 0 else t('matched SPY', '持平标普') -}}</span>
+        {% set fd_hit = s.get('hit_rate') %}
+        <span class="trlab">n {{ '{:,}'.format(s.n) }}
+          {%- if fd_hit is not none %} · {{ t('%.0f%% of leads beat SPY'|format(fd_hit * 100),
+            '%.0f%% 的线索跑赢标普'|format(fd_hit * 100)) }}{% endif %}</span>
+        {% set fd_ns = namespace(en=[], zh=[]) %}
+        {% for h2, e2 in TR.horizons.items() %}{% if h2 != '21' %}
+        {% set fd_o = (e2.get('by_source') or {}).get(fd_name) or {} %}
+        {% if fd_o.get('n') and fd_o.get('mean_fwd_rel') is not none %}
+        {% set fd_ov = '%+.1f'|format(fd_o.mean_fwd_rel * 100) ~ '%' %}
+        {% set fd_ns.en = fd_ns.en + [h2 ~ 'd ' ~ fd_ov] %}
+        {% set fd_ns.zh = fd_ns.zh + [h2 ~ '天 ' ~ fd_ov] %}
+        {% endif %}{% endif %}{% endfor %}
+        {% if fd_ns.en %}
+        <span class="trlab">{{ t(fd_ns.en|join(' · '), fd_ns.zh|join(' · ')) }}</span>
+        {% endif %}
+      </div>
+      {% endif %}{% endfor %}
+    </div>
+  </div>
+  {% endif %}
   {% set ag = TR.accrual_gaps or {} %}
   {% if ag.get('n_missing', 0) >= 1 and ag.get('n_expected') %}
   <div class="card note">

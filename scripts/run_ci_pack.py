@@ -1224,6 +1224,13 @@ def infer_job_scopes(jobs: Iterable[LegacyJob]) -> tuple[list[LegacyJob], str]:
 
             for reference in SCOPE_REFERENCE_RE.findall(command):
                 rel = reference.split("::", 1)[0].rstrip(".,;:'\")")
+                # Named suites already contributed their complete closure above.
+                # They also match the generic path scanner, sometimes repeatedly
+                # (multiple node IDs in one suite). Rewalking the same graph adds
+                # no ownership: pytest ambiguity was checked before either pass,
+                # and the final named_pytest filter applies to both fallbacks.
+                if rel in named_here:
+                    continue
                 path = Path(rel)
                 if not planner_path_is_file(path):
                     continue

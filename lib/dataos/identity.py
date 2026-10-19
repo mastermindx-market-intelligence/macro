@@ -699,6 +699,8 @@ def _as_date(value: date | str | None) -> date | None:
 # receipt. Candidate input consumers must additionally bind their actual snapshot
 # read by the decision cutoff in the existing input bundle.
 NATIVE_REFERENCE_VENDOR = "polygon"
+SEC_FILING_CUSIP_VENDOR = "sec_filing_cusip"
+_SEALED_REFERENCE_VENDORS = frozenset({NATIVE_REFERENCE_VENDOR, SEC_FILING_CUSIP_VENDOR})
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
@@ -856,32 +858,45 @@ class AliasRow:
             if self.binding_sha256 != expected:
                 raise IdentityError("option root binding seal mismatch")
             return
-        if self.vendor != NATIVE_REFERENCE_VENDOR:
+        if self.vendor not in _SEALED_REFERENCE_VENDORS:
             return
+        if self.vendor == SEC_FILING_CUSIP_VENDOR:
+            if (not isinstance(self.vendor_symbol, str)
+                    or not re.fullmatch(r"[0-9A-Z]{9}", self.vendor_symbol)
+                    or not isinstance(self.security_id, str)
+                    or not self.security_id.startswith("SEC:")):
+                raise IdentityError("SEC filing requires an exact CUSIP and canonical security")
+            parse_id(self.security_id)
+            if (type(self.valid_from) is not date or type(self.valid_to) is not date
+                    or self.valid_to != self.valid_from + timedelta(days=1)):
+                raise IdentityError("SEC filing binding is restricted to its evidenced observation day")
+        reference_label = "SEC filing" if self.vendor == SEC_FILING_CUSIP_VENDOR else "polygon"
         clock = _aware_utc(self.known_at, "known_at")
         object.__setattr__(self, "known_at", clock)
         if self.valid_from is None or isinstance(self.valid_from, datetime):
-            raise IdentityError("polygon reference requires a dated valid_from")
+            raise IdentityError(f"{reference_label} reference requires a dated valid_from")
         if clock.date() < self.valid_from:
-            raise IdentityError("polygon evidence precedes its reference date")
+            raise IdentityError(f"{reference_label} evidence precedes its reference date")
         if self.valid_to is not None and self.valid_to <= self.valid_from:
-            raise IdentityError("polygon invalid event-date bounds")
+            raise IdentityError(f"{reference_label} invalid event-date bounds")
         if not isinstance(self.evidence_sha256, str) or not _SHA256_RE.fullmatch(self.evidence_sha256):
-            raise IdentityError("polygon missing evidence digest")
+            raise IdentityError(f"{reference_label} missing evidence digest")
         expected = alias_binding_sha256(self.vendor, self.vendor_symbol, self.security_id,
                                         self.valid_from, self.valid_to, clock,
                                         self.evidence_sha256)
         if self.binding_sha256 != expected:
-            raise IdentityError("polygon alias binding seal mismatch")
+            raise IdentityError(f"{reference_label} alias binding seal mismatch")
 
     @property
     def underlying_kind(self) -> str | None:
         return option_underlying_kind(self.security_id) if self.alias_kind == OPTION_ROOT_KIND else None
 
     def covers(self, on: date, *, decision_at: datetime | str | None = None) -> bool:
+        if self.vendor == SEC_FILING_CUSIP_VENDOR and type(on) is not date:
+            raise IdentityError("SEC filing requires an exact event date")
         if self.alias_kind == OPTION_ROOT_KIND:
             _option_root_query(self.vendor, self.vendor_symbol, on)
-        if self.alias_kind == OPTION_ROOT_KIND or self.vendor == NATIVE_REFERENCE_VENDOR:
+        if self.alias_kind == OPTION_ROOT_KIND or self.vendor in _SEALED_REFERENCE_VENDORS:
             cutoff = _aware_utc(decision_at, "decision_at")
             if cutoff < self.known_at or on > cutoff.date():
                 return False
@@ -1054,7 +1069,7 @@ class VendorAliasTable:
 
 
 # ── Pure observation history (publication/adapter activation is separate) ──────
-_CLOCKED_ALIAS_VENDORS = frozenset({"polygon", "listing"})
+_CLOCKED_ALIAS_VENDORS = frozenset({"polygon", "listing", SEC_FILING_CUSIP_VENDOR})
 _OBSERVATION_SCHEMA = "mastermind.identity_observations.v1"
 _ARTIFACT_NAMES = (
     "security_master.parquet", "vendor_aliases.parquet", "issuer_master.parquet",
