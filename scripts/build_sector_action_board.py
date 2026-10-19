@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from jinja2 import Environment, FileSystemLoader  # noqa: E402
+from engine.json_strict import sanitize_non_finite  # noqa: E402
 log = logging.getLogger("build_sector_action_board")
 
 
@@ -35,7 +36,10 @@ def _basket_as_of(payload: dict[str, Any]) -> str:
 
 def _atomic_json_write(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    raw = json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode()
+    # Browser JSON.parse rejects Python\x27s bare NaN/Infinity extensions. Encode
+    # non-finite, unmeasured factor legs as null, never as invented zeros.
+    raw = json.dumps(sanitize_non_finite(payload), separators=(",", ":"),
+                     ensure_ascii=False, allow_nan=False).encode()
     fd, temp_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
     try:
         with os.fdopen(fd, "wb") as handle:
