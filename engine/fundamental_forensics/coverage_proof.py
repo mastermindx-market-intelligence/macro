@@ -26,6 +26,20 @@ counted under ``field_id_aliases_applied``, and reported as the
 census draft can be measured; an attested acceptance manifest must use the
 canonical vocabulary, and every other dotted or unknown ``field_id`` is still
 refused.
+
+Review-lane rulings (V1-a r2, 2026-10-19) tighten what may ever count toward
+a tier and what blocks acceptance: an issuer counts toward a tier only when
+its band for that tier's scope is ``complete`` and its failed-field list is
+empty; a withheld formula metric fails its issuer for the pass decision
+(reason ``formula_inputs_absent``); an issuer with no applicable fields never
+passes; the statuses ``stale``, ``failed_extraction`` and ``incomparable``
+count in ``applicable``, fail the issuer and are reported in their own
+counts; a present cell carrying a reason is refused; the manifest's census
+identity, the cells' source generations and the freeze reference are checked
+and any disagreement is an acceptance blocker; orphan cells and rollup
+mismatches block acceptance; a metric cell outside the declared windows is
+an orphan, never silently dropped; core periods outside the deep periods are
+refused at load.
 """
 from __future__ import annotations
 
@@ -58,8 +72,20 @@ WILDCARD_PERIOD = "*"
 STATE_PRESENT = "present"
 STATE_NOT_APPLICABLE = "not_applicable"
 STATE_ABSENT = "absent"
+STATE_STALE = "stale"
+STATE_FAILED_EXTRACTION = "failed_extraction"
+STATE_INCOMPARABLE = "incomparable"
 REASON_CELL_MISSING = "cell_missing"
+REASON_FORMULA_INPUTS_ABSENT = "formula_inputs_absent"
+REASON_ORPHAN_CIK = "cik_not_member"
+REASON_ORPHAN_WINDOW = "period_outside_windows"
 NO_APPLICABLE_FIELDS_BAND = "no_applicable_fields"
+COMPLETE_BAND = "complete"
+
+# The repository root a ``freeze_ref`` is declared against.  Deriving it from
+# this module's location keeps the check a pure tree lookup: no network, no
+# store, no wall-clock read.
+_REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # The single declared legacy field_id alias (seat ruling K-V1A-R1): the census
 # draft spells its package cells "package.<role>" where the frozen vocabulary
@@ -77,13 +103,30 @@ _BARE_FIELDS = frozenset({"packet", "journey"})
 
 # Manifest status -> proof state.  ``slot_absent`` is never turned into
 # ``not_applicable``; only an explicit ``not_applicable`` leaves the
-# applicable denominator.
+# applicable denominator.  ``stale``, ``failed_extraction`` and
+# ``incomparable`` (ruling V1-a r2) keep their own names: each counts in
+# ``applicable``, fails the issuer for the pass decision, and is reported in
+# its own count — never merged into ``absent``.
 _STATUS_STATES: Mapping[str, str] = {
     "present": STATE_PRESENT,
     "not_applicable": STATE_NOT_APPLICABLE,
     "absent": STATE_ABSENT,
     "slot_absent": STATE_ABSENT,
+    "stale": STATE_STALE,
+    "failed_extraction": STATE_FAILED_EXTRACTION,
+    "incomparable": STATE_INCOMPARABLE,
 }
+
+# Per-state count keys shared by issuer cell tallies and component buckets.
+_CELL_STATE_KEYS = (
+    STATE_PRESENT,
+    STATE_ABSENT,
+    STATE_NOT_APPLICABLE,
+    STATE_STALE,
+    STATE_FAILED_EXTRACTION,
+    STATE_INCOMPARABLE,
+)
+_COMPONENT_BUCKET_KEYS = _CELL_STATE_KEYS + ("missing",)
 
 _THRESHOLD_KEYS = frozenset(
     {
@@ -364,6 +407,19 @@ def _thresholds_from_raw(
         },
     }
 
+    # Ruling V1-a r2 (F6): core periods outside the deep periods would be a
+    # silent window drop — every core period must also be a deep period.
+    core_outside_deep = [
+        name for name in tiers["core"]["periods"]
+        if name not in set(tiers["deep"]["periods"])
+    ]
+    if core_outside_deep:
+        raise CoverageProofError(
+            "period_windows",
+            "thresholds.tiers.core.periods must be a subset of "
+            f"thresholds.tiers.deep.periods; outside: {', '.join(core_outside_deep)}",
+        )
+
     return CoverageThresholds(
         schema=schema,
         thresholds_id=thresholds_id,
@@ -570,6 +626,17 @@ def _check_cell_shape(
             "status_vocabulary",
             f"cells[{position}] has an unsupported status: {status!r}",
         )
+    if status == "present":
+        # Ruling V1-a r2 (F4): a present cell carries no failure reason.  A
+        # non-null reason_code on a present cell is refused with a typed
+        # code, never silently counted as present.
+        reason = cell.get("reason_code")
+        if reason is not None and reason != "":
+            raise CoverageProofError(
+                "present_cell_carries_reason",
+                f"cells[{position}] is present but carries reason_code "
+                f"{reason!r}; a present cell carries no reason",
+            )
     source_generation_id = cell.get("source_generation_id")
     if not isinstance(source_generation_id, str) or not source_generation_id:
         raise shape(
@@ -775,9 +842,23 @@ def prove_coverage(
     deep_cik_set = set(deep_ciks)
 
     orphan_cells = 0
+    orphan_reasons: dict[str, int] = {REASON_ORPHAN_CIK: 0, REASON_ORPHAN_WINDOW: 0}
     status_normalised: dict[str, int] = {}
+    cell_generation_counts: dict[str, int] = {}
     issuer_cell_states: dict[str, dict[str, int]] = {
-        cik: {STATE_PRESENT: 0, STATE_ABSENT: 0, STATE_NOT_APPLICABLE: 0}
+        cik: {state: 0 for state in _CELL_STATE_KEYS} for cik in core_ciks
+    }
+    core_periods = thresholds.core_periods
+    deep_periods = thresholds.deep_periods
+    # A member's declared window: the deep periods for deep members (core
+    # periods are a subset of them by load-time refusal), the core periods
+    # for core-only members.
+    member_windows: dict[str, frozenset[str]] = {
+        cik: (
+            frozenset(deep_periods) | frozenset(core_periods)
+            if cik in deep_cik_set
+            else frozenset(core_periods)
+        )
         for cik in core_ciks
     }
     cells_list = cells if isinstance(cells, list) else []
@@ -786,17 +867,32 @@ def prove_coverage(
         state = _STATUS_STATES[status]
         if status != state:
             status_normalised[status] = status_normalised.get(status, 0) + 1
+        generation = cell.get("source_generation_id")
+        if isinstance(generation, str) and generation:
+            cell_generation_counts[generation] = (
+                cell_generation_counts.get(generation, 0) + 1
+            )
         cik = cell.get("cik")
         if cik not in core_cik_set:
             orphan_cells += 1
+            orphan_reasons[REASON_ORPHAN_CIK] += 1
+            continue
+        field_id = cell.get("field_id")
+        if (
+            isinstance(field_id, str)
+            and field_id.startswith("metric:")
+            and cell.get("period_id") not in member_windows[cik]
+        ):
+            # Ruling V1-a r2 (F6): a metric cell outside the declared
+            # windows is an orphan, never silently dropped.
+            orphan_cells += 1
+            orphan_reasons[REASON_ORPHAN_WINDOW] += 1
             continue
         issuer_cell_states[cik][state] += 1
 
-    core_periods = thresholds.core_periods
-    deep_periods = thresholds.deep_periods
-
     def metric_scope(cik: str, periods: tuple[str, ...]) -> dict[str, Any]:
         present = absent = not_applicable = withheld = 0
+        stale = failed_extraction = incomparable = 0
         failed: list[str] = []
         withheld_fields: list[str] = []
         for period in periods:
@@ -807,27 +903,46 @@ def prove_coverage(
                     state, reason = STATE_ABSENT, REASON_CELL_MISSING
                 else:
                     state = _STATUS_STATES[cell["status"]]
-                    reason = _absent_reason(cell) if state == STATE_ABSENT else ""
+                    reason = _absent_reason(cell) if state != STATE_PRESENT else ""
                 if state == STATE_PRESENT:
                     present += 1
                 elif state == STATE_NOT_APPLICABLE:
                     not_applicable += 1
+                elif state == STATE_STALE:
+                    stale += 1
+                    failed.append(_field_label(period, field_id, reason))
+                elif state == STATE_FAILED_EXTRACTION:
+                    failed_extraction += 1
+                    failed.append(_field_label(period, field_id, reason))
+                elif state == STATE_INCOMPARABLE:
+                    incomparable += 1
+                    failed.append(_field_label(period, field_id, reason))
                 elif metric_id in formula:
-                    # A formula metric absent is withheld: it does not fail the
-                    # issuer and does not count as present, but stays in the
-                    # applicable denominator.
+                    # A formula metric that is not present is withheld: it
+                    # stays in the applicable denominator and is still
+                    # reported under ``withheld``, but (ruling V1-a r2, F1)
+                    # it is a failed field for the pass decision with
+                    # reason ``formula_inputs_absent``.
                     withheld += 1
                     withheld_fields.append(_field_label(period, field_id, reason))
+                    failed.append(
+                        _field_label(period, field_id, REASON_FORMULA_INPUTS_ABSENT)
+                    )
                 else:
                     absent += 1
                     failed.append(_field_label(period, field_id, reason))
-        applicable = present + absent + withheld
+        applicable = (
+            present + absent + withheld + stale + failed_extraction + incomparable
+        )
         rate = (present / applicable) if applicable else None
         return {
             "present": present,
             "applicable": applicable,
             "not_applicable": not_applicable,
             "withheld": withheld,
+            "stale": stale,
+            "failed_extraction": failed_extraction,
+            "incomparable": incomparable,
             "rate": rate,
             "failed": failed,
             "withheld_fields": withheld_fields,
@@ -852,8 +967,7 @@ def prove_coverage(
         failed: list[str] = []
         for period, field_id, allows_not_applicable in deep_component_specs:
             bucket = counts.setdefault(
-                field_id,
-                {"present": 0, "absent": 0, "not_applicable": 0, "missing": 0},
+                field_id, {key: 0 for key in _COMPONENT_BUCKET_KEYS}
             )
             cell = index.get((cik, period, field_id))
             if cell is None:
@@ -880,7 +994,11 @@ def prove_coverage(
         issuer = members[cik]
         is_deep = cik in deep_cik_set
         core_scope = metric_scope(cik, core_periods)
-        core_pass = not core_scope["failed"]
+        # Ruling V1-a r2 (F1/F3): an issuer counts toward a tier only when
+        # its band for that tier's scope is ``complete`` and its failed-field
+        # list is empty; a ``no_applicable_fields`` band never passes.
+        core_band = thresholds.band_for_rate(core_scope["rate"])
+        core_pass = not core_scope["failed"] and core_band == COMPLETE_BAND
         entry: dict[str, Any] = {
             "cik": cik,
             "ticker": issuer.get("ticker") if isinstance(issuer.get("ticker"), str) else "",
@@ -891,11 +1009,12 @@ def prove_coverage(
             deep_scope = metric_scope(cik, deep_periods)
             component_counts, component_failed = deep_components(cik)
             deep_labels = deep_scope["failed"] + component_failed
-            deep_pass = not deep_labels
+            deep_band = thresholds.band_for_rate(deep_scope["rate"])
+            deep_pass = not deep_labels and deep_band == COMPLETE_BAND
             own = deep_scope
             entry["deep_pass"] = deep_pass
             entry["field_rate"] = own["rate"]
-            entry["band"] = thresholds.band_for_rate(own["rate"])
+            entry["band"] = deep_band
             entry["failed_fields"] = sorted(
                 set(deep_labels) | set(core_scope["failed"])
             )
@@ -912,7 +1031,7 @@ def prove_coverage(
         else:
             entry["deep_pass"] = None
             entry["field_rate"] = core_scope["rate"]
-            entry["band"] = thresholds.band_for_rate(core_scope["rate"])
+            entry["band"] = core_band
             entry["failed_fields"] = sorted(core_scope["failed"])
             entry["withheld_fields"] = sorted(core_scope["withheld_fields"])
             proof_by_cik[cik] = {
@@ -927,7 +1046,15 @@ def prove_coverage(
         issuer_entries.append(entry)
 
     def tier_block(cik_list: list[str], target: int, *, use_deep: bool) -> dict[str, Any]:
-        fields = {"present": 0, "applicable": 0, "not_applicable": 0, "withheld": 0}
+        fields = {
+            "present": 0,
+            "applicable": 0,
+            "not_applicable": 0,
+            "withheld": 0,
+            "stale": 0,
+            "failed_extraction": 0,
+            "incomparable": 0,
+        }
         bands = empty_bands()
         failing_reasons: dict[str, int] = {}
         components: dict[str, dict[str, int]] = {}
@@ -951,8 +1078,7 @@ def prove_coverage(
             if use_deep:
                 for field_id, bucket in proof["components"].items():
                     target_bucket = components.setdefault(
-                        field_id,
-                        {"present": 0, "absent": 0, "not_applicable": 0, "missing": 0},
+                        field_id, {key: 0 for key in _COMPONENT_BUCKET_KEYS}
                     )
                     for key in target_bucket:
                         target_bucket[key] += bucket[key]
@@ -974,6 +1100,9 @@ def prove_coverage(
                 "applicable": fields["applicable"],
                 "not_applicable": fields["not_applicable"],
                 "withheld": fields["withheld"],
+                "stale": fields["stale"],
+                "failed_extraction": fields["failed_extraction"],
+                "incomparable": fields["incomparable"],
                 "rate": rate,
             },
             "bands": bands,
@@ -1038,6 +1167,46 @@ def prove_coverage(
     def verbatim(key: str) -> Any:
         return manifest.get(key)
 
+    # Ruling V1-a r2 (F2): the manifest must carry the thresholds' pinned
+    # census identity.  The proof still runs and reports; every disagreement
+    # is an acceptance blocker instead of a refusal.  ``cutoff_at`` and
+    # ``source_generation_id`` are compared against the manifest's top-level
+    # fields; ``manifest_draft_sha256_prefix`` is a declared value on both
+    # sides (BASE defines no computation for it), so it is compared only when
+    # the manifest declares one.
+    thresholds_identity = dict(thresholds.census_identity)
+    manifest_identity = {
+        "source_generation_id": manifest.get("source_generation_id"),
+        "cutoff_at": manifest.get("cutoff_at"),
+        "manifest_draft_sha256_prefix": manifest.get("manifest_draft_sha256_prefix"),
+    }
+    identity_mismatched_fields = [
+        field
+        for field in ("source_generation_id", "cutoff_at")
+        if manifest_identity[field] != thresholds_identity[field]
+    ]
+    declared_prefix = manifest_identity["manifest_draft_sha256_prefix"]
+    if declared_prefix is not None and (
+        declared_prefix != thresholds_identity["manifest_draft_sha256_prefix"]
+    ):
+        identity_mismatched_fields.append("manifest_draft_sha256_prefix")
+    manifest_generation = manifest_identity["source_generation_id"]
+    mixed_source_generations = any(
+        generation != manifest_generation for generation in cell_generation_counts
+    )
+    census_identity_block = {
+        "thresholds": thresholds_identity,
+        "manifest": manifest_identity,
+        "mismatched_fields": sorted(identity_mismatched_fields),
+        "cell_source_generation_counts": dict(sorted(cell_generation_counts.items())),
+        "mixed_source_generations": mixed_source_generations,
+    }
+
+    # Ruling V1-a r2 (F2): ``freeze_ref`` must name a path that exists
+    # relative to the repository root.
+    freeze_path = _REPO_ROOT / thresholds.freeze_ref
+    freeze_ref_exists = freeze_path.exists()
+
     report_manifest = {
         "schema": verbatim("schema"),
         "sha256": manifest_sha256,
@@ -1060,6 +1229,18 @@ def prove_coverage(
         blockers.append("core_target_not_met")
     if package_aliases_applied > 0:
         blockers.append(LEGACY_FIELD_ID_ALIAS_BLOCKER)
+    if identity_mismatched_fields:
+        blockers.append("census_identity_mismatch")
+    if mixed_source_generations:
+        blockers.append("mixed_source_generations")
+    if not freeze_ref_exists:
+        blockers.append("freeze_ref_missing")
+    # Ruling V1-a r2 (F5): orphan cells and rollup mismatches block
+    # acceptance; they were reported but non-blocking before.
+    if orphan_cells > 0:
+        blockers.append("orphan_cells")
+    if rollup_mismatch:
+        blockers.append("rollup_mismatch")
     blockers.sort()
 
     issuer_entries.sort(key=lambda entry: entry["cik"])
@@ -1071,8 +1252,16 @@ def prove_coverage(
             "content_sha256": thresholds.content_sha256,
             "deep_target": thresholds.deep_target,
             "core_target": thresholds.core_target,
+            "freeze_ref": thresholds.freeze_ref,
+            "freeze_ref_path": str(freeze_path),
+            "freeze_ref_exists": freeze_ref_exists,
         },
         "manifest": report_manifest,
+        # The manifest bytes' sha256 computed by the prover itself (ruling
+        # V1-a r2, F2): the thresholds pin only a declared draft prefix,
+        # whose computation BASE never defined.
+        "manifest_sha256": manifest_sha256,
+        "census_identity": census_identity_block,
         "tiers": {"core": core_block, "deep": deep_block},
         "issuers": issuer_entries,
         "incomplete_issuers": {"deep": deep_incomplete, "core": core_incomplete},
@@ -1082,6 +1271,7 @@ def prove_coverage(
             "header": header_exclusions,
         },
         "orphan_cells": orphan_cells,
+        "orphan_reasons": dict(sorted(orphan_reasons.items())),
         "status_normalised": dict(sorted(status_normalised.items())),
         "field_id_aliases_applied": {
             LEGACY_PACKAGE_ALIAS_PREFIX: package_aliases_applied

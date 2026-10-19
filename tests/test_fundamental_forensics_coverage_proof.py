@@ -165,7 +165,14 @@ def issuer(cik: str, ticker: str, tier: str, **fields) -> dict:
     return entry
 
 
-def cell(cik: str, period: str, field_id: str, status: str = "present", **extra) -> dict:
+def cell(
+    cik: str,
+    period: str,
+    field_id: str,
+    status: str = "present",
+    generation: str = "census-test",
+    **extra,
+) -> dict:
     entry = {
         # cell.tier is deliberately "core" on every cell, including deep
         # members' cells: the proof must never read it as membership.
@@ -177,8 +184,10 @@ def cell(cik: str, period: str, field_id: str, status: str = "present", **extra)
         "accession": "0000000000-00-000000",
         "field_id": field_id,
         "status": status,
-        "source_generation_id": "census-test",
-        "reason_code": "present" if status == "present" else "",
+        "source_generation_id": generation,
+        # A present cell carries no reason (ruling V1-a r2, F4); every other
+        # status may carry one.
+        "reason_code": None if status == "present" else "",
     }
     entry.update(extra)
     return entry
@@ -239,13 +248,25 @@ def build_manifest(
                 cells.append(cell(cik, period, field_id, statuses.get(key, "present")))
 
     def scope_pass(cik: str, periods: tuple[str, ...], component_keys=None) -> bool:
-        """Mirror the frozen pass rules for the fixture's own rollup fields."""
+        """Mirror the frozen pass rules for the fixture's own rollup fields.
+
+        Ruling V1-a r2: a withheld formula metric fails the pass decision,
+        and an issuer with zero applicable metric fields never passes, so
+        the mirror fails on any non-present applicable metric and on an
+        empty applicable set.
+        """
+        applicable = 0
         for period in periods:
             for metric_id in ALL_METRICS:
                 key = (cik, period, f"metric:{metric_id}")
                 status = "missing" if key in drop else statuses.get(key, "present")
-                if status in ("absent", "slot_absent", "missing") and metric_id not in FORMULA_IDS:
+                if status == "not_applicable":
+                    continue
+                applicable += 1
+                if status != "present":
                     return False
+        if applicable == 0:
+            return False
         if component_keys is None:
             return True
         for period, field_id in component_keys:
@@ -464,9 +485,14 @@ def test_absent_formula_withheld_and_absent_direct_fails() -> None:
     )
     report = run_proof(withheld_manifest)
     entry = entry_for(report, "0000000003")
-    assert entry["core_pass"] is True
+    # Ruling V1-a r2 (F1): a withheld formula metric is a failed field for
+    # the pass decision, so the issuer no longer passes; it is still
+    # reported under withheld and keeps the issuer out of band complete.
+    assert entry["core_pass"] is False
     assert "A1/metric:phi:absent" in entry["withheld_fields"]
-    assert entry["failed_fields"] == []
+    assert entry["failed_fields"] == ["A1/metric:phi:formula_inputs_absent"]
+    # 11/12 applicable present -> the high band, not complete.
+    assert entry["band"] == "high"
     core_fields = report["tiers"]["core"]["fields"]
     # The withheld cell sits in applicable but not in present.
     assert core_fields["present"] == 35
@@ -791,8 +817,13 @@ def test_zero_denominator_gets_null_rate_and_no_applicable_band() -> None:
     assert entry["field_rate"] is None
     assert entry["band"] == "no_applicable_fields"
     assert report["tiers"]["core"]["bands"]["no_applicable_fields"] == 1
-    # An explicitly not_applicable metric never fails its issuer.
-    assert entry["core_pass"] is True
+    # Ruling V1-a r2 (F3): an issuer with zero applicable fields never
+    # counts toward a tier, so it never passes even though it has no failed
+    # field.
+    assert entry["core_pass"] is False
+    assert entry["failed_fields"] == []
+    assert report["tiers"]["core"]["pass"] == 2
+    assert report["tiers"]["core"]["target_met"] is False
     core_fields = report["tiers"]["core"]["fields"]
     assert core_fields["applicable"] == 24
     assert core_fields["not_applicable"] == 12
@@ -838,6 +869,9 @@ def test_reports_conform_to_contract() -> None:
 
 def _frozen_manifest(tmp_path: Path) -> Path:
     """A full-size synthetic manifest that meets the frozen 250/1000 targets."""
+    shipped = json.loads(SHIPPED_THRESHOLDS.read_text())
+    shipped_generation = shipped["census_identity"]["source_generation_id"]
+    shipped_cutoff = shipped["census_identity"]["cutoff_at"]
     direct_ids, formula_ids = load_metric_sets(REAL_CATALOG, REAL_FORMULAS)
     metric_ids = sorted(set(direct_ids) | set(formula_ids))
     deep_component_specs: list[tuple[str, str]] = []
@@ -861,10 +895,19 @@ def _frozen_manifest(tmp_path: Path) -> Path:
         periods = ("A1", "A2", "I1", "I2") if is_deep else ("A1", "I1")
         for period in periods:
             for metric_id in metric_ids:
-                cells.append(cell(cik, period, f"metric:{metric_id}"))
+                cells.append(cell(cik, period, f"metric:{metric_id}", generation=shipped_generation))
         if is_deep:
             for period, field_id in deep_component_specs:
-                cells.append(cell(cik, period, field_id))
+                cells.append(cell(cik, period, field_id, generation=shipped_generation))
+    # The manifest's own rollup fields must agree with the proof (every cell
+    # present, every issuer complete), or the rollup mismatch itself blocks.
+    owned_counts: dict[str, int] = {}
+    for item in cells:
+        owned_counts[item["cik"]] = owned_counts.get(item["cik"], 0) + 1
+    for entry in issuers:
+        entry["present_cells"] = owned_counts.get(entry["cik"], 0)
+        entry["core_pass"] = True
+        entry["deep_pass"] = True
     manifest_path = tmp_path / "frozen_manifest.json"
     manifest_path.write_text(
         json.dumps(
@@ -873,8 +916,8 @@ def _frozen_manifest(tmp_path: Path) -> Path:
                 "draft": True,
                 "attested": False,
                 "basis": "census_precheck_companyfacts",
-                "cutoff_at": "2026-10-18T00:00:00Z",
-                "source_generation_id": "census-test",
+                "cutoff_at": shipped_cutoff,
+                "source_generation_id": shipped_generation,
                 "recorded_at": "2026-10-18T20:50:47Z",
                 "cells": cells,
                 "issuers": issuers,
@@ -927,7 +970,13 @@ def test_cli_exit_codes_and_print_block(tmp_path: Path) -> None:
     assert report["tiers"]["deep"]["pass"] == 250
     assert report["tiers"]["core"]["pass"] == 1000
     assert report["acceptance_eligible"] is False
-    assert report["acceptance_blockers"] == ["manifest_draft", "manifest_unattested"]
+    # The shipped freeze_ref names a path absent from this repository, so
+    # ruling V1-a r2 (F2) blocks acceptance on top of draft/unattested.
+    assert report["acceptance_blockers"] == [
+        "freeze_ref_missing",
+        "manifest_draft",
+        "manifest_unattested",
+    ]
 
     lines = ok.stderr.splitlines()
     assert len(lines) == len(PRINT_PREFIXES)
@@ -937,7 +986,10 @@ def test_cli_exit_codes_and_print_block(tmp_path: Path) -> None:
     assert lines[1].startswith("deep issuers:   250 / 250")
     assert lines[2].startswith("core issuers:   1000 / 1000")
     assert lines[8] == "exclusions:     none"
-    assert lines[9] == "acceptance:     eligible=false  blockers=manifest_draft,manifest_unattested"
+    assert lines[9] == (
+        "acceptance:     eligible=false  "
+        "blockers=freeze_ref_missing,manifest_draft,manifest_unattested"
+    )
 
     # --out writes the same single JSON document.
     out_path = tmp_path / "report.json"
@@ -1042,7 +1094,338 @@ def test_cli_threads_alias_roles_into_load_manifest(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# 16. Source hygiene scan
+# 16. Review-lane rulings V1-a r2 (2026-10-19): probes P1-P5 and blockers
+# ---------------------------------------------------------------------------
+
+
+def test_probe_p2_all_formula_withheld_blocks_pass_and_target() -> None:
+    """Reviewer probe P2: every formula metric withheld must not pass."""
+    members = standard_members()
+    statuses = {
+        (member["cik"], period, f"metric:{metric_id}"): "slot_absent"
+        for member in members
+        for period in (
+            DEEP_PERIODS if member["tier_assigned"] == "deep" else CORE_PERIODS
+        )
+        for metric_id in FORMULA_IDS
+    }
+    report = run_proof(
+        build_manifest(members, statuses=statuses, draft=False, attested=True)
+    )
+
+    # Every issuer lands in the partial band (4/6 applicable present) and
+    # none counts toward either tier.
+    for entry in report["issuers"]:
+        assert entry["band"] == "partial", entry
+        assert entry["core_pass"] is False
+        if entry["tier"] == "deep":
+            assert entry["deep_pass"] is False
+    assert report["tiers"]["deep"]["pass"] == 0
+    assert report["tiers"]["core"]["pass"] == 0
+    assert report["tiers"]["deep"]["target_met"] is False
+    assert report["tiers"]["core"]["target_met"] is False
+    withheld_entry = entry_for(report, "0000000003")
+    assert "A1/metric:phi:slot_absent" in withheld_entry["withheld_fields"]
+    assert "A1/metric:phi:formula_inputs_absent" in withheld_entry["failed_fields"]
+    # 3 core members x 2 core periods x 2 formula metrics withheld in core;
+    # 2 deep members x 4 deep periods x 2 in deep.
+    assert report["tiers"]["core"]["fields"]["withheld"] == 12
+    assert report["tiers"]["deep"]["fields"]["withheld"] == 16
+    assert report["acceptance_eligible"] is False
+    assert report["acceptance_blockers"] == [
+        "core_target_not_met",
+        "deep_target_not_met",
+    ]
+
+
+def test_probe_p1_foreign_identity_and_mixed_generations_block() -> None:
+    """Reviewer probe P1: a foreign census identity with cells from three
+    generations must not be acceptance-eligible."""
+    members = standard_members()
+    manifest = build_manifest(members, draft=False, attested=True)
+    manifest["source_generation_id"] = "OTHER"
+    manifest["cutoff_at"] = "1999-01-01"
+    for index, item in enumerate(manifest["cells"]):
+        item["source_generation_id"] = ("OTHER", "gen-a", "gen-b")[index % 3]
+    report = run_proof(manifest)
+
+    assert report["acceptance_eligible"] is False
+    assert report["acceptance_blockers"] == [
+        "census_identity_mismatch",
+        "mixed_source_generations",
+    ]
+    identity = report["census_identity"]
+    assert identity["mismatched_fields"] == ["cutoff_at", "source_generation_id"]
+    assert identity["manifest"]["source_generation_id"] == "OTHER"
+    assert identity["thresholds"]["source_generation_id"] == "census-test"
+    assert identity["mixed_source_generations"] is True
+    counts = identity["cell_source_generation_counts"]
+    assert set(counts) == {"OTHER", "gen-a", "gen-b"}
+    assert sum(counts.values()) == len(manifest["cells"])
+
+
+def test_census_identity_blockers_individually() -> None:
+    members = standard_members()
+
+    # Blocker 1 (source_generation_id): the manifest's generation differs
+    # from the thresholds' pin while its cells stay consistent with it.
+    wrong_generation = build_manifest(members, draft=False, attested=True)
+    wrong_generation["source_generation_id"] = "census-other"
+    for item in wrong_generation["cells"]:
+        item["source_generation_id"] = "census-other"
+    report = run_proof(wrong_generation)
+    assert report["census_identity"]["mismatched_fields"] == ["source_generation_id"]
+    assert report["acceptance_blockers"] == ["census_identity_mismatch"]
+
+    # Blocker 1 (cutoff_at): the manifest's cutoff differs from the pin.
+    wrong_cutoff = build_manifest(members, draft=False, attested=True)
+    wrong_cutoff["cutoff_at"] = "1999-01-01"
+    report = run_proof(wrong_cutoff)
+    assert report["census_identity"]["mismatched_fields"] == ["cutoff_at"]
+    assert report["acceptance_blockers"] == ["census_identity_mismatch"]
+
+    # Blocker 3 (prefix): a manifest-declared draft prefix differs from the
+    # thresholds' declared value; BASE defines no computation for it, so the
+    # declared values are compared and the prover-computed manifest bytes
+    # hash rides on the report.
+    wrong_prefix = build_manifest(members, draft=False, attested=True)
+    wrong_prefix["manifest_draft_sha256_prefix"] = "f" * 20
+    report = run_proof(wrong_prefix)
+    assert report["census_identity"]["mismatched_fields"] == [
+        "manifest_draft_sha256_prefix"
+    ]
+    assert report["acceptance_blockers"] == ["census_identity_mismatch"]
+    assert report["manifest_sha256"] == report["manifest"]["sha256"]
+
+    # A manifest declaring the thresholds' own prefix adds no blocker.
+    right_prefix = build_manifest(members, draft=False, attested=True)
+    right_prefix["manifest_draft_sha256_prefix"] = "0" * 20
+    assert run_proof(right_prefix)["acceptance_blockers"] == []
+
+
+def test_mixed_source_generations_blocker_with_counts() -> None:
+    members = standard_members()
+    manifest = build_manifest(members, draft=False, attested=True)
+    manifest["cells"][0]["source_generation_id"] = "gen-a"
+    manifest["cells"][1]["source_generation_id"] = "gen-b"
+    report = run_proof(manifest)
+
+    assert report["census_identity"]["mismatched_fields"] == []
+    counts = report["census_identity"]["cell_source_generation_counts"]
+    assert counts == {
+        "census-test": len(manifest["cells"]) - 2,
+        "gen-a": 1,
+        "gen-b": 1,
+    }
+    assert report["acceptance_eligible"] is False
+    assert report["acceptance_blockers"] == ["mixed_source_generations"]
+
+
+def test_freeze_ref_missing_blocks_and_reports_path() -> None:
+    members = standard_members()
+    thresholds = small_thresholds(freeze_ref="docs/NO_SUCH_FREEZE.md")
+    report = run_proof(
+        build_manifest(members, draft=False, attested=True), thresholds
+    )
+    assert report["thresholds"]["freeze_ref"] == "docs/NO_SUCH_FREEZE.md"
+    assert report["thresholds"]["freeze_ref_path"].endswith("docs/NO_SUCH_FREEZE.md")
+    assert report["thresholds"]["freeze_ref_exists"] is False
+    assert report["acceptance_eligible"] is False
+    assert report["acceptance_blockers"] == ["freeze_ref_missing"]
+
+    # The small fixture's own freeze_ref (this test file) exists: no blocker.
+    ok_report = run_proof(build_manifest(members, draft=False, attested=True))
+    assert ok_report["thresholds"]["freeze_ref_exists"] is True
+    assert "freeze_ref_missing" not in ok_report["acceptance_blockers"]
+
+
+def test_probe_p3_zero_applicable_issuer_never_counts() -> None:
+    """Reviewer probe P3: an all-not_applicable issuer must not count."""
+    members = standard_members()
+    statuses = {
+        ("0000000001", period, f"metric:{metric_id}"): "not_applicable"
+        for period in DEEP_PERIODS
+        for metric_id in ALL_METRICS
+    }
+    report = run_proof(build_manifest(members, statuses=statuses))
+
+    entry = entry_for(report, "0000000001")
+    assert entry["band"] == "no_applicable_fields"
+    assert entry["field_rate"] is None
+    assert entry["failed_fields"] == []
+    assert entry["core_pass"] is False
+    assert entry["deep_pass"] is False
+    assert report["tiers"]["core"]["bands"]["no_applicable_fields"] == 1
+    assert report["tiers"]["deep"]["bands"]["no_applicable_fields"] == 1
+    assert report["tiers"]["deep"]["pass"] == 1
+    assert report["tiers"]["core"]["pass"] == 2
+    assert "deep_target_not_met" in report["acceptance_blockers"]
+    assert "core_target_not_met" in report["acceptance_blockers"]
+    assert report["acceptance_eligible"] is False
+
+
+def test_probe_p4_present_cell_with_reason_is_refused() -> None:
+    """Reviewer probe P4: a present cell carrying a reason is refused."""
+    members = standard_members()
+    manifest = build_manifest(members)
+    manifest["cells"][0]["reason_code"] = "late_filing"
+    refuse(manifest, "present_cell_carries_reason")
+
+
+@pytest.mark.parametrize(
+    "status",
+    ["stale", "failed_extraction", "incomparable"],
+)
+def test_new_statuses_fail_and_keep_own_counts(status: str) -> None:
+    members = standard_members()
+    statuses = {
+        ("0000000003", "A1", "metric:alpha"): status,
+        ("0000000001", "A2", "metric:alpha"): status,
+    }
+    report = run_proof(build_manifest(members, statuses=statuses))
+
+    core_entry = entry_for(report, "0000000003")
+    deep_entry = entry_for(report, "0000000001")
+    assert core_entry["core_pass"] is False
+    assert f"A1/metric:alpha:{status}" in core_entry["failed_fields"]
+    assert deep_entry["deep_pass"] is False
+    assert f"A2/metric:alpha:{status}" in deep_entry["failed_fields"]
+
+    core_fields = report["tiers"]["core"]["fields"]
+    deep_fields = report["tiers"]["deep"]["fields"]
+    # The status counts in applicable, is reported in its own count, and
+    # never merges into absent or withheld.
+    assert core_fields[status] == 1
+    assert deep_fields[status] == 1
+    assert core_fields["applicable"] == 36
+    assert deep_fields["applicable"] == 48
+    assert core_fields["present"] == 35
+    assert deep_fields["present"] == 47
+    assert core_fields["withheld"] == 0
+    assert deep_fields["withheld"] == 0
+
+
+def test_new_status_on_deep_component_fails_and_counts() -> None:
+    members = standard_members()
+    statuses = {("0000000001", "A2", "package:label"): "incomparable"}
+    report = run_proof(build_manifest(members, statuses=statuses))
+
+    entry = entry_for(report, "0000000001")
+    assert entry["deep_pass"] is False
+    assert "A2/package:label:incomparable" in entry["failed_fields"]
+    bucket = report["tiers"]["deep"]["components"]["package:label"]
+    assert bucket["incomparable"] == 1
+    assert bucket["present"] == 7
+
+
+def test_probe_p5_orphans_and_rollup_mismatch_block() -> None:
+    """Reviewer probe P5: orphan cells and rollup lies must block."""
+    members = standard_members()
+    manifest = build_manifest(members, draft=False, attested=True)
+    manifest["cells"].append(cell("0000000099", "A1", "metric:alpha"))
+    manifest["issuers"][0]["present_cells"] = 999
+    report = run_proof(manifest)
+
+    assert report["orphan_cells"] == 1
+    assert report["orphan_reasons"] == {"cik_not_member": 1, "period_outside_windows": 0}
+    assert report["manifest_rollup_mismatch"]
+    assert report["acceptance_eligible"] is False
+    assert report["acceptance_blockers"] == ["orphan_cells", "rollup_mismatch"]
+
+
+def test_out_of_window_metric_cell_is_an_orphan() -> None:
+    members = standard_members()
+    manifest = build_manifest(members, draft=False, attested=True)
+    # A core member's cell on a deep-only period and a deep member's cell on
+    # an undeclared period: both outside the member's declared windows.
+    manifest["cells"].append(cell("0000000003", "A2", "metric:alpha"))
+    manifest["cells"].append(cell("0000000001", "A3", "metric:alpha"))
+    report = run_proof(manifest)
+
+    assert report["orphan_cells"] == 2
+    assert report["orphan_reasons"] == {"cik_not_member": 0, "period_outside_windows": 2}
+    assert report["acceptance_eligible"] is False
+    assert report["acceptance_blockers"] == ["orphan_cells"]
+    # Neither cell leaks into any denominator.
+    assert report["tiers"]["core"]["fields"]["applicable"] == 36
+    assert report["tiers"]["deep"]["fields"]["applicable"] == 48
+
+
+def test_core_periods_outside_deep_are_refused() -> None:
+    mapping = small_thresholds_mapping()
+    mapping["tiers"]["core"]["periods"] = ["A1", "Q3"]
+    with pytest.raises(CoverageProofError) as excinfo:
+        thresholds_from_mapping(mapping, enforce_frozen_targets=False)
+    assert excinfo.value.code == "period_windows"
+
+
+def test_real_run_sanity_shipped_thresholds_block(tmp_path: Path) -> None:
+    """Real-run sanity: the CLI on the shipped thresholds config with a
+    small synthetic manifest reports acceptance_eligible false whenever any
+    blocker condition holds."""
+    small = build_manifest(standard_members(), draft=True, attested=False)
+    shipped = json.loads(SHIPPED_THRESHOLDS.read_text())
+    identity = shipped["census_identity"]
+
+    def run_cli(manifest_path: Path) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            [
+                sys.executable,
+                str(CLI_PATH),
+                "prove",
+                "--manifest",
+                str(manifest_path),
+                "--thresholds",
+                str(SHIPPED_THRESHOLDS),
+                "--proved-at",
+                "2026-10-19T00:00:00Z",
+                "--print",
+            ],
+            capture_output=True,
+            text=True,
+        )
+
+    # The fixture's census-test identity is not the shipped pin, and the
+    # shipped freeze_ref names a path absent from this repository.
+    mismatched_path = tmp_path / "small_mismatched.json"
+    mismatched_path.write_text(json.dumps(small), encoding="utf-8")
+    result = run_cli(mismatched_path)
+    assert result.returncode == 0, result.stderr
+    report = json.loads(result.stdout)
+    assert report["acceptance_eligible"] is False
+    for blocker in (
+        "census_identity_mismatch",
+        "freeze_ref_missing",
+        "manifest_draft",
+        "manifest_unattested",
+        "deep_target_not_met",
+        "core_target_not_met",
+    ):
+        assert blocker in report["acceptance_blockers"], blocker
+
+    # With the shipped identity pinned on the same manifest, the identity
+    # blockers disappear; every remaining blocker condition still holds
+    # acceptance false.
+    pinned = copy.deepcopy(small)
+    pinned["source_generation_id"] = identity["source_generation_id"]
+    pinned["cutoff_at"] = identity["cutoff_at"]
+    for item in pinned["cells"]:
+        item["source_generation_id"] = identity["source_generation_id"]
+    pinned_path = tmp_path / "small_pinned.json"
+    pinned_path.write_text(json.dumps(pinned), encoding="utf-8")
+    pinned_result = run_cli(pinned_path)
+    assert pinned_result.returncode == 0, pinned_result.stderr
+    pinned_report = json.loads(pinned_result.stdout)
+    assert "census_identity_mismatch" not in pinned_report["acceptance_blockers"]
+    assert "mixed_source_generations" not in pinned_report["acceptance_blockers"]
+    assert pinned_report["acceptance_eligible"] is False
+    assert "freeze_ref_missing" in pinned_report["acceptance_blockers"]
+    line = pinned_result.stderr.splitlines()[-1]
+    assert line.startswith("acceptance:     eligible=false")
+
+
+# ---------------------------------------------------------------------------
+# 17. Source hygiene scan
 # ---------------------------------------------------------------------------
 
 

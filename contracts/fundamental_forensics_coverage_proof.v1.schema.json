@@ -10,12 +10,15 @@
     "proved_at",
     "thresholds",
     "manifest",
+    "manifest_sha256",
+    "census_identity",
     "tiers",
     "issuers",
     "incomplete_issuers",
     "manifest_rollup_mismatch",
     "exclusions",
     "orphan_cells",
+    "orphan_reasons",
     "status_normalised",
     "field_id_aliases_applied",
     "acceptance_eligible",
@@ -32,7 +35,15 @@
     "thresholds": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["thresholds_id", "content_sha256", "deep_target", "core_target"],
+      "required": [
+        "thresholds_id",
+        "content_sha256",
+        "deep_target",
+        "core_target",
+        "freeze_ref",
+        "freeze_ref_path",
+        "freeze_ref_exists"
+      ],
       "properties": {
         "thresholds_id": {
           "type": "string",
@@ -49,6 +60,56 @@
         "core_target": {
           "type": "integer",
           "minimum": 1
+        },
+        "freeze_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "freeze_ref_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "freeze_ref_exists": {
+          "type": "boolean"
+        }
+      }
+    },
+    "manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "census_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "thresholds",
+        "manifest",
+        "mismatched_fields",
+        "cell_source_generation_counts",
+        "mixed_source_generations"
+      ],
+      "properties": {
+        "thresholds": {
+          "$ref": "#/$defs/declared_identity"
+        },
+        "manifest": {
+          "$ref": "#/$defs/declared_identity"
+        },
+        "mismatched_fields": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "source_generation_id",
+              "cutoff_at",
+              "manifest_draft_sha256_prefix"
+            ]
+          }
+        },
+        "cell_source_generation_counts": {
+          "$ref": "#/$defs/count_map"
+        },
+        "mixed_source_generations": {
+          "type": "boolean"
         }
       }
     },
@@ -224,6 +285,9 @@
       "type": "integer",
       "minimum": 0
     },
+    "orphan_reasons": {
+      "$ref": "#/$defs/count_map"
+    },
     "status_normalised": {
       "type": "object",
       "additionalProperties": {
@@ -253,7 +317,12 @@
           "manifest_unattested",
           "deep_target_not_met",
           "core_target_not_met",
-          "legacy_field_id_alias"
+          "legacy_field_id_alias",
+          "census_identity_mismatch",
+          "mixed_source_generations",
+          "freeze_ref_missing",
+          "orphan_cells",
+          "rollup_mismatch"
         ]
       }
     }
@@ -273,10 +342,39 @@
         "minimum": 0
       }
     },
+    "declared_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_generation_id",
+        "cutoff_at",
+        "manifest_draft_sha256_prefix"
+      ],
+      "properties": {
+        "source_generation_id": {
+          "type": ["string", "null"]
+        },
+        "cutoff_at": {
+          "type": ["string", "null"]
+        },
+        "manifest_draft_sha256_prefix": {
+          "type": ["string", "null"]
+        }
+      }
+    },
     "fields_block": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["present", "applicable", "not_applicable", "withheld", "rate"],
+      "required": [
+        "present",
+        "applicable",
+        "not_applicable",
+        "withheld",
+        "stale",
+        "failed_extraction",
+        "incomparable",
+        "rate"
+      ],
       "properties": {
         "present": {
           "type": "integer",
@@ -291,6 +389,18 @@
           "minimum": 0
         },
         "withheld": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stale": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed_extraction": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "incomparable": {
           "type": "integer",
           "minimum": 0
         },
@@ -340,7 +450,15 @@
     "component_counts": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["present", "absent", "not_applicable", "missing"],
+      "required": [
+        "present",
+        "absent",
+        "not_applicable",
+        "missing",
+        "stale",
+        "failed_extraction",
+        "incomparable"
+      ],
       "properties": {
         "present": {
           "type": "integer",
@@ -355,6 +473,18 @@
           "minimum": 0
         },
         "missing": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stale": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed_extraction": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "incomparable": {
           "type": "integer",
           "minimum": 0
         }
