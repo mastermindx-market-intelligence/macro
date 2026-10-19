@@ -42,7 +42,22 @@
     "job": "catalyst-stock-context",
     "validation_exit_code": 0,
     "code_jobs_validated": 256,
-    "runtime": "Python 3.12"
+    "runtime": "Python 3.12",
+    "scope_repair": {
+      "prior_head": "bdf1ceda8c1daa4bf74c64d88c7cf68501c09031",
+      "failed_hosted_run": 39199165652,
+      "cause": "Opaque CLI subprocess fallback selected this job for an unrelated homepage packing probe.",
+      "repair": "Exclusive declared static owner closure, ancestor initializers and actual schema/fixture reads; no packing ceiling or guard changed.",
+      "canonical_method": "infer_job_scopes on the job with exclusive/declared paths removed; _matches_any coverage; ancestor_init_census; _job_diff_match positive and negative probes; manifest --validate-only; git diff --check",
+      "static_closure_paths": 31,
+      "uncovered_static_paths": [],
+      "undeclared_ancestor_count": 0,
+      "negative_paths_not_selected": ["templates/index.html", "site/index.html"],
+      "positive_probe_count": 6,
+      "inference_seconds": 70.72,
+      "exit_code": 0,
+      "engine_and_test_source_changed": false
+    }
   },
   "independent_review": {
     "role": "C3 integration principal",
