@@ -935,3 +935,36 @@ def test_theme_refuses_noncalendar_or_after_build_observation_clock(monkeypatch,
     assert response.json()['detail']['code'] == 'source_unavailable'
     assert response.headers['cache-control'] == 'private, no-store'
     assert 'bindings' not in response.text
+
+
+@pytest.mark.parametrize('mutate_source',[False,True])
+def test_theme_etf_adoption_uses_native_alias_and_rechecks_identity_generation(monkeypatch,tmp_path,mutate_source):
+    import pyarrow as arrow
+    import pyarrow.parquet as parquet
+    from tests.test_theme_graph_hierarchy_paths import _etf_adoption_inputs
+    from engine.theme_graph import identity_resolution as owner
+    root=_theme_owner_root(tmp_path)
+    view,sources,*_=_etf_adoption_inputs(tmp_path/'classification',monkeypatch)
+    for name,rows in [('nodes',view._nodes),('edges',view._edges),('evidence',view._evidence)]:
+        parquet.write_table(arrow.Table.from_pylist(rows),root/'data/theme_graph'/(name+'.parquet'))
+    for rel,raw in sources.items():
+        p=root/rel;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(raw)
+    original=owner.adopt_etf_references
+    if mutate_source:
+        def changed(*args,**kwargs):
+            value=original(*args,**kwargs)
+            path=root/'data/reference/security_master.parquet';path.write_bytes(path.read_bytes()+b'changed')
+            return value
+        monkeypatch.setattr(owner,'adopt_etf_references',changed)
+    with _client(monkeypatch,tmp_path,root=root) as client:
+        response=client.post(THEME_ROUTE,json=_theme_body(client))
+    assert response.status_code==(503 if mutate_source else 200),response.text
+    if mutate_source:
+        assert 'SEC:US-XNAS-DIFFERENT' not in response.text and 'references' not in response.text
+    else:
+        value=response.json();tracking=value['theme_map']['etf_tracking']
+        assert tracking['security_identity']['status']=='available'
+        assert tracking['references'][0]['security_identity']['security_id']=='SEC:US-XNAS-DIFFERENT'
+        assert tracking['references'][0]['selected_security_id']=='SEC:US-XNAS-AAA'
+        assert len(value['source']['reads'])==11
+        assert tracking['holdings']['status']=='unavailable'

@@ -1061,3 +1061,86 @@ def test_selected_etf_unreadable_current_policy_is_typed_unavailable(house):
         source_policy={'families': {'mastermind_curated': house}})
     assert result['etf_tracking']['reason'] == 'HOUSE_DISPLAY_PERMISSION_UNAVAILABLE'
     assert result['etf_tracking']['references'] == []
+
+
+def _etf_adoption_inputs(tmp_path, monkeypatch, *, etf=True):
+    import io
+    import pandas as pd
+    from tests import test_symbol_directory_completion_receipts as listing
+    frame = listing._listing_frame()
+    frame.loc[0,['symbol','etf']] = ['AAAETF',etf]
+    monkeypatch.setattr(listing,'_listing_frame',lambda:frame)
+    artifact, sidecar, _ = listing._listing_receipt(tmp_path)
+    def parquet(rows):
+        out=io.BytesIO();pd.DataFrame(rows).to_parquet(out,index=False);return out.getvalue()
+    master=[{'security_id':'SEC:US-XNAS-DIFFERENT','listing_key':'US-XNAS-DIFFERENT',
+        'country':'US','mic':'XNAS','inception_code':'DIFFERENT','security_state':None}]
+    aliases=[{'vendor':'membership','vendor_symbol':'AAAETF','security_id':master[0]['security_id'],
+        'valid_from':None,'valid_to':None,'ingested_at':'2026-08-11T00:00:00Z'}]
+    receipt={'producer':'scripts/build_security_master.py','authority':{'identity_authority':'canonical_exact_identity'},
+        'dataset_ids':['reference.security_master','reference.vendor_aliases'],
+        'symbol_directory_snapshot':'2026-08-10','generated_at':'2026-08-11T00:00:00Z',
+        'inputs':{'data/symbol_directory/snapshots':hashlib.sha256(artifact.read_bytes()).hexdigest()},
+        'row_counts':{'security_master':1,'vendor_alias_rows_readable':1}}
+    sources={'data/reference/_receipt.json':json.dumps(receipt).encode(),
+        'data/reference/security_master.parquet':parquet(master),
+        'data/reference/vendor_aliases.parquet':parquet(aliases),
+        'data/symbol_directory/snapshots/2026-08-10.parquet':artifact.read_bytes(),
+        'data/symbol_directory/receipts/snapshots/2026-08-10.json':sidecar.read_bytes()}
+    return _selected_etf_view(),sources,master,aliases,receipt,parquet
+
+
+def _adopt_etf(view, sources):
+    from engine.theme_graph.identity_resolution import adopt_etf_references
+    return adopt_etf_references(view._nodes,view._lifecycle,['etf:AAAETF'],sources,
+        now=datetime(2026,10,19,tzinfo=timezone.utc))['etf:AAAETF']
+
+
+def test_etf_adoption_uses_canonical_alias_not_graph_spelling_and_keeps_type_observation(tmp_path,monkeypatch):
+    view,sources,*_ = _etf_adoption_inputs(tmp_path,monkeypatch)
+    before=copy.deepcopy(view._nodes)
+    result=_adopt_etf(view,sources)
+    assert result['status']=='available'
+    assert result['security_id']=='SEC:US-XNAS-DIFFERENT'  # graph is AAAETF
+    assert result['listing_key']=='US-XNAS-DIFFERENT'
+    assert result['identity_basis']=='LATEST_PUBLISHED_DATAOS_VENDOR_ALIAS'
+    assert result['historical_identity_claim'] is False
+    assert result['instrument_type']=='ETF'
+    assert result['instrument_type_basis']=='NATIVE_LISTING_OBSERVATION_ONLY'
+    assert result['listing_observed_on']=='2026-08-10'
+    assert result['listing_known_at']=='2026-08-10T00:00:04.000000Z'
+    assert 'issuer_id' not in result and 'name' not in result and view._nodes==before
+
+
+@pytest.mark.parametrize('mutation',['missing_alias','ambiguous_alias','active_wrapper','retired_wrapper',
+    'inactive_security','classification_bytes','future_master','foreign_listing_generation','wrong_venue'])
+def test_etf_adoption_preserves_native_identity_refusals(tmp_path,monkeypatch,mutation):
+    view,sources,master,aliases,receipt,parquet = _etf_adoption_inputs(tmp_path,monkeypatch)
+    if mutation=='missing_alias':aliases[0]['vendor_symbol']='OTHER'
+    elif mutation=='ambiguous_alias':
+        master.append({**master[0],'security_id':'SEC:US-XNAS-OTHER','listing_key':'US-XNAS-OTHER'})
+        aliases.append({**aliases[0],'vendor':'yahoo','security_id':'SEC:US-XNAS-OTHER'})
+    elif mutation in {'active_wrapper','retired_wrapper'}:
+        view._nodes.append(_company('co:us:AAAETF',external_ids=json.dumps({'symbol':'AAAETF'})))
+        if mutation=='retired_wrapper':
+            view._lifecycle.append(dict(node_id='co:us:AAAETF',status='retired',retire_date='2026-08-22',
+                merged_into=None,computed_at='2026-08-22T00:00:00Z'))
+    elif mutation=='inactive_security':master[0]['security_state']='SUPERSEDED_DUPLICATE_MINT'
+    elif mutation=='classification_bytes':sources['data/symbol_directory/snapshots/2026-08-10.parquet']+=b'changed'
+    elif mutation=='future_master':receipt['generated_at']='2027-01-01T00:00:00Z'
+    elif mutation=='foreign_listing_generation':receipt['inputs']['data/symbol_directory/snapshots']='0'*64
+    else:master[0].update(security_id='SEC:US-XNYS-DIFFERENT',listing_key='US-XNYS-DIFFERENT',mic='XNYS');aliases[0]['security_id']=master[0]['security_id']
+    receipt['row_counts']={'security_master':len(master),'vendor_alias_rows_readable':len(aliases)}
+    sources['data/reference/_receipt.json']=json.dumps(receipt).encode()
+    sources['data/reference/security_master.parquet']=parquet(master)
+    sources['data/reference/vendor_aliases.parquet']=parquet(aliases)
+    result=_adopt_etf(view,sources)
+    assert result['status']==('available' if mutation=='retired_wrapper' else 'unavailable')
+    if mutation=='active_wrapper':assert result['reason']=='AMBIGUOUS_ACTIVE_COMPANY_WRAPPER'
+    elif mutation=='ambiguous_alias':assert result['reason']=='AMBIGUOUS_CANONICAL_ALIAS'
+    if result['status']!='available':assert 'security_id' not in result
+
+
+def test_etf_adoption_requires_explicit_native_instrument_flag(tmp_path,monkeypatch):
+    view,sources,*_=_etf_adoption_inputs(tmp_path,monkeypatch,etf=False)
+    assert _adopt_etf(view,sources)=={'status':'unavailable','reason':'ETF_INSTRUMENT_TYPE_UNQUALIFIED'}

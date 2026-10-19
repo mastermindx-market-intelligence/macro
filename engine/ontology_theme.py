@@ -8,6 +8,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 import hashlib
 import io
+import json
 import re
 from pathlib import Path
 from types import SimpleNamespace
@@ -15,7 +16,7 @@ from types import SimpleNamespace
 import yaml
 
 from engine import ontology_explorer as explorer
-from engine.theme_graph import security_navigation, store, rights
+from engine.theme_graph import identity_resolution, security_navigation, store, rights
 from engine.theme_graph.ontology import _clock_instant
 
 METHOD = 'ontology_house_theme_continuation.v1'
@@ -133,6 +134,34 @@ def compose_theme_continuation(root: Path | str, payload: dict, *, now: datetime
             for path in binding['paths']:
                 for node in path['path'] + [hop['node'] for hop in path['via']]:
                     node['rights']['rights_class'] = house['rights_class']
+        tracking = result['etf_tracking']
+        refs = tracking['references']
+        if refs:
+            identity_sources = {}
+            try:
+                for rel in ('data/reference/_receipt.json', 'data/reference/security_master.parquet',
+                            'data/reference/vendor_aliases.parquet'):
+                    identity_sources[rel] = _read(root, rel)
+                day = json.loads(identity_sources['data/reference/_receipt.json'])['symbol_directory_snapshot']
+                if not isinstance(day, str) or datetime.fromisoformat(day).date().isoformat() != day:
+                    raise ValueError('listing source clock')
+                for rel in (f'data/symbol_directory/snapshots/{day}.parquet',
+                            f'data/symbol_directory/receipts/snapshots/{day}.json'):
+                    identity_sources[rel] = _read(root, rel)
+                adopted = identity_resolution.adopt_etf_references(frames['nodes'], frames['node_lifecycle'],
+                    [r['etf_node_id'] for r in refs], identity_sources, now=now)
+            except (OSError, ValueError, KeyError, TypeError):
+                adopted = {}
+            # Bind every observed identity byte in the same rechecked manifest,
+            # including a failed/partial owner observation. Never keep old IDs.
+            raw_sources.update(identity_sources)
+            for ref in refs:
+                ref['security_identity'] = adopted.get(ref['etf_node_id'],
+                    {'status': 'unavailable', 'reason': 'ETF_IDENTITY_INPUTS_UNAVAILABLE'})
+            available = sum(r['security_identity']['status'] == 'available' for r in refs)
+            tracking['security_identity'] = {'status': 'available' if available == len(refs)
+                else 'partial' if available else 'unavailable',
+                'reason': None if available == len(refs) else 'ETF_IDENTITY_NOT_FULLY_RESOLVED'}
     except (OSError, ValueError, TypeError, KeyError, RecursionError, yaml.YAMLError, rights.RightsRefusal):
         raise explorer.SourceUnavailable('theme_owner_unavailable') from None
     receipts = [{'path': rel, 'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw)}
