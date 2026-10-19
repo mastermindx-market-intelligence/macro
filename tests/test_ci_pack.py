@@ -5012,7 +5012,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_808),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_810),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
@@ -5733,6 +5733,29 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     weights, not measured execution timings. Narrowing the shared Brain job
     without its complete dependency audit would discard conservative coverage;
     no assertion or semantic release rule is weakened to excuse a failing test.
+
+    2026-10-19 (PR #8014, accepted-main issuer-context integration):
+    the normal c3d25f38 + f5b7b273 merge retains every existing Brain and
+    upstream regression. Accepted main registers
+    tests/test_gmi_issuer_economic_context_api.py in prelaunch-hardening.
+    It is the sole selected weight change, 45 -> 47; the existing job sets
+    are unchanged. The other two changed exclusive jobs do not enter any
+    probe. Full-manifest measurements bound to the merged checkout compare
+    the prior and combined manifests on the SAME combined source tree
+    d7ab4bf07968eb6a8db2c107c06c0ca2bdf93c9b (not historical source runs):
+
+        templates/index.html          136 -> 136 jobs, 5,808 -> 5,810 weight
+        scripts/build_free_content.py 134 -> 134 jobs, 5,595 -> 5,597 weight
+        engine/prophet/plan_book.py   129 -> 129 jobs, 5,557 -> 5,559 weight
+
+    All three still require ten packs. Fund only the measured two units
+    beyond the existing index-template ceiling: 5,808 -> 5,810. Keep both
+    other weight limits, all job-count limits, every suite and selector,
+    and the ten-pack limit. These are deterministic planning weights, not
+    execution timings. The initial pytest failure is retained as evidence;
+    no runtime, scope, command, observed-duration override or semantic
+    release gate is changed. In particular, the independent Sector RIG
+    approval requirement remains active.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
