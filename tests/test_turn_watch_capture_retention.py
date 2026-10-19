@@ -275,3 +275,119 @@ def test_identical_digest_rerun_needs_no_correction_or_worktree_change(runners):
     before = state(second)
     assert retention.preserve_retained(second)["restored_count"] == 0
     assert state(second) == before
+
+
+@pytest.mark.parametrize("pending", ["capture", "unrelated"])
+@pytest.mark.parametrize("copy_failure", [False, True], ids=["normal-copy", "failed-copy"])
+def test_late_staged_preimage_survives_snapshot_failure(runners, monkeypatch, pending, copy_failure):
+    _, _, repo = overlap(runners)
+    late_path = CAPTURE if pending == "capture" else "unrelated-owner.txt"
+    foreign = b"independent writer staged after preflight\n"
+    real_git = retention._git
+    real_run = subprocess.run
+    count = 0
+    before = {}
+
+    def interleave(where, *args):
+        nonlocal count
+        out = real_git(where, *args)
+        if args == ("rev-parse", "--verify", "--end-of-options", "origin/main^{commit}"):
+            count += 1
+            if count == 2:
+                write(repo, late_path, foreign)
+                git(repo, "add", "--", late_path)
+                before["head"] = git(repo, "rev-parse", "HEAD").stdout
+                before["index"] = (repo / ".git/index").read_bytes()
+        return out
+
+    fault = '''cp() {
+  local arg
+  for arg in "$@"; do
+    case "$arg" in */oip-locked-index.*)
+      printf 'INJECTED: private index snapshot copy failure\\n' >&2
+      return 73 ;;
+    esac
+  done
+  command cp "$@"
+}
+'''
+    def fail_snapshot(argv, *args, **kwargs):
+        if copy_failure and isinstance(argv, list) and argv[:2] == ["bash", "-c"] and "oip_commit_locked_roots" in argv[2]:
+            argv = [*argv[:2], fault + argv[2], *argv[3:]]
+        return real_run(argv, *args, **kwargs)
+
+    monkeypatch.setattr(retention, "_git", interleave)
+    monkeypatch.setattr(subprocess, "run", fail_snapshot)
+    with pytest.raises((ValueError, subprocess.CalledProcessError)):
+        retention.preserve_retained(repo)
+    staged = git(repo, "show", ":" + late_path, check=False)
+    observed = {
+        "pending": pending, "copy_failure": copy_failure,
+        "injected_once": count == 2,
+        "head_preserved": git(repo, "rev-parse", "HEAD").stdout == before["head"],
+        "working_bytes_preserved": (repo / late_path).read_bytes() == foreign,
+        "index_bytes_preserved": (repo / ".git/index").read_bytes() == before["index"],
+        "staged_bytes_preserved": staged.returncode == 0 and staged.stdout == foreign,
+        "lock_left": (repo / ".git/index.lock").exists(),
+    }
+    assert observed["injected_once"] and observed["head_preserved"] and observed["working_bytes_preserved"]
+    assert observed["staged_bytes_preserved"], observed
+    assert observed["index_bytes_preserved"], observed
+
+
+def _inject_locked_snapshot_hook(monkeypatch, hook):
+    """Use the incumbent shell's existing race hook; never alter its source."""
+    real_run = subprocess.run
+
+    def inject(argv, *args, **kwargs):
+        if isinstance(argv, list) and argv[:2] == ["bash", "-c"] and "oip_commit_locked_roots" in argv[2]:
+            argv = [*argv[:2], hook + "\n" + argv[2], *argv[3:]]
+        return real_run(argv, *args, **kwargs)
+
+    monkeypatch.setattr(subprocess, "run", inject)
+
+
+@pytest.mark.parametrize("kind", ["modified", "different-inode", "symlink", "fifo"])
+def test_retention_failure_preserves_changed_owned_lock(runners, monkeypatch, kind):
+    _, _, repo = overlap(runners)
+    write(repo, "untracked-owner.txt", b"untracked owner bytes\n")
+    before = state(repo)
+    if kind == "modified":
+        mutation = "printf 'foreign lock bytes' > .git/index.lock"
+    else:
+        mutation = "mv .git/index.lock .git/index.lock.original\n"
+        mutation += {
+            "different-inode": ": > .git/index.lock",
+            "symlink": "ln -s ../untracked-owner.txt .git/index.lock",
+            "fifo": "mkfifo .git/index.lock",
+        }[kind]
+    hook = "oip_after_locked_tree_snapshot() {\n" + mutation + "\nreturn 74\n}\n"
+    _inject_locked_snapshot_hook(monkeypatch, hook)
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        retention.preserve_retained(repo)
+    assert exc.value.returncode == 74
+    assert state(repo) == before
+    lock = repo / ".git/index.lock"
+    if kind == "modified":
+        assert lock.read_bytes() == b"foreign lock bytes"
+    elif kind == "different-inode":
+        assert lock.is_file() and lock.stat().st_size == 0
+        assert lock.stat().st_ino != (repo / ".git/index.lock.original").stat().st_ino
+    elif kind == "symlink":
+        assert lock.is_symlink()
+    else:
+        assert lock.is_fifo()
+    assert (repo / "untracked-owner.txt").read_bytes() == b"untracked owner bytes\n"
+
+
+def test_working_writer_after_private_snapshot_survives_success(runners, monkeypatch):
+    _, _, repo = overlap(runners)
+    hook = "oip_after_locked_tree_snapshot() {\nprintf 'late working writer\\n' > '" + CAPTURE + "'\n}\n"
+    _inject_locked_snapshot_hook(monkeypatch, hook)
+    result = retention.preserve_retained(repo)
+    assert result["restored_count"] == 1
+    assert git(repo, "show", "HEAD:" + CAPTURE).stdout == FIRST
+    assert git(repo, "show", ":" + CAPTURE).stdout == FIRST
+    assert (repo / CAPTURE).read_bytes() == b"late working writer\n"
+    assert (repo / "data/other_engine_output.json").read_bytes() == b'{"retain_me":true}\n'
+    assert not (repo / ".git/index.lock").exists()

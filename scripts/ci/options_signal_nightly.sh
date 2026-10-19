@@ -646,9 +646,12 @@ oip_commit_locked_roots() {
         || true
       rc=1
     fi
-  elif [ "$qledger_rejected" -eq 1 ]; then
-    # No commit/ref/index installation occurred. Do not restore the parent
-    # index: that would discard the original staged candidate we rejected.
+  elif [ "$qledger_rejected" -eq 1 ] || [ -n "$capture_target" ]; then
+    # No ref/index installation occurred. A retention failure must also preserve
+    # the live preimage: a failed private-index copy can hide a late staged
+    # writer before the overlay has a chance to validate it. Never rebuild the
+    # real index here. Release only our still-empty lock; a filled/replaced lock
+    # remains a fail-closed recovery marker under the existing identity owner.
     if oip_release_owned_empty_lock "$lock_path" "$lock_identity"; then
       owned=0
     else
