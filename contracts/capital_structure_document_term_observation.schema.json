@@ -82,7 +82,7 @@
           ]
         },
         "term_type": {"type": "string", "enum": ["share_count", "principal_amount", "quantity", "price", "amount", "rate"]},
-        "scope": {"const": "registration_fee_table_row"}
+        "scope": {"enum": ["registration_fee_table_row", "registration_fee_table_total"]}
       }
     },
     "state": {
