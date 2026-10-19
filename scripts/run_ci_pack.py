@@ -3399,6 +3399,15 @@ def _prepare_provided_actions(
         )
 
     git_env = _trusted_git_environment(root)
+    # Recheck this exact repository/tree before fetching: a later consumer must
+    # not re-shallow history already established by an earlier consumer.
+    if _tested_tree_ancestry_ready(root, git_env, tested_tree_sha):
+        print(
+            "::notice title=run-ci-pack::exact tested-tree ancestry already "
+            "complete; retaining local history",
+            flush=True,
+        )
+        return
     exact_fetch_failed = False
     for index, depth in enumerate(_EXACT_TESTED_TREE_DEPTHS):
         try:
