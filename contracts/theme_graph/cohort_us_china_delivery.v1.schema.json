@@ -1,0 +1,443 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "theme_graph.cohort_us_china_delivery/v1",
+  "title": "US/China selection-cohort delivery contract v1",
+  "description": "One typed delivery state per market and finalized generation, composed over the incumbent W3C cohort readers (engine/theme_graph/selection_cohort_publication.read_finalized_cohort + selection_cohort_projection.project_selection_cohort_for_product). POSITIVE = a separately authorized finalized capture; DEGRADED_REFUSAL = honest typed unavailability with the incumbent reason codes verbatim; REFUSED = an unauthorized or unlawful capture, with no projection and no members. The viewer disclosure grant and Prophet-board graph-source enrollment are independent blocks: a disclosure grant never confers enrollment. Display-only: no rank, size, gate, score or magnitude field exists. Reader: engine/market_ontology/cohort_us_china.py. The projection object's shape is owned by contracts/theme_graph/selection_cohort_projection.v1.schema.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "market",
+    "incumbent_market",
+    "cohort_scope",
+    "reason_projection",
+    "delivery",
+    "reason_codes",
+    "capture",
+    "prophet_board_graph_source_enrollment",
+    "viewer_disclosure_grant",
+    "projection",
+    "n_selected",
+    "authority_ceiling",
+    "public_display_allowed",
+    "can_rank",
+    "can_size",
+    "can_gate",
+    "can_originate_signal",
+    "can_add_candidates",
+    "can_escalate",
+    "limitations"
+  ],
+  "properties": {
+    "schema": {
+      "const": "theme_graph.cohort_us_china_delivery/v1"
+    },
+    "market": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "minLength": 1
+        }
+      ]
+    },
+    "incumbent_market": {
+      "enum": [
+        null,
+        "us_today",
+        "cn_featured"
+      ]
+    },
+    "cohort_scope": {
+      "enum": [
+        null,
+        "US_COMPLETE_NATIVE_FEATURED/v1",
+        "CN_COMPLETE_SERVED_WIDE_BUY/v1"
+      ]
+    },
+    "reason_projection": {
+      "enum": [
+        null,
+        "native-owner-reasons/v1",
+        "cn-served-reasons/v1"
+      ]
+    },
+    "delivery": {
+      "enum": [
+        "POSITIVE",
+        "DEGRADED_REFUSAL",
+        "REFUSED"
+      ]
+    },
+    "reason_codes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "capture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "authorized",
+        "receipt_sha256",
+        "generation_id"
+      ],
+      "properties": {
+        "purpose": {
+          "const": "selection_cohort_internal_capture"
+        },
+        "authorized": {
+          "type": "boolean"
+        },
+        "receipt_sha256": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          ]
+        },
+        "generation_id": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "minLength": 1
+            }
+          ]
+        }
+      }
+    },
+    "prophet_board_graph_source_enrollment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "basis",
+        "derived_from_disclosure_grant"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "ENROLLED_FOR_THIS_READ",
+            "NOT_ENROLLED"
+          ]
+        },
+        "basis": {
+          "enum": [
+            null,
+            "incumbent_capture_gate:selection_cohort_internal_capture"
+          ]
+        },
+        "derived_from_disclosure_grant": {
+          "const": false
+        }
+      }
+    },
+    "viewer_disclosure_grant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "purpose",
+        "audience",
+        "reason",
+        "confers_enrollment"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "NOT_EVALUATED",
+            "GRANTED",
+            "NOT_GRANTED"
+          ]
+        },
+        "purpose": {
+          "const": "private_company_intelligence_context"
+        },
+        "audience": {
+          "const": "company_intelligence_entitled"
+        },
+        "reason": {
+          "enum": [
+            null,
+            "PURPOSE_MISMATCH",
+            "AUDIENCE_MISMATCH",
+            "NOT_GRANTED",
+            "MALFORMED"
+          ]
+        },
+        "confers_enrollment": {
+          "const": false
+        }
+      }
+    },
+    "projection": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "n_selected": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "authority_ceiling": {
+      "const": "research_internal_only"
+    },
+    "public_display_allowed": {
+      "const": false
+    },
+    "can_rank": {
+      "const": false
+    },
+    "can_size": {
+      "const": false
+    },
+    "can_gate": {
+      "const": false
+    },
+    "can_originate_signal": {
+      "const": false
+    },
+    "can_add_candidates": {
+      "const": false
+    },
+    "can_escalate": {
+      "const": false
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "delivery": {
+            "const": "POSITIVE"
+          }
+        },
+        "required": [
+          "delivery"
+        ]
+      },
+      "then": {
+        "properties": {
+          "reason_codes": {
+            "maxItems": 0
+          },
+          "capture": {
+            "properties": {
+              "authorized": {
+                "const": true
+              },
+              "receipt_sha256": {
+                "type": "string"
+              },
+              "generation_id": {
+                "type": "string"
+              }
+            }
+          },
+          "prophet_board_graph_source_enrollment": {
+            "properties": {
+              "state": {
+                "const": "ENROLLED_FOR_THIS_READ"
+              },
+              "basis": {
+                "type": "string"
+              }
+            }
+          },
+          "projection": {
+            "type": "object"
+          },
+          "incumbent_market": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "delivery": {
+            "const": "DEGRADED_REFUSAL"
+          }
+        },
+        "required": [
+          "delivery"
+        ]
+      },
+      "then": {
+        "properties": {
+          "reason_codes": {
+            "minItems": 1
+          },
+          "n_selected": {
+            "const": 0
+          },
+          "capture": {
+            "properties": {
+              "authorized": {
+                "const": false
+              },
+              "receipt_sha256": {
+                "type": "null"
+              },
+              "generation_id": {
+                "type": "null"
+              }
+            }
+          },
+          "prophet_board_graph_source_enrollment": {
+            "properties": {
+              "state": {
+                "const": "NOT_ENROLLED"
+              },
+              "basis": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "delivery": {
+            "const": "REFUSED"
+          }
+        },
+        "required": [
+          "delivery"
+        ]
+      },
+      "then": {
+        "properties": {
+          "reason_codes": {
+            "minItems": 1
+          },
+          "n_selected": {
+            "const": 0
+          },
+          "projection": {
+            "type": "null"
+          },
+          "capture": {
+            "properties": {
+              "authorized": {
+                "const": false
+              },
+              "receipt_sha256": {
+                "type": "null"
+              },
+              "generation_id": {
+                "type": "null"
+              }
+            }
+          },
+          "prophet_board_graph_source_enrollment": {
+            "properties": {
+              "state": {
+                "const": "NOT_ENROLLED"
+              },
+              "basis": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "viewer_disclosure_grant": {
+            "properties": {
+              "state": {
+                "const": "GRANTED"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "viewer_disclosure_grant": {
+            "properties": {
+              "reason": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "viewer_disclosure_grant": {
+            "properties": {
+              "state": {
+                "const": "NOT_EVALUATED"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "viewer_disclosure_grant": {
+            "properties": {
+              "reason": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "viewer_disclosure_grant": {
+            "properties": {
+              "state": {
+                "const": "NOT_GRANTED"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "viewer_disclosure_grant": {
+            "properties": {
+              "reason": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

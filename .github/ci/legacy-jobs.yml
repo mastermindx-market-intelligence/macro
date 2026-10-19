@@ -664,8 +664,10 @@ jobs:
       - "engine/theme_context.py"
       - "engine/theme_crowding.py"
       - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/economic_context.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/identity_resolution.py"
+      - "engine/theme_graph/issuer_economic_context.py"
       - "engine/theme_graph/ontology.py"
       - "engine/theme_graph/probation.py"
       - "engine/theme_graph/rights.py"
@@ -2395,8 +2397,10 @@ jobs:
       - "engine/theme_context.py"
       - "engine/theme_crowding.py"
       - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/economic_context.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/identity_resolution.py"
+      - "engine/theme_graph/issuer_economic_context.py"
       - "engine/theme_graph/ontology.py"
       - "engine/theme_graph/probation.py"
       - "engine/theme_graph/rights.py"
@@ -3219,8 +3223,10 @@ jobs:
       - "engine/theme_context.py"
       - "engine/theme_crowding.py"
       - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/economic_context.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/identity_resolution.py"
+      - "engine/theme_graph/issuer_economic_context.py"
       - "engine/theme_graph/ontology.py"
       - "engine/theme_graph/probation.py"
       - "engine/theme_graph/rights.py"
@@ -8491,6 +8497,8 @@ jobs:
       - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
+      - engine/theme_graph/economic_context.py
+      - engine/theme_graph/issuer_economic_context.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
@@ -17274,10 +17282,15 @@ jobs:
       # suite is wired here in the SAME commit per the W1 contract-delta lesson
       # (a new test file without a path gate is an unwired suite).
       - "engine/global_liquidity_outlook.py"
+      # GLT T10 (W2, 2026-10-19): the measurement-only regional scenario map
+      # imports the accounting and T08 outlook modules above; its suite is wired
+      # here in the SAME commit (a new test file without a path gate is an unwired suite).
+      - "engine/global_liquidity_regional_scenarios.py"
       - "engine/global_liquidity_transmission.py"
       - "tests/test_global_liquidity_accounting.py"
       - "tests/test_global_liquidity_knowledge_time.py"
       - "tests/test_global_liquidity_outlook.py"
+      - "tests/test_global_liquidity_regional_scenarios.py"
       - "tests/test_global_liquidity_sources_v2.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
@@ -17288,8 +17301,8 @@ jobs:
           python-version: "3.12"
       - name: install GLT contract test dependencies
         run: pip install pytest pandas numpy pyyaml
-      - name: global liquidity T03–T05 + T08 contracts — source manifest, knowledge time, monetary accounting, component outlook
-        run: python -m pytest tests/test_global_liquidity_accounting.py tests/test_global_liquidity_knowledge_time.py tests/test_global_liquidity_sources_v2.py tests/test_global_liquidity_outlook.py -q
+      - name: global liquidity T03–T05 + T08 + T10 contracts — source manifest, knowledge time, monetary accounting, component outlook, regional scenario map
+        run: python -m pytest tests/test_global_liquidity_accounting.py tests/test_global_liquidity_knowledge_time.py tests/test_global_liquidity_sources_v2.py tests/test_global_liquidity_outlook.py tests/test_global_liquidity_regional_scenarios.py -q
 
   ric-d0-fed-path-provenance:
     if: ${{ false }}
@@ -20242,7 +20255,7 @@ jobs:
       - name: node must be on PATH — dossier JS contract skips without it (vacuous green)
         run: node --version
       - name: collect beacon throttle + growth-event registry + tape per-IP cap + generic billing/auth errors + dossier quote honesty
-        run: python -m pytest tests/test_collect_throttle.py tests/test_growth_events_registry.py tests/test_tape_relay.py tests/test_billing_subscribe.py tests/test_company_intelligence_api.py tests/test_company_disclosures_api.py tests/test_company_context_runtime.py tests/test_company_intelligence_dossier_js.py tests/test_dossier_quote_api.py tests/test_dossier_live_quote_surface.py -q
+        run: python -m pytest tests/test_collect_throttle.py tests/test_growth_events_registry.py tests/test_tape_relay.py tests/test_billing_subscribe.py tests/test_company_intelligence_api.py tests/test_company_disclosures_api.py tests/test_gmi_issuer_economic_context_api.py tests/test_company_context_runtime.py tests/test_company_intelligence_dossier_js.py tests/test_dossier_quote_api.py tests/test_dossier_live_quote_surface.py -q
       # WS:COMMERCIAL-ACTIVATION CA1A (2026-09-04): the event-spine acceptance
       # battery — registry-as-whitelist derivation (W2-1), envelope-v1 eid/schema/
       # meta validation and replay identity through the mounted /api/collect route,
@@ -20588,6 +20601,8 @@ jobs:
       - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
+      - engine/theme_graph/economic_context.py
+      - engine/theme_graph/issuer_economic_context.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
@@ -22020,6 +22035,8 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_market_ontology_exposure_map.py -q
       - name: market ontology — theme-tier guard (category and micro_theme nodes never compose as themes)
         run: TZ=UTC python -m pytest tests/test_theme_graph_tier_guard.py -q
+      - name: market ontology — US/China cohort delivery contract (positive vs degraded vs refused, grant != enrollment)
+        run: TZ=UTC python -m pytest tests/test_cohort_us_china_contract.py -q
       - name: CN limit-rule registry — schema, continuity, parity vs china_microstructure
         run: TZ=UTC python -m pytest tests/test_cn_limit_rules.py -q
       # GMI W2 — the exposure-decomposition probe's pure math. The probe script itself is a
@@ -28793,6 +28810,8 @@ jobs:
       - engine/oracle/__init__.py
       - engine/press/__init__.py
       - engine/seasonality/__init__.py
+      - engine/theme_graph/economic_context.py
+      - engine/theme_graph/issuer_economic_context.py
       # R15: the existing phase1 tests now reach both native 30m pivot families.
       - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/first_green_reversal_descriptor.py"
@@ -31611,6 +31630,8 @@ jobs:
       - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
+      - engine/theme_graph/economic_context.py
+      - engine/theme_graph/issuer_economic_context.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
@@ -33959,6 +33980,11 @@ jobs:
     paths:
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
+      - engine/theme_graph/issuer_economic_context.py
+      - tests/test_gmi_issuer_economic_context.py
+      - engine/theme_graph/__init__.py
+      - engine/theme_graph/economic_context.py
+      - tests/test_gmi_native_economic_context.py
       - collectors/__init__.py
       - collectors/edgar_forensics.py
       - collectors/fundamental_forensics_acquisition.py
@@ -34066,7 +34092,7 @@ jobs:
       - name: install candidate inspection test dependencies
         run: pip install pytest pyyaml requests
       - name: File, pinned-source, observation and native disclosure contracts
-        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py tests/test_company_issuer_disclosures.py tests/test_company_disclosure_owner.py tests/test_company_disclosure_identity_continuity.py tests/test_company_disclosure_preflight.py -q
+        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py tests/test_company_issuer_disclosures.py tests/test_company_disclosure_owner.py tests/test_company_disclosure_identity_continuity.py tests/test_company_disclosure_preflight.py tests/test_gmi_native_economic_context.py tests/test_gmi_issuer_economic_context.py -q
 
   gmi-source-diagnostic-kernel:
     # WP02 deterministic artificial research model and structural-only refusals.
