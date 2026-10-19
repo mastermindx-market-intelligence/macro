@@ -1021,7 +1021,7 @@ def test_cold_tracked_source_export_import_is_repeatable_without_bytecode(tmp_pa
     assert outputs == [outputs[0]] * 3
     assert outputs[0] == (
         "298 939fb266ac7b94483ba08b54153fbd5f45c49e261cffaaaf6bd2a80eb0fade7a "
-        "c9885c435ed0dab8dc1b742efae1ff7d25f131e485275391723fde5dae9fd0fe "
+        "35ed9840daf86793736bf62c50a574e2c9005f3a1bd4bd8e3d7cf70c27e24df5 "
         "7adefd79136224d8c0ca0c84cd4ef41bd206690f9ec28622cdf95f682c811b28"
     )
     assert not list(export_root.rglob("__pycache__"))
@@ -1032,12 +1032,12 @@ def test_released_authority_policy_has_independent_golden_closure():
     manifest, manifest_sha256, implementation_sha256 = document_terms._semantic_closure(
         policy.entrypoints,
     )
-    assert len(manifest) == 432
+    assert len(manifest) == 468
     assert manifest_sha256 == (
-        "ce4537defd873c1f1406ea8b4e3709ef0e33c8e034c9d6c2b632b3af546c0425"
+        "5f455b19c38aad2f1460a2c4122548176e4bf2f6192a241ef29c01493ccd95b7"
     )
     assert implementation_sha256 == (
-        "c9885c435ed0dab8dc1b742efae1ff7d25f131e485275391723fde5dae9fd0fe"
+        "35ed9840daf86793736bf62c50a574e2c9005f3a1bd4bd8e3d7cf70c27e24df5"
     )
     assert len(manifest) == policy.dependency_count
     assert manifest_sha256 == policy.dependency_manifest_sha256
@@ -2665,3 +2665,433 @@ def test_ex107_total_row_split_currency_cells_stay_inside_the_header_span():
     }
     assert totals[0]["reported"]["raw_text"] == "2,750,000.00"
     assert totals[0]["reported"]["value"] == "2750000"
+
+
+# ---------------------------------------------------------------------------
+# Durable parse receipts: a parser version bump must re-read each filing once,
+# never every night. Receipts are operational evidence of a completed parse,
+# never facts; the observation ledger stays append-only and untouched by them.
+# ---------------------------------------------------------------------------
+
+_PARSE_RECEIPT_SCHEMA = json.loads(
+    (
+        ROOT
+        / "contracts/capital_structure_document_term_parse_receipt.schema.json"
+    ).read_text()
+)
+
+
+def _receipt_identity(
+    source_manifest_id: str, content_sha256: str, parser_version: str,
+) -> str:
+    return sha256(json.dumps(
+        [source_manifest_id, content_sha256, parser_version],
+        sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+    ).encode("utf-8")).hexdigest()
+
+
+def _validate_parse_receipts(receipts: list[dict]) -> None:
+    validator = Draft202012Validator(
+        _PARSE_RECEIPT_SCHEMA, format_checker=FormatChecker(),
+    )
+    for receipt in receipts:
+        errors = list(validator.iter_errors(receipt))
+        assert not errors, errors[0].message
+
+
+def test_active_parse_receipt_ends_the_every_night_reread_of_an_unchanged_filing():
+    raw = FIXTURE.read_bytes()
+    manifest = _manifest(raw)
+    _prior_version, lane, capability = _fixture_prior_parser_lane()
+    # Night 0: the released 1.1.0 parser produced this filing's whole history.
+    night0 = document_terms._compile_document_term_records_test_lane(
+        [manifest], source_reader=_reader(raw), generated_at="2026-08-03T00:00:00Z",
+        parser_lane=lane, parser_version="capital-structure-document-terms/1.1.0",
+        capability=capability,
+    )["observations"]
+
+    night1_reads: list[str] = []
+
+    def night1_reader(row):
+        night1_reads.append(str(row["manifest_id"]))
+        return raw
+
+    night1 = document_terms._compile_document_term_records_test_lane(
+        [manifest], source_reader=night1_reader, existing_observations=night0,
+        generated_at="2026-08-04T00:00:00Z",
+        parser_lane=lane, parser_version="capital-structure-document-terms/1.2.0",
+        capability=capability,
+    )
+    # The defect: the active parse leaves every row semantically unchanged, yet
+    # the stale 1.1.0 rows keep the manifest invalidated and re-read nightly.
+    assert night1_reads == [manifest["manifest_id"]]
+    assert night1["counts"]["parser_version_invalidations"] == 1
+    assert night1["counts"]["new_observations"] == 0
+    assert night1["counts"]["unchanged_observations"] == 5
+    assert night1["counts"]["parse_receipts"] == 1
+    assert night1["counts"]["new_parse_receipts"] == 1
+    assert night1["counts"]["receipt_exempt_manifests"] == 0
+    receipts = night1["receipts"]
+    assert len(receipts) == 1
+    _validate_parse_receipts(receipts)
+    receipt = receipts[0]
+    assert receipt["schema_version"] == (
+        "capital_structure.document_term_parse_receipt.v1"
+    )
+    assert receipt["source_manifest_id"] == manifest["manifest_id"]
+    assert receipt["accession"] == manifest["filing"]["accession"]
+    assert receipt["content_sha256"] == manifest["document"]["content_sha256"]
+    assert receipt["parser_version"] == "capital-structure-document-terms/1.2.0"
+    assert receipt["parser_implementation_sha256"] == (
+        document_terms._registered_parser(
+            "capital-structure-document-terms/1.2.0",
+        ).implementation_sha256
+    )
+    assert receipt["candidate_count"] == 5
+    assert receipt["candidate_logical_ids_sha256"] == sha256(json.dumps(
+        sorted(row["logical_observation_id"] for row in night0),
+        sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+    ).encode("utf-8")).hexdigest()
+    assert receipt["generated_at"] == "2026-08-04T00:00:00Z"
+    assert receipt["receipt_id"] == _receipt_identity(
+        manifest["manifest_id"],
+        manifest["document"]["content_sha256"],
+        "capital-structure-document-terms/1.2.0",
+    )
+
+    night2_reads: list[str] = []
+
+    def night2_reader(row):
+        night2_reads.append(str(row["manifest_id"]))
+        return raw
+
+    night2 = document_terms._compile_document_term_records_test_lane(
+        [manifest], source_reader=night2_reader,
+        existing_observations=night1["observations"],
+        generated_at="2026-08-05T00:00:00Z",
+        parser_lane=lane, parser_version="capital-structure-document-terms/1.2.0",
+        capability=capability, parse_receipts=receipts,
+    )
+    # Night 2 with the durable receipt: zero source reads, zero invalidations.
+    assert night2_reads == []
+    assert night2["counts"]["source_reads"] == 0
+    assert night2["counts"]["parser_version_invalidations"] == 0
+    assert night2["counts"]["receipt_exempt_manifests"] == 1
+    assert night2["counts"]["parse_receipts"] == 1
+    assert night2["counts"]["new_parse_receipts"] == 0
+    assert night2["observations"] == night1["observations"]
+    assert night2["receipts"] == receipts
+
+    # The regression this fix removes: without the receipt, night 2 re-reads.
+    regression_reads: list[str] = []
+
+    def regression_reader(row):
+        regression_reads.append(str(row["manifest_id"]))
+        return raw
+
+    regression = document_terms._compile_document_term_records_test_lane(
+        [manifest], source_reader=regression_reader,
+        existing_observations=night1["observations"],
+        generated_at="2026-08-05T00:00:00Z",
+        parser_lane=lane, parser_version="capital-structure-document-terms/1.2.0",
+        capability=capability,
+    )
+    assert regression_reads == [manifest["manifest_id"]]
+    assert regression["counts"]["parser_version_invalidations"] == 1
+    assert regression["counts"]["receipt_exempt_manifests"] == 0
+
+
+def test_parse_receipt_never_exempts_a_filing_without_prior_rows():
+    raw = FIXTURE.read_bytes()
+    manifest = _manifest(raw)
+    _prior_version, lane, capability = _fixture_prior_parser_lane()
+    # Night 0: a stale 1.1.0 history for the first filing only.
+    night0 = document_terms._compile_document_term_records_test_lane(
+        [manifest], source_reader=_reader(raw), generated_at="2026-08-03T00:00:00Z",
+        parser_lane=lane, parser_version="capital-structure-document-terms/1.1.0",
+        capability=capability,
+    )["observations"]
+    night1 = document_terms._compile_document_term_records_test_lane(
+        [manifest], source_reader=_reader(raw), existing_observations=night0,
+        generated_at="2026-08-04T00:00:00Z",
+        parser_lane=lane, parser_version="capital-structure-document-terms/1.2.0",
+        capability=capability,
+    )
+    receipts = night1["receipts"]
+
+    new_raw = raw.replace(b"1,250,000", b"1,260,000")
+    new_manifest = _manifest(new_raw)
+    new_manifest["document"]["document_version"] = 2
+    new_manifest["retrieval"]["retrieved_at"] = "2026-08-04T12:00:00Z"
+    new_manifest["retrieval"]["first_seen_at"] = "2026-08-04T12:00:00Z"
+    new_manifest["manifest_id"] = manifest_id_for(new_manifest)
+    payloads = {
+        manifest["manifest_id"]: raw,
+        new_manifest["manifest_id"]: new_raw,
+    }
+
+    reads: list[str] = []
+
+    def reader(row):
+        manifest_id = str(row["manifest_id"])
+        reads.append(manifest_id)
+        return payloads[manifest_id]
+
+    result = document_terms._compile_document_term_records_test_lane(
+        [manifest, new_manifest], source_reader=reader,
+        existing_observations=night1["observations"],
+        generated_at="2026-08-05T00:00:00Z",
+        parser_lane=lane, parser_version="capital-structure-document-terms/1.2.0",
+        capability=capability, parse_receipts=receipts,
+    )
+    # The receipt exempts the already-parsed filing, but the brand-new filing
+    # with no prior rows is still read.
+    assert reads == [new_manifest["manifest_id"]]
+    assert result["counts"]["receipt_exempt_manifests"] == 1
+    assert result["counts"]["source_reads"] == 1
+    assert result["counts"]["parse_receipts"] == 2
+    assert result["counts"]["new_parse_receipts"] == 1
+    _validate_parse_receipts(result["receipts"])
+    kept = next(
+        item for item in result["receipts"]
+        if item["source_manifest_id"] == manifest["manifest_id"]
+    )
+    assert kept == receipts[0]
+    new_receipt = next(
+        item for item in result["receipts"]
+        if item["source_manifest_id"] == new_manifest["manifest_id"]
+    )
+    assert new_receipt["candidate_count"] == 5
+    assert new_receipt["parser_version"] == "capital-structure-document-terms/1.2.0"
+    assert new_receipt["generated_at"] == "2026-08-05T00:00:00Z"
+
+
+def test_rebuild_with_the_supplied_receipt_reproduces_it_and_keeps_its_generated_at():
+    raw = FIXTURE.read_bytes()
+    manifest = _manifest(raw)
+    night1 = compile_document_term_records(
+        [manifest], source_reader=_reader(raw), generated_at="2026-08-04T00:00:00Z",
+    )
+    receipt = night1["receipts"][0]
+    result = compile_document_term_records(
+        [manifest], source_reader=_reader(raw),
+        existing_observations=night1["observations"],
+        generated_at="2026-08-05T00:00:00Z", rebuild=True,
+        parse_receipts=night1["receipts"],
+    )
+    assert result["counts"]["source_reads"] == 1
+    assert result["new_observations"] == []
+    assert result["counts"]["parse_receipts"] == 1
+    assert result["counts"]["new_parse_receipts"] == 0
+    assert result["receipts"][0] == receipt
+    assert result["receipts"][0]["receipt_id"] == receipt["receipt_id"]
+    assert result["receipts"][0]["generated_at"] == "2026-08-04T00:00:00Z"
+
+
+def test_supplied_parse_receipts_fail_closed_before_any_source_read():
+    raw = FIXTURE.read_bytes()
+    manifest = _manifest(raw)
+    active_version = document_terms.PARSER_VERSION
+    night1 = compile_document_term_records(
+        [manifest], source_reader=_reader(raw), generated_at="2026-08-04T00:00:00Z",
+    )
+    valid = night1["receipts"][0]
+    content = manifest["document"]["content_sha256"]
+
+    def compile_with(receipts, *, rebuild=False):
+        reads: list[str] = []
+
+        def reader(row):
+            reads.append(str(row["manifest_id"]))
+            return raw
+
+        error = None
+        try:
+            compile_document_term_records(
+                [manifest], source_reader=reader,
+                existing_observations=night1["observations"],
+                generated_at="2026-08-05T00:00:00Z", rebuild=rebuild,
+                parse_receipts=receipts,
+            )
+        except ValueError as exc:
+            error = exc
+        return reads, error
+
+    unreleased = dict(valid)
+    unreleased["parser_version"] = "forged-document-terms/9.9.9"
+    unreleased["receipt_id"] = _receipt_identity(
+        valid["source_manifest_id"], content, unreleased["parser_version"],
+    )
+    reads, error = compile_with([unreleased])
+    assert error is not None and "parser_version is not registered" in str(error)
+    assert reads == []
+
+    wrong_content = dict(valid)
+    wrong_content["content_sha256"] = "b" * 64
+    wrong_content["receipt_id"] = _receipt_identity(
+        valid["source_manifest_id"], "b" * 64, active_version,
+    )
+    reads, error = compile_with([wrong_content])
+    assert error is not None and "content_sha256" in str(error)
+    assert reads == []
+
+    unknown_manifest = dict(valid)
+    unknown_manifest["source_manifest_id"] = "manifest:cs:" + "e" * 64
+    unknown_manifest["receipt_id"] = _receipt_identity(
+        unknown_manifest["source_manifest_id"], content, active_version,
+    )
+    reads, error = compile_with([unknown_manifest])
+    assert error is not None and "source manifest is absent" in str(error)
+    assert reads == []
+
+    tampered_id = dict(valid)
+    tampered_id["receipt_id"] = "f" * 64
+    reads, error = compile_with([tampered_id])
+    assert error is not None and "recomputed receipt_id" in str(error)
+    assert reads == []
+
+    wrong_impl = dict(valid)
+    wrong_impl["parser_implementation_sha256"] = "a" * 64
+    reads, error = compile_with([wrong_impl])
+    assert error is not None and "implementation digest mismatch" in str(error)
+    assert reads == []
+
+    altered = dict(valid)
+    altered["candidate_semantic_sha256"] = "c" * 64
+    reads, error = compile_with([altered], rebuild=True)
+    assert error is not None
+    assert "document-term parse receipt is not reproducible" in str(error)
+    assert manifest["manifest_id"] in str(error)
+    assert reads == [manifest["manifest_id"]]
+
+
+def test_no_longer_emitted_prior_logical_ids_are_counted_as_orphans_and_untouched():
+    raw = EX107_FIXTURES[0].read_bytes()
+    manifest = _ex107_manifest(raw)
+    _prior_version, lane, capability = _fixture_prior_parser_lane()
+    # The released 1.1.0 parser refuses this exhibit into document-level slots
+    # that the active 1.2.0 parse no longer emits.
+    night0 = document_terms._compile_document_term_records_test_lane(
+        [manifest], source_reader=_reader(raw), generated_at="2026-08-03T00:00:00Z",
+        parser_lane=lane, parser_version="capital-structure-document-terms/1.1.0",
+        capability=capability,
+    )["observations"]
+    prior_logicals = {row["logical_observation_id"] for row in night0}
+
+    reads: list[str] = []
+
+    def reader(row):
+        reads.append(str(row["manifest_id"]))
+        return raw
+
+    result = document_terms._compile_document_term_records_test_lane(
+        [manifest], source_reader=reader, existing_observations=night0,
+        generated_at="2026-08-04T00:00:00Z",
+        parser_lane=lane, parser_version="capital-structure-document-terms/1.2.0",
+        capability=capability,
+    )
+    assert reads == [manifest["manifest_id"]]
+    assert result["counts"]["orphaned_prior_observations"] == len(night0)
+    examples = result["orphaned_examples"]
+    assert {item["logical_observation_id"] for item in examples} == prior_logicals
+    assert all(
+        item["source_manifest_id"] == manifest["manifest_id"] for item in examples
+    )
+    # The orphaned 1.1.0 rows are unchanged in the output, never retracted.
+    assert result["observations"][: len(night0)] == night0
+    for row in result["observations"][: len(night0)]:
+        assert row["extraction"]["parser_version"] == (
+            "capital-structure-document-terms/1.1.0"
+        )
+    # The active parse emits none of those slots; every candidate is a new row.
+    new_logicals = {
+        row["logical_observation_id"] for row in result["new_observations"]
+    }
+    assert prior_logicals.isdisjoint(new_logicals)
+    assert result["counts"]["new_observations"] == len(result["new_observations"])
+    receipt = result["new_receipts"][0]
+    assert receipt["candidate_count"] == len(result["new_observations"])
+    assert receipt["candidate_logical_ids_sha256"] == sha256(json.dumps(
+        sorted(new_logicals), sort_keys=True, separators=(",", ":"),
+        ensure_ascii=False,
+    ).encode("utf-8")).hexdigest()
+
+
+def test_disk_compile_writes_durable_parse_receipts_and_a_corrupt_line_fails_closed(tmp_path):
+    raw = FIXTURE.read_bytes()
+    manifest = _manifest(raw)
+    _write_ledger(source_ledger_path(tmp_path), [manifest])
+    # Seed the committed defect shape: a 1.1.0-parsed ledger that the active
+    # parse leaves semantically unchanged, so only a receipt can stop the
+    # nightly re-read.
+    _prior_version, lane, capability = _fixture_prior_parser_lane()
+    seeded = document_terms._compile_document_term_records_test_lane(
+        [manifest], source_reader=_reader(raw), generated_at="2026-08-03T00:00:00Z",
+        parser_lane=lane, parser_version="capital-structure-document-terms/1.1.0",
+        capability=capability,
+    )["observations"]
+    compile_capital_structure_document_terms._atomic_write(
+        compile_capital_structure_document_terms._to_frame(seeded),
+        tmp_path / "document_term_observations.parquet",
+    )
+
+    class CountingStore:
+        store_id = "r2_shared"
+
+        def __init__(self):
+            self.reads = 0
+
+        def get_verified(self, object_key: str, expected_sha256: str) -> bytes | None:
+            self.reads += 1
+            return raw
+
+    class NoReadStore:
+        store_id = "r2_shared"
+
+        def get_verified(self, object_key: str, expected_sha256: str) -> bytes | None:
+            raise AssertionError(
+                "a receipt-exempt manifest must not read retained source bytes"
+            )
+
+    first = compile_from_disk(
+        root=tmp_path, generated_at="2026-08-04T00:00:00Z", source_store=CountingStore(),
+    )
+    assert first["source_reads"] == 1
+    assert first["parser_version_invalidations"] == 1
+    assert first["new_observations"] == 0
+    assert first["new_parse_receipts"] == 1
+    receipts_path = tmp_path / "document_term_parse_receipts.jsonl"
+    first_receipts_text = receipts_path.read_text(encoding="utf-8")
+    assert first_receipts_text.endswith("\n")
+    lines = first_receipts_text.splitlines()
+    assert len(lines) == 1
+    receipt = json.loads(lines[0])
+    assert lines[0] == json.dumps(
+        receipt, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+    )
+    assert receipt["parser_version"] == document_terms.PARSER_VERSION
+    ledger_path = tmp_path / "document_term_observations.parquet"
+    first_ledger_bytes = ledger_path.read_bytes()
+
+    second = compile_from_disk(
+        root=tmp_path, generated_at="2026-08-05T00:00:00Z", source_store=NoReadStore(),
+    )
+    assert second["source_reads"] == 0
+    assert second["receipt_exempt_manifests"] == 1
+    assert second["new_parse_receipts"] == 0
+    assert receipts_path.read_text(encoding="utf-8") == first_receipts_text
+    assert ledger_path.read_bytes() == first_ledger_bytes
+
+    tampered = dict(receipt)
+    tampered["receipt_id"] = "f" * 64
+    corrupted_text = json.dumps(
+        tampered, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+    ) + "\n"
+    receipts_path.write_text(corrupted_text, encoding="utf-8")
+    with pytest.raises(ValueError, match="recomputed receipt_id"):
+        compile_from_disk(
+            root=tmp_path, generated_at="2026-08-05T00:00:00Z",
+            source_store=NoReadStore(),
+        )
+    assert receipts_path.read_text(encoding="utf-8") == corrupted_text
+    assert ledger_path.read_bytes() == first_ledger_bytes

@@ -18532,6 +18532,32 @@ artifacts:
       sizing, or Prophet authority. The first later consumer must be registered here before
       using this artifact.
 
+  capital-structure-document-term-parse-receipts:
+    path: data/capital_structure/document_term_parse_receipts.jsonl
+    format: jsonl
+    producer: scripts/compile_capital_structure_document_terms.py
+    known_extra_writers: []
+    owner_program: capital-structure-intelligence
+    cadence: collect
+    storage: git
+    asof_field: generated_at
+    freshness_sla_hours: 30
+    schema: capital_structure.document_term_parse_receipt.v1
+    tier: infrastructure
+    horizon_role: context
+    weights: none
+    scored_path_surfaces: []
+    consumers: []
+    external_consumers: []
+    notes: >
+      Operational parse receipts, not facts. Each receipt records that one
+      manifest/content/parser-version triple was already materialized by a completed
+      document-term parse, so a parser version bump re-reads each filing once instead of
+      re-reading every unchanged filing every night. Receipts only exempt an already-parsed
+      filing from re-reading; they never amend, retract, or re-version the append-only
+      observation ledger and grant no capacity, signal, sizing, or Prophet authority. The
+      first later consumer must be registered here before using this artifact.
+
   capital-structure-event-versions:
     path: data/capital_structure/event_versions.parquet
     format: parquet
