@@ -37,6 +37,25 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      # F11 composition: exact newly reached import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/projection.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_vault/comparison.py"
+      - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/fulltext_index.py"
+      - "engine/research_vault/fulltext_store.py"
+      - "engine/research_vault/producer_generation.py"
+      - "engine/research_vault/qualified_reader.py"
+      - "engine/research_vault/read_adapters.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_runtime.py"
+      - "engine/research_vault/read_service.py"
+      - "engine/research_vault/source_layout.py"
+      - "scripts/check_research_vault_source_freshness.py"
       - "app/__init__.py"
       - "app/account_actions.py"
       - "app/account_prefs.py"
@@ -1780,6 +1799,25 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      # F11 composition: exact newly reached import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/projection.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_vault/comparison.py"
+      - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/fulltext_index.py"
+      - "engine/research_vault/fulltext_store.py"
+      - "engine/research_vault/producer_generation.py"
+      - "engine/research_vault/qualified_reader.py"
+      - "engine/research_vault/read_adapters.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_runtime.py"
+      - "engine/research_vault/read_service.py"
+      - "engine/research_vault/source_layout.py"
+      - "scripts/check_research_vault_source_freshness.py"
       - "tests/test_c19_wp32_correction.py"
       - "tests/test_c19_wp32_denial_cache.py"
       - "tests/test_c19_wp19_integrated_answer_entitlement_pins.py"
@@ -2586,6 +2624,25 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      # F11 composition: exact newly reached import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/projection.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_vault/comparison.py"
+      - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/fulltext_index.py"
+      - "engine/research_vault/fulltext_store.py"
+      - "engine/research_vault/producer_generation.py"
+      - "engine/research_vault/qualified_reader.py"
+      - "engine/research_vault/read_adapters.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_runtime.py"
+      - "engine/research_vault/read_service.py"
+      - "engine/research_vault/source_layout.py"
+      - "scripts/check_research_vault_source_freshness.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - "tests/test_c19_wp22_dhi_traversal.py"
@@ -8500,6 +8557,11 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      # F11 composition: exact newly reached import closure.
+      - "engine/research_vault/fulltext_index.py"
+      - "engine/research_vault/producer_generation.py"
+      - "engine/research_vault/qualified_reader.py"
+      - "engine/research_vault/source_layout.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - "engine/government_revenue/program_dossier.py"
@@ -17747,6 +17809,9 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve all 36 suites while removing unrelated opaque fallback fanout.
     paths:
+      # F11 composition: exact newly reached import closure.
+      - "engine/research_vault/comparison.py"
+      - "engine/research_vault/qualified_reader.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
       - "collectors/base.py"
@@ -21041,6 +21106,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # F11 composition: exact newly reached import closure.
+      - "engine/research_vault/fulltext_index.py"
+      - "engine/research_vault/producer_generation.py"
+      - "engine/research_vault/qualified_reader.py"
+      - "engine/research_vault/source_layout.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - "engine/government_revenue/program_dossier.py"
@@ -29276,6 +29346,11 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # F11 composition: exact newly reached import closure.
+      - "engine/research_vault/fulltext_index.py"
+      - "engine/research_vault/producer_generation.py"
+      - "engine/research_vault/qualified_reader.py"
+      - "engine/research_vault/source_layout.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - lib/dataos/web_history.py
@@ -32132,6 +32207,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # F11 composition: exact newly reached import closure.
+      - "engine/research_vault/fulltext_index.py"
+      - "engine/research_vault/producer_generation.py"
+      - "engine/research_vault/qualified_reader.py"
+      - "engine/research_vault/source_layout.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # MI W14 (2026-10-17): scripts/build_qbus_news_universe.py reads via the native parquet helper.
