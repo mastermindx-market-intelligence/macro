@@ -12182,6 +12182,9 @@ jobs:
           tests/test_market_memory_e0_critical_claims.py
           tests/test_market_memory_e0_reservations.py
           tests/test_market_memory_e0_baselines.py
+          tests/test_market_memory_e0_task_evidence.py
+          tests/test_market_memory_e0_registered_method.py
+          tests/test_market_memory_e0_condition_evidence.py
           tests/test_market_memory_e0_allocation.py
           tests/test_market_memory_e0_reserved_read.py
           tests/test_market_memory_e0_access_history.py
