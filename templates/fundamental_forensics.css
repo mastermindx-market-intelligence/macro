@@ -3222,7 +3222,7 @@ html[data-theme="light"] .ff-revisions-table tr.is-restated td:last-child {
 .ff-statement-block--withheld {
   padding: 14px 16px;
   border: 1px dashed var(--ff-border-strong);
-  border-radius: var(--ff-radius-sm);
+  border-radius: var(--r-btn, 10px);
   background: var(--ff-soft);
 }
 .ff-statement-block--withheld .ff-statement-withheld-copy {
