@@ -12189,6 +12189,7 @@ jobs:
           tests/test_market_memory_e0_reserved_read.py
           tests/test_market_memory_e0_access_history.py
           tests/test_market_memory_e0_installed_control.py
+          tests/test_market_memory_e0_selected_task_inputs.py
           tests/test_market_memory_e0_source_identity.py
           tests/test_inspect_market_memory_e0_control.py
           -q

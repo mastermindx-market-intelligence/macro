@@ -6,14 +6,17 @@ The public entry accepts only a study identity and uses fixed production paths.
 Private helpers are test/composition seams inside that trusted process, not an
 authorization API or a sandbox against a malicious administrator.
 
-This implements selected CONTROL metadata inspection only. It never loads
-domain payloads, reservations, labels, annotations or provider output; never
-initializes, publishes, repairs or activates a study; and never infers genuine
-reviewer independence from a metadata reference. Missing selection fails closed.
+The public inspector reads selected CONTROL metadata only. The private future
+executor composition additionally prepares only the selected prelabel method,
+task manifest and original frozen membership. Neither path reads reservations,
+source packets, labels, annotations or provider output; initializes, publishes,
+repairs or activates a study; or infers genuine reviewer independence from a
+metadata reference. Missing selection fails closed.
 """
 from __future__ import annotations
 
 from contextlib import contextmanager
+from dataclasses import dataclass
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -49,6 +52,22 @@ _SOURCE_PATHS = (
     "engine/research_factory/market_memory_e0_reservations.py",
     _MODULE_PATH,
 ) + tuple(f"contracts/market_memory/e0_{kind}.v1.schema.json" for kind in control.KINDS)
+_TASK_SOURCE_PATHS = _SOURCE_PATHS + (
+    "engine/neuralweb/__init__.py", "engine/neuralweb/market_memory.py",
+    "engine/neuralweb/market_memory_episode_comparison.py",
+    "engine/neuralweb/market_memory_episode_features.py",
+    "engine/neuralweb/market_memory_episode_retrieval.py",
+    "engine/neuralweb/market_memory_operating_cortex_service.py",
+    "engine/neuralweb/market_memory_pit.py", "engine/neuralweb/market_memory_projection.py",
+    "engine/neuralweb/market_memory_retained_context_cohort.py",
+    "engine/neuralweb/market_memory_trusted.py",
+    "engine/research_factory/market_memory_e0_baselines.py",
+    "engine/research_factory/market_memory_e0_condition_evidence.py",
+    "engine/research_factory/market_memory_e0_task_evidence.py",
+    "contracts/market_memory/e0_tasks.v1.schema.json",
+)
+_PREPARED_TOKEN = object()
+_INPUT_NAMES = ("registration", "method_manifest", "task_manifest", "frozen_membership")
 
 
 class E0InstalledControlError(ValueError):
@@ -136,7 +155,7 @@ def _read(descriptor: int, name: str, limit: int, *, private=True) -> bytes:
             os.close(opened)
 
 
-def _verify_source(root: Path, commit: str) -> None:
+def _verify_source(root: Path, commit: str, *, paths=_SOURCE_PATHS) -> None:
     """Selected source identity must equal installed bytes; never fetch Git data."""
     _require(type(commit) is str and re.fullmatch(r"[a-f0-9]{40}", commit) is not None,
              "selected_source_commit_invalid")
@@ -154,7 +173,7 @@ def _verify_source(root: Path, commit: str) -> None:
         _require(kind.stdout == b"commit\n" and not kind.stderr,
                  "selected_source_commit_invalid")
         result = subprocess.run(
-            ["/usr/bin/git", "-C", str(root), "ls-tree", "-rz", commit, "--", *_SOURCE_PATHS],
+            ["/usr/bin/git", "-C", str(root), "ls-tree", "-rz", commit, "--", *paths],
             capture_output=True, timeout=10, check=True,
             env=environment)
     except (OSError, subprocess.SubprocessError) as exc:
@@ -169,7 +188,7 @@ def _verify_source(root: Path, commit: str) -> None:
             expected[path.decode()] = digest.decode()
     except (ValueError, UnicodeError) as exc:
         raise E0InstalledControlError("selected_source_listing_invalid") from exc
-    _require(set(expected) == set(_SOURCE_PATHS), "selected_source_closure_incomplete")
+    _require(set(expected) == set(paths), "selected_source_closure_incomplete")
     for relative, expected_digest in expected.items():
         path = root / relative
         with _directory(path.parent, private=False) as descriptor:
@@ -178,7 +197,7 @@ def _verify_source(root: Path, commit: str) -> None:
         _require(digest == expected_digest, "installed_source_changed")
 
 
-def _load_selected_control(directory: Path, study_id: str, verify_source, *, clock) -> dict:
+def _load_selected_control(directory: Path, study_id: str, verify_source, *, clock, prepare=None):
     """Trusted internal composition. Public entry binds every argument itself."""
     _require(type(study_id) is str and control._ID.fullmatch(study_id) is not None,
              "study_identity_invalid")
@@ -228,7 +247,17 @@ def _load_selected_control(directory: Path, study_id: str, verify_source, *, clo
             state, body = load(ref, "access_state", "access_state_id")
             reverse.append(body)
             ref = state["previous_state_ref"]
+        # History must qualify before any selected prelabel-domain preparation.
+        # The optional callable is trusted owner code, never a request argument.
+        validate_access_history(installation=records["installation"],
+                                history=list(reversed(reverse)), as_of=now)
+        prepared = None if prepare is None else prepare(
+            descriptor, selected, records, cached[refs["registration"]["sha256"]])
         _require(verify_source(selected["source_commit"]) is None, "source_verifier_contract")
+        if prepare is not None:
+            for digest, original in cached.items():
+                _require(_read(descriptor, digest + ".json", control.MAX_CONTROL_BYTES) == original,
+                         "selected_control_record_changed")
         _require(_read(descriptor, "SELECTED.json", 16384) == selected_bytes,
                  "selected_control_changed")
         final_now = clock()
@@ -236,12 +265,13 @@ def _load_selected_control(directory: Path, study_id: str, verify_source, *, clo
         joined = control.validate_e0_control_join(**records, as_of=final_now)
         checked = validate_access_history(installation=records["installation"],
                                           history=list(reversed(reverse)), as_of=final_now)
-        return {"schema": "research_factory.market_memory_e0_installed_control_inspection.v1",
+        summary = {"schema": "research_factory.market_memory_e0_installed_control_inspection.v1",
                 "authority": "display_only", "study_id": study_id,
                 "source_commit": selected["source_commit"], "metadata_consistent": joined["metadata_consistent"],
                 "access_history": checked, "domain_payloads_read": False,
                 "reservation_store_read": False, "labels_read": False,
                 "provider_invoked": False, "runtime_writes": False, "operational_admission": False}
+        return summary if prepare is None else (prepared, selected_bytes)
 
 
 def inspect_selected_control(study_id: str) -> dict:
@@ -259,9 +289,9 @@ def inspect_selected_control(study_id: str) -> dict:
                                       timespec="microseconds").replace("+00:00", "Z"))
 
 
-def _verify_loaded_sources() -> None:
+def _verify_loaded_sources(*, paths=_SOURCE_PATHS) -> None:
     """Match executed project modules to the source files the owner verifies."""
-    for relative in _SOURCE_PATHS:
+    for relative in paths:
         if not relative.startswith("engine/") or not relative.endswith(".py"):
             continue
         name = relative.removesuffix(".py").replace("/", ".").removesuffix(".__init__")
@@ -273,3 +303,89 @@ def _verify_loaded_sources() -> None:
         origin = getattr(module, "__file__", None)
         _require(type(origin) is str and Path(origin).resolve() == INSTALLED_ROOT / relative,
                  "loaded_source_origin_invalid")
+
+
+def _prepare_task_bytes(descriptor, selected, records, registration, *, task_id):
+    """Only the three named prelabel roles; no general reference traversal."""
+    from . import market_memory_e0_task_evidence as tasks
+    access, installation, reg = records["access"], records["installation"], records["registration"]
+    _require(access["status"] == "active" and access["contamination_state"] == "clean"
+             and {"read_e0_registration", "disclose_e0_registration"}
+             <= set(installation["permitted_actions"]), "current_prelabel_metadata_access_required")
+    roles = (
+        ("method_manifest", reg["implementation"]["method_ref"], tasks.METHOD_SCHEMA, tasks.MAX_METHOD_BYTES),
+        ("task_manifest", reg["tasks_ref"], control._TASK_SCHEMA, control.MAX_DOMAIN_OBJECT_BYTES),
+        ("frozen_membership", reg["corpus"]["membership_ref"],
+         "market_memory.e0_original_owner_metadata_membership.v1", control.MAX_DOMAIN_OBJECT_BYTES),
+    )
+    # Qualify every role and aggregate declared size before opening any of them.
+    for _name, ref, schema, limit in roles:
+        control._domain_reference(ref)
+        _require(ref["schema"] == schema and ref["bytes"] <= limit, "selected_prelabel_role_invalid")
+    _require(len({ref["sha256"] for _, ref, _, _ in roles}) == len(roles),
+             "selected_prelabel_role_alias")
+    _require(reg["corpus"]["membership_ref"]["sha256"] == control._FROZEN_DOMAIN_DIGESTS["membership"],
+             "selected_frozen_membership_mismatch")
+    _require(sum(ref["bytes"] for _, ref, _, _ in roles) <= control.MAX_DOMAIN_TOTAL_BYTES,
+             "selected_prelabel_byte_limit")
+    values = {"registration": registration}
+    for name, ref, _schema, limit in roles:
+        body = _read(descriptor, ref["sha256"] + ".json", limit)
+        _require(len(body) == ref["bytes"] and hashlib.sha256(body).hexdigest() == ref["sha256"],
+                 "selected_prelabel_bytes_mismatch")
+        values[name] = body
+    tasks.resolve_registered_task_inputs(**values)
+    manifest = control._domain_json(values["task_manifest"])
+    _require(sum(task["task_id"] == task_id for task in manifest["tasks"]) == 1,
+             "selected_registered_task_required")
+    return tuple(values[name] for name in _INPUT_NAMES)
+
+
+@dataclass(frozen=True, slots=True, init=False, repr=False)
+class _SelectedTaskInputs:
+    _study_id: str
+    _task_id: str
+    _selection: bytes
+    _inputs: tuple
+    _seal: object
+
+    def __init__(self, study_id, task_id, selection, inputs, *, _key=None):
+        _require(_key is _PREPARED_TOKEN, "selected_task_inputs_required")
+        for name, value in (("_study_id", study_id), ("_task_id", task_id),
+                            ("_selection", selection), ("_inputs", inputs), ("_seal", _key)):
+            object.__setattr__(self, name, value)
+
+
+def _prepare_selected_task_inputs(study_id: str, task_id: str):
+    """Fixed installed-owner metadata preparation, never study/read admission.
+
+    The future executor still owes full domain qualification, actual independent
+    closure, current source-use authorization and a durable operation reservation
+    before source packets, provider calls, annotations or labels. This function
+    does not call a source reader, initialize storage or create a selection.
+    """
+    _require(sys.platform == "linux" and os.geteuid() == 0
+             and Path(__file__).resolve() == INSTALLED_ROOT / _MODULE_PATH,
+             "installed_administrator_entry_required")
+    for value in (study_id, task_id):
+        _require(type(value) is str and control._ID.fullmatch(value) is not None,
+                 "study_or_task_identity_invalid")
+    from . import market_memory_e0_task_evidence  # Load only the verified fixed composition.
+    _verify_loaded_sources(paths=_TASK_SOURCE_PATHS)
+    directory = CONTROL_ROOT / hashlib.sha256(study_id.encode()).hexdigest()
+    values, selection = _load_selected_control(directory, study_id,
+        lambda commit: _verify_source(INSTALLED_ROOT, commit, paths=_TASK_SOURCE_PATHS),
+        clock=lambda: datetime.now(timezone.utc).isoformat(timespec="microseconds").replace("+00:00", "Z"),
+        prepare=lambda fd, selected, records, registration: _prepare_task_bytes(
+            fd, selected, records, registration, task_id=task_id))
+    return _SelectedTaskInputs(study_id, task_id, selection, values, _key=_PREPARED_TOKEN)
+
+
+def _current_selected_task_bytes(prepared):
+    """Re-read current selected metadata before an executor consumes the bytes."""
+    _require(type(prepared) is _SelectedTaskInputs and prepared._seal is _PREPARED_TOKEN,
+             "selected_task_inputs_required")
+    current = _prepare_selected_task_inputs(prepared._study_id, prepared._task_id)
+    _require(current._selection == prepared._selection and current._inputs == prepared._inputs,
+             "prepared_selection_or_inputs_changed")
+    return dict(zip(_INPUT_NAMES, current._inputs))

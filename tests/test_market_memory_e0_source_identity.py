@@ -74,6 +74,43 @@ def test_installed_byte_drift_is_still_refused(source_repository):
         installed._verify_source(root, commit)
 
 
+@pytest.mark.parametrize("changed", [
+    "engine/neuralweb/market_memory_episode_retrieval.py",
+    "engine/research_factory/market_memory_e0_task_evidence.py",
+    "contracts/market_memory/e0_tasks.v1.schema.json",
+])
+def test_task_preparation_requires_expanded_source_closure_and_exact_bytes(source_repository, changed):
+    root, git = source_repository
+    with pytest.raises(installed.E0InstalledControlError, match="selected_source_closure_incomplete"):
+        installed._verify_source(root, git("rev-parse", "HEAD"), paths=installed._TASK_SOURCE_PATHS)
+    for name in set(installed._TASK_SOURCE_PATHS) - set(installed._SOURCE_PATHS):
+        path = root / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"synthetic task preparation source\n")
+        path.chmod(0o600)
+    git("add", ".")
+    git("-c", "user.name=Synthetic", "-c", "user.email=test@example.invalid",
+        "-c", "core.hooksPath=/dev/null", "commit", "-qm", "Synthetic expanded closure")
+    commit = git("rev-parse", "HEAD")
+    assert installed._verify_source(root, commit, paths=installed._TASK_SOURCE_PATHS) is None
+    (root / changed).write_bytes(b"changed after selection\n")
+    with pytest.raises(installed.E0InstalledControlError, match="installed_source_changed"):
+        installed._verify_source(root, commit, paths=installed._TASK_SOURCE_PATHS)
+
+
+def test_task_preparation_module_origins_include_native_method_and_domain_parser(monkeypatch):
+    from engine.research_factory import market_memory_e0_task_evidence
+    for relative in installed._TASK_SOURCE_PATHS:
+        if relative.startswith("engine/") and relative.endswith(".py"):
+            name = relative.removesuffix(".py").replace("/", ".").removesuffix(".__init__")
+            if name in sys.modules:
+                monkeypatch.setattr(sys.modules[name], "__file__", str(installed.INSTALLED_ROOT / relative))
+    installed._verify_loaded_sources(paths=installed._TASK_SOURCE_PATHS)
+    monkeypatch.setattr(market_memory_e0_task_evidence, "__file__", "/foreign/task_evidence.py")
+    with pytest.raises(installed.E0InstalledControlError, match="loaded_source_origin_invalid"):
+        installed._verify_loaded_sources(paths=installed._TASK_SOURCE_PATHS)
+
+
 @pytest.mark.parametrize("foreign_name", [
     "engine.research_factory.market_memory_contextual_registration",
     "engine.research_factory.market_memory_e0_access_history",
