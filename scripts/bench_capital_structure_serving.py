@@ -11,7 +11,7 @@ Modes
 ``--fixture`` builds the small in-test corpus the U1a state-API suite uses
 (``tests.test_capital_structure_state_api`` fixture helpers, imported by name —
 never copied); ``--data-root <dir>`` copies a committed capital-structure data
-directory into a fresh temp dir and builds the state bundle over the COPY with
+directory into a new temp dir and builds the state bundle over the COPY with
 the existing ``scripts.build_capital_structure_state.build_from_disk``.  The
 repository's ``data/`` tree is never written; the temp dir is removed at exit.
 
