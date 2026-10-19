@@ -2,7 +2,7 @@
 
 ## Capability and scope
 
-R32 completed the requested light design, eight product workspaces, fifteen tool families and progressive analytical tools. R33 adds a working source inspector and an additive publication in the existing Macro builder. The 19 October delta mounts the strict adapter and inspector in the existing Bonds template and publishes an exact-byte mirror behind the existing site access boundary. The result remains **BUILT_NOT_PROVEN** for production: 53 new actual-template HTTP browser checks and 176 existing Bonds owner pytest checks pass, while release and deployed-origin proof remain gated.
+R32 completed the requested light design, eight product workspaces, fifteen tool families and progressive analytical tools. R33 adds a working source inspector and an additive publication in the existing Macro builder. The 19 October delta mounts the strict adapter and inspector in the existing Bonds template and publishes an exact-byte mirror behind the existing site access boundary. The result remains **BUILT_NOT_PROVEN** for production: 54 new actual-template HTTP browser checks and the earlier 176 existing Bonds owner pytest checks are retained, while release and deployed-origin proof remain gated.
 
 Read [PRODUCTION_INTEGRATION_2026-10-19.md](PRODUCTION_INTEGRATION_2026-10-19.md) and the [current cumulative handoff](SESSION_HANDOFF_2026-10-18.md) for the current source path, receipts, source dates and existing-owner next actions. The reference journey below is retained baseline documentation; its 65+26 offline journeys were not rerun.
 

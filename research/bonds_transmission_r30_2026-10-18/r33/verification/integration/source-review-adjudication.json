@@ -78,7 +78,9 @@
       "passed": 53,
       "failed": 0,
       "receipt": "browser-receipt.json",
-      "production_origin_observed": false
+      "production_origin_observed": false,
+      "git_ref": "e58cb52eaac2c092be559cb9adc009c8b9df6479",
+      "note": "Historical 53-case receipt at e58. The current 54-case receipt supersedes its browser sample without rewriting this accepted review result."
     },
     "owner_pytest": {
       "passed": 176,
@@ -105,5 +107,122 @@
     "Original source review omitted unchanged publisher helper bodies and some existing host bodies, as disclosed in the raw return; accepted earlier baseline remains distinct.",
     "Two invalid-argument acceptance attempts had no acceptance effect on status readback; final corrected call accepted the same response digest. No worker was retried."
   ],
-  "current_status_owner": "Existing PR #9578 and SESSION_HANDOFF_2026-10-18.md; no watcher or new owner registry."
+  "current_status_owner": "Existing PR #9578 and SESSION_HANDOFF_2026-10-18.md; no watcher or new owner registry.",
+  "followup_review_evidence": [
+    {
+      "run_id": "r33-integration-final-delta-review-20261019-c4",
+      "reviewed_commit": "e58cb52eaac2c092be559cb9adc009c8b9df6479",
+      "response_sha256": "919362e583b0a47802f9576abcb742cc49c9eabc3a5a8b54cfbabc05c8a63ce5",
+      "raw_response": "independent-delta-review-e58.txt",
+      "whole_verdict_accepted": false,
+      "adjudication": "Display-delta and serving-path observations retained. Static CI-registration assurance was contradicted by hosted run39211448395 packing regression; not CI clearance."
+    },
+    {
+      "run_id": "r33-ci-registration-scope-review-20261019-c4",
+      "reviewed_commit": "e58cb52eaac2c092be559cb9adc009c8b9df6479",
+      "response_sha256": "15eed437991a8e98ce5719c3032b09d7e74cae685546a598368169da34576c39",
+      "raw_response": "independent-ci-scope-review-e58.txt",
+      "verdict": "QUALIFIED_SCOPE_REPAIR_PROPOSAL",
+      "acceptance_owner": "Parent deterministic closure/trigger/packing/ancestor guards and current exact-head CI",
+      "adjudication": "One-line exclusivity was insufficient. Parent retained all six suites and22 original paths, derived the finite closure, and included thirteen nested package initializers discovered by the tracked census. No bound or test weakened.",
+      "fabric_acceptance": {
+        "schema": "mastermind.fabric_mcp.v1",
+        "action": "fabric_accept",
+        "run_id": "r33-ci-registration-scope-review-20261019-c4",
+        "root_id": "bonds-transmission-r30-20261018-sol001",
+        "accepted": true,
+        "accepted_by": "deterministic",
+        "reviewed_response_sha256": "15eed437991a8e98ce5719c3032b09d7e74cae685546a598368169da34576c39",
+        "verification_summary": "Qualified scope proposal accepted. Parent completed closure and init coverage; 8 existing guards and 27 positive triggers pass. All suites and ceilings retained. Local proof only; no hosted CI, release or production acceptance.",
+        "legacy_acceptance_not_atomic_attestation": true,
+        "retry_allowed": false
+      },
+      "acceptance_state": "BOUNDED_SCOPE_PROPOSAL_ACCEPTED_AFTER_PARENT_GUARDS"
+    }
+  ],
+  "ci_repair": {
+    "candidate_before_repair": "e58cb52eaac2c092be559cb9adc009c8b9df6479",
+    "hosted_failure_run": 39211448395,
+    "introduced_failures": [
+      "ccw-w4-credit-desk fallback selection exceeded the free-content packing job ceiling",
+      "24 added CSS color/radius literals"
+    ],
+    "inherited_failure": {
+      "owner": "existing Sector Central RIG receipt owner",
+      "exact_tested_base": "072822093ccdf720570df19ed08d1cc86e98b5a0",
+      "packets": [
+        "MP-20261018-sector-central-capability-crosswalk.md",
+        "MP-20261018-sector-central-paper-and-acceptance.md",
+        "MP-20261018-sector-central.md"
+      ],
+      "proof": "same nonempty reference-integrity failure signature reproduced on exact base",
+      "candidate_self_excuse": false
+    },
+    "repair": {
+      "existing_job": "ccw-w4-credit-desk",
+      "six_suites_retained": true,
+      "prior_paths_retained": 22,
+      "added_literal_paths": 789,
+      "declared_paths": 811,
+      "new_data_paths": [],
+      "nested_initializers_added_after_census": 13,
+      "ceilings_changed": false,
+      "test_assertions_weakened": false,
+      "shared_token_consumption": true
+    },
+    "local_verification": {
+      "initial_full_packing": {
+        "tests": 198,
+        "passed": 191,
+        "failed": 5,
+        "skipped": 2,
+        "receipt": "ci-pack-initial.xml.gz",
+        "adjudication": "Four source-content omissions in sparse checkout and13 missing nested initializer declarations; neither hidden nor relabeled green.",
+        "storage": "Lossless gzip of the exact original pytest XML; failure-trace whitespace preserved.",
+        "uncompressed_sha256": "44f768cc325e06ada52859638bce81f0f475e443c2c136f73c25428e078c7a49",
+        "compressed_sha256": "53e141eae5689e421e36d7e666be677aace8db824994dd70a27a75bdf521fd12"
+      },
+      "focused_packing": {
+        "tests": 8,
+        "passed": 8,
+        "failed": 0,
+        "receipt": "ci-pack-focused.xml",
+        "covers": [
+          "named source closure",
+          "all curated dependency coverage",
+          "ancestor ceiling",
+          "exclusive set registration",
+          "no loss of earned probe ownership",
+          "unchanged aggregate packing ceilings"
+        ]
+      },
+      "positive_trigger_cases": 27,
+      "negative_job_probes": 3,
+      "trigger_receipt": "ci-positive-triggers.json",
+      "canonical_visual_gate": {
+        "exit_code": 0,
+        "receipt": "ui-visual-evidence.log"
+      },
+      "design_tokens": {
+        "exit_code": 0,
+        "blocking": 0,
+        "receipt": "design-token-ratchet.log"
+      },
+      "browser": {
+        "passed": 54,
+        "failed": 0,
+        "receipt": "browser-receipt.json"
+      },
+      "canonical_states": 24,
+      "no_production_origin_observed": true
+    },
+    "source_digests": {
+      ".github/ci/legacy-jobs.yml": "5468bc67289a1d2724da31441c67f63f6c5103e3f85605361dfac3170f908f23",
+      "tests/test_ci_pack.py": "961322574ad7c239a5807389a0651163c303762337fc9e1ad435de6a2e1cb12a",
+      "templates/_bonds_source_inspector.css.j2": "e86e001554382589e86c6e06ef42212b829383e2028e9bb45c0e51c5511d5fa9",
+      "research/bonds_transmission_r30_2026-10-18/r33/prepare-bonds-integration.py": "167d4ce45fb1d023170b527fe074551bbca4f4518c3c83b7bc27b227bfea27f4",
+      "research/bonds_transmission_r30_2026-10-18/r33/test-bonds-integration.py": "e31dbd473f5fcec427753382bc9e3ff814c2a1bd5910a7c8e73aeedf6881b590"
+    },
+    "binding_result_owner": "Current PR #9578 exact resulting head; these local checks are not hosted CI or release authorization"
+  }
 }

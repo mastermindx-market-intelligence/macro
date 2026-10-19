@@ -58,7 +58,7 @@ Nonfinite numbers are normalized to null with diagnostics. In the consumer, numb
 
 The consumer therefore exposes `evaluate=false`, `forecast=false`, `retain=false`, `monitor=false`. Event results, continuation probability and independent confirmation counts remain absent.
 
-## Captured example
+## Preserved offline captured example
 
 The bundled publication was built locally on **18 October 2026 at 11:00:08 UTC** from Macro inputs pinned to `b912fd97827cca925a7123aa2012e9765077f3f7`. It is not a deployed-feed capture.
 
@@ -67,6 +67,12 @@ The captured rates/credit component is dated 16 October; the funding component i
 Captured content digest: `d568576803a0fa032846f419fd433a9391e01c13e60e6dc4c75a8ff6017a1455`.
 
 The inspector count 22/22 refers only to supplied display fields. It does not mean complete decision evidence. The existing hub's transition count and this locally rebuilt capture can differ because their validation dates differ.
+
+## Current existing-Bonds integration publication
+
+The separate [integration build receipt](verification/integration/build-receipt.json) binds six actual owner inputs at `80f270c44bcdf11f5e71dacc05b11a0875a01d7f`. The existing Macro generator assessed them on **2026-10-19** and built the site/data companion bytes at **2026-10-19T11:33:48Z**. The declared content digest is `bc376400bbed713cb8a85e2f528fd1fc066b7e388e6f3f07ffc7d494abf481d1`; the exact mirrored file SHA-256 is `53581d326fb985bd3abe1534625e42cab4517768803d6e792452c8ef10ccc98a`. Component dates remain 16/17 October, with the oldest reported snapshot component dated 14 October. These clocks have different meanings and none supplies the missing observation/availability timestamps.
+
+This candidate is retained for evidence only. The mounted consumer fetches the protected site publication and has no fallback to either retained example. The older offline reference above and its 65+26 journeys remain unchanged.
 
 ## Failure behavior
 

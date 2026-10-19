@@ -2,87 +2,87 @@
   "schema": "r33.bonds_source_integration_browser.v1",
   "acceptance": "BUILT_NOT_PROVEN",
   "kind": "isolated_http_bonds_route_from_pinned_owner_inputs",
-  "route": "http://127.0.0.1:54521/bonds.html",
+  "route": "http://127.0.0.1:61610/bonds.html",
   "production_origin_observed": false,
   "input_commit": "80f270c44bcdf11f5e71dacc05b11a0875a01d7f",
-  "publication_content_sha256": "a4e86189a25a92fd9f6ee44cc40569a9ac698b3c2807c2122ca111fb49dbc2bb",
+  "publication_content_sha256": "bc376400bbed713cb8a85e2f528fd1fc066b7e388e6f3f07ffc7d494abf481d1",
   "source_files": {
     "scripts/build_macro_context.py": "4370a17da646c4c31d4dc32ea3dbf38775da05421fd51c1a4eaf3562960cfeac",
     "templates/bonds.html.j2": "edffe64e9374ea683ff880caa3b0ff2cd525e1ecab16f644343b760ae344565d",
     "templates/_bonds_source_adapter.js.j2": "eddd3b84b90a58c17333cdab6972d0a223e38f62b1f45aecefb189a8c511a5a2",
     "templates/_bonds_source_inspector.js.j2": "dcafda815a349afa39b74512c6a099485d4b22b0a475574351ed3324cb343ce8",
-    "templates/_bonds_source_inspector.css.j2": "72c4ac77315d414b47f3274423d1b7e7b47dd3748f14fc168c9d720b3089e746"
+    "templates/_bonds_source_inspector.css.j2": "e86e001554382589e86c6e06ef42212b829383e2028e9bb45c0e51c5511d5fa9"
   },
   "results": [
     {
       "name": "Existing Bonds route renders without eager publication fetch",
       "pass": true,
-      "seconds": 0.01
+      "seconds": 0.041
     },
     {
       "name": "Actual generator bytes reach three dated metric cards on Bonds",
       "pass": true,
-      "seconds": 0.071
+      "seconds": 0.219
     },
     {
       "name": "UTC build and owner assessment remain visibly distinct",
       "pass": true,
-      "seconds": 0.011
+      "seconds": 0.059
     },
     {
       "name": "Identity view exposes declared digest and real component clocks",
       "pass": true,
-      "seconds": 0.019
+      "seconds": 0.039
     },
     {
       "name": "Field detail returns to the filtered result and keyboard invoker",
       "pass": true,
-      "seconds": 0.021
+      "seconds": 0.037
     },
     {
       "name": "Missing evidence preserves the three independent existing-owner gates",
       "pass": true,
-      "seconds": 0.013
+      "seconds": 0.024
     },
     {
       "name": "HTTP 401 withholds old values",
       "pass": true,
-      "seconds": 0.011
+      "seconds": 0.028
     },
     {
       "name": "HTTP 403 withholds old values",
       "pass": true,
-      "seconds": 0.013
+      "seconds": 0.043
     },
     {
       "name": "HTTP 404 withholds old values",
       "pass": true,
-      "seconds": 0.012
+      "seconds": 0.021
     },
     {
       "name": "HTTP 503 withholds old values",
       "pass": true,
-      "seconds": 0.01
+      "seconds": 0.022
     },
     {
       "name": "Malformed JSON is unavailable without fallback",
       "pass": true,
-      "seconds": 0.012
+      "seconds": 0.023
     },
     {
       "name": "Wrong media type is unavailable without fallback",
       "pass": true,
-      "seconds": 0.01
+      "seconds": 0.021
     },
     {
       "name": "Oversized response is unavailable without fallback",
       "pass": true,
-      "seconds": 0.012
+      "seconds": 0.017
     },
     {
       "name": "Redirected sign-in response is unavailable without fallback",
       "pass": true,
-      "seconds": 0.012
+      "seconds": 0.019
     },
     {
       "name": "Unknown schema import clears prior site context",
@@ -92,177 +92,182 @@
     {
       "name": "Malformed UTF-8 import is rejected with the precise text error",
       "pass": true,
-      "seconds": 0.017
+      "seconds": 0.068
     },
     {
       "name": "File read failure stays distinct from invalid UTF-8",
       "pass": true,
-      "seconds": 0.017
+      "seconds": 0.04
     },
     {
       "name": "Import and reload preserve the keyboard loadbar control",
       "pass": true,
-      "seconds": 0.1
+      "seconds": 0.264
     },
     {
       "name": "Owner stale true false and null remain distinct in Chinese",
       "pass": true,
-      "seconds": 0.017
+      "seconds": 0.038
     },
     {
       "name": "Local import preserves numeric zero and unverified origin",
       "pass": true,
-      "seconds": 0.011
+      "seconds": 0.034
     },
     {
       "name": "Missing scalar stays unavailable within an otherwise valid projection",
       "pass": true,
-      "seconds": 0.014
+      "seconds": 0.037
     },
     {
       "name": "Imported strings and filename cannot execute markup",
       "pass": true,
-      "seconds": 0.01
+      "seconds": 0.036
     },
     {
       "name": "Future source clock remains a disclosed limitation",
       "pass": true,
-      "seconds": 0.006
+      "seconds": 0.009
     },
     {
       "name": "Failed import stays unavailable until explicit site reload",
       "pass": true,
-      "seconds": 0.011
+      "seconds": 0.036
     },
     {
       "name": "A late file read cannot replace an explicit site reload",
       "pass": true,
-      "seconds": 0.014
+      "seconds": 0.032
     },
     {
       "name": "Disconnected source clears values and remains unavailable",
       "pass": true,
-      "seconds": 0.011
+      "seconds": 0.021
     },
     {
       "name": "Stream byte cap rejects a multibyte body without Content-Length",
       "pass": true,
-      "seconds": 0.02
+      "seconds": 0.027
     },
     {
       "name": "Future owner assessment is disclosed against the viewer UTC clock",
       "pass": true,
-      "seconds": 0.006
+      "seconds": 0.017
     },
     {
-      "name": "Closing a pending fetch permits a clean reopen and ignores the old response",
-      "pass": true,
-      "seconds": 0.015
-    },
-    {
-      "name": "Closing a pending import prevents its late result from changing the reopened source",
-      "pass": true,
-      "seconds": 0.015
-    },
-    {
-      "name": "A stalled source request becomes an explicit timeout",
+      "name": "Older owner assessment is disclosed against the viewer UTC clock",
       "pass": true,
       "seconds": 0.017
     },
     {
+      "name": "Closing a pending fetch permits a clean reopen and ignores the old response",
+      "pass": true,
+      "seconds": 0.021
+    },
+    {
+      "name": "Closing a pending import prevents its late result from changing the reopened source",
+      "pass": true,
+      "seconds": 0.032
+    },
+    {
+      "name": "A stalled source request becomes an explicit timeout",
+      "pass": true,
+      "seconds": 0.06
+    },
+    {
       "name": "1440px light en inspector fits",
       "pass": true,
-      "seconds": 0.136
+      "seconds": 0.235
     },
     {
       "name": "1440px light zh inspector fits",
       "pass": true,
-      "seconds": 0.122
+      "seconds": 0.208
     },
     {
       "name": "1440px dark en inspector fits",
       "pass": true,
-      "seconds": 0.115
+      "seconds": 0.22
     },
     {
       "name": "1440px dark zh inspector fits",
       "pass": true,
-      "seconds": 0.1
+      "seconds": 0.201
     },
     {
       "name": "1024px light en inspector fits",
       "pass": true,
-      "seconds": 0.118
+      "seconds": 0.212
     },
     {
       "name": "1024px light zh inspector fits",
       "pass": true,
-      "seconds": 0.111
+      "seconds": 0.234
     },
     {
       "name": "1024px dark en inspector fits",
       "pass": true,
-      "seconds": 0.109
+      "seconds": 0.224
     },
     {
       "name": "1024px dark zh inspector fits",
       "pass": true,
-      "seconds": 0.104
+      "seconds": 0.106
     },
     {
       "name": "768px light en inspector fits",
       "pass": true,
-      "seconds": 0.109
+      "seconds": 0.132
     },
     {
       "name": "768px light zh inspector fits",
       "pass": true,
-      "seconds": 0.092
+      "seconds": 0.141
     },
     {
       "name": "768px dark en inspector fits",
       "pass": true,
-      "seconds": 0.114
+      "seconds": 0.167
     },
     {
       "name": "768px dark zh inspector fits",
       "pass": true,
-      "seconds": 0.097
+      "seconds": 0.135
     },
     {
       "name": "390px light en inspector fits",
       "pass": true,
-      "seconds": 0.11
+      "seconds": 0.194
     },
     {
       "name": "390px light zh inspector fits",
       "pass": true,
-      "seconds": 0.083
+      "seconds": 0.132
     },
     {
       "name": "390px dark en inspector fits",
       "pass": true,
-      "seconds": 0.098
+      "seconds": 0.16
     },
     {
       "name": "390px dark zh inspector fits",
       "pass": true,
-      "seconds": 0.088
+      "seconds": 0.134
     },
     {
       "name": "390px fields progressive view fits",
       "pass": true,
-      "seconds": 0.051
+      "seconds": 0.085
     },
     {
       "name": "390px dates progressive view fits",
       "pass": true,
-      "seconds": 0.043
+      "seconds": 0.096
     },
     {
       "name": "390px missing progressive view fits",
       "pass": true,
-      "seconds": 0.046
+      "seconds": 0.078
     },
     {
       "name": "All visible inspector controls provide 44px targets",
@@ -272,7 +277,7 @@
     {
       "name": "Native dialog traps focus and Escape returns to the Bonds trigger",
       "pass": true,
-      "seconds": 0.011
+      "seconds": 0.024
     },
     {
       "name": "Source inspection leaves host content, saved storage and write authority unchanged",
@@ -280,10 +285,10 @@
       "seconds": 0.0
     }
   ],
-  "passed": 53,
+  "passed": 54,
   "failed": 0,
   "browser": "129.0.6668.29",
-  "first_open_ms": 160,
+  "first_open_ms": 211,
   "baseline_page_errors": [],
   "new_page_errors": [],
   "baseline_external_blocked": [],
@@ -291,167 +296,167 @@
   "requests": [
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/bonds.html"
+      "url": "http://127.0.0.1:61610/bonds.html"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/illus.css"
+      "url": "http://127.0.0.1:61610/illus.css"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/product-nav-icons.css"
+      "url": "http://127.0.0.1:61610/product-nav-icons.css"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/navigation-refresh.css"
+      "url": "http://127.0.0.1:61610/navigation-refresh.css"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/logo_config.js"
+      "url": "http://127.0.0.1:61610/logo_config.js"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/stock-logos.js"
+      "url": "http://127.0.0.1:61610/stock-logos.js"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/live_config.js"
+      "url": "http://127.0.0.1:61610/live_config.js"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/live.js"
+      "url": "http://127.0.0.1:61610/live.js"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/theme.js"
+      "url": "http://127.0.0.1:61610/theme.js"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/illus.js"
+      "url": "http://127.0.0.1:61610/illus.js"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/fonts/Inter-400.woff2"
+      "url": "http://127.0.0.1:61610/fonts/Inter-400.woff2"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/account.js?v=20261015-mm-return-language"
+      "url": "http://127.0.0.1:61610/fonts/Inter-800.woff2"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/fonts/Inter-500.woff2"
+      "url": "http://127.0.0.1:61610/fonts/Inter-600.woff2"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/fonts/Inter-800.woff2"
+      "url": "http://127.0.0.1:61610/fonts/Inter-700.woff2"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/fonts/Inter-600.woff2"
+      "url": "http://127.0.0.1:61610/fonts/Inter-500.woff2"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/fonts/Inter-700.woff2"
+      "url": "http://127.0.0.1:61610/account.js?v=20261015-mm-return-language"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/nav_market.js?v=20261015-mm-return-language"
+      "url": "http://127.0.0.1:61610/nav_market.js?v=20261015-mm-return-language"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/terminal_overlay.js"
+      "url": "http://127.0.0.1:61610/terminal_overlay.js"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:54521/macro-context-data/decision_workspaces.json"
+      "url": "http://127.0.0.1:61610/macro-context-data/decision_workspaces.json"
     }
   ],
   "server_requests": [
@@ -501,11 +506,7 @@
     },
     {
       "method": "GET",
-      "path": "/account.js"
-    },
-    {
-      "method": "GET",
-      "path": "/fonts/Inter-500.woff2"
+      "path": "/fonts/Inter-600.woff2"
     },
     {
       "method": "GET",
@@ -513,11 +514,15 @@
     },
     {
       "method": "GET",
-      "path": "/fonts/Inter-600.woff2"
+      "path": "/fonts/Inter-700.woff2"
     },
     {
       "method": "GET",
-      "path": "/fonts/Inter-700.woff2"
+      "path": "/fonts/Inter-500.woff2"
+    },
+    {
+      "method": "GET",
+      "path": "/account.js"
     },
     {
       "method": "GET",
@@ -701,147 +706,147 @@
       "width": 1440,
       "theme": "light",
       "language": "en",
-      "text_nodes": 35,
+      "text_nodes": 34,
       "minimum_ratio": 6.211
     },
     {
       "width": 1440,
       "theme": "light",
       "language": "zh",
-      "text_nodes": 35,
+      "text_nodes": 34,
       "minimum_ratio": 6.211
     },
     {
       "width": 1440,
       "theme": "dark",
       "language": "en",
-      "text_nodes": 35,
+      "text_nodes": 34,
       "minimum_ratio": 5.33
     },
     {
       "width": 1440,
       "theme": "dark",
       "language": "zh",
-      "text_nodes": 35,
+      "text_nodes": 34,
       "minimum_ratio": 5.33
     },
     {
       "width": 1024,
       "theme": "light",
       "language": "en",
-      "text_nodes": 35,
+      "text_nodes": 34,
       "minimum_ratio": 6.211
     },
     {
       "width": 1024,
       "theme": "light",
       "language": "zh",
-      "text_nodes": 35,
+      "text_nodes": 34,
       "minimum_ratio": 6.211
     },
     {
       "width": 1024,
       "theme": "dark",
       "language": "en",
-      "text_nodes": 35,
+      "text_nodes": 34,
       "minimum_ratio": 5.33
     },
     {
       "width": 1024,
       "theme": "dark",
       "language": "zh",
-      "text_nodes": 35,
+      "text_nodes": 34,
       "minimum_ratio": 5.33
     },
     {
       "width": 768,
       "theme": "light",
       "language": "en",
-      "text_nodes": 35,
+      "text_nodes": 34,
       "minimum_ratio": 6.211
     },
     {
       "width": 768,
       "theme": "light",
       "language": "zh",
-      "text_nodes": 35,
+      "text_nodes": 34,
       "minimum_ratio": 6.211
     },
     {
       "width": 768,
       "theme": "dark",
       "language": "en",
-      "text_nodes": 35,
+      "text_nodes": 34,
       "minimum_ratio": 5.33
     },
     {
       "width": 768,
       "theme": "dark",
       "language": "zh",
-      "text_nodes": 35,
+      "text_nodes": 34,
       "minimum_ratio": 5.33
     },
     {
       "width": 390,
       "theme": "light",
       "language": "en",
-      "text_nodes": 35,
+      "text_nodes": 34,
       "minimum_ratio": 6.211
     },
     {
       "width": 390,
       "theme": "light",
       "language": "zh",
-      "text_nodes": 35,
+      "text_nodes": 34,
       "minimum_ratio": 6.211
     },
     {
       "width": 390,
       "theme": "dark",
       "language": "en",
-      "text_nodes": 35,
+      "text_nodes": 34,
       "minimum_ratio": 5.33
     },
     {
       "width": 390,
       "theme": "dark",
       "language": "zh",
-      "text_nodes": 35,
+      "text_nodes": 34,
       "minimum_ratio": 5.33
     }
   ],
   "screenshots": [
     {
       "path": "1440-dark-en.png",
-      "sha256": "4785ec97bb7574cdb9dca462ab369072d6f00b1a4bcbd15969a04c65de0381c4"
+      "sha256": "1ce5851a2dbb78f7d6fa7ed53aa14c3a117d5fe4c4a4189a87a0eea4545b940f"
     },
     {
       "path": "1440-dark-zh.png",
-      "sha256": "2a9825f15f5105b3e06f6c49ec9c5bec7ecfb1e770a854175120c2176a34f911"
+      "sha256": "b45983a2ee374b608e3103983259b1feacf0188504d2b55a2e4644057370b576"
     },
     {
       "path": "1440-light-en.png",
-      "sha256": "7e95693389f9d67a20405b9ab5f7a59a2d9c4159157c50aa794e8a6b1c52481b"
+      "sha256": "5c04eaacc0ed6176f18088ce103d4e912741d21056250c43adb7e581afe268a6"
     },
     {
       "path": "1440-light-zh.png",
-      "sha256": "56171bf1f484c78e812bd08819106ab456faaaad1e6dc13dc7f3788924930c4d"
+      "sha256": "56f5175247fa21da444b0d0995e752594c7f14df0a492998e393a93b17d51831"
     },
     {
       "path": "390-dark-en.png",
-      "sha256": "72cca3859b689f97da8163f9006937de42a80a8ec0df2f462a676d83ec935495"
+      "sha256": "84bebebd86a3557b40de1021d542047ce1bd91e7d144f9b2518979b0e17f7386"
     },
     {
       "path": "390-dark-zh.png",
-      "sha256": "0a68c7c705487a8d27ca1538f905d997065818c62f3a18e5d349b7768dbc5b60"
+      "sha256": "15e2ae8d875876e07383cc5c7ae228430b33390b8aeb70d220bbd2c51d0811c3"
     },
     {
       "path": "390-light-en.png",
-      "sha256": "41ef089870fe2e172dddef78200a77465018a33e15e8f6ffe00176d59e4aae63"
+      "sha256": "50e7732fca32d6446c2392bbbca0ace093bdb22cb534b140929cdfad469687b6"
     },
     {
       "path": "390-light-zh.png",
-      "sha256": "689bcfc3d08234de1402c9c56d63ff6d465061cb2aecaee4407cccfe90b9b19c"
+      "sha256": "96e44a00241b50eae5ce458d152dda7e649e3ac7743fd8e99d6469de928b65f8"
     }
   ]
 }

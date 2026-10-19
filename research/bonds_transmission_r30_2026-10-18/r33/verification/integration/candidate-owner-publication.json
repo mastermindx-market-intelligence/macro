@@ -25,13 +25,13 @@
           "path": "data/bonds/bond_health.json",
           "asof": "2026-10-16",
           "date_status": "known",
-          "age_days": 2
+          "age_days": 3
         },
         "transmission": {
           "path": "data/transmission/latest.json",
           "asof": "2026-10-16",
           "date_status": "known",
-          "age_days": 2
+          "age_days": 3
         }
       },
       "current_read": {
@@ -112,7 +112,7 @@
           "path": "data/forex/latest.json",
           "asof": "2026-10-17",
           "date_status": "known",
-          "age_days": 1
+          "age_days": 2
         }
       },
       "current_read": {
@@ -250,7 +250,7 @@
   },
   "publication": {
     "producer": "scripts/build_macro_context.py",
-    "validation_date": "2026-10-18",
+    "validation_date": "2026-10-19",
     "identity_scope": "normalized_loaded_inputs_and_projection_excluding_build_time",
     "hash_algorithm": "sha256_python_sorted_compact_utf8_json",
     "identity_use": "content_comparison_only_not_authenticated_or_retained_evidence",
@@ -292,7 +292,7 @@
         "reported_value": "2026-10-17",
         "asof": "2026-10-17",
         "date_status": "known",
-        "age_days": 1
+        "age_days": 2
       },
       "snapshot_oldest_component": {
         "source_file": "data/macro_snapshots/latest.json",
@@ -301,7 +301,7 @@
         "reported_value": "2026-10-14",
         "asof": "2026-10-14",
         "date_status": "known",
-        "age_days": 4
+        "age_days": 5
       },
       "rates_credit": {
         "source_file": "data/neuralweb/world_state.json",
@@ -310,7 +310,7 @@
         "reported_value": "2026-10-16",
         "asof": "2026-10-16",
         "date_status": "known",
-        "age_days": 2
+        "age_days": 3
       },
       "cross_asset": {
         "source_file": "data/neuralweb/world_state.json",
@@ -319,7 +319,7 @@
         "reported_value": "2026-10-17",
         "asof": "2026-10-17",
         "date_status": "known",
-        "age_days": 1
+        "age_days": 2
       },
       "regime": {
         "source_file": "data/regime/latest.json",
@@ -328,7 +328,7 @@
         "reported_value": "2026-10-16",
         "asof": "2026-10-16",
         "date_status": "known",
-        "age_days": 2
+        "age_days": 3
       },
       "fx_dollar": {
         "source_file": "data/neuralweb/world_state.json",
@@ -337,7 +337,7 @@
         "reported_value": "2026-10-17",
         "asof": "2026-10-17",
         "date_status": "known",
-        "age_days": 1
+        "age_days": 2
       }
     },
     "reported_world_state_produced_at": "2026-10-18T07:03:19Z",
@@ -368,7 +368,7 @@
             "reported_value": "2026-10-16",
             "asof": "2026-10-16",
             "date_status": "known",
-            "age_days": 2
+            "age_days": 3
           },
           "observation_asof": null,
           "available_at": null,
@@ -396,7 +396,7 @@
             "reported_value": "2026-10-16",
             "asof": "2026-10-16",
             "date_status": "known",
-            "age_days": 2
+            "age_days": 3
           },
           "observation_asof": null,
           "available_at": null,
@@ -424,7 +424,7 @@
             "reported_value": "2026-10-16",
             "asof": "2026-10-16",
             "date_status": "known",
-            "age_days": 2
+            "age_days": 3
           },
           "observation_asof": null,
           "available_at": null,
@@ -452,7 +452,7 @@
             "reported_value": "2026-10-16",
             "asof": "2026-10-16",
             "date_status": "known",
-            "age_days": 2
+            "age_days": 3
           },
           "observation_asof": null,
           "available_at": null,
@@ -476,7 +476,7 @@
             "reported_value": "2026-10-16",
             "asof": "2026-10-16",
             "date_status": "known",
-            "age_days": 2
+            "age_days": 3
           },
           "observation_asof": null,
           "available_at": null,
@@ -500,7 +500,7 @@
             "reported_value": "2026-10-16",
             "asof": "2026-10-16",
             "date_status": "known",
-            "age_days": 2
+            "age_days": 3
           },
           "observation_asof": null,
           "available_at": null,
@@ -795,7 +795,7 @@
           "reported_value": "2026-10-02",
           "asof": "2026-10-02",
           "date_status": "known",
-          "age_days": 16
+          "age_days": 17
         }
       },
       "ebp": {
@@ -812,7 +812,7 @@
           "reported_value": "2026-09-01",
           "asof": "2026-09-01",
           "date_status": "known",
-          "age_days": 47
+          "age_days": 48
         }
       },
       "hy_oas": {
@@ -829,7 +829,7 @@
           "reported_value": "2026-10-13",
           "asof": "2026-10-13",
           "date_status": "known",
-          "age_days": 5
+          "age_days": 6
         }
       },
       "nfci": {
@@ -846,7 +846,7 @@
           "reported_value": "2026-10-02",
           "asof": "2026-10-02",
           "date_status": "known",
-          "age_days": 16
+          "age_days": 17
         }
       },
       "ofr_fsi": {
@@ -863,7 +863,7 @@
           "reported_value": "2026-10-12",
           "asof": "2026-10-12",
           "date_status": "known",
-          "age_days": 6
+          "age_days": 7
         }
       },
       "recession_risk": {
@@ -880,7 +880,7 @@
           "reported_value": "2026-10-16",
           "asof": "2026-10-16",
           "date_status": "known",
-          "age_days": 2
+          "age_days": 3
         }
       },
       "stlfsi": {
@@ -897,7 +897,7 @@
           "reported_value": "2026-10-09",
           "asof": "2026-10-09",
           "date_status": "known",
-          "age_days": 9
+          "age_days": 10
         }
       },
       "us10y": {
@@ -914,14 +914,14 @@
           "reported_value": "2026-10-13",
           "asof": "2026-10-13",
           "date_status": "known",
-          "age_days": 5
+          "age_days": 6
         }
       }
     },
     "changes_scope": "selected_label_transitions_not_event_ledger_or_complete_history",
     "clock_policy": "component_dates_do_not_establish_observation_time_availability_or_vendor_freshness",
     "invalid_values": [],
-    "content_sha256": "a4e86189a25a92fd9f6ee44cc40569a9ac698b3c2807c2122ca111fb49dbc2bb",
-    "built_at": "2026-10-19T06:25:09Z"
+    "content_sha256": "bc376400bbed713cb8a85e2f528fd1fc066b7e388e6f3f07ffc7d494abf481d1",
+    "built_at": "2026-10-19T11:33:48Z"
   }
 }

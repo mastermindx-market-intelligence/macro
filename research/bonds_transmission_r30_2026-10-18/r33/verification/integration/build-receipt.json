@@ -2,9 +2,9 @@
   "schema": "r33.bonds_source_integration_build.v1",
   "acceptance": "BUILT_NOT_PROVEN",
   "kind": "isolated_candidate_from_committed_owner_inputs",
-  "source_head_before_delta": "43eafbbbe601221f658a64471b33166477f716e8",
+  "source_head_before_delta": "e58cb52eaac2c092be559cb9adc009c8b9df6479",
   "input_commit": "80f270c44bcdf11f5e71dacc05b11a0875a01d7f",
-  "generated_at": "2026-10-19T06:25:10.094607+00:00",
+  "generated_at": "2026-10-19T11:33:48.711877+00:00",
   "inputs": [
     {
       "path": "data/macro_snapshots/latest.json",
@@ -54,11 +54,38 @@
     "templates/bonds.html.j2": "edffe64e9374ea683ff880caa3b0ff2cd525e1ecab16f644343b760ae344565d",
     "templates/_bonds_source_adapter.js.j2": "eddd3b84b90a58c17333cdab6972d0a223e38f62b1f45aecefb189a8c511a5a2",
     "templates/_bonds_source_inspector.js.j2": "dcafda815a349afa39b74512c6a099485d4b22b0a475574351ed3324cb343ce8",
-    "templates/_bonds_source_inspector.css.j2": "72c4ac77315d414b47f3274423d1b7e7b47dd3748f14fc168c9d720b3089e746"
+    "templates/_bonds_source_inspector.css.j2": "e86e001554382589e86c6e06ef42212b829383e2028e9bb45c0e51c5511d5fa9"
+  },
+  "local_shared_assets": {
+    "templates/illus.css": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07",
+    "templates/navigation-refresh.css": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+    "templates/product-nav-icons.css": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
+    "templates/logo_config.js": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+    "templates/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+    "templates/live.js": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+    "templates/theme.js": "1bd24c7684455984420f75f8adce6d9c2ca0b3e9ab35af6d12c9cf57ef0db3e7",
+    "templates/illus.js": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620",
+    "templates/account.js": "94a05a679fc9f62bc8c21f762501af80f156d78b8b479848639f3d724f85a852",
+    "templates/terminal_overlay.js": "569f74c47a6b3c4564019a2a52e14fc27432f5f2df3929cb73e5db70125ce289",
+    "templates/nav_market.js": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497",
+    "templates/fonts/Inter-700.woff2": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+    "templates/fonts/Inter-600.woff2": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+    "templates/fonts/InterDisplay-500.woff2": "a5b16b4bd4d1ad12a11c12bc3325bd09250364237e943974a7560ec2b7f22c9a",
+    "templates/fonts/Inter-400.woff2": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+    "templates/fonts/InterDisplay-700.woff2": "634290d856dfb3503c76eb655754e324b7b3513fb66254346db6046d186a253e",
+    "templates/fonts/InterDisplay-600.woff2": "d8bb10ec73c52ddeeed35b9e7913cf0cf0226ca3469c696883413f49ef03aa61",
+    "templates/fonts/Inter-500.woff2": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+    "templates/fonts/Inter-900.woff2": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e",
+    "templates/fonts/Inter-800.woff2": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+  },
+  "local_live_config": {
+    "sha256": "fa4af2363a4b7cda77022b89f799c41c2fa42a031fa5090f4f627760e69444c9",
+    "live_quotes_enabled": false,
+    "endpoints": "empty test environment"
   },
   "publisher": {
     "producer": "scripts/build_macro_context.py",
-    "validation_date": "2026-10-18",
+    "validation_date": "2026-10-19",
     "identity_scope": "normalized_loaded_inputs_and_projection_excluding_build_time",
     "hash_algorithm": "sha256_python_sorted_compact_utf8_json",
     "identity_use": "content_comparison_only_not_authenticated_or_retained_evidence",
@@ -100,7 +127,7 @@
         "reported_value": "2026-10-17",
         "asof": "2026-10-17",
         "date_status": "known",
-        "age_days": 1
+        "age_days": 2
       },
       "snapshot_oldest_component": {
         "source_file": "data/macro_snapshots/latest.json",
@@ -109,7 +136,7 @@
         "reported_value": "2026-10-14",
         "asof": "2026-10-14",
         "date_status": "known",
-        "age_days": 4
+        "age_days": 5
       },
       "rates_credit": {
         "source_file": "data/neuralweb/world_state.json",
@@ -118,7 +145,7 @@
         "reported_value": "2026-10-16",
         "asof": "2026-10-16",
         "date_status": "known",
-        "age_days": 2
+        "age_days": 3
       },
       "cross_asset": {
         "source_file": "data/neuralweb/world_state.json",
@@ -127,7 +154,7 @@
         "reported_value": "2026-10-17",
         "asof": "2026-10-17",
         "date_status": "known",
-        "age_days": 1
+        "age_days": 2
       },
       "regime": {
         "source_file": "data/regime/latest.json",
@@ -136,7 +163,7 @@
         "reported_value": "2026-10-16",
         "asof": "2026-10-16",
         "date_status": "known",
-        "age_days": 2
+        "age_days": 3
       },
       "fx_dollar": {
         "source_file": "data/neuralweb/world_state.json",
@@ -145,7 +172,7 @@
         "reported_value": "2026-10-17",
         "asof": "2026-10-17",
         "date_status": "known",
-        "age_days": 1
+        "age_days": 2
       }
     },
     "reported_world_state_produced_at": "2026-10-18T07:03:19Z",
@@ -176,7 +203,7 @@
             "reported_value": "2026-10-16",
             "asof": "2026-10-16",
             "date_status": "known",
-            "age_days": 2
+            "age_days": 3
           },
           "observation_asof": null,
           "available_at": null,
@@ -204,7 +231,7 @@
             "reported_value": "2026-10-16",
             "asof": "2026-10-16",
             "date_status": "known",
-            "age_days": 2
+            "age_days": 3
           },
           "observation_asof": null,
           "available_at": null,
@@ -232,7 +259,7 @@
             "reported_value": "2026-10-16",
             "asof": "2026-10-16",
             "date_status": "known",
-            "age_days": 2
+            "age_days": 3
           },
           "observation_asof": null,
           "available_at": null,
@@ -260,7 +287,7 @@
             "reported_value": "2026-10-16",
             "asof": "2026-10-16",
             "date_status": "known",
-            "age_days": 2
+            "age_days": 3
           },
           "observation_asof": null,
           "available_at": null,
@@ -284,7 +311,7 @@
             "reported_value": "2026-10-16",
             "asof": "2026-10-16",
             "date_status": "known",
-            "age_days": 2
+            "age_days": 3
           },
           "observation_asof": null,
           "available_at": null,
@@ -308,7 +335,7 @@
             "reported_value": "2026-10-16",
             "asof": "2026-10-16",
             "date_status": "known",
-            "age_days": 2
+            "age_days": 3
           },
           "observation_asof": null,
           "available_at": null,
@@ -603,7 +630,7 @@
           "reported_value": "2026-10-02",
           "asof": "2026-10-02",
           "date_status": "known",
-          "age_days": 16
+          "age_days": 17
         }
       },
       "ebp": {
@@ -620,7 +647,7 @@
           "reported_value": "2026-09-01",
           "asof": "2026-09-01",
           "date_status": "known",
-          "age_days": 47
+          "age_days": 48
         }
       },
       "hy_oas": {
@@ -637,7 +664,7 @@
           "reported_value": "2026-10-13",
           "asof": "2026-10-13",
           "date_status": "known",
-          "age_days": 5
+          "age_days": 6
         }
       },
       "nfci": {
@@ -654,7 +681,7 @@
           "reported_value": "2026-10-02",
           "asof": "2026-10-02",
           "date_status": "known",
-          "age_days": 16
+          "age_days": 17
         }
       },
       "ofr_fsi": {
@@ -671,7 +698,7 @@
           "reported_value": "2026-10-12",
           "asof": "2026-10-12",
           "date_status": "known",
-          "age_days": 6
+          "age_days": 7
         }
       },
       "recession_risk": {
@@ -688,7 +715,7 @@
           "reported_value": "2026-10-16",
           "asof": "2026-10-16",
           "date_status": "known",
-          "age_days": 2
+          "age_days": 3
         }
       },
       "stlfsi": {
@@ -705,7 +732,7 @@
           "reported_value": "2026-10-09",
           "asof": "2026-10-09",
           "date_status": "known",
-          "age_days": 9
+          "age_days": 10
         }
       },
       "us10y": {
@@ -722,15 +749,15 @@
           "reported_value": "2026-10-13",
           "asof": "2026-10-13",
           "date_status": "known",
-          "age_days": 5
+          "age_days": 6
         }
       }
     },
     "changes_scope": "selected_label_transitions_not_event_ledger_or_complete_history",
     "clock_policy": "component_dates_do_not_establish_observation_time_availability_or_vendor_freshness",
     "invalid_values": [],
-    "content_sha256": "a4e86189a25a92fd9f6ee44cc40569a9ac698b3c2807c2122ca111fb49dbc2bb",
-    "built_at": "2026-10-19T06:25:09Z"
+    "content_sha256": "bc376400bbed713cb8a85e2f528fd1fc066b7e388e6f3f07ffc7d494abf481d1",
+    "built_at": "2026-10-19T11:33:48Z"
   },
   "hub_keys": [
     "asof",
@@ -742,16 +769,16 @@
   "data_site_bytes_identical": true,
   "artifacts": {
     "bonds.html": {
-      "bytes": 256032,
-      "sha256": "1ac7d9d0ba77a5211b4764b9a366dc039b98a0cabd39a17e4cf1f9c3b841c670"
+      "bytes": 256057,
+      "sha256": "6aa6ce6f450ba1d07dd6a7e50a808c40d416a7e6b3b79a5c9610ddaa4d84074d"
     },
     "macro_context.html": {
-      "bytes": 244056,
-      "sha256": "cc1e40c180e4f8b00fd4a8eb93c5922fa882d98193842a6ebc39236573052b32"
+      "bytes": 244070,
+      "sha256": "ec894f8b6e593e6d23e308796756c44744298d8e29b7ce807317b51f96d0b51d"
     },
     "macro-context-data/decision_workspaces.json": {
-      "bytes": 31622,
-      "sha256": "66d06b31ec825662f517437dab15ecd85fd0720dcc7038214ae0ebb0d5908f82"
+      "bytes": 31623,
+      "sha256": "53581d326fb985bd3abe1534625e42cab4517768803d6e792452c8ef10ccc98a"
     }
   },
   "scope_limits": [

@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 from unittest.mock import patch
@@ -83,18 +84,38 @@ def prepare(output: Path, input_ref: str) -> dict:
     from engine.i18n import tr, td
     from scripts import build_macro_context as macro
     from scripts import build_bonds as bonds
+    from scripts import build_live_overlay as live
 
     cfg = deepcopy(config.load())
     cfg["storage"]["site_dir"] = "site"
     cfg["storage"]["data_dir"] = "data"
+    cfg["live"] = {**(cfg.get("live") or {}), "enabled": False, "ws_tape_enabled": False}
     data = output / "data"
     site = output / "site"
     site.mkdir(parents=True, exist_ok=True)
+    # Same raw shared assets used by the integration HTTP harness. Production
+    # auth baking and unrelated live-quote polling are outside this local proof.
+    shared_assets = (
+        "illus.css", "navigation-refresh.css", "product-nav-icons.css",
+        "logo_config.js", "stock-logos.js", "live.js", "theme.js", "illus.js",
+        "account.js", "terminal_overlay.js", "nav_market.js",
+    )
+    local_assets = {}
+    for asset in shared_assets:
+        source = ROOT / "templates" / asset
+        (site / asset).write_bytes(source.read_bytes())
+        local_assets["templates/" + asset] = sha(source.read_bytes())
+    shutil.copytree(ROOT / "templates/fonts", site / "fonts", dirs_exist_ok=True)
+    for font in (ROOT / "templates/fonts").glob("*.woff2"):
+        local_assets["templates/fonts/" + font.name] = sha(font.read_bytes())
     with ExitStack() as stack:
         stack.enter_context(patch.object(config, "ROOT", output))
         stack.enter_context(patch.object(config, "load", lambda: cfg))
         stack.enter_context(patch.object(config, "data_dir", lambda: data))
         stack.enter_context(patch.object(config, "site_dir", lambda: site))
+        stack.enter_context(patch.object(live, "resolve_worker_url", lambda: ""))
+        stack.enter_context(patch.object(live, "resolve_snapshot_url", lambda: ""))
+        live.write_live_config(site)
         if macro.main() != 0:
             raise RuntimeError("Existing Macro generator did not complete.")
         snap = json.loads((data / "bonds/bond_health.json").read_text())
@@ -159,6 +180,9 @@ def prepare(output: Path, input_ref: str) -> dict:
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "inputs": receipts,
         "source_files": {name: sha((ROOT / name).read_bytes()) for name in source_paths if (ROOT / name).exists()},
+        "local_shared_assets": local_assets,
+        "local_live_config": {"sha256": sha((site / "live_config.js").read_bytes()),
+                              "live_quotes_enabled": False, "endpoints": "empty test environment"},
         "publisher": pub["publication"],
         "hub_keys": sorted(hub),
         "data_site_bytes_identical": True,

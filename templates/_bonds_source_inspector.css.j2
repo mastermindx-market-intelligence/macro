@@ -5,16 +5,16 @@
   min-height:44px;
   padding:10px 16px;
   border:1px solid var(--line);
-  border-radius:10px;
+  border-radius:var(--r-btn,10px);
   background:var(--panel2);
   color:var(--text);
   font:inherit;
   font-family:var(--font-ui,-apple-system,BlinkMacSystemFont,Inter,"Segoe UI",Roboto,sans-serif);
   cursor:pointer;
 }
-#bonds-source-open:hover{background:color-mix(in srgb,var(--text) 8%,var(--panel2))}
+#bonds-source-open:hover{background:var(--gbtn-bg-hover)}
 #bonds-source-open:focus-visible{outline:3px solid var(--link);outline-offset:2px}
-#bonds-source-open[aria-expanded=true]{background:color-mix(in srgb,var(--link) 24%,var(--panel2));border-color:var(--link)}
+#bonds-source-open[aria-expanded=true]{background:var(--ff-tint-info-12-panel2);border-color:var(--link)}
 
 #bonds-source-dialog{
   border:0;
@@ -23,13 +23,13 @@
   background:var(--panel);
   color:var(--text);
   font-family:var(--font-ui,-apple-system,BlinkMacSystemFont,Inter,"Segoe UI",Roboto,sans-serif);
-  border-radius:14px;
+  border-radius:var(--r-card,12px);
   width:min(640px,calc(100vw - 24px));
   max-height:min(90dvh,820px);
   overflow:hidden;
   box-shadow:var(--popover-shadow);
 }
-#bonds-source-dialog::backdrop{background:rgba(0,0,0,.55)}
+#bonds-source-dialog::backdrop{background:var(--pv-dialog-backdrop)}
 
 #bonds-source-dialog .bonds-source-header{
   display:flex;align-items:center;justify-content:space-between;gap:12px;
@@ -41,7 +41,7 @@
   overflow-wrap:anywhere;
 }
 #bonds-source-dialog .bonds-source-close{
-  min-width:44px;min-height:44px;border-radius:10px;
+  min-width:44px;min-height:44px;border-radius:var(--r-btn,10px);
   border:1px solid var(--line);
   background:transparent;color:var(--text);
   font-size:18px;line-height:1;cursor:pointer;flex-shrink:0;
@@ -61,7 +61,7 @@
 #bonds-source-dialog .row{display:flex;align-items:center;gap:10px}
 #bonds-source-dialog .row.spread{justify-content:space-between}
 #bonds-source-dialog .chip{
-  display:inline-block;padding:4px 10px;border-radius:999px;
+  display:inline-block;padding:4px 10px;border-radius:var(--r-pill,999px);
   background:var(--panel2);color:var(--muted);font-size:12px;
 }
 #bonds-source-dialog .label{color:var(--muted);font-size:12px}
@@ -73,16 +73,16 @@
 #bonds-source-dialog details summary{cursor:pointer;color:var(--muted);min-height:44px;display:flex;align-items:center}
 
 #bonds-source-dialog button{
-  min-height:44px;padding:10px 14px;border-radius:10px;
+  min-height:44px;padding:10px 14px;border-radius:var(--r-btn,10px);
   border:1px solid var(--line);
   background:var(--panel2);
   color:var(--text);
   font:inherit;cursor:pointer;
 }
-#bonds-source-dialog button:hover{background:color-mix(in srgb,var(--text) 8%,var(--panel2))}
+#bonds-source-dialog button:hover{background:var(--gbtn-bg-hover)}
 #bonds-source-dialog button:focus-visible{outline:3px solid var(--link);outline-offset:2px}
-#bonds-source-dialog button.primary{background:color-mix(in srgb,var(--link) 28%,var(--panel2));border-color:var(--link);color:var(--text)}
-#bonds-source-dialog button.primary:hover{background:color-mix(in srgb,var(--link) 40%,var(--panel2))}
+#bonds-source-dialog button.primary{background:var(--ff-tint-info-12-panel2);border-color:var(--link);color:var(--text)}
+#bonds-source-dialog button.primary:hover{background:var(--ff-tint-info-18-panel)}
 #bonds-source-dialog button:disabled{opacity:.6;cursor:not-allowed}
 
 #bonds-source-dialog .source-tabs{
@@ -90,13 +90,13 @@
   padding-bottom:10px;overflow-x:auto;
 }
 #bonds-source-dialog .source-tab{
-  border:0;border-radius:8px;background:transparent;
+  border:0;border-radius:var(--r-ctl,8px);background:transparent;
   color:var(--muted);padding:10px 14px;min-height:44px;
   white-space:nowrap;font-weight:600;cursor:pointer;
 }
 #bonds-source-dialog .source-tab[aria-pressed=true]{
   color:var(--link);
-  background:color-mix(in srgb,var(--link) 16%,transparent);
+  background:var(--mc-accent-12);
 }
 #bonds-source-dialog .source-tab:focus-visible{outline:3px solid var(--link);outline-offset:2px}
 
@@ -108,17 +108,17 @@
 #bonds-source-dialog .source-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 #bonds-source-dialog .source-metric{
   display:flex;flex-direction:column;gap:10px;text-align:left;padding:18px;
-  border:1px solid var(--line);border-radius:12px;
+  border:1px solid var(--line);border-radius:var(--r-card,12px);
   background:var(--panel2);color:var(--text);
   min-width:0;min-height:44px;cursor:pointer;font:inherit;text-align:left;
 }
-#bonds-source-dialog .source-metric:hover{background:color-mix(in srgb,var(--text) 6%,var(--panel2))}
+#bonds-source-dialog .source-metric:hover{background:var(--gbtn-bg-hover)}
 #bonds-source-dialog .source-metric:focus-visible{outline:3px solid var(--link);outline-offset:2px}
 #bonds-source-dialog .source-metric>strong{font-size:24px;line-height:1.2;font-weight:700}
 #bonds-source-dialog .source-metric-link{font-size:12px;font-weight:600;color:var(--link)}
 
 #bonds-source-dialog .source-date-note{
-  padding:14px 16px;border:1px solid var(--line);border-radius:10px;
+  padding:14px 16px;border:1px solid var(--line);border-radius:var(--r-btn,10px);
   background:var(--panel2);
   display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:13px;
 }
@@ -141,7 +141,7 @@
 #bonds-source-dialog .source-file-label{
   position:relative;overflow:hidden;cursor:pointer;flex-shrink:0;
   display:inline-flex;align-items:center;min-height:46px;padding:8px 14px;
-  border:1px solid var(--line);border-radius:10px;background:var(--panel2);
+  border:1px solid var(--line);border-radius:var(--r-btn,10px);background:var(--panel2);
 }
 #bonds-source-dialog .source-file-label input{
   position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;
@@ -177,7 +177,7 @@
 #bonds-source-dialog .source-identity dd{margin:0;overflow-wrap:anywhere;font-family:var(--font-mono,ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono",monospace)}
 
 #bonds-source-dialog .source-need{
-  border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+  border:1px solid var(--line);border-radius:var(--r-card,12px);padding:16px 18px;
 }
 #bonds-source-dialog .source-need-top{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 #bonds-source-dialog .source-need-top .chip{margin-left:auto}
@@ -190,18 +190,18 @@
 
 #bonds-source-dialog .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 #bonds-source-dialog .soft-panel{
-  padding:14px 16px;border:1px solid var(--line);border-radius:10px;
+  padding:14px 16px;border:1px solid var(--line);border-radius:var(--r-btn,10px);
   background:var(--panel2);
 }
 #bonds-source-dialog .receipt{
   font-family:var(--font-mono,ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono",monospace);
   font-size:12px;background:var(--bg);color:var(--text);
-  padding:12px;border-radius:8px;overflow:auto;max-height:260px;
+  padding:12px;border-radius:var(--r-ctl,8px);overflow:auto;max-height:260px;
   white-space:pre-wrap;overflow-wrap:anywhere;margin-top:8px;
 }
 #bonds-source-dialog .field{display:flex;flex-direction:column;gap:6px}
 #bonds-source-dialog input[type=search]{
-  min-height:44px;padding:10px 12px;border-radius:10px;
+  min-height:44px;padding:10px 12px;border-radius:var(--r-btn,10px);
   border:1px solid var(--line);
   background:var(--bg);color:var(--text);
   font:inherit;
@@ -209,15 +209,15 @@
 #bonds-source-dialog input[type=search]:focus-visible{outline:3px solid var(--link);outline-offset:2px}
 
 #bonds-source-dialog .bonds-source-banner{
-  padding:12px 14px;border:1px solid var(--line);border-radius:10px;
+  padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-btn,10px);
   background:var(--panel2);font-size:13px;line-height:1.5;
 }
 #bonds-source-dialog .bonds-source-banner.cautious{
-  border-color:color-mix(in srgb,var(--link) 55%,var(--line));
+  border-color:var(--ff-tint-info-40-line);
 }
 
 @media (max-width:760px){
-  #bonds-source-dialog{width:calc(100vw - 16px);max-height:92dvh;border-radius:12px}
+  #bonds-source-dialog{width:calc(100vw - 16px);max-height:92dvh;border-radius:var(--r-card,12px)}
   #bonds-source-content{max-height:calc(92dvh - 60px);padding:14px}
   #bonds-source-dialog .source-summary{align-items:flex-start;gap:14px;flex-direction:column}
   #bonds-source-dialog .source-summary-meta{min-width:70px}

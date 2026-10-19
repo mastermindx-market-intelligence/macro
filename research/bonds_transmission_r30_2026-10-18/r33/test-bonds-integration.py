@@ -227,13 +227,14 @@ def run(candidate: Path, output: Path) -> dict:
                 expect(body).to_contain_text("2026-10-17"),
                 fit(),
             ))
-            check("UTC build and owner assessment remain visibly distinct", lambda: (
-                expect(body).to_contain_text(pub["publication"]["validation_date"]),
-                expect(body).to_contain_text("publisher identity not authenticated"),
-            ))
             section("dates")
             for label in ("Publication identity",):
                 body.get_by_text(label, exact=True).click()
+            check("UTC build and owner assessment remain visibly distinct", lambda: (
+                expect(body).to_contain_text(pub["publication"]["validation_date"]),
+                expect(body).to_contain_text(pub["publication"]["built_at"]),
+                expect(body).to_contain_text("publisher identity not authenticated"),
+            ))
             check("Identity view exposes declared digest and real component clocks", lambda: (
                 expect(body).to_contain_text(pub["publication"]["content_sha256"]),
                 expect(body).to_contain_text(pub["publication"]["built_at"]),
@@ -390,14 +391,25 @@ def run(candidate: Path, output: Path) -> dict:
             ))
             normal()
             reload()
-            page.evaluate("""() => {
+            page.evaluate("""assessed => {
                 window.r33RealDate=Date;
+                const before=new window.r33RealDate(assessed+'T12:00:00Z');
+                before.setUTCDate(before.getUTCDate()-1);
                 window.Date=class extends window.r33RealDate {
-                    constructor(...args){super(...(args.length?args:['2026-10-17T12:00:00Z']));}
+                    constructor(...args){super(...(args.length?args:[before.toISOString()]));}
                 };
                 document.dispatchEvent(new CustomEvent('langchange',{detail:'en'}));
-            }""")
+            }""", pub["publication"]["validation_date"])
             check("Future owner assessment is disclosed against the viewer UTC clock", lambda: expect(body).to_contain_text("later than today"))
+            page.evaluate("""assessed => {
+                const after=new window.r33RealDate(assessed+'T12:00:00Z');
+                after.setUTCDate(after.getUTCDate()+1);
+                window.Date=class extends window.r33RealDate {
+                    constructor(...args){super(...(args.length?args:[after.toISOString()]));}
+                };
+                document.dispatchEvent(new CustomEvent('langchange',{detail:'en'}));
+            }""", pub["publication"]["validation_date"])
+            check("Older owner assessment is disclosed against the viewer UTC clock", lambda: expect(body).to_contain_text("older than today"))
             page.evaluate("""() => {
                 window.Date=window.r33RealDate;
                 document.dispatchEvent(new CustomEvent('langchange',{detail:'en'}));

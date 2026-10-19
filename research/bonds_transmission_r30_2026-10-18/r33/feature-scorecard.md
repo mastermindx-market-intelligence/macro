@@ -2,7 +2,7 @@
 
 R33 extends I01/I03 inside the accepted eight-workspace, fifteen-family design. The table below records the accepted offline reference. The complete R32 tool scorecard remains in ../r32/feature-scorecard.md.
 
-The [19 October integration record](PRODUCTION_INTEGRATION_2026-10-19.md) adds the existing `/bonds.html` source mount and protected publisher read: 53 new HTTP browser checks and 176 existing Bonds owner pytest checks pass. It covers source/import identity, byte limits, access/network rejection, cancellation, source dates, keyboard behavior and 16 responsive/theme/language combinations. This is an isolated actual-template candidate receipt, not deployed-origin acceptance. Existing offline restore behavior remains in the reference; the production-template port uses explicit site reload without a captured fallback.
+The [19 October integration record](PRODUCTION_INTEGRATION_2026-10-19.md) adds the existing `/bonds.html` source mount and protected publisher read: 54 new HTTP browser checks and the earlier 176 existing Bonds owner pytest checks are retained. It covers source/import identity, byte limits, access/network rejection, cancellation, source dates, keyboard behavior and 16 responsive/theme/language combinations. This is an isolated actual-template candidate receipt, not deployed-origin acceptance. Existing offline restore behavior remains in the reference; the production-template port uses explicit site reload without a captured fallback.
 
 | Feature | Trigger and useful result | State / return behavior | Acceptance evidence |
 | --- | --- | --- | --- |

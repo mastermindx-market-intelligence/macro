@@ -1,6 +1,6 @@
 # Bonds × Transmission — current R33 design and implementation handoff
 
-**The native revamp and working offline reference are complete. The R33 publisher and strict source inspector are now mounted in the existing Bonds source template.** The actual-template HTTP candidate passes 53 new browser checks and 176 existing Bonds owner pytest checks; deployment and production acceptance remain unproven. The eight workspaces, fifteen tool families and protected Forex/CDI boundaries remain intact.
+**The native revamp and working offline reference are complete. The R33 publisher and strict source inspector are now mounted in the existing Bonds source template.** The actual-template HTTP candidate passes 54 new browser checks; 24 canonical host/trigger captures and the earlier 176 existing Bonds owner pytest checks are retained; deployment and production acceptance remain unproven. The eight workspaces, fifteen tool families and protected Forex/CDI boundaries remain intact.
 
 Read the [current cumulative handoff](r33/SESSION_HANDOFF_2026-10-18.md) and [19 October production integration record](r33/PRODUCTION_INTEGRATION_2026-10-19.md) first. They supersede only the earlier unmounted status and next action. The accepted Paper redesign and 65+26 offline journeys were not repeated.
 
