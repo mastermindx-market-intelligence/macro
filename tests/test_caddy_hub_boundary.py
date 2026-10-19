@@ -65,7 +65,9 @@ def test_shipped_caddyfile_line_numbers_match_known_blocks() -> None:
 
     A-MOR-2b lane B inserted the @am_edition_live overlay handle inside
     handle @open_html's route block — that pushed the last reverse_proxy at
-    line 772 down to line 793. The proxy COUNT (7) and the OTHER six lines
+    line 772 down to line 793. The watchstore versioned-cache split adds
+    eleven lines above that final proxy, moving it to line 804. The proxy
+    COUNT (7) and the OTHER six lines
     (121, 146, 350, 359, 392, 430) are unchanged; the topology guard itself
     is unchanged. If you find yourself changing a count or classification
     here, you almost certainly widened the static-access boundary — read
@@ -79,7 +81,7 @@ def test_shipped_caddyfile_line_numbers_match_known_blocks() -> None:
         359: SAFE_FIXED_REWRITE,
         392: SAFE_FIXED_REWRITE,
         430: SAFE_FIXED_REWRITE,
-        793: SAFE_FIXED_REWRITE,
+        804: SAFE_FIXED_REWRITE,
     }
 
 

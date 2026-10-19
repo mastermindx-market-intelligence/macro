@@ -1046,15 +1046,15 @@
       var dailyOK = !dailyIntegrityDescriptor(data);
       // A vendor may emit an after-hours 16:14 heartbeat without a lawful
       // 15:00 trade time. After filtering, zero source-current quotes must
-      // never look like a completed EOD; retain the last verified daily pair.
+      // never look like a completed EOD; retain the last available daily pair.
       var pendingClose = (meta.phase === 'post_close' || meta.phase === 'closed')
         && meta.baseline_asof !== meta.session_date;
       if (pendingClose) return {
         state: 'degraded', dot: 'degraded',
         en: 'Post-close pending · quotes unverified · ' + coverage
-          + (dailyOK ? ' · Last verified daily ' : ' · Daily unavailable ') + (data.asof || '—'),
+          + (dailyOK ? ' · Last available daily close ' : ' · Daily unavailable ') + (data.asof || '—'),
         zh: '收盘数据待确认 · 行情未经验证 · ' + coverage
-          + (dailyOK ? ' · 上次已验证日线 ' : ' · 日线不可用 ') + (data.asof || '—'), breadth: null
+          + (dailyOK ? ' · 上次可用日线 ' : ' · 日线不可用 ') + (data.asof || '—'), breadth: null
       };
       return {
         state: 'degraded', dot: 'degraded',

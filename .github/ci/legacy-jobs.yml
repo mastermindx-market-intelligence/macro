@@ -9915,7 +9915,6 @@ jobs:
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "tests/test_china_heatmap_freshness.py"
-      - "tests/test_china_heatmap_settled_close.py"
       - "collectors/massive_stock_day.py"
       - "config/dataset_registry.yml"
       - "engine/grey_deer_pullback_forward.py"
@@ -10830,6 +10829,22 @@ jobs:
       - "templates/methodology.html.j2"
       - "templates/support.html.j2"
       - "templates/theme.css"
+      - "app/__init__.py"
+      - "engine/capital_structure/__init__.py"
+      - "engine/codex_lane/__init__.py"
+      - "engine/earnings_narrative/__init__.py"
+      - "engine/earnings_release/__init__.py"
+      - "engine/fundamental_forensics/__init__.py"
+      - "engine/government_revenue/__init__.py"
+      - "engine/intelligence_workspace/__init__.py"
+      - "engine/intelligence_workspace/adapters/__init__.py"
+      - "engine/market_os/__init__.py"
+      - "engine/press/__init__.py"
+      - "engine/research_vault/__init__.py"
+      - "engine/seasonality/__init__.py"
+      - "engine/sector_intelligence/__init__.py"
+      - "engine/signal_foundry/__init__.py"
+      - "tests/__init__.py"
     # Whole-board 沪深 涨跌家数 (~5,200 names) behind the A-share heatmap's breadth
     # card. WIRING LAW (#1253 precedent): tests/test_market_heatmap.py was named by
     # NO job before this — the CN/HK/CA map contract merged untested for its whole
@@ -25221,6 +25236,10 @@ jobs:
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
       - "scripts/build_turn_watch.py"
+      - "collectors/biocatalyst/__init__.py"
+      - "engine/biocatalyst/__init__.py"
+      - "engine/context_index/__init__.py"
+      - "engine/market_ontology/__init__.py"
       # Connected Research Factory import closure (PR9463).
       - engine/research_codegen/__init__.py
       - engine/research_codegen/accounting_contract.py

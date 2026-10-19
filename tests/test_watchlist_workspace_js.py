@@ -2152,8 +2152,9 @@ def test_elevated_is_the_engines_own_caution_set_and_has_exactly_one_definition(
 # have silently run its PS-absent fallback for every anonymous visitor forever
 # (found in post-merge live verification, repaired in the follow-up PR that
 # added this test). Every ?v=-stamped script on the page must be either present
-# in EVERY Caddyfile matcher that names /watchlist.js (the funnel-shell set) or
-# named here as deliberately account-gated.
+# in both anonymous-access exclusions and the public static matcher, or
+# named here as deliberately account-gated. Versioned cache membership is a
+# separate contract: watchstore has hashed and legacy branches.
 # ---------------------------------------------------------------------------
 def test_every_watchlist_page_script_is_served_or_deliberately_gated():
     import re
@@ -2170,23 +2171,48 @@ def test_every_watchlist_page_script_is_served_or_deliberately_gated():
     stamped = set(re.findall(r'<script src="([a-z_0-9]+\.js)\?v=\d+"', j2))
     assert "watchlist.js" in stamped, "sentinel: the page must reference its own shell"
 
-    shell_lines = [ln for ln in caddy.splitlines() if "/watchlist.js" in ln]
-    assert len(shell_lines) >= 4, (
-        "expected the four Caddyfile matchers naming /watchlist.js "
-        f"(anonymous-open x2, public path, versioned cache); found {len(shell_lines)}"
+    def matcher_paths(name, directive="path"):
+        blocks = re.findall(rf"^\s*@{name}\s*\{{(.*?)^\s*\}}", caddy, re.S | re.M)
+        assert len(blocks) == 1, f"expected exactly one @{name} matcher, found {len(blocks)}"
+        paths = re.findall(rf"^\s*{directive} ([^\n]+)", blocks[0], re.M)
+        assert len(paths) == 1, f"expected one {directive} directive in @{name}"
+        return set(paths[0].split())
+
+    # These are access exclusions, not the similarly shaped cache matchers.
+    # Keep both paths: a missing error-path exclusion can still regwall a script.
+    public_paths = {
+        "reg_asset": matcher_paths("reg_asset", "not path"),
+        "reg_asset_err": matcher_paths("reg_asset_err", "not path"),
+        "public_static": matcher_paths("public_static"),
+    }
+    missing = {
+        script: [name for name, paths in public_paths.items() if f"/{script}" not in paths]
+        for script in sorted(stamped - GATED)
+        if any(f"/{script}" not in paths for paths in public_paths.values())
+    }
+    assert not missing, (
+        "watchlist.html.j2 references scripts absent from the anonymous-access "
+        f"exclusions or public static matcher: {missing}. Restore the reviewed "
+        "public membership; adding to GATED requires an authority decision."
     )
 
-    missing = {}
+    # The shared shell cache accepts integer stamps. watchstore moved to a
+    # content hash while its old integer/unknown URLs retain their short TTL.
+    # Both branches must remain wired; the dedicated site-access boundary test
+    # pins their complementary hash predicates and cache policy.
+    cache_paths = {
+        name: matcher_paths(name)
+        for name in ("watchlist_shell_versioned", "public_versioned", "watchstore_legacy_versioned")
+    }
+    missing_cache = {}
     for script in sorted(stamped - GATED):
-        absent = [i for i, ln in enumerate(shell_lines) if f"/{script}" not in ln]
+        required = (("public_versioned", "watchstore_legacy_versioned")
+                    if script == "watchstore.js" else ("watchlist_shell_versioned",))
+        absent = [name for name in required if f"/{script}" not in cache_paths[name]]
         if absent:
-            missing[script] = absent
-    assert not missing, (
-        "watchlist.html.j2 references scripts the Caddyfile does not serve "
-        "anonymously in every shell matcher (regwall will 401 them): "
-        f"{missing} — add each to every matcher naming /watchlist.js in "
-        "app/deploy/Caddyfile, or add it to GATED above if the 401 is intended."
-    )
+            missing_cache[script] = absent
+    assert not missing_cache, f"versioned public scripts lack their cache branches: {missing_cache}"
+    assert "/watchstore.js" not in cache_paths["watchlist_shell_versioned"]
 
 
 @needs_node

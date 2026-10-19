@@ -227,8 +227,9 @@ test('unverified post-close quote heartbeat declares pending rather than settled
  assert.equal(d.state,'degraded');
  assert.equal(d.dot,'degraded');
  assert.match(d.en,/Post-close pending · quotes unverified · 0\/100/);
- assert.match(d.en,/Last verified daily 2026-10-14/);
+ assert.match(d.en,/Last available daily close 2026-10-14/);
  assert.match(d.zh,/收盘数据待确认 · 行情未经验证/);
+ assert.match(d.zh,/上次可用日线 2026-10-14/);
  assert.doesNotMatch(d.en,/Market closed|Daily close/);
 });
 
