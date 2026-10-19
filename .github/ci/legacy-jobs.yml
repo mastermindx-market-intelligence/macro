@@ -31011,6 +31011,8 @@ jobs:
       - scripts/tiingo_corpus_audit.py
       - tests/test_tiingo_corpus_audit.py
       - tests/test_tiingo_additional_history.py
+      - scripts/tiingo_chart_history.py
+      - tests/test_tiingo_chart_history.py
       - tests/test_tiingo_capture_admission.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
@@ -31033,6 +31035,7 @@ jobs:
           tests/test_tiingo_ingestion_integrity.py
           tests/test_tiingo_reference_audit.py tests/test_tiingo_planning.py
           tests/test_tiingo_corpus_audit.py tests/test_tiingo_additional_history.py
+          tests/test_tiingo_chart_history.py
           tests/test_tiingo_capture_admission.py -q
 
 
