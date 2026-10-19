@@ -5012,8 +5012,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_810),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_822),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_609),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5756,6 +5756,30 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     no runtime, scope, command, observed-duration override or semantic
     release gate is changed. In particular, the independent Sector RIG
     approval requirement remains active.
+
+    2026-10-19 (PR #8014, current hosted/base and Research-mode composition):
+    hosted run 39219648574 tested 0bbef372 against b73dbbd8 and exposed
+    index/build weights 5,814/5,601, above 5,810/5,600. The same original
+    branch now joins accepted main ff1b80af, preserving its Research mode and
+    every chart/rich regression. The prior and combined manifests, measured
+    on the SAME combined source tree bec31d6128b830212570dae2a60f0ce4c9ad072c,
+    select identical jobs; these are not historical source executions:
+
+        templates/index.html          136 -> 136 jobs, 5,810 -> 5,822 weight
+        scripts/build_free_content.py 134 -> 134 jobs, 5,597 -> 5,609 weight
+        engine/prophet/plan_book.py   129 -> 129 jobs, 5,559 -> 5,571 weight
+
+    All three remain at ten packs. Exactly four accepted upstream additions
+    contribute to each probe: prelaunch-hardening +2 (issuer-context parity),
+    support-email-spine +4 (held-material delivery), unrun-brain-gateway +2
+    (Research mode) and unrun-intl-libraries +4 (US/China cohort contract).
+    Other changed jobs are absent from these selected sets. The incoming
+    main manifest alone measures 5,793/5,580/5,542 on this same source.
+    Fund only the necessary exact ceilings: index 5,810 -> 5,822 and build
+    5,600 -> 5,609. Preserve the plan-book ceiling, every job-count limit,
+    all suites, selectors, scope/closure audits, observed-duration overrides
+    and the ten-pack limit. These are planning weights, not execution times.
+    No reference-integrity rule or approval requirement changes here.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
