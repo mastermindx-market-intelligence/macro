@@ -16,7 +16,7 @@
  "reference_pack": {
   "path": "config/capital_structure_reference_pack.v1.json",
   "schema": "capital_structure.reference_pack.v1",
-  "sha256_at_qualification": "4359d520f53dee1c26a0667f8a1bf8763bdec723de97bcdc586cab1d7eb0a228",
+  "sha256_at_qualification": "a02b548d617563df42b04cdd5b83876fcd7ef048ffe44bb22561f50f6199cc8e",
   "pinned_spans": {
    "cdi_securities_act_forms_q116_21": "55ca5395f131bd98c293a3938c825750f9c113e1ecc90a5d6f5bceef51661f32",
    "cdi_securities_act_forms_q116_22": "c7653f8b341cd9f8fd900d96a7a16d5382514055dc836bf904a1b560969434df",

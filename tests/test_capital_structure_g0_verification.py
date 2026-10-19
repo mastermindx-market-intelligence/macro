@@ -22,6 +22,8 @@ import ast
 import hashlib
 import json
 import re
+from decimal import Decimal
+from fractions import Fraction
 from pathlib import Path
 from typing import Any
 
@@ -448,6 +450,405 @@ def test_g0v_negative_rpid(identities: list[dict[str, Any]]) -> None:
     unknown_ids = {str(item.unknown_id) for item in conflicted.envelope.unknowns}
     assert any(uid.startswith("listing_venue_conflict:") for uid in unknown_ids), sorted(unknown_ids)
     assert (conflicted.inputs.get("nasdaq") or {}).get("reason") == "listing_venue_conflict"
+
+
+
+# ---------------------------------------------------------------------------
+# SPEC 3a — the committed sealed answer and its binding to the pack
+# ---------------------------------------------------------------------------
+
+
+def _sealed_record() -> dict[str, Any]:
+    return json.loads((ROOT / SEALED_RELPATH).read_text(encoding="utf-8"))
+
+
+def test_g0v_sealed_fixture_seal(raw_pack: dict[str, Any]) -> None:
+    path = ROOT / SEALED_RELPATH
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    assert digest == SEALED_SHA256
+    sealed = _sealed_record()
+    identity = next(item for item in raw_pack["identities"] if item["archetype"] == "RPID")
+    case = identity["details"]["g0_case"]
+    assert sealed["cik"] == identity["cik"]
+    assert sealed["path_id"] == case["numerical_path"]["path_id"]
+    assert sealed["rule_id"] == case["numerical_path"]["rule_id"]
+    assert sealed["unit"] == "USD"
+    # The sealed operands bind the committed fixture spans by digest, not by value.
+    _hdr, spans = parse_g0_fixture(ROOT / case["fixture"]["path"])
+    by_label = {span["label"]: span["sha256"] for span in spans}
+    packed = {operand["name"]: operand for operand in case["numerical_path"]["operands"]}
+    for operand in sealed["operands"]:
+        assert operand["span_text_sha256"] == by_label[packed[operand["name"]]["span_label"]], (
+            operand["name"]
+        )
+
+
+# ---------------------------------------------------------------------------
+# SPEC 6 — the recorded held_out_result and its exact shape
+# ---------------------------------------------------------------------------
+
+
+def _held_out_entry(raw_pack: dict[str, Any]) -> dict[str, Any]:
+    return next(
+        gold for gold in raw_pack["gold_cases"] if gold["gold_id"] == HELD_OUT_GOLD_ID
+    )
+
+
+def test_g0v_held_out_result_shape(raw_pack: dict[str, Any]) -> None:
+    entry = _held_out_entry(raw_pack)
+    assert entry["sealed"] is True
+    # Consumers are named relative to tests/, per the pack's own convention.
+    assert "test_capital_structure_g0_verification.py" in entry["consumers"]
+    record = entry["held_out_result"]
+    assert set(record) == set(HELD_OUT_RESULT_KEYS), sorted(record)
+    assert record["outcome"] in ("pass", "fail", "typed_unavailable")
+    assert isinstance(record["reason"], str)
+    assert record["difference"] is None or isinstance(record["difference"], str)
+    assert record["conditional_arithmetic"] in ("match", "mismatch", "not_run")
+    assert record["sealed_sha256"] == SEALED_SHA256
+    assert record["verified_on"] == VERIFIED_ON
+    assert record["verified_by"] == VERIFIED_BY
+    sealed = _sealed_record()
+    assert record["cutoff_instant"] == f"{sealed['cutoff']}T23:59:59Z"
+
+    def walk(node: Any, path: str) -> None:
+        if isinstance(node, dict):
+            for key, value in node.items():
+                assert key not in ("expected", "value", "amount"), (path, key)
+                walk(value, f"{path}.{key}")
+        elif isinstance(node, list):
+            for index, item in enumerate(node):
+                walk(item, f"{path}[{index}]")
+
+    walk(record, "held_out_result")
+
+
+# ---------------------------------------------------------------------------
+# REAL-BUNDLE tier — SPEC 3b–3f and 4
+# ---------------------------------------------------------------------------
+
+_SKIP_REASON = "g0v: no verified capital-structure generation under data/capital_structure"
+
+
+def _skip_unless_verified_generation() -> Any:
+    """The real tier's one skip: no verified generation under data/capital_structure."""
+    pytest.importorskip("pandas", reason="g0v real-bundle tier reads parquet")
+    pytest.importorskip("pyarrow", reason="g0v real-bundle tier reads parquet")
+    from engine.capital_structure.verified_projection_generation import (
+        read_verified_projection_generation,
+    )
+
+    try:
+        generation = read_verified_projection_generation(DATA_ROOT)
+    except Exception as exc:  # noqa: BLE001 — an unverifiable generation is the skip itself
+        pytest.skip(f"{_SKIP_REASON} ({exc})")
+    telemetry = generation.telemetry if isinstance(generation.telemetry, dict) else {}
+    if not telemetry.get("generation_id"):
+        pytest.skip(_SKIP_REASON)
+    return generation
+
+
+def _exact_difference_text(difference: Any) -> str:
+    """An exact rendering of engine-minus-sealed: an integer or a proper fraction."""
+    if difference.denominator == 1:
+        return str(difference.numerator)
+    return f"{difference.numerator}/{difference.denominator}"
+
+
+def _rpid_listing_for_day(day: str, instant: str):
+    """The SPEC 2a listing for the RPID slot, evaluated on an arbitrary day."""
+    return case_listing(
+        {"exchanges": ["Nasdaq"], "details": {}, "latest_in_policy_anchor": {}},
+        day,
+        instant,
+    )
+
+
+def _conditional(
+    published: dict[str, Any],
+    sealed: dict[str, Any],
+    pack: Any,
+    result: dict[str, Any],
+) -> None:
+    """SPEC 3f — the conditional arithmetic on the current published state,
+    recorded SEPARATELY and never counted as a pass."""
+    from engine.capital_structure.issuer_state_contracts import (
+        FinancingScenario,
+        PriceAssumption,
+        Quantity,
+        UnknownResolution,
+    )
+    from engine.capital_structure.rule_applicability import build_rule_pack
+    from engine.capital_structure.state_bundle import state_from_record
+
+    state = state_from_record(published)
+    as_of = str(state.request.as_of)
+    as_of_day = as_of[:10]
+    result["conditional_as_of"] = as_of
+    rules = build_rule_pack(pack, as_of_day)[0]
+    if rules is None:
+        result["conditional_reason"] = f"no qualified rule text on {as_of_day}"
+        return
+    listing = _rpid_listing_for_day(as_of_day, as_of)
+    operands = {str(item["name"]): item for item in sealed["operands"]}
+    resolutions = []
+    for name, key in (
+        ("public_float", "baby_shelf_public_float:"),
+        ("sold_trailing", "baby_shelf_sold_trailing:"),
+    ):
+        operand = operands[name]
+        resolutions.append(
+            UnknownResolution(
+                f"{key}{as_of_day}",
+                Quantity.known(str(Decimal(str(operand["value"]))), "usd"),
+                f"assumption-from-disclosure ({name}): accession {operand['accession']} "
+                f"document {operand['document']} span_text_sha256 {operand['span_text_sha256']}",
+            )
+        )
+    scenario = FinancingScenario(
+        view="then_known",
+        as_of=as_of,
+        horizon_start=as_of_day,
+        horizon_end=as_of_day,
+        price=PriceAssumption(kind="fixed", fixed_price="1.00"),
+        fee_rate="0.01",
+        unknown_resolutions=tuple(resolutions),
+    )
+    evaluation = explain_capacity(state, scenario, rules, pack=pack, listing=listing)
+    pools = {str(pool.constraint_id): pool for pool in evaluation.envelope.shared_pools}
+    pool = pools.get(f"baby_shelf:{as_of_day}")
+    if pool is None:
+        result["conditional_reason"] = (
+            ";".join(sorted(str(item.unknown_id) for item in evaluation.envelope.unknowns))
+            or "no baby-shelf pool on the published state"
+        )
+        return
+    headroom = pool.bound
+    if headroom.status != "known" or headroom.value is None:
+        result["conditional_reason"] = f"baby_shelf_headroom_{headroom.status}"
+        return
+    engine_value = Fraction(Decimal(str(headroom.value)))
+    exact_value = Fraction(*[int(part) for part in str(sealed["expected_exact"]).split("/")])
+    if engine_value == exact_value:
+        result["conditional_arithmetic"] = "match"
+    else:
+        result["conditional_arithmetic"] = "mismatch"
+        result["conditional_reason"] = _exact_difference_text(engine_value - exact_value)
+
+
+@pytest.fixture(scope="module")
+def finding(tmp_path_factory: pytest.TempPathFactory) -> dict[str, Any]:
+    """SPEC 3b–3f: the one real-bundle derivation and its outcome, compared
+    with the pack's ``held_out_result`` exactly as recorded.  Nothing is
+    patched to pass; a wrong or unavailable engine answer is the finding."""
+    from engine.capital_structure.issuer_state_contracts import (
+        ContractViolation,
+        FinancingScenario,
+        PriceAssumption,
+        Quantity,
+        UnknownResolution,
+    )
+    from engine.capital_structure.rule_applicability import build_rule_pack
+    from engine.capital_structure.state_bundle import (
+        issuer_inputs,
+        state_from_record,
+        then_known_state,
+    )
+    from scripts.build_capital_structure_state import build_from_disk
+
+    generation = _skip_unless_verified_generation()
+    out_path = tmp_path_factory.mktemp("g0v") / "state_bundle.json"
+    build_from_disk(root=DATA_ROOT, out_path=out_path)
+    bundle = json.loads(out_path.read_text(encoding="utf-8"))
+
+    pack = C1.PACK
+    reference = rq.load_reference_pack(PACK_PATH)
+    identity = next(item for item in reference.identities if item.archetype == "RPID")
+    issuer_id = identity.issuer_id
+    sealed = _sealed_record()
+    cutoff_day = str(sealed["cutoff"])
+    cutoff_instant = f"{cutoff_day}T23:59:59Z"
+    operands = {str(item["name"]): item for item in sealed["operands"]}
+    published = next(
+        (
+            row
+            for row in bundle["issuers"]
+            if str((row.get("request") or {}).get("issuer_id")) == issuer_id
+        ),
+        None,
+    )
+    result: dict[str, Any] = {
+        "outcome": "typed_unavailable",
+        "reason": "",
+        "difference": None,
+        "conditional_arithmetic": "not_run",
+        "conditional_as_of": None,
+        "conditional_reason": "",
+        "float_from_served_state": None,
+        "float_row": None,
+        "cutoff_instant": cutoff_instant,
+    }
+    if published is None:
+        result["reason"] = "issuer not covered"
+        result["conditional_reason"] = "issuer not covered"
+        return result
+
+    # SPEC 3c — the then-known derivation, exactly as the app performs it.
+    state = None
+    try:
+        inputs = issuer_inputs(bundle, generation, issuer_id)
+        moments = sorted(
+            str(event["point_in_time"]["available_at"])
+            for event in inputs.events
+            if (event.get("point_in_time") or {}).get("available_at")
+        )
+        if moments and moments[0] > cutoff_instant:
+            result["reason"] = "before_first_bound_event"
+        else:
+            derived = then_known_state(published, inputs, cutoff=cutoff_instant, rule_pack=pack)
+            state = state_from_record(derived.as_record())
+    except (ContractViolation, ValueError) as exc:
+        result["reason"] = str(exc) or type(exc).__name__
+
+    if state is None:
+        if not result["reason"]:
+            result["reason"] = "derivation refused"
+        _conditional(published, sealed, pack, result)
+        return result
+
+    # SPEC 3d — one scenario: the state's own as_of, the cutoff day as the
+    # horizon, an S-3 primary shelf route under General Instruction I.B.6, the
+    # SPEC 2a listing, and exactly the sealed sold_trailing resolution.  The
+    # public float is deliberately not resolved: it must come from served
+    # state, or the engine must say why not.
+    rules = build_rule_pack(pack, cutoff_day)[0]
+    assert rules is not None, f"no qualified rule text on {cutoff_day}"
+    listing = _rpid_listing_for_day(cutoff_day, cutoff_instant)
+    sold = operands["sold_trailing"]
+    resolution = UnknownResolution(
+        f"baby_shelf_sold_trailing:{cutoff_day}",
+        Quantity.known(str(Decimal(str(sold["value"]))), "usd"),
+        "historical knowledge: trailing I.B.6 sales as disclosed by accession "
+        f"{sold['accession']} document {sold['document']} span_text_sha256 {sold['span_text_sha256']}",
+    )
+    scenario = FinancingScenario(
+        view="then_known",
+        as_of=str(state.request.as_of),
+        horizon_start=cutoff_day,
+        horizon_end=cutoff_day,
+        price=PriceAssumption(kind="fixed", fixed_price="1.00"),
+        fee_rate="0.01",
+        unknown_resolutions=(resolution,),
+    )
+    evaluation = explain_capacity(state, scenario, rules, pack=pack, listing=listing)
+    pool_id = f"baby_shelf:{cutoff_day}"
+    pools = {str(pool.constraint_id): pool for pool in evaluation.envelope.shared_pools}
+    pool = pools.get(pool_id)
+    record = evaluation.inputs.get("baby_shelf") or {}
+    float_record = record.get("public_float") or {}
+    result["float_from_served_state"] = bool(float_record.get("provenance"))
+    result["float_row"] = (
+        str(record.get("float_measured_on")) if record.get("float_measured_on") else None
+    )
+    if pool is None or pool.bound.status != "known" or pool.bound.value is None:
+        status = pool.bound.status if pool is not None else "absent"
+        result["reason"] = (
+            ";".join(sorted(str(item.unknown_id) for item in evaluation.envelope.unknowns))
+            or f"baby_shelf_headroom_{status}"
+        )
+        _conditional(published, sealed, pack, result)
+        return result
+    # SPEC 3e — the exact comparison.
+    engine_value = Fraction(Decimal(str(pool.bound.value)))
+    exact_value = Fraction(*[int(part) for part in str(sealed["expected_exact"]).split("/")])
+    expected_value = Decimal(str(sealed["expected"]))
+    result["difference"] = _exact_difference_text(engine_value - exact_value)
+    if engine_value == exact_value and Decimal(str(pool.bound.value)) == expected_value:
+        result["outcome"] = "pass"
+    else:
+        result["outcome"] = "fail"
+    _conditional(published, sealed, pack, result)
+    return result
+
+
+def test_g0v_held_out_comparison_matches_the_record(
+    raw_pack: dict[str, Any], finding: dict[str, Any]
+) -> None:
+    record = _held_out_entry(raw_pack)["held_out_result"]
+    fresh = {key: finding[key] for key in ("outcome", "reason", "difference", "conditional_arithmetic", "cutoff_instant")}
+    assert fresh["outcome"] == record["outcome"], json.dumps(finding, sort_keys=True)
+    assert fresh["reason"] == record["reason"], json.dumps(finding, sort_keys=True)
+    assert fresh["difference"] == record["difference"], json.dumps(finding, sort_keys=True)
+    assert fresh["conditional_arithmetic"] == record["conditional_arithmetic"]
+    assert fresh["cutoff_instant"] == record["cutoff_instant"]
+
+
+def test_g0v_public_float_provenance_is_answered(
+    raw_pack: dict[str, Any], finding: dict[str, Any]
+) -> None:
+    """Q3's provenance question has an answer for the recorded outcome: when
+    the derivation was refused, no float row was read at all."""
+    record = _held_out_entry(raw_pack)["held_out_result"]
+    if record["outcome"] == "typed_unavailable" and record["reason"] == "before_first_bound_event":
+        assert finding["float_from_served_state"] is None
+        assert finding["float_row"] is None
+    else:  # a computed outcome must name where its float came from
+        assert isinstance(finding["float_from_served_state"], bool)
+
+
+def test_g0v_conditional_arithmetic_is_separate(
+    raw_pack: dict[str, Any], finding: dict[str, Any]
+) -> None:
+    record = _held_out_entry(raw_pack)["held_out_result"]
+    assert finding["conditional_arithmetic"] == record["conditional_arithmetic"]
+    assert finding["conditional_arithmetic"] in ("match", "mismatch", "not_run")
+    # The conditional leg never upgrades the recorded outcome.
+    if record["conditional_arithmetic"] == "match":
+        assert record["outcome"] == "pass"
+    if record["conditional_arithmetic"] == "not_run":
+        assert finding["conditional_reason"], "a not_run conditional names its reason"
+
+
+def test_g0v_coverage_denominator(
+    raw_pack: dict[str, Any], identities: list[dict[str, Any]], case_table: dict[str, dict[str, Any]]
+) -> None:
+    """SPEC 4 — the honest denominator over the NINE G0 reference slots: the six
+    archetypes, EDRY, RPID, and the open WHK replacement slot, which is counted
+    in ``total`` and never in ``examined``."""
+    archetypes = [str(item["archetype"]) for item in identities]
+    assert archetypes == ["AIR", "CLNN", "QNCX", "WHK", "LPTH", "EDBL", "EDRY", "RPID"]
+    assert any(
+        str(gap.get("gap_id")) == "whk_replacement_issuer" for gap in raw_pack["gaps"]
+    ), "the WHK replacement slot is not open in the pack"
+    whk = next(item for item in raw_pack["identities"] if item["archetype"] == "WHK")
+    assert whk["replacement"] is None and whk["replacement_owed"] is True
+
+    slots = archetypes + ["whk_replacement_issuer"]
+    assert len(slots) == 9
+    examined = [slot for slot in slots if slot in case_table]
+    assert sorted(examined) == sorted(archetypes), (
+        "the open WHK replacement slot is never an examined slot"
+    )
+    held_out_entry = _held_out_entry(raw_pack)
+    assert held_out_entry["cik"] == "0001380106"
+    per_check = {
+        "gold": len(examined),
+        "listing": len(examined),
+        "engine_run": len(examined),
+        "held-out": 1,
+    }
+    for name, count in per_check.items():
+        print(f"{name}: {count}/{len(slots)}")
+        assert count <= len(examined), name
+    # AIR and WHK (NYSE): the venue is unqualified and no Nasdaq pool exists.
+    for archetype in ("AIR", "WHK"):
+        row = case_table[archetype]
+        assert any(
+            uid.startswith("venue_rule_pack_unqualified:nyse") for uid in row["unknown_ids"]
+        ), f"{archetype}: FINDING — {row['unknown_ids']!r}"
+        assert not any(uid.startswith("nasdaq_20pct:") for uid in row["pool_ids"]), (
+            f"{archetype}: FINDING — a Nasdaq 5635 pool on an NYSE case"
+        )
 
 
 # ---------------------------------------------------------------------------
