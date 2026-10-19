@@ -165,7 +165,7 @@ def test_every_span_digest_matches_its_exact_text(pack):
             assert span.chars == len(span.text)
             assert span.label not in seen
             seen.add(span.label)
-    assert len(seen) == 11
+    assert len(seen) == 13
 
 
 def test_cdi_section_116_spans_are_exact_dated_staff_interpretations(pack):
@@ -200,7 +200,8 @@ def test_nasdaq_rule_keeps_the_refused_fetch_receipt_beside_the_browser_qualific
     for span in nasdaq.spans:
         assert span.chars <= rq.EXCERPT_CAP_CHARS
     labels = {s.label for s in nasdaq.spans}
-    assert {"nasdaq_5635_d_1_A_minimum_price", "nasdaq_5635_d_1_B_twenty_percent_issuance",
+    assert {"nasdaq_5615_a_3_A_fpi_home_country_practice", "nasdaq_5615_a_3_B_i_annual_report_disclosure",
+            "nasdaq_5635_d_1_A_minimum_price", "nasdaq_5635_d_1_B_twenty_percent_issuance",
             "nasdaq_5635_d_2_approval_trigger", "nasdaq_im_5635_3_registration_alone_not_public_offering",
             "nasdaq_5635_e_1_outstanding_shares_basis"} == labels
     assert pack.source_policy["http_403_is_never_missing_index_evidence"] is True

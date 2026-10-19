@@ -50,6 +50,7 @@ from typing import Any, Mapping, Sequence
 from engine.capital_structure import capacity as capacity_module
 from engine.capital_structure import funding as funding_module
 from engine.capital_structure import supply_scenarios as supply_module
+from engine.capital_structure.listing_facts import ListingFact
 from engine.capital_structure.issuer_state_contracts import (
     AUTHORIZED_HEADROOM_STATUSES,
     COVERAGE_SCENARIO_ONLY_NOTE,
@@ -296,10 +297,11 @@ def _run_components(
     scenario: FinancingScenario,
     rules: RulePack,
     pack: Any,
+    listing: ListingFact | None = None,
 ) -> tuple[Any, dict[str, Any], Any, FundingSchedule]:
     """Steps 2-4 of the fixed compose order, each wrapped only by type."""
     try:
-        evaluation = capacity_module.explain_capacity(state, scenario, rules, pack=pack)
+        evaluation = capacity_module.explain_capacity(state, scenario, rules, pack=pack, listing=listing)
     except capacity_module.CapacityInputError as exc:
         raise ScenarioCompositionError(str(exc)) from exc
     _identity("capacity", evaluation.envelope.scenario_id == scenario.scenario_id)
@@ -1178,11 +1180,12 @@ def explain_scenario(
     rules: RulePack,
     *,
     pack: Any = None,
+    listing: ListingFact | None = None,
 ) -> ScenarioComposition:
     """Compose the three components and keep the material the checks were read from."""
     _preconditions(state, scenario)
     evaluation, trace, envelope, schedule = _run_components(
-        state, instruments, basis, financials, commitments, scenario, rules, pack
+        state, instruments, basis, financials, commitments, scenario, rules, pack, listing
     )
     index = _index_actions(evaluation, scenario)
     checks = _action_checks(index)
@@ -1252,7 +1255,13 @@ def compose_scenario(
     *,
     pack: Any = None,
 ) -> ScenarioResult:
-    """The composed :class:`ScenarioResult` for one scenario on one issuer state."""
+    """The composed :class:`ScenarioResult` for one scenario on one issuer state.
+
+    The signature is frozen at exactly the ``INTERFACE_OWNERSHIP`` parameters
+    (masterplan §9, pinned by the issuer-state-contracts interface test), so the
+    SPEC_G0 Rev 2.2 ``listing`` pass-through rides :func:`explain_scenario`
+    until the seat's integration step widens the frozen interface.
+    """
     return explain_scenario(
         state, instruments, basis, financials, commitments, scenario, rules, pack=pack
     ).result
