@@ -28,6 +28,7 @@ from engine.qbus_news_universe_snapshot import (
     diagnose_news_universe,
 )
 from lib import config
+from lib.native_parquet import read_parquet_native
 
 
 class NewsUniverseBuildError(RuntimeError):
@@ -75,7 +76,10 @@ def _records(frame: pd.DataFrame, *, include_index: bool = False) -> list[dict]:
 
 def _read_parquet(path: Path, *, include_index: bool = False) -> list[dict]:
     try:
-        frame = pd.read_parquet(path)
+        # Native read: a Python-backed pyarrow buffer destroyed at interpreter
+        # exit forces pthread_exit -> SIGABRT (PR #9043: 63/1002 -> 0/1002);
+        # lib/native_parquet.py owns the mechanism.
+        frame = read_parquet_native(path)
     except Exception as exc:
         raise NewsUniverseBuildError("owner_artifact_unreadable") from exc
     try:

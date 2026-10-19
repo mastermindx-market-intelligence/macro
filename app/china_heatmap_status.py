@@ -99,5 +99,3 @@ def status_projection(
         "breadth_flat": breadth.get("flat") if isinstance(breadth, dict) else None,
         "breadth_pct_up": breadth.get("pctUp") if isinstance(breadth, dict) else None,
     }
-
-

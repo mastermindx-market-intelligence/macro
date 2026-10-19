@@ -1,0 +1,45 @@
+{
+  "schema": "tiingo.qualifier_control_only_selection_offline_checks/v1",
+  "recorded_at_utc": "2026-10-12T23:11:05.896177+00:00",
+  "qualifier_sha256": "e13773e6374fe3f39f92b8ab3b31eb6403a543204a7c7250dad0c67f487dd0b9",
+  "check_method_sha256": "13de035a543291a4e518fa8017eebcd8a9e95a57104c310da8a415170a94d6ed",
+  "actual_qualifier_selection_nodes_executed": true,
+  "boundary_functions_are_offline_fixtures": true,
+  "cases": [
+    {
+      "kinds": [
+        "Q",
+        "other"
+      ],
+      "all_raw_segments_reconciled": 2,
+      "raw_bytes": 276,
+      "reader_calls": 1,
+      "tape_chunks": 1,
+      "market_only_selection_verified": true,
+      "control_only_reader_status_truthful": true
+    },
+    {
+      "kinds": [
+        "other"
+      ],
+      "all_raw_segments_reconciled": 1,
+      "raw_bytes": 140,
+      "reader_calls": 0,
+      "tape_chunks": 0,
+      "market_only_selection_verified": true,
+      "control_only_reader_status_truthful": true
+    },
+    {
+      "kinds": [],
+      "all_raw_segments_reconciled": 0,
+      "raw_bytes": 0,
+      "reader_calls": 0,
+      "tape_chunks": 0,
+      "market_only_selection_verified": true,
+      "control_only_reader_status_truthful": true
+    }
+  ],
+  "provider_requests": 0,
+  "actual_materializer_or_reader_executed": false,
+  "production_acceptance_claimed": false
+}

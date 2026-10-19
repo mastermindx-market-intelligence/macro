@@ -248,10 +248,15 @@ next_action: >
   on issuer overlap clusters (DEC:K3E-EVAL1-PARTITION-CLOCK-UNIT-2026-10-07) and the only counter is
   eval1_partition_clock.py read at a fresh origin/main. B0/B6/challenger are fit on F_DEV only, after
   F_DEV closes at 100 clusters, by the single evaluator (engine/k3e_eval1_forward.py); F_HOLD stays
-  locked; no tuning loop. (2) After the first nightly that runs the widened builder, re-run
-  r1_readiness_probe at a post-build cutoff and issue the prospective owner receipt upgrading the
-  resolved names from DEGRADED_ACCEPTED to CLOSED (R1 DEC upgrade path); never re-label rows at or
-  before 2026-10-03T06:31:51Z. (3) R4 predictive admission re-runs only when the forward N floor can
+  locked; no tuning loop. (2) DONE 2026-10-17 as a degraded REFRESH, not a CLOSED upgrade
+  (DEC:ITP-R1-DEGRADED-RECEIPT-REFRESH-2026-10-17): the widened builder's nightlies moved G1 to 1495 of
+  1502 names resolved (7 unresolved: BLFS, CENT, CENTA, CWEN-A, HLX, SKYD, TCBI) and G2 stays undated by
+  the ALIAS ruling, so no gap meets the spec's CLOSED gate; the refreshed receipt
+  R1_OWNER_RECEIPTS_2026-10-17.json at cutoff 2026-10-15T13:32:43Z and probe run
+  R1_READINESS_2026-10-17.json (COMPLETE_DEGRADED) are on main; never re-label rows at or before
+  2026-10-03T06:31:51Z, and a later refresh re-runs the probe with --cutoff/--owner-receipts/
+  --expected-universe-sha256 at a later spine clock (CLOSED only if issuer_id_resolved == names AND
+  undated_alias_rows == 0, neither reachable without a dated identity source). (3) R4 predictive admission re-runs only when the forward N floor can
   be met on post-boundary data. Absolute gates: vendor PIT procurement, capital/rank authority
   (Chairman). No K3-E merge authorizes consumer wiring, Market OS UI, rank, gate, size, trade or
   deployment; financial_influence, k3e_admissible and promotion_eligible stay false.

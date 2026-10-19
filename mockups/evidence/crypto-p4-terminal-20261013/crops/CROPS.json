@@ -1,0 +1,658 @@
+[
+ {
+  "file": "crypto_H3_dark_en_1440.png",
+  "page": "crypto.html",
+  "shelf": "H3",
+  "theme": "dark",
+  "lang": "en",
+  "doc_theme": "dark",
+  "doc_lang": "en",
+  "qm": [
+   {
+    "tip": "Farside fund-level net creations and redemptions, in million",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(139, 147, 161)",
+    "border": "rgb(58, 65, 80)",
+    "radius": "999px"
+   },
+   {
+    "tip": "DefiLlama aggregate circulating supply. A supply change, not",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(139, 147, 161)",
+    "border": "rgb(58, 65, 80)",
+    "radius": "999px"
+   },
+   {
+    "tip": "BTC spot-volume percentile is an honest proxy until full cla",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(139, 147, 161)",
+    "border": "rgb(58, 65, 80)",
+    "radius": "999px"
+   }
+  ],
+  "captured_at": "77ec575a (pre-R39): qm tip text predates the R39 move of source names into the LENS receipt line"
+ },
+ {
+  "file": "crypto_H4_dark_en_1440.png",
+  "page": "crypto.html",
+  "shelf": "H4",
+  "theme": "dark",
+  "lang": "en",
+  "doc_theme": "dark",
+  "doc_lang": "en",
+  "qm": [
+   {
+    "tip": "An annualized cost needs a qualified interval and source. Pr",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(139, 147, 161)",
+    "border": "rgb(58, 65, 80)",
+    "radius": "999px"
+   },
+   {
+    "tip": "ETH/BTC relative trend plus BTC dominance; display context o",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(139, 147, 161)",
+    "border": "rgb(58, 65, 80)",
+    "radius": "999px"
+   }
+  ],
+  "captured_at": "77ec575a (pre-R39): qm tip text predates the R39 move of source names into the LENS receipt line"
+ },
+ {
+  "file": "crypto_H3_dark_zh_1440.png",
+  "page": "crypto.html",
+  "shelf": "H3",
+  "theme": "dark",
+  "lang": "zh",
+  "doc_theme": "dark",
+  "doc_lang": "zh-CN",
+  "qm": [
+   {
+    "tip": "Farside 基金级净申购与赎回，单位为百万美元。这是比特币 ETF 申购测量，不是全市场市值。",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(139, 147, 161)",
+    "border": "rgb(58, 65, 80)",
+    "radius": "999px"
+   },
+   {
+    "tip": "DefiLlama 汇总流通供应量。这是供应量变化，不是已测量的 ETF 申购。",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(139, 147, 161)",
+    "border": "rgb(58, 65, 80)",
+    "radius": "999px"
+   },
+   {
+    "tip": "在全市场成交量积累完成前，以 BTC 现货成交量百分位作为明确标注的代理。",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(139, 147, 161)",
+    "border": "rgb(58, 65, 80)",
+    "radius": "999px"
+   }
+  ],
+  "captured_at": "77ec575a (pre-R39): qm tip text predates the R39 move of source names into the LENS receipt line"
+ },
+ {
+  "file": "crypto_H4_dark_zh_1440.png",
+  "page": "crypto.html",
+  "shelf": "H4",
+  "theme": "dark",
+  "lang": "zh",
+  "doc_theme": "dark",
+  "doc_lang": "zh-CN",
+  "qm": [
+   {
+    "tip": "年化成本需要明确的结算间隔与来源。预测资金费率并非实际结算支付。",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(139, 147, 161)",
+    "border": "rgb(58, 65, 80)",
+    "radius": "999px"
+   },
+   {
+    "tip": "ETH/BTC 相对趋势结合 BTC 占比；仅作展示背景。",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(139, 147, 161)",
+    "border": "rgb(58, 65, 80)",
+    "radius": "999px"
+   }
+  ],
+  "captured_at": "77ec575a (pre-R39): qm tip text predates the R39 move of source names into the LENS receipt line"
+ },
+ {
+  "file": "crypto_H3_light_en_1440.png",
+  "page": "crypto.html",
+  "shelf": "H3",
+  "theme": "light",
+  "lang": "en",
+  "doc_theme": "light",
+  "doc_lang": "en",
+  "qm": [
+   {
+    "tip": "Farside fund-level net creations and redemptions, in million",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(76, 90, 108)",
+    "border": "rgb(192, 196, 205)",
+    "radius": "999px"
+   },
+   {
+    "tip": "DefiLlama aggregate circulating supply. A supply change, not",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(76, 90, 108)",
+    "border": "rgb(192, 196, 205)",
+    "radius": "999px"
+   },
+   {
+    "tip": "BTC spot-volume percentile is an honest proxy until full cla",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(76, 90, 108)",
+    "border": "rgb(192, 196, 205)",
+    "radius": "999px"
+   }
+  ],
+  "captured_at": "77ec575a (pre-R39): qm tip text predates the R39 move of source names into the LENS receipt line"
+ },
+ {
+  "file": "crypto_H4_light_en_1440.png",
+  "page": "crypto.html",
+  "shelf": "H4",
+  "theme": "light",
+  "lang": "en",
+  "doc_theme": "light",
+  "doc_lang": "en",
+  "qm": [
+   {
+    "tip": "An annualized cost needs a qualified interval and source. Pr",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(76, 90, 108)",
+    "border": "rgb(192, 196, 205)",
+    "radius": "999px"
+   },
+   {
+    "tip": "ETH/BTC relative trend plus BTC dominance; display context o",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(76, 90, 108)",
+    "border": "rgb(192, 196, 205)",
+    "radius": "999px"
+   }
+  ],
+  "captured_at": "77ec575a (pre-R39): qm tip text predates the R39 move of source names into the LENS receipt line"
+ },
+ {
+  "file": "crypto_H3_light_zh_1440.png",
+  "page": "crypto.html",
+  "shelf": "H3",
+  "theme": "light",
+  "lang": "zh",
+  "doc_theme": "light",
+  "doc_lang": "zh-CN",
+  "qm": [
+   {
+    "tip": "Farside 基金级净申购与赎回，单位为百万美元。这是比特币 ETF 申购测量，不是全市场市值。",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(76, 90, 108)",
+    "border": "rgb(192, 196, 205)",
+    "radius": "999px"
+   },
+   {
+    "tip": "DefiLlama 汇总流通供应量。这是供应量变化，不是已测量的 ETF 申购。",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(76, 90, 108)",
+    "border": "rgb(192, 196, 205)",
+    "radius": "999px"
+   },
+   {
+    "tip": "在全市场成交量积累完成前，以 BTC 现货成交量百分位作为明确标注的代理。",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(76, 90, 108)",
+    "border": "rgb(192, 196, 205)",
+    "radius": "999px"
+   }
+  ],
+  "captured_at": "77ec575a (pre-R39): qm tip text predates the R39 move of source names into the LENS receipt line"
+ },
+ {
+  "file": "crypto_H4_light_zh_1440.png",
+  "page": "crypto.html",
+  "shelf": "H4",
+  "theme": "light",
+  "lang": "zh",
+  "doc_theme": "light",
+  "doc_lang": "zh-CN",
+  "qm": [
+   {
+    "tip": "年化成本需要明确的结算间隔与来源。预测资金费率并非实际结算支付。",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(76, 90, 108)",
+    "border": "rgb(192, 196, 205)",
+    "radius": "999px"
+   },
+   {
+    "tip": "ETH/BTC 相对趋势结合 BTC 占比；仅作展示背景。",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(76, 90, 108)",
+    "border": "rgb(192, 196, 205)",
+    "radius": "999px"
+   }
+  ],
+  "captured_at": "77ec575a (pre-R39): qm tip text predates the R39 move of source names into the LENS receipt line"
+ },
+ {
+  "file": "crypto_lens_etf_dark_en_1440.png",
+  "page": "crypto.html",
+  "shelf": "H3",
+  "state": "lens-open-etf",
+  "opened_by": "hover",
+  "viewport_width": 1440,
+  "theme": "dark",
+  "lang": "en",
+  "doc_theme": "dark",
+  "doc_lang": "en",
+  "popover": {
+   "text": "Fund-level net creations and redemptions, in millions of dollars. A bitcoin-ETF subscription measurement, not class capitalization. Source: Farside",
+   "bg": "color(srgb 0.0823529 0.0941176 0.12549 / 0.86)",
+   "color": "rgb(200, 208, 220)",
+   "shadow": "rgba(3, 7, 18, 0.74) 0px 24px 64px -22px, rgba(3, 7, 18, 0.55) 0px 10px 26px -12px, color(srgb 1 1 1 / 0.1) 0px 1px 0px 0px inset",
+   "border": "rgb(200, 208, 220)",
+   "position": "fixed",
+   "rect": {
+    "x": 100,
+    "y": 247,
+    "w": 300,
+    "h": 124
+   },
+   "vw": 1440,
+   "vh": 900,
+   "rc_text": "Source: Farside",
+   "scrim_open": false,
+   "sheet": false
+  }
+ },
+ {
+  "file": "crypto_lens_stablecoin_dark_en_1440.png",
+  "page": "crypto.html",
+  "shelf": "H3",
+  "state": "lens-open-stablecoin",
+  "opened_by": "hover",
+  "viewport_width": 1440,
+  "theme": "dark",
+  "lang": "en",
+  "doc_theme": "dark",
+  "doc_lang": "en",
+  "popover": {
+   "text": "Aggregate circulating supply. A supply change, not a measured ETF subscription. Source: DefiLlama",
+   "bg": "color(srgb 0.0823529 0.0941176 0.12549 / 0.86)",
+   "color": "rgb(200, 208, 220)",
+   "shadow": "rgba(3, 7, 18, 0.74) 0px 24px 64px -22px, rgba(3, 7, 18, 0.55) 0px 10px 26px -12px, color(srgb 1 1 1 / 0.1) 0px 1px 0px 0px inset",
+   "border": "rgb(200, 208, 220)",
+   "position": "fixed",
+   "rect": {
+    "x": 543,
+    "y": 267,
+    "w": 300,
+    "h": 104
+   },
+   "vw": 1440,
+   "vh": 900,
+   "rc_text": "Source: DefiLlama",
+   "scrim_open": false,
+   "sheet": false
+  }
+ },
+ {
+  "file": "crypto_lens_etf_light_zh_1440.png",
+  "page": "crypto.html",
+  "shelf": "H3",
+  "state": "lens-open-etf",
+  "opened_by": "hover",
+  "viewport_width": 1440,
+  "theme": "light",
+  "lang": "zh",
+  "doc_theme": "light",
+  "doc_lang": "zh-CN",
+  "popover": {
+   "text": "基金级净申购与赎回，单位为百万美元。这是比特币 ETF 申购测量，不是全市场市值。 来源：Farside",
+   "bg": "color(srgb 1 1 1 / 0.64)",
+   "color": "rgb(46, 57, 80)",
+   "shadow": "rgba(20, 32, 64, 0.34) 0px 20px 54px -24px, rgba(20, 32, 64, 0.2) 0px 10px 24px -14px, rgba(255, 255, 255, 0.85) 0px 1px 0px 0px inset",
+   "border": "rgb(46, 57, 80)",
+   "position": "fixed",
+   "rect": {
+    "x": 89,
+    "y": 274,
+    "w": 300,
+    "h": 104
+   },
+   "vw": 1440,
+   "vh": 900,
+   "rc_text": "来源：Farside",
+   "scrim_open": false,
+   "sheet": false
+  }
+ },
+ {
+  "file": "crypto_lens_stablecoin_light_zh_1440.png",
+  "page": "crypto.html",
+  "shelf": "H3",
+  "state": "lens-open-stablecoin",
+  "opened_by": "hover",
+  "viewport_width": 1440,
+  "theme": "light",
+  "lang": "zh",
+  "doc_theme": "light",
+  "doc_lang": "zh-CN",
+  "popover": {
+   "text": "汇总流通供应量。这是供应量变化，不是已测量的 ETF 申购。 来源：DefiLlama",
+   "bg": "color(srgb 1 1 1 / 0.64)",
+   "color": "rgb(46, 57, 80)",
+   "shadow": "rgba(20, 32, 64, 0.34) 0px 20px 54px -24px, rgba(20, 32, 64, 0.2) 0px 10px 24px -14px, rgba(255, 255, 255, 0.85) 0px 1px 0px 0px inset",
+   "border": "rgb(46, 57, 80)",
+   "position": "fixed",
+   "rect": {
+    "x": 488,
+    "y": 274,
+    "w": 300,
+    "h": 104
+   },
+   "vw": 1440,
+   "vh": 900,
+   "rc_text": "来源：DefiLlama",
+   "scrim_open": false,
+   "sheet": false
+  }
+ },
+ {
+  "file": "crypto_lens_etf_dark_en_390.png",
+  "page": "crypto.html",
+  "shelf": "H3",
+  "state": "lens-open-etf",
+  "opened_by": "image: hover-open frame (settled); probe: focus-open pass (same source)",
+  "viewport_width": 390,
+  "theme": "dark",
+  "lang": "en",
+  "doc_theme": "dark",
+  "doc_lang": "en",
+  "popover": {
+   "text": "✕ Fund-level net creations and redemptions, in millions of dollars. A bitcoin-ETF subscription measurement, not class capitalization. Source: Farside",
+   "bg": "color(srgb 0.0823529 0.0941176 0.12549 / 0.86)",
+   "color": "rgb(200, 208, 220)",
+   "shadow": "rgba(3, 7, 18, 0.74) 0px 24px 64px -22px, rgba(3, 7, 18, 0.55) 0px 10px 26px -12px, color(srgb 1 1 1 / 0.1) 0px 1px 0px 0px inset",
+   "border": "rgb(200, 208, 220)",
+   "position": "fixed",
+   "rect": {
+    "x": 0,
+    "y": 703,
+    "w": 390,
+    "h": 145
+   },
+   "vw": 390,
+   "vh": 844,
+   "rc_text": "Source: Farside",
+   "scrim_open": true,
+   "sheet": true
+  },
+  "note": "Headless click toggles the 390 bottom sheet and a hover-opened sheet closes once the scrim takes the pointer, so the frame and the DOM probe come from two runs of identical source: the image is the settled hover-open frame, the popover fields are the focus-open probe."
+ },
+ {
+  "file": "crypto_lens_stablecoin_dark_en_390.png",
+  "page": "crypto.html",
+  "shelf": "H3",
+  "state": "lens-open-stablecoin",
+  "opened_by": "image: hover-open frame (settled); probe: focus-open pass (same source)",
+  "viewport_width": 390,
+  "theme": "dark",
+  "lang": "en",
+  "doc_theme": "dark",
+  "doc_lang": "en",
+  "popover": {
+   "text": "✕ Aggregate circulating supply. A supply change, not a measured ETF subscription. Source: DefiLlama",
+   "bg": "color(srgb 0.0823529 0.0941176 0.12549 / 0.86)",
+   "color": "rgb(200, 208, 220)",
+   "shadow": "rgba(3, 7, 18, 0.74) 0px 24px 64px -22px, rgba(3, 7, 18, 0.55) 0px 10px 26px -12px, color(srgb 1 1 1 / 0.1) 0px 1px 0px 0px inset",
+   "border": "rgb(200, 208, 220)",
+   "position": "fixed",
+   "rect": {
+    "x": 0,
+    "y": 736,
+    "w": 390,
+    "h": 125
+   },
+   "vw": 390,
+   "vh": 844,
+   "rc_text": "Source: DefiLlama",
+   "scrim_open": true,
+   "sheet": true
+  },
+  "note": "Headless click toggles the 390 bottom sheet and a hover-opened sheet closes once the scrim takes the pointer, so the frame and the DOM probe come from two runs of identical source: the image is the settled hover-open frame, the popover fields are the focus-open probe."
+ },
+ {
+  "file": "crypto_lens_etf_light_zh_390.png",
+  "page": "crypto.html",
+  "shelf": "H3",
+  "state": "lens-open-etf",
+  "opened_by": "image: hover-open frame (settled); probe: focus-open pass (same source)",
+  "viewport_width": 390,
+  "theme": "light",
+  "lang": "zh",
+  "doc_theme": "light",
+  "doc_lang": "zh-CN",
+  "popover": {
+   "text": "✕ 基金级净申购与赎回，单位为百万美元。这是比特币 ETF 申购测量，不是全市场市值。 来源：Farside",
+   "bg": "color(srgb 1 1 1 / 0.64)",
+   "color": "rgb(46, 57, 80)",
+   "shadow": "rgba(20, 32, 64, 0.34) 0px 20px 54px -24px, rgba(20, 32, 64, 0.2) 0px 10px 24px -14px, rgba(255, 255, 255, 0.85) 0px 1px 0px 0px inset",
+   "border": "rgb(46, 57, 80)",
+   "position": "fixed",
+   "rect": {
+    "x": 0,
+    "y": 729,
+    "w": 390,
+    "h": 125
+   },
+   "vw": 390,
+   "vh": 844,
+   "rc_text": "来源：Farside",
+   "scrim_open": true,
+   "sheet": true
+  },
+  "note": "Headless click toggles the 390 bottom sheet and a hover-opened sheet closes once the scrim takes the pointer, so the frame and the DOM probe come from two runs of identical source: the image is the settled hover-open frame, the popover fields are the focus-open probe."
+ },
+ {
+  "file": "crypto_lens_stablecoin_light_zh_390.png",
+  "page": "crypto.html",
+  "shelf": "H3",
+  "state": "lens-open-stablecoin",
+  "opened_by": "image: hover-open frame (settled); probe: focus-open pass (same source)",
+  "viewport_width": 390,
+  "theme": "light",
+  "lang": "zh",
+  "doc_theme": "light",
+  "doc_lang": "zh-CN",
+  "popover": {
+   "text": "✕ 汇总流通供应量。这是供应量变化，不是已测量的 ETF 申购。 来源：DefiLlama",
+   "bg": "color(srgb 1 1 1 / 0.64)",
+   "color": "rgb(46, 57, 80)",
+   "shadow": "rgba(20, 32, 64, 0.34) 0px 20px 54px -24px, rgba(20, 32, 64, 0.2) 0px 10px 24px -14px, rgba(255, 255, 255, 0.85) 0px 1px 0px 0px inset",
+   "border": "rgb(46, 57, 80)",
+   "position": "fixed",
+   "rect": {
+    "x": 0,
+    "y": 745,
+    "w": 390,
+    "h": 125
+   },
+   "vw": 390,
+   "vh": 844,
+   "rc_text": "来源：DefiLlama",
+   "scrim_open": true,
+   "sheet": true
+  },
+  "note": "Headless click toggles the 390 bottom sheet and a hover-opened sheet closes once the scrim takes the pointer, so the frame and the DOM probe come from two runs of identical source: the image is the settled hover-open frame, the popover fields are the focus-open probe."
+ },
+ {
+  "file": "vector_S3_dark_en_1440.png",
+  "page": "vector.html",
+  "shelf": "S3",
+  "viewport_width": 1440,
+  "theme": "dark",
+  "lang": "en",
+  "doc_theme": "dark",
+  "doc_lang": "en",
+  "rows": [
+   "Trend & Momentum Bullish +0.36 momentum ?",
+   "Cycle & Valuation Neutral 74% cycle ?",
+   "Liquidity & Flows Unavailable +0.9% stablecoin growth ?",
+   "Leverage & Derivatives Low 5/100 pressure · as of Oct 11 ?",
+   "Network & Miners Positive 86/100 BFI ?",
+   "Macro Backdrop Headwind +6.8% global M2 ?"
+  ]
+ },
+ {
+  "file": "vector_S3_dark_zh_1440.png",
+  "page": "vector.html",
+  "shelf": "S3",
+  "viewport_width": 1440,
+  "theme": "dark",
+  "lang": "zh",
+  "doc_theme": "dark",
+  "doc_lang": "zh-CN",
+  "rows": [
+   "趋势与动量 看多 +0.36 动量 ?",
+   "周期与估值 中性 74% 周期 ?",
+   "流动性与资金流 暂无 +0.9% 稳定币增长 ?",
+   "杠杆与衍生品 低 5/100 压力 · 截至10月11日 ?",
+   "网络与矿工 正向 86/100 BFI ?",
+   "宏观背景 逆风 +6.8% 全球 M2 ?"
+  ]
+ },
+ {
+  "file": "vector_S3_light_en_1440.png",
+  "page": "vector.html",
+  "shelf": "S3",
+  "viewport_width": 1440,
+  "theme": "light",
+  "lang": "en",
+  "doc_theme": "light",
+  "doc_lang": "en",
+  "rows": [
+   "Trend & Momentum Bullish +0.36 momentum ?",
+   "Cycle & Valuation Neutral 74% cycle ?",
+   "Liquidity & Flows Unavailable +0.9% stablecoin growth ?",
+   "Leverage & Derivatives Low 5/100 pressure · as of Oct 11 ?",
+   "Network & Miners Positive 86/100 BFI ?",
+   "Macro Backdrop Headwind +6.8% global M2 ?"
+  ]
+ },
+ {
+  "file": "vector_S3_light_zh_1440.png",
+  "page": "vector.html",
+  "shelf": "S3",
+  "viewport_width": 1440,
+  "theme": "light",
+  "lang": "zh",
+  "doc_theme": "light",
+  "doc_lang": "zh-CN",
+  "rows": [
+   "趋势与动量 看多 +0.36 动量 ?",
+   "周期与估值 中性 74% 周期 ?",
+   "流动性与资金流 暂无 +0.9% 稳定币增长 ?",
+   "杠杆与衍生品 低 5/100 压力 · 截至10月11日 ?",
+   "网络与矿工 正向 86/100 BFI ?",
+   "宏观背景 逆风 +6.8% 全球 M2 ?"
+  ]
+ },
+ {
+  "file": "vector_S3_dark_en_390.png",
+  "page": "vector.html",
+  "shelf": "S3",
+  "viewport_width": 390,
+  "theme": "dark",
+  "lang": "en",
+  "doc_theme": "dark",
+  "doc_lang": "en",
+  "rows": [
+   "Trend & Momentum Bullish +0.36 momentum ?",
+   "Cycle & Valuation Neutral 74% cycle ?",
+   "Liquidity & Flows Unavailable +0.9% stablecoin growth ?",
+   "Leverage & Derivatives Low 5/100 pressure · as of Oct 11 ?",
+   "Network & Miners Positive 86/100 BFI ?",
+   "Macro Backdrop Headwind +6.8% global M2 ?"
+  ]
+ },
+ {
+  "file": "vector_S3_light_zh_390.png",
+  "page": "vector.html",
+  "shelf": "S3",
+  "viewport_width": 390,
+  "theme": "light",
+  "lang": "zh",
+  "doc_theme": "light",
+  "doc_lang": "zh-CN",
+  "rows": [
+   "趋势与动量 看多 +0.36 动量 ?",
+   "周期与估值 中性 74% 周期 ?",
+   "流动性与资金流 暂无 +0.9% 稳定币增长 ?",
+   "杠杆与衍生品 低 5/100 压力 · 截至10月11日 ?",
+   "网络与矿工 正向 86/100 BFI ?",
+   "宏观背景 逆风 +6.8% 全球 M2 ?"
+  ]
+ }
+]

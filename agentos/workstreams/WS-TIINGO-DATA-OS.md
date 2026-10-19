@@ -34,38 +34,36 @@ waves:
     status: in_progress
     pr: [8698, 945, 955, 8986, 9004, 9018, 9020, 9022, 9027]
 next_action: >-
-  Wave13 now accounts for all original 5000 selections exactly once across five
-  settled phases: 4994 qualified successes, six held transport failures and zero
-  never-admitted remainder. Qualified responses add 10976717 bars and 2468556453
-  raw bytes. All 28 proof hashes, actual admission mappings and phase receipt
-  clocks match. Preserve the original and three intermediate false completion
-  flags; no attempted failure was retried. LDHOF, LDHUF, LDKYQ, LDSSF, LFYC and
-  LIBHB remain held. The reused census is 38165 nonempty histories, 80781264 bars,
-  112 empty responses, 9411 uncaptured catalogue windows and one WTFNF whole-receipt
-  source-quality quarantine; uncaptured is not never-attempted or a retry queue.
-  Independent review accepted truthful outcome accounting and corrected the next
-  scope gate so a new final authentication/access refusal cannot admit further
-  capture merely through a symbol hold. Actual serial3 succeeded and qualified.
-  Continue original wave14, actually started 2026-10-12 22:45:37 UTC after fresh
-  source, collision, quota and storage checks. Its 5000 selections exclude every
-  earlier whole reservation and all 22 held symbols. Qualify only owned completed
-  responses; keep the unchanged collector/key/module, four in flight, rolling
-  local admissions no faster than four per five seconds, 24 GiB raw threshold,
-  40 GiB admission floor and first-error stop. Save actual settlement and quality
-  partition, then advance the remaining disjoint eligible catalogue work.
-  Macro source/evidence 9018, 9020, 9022 and 9027 are merged. New safe proof lives
-  in docs/tiingo-evidence/20261012-wave13-held-outcome/. The installed research
-  release remains 0b204cde017b88a9fec03ddb583f6b5e02ea4886; accepted real Lab/reader
-  proof remains valid. Four contracts are PRODUCED, twenty PROPOSED.
-  Terminal 955 was observed OPEN/BLOCKED at 628dc9e1a0bc87ecb0b94347a63624a4bfcb9681;
-  dispatched CI 38308545171 has all twelve actual jobs successful. Current PR run
-  38308552647 remains action_required and its required aggregate absent. Preserve
-  the original approval refusal and require protected landing before the existing
-  VPS builder path. No release or browser acceptance is claimed. The next BOATS
-  opening is 2026-10-13 00:00 UTC. Standalone split, SHW/PFE and provider access
-  holds remain; 75 accepted fundamental captures across 25 companies serve about
-  three years. Deep/all-symbol serving, dated identity, PIT and responsive live
-  BOATS acceptance remain open. Continue ready work.
+  Preserve accepted producer integrity, the four PRODUCED research contracts,
+  original refusals, foreign writers and PIT boundaries. Macro9084 merged9d3fe8.
+  Six actual captures account for all4,392 original requests:4,381 qualified,
+  one wholeSCNG quarantine, ten historical failures and zero never admitted.
+  The final121 captures and reader checks passed. Recovery accepted568 retained
+  projections, then536 complete plus326 missing-only writes;22925/91287 native
+  exits remain unknown. Separate eleven-request and fourteen-request later
+  repairs each completed and passed full new-reader comparison. Current accepted
+  census is47,564 nonempty histories/100,626,945 distinct bars,117 empty responses,
+  five explicit provider refusals and three whole-response quality quarantines.
+  All47,689 catalogue candidates have a current disposition; full vendor history,
+  dated identity and historical known-at remain unproven. Preserve original
+  fourteen failures and their eleven unknown causes, the failed directory
+  preflight and validation90730's unknown native exit. Terminal955 merged1408943
+  after all12 original jobs passed on c90b1ca;82 reviewed blobs match the merge
+  and installed afae release. The later5fa856bf release also passed exact10
+  consumer/builder and source/marker/public-HTML identity checks. The original
+  public relay read returned explicitHTTP403 and remains frozen. No publisher,
+  R2 PUT or new stream started. Separate Cloudflare configuration diagnosis
+  reached the verified account's Google passkey/user-presence step; only the
+  account user can complete that step. Preserve it without alternate login or
+  relay routes. Carry the reviewed evidence through protected CI and merge;
+  then continue lawful configuration diagnosis. Actual access resolution and
+  all current source, account, archive/relay custody, resource, session and
+  clock checks remain required before any separately admitted finite publication.
+  Preserve the persistent scheduling refusal. Prove real trade provenance through
+  the incumbent R2 key, installed QuoteHub/API, responsive EN/ZH and final expiry.
+  Keep News/QuoteHub/peer-intraday custody and SHW/PFE/evaluation/split/provider
+  holds. Full fundamentals and PIT remain unadmitted. Retained source, methods,
+  reviews and actual returns are in docs/tiingo-evidence/20261013-recovered-final-history/.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -73,6 +71,12 @@ owns_paths:
   - docs/TIINGO_DATA_OS_INGESTION_20261009.md
   - docs/tiingo-evidence/
 artifacts:
+  - docs/tiingo-evidence/20261013-recovered-final-history/
+  - docs/tiingo-evidence/20261013-attended-recovery/
+  - docs/tiingo-evidence/20261013-continuation-accounting/
+  - docs/tiingo-evidence/20261013-final-scope-disposition/
+  - docs/tiingo-evidence/20261013-open-session-history-frontier/
+  - docs/tiingo-evidence/20261012-final-capture-preparation/
   - docs/tiingo-evidence/20261012-wave13-held-outcome/
   - docs/tiingo-evidence/20261012-wave12-quality-partition/
   - docs/TIINGO_DATA_OS_INGESTION_20261009.md

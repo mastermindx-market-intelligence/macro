@@ -176,6 +176,32 @@ def test_selection_year_ago_absent_adds_nothing() -> None:
     }
 
 
+def test_admission_candidates_are_rule_only_by_signature() -> None:
+    # R5 candidates are a function of the D0 rows alone: no extras parameter
+    # exists through which an operator-supplied accession could reach them.
+    import inspect
+
+    assert list(inspect.signature(gsrc.r5_admission_candidates).parameters) == ["rows"]
+
+
+@pytest.mark.parametrize("ticker", sorted(_R5_SETS))
+def test_extras_never_change_the_admission_candidates(ticker: str) -> None:
+    row = _d0_issuer_rows()[ticker]
+    rule = {item.accession for item in gsrc.r5_admission_candidates(row["accessions"])}
+    assert rule == {acc for acc, sel in _R5_SETS[ticker] if sel == "admission_candidate"}
+    accessions = [str(item["accession"]) for item in row["accessions"]]
+    for extras in [[acc] for acc in accessions] + [accessions]:
+        selected = gsrc.select_issuer_accessions(row, extras)
+        assert {
+            item.accession for item in selected if item.selection == "admission_candidate"
+        } == rule, extras
+        for extra in extras:
+            if extra not in rule:
+                assert [
+                    item.selection for item in selected if item.accession == extra
+                ] == ["capture_only"], extra
+
+
 _CLOCK = "2026-10-12T00:00:00Z"
 
 
@@ -257,6 +283,26 @@ def test_main_refuses_unresolvable_user_agent(
     rc = gsrc.main(["--issuer", "SNOW", "--captured-at", _CLOCK])
     assert rc == 2
     assert "gsrc_refusal: sec_user_agent_unavailable: ValueError" in capsys.readouterr().out
+
+
+def test_main_refuses_malformed_config_yaml_as_typed_code(
+    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    yaml = pytest.importorskip("yaml")
+    malformed = "edgar: {user_agent: [unclosed"
+    with pytest.raises(yaml.YAMLError) as real:
+        yaml.safe_load(malformed)
+
+    def _malformed() -> str:
+        # The real PyYAML parse failure a malformed config.yml raises.
+        return str(yaml.safe_load(malformed))
+
+    monkeypatch.setattr(gsrc, "_resolve_sec_user_agent", _malformed)
+    rc = gsrc.main(["--issuer", "SNOW", "--captured-at", _CLOCK])
+    assert rc == 2
+    out = capsys.readouterr().out
+    assert f"gsrc_refusal: sec_user_agent_unavailable: {type(real.value).__name__}: " in out
+    assert "Traceback" not in out
 
 
 # M2: a status-less URLError is retried within the bound and logged.
@@ -793,8 +839,14 @@ def test_admission_candidate_package_is_self_checked_by_d1(
 
 
 # ---------------------------------------------------------------------------
-# data_gate: byte-level digest re-check + D1 re-admission over staged bytes.
+# data_gate (c2): byte-level digest re-check + re-admission over staged bytes.
 # ---------------------------------------------------------------------------
+# Re-derives every committed row's (manifest sha256, verdict) from the staged
+# archive bytes through the real path -- statement-role classification, then
+# D1 ``admit_retained_filing_package`` for extracted admission candidates --
+# and asserts equality with the hermetic ``_VERDICT_PIN`` (c1) below. This is
+# the check that catches verdict drift from ANY admission import. It needs the
+# staged bytes, so it skips unless ``FIF_GSRC_STAGE_ROOT`` is set.
 
 
 @pytest.mark.data_gate
@@ -811,6 +863,7 @@ def test_staged_bytes_match_manifests_and_readmit() -> None:
     )
 
     checked = 0
+    readmitted: dict[str, tuple[str, str]] = {}
     for cik10 in issuers:
         capture_index = json.loads(
             (_G_SRC / cik10 / "capture_index.json").read_text(encoding="utf-8")
@@ -820,11 +873,10 @@ def test_staged_bytes_match_manifests_and_readmit() -> None:
                 continue
             accession = str(row["accession"])
             package_dir = stage / cik10 / accession
-            manifest = json.loads(
-                (_G_SRC / cik10 / accession / "package_manifest.json").read_text(
-                    encoding="utf-8"
-                )
-            )
+            manifest_bytes = (_G_SRC / cik10 / accession / "package_manifest.json").read_bytes()
+            manifest_sha = hashlib.sha256(manifest_bytes).hexdigest()
+            assert manifest_sha == row["manifest_sha256"], accession
+            manifest = json.loads(manifest_bytes.decode("utf-8"))
             index_bytes = (package_dir / "index.json").read_bytes()
             assert hashlib.sha256(index_bytes).hexdigest() == manifest["index_sha256"]
             assert len(index_bytes) == manifest["index_byte_length"]
@@ -844,24 +896,274 @@ def test_staged_bytes_match_manifests_and_readmit() -> None:
                 assert len(payload) == member["byte_length"]
                 members[member["name"]] = payload
             checked += 1
+            by_role = {
+                member["role"]: member["name"]
+                for member in manifest["members"]
+                if member["state"] == "stored"
+            }
+            _roles, roles_state = gsrc.classify_statement_roles(
+                members[by_role["presentation"]], members[by_role["schema"]]
+            )
+            assert roles_state == row["statement_roles_state"], accession
             if row["selection"] == "capture_only":
                 # Retained bytes are digest-checked above; capture-only rows
                 # are never admitted, so D1 is not consulted for them.
-                assert row["admission"] == gsrc.CAPTURE_ONLY_ADMISSION, accession
-                continue
-            if row["statement_roles_state"] != "extracted":
+                verdict = gsrc.CAPTURE_ONLY_ADMISSION
+            elif roles_state != "extracted":
                 # Capture-side role refusal: D1 was never the arbiter.
-                continue
-            try:
-                admit_retained_filing_package(
-                    index_bytes=index_bytes,
-                    manifest=manifest,
-                    members=members,
-                    witness_bytes=witness_bytes,
-                    capture_recorded_at=manifest["fixture_recorded_at"],
-                )
-            except AdmittedFilingPackageError as exc:
-                assert str(exc.code) == row["admission"], (accession, exc.code, row["admission"])
+                verdict = roles_state
             else:
-                assert row["admission"] == "ADMITTED", accession
+                try:
+                    admit_retained_filing_package(
+                        index_bytes=index_bytes,
+                        manifest=manifest,
+                        members=members,
+                        witness_bytes=witness_bytes,
+                        capture_recorded_at=manifest["fixture_recorded_at"],
+                    )
+                except AdmittedFilingPackageError as exc:
+                    verdict = str(exc.code)
+                else:
+                    verdict = "ADMITTED"
+            readmitted[accession] = (manifest_sha, verdict)
     assert checked > 0
+    assert readmitted == _VERDICT_PIN, _VERDICT_REPIN
+
+
+# ---------------------------------------------------------------------------
+# (c1) Hermetic verdict pin over the committed G-SRC table.
+# ---------------------------------------------------------------------------
+# Every committed capture_index row as a literal (manifest sha256, verdict),
+# plus each issuer's admitted/refused tally under the capture report's own
+# rule (``gsrc.admission_counts``). Hermetic and code-independent on purpose:
+# a parser or admission edit never trips it. The staged-byte re-admission
+# that proves these verdicts is the data_gate test (c2) above.
+_VERDICT_PIN: dict[str, tuple[str, str]] = {
+    "0000018230-26-000008": (
+        "4739cea87815aee6ea849d5686b6d29f80288c3622c0ad44815b4acff8835278",
+        "ADMITTED",
+    ),
+    "0000018230-25-000008": (
+        "3b2eae783fc9bd4048bf8364b07cb5755d76fb26e116518b22053e55cb96ced1",
+        "ADMITTED",
+    ),
+    "0000018230-26-000046": (
+        "0007a8da08646f22132d8f653325c3686248d97b927cd795e94da966a6100832",
+        "ADMITTED",
+    ),
+    "0000018230-26-000021": (
+        "60e12190a7f6825e5898c03c99b2b8e32441bda1542951cadabbd0098e8b6d04",
+        "ADMITTED",
+    ),
+    "0000018230-25-000040": (
+        "08846e666e59d28250e15cfe6ef42cf6b9f435d4af658c2654762d5dc4a01cd4",
+        "not_admitted:capture_only",
+    ),
+    "0000070858-26-000157": (
+        "88deec70816cfcebfed5b13ba6aae010199a5c9b1a26aea5fc47853b98b6503b",
+        "ADMITTED",
+    ),
+    "0000070858-25-000139": (
+        "81e4206c6d0e179aa4ef95902b71fea0d98fb2159454b4f16a0eddac97555237",
+        "ADMITTED",
+    ),
+    "0000070858-26-000394": (
+        "7b69baf66ab6aac4f56063667deb959b38c2cf3a1a8d546a11f2c02a75a27afa",
+        "ADMITTED",
+    ),
+    "0000070858-26-000249": (
+        "de2caccf73f9952769b980ea120b58c1fb74acdbbea1579039086002e5aac73d",
+        "ADMITTED",
+    ),
+    "0000070858-25-000268": (
+        "ce90fbf6044e4a78d87699d1337166f203976b8c67d77a61ff821e39a692e138",
+        "not_admitted:capture_only",
+    ),
+    "0001640147-26-000008": (
+        "c8868c1ad12efefde1a32d4ac2ded69a106d5b7e0ad6146a53b7d36bea6752cd",
+        "ADMITTED",
+    ),
+    "0001640147-25-000052": (
+        "9cdb431b9ba8709d6e1ce5b5d1b2ff1f17d22c97c93f8eb8668894a20f2be1f0",
+        "ADMITTED",
+    ),
+    "0001640147-26-000037": (
+        "ca4ce72461ce39ad1596b55e29e44b63bef41df7397786eb86cb406f3b196cee",
+        "ADMITTED",
+    ),
+    "0001640147-26-000030": (
+        "0f7a1d1a5681d910312d26f1e4fbe5f26759e4564bd90721c77fbe2514dc8e55",
+        "ADMITTED",
+    ),
+    "0001640147-24-000101": (
+        "6cd08a7a48f61a11e79dc28a5e08c84febf41722697838a1c77ec2f65ce9e069",
+        "not_admitted:capture_only",
+    ),
+    "0001640147-25-000187": (
+        "423bbf79430bb162c9ca7678cc31cf06689bcd8ff947ba953f79645c33d17812",
+        "not_admitted:capture_only",
+    ),
+    "0001652044-26-000018": (
+        "020717667a072222c70292155eb1050377ebc7c2b75c06225494b71b77f9112e",
+        "ADMITTED",
+    ),
+    "0001652044-25-000014": (
+        "be8ea37891071eec6cf5afc68f74beacf6d7df897e0250d029a156dd22b27d46",
+        "ADMITTED",
+    ),
+    "0001652044-26-000071": (
+        "3f652297a35d6bafbf479044a0815df8752155d00fcf86c18488eb726722e892",
+        "ADMITTED",
+    ),
+    "0001652044-26-000048": (
+        "837db3ff4356a88ee6acdff8d673177af9a5be4571b53279c215ed0780397c09",
+        "ADMITTED",
+    ),
+    "0001652044-25-000062": (
+        "859847e57dfef0b7e7dc6ae3c8b376fbe9628f20963b356258108008b523ddbb",
+        "not_admitted:capture_only",
+    ),
+}
+_VERDICT_COUNTS: dict[str, dict[str, object]] = {
+    "0000018230": {
+        "packages": 5,
+        "admitted": 4,
+        "refusals": {"not_admitted": 1},
+    },
+    "0000070858": {
+        "packages": 5,
+        "admitted": 4,
+        "refusals": {"not_admitted": 1},
+    },
+    "0001640147": {
+        "packages": 6,
+        "admitted": 4,
+        "refusals": {"not_admitted": 2},
+    },
+    "0001652044": {
+        "packages": 5,
+        "admitted": 4,
+        "refusals": {"not_admitted": 1},
+    },
+}
+_VERDICT_REPIN = (
+    "re-run `FIF_GSRC_STAGE_ROOT=<stage> python3 -m pytest -m data_gate "
+    "tests/test_fif_gsrc_capture.py` where the staged bytes live, then update "
+    "the moved capture_index rows, _VERDICT_PIN and _VERDICT_COUNTS in one change"
+)
+
+
+def _committed_g_src_rows() -> dict[str, list[dict]]:
+    return {
+        cik10: json.loads(
+            (_G_SRC / cik10 / "capture_index.json").read_text(encoding="utf-8")
+        )
+        for cik10 in _g_src_issuers()
+    }
+
+
+def test_committed_g_src_verdicts_match_the_pin() -> None:
+    got = {
+        str(row["accession"]): (row["manifest_sha256"], row["admission"])
+        for rows in _committed_g_src_rows().values()
+        for row in rows
+    }
+    assert got == _VERDICT_PIN, _VERDICT_REPIN
+
+
+# The classifier's closed role-refusal grammar (``classify_statement_roles``):
+# one part per failing kind, in kind order, each kind at most once, joined by
+# "; ". A part is ``statement_roles_missing:<kind>`` or
+# ``statement_roles_ambiguous:<kind>:<title> | <title>[ | <title>...]`` with
+# stripped, non-empty, single-line titles (at least two: one candidate is a
+# pick, not an ambiguity).
+_ROLE_KINDS = ("income_statement", "balance_sheet", "cash_flow")
+_ROLE_KIND = "(income_statement|balance_sheet|cash_flow)"
+_ROLE_TITLE = r"\S(?:[^\n]*?\S)?"
+_ROLE_REFUSAL_PART = re.compile(
+    "statement_roles_missing:" + _ROLE_KIND
+    + "|statement_roles_ambiguous:" + _ROLE_KIND
+    + ":" + _ROLE_TITLE + r"(?: \| " + _ROLE_TITLE + ")+"
+)
+
+
+def _is_typed_role_refusal(state: object) -> bool:
+    if not isinstance(state, str) or not state:
+        return False
+    kinds: list[str] = []
+    for part in re.split(r"; (?=statement_roles_(?:missing|ambiguous):)", state):
+        match = _ROLE_REFUSAL_PART.fullmatch(part)
+        if match is None:
+            return False
+        kinds.append(match.group(1) or match.group(2))
+    order = [_ROLE_KINDS.index(kind) for kind in kinds]
+    return order == sorted(set(order))
+
+
+def test_pinned_verdicts_are_drawn_from_the_closed_typed_set() -> None:
+    from engine.fundamental_forensics.admitted_filing_package import (
+        AdmittedFilingPackageError,
+    )
+
+    for rows in _committed_g_src_rows().values():
+        for row in rows:
+            accession, verdict = row["accession"], row["admission"]
+            if row["selection"] == "capture_only":
+                assert verdict == gsrc.CAPTURE_ONLY_ADMISSION, accession
+            elif row["statement_roles_state"] != "extracted":
+                # Capture-side role refusal carries the classifier's own state,
+                # which must itself parse under the closed role grammar above.
+                assert _is_typed_role_refusal(row["statement_roles_state"]), accession
+                assert verdict == row["statement_roles_state"], accession
+            elif verdict != "ADMITTED":
+                # D1's typed refusal constructor rejects any code outside its
+                # closed set, so a hand-edited or stale code fails here.
+                assert AdmittedFilingPackageError("pin", code=verdict).code == verdict
+
+
+def test_role_refusal_grammar_admits_classifier_output_and_nothing_else() -> None:
+    produced = [
+        gsrc.classify_statement_roles(_syn_pre(roles), _SYN_SCHEMA)
+        for roles in (
+            ["r:ops", "r:ops_plain", "r:bs", "r:cf"],
+            ["r:ops", "r:bs"],
+            ["r:ops", "r:ops_plain", "r:bs"],
+            [],
+        )
+    ]
+    for roles, state in produced:
+        assert roles is None, state
+        assert _is_typed_role_refusal(state), state
+    assert produced[2][1] == (
+        "statement_roles_ambiguous:income_statement:"
+        "Consolidated Statements of Operations | Statements of Income; "
+        "statement_roles_missing:cash_flow"
+    )
+    for bad in (
+        None,
+        "",
+        "extracted",
+        "primary_unparseable",
+        "not_admitted:capture_only",
+        "statement_roles_missing:equity",
+        "statement_roles_missing:cash_flow ",
+        "statement_roles_missing:cash_flow; statement_roles_missing:cash_flow",
+        "statement_roles_missing:cash_flow; statement_roles_missing:income_statement",
+        "statement_roles_missing:balance_sheet;statement_roles_missing:cash_flow",
+        "statement_roles_ambiguous:income_statement:",
+        "statement_roles_ambiguous:income_statement:Statements of Income",
+        "statement_roles_ambiguous:income_statement: | Statements of Income",
+        "statement_roles_ambiguous:income_statement:Statements of Income | ",
+        "statement_roles_ambiguous:equity:Statements of Income | Operations",
+    ):
+        assert not _is_typed_role_refusal(bad), bad
+
+
+def test_pinned_counts_agree_with_the_capture_report_rule() -> None:
+    got = {
+        cik10: gsrc.admission_counts(rows)
+        for cik10, rows in _committed_g_src_rows().items()
+    }
+    assert got == _VERDICT_COUNTS, _VERDICT_REPIN
+    admitted = sum(1 for _sha, verdict in _VERDICT_PIN.values() if verdict == "ADMITTED")
+    assert admitted == sum(int(c["admitted"]) for c in _VERDICT_COUNTS.values())
