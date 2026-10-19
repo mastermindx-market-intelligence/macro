@@ -7356,6 +7356,8 @@ jobs:
           tests/test_commodity_confluence.py
           tests/test_commodity_cycle_state.py
           tests/test_commodity_coverage_matrix.py
+          tests/test_critical_minerals_display.py
+          tests/test_critical_minerals_panel.py
           tests/test_china_gold_premium.py
           tests/test_fear_euphoria.py tests/test_froth_fragility.py
           tests/test_vol_velocity.py tests/test_fear_greed_honesty.py
