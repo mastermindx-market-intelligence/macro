@@ -371,3 +371,18 @@ def test_bridge_validates_full_snapshot_before_mutation(lake, private_root, chan
     with pytest.raises(ValueError):
         bridge_module.exchange(private_root, {"operation":"publish", "snapshot":doc})
     assert not (private_root/"bars"/"AMD.json").exists()
+
+
+@pytest.mark.parametrize("day,offset,due_hour", [("2026-10-18",-7,17),("2026-11-01",-7,18),("2026-11-01",-8,17)])
+def test_live_history_schedule_uses_market_open_without_provider_or_archive_on_unused_candidate(tmp_path, lake, day, offset, due_hour):
+    import dataclasses, plistlib
+    job = plistlib.loads((Path(__file__).resolve().parents[1]/"ops/launchd/com.macro.boats-live-history.plist").read_bytes())
+    assert job["StartCalendarInterval"] == [{"Weekday":d,"Hour":h,"Minute":0} for d in range(5) for h in (17,18)]
+    assert job["RunAtLoad"] is False and job["KeepAlive"] is False and "StartInterval" not in job
+    assert "--scheduled" in job["ProgramArguments"]
+    cfg = dataclasses.replace(setup_run(tmp_path,lake), scheduled=True)
+    unused = 18 if due_hour == 17 else 17
+    now = datetime.fromisoformat(day).replace(hour=unused,tzinfo=timezone(timedelta(hours=offset)))
+    result=live.run(cfg,lambda r:pytest.fail("unused candidate reached SSH"),now=lambda:now,
+        archive_factory=lambda root:pytest.fail("unused candidate reached archive"))
+    assert result["reason"] == "scheduled_candidate_not_due" and result["requests"] == 0

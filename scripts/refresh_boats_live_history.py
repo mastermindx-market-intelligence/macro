@@ -25,6 +25,7 @@ import sys
 import time
 import tempfile
 from typing import Callable
+from zoneinfo import ZoneInfo
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -101,6 +102,7 @@ class Config:
     max_requests: int = MAX_REQUESTS
     max_bytes: int = MAX_BYTES
     max_seconds: int = MAX_SECONDS
+    scheduled: bool = False
 
     def __post_init__(self):
         for value, cap in ((self.max_requests, MAX_REQUESTS), (self.max_bytes, MAX_BYTES), (self.max_seconds, MAX_SECONDS)):
@@ -207,6 +209,11 @@ def run(config: Config, bridge: Callable, *, now: Callable = lambda: datetime.no
               "eligible_symbols": len(covered - excluded), "started_at_utc": started.isoformat()}
     if not config.capture:
         return result
+    if config.scheduled:
+        eastern = started.astimezone(ZoneInfo("America/New_York"))
+        if session is None or eastern.hour != 20 or eastern.minute >= 15:
+            result["reason"] = "scheduled_candidate_not_due"
+            return result
     if session is None:
         raise RefreshStopped("outside a real BOATS overnight session")
     archive = archive_factory(config.root)
@@ -360,6 +367,7 @@ def main(argv=None) -> int:
     p.add_argument("--symbols", type=Path, required=True)
     p.add_argument("--held", type=Path, required=True)
     p.add_argument("--capture", action="store_true")
+    p.add_argument("--scheduled", action="store_true")
     p.add_argument("--ssh-host")
     p.add_argument("--ssh-identity", type=Path)
     p.add_argument("--remote-script")
@@ -368,7 +376,7 @@ def main(argv=None) -> int:
     p.add_argument("--max-bytes", type=int, default=MAX_BYTES)
     p.add_argument("--max-seconds", type=int, default=MAX_SECONDS)
     a = p.parse_args(argv)
-    cfg = Config(a.root, a.symbols, a.held, a.capture, a.max_requests, a.max_bytes, a.max_seconds)
+    cfg = Config(a.root, a.symbols, a.held, a.capture, a.max_requests, a.max_bytes, a.max_seconds, a.scheduled)
     if a.capture and not all((a.ssh_host, a.ssh_identity, a.remote_script, a.remote_root)):
         p.error("capture requires the complete existing SSH binding")
     bridge = SSHBridge(a.ssh_host, a.ssh_identity, a.remote_script, a.remote_root) if a.capture else None
@@ -378,7 +386,7 @@ def main(argv=None) -> int:
     try:
         result = run(cfg, bridge)
         print(json.dumps(result, separators=(",", ":")))
-        return 0 if result["reason"] in {"plan", "window_closed", "seconds_budget", "capture_budget"} else 5
+        return 0 if result["reason"] in {"plan", "window_closed", "seconds_budget", "capture_budget", "scheduled_candidate_not_due"} else 5
     finally:
         for sig, handler in previous.items():
             signal.signal(sig, handler)
