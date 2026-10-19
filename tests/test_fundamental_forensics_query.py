@@ -1646,12 +1646,18 @@ def test_visible_metadata_is_frozen_bound_and_clocked_at_engine_construction() -
         ("2025-07-23T23:44:01Z", "2025-07-28"),
         # Within filing hours the filing date may not follow the ET date.
         ("2026-07-31T20:00:00Z", "2026-07-31"),
-        # DST: 22:15Z is 17:15 EST (in hours) but 22:45Z is 17:45 EST.
+        # Under EST the cutoff is 22:30Z (21:30Z under EDT): 17:15 EST is in
+        # hours, while exactly 17:30:00 and 17:45 EST are past the cutoff.
         ("2025-01-15T22:15:00Z", "2025-01-15"),
+        ("2025-01-15T22:30:00Z", "2025-01-20"),
         ("2025-01-15T22:45:00Z", "2025-01-20"),
-        # Friday 18:00 EDT and a Saturday acceptance roll over the weekend.
+        # Tuesday 20:30 EDT: the UTC date is already Wednesday, and the bound
+        # rolls from the Eastern date, not the UTC date.
+        ("2025-07-16T00:30:00Z", "2025-07-18"),
+        # Friday 18:00 EDT, Saturday and Sunday acceptances roll over the weekend.
         ("2026-07-31T22:00:00Z", "2026-08-05"),
         ("2026-08-01T15:00:00Z", "2026-08-05"),
+        ("2026-08-02T15:00:00Z", "2026-08-05"),
     ),
 )
 def test_latest_edgar_filed_date_follows_regulation_st_cutoff(
