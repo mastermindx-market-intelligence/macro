@@ -1101,8 +1101,13 @@ def members_asof(basket_id: str, date: str, *, suite: str = SUITE_THS) -> dict:
 
 
 def coverage(suite: str = SUITE_THS) -> dict:
-    """Compact store description: {suite, snapshots, first, last, rows}."""
-    df = read_history(suite)
+    """Compact store description: {suite, snapshots, first, last, rows}.
+
+    An absent store describes as zero snapshots.  An existing but unreadable
+    store raises ``HistoryIntegrityError`` rather than describing as empty —
+    corruption is never reported as absence (Q02-F1 gap A1).
+    """
+    df = read_history(suite, strict=True)
     if df.empty:
         return {"suite": suite, "snapshots": 0, "first": None, "last": None, "rows": 0}
     dates = sorted(set(df["snapshot_date"].astype(str)))
