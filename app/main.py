@@ -2558,6 +2558,11 @@ app.include_router(ontology_explorer_router)
 from app.forensics import _financial_dataset_mode, router as forensics_router  # noqa: E402
 app.include_router(forensics_router)
 
+# Exact, entitled institutional research reads share the existing Forensics
+# authentication/entitlement boundary; the private catalog is never a site asset.
+from app.institutional_research import router as institutional_research_router  # noqa: E402
+app.include_router(institutional_research_router)
+
 # BioCatalyst Intelligence serves only the worker's pointer-bound normalized
 # product projection. Its router performs early site_full enforcement before
 # touching the isolated read-only public generation root. This route is a paid
