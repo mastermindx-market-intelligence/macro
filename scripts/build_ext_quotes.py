@@ -779,8 +779,11 @@ def main() -> None:
     parser.add_argument("--boats", action="store_true", help="One bounded BOATS archive and display segment.")
     parser.add_argument("--max-seconds", type=int, default=600)
     parser.add_argument("--max-messages", type=int, default=20000)
+    parser.add_argument("--symbols-file", help="Bounded line-oriented BOATS coverage; defaults to the existing watchlist.")
     parser.add_argument("--session", action="store_true", help="Print the current ET session for the existing runner.")
     args = parser.parse_args()
+    if args.symbols_file and not args.boats:
+        parser.error("--symbols-file requires --boats")
     if args.publish and not args.boats and not args.smoke:
         parser.error("public relay publication requires --boats; legacy diagnostics are private")
     if args.session:
@@ -790,6 +793,13 @@ def main() -> None:
     if args.boats:
         if args.smoke:
             parser.error("--boats and --smoke are incompatible; smoke cannot open or publish a live stream")
+        symbols = None
+        if args.symbols_file:
+            from scripts.tiingo_ingest import load_symbols
+            symbols = load_symbols("", args.symbols_file)
+            # Validate before any provider, archive or R2 effect. An empty file
+            # must not silently fall back to the default watchlist.
+            BoatsLastTrade(symbols, "coverage-validation")
         now = datetime.now(timezone.utc)
         if boats_session_date(now) is None:
             log.info("BOATS outside conservative overnight window")
@@ -797,7 +807,8 @@ def main() -> None:
         local = now.astimezone(ET)
         boundary = datetime.combine(local.date() + timedelta(days=1 if local.hour >= 20 else 0), dtime(4), tzinfo=ET)
         seconds = min(args.max_seconds, max(1, int((boundary - local).total_seconds())))
-        result = publish_boats_stream(max_seconds=seconds, max_messages=args.max_messages, publish=args.publish)
+        result = publish_boats_stream(max_seconds=seconds, max_messages=args.max_messages,
+                                      symbols=symbols, publish=args.publish)
         log.info("BOATS bounded segment settled %s", json.dumps(result))
         if args.publish and result["publication_ok"] is not True:
             raise SystemExit(1)
