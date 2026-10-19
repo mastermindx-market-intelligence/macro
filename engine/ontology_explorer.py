@@ -70,7 +70,7 @@ SCHEMA_ID = "ontology_explorer_snapshot.v1"
 #: read byte-identical sources and still differ, because the meaning is produced
 #: by THIS code — so the method that read them is part of what the digest binds.
 #: It is still a read receipt, never a native owner generation.
-COMPOSER_METHOD = "ontology_explorer.compose.v3"
+COMPOSER_METHOD = "ontology_explorer.compose.v4"
 ERROR_SCHEMA_ID = "ontology_explorer_error.v1"
 DEFAULT_CHAIN = "oil_inflation_duration_derate"
 
@@ -102,6 +102,7 @@ _KNOWLEDGE_REL = "knowledge/transmission"
 _STATE_REL = "data/transmission/chain_state.json"
 _EPISODES_REL = "data/transmission/chain_episodes.jsonl"
 _ALIASES_REL = "data/reference/vendor_aliases.parquet"
+_CALIBRATION_REL = "data/transmission/calibration.json"
 
 
 class SourceUnavailable(RuntimeError):
@@ -273,6 +274,17 @@ def compose_snapshot(root: Path | str, *, chain: str = DEFAULT_CHAIN,
             raise SourceIncoherent(
                 f"source_exceeds_bound:{rel}:{len(raws[rel])}>{MAX_SOURCE_BYTES}")
     digests = {rel: _digest(raw) for rel, raw in raws.items()}
+    # Bind an optional native generation without copying scenario/private
+    # payloads into X1 or withholding WTI when rates metadata is unavailable.
+    # The explicit POST alone decodes and admits this owner's bounded bytes.
+    try:
+        calibration_raw = _read_source(root / _CALIBRATION_REL)
+    except OSError:
+        pass
+    else:
+        raws[_CALIBRATION_REL] = calibration_raw
+        rels.append(_CALIBRATION_REL)
+        digests[_CALIBRATION_REL] = _digest(calibration_raw)
 
     try:
         definition = yaml.safe_load(raws[yaml_rel].decode("utf-8"))
