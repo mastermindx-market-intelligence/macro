@@ -32,12 +32,18 @@ Exit codes (an uncaught traceback is never the exit path):
 * 1 — the ledger was written and at least one check failed (both outputs are
   still written); a per-issuer read or internal error is a FAIL row for that
   issuer (``statement_trees_unreadable``, ``lineage_evidence_unreadable``,
-  ``issuer_internal_error``) and the other issuers are still ledgered;
+  ``issuer_internal_error``) and the other issuers are still ledgered; an
+  issuer that stopped at an internal error keeps exactly that one check row;
 * 2 — unusable arguments/inputs: one typed stderr line plus a FAIL ledger
   carrying the ``harness_input`` check row, written to both out paths (stale
-  out files are unlinked first, so no previous run's bytes survive);
+  out files are unlinked first, so no previous run's bytes survive).  Two out
+  paths naming the same file are refused before any delete or input read,
+  with the stderr line only (one file cannot hold the pair).  An output that
+  cannot be written leaves neither output and no temp file;
 * 3 — internal error: one typed stderr line plus a FAIL ledger carrying the
-  ``harness_internal_error`` check row, written to both out paths.
+  ``harness_internal_error`` check row, written to both out paths.  When
+  every contract issuer stopped at an internal error, the full ledger keeps
+  its ``issuer_internal_error`` rows and adds that run-level row.
 """
 from __future__ import annotations
 
@@ -1651,20 +1657,27 @@ def build_ledger(
         )
         issuers_out.append(issuer_out)
 
+    issuer_internal_errors = 0
     for issuer_row in contract_issuers:
         issuers_mark = len(issuers_out)
         table_mark = len(coverage_table)
+        checks_mark = len(checks.rows)
         try:
             _ledger_issuer(issuer_row)
         except Exception as exc:  # noqa: BLE001 - one issuer's internal error is a FAIL row
+            # Every partial output of the failed issuer is cut back, check
+            # rows included: a PASS row written before the error would claim
+            # a result the issuer entry says is unavailable.
             del issuers_out[issuers_mark:]
             del coverage_table[table_mark:]
+            del checks.rows[checks_mark:]
+            issuer_internal_errors += 1
             failed_ticker = str(issuer_row.get("ticker") or "") or None
             checks.add(
                 "issuer_internal_error",
                 failed_ticker,
                 False,
-                f"issuer ledger stopped at an internal error ({type(exc).__name__}); "
+                f"issuer ledger stopped at an internal error ({type(exc).__name__}: {exc}); "
                 "the remaining issuers were still processed",
             )
             coverage_table.append(
@@ -1698,6 +1711,18 @@ def build_ledger(
                     "lineage": None,
                 }
             )
+    if contract_issuers and issuer_internal_errors == len(contract_issuers):
+        # No issuer was ledgered at all: that is a harness defect, not an
+        # ordinary check failure, so the run carries the run-level
+        # harness_internal_error row (main exits 3) beside the issuer rows.
+        checks.add(
+            "harness_internal_error",
+            None,
+            False,
+            f"every contract issuer stopped at an internal error "
+            f"({issuer_internal_errors} of {len(contract_issuers)}); "
+            "see the issuer_internal_error rows",
+        )
 
     # ---- 6b. report issuers versus the coverage contract -----------------
     contract_ciks = {
@@ -1846,25 +1871,28 @@ def _failure_ledger(check_id: str, detail: str) -> dict[str, Any]:
 def _write_outputs(
     args: argparse.Namespace, document: Mapping[str, Any], markdown: str
 ) -> int | None:
-    """Write both out paths; the typed OSError exit (2) when either refuses.
+    """Write both out paths; the typed exit (2) when either cannot be written.
 
     ``None`` means both files were written — the caller owns the exit code.
     The two outputs are a pair: both are staged to same-directory temp files
     and renamed into place only after both writes succeed, and any failure
     removes every staged and already-renamed file, so a half pair never
-    survives.
+    survives.  An unencodable payload (a lone surrogate is a
+    ``UnicodeEncodeError``, a ``ValueError``) or an unserialisable document
+    (``TypeError`` from ``json.dumps``) is the same typed exit, never a
+    traceback that leaves a temp file behind.
     """
-    pairs = [
-        (
-            Path(args.out_json),
-            json.dumps(document, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
-        ),
-        (Path(args.out_md), markdown),
-    ]
     staged: list[Path] = []
     published: list[Path] = []
-    target = pairs[0][0]
+    target = Path(args.out_json)
     try:
+        pairs = [
+            (
+                target,
+                json.dumps(document, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+            ),
+            (Path(args.out_md), markdown),
+        ]
         temps: list[tuple[Path, Path]] = []
         # Phase 1 (stage): write each payload next to its target.
         for target, payload in pairs:
@@ -1878,14 +1906,15 @@ def _write_outputs(
         for temp, target in temps:
             os.replace(temp, target)
             published.append(target)
-    except OSError as exc:
+    except (OSError, ValueError, TypeError) as exc:
         for leftover in (*staged, *published):
             try:
                 leftover.unlink(missing_ok=True)
             except OSError:
                 pass
+        reason = getattr(exc, "strerror", None) or type(exc).__name__
         print(
-            f"fif_a1_journey_ledger: output is unwritable: {target.name} ({exc.strerror})",
+            f"fif_a1_journey_ledger: output is unwritable: {target.name} ({reason})",
             file=sys.stderr,
             flush=True,
         )
@@ -1893,8 +1922,38 @@ def _write_outputs(
     return None
 
 
+def _refuse_shared_out_path(out_json: str, out_md: str) -> None:
+    """The typed usage refusal when both out paths name one file.
+
+    One file cannot hold the pair: the staged write would publish one output
+    and lose the other, and the stale-output unlink below would delete the
+    only copy.  The same file is the same resolved path (``..`` segments and
+    symlinks included) or, when both exist, the same inode (a hard link or a
+    case-insensitive alias).
+    """
+    first, second = Path(out_json), Path(out_md)
+    try:
+        same = first.resolve() == second.resolve()
+    except (OSError, RuntimeError):
+        same = os.path.abspath(out_json) == os.path.abspath(out_md)
+    if not same:
+        try:
+            same = os.path.samefile(first, second)
+        except OSError:
+            same = False
+    if same:
+        raise _UsageError(f"--out-json and --out-md name the same file: {second.name}")
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parse_args(sys.argv[1:] if argv is None else argv)
+    try:
+        _refuse_shared_out_path(args.out_json, args.out_md)
+    except _UsageError as exc:
+        # Refused before any delete or input read: no ledger is written (one
+        # file cannot hold the pair) and the existing file is left untouched.
+        print(f"fif_a1_journey_ledger: {exc}", file=sys.stderr, flush=True)
+        return 2
     # Stale output never survives into this run: both out paths are unlinked
     # before any input is read, so a later refusal cannot leave the previous
     # run's bytes in place.
@@ -1955,9 +2014,24 @@ def main(argv: Sequence[str] | None = None) -> int:
         status = _write_outputs(args, document, _render_markdown(document))
         return 3 if status is None else status
 
+    # Every contract issuer stopping at an internal error is a harness defect:
+    # build_ledger then carries the run-level harness_internal_error row, and
+    # the run exits 3 (never the ordinary check-failure exit 1).
+    internal = next(
+        (row for row in document["checks"] if row["id"] == "harness_internal_error"),
+        None,
+    )
+    if internal is not None:
+        print(
+            f"fif_a1_journey_ledger: internal error: {internal['detail']}",
+            file=sys.stderr,
+            flush=True,
+        )
     written = _write_outputs(args, document, markdown)
     if written is not None:
         return written
+    if internal is not None:
+        return 3
     return 0 if document["all_checks_passed"] else 1
 
 

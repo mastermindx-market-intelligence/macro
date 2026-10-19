@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import errno
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -2058,9 +2059,12 @@ def test_t_r8b_trees_role_missing_is_a_fail_row_others_survive(
 def test_t_r8c_unexpected_issuer_error_is_issuer_internal_error(
     a1_store, a1_extra_run, tmp_path, monkeypatch
 ):
-    """T-r8c: any other per-issuer error is the issuer_internal_error FAIL row
-    with a minimal "unavailable" entry; the remaining issuers are still
-    ledgered and the markdown renders every issuer."""
+    """T-r8c (r9-strengthened): any other per-issuer error is the
+    issuer_internal_error FAIL row (type and message, as on the run-wide path)
+    with a minimal "unavailable" entry; the failed issuer keeps exactly that
+    one check row (no PASS row written before the error survives), the
+    remaining issuers are still ledgered and the markdown renders every
+    issuer."""
     import scripts.fif_a1_journey_ledger as ledger_module
 
     real_hits = ledger_module._fixture_locator_hits
@@ -2076,9 +2080,16 @@ def test_t_r8c_unexpected_issuer_error_is_issuer_internal_error(
     internal = _only_row(document, "issuer_internal_error", "AAPL")
     assert internal["status"] == "fail"
     assert internal["detail"] == (
-        "issuer ledger stopped at an internal error (RuntimeError); "
+        "issuer ledger stopped at an internal error "
+        "(RuntimeError: synthetic per-issuer failure); "
         "the remaining issuers were still processed"
     )
+    # The failed issuer ends with exactly one check row: no bridge/query
+    # engine PASS claim survives beside an "unavailable" issuer entry.
+    assert [c["id"] for c in document["checks"] if c["issuer"] == "AAPL"] == [
+        "issuer_internal_error"
+    ]
+    assert all(c["id"] != "harness_internal_error" for c in document["checks"])
     assert [r["ticker"] for r in document["coverage_table"]] == ["AAPL", "SECOND", "THIRD"]
     aapl_row = next(r for r in document["coverage_table"] if r["ticker"] == "AAPL")
     assert aapl_row == _R8_MINIMAL_COVERAGE_ROW
@@ -2196,3 +2207,195 @@ def test_t_r8g_success_writes_both_with_no_leftovers(tmp_path):
     )
     assert (d / "o.md").read_text(encoding="utf-8") == markdown
     assert sorted(p.name for p in d.iterdir()) == ["o.json", "o.md"]
+
+
+# ---------------------------------------------------------------------------
+# r9: all-issuer internal error is exit 3; unencodable output; shared out path
+# ---------------------------------------------------------------------------
+
+
+def _main_args(report_path, contract_path, store_dir, out_json, out_md):
+    return [
+        "--production-report",
+        str(report_path),
+        "--store-dir",
+        str(store_dir),
+        "--coverage-file",
+        str(contract_path),
+        "--out-json",
+        str(out_json),
+        "--out-md",
+        str(out_md),
+    ]
+
+
+def test_t_r9a_every_issuer_internal_error_exits_3(a1_store, tmp_path, monkeypatch, capsys):
+    """T-r9a: when EVERY contract issuer stops at an internal error the run is
+    a harness defect: exit 3 with the run-level harness_internal_error row
+    beside each issuer_internal_error row (both outputs written); one failed
+    issuer among healthy ones stays the ordinary exit 1."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    def _always(gen):
+        raise RuntimeError("synthetic harness defect")
+
+    monkeypatch.setattr(ledger_module, "_fixture_locator_hits", _always)
+    directory = tmp_path / "r9a-all"
+    report_path, contract_path = _write_inputs(
+        directory, _report_document(a1_store, extra_issuers=True), extra_issuers=True
+    )
+    exit_code = ledger_module.main(
+        _main_args(
+            report_path, contract_path, a1_store["store_dir"],
+            directory / "o.json", directory / "o.md",
+        )
+    )
+    assert exit_code == 3
+    assert (directory / "o.json").is_file()
+    assert (directory / "o.md").is_file()
+    document = json.loads((directory / "o.json").read_text(encoding="utf-8"))
+    internal = [c for c in document["checks"] if c["id"] == "issuer_internal_error"]
+    assert sorted(c["issuer"] for c in internal) == ["AAPL", "SECOND", "THIRD"]
+    for ticker in ("AAPL", "SECOND", "THIRD"):
+        assert [c["id"] for c in document["checks"] if c["issuer"] == ticker] == [
+            "issuer_internal_error"
+        ]
+    harness = _only_row(document, "harness_internal_error", None)
+    assert harness["status"] == "fail"
+    assert harness["detail"] == (
+        "every contract issuer stopped at an internal error (3 of 3); "
+        "see the issuer_internal_error rows"
+    )
+    assert document["all_checks_passed"] is False
+    assert (
+        "fif_a1_journey_ledger: internal error: every contract issuer stopped"
+        in capsys.readouterr().err
+    )
+
+    # Contrast: only AAPL (the one issuer with a generation) fails -> exit 1.
+    def _only_with_generation(gen):
+        if gen is not None:
+            raise RuntimeError("synthetic per-issuer failure")
+        return []
+
+    monkeypatch.setattr(ledger_module, "_fixture_locator_hits", _only_with_generation)
+    directory = tmp_path / "r9a-one"
+    report_path, contract_path = _write_inputs(
+        directory, _report_document(a1_store, extra_issuers=True), extra_issuers=True
+    )
+    exit_code = ledger_module.main(
+        _main_args(
+            report_path, contract_path, a1_store["store_dir"],
+            directory / "o.json", directory / "o.md",
+        )
+    )
+    assert exit_code == 1
+    document = json.loads((directory / "o.json").read_text(encoding="utf-8"))
+    assert [c["issuer"] for c in document["checks"] if c["id"] == "issuer_internal_error"] == [
+        "AAPL"
+    ]
+    assert all(c["id"] != "harness_internal_error" for c in document["checks"])
+
+
+_CIRCULAR: dict = {}
+_CIRCULAR["self"] = _CIRCULAR
+
+
+@pytest.mark.parametrize(
+    ("document", "markdown", "refused"),
+    [
+        pytest.param(
+            {"a": "lone \ud800 surrogate"}, "md\n", "o.json (UnicodeEncodeError)",
+            id="json-surrogate",
+        ),
+        pytest.param(
+            {"a": 1}, "md lone \ud800 surrogate\n", "o.md (UnicodeEncodeError)",
+            id="md-surrogate",
+        ),
+        pytest.param({"a": object()}, "md\n", "o.json (TypeError)", id="unserialisable"),
+        pytest.param(_CIRCULAR, "md\n", "o.json (ValueError)", id="circular"),
+    ],
+)
+def test_t_r9b_unencodable_payload_exits_2_with_no_temp(
+    tmp_path, capsys, document, markdown, refused
+):
+    """T-r9b: an unencodable payload (lone surrogate -> UnicodeEncodeError) or
+    an unserialisable document (TypeError / ValueError from json.dumps) is
+    the typed exit 2 with neither output and no temp file left, never a
+    traceback."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    d = tmp_path / "out"
+    d.mkdir()
+    result = ledger_module._write_outputs(
+        argparse.Namespace(out_json=str(d / "o.json"), out_md=str(d / "o.md")),
+        document,
+        markdown,
+    )
+    assert result == 2
+    # Neither output and no ``.partial-<pid>`` temp survives (the md-surrogate
+    # case already staged the JSON temp before the markdown write failed).
+    assert list(d.iterdir()) == []
+    assert f"output is unwritable: {refused}" in capsys.readouterr().err
+
+
+def test_t_r9c_cli_surrogate_ledger_exits_2_with_nothing_left(
+    a1_store, tmp_path, monkeypatch, capsys
+):
+    """T-r9c: end to end, a ledger carrying a lone surrogate exits 2 and leaves
+    no output and no temp file in the out directory."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    def _surrogate_ledger(**_kwargs):
+        return ledger_module._failure_ledger("synthetic_check", "bad \ud800 detail")
+
+    monkeypatch.setattr(ledger_module, "build_ledger", _surrogate_ledger)
+    directory = tmp_path / "r9c"
+    report_path, contract_path = _write_inputs(directory, _report_document(a1_store))
+    out_dir = directory / "out"
+    out_dir.mkdir()
+    exit_code = ledger_module.main(
+        _main_args(
+            report_path, contract_path, a1_store["store_dir"],
+            out_dir / "o.json", out_dir / "o.md",
+        )
+    )
+    assert exit_code == 2
+    assert list(out_dir.iterdir()) == []
+    assert "output is unwritable: o.json (UnicodeEncodeError)" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("alias", ["identical", "dotdot", "symlink", "hardlink"])
+def test_t_r9d_shared_out_path_is_refused_before_any_read_or_delete(tmp_path, capsys, alias):
+    """T-r9d: --out-json and --out-md naming one file (textually, through a
+    ``..`` segment, a symlink or a hard link) is a typed usage refusal (exit
+    2) before any input read or delete: the existing file keeps its bytes
+    and nothing new is written."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    d = tmp_path / "out"
+    (d / "sub").mkdir(parents=True)
+    out_json = d / "o.json"
+    out_json.write_text("previous run\n", encoding="utf-8")
+    if alias == "identical":
+        out_md = out_json
+    elif alias == "dotdot":
+        out_md = d / "sub" / ".." / "o.json"
+    elif alias == "symlink":
+        out_md = d / "link.md"
+        out_md.symlink_to(out_json)
+    else:
+        out_md = d / "hard.md"
+        os.link(out_json, out_md)
+    before = sorted(p.name for p in d.iterdir())
+    missing = tmp_path / "never-read"
+    exit_code = ledger_module.main(
+        _main_args(missing / "report.json", missing / "contract.json", missing, out_json, out_md)
+    )
+    assert exit_code == 2
+    err = capsys.readouterr().err
+    assert err == (
+        f"fif_a1_journey_ledger: --out-json and --out-md name the same file: {out_md.name}\n"
+    )
+    assert out_json.read_text(encoding="utf-8") == "previous run\n"
+    assert sorted(p.name for p in d.iterdir()) == before
