@@ -1,0 +1,316 @@
+{
+  "carrier": "Mastermind Paper",
+  "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+  "scope_pages": [
+    "p-1H-0",
+    "p-1E-0"
+  ],
+  "protected_forex_pages": [
+    "p-1F-0",
+    "p-N-1"
+  ],
+  "other_owner_nodes_untouched": [
+    "6GDA-0",
+    "6JKG-0"
+  ],
+  "operation_count": 32,
+  "counts": {
+    "EFFECT_NONE_RECONCILED": 3,
+    "APPLIED_RESPONSE_OBSERVED": 29
+  },
+  "operations": [
+    {
+      "operation_id": "btx-r33-source-20261018-001",
+      "tool": "write_html",
+      "target": "65YW-1",
+      "label": "Add source-inspector native module in existing S01 atlas",
+      "state": "EFFECT_NONE_RECONCILED",
+      "reconciliation": {
+        "carrier": "Mastermind Paper",
+        "target": "65YW-1",
+        "after_children": [
+          "65YX-1",
+          "65Z5-1",
+          "667M-1"
+        ],
+        "unique_heading_matches": 0,
+        "observation": "Original target unchanged in two same-carrier semantic reads; no replay of uncertain effect."
+      },
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-002",
+      "tool": "write_html",
+      "target": "65YW-1",
+      "label": "Create bounded source-context specimen after confirmed no-effect",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-003",
+      "tool": "write_html",
+      "target": "6JNE-0",
+      "label": "sourceRow",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-004",
+      "tool": "write_html",
+      "target": "6JNH-0",
+      "label": "sourceMobile",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-005",
+      "tool": "write_html",
+      "target": "6JNI-0",
+      "label": "sourceDesktopTabs",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-006",
+      "tool": "write_html",
+      "target": "6JNI-0",
+      "label": "sourceDesktopSummary",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-007",
+      "tool": "write_html",
+      "target": "6JNO-0",
+      "label": "sourceMobileTabs",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-008",
+      "tool": "write_html",
+      "target": "6JNO-0",
+      "label": "sourceMobileSummary",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-009",
+      "tool": "write_html",
+      "target": "6JNI-0",
+      "label": "sourceDesktopMetrics",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-010",
+      "tool": "write_html",
+      "target": "6JNO-0",
+      "label": "sourceMobileHY",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-011",
+      "tool": "write_html",
+      "target": "6JNO-0",
+      "label": "sourceMobileReal",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-012",
+      "tool": "write_html",
+      "target": "6JNO-0",
+      "label": "sourceMobileFunding",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-013",
+      "tool": "write_html",
+      "target": "6JNI-0",
+      "label": "sourceDesktopDates",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-014",
+      "tool": "write_html",
+      "target": "6JNI-0",
+      "label": "sourceDesktopNext",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-015",
+      "tool": "write_html",
+      "target": "6JNI-0",
+      "label": "sourceDesktopFooter",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-016",
+      "tool": "write_html",
+      "target": "6JNO-0",
+      "label": "sourceMobileFooter",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-017",
+      "tool": "write_html",
+      "target": "6JNE-0",
+      "label": "sourceStateRow",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-018",
+      "tool": "write_html",
+      "target": "6JR6-0",
+      "label": "sourceRejectedState",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-019",
+      "tool": "write_html",
+      "target": "6JR6-0",
+      "label": "sourceMissingState",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-020",
+      "tool": "update_styles",
+      "target": "65YV-1",
+      "label": "Align source tabs and clear S01 extension from S04",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-021",
+      "tool": "set_text_content",
+      "target": "6886-1",
+      "label": "Refresh START guidance and C04 source readiness to R33",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-022",
+      "tool": "write_html",
+      "target": "67ZD-1",
+      "label": "sourceBuildScorecard",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-023",
+      "tool": "write_html",
+      "target": "6JUS-0",
+      "label": "sourceScoreRow1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-024",
+      "tool": "write_html",
+      "target": "6JUS-0",
+      "label": "sourceScoreRow2",
+      "state": "EFFECT_NONE_RECONCILED",
+      "reconciliation": {
+        "carrier": "Mastermind Paper",
+        "target": "6JUS-0",
+        "children": [
+          "6JUT-0",
+          "6JV1-0"
+        ],
+        "reads": [
+          "get_children",
+          "get_tree_summary"
+        ],
+        "finding": "No integration acceptance row or requested child cards exists; invalid-argument response had no observed effect."
+      },
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-025",
+      "tool": "write_html",
+      "target": "6JUS-0",
+      "label": "sourceScoreRow2",
+      "state": "EFFECT_NONE_RECONCILED",
+      "reconciliation": {
+        "carrier": "Mastermind Paper",
+        "target": "6JUS-0",
+        "reads": [
+          "get_children",
+          "get_tree_summary"
+        ],
+        "children": [
+          "6JUT-0",
+          "6JV1-0"
+        ],
+        "finding": "Second row absent on both reads after INVALID_ARGUMENT."
+      },
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-026",
+      "tool": "rename_nodes",
+      "target": "65YV-1",
+      "label": "Identify the current source extension on existing atlases",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-027",
+      "tool": "duplicate_nodes",
+      "target": "6JV1-0",
+      "label": "Create matching acceptance row from verified inspector scorecards",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-028",
+      "tool": "set_text_content",
+      "target": "6JVI-0",
+      "label": "Complete publisher, adapter and accessibility acceptance cards",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-029",
+      "tool": "rename_nodes",
+      "target": "6JVI-0",
+      "label": "Name integration scorecard components",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-030",
+      "tool": "finish_working_on_nodes",
+      "target": "65YV-1",
+      "label": "Release only this continuation's edited atlas indicators",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-031",
+      "tool": "set_text_content",
+      "target": "65YV-1",
+      "label": "Clarify native reference versus production status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    },
+    {
+      "operation_id": "btx-r33-source-20261018-032",
+      "tool": "finish_working_on_nodes",
+      "target": "65YV-1",
+      "label": "Finish final native status adjustment",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "71c024ead4c1c7d4032dd858b5b9f6a2b4f56de7439a3a264f9870e49abf9ac9"
+    }
+  ]
+}
