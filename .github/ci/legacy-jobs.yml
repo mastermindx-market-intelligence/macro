@@ -9880,6 +9880,8 @@ jobs:
           tests/test_capital_structure_evidence_identity.py
           tests/test_capital_structure_reference_qualification.py
           tests/test_capital_structure_g0_reference.py
+          tests/test_capital_structure_a0_reference_lineage.py
+          tests/test_capital_structure_reference_dossiers.py
           tests/test_capital_structure_rule_applicability.py
           tests/test_capital_structure_capacity_joint.py
           tests/test_capital_structure_capacity.py
