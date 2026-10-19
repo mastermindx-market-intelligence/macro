@@ -5016,7 +5016,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_609),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_613),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5034,8 +5034,13 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     scripts.build_free_content dependency reached through press.validators.
     Hosted contract-delta39234988640 measured build_free_content 5,576 -> 5,609;
     the scoped local probe independently measured 134 jobs / 5,609 against 5,600.
-    Fund only that nine-weight-second excess: 5,600 -> 5,609, no padding.
-    Job counts, the other weight ceilings and the ten-pack ceiling remain.
+    The protected ff1b80af refresh also adds two alert-email suites (+4),
+    producing the current measured 134 jobs / 5,613. The exact local four-case
+    audit passed declaration, complete dependency coverage and opaque-tier-only
+    removal; its sole breach was 5,613 against 5,609. Fund that final measured
+    excess only: 5,600 -> 5,613, no padding. This is retained measurement reuse,
+    not a new selector or suite change. Job counts, other weights and ten packs
+    remain fixed; current-head hosted CI must execute the updated assertion.
     Dropping the imported validator or understating the suite weight would
     discard coverage or hide the actual added test load.
 
