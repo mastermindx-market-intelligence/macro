@@ -1048,7 +1048,7 @@ def test_interface_ownership_matches_masterplan_section_nine():
         "engine/capital_structure/scenario_composition.py": (
             "compose_scenario",
             ("CapitalState", "InstrumentSet", "ShareBasisResult", "FinancialInputs",
-             "CommitmentInputs", "FinancingScenario", "RulePack", "pack"),
+             "CommitmentInputs", "FinancingScenario", "RulePack", "pack", "listing"),
             "ScenarioResult",
         ),
     }
@@ -1059,7 +1059,7 @@ def test_interface_ownership_matches_masterplan_section_nine():
     for path, function_name, parameters, result_type in c.INTERFACE_OWNERSHIP:
         assert hasattr(c, result_type), result_type
         for parameter in parameters:
-            assert parameter in ("as_of", "pack") or hasattr(c, parameter), parameter
+            assert parameter in ("as_of", "pack", "listing") or hasattr(c, parameter), parameter
         if not (ROOT / path).exists():
             continue
         module = importlib.import_module(path[:-3].replace("/", "."))

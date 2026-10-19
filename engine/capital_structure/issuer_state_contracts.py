@@ -196,6 +196,10 @@ INTERFACE_OWNERSHIP: tuple[tuple[str, str, tuple[str, ...], str], ...] = (
             # verbatim to ``explain_capacity``; it names no contract type, so it
             # is listed like ``as_of`` rather than as a dataclass name.
             "pack",
+            # ``listing`` is the optional then-known ListingFact (SPEC_G0 §2.4),
+            # forwarded verbatim to ``explain_capacity``; like ``pack`` it is a
+            # keyword, not a state contract type.
+            "listing",
         ),
         "ScenarioResult",
     ),
@@ -1315,17 +1319,26 @@ class FinancingScenario:
         for action in self.actions:
             _require(isinstance(action, ActionSelection), "scenario.actions: ActionSelection required")
         _unique([action.route_id for action in self.actions], "scenario.actions")
+        # Actions, assumptions and resolutions are keyed sets: their given order
+        # carries no meaning, so they are stored canonically and a permuted
+        # scenario keeps one scenario_id and one record (SPEC_S0 section 11 item 6).
+        object.__setattr__(self, "actions", tuple(sorted(self.actions, key=lambda action: action.route_id)))
         for name in ("fee_rate", "discount_rate"):
             value = getattr(self, name)
             if value is not None:
                 _decimal(value, f"scenario.{name}")
                 _require(Decimal(value) <= 1, f"scenario.{name}: a rate is at most 1")
-        object.__setattr__(self, "other_assumptions", tuple((str(key), str(value)) for key, value in self.other_assumptions))
+        object.__setattr__(
+            self, "other_assumptions", tuple(sorted((str(key), str(value)) for key, value in self.other_assumptions))
+        )
         _unique([key for key, _ in self.other_assumptions], "scenario.other_assumptions")
         object.__setattr__(self, "unknown_resolutions", tuple(self.unknown_resolutions))
         for item in self.unknown_resolutions:
             _require(isinstance(item, UnknownResolution), "scenario.unknown_resolutions: UnknownResolution required")
         _unique([item.unknown_id for item in self.unknown_resolutions], "scenario.unknown_resolutions")
+        object.__setattr__(
+            self, "unknown_resolutions", tuple(sorted(self.unknown_resolutions, key=lambda item: item.unknown_id))
+        )
 
     @property
     def assumptions(self) -> dict[str, Any]:
