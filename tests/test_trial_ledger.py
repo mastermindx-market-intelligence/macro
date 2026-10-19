@@ -719,14 +719,26 @@ def test_identity_bearing_or_shapeless_rows_stay_corrupt(tmp_path):
 
 
 def test_live_causal_filing_budget_rows_do_not_block_appends(tmp_path, monkeypatch):
-    # scripts/causal_ingest_brainstorm.py appends a filing_budget row for every card it
-    # files, so this shape keeps arriving after WP06; it must never wedge the ledger.
+    # scripts/causal_ingest_brainstorm.py used to append a filing_budget row for every card
+    # it filed straight into the ledger; those historical rows stay in the file and must
+    # never wedge it. The live writer (#9585) now targets its own budget file only.
+    import json
     from scripts import causal_ingest_brainstorm as causal
     p = tmp_path / "t.jsonl"
     TrialLedger(p, family="f").log_trial({"w": 20})
+    with p.open("a", encoding="utf-8") as fh:
+        for mech in ("mech-1", "mech-2"):
+            fh.write(json.dumps({"ts": "2026-10-13T00:00:00+00:00", "kind": "filing_budget",
+                                 "family": "causal_scan", "filing_week": "2026-W42",
+                                 "mechanism_id": mech}) + "\n")
+    budget = tmp_path / "budget.jsonl"
     monkeypatch.setattr(causal, "_TRIAL_LEDGER", p)
-    causal._log_filing_budget_to_ledger("mech-1", "2026-W42")
-    causal._log_filing_budget_to_ledger("mech-2", "2026-W42")
+    monkeypatch.setattr(causal, "_FILING_BUDGET", budget)
+    before = p.read_bytes()
+    causal._log_filing_budget("mech-3", "2026-W42")
+    causal._log_filing_budget("mech-4", "2026-W42")
+    assert p.read_bytes() == before
+    assert len(budget.read_text().splitlines()) == 2
     fresh = TrialLedger(p, family="f")
     assert (fresh.corrupt_lines, fresh.legacy_rows) == (0, 2)
     assert fresh.literal_n("f") == 1

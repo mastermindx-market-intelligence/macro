@@ -1645,6 +1645,9 @@ def brain_chat(body: BrainChatRequest, request: Request, background: BackgroundT
         # already returned — ZERO extra network calls. Server-derived like user_email, so
         # the body can never set it; a guest record carries none and reads as {}.
         account_prefs=user_prefs.read_user_prefs(user),
+        # F11-6 (Sol 5967105152 item 5): the caller's own verified token, already injected
+        # by require_user as `_access_token`; a guest has none. Never re-extracted here.
+        user_jwt="" if is_guest else (user.get("_access_token") or ""),
     )
 
     if result.get("quota_exhausted"):
@@ -1714,6 +1717,8 @@ def brain_stream(body: BrainChatRequest, request: Request, background: Backgroun
             guest_aid=guest_aid,
             guest_ip=guest_ip,
             account_prefs=account_prefs,
+            # F11-6 (Sol 5967105152 item 5): same caller-token pass-through as chat().
+            user_jwt="" if is_guest else (user.get("_access_token") or ""),
         )
 
     # The turn is registered as a server-side RUN before a single byte goes out.
@@ -1840,6 +1845,8 @@ _CHART_STATE_BODY_MAX = 64 * 1024   # ~64KB serialized body cap (reject bigger s
 
 class ChartStateRequest(BaseModel):
     client: str = Field(..., max_length=32, description="Chart client id, e.g. 'terminal'")
+    origin_id: str = Field("", max_length=64, description="Opaque ai-context mount id; empty for legacy clients")
+    context_revision: int | None = Field(None, ge=0, description="ai-context revision for the mirrored chart state")
     session: dict = Field(..., description="Current chart session (symbol/tf/indicators/range/capabilities/drawings)")
     acks: list[dict] | None = Field(None, description="Optional command acks with fit metrics")
 
@@ -1847,7 +1854,12 @@ class ChartStateRequest(BaseModel):
     def _bound_body(self) -> "ChartStateRequest":
         """Reject an oversized payload — the session/acks JSON must fit the body cap."""
         try:
-            size = len(json.dumps({"session": self.session, "acks": self.acks or []}, default=str))
+            size = len(json.dumps({
+                "origin_id": self.origin_id,
+                "context_revision": self.context_revision,
+                "session": self.session,
+                "acks": self.acks or [],
+            }, default=str))
         except Exception:  # noqa: BLE001 — unserializable → treat as too large/bad
             raise ValueError("chart state not serializable")
         if size > _CHART_STATE_BODY_MAX:
@@ -1860,14 +1872,22 @@ def brain_chart_state(body: ChartStateRequest,
                       user: dict = Depends(require_user)):
     """Store the latest chart state for this user + client (CMX W2, masterplan §2.2).
 
-    POST body: {client, session, acks?}. Auth: verified user (401 without a valid session).
+    POST body: {client, origin_id?, context_revision?, session, acks?}.
+    Auth: verified user (401 without a valid session).
     No quota is debited — this is telemetry the Brain reads via read_chart_state.
     Response: {ok: true}.
     """
     gw = _brain_module()
     user_id = user.get("id") or user.get("email") or "unknown"
     client = (body.client or "").strip().lower()[:32] or "terminal"
-    gw.put_chart_state(user_id, client, body.session)
+    gw.put_chart_state(
+        user_id,
+        client,
+        body.session,
+        origin_id=body.origin_id,
+        context_revision=body.context_revision,
+        acks=body.acks,
+    )
     return {"ok": True}
 
 

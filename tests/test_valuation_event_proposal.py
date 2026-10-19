@@ -405,6 +405,24 @@ def test_panel_shows_the_before_and_after_and_the_untouched_inputs():
     assert "The other two are untouched." in html
 
 
+def test_guidance_cut_is_not_described_as_a_more_optimistic_scenario():
+    cb = controls()
+    proposal = vep.propose_from_guidance_hit(
+        guidance_hit(direction="cut", phrase="lowering our full-year guidance"), cb
+    )
+    scenario = vep.evaluate_proposal(cb, proposal)
+    assert proposal["status"] == vep.STATUS_PROPOSED
+    assert scenario["proposed"]["per_share"] < scenario["baseline"]["per_share"]
+    cb["event_assumption_proposal"] = proposal
+    cb["event_assumption_scenario"] = scenario
+    html = _render(cb)
+    assert 'id="va-event-proposal"' in html
+    assert "more optimistic" not in html
+    assert "较乐观" not in html
+    assert "not a number the company gave" in html
+    assert "并非公司给出的数字" in html
+
+
 def test_panel_links_the_filing_it_quotes():
     html = _render(_proposed_blob())
     assert "https://www.sec.gov/Archives/edgar/data/1755672/" in html
