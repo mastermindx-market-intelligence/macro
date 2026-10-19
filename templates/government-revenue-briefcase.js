@@ -280,6 +280,7 @@
       type: type,
       enabled: value.enabled !== false,
       primed: value.primed === true,
+      membership_contract: ['page_filter_membership.v1','legacy_event_membership.v1'].indexOf(value.membership_contract)>=0 ? value.membership_contract : null,
       seen_event_ids: stableUniqueIds(value.seen_event_ids),
       created_at: text(value.created_at, 80) || null,
       last_checked_at: text(value.last_checked_at, 80) || null
@@ -574,6 +575,7 @@
     var storageKey = /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(ownerId)
       ? STORAGE_KEY + '.user.' + ownerId : null;
     var now = typeof api.now === 'function' ? api.now : function () { return new Date().toISOString(); };
+    var membershipContract=api.membershipMode==='legacy'&&!Object.prototype.hasOwnProperty.call(api,'resolveEventIds')?'legacy_event_membership.v1':'page_filter_membership.v1';
     var counter = 0;
 
     function stamp() {
@@ -722,7 +724,7 @@
       if (state.alerts.length >= MAX_ALERTS) throw new Error('local alert limit reached');
       var alert = {
         id: makeId('gra'), view_id: viewId, type: type, enabled: input.enabled !== false,
-        primed: false, seen_event_ids: [], created_at: stamp(), last_checked_at: null
+        primed: false, membership_contract: null, seen_event_ids: [], created_at: stamp(), last_checked_at: null
       };
       state.alerts.push(alert);
       return { alert: copy(alert), persisted: commit() };
@@ -745,11 +747,26 @@
       return { deleted: true, persisted: commit() };
     }
 
-    function matchingEvents(workspace, alert) {
-      var view = viewById(alert.view_id);
-      if (!view) return [];
-      return array(workspace.events).filter(function (event) {
-        return object(event) && text(event.event_id, MAX_EVENT_ID_LENGTH) && matchesFilters(event, view.filters) && matchesAlert(event, alert.type);
+    function resolvedEvents(workspace,filters) {
+      var clean=cleanFilters(filters);
+      // Explicit compatibility for non-page callers only. The product always
+      // supplies the page resolver; a broken resolver never falls back.
+      if (api.membershipMode==='legacy' && !Object.prototype.hasOwnProperty.call(api,'resolveEventIds')) {
+        return array(workspace.events).filter(function(event){return object(event)&&matchesFilters(event,clean);});
+      }
+      if (typeof api.resolveEventIds!=='function') throw cutError('view_membership_unavailable');
+      var ids;
+      try { ids=api.resolveEventIds(workspace,copy(clean)); }
+      catch(error) { throw cutError('view_membership_unavailable'); }
+      if (!Array.isArray(ids)||ids.length>MAX_SEEN_IDS) throw cutError('view_membership_unavailable');
+      var byId=Object.create(null),seen=Object.create(null);
+      array(workspace.events).forEach(function(event){
+        if(!object(event)||typeof event.event_id!=='string'||!event.event_id||byId[event.event_id])throw cutError('view_membership_unavailable');
+        byId[event.event_id]=event;
+      });
+      return ids.map(function(id){
+        if(typeof id!=='string'||seen[id]||!byId[id]||!eventKindForMode(clean.mode,byId[id]))throw cutError('view_membership_unavailable');
+        seen[id]=true;return byId[id];
       });
     }
 
@@ -761,17 +778,33 @@
       }
       var emitted = [];
       var withheld = [];
+      var matches=Object.create(null),rebaselined=[];
+      // Resolve every active view before touching any baseline or inbox entry.
+      // One unavailable view must not leave an apparently successful partial check.
+      try {
+        state.alerts.forEach(function(alert){
+          if(!alert.enabled||(alert.type==='award_change'&&!isAwardRailReady(workspace)))return;
+          var view=viewById(alert.view_id);
+          if(!view)throw cutError('view_membership_unavailable');
+          matches[alert.id]=resolvedEvents(workspace,view.filters).filter(function(event){return matchesAlert(event,alert.type);});
+        });
+      } catch(error) {
+        return {reconciled:false,reason:'view_membership_unavailable',alerts:[],withheld_alert_ids:[]};
+      }
       state.alerts.forEach(function (alert) {
         if (!alert.enabled) return;
         if (alert.type === 'award_change' && !isAwardRailReady(workspace)) {
           withheld.push(alert.id);
           return;
         }
-        var rows = matchingEvents(workspace, alert);
+        var rows = matches[alert.id];
         var ids = stableUniqueIds(rows.map(function (event) { return event.event_id; }));
-        if (!alert.primed) {
+        if (!alert.primed || alert.membership_contract!==membershipContract) {
+          // An expanded predicate must not backfill old records as new alerts.
+          if(alert.primed)rebaselined.push(alert.id);
           alert.primed = true;
-          alert.seen_event_ids = ids;
+          alert.membership_contract=membershipContract;
+          alert.seen_event_ids = stableUniqueIds(ids.concat(alert.seen_event_ids));
           alert.last_checked_at = stamp();
           return;
         }
@@ -801,7 +834,7 @@
         alert.last_checked_at = stamp();
       });
       state.inbox = state.inbox.slice(0, MAX_INBOX);
-      return { reconciled: true, alerts: emitted, withheld_alert_ids: withheld, persisted: commit() };
+      return { reconciled: true, alerts: emitted, withheld_alert_ids: withheld, rebaselined_alert_ids: rebaselined, persisted: commit() };
     }
 
     function buildJsonExport(workspace, filters) {
@@ -814,9 +847,9 @@
         throw unsupported;
       }
       var clean = cleanFilters(filters);
-      var records = array(workspace.events).filter(function (event) {
-        return object(event) && matchesFilters(event, clean);
-      }).slice(0, MAX_SEEN_IDS).map(publicEvent);
+      var matched=resolvedEvents(workspace,clean);
+      if(matched.length>MAX_SEEN_IDS)throw cutError('view_membership_unavailable');
+      var records=matched.map(publicEvent);
       return {
         contract: EXPORT_CONTRACT,
         exported_at: stamp(),

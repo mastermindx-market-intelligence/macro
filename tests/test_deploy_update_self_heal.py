@@ -327,6 +327,17 @@ def _triggers_press_restart(path: str) -> bool:
 
 # Import-cached by the macro-api process -> a change here MUST restart it.
 MUST_RESTART = [
+    # Native supplier conditional research imports and cached K3 validators.
+    'app/company_supplier_research.py',
+    'engine/company_intelligence/h20_reported_event.py',
+    'engine/earnings_release/__init__.py',
+    'engine/earnings_release/receipts.py',
+    'engine/theme_graph/native_disclosure_propagation.py',
+    'lib/economic_propagation.py',
+    'lib/economic_propagation_v2.py',
+    'contracts/economic_propagation/propagation_hypothesis.v1.schema.json',
+    'contracts/economic_propagation/propagation_hypothesis.v2.schema.json',
+    'contracts/economic_propagation/generator_registry.v1.json',
     # F04 captured/native research and published Radar validation: request-time
     # imports also stay cached. The three JSON resources have lru-cached readers.
     'engine/entry_radar/c5_adapter.py',
