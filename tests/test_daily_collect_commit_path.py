@@ -75,6 +75,11 @@ MARKET_PUSH_STEP = "push market data"
 COLLECTORS_STEP = "run collectors"
 HANDOFF_STAMP_STEP = "stamp the capital-structure handoff receipt"
 HANDOFF_UPLOAD_STEP = "hand the capital-structure workspace to its own job"
+# Carve-custody steps (PR #9556 review 5566188238). Absent on a52f5ad8 — tests
+# that look these up must use _index_of_absent so the RED phase can still run.
+QLEDGER_PARK_STEP = "park carved qledger bytes outside the push autostash"
+QLEDGER_RESTORE_STEP = "restore carved qledger bytes (runner-local, never published here)"
+SALVAGE_PUSH_STEP = "salvage push"
 
 # Steps that MAY fail the collect job before "commit market data", and why.  Every
 # entry costs the night's market collection when it fires — that would be an
@@ -117,6 +122,16 @@ def _index_of(steps: list[dict], needle: str) -> int:
         if needle in (step.get("name") or ""):
             return i
     raise AssertionError(f"no step whose name contains {needle!r}")
+
+
+def _index_of_absent(steps: list[dict], needle: str) -> int | None:
+    """Same as `_index_of` but returns None when the step is absent instead of
+    raising. Used by the carve-custody tests so they can run on a52f5ad8 (RED
+    baseline) where the park/restore steps do not yet exist."""
+    for i, step in enumerate(steps):
+        if needle in (step.get("name") or ""):
+            return i
+    return None
 
 
 def _index_of_run(steps: list[dict], fragment: str) -> int:
@@ -702,10 +717,16 @@ def test_r2_publish_is_itself_non_fatal(collect_steps, step_name):
 import os  # noqa: E402
 
 
-def _run_market_commit(tmp_path, collect_steps, mutate):
+def _run_market_commit(tmp_path, collect_steps, mutate, seed=None):
     """Materialize a fresh git repo, mutate it, and run the verbatim `run:` body
     of the market-commit step. Returns (subprocess.CompletedProcess, parsed
-    GITHUB_OUTPUT dict, Path to repo)."""
+    GITHUB_OUTPUT dict, Path to repo).
+
+    `seed`, when given, is called as `seed(repo)` after the base files are
+    written and before the base commit. Whatever it writes must land in the
+    base commit. If a `seed` writes `.gitattributes` the helper adds it to the
+    base commit alongside `data`/`site`; seed may also stage its own files
+    using the helper's `env` (passed as the second positional arg)."""
     run = str(collect_steps[_index_of(collect_steps, MARKET_COMMIT_STEP)]["run"])
     assert "${{" not in run, (
         "test harness must run the step body verbatim — if daily.yml grew a "
@@ -740,6 +761,13 @@ def _run_market_commit(tmp_path, collect_steps, mutate):
     (repo / "data" / "capital_structure" / "source_manifest.jsonl").write_bytes(b"m1\n")
     (repo / "data" / "hk" / "x.csv").write_bytes(b"h1\n")
     subprocess.run(["git", "add", "data", "site"], cwd=repo, env=env, check=True)
+    if seed is not None:
+        seed(repo, env)
+        # Stage `.gitattributes` alongside `data`/`site` so the seeded file
+        # lands in the base commit. `git add` on an already-staged file is a
+        # no-op, so seeds that staged their own files still work.
+        if (repo / ".gitattributes").exists():
+            subprocess.run(["git", "add", ".gitattributes"], cwd=repo, env=env, check=True)
     subprocess.run(["git", "commit", "-q", "-m", "base"], cwd=repo, env=env, check=True)
     mutate(repo)
     proc = subprocess.run(
@@ -1452,3 +1480,765 @@ def test_collect_job_has_publication_headroom_after_oct14_timeout_loss():
     ]
     assert len(market_push) == 1
     assert "PUSH_ALARM=420" in market_push[0].get("run", "")
+
+
+# ── Carve-custody guard (PR #9556 review 5566188238) ──────────────────────────
+# The qledger carve-out leaves data/qledger + site/qledger DIRTY in the worktree,
+# and the push step's `git pull --rebase --autostash` carries that dirt across
+# the rebase. A conflicted re-apply (e.g. a concurrent site/qledger/
+# track_record.json — NOT merge=union) makes push_autostash_ok drop the stash
+# and `git reset --hard HEAD`, silently destroying the freshly-collected claims
+# append while the market push still reports `published=true`. The park +
+# restore steps isolate those bytes from the autostash and emit a non-fatal
+# "not published" signal. These tests pin the guard with real Git integration:
+# a synthetic racer clone forces the conflict and the harness runs the verbatim
+# step bodies, so a regression in daily.yml fails with the exact loss scenario
+# the lane was built to stop.
+
+import shutil  # noqa: E402
+
+
+def _carve_seed_gitattributes(repo, env):
+    """Seed the temp repo's base commit with the REAL ROOT `.gitattributes` so
+    the push step's `--autostash` / race re-apply sees the same merge attributes
+    as the real repository (e.g. site/qledger/track_record.json is NOT
+    `merge=union` on a52f5ad8)."""
+    shutil.copy(ROOT / ".gitattributes", repo / ".gitattributes")
+
+
+def _carve_step_body(collect_steps, needle):
+    """Return the verbatim `run:` body for a step whose name contains `needle`,
+    or None if absent. Used by the carve-custody tests so a52f5ad8 (no park or
+    restore step yet) does not trip on a missing helper."""
+    idx = _index_of_absent(collect_steps, needle)
+    if idx is None:
+        return None
+    return str(collect_steps[idx].get("run") or "")
+
+
+def _make_step_env(tmp_path, summary_path, snapshot, *,
+                   racer_dir=None, counter_file=None, real_git=None):
+    """Return the env dict used to run every step body verbatim. Honours the
+    harness' git-config overrides and the lane's PUSH_* + QLEDGER_SNAPSHOT
+    contract. Each caller writes a fresh GITHUB_OUTPUT per step."""
+    shim_dir = tmp_path / "shim"
+    path_dirs = [str(shim_dir)] + [
+        d for d in os.environ.get("PATH", "").split(":")
+        if d and d != str(shim_dir)
+    ]
+    env = {
+        "PATH": ":".join(path_dirs),
+        "PYTHONPATH": str(ROOT),
+        "GITHUB_WORKSPACE": str(ROOT),
+        "GITHUB_ACTIONS": "true",
+        "GITHUB_OUTPUT": str(tmp_path / "step_output"),
+        "GITHUB_STEP_SUMMARY": str(summary_path),
+        "PUSH_MAX_ATTEMPTS": "3",
+        "PUSH_BUDGET_SECS": "120",
+        "PUSH_FENCE_PYTHON": sys.executable,
+        "QLEDGER_SNAPSHOT": snapshot,
+        "GIT_CONFIG_GLOBAL": os.devnull,
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_ALLOW_PROTOCOL": "file",
+        "GIT_CONFIG_COUNT": "2",
+        "GIT_CONFIG_KEY_0": "core.hooksPath",
+        "GIT_CONFIG_VALUE_0": os.devnull,
+        "GIT_CONFIG_KEY_1": "commit.gpgsign",
+        "GIT_CONFIG_VALUE_1": "false",
+        "GIT_AUTHOR_NAME": "bot",
+        "GIT_AUTHOR_EMAIL": "bot@bot",
+        "GIT_COMMITTER_NAME": "bot",
+        "GIT_COMMITTER_EMAIL": "bot@bot",
+    }
+    if racer_dir is not None:
+        env["SHIM_RACER_DIR"] = str(racer_dir)
+    if counter_file is not None:
+        env["SHIM_COUNTER"] = str(counter_file)
+    if real_git is not None:
+        env["SHIM_REAL_GIT"] = str(real_git)
+    return env
+
+
+def _run_step(body, cwd, env, *, timeout=300):
+    """Run a step body verbatim with the harness shell. Asserts no `${{`
+    survives — would have been swallowed by github_actions if present."""
+    assert "${{" not in body, (
+        f"step body has ${{...}} interpolation: {body[:120]!r}..."
+    )
+    return subprocess.run(
+        ["bash", "--noprofile", "--norc", "-eo", "pipefail", "-c",
+         "sleep() { :; }\n" + body],
+        cwd=cwd, env=env, capture_output=True, text=True, timeout=timeout,
+    )
+
+
+def _write_shims(shim_dir, real_git):
+    """Write the `git`, `python`, `python3` shims used by the harness. The
+    `git` shim is pass-through except for the FIRST `git push` it sees, when
+    it also publishes the racer's racing-lane.txt (clean-race injection). The
+    counter file lives next to the shim dir, so each test starts at zero."""
+    shim_dir.mkdir(exist_ok=True)
+    counter_file = shim_dir.parent / "push_count"
+    counter_file.write_text("0")
+
+    (shim_dir / "git").write_text(
+        "#!/usr/bin/env bash\n"
+        "set -e\n"
+        "counter_file=\"${SHIM_COUNTER:?SHIM_COUNTER not set}\"\n"
+        "racer_dir=\"${SHIM_RACER_DIR:-}\"\n"
+        "real_git=\"${SHIM_REAL_GIT:?SHIM_REAL_GIT not set}\"\n"
+        "is_push=0\n"
+        "for a in \"$@\"; do\n"
+        "  if [ \"$a\" = \"push\" ]; then is_push=1; break; fi\n"
+        "done\n"
+        "if [ \"$is_push\" = \"1\" ]; then\n"
+        "  n=$(cat \"$counter_file\" 2>/dev/null || echo 0)\n"
+        "  if [ \"$n\" = \"0\" ] && [ -n \"$racer_dir\" ] && "
+        "[ -d \"$racer_dir\" ] && [ -f \"$racer_dir/racing-lane.txt\" ]; then\n"
+        "    ( cd \"$racer_dir\" && \"$real_git\" push origin HEAD:main ) "
+        ">\"$counter_file.publog\" 2>&1 || true\n"
+        "  fi\n"
+        "  echo $((n+1)) > \"$counter_file\" 2>/dev/null || true\n"
+        "fi\n"
+        "exec \"$real_git\" \"$@\"\n"
+    )
+    (shim_dir / "git").chmod(0o755)
+
+    for py_name in ("python", "python3"):
+        (shim_dir / py_name).write_text(
+            f"#!/usr/bin/env bash\nexec \"{sys.executable}\" \"$@\"\n"
+        )
+        (shim_dir / py_name).chmod(0o755)
+
+
+def _git_env(repo=None):
+    """Minimal env for real-git helper calls that don't go through the shim."""
+    env = {"GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"}
+    if repo is not None:
+        env["GIT_AUTHOR_NAME"] = "h"
+        env["GIT_AUTHOR_EMAIL"] = "h@h"
+        env["GIT_COMMITTER_NAME"] = "h"
+        env["GIT_COMMITTER_EMAIL"] = "h@h"
+    return env
+
+
+def _git(repo, *args, **kw):
+    """Run git in the repo with the harness env. Returns CompletedProcess."""
+    return subprocess.run(
+        ["git", *args], cwd=repo, env=_git_env(),
+        capture_output=True, text=True, check=kw.pop("check", True), **kw,
+    )
+
+
+def _run_carve_publish(tmp_path, collect_steps, monkeypatch, race):
+    """Build the carve-custody harness. Returns a namespace dict with the repo,
+    racer, origin, deferred/HEAD blob ids, step procs and outputs."""
+    # 1. Cleanup parent env so a contaminated host cannot leak into the steps.
+    for k in list(os.environ):
+        if k.startswith("GIT_") or k.startswith("PUSH_") or k in ("BASH_ENV", "ENV"):
+            monkeypatch.delenv(k, raising=False)
+
+    # 2. Locate the real git binary BEFORE the shim shadows it. `shutil.which`
+    # resolves via the parent process PATH (which the harness has not touched);
+    # fall back to the conventional location if shutil can't find it.
+    real_git = shutil.which("git") or "/usr/bin/git"
+    if not os.path.isfile(real_git):
+        bash_which = subprocess.run(
+            ["bash", "-c", "command -v git"],
+            capture_output=True, text=True, check=False,
+        )
+        if bash_which.returncode == 0 and bash_which.stdout.strip():
+            real_git = bash_which.stdout.strip()
+
+    # 3. Step bodies.
+    commit_run = str(collect_steps[_index_of(collect_steps, MARKET_COMMIT_STEP)]["run"])
+    push_run = str(collect_steps[_index_of(collect_steps, MARKET_PUSH_STEP)]["run"])
+    park_run = _carve_step_body(collect_steps, QLEDGER_PARK_STEP)
+    restore_run = _carve_step_body(collect_steps, QLEDGER_RESTORE_STEP)
+
+    # 4. Run commitdata on a fresh repo (mutates + records deferred state).
+    def mutate(repo):
+        (repo / "data" / "baskets" / "ohlcv" / "NVDA.parquet").write_bytes(b"v2")
+        _grow(repo / "data" / "qledger" / "claims.jsonl", _LIMIT + 4096)
+        (repo / "site" / "qledger" / "track_record.json").write_bytes(b'{"n":1}')
+        (repo / "data" / "capital_structure" / "source_manifest.jsonl").write_bytes(b"m2\n")
+
+    commit_proc, commit_outputs, repo = _run_market_commit(
+        tmp_path, collect_steps, mutate, seed=_carve_seed_gitattributes,
+    )
+    assert commit_proc.returncode == 0, (
+        f"commitdata failed: stdout={commit_proc.stdout!r} "
+        f"stderr={commit_proc.stderr!r}"
+    )
+    assert commit_outputs.get("committed") == "true", (
+        f"commitdata did not commit (no market change?): {commit_outputs!r}"
+    )
+    assert commit_outputs.get("qledger_carved") == "true", (
+        f"commitdata did not carve (no oversize?): {commit_outputs!r}"
+    )
+
+    # 5. Record committed (HEAD^/HEAD) and deferred (worktree) blob ids.
+    base_sha = _git(repo, "rev-parse", "HEAD^").stdout.strip()
+
+    def blob_at(rev, path):
+        return subprocess.run(
+            ["git", "show", f"{rev}:{path}"], cwd=repo, env=_git_env(),
+            capture_output=True, check=True,
+        ).stdout
+
+    def hash_at(path):
+        return subprocess.run(
+            ["git", "hash-object", "--no-filters", "--", str(repo / path)],
+            cwd=repo, env=_git_env(),
+            capture_output=True, text=True, check=True,
+        ).stdout.strip()
+
+    head_sha = _git(repo, "rev-parse", "HEAD").stdout.strip()
+    deferred_claims = hash_at("data/qledger/claims.jsonl")
+    deferred_twin = hash_at("site/qledger/track_record.json")
+    claims_at_base = blob_at(base_sha, "data/qledger/claims.jsonl")
+    twin_at_base = blob_at(base_sha, "site/qledger/track_record.json")
+
+    # 6. Origin: bare repo with the base commit (HEAD^).
+    origin = tmp_path / "origin.git"
+    subprocess.run(
+        ["git", "init", "--bare", "-q", "-b", "main", str(origin)], check=True,
+    )
+    subprocess.run(
+        ["git", "push", "-q", str(origin), f"{base_sha}:refs/heads/main"],
+        cwd=repo, env=_git_env(), check=True,
+    )
+    _git(repo, "remote", "add", "origin", str(origin))
+    _git(repo, "fetch", "origin", "main")
+    _git(repo, "branch", "--set-upstream-to=origin/main", "main")
+
+    # 7. Racer clone. The racer's commit differs per `race`.
+    racer = tmp_path / "racer"
+    subprocess.run(["git", "clone", "-q", str(origin), str(racer)], check=True)
+    racer_env = _git_env()
+    subprocess.run(["git", "config", "user.name", "racer"],
+                   cwd=racer, env=racer_env, check=True)
+    subprocess.run(["git", "config", "user.email", "racer@racer"],
+                   cwd=racer, env=racer_env, check=True)
+    if race == "clean":
+        (racer / "racing-lane.txt").write_text("racing\n")
+        subprocess.run(["git", "add", "racing-lane.txt"],
+                       cwd=racer, env=racer_env, check=True)
+        subprocess.run(["git", "commit", "-q", "-m", "racing-lane"],
+                       cwd=racer, env=racer_env, check=True)
+    elif race == "conflicted":
+        (racer / "site" / "qledger").mkdir(exist_ok=True)
+        (racer / "site" / "qledger" / "track_record.json").write_bytes(b'{"racer":2}')
+        subprocess.run(["git", "add", "site/qledger/track_record.json"],
+                       cwd=racer, env=racer_env, check=True)
+        subprocess.run(["git", "commit", "-q", "-m", "racer twin"],
+                       cwd=racer, env=racer_env, check=True)
+        # Push the racer's divergent twin BEFORE pushdata starts so pushdata's
+        # first pull sees it; this is the EXACT autostash-conflict scenario the
+        # carve-out must survive.
+        subprocess.run(
+            ["git", "push", "-q", "origin", "HEAD:main"],
+            cwd=racer, env=racer_env, check=True,
+        )
+    else:
+        raise AssertionError(f"unknown race: {race!r}")
+
+    # 8. Shims and step env.
+    shim_dir = tmp_path / "shim"
+    _write_shims(shim_dir, real_git)
+    counter_file = shim_dir.parent / "push_count"
+    summary_path = tmp_path / "summary.md"
+    snapshot = commit_outputs.get("qledger_snapshot", "")
+
+    env_template = _make_step_env(
+        tmp_path, summary_path, snapshot,
+        racer_dir=racer if race == "clean" else None,
+        counter_file=counter_file, real_git=real_git,
+    )
+
+    def step_env_for(name):
+        env = dict(env_template)
+        env["GITHUB_OUTPUT"] = str(tmp_path / f"output_{name}")
+        return env
+
+    # 9. Run PARK / PUSH / RESTORE in workflow order, honouring the gates.
+    procs = {}
+
+    if park_run and commit_outputs.get("committed") == "true" and snapshot:
+        procs["park"] = _run_step(park_run, repo, step_env_for("park"))
+
+    if commit_outputs.get("committed") == "true":
+        procs["push"] = _run_step(push_run, repo, step_env_for("push"))
+
+    if restore_run and snapshot:
+        procs["restore"] = _run_step(restore_run, repo, step_env_for("restore"))
+
+    return {
+        "commit_proc": commit_proc,
+        "commit_outputs": commit_outputs,
+        "repo": repo,
+        "racer": racer,
+        "origin": origin,
+        "base_sha": base_sha,
+        "head_sha": head_sha,
+        "market_at_base": blob_at(base_sha, "data/baskets/ohlcv/NVDA.parquet"),
+        "claims_at_base": claims_at_base,
+        "twin_at_base": twin_at_base,
+        "deferred_claims": deferred_claims,
+        "deferred_twin": deferred_twin,
+        "claims_size": (repo / "data" / "qledger" / "claims.jsonl").stat().st_size,
+        "snapshot": snapshot,
+        "summary_path": summary_path,
+        "procs": procs,
+        "real_git": real_git,
+    }
+
+
+@pytest.mark.parametrize("race", ["clean", "conflicted"])
+def test_qledger_carve_custody_survives_the_market_push(
+    tmp_path, collect_steps, monkeypatch, race,
+):
+    """PR #9556 review 5566188238: end-to-end that the qledger carve-out must
+    NOT silently destroy unpublished claims. A synthetic racer clone forces a
+    real rebase race (clean = racing-lane only; conflicted = divergent
+    site/qledger/track_record.json, the EXACT autostash-conflict scenario).
+    On a52f5ad8 the carve-out is unprotected; the assertion order below makes
+    the first failure the substantive one (BYTES for conflicted, SIGNAL for
+    clean — autostash re-applies cleanly when origin hasn't touched the
+    carved paths)."""
+    h = _run_carve_publish(tmp_path, collect_steps, monkeypatch, race)
+
+    # 1. pushdata rc == 0 and `published` == "true".
+    push = h["procs"].get("push")
+    assert push is not None, "pushdata step did not run (commitdata did not commit)"
+    assert push.returncode == 0, (
+        f"pushdata failed: stdout={push.stdout!r} stderr={push.stderr!r}"
+    )
+    push_outputs_path = tmp_path / "output_push"
+    push_outputs: dict[str, str] = {}
+    if push_outputs_path.exists():
+        for line in push_outputs_path.read_text().splitlines():
+            if "=" in line:
+                k, v = line.split("=", 1)
+                push_outputs[k] = v  # last write wins, matching GITHUB_OUTPUT
+    assert push_outputs.get("published") == "true", (
+        f"published should be 'true' (last value in GITHUB_OUTPUT), got "
+        f"{push_outputs!r}; full stdout={push.stdout!r} stderr={push.stderr!r}"
+    )
+
+    # 2. BYTES — the carved bytes survived in the worktree. On a52f5ad8 the
+    #    conflict (race=conflicted) destroys the dirty bytes; the message below
+    #    states the original local claim bytes were lost.
+    worktree_claims_hash = subprocess.run(
+        ["git", "hash-object", "--no-filters", "--",
+         str(h["repo"] / "data/qledger/claims.jsonl")],
+        cwd=h["repo"], env=_git_env(),
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+    assert worktree_claims_hash == h["deferred_claims"], (
+        f"worktree claims hash {worktree_claims_hash} != deferred "
+        f"{h['deferred_claims']}; the original local claim bytes were lost — "
+        f"the carve-out must NEVER drop, stash-drop, hard-reset or silently "
+        f"issue the freshly-collected claims append"
+    )
+    assert (h["repo"] / "data" / "qledger" / "claims.jsonl").stat().st_size == _LIMIT + 4096, (
+        f"worktree claims size != _LIMIT + 4096; the carve-out reverted or "
+        f"truncated the file"
+    )
+    worktree_twin_hash = subprocess.run(
+        ["git", "hash-object", "--no-filters", "--",
+         str(h["repo"] / "site/qledger/track_record.json")],
+        cwd=h["repo"], env=_git_env(),
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+    assert worktree_twin_hash == h["deferred_twin"], (
+        f"worktree twin hash {worktree_twin_hash} != deferred {h['deferred_twin']}"
+    )
+    assert (h["repo"] / "data" / "capital_structure"
+            / "source_manifest.jsonl").read_bytes() == b"m2\n", (
+        "the CS carve-out must keep its local bytes untouched in the worktree"
+    )
+
+    # 3. push stdout+stderr must not contain autostash-conflict markers — the
+    #    park step is what isolates the carved bytes from --autostash.
+    push_text = (push.stdout or "") + (push.stderr or "")
+    assert "autostash-conflict" not in push_text, (
+        f"pushdata reported autostash-conflict; the park step failed to "
+        f"isolate the carved bytes from --autostash. Output: {push_text!r}"
+    )
+    assert "conflicted autostash apply" not in push_text, (
+        f"pushdata reset hard after a conflicted autostash apply; the carve "
+        f"bytes would be silently destroyed. Output: {push_text!r}"
+    )
+
+    # 4. Origin's main has the expected blobs.
+    main_market = subprocess.run(
+        ["git", "--git-dir", str(h["origin"]), "show",
+         "main:data/baskets/ohlcv/NVDA.parquet"],
+        capture_output=True, check=True,
+    ).stdout
+    assert main_market == b"v2", (
+        f"market blob at origin main was {main_market!r}; the market plane "
+        f"must publish even when qledger is carved out"
+    )
+    racer_tip = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=h["racer"], env=_git_env(),
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+    ancestor = subprocess.run(
+        ["git", "--git-dir", str(h["origin"]), "merge-base", "--is-ancestor",
+         racer_tip, "main"],
+        capture_output=True,
+    )
+    assert ancestor.returncode == 0, (
+        f"racer tip {racer_tip} is NOT an ancestor of origin main; the "
+        f"market lane did not actually pick up the racer's race commit"
+    )
+    main_claims = subprocess.run(
+        ["git", "--git-dir", str(h["origin"]), "show",
+         "main:data/qledger/claims.jsonl"],
+        capture_output=True, check=True,
+    ).stdout
+    assert main_claims == h["claims_at_base"], (
+        f"main claims != base claims (the carve-out must NOT publish the "
+        f"deferred bytes); main={main_claims!r} base={h['claims_at_base']!r}"
+    )
+    main_twin = subprocess.run(
+        ["git", "--git-dir", str(h["origin"]), "show",
+         "main:site/qledger/track_record.json"],
+        capture_output=True, check=True,
+    ).stdout
+    expected_twin_main = h["twin_at_base"] if race == "clean" else b'{"racer":2}'
+    assert main_twin == expected_twin_main, (
+        f"main twin mismatch for race={race!r}: got {main_twin!r}, "
+        f"want {expected_twin_main!r}"
+    )
+
+    # 5. Every blob in main's tree (above base) must NOT include the deferred
+    #    blobs and must not exceed _LIMIT (GH001 invariant).
+    objects = subprocess.run(
+        ["git", "--git-dir", str(h["origin"]), "rev-list", "--objects",
+         f"{h['base_sha']}..main"],
+        capture_output=True, text=True, check=True,
+    ).stdout
+    seen_blobs: set[tuple[str, int]] = set()
+    for line in objects.splitlines():
+        parts = line.split(" ", 1)
+        if len(parts) < 2:
+            continue
+        oid = parts[0]
+        kind_proc = subprocess.run(
+            ["git", "--git-dir", str(h["origin"]), "cat-file", "-t", oid],
+            capture_output=True, text=True, check=True,
+        )
+        if kind_proc.stdout.strip() != "blob":
+            continue
+        size_proc = subprocess.run(
+            ["git", "--git-dir", str(h["origin"]), "cat-file", "-s", oid],
+            capture_output=True, text=True, check=True,
+        )
+        seen_blobs.add((oid, int(size_proc.stdout.strip())))
+    assert (h["deferred_claims"], _LIMIT + 4096) not in seen_blobs, (
+        f"main contains the deferred claims blob — the carve-out must NOT "
+        f"publish it"
+    )
+    assert (h["deferred_twin"], len(b'{"n":1}')) not in seen_blobs, (
+        f"main contains the deferred twin blob — the carve-out must NOT "
+        f"publish it"
+    )
+    oversized = [(o, s) for o, s in seen_blobs if s > _LIMIT]
+    assert not oversized, f"main has oversized blobs (>_LIMIT): {oversized}"
+
+    # 6. Snapshot commit id is ABSENT from origin (runner-local, never pushed).
+    snap_check = subprocess.run(
+        ["git", "--git-dir", str(h["origin"]), "cat-file", "-e", h["snapshot"]],
+        capture_output=True,
+    )
+    assert snap_check.returncode != 0, (
+        f"snapshot commit {h['snapshot']} leaked to origin — the carve-out's "
+        f"runner-local object store is not isolated"
+    )
+
+    # 7. Nothing staged in the repo after the carve+custody flow.
+    staged = subprocess.run(
+        ["git", "diff", "--cached", "--quiet"], cwd=h["repo"], env=_git_env(),
+    )
+    assert staged.returncode == 0, (
+        "the repo has staged changes after the carve+custody flow; "
+        "`git diff --cached` should be empty"
+    )
+
+    # 8. Signal — the restore step emitted the not-published warning AND the
+    #    step summary AND nothing in the whole flow escalated to ::error.
+    restore = h["procs"].get("restore")
+    assert restore is not None, (
+        "T1 requires the restore step (QLEDGER_RESTORE_STEP); the carve-custody "
+        "guard cannot run without it. On a52f5ad8 this is the RED that motivates "
+        "Edits A + B + C."
+    )
+    restore_text = (restore.stdout or "") + (restore.stderr or "")
+    assert "::warning title=qledger carve-out not published::" in restore_text, (
+        f"restore step did not emit the not-published warning; output: "
+        f"{restore_text!r}"
+    )
+    assert "data/qledger/claims.jsonl" in restore_text, (
+        f"restore step did not name the lost path; output: {restore_text!r}"
+    )
+    summary_text = (
+        h["summary_path"].read_text() if h["summary_path"].exists() else ""
+    )
+    assert "### QLedger carve-out" in summary_text, (
+        f"step summary missing the carve-out header; got: {summary_text!r}"
+    )
+    assert h["snapshot"] in summary_text, (
+        f"step summary missing the snapshot id {h['snapshot']}; got: "
+        f"{summary_text!r}"
+    )
+    for name, proc in h["procs"].items():
+        text = (proc.stdout or "") + (proc.stderr or "")
+        assert "::error" not in text, (
+            f"{name} step emitted ::error; the carve-out must NEVER fail the "
+            f"job (capital_structure and government_revenue_projection need "
+            f"collect to succeed). Output: {text!r}"
+        )
+
+
+def test_qledger_carve_custody_steps_are_wired(collect_steps):
+    """The park + restore steps must exist, sit in the right place in the
+    workflow, and have the exact gates / env wiring from Edits B and C."""
+    commit_idx = _index_of(collect_steps, MARKET_COMMIT_STEP)
+    push_idx = _index_of(collect_steps, MARKET_PUSH_STEP)
+    salvage_idx = _index_of(collect_steps, SALVAGE_PUSH_STEP)
+    handoff_idx = _index_of(collect_steps, HANDOFF_STAMP_STEP)
+
+    park_idx = _index_of_absent(collect_steps, QLEDGER_PARK_STEP)
+    restore_idx = _index_of_absent(collect_steps, QLEDGER_RESTORE_STEP)
+
+    assert park_idx is not None, (
+        f"missing step: {QLEDGER_PARK_STEP!r} (Edit B must be applied)"
+    )
+    assert restore_idx is not None, (
+        f"missing step: {QLEDGER_RESTORE_STEP!r} (Edit C must be applied)"
+    )
+
+    # Order — park sits between commitdata and pushdata; restore sits between
+    # salvage-push and the capital-structure handoff (test_salvage_push_covers_
+    # the_market_commit requires salvage == push+1, so restore cannot displace
+    # salvage).
+    assert park_idx > commit_idx, "park must follow commit market data"
+    assert park_idx < push_idx, "park must precede push market data"
+    assert restore_idx > salvage_idx, (
+        "restore must follow the salvage push (salvage must stay directly after "
+        "pushdata — test_salvage_push_covers_the_market_commit pins that order)"
+    )
+    assert restore_idx < handoff_idx, (
+        "restore must precede stamp the capital-structure handoff receipt"
+    )
+
+    park_step = collect_steps[park_idx]
+    restore_step = collect_steps[restore_idx]
+
+    # Gate text — EXACTLY the strings in Edits B / C.
+    expected_park_if = (
+        "always() && steps.commitdata.outputs.committed == 'true' && "
+        "steps.commitdata.outputs.qledger_snapshot != ''"
+    )
+    expected_restore_if = (
+        "always() && steps.commitdata.outputs.qledger_snapshot != ''"
+    )
+    assert park_step.get("if") == expected_park_if, (
+        f"park if: mismatch; got {park_step.get('if')!r}, want "
+        f"{expected_park_if!r}"
+    )
+    assert restore_step.get("if") == expected_restore_if, (
+        f"restore if: mismatch; got {restore_step.get('if')!r}, want "
+        f"{expected_restore_if!r}"
+    )
+
+    # Env — both reference the same commitdata output.
+    park_env = park_step.get("env") or {}
+    restore_env = restore_step.get("env") or {}
+    assert park_env.get("QLEDGER_SNAPSHOT") == (
+        "${{ steps.commitdata.outputs.qledger_snapshot }}"
+    ), (
+        f"park env QLEDGER_SNAPSHOT mismatch; got "
+        f"{park_env.get('QLEDGER_SNAPSHOT')!r}"
+    )
+    assert restore_env.get("QLEDGER_SNAPSHOT") == (
+        "${{ steps.commitdata.outputs.qledger_snapshot }}"
+    ), (
+        f"restore env QLEDGER_SNAPSHOT mismatch; got "
+        f"{restore_env.get('QLEDGER_SNAPSHOT')!r}"
+    )
+
+    # Run bodies must not stage/commit/push/stash/reset-hard nor fail the job.
+    park_run = str(park_step.get("run") or "")
+    restore_run = str(restore_step.get("run") or "")
+    for forbidden in (
+        "${{", "git add", "git commit", "git push", "git stash",
+        "reset --hard", "exit 1",
+    ):
+        assert forbidden not in park_run, (
+            f"park run contains forbidden {forbidden!r}"
+        )
+        assert forbidden not in restore_run, (
+            f"restore run contains forbidden {forbidden!r}"
+        )
+
+    # commitdata must capture the snapshot BEFORE the carve-out reset and
+    # write the qledger_snapshot= output line.
+    commit_run = str(collect_steps[commit_idx].get("run") or "")
+    snap_idx = commit_run.find("qledger_snapshot=$(git commit-tree")
+    reset_idx = commit_run.find("git reset -q -- data/qledger site/qledger")
+    assert snap_idx != -1, (
+        "commitdata does not write qledger_snapshot via `git commit-tree`; "
+        "Edit A's snapshot line is missing"
+    )
+    assert reset_idx != -1, (
+        "commitdata missing the qledger carve-out `git reset -q -- "
+        "data/qledger site/qledger` line"
+    )
+    assert snap_idx < reset_idx, (
+        f"the snapshot must be captured BEFORE the carve-out reset "
+        f"(snapshot at {snap_idx}, reset at {reset_idx})"
+    )
+    assert "qledger_snapshot=" in commit_run, (
+        "commitdata does not write `qledger_snapshot=` to GITHUB_OUTPUT"
+    )
+
+
+def test_qledger_carve_custody_reports_a_lost_path_without_failing(
+    tmp_path, collect_steps,
+):
+    """When the restore step cannot write a path (claims.jsonl replaced by a
+    directory mid-flow), it must report LOST via ::error AND step summary AND
+    exit 0 — the carve-custody guard never fails the collect job, because
+    capital_structure and government_revenue_projection need collect to
+    succeed."""
+    def mutate(repo):
+        (repo / "data" / "baskets" / "ohlcv" / "NVDA.parquet").write_bytes(b"v2")
+        _grow(repo / "data" / "qledger" / "claims.jsonl", _LIMIT + 4096)
+        (repo / "site" / "qledger" / "track_record.json").write_bytes(b'{"n":1}')
+
+    commit_proc, commit_outputs, repo = _run_market_commit(
+        tmp_path, collect_steps, mutate, seed=_carve_seed_gitattributes,
+    )
+    assert commit_proc.returncode == 0
+    assert commit_outputs.get("qledger_carved") == "true"
+    snapshot = commit_outputs.get("qledger_snapshot", "")
+    assert snapshot, "commitdata did not write qledger_snapshot"
+
+    # Replace claims.jsonl with a DIRECTORY mid-flow. hash-object on a
+    # directory fails, the cat-file write fails, so the path is LOST.
+    claims_path = repo / "data" / "qledger" / "claims.jsonl"
+    claims_path.unlink()
+    claims_path.mkdir()
+    (claims_path / "sentinel").write_text("placeholder\n")
+
+    restore_run = _carve_step_body(collect_steps, QLEDGER_RESTORE_STEP)
+    assert restore_run is not None, "restore step missing"
+    summary_path = tmp_path / "summary_lost.md"
+    env = _make_step_env(tmp_path, summary_path, snapshot)
+    env["GITHUB_OUTPUT"] = str(tmp_path / "output_restore_lost")
+    proc = _run_step(restore_run, repo, env)
+
+    assert proc.returncode == 0, (
+        f"restore step must NEVER fail the collect job; got "
+        f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+    )
+    text = (proc.stdout or "") + (proc.stderr or "")
+    assert "::error title=qledger carve custody LOST::" in text, (
+        f"restore step did not emit the LOST ::error; output: {text!r}"
+    )
+    assert "data/qledger/claims.jsonl" in text, (
+        f"restore step did not name the lost path; output: {text!r}"
+    )
+    summary = summary_path.read_text() if summary_path.exists() else ""
+    assert "LOST" in summary, f"step summary missing the LOST marker: {summary!r}"
+    assert "data/qledger/claims.jsonl" in summary, (
+        f"step summary missing the claims path: {summary!r}"
+    )
+    # The twin (track_record.json) was restorable and must appear in BOTH the
+    # warning AND as a successful restore in the worktree.
+    twin_bytes = (repo / "site" / "qledger" / "track_record.json").read_bytes()
+    assert twin_bytes == b'{"n":1}', (
+        f"twin (track_record.json) was not restored byte-identical: "
+        f"{twin_bytes!r}"
+    )
+    assert "site/qledger/track_record.json" in text, (
+        f"restore step did not list the twin in the warning; output: {text!r}"
+    )
+
+
+def test_qledger_carve_custody_restores_on_a_deferred_only_night(
+    tmp_path, collect_steps,
+):
+    """A night with ONLY the qledger oversize (no other market change) leaves
+    commitdata at committed=false but still carves + snapshots the qledger
+    bytes. The restore step must run regardless of pushdata, and must bring
+    the carved bytes back."""
+    def mutate(repo):
+        _grow(repo / "data" / "qledger" / "claims.jsonl", _LIMIT + 4096)
+
+    commit_proc, commit_outputs, repo = _run_market_commit(
+        tmp_path, collect_steps, mutate, seed=_carve_seed_gitattributes,
+    )
+    assert commit_proc.returncode == 0
+    assert commit_outputs.get("committed") == "false", (
+        f"deferred-only night: commitdata should NOT commit; got "
+        f"{commit_outputs!r}"
+    )
+    assert commit_outputs.get("qledger_carved") == "true"
+    snapshot = commit_outputs.get("qledger_snapshot", "")
+    assert snapshot, (
+        "deferred-only night should still snapshot the carved bytes — the "
+        "snapshot is what the restore step restores from"
+    )
+
+    # Record the deferred hash BEFORE running restore.
+    deferred_hash = subprocess.run(
+        ["git", "hash-object", "--no-filters", "--",
+         str(repo / "data/qledger/claims.jsonl")],
+        cwd=repo, env=_git_env(),
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+
+    restore_run = _carve_step_body(collect_steps, QLEDGER_RESTORE_STEP)
+    assert restore_run is not None, "restore step missing"
+    summary_path = tmp_path / "summary_deferred.md"
+    env = _make_step_env(tmp_path, summary_path, snapshot)
+    env["GITHUB_OUTPUT"] = str(tmp_path / "output_restore_deferred")
+    proc = _run_step(restore_run, repo, env)
+
+    assert proc.returncode == 0, (
+        f"restore step failed on deferred-only night: "
+        f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
+    )
+
+    # Worktree claims hash unchanged (= deferred).
+    after_hash = subprocess.run(
+        ["git", "hash-object", "--no-filters", "--",
+         str(repo / "data/qledger/claims.jsonl")],
+        cwd=repo, env=_git_env(),
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+    assert after_hash == deferred_hash, (
+        f"deferred-only night: worktree claims changed (before={deferred_hash}, "
+        f"after={after_hash})"
+    )
+
+    # Warning + summary still surface the not-published signal.
+    text = (proc.stdout or "") + (proc.stderr or "")
+    assert "data/qledger/claims.jsonl" in text, (
+        f"deferred-only: restore warning missing claims path; output: {text!r}"
+    )
+    summary = summary_path.read_text() if summary_path.exists() else ""
+    assert "### QLedger carve-out" in summary, (
+        f"deferred-only: step summary missing the carve-out header; got: "
+        f"{summary!r}"
+    )
+    assert snapshot in summary, (
+        f"deferred-only: step summary missing the snapshot id {snapshot}; "
+        f"got: {summary!r}"
+    )
