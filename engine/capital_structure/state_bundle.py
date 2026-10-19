@@ -513,16 +513,36 @@ def build_capital_inputs(
     return _inputs_from_generation(bindings, generation, document_terms=rows)
 
 
-def inputs_for_issuer(inputs: CapitalInputs, issuer_id: str) -> CapitalInputs:
+def inputs_for_issuer(
+    inputs: CapitalInputs, issuer_id: str, *, cutoff: str | None = None
+) -> CapitalInputs:
     """The same bindings narrowed to one issuer, in the generation's row order.
 
     Records are never sorted: ``input_digest`` is order-sensitive and the reader
     re-derives it the same way, so a reorder here would break the binding proof.
     The fee rows narrow through the one shared selection function, so the
     producer and the reader cannot disagree about which rows belong to whom.
+
+    With a ``cutoff``, only fee rows whose SYSTEM availability instant
+    (``document_terms.point_in_time.available_at``) had already arrived survive
+    -- the same predicate :func:`then_known_state` applies, so an explicit
+    ``as_of`` can never seal a row that became available after it.  Events and
+    edges are untouched; ``cutoff=None`` keeps the unfiltered narrowing.
     """
     if not isinstance(inputs, CapitalInputs):
         raise ContractViolation("inputs must be a CapitalInputs")
+    document_terms = _select_document_terms(inputs.document_terms, issuer_id)
+    if cutoff is not None:
+        moment = _parse_instant(cutoff, "cutoff")
+        document_terms = tuple(
+            row
+            for row in document_terms
+            if _available_at(row, "document_terms.point_in_time.available_at")
+            and _parse_instant(
+                _available_at(row, "document_terms.point_in_time.available_at")
+            )
+            <= moment
+        )
     events = tuple(event for event in inputs.events if _issuer_of(event) == issuer_id)
     bound = {str(event["event_id"]) for event in events}
     edges = tuple(
@@ -535,7 +555,7 @@ def inputs_for_issuer(inputs: CapitalInputs, issuer_id: str) -> CapitalInputs:
         bindings=inputs.bindings,
         events=events,
         edges=edges,
-        document_terms=_select_document_terms(inputs.document_terms, issuer_id),
+        document_terms=document_terms,
     )
 
 
@@ -1062,7 +1082,7 @@ def build_state_bundle(
     per_coverage: list[dict[str, Any]] = []
     citations_input: list[tuple[str, Sequence[Mapping[str, Any]]]] = []
     for issuer_id in issuer_ids:
-        inputs = inputs_for_issuer(whole, issuer_id)
+        inputs = inputs_for_issuer(whole, issuer_id, cutoff=cutoff)
         state, reg = issuer_state(
             inputs,
             issuer_id=issuer_id,
@@ -1349,7 +1369,11 @@ def issuer_inputs(
     if record is None:
         raise ContractViolation("issuer not covered")
     whole = _inputs_from_generation(bindings, generation, document_terms=ledger_rows)
-    inputs = inputs_for_issuer(whole, issuer_id)
+    # The reader replays the published view's own as_of through the SAME
+    # selection path the producer used, so a re-derived digest that reproduces
+    # the published one proves the issuer's rows, and nothing newer than the
+    # view, were sealed (U1C).
+    inputs = inputs_for_issuer(whole, issuer_id, cutoff=bundle["as_of"])
     published = (record.get("receipt") or {}).get("input_digest")
     if inputs.input_digest != published:
         if terms_binding is not None:

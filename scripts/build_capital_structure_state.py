@@ -114,9 +114,10 @@ def build_from_disk(
     # DEC:CS-V2-U1C-BUNDLE-AS-OF-COVERS-SEALED-INPUTS: the bundle as_of is the
     # latest system-availability instant among the inputs it seals.  With no
     # explicit as_of the cutoff therefore covers a fee ledger whose rows became
-    # available after the event compiler ran; an explicit as_of is honoured
-    # unchanged, and rows available after it simply stay invisible.  A row's own
-    # timestamps are never moved.
+    # available after the event compiler ran.  An explicit as_of is honoured
+    # unchanged and is a real cutoff: through the same shared selection path
+    # (inputs_for_issuer), fee rows whose system availability postdates it are
+    # not sealed into the bundle at all.  A row's own timestamps are never moved.
     document_terms = None
     ledger_path = root / DOCUMENT_LEDGER_FILENAME
     if ledger_path.exists():

@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any, Iterable, Sequence
 
@@ -584,3 +585,59 @@ def test_existing_three_binding_bundle_is_unchanged(pack, tmp_path):
         str(row["path_id"]) for row in _path_records_of(family["records"])
     }
     assert set(index["path_evidence"]) == path_ids
+
+
+# ---------------------------------------------------------------------------
+# F2: an explicit as_of is a real cutoff for the served current mode
+# ---------------------------------------------------------------------------
+
+
+def test_explicit_as_of_never_seals_fee_rows_available_after_it(pack, tmp_path):
+    """One row available before the explicit as_of, one after: the served
+    current-mode bundle seals only the earlier row, and the reader reproduces
+    the published digest through the SAME selection path."""
+    root = _disk_root(tmp_path)
+    projection = json.loads((root / "projection.json").read_text(encoding="utf-8"))
+    issuer_id = str(projection["records"][0]["issuer_id"])
+    telemetry_as_of = json.loads((root / "telemetry.json").read_text(encoding="utf-8"))[
+        "as_of"
+    ]
+    ledger = _write_ledger(
+        root / DOCUMENT_LEDGER_FILENAME,
+        [
+            _fee_observation(
+                "fee-before-explicit-as-of",
+                issuer_id=issuer_id,
+                value="1000000",
+                available_at="2026-08-02T11:00:00Z",
+                source_available_at="2026-08-02T10:00:00Z",
+            ),
+            _fee_observation(
+                "fee-after-explicit-as-of",
+                issuer_id=issuer_id,
+                value="2000000",
+                available_at="2026-08-03T00:00:00Z",
+                source_available_at="2026-08-02T20:00:00Z",
+            ),
+        ],
+    )
+
+    summary = state_builder.build_from_disk(
+        root=root, as_of=telemetry_as_of, generated_at=DISK_STATE_AT
+    )
+    assert summary["as_of"] == telemetry_as_of
+    bundle = json.loads((root / "state_bundle.json").read_text(encoding="utf-8"))
+    assert bundle["as_of"] == telemetry_as_of
+    validate_state_bundle(bundle)
+
+    family = _family_record_of(_state_record(bundle, issuer_id))
+    fee = _fee_rows(family["records"])
+    assert [row["normalized"]["value"] for row in fee] == ["1000000"]
+
+    generation = read_verified_projection_generation(root)
+    inputs = issuer_inputs(bundle, generation, issuer_id, document_terms_ledger=ledger)
+    assert inputs.input_digest == (
+        _state_record(bundle, issuer_id)["receipt"]["input_digest"]
+    )
+
+
