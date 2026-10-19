@@ -10,9 +10,12 @@ from __future__ import annotations
 import dataclasses
 import inspect
 import json
+import re
 from datetime import date, timedelta
 from decimal import Decimal
 from fractions import Fraction
+from hashlib import sha256
+from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 import pytest
@@ -28,6 +31,7 @@ from engine.capital_structure.capacity import (
     evaluate_capacity,
     explain_capacity,
 )
+from engine.capital_structure.document_terms import compile_document_term_records
 from engine.capital_structure.issuer_state_contracts import (
     COMPATIBLE_INPUT_SCHEMAS,
     FORBIDDEN_PROPERTY_PATTERN,
@@ -48,6 +52,7 @@ from engine.capital_structure.issuer_state_contracts import (
     stable_id,
     validate_state_record,
 )
+from engine.capital_structure.source_identity import manifest_id_for
 
 PACK = ra.load_rule_applicability_pack()
 
@@ -1820,3 +1825,179 @@ def test_c10_fee_row_available_at_after_the_cutoff_is_excluded_despite_earlier_s
     registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
     assert registered["status"] == "known"
     assert registered["value"] == "20000000"
+
+
+# ---------------------------------------------------------------------------
+# §5 indeterminate zeros — a deferred-fee automatic shelf (Rules 456(b)/457(r))
+# files its fee table quoting "$ 0.00".  The document fact stays as filed; the
+# consumer reads it as indeterminate, never as a known $0 registered amount.
+# ---------------------------------------------------------------------------
+
+
+def _ex107_parser_rows(fixture_name: str) -> tuple[str, str, list[dict[str, Any]]]:
+    """Parse one committed EX-107 fixture with the released parser exactly as
+    the document-terms suite does; return (accession, form, observations)."""
+    raw = (
+        Path(__file__).resolve().parents[1]
+        / "tests/fixtures/capital_structure/document_terms"
+        / fixture_name
+    ).read_bytes()
+    accession = re.search(
+        rb"^<SEC-DOCUMENT>([0-9]{10}-[0-9]{2}-[0-9]{6})\.txt", raw, re.MULTILINE,
+    ).group(1).decode("ascii")
+    form = re.search(
+        rb"^CONFORMED SUBMISSION TYPE:\s*(\S+)", raw, re.MULTILINE,
+    ).group(1).decode("ascii")
+    cik = re.search(
+        rb"^[ \t]*CENTRAL INDEX KEY:[ \t]*([0-9]+)", raw, re.MULTILINE,
+    ).group(1).decode("ascii")
+    digest = sha256(raw).hexdigest()
+    manifest = {
+        "schema": "capital_structure.source_manifest/v1",
+        "source_system": "sec_edgar",
+        "source_id": f"{accession}:0:complete-submission.txt",
+        "issuer": {
+            "issuer_id": f"sec:cik:{cik}", "cik": cik, "ticker": "ABC",
+            "aliases": ["ABC Corp"],
+        },
+        "filing": {
+            "accession": accession, "form": form,
+            "filing_date": "2026-08-01", "accepted_at": "2026-08-01T11:00:00Z",
+            "file_number": "333-123456",
+        },
+        "document": {
+            "canonical_url": f"https://www.sec.gov/Archives/edgar/data/{accession}.txt",
+            "document_name": "complete-submission.txt", "document_type": form,
+            "document_role": "complete_submission", "sequence": "0", "media_type": "text/plain",
+            "byte_length": len(raw), "document_version": 1, "content_sha256": digest,
+            "parent_manifest_id": None, "root_locator": f"sha256:{digest}",
+        },
+        "retrieval": {
+            "retrieved_at": "2026-08-02T12:00:00Z", "first_seen_at": "2026-08-02T12:00:00Z",
+            "transport_status": "retrieved",
+        },
+        "storage": {
+            "backend": "r2", "store_id": "r2_shared",
+            "object_key": f"capital_structure/sec/sha256/{digest[:2]}/{digest}",
+            "content_addressed": True, "retention_state": "retained",
+        },
+        "rights": {
+            "redistribution_class": "public_source_link", "attribution_required": True,
+            "license_note": "United States SEC EDGAR public filing",
+        },
+        "privacy": {"classification": "public", "contains_personal_data": False},
+        "parser": {
+            "eligibility": "eligible", "corruption_state": "clean",
+            "parser_version": "sec-source-inspector/1.0.0",
+        },
+        "spans": [{
+            "span_id": f"root:{digest}", "locator_type": "document",
+            "locator": f"bytes:0-{len(raw)}", "text_sha256": digest,
+        }],
+    }
+    manifest["manifest_id"] = manifest_id_for(manifest)
+    result = compile_document_term_records(
+        [manifest], source_reader=lambda _manifest: raw, generated_at="2026-08-03T00:00:00Z",
+    )
+    rows = result["observations"]
+    assert {row["extraction"]["parser_version"] for row in rows} == {
+        "capital-structure-document-terms/1.2.0"
+    }
+    return accession, form, rows
+
+
+def _ex107_capacity(fixture_name: str):
+    """Evaluate capacity for one shelf path whose accession is the fixture's."""
+    accession, form, rows = _ex107_parser_rows(fixture_name)
+    registration: list[dict[str, Any]] = [
+        registration_path(PATH_A, accession=accession, form=form),
+        *rows,
+    ]
+    shares = [
+        public_float(
+            "300000000",
+            period_end=shift(SALE, 14),
+            available_at=f"{shift(SALE, 13)}T00:00:00Z",
+        ),
+        share_basis_result("15000005", as_of=AS_OF),
+    ]
+    evaluation, _, _ = evaluate(
+        registration=registration,
+        share_basis=shares,
+        resolutions=[
+            usd(f"shelf_usage:{PATH_A}", "0"),
+            usd(f"continuing_offering:{PATH_A}", "0"),
+        ],
+    )
+    return evaluation, accession
+
+
+def _assert_no_known_zero_capacity_quantity(evaluation) -> None:
+    """No derived capacity quantity is a known zero.
+
+    The envelope's own quantities are walked.  The LP feasible witness is
+    skipped: its 0.00 is the relaxation's feasible point, the same on every
+    unresolved-limit path, not a capacity claim about the registered amount.
+    """
+    def walk(value: Any, path: str) -> None:
+        if isinstance(value, Mapping):
+            if {"unit", "status", "value"} <= set(value):
+                assert not (
+                    value["status"] == "known" and value["value"] in ("0", "0.00")
+                ), f"{path}: a derived capacity quantity is a known zero"
+            for key, item in value.items():
+                if key == "feasible_witness":
+                    continue
+                walk(item, f"{path}.{key}")
+        elif isinstance(value, (list, tuple)):
+            for index, item in enumerate(value):
+                walk(item, f"{path}[{index}]")
+
+    walk(evaluation.envelope.as_record(), "envelope")
+
+
+def test_a_committed_s3asr_fee_table_quoting_zero_is_indeterminate() -> None:
+    evaluation, accession = _ex107_capacity("ex107_S-3ASR_0001193125-26-326375.txt")
+    assert accession == "0001193125-26-326375"
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "unknown"
+    assert registered["value"] is None
+    assert f"fee_table_total_indeterminate:{accession}" in evaluation.envelope.blockers
+    # The whole derivation stays unknown: the gross amount, its pool bound, the
+    # route limit, the aggregate bound and the ceiling call are never a known 0.
+    assert pools_by_id(evaluation)[f"registered:{PATH_A}"].bound.status == "unknown"
+    assert routes_by_id(evaluation)[f"shelf_takedown:{PATH_A}"].limit.status == "unknown"
+    assert evaluation.envelope.aggregate_bound.status == "unknown"
+    assert evaluation.envelope.aggregate_bound.value is None
+    assert evaluation.inputs["ceiling_call"]["value"] is None
+    _assert_no_known_zero_capacity_quantity(evaluation)
+
+
+def test_a_zero_per_security_fee_row_with_no_total_row_is_indeterminate() -> None:
+    reg, shares = standard_registration(registered="0", float_value="300000000")
+    evaluation, _, _ = evaluate(
+        registration=reg,
+        share_basis=shares,
+        resolutions=[
+            usd(f"shelf_usage:{PATH_A}", "0"),
+            usd(f"continuing_offering:{PATH_A}", "0"),
+        ],
+    )
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "unknown"
+    assert registered["value"] is None
+    assert f"fee_table_value_indeterminate:{ACC_A}" in evaluation.envelope.blockers
+    assert f"fee_table_total_indeterminate:{ACC_A}" not in evaluation.envelope.blockers
+    assert evaluation.envelope.aggregate_bound.status == "unknown"
+    assert evaluation.envelope.aggregate_bound.value is None
+
+
+def test_a_committed_s3_fee_table_total_is_still_a_known_positive_amount() -> None:
+    evaluation, accession = _ex107_capacity("ex107_S-3_0001493152-26-034585.txt")
+    assert accession == "0001493152-26-034585"
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "known"
+    assert registered["value"] == "1009975"
+    assert f"fee_table_multi_row:{accession}" not in evaluation.envelope.blockers
+    assert evaluation.envelope.aggregate_bound.status == "known"
+    assert evaluation.envelope.aggregate_bound.value == "1009975.00"

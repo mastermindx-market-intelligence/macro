@@ -1610,6 +1610,19 @@ class _Builder:
                 f"the fee-table value of {accession} is not a nonnegative decimal",
                 blockers=(f"fee_table_value_not_decimal:{accession}",),
             )
+        if value == 0:
+            # A deferred-fee automatic shelf (Rules 456(b)/457(r)) files its fee
+            # table quoting "$ 0.00": the document says zero, but that states no
+            # registered amount at all.  It is indeterminate, never a known $0.
+            if _text(_nested(chosen[0][0].body, "term", "scope")) == "registration_fee_table_total":
+                return missing(
+                    f"the fee-table total of {accession} quotes zero, which states no registered amount",
+                    blockers=(f"fee_table_total_indeterminate:{accession}",),
+                )
+            return missing(
+                f"the fee-table row of {accession} quotes zero, which states no registered amount",
+                blockers=(f"fee_table_value_indeterminate:{accession}",),
+            )
         if not refs:
             return missing(
                 f"the fee-table row of {accession} retains no span evidence",
