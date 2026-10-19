@@ -560,6 +560,7 @@ def test_builtin_receiver_settings_reach_the_next_provider_request(chart, monkey
     # a protocol specimen, not a Python indicator registry or a pixel claim.
     packet = json.loads((Path(__file__).parent / "fixtures/chart_builtin_parameters_v1.json").read_text())
     chart["session"]["capabilities"]["builtin_parameters"] = copy.deepcopy(packet)
+    chart["session"]["indicators"].append({"name": "rsi__aipair01", "params": {"length": 7}})
     gw.put_chart_state(USER, "terminal", chart["session"], origin_id=chart["origin"], context_revision=7)
     client, _ = run_model(chart, monkeypatch, [
         [block("read_chart_state", {}, "read-settings")],
@@ -567,6 +568,8 @@ def test_builtin_receiver_settings_reach_the_next_provider_request(chart, monkey
     ])
     observed = result_for(client, "read-settings")
     assert observed["session"]["capabilities"]["builtin_parameters"] == packet
+    attached_names = {row["name"] for row in observed["session"]["indicators"]}
+    assert all(row["name"] in attached_names for row in packet["instances"])
     rsi = next(row for row in packet["types"] if row["name"] == "rsi")
     assert rsi["parameters"]["length"] == {"type": "number", "default": 14, "minimum": 2, "maximum": 100}
     assert "len" not in rsi["parameters"]
