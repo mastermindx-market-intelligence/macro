@@ -1783,6 +1783,7 @@ jobs:
       - "tests/test_c19_wp32_denial_cache.py"
       - "tests/test_c19_wp19_integrated_answer_entitlement_pins.py"
       - "app/integrated_answer.py"
+      - "engine/neuralweb/brain_visuals.py"
       - "app/forensics.py"
       - "tests/test_integrated_answer_v0.py"
       - "tests/test_company_theme_exposure.py"
