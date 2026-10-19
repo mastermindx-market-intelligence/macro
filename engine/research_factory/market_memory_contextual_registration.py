@@ -275,6 +275,75 @@ MAX_DOMAIN_TOTAL_BYTES = 32 * 1024 * 1024
 _DOMAIN_KEYS = ("tasks_ref", "source_coverage_ref", "interval_split_ref", "design_ref",
                 "reviewer_plan_ref", "outcome_definition_ref", "metrics_ref", "access_rules_ref")
 _REFERENCE_KEYS = {"schema", "object_id", "sha256", "bytes"}
+_TASK_SCHEMA = "research_factory.market_memory_e0_tasks.v1"
+
+
+@lru_cache(maxsize=1)
+def _task_validator():
+    schema_path = Path(__file__).resolve().parents[2] / "contracts" / "market_memory" / "e0_tasks.v1.schema.json"
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    Draft202012Validator.check_schema(schema)
+    return _INTEGER_VALIDATOR(schema, format_checker=FormatChecker())
+
+
+def _validate_task_bindings(value: object, body: bytes, membership: dict | None) -> dict:
+    """Bind supplied task metadata, never certify a question or its answer.
+
+    The frozen corpus contains query candidates, not an actual task selection.
+    Questions/facets here are caller-supplied declarations. Neither their digest
+    nor a matching source identity establishes answerability, entailment,
+    usefulness, independent samples, source rights or prelabel registration.
+    """
+    detached, canonical = _snapshot(value)
+    if next(_task_validator().iter_errors(detached), None) is not None:
+        raise E0ControlError("task_schema_violation")
+    if canonical != body:
+        raise E0ControlError("noncanonical_task_bytes")
+    tasks = detached["tasks"]
+    identifiers = [detached["object_id"]]
+    identifiers += [task["task_id"] for task in tasks]
+    identifiers += [facet for task in tasks for facet in task["required_facet_ids"]]
+    if any(_ID.fullmatch(identifier) is None for identifier in identifiers):
+        raise E0ControlError("task_bounded_identifier_required")
+    if len({task["task_id"] for task in tasks}) != len(tasks):
+        raise E0ControlError("duplicate_task_identity")
+    rows = {row["query_id"]: row for row in membership["query_candidates"]} if membership else None
+    identity_keys = ("query_id", "context_id", "capture_id", "packet_sha256")
+
+    def source(ref: dict, cutoff: datetime) -> dict:
+        row = rows.get(ref["query_id"])
+        if row is None or any(ref[key] != row[key] for key in identity_keys):
+            raise E0ControlError("task_frozen_source_identity_mismatch")
+        if _clock(row["first_available_for_contextual_analysis"]) > cutoff:
+            raise E0ControlError("task_source_unavailable_at_cutoff")
+        return row
+
+    for task in tasks:
+        cutoff = _clock(task["analysis_cutoff"])
+        if any(re.fullmatch(r"mmsecurity_[a-f0-9]{64}", task[key]) is None
+               for key in ("subject_id", "instrument_id")):
+            raise E0ControlError("task_exact_subject_identity_required")
+        for ref in [task, *task["original_evidence"]]:
+            for key, prefix in (("query_id", "mmquery_"), ("context_id", "mmctx_"),
+                                ("capture_id", "mmcapture_"), ("packet_sha256", "")):
+                if re.fullmatch(prefix + r"[a-f0-9]{64}", ref[key]) is None:
+                    raise E0ControlError("task_exact_source_identity_required")
+        if not task["question"].strip():
+            raise E0ControlError("task_question_required")
+        if hashlib.sha256(task["question"].encode("utf-8")).hexdigest() != task["question_sha256"]:
+            raise E0ControlError("task_question_digest_mismatch")
+        if rows is not None:
+            row = source(task, cutoff)
+            if any(task[key] != row["subject"][key] for key in ("subject_id", "instrument_id")):
+                raise E0ControlError("task_frozen_subject_identity_mismatch")
+            for evidence in task["original_evidence"]:
+                source(evidence, cutoff)
+    return {"schema": _TASK_SCHEMA, "object_id": detached["object_id"],
+            "task_count": len(tasks), "question_bytes_bound": True,
+            "frozen_source_bindings_checked": rows is not None,
+            "unresolved": [] if rows is not None else ["frozen_membership_bytes"],
+            "actual_task_selection_verified": False, "answerability_verified": False,
+            "usefulness_verified": False}
 
 
 def _domain_reference(value: object) -> dict:
@@ -321,12 +390,13 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
     code/text and unknown schemas stay opaque, never imported or executed.
     The optional original prelabel_design bytes are a diagnostic input, never
     a substitute for a registration reference or a reviewer plan. They share
-    the object/byte bounds. Only registration references and that known guide
-    digest link are followed; this is not a recursive object loader.
+    the object/byte bounds. Only registration references and known guide digest
+    links are followed; this is not a recursive object loader.
 
-    Reference closure is distinct from domain completeness: current contracts
-    do not define tasks/splits/reviewer/allocation payload schemas. Resolving
-    their hashes must not silently certify those scientific obligations.
+    The known task contract checks supplied question bytes, exact frozen source
+    identities and original availability clocks. It does not select actual tasks
+    or establish answerability/usefulness. Splits, reviewers and allocation still
+    lack payload contracts; reference closure never certifies admission.
     """
     reg = validate_e0_registration(registration)
     extra = int(prelabel_design is not None)
@@ -379,6 +449,8 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
         known = _FROZEN_JSON_SCHEMAS.get(clean["schema"])
         if known is not None and digest != _FROZEN_DOMAIN_DIGESTS[known]:
             raise E0ControlError("frozen_domain_schema_reference_mismatch")
+        if clean["schema"] == _TASK_SCHEMA and _role != "tasks_ref":
+            raise E0ControlError("task_reference_role_mismatch")
         if digest in references:
             if references[digest] != clean:
                 raise E0ControlError("domain_reference_alias_mismatch")
@@ -393,10 +465,10 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
         if len(body) != clean["bytes"] or hashlib.sha256(body).hexdigest() != digest:
             raise E0ControlError("domain_reference_bytes_mismatch")
         # No JSON-by-first-character heuristic: source code and unsupported
-        # semantic schemas stay opaque. Only exact known frozen JSON is parsed.
+        # semantic schemas stay opaque. Only known payload contracts are parsed.
         json_digests = {_FROZEN_DOMAIN_DIGESTS[key]
                         for key in ("membership", "design", "prelabel_binding")}
-        value = _domain_json(body) if digest in json_digests else None
+        value = _domain_json(body) if digest in json_digests or clean["schema"] == _TASK_SCHEMA else None
         if type(value) is dict:
             declared_schema = value.get("schema", value.get("document_type"))
             if declared_schema != clean["schema"]:
@@ -424,6 +496,11 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
             raise E0ControlError("domain_prelabel_binding_mismatch")
         digest = binding["annotation_guide_sha256"]
         linked_digests.add(digest)
+    tasks_ref = reg["tasks_ref"]
+    task_value = parsed.get(tasks_ref["sha256"]) if tasks_ref["schema"] == _TASK_SCHEMA else None
+    if task_value is not None:
+        linked_digests.add(_FROZEN_DOMAIN_DIGESTS["annotation_guide"])
+    for digest in linked_digests:
         body = objects.get(digest)
         if body is not None:
             if hashlib.sha256(body).hexdigest() != digest:
@@ -458,10 +535,14 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
         if binding["condition_seed"]["allocation_hash"] is None:
             gaps.append({"field": "prelabel_binding.condition_allocation", "missing_rows": 1})
 
+    task_checks = []
+    if tasks_ref["schema"] == _TASK_SCHEMA and tasks_ref["sha256"] in parsed:
+        task_checks.append(_validate_task_bindings(task_value, objects[tasks_ref["sha256"]], membership))
+
     return {"schema": "research_factory.market_memory_e0_reference_resolution.v1",
             "authority": "display_only", "study_id": reg["study_id"],
             "registration_ref": _record_ref(reg, "registration"),
-            "reference_scope": "registration_refs_and_known_prelabel_digest_link",
+            "reference_scope": "registration_refs_and_known_domain_digest_links",
             "references_complete": not missing and not missing_linked,
             "resolved_references": [references[key] for key in sorted(parsed) if key in references],
             "missing_references": [references[key] for key in sorted(missing)],
@@ -471,6 +552,7 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
             "unparsed_reference_schemas": sorted({references[key]["schema"] for key in parsed
                 if key in references and parsed[key] is None}),
             "frozen_metadata_gaps": gaps,
+            "task_binding_checks": task_checks,
             "domain_metadata_complete": False, "operational_admission": False,
             "unresolved_semantics": ["tasks_and_query_selection", "source_coverage_and_feature_intervals",
                 "episode_clusters_and_interval_splits", "reviewer_plan_and_independence",
