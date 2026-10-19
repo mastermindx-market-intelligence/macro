@@ -9901,6 +9901,9 @@ jobs:
           tests/test_capital_structure_supply_variable.py
           tests/test_capital_structure_scenario_composition.py
           tests/test_capital_structure_scenario_inputs.py
+          tests/test_capital_structure_state_changes.py
+          tests/test_capital_structure_saved_scenarios.py
+          tests/test_capital_structure_scenario_export.py
           tests/test_nwqs_c_dilution.py
           tests/test_compile_capital_structure_registration_lifecycles.py
           tests/test_covenant_terms.py
