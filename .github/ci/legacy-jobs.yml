@@ -9861,6 +9861,7 @@ jobs:
           tests/test_capital_policy_projection.py
           tests/test_capital_structure_api.py
           tests/test_capital_structure_state_bundle.py
+          tests/test_capital_structure_state_bundle_document_terms.py
           tests/test_capital_structure_state_api.py
           tests/test_capital_structure_source_identity.py
           tests/test_capital_structure_source_manifest.py

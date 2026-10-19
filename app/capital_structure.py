@@ -45,7 +45,10 @@ from engine.capital_structure.projection import (
     PROJECTION_SCHEMA,
     validate_projection_bundle,
 )
-from engine.capital_structure.registration_integration import REGISTRATION_FAMILY
+from engine.capital_structure.registration_integration import (
+    REGISTRATION_FAMILY,
+    REGISTRATION_PATH_SCHEMA,
+)
 from engine.capital_structure.rule_applicability import (
     RuleApplicabilityError,
     load_rule_applicability_pack,
@@ -66,6 +69,7 @@ from engine.capital_structure.scenario_inputs import (
     validate_capacity_inputs_bundle,
 )
 from engine.capital_structure.state_bundle import (
+    DOCUMENT_LEDGER_FILENAME,
     STATE_BUNDLE_SCHEMA,
     coverage_for,
     issuer_inputs,
@@ -580,9 +584,17 @@ def _registration_family(record: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def _path_rows(family_record: dict[str, Any]) -> list[dict[str, Any]]:
-    """The family's registration paths in the API's stable listing order."""
+    """The family's registration paths in the API's stable listing order.
+
+    The family also carries document-term fee rows (U1C); every listing here is
+    a path listing, so the path schema is matched explicitly.
+    """
     return sorted(
-        (row for row in family_record.get("records") or () if isinstance(row, dict)),
+        (
+            row
+            for row in family_record.get("records") or ()
+            if isinstance(row, dict) and row.get("schema") == REGISTRATION_PATH_SCHEMA
+        ),
         key=lambda row: str(row["path_id"]),
     )
 
@@ -722,7 +734,14 @@ def _state_view(
     else:
         generation = _load_generation()
         try:
-            inputs = issuer_inputs(bundle, generation, issuer_id)
+            # U1C: the fee ledger is re-read and re-verified byte for byte on
+            # every then-known replay, from beside the served bundle itself.
+            inputs = issuer_inputs(
+                bundle,
+                generation,
+                issuer_id,
+                document_terms_ledger=STATE_PATH.parent / DOCUMENT_LEDGER_FILENAME,
+            )
         except (ContractViolation, ValueError) as exc:
             raise _unavailable(str(exc)) from exc
         earliest = _earliest_available_at(inputs)
