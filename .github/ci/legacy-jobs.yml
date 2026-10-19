@@ -31537,6 +31537,10 @@ jobs:
       - config/delisted_symbols.yml
       - data/reference/**
       - lib/dataos/identity.py
+      - lib/dataos/sec_filing_identity.py
+      - lib/dataos/sec_cusip_binding.py
+      - tests/test_sec_filing_identity.py
+      - tests/test_dataos_sec_cusip.py
       # M01 (DATA-OS-COMPLETION): the frozen market support matrix. Its suite reads the
       # committed US/HK/CN stores and the HK Connect roster (pyarrow) and pins the record
       # research/data_os_completion/2026-10-13/M01_SUPPORT_MATRIX.md to the code, so it
@@ -31601,6 +31605,10 @@ jobs:
         # pandas+pyarrow: the suite reads the committed security_master/vendor_aliases
         # parquet through lib.dataos.identity.VendorAliasTable. pyyaml: the registry itself.
         run: pip install pytest pyyaml pandas pyarrow
+      - name: retained SEC filing CUSIP identity and cutoff contracts (hermetic)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_sec_filing_identity.py tests/test_dataos_sec_cusip.py -q -rs
       - name: basket composition read binds membership, identity and price to one request (U04)
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
