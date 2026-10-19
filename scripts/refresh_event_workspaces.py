@@ -1135,7 +1135,10 @@ def load_prior_workspace_for_ticker(ticker: str, *, base_url: str | None = None)
     # genuine fetch failure — into this module's own
     # ``PriorWorkspaceFetchFailed`` with the same line-start ``::warning``,
     # preserving the exact NEW-6/NEW-7 anomaly discipline byte-for-byte.
-    issuer = issuer_for_ticker(ticker)
+    # Discovery already admits this cohort through its registered source owner.
+    # The same identity must seed quiet cycles, even when no new filing exists.
+    from engine.company_intelligence.industrial_sources import SOURCE_OWNER_TICKERS, source_owner_issuer
+    issuer = source_owner_issuer(ticker) if ticker in SOURCE_OWNER_TICKERS else issuer_for_ticker(ticker)
     if issuer is None:
         return None
 

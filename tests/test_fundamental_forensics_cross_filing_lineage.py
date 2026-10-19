@@ -46,8 +46,12 @@ _A2 = "0000320193-26-000020"
 
 # Accepted FIF-3A3 identities. A4 must not move any of them.
 _LEDGER_SHA = "ba149bd55d929d843f353e91bbf68147791fb8b4a20c258426ea2eb7527019d8"
-_AAPL_QUERY_RESPONSE_SHA = "58972cb88f82483e86acc9d9fc3b1cbce046f466ff8665ae214909d90ab078b0"
-_AAPL_QUERY_HASH = "f8f6dc3134592c817001738cbdefb09ee1b71798ef24a8e64dc75685a6f9c7a1"
+# Re-captured at the FIF G0-r1p3 re-pin commit e94ba62aa89: AAPL resolves industrial
+# (3571) through the shipped coverage contract, so the response digest layer
+# moved with the G0 catalog and the SIC-bearing entity wire; the value layer
+# is byte-identical to BASE (leaf-diff: digest-family leaves only).
+_AAPL_QUERY_RESPONSE_SHA = "fbae153c5fccd26b747be10239fe4b5fcd0e30113604597d16b01bf31b875c48"
+_AAPL_QUERY_HASH = "a4b04952c3df3e50936d4229b018f0a7f7035edb24139ba936aa58f913515920"
 _A1_ASSETS_OCCURRENCE = "rawfact_bc9355a292f06baaaf988b683106b2b02e3dd9c4a9555f1eb160a94643e4feaf"
 _A2_ASSETS_OCCURRENCE = "rawfact_9669446bc8076fa26bca33a3d9a067093bddadbb28e4617318bb3de33a4eca29"
 
@@ -724,22 +728,25 @@ def test_forged_uri_is_also_refused_at_admission():
 # valid policy cases (response sha256, then receipt query_hash).  The
 # pre-lineage historical cutoff pin equals the accepted FIF-3A3 constants
 # pinned above, which cross-checks the capture procedure itself.
+# Re-captured at the FIF G0-r1p3 re-pin commit e94ba62aa89 (G0 catalog + SIC-bearing
+# entity wire; value layer byte-identical to BASE under every case —
+# leaf-diff shows digest-family leaves only, 19 nodes matched per case).
 _T1_VALID_CASE_PINS = {
     ("latest_known_as_of", _A4_SOURCE, _A4_RECORDED): (
-        "e0173c107af89a6a075d6112707d476bedb2bd0eb4e9f7bc06e5373013b735fa",
-        "f0c98ed0d5040c5b105fe8f539d6b1c80d37212e6e2a3f2625006166f192d2b2",
+        "ea72f02eed4b95e5251927e7886721d3e4e77545f5f0748433814357c1d762e3",
+        "06e42bc7ff04f9f7295601ac1277ed0f2e5d597fb78bed0e07fef4ad53213223",
     ),
     ("as_reported", _A4_SOURCE, _A4_RECORDED): (
-        "1bbba5c6130737828321e2fa152b646d3359225c016cdd0aa3d6ab003eac414d",
-        "fa2e5abcb8014560495f477e3c54f9710f7a1b9e6b2fe7efc0009cdfce82dbfa",
+        "dd3ffb2838a867a501aab2f186f236808a76a75724032161aa2f3c1f4b741c29",
+        "ac4a97a0ab2cc7023623798f89c117c89e1089b6e543c2fd07cb5a990a7b234b",
     ),
     ("latest_restated", _A4_SOURCE, _A4_RECORDED): (
-        "3b28e6ba9a10fd73952cd8283bf8c50d895801a7a8117d38fb5cb84c6050d5f8",
-        "d3f4bddde31eafede693a7fe48da6913f417dc9f1119c3f1570cc88527db0363",
+        "1400b4d3858d5b573576c74f8c687ee9a66b990a5cfb61743db9d9e39d3ce14f",
+        "77043368f7dd3c6d280211eebc17834c1b5fea28a05640eda347b2a04273f626",
     ),
     ("latest_known_as_of", _A3_SOURCE, _A3_RECORDED): (
-        "58972cb88f82483e86acc9d9fc3b1cbce046f466ff8665ae214909d90ab078b0",
-        "f8f6dc3134592c817001738cbdefb09ee1b71798ef24a8e64dc75685a6f9c7a1",
+        "fbae153c5fccd26b747be10239fe4b5fcd0e30113604597d16b01bf31b875c48",
+        "a4b04952c3df3e50936d4229b018f0a7f7035edb24139ba936aa58f913515920",
     ),
 }
 
