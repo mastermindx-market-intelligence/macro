@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-10-18T07:13:40.821656+00:00",
+  "produced_at": "2026-10-18T21:44:09.787646+00:00",
   "as_of": "2026-10-16",
   "status": "degraded",
   "phase": "final",
@@ -11,134 +11,7 @@
     "context_stale": false,
     "summary": "cortex degraded — model_unavailable"
   },
-  "what_changed": [
-    {
-      "kind": "cortex_status_changed",
-      "id": "cortex",
-      "summary": "cortex status changed: fresh → degraded",
-      "severity": "warn",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "risk-radar-review-log",
-      "summary": "lobe risk-radar-review-log row count changed: 21 → 22 (5%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "spine-index",
-      "summary": "lobe spine-index row count changed: 519155 → 519190 (0%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "ops-push-basket-freeze",
-      "summary": "lobe ops-push-basket-freeze row count changed: 62 → 63 (2%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "nw-health-run-history",
-      "summary": "lobe nw-health-run-history row count changed: 94 → 95 (1%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "governance-ledger",
-      "summary": "lobe governance-ledger row count changed: 331 → 344 (4%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "cortex-attention-firings",
-      "summary": "lobe cortex-attention-firings row count changed: 178 → 184 (3%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "hypothesis-inbox",
-      "summary": "lobe hypothesis-inbox row count changed: 42 → 46 (10%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "machine-registry",
-      "summary": "lobe machine-registry row count changed: 68 → 72 (6%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_status_changed",
-      "id": "site-liquidity-plumbing",
-      "summary": "lobe site-liquidity-plumbing status: fresh_partial → stale",
-      "severity": "warn",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "mechanism-pathways-history",
-      "summary": "lobe mechanism-pathways-history row count changed: 81 → 82 (1%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "theme-thesis-ledger",
-      "summary": "lobe theme-thesis-ledger row count changed: 514 → 523 (2%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_status_changed",
-      "id": "liquidity-plumbing",
-      "summary": "lobe liquidity-plumbing status: fresh_partial → stale",
-      "severity": "warn",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_new",
-      "id": "causal-filing-budget",
-      "summary": "lobe causal-filing-budget appeared in scope",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "covariance-spine-history",
-      "summary": "lobe covariance-spine-history row count changed: 74 → 75 (1%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_status_changed",
-      "id": "release-forecast-latest",
-      "summary": "lobe release-forecast-latest status: fresh → stale",
-      "severity": "warn",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_status_changed",
-      "id": "causal-edges",
-      "summary": "lobe causal-edges status: stale → fresh",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_status_changed",
-      "id": "causal-nulls",
-      "summary": "lobe causal-nulls status: stale → fresh",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    }
-  ],
+  "what_changed": [],
   "what_contradicted": [
     {
       "id": "",
@@ -742,7 +615,7 @@
   },
   "causal_lab": {
     "available": true,
-    "asof": "2026-10-17T20:27:18Z",
+    "asof": "2026-10-18T07:35:03Z",
     "new_edges_this_week_by_verdict": {
       "insufficient_power": 22,
       "null": 11,
