@@ -34,8 +34,11 @@ class _TimedRoute(APIRoute):
     401/403/400 rejections can never drag p95 down to a stale green. The
     dedicated method-not-allowed handlers never reach real handler work and
     are not recorded at all. The ``Server-Timing`` header rides success
-    responses only; an ``HTTPException`` (the router's expected failure
-    boundary) is counted under its own status and re-raised unchanged, any
+    responses only, and never the file exports: A54 pins identical export
+    posts to byte-identical responses, headers included, so an export is
+    recorded but carries no per-request duration. An ``HTTPException`` (the
+    router's expected failure boundary) is counted under its own status and
+    re-raised unchanged, any
     other exception is counted as a 500 and re-raised unchanged. Recording
     itself can never alter a status, body or existing header: it sits inside
     its own ``try/except Exception: pass``.
@@ -67,7 +70,8 @@ class _TimedRoute(APIRoute):
                     pass
                 raise
             duration_ms = (time.perf_counter() - t0) * 1000.0
-            response.headers["Server-Timing"] = f"fif;dur={duration_ms:.1f}"
+            if self.path not in _BYTE_IDENTICAL_EXPORT_PATHS:
+                response.headers["Server-Timing"] = f"fif;dur={duration_ms:.1f}"
             try:
                 RECORDER.record(self.path, duration_ms, response.status_code)
             except Exception:  # noqa: BLE001 - timing must never fail a request
@@ -1498,6 +1502,14 @@ async def financial_statements(
 # 405 is neither a latency sample nor a client-error count on the real route
 # template. (The alternative, keying the recorder by (method, path), would
 # break the SLO config's path-template keys.)
+_BYTE_IDENTICAL_EXPORT_PATHS = frozenset(
+    {
+        "/api/forensics/v1/financial/query.xlsx",
+        "/api/forensics/v1/financial/query.csv",
+        "/api/forensics/v1/financial/query.parquet",
+    }
+)
+
 _METHOD_NOT_ALLOWED_ENDPOINTS = frozenset(
     {
         financial_query_method_not_allowed,
