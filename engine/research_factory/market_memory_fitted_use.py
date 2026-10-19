@@ -242,6 +242,20 @@ class TrainingWindowCapability:
         object.__setattr__(self, "_seal", _TOKEN)
 
 
+@dataclass(frozen=True, slots=True, init=False, repr=False)
+class RetainedTrainingWindowCapability:
+    """Original immutable fit provenance; current authority is checked separately."""
+    _body: bytes
+    _retained: object
+    _seal: object
+
+    def __init__(self, body, retained, *, _key=None):
+        _require(_key is _TOKEN, "retained_training_window_required")
+        object.__setattr__(self, "_body", body)
+        object.__setattr__(self, "_retained", retained)
+        object.__setattr__(self, "_seal", _TOKEN)
+
+
 def prepare_registered_training_window():
     """Fixed installed administrator path. No caller path, grant or callback."""
     _require(sys.platform == "linux" and os.geteuid() == 0
@@ -261,6 +275,12 @@ def prepare_registered_training_window():
 
 
 def disclose_training_window(capability):
+    if type(capability) is RetainedTrainingWindowCapability:
+        _require(capability._seal is _TOKEN and type(capability._body) is bytes
+            and len(capability._body) <= control.MAX_DOMAIN_OBJECT_BYTES,
+            "retained_training_window_required")
+        from . import market_memory_fitted_persistence as persistence
+        return persistence._disclose_retained_window(capability)
     _require(type(capability) is TrainingWindowCapability and capability._seal is _TOKEN
         and type(capability._body) is bytes and len(capability._body) <= control.MAX_DOMAIN_OBJECT_BYTES,
         "authenticated_training_window_required")

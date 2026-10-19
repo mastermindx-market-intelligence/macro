@@ -250,7 +250,7 @@ def fit_registered_normalizer(window, population, *, policy):
         authenticate_registered_training_sources(window, population, policy=policy), policy=policy)
 
 
-def fit_authenticated_training_sources(sources, *, policy):
+def _normalizer_parts(sources, *, policy):
     source = disclose_registered_training_sources(sources, policy=policy)
     window, population, retained = sources._window, sources._population, sources._features
     declared = use.disclose_training_window(window)
@@ -282,7 +282,35 @@ def fit_authenticated_training_sources(sources, *, policy):
         "construction_provenance": "current_construction_not_historical_fit_availability_proof",
         "independent_episode_count": "not_established", "effective_n": "not_estimated"}
     core["normalizer_id"] = "mmfittednormalizer_" + sha256(cohort.canonical(core)).hexdigest()
-    result = FittedNormalizerCapability(_encoded(core), window, population, tuple(retained), _key=_TOKEN)
+    return _encoded(core), window, population, tuple(retained)
+
+
+def fit_authenticated_training_sources(sources, *, policy):
+    body, window, population, retained = _normalizer_parts(sources, policy=policy)
+    result = FittedNormalizerCapability(body, window, population, retained, _key=_TOKEN)
+    disclose_fitted_normalizer(result, policy=policy)
+    return result
+
+
+def reopen_retained_normalizer(retained_fit, population, *, policy):
+    """Authenticate original custody and sources; never construct or refit a version.
+
+    Parameter reproduction validates the retained bytes. Only an owner-verified
+    completed receipt can supply the original construction clock.
+    """
+    from engine.research_factory import market_memory_fitted_persistence as persistence
+    original = persistence.disclose_retained_fit(retained_fit)
+    window = use.RetainedTrainingWindowCapability(original["window"], retained_fit, _key=use._TOKEN)
+    sources = authenticate_registered_training_sources(window, population, policy=policy)
+    body, window, population, projections = _normalizer_parts(sources, policy=policy)
+    _require(body == original["parameters"], "retained_parameter_reproduction_mismatch")
+    # This distinct restoration path cannot accept caller bytes or a clock. The
+    # typed receipt and fixed current owner authenticated both above and below.
+    result = object.__new__(FittedNormalizerCapability)
+    for key, value in (("_body", body), ("_digest", sha256(body).hexdigest()),
+        ("_window", window), ("_population", population), ("_features", projections),
+        ("_constructed_at", original["constructed_at"]), ("_seal", _TOKEN)):
+        object.__setattr__(result, key, value)
     disclose_fitted_normalizer(result, policy=policy)
     return result
 

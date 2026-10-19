@@ -30608,6 +30608,9 @@ jobs:
       - "engine/neuralweb/market_memory_fitted_normalization.py"
       - "engine/neuralweb/market_memory_fitted_distance.py"
       - "engine/neuralweb/market_memory_fitted_retrieval.py"
+      - "engine/research_factory/market_memory_fitted_persistence.py"
+      - "engine/research_factory/market_memory_fit_bundle.py"
+      - "engine/research_factory/market_memory_e0_reserved_read.py"
       - "engine/neuralweb/market_memory_exact_index.py"
       - "engine/neuralweb/market_memory_episode_features.py"
       - "engine/neuralweb/market_memory_episode_retrieval.py"
@@ -30964,6 +30967,8 @@ jobs:
       - "tests/test_market_memory_fitted_normalization.py"
       - "tests/test_market_memory_fitted_distance.py"
       - "tests/test_market_memory_fitted_retrieval.py"
+      - "tests/test_market_memory_fitted_persistence.py"
+      - "tests/test_market_memory_fit_bundle.py"
       - "tests/test_market_memory_e0_domains.py"
       - "tests/test_market_memory_exact_index.py"
       - "tests/test_market_memory_episode_features.py"
@@ -31087,6 +31092,8 @@ jobs:
           tests/test_market_memory_fitted_normalization.py
           tests/test_market_memory_fitted_distance.py
           tests/test_market_memory_fitted_retrieval.py
+          tests/test_market_memory_fitted_persistence.py
+          tests/test_market_memory_fit_bundle.py
           tests/test_market_memory_exact_index.py
           tests/test_market_memory_episode_features.py
           tests/test_market_memory_episode_comparison.py
