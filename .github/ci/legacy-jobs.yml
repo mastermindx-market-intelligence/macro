@@ -174,6 +174,7 @@ jobs:
       - "contracts/intelligence_workspace/datapoint_value.schema.json"
       - "contracts/market_os/security_state.v1.schema.json"
       - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "contracts/theme_graph/membership_collection.v2.schema.json"
       - "contracts/theme_graph/probation_proposal.v1.schema.json"
       - "contracts/theme_graph/probation_relation_event.v2.schema.json"
@@ -1781,6 +1782,7 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "tests/test_c19_wp32_correction.py"
       - "tests/test_c19_wp32_denial_cache.py"
       - "tests/test_c19_wp19_integrated_answer_entitlement_pins.py"
@@ -2588,6 +2590,7 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - "tests/test_c19_wp22_dhi_traversal.py"
@@ -4915,6 +4918,7 @@ jobs:
     scope: exclusive
     paths:
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/rates_command_basis.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
       - "engine/neuralweb/rotation_risk_context.py"
@@ -8495,6 +8499,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - "engine/government_revenue/program_dossier.py"
@@ -10276,6 +10281,7 @@ jobs:
     scope: exclusive
     paths:
       # Connected Research Factory import closure (PR9463).
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - research/signal_engine/confluence.py
       - scripts/oracle_reversion_screen.py
       - scripts/oracle_screen.py
@@ -11532,6 +11538,7 @@ jobs:
     scope: exclusive
     paths:
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/rates_command_basis.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
       - "engine/neuralweb/rotation_risk_context.py"
@@ -14264,6 +14271,7 @@ jobs:
       - "config/theme_crosswalk.yml"
       - "config/theme_graph_identity_breaks.yml"
       - "config/theme_sources.yml"
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "contracts/theme_graph/membership_collection.v2.schema.json"
       - "contracts/theme_graph/probation_proposal.v1.schema.json"
       - "contracts/theme_graph/probation_relation_event.v2.schema.json"
@@ -15354,6 +15362,14 @@ jobs:
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
       # Connected Research Factory import closure (PR9463).
+      - engine/company_intelligence/issuer_disclosures.py
+      - engine/company_intelligence/issuer_disclosure_selection.py
+      - engine/company_intelligence/issuer_disclosure_publication.py
+      - engine/company_intelligence/issuer_disclosure_preflight.py
+      - engine/company_intelligence/issuer_disclosure_owner.py
+      - engine/company_intelligence/current_context_runtime.py
+      - engine/company_intelligence/current_company_context.py
+      - contracts/theme_graph/activity_membership_proposal.v1.schema.json
       - engine/oracle/compounds.py
       - engine/oracle/graph.py
       - engine/research_codegen/__init__.py
@@ -15516,12 +15532,14 @@ jobs:
       - scripts/build_theme_graph.py
       - scripts/ci/daily_engine_regional_desk_builders.sh
       - scripts/correct_gmi_identity_lineage.py
+      - scripts/publish_company_disclosure.py
       - scripts/publish_company_theme_exposure_r2.py
       - scripts/seed_china_ths_baskets.py
       - tests/test_build_subsector_membership.py
       - tests/test_company_theme_exposure.py
       - tests/test_company_theme_exposure_successor.py
       - tests/test_dt_contra_state.py
+      - tests/test_gmi_activity_membership_admission.py
       - tests/test_gmi_history_integrity.py
       - tests/test_publish_company_theme_exposure_r2.py
       - tests/test_theme_graph_selection_cohort.py
@@ -16430,7 +16448,7 @@ jobs:
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
@@ -16991,9 +17009,9 @@ jobs:
       - name: unsubscribe page + per-matcher serving boundary (templates/unsubscribe.html.j2)
         run: python -m pytest tests/test_unsubscribe_page.py -v
       - name: pinned alert email message type (app/mailer.py alert template)
-        run: python -m pytest tests/test_mailer_alert_template.py -v
+        run: python -m pytest tests/test_mailer_alert_template.py tests/test_mailer_held_material.py -v
       - name: alert outbox delivery drain (engine/alert_delivery_drain.py, scripts/drain_alert_outbox.py)
-        run: python -m pytest tests/test_alert_delivery_drain.py -v
+        run: python -m pytest tests/test_alert_delivery_drain.py tests/test_held_material_entitlement.py -v
       - name: post-SMTP effect boundary (app/mailer.py write-ahead marker x drain quarantine)
         run: python -m pytest tests/test_alert_delivery_effect_boundary.py -v
 
@@ -17496,6 +17514,7 @@ jobs:
     paths:
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "lib/delisted_symbols.py"
       - "lib/stooq.py"
       - "lib/ticker_aliases.py"
@@ -20122,6 +20141,7 @@ jobs:
     scope: exclusive
     paths:
       # Rotation/risk context extends this owner's actual transitive read closure.
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "scripts/build_risk_envelope.py"
       - "site/marketdata/rotation_events.json"
       - "config/**"
@@ -20606,6 +20626,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - contracts/theme_graph/activity_membership_proposal.v1.schema.json
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - "engine/government_revenue/program_dossier.py"
@@ -24040,6 +24061,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
       - "scripts/build_turn_watch.py"
@@ -26587,6 +26609,8 @@ jobs:
     scope: exclusive
     paths:
       - "tests/test_foresight_cascade.py"
+      - "engine/power_scarcity.py"
+      - "tests/test_power_scarcity.py"
       - "tests/test_fda_shortages_generation.py"
       - "tests/test_fda_supply_probes.py"
       - "tests/test_fda_supply_probes_t02r.py"
@@ -26643,6 +26667,8 @@ jobs:
       - "collectors/yahoo.py"
       - "lib/stooq.py"
       - "lib/ticker_aliases.py"
+      - "tests/test_thesis_monitor.py"
+      - "engine/thesis_monitor.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -26653,7 +26679,7 @@ jobs:
       - name: install deps for the FDA supply suites
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests
       - name: FDA foresight cascade and qualified observation suites
-        run: python -m pytest tests/test_foresight_cascade.py tests/test_fda_shortages_generation.py -q
+        run: python -m pytest tests/test_foresight_cascade.py tests/test_fda_shortages_generation.py tests/test_power_scarcity.py -q
       - name: FDA supply acceptance probes
         run: python -m pytest tests/test_fda_supply_probes.py tests/test_fda_supply_probes_t02r.py tests/test_fda_supply_probes_t02r2.py tests/test_fda_supply_probes_t01r.py tests/test_fda_supply_probes_t02r3.py tests/test_fda_supply_probes_final.py tests/test_fda_supply_probes_mixed.py -q
       - name: FDA sweep completeness regression probes (duplicate dedupe keys)
@@ -26666,6 +26692,11 @@ jobs:
         run: python -m pytest tests/test_healthcare_observation_split.py -q
       - name: Healthcare FDA record lines under the chips
         run: python -m pytest tests/test_healthcare_fda_details.py -q
+      # This job owns scripts/build_foresight.py and engine/foresight_health.py, the
+      # consumers of compute_thesis_monitor, so it is the home of the LLM thesis
+      # kill-condition attribution suite.
+      - name: Foresight thesis monitor kill conditions
+        run: python -m pytest tests/test_thesis_monitor.py -q
 
   earnings-economic-source-selection:
     # CDV-1 Task 2: preserve private PG acquisition currentness and revision clocks.
@@ -28023,6 +28054,7 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "tests/test_energy_economic_change_non_regression.py"
       - "tests/fixtures/energy_non_regression/**"
       - "data/baskets/membership.json"
@@ -28796,6 +28828,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - lib/dataos/web_history.py
@@ -31022,6 +31055,7 @@ jobs:
       - scripts/tiingo_ingest.py
       - scripts/build_ext_quotes.py
       - tests/test_tiingo_boats_display.py
+      - tests/test_tiingo_boats_coverage_cli.py
       - tests/test_build_ext_quotes.py
       - scripts/tiingo_materialize.py
       - scripts/tiingo_vendor_cohort.py
@@ -31064,6 +31098,7 @@ jobs:
           tests/test_tiingo_research_query.py tests/test_tiingo_boats_tape.py
           tests/test_tiingo_boats_stream_chain.py tests/test_tiingo_vendor_cohort.py
           tests/test_tiingo_boats_display.py tests/test_build_ext_quotes.py
+          tests/test_tiingo_boats_coverage_cli.py
           tests/test_tiingo_ingestion_integrity.py
           tests/test_tiingo_reference_audit.py tests/test_tiingo_planning.py
           tests/test_tiingo_corpus_audit.py tests/test_tiingo_additional_history.py
@@ -31636,6 +31671,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # MI W14 (2026-10-17): scripts/build_qbus_news_universe.py reads via the native parquet helper.
@@ -32731,6 +32767,11 @@ jobs:
       - "tests/fixtures/macro_workspace_prior_publication/**"
       # Literal site artifact reference in the closure (liquidity composer).
       - "site/liquiditydata/global_liquidity_transmission.json"
+      # GLT T21 (#9657): the liquidity suite imports the Macro Command copy
+      # guard and machine-text counter to pin the Now view's measured copy.
+      - "scripts/__init__.py"
+      - "scripts/check_macro_command_copy.py"
+      - "scripts/count_macro_command_machine_text.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -33070,6 +33111,7 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
       - engine/research_codegen/__init__.py
