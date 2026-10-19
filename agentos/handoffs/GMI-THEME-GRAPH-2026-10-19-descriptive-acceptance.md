@@ -61,7 +61,7 @@ verified:
     result: "us 1939/1935/1927/1925, principal activity 0, cn 1019 listings 0 issuers, taxonomy 68/68 versioned owner_reviewed false"
   - claim: "One CI-authority main baseline was dispatched for the #9753 legacy-jobs.yml change over a clear field"
     command: "gh run list --workflow ci.yml --branch main --json databaseId,status --jq '[.[]|select(.status!=\"completed\")]' -> []; gh workflow run ci.yml --ref main"
-    result: "run 39277589795 dispatched 15:23Z 2026-10-19 on main f70d7cdf3f62; conclusion recorded in this handoff's follow-up commit before the records PR was marked ready; never re-dispatched over it"
+    result: "run 39277589795 dispatched 15:23Z 2026-10-19 on main f70d7cdf3f62; concluded SUCCESS at 16:33Z (70 min, status-only watcher; the jobs endpoint returned 502 to the built-in watcher twice); never re-dispatched over it; main is proven under the #9753 CI authority"
   - claim: "Agent OS records validate"
     command: "python3 scripts/agentos.py validate"
     result: "exit 0: 1885 records (99 workstreams, 507 decisions, 543 discoveries, 736 handoffs), 0 errors, 169 pre-existing warnings (2026-10-19 15:2xZ, this records worktree)"
