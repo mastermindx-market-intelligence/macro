@@ -12,11 +12,16 @@ Covered (EOD252 baseline-binding repair):
   4. latest-252 window over >252 unsorted observations
   5. MIN_SESSIONS boundary (120 pass / 119 skip) + retained existing entries
   6. one canonical binding per run (no per-root re-resolve)
+  7. source-window metadata: source_session_start/end report the actual
+     selected window (distinct from the computed_asof build date) in results,
+     dry-run returns, retained/merged artifacts and the per-root log
 """
 from __future__ import annotations
 
 import json
+import logging
 import random
+from datetime import date
 from pathlib import Path
 
 import numpy as np
@@ -223,11 +228,15 @@ def test_dry_run_writes_nothing(sb):
     sb.write_existing_artifact({"KEEP": {"mean": 7.0, "std": 2.0, "n_obs": 252,
                                          "computed_asof": "2026-01-01"}})
     before = sb.out_path().read_text()
-    sb.set_frame("SPY", gross_frame(_bdates(150), ramp_gross(150)))
+    spy_dates = _bdates(150)
+    sb.set_frame("SPY", gross_frame(spy_dates, ramp_gross(150)))
 
     updated = bl.run(["SPY"], dry_run=True)
 
     assert "SPY" in updated and "KEEP" in updated      # computed in-memory
+    # the dry-run result still carries the source-window metadata
+    assert updated["SPY"]["source_session_start"] == spy_dates[0]
+    assert updated["SPY"]["source_session_end"] == spy_dates[-1]
     assert sb.out_path().read_text() == before          # file untouched
     assert not sb.out_path().with_suffix(".tmp.json").exists()  # no temp left
     assert not (sb.checkout_data / "live_flow_baselines").is_dir() or (
@@ -261,6 +270,12 @@ def test_latest_252_window_from_unsorted_observations(sb):
     assert result["mean"] != pytest.approx(float(np.mean(all_hist)), rel=1e-4)
     assert result["std"] != pytest.approx(float(np.std(all_hist, ddof=1)), rel=1e-4)
 
+    # the reported source range is the ACTUAL selected (chronological) window,
+    # independent of the shuffled row order the data arrived in
+    window_dates = dates[-252:]
+    assert result["source_session_start"] == window_dates[0]
+    assert result["source_session_end"] == window_dates[-1]
+
 
 def test_window_is_latest_not_first_252(sb):
     sb.prebind()
@@ -278,17 +293,53 @@ def test_window_is_latest_not_first_252(sb):
     assert result["mean"] != pytest.approx(expected_first, rel=1e-4)
 
 
+def test_source_dates_stay_old_despite_current_computed_asof(sb):
+    sb.prebind()
+    dates = _bdates(252, end="2024-06-28")  # window ended long ago
+    sb.set_frame("SPY", gross_frame(dates, ramp_gross(252)))
+
+    result = bl.compute_baseline("SPY")
+
+    assert result is not None
+    assert result["computed_asof"] == str(date.today())  # build date: today
+    # the source range stays the historical window actually selected —
+    # recomputing today does not redate the source data
+    assert result["source_session_start"] == dates[0]
+    assert result["source_session_end"] == dates[-1]
+    assert result["source_session_end"] < result["computed_asof"]
+
+
+def test_per_root_log_reports_selected_source_range(sb, caplog):
+    sb.prebind()
+    dates = _bdates(130)
+    sb.set_frame("SPY", gross_frame(dates, ramp_gross(130)))
+
+    with caplog.at_level(logging.INFO, logger="scripts.build_live_flow_baselines"):
+        bl.compute_baseline("SPY")
+
+    lines = [r.getMessage() for r in caplog.records
+             if r.name == "scripts.build_live_flow_baselines"
+             and "n_obs=" in r.getMessage()]
+    assert lines, "per-root log line missing"
+    assert dates[0] in lines[-1] and dates[-1] in lines[-1]
+
+
 # ---------------------------------------------------------------------------
 # 5. MIN_SESSIONS boundary + retained existing entries
 # ---------------------------------------------------------------------------
 
 def test_min_sessions_120_passes_119_skips(sb):
     sb.prebind()
-    sb.set_frame("GOOD", gross_frame(_bdates(120), ramp_gross(120)))
+    good_dates = _bdates(120)
+    sb.set_frame("GOOD", gross_frame(good_dates, ramp_gross(120)))
     sb.set_frame("SHORT", gross_frame(_bdates(119), ramp_gross(119)))
 
-    assert bl.compute_baseline("GOOD") is not None
-    assert bl.compute_baseline("GOOD")["n_obs"] == 120
+    good = bl.compute_baseline("GOOD")
+    assert good is not None
+    assert good["n_obs"] == 120
+    # a 120-session entry still carries honest source-window metadata
+    assert good["source_session_start"] == good_dates[0]
+    assert good["source_session_end"] == good_dates[-1]
     assert bl.compute_baseline("SHORT") is None
 
     updated = bl.run(["GOOD", "SHORT"], dry_run=True)
@@ -301,13 +352,19 @@ def test_existing_entries_retained_when_root_skipped(sb):
     old_entry = {"mean": 31337.0, "std": 42.0, "n_obs": 252,
                  "computed_asof": "2026-01-01"}
     sb.write_existing_artifact({"OLDNAME": old_entry})
-    sb.set_frame("SPY", gross_frame(_bdates(120), ramp_gross(120)))
+    spy_dates = _bdates(120)
+    sb.set_frame("SPY", gross_frame(spy_dates, ramp_gross(120)))
     # OLDNAME has no data in the store -> skipped this run
 
     updated = bl.run(["SPY", "OLDNAME"], dry_run=False)
 
     assert updated["OLDNAME"] == old_entry  # retained verbatim
+    # entries this run did NOT compute get no invented metadata
+    assert "source_session_start" not in updated["OLDNAME"]
+    assert "source_session_end" not in updated["OLDNAME"]
     assert updated["SPY"]["n_obs"] == 120   # fresh entry merged in
+    assert updated["SPY"]["source_session_start"] == spy_dates[0]
+    assert updated["SPY"]["source_session_end"] == spy_dates[-1]
     on_disk = sb.read_artifact()
     assert on_disk["OLDNAME"] == old_entry
     assert on_disk["SPY"]["n_obs"] == 120

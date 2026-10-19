@@ -5,7 +5,16 @@ thetadata_eod store.  Writes a small git-tracked JSON:
 
     data/live_flow_baselines/baselines.json
 
-Format: {ROOT: {mean, std, n_obs, computed_asof}, ...}
+Format: {ROOT: {mean, std, n_obs, computed_asof, source_session_start,
+                source_session_end}, ...}
+
+computed_asof is the BUILD date (when this run computed the entry).
+source_session_start / source_session_end are the first and last dates of the
+ACTUAL latest-252 window selected for that entry's statistics, read from the
+chronological date index of the store's observed daily values.  They describe
+the source data range only — no observation or availability clock is derived
+from them, and entries merged from earlier runs are retained verbatim (an old
+entry keeps its old source range).
 
 This is a DISPLAY-TIER heuristic denominator (labeled "eod252") for the live
 flow feed's unusual-name z-scores.  These are also the "prem baselines" that
@@ -21,7 +30,8 @@ of silently producing a merge-only artifact from the wrong checkout path.
 
 Window: statistics cover the latest EOD_WINDOW (252) observed daily values
 in chronological order — not the first 252 and not all history.  n_obs
-reflects the selected window.
+reflects the selected window, and the per-root log line reports that
+selected window's source range as `source=<first>..<last>`.
 
 FC-R7 (FLOW_CONTINUITY_MASTERPLAN): extended from 18 ETF roots to the full
 poll universe (~375 roots) with chunked, bounded-memory processing.
@@ -207,10 +217,13 @@ def _daily_gross_premium(root: str, store: Path | None = None) -> pd.Series | No
 
 
 def compute_baseline(root: str, store: Path | None = None) -> dict | None:
-    """Compute {mean, std, n_obs, computed_asof} for root, or None if insufficient.
+    """Compute {mean, std, n_obs, computed_asof, source_session_start,
+    source_session_end} for root, or None if insufficient.
 
     Statistics cover the latest EOD_WINDOW (252) observed daily values in
     chronological order; n_obs reflects that selected window.
+    source_session_start/end are the first/last dates of that selected window
+    (source data range), distinct from computed_asof (the build date).
     """
     daily = _daily_gross_premium(root, store=store)
     if daily is None or len(daily) < MIN_SESSIONS:
@@ -223,13 +236,18 @@ def compute_baseline(root: str, store: Path | None = None) -> dict | None:
     std_val  = float(np.std(window.values, ddof=1))
     n_obs    = int(len(window))
     asof     = str(date.today())
+    src_start = str(window.index[0])
+    src_end   = str(window.index[-1])
 
-    log.info("baselines: %s — n_obs=%d mean=%.0f std=%.0f", root, n_obs, mean_val, std_val)
+    log.info("baselines: %s — n_obs=%d mean=%.0f std=%.0f source=%s..%s",
+             root, n_obs, mean_val, std_val, src_start, src_end)
     return {
         "mean":         mean_val,
         "std":          std_val,
         "n_obs":        n_obs,
         "computed_asof": asof,
+        "source_session_start": src_start,
+        "source_session_end": src_end,
     }
 
 
