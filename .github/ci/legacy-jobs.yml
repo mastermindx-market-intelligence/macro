@@ -62,6 +62,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/news_desk.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -1811,6 +1812,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/news_desk.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -2616,6 +2618,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/news_desk.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -8560,6 +8563,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/news_desk.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -20632,6 +20636,7 @@ jobs:
       - app/intelligence_hub_market_pulse.py
       - app/mailer.py
       - app/main.py
+      - "app/news_desk.py"
       - app/market_memory.py
       - app/marketing_emails.py
       - app/observability.py
@@ -28875,6 +28880,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/news_desk.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -31692,6 +31698,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/news_desk.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
