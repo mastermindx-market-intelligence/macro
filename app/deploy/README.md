@@ -437,6 +437,7 @@ run the repack on the root filesystem. Write the consolidated pack on
 M=/mnt/terminal_storage/macro-git-maint-$(date -u +%Y%m%d); mkdir -p "$M/objects/pack"
 exec 9>/var/lock/macro-update.lock; flock 9
 ls /opt/macro/.git/objects/pack/pack-*.pack > "$M/old-packs.txt"
+git -C /opt/macro for-each-ref --format='%(objectname)' | sort -u > "$M/old-tips.txt"
 # Writes ONLY to $M: one self-contained pack of every object reachable from refs,
 # reflogs and the index. GIT_OBJECT_DIRECTORY is required, not optional: pack-objects
 # creates its temporary pack in the repository's own objects/pack (the root disk) and
@@ -452,12 +453,19 @@ GIT_OBJECT_DIRECTORY="$M/objects" GIT_ALTERNATE_OBJECT_DIRECTORIES=/opt/macro/.g
 The lock may be released once pack-objects prints "Compressing objects" (it has read
 every ref by then), so pull ticks resume during the long compression; take it again for
 the swap. Under the lock: first add `$M/objects` to `.git/objects/info/alternates` so
-every object stays readable, delete `objects/pack/multi-pack-index`, move every pack in
-`old-packs.txt` (`.pack`, `.idx`, `.rev`) aside on the same filesystem, and check with
-`git fsck --connectivity-only` (move the old packs back if it fails; this also catches
-an old object that a pull made reachable again after the snapshot). Then delete the old
-packs, copy the new `.pack` and `.rev` and then its `.idx` into `objects/pack`, remove
-the alternates line, run fsck again, and finish with `git prune-packed` and
+every object stays readable. Then rescue what only the old packs hold: a small fetch is
+unpacked loose and skips any object that is already packed, so a pull after the snapshot
+can depend on an old object that was unreachable at the snapshot and is therefore not in
+the new pack. Touch a `.keep` next to every pack that is not in `old-packs.txt`, run
+`sed 's/^/^/' "$M/old-tips.txt" | git -C /opt/macro pack-objects --revs --local
+--honor-pack-keep --non-empty --all --reflog --indexed-objects .git/objects/pack/pack`
+(it skips objects in the new pack and in the kept packs, so only those rescued objects and
+a few loose ones go on root), and remove the `.keep` files again. Now delete
+`objects/pack/multi-pack-index`, move every pack in `old-packs.txt` (`.pack`, `.idx`,
+`.rev`) aside on the same filesystem, and check with `git fsck --connectivity-only` (move
+the old packs back if it fails). Then delete the old packs, copy the new `.pack` and
+`.rev` and then its `.idx` into `objects/pack`, remove the alternates line, run fsck
+again, and finish with `git prune-packed` and
 `git prune --expire=2.weeks.ago` before releasing the lock (`exec 9>&-`). `git prune`
 also drops `.git/shallow` lines for boundary commits that are no longer reachable; the
 repository stays shallow and its reachable boundary is unchanged.

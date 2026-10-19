@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import fcntl
 import os
+import re
 import shutil
 import subprocess
 import time
@@ -367,3 +368,115 @@ def test_defers_when_memory_is_short(store: Store):
     assert done.returncode == 75
     assert "DEFERRED: MemAvailable" in done.stdout
     assert packs(store.app) == before
+
+
+def _pack_contents(repo: Path, idx: Path) -> set[str]:
+    with idx.open("rb") as fh:
+        done = subprocess.run(
+            ["git", "-C", str(repo), "show-index"], stdin=fh, capture_output=True,
+            text=True, env=git_env(), check=True,
+        )
+    return {line.split()[1] for line in done.stdout.splitlines()}
+
+
+def _commit_file(repo: Path, name: str, text: str, message: str) -> None:
+    (repo / name).write_text(text)
+    git(repo, "add", name)
+    git(repo, "commit", "-qm", message)
+
+
+def test_readme_recovery_rescues_old_objects_that_a_small_fetch_reused(tmp_path: Path):
+    # A fetch below transfer.unpackLimit is unpacked loose and SKIPS objects that are
+    # already packed (on the droplet 2026-10-19 a 07:39 pull re-freshened two 2026-10-18
+    # packs instead of writing loose copies). An object unreachable at the snapshot is not
+    # in the consolidated pack, so retiring the old packs loses it unless the recipe's
+    # rescue step packs it first. Runs the README's own rescue command.
+    readme = (DEPLOY / "README.md").read_text(encoding="utf-8")
+    section = readme.split("Recovery when it REFUSES for space", 1)[1].split("\n### ", 1)[0]
+    found = re.search(r"`(sed 's/\^/\^/' [^`]+)`", section)
+    assert found, "recipe lost its rescue step"
+    rescue = " ".join(found.group(1).split())
+    assert "--local" in rescue and "--honor-pack-keep" in rescue, rescue
+
+    src, origin, prod, maint = (tmp_path / n for n in ("src", "origin.git", "prod", "maint"))
+    src.mkdir()
+    git(src, "init", "-q", "-b", "main")
+    for n in range(4):
+        _commit_file(src, f"f{n}", f"v{n}\n", f"c{n}")
+    git(tmp_path, "clone", "-q", "--bare", str(src), str(origin))
+    git(tmp_path, "clone", "-q", "--depth", "2", f"file://{origin}", str(prod))
+    # Old pack 2 holds blob X from a side commit that is then made unreachable.
+    git(prod, "checkout", "-q", "-b", "side")
+    _commit_file(prod, "x", "rescue-me\n", "side")
+    x = git(prod, "rev-parse", "HEAD:x")
+    git(prod, "repack", "-q", "-d")
+    git(prod, "checkout", "-q", "main")
+    git(prod, "branch", "-q", "-D", "side")
+    git(prod, "reflog", "expire", "--expire=now", "--expire-unreachable=now", "--all")
+    pack_dir = prod / ".git" / "objects" / "pack"
+    old_packs = sorted(pack_dir.glob("pack-*.pack"))
+    tips = maint / "old-tips.txt"
+    (maint / "objects" / "pack").mkdir(parents=True)
+    tips.write_text(git(prod, "for-each-ref", "--format=%(objectname)") + "\n")
+    env = {**git_env(), "GIT_OBJECT_DIRECTORY": str(maint / "objects"),
+           "GIT_ALTERNATE_OBJECT_DIRECTORIES": str(prod / ".git" / "objects")}
+    subprocess.run(
+        ["git", "-C", str(prod), "pack-objects", "-q", "--all", "--reflog",
+         "--indexed-objects", str(maint / "objects" / "pack" / "pack")],
+        stdin=subprocess.DEVNULL, capture_output=True, env=env, check=True,
+    )
+    new_idx = next((maint / "objects" / "pack").glob("pack-*.idx"))
+    assert x not in _pack_contents(prod, new_idx)
+    # Post-snapshot small fetch reusing X: unpacked loose, X skipped as already packed.
+    _commit_file(src, "x", "rescue-me\n", "c-reuse")
+    git(origin, "fetch", "-q", str(src), "main:main")
+    git(prod, "-c", "transfer.unpackLimit=1000", "fetch", "-q", "origin", "main")
+    git(prod, "reset", "-q", "--hard", "FETCH_HEAD")
+    assert not (prod / ".git" / "objects" / x[:2] / x[2:]).exists()
+    # Post-snapshot large fetch, kept as its own pack.
+    for n in range(30):
+        (src / f"b{n}").write_text(f"big{n}\n")
+    git(src, "add", ".")
+    git(src, "commit", "-qm", "c-big")
+    git(origin, "fetch", "-q", str(src), "main:main")
+    git(prod, "-c", "transfer.unpackLimit=1", "fetch", "-q", "origin", "main")
+    git(prod, "reset", "-q", "--hard", "FETCH_HEAD")
+    post_packs = sorted(set(pack_dir.glob("pack-*.pack")) - set(old_packs))
+    assert len(post_packs) == 1
+    post_objects = _pack_contents(prod, post_packs[0].with_suffix(".idx"))
+    (prod / ".git" / "objects" / "info" / "alternates").write_text(f"{maint / 'objects'}\n")
+    retired = tmp_path / "retired"
+
+    def retire_old_packs() -> None:
+        retired.mkdir()
+        for pack in old_packs:
+            for ext in (".pack", ".idx", ".rev"):
+                if pack.with_suffix(ext).exists():
+                    pack.with_suffix(ext).rename(retired / pack.with_suffix(ext).name)
+
+    def restore_old_packs() -> None:
+        for f in sorted(retired.iterdir(), key=lambda f: f.suffix != ".pack"):
+            f.rename(pack_dir / f.name)
+        retired.rmdir()
+
+    # Falsifier: without the rescue the swap's fsck must fail on this fixture.
+    retire_old_packs()
+    assert not ok(prod, "fsck", "--connectivity-only", "--no-dangling")
+    restore_old_packs()
+
+    before = set(pack_dir.glob("pack-*.pack"))
+    for pack in post_packs:
+        pack.with_suffix(".keep").touch()
+    command = rescue.replace('"$M/old-tips.txt"', f"'{tips}'").replace("/opt/macro", str(prod))
+    subprocess.run(["bash", "-c", command], capture_output=True, env=git_env(), check=True)
+    for pack in post_packs:
+        pack.with_suffix(".keep").unlink()
+    (rescued,) = set(pack_dir.glob("pack-*.pack")) - before
+    rescued_objects = _pack_contents(prod, rescued.with_suffix(".idx"))
+    assert x in rescued_objects
+    assert not rescued_objects & post_objects, "rescue duplicated a kept post-snapshot pack"
+    assert not rescued_objects & _pack_contents(prod, new_idx), "rescue duplicated the new pack"
+
+    retire_old_packs()
+    assert ok(prod, "fsck", "--connectivity-only", "--no-dangling")
+    assert ok(prod, "cat-file", "-e", x)
