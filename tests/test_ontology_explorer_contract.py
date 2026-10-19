@@ -1912,3 +1912,162 @@ def test_native_transition_k1_missing_contract_keeps_owner_truth(tmp_path, monke
     k1 = snapshot['evidence']['k1']
     assert k1['refs_count'] == 0 and k1['detail']['resolver_state'] == 'unavailable'
     assert 'PRIVATE_CONTRACT_FAILURE' not in json.dumps(snapshot)
+
+
+# MO-PAID-043: native owner -> captured-source Gap composition. No re-evaluation.
+def _native_gap_root(tmp_path, *, readings=None, asof='2026-01-05', kill=False,
+                     stall=None, prior_steps=None):
+    from engine import transmission_chains as txi
+    from tests.test_transmission_chains import _synth_chain, _adapters
+    chain = _synth_chain(n_hops=2, lag_hi=10)
+    if stall is not None:
+        chain['stall'] = {'when': {'path': 'slow', 'op': 'is_true'}, 'src': 'synth'}
+    ledger = []
+    steps = [('2026-01-01', {'n0': True, 'n1': False, 'n2': False})] if prior_steps is None else prior_steps
+    for on, values in steps:
+        produced = txi.evaluate_chain(chain, _adapters(values), on, prior=ledger)
+        ledger += produced['transitions']
+    values = {'n0': True, 'n1': False, 'n2': False, 'kill': kill}
+    values.update(readings or {})
+    if stall is not None:
+        values['slow'] = stall
+    produced = txi.evaluate_chain(chain, _adapters(values), asof, prior=ledger)
+    ledger += produced['transitions']
+    state = {'schema': 'transmission_chains.v1', 'asof': asof,
+             'built': asof+'T23:00:00Z', 'chains': [produced['per_chain']]}
+    root = fx.build_root(tmp_path, yaml_doc=chain, state_doc=state, slug=chain['chain'])
+    path = root / 'data/transmission/chain_episodes.jsonl'
+    path.write_text(''.join(json.dumps(row)+'\n' for row in ledger))
+    return root, state, chain, ledger
+
+
+def _native_gap(root):
+    from datetime import UTC, datetime
+    return _compose(root, chain='synth_chain', now=datetime(2026, 2, 1, tzinfo=UTC))
+
+
+@pytest.mark.parametrize('readings,kill,stall,asof,expected', [
+    ({}, False, None, '2026-01-05', 'waiting_inside_window'),
+    ({}, False, True, '2026-01-05', 'stalled'),
+    ({'n2': True}, False, None, '2026-01-05', 'contradicted'),
+    ({}, True, None, '2026-01-05', 'condition_stopped'),
+    ({}, False, None, '2026-01-12', 'owner_expired'),
+    ({}, False, None, '2026-01-11', 'waiting_inside_window'),
+])
+def test_gap_projects_actual_native_owner_states_and_calendar_boundary(tmp_path, readings, kill, stall, asof, expected):
+    root, state, chain, ledger = _native_gap_root(tmp_path, readings=readings,
+        asof=asof, kill=kill, stall=stall)
+    before = {str(p): p.read_bytes() for p in root.rglob('*') if p.is_file()}
+    snapshot = _native_gap(root)
+    gap = snapshot['transmission_gap']
+    assert gap['status'] == 'available' and gap['state'] == expected
+    assert gap['identity'] == {'chain': 'synth_chain', 'rev': 0,
+                              'episode_id': state['chains'][0]['episode_id']}
+    assert gap['initiating_observation']['asof'] == '2026-01-01'
+    assert gap['initiating_observation']['receipts'] == [{k: v for k, v in r.items() if k != 'path'} for r in ledger[0]['receipts']['n0']]
+    assert gap['pending_hop']['elapsed_calendar_days'] == (int(asof[-2:])-1)
+    assert gap['pending_hop']['lag_d'] == [0, 10]
+    assert gap['pending_hop']['target_observation']['confirmed'] is False
+    assert gap['ledger']['sha256'] == hashlib.sha256((root/'data/transmission/chain_episodes.jsonl').read_bytes()).hexdigest()
+    assert any(r['sha256'] == gap['ledger']['sha256'] for r in snapshot['source']['reads'])
+    assert gap['ledger']['historical_knowledge'] == 'unavailable'
+    assert gap['instrument_only'] is True and gap['market_thesis_verdict'] is None
+    assert gap['watched_conditions'][0]['when'] == chain['falsifiers'][0]['when']
+    assert before == {str(p): p.read_bytes() for p in root.rglob('*') if p.is_file()}
+
+
+def test_gap_pending_hop_uses_recorded_confirm_date_not_episode_id(tmp_path):
+    root, _, _, _ = _native_gap_root(tmp_path, readings={'n1': True}, asof='2026-01-09',
+        prior_steps=[('2026-01-01', {'n0': True, 'n1': False, 'n2': False}),
+                     ('2026-01-07', {'n0': True, 'n1': True, 'n2': False})])
+    gap = _native_gap(root)['transmission_gap']
+    assert gap['state'] == 'waiting_inside_window'
+    assert gap['pending_hop']['hop_id'] == 'n1->n2'
+    assert gap['pending_hop']['anchor_asof'] == '2026-01-07'
+    assert gap['pending_hop']['elapsed_calendar_days'] == 2
+
+
+@pytest.mark.parametrize('mutation,reason', [
+    ('missing_ledger', 'episode_ledger_unavailable'),
+    ('missing_arm', 'arming_observation_unavailable'),
+    ('unresolved', 'current_observation_unavailable'),
+    ('corrupt', 'episode_ledger_unreadable'),
+    ('conflicting_key', 'episode_ledger_unreadable'),
+    ('stale_state', 'owner_window_elapsed_unsettled'),
+    ('future_generation', 'owner_clock_unavailable'),
+    ('late_terminal', 'owner_episode_ledger_mismatch'),
+    ('wrong_episode', 'episode_not_in_captured_ledger'),
+])
+def test_gap_missing_inputs_never_become_failure_or_reconstructed_clocks(tmp_path, mutation, reason):
+    root, state, chain, ledger = _native_gap_root(tmp_path)
+    path = root/'data/transmission/chain_episodes.jsonl'
+    if mutation == 'missing_ledger': path.unlink()
+    elif mutation == 'missing_arm':
+        ledger[0].update(transition='propagating', hop=1)
+        state['chains'][0].update(state='propagating', hop=1)
+    elif mutation == 'unresolved': state['chains'][0]['nodes'][1]['resolved'] = False
+    elif mutation == 'corrupt': path.write_text('{not json\n')
+    elif mutation == 'conflicting_key': ledger.append({**ledger[0], 'receipts': {}})
+    elif mutation == 'stale_state':
+        state.update(asof='2026-01-20', built='2026-01-20T23:00:00Z')
+    elif mutation == 'future_generation': state['built'] = '2026-03-01T00:00:00Z'
+    elif mutation == 'late_terminal':
+        ledger.append({**ledger[0], 'transition': 'expired', 'asof': '2026-01-04'})
+    else: state['chains'][0]['episode_id'] += '-other'
+    if mutation not in ('missing_ledger', 'corrupt'):
+        path.write_text(''.join(json.dumps(row)+'\n' for row in ledger))
+    (root/'data/transmission/chain_state.json').write_text(json.dumps(state))
+    gap = _native_gap(root)['transmission_gap']
+    assert gap['status'] == 'unavailable' and gap['state'] == 'source_unavailable'
+    assert gap['reason'] == reason
+    if mutation == 'missing_arm': assert gap['initiating_observation'] is None
+
+
+def test_gap_excludes_future_transition_and_unresolved_stall_is_not_stalled(tmp_path):
+    root, state, _, ledger = _native_gap_root(tmp_path)
+    path = root/'data/transmission/chain_episodes.jsonl'
+    ledger.append({**ledger[0], 'asof': '2026-01-12', 'transition': 'expired'})
+    path.write_text(''.join(json.dumps(row)+'\n' for row in ledger))
+    state['chains'][0]['turn_watch'] = {'stalling': False, 'unresolved': 'synthetic unavailable'}
+    (root/'data/transmission/chain_state.json').write_text(json.dumps(state))
+    gap = _native_gap(root)['transmission_gap']
+    assert gap['state'] == 'waiting_inside_window'
+    assert gap['ledger']['excluded_after_observation'] == 1
+    assert gap['turn_watch'] == {'status': 'unavailable', 'stalling': None, 'receipts': []}
+
+
+def test_gap_confirm_clock_must_agree_with_current_owner_hop(tmp_path):
+    root, state, _, _ = _native_gap_root(tmp_path, readings={'n1': True}, asof='2026-01-09',
+        prior_steps=[('2026-01-01', {'n0': True, 'n1': False, 'n2': False}),
+                     ('2026-01-07', {'n0': True, 'n1': True, 'n2': False})])
+    state['chains'][0]['hops'][0]['asof'] = '2026-01-06'
+    (root/'data/transmission/chain_state.json').write_text(json.dumps(state))
+    gap = _native_gap(root)['transmission_gap']
+    assert gap['status'] == 'unavailable' and gap['reason'] == 'pending_clock_incoherent'
+
+
+def test_gap_condition_stop_cites_native_watched_condition_and_receipt(tmp_path):
+    root, _, _, _ = _native_gap_root(tmp_path, kill=True)
+    gap = _native_gap(root)['transmission_gap']
+    assert gap['condition_stop']['condition_id'] == 'invalidator_0'
+    assert gap['condition_stop']['asof'] == '2026-01-05'
+    assert gap['condition_stop']['receipts'][0]['passed'] is True
+    assert gap['state'] == 'condition_stopped'
+
+
+def test_gap_completed_native_episode_has_no_pending_clock(tmp_path):
+    root, _, _, _ = _native_gap_root(tmp_path, readings={'n1': True, 'n2': True}, asof='2026-01-09',
+        prior_steps=[('2026-01-01', {'n0': True, 'n1': False, 'n2': False}),
+                     ('2026-01-07', {'n0': True, 'n1': True, 'n2': False})])
+    gap = _native_gap(root)['transmission_gap']
+    assert gap['state'] == 'owner_completed' and gap['pending_hop'] is None
+
+
+def test_gap_native_arm_with_already_true_target_is_not_stalled(tmp_path):
+    root, state, _, _ = _native_gap_root(tmp_path, readings={'n1': True}, stall=True, prior_steps=[])
+    assert state['chains'][0]['state'] == 'arming'
+    assert state['chains'][0]['turn_watch']['stalling'] is True
+    gap = _native_gap(root)['transmission_gap']
+    assert gap['turn_watch']['stalling'] is True
+    assert gap['pending_hop']['target_observation']['confirmed'] is True
+    assert gap['status'] == 'unavailable' and gap['reason'] == 'owner_transition_unsettled'

@@ -70,7 +70,7 @@ SCHEMA_ID = "ontology_explorer_snapshot.v1"
 #: read byte-identical sources and still differ, because the meaning is produced
 #: by THIS code — so the method that read them is part of what the digest binds.
 #: It is still a read receipt, never a native owner generation.
-COMPOSER_METHOD = "ontology_explorer.compose.v4"
+COMPOSER_METHOD = "ontology_explorer.compose.v5"
 ERROR_SCHEMA_ID = "ontology_explorer_error.v1"
 DEFAULT_CHAIN = "oil_inflation_duration_derate"
 
@@ -520,6 +520,9 @@ def _build(definition: dict, state_doc: dict, episodes_raw: bytes | None, *,
         },
         "first_blocking_leg": first_blocking,
         "contradiction": contradiction,
+        "transmission_gap": _transmission_gap(
+            state_doc, observed, episodes_raw, legs, hops,
+            invalidators, contradiction, now=now),
         "what_changed": _what_changed(episodes_raw, chain=chain,
                                       rev=observed.get("rev"),
                                       cutoff=state_doc.get("asof"), gaps=gaps),
@@ -971,6 +974,207 @@ def _contradiction(legs: list[dict], first_blocking: dict | None) -> dict[str, A
                   "既不代表路径已启动，也不能回溯归因于链条起点。",
         },
     }
+
+
+def _transmission_gap(state_doc: dict, observed: dict,
+                      episodes_raw: bytes | None, legs: list[dict], hops: list[dict],
+                      invalidators: list[dict], contradiction: dict | None, *,
+                      now: datetime) -> dict:
+    """Read native TXI state and its captured episode clocks, without advancing it.
+
+    Calendar elapsed is the owner's evaluate_chain subtraction, NOT sessions or
+    a second expiry evaluator. Native asof has no ingestion/knowledge timestamp;
+    the manifest binds the captured read, not a historical point-in-time claim.
+    """
+    from engine import transmission_chains as txi
+
+    result = {
+        "schema": "txi_gap_projection.v1", "scope": "txi_only",
+        "status": "unavailable", "state": "source_unavailable", "reason": None,
+        "method_class": "native_owner_state_projection", "instrument_only": True,
+        "market_thesis_verdict": None,
+        "identity": {"chain": observed.get("chain"), "rev": observed.get("rev"),
+                     "episode_id": observed.get("episode_id")},
+        "observation": {"asof": state_doc.get("asof"), "built": state_doc.get("built")},
+        "ledger": {"sha256": _digest(episodes_raw) if episodes_raw is not None else None,
+                   "bytes": len(episodes_raw) if episodes_raw is not None else None,
+                   "clock_basis": "native_transition_asof",
+                   "historical_knowledge": "unavailable", "excluded_after_observation": 0},
+        "initiating_observation": None, "pending_hop": None,
+        "current_contradiction": contradiction, "watched_conditions": invalidators,
+        "watch_condition_fired": isinstance(observed.get("falsifier_fired"), dict) and bool(observed["falsifier_fired"]),
+        "condition_stop": None,
+        "turn_watch": {"status": "unavailable", "stalling": None, "receipts": []},
+        "owner_state": observed.get("state"),
+    }
+
+    def unavailable(reason):
+        result["reason"] = reason
+        return result
+
+    def day(value):
+        if not isinstance(value, str) or not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value):
+            raise ValueError("calendar clock")
+        return datetime.strptime(value, "%Y-%m-%d").date()
+
+    try:
+        effective = day(state_doc.get("asof"))
+        built = _parse_build_stamp(state_doc.get("built"))
+        if (built is None or built > now or effective > now.date()
+                or effective > built.astimezone(UTC).date()):
+            raise ValueError("owner generation")
+    except (TypeError, ValueError):
+        return unavailable("owner_clock_unavailable")
+    if (len(hops) + 1 != len(legs) or any(
+            h["from"] != legs[i]["node_id"] or h["to"] != legs[i + 1]["node_id"]
+            for i, h in enumerate(hops))):
+        return unavailable("path_unavailable")
+    if not legs or any(leg["observation"] != "observed" for leg in legs):
+        return unavailable("current_observation_unavailable")
+    if not isinstance(observed.get("rev"), int) or isinstance(observed.get("rev"), bool):
+        return unavailable("owner_identity_unavailable")
+    state = observed.get("state")
+    if state == "dormant" and observed.get("episode_id") is None:
+        result.update(status="available", state="dormant")
+        return result
+    if state not in OWNER_TRANSITIONS or not isinstance(observed.get("episode_id"), str):
+        return unavailable("owner_identity_unavailable")
+    if not episodes_raw:
+        return unavailable("episode_ledger_unavailable")
+
+    def unique(pairs):
+        out = {}
+        for key, value in pairs:
+            if key in out:
+                raise ValueError("duplicate ledger field")
+            out[key] = value
+        return out
+
+    def nonfinite(_value):
+        raise ValueError("nonfinite ledger field")
+
+    rows, by_key = [], {}
+    try:
+        lines = [line for line in episodes_raw.decode("utf-8").splitlines() if line.strip()]
+        if len(lines) > MAX_EPISODE_ROWS:
+            raise ValueError("ledger bound")
+        for line in lines:
+            row = json.loads(line, object_pairs_hook=unique, parse_constant=nonfinite)
+            if not isinstance(row, dict):
+                raise ValueError("ledger shape")
+            if row.get("chain") != observed["chain"] or row.get("rev") != observed["rev"]:
+                continue
+            if day(row.get("asof")) > effective:
+                result["ledger"]["excluded_after_observation"] += 1
+                continue
+            if (type(row.get("rev")) is not int or type(row.get("hop")) is not int
+                    or not 0 <= row["hop"] <= len(hops)
+                    or row.get("transition") not in OWNER_TRANSITIONS
+                    or not isinstance(row.get("episode_id"), str) or not row["episode_id"]):
+                raise ValueError("native identity")
+            key = txi._ledger_key(row)
+            if key in by_key:
+                if by_key[key] != row:
+                    raise ValueError("conflicting native key")
+                continue
+            by_key[key] = row
+            rows.append(row)
+    except (UnicodeError, ValueError, TypeError, KeyError, RecursionError):
+        return unavailable("episode_ledger_unreadable")
+    episode = [row for row in rows if row["episode_id"] == observed["episode_id"]]
+    if not episode:
+        return unavailable("episode_not_in_captured_ledger")
+    if any(a["asof"] > b["asof"] for a, b in zip(episode, episode[1:])):
+        return unavailable("episode_clock_incoherent")
+    last = episode[-1]
+    if last["transition"] != state or last["hop"] != observed.get("hop"):
+        return unavailable("owner_episode_ledger_mismatch")
+    arms = [row for row in episode if row["transition"] == "arming" and row["hop"] == 0]
+    if len(arms) != 1 or episode[0] != arms[0]:
+        return unavailable("arming_observation_unavailable")
+    arm = arms[0]
+    confirmed = 0
+    for row in episode[1:]:
+        if row["transition"] == "propagating" and row["hop"] == confirmed + 1 and row["hop"] < len(hops):
+            confirmed += 1
+        elif row == last and ((row["transition"] in {"failed", "expired"} and row["hop"] == confirmed)
+                or (row["transition"] == "expressed" and row["hop"] == len(hops) == confirmed + 1)):
+            pass
+        else:
+            return unavailable("episode_progression_incoherent")
+    if not isinstance(arm.get("receipts"), dict):
+        return unavailable("arming_observation_unavailable")
+    initial = _receipts(arm["receipts"].get(legs[0]["node_id"]),
+                        where="gap.initiating", gaps=[])
+    if not initial:
+        return unavailable("arming_observation_unavailable")
+    result["initiating_observation"] = {
+        "node_id": legs[0]["node_id"], "asof": arm["asof"], "receipts": initial}
+    # Use the owner's open-episode reconstruction as well as the exact selected
+    # identity. Never substitute its fallback arm date for a missing hop date.
+    if state in _OWNER_RUNNING:
+        opened = txi._latest_open_episode(rows)
+        if opened is None or opened["episode_id"] != observed["episode_id"]:
+            return unavailable("owner_episode_ledger_mismatch")
+    k = observed.get("hop")
+    if type(k) is not int or not 0 <= k <= len(hops):
+        return unavailable("pending_hop_unavailable")
+    if state != "expressed":
+        if k >= len(hops):
+            return unavailable("pending_hop_unavailable")
+        anchor = arm if k == 0 else next((r for r in episode
+            if r["transition"] == "propagating" and r["hop"] == k), None)
+        lag = hops[k]["lag_d"]
+        if (anchor is None or not isinstance(lag, list) or len(lag) != 2
+                or any(type(v) not in (int, float) or not math.isfinite(v) for v in lag)
+                or not 0 <= lag[0] <= lag[1]):
+            return unavailable("pending_clock_unavailable")
+        if k > 0 and (hops[k - 1]["confirmed"] is not True
+                      or hops[k - 1]["confirmed_asof"] != anchor["asof"]):
+            return unavailable("pending_clock_incoherent")
+        elapsed = (effective - day(anchor["asof"])).days
+        target = next((leg for leg in legs if leg["node_id"] == hops[k]["to"]), None)
+        if target is None or not target["receipts"]:
+            return unavailable("target_observation_unavailable")
+        result["pending_hop"] = {
+            "hop_id": hops[k]["hop_id"], "from": hops[k]["from"], "to": hops[k]["to"],
+            "expected_condition": hops[k]["condition"], "lag_d": lag,
+            "elapsed_calendar_days": elapsed, "elapsed_basis": "native_calendar_days",
+            "minimum_lag_elapsed": elapsed >= lag[0],
+            "anchor_asof": anchor["asof"],
+            "target_observation": {"asof": state_doc["asof"], **target}}
+        if state in _OWNER_RUNNING and (elapsed < 0 or elapsed > lag[1]):
+            return unavailable("owner_window_elapsed_unsettled")
+    watch = observed.get("turn_watch")
+    if isinstance(watch, dict) and type(watch.get("stalling")) is bool and "unresolved" not in watch:
+        result["turn_watch"] = {"status": "available", "stalling": watch["stalling"],
+            "receipts": _receipts(watch.get("receipts"), where="gap.turn_watch", gaps=[])}
+    if state == "failed":
+        if not isinstance(last.get("falsifier"), dict) or not last["falsifier"]:
+            return unavailable("stopped_condition_unavailable")
+        stopped = last['falsifier']
+        index = stopped.get('index')
+        if type(index) is not int or not 0 <= index < len(invalidators):
+            return unavailable("stopped_condition_unavailable")
+        result['condition_stop'] = {'condition_id': invalidators[index]['id'],
+            'asof': last['asof'], 'receipts': _receipts(stopped.get('receipts'),
+                                                     where='gap.condition_stop', gaps=[])}
+        code = "condition_stopped"
+    elif state == "expired":
+        code = "owner_expired"
+    elif state == "expressed":
+        code = "owner_completed"
+    elif contradiction is not None:
+        code = "contradicted"
+    elif (result["turn_watch"]["stalling"] is True
+          and result["pending_hop"]["target_observation"]["confirmed"] is False):
+        code = "stalled"
+    elif result["pending_hop"]["target_observation"]["confirmed"] is False:
+        code = "waiting_inside_window"
+    else:
+        return unavailable("owner_transition_unsettled")
+    result.update(status="available", state=code)
+    return result
 
 
 def _is_iso_date(value: Any) -> bool:
