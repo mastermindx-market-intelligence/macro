@@ -587,3 +587,102 @@ not been resubmitted or replaced. No protected approval, arm, merge, or deployme
 has occurred. Candidate design acceptance and authenticated natural-session
 China/HK proof remain unestablished. The recorded unsuccessful 10:12 UTC source
 observation remains unchanged by this CI-only correction.
+
+
+## Continuation — 2026-10-19: completed native CI and current-main composition
+
+This continues the same original live and settled-close mission. The original
+`heatmap-quality-audit-20261018-c1-r1` run remains `EFFECT_UNKNOWN`,
+with worker `UNKNOWN` and lineage `UNVERIFIED`. This section records source
+and CI evidence; it supplies no terminal audit receipt or protected approval.
+
+### Completed native results and their exact subjects
+
+Published live `84508e9061b3b47bde15b8f4910e401bf4db14d3` completed native
+CI [39242959467](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39242959467)
+and fences **39242958860** successfully. Final gate **118052689302** reconciled
+255 logical jobs, 548 passing semantic proofs and zero infrastructure findings.
+Its actual tested merge was `fc6fe9661295fad72614a2fd50870805d2fe7bbe`,
+against base `5913c2303416fa21d4520a27f15323135a37a02a`. The downloaded
+final artifact **12185607343** was verified against the retained native plan:
+every job identity, execution hash, pack index, proof identity and proof
+specification matched. Reference-integrity passed in pack 8; washout and
+China-board-breadth passed in pack 9. The completed native result qualifies
+that recorded subject and tested composition.
+
+Settled `f679236ba3926cd3ce3dd6ffa95d0df0d605a985` also completed
+CI [39236316198](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39236316198)
+and fences **39236315980** successfully. Its verified final evidence contains
+255 logical jobs, 546 passing semantic proofs and zero infrastructure findings.
+The exact native base, tested merge, tested tree and artifact hashes are retained
+in the companion record. These are completed runs, not requests to repeat them.
+
+### New integration and focused qualification
+
+A complete Git path census between the live native base and newer main
+`fc44c814c19228d1d19964a34dcf40ce0593eb87` found 4,727 changed paths,
+including 4,691 generated site paths. The only direct intersection with the
+recorded live and settled owned changes was `.github/ci/legacy-jobs.yml`.
+The live composition had seven actual additive path-list conflict regions.
+The resolution preserves both parents' declarations, including the upstream
+activity-membership schema and the existing heatmap, clock and economic-context
+dependencies. All 327 job inventories, non-path fields, path multiplicities and
+relative ordering were checked against the legitimate parent composition.
+Upstream GMI and thesis-monitor changes remain intact.
+
+The normal live merge is `24954dc7abc4cb270ae5fa5f44a2c43532b37be6`,
+tree `ffd802a525daeafec9ebe605e8b54e3fc402c492`, with parents
+`84508e9061b3b47bde15b8f4910e401bf4db14d3` and
+`fc44c814c19228d1d19964a34dcf40ce0593eb87`. On that exact composed tree,
+the existing canonical one-job washout closure returned no findings, and the
+existing workflow test-path existence check passed. Sixty owned source and
+evidence paths were verified byte-identical to the prior live parent.
+
+The same original rehearsal now records merge
+`f253f00eab4377847c40bd8ff92d8347f0b86387`, tree
+`c5b9d7ed51a837a9a4f026bdca42c94a3d6615f5`, with parents
+`bad3cf56a56b65d5ae5294169e53bf392725d143` and the new live merge.
+Its focused canonical washout closure also returned no findings; 79 owned
+paths were preserved against the recorded prior pair parent. The committed
+tree equals the qualified staged tree. The workspace is clean, with no pending
+merge. Original rehearsal `ef873ccfedd1330d0e883736baa4ac2eab40bcd9`
+and the original integrated-rehearsal evidence remain preserved.
+
+Generated HTML whitespace findings exactly match the inherited upstream
+findings; the resolved manifest introduces none. No validator, exemption,
+closure ceiling or admission rule was changed. The settled source composes
+cleanly with the recorded newer main in the read-only preview and was not
+republished merely to refresh ancestry.
+
+The newer live composition and the forthcoming evidence descendant do not yet
+have their own native result at this record's creation. The completed `84508`
+run is not a qualification of either new subject. Publication and subsequent
+native results must be reconciled against their actual commit identities.
+
+### Continuing admission boundaries
+
+The protected Skillpack pin `1ffe6b566b9addb58d13893bfb78e8505dce1752`
+remains compatible with the read protected INDEX, REVIEW_RETURN and
+RECONCILE_STATE documents. No bootstrap was restarted. Owner delta reads through
+12:33:31 UTC supplied no new Full RIG approval references or original audit
+terminal-effect reconciliation. The recovered Paper adapter reported by the
+Sector owner does not establish an approved R3 design or the three Full RIG
+receipts. Protected review at the current source remains unestablished.
+
+The retained bounded Tencent observation normalized 1,722 rows but qualified
+zero within the canonical close window. Its timestamp interpretation and source
+refusal remain unchanged; no producer or provider query was repeated for this
+integration. A later immutable dataset metadata read returned no result or
+process identity before interruption and establishes no new dataset fact.
+Candidate deployment, design acceptance, authenticated candidate access and
+natural-session China/HK proof remain **NOT_ESTABLISHED**.
+
+All prior audit bytes, evidence, source custody, refusal/effect fences and
+DO_NOT_REDO records are preserved. The denied predecessor recovery-comment
+write has not been retried, repackaged or treated as persisted. The original
+audit has not been duplicated, resubmitted or replaced. No protected approval,
+release arm, main merge or deployment is claimed. Mission complete: **false**.
+
+Exact source identities, local check results, owned-path manifests, native
+artifact digests and continuing gates are in
+[the native success and current-main merge record](evidence/asia-heatmap-quality-20261018/native-success-and-current-main-merge-20261019.json).
