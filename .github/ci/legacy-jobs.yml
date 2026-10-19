@@ -15377,6 +15377,7 @@ jobs:
       - engine/company_intelligence/current_context_runtime.py
       - engine/company_intelligence/current_company_context.py
       - contracts/theme_graph/activity_membership_proposal.v1.schema.json
+      - contracts/theme_graph/activity_membership_history.v1.schema.json
       - engine/oracle/compounds.py
       - engine/oracle/graph.py
       - engine/research_codegen/__init__.py
@@ -15387,6 +15388,7 @@ jobs:
       - engine/research_codegen/evaluation.py
       - engine/research_codegen/input_contract.py
       - engine/research_codegen/output_contract.py
+      - engine/theme_graph/theme_state_owner_readers.py
       - research/signal_engine/confluence.py
       - scripts/oracle_reversion_screen.py
       - scripts/oracle_screen.py
@@ -15542,6 +15544,7 @@ jobs:
       - scripts/publish_company_disclosure.py
       - scripts/publish_company_theme_exposure_r2.py
       - scripts/seed_china_ths_baskets.py
+      - tests/__init__.py
       - tests/test_build_subsector_membership.py
       - tests/test_company_theme_exposure.py
       - tests/test_company_theme_exposure_successor.py
@@ -15549,6 +15552,7 @@ jobs:
       - tests/test_gmi_activity_membership_admission.py
       - tests/test_gmi_history_integrity.py
       - tests/test_publish_company_theme_exposure_r2.py
+      - tests/test_theme_graph_activity_membership_history.py
       - tests/test_theme_graph_selection_cohort.py
       - tests/test_theme_graph_selection_cohort_reads.py
       - tests/test_theme_graph_selection_cohort_reads_pit.py
@@ -16308,6 +16312,7 @@ jobs:
       - tests/test_build_china_library_more_actionable_guard.py
       - tests/test_china_standouts_serialization.py
       - tests/test_theme_graph_selection_cohort_publication.py
+      - tests/test_theme_state_generation_applicability.py
       - tests/test_us_standouts_cascade_gate.py
       - "contracts/theme_graph/theme_state.v2.schema.json"
       - "contracts/theme_graph/theme_state_generation.v1.schema.json"
@@ -16455,11 +16460,11 @@ jobs:
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
-        run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_production.py tests/test_build_thematic_state_shadow_graph_state.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py tests/test_theme_state_generation_use_reader.py -q
+        run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_generation_applicability.py tests/test_theme_state_production.py tests/test_build_thematic_state_shadow_graph_state.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py tests/test_theme_state_generation_use_reader.py -q
       - name: GMI CTE successor and v1 publisher fixture compatibility
         run: TZ=UTC python -m pytest tests/test_company_theme_exposure_successor.py tests/test_company_theme_exposure.py tests/test_publish_company_theme_exposure_r2.py tests/test_company_theme_exposure_production_bridge.py tests/test_company_theme_exposure_staleness_matrix.py -k 'not live_theme_inputs' -q
       - name: L3 leadership receipt (theme_state freshness + descriptive rows)
@@ -17322,7 +17327,19 @@ jobs:
       # here in the SAME commit (a new test file without a path gate is an unwired suite).
       - "engine/global_liquidity_regional_scenarios.py"
       - "engine/global_liquidity_transmission.py"
+      # GLT T09 (W3, 2026-10-19): the measurement-only preregistered component
+      # forecast study imports the T08 outlook + knowledge-time modules above; its
+      # runner imports canon + the trial ledger (scratch ledger only) and the
+      # frozen config, and its suite imports the runner through the scripts
+      # package — the full import closure is wired here in the SAME commit.
+      - "config/global_liquidity_forecast_v1.yml"
+      - "engine/canon.py"
+      - "engine/global_liquidity_forecast.py"
+      - "engine/trial_ledger.py"
+      - "scripts/__init__.py"
+      - "scripts/research_global_liquidity_forecast.py"
       - "tests/test_global_liquidity_accounting.py"
+      - "tests/test_global_liquidity_forecast.py"
       - "tests/test_global_liquidity_knowledge_time.py"
       - "tests/test_global_liquidity_outlook.py"
       - "tests/test_global_liquidity_regional_scenarios.py"
@@ -17336,8 +17353,8 @@ jobs:
           python-version: "3.12"
       - name: install GLT contract test dependencies
         run: pip install pytest pandas numpy pyyaml
-      - name: global liquidity T03–T05 + T08 + T10 contracts — source manifest, knowledge time, monetary accounting, component outlook, regional scenario map
-        run: python -m pytest tests/test_global_liquidity_accounting.py tests/test_global_liquidity_knowledge_time.py tests/test_global_liquidity_sources_v2.py tests/test_global_liquidity_outlook.py tests/test_global_liquidity_regional_scenarios.py -q
+      - name: global liquidity T03–T05 + T08 + T09 + T10 contracts — source manifest, knowledge time, monetary accounting, component outlook, component forecast study, regional scenario map
+        run: python -m pytest tests/test_global_liquidity_accounting.py tests/test_global_liquidity_knowledge_time.py tests/test_global_liquidity_sources_v2.py tests/test_global_liquidity_outlook.py tests/test_global_liquidity_regional_scenarios.py tests/test_global_liquidity_forecast.py -q
 
   ric-d0-fed-path-provenance:
     if: ${{ false }}
@@ -26624,6 +26641,9 @@ jobs:
     scope: exclusive
     paths:
       - "tests/test_foresight_cascade.py"
+      - "tests/test_foresight_health.py"
+      - "tests/test_foresight_score.py"
+      - "tests/test_foresight_sizing.py"
       - "engine/power_scarcity.py"
       - "tests/test_power_scarcity.py"
       - "tests/test_fda_shortages_generation.py"
@@ -26695,6 +26715,8 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests
       - name: FDA foresight cascade and qualified observation suites
         run: python -m pytest tests/test_foresight_cascade.py tests/test_fda_shortages_generation.py tests/test_power_scarcity.py -q
+      - name: Foresight health, score and sizing suites
+        run: python -m pytest tests/test_foresight_health.py tests/test_foresight_score.py tests/test_foresight_sizing.py -q
       - name: FDA supply acceptance probes
         run: python -m pytest tests/test_fda_supply_probes.py tests/test_fda_supply_probes_t02r.py tests/test_fda_supply_probes_t02r2.py tests/test_fda_supply_probes_t01r.py tests/test_fda_supply_probes_t02r3.py tests/test_fda_supply_probes_final.py tests/test_fda_supply_probes_mixed.py -q
       - name: FDA sweep completeness regression probes (duplicate dedupe keys)
