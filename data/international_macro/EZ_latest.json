@@ -7,21 +7,21 @@
   "flag": "🇪🇺",
   "scope_en": "Euro area aggregate (current EA21 composition), not the European Union. STOXX Europe 600 is broader market context only.",
   "scope_zh": "欧元区当前21国总量（EA21），并非欧盟整体。STOXX Europe 600仅作更广泛市场背景。",
-  "asof": "2026-10-08",
-  "built": "2026-10-14 19:06 UTC",
+  "asof": "2026-10-14",
+  "built": "2026-10-18 06:47 UTC",
   "regime": {
     "quad": "Q3",
     "name": "Stagflation",
-    "growth_score": -0.143,
+    "growth_score": 0.143,
     "inflation_score": 0.333,
-    "confidence": 0.119,
+    "confidence": 0.155,
     "liquidity": "contracting",
-    "recession_score": 11.0,
+    "recession_score": 7.0,
     "recession_band": "low",
     "data_limited": false
   },
   "decision": {
-    "score": 33,
+    "score": 44,
     "state": "defensive",
     "state_en": "Defensive",
     "state_zh": "防御",
@@ -39,21 +39,17 @@
     ],
     "parts": {
       "base": 50.0,
-      "growth": -3.15,
+      "growth": 3.15,
       "inflation": -3.33,
-      "recession": -1.98,
+      "recession": -1.26,
       "liquidity": -5.0,
-      "risk_state": -4.0
+      "risk_state": 0.0
     },
     "method_en": "50 + growth impulse − inflation pressure − recession stress + liquidity + current calibrated-risk state. Descriptive, not a forecast.",
     "method_zh": "50 + 增长脉冲 − 通胀压力 − 衰退压力 + 流动性 + 当前校准风险状态。仅作描述，不是预测。"
   },
   "history": {
     "values": [
-      43,
-      47,
-      47,
-      53,
       46,
       47,
       47,
@@ -109,13 +105,13 @@
       34,
       34,
       37,
-      37
+      37,
+      37,
+      43,
+      43,
+      44
     ],
     "dates": [
-      "2026-07-17",
-      "2026-07-20",
-      "2026-07-21",
-      "2026-07-22",
       "2026-07-23",
       "2026-07-24",
       "2026-07-27",
@@ -171,27 +167,31 @@
       "2026-10-05",
       "2026-10-06",
       "2026-10-07",
-      "2026-10-08"
+      "2026-10-08",
+      "2026-10-09",
+      "2026-10-12",
+      "2026-10-13",
+      "2026-10-14"
     ],
-    "points": "0.00,57.00 1.69,53.00 3.39,53.00 5.08,47.00 6.78,54.00 8.47,53.00 10.17,53.00 11.86,55.00 13.56,52.00 15.25,52.00 16.95,52.00 18.64,62.00 20.34,56.00 22.03,52.00 23.73,52.00 25.42,59.00 27.12,59.00 28.81,59.00 30.51,59.00 32.20,59.00 33.90,59.00 35.59,59.00 37.29,59.00 38.98,65.00 40.68,59.00 42.37,59.00 44.07,59.00 45.76,59.00 47.46,59.00 49.15,65.00 50.85,65.00 52.54,69.00 54.24,75.00 55.93,75.00 57.63,75.00 59.32,72.00 61.02,72.00 62.71,72.00 64.41,69.00 66.10,73.00 67.80,72.00 69.49,68.00 71.19,68.00 72.88,73.00 74.58,69.00 76.27,70.00 77.97,69.00 79.66,69.00 81.36,69.00 83.05,69.00 84.75,69.00 86.44,69.00 88.14,66.00 89.83,66.00 91.53,67.00 93.22,66.00 94.92,66.00 96.61,66.00 98.31,63.00 100.00,63.00",
+    "points": "0.00,54.00 1.69,53.00 3.39,53.00 5.08,55.00 6.78,52.00 8.47,52.00 10.17,52.00 11.86,62.00 13.56,56.00 15.25,52.00 16.95,52.00 18.64,59.00 20.34,59.00 22.03,59.00 23.73,59.00 25.42,59.00 27.12,59.00 28.81,59.00 30.51,59.00 32.20,65.00 33.90,59.00 35.59,59.00 37.29,59.00 38.98,59.00 40.68,59.00 42.37,65.00 44.07,65.00 45.76,69.00 47.46,75.00 49.15,75.00 50.85,75.00 52.54,72.00 54.24,72.00 55.93,72.00 57.63,69.00 59.32,73.00 61.02,72.00 62.71,68.00 64.41,68.00 66.10,73.00 67.80,69.00 69.49,70.00 71.19,69.00 72.88,69.00 74.58,69.00 76.27,69.00 77.97,69.00 79.66,69.00 81.36,66.00 83.05,66.00 84.75,67.00 86.44,66.00 88.14,66.00 89.83,66.00 91.53,63.00 93.22,63.00 94.92,63.00 96.61,57.00 98.31,57.00 100.00,56.00",
     "min": 25,
-    "max": 53,
-    "start": "2026-07-17",
-    "end": "2026-10-08"
+    "max": 48,
+    "start": "2026-07-23",
+    "end": "2026-10-14"
   },
   "market": {
     "index_label": "Euro STOXX / Europe context",
     "currency_label": "EUR/USD",
     "equity": {
-      "price": 625.51,
-      "off_52w_high": -5.3,
+      "price": 637.75,
+      "off_52w_high": -3.4,
       "above_50d": false,
       "above_200d": true,
-      "realvol": 10.7,
-      "rsi": 36.0,
-      "ext_z": -2.38,
+      "realvol": 11.1,
+      "rsi": 51.0,
+      "ext_z": -1.58,
       "ext_grade": "intrend",
-      "drawdown_risk": 11.0,
+      "drawdown_risk": 7.0,
       "drawdown_band": "low",
       "bubble_flag": false
     }
@@ -203,29 +203,25 @@
     "curve": 1.19
   },
   "risk": {
-    "state": "caution",
-    "top_score": 77,
+    "state": "watch",
+    "top_score": 63,
     "dominant_en": "Euro depreciation / outflows",
     "dominant_zh": "欧元贬值／资金外流",
-    "h21": 0.15,
+    "h21": 0.013,
     "measure": ">=5% index pullback within h business days (measured on this market's own history)",
     "trajectory": {
-      "intensity": 77.2,
+      "intensity": 63.3,
       "peak": 96.6,
-      "peak_days_ago": 9,
-      "off_peak": 19.4,
-      "velocity": 1.2,
-      "phase": "flat",
+      "peak_days_ago": 13,
+      "off_peak": 33.3,
+      "velocity": -19.6,
+      "phase": "receding",
       "reached_risk": true,
-      "state_now": "caution",
-      "odds_now": 0.15,
-      "odds_peak": 0.15,
+      "state_now": "watch",
+      "odds_now": 0.013,
+      "odds_peak": 0.013,
       "odds_delta": 0.0,
       "spark": [
-        50.6,
-        41.1,
-        39.7,
-        51.8,
         62.7,
         59.5,
         66.1,
@@ -245,16 +241,20 @@
         90.9,
         91.9,
         82.9,
-        77.2
+        75.2,
+        72.6,
+        71.0,
+        68.1,
+        63.3
       ],
-      "spark_pts": "3.0,19.2 6.9,22.5 10.8,23.0 14.7,18.7 18.7,14.9 22.6,16.0 26.5,13.7 30.4,11.4 34.3,6.8 38.2,5.6 42.1,4.8 46.0,4.4 50.0,3.8 53.9,3.1 57.8,3.0 61.7,3.3 65.6,5.1 69.5,5.6 73.4,10.2 77.3,5.8 81.3,5.0 85.2,4.7 89.1,7.8 93.0,9.8",
+      "spark_pts": "3.0,21.3 6.9,23.0 10.8,19.4 14.7,15.8 18.7,8.9 22.6,6.9 26.5,5.7 30.4,5.2 34.3,4.2 38.2,3.2 42.1,3.0 46.0,3.4 50.0,6.2 53.9,6.9 57.8,14.1 61.7,7.3 65.6,6.1 69.5,5.5 73.4,10.4 77.3,14.5 81.3,15.9 85.2,16.8 89.1,18.4 93.0,21.0",
       "spark_peak": {
-        "x": 57.8,
+        "x": 42.1,
         "y": 3.0
       },
       "spark_last": {
         "x": 93.0,
-        "y": 9.8
+        "y": 21.0
       },
       "spark_w": 96,
       "spark_h": 26,
@@ -266,12 +266,12 @@
         "tier": "A",
         "label_en": "Euro depreciation / outflows",
         "label_zh": "欧元贬值／资金外流",
-        "score": 99.6,
+        "score": 95.0,
         "band": "risk-off",
         "firing_legs": [
           {
             "leg": "eur_depreciation",
-            "pctile": 0.996,
+            "pctile": 0.95,
             "confirmed": true
           }
         ]
@@ -281,23 +281,23 @@
         "tier": "A",
         "label_en": "US rate shock",
         "label_zh": "美债利率冲击",
-        "score": 94.4,
-        "band": "risk-off",
+        "score": 79.6,
+        "band": "elevated",
         "firing_legs": [
           {
             "leg": "us_real_rate",
-            "pctile": 0.982,
+            "pctile": 0.893,
             "confirmed": true
           },
           {
             "leg": "us_rate_10y",
-            "pctile": 0.95,
-            "confirmed": true
+            "pctile": 0.801,
+            "confirmed": false
           },
           {
             "leg": "us_rate_2y",
-            "pctile": 0.899,
-            "confirmed": true
+            "pctile": 0.693,
+            "confirmed": false
           }
         ]
       },
@@ -306,7 +306,7 @@
         "tier": "A",
         "label_en": "Parabolic extension / exhaustion",
         "label_zh": "抛物线伸展／透支",
-        "score": 25.5,
+        "score": 31.5,
         "band": "calm",
         "firing_legs": []
       }
@@ -372,7 +372,7 @@
       "key": "fx",
       "label_en": "FX reference",
       "label_zh": "汇率参考",
-      "raw": 1.1201,
+      "raw": 1.1204,
       "value": "1.12",
       "unit": "",
       "asof": null
@@ -381,8 +381,8 @@
       "key": "fx_strength_3m",
       "label_en": "Currency strength, 3m",
       "label_zh": "货币强弱，3个月",
-      "raw": -2.8,
-      "value": "-2.80%",
+      "raw": -2.84,
+      "value": "-2.84%",
       "unit": "%",
       "asof": null
     },
@@ -390,8 +390,8 @@
       "key": "drawdown",
       "label_en": "Index from 52w high",
       "label_zh": "指数距52周高点",
-      "raw": -5.3,
-      "value": "-5.30%",
+      "raw": -3.4,
+      "value": "-3.40%",
       "unit": "%",
       "asof": null
     },
@@ -399,8 +399,8 @@
       "key": "realvol",
       "label_en": "Realized volatility",
       "label_zh": "实现波动率",
-      "raw": 10.7,
-      "value": "10.70%",
+      "raw": 11.1,
+      "value": "11.10%",
       "unit": "%",
       "asof": null
     }
@@ -531,7 +531,7 @@
     {
       "metric": "cpi_yoy",
       "asof": "2026-08",
-      "age_days": 74,
+      "age_days": 78,
       "state": "fresh",
       "label_en": "Inflation",
       "label_zh": "通胀"
@@ -539,7 +539,7 @@
     {
       "metric": "gdp",
       "asof": "2026-04",
-      "age_days": 196,
+      "age_days": 200,
       "state": "stale",
       "label_en": "Growth",
       "label_zh": "增长"
@@ -547,7 +547,7 @@
     {
       "metric": "unemployment",
       "asof": "2026-08",
-      "age_days": 74,
+      "age_days": 78,
       "state": "fresh",
       "label_en": "Labour",
       "label_zh": "就业"
@@ -555,7 +555,7 @@
     {
       "metric": "yield_10y",
       "asof": "2026-01",
-      "age_days": 286,
+      "age_days": 290,
       "state": "stale",
       "label_en": "Rates",
       "label_zh": "利率"
@@ -613,10 +613,10 @@
         "publisher": "European Commission",
         "source_key": "ec_presscorner",
         "jurisdiction": "EU",
-        "title": "Commissioners Kubilius and Lahbib strengthen global disaster risk management through space technologies",
-        "url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_26_2164",
-        "published": "2026-10-14T13:14:21+00:00",
-        "known_at": "2026-10-14T15:08:54.328814+00:00",
+        "title": "Daily News 16 / 10 / 2026",
+        "url": "https://ec.europa.eu/commission/presscorner/detail/en/mex_26_2189",
+        "published": "2026-10-16T09:38:24+00:00",
+        "known_at": "2026-10-16T11:31:20.434759+00:00",
         "rights_basis": "CC BY 4.0 (Commission Decision 2011/833/EU) — https://commission.europa.eu/legal-notice_en — 'reuse is allowed, provided appropriate credit is given'",
         "rights_state": "VERIFIED_PUBLIC_REUSE"
       },
@@ -624,10 +624,10 @@
         "publisher": "European Commission",
         "source_key": "ec_presscorner",
         "jurisdiction": "EU",
-        "title": "Speech by Executive Vice-President Fitto at High Level Session   “A Cohesion Policy for a Competitive Union”",
-        "url": "https://ec.europa.eu/commission/presscorner/detail/en/speech_26_2163",
-        "published": "2026-10-14T12:19:03+00:00",
-        "known_at": "2026-10-14T15:08:54.328814+00:00",
+        "title": "Statement by Executive Vice-President Mînzatu ahead of the International Day for the Eradication of Poverty",
+        "url": "https://ec.europa.eu/commission/presscorner/detail/en/statement_26_2188",
+        "published": "2026-10-16T08:53:34+00:00",
+        "known_at": "2026-10-16T11:31:20.434759+00:00",
         "rights_basis": "CC BY 4.0 (Commission Decision 2011/833/EU) — https://commission.europa.eu/legal-notice_en — 'reuse is allowed, provided appropriate credit is given'",
         "rights_state": "VERIFIED_PUBLIC_REUSE"
       },
@@ -635,10 +635,10 @@
         "publisher": "European Commission",
         "source_key": "ec_presscorner",
         "jurisdiction": "EU",
-        "title": "Opening Remarks by Commissioner Hansen at the Farmers' Congress in Sweden",
-        "url": "https://ec.europa.eu/commission/presscorner/detail/en/speech_26_2162",
-        "published": "2026-10-14T09:37:47+00:00",
-        "known_at": "2026-10-14T15:08:54.328814+00:00",
+        "title": "Commission awards 2026 New European Bauhaus prizes for sustainable, inclusive and beautiful projects",
+        "url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_26_2186",
+        "published": "2026-10-16T08:50:22+00:00",
+        "known_at": "2026-10-16T11:31:20.434759+00:00",
         "rights_basis": "CC BY 4.0 (Commission Decision 2011/833/EU) — https://commission.europa.eu/legal-notice_en — 'reuse is allowed, provided appropriate credit is given'",
         "rights_state": "VERIFIED_PUBLIC_REUSE"
       },
@@ -646,10 +646,10 @@
         "publisher": "European Commission",
         "source_key": "ec_presscorner",
         "jurisdiction": "EU",
-        "title": "Opening remarks by Executive Vice-President Teresa Ribera on the Commission decision to accept commitments by Sanofi",
-        "url": "https://ec.europa.eu/commission/presscorner/detail/en/speech_26_2161",
-        "published": "2026-10-14T09:15:23+00:00",
-        "known_at": "2026-10-14T15:08:54.328814+00:00",
+        "title": "Statement by President von der Leyen with Presidents Zelenskyy and Costa ahead of the European Council meeting of 16 October",
+        "url": "https://ec.europa.eu/commission/presscorner/detail/en/statement_26_2181",
+        "published": "2026-10-16T06:59:56+00:00",
+        "known_at": "2026-10-16T11:31:20.434759+00:00",
         "rights_basis": "CC BY 4.0 (Commission Decision 2011/833/EU) — https://commission.europa.eu/legal-notice_en — 'reuse is allowed, provided appropriate credit is given'",
         "rights_state": "VERIFIED_PUBLIC_REUSE"
       },
@@ -657,10 +657,10 @@
         "publisher": "European Commission",
         "source_key": "ec_presscorner",
         "jurisdiction": "EU",
-        "title": "Eurobarometer survey highlights growing use of AI in European companies",
-        "url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_26_2160",
-        "published": "2026-10-14T08:42:46+00:00",
-        "known_at": "2026-10-14T15:08:54.328814+00:00",
+        "title": "Keynote speech by Commissioner Kubilius at the Anniversary of Magna Charta Universitatum",
+        "url": "https://ec.europa.eu/commission/presscorner/detail/en/speech_26_2179",
+        "published": "2026-10-16T05:09:03+00:00",
+        "known_at": "2026-10-16T11:31:20.434759+00:00",
         "rights_basis": "CC BY 4.0 (Commission Decision 2011/833/EU) — https://commission.europa.eu/legal-notice_en — 'reuse is allowed, provided appropriate credit is given'",
         "rights_state": "VERIFIED_PUBLIC_REUSE"
       }

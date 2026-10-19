@@ -1,5 +1,6 @@
 """Pinned publisher member-order regression; fictional bytes, no host effects."""
 import io
+from pathlib import Path
 import tarfile
 
 import pytest
@@ -76,3 +77,30 @@ def test_unexpected_directory_stays_refused_after_regular_files(scan, name):
     with pytest.raises(mod.InstallError) as exc:
         scan(entries)
     assert exc.value.category in ("ARCHIVE_MEMBER_UNEXPECTED", "ARCHIVE_MEMBER_UNSAFE")
+
+
+def test_directory_spelling_as_regular_file_stays_refused(scan):
+    # DIRTYPE names normalize on tarfile read; REGTYPE keeps this spelling.
+    with pytest.raises(mod.InstallError) as exc:
+        scan(regulars() + [("gvisor-bin/", b"not a directory")])
+    assert exc.value.category == "ARCHIVE_MEMBER_UNEXPECTED"
+
+
+def test_order_tolerance_stages_only_the_six_bound_members():
+    fx = fixtures.Fixture()
+    try:
+        engine = fx.engine()
+        engine.binding = mod.Binding(dict(fx.binding_dict), fixtures.TEST_CONTRACT)
+        entries = regulars()
+        entries.insert(2, ("gvisor-bin/", None))
+        fx.overwrite(fx.archive_path, archive(entries), 0o644)
+        stage = Path(fx.version_dir() + ".review-stage")
+        (stage / mod.GVISOR_BIN_DIR).mkdir(parents=True)
+        engine._scan_archive(staging_dir=str(stage))
+        files = {str(p.relative_to(stage)) for p in stage.rglob("*") if p.is_file()}
+        assert files == set(fixtures.TEST_MEMBER_SIZES)
+        assert not (stage / mod.OPTIONAL_SHIM_MEMBER).exists()
+        assert not fx.runner.calls
+        assert fx.config_now() == fixtures.CONFIG_BYTES
+    finally:
+        fx.close()

@@ -61,7 +61,8 @@ def _hashed_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def _unique_raw_context(base: Path, source: str, day: str, digest: str, *, receipt_id: str | None = None) -> dict[str, Any]:
+def _unique_raw_context(base: Path, source: str, day: str, digest: str, *, receipt_id: str | None = None,
+                        receipt_path: Path | None = None) -> dict[str, Any]:
     """Quarantine v1 content-key collisions; do not repair or rewrite source data.
 
     The current producer uses content-only output names. Until that producer is
@@ -71,10 +72,20 @@ def _unique_raw_context(base: Path, source: str, day: str, digest: str, *, recei
     parent = base / "receipts" / source / day
     contexts: dict[tuple[Any, ...], dict[str, Any]] = {}
     matching = 0
-    files = list(parent.glob(f"*{digest[:24]}*.json"))
-    if not files:
-        # Exact receipt IDs can also select a retained legacy content path.
-        files = parent.glob("*.json")
+    if receipt_path is not None:
+        # A hint is valid only for an exact content-addressed receipt selection.
+        # It cannot narrow a raw-digest query and hide conflicting contexts.
+        if receipt_id is None or not SHA.fullmatch(receipt_id):
+            raise TiingoViewRefusal("receipt path requires exact receipt identity")
+        if (receipt_path.is_symlink() or receipt_path.parent.resolve() != parent.resolve()
+                or not receipt_path.is_file()):
+            raise TiingoViewRefusal("receipt hint is outside the selected source day")
+        files = [receipt_path]
+    else:
+        files = list(parent.glob(f"*{digest[:24]}*.json"))
+        if not files:
+            # Exact receipt IDs can also select a retained legacy content path.
+            files = parent.glob("*.json")
     for file in files:
         if not file.resolve().is_relative_to(base.resolve()) or file.stat().st_size > 1_000_000:
             raise TiingoViewRefusal("source receipt escapes bounded archive evidence")
@@ -114,7 +125,8 @@ def read_research_view(source: str, day: str, sha256: str, *,
                        purpose: str = "INSPECTION",
                        acknowledge_hindsight: bool = False,
                        max_rows: int = 20_000,
-                       check_mount: bool = True) -> TiingoView:
+                       check_mount: bool = True,
+                       receipt_path: Path | None = None) -> TiingoView:
     if source not in SOURCES and source != "boats-firehose":
         raise TiingoViewRefusal("unsupported vendor source ID")
     try:
@@ -140,7 +152,11 @@ def read_research_view(source: str, day: str, sha256: str, *,
             lookup_digest, selected_receipt = direct.get("source_sha256"), sha256
             if not isinstance(lookup_digest, str) or not SHA.fullmatch(lookup_digest):
                 raise TiingoViewRefusal("source view content/manifest integrity mismatch")
-    context = _unique_raw_context(base, source, day, lookup_digest, receipt_id=selected_receipt)
+    if receipt_path is not None:
+        # With a hint, the public selector is always the exact receipt ID.
+        selected_receipt = sha256
+    context = _unique_raw_context(base, source, day, lookup_digest,
+                                  receipt_id=selected_receipt, receipt_path=receipt_path)
     identity = receipt_identity(context)
     raw_digest = context["raw_sha256"]
     artifact_id = sha256
@@ -665,3 +681,98 @@ def read_research_statement_timeline(
         source_partitions=tuple(ref for _, ref in sorted(capture_refs)),
         identical_report_overlaps=identical_overlaps,
     )
+
+
+def read_research_statement_comparison(
+    vendor_symbol: str,
+    as_reported_ref: tuple[str, str],
+    restated_ref: tuple[str, str],
+    start_release_date: str,
+    end_release_date: str,
+    observed_before_utc: str,
+    *,
+    root: Path = DEFAULT_ARCHIVE,
+    acknowledge_hindsight: bool = False,
+    max_rows: int = 100_000,
+    check_mount: bool = True,
+) -> dict[str, Any]:
+    """Compare two exact statement captures without selecting a revision winner.
+
+    Fiscal period/section/metric alignment is a research comparison of vendor
+    values, not canonical identity, common publication time or a proven
+    restatement event. Multiple release claims stay unpaired, and both original
+    rows retain their source receipts, capture clocks and vendor release labels.
+    Neither missing metrics nor release-label changes imply when a change occurred.
+    """
+    sides = {}
+    for name, ref, dimension in (
+        ("as_reported", as_reported_ref, True),
+        ("restated", restated_ref, False),
+    ):
+        sides[name] = read_research_statement_timeline(
+            vendor_symbol, [ref], start_release_date, end_release_date,
+            observed_before_utc, as_reported=dimension, root=root,
+            acknowledge_hindsight=acknowledge_hindsight, max_partitions=1,
+            max_rows=max_rows, check_mount=check_mount,
+        )
+    indexed: dict[str, dict[tuple[int, int, str, str], list[dict[str, Any]]]] = {}
+    for name, timeline in sides.items():
+        groups: dict[tuple[int, int, str, str], list[dict[str, Any]]] = {}
+        for row in timeline.rows:
+            key = (row["fiscal_year"], row["fiscal_quarter"],
+                   row["statement_type"], row["metric_code"])
+            groups.setdefault(key, []).append(row)
+        indexed[name] = groups
+    keys = sorted(indexed["as_reported"].keys() | indexed["restated"].keys())
+    if len(keys) > max_rows:
+        raise TiingoViewRefusal("statement comparison row cap exceeded")
+    counts = {status: 0 for status in (
+        "SAME_VENDOR_VALUE", "DIFFERENT_VENDOR_VALUE",
+        "ONLY_IN_AS_REPORTED_CAPTURE", "ONLY_IN_RESTATED_CAPTURE",
+        "AMBIGUOUS_RELEASES", "VENDOR_IDENTITY_CONFLICT",
+    )}
+    rows = []
+    for year, quarter, family, code in keys:
+        key = (year, quarter, family, code)
+        left = indexed["as_reported"].get(key, [])
+        right = indexed["restated"].get(key, [])
+        if len(left) > 1 or len(right) > 1:
+            status = "AMBIGUOUS_RELEASES"
+        elif not left:
+            status = "ONLY_IN_RESTATED_CAPTURE"
+        elif not right:
+            status = "ONLY_IN_AS_REPORTED_CAPTURE"
+        elif (left[0].get("permaticker_vendor") is not None
+              and right[0].get("permaticker_vendor") is not None
+              and left[0]["permaticker_vendor"] != right[0]["permaticker_vendor"]):
+            status = "VENDOR_IDENTITY_CONFLICT"
+        else:
+            status = ("SAME_VENDOR_VALUE" if left[0]["metric_value"] == right[0]["metric_value"]
+                      else "DIFFERENT_VENDOR_VALUE")
+        counts[status] += 1
+        rows.append({
+            "fiscal_year": year, "fiscal_quarter": quarter,
+            "statement_type": family, "metric_code": code,
+            "comparison_status": status,
+            "as_reported_rows": left, "restated_rows": right,
+        })
+    return {
+        "source": "fund-statements", "vendor_symbol": vendor_symbol,
+        "comparison_basis": "VENDOR_FISCAL_PERIOD_SECTION_METRIC_VALUES",
+        "as_reported": sides["as_reported"].metadata(),
+        "restated": sides["restated"].metadata(),
+        "capture_references": {
+            name: [list(ref) for ref in timeline.source_partitions]
+            for name, timeline in sides.items()
+        },
+        "comparison_counts": counts,
+        "comparison_rows": rows,
+        "release_labels_preserved": True,
+        "revision_event_or_materiality_proven": False,
+        "historical_known_at_proven": False,
+        "historical_identity_admitted": False,
+        "pit_backtest_eligible": False,
+        "redistribution_admitted": False,
+        "report_history_completeness_proven": False,
+        "availability_clock": "SOURCE_CAPTURE_ONLY_NO_PIT",
+    }
