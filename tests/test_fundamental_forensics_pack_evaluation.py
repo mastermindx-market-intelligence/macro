@@ -981,11 +981,13 @@ def _pack_result_envelope(fields: list[dict]) -> dict:
 
 
 def test_predictions_from_pack_result_adapts_rows() -> None:
+    # Field ids come from the PK01 catalogue: the envelope validator refuses
+    # a field the pack does not declare.
     accession = "0000000000-26-000002"
     envelope = _pack_result_envelope(
         [
             _field_row(
-                field_id="f_val",
+                field_id="total_debt",
                 quality_state="valued",
                 value="125.50",
                 text_value=None,
@@ -996,7 +998,7 @@ def test_predictions_from_pack_result_adapts_rows() -> None:
                 reason=None,
             ),
             _field_row(
-                field_id="f_text",
+                field_id="covenant_term_observation",
                 type="text",
                 unit=None,
                 quality_state="valued",
@@ -1014,15 +1016,15 @@ def test_predictions_from_pack_result_adapts_rows() -> None:
                 coverage_state="source_trace_complete",
                 reason=None,
             ),
-            _field_row(field_id="f_missing", quality_state="missing",
+            _field_row(field_id="short_term_debt", quality_state="missing",
                        non_value_state="missing"),
-            _field_row(field_id="f_noteval",
+            _field_row(field_id="long_term_debt",
                        quality_state="not_evaluable",
                        non_value_state="not_evaluable"),
-            _field_row(field_id="f_unsup",
+            _field_row(field_id="debt_fair_value",
                        quality_state="unsupported",
                        non_value_state="unsupported"),
-            _field_row(field_id="f_unmapped", quality_state="missing",
+            _field_row(field_id="current_assets", quality_state="missing",
                        non_value_state="missing"),
         ]
     )
@@ -1030,14 +1032,14 @@ def test_predictions_from_pack_result_adapts_rows() -> None:
         envelope,
         accession=accession,
         trial_ids={
-            "f_val": "t-val",
-            "f_text": "t-text",
-            "f_missing": "t-missing",
-            "f_noteval": "t-noteval",
-            "f_unsup": "t-unsup",
+            "total_debt": "t-val",
+            "covenant_term_observation": "t-text",
+            "short_term_debt": "t-missing",
+            "long_term_debt": "t-noteval",
+            "debt_fair_value": "t-unsup",
         },
     )
-    assert unmapped == ("f_unmapped",)
+    assert unmapped == ("current_assets",)
     by_trial = {record.trial_id: record for record in records}
     assert set(by_trial) == {"t-val", "t-text", "t-missing", "t-noteval", "t-unsup"}
     assert by_trial["t-val"].state == "emitted"
@@ -1059,7 +1061,7 @@ def test_predictions_from_pack_result_adapts_rows() -> None:
     assert by_trial["t-unsup"].exclusion_reason == "unsupported"
     assert all(record.target_kind == "extract" for record in records)
     broken = _pack_result_envelope(
-        [_field_row(field_id="f_val", quality_state="valued", value="9.9",
+        [_field_row(field_id="total_debt", quality_state="valued", value="9.9",
                     text_value=None, non_value_state=None,
                     source_occurrence_ids=["occ-1"], concept="us-gaap:Assets",
                     coverage_state="source_trace_complete", reason=None)]
@@ -1067,7 +1069,7 @@ def test_predictions_from_pack_result_adapts_rows() -> None:
     broken["fields"][0]["value"] = "1.1"  # digest no longer matches
     with pytest.raises(PackEvaluationError):
         predictions_from_pack_result(
-            broken, accession=accession, trial_ids={"f_val": "t-val"}
+            broken, accession=accession, trial_ids={"total_debt": "t-val"}
         )
 
 
