@@ -155,6 +155,82 @@ def _build_real_evidence_packet(
     if any(owner[name] != getattr(generation, name) for name in
            ("store_id", "generation_id", "generation_sha256")):
         raise RealEvidenceError("exact_selection_generation_mismatch")
+    if len(selected["selected"]) > retrieval.MAX_K:
+        raise RealEvidenceError("selected_context_bound_exceeded")
+    refs = [("query", selected["query"], owner)] + [
+        ("selected_neighbor", item["candidate"], item["candidate_owner"])
+        for item in selected["selected"]]
+    context_ids = {ref[1]["context_id"] for ref in refs}
+    if len(context_ids) != len(refs):
+        raise RealEvidenceError("duplicate_selected_context")
+    if any(not set(c.context_ids) <= context_ids for c in claims):
+        raise RealEvidenceError("claim_cites_unselected_context")
+    cards, resources = _read_source_cards(
+        reader, generation, owner=owner, refs=refs, policy=policy,
+        retrieval_id=selected["retrieval_id"],
+    )
+    query_facts = {f["field"]: f["value"] for f in cards[0]["facts"]}
+    differences = [{"context_id": card["context_id"], "field": fact["field"],
+                    "query_value": query_facts[fact["field"]], "neighbor_value": fact["value"],
+                    "meaning": "different_dated_outputs_not_a_logical_contradiction"}
+                   for card in cards[1:] for fact in card["facts"]
+                   if fact["value"] != query_facts[fact["field"]]]
+    citations = {(card["context_id"], fact["field"]): fact["citation"]
+                 for card in cards for fact in card["facts"]}
+    audit = [{"claim_id": c.claim_id, "text": c.text, "context_ids": list(c.context_ids),
+              "fields": list(c.fields), "structural_source_closure": True,
+              "citation_refs": [{"context_id": context_id, **citations[(context_id, field)]}
+                                for context_id in c.context_ids for field in c.fields],
+              "entailment": "not_assessed", "unsupported_status": "unassessed_not_supported",
+              "contradictory_evidence_review": "not_performed",
+              "falsifier": c.falsifier, "falsifier_status": "named_not_tested" if c.falsifier else "missing"}
+             for c in claims]
+    value = {"schema": SCHEMA, "input_profile": PROFILE, "mode": selected["method_spec"]["mode"],
+             "owner": owner, "retrieval_id": selected["retrieval_id"],
+             "selection_sha256": selected["selection_sha256"],
+             "method_spec_id": selected["method_spec"]["method_spec_id"],
+             "denominator": selected["denominator"], "accounting": selected["accounting"],
+             "status": selected["status"], "source_cards": cards,
+             "state_differences": differences, "analyst_claim_audit": audit,
+             "missing_evidence": ["component_source_vintages_not_authenticated",
+                                  "cross_domain_evidence_not_bound", "subsequent_outcomes_not_attached",
+                                  "contradictory_external_evidence_not_assessed",
+                                  "independent_usefulness_study_not_run"],
+             "claims": {"semantic_entailment_established": False, "causal_claim_established": False,
+                        "forecast_skill_established": False, "independent_episodes_established": False,
+                        "training_eligible": False, "promotion_eligible": False,
+                        "operational_source_admission_granted": False},
+             "source_ref": {"module": "engine/neuralweb/market_memory_operating_cortex_service.py",
+                            "sha256": _IMPORTED_SOURCE_SHA256,
+                            "assurance": "local_import_source_bytes_not_external_runtime_attestation"},
+             "authority": dict(mm.AUTHORITY)}
+    value["packet_id"] = "mmrealcortex_" + sha256(cohort.canonical(value)).hexdigest()
+    body = cohort.canonical(value)
+    if len(body) > MAX_PACKET_BYTES:
+        raise RealEvidenceError("real_evidence_packet_byte_bound_exceeded")
+    capability = RealEvidenceCapability(body, selection, resources, _key=_TOKEN)
+    disclose_real_evidence_packet(capability, policy=policy)
+    return capability
+
+
+def _read_source_cards(reader, generation, *, owner, refs, policy, retrieval_id):
+    """Private common read path for owner-verified selections.
+
+    Callers must first disclose their native sealed selection and bound the
+    entire operation with bounded_owner_reads. This is not an admission API.
+    The original per-source rights, clocks, bytes and citation checks are shared
+    by product evidence and the E0 condition composition.
+    """
+    if (type(reader) is not trusted.TrustedFileAsKnownAtReader
+            or type(generation) is not pit.PinnedGenerationSnapshot
+            or generation.profile != trusted.TRUSTED_STORE_PROFILE):
+        raise RealEvidenceError("exact_trusted_owner_and_generation_required")
+    if (not 1 <= len(refs) <= retrieval.MAX_K + 1
+            or len({ref[1]["context_id"] for ref in refs}) != len(refs)):
+        raise RealEvidenceError("bounded_unique_selected_contexts_required")
+    if any(owner[name] != getattr(generation, name) for name in
+           ("store_id", "generation_id", "generation_sha256")):
+        raise RealEvidenceError("exact_selection_generation_mismatch")
     metadata = {key: value for key, value in owner.items() if key != "subject_id"}
     metadata["requested_subject_id"] = owner["subject_id"]
     _authorize(policy, "read_real_synthesis_generation_metadata", metadata)
@@ -166,16 +242,6 @@ def _build_real_evidence_packet(
     if authenticated != generation:
         raise RealEvidenceError("exact_owner_generation_mismatch")
     generation = authenticated
-    if len(selected["selected"]) > retrieval.MAX_K:
-        raise RealEvidenceError("selected_context_bound_exceeded")
-    refs = [("query", selected["query"], owner)] + [
-        ("selected_neighbor", item["candidate"], item["candidate_owner"])
-        for item in selected["selected"]]
-    context_ids = {ref[1]["context_id"] for ref in refs}
-    if len(context_ids) != len(refs):
-        raise RealEvidenceError("duplicate_selected_context")
-    if any(not set(c.context_ids) <= context_ids for c in claims):
-        raise RealEvidenceError("claim_cites_unselected_context")
     resources = []
     receipts = []
     declared_bytes = 0
@@ -183,7 +249,7 @@ def _build_real_evidence_packet(
         if any(ref_owner[name] != owner[name] for name in
                ("store_id", "generation_id", "generation_sha256", "subject_id", "query_cutoff")):
             raise RealEvidenceError("selected_subject_generation_or_cutoff_mismatch")
-        resource = {**ref_owner, "retrieval_id": selected["retrieval_id"],
+        resource = {**ref_owner, "retrieval_id": retrieval_id,
                     "context_id": ref["context_id"], "capture_id": ref["capture_id"]}
         metadata = {key: value for key, value in resource.items() if key != "subject_id"}
         metadata["requested_subject_id"] = ref_owner["subject_id"]
@@ -236,48 +302,7 @@ def _build_real_evidence_packet(
                       "clocks": clocks, "facts": _source_facts(original.feature, receipt),
                       "missing_feature_ids": list(receipt["missing_feature_ids"]),
                       "evidence_basis": "retained_original_house_output"})
-    query_facts = {f["field"]: f["value"] for f in cards[0]["facts"]}
-    differences = [{"context_id": card["context_id"], "field": fact["field"],
-                    "query_value": query_facts[fact["field"]], "neighbor_value": fact["value"],
-                    "meaning": "different_dated_outputs_not_a_logical_contradiction"}
-                   for card in cards[1:] for fact in card["facts"]
-                   if fact["value"] != query_facts[fact["field"]]]
-    citations = {(card["context_id"], fact["field"]): fact["citation"]
-                 for card in cards for fact in card["facts"]}
-    audit = [{"claim_id": c.claim_id, "text": c.text, "context_ids": list(c.context_ids),
-              "fields": list(c.fields), "structural_source_closure": True,
-              "citation_refs": [{"context_id": context_id, **citations[(context_id, field)]}
-                                for context_id in c.context_ids for field in c.fields],
-              "entailment": "not_assessed", "unsupported_status": "unassessed_not_supported",
-              "contradictory_evidence_review": "not_performed",
-              "falsifier": c.falsifier, "falsifier_status": "named_not_tested" if c.falsifier else "missing"}
-             for c in claims]
-    value = {"schema": SCHEMA, "input_profile": PROFILE, "mode": selected["method_spec"]["mode"],
-             "owner": owner, "retrieval_id": selected["retrieval_id"],
-             "selection_sha256": selected["selection_sha256"],
-             "method_spec_id": selected["method_spec"]["method_spec_id"],
-             "denominator": selected["denominator"], "accounting": selected["accounting"],
-             "status": selected["status"], "source_cards": cards,
-             "state_differences": differences, "analyst_claim_audit": audit,
-             "missing_evidence": ["component_source_vintages_not_authenticated",
-                                  "cross_domain_evidence_not_bound", "subsequent_outcomes_not_attached",
-                                  "contradictory_external_evidence_not_assessed",
-                                  "independent_usefulness_study_not_run"],
-             "claims": {"semantic_entailment_established": False, "causal_claim_established": False,
-                        "forecast_skill_established": False, "independent_episodes_established": False,
-                        "training_eligible": False, "promotion_eligible": False,
-                        "operational_source_admission_granted": False},
-             "source_ref": {"module": "engine/neuralweb/market_memory_operating_cortex_service.py",
-                            "sha256": _IMPORTED_SOURCE_SHA256,
-                            "assurance": "local_import_source_bytes_not_external_runtime_attestation"},
-             "authority": dict(mm.AUTHORITY)}
-    value["packet_id"] = "mmrealcortex_" + sha256(cohort.canonical(value)).hexdigest()
-    body = cohort.canonical(value)
-    if len(body) > MAX_PACKET_BYTES:
-        raise RealEvidenceError("real_evidence_packet_byte_bound_exceeded")
-    capability = RealEvidenceCapability(body, selection, resources, _key=_TOKEN)
-    disclose_real_evidence_packet(capability, policy=policy)
-    return capability
+    return cards, resources
 
 
 def disclose_real_evidence_packet(capability: RealEvidenceCapability, *, policy: object) -> dict:
