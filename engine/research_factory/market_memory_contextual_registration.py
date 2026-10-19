@@ -508,6 +508,8 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
     """
     reg = validate_e0_registration(registration)
     from . import market_memory_e0_domains as temporal
+    from . import market_memory_e0_allocation_binding as allocation
+    allocation_value = None
     temporal_roles = {schema: role for role, schema in temporal.SCHEMAS.items()}
     extra = int(prelabel_design is not None)
     if type(objects) is not dict or len(objects) + extra > MAX_DOMAIN_OBJECTS:
@@ -564,6 +566,9 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
         known = _FROZEN_JSON_SCHEMAS.get(clean["schema"])
         if known is not None and digest != _FROZEN_DOMAIN_DIGESTS[known]:
             raise E0ControlError("frozen_domain_schema_reference_mismatch")
+        if (clean["schema"] == allocation.allocator.OUTPUT_SCHEMA
+                and _role != "allocation.assignment_ref"):
+            raise E0ControlError("allocation_assignment_reference_role_mismatch")
         if clean["schema"] == _TASK_SCHEMA and _role != "tasks_ref":
             raise E0ControlError("task_reference_role_mismatch")
         if clean["schema"] == _REVIEWER_PLAN_SCHEMA and _role != "reviewer_plan_ref":
@@ -592,7 +597,8 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
         value = (_domain_json(body) if digest in json_digests
                  or clean["schema"] in {_TASK_SCHEMA, _REVIEWER_PLAN_SCHEMA}
                  or clean["schema"] in evaluation_roles
-                 or clean["schema"] in temporal_roles else None)
+                 or clean["schema"] in temporal_roles
+                 or clean["schema"] == allocation.allocator.OUTPUT_SCHEMA else None)
         if type(value) is dict:
             declared_schema = value.get("schema", value.get("document_type"))
             if declared_schema != clean["schema"]:
@@ -601,6 +607,10 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
             if identity is not None and identity != clean["object_id"]:
                 raise E0ControlError("domain_object_identity_mismatch")
         parsed[digest] = value
+        if clean["schema"] == allocation.allocator.OUTPUT_SCHEMA:
+            allocation_value = allocation.validate_declaration(value, body, registration=reg)
+            if clean["object_id"] != allocation_value["allocation_sha256"]:
+                raise E0ControlError("allocation_assignment_reference_identity_mismatch")
         if clean["schema"] == _REVIEWER_PLAN_SCHEMA:
             reviewer_plan = _validate_reviewer_plan_declaration(value, body, reg)
             roots.extend(_reviewer_plan_evidence_references(reviewer_plan))
@@ -673,6 +683,17 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
     task_checks = []
     if tasks_ref["schema"] == _TASK_SCHEMA and tasks_ref["sha256"] in parsed:
         task_checks.append(_validate_task_bindings(task_value, objects[tasks_ref["sha256"]], membership))
+    allocation_checks = []
+    if allocation_value is not None:
+        algorithm_ref = reg["allocation"]["algorithm_ref"]
+        source_resolved = algorithm_ref["sha256"] in parsed
+        source_matches = (algorithm_ref["schema"] == "python.source.v1"
+                          and algorithm_ref["sha256"] == allocation.ALLOCATOR_SOURCE_SHA256
+                          and algorithm_ref["bytes"] == allocation.ALLOCATOR_SOURCE_BYTES)
+        if source_resolved and not source_matches:
+            raise E0ControlError("allocation_algorithm_source_mismatch")
+        allocation_checks.append(allocation.binding_checks(
+            allocation_value, tasks=task_value, algorithm_source_bound=source_resolved and source_matches))
     reviewer_checks = []
     if reviewer_plan is not None:
         reviewer_checks.append(_reviewer_plan_binding_checks(
@@ -704,6 +725,7 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
             "frozen_metadata_gaps": gaps,
             "task_binding_checks": task_checks,
             "reviewer_plan_binding_checks": reviewer_checks,
+            "allocation_binding_checks": allocation_checks,
             "evaluation_binding_checks": evaluation_checks,
             "source_coverage_binding_checks": coverage_checks,
             "interval_split_binding_checks": split_checks,

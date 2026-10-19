@@ -12186,6 +12186,7 @@ jobs:
           tests/test_market_memory_e0_registered_method.py
           tests/test_market_memory_e0_condition_evidence.py
           tests/test_market_memory_e0_allocation.py
+          tests/test_market_memory_e0_allocation_resolution.py
           tests/test_market_memory_e0_reserved_read.py
           tests/test_market_memory_e0_access_history.py
           tests/test_market_memory_e0_installed_control.py
