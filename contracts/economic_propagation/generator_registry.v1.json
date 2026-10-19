@@ -88,6 +88,16 @@
   },
   "owner_evidence_grammars": {
     "gmi-theme-graph": {
+      "native_disclosure_carrier": {
+        "owner_program": "gmi-theme-graph",
+        "artifact_schema": "theme_graph.native_economic_context/v1",
+        "construct": "disclosed_customer_supplier",
+        "kind": "disclosed_supplier",
+        "role": "supplier",
+        "role_evidence_class": "disclosed_role_specific",
+        "claim_strength": "disclosed",
+        "binding_schema": "economic_propagation.native_supplier_binding/v1"
+      },
       "graph_1_edge_prefix": "^(supplies|enables|bottleneck_of|benefits_from|catalyst_of):",
       "graph_2_edge_prefix": "^(member_of|expresses):",
       "graph_3_edge_prefix": "^(tracks):",

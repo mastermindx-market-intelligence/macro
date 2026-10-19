@@ -334,6 +334,63 @@ def _scan_forbidden_keys(node: Any, path: str, out: list[Finding], code: str) ->
 # ---------------------------------------------------------------------------
 
 
+def native_supplier_binding_valid(binding: Any, *, asof: str, compiled_at: str,
+                                  source_identity: dict | None = None,
+                                  target_resolution: dict | None = None) -> bool:
+    """Validate metadata from one current owner-qualified Data OS bundle.
+
+    This checks linkage, not owner admission or historical identity. The caller
+    still obtains the bundle through the incumbent identity owner. Receipts are
+    not source bodies and do not grant source-purpose or publication rights.
+    """
+    from datetime import date, datetime, timezone
+    from lib.dataos.identity import parse_id
+    try:
+        schema = load_hypothesis_schema()
+        fragment = {"$defs": schema["$defs"], "$ref": "#/$defs/native_supplier_binding"}
+        if not Draft202012Validator(fragment).is_valid(binding):
+            return False
+        observed = datetime.fromisoformat(binding["current_identity_observed_at"].replace("Z", "+00:00"))
+        compiled = datetime.fromisoformat(compiled_at.replace("Z", "+00:00"))
+        cutoff = date.fromisoformat(asof)
+        if (observed.tzinfo is None or compiled.tzinfo is None or observed > compiled
+                or observed.astimezone(timezone.utc).date() != cutoff
+                or compiled.astimezone(timezone.utc).date() != cutoff):
+            return False
+        subject, obj = binding["subject"], binding["object"]
+        if subject["issuer_id"] == obj["issuer_id"] or subject["security_id"] == obj["security_id"]:
+            return False
+        for party, resolution in ((subject, source_identity), (obj, target_resolution)):
+            receipt = party["identity_receipt"]
+            if (parse_id(party["issuer_id"])[0] != "issuer"
+                    or parse_id(party["security_id"])[0] != "security"
+                    or receipt["issuer_id"] != party["issuer_id"]
+                    or int(receipt["evidenced_cik"]) <= 0
+                    or date.fromisoformat(receipt["evidence_snapshot"]) > cutoff):
+                return False
+            if resolution is not None and (
+                    resolution.get("resolution_state") != "RESOLVED"
+                    or any(resolution.get(k) != party[k] for k in ("issuer_id", "security_id"))
+                    or resolution.get("resolution_asof") != asof):
+                return False
+        left, right = subject["identity_receipt"], obj["identity_receipt"]
+        return left["source_commit"] == right["source_commit"] and left["sources"] == right["sources"]
+    except (AttributeError, KeyError, TypeError, ValueError, OverflowError):
+        return False
+
+
+def _native_disclosure_candidate(row: dict) -> bool:
+    owner = row.get("owner_ref")
+    refs = row.get("evidence_refs")
+    artifact = owner.get("artifact") if isinstance(owner, dict) else None
+    return ("native_disclosure_binding" in row
+            or (isinstance(owner, dict) and (
+                owner.get("artifact_schema") == "theme_graph.native_economic_context/v1"
+                or (isinstance(artifact, str) and artifact.startswith("native_disclosure:"))))
+            or (isinstance(refs, list) and any(isinstance(r, str) and
+                r.startswith(("native_fact:", "native_edition:")) for r in refs)))
+
+
 def _usable(leg: dict) -> bool:
     return leg.get("usability_state") == "usable"
 
@@ -745,7 +802,63 @@ def validate_hypothesis(record: Any) -> list[Finding]:
                 )
             )
 
+    _native_rows = {f"$.{name}[{i}]": row for name, rows in (
+        ("relationship_paths", g1_legs), ("similarity_evidence", g2_legs),
+        ("market_evidence", g3_legs), ("generator_admissions", admissions))
+        for i, row in enumerate(rows) if isinstance(row, dict)}
+
     def _check_evidence_grammar(path: str, construct: Any, owner_ref: Any, evidence_refs: Any, expected_graph: str) -> None:
+        # The existing GMI disclosure reader is a distinct native carrier,
+        # never a synthetic supplies: edge. All other owner grammars stay intact.
+        row = _native_rows.get(path, {})
+        if _native_disclosure_candidate(row):
+            carrier = owner_grammars.get("gmi-theme-graph", {}).get("native_disclosure_carrier", {})
+            refs = row.get("evidence_refs")
+            artifact = owner_ref.get("artifact") if isinstance(owner_ref, dict) else None
+            match = re.fullmatch(r"native_disclosure:([0-9a-f]{64})", artifact) if isinstance(artifact, str) else None
+            is_leg = path.startswith("$.relationship_paths[")
+            valid = (expected_graph == "graph_1" and row.get("graph") == "graph_1"
+                and construct == carrier.get("construct") == "disclosed_customer_supplier"
+                and owner_ref == {"owner_program": "gmi-theme-graph", "artifact": artifact,
+                                  "artifact_schema": "theme_graph.native_economic_context/v1"}
+                and carrier.get("owner_program") == "gmi-theme-graph"
+                and carrier.get("kind") == "disclosed_supplier"
+                and carrier.get("binding_schema") == "economic_propagation.native_supplier_binding/v1"
+                and carrier.get("artifact_schema") == "theme_graph.native_economic_context/v1"
+                and match is not None and isinstance(refs, list) and len(refs) == 2
+                and refs[0] == "native_fact:sha256:" + match.group(1)
+                and isinstance(refs[1], str)
+                and re.fullmatch(r"native_edition:sha256:[0-9a-f]{64}", refs[1]) is not None
+                and native_supplier_binding_valid(row.get("native_disclosure_binding"),
+                    asof=record.get("asof"), compiled_at=record.get("compiled_at"),
+                    source_identity=source_identity_for_gate,
+                    target_resolution=resolution))
+            try:
+                from datetime import datetime
+                known = datetime.fromisoformat(row.get("known_at", "").replace("Z", "+00:00"))
+                compiled = datetime.fromisoformat(record.get("compiled_at", "").replace("Z", "+00:00"))
+                valid = valid and known.tzinfo is not None and known <= compiled and row.get("asof") == record.get("asof")
+            except (AttributeError, TypeError, ValueError):
+                valid = False
+            if is_leg:
+                valid = valid and all(row.get(key) == carrier.get(key) for key in
+                    ("role", "role_evidence_class", "claim_strength"))
+                valid = valid and row.get("leg_id") == "sec_supplier:" + (match.group(1) if match else "")
+                valid = valid and row.get("usability_state") == "usable"
+            else:
+                valid = valid and row.get("generator_id") == "gen_disclosed_customer_supplier"
+                valid = valid and row.get("coverage_state") == "partial"
+            # Both halves must describe the same qualified native observation;
+            # an admission must not pair an unrelated generic or legacy leg.
+            opposite = admissions if is_leg else g1_legs
+            linkage = ("owner_ref", "evidence_refs", "asof", "known_at", "construct", "native_disclosure_binding")
+            valid = valid and any(isinstance(other, dict) and
+                all(other.get(key) == row.get(key) for key in linkage) for other in opposite)
+            if not valid:
+                findings.append(_f("K3D_R038", path,
+                    "native supplier carrier requires exact qualified GMI fact/edition, role, "
+                    "paired admission and same-generation current issuer/security receipts"))
+            return
         owner = owner_ref.get("owner_program") if isinstance(owner_ref, dict) else None
         grammar = owner_grammars.get(owner)
         if not grammar or not isinstance(evidence_refs, list):

@@ -107,7 +107,8 @@
           "evidence_refs": { "$ref": "#/$defs/evidence_refs" },
           "asof": { "$ref": "#/$defs/date" },
           "known_at": { "$ref": "#/$defs/datetime_or_date" },
-          "coverage_state": { "$ref": "#/$defs/coverage_state" }
+          "coverage_state": { "$ref": "#/$defs/coverage_state" },
+          "native_disclosure_binding": { "$ref": "#/$defs/native_supplier_binding" }
         }
       },
       "description": "Which generator admitted this target into consideration, tagged with its graph. An admitted-by-Graph-2 target stays Graph-2-admitted even if a Graph-3 move also exists. Generators must exist in contracts/economic_propagation/generator_registry.v1.json; a registry row with admits_target=false (peer participation/breadth) can never appear here."
@@ -305,6 +306,177 @@
     }
   },
   "$defs": {
+    "native_current_issuer_receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "identity_mode",
+        "issuer_id",
+        "evidenced_cik",
+        "source_commit",
+        "sources",
+        "evidence_source",
+        "evidence_snapshot"
+      ],
+      "properties": {
+        "schema": {
+          "const": "company_intelligence.current_issuer_identity/v1"
+        },
+        "identity_mode": {
+          "const": "current"
+        },
+        "issuer_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "evidenced_cik": {
+          "type": "string",
+          "pattern": "^[0-9]{10}$"
+        },
+        "source_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "sources": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "security_master",
+            "vendor_aliases",
+            "issuer_master"
+          ],
+          "properties": {
+            "security_master": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "sha256",
+                "byte_length"
+              ],
+              "properties": {
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "byte_length": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "vendor_aliases": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "sha256",
+                "byte_length"
+              ],
+              "properties": {
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "byte_length": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "issuer_master": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "sha256",
+                "byte_length"
+              ],
+              "properties": {
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "byte_length": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          }
+        },
+        "evidence_source": {
+          "const": "sec_company_tickers"
+        },
+        "evidence_snapshot": {
+          "$ref": "#/$defs/date"
+        }
+      }
+    },
+    "native_current_party": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issuer_id",
+        "security_id",
+        "identity_receipt"
+      ],
+      "properties": {
+        "issuer_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "security_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "identity_receipt": {
+          "$ref": "#/$defs/native_current_issuer_receipt"
+        }
+      }
+    },
+    "native_supplier_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "kind",
+        "lifecycle",
+        "direction",
+        "identity_mode",
+        "current_identity_observed_at",
+        "subject",
+        "object"
+      ],
+      "properties": {
+        "schema": {
+          "const": "economic_propagation.native_supplier_binding/v1"
+        },
+        "kind": {
+          "const": "disclosed_supplier"
+        },
+        "lifecycle": {
+          "const": "reported_use"
+        },
+        "direction": {
+          "const": "object_supplies_subject"
+        },
+        "identity_mode": {
+          "const": "current"
+        },
+        "current_identity_observed_at": {
+          "$ref": "#/$defs/datetime"
+        },
+        "subject": {
+          "$ref": "#/$defs/native_current_party"
+        },
+        "object": {
+          "$ref": "#/$defs/native_current_party"
+        }
+      }
+    },
+
     "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
     "datetime": {
       "type": "string",
@@ -431,7 +603,8 @@
         "evidence_refs": { "$ref": "#/$defs/evidence_refs" },
         "asof": { "$ref": "#/$defs/date" },
         "known_at": { "$ref": "#/$defs/datetime_or_date" },
-        "usability_state": { "$ref": "#/$defs/usability_state" }
+        "usability_state": { "$ref": "#/$defs/usability_state" },
+        "native_disclosure_binding": { "$ref": "#/$defs/native_supplier_binding" }
       }
     },
     "graph2_leg": {
