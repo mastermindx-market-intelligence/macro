@@ -31,8 +31,13 @@
   'use strict';
   const data=JSON.parse(document.getElementById('capturedFixtures').textContent);
   const clone=x=>JSON.parse(JSON.stringify(x));
-  const params=new URLSearchParams(location.search), language=params.get('lang')==='zh'?'zh':'en';
-  document.documentElement.dataset.theme=params.get('theme')==='light'?'light':'dark';
+  const params=new URLSearchParams(location.search);
+  function previewPreference(key,fallback) {
+    if(params.has(key)) return params.get(key);
+    try { return localStorage.getItem(key)||fallback; } catch (_) { return fallback; }
+  }
+  const language=previewPreference('lang','en')==='zh'?'zh':'en';
+  document.documentElement.dataset.theme=previewPreference('theme','dark')==='light'?'light':'dark';
   document.documentElement.dataset.lang=language;
   document.documentElement.lang=language==='zh'?'zh-CN':'en';
   document.getElementById('previewTheme').value=document.documentElement.dataset.theme;

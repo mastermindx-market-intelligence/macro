@@ -12,7 +12,7 @@
     "Captured API responses drive horizon changes, honest empty views and null-horizon review/history queries",
     "Conflict replaces the forward-looking card, headline and company action across every detail task",
     "Withdrawal and unavailable API clear the earlier case, count and open detail together",
-    "Host authorization-context change immediately removes the previous account\u2019s data",
+    "Host authorization-context change immediately removes the previous account’s data",
     "Historical revisions remain distinct from withdrawn events in the card and Research task",
     "Supplied source wording is rendered as text",
     "Chinese titles use a resolved CJK font in every Chinese layout; missing-glyph geometry cannot count as visual proof",
@@ -138,7 +138,7 @@
       "lang": "zh",
       "theme": "dark",
       "width": 320,
-      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
+      "heading": "核查下一次已披露的临床进展。",
       "fonts": [
         {
           "familyName": "Noto Sans CJK SC",
@@ -152,7 +152,7 @@
       "lang": "zh",
       "theme": "dark",
       "width": 390,
-      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
+      "heading": "核查下一次已披露的临床进展。",
       "fonts": [
         {
           "familyName": "Noto Sans CJK SC",
@@ -166,7 +166,7 @@
       "lang": "zh",
       "theme": "dark",
       "width": 768,
-      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
+      "heading": "核查下一次已披露的临床进展。",
       "fonts": [
         {
           "familyName": "Noto Sans CJK SC",
@@ -180,7 +180,7 @@
       "lang": "zh",
       "theme": "dark",
       "width": 1440,
-      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
+      "heading": "核查下一次已披露的临床进展。",
       "fonts": [
         {
           "familyName": "Noto Sans CJK SC",
@@ -194,7 +194,7 @@
       "lang": "zh",
       "theme": "light",
       "width": 320,
-      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
+      "heading": "核查下一次已披露的临床进展。",
       "fonts": [
         {
           "familyName": "Noto Sans CJK SC",
@@ -208,7 +208,7 @@
       "lang": "zh",
       "theme": "light",
       "width": 390,
-      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
+      "heading": "核查下一次已披露的临床进展。",
       "fonts": [
         {
           "familyName": "Noto Sans CJK SC",
@@ -222,7 +222,7 @@
       "lang": "zh",
       "theme": "light",
       "width": 768,
-      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
+      "heading": "核查下一次已披露的临床进展。",
       "fonts": [
         {
           "familyName": "Noto Sans CJK SC",
@@ -236,7 +236,7 @@
       "lang": "zh",
       "theme": "light",
       "width": 1440,
-      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
+      "heading": "核查下一次已披露的临床进展。",
       "fonts": [
         {
           "familyName": "Noto Sans CJK SC",
@@ -296,5 +296,24 @@
     "manifest_contract": "validated with Python 3.12 and Node 20",
     "prior_head_unrelated_failure": "reference-integrity reproduced on PR and base for MP-20261018-sector-central-capability-crosswalk.md",
     "hosted_status": "Read the current PR head; local checks are not hosted CI acceptance"
+  },
+  "canonical_visual_evidence": {
+    "manifest": "mockups/evidence/biocatalyst-decision-desk-r1/manifest.json",
+    "manifest_sha256": "45235b8ae38ab6a8e2e201972e67501570fdfd0edcf44c273ad602cfc1b9acbd",
+    "receipt": "mockups/evidence/biocatalyst-decision-desk-r1/EVIDENCE.yml",
+    "generated_at": "2026-10-19T05:06:49Z",
+    "states_attempted": 24,
+    "states_captured": 24,
+    "scope": "anonymous local synthetic replay; actual browser rest/hover/focus; not native source or production admission",
+    "visual_evidence_guard_exit_code": 0,
+    "component_css_js_unchanged_from": "bf08404bed49cee034fb1a1008e2283da5b15520",
+    "prior_behavior_proof": "The original generated_at/source_sha256 above identify the preserved 15-behavior/16-layout verification. This new capture additionally covers the preference-aware preview shell.",
+    "preview_shell_sha256": "58e1a7987ccda750629bf15deec64138bde4df2e2b93cc9d06ade274440e2e82",
+    "generated_replay_sha256": "e2ed58b3cb0427a6b56e9bc527f34aeecf30c4ccd663ba66ea01f13f2d4f9b7e",
+    "root_visual_review": [
+      "desktop/en/dark rest",
+      "mobile/zh/light rest",
+      "desktop/en/light button_focus"
+    ]
   }
 }
