@@ -8539,6 +8539,7 @@ jobs:
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "data/fundamental_forensics/**"
       - "tests/test_fundamental_forensics_*"
+      - "tests/test_fundamental_forensics_lane_c2_bac_periods.py"
       - "tests/test_fif_pf_health_entity.py"
       - "tests/test_fif_pf_health_pointer.py"
       - "tests/fixtures/fundamental_forensics/**"
@@ -9402,6 +9403,7 @@ jobs:
           tests/test_fundamental_forensics_statement_grid.py
           tests/test_fundamental_forensics_statement_grid_p5b.py
           tests/test_fundamental_forensics_lane_c_cat_title.py
+          tests/test_fundamental_forensics_lane_c2_bac_periods.py
           tests/test_fundamental_forensics_ui.py
           tests/test_fundamental_forensics_wave2_operator.py
           -q
