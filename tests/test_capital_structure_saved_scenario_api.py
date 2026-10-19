@@ -36,6 +36,7 @@ from engine.capital_structure.issuer_state_contracts import (  # noqa: E402
 from engine.capital_structure.saved_scenarios import (  # noqa: E402
     SavedScenario,
     result_digest_of,
+    result_substance_digest_of,
 )
 from engine.capital_structure.scenario_inputs import CAPACITY_INPUTS_FILENAME  # noqa: E402
 from engine.capital_structure.scenario_export import export_scenario_envelope  # noqa: E402
@@ -75,6 +76,11 @@ EVALUATE_EXPORT_PATH = f"{PREFIX}/issuers/{ISSUER_ONE}/scenarios/evaluate/export
 LEDGER_GENERATED_AT = "2026-10-19T08:00:00Z"
 #: The second generation's stamp: the same as_of, published later the same day.
 SECOND_GENERATED_AT = "2026-10-14T09:00:00Z"
+#: The nightly's as_of move, within the saved horizon's own day: the rebased
+#: anchor re-runs (a later-day move past the horizon start is the honest
+#: ``scenario_refused`` answer, exercised through the refusal table).
+NOON_AS_OF = evaluate_suite._shift(evaluate_suite.AS_OF, hours=12)
+NOON_GENERATED_AT = evaluate_suite._shift(evaluate_suite.STATE_GENERATED_AT, hours=6)
 _STATE_UNAVAILABLE = evaluate_suite._STATE_UNAVAILABLE
 _INPUTS_UNAVAILABLE = evaluate_suite._INPUTS_UNAVAILABLE
 
@@ -284,6 +290,73 @@ def _serve_second_generation(
     assert summary["status"] == "diffed", summary
     api._reset_changes_cache()
     return str(moved.bundle["generation_id"])
+
+
+@pytest.fixture(scope="module")
+def moved_noon(built: evaluate_suite._Built, pack) -> _Moved:
+    """A real nightly as_of move: the same events republished at a later cut
+    of the same day, with its own projection and inputs bundle."""
+    telemetry = evaluate_suite._telemetry(built.events, built.edges)
+    telemetry["counts"] = {
+        "event_versions": len(built.events),
+        "event_edges": len(built.edges),
+        "review_queue": 0,
+    }
+    generation = evaluate_suite.VerifiedProjectionGeneration(
+        tuple(built.events), tuple(built.edges), (), telemetry
+    )
+    projection = evaluate_suite.build_projection_bundle(
+        list(built.events),
+        list(built.edges),
+        (),
+        telemetry,
+        as_of=evaluate_suite.AS_OF,
+        generated_at=evaluate_suite.LATER_PROJECTION_AT,
+    )
+    projection_body = json.dumps(projection, indent=2, sort_keys=True) + "\n"
+    first = built.events[0]["evidence"][0]
+    row = evaluate_suite._manifest(role="primary")
+    resolved_row = {
+        **row,
+        "manifest_id": first["manifest_id"],
+        "spans": [
+            {
+                **row["spans"][0],
+                "span_id": first["span_id"],
+                "text_sha256": first["text_sha256"],
+            }
+        ],
+    }
+    bundle = evaluate_suite.build_state_bundle(
+        generation=generation,
+        projection=projection,
+        health=evaluate_suite.HEALTH,
+        rule_pack=pack,
+        as_of=NOON_AS_OF,
+        generated_at=NOON_GENERATED_AT,
+        projection_sha256=hashlib.sha256(projection_body.encode("utf-8")).hexdigest(),
+        source_manifests=(resolved_row,),
+    )
+    evaluate_suite.validate_state_bundle(bundle)
+    assert bundle["generation_id"] != built.bundle["generation_id"]
+    assert bundle["as_of"] == NOON_AS_OF
+    inputs_record = evaluate_suite._inputs_bundle_record(
+        built, as_of=NOON_AS_OF, state_generation_id=bundle["generation_id"]
+    )
+    state_body = json.dumps(bundle, indent=2, sort_keys=True) + "\n"
+    return _Moved(projection_body, state_body, bundle, inputs_record)
+
+
+def _serve_noon_generation(
+    served: evaluate_suite._Served,
+    moved_noon: _Moved,
+) -> str:
+    """Serve the moved-as_of generation with NO retained ledger (the common
+    nightly shape: the cut moved, the retained ledger window has not)."""
+    served.projection_path.write_text(moved_noon.projection_body, encoding="utf-8")
+    served.state_path.write_text(moved_noon.state_body, encoding="utf-8")
+    _write_inputs(served, moved_noon.inputs_record)
+    return str(moved_noon.bundle["generation_id"])
 
 
 # ---------------------------------------------------------------------------
@@ -505,6 +578,7 @@ def test_u2_save_is_idempotent_and_201_returns_public_record_only(
         inputs_generation_id=str(with_inputs.record["generation_id"]),
         result_id=str(recomputed["result_id"]),
         result_digest=result_digest_of(recomputed),
+        result_substance_digest=result_substance_digest_of(recomputed),
         rule_pack_digest=str(recomputed["capacity_envelope"]["rule_pack_digest"]),
         saved_at=str(public["saved_at"]),
     )
@@ -579,6 +653,22 @@ def _unavailable_families_inputs(served: evaluate_suite._Served, built) -> None:
     _write_inputs(served, evaluate_suite._inputs_bundle_record(built, entries=entries))
 
 
+def _corrected_financials_inputs(
+    served: evaluate_suite._Served, built: evaluate_suite._Built, as_of: str, state_generation_id: str
+) -> None:
+    """A real corrected financial observation, published over the served cut."""
+    entries = evaluate_suite._fixture_entries(as_of)
+    entries[inputs_suite.FINANCIALS_FAMILY] = inputs_suite._entry_for(
+        F.financials(F.cash("4321000"), F.ocf()), inputs_suite.FINANCIALS_FAMILY
+    )
+    _write_inputs(
+        served,
+        evaluate_suite._inputs_bundle_record(
+            built, as_of=as_of, entries=entries, state_generation_id=state_generation_id
+        ),
+    )
+
+
 @pytest.mark.parametrize(
     "outcome",
     (
@@ -588,6 +678,7 @@ def _unavailable_families_inputs(served: evaluate_suite._Served, built) -> None:
         "inputs_unavailable",
         "source_outage",
         "scenario_rejected",
+        "changed_unattributed",
     ),
 )
 def test_u2_restore_outcomes_are_200_with_typed_outcome_not_errors(
@@ -597,6 +688,7 @@ def test_u2_restore_outcomes_are_200_with_typed_outcome_not_errors(
     built: evaluate_suite._Built,
     with_inputs,
     moved: _Moved,
+    moved_noon: _Moved,
     ledger_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -609,11 +701,33 @@ def test_u2_restore_outcomes_are_200_with_typed_outcome_not_errors(
     fake.rows = [_row_for(_saved_of_public(saved_public, "paid-user"))]
 
     if outcome == "correction":
-        entries = evaluate_suite._fixture_entries(built.bundle["as_of"])
-        entries[inputs_suite.FINANCIALS_FAMILY] = inputs_suite._entry_for(
-            F.financials(F.cash("4321000"), F.ocf()), inputs_suite.FINANCIALS_FAMILY
+        # The nightly moved the cut AND a corrected financial observation was
+        # published; the retained ledger ATTRIBUTES the change to a correction.
+        served_generation = _serve_noon_generation(served, moved_noon)
+        _corrected_financials_inputs(served, built, NOON_AS_OF, served_generation)
+        corrected = contract_suite._changeset(
+            contract_suite._change(
+                "corrected_observation",
+                "correction_version_incremented",
+                issuer_id=ISSUER_ONE,
+                subject={
+                    "logical_observation_id": contract_suite.stable_id(
+                        "lifecycle", {"probe": "u2-correction"}
+                    )
+                },
+                from_generation_id=str(built.bundle["generation_id"]),
+                to_generation_id=str(moved_noon.bundle["generation_id"]),
+            ),
+            from_generation_id=str(built.bundle["generation_id"]),
+            to_generation_id=str(moved_noon.bundle["generation_id"]),
         )
-        _write_inputs(served, evaluate_suite._inputs_bundle_record(built, entries=entries))
+        monkeypatch.setattr(api, "_load_changes", lambda: corrected)
+        api._reset_changes_cache()
+    elif outcome == "changed_unattributed":
+        # The same nightly move and correction, but the retained ledger does
+        # not span saved→served: the changed answer names no cause.
+        served_generation = _serve_noon_generation(served, moved_noon)
+        _corrected_financials_inputs(served, built, NOON_AS_OF, served_generation)
     elif outcome == "new_events":
         _serve_second_generation(served, built, moved, ledger_path)
     elif outcome == "inputs_unavailable":
@@ -631,15 +745,20 @@ def test_u2_restore_outcomes_are_200_with_typed_outcome_not_errors(
     assert set(body) == {"saved", "current", "unavailable", "restore", "changes"}
     restore = body["restore"]
     assert restore["outcome"] == outcome, json.dumps(restore, sort_keys=True)
-    if outcome in ("no_change", "correction", "new_events"):
+    if outcome in ("no_change", "correction", "new_events", "changed_unattributed"):
         assert body["current"] is not None
         assert body["current"]["result"]["result_id"]
+        assert body["current"]["scenario"]["as_of"] == body["current"]["view"]["as_of"]
     else:
         assert body["current"] is None
     if outcome == "no_change":
         assert restore["result_identical"] is True
-    if outcome == "correction":
+    if outcome in ("correction", "changed_unattributed"):
         assert restore["result_identical"] is False
+        assert restore["scenario_id_after"] != restore["scenario_id_before"]
+        assert restore["to_as_of"] == (
+            NOON_AS_OF if outcome in ("correction", "changed_unattributed") else built.bundle["as_of"]
+        )
     if outcome == "inputs_unavailable":
         assert body["unavailable"] == {"components": ["financials", "share_basis"]}
     else:
@@ -701,6 +820,231 @@ def test_u2_foreign_or_absent_saved_id_is_404_never_403(
 
 
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# U2-2 R1 — the restore rebases the anchor at the served as_of (DEC)
+# ---------------------------------------------------------------------------
+
+
+def test_u2r_restore_rebases_as_of_after_nightly(
+    client: TestClient,
+    served: evaluate_suite._Served,
+    built: evaluate_suite._Built,
+    with_inputs,
+    moved_noon: _Moved,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _FakePostgREST()
+    monkeypatch.setattr(store, "_transport", fake)
+    saved_public = evaluate_suite._checked(client.post(SAVED_PATH, json=_save_body()), status=201)[
+        "saved"
+    ]
+    saved_id = str(saved_public["saved_id"])
+    fake.rows = [_row_for(_saved_of_public(saved_public, "paid-user"))]
+
+    _serve_noon_generation(served, moved_noon)
+    body = evaluate_suite._checked(client.get(f"{SAVED_PATH}/{saved_id}"), status=200)
+    restore = body["restore"]
+    # the anchor was REBASED, not refused: the re-run happened at the served cut
+    assert restore["outcome"] != "scenario_rejected", json.dumps(restore, sort_keys=True)
+    assert restore["to_as_of"] == NOON_AS_OF
+    assert restore["scenario_id_after"] != restore["scenario_id_before"]
+    assert restore["from_as_of"] == saved_public["scenario"]["as_of"]
+    # the saved block stays byte-verbatim
+    assert json.dumps(body["saved"], sort_keys=True) == json.dumps(saved_public, sort_keys=True)
+    # the re-run carries the rebased anchor
+    assert body["current"]["scenario"]["as_of"] == NOON_AS_OF
+    assert body["current"]["view"]["as_of"] == NOON_AS_OF
+    assert body["current"]["view"]["scenario_id"] == restore["scenario_id_after"]
+
+
+def test_u2r_then_known_restore_after_nightly_is_inputs_unavailable(
+    client: TestClient,
+    served: evaluate_suite._Served,
+    built: evaluate_suite._Built,
+    with_inputs,
+    moved_noon: _Moved,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from engine.capital_structure.scenario_inputs import BUNDLE_FAMILIES
+
+    fake = _FakePostgREST()
+    monkeypatch.setattr(store, "_transport", fake)
+    saved_public = evaluate_suite._checked(
+        client.post(
+            SAVED_PATH,
+            json=_save_body(view={"mode": "then_known", "cutoff": evaluate_suite.AS_OF}),
+        ),
+        status=201,
+    )["saved"]
+    saved_id = str(saved_public["saved_id"])
+    fake.rows = [_row_for(_saved_of_public(saved_public, "paid-user"))]
+
+    _serve_noon_generation(served, moved_noon)
+    body = evaluate_suite._checked(client.get(f"{SAVED_PATH}/{saved_id}"), status=200)
+    restore = body["restore"]
+    # a then_known anchor re-runs at its own cutoff; the moved inputs bundle
+    # refuses the anchor's as_of, and every family is named, with the engine's
+    # own reason — never an invented code.
+    assert restore["outcome"] == "inputs_unavailable", json.dumps(restore, sort_keys=True)
+    # the response names the unavailable families (a sorted list of names, as
+    # for every inputs_unavailable restore); the reasons stay in the engine.
+    components = body["unavailable"]["components"]
+    assert components == sorted(BUNDLE_FAMILIES), components
+    assert restore["from_as_of"] == saved_public["scenario"]["as_of"]
+    assert restore["to_as_of"] is None
+
+
+@pytest.mark.parametrize(
+    ("row", "outcome", "note"),
+    (
+        ("state_503", "source_outage", "source_outage"),
+        ("issuer_404", "source_outage", "source_outage"),
+        ("inputs_unavailable_409", "inputs_unavailable", "inputs_unavailable"),
+        ("inputs_error_409", "inputs_unavailable", "inputs_unavailable"),
+        ("composition_409", "scenario_rejected", "scenario_refused"),
+        ("body_422", "scenario_rejected", "scenario_refused"),
+    ),
+)
+def test_u2r_refusal_table(
+    row: str,
+    outcome: str,
+    note: str,
+    client: TestClient,
+    served: evaluate_suite._Served,
+    built: evaluate_suite._Built,
+    with_inputs,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from engine.capital_structure.issuer_state_contracts import ContractViolation
+    from engine.capital_structure.scenario_composition import ScenarioCompositionError
+    from engine.capital_structure.scenario_inputs import (
+        BUNDLE_FAMILIES,
+        ScenarioInputsError,
+    )
+
+    fake = _FakePostgREST()
+    monkeypatch.setattr(store, "_transport", fake)
+    saved_public = evaluate_suite._checked(client.post(SAVED_PATH, json=_save_body()), status=201)[
+        "saved"
+    ]
+    saved_id = str(saved_public["saved_id"])
+    fake.rows = [_row_for(_saved_of_public(saved_public, "paid-user"))]
+
+    if row == "state_503":
+        served.state_path.write_text("{not-json", encoding="utf-8")
+        served.reset()
+    elif row == "issuer_404":
+        monkeypatch.setattr(
+            api,
+            "_issuer",
+            lambda _bundle, issuer_id: (_ for _ in ()).throw(
+                api._private_error(404, "issuer not covered")
+            ),
+        )
+    elif row == "inputs_unavailable_409":
+        _unavailable_families_inputs(served, built)
+    elif row == "inputs_error_409":
+        def mismatched(*_args, **_kwargs):
+            raise ScenarioInputsError(
+                "inputs_as_of_mismatch: the inputs bundle is cut at a later as_of "
+                f"than {evaluate_suite.AS_OF!r}"
+            )
+
+        monkeypatch.setattr(api, "assemble_scenario_inputs", mismatched)
+    elif row == "composition_409":
+        def refused(*_args, **_kwargs):
+            raise ScenarioCompositionError("composition refused by the served rules")
+
+        monkeypatch.setattr(api, "compose_scenario", refused)
+    else:
+        assert row == "body_422"
+
+        def bad_body(_body):
+            raise ContractViolation("saved_scenario.scenario: does not reconstruct")
+
+        monkeypatch.setattr(api, "_scenario_from_body", bad_body)
+
+    body = evaluate_suite._checked(client.get(f"{SAVED_PATH}/{saved_id}"), status=200)
+    restore = body["restore"]
+    assert restore["outcome"] == outcome, json.dumps(restore, sort_keys=True)
+    assert restore["note"] == api.RESTORE_NOTES[note]
+    assert body["current"] is None
+    if row == "inputs_unavailable_409":
+        assert body["unavailable"] == {"components": ["financials", "share_basis"]}
+    elif row == "inputs_error_409":
+        assert set(body["unavailable"]["components"]) == set(BUNDLE_FAMILIES)
+    else:
+        assert body["unavailable"] is None
+
+
+def test_u2r_identity_drift_is_typed_503(
+    client: TestClient,
+    served: evaluate_suite._Served,
+    built: evaluate_suite._Built,
+    with_inputs,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _FakePostgREST()
+    monkeypatch.setattr(store, "_transport", fake)
+    saved_public = evaluate_suite._checked(client.post(SAVED_PATH, json=_save_body()), status=201)[
+        "saved"
+    ]
+    saved_id = str(saved_public["saved_id"])
+    fake.rows = [_row_for(_saved_of_public(saved_public, "paid-user"))]
+
+    original = api.compose_scenario
+
+    class _Perturbed:
+        def __init__(self, record: dict) -> None:
+            self._record = record
+
+        def as_record(self) -> dict:
+            return self._record
+
+    def drifting(*args, **kwargs):
+        record = dict(original(*args, **kwargs).as_record())
+        record["capacity_envelope"] = dict(record["capacity_envelope"], drift_probe="different-result")
+        return _Perturbed(record)
+
+    monkeypatch.setattr(api, "compose_scenario", drifting)
+    response = client.get(f"{SAVED_PATH}/{saved_id}")
+    assert response.status_code == 503, response.text[:200]
+    assert evaluate_suite._detail(response) == {"code": "saved_scenario_identity_drift"}
+    evaluate_suite._checked(response)
+
+
+def test_u2r_unreconstructable_row_is_rejected_not_500(
+    client: TestClient,
+    served: evaluate_suite._Served,
+    built: evaluate_suite._Built,
+    with_inputs,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _FakePostgREST()
+    monkeypatch.setattr(store, "_transport", fake)
+    saved_public = evaluate_suite._checked(client.post(SAVED_PATH, json=_save_body()), status=201)[
+        "saved"
+    ]
+    saved_id = str(saved_public["saved_id"])
+    saved = _saved_of_public(saved_public, "paid-user")
+    row = _row_for(saved)
+    record = json.loads(row["record"])
+    del record["result_substance_digest"]
+    missing_digest = dict(row, record=json.dumps(record, sort_keys=True))
+    record = json.loads(row["record"])
+    record["unexpected_extra"] = "not part of the contract"
+    extra_key = dict(row, record=json.dumps(record, sort_keys=True))
+
+    for broken in (missing_digest, extra_key):
+        monkeypatch.setattr(store, "_transport", _FakePostgREST(rows=[broken]))
+        body = evaluate_suite._checked(client.get(f"{SAVED_PATH}/{saved_id}"), status=200)
+        restore = body["restore"]
+        assert restore["outcome"] == "scenario_rejected", json.dumps(restore, sort_keys=True)
+        assert restore["note"] == api.RESTORE_NOTES["scenario_rejected"]
+        assert body["current"] is None
+        assert body["saved"]["saved_id"] == saved_id
+
+
 # Gate 29 — the export routes attach private exact bytes
 # ---------------------------------------------------------------------------
 

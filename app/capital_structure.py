@@ -58,6 +58,7 @@ from engine.capital_structure.scenario_composition import (
     compose_scenario,
 )
 from engine.capital_structure.scenario_inputs import (
+    BUNDLE_FAMILIES,
     CAPACITY_INPUTS_FILENAME,
     CAPACITY_INPUTS_SCHEMA,
     ISSUER_FAMILIES,
@@ -72,7 +73,9 @@ from engine.capital_structure.saved_scenarios import (
     RestoreOutcome,
     SavedScenario,
     classify_restore,
+    restore_anchor,
     result_digest_of,
+    result_substance_digest_of,
 )
 from engine.capital_structure.saved_scenario_store import (
     READ_OK,
@@ -1368,13 +1371,31 @@ def _admit_scenario_body(raw: bytes) -> dict[str, Any]:
     return body
 
 
+class _Evaluated(NamedTuple):
+    """One evaluate run: the response envelope plus what it actually bound.
+
+    The restore classifies against the state and inputs generations THIS run
+    bound — never a second independent read — and carries the evaluated
+    scenario (the rebased anchor on a restore) for the typed outcome and the
+    export envelope.
+    """
+
+    envelope: dict[str, Any]
+    scenario: FinancingScenario
+    state_generation_id: str
+    inputs_generation_id: str
+
+
 def _evaluate_internals(
     issuer_id: str,
     mode: str | None,
     cutoff: str | None,
     clock: str | None,
     raw: bytes,
-) -> dict[str, Any]:
+    *,
+    rebase_as_of: bool = False,
+    anchor: SavedScenario | None = None,
+) -> _Evaluated:
 
     """The evaluate route's whole body — U1B-2 §4, unchanged, now shared.
 
@@ -1383,6 +1404,13 @@ def _evaluate_internals(
     route's original law: the served state generation, the published inputs
     bundle, then the body, then composition.  Every refusal is the route's own
     typed error, propagated unchanged.
+
+    The restore path alone sets ``rebase_as_of`` (with the saved row as
+    ``anchor``): the scenario evaluated is :func:`restore_anchor`'s — the saved
+    assumptions re-anchored at the served generation's as_of — so the as_of
+    equality below holds by construction and a nightly move is a re-run, not a
+    refusal.  Every public caller keeps the defaults and byte-identical
+    behaviour.
     """
     resolved = _state_view(issuer_id, mode, cutoff, clock)
     state_bundle = resolved.bundle
@@ -1394,6 +1422,10 @@ def _evaluate_internals(
         scenario = _scenario_from_body(body)
     except ContractViolation as exc:
         raise _private_error(422, {"contract_error": str(exc)}) from exc
+    if rebase_as_of:
+        if anchor is None:
+            raise _private_error(422, {"contract_error": "restore rebase requires the saved anchor"})
+        scenario = restore_anchor(anchor, str(state.request.as_of))
     if scenario.as_of != state.request.as_of:
         raise _private_error(422, _SCENARIO_AS_OF_MISMATCH)
 
@@ -1443,14 +1475,19 @@ def _evaluate_internals(
     except (CapacityInputError, FundingInputError) as exc:
         raise _private_error(422, str(exc)) from exc
 
-    return {
-        "view": view,
-        "inputs": inputs_view,
-        "result": result.as_record(),
-        "facts_unchanged": True,
-        "compatibility": dict(PROJECTION_COMPATIBILITY),
-        "authority": dict(AUTHORITY),
-    }
+    return _Evaluated(
+        envelope={
+            "view": view,
+            "inputs": inputs_view,
+            "result": result.as_record(),
+            "facts_unchanged": True,
+            "compatibility": dict(PROJECTION_COMPATIBILITY),
+            "authority": dict(AUTHORITY),
+        },
+        scenario=scenario,
+        state_generation_id=str(state_bundle["generation_id"]),
+        inputs_generation_id=str(inputs_record["generation_id"]),
+    )
 
 
 def _scenario_record_of(raw: bytes) -> dict[str, Any]:
@@ -1487,7 +1524,7 @@ async def issuer_scenario_evaluate(
     """
     _private(response)
     raw = await request.body()
-    return _evaluate_internals(issuer_id, mode, cutoff, clock, raw)
+    return _evaluate_internals(issuer_id, mode, cutoff, clock, raw).envelope
 
 
 @router.get("/api/capital-structure/v1/issuers/{issuer_id}/state/registration")
@@ -1690,13 +1727,19 @@ def _saved_from_record(record: Mapping[str, Any]) -> SavedScenario:
 
     ``schema`` and ``saved_id`` are the server's mint; every other field must
     reconstruct under the served contract version.  A row that no longer does
-    is the typed ``scenario_rejected`` restore outcome — never a partial
-    answer.
+    — a missing or extra field, an invalid value, a record written before the
+    substance digest existed — is the typed ``scenario_rejected`` restore
+    outcome, never a partial answer and never a 500.
     """
     body = {
         str(key): value for key, value in record.items() if str(key) not in ("schema", "saved_id")
     }
-    return SavedScenario(**body)
+    try:
+        return SavedScenario(**body)
+    except ContractViolation:
+        raise
+    except (TypeError, ValueError) as exc:
+        raise ContractViolation(f"saved_scenario: stored record does not reconstruct ({exc})") from exc
 
 
 def _public_of_record(record: Mapping[str, Any]) -> dict[str, Any]:
@@ -1764,15 +1807,28 @@ def _restore_outcome_from_refusal(
 ) -> RestoreOutcome:
     """Map an evaluate refusal to the typed restore outcome it names.
 
-    SPEC_U2 §1 "U2-2": on a restore an evaluate error becomes the typed
-    outcome, never a number and never a propagated error for the caller's own
-    row — the inputs-family 409 is ``inputs_unavailable``, a U1a 503 condition
-    is ``source_outage``, and any other refusal (an as_of that no longer
-    binds, an issuer that left coverage, a composition the served rules
-    refuse) is the saved scenario failing to produce its answer under the
-    served generation: ``scenario_rejected``.
+    The closed table (S8), decided on the typed cause — the internals raise
+    with ``from exc``, so ``exc.__cause__`` carries the engine class:
+
+    - 503 → ``source_outage``;
+    - 404 (the issuer is absent from the served state) → ``source_outage``;
+    - 409 whose detail names ``scenario_inputs_unavailable`` →
+      ``inputs_unavailable`` with the detail's components;
+    - 409 whose cause is a ``ScenarioInputsError`` (an inputs as_of mismatch —
+      the normal case for a ``then_known`` save after a nightly — or an
+      unknown issuer) → ``inputs_unavailable``, naming every family with the
+      engine's own reason, never an invented code;
+    - any other 409 or 422 (composition, capacity, funding, a body contract
+      error, the then_known as_of mismatch, a contract refusal of the rebased
+      anchor) → ``scenario_rejected`` as a refusal of the served engine
+      (``scenario_refused``);
+    - any other status propagates unchanged.
+
+    A restore refusal is a typed outcome for the caller's own row — never a
+    number and never a propagated error.
     """
     detail = exc.detail
+    cause = exc.__cause__
     if exc.status_code == 409 and isinstance(detail, Mapping) and detail.get("code") == "scenario_inputs_unavailable":
         unavailable = ScenarioInputsUnavailable(
             dict(detail.get("components") or {}),
@@ -1788,7 +1844,25 @@ def _restore_outcome_from_refusal(
             scenario_rejected=False,
             changes=changeset,
         )
-    if exc.status_code == 503:
+    if exc.status_code == 409 and isinstance(cause, ScenarioInputsError):
+        unavailable = ScenarioInputsUnavailable(
+            {
+                family: {"support": "unavailable", "reason_codes": [str(cause)]}
+                for family in BUNDLE_FAMILIES
+            },
+            (),
+        )
+        return classify_restore(
+            saved,
+            state_generation_id=state_generation_id,
+            inputs_generation_id=inputs_generation_id,
+            current_result=None,
+            unavailable=unavailable,
+            state_unavailable=False,
+            scenario_rejected=False,
+            changes=changeset,
+        )
+    if exc.status_code in (503, 404):
         return classify_restore(
             saved,
             state_generation_id=None,
@@ -1799,16 +1873,19 @@ def _restore_outcome_from_refusal(
             scenario_rejected=False,
             changes=None,
         )
-    return classify_restore(
-        saved,
-        state_generation_id=state_generation_id,
-        inputs_generation_id=inputs_generation_id,
-        current_result=None,
-        unavailable=None,
-        state_unavailable=False,
-        scenario_rejected=True,
-        changes=changeset,
-    )
+    if exc.status_code in (409, 422):
+        return classify_restore(
+            saved,
+            state_generation_id=state_generation_id,
+            inputs_generation_id=inputs_generation_id,
+            current_result=None,
+            unavailable=None,
+            state_unavailable=False,
+            scenario_rejected=False,
+            scenario_refused=True,
+            changes=changeset,
+        )
+    raise exc
 
 
 def _restore_body(
@@ -1837,11 +1914,15 @@ def _rejected_restore(record: Mapping[str, Any], issuer_id: str, served_generati
     Mirrors the classifier's first precedence row for a body the served
     contract version refuses — the one case where no ``SavedScenario`` exists
     to classify with, so the outcome carries the row's own stored identity.
+    The scenario's as_of and scenario_id name the answer that cannot be
+    re-run; a row missing either is store corruption, not an outcome the
+    closed vocabulary can name.
     """
     result_id_before = str(record.get("result_id") or "")
-    if not result_id_before:
-        # A row without even its result identity is store corruption, not an
-        # outcome the closed vocabulary can name.
+    scenario_record = record.get("scenario")
+    scenario_as_of = str(scenario_record.get("as_of") or "") if isinstance(scenario_record, Mapping) else ""
+    scenario_id = str(scenario_record.get("scenario_id") or "") if isinstance(scenario_record, Mapping) else ""
+    if not result_id_before or not scenario_as_of or not scenario_id:
         raise _unavailable(_STORE_UNAVAILABLE)
     _state_generation_id, inputs_generation_id = _served_generations()
     changeset = _usable_ledger(record.get("state_generation_id"), served_generation_id)
@@ -1856,8 +1937,12 @@ def _rejected_restore(record: Mapping[str, Any], issuer_id: str, served_generati
             None if record.get("inputs_generation_id") is None else str(record["inputs_generation_id"])
         ),
         to_inputs_generation_id=inputs_generation_id,
+        from_as_of=scenario_as_of,
+        to_as_of=None,
         result_id_before=result_id_before,
         result_id_after=None,
+        scenario_id_before=scenario_id,
+        scenario_id_after=None,
         result_identical=None,
         changes_n=len(issuer_changes),
         change_kinds=tuple(sorted({change.kind for change in issuer_changes})),
@@ -1880,9 +1965,13 @@ def _restore_answer(user_id: str, issuer_id: str, saved_id: str) -> _Restored:
     The row is read through the store adapter (which owns the partition), the
     route re-checks it, and the evaluate internals re-run the saved scenario
     and view against the served generation — the SAME function, so a restore
-    never recomposes differently from the live route.  Every outcome of the
-    re-run is typed and 200; another user's or an absent ``saved_id`` is 404,
-    never 403.
+    never recomposes differently from the live route.  A ``current`` or
+    ``scenario`` anchor re-runs the saved assumptions AT the served as_of
+    (:func:`restore_anchor` builds S′, once); a ``then_known`` anchor re-runs
+    at its own cutoff.  The classification binds the generations THIS re-run
+    bound, and identity is substance: the saved block stays byte-verbatim.
+    Every outcome of the re-run is typed and 200; another user's or an absent
+    ``saved_id`` is 404, never 403; identity drift is the typed 503.
     """
     result = store.read_one(user_id, saved_id)
     if result.state == READ_UNAVAILABLE:
@@ -1916,7 +2005,15 @@ def _restore_answer(user_id: str, issuer_id: str, saved_id: str) -> _Restored:
     ).encode("utf-8")
     mode, cutoff = _restore_view_params(saved.view)
     try:
-        envelope = _evaluate_internals(saved.issuer_id, mode, cutoff, "system", scenario_body)
+        evaluated = _evaluate_internals(
+            saved.issuer_id,
+            mode,
+            cutoff,
+            "system",
+            scenario_body,
+            rebase_as_of=mode is None,
+            anchor=saved,
+        )
     except HTTPException as exc:
         outcome = _restore_outcome_from_refusal(
             saved, exc, state_generation_id, inputs_generation_id, changeset
@@ -1925,28 +2022,37 @@ def _restore_answer(user_id: str, issuer_id: str, saved_id: str) -> _Restored:
             _restore_body(saved.public_record(), None, outcome, issuer_changes),
             None,
         )
-    outcome = classify_restore(
-        saved,
-        state_generation_id=state_generation_id,
-        inputs_generation_id=inputs_generation_id,
-        current_result=envelope["result"],
-        unavailable=None,
-        state_unavailable=False,
-        scenario_rejected=False,
-        changes=changeset,
-    )
+    rebased = evaluated.scenario
+    try:
+        outcome = classify_restore(
+            saved,
+            state_generation_id=evaluated.state_generation_id,
+            inputs_generation_id=evaluated.inputs_generation_id,
+            current_result=evaluated.envelope["result"],
+            unavailable=None,
+            state_unavailable=False,
+            scenario_rejected=False,
+            changes=changeset,
+            current_scenario_id=rebased.scenario_id,
+            current_as_of=str(evaluated.envelope["view"]["as_of"]),
+        )
+    except ContractViolation as exc:
+        if "saved_scenario:identity_drift" not in str(exc):
+            raise
+        raise _private_error(503, {"code": "saved_scenario_identity_drift"}) from exc
     export_envelope = {
-        "view": envelope["view"],
-        "inputs": envelope["inputs"],
-        "result": envelope["result"],
-        "scenario": dict(saved.scenario),
+        "view": evaluated.envelope["view"],
+        "inputs": evaluated.envelope["inputs"],
+        "result": evaluated.envelope["result"],
+        "scenario": rebased.as_record(),
         "issuer_id": saved.issuer_id,
-        "inputs_generation_id": inputs_generation_id,
+        "inputs_generation_id": evaluated.inputs_generation_id,
     }
     current = {
-        "view": envelope["view"],
-        "inputs": envelope["inputs"],
-        "result": envelope["result"],
+        "view": evaluated.envelope["view"],
+        "inputs": evaluated.envelope["inputs"],
+        "result": evaluated.envelope["result"],
+        "scenario": rebased.as_record(),
     }
     return _Restored(
         _restore_body(saved.public_record(), current, outcome, issuer_changes),
@@ -2050,7 +2156,7 @@ async def issuer_scenario_save(
     eval_mode, eval_cutoff = (
         ("then_known", normalized_cutoff) if mode == "then_known" else (None, normalized_cutoff)
     )
-    envelope = _evaluate_internals(issuer_id, eval_mode, eval_cutoff, "system", scenario_raw)
+    envelope = _evaluate_internals(issuer_id, eval_mode, eval_cutoff, "system", scenario_raw).envelope
     scenario_record = _scenario_record_of(scenario_raw)
     served_state = _load_state()
     served_inputs = _load_inputs()
@@ -2066,6 +2172,7 @@ async def issuer_scenario_save(
             inputs_generation_id=str(served_inputs["generation_id"]),
             result_id=str(result["result_id"]),
             result_digest=result_digest_of(result),
+            result_substance_digest=result_substance_digest_of(result),
             rule_pack_digest=str(result["capacity_envelope"]["rule_pack_digest"]),
             saved_at=_utc_stamp(datetime.now(timezone.utc)),
         )
@@ -2228,7 +2335,7 @@ async def issuer_scenario_evaluate_export(
     if fmt not in EXPORT_FORMATS:
         raise _private_error(404, f"unsupported export format: {fmt}")
     raw = await request.body()
-    envelope = _evaluate_internals(issuer_id, mode, cutoff, clock, raw)
+    envelope = _evaluate_internals(issuer_id, mode, cutoff, clock, raw).envelope
     export_envelope = {
         **envelope,
         "scenario": _scenario_record_of(raw),
