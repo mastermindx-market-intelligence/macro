@@ -58,10 +58,31 @@ test("heartbeat expiry schedules an actual generation-fenced recovery",async t=>
  h.streams[0].emit("snapshot",snapshot([story("obsolete")]));
  assert.ok(!h.doc.getElementById("ndFeed").textContent.includes("obsolete"));
 });
-test("repeated stream errors switch to bounded polling",async t=>{
+test("repeated stream errors switch to bounded polling and language changes retain its deadline",async t=>{
  const h=harness(t);await settle();
  for(let i=0;i<3;i++){h.streams.at(-1).onerror();await h.advance(10000);}
  assert.equal(h.app.getState().mode,"polling");assert.equal(h.streams.length,3);
+ await h.advance(4000);const requests=h.requests();
+ for(const [locale,label] of [["zh","自动刷新 · 10秒"],["en","Auto refresh · 10s"]]){
+  h.doc.documentElement.dataset.lang=locale;h.doc.dispatchEvent(new h.win.Event("langchange"));
+  assert.deepEqual(["ndConnection","ndConnectionMobile"].map(id=>h.doc.getElementById(id).textContent),[label,label]);
+  assert.equal(h.app.getState().mode,"polling");assert.equal(h.requests(),requests);assert.equal(h.streams.length,3);
+ }
+ await h.advance(5999);assert.equal(h.requests(),requests);
+ await h.advance(1);assert.equal(h.requests(),requests+1);assert.equal(h.streams.length,3);
+});
+test("language changes retain the live channel and current failure wording",async t=>{
+ const h=harness(t);await settle();const stream=h.streams[0];stream.emit("snapshot",snapshot([story()]));
+ const requests=h.requests();h.click("ndCoverageOpen");
+ h.doc.documentElement.dataset.lang="zh";h.doc.dispatchEvent(new h.win.Event("langchange"));
+ assert.deepEqual(["ndConnection","ndConnectionMobile"].map(id=>h.doc.getElementById(id).textContent),["新闻流已连接","新闻流已连接"]);
+ assert.equal(h.doc.querySelector("#ndCoverageBody .nd-section p").textContent,"新闻流已连接");
+ assert.equal(h.app.getState().mode,"connected");assert.equal(stream.closed,false);assert.equal(h.streams.length,1);assert.equal(h.requests(),requests);
+ stream.emit("unavailable");assert.equal(h.doc.getElementById("ndConnection").textContent,"新闻流不可用");
+ h.doc.documentElement.dataset.lang="en";h.doc.dispatchEvent(new h.win.Event("langchange"));
+ assert.deepEqual(["ndConnection","ndConnectionMobile"].map(id=>h.doc.getElementById(id).textContent),["Feed unavailable","Feed unavailable"]);
+ assert.equal(h.doc.querySelector("#ndCoverageBody .nd-section p").textContent,"Feed unavailable");
+ assert.equal(h.app.getState().mode,"degraded");assert.equal(stream.closed,true);assert.equal(h.streams.length,1);assert.equal(h.requests(),requests);
 });
 test("mobile save, detail tabs and updates preserve usable focus",async t=>{
  const h=harness(t,{mobile:true});await settle();selected(h);
@@ -73,6 +94,31 @@ test("mobile save, detail tabs and updates preserve usable focus",async t=>{
  assert.equal(h.doc.activeElement.dataset.action,"detail-tab-evidence");
  h.key("/");assert.notEqual(h.doc.activeElement.id,"ndSearch");
  h.click("ndDetailClose");assert.ok(h.doc.activeElement.classList.contains("nd-title"));
+});
+test("closed shared dialogs allow search shortcuts while a visible dialog owns them",async t=>{
+ const h=harness(t);await settle();
+ const panel=h.doc.createElement("div");panel.setAttribute("role","dialog");h.doc.body.appendChild(panel);
+ h.click("ndDensity");const trigger=h.doc.getElementById("ndDensity");
+ for(const state of [
+  {css:"display:block;visibility:hidden;opacity:1",aria:null},
+  {css:"display:block;visibility:visible;opacity:1",aria:"true"}
+ ]){
+  panel.style.cssText=state.css;
+  if(state.aria===null)panel.removeAttribute("aria-hidden");else panel.setAttribute("aria-hidden",state.aria);
+  trigger.focus();h.key("/");assert.equal(h.doc.activeElement.id,"ndSearch",state.css+" aria-hidden="+state.aria);
+ }
+ panel.removeAttribute("aria-hidden");
+ for(const opacity of ["0","1"]){
+  panel.style.cssText="display:flex;visibility:visible;opacity:"+opacity;
+  trigger.focus();h.key("/");assert.equal(h.doc.activeElement,trigger,"visible dialog opacity="+opacity);
+ }
+});
+test("CSS-hidden shared dialogs leave the mobile story focus trap active",async t=>{
+ const h=harness(t,{mobile:true});await settle();selected(h);
+ const panel=h.doc.createElement("div");panel.setAttribute("role","dialog");panel.style.cssText="display:block;visibility:hidden;opacity:1";h.doc.body.appendChild(panel);
+ h.doc.getElementById("ndDensity").focus();
+ const event=new h.win.KeyboardEvent("keydown",{key:"Tab",bubbles:true,cancelable:true});h.doc.dispatchEvent(event);
+ assert.equal(event.defaultPrevented,true);assert.equal(h.doc.activeElement.id,"ndDetailClose");
 });
 test("breakpoint changes synchronize modal semantics",async t=>{
  const h=harness(t);await settle();selected(h);h.resize(true);

@@ -1,0 +1,699 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      {
+        "attribute": null,
+        "kind": "hover",
+        "name": "news_hover",
+        "spec": "news_hover:hover(#ndDensity)",
+        "value": "#ndDensity"
+      },
+      {
+        "attribute": null,
+        "kind": "focus",
+        "name": "news_focus",
+        "spec": "news_focus:focus(#ndSearch)",
+        "value": "#ndSearch"
+      },
+      {
+        "attribute": null,
+        "kind": "focus",
+        "name": "company_buffered",
+        "spec": "company_buffered:focus(#ndCompanyUpdates)",
+        "value": "#ndCompanyUpdates"
+      },
+      {
+        "attribute": null,
+        "kind": "focus",
+        "name": "story_warning",
+        "spec": "story_warning:focus(#ndDetailClose)",
+        "value": "#ndDetailClose"
+      }
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-10-19T02:16:41.289732Z",
+  "honesty": {
+    "access": "The actual capture records declare anonymous access; authenticated tiers remain gaps.",
+    "assembly": {
+      "module_ref": "mockups/evidence/news-cockpit-20261019/assemble_manifest.py",
+      "module_sha256": "00a4161e451fb8c34c9fa8146931b69573cb6f8709814b5fecf1b8a8e3f379f5"
+    },
+    "authority": "Actual Browser-plugin screenshots and DOM observations were assembled into the existing v2 schema. The standalone capture_page_evidence.py CLI was not executed.",
+    "capture_context": [
+      "All 14 accepted final captures were observed at https://hip-parks-talk.loca.lt/news.html, with any story fragment retained in the raw metadata. This is a controlled illustrative preview. Earlier QuickTunnel attempts were superseded and are not included as accepted records.",
+      "The release owner reports that the 12 mandatory final captures use news_desk.js SHA-256 fc345ae6fc8a6cfd1b06da26ff5fa953ec7aa1c1ff1e3abd4e961c7f98b5849c. The local file independently has that hash. The mobile company extra at 01:59:51 used the preceding news_desk.js revision identified by prefix 72d339; the later change was translation-only according to the release owner. The company module and CSS were unchanged for that extra.",
+      "The local news_desk.css SHA-256 is a1bf8c533e154ed4b2baf19005022e2572c12247cc6c7d5b5aa6017e60481f68; the local news_company.js SHA-256 is 4bda25bfb4b4db863896f79f37158e9b7de4114609c2af8375e4fba90b2fdb9b. The release owner identifies the canonical built News HTML by SHA-256 prefix def133. That HTML was not supplied to this assembler, so no page_tree_sha or repository commit attribution is asserted.",
+      "The release owner reported a native external preview transport probe with snapshot response 8.014 seconds and group response 9.984 seconds, and intermittent group requests crossing the real 10-second client timeout with correct UI clearing. Three optional desktop company capture attempts were unsuccessful; no accepted desktop company PNG was written. These are attributed preview observations, not metrics collected by the capture adapter or production latency measurements."
+    ],
+    "capture_plan": "The accepted package contains eight mandatory rest cells, four mandatory desktop/en hover/focus cells across both themes, and two additional mobile UI views. Two self-imposed optional desktop company views remain explicit gaps after three unsuccessful preview capture attempts reported by the release owner. Totals and screenshot_completion describe the selected final records, not all earlier preview operations. No mandatory cell or integrity requirement was removed.",
+    "capture_records": [
+      {
+        "capture_metadata": "desktop-en-dark.capture.json",
+        "capture_metadata_sha256": "eb7b7269f11c3d243da2e68baf9fc244a56899f6e7b1cbbfe29492be65b47ae5",
+        "captured_at": "2026-10-19T02:11:10.794Z",
+        "native_screenshot": {
+          "bytes": 127593,
+          "format": "JPEG",
+          "pixel_preserving_png_reencode": true,
+          "sha256": "fb6a65ee7839efdca6a075d75ce70e9b2b5426e9e9294f44ecf7d88fc566c257"
+        },
+        "url": "https://hip-parks-talk.loca.lt/news.html#story=preview-story-0"
+      },
+      {
+        "capture_metadata": "desktop-en-dark-focus.capture.json",
+        "capture_metadata_sha256": "2006dd884bf3fb6167d5721bc904f6aeac64c50bb42da9efdade5e9343b640a7",
+        "captured_at": "2026-10-19T02:11:25.935Z",
+        "native_screenshot": {
+          "bytes": 130745,
+          "format": "JPEG",
+          "pixel_preserving_png_reencode": true,
+          "sha256": "17aac7810e7ff384456fec8c847e9b9cbc222c5589d82147ebf0ccac7a449e9b"
+        },
+        "url": "https://hip-parks-talk.loca.lt/news.html#story=preview-story-0"
+      },
+      {
+        "capture_metadata": "desktop-en-dark-hover.capture.json",
+        "capture_metadata_sha256": "344e0bbce7051199ff9dd37698d8b85b8155c178b0521241154ff7a903817e4f",
+        "captured_at": "2026-10-19T02:11:18.128Z",
+        "native_screenshot": {
+          "bytes": 127432,
+          "format": "JPEG",
+          "pixel_preserving_png_reencode": true,
+          "sha256": "0233a28322a52748848d167719df8d70152119904ee96ac92a3d963aa2f410f2"
+        },
+        "url": "https://hip-parks-talk.loca.lt/news.html#story=preview-story-0"
+      },
+      {
+        "capture_metadata": "desktop-en-light.capture.json",
+        "capture_metadata_sha256": "8307bd06b0c18a20bd77d49b33f36fe85972be6d94d08c92c786955daa41f4da",
+        "captured_at": "2026-10-19T02:10:14.605Z",
+        "native_screenshot": {
+          "bytes": 146128,
+          "format": "JPEG",
+          "pixel_preserving_png_reencode": true,
+          "sha256": "d8c2ca68be1a5763e3da2e73e3ba643642257212c7ec1b1f4279907b700cae56"
+        },
+        "url": "https://hip-parks-talk.loca.lt/news.html#story=preview-story-0"
+      },
+      {
+        "capture_metadata": "desktop-en-light-focus.capture.json",
+        "capture_metadata_sha256": "c44e1f07c3abdca1f980fb3be299cb23a3743c8b3f1b48f5f3d0261d54123399",
+        "captured_at": "2026-10-19T02:10:34.654Z",
+        "native_screenshot": {
+          "bytes": 149142,
+          "format": "JPEG",
+          "pixel_preserving_png_reencode": true,
+          "sha256": "7ea92dd1294f080dedceac5c1c2ce5516f407657acb029117399f98911f62455"
+        },
+        "url": "https://hip-parks-talk.loca.lt/news.html#story=preview-story-0"
+      },
+      {
+        "capture_metadata": "desktop-en-light-hover.capture.json",
+        "capture_metadata_sha256": "cfa63e5b24b9e62053bef84f18cc0b2e5c124b56844291cfdc960f22da48d748",
+        "captured_at": "2026-10-19T02:10:24.884Z",
+        "native_screenshot": {
+          "bytes": 145352,
+          "format": "JPEG",
+          "pixel_preserving_png_reencode": true,
+          "sha256": "ce05727dec2201ac21f7ea78e50c754863b40fb93424c3b0da1c7a70a8971fea"
+        },
+        "url": "https://hip-parks-talk.loca.lt/news.html#story=preview-story-0"
+      },
+      {
+        "capture_metadata": "desktop-zh-dark.capture.json",
+        "capture_metadata_sha256": "469c2d9ebf5001fedb18387ef55fecb7aab724f0f65e726a6f6967d6a96cca3c",
+        "captured_at": "2026-10-19T02:05:26.424Z",
+        "native_screenshot": {
+          "bytes": 105298,
+          "format": "JPEG",
+          "pixel_preserving_png_reencode": true,
+          "sha256": "681f07de99cc1a847961e614867db3dedb448fc96940e8a98f73ce492ae7aaa9"
+        },
+        "url": "https://hip-parks-talk.loca.lt/news.html#story=preview-story-0"
+      },
+      {
+        "capture_metadata": "desktop-zh-light.capture.json",
+        "capture_metadata_sha256": "dcf315160cff4dbc83026e09cf5c4c785f05f6f73b0eab08ca24b0dea8f9a92a",
+        "captured_at": "2026-10-19T02:05:38.267Z",
+        "native_screenshot": {
+          "bytes": 121983,
+          "format": "JPEG",
+          "pixel_preserving_png_reencode": true,
+          "sha256": "091e378ed4e4f99b09f701f91cf5e11c80f97a698753c1d02197f8de8e4eff9b"
+        },
+        "url": "https://hip-parks-talk.loca.lt/news.html#story=preview-story-0"
+      },
+      {
+        "capture_metadata": "mobile-en-dark.capture.json",
+        "capture_metadata_sha256": "1dac30a3e2f230da28a8b0befe85cc32c9d0c11865e521f48acbb96fb1b1f30c",
+        "captured_at": "2026-10-19T02:02:48.152Z",
+        "native_screenshot": {
+          "bytes": 42203,
+          "format": "JPEG",
+          "pixel_preserving_png_reencode": true,
+          "sha256": "cb96210d727b45112dfce5aed5a8214f061cff54da3b2b9109bdf9f1e797a06c"
+        },
+        "url": "https://hip-parks-talk.loca.lt/news.html"
+      },
+      {
+        "capture_metadata": "mobile-en-dark-company.capture.json",
+        "capture_metadata_sha256": "265e1de1ff96e886faf7c7f9cb2aae7ea06a5f1ed2367808ef51b926306927b0",
+        "captured_at": "2026-10-19T01:59:51.047Z",
+        "checked_ui_observation": {
+          "buffered_group_count": 1,
+          "connection_state": "connected",
+          "expanded_groups": [
+            {
+              "members": 2,
+              "source_link_count": 2,
+              "source_link_hosts": [
+                "example.com"
+              ]
+            }
+          ],
+          "state_to_capture_delay_seconds": 2.849,
+          "visible_dialog": "ndCompany",
+          "visible_row_count": 3
+        },
+        "native_screenshot": {
+          "bytes": 42122,
+          "format": "JPEG",
+          "pixel_preserving_png_reencode": true,
+          "sha256": "d5f7a46d679f56f525a53048054ad616aa60867490358ac9ad770afce6245898"
+        },
+        "state_evidence": "mobile-en-dark-company.state.json",
+        "state_evidence_sha256": "7d6c50711804632461dbb75f2efddb427ddf7dddd7b7669b5458948ef664959a",
+        "url": "https://hip-parks-talk.loca.lt/news.html"
+      },
+      {
+        "capture_metadata": "mobile-en-light.capture.json",
+        "capture_metadata_sha256": "ba69e989878f4b463f7b8fa0d4d5522a966a529ef06860232224fe376fef9500",
+        "captured_at": "2026-10-19T02:02:57.485Z",
+        "native_screenshot": {
+          "bytes": 49828,
+          "format": "JPEG",
+          "pixel_preserving_png_reencode": true,
+          "sha256": "3a37298ea66fd119d8169b564766f0e87abce6f6de9196212e2c8d2963c14e8f"
+        },
+        "url": "https://hip-parks-talk.loca.lt/news.html"
+      },
+      {
+        "capture_metadata": "mobile-zh-dark.capture.json",
+        "capture_metadata_sha256": "46d9a91de3f05ad55d972365b8ad358e543f3597e9926ddc0931ed6be89ca38f",
+        "captured_at": "2026-10-19T02:04:38.100Z",
+        "native_screenshot": {
+          "bytes": 36552,
+          "format": "JPEG",
+          "pixel_preserving_png_reencode": true,
+          "sha256": "666c03a53d44431c77756d2efbe3207d0f18904879eb775adc74d91f08f36bef"
+        },
+        "url": "https://hip-parks-talk.loca.lt/news.html"
+      },
+      {
+        "capture_metadata": "mobile-zh-light.capture.json",
+        "capture_metadata_sha256": "9b9866c64c0d207ebeddd2b095c467b292f42bced17febccf8f18e9fe3bb4b23",
+        "captured_at": "2026-10-19T02:03:07.097Z",
+        "native_screenshot": {
+          "bytes": 43108,
+          "format": "JPEG",
+          "pixel_preserving_png_reencode": true,
+          "sha256": "e33648e6f46db702f2d18ba0d5e05a462ef339a7c756fa6ae30faa4dd9c6df3e"
+        },
+        "url": "https://hip-parks-talk.loca.lt/news.html"
+      },
+      {
+        "capture_metadata": "mobile-zh-light-story.capture.json",
+        "capture_metadata_sha256": "a4c357d0efd4291b0241720dac50f05b7435c6e40f9b0add780fb28bc234b31e",
+        "captured_at": "2026-10-19T02:04:25.908Z",
+        "checked_ui_observation": {
+          "close_focus_visible": true,
+          "connection_state": "connected",
+          "state_to_capture_delay_seconds": 3.076,
+          "story_modal": true,
+          "warning_visible": true
+        },
+        "native_screenshot": {
+          "bytes": 45495,
+          "format": "JPEG",
+          "pixel_preserving_png_reencode": true,
+          "sha256": "4cd2ee0d56eba0832103efaf3e81c8d4aaba87f9c8fb26f41af557af868620c9"
+        },
+        "state_evidence": "mobile-zh-light-story.state.json",
+        "state_evidence_sha256": "989f3950b4e58ea6239b4c4166901ad2d122f32781f506f629a79e87ca0ed396",
+        "url": "https://hip-parks-talk.loca.lt/news.html#story=preview-story-0"
+      }
+    ],
+    "capture_window": {
+      "first": "2026-10-19T01:59:51.047000+00:00",
+      "last": "2026-10-19T02:11:25.935000+00:00"
+    },
+    "company_source_scope": "Company views contain illustrative records from a controlled preview. The checks establish the recorded connected UI state, visible buffered count, three visible rows and expanded source links. They do not establish production entitlements, publisher coverage, source independence, delivery latency or row stability over time. The actual observed source hosts are retained in checked_ui_observation.",
+    "force_states": "Force definitions record real hover or visible keyboard focus after normal UI interactions. Company and warning context is preserved in actual companion state observations, without synthetic DOM emulation.",
+    "gaps": "Unmeasured metrics remain null and missing screenshots prevent assembly.",
+    "measurement_scope": "No browser user-agent, console completeness, request-count or network-byte claim is inferred from screenshots. Raw companion observations remain unchanged.",
+    "screenshot_encoding": "Native JPEG identities and pixel-preserving PNG re-encoding are transcribed from native_screenshot metadata. Saved PNG digests, byte lengths and dimensions are independently checked; original JPEG bytes are not reconstructed by this assembler.",
+    "served_origins": [
+      {
+        "base_url": "https://hip-parks-talk.loca.lt",
+        "capture_metadata": [
+          "desktop-en-dark.capture.json",
+          "desktop-en-dark-focus.capture.json",
+          "desktop-en-dark-hover.capture.json",
+          "desktop-en-light.capture.json",
+          "desktop-en-light-focus.capture.json",
+          "desktop-en-light-hover.capture.json",
+          "desktop-zh-dark.capture.json",
+          "desktop-zh-light.capture.json",
+          "mobile-en-dark.capture.json",
+          "mobile-en-dark-company.capture.json",
+          "mobile-en-light.capture.json",
+          "mobile-zh-dark.capture.json",
+          "mobile-zh-light.capture.json",
+          "mobile-zh-light-story.capture.json"
+        ]
+      }
+    ]
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "Authenticated access states are outside this anonymous capture package.",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "Authenticated access states are outside this anonymous capture package.",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "Authenticated access states are outside this anonymous capture package.",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "measurement",
+          "reason": "The Browser capture adapter did not collect this metric; no zero/error-free claim is made.",
+          "value": "console_errors"
+        },
+        {
+          "captured": false,
+          "dimension": "measurement",
+          "reason": "The Browser capture adapter did not collect this metric; no zero/error-free claim is made.",
+          "value": "failed_responses"
+        },
+        {
+          "captured": false,
+          "dimension": "measurement",
+          "reason": "The Browser capture adapter did not collect this metric; no zero/error-free claim is made.",
+          "value": "request_count"
+        },
+        {
+          "captured": false,
+          "dimension": "measurement",
+          "reason": "The Browser capture adapter did not collect this metric; no zero/error-free claim is made.",
+          "value": "payload_bytes_total"
+        },
+        {
+          "captured": false,
+          "dimension": "force_state",
+          "locale": "en",
+          "reason": "This optional desktop company view was not accepted. The release owner reported preview group-request timeouts and UI clearing during capture attempts. No accepted PNG exists; the view is excluded from captured states and totals.",
+          "theme": "dark",
+          "value": "company_buffered",
+          "viewport": "desktop"
+        },
+        {
+          "captured": false,
+          "dimension": "force_state",
+          "locale": "zh",
+          "reason": "This optional desktop company view was not accepted. The release owner reported preview group-request timeouts and UI clearing during capture attempts. No accepted PNG exists; the view is excluded from captured states and totals.",
+          "theme": "light",
+          "value": "company_buffered",
+          "viewport": "desktop"
+        }
+      ],
+      "metrics": {
+        "asof_present": null,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": null,
+            "elements_wider_than_viewport": null,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": null,
+            "elements_wider_than_viewport": null,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": null,
+        "document_height_px": null,
+        "duplicate_heading_texts": null,
+        "elements_wider_than_viewport": null,
+        "heading_counts": null,
+        "horizontal_overflow": null,
+        "long_paragraph_count": null,
+        "measured_in": null,
+        "panel_count": null,
+        "payload_bytes_total": null,
+        "raw_slug_hit_count": null,
+        "raw_slug_hits": null,
+        "request_count": null,
+        "screenshot_completion": 1.0,
+        "section_count": null,
+        "source_present": null,
+        "todo_placeholder_hit_count": null,
+        "todo_placeholder_hits": null,
+        "visible_word_count": null
+      },
+      "page_id": "news.html",
+      "registry_route": "/news.html",
+      "route": "/news.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 555793,
+          "capture_tool_module_sha256": "38ea551fb8df7caa013ef1280583eefdab944ba216bb8cf4ea21e4feeac23e29",
+          "captured": true,
+          "file": "desktop-en-dark.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "en",
+          "sha256": "add3df1086daf4392fb5403512698c8808aef6feea9e5f48b6dea14a3827f972",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "news_focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 559492,
+          "capture_tool_module_sha256": "38ea551fb8df7caa013ef1280583eefdab944ba216bb8cf4ea21e4feeac23e29",
+          "captured": true,
+          "file": "desktop-en-dark-focus.png",
+          "force_state": "news_focus",
+          "height": 900,
+          "locale": "en",
+          "sha256": "64f682c855de55dc6345426e2a13b94d8cf6db784edde4939b2579e2189fc246",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "news_hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 554721,
+          "capture_tool_module_sha256": "38ea551fb8df7caa013ef1280583eefdab944ba216bb8cf4ea21e4feeac23e29",
+          "captured": true,
+          "file": "desktop-en-dark-hover.png",
+          "force_state": "news_hover",
+          "height": 900,
+          "locale": "en",
+          "sha256": "39eff2b23f8076c3fa11ecbbe1a746a9d80e229b46cf2f5f9c91c0572e8cc906",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 589073,
+          "capture_tool_module_sha256": "38ea551fb8df7caa013ef1280583eefdab944ba216bb8cf4ea21e4feeac23e29",
+          "captured": true,
+          "file": "desktop-en-light.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "en",
+          "sha256": "d66d86d1a9eca4242ce1bb9d9ed8e4196f4c1b1731205c2600b5e6aed9793f9e",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "news_focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 590468,
+          "capture_tool_module_sha256": "38ea551fb8df7caa013ef1280583eefdab944ba216bb8cf4ea21e4feeac23e29",
+          "captured": true,
+          "file": "desktop-en-light-focus.png",
+          "force_state": "news_focus",
+          "height": 900,
+          "locale": "en",
+          "sha256": "7a37c5a4704b0c1afa62ac3e324f16f44827b6ad833043e07699023e00852652",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "news_hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 584690,
+          "capture_tool_module_sha256": "38ea551fb8df7caa013ef1280583eefdab944ba216bb8cf4ea21e4feeac23e29",
+          "captured": true,
+          "file": "desktop-en-light-hover.png",
+          "force_state": "news_hover",
+          "height": 900,
+          "locale": "en",
+          "sha256": "86ece31245c09ccab50d9b35df4d5cebd4da2c8de790de46ce108dfcabd9aea0",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 464357,
+          "capture_tool_module_sha256": "38ea551fb8df7caa013ef1280583eefdab944ba216bb8cf4ea21e4feeac23e29",
+          "captured": true,
+          "file": "desktop-zh-dark.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "zh",
+          "sha256": "34e316fc7c41063f628052bf82d281a119480c3bcb06cf08ff4212afd9c6857e",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 491849,
+          "capture_tool_module_sha256": "38ea551fb8df7caa013ef1280583eefdab944ba216bb8cf4ea21e4feeac23e29",
+          "captured": true,
+          "file": "desktop-zh-light.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "zh",
+          "sha256": "c9bf176b5965262eee238ff29a4b217fb87d89036272a5e4b83c19f70ad2c82e",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 194089,
+          "capture_tool_module_sha256": "38ea551fb8df7caa013ef1280583eefdab944ba216bb8cf4ea21e4feeac23e29",
+          "captured": true,
+          "file": "mobile-en-dark.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "en",
+          "sha256": "f004cc00a6415af62298f4efd955616c258c98e85e9c8c496612aef11b2cee84",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "company_buffered",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 201324,
+          "capture_tool_module_sha256": "38ea551fb8df7caa013ef1280583eefdab944ba216bb8cf4ea21e4feeac23e29",
+          "captured": true,
+          "file": "mobile-en-dark-company.png",
+          "force_state": "company_buffered",
+          "height": 844,
+          "locale": "en",
+          "sha256": "e4fc69ed4e20c21ab7aa2e2c38881cd178efb6dc8ba5cc377a61dce779c3fea0",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 206652,
+          "capture_tool_module_sha256": "38ea551fb8df7caa013ef1280583eefdab944ba216bb8cf4ea21e4feeac23e29",
+          "captured": true,
+          "file": "mobile-en-light.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "en",
+          "sha256": "f390e08784587b2131403dbc1eeb27ab82c957392b319a7904cb086268bad84d",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 173236,
+          "capture_tool_module_sha256": "38ea551fb8df7caa013ef1280583eefdab944ba216bb8cf4ea21e4feeac23e29",
+          "captured": true,
+          "file": "mobile-zh-dark.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "zh",
+          "sha256": "b8a7ece8eb095037a2611373df244dfe0d18e1c8ab52818976e195d175f62461",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 183649,
+          "capture_tool_module_sha256": "38ea551fb8df7caa013ef1280583eefdab944ba216bb8cf4ea21e4feeac23e29",
+          "captured": true,
+          "file": "mobile-zh-light.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "zh",
+          "sha256": "4dee994492a6c4c0017cf8bb28fefecc1d8e6e1b43f777dbadbd55f8769735b6",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "story_warning",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 181017,
+          "capture_tool_module_sha256": "38ea551fb8df7caa013ef1280583eefdab944ba216bb8cf4ea21e4feeac23e29",
+          "captured": true,
+          "file": "mobile-zh-light-story.png",
+          "force_state": "story_warning",
+          "height": 844,
+          "locale": "zh",
+          "sha256": "adc00a4bcb34c30a680f3a7fca4061a89de6554187296cbdf674a37c977fd969",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/news.html"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "One explicit Browser route; registry filters were not applied.",
+    "priority": null,
+    "registry": null,
+    "registry_rows": null,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": "https://hip-parks-talk.loca.lt",
+    "kind": "base_url",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "base_url records the earliest actual capture origin; all actual endpoints are listed in honesty.served_origins and each capture URL is retained. Browser URLs do not attest a repository commit or byte equality across origins. An optional page_tree_sha identifies supplied HTML bytes.",
+    "site_dir": null
+  },
+  "tool": {
+    "module_ref": "mockups/evidence/news-cockpit-20261019/capture-browser.js",
+    "module_sha256": "38ea551fb8df7caa013ef1280583eefdab944ba216bb8cf4ea21e4feeac23e29",
+    "user_agent": null,
+    "version": "1"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 14,
+    "states_captured": 14
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "requested": {
+    "name": "mobile-zh-dark",
+    "viewport": "mobile",
+    "locale": "zh",
+    "theme": "dark",
+    "access": "anonymous",
+    "viewport_width": 390,
+    "viewport_height": 844,
+    "force_state": null
+  },
+  "observed": {
+    "aggregate_connection": "\u65b0\u95fb\u6d41\u5df2\u8fde\u63a5",
+    "applied_locale": "zh",
+    "applied_theme": "dark",
+    "captured_at": "2026-10-19T02:04:38.100Z",
+    "company_connection": "Choose a company\u9009\u62e9\u4e00\u5bb6\u516c\u53f8",
+    "company_update_visible": false,
+    "desk_width": 366,
+    "document_width": 390,
+    "focus_applied": false,
+    "focus_visible": false,
+    "hover_applied": false,
+    "target_background": null,
+    "target_outline": null,
+    "target_present": false,
+    "url": "https://hip-parks-talk.loca.lt/news.html",
+    "viewport_height": 844,
+    "viewport_width": 390,
+    "visible_dialog": null
+  },
+  "native_screenshot": {
+    "format": "JPEG",
+    "sha256": "666c03a53d44431c77756d2efbe3207d0f18904879eb775adc74d91f08f36bef",
+    "bytes": 36552,
+    "pixel_preserving_png_reencode": true
+  },
+  "image": {
+    "file": "mobile-zh-dark.png",
+    "bytes": 173236,
+    "sha256": "b8a7ece8eb095037a2611373df244dfe0d18e1c8ab52818976e195d175f62461",
+    "width": 390,
+    "height": 844
+  }
+}

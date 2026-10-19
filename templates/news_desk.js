@@ -160,6 +160,7 @@
     try{if(win.location.hash.startsWith("#story="))requestedStoryId=decodeURIComponent(win.location.hash.slice(7));}catch(_){}
     root.dataset.density=prefs.density;$("ndDensity").setAttribute("aria-pressed",String(prefs.density==="reading"));
     var liveReady=false,health={},sourceHealth=[],stream=null,timer=0,inflight=false,disposed=false,authPaused=false,mode="connecting",lastTransportAt=0,failures=0,generation=0,handshake=0,streamAvailable=true,streamFailures=0,streamRetryAt=0;
+    var connectionLabel=["Connecting","正在连接"];
     function persist(){try{win.localStorage.setItem("mm.newsDesk.preferences.v1",JSON.stringify(prefs));}catch(_){announce(tx("This browser could not save your preferences.","此浏览器无法保存偏好设置。"));}}
     function el(tag,cls,value){var n=doc.createElement(tag);if(cls)n.className=cls;if(value!==undefined)n.textContent=String(value);return n;}
     function button(label,handler,cls){var n=el("button",cls||"nd-btn",label);n.type="button";n.addEventListener("click",handler);return n;}
@@ -203,7 +204,7 @@
       if(!pubs.length)pubs=visible.map(function(r){return r.published;}).filter(function(t){return t!==null&&t<=ms+300000;});
       var newest=pubs.length?new Date(Math.max.apply(null,pubs)).toISOString():"";
       $("ndFreshness").textContent=newest?tx("Latest publication ","最新发布 ")+age(newest,ms,zh()):tx("Publication time unavailable","发布时间未提供");
-      if(mode==="connected"&&lastTransportAt&&ms-lastTransportAt>45000){closeStream();setConnection("degraded",tx("Reconnecting","正在重连"));banner(tx("The connection stopped responding. Recovering the latest available reporting.","连接已停止响应，正在恢复最新可用报道。"),false,true);schedule(0);}
+      if(mode==="connected"&&lastTransportAt&&ms-lastTransportAt>45000){closeStream();setConnection("degraded","Reconnecting","正在重连");banner(tx("The connection stopped responding. Recovering the latest available reporting.","连接已停止响应，正在恢复最新可用报道。"),false,true);schedule(0);}
     }
     function render(){
       var panel=$("ndFeedPanel"),oldScroll=panel.scrollTop,active=doc.activeElement,focused=panel.contains(active),focusRow=focused&&active.closest(".nd-row"),focusId=focusRow&&focusRow.dataset.id;
@@ -345,7 +346,11 @@
       prefs.saved=prefs.saved.slice(-500);persist();renderDetail();if(filters.saved)render();
       announce(prefs.saved.includes(id)?tx("Story saved on this browser","已在此浏览器收藏报道"):tx("Story removed from saved","已取消收藏"));
     }
-    function setConnection(state,label){mode=state;$("ndConnection").dataset.state=state;$("ndConnection").textContent=label;if($("ndConnectionMobile")){$("ndConnectionMobile").dataset.state=state;$("ndConnectionMobile").textContent=label;}}
+    function renderConnection(){
+      var label=tx.apply(null,connectionLabel);
+      ["ndConnection","ndConnectionMobile"].forEach(function(id){var node=$(id);if(node){node.dataset.state=mode;node.textContent=label;}});
+    }
+    function setConnection(state,en,cn){mode=state;connectionLabel=[en,cn];renderConnection();}
     function banner(message,auth,retry){$("ndBanner").hidden=!message;$("ndBannerText").textContent=message||"";$("ndSignIn").hidden=!auth;$("ndRetry").hidden=!retry;}
     function accept(payload){
       if(!validSnapshot(payload))throw new Error("schema");
@@ -393,19 +398,19 @@
         if(issued!==generation||disposed||doc.hidden)return;
         accept(p);failures=0;banner("",false,false);
         if(!streamAvailable&&Date.now()>=streamRetryAt){streamAvailable=true;streamFailures=0;}
-        if(legacy||!win.EventSource||!streamAvailable){setConnection("polling",tx("Auto refresh · 10s","自动刷新 · 10秒"));schedule(10000);return;}
-        setConnection("connecting",tx("Connecting","正在连接"));stream=new win.EventSource("/api/news-desk/stream",{withCredentials:true});
-        handshake=win.setTimeout(function(){if(issued!==generation)return;streamAvailable=false;streamRetryAt=Date.now()+300000;closeStream();setConnection("polling",tx("Auto refresh · 10s","自动刷新 · 10秒"));schedule(10000);},12000);
-        stream.addEventListener("snapshot",function(e){if(issued!==generation)return;win.clearTimeout(handshake);try{accept(JSON.parse(e.data));streamFailures=0;setConnection("connected",tx("Stream connected","新闻流已连接"));banner("",false,false);}catch(_){closeStream();setConnection("degraded",tx("Feed interrupted","新闻流中断"));banner(tx("A news update could not be read. Your current stories remain available.","暂时无法读取新闻更新，当前报道仍可阅读。"),false,true);schedule(5000);}});
+        if(legacy||!win.EventSource||!streamAvailable){setConnection("polling","Auto refresh · 10s","自动刷新 · 10秒");schedule(10000);return;}
+        setConnection("connecting","Connecting","正在连接");stream=new win.EventSource("/api/news-desk/stream",{withCredentials:true});
+        handshake=win.setTimeout(function(){if(issued!==generation)return;streamAvailable=false;streamRetryAt=Date.now()+300000;closeStream();setConnection("polling","Auto refresh · 10s","自动刷新 · 10秒");schedule(10000);},12000);
+        stream.addEventListener("snapshot",function(e){if(issued!==generation)return;win.clearTimeout(handshake);try{accept(JSON.parse(e.data));streamFailures=0;setConnection("connected","Stream connected","新闻流已连接");banner("",false,false);}catch(_){closeStream();setConnection("degraded","Feed interrupted","新闻流中断");banner(tx("A news update could not be read. Your current stories remain available.","暂时无法读取新闻更新，当前报道仍可阅读。"),false,true);schedule(5000);}});
         stream.addEventListener("heartbeat",function(){if(issued===generation)lastTransportAt=Date.now();});
         stream.addEventListener("reconnect",function(){if(issued!==generation)return;closeStream();schedule(250);});
-        stream.addEventListener("unavailable",function(){if(issued!==generation)return;closeStream();setConnection("degraded",tx("Feed unavailable","新闻流不可用"));banner(tx("Live updates are unavailable. The last loaded reporting remains visible.","实时更新暂不可用，已载入报道仍可阅读。"),false,true);schedule(5000);});
-        stream.onerror=function(){if(issued!==generation)return;streamFailures++;if(streamFailures>=3){streamAvailable=false;streamRetryAt=Date.now()+300000;}closeStream();setConnection("degraded",tx("Reconnecting","正在重连"));banner(tx("Connection interrupted. Reconnecting to recover the latest feed.","连接已中断，正在重连并恢复最新新闻流。"),false,true);schedule(streamAvailable?Math.min(15000,2000*Math.pow(2,streamFailures-1)):10000);};
+        stream.addEventListener("unavailable",function(){if(issued!==generation)return;closeStream();setConnection("degraded","Feed unavailable","新闻流不可用");banner(tx("Live updates are unavailable. The last loaded reporting remains visible.","实时更新暂不可用，已载入报道仍可阅读。"),false,true);schedule(5000);});
+        stream.onerror=function(){if(issued!==generation)return;streamFailures++;if(streamFailures>=3){streamAvailable=false;streamRetryAt=Date.now()+300000;}closeStream();setConnection("degraded","Reconnecting","正在重连");banner(tx("Connection interrupted. Reconnecting to recover the latest feed.","连接已中断，正在重连并恢复最新新闻流。"),false,true);schedule(streamAvailable?Math.min(15000,2000*Math.pow(2,streamFailures-1)):10000);};
       }catch(e){
         if(issued!==generation||disposed||doc.hidden)return;
         failures++;var auth=e.status===401||e.status===403;
         if(auth)clearProtected();
-        setConnection(auth?"restricted":"degraded",auth?tx("Sign in for live","登录查看实时新闻"):tx(win.navigator.onLine===false?"Offline":"Updates unavailable",win.navigator.onLine===false?"离线":"更新不可用"));
+        setConnection(auth?"restricted":"degraded",auth?"Sign in for live":win.navigator.onLine===false?"Offline":"Updates unavailable",auth?"登录查看实时新闻":win.navigator.onLine===false?"离线":"更新不可用");
         banner(auth?tx("Sign in to connect to live desk updates. Browse the available edition below.","登录以连接实时新闻台；仍可浏览下方已载入报道。"):tx("Live updates could not be loaded. The last available reporting remains readable.","无法载入实时更新，最新可用报道仍可阅读。"),auth,!auth);
         if(!auth)schedule(Math.min(30000,3000*Math.pow(2,Math.min(failures,4))));
       }finally{inflight=false;if(issued!==generation&&!doc.hidden&&!disposed&&!authPaused&&!stream&&!timer)schedule(0);}
@@ -447,7 +452,7 @@
       doc.querySelectorAll("[data-placeholder-zh]").forEach(function(n){if(!n.dataset.placeholderEn)n.dataset.placeholderEn=n.placeholder;n.placeholder=zh()?n.dataset.placeholderZh:n.dataset.placeholderEn;});
       doc.querySelectorAll("[data-label-zh]").forEach(function(n){if(!n.dataset.labelEn)n.dataset.labelEn=n.getAttribute("aria-label");n.setAttribute("aria-label",zh()?n.dataset.labelZh:n.dataset.labelEn);});
       doc.querySelectorAll("option[data-en]").forEach(function(n){n.textContent=zh()?n.dataset.zh:n.dataset.en;});
-      render();if(selected)renderDetail();if($("ndCoverage").open)renderCoverage();renderViews();
+      renderConnection();render();if(selected)renderDetail();if($("ndCoverage").open)renderCoverage();renderViews();
     }
     $("ndSearch").addEventListener("input",function(){filters.query=this.value;limit=60;render();saveFiltersToURL();});
     $("ndTime").addEventListener("change",function(){filters.time=this.value;render();saveFiltersToURL();});
@@ -474,7 +479,11 @@
     doc.querySelectorAll("[data-close-dialog]").forEach(function(b){b.addEventListener("click",function(){closeDialog(b.closest("dialog"));});});
     doc.addEventListener("keydown",function(e){
       var typing=/INPUT|TEXTAREA|SELECT/.test(doc.activeElement&&doc.activeElement.tagName)||doc.activeElement&&doc.activeElement.isContentEditable;
-      var otherDialog=Array.from(doc.querySelectorAll('dialog[open],[role="dialog"]')).some(function(n){return n.id!=="ndDetail"&&!n.hidden&&win.getComputedStyle(n).display!=="none";});
+      var otherDialog=Array.from(doc.querySelectorAll('dialog[open],[role="dialog"]')).some(function(n){
+        if(n.id==="ndDetail"||n.hidden||n.getAttribute("aria-hidden")==="true")return false;
+        var style=win.getComputedStyle(n);
+        return style.display!=="none"&&style.visibility!=="hidden"&&style.visibility!=="collapse";
+      });
       if(e.key==="Escape"){if(!otherDialog&&selected)closeStory();return;}
       if(otherDialog)return;
       if($("ndDetail").getAttribute("aria-modal")==="true"&&e.key==="Tab"){
@@ -489,12 +498,12 @@
     });
     var breakpoint=win.matchMedia("(max-width:760px)");if(breakpoint.addEventListener)breakpoint.addEventListener("change",syncDetailModal);
     doc.addEventListener("langchange",refreshLanguage);
-    doc.addEventListener("visibilitychange",function(){if(doc.hidden){closeStream();win.clearTimeout(timer);timer=0;setConnection("paused",tx("Paused in background","后台已暂停"));}else connect();});
+    doc.addEventListener("visibilitychange",function(){if(doc.hidden){closeStream();win.clearTimeout(timer);timer=0;setConnection("paused","Paused in background","后台已暂停");}else connect();});
     win.addEventListener("online",connect);
     win.addEventListener("mdx-auth",function(event){
       var detail=event.detail||{};if(detail.event==="PREFS_SAVED")return;
       closeStream();win.clearTimeout(timer);timer=0;clearProtected();authPaused=!detail.user;
-      if(authPaused){setConnection("restricted",tx("Sign in for live","登录查看实时新闻"));banner(tx("Sign in to connect to live desk updates. Browse the available edition below.","登录以连接实时新闻台；仍可浏览下方已载入报道。"),true,false);}
+      if(authPaused){setConnection("restricted","Sign in for live","登录查看实时新闻");banner(tx("Sign in to connect to live desk updates. Browse the available edition below.","登录以连接实时新闻台；仍可浏览下方已载入报道。"),true,false);}
       else schedule(0);
     });
     win.addEventListener("pagehide",function(){disposed=true;closeStream();win.clearTimeout(timer);});
