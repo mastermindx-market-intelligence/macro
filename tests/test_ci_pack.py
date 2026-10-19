@@ -4845,6 +4845,11 @@ CURATED_EXCLUSIVE = {
     # probes. scope: exclusive pins it to its declared static import closure
     # plus ancestor inits; ceilings stay fixed.
     "c19-wp32-integrated-answer-correction-denial-pins",
+    # 2026-10-19 Catalyst R1: the CLI subprocess made inference select this
+    # research consumer on templates/index.html (137 > 136 jobs). Its
+    # exclusive scope retains all 31 static closure paths, package initializers,
+    # and actual schema/fixture reads. Packing ceilings and closure guards stay fixed.
+    "catalyst-stock-context",
 }
 
 

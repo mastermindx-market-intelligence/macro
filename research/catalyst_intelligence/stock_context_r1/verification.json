@@ -56,7 +56,19 @@
       "positive_probe_count": 6,
       "inference_seconds": 70.72,
       "exit_code": 0,
-      "engine_and_test_source_changed": false
+      "engine_and_test_source_changed": false,
+      "curated_registry_followup": {
+        "prior_head": "3ddd2afc0c601778804806c3b600f43b5ccea9d8",
+        "hosted_run": 39202501399,
+        "contract_delta": "success",
+        "cause": "The exact curated-job registry also needs the newly declared Catalyst job.",
+        "repair": "Add catalyst-stock-context to CURATED_EXCLUSIVE without changing any assertion, closure check or packing ceiling.",
+        "test": "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+        "passed": 1,
+        "duration_seconds": 34.85,
+        "exit_code": 0,
+        "engine_fixture_and_focused_test_bytes_unchanged": true
+      }
     }
   },
   "independent_review": {
