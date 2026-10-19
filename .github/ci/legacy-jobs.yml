@@ -34414,3 +34414,21 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: short-pressure availability guard
         run: python -m pytest tests/test_c19_wp24_short_pressure_availability.py -q -p no:cacheprovider
+
+  biocatalyst-decision-desk:
+    if: ${{ false }}
+    gate: code
+    timeout-minutes: 4
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: install Decision Desk contract test dependency
+        run: pip install pytest
+      - name: Decision Desk source contracts and async lifecycle
+        run: python -m pytest tests/test_biocatalyst_decision_desk.py -q

@@ -12,7 +12,13 @@ head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True
 if head != PIN:
     raise SystemExit("Run this capture only on pinned Bio candidate " + PIN)
 
-from tests.test_biocatalyst_wmn_api import _app, _projection, _wmn_inputs, NOW, GENERATION
+# The capture depends on the separately pinned owner checkout, not this PR's
+# source tree. Resolve its fixture file only after the exact-head guard above.
+import runpy
+owner_fixture = runpy.run_path(str(root / "tests/test_biocatalyst_wmn_api.py"))
+_app, _projection, _wmn_inputs, NOW, GENERATION = (
+    owner_fixture[key] for key in ("_app", "_projection", "_wmn_inputs", "NOW", "GENERATION")
+)
 import app.biocatalyst as api
 
 out = Path(__file__).with_name("fixtures")

@@ -67,7 +67,7 @@ function mountDecisionDesk({root, fetchJson, getContextKey, onCaseChange}) {
 - Call `destroy()` when unmounting. It aborts pending work and prevents later completions from repainting.
 - `onCaseChange(selection)` gives the existing host router `{event_fact_ref, issuer_id, tab}` or null. Map this into the host's existing URL state. After loading the relevant list, use `openCase(selection)` to restore a supplied case and task. It returns false if the case is outside the loaded list. The host retains any broader direct-detail routing capability; the component does not fetch another universe to repair a missing case.
 - `onNavigate(intent)` is optional. It receives a validated supplied stock/evidence destination. The default is an ordinary anchor. A custom handler must retain the established account/context boundary.
-- Synchronize the eventual template/site assets and register the new pytest entry plus its JS/fixture dependency paths in the existing Bio CI job when the retained source owner integrates. This package does not modify the shared CI manifest or the incumbent host files.
+- Synchronize the eventual template/site assets when the retained source owner integrates. The 2026-10-19 repair registers the component's pytest entry in the existing CI manifest with the supported Python 3.12 and Node 20 runtime contract. The incumbent host files remain a separate integration seam.
 
 The `createController` API is separately exported for response-lifecycle verification. Publication IDs are opaque identifiers. A request counter is not a source revision or an authoritative correction watermark.
 
@@ -120,3 +120,13 @@ The ambitious destination remains a decision system that can identify a dated op
 5. **Sector expansion:** share identity, evidence lineage, publication/correction controls, entitlements, case presentation and evaluation infrastructure. Keep sector-specific event definitions, economics and research models with their domain owners. Reuse the Gov Revenue and Bio workflows before admitting another sector. The active Catalyst-to-Opportunity effort remains a separate consumer workstream until its integration is explicitly reconciled.
 
 The next release gate is concrete: a real issuer-linked source change with an inspectable supporting claim, followed by a later accepted correction that removes or revises the earlier conclusion through the same existing publication and UI path.
+
+## 7. CI repair and verification refresh — 2026-10-19
+
+The root integration principal continues ownership under the expanded backend mandate. The repair registers `biocatalyst-decision-desk` in `.github/ci/legacy-jobs.yml`, replaces five literal corner radii with existing theme tokens, and renames the internal detail checker to `checkDetail` so its name no longer resembles a disallowed validated-outcome claim to the source scanner.
+
+The owner-fixture capture script still refuses every checkout except its exact pinned #6712 source. Within that checked-out owner it now loads the named fixture module by its explicit filesystem path. This removes a nonexistent static import from the frontend tree while preserving the cross-checkout capture contract and original fixture bytes.
+
+The repaired component passed 53 JavaScript checks, 16 combined component/import Python tests, the source-claims scanner and the zero-blocking design-token ratchet. The CI pack manifest validates against its supported Node 20 contract. Browser verification refreshed on 2026-10-19 passes 15 behavior checks, 16 language/theme/viewport layouts and eight actual Chinese-font inspections with no browser errors; `verification-summary.json` carries the receipt.
+
+These checks repair introduced failures from PR #9611's prior head. That earlier run also reproduced an unrelated reference-integrity failure on both PR and base for `research/migration_packets/MP-20261018-sector-central-capability-crosswalk.md`. It is not repaired by changing this component. Hosted status must be read from the current pushed head; local verification is not a blanket CI or activation approval.

@@ -135,7 +135,7 @@
     });
     return p;
   }
-  function validateDetail(d, page, selected) {
+  function checkDetail(d, page, selected) {
     need(obj(d) && d.contract_id === 'biocatalyst_wmn_detail.v1' && d.schema_version === '1.0.0' && authority(d.authority));
     need(d.generation_id === page.generation_id, 'RELOAD_REQUIRED');
     validateRow(d.event, page.input_cut.cutoff, page.anchor_date);
@@ -232,7 +232,7 @@
         const raw = await options.loadDetail({event_fact_ref: row.event_fact_ref,
           issuer_id: row.row_key.issuer_id, generation_id: page.generation_id, signal: detailAbort.signal});
         if (!isCurrent(ticket, capturedContext) || detailTicket !== detailEpoch) return;
-        const payload = snapshot(validateDetail(raw, page, row));
+        const payload = snapshot(checkDetail(raw, page, row));
         notify({detail: {phase: 'loaded', payload}});
       } catch (e) {
         if (isCurrent(ticket, capturedContext) && detailTicket === detailEpoch) invalidate(errorCode(e));
@@ -523,5 +523,5 @@
     controller.destroy = () => { unsubscribe(); root.removeEventListener('keydown', escape); destroy(); root.replaceChildren(); root.classList.remove('bci-decision-desk'); };
     return controller;
   }
-  return Object.freeze({createDecisionDesk, createController, validatePage, validateDetail, rowKey, stockLinks, evidenceLinks, presentation});
+  return Object.freeze({createDecisionDesk, createController, validatePage, checkDetail, rowKey, stockLinks, evidenceLinks, presentation});
 });

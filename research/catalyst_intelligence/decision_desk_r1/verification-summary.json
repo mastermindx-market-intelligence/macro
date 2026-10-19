@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-18T23:55:03.301Z",
+  "generated_at": "2026-10-19T01:41:57.713Z",
   "browser": "155.0.8059.84",
   "scope": "Component replay only; no source admission, authentication or live integration proof",
   "checks": [
@@ -12,7 +12,7 @@
     "Captured API responses drive horizon changes, honest empty views and null-horizon review/history queries",
     "Conflict replaces the forward-looking card, headline and company action across every detail task",
     "Withdrawal and unavailable API clear the earlier case, count and open detail together",
-    "Host authorization-context change immediately removes the previous account’s data",
+    "Host authorization-context change immediately removes the previous account\u2019s data",
     "Historical revisions remain distinct from withdrawn events in the card and Research task",
     "Supplied source wording is rendered as text",
     "Chinese titles use a resolved CJK font in every Chinese layout; missing-glyph geometry cannot count as visual proof",
@@ -138,7 +138,7 @@
       "lang": "zh",
       "theme": "dark",
       "width": 320,
-      "heading": "核查下一次已披露的临床进展。",
+      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
       "fonts": [
         {
           "familyName": "Noto Sans CJK SC",
@@ -152,7 +152,7 @@
       "lang": "zh",
       "theme": "dark",
       "width": 390,
-      "heading": "核查下一次已披露的临床进展。",
+      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
       "fonts": [
         {
           "familyName": "Noto Sans CJK SC",
@@ -166,7 +166,7 @@
       "lang": "zh",
       "theme": "dark",
       "width": 768,
-      "heading": "核查下一次已披露的临床进展。",
+      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
       "fonts": [
         {
           "familyName": "Noto Sans CJK SC",
@@ -180,7 +180,7 @@
       "lang": "zh",
       "theme": "dark",
       "width": 1440,
-      "heading": "核查下一次已披露的临床进展。",
+      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
       "fonts": [
         {
           "familyName": "Noto Sans CJK SC",
@@ -194,7 +194,7 @@
       "lang": "zh",
       "theme": "light",
       "width": 320,
-      "heading": "核查下一次已披露的临床进展。",
+      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
       "fonts": [
         {
           "familyName": "Noto Sans CJK SC",
@@ -208,7 +208,7 @@
       "lang": "zh",
       "theme": "light",
       "width": 390,
-      "heading": "核查下一次已披露的临床进展。",
+      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
       "fonts": [
         {
           "familyName": "Noto Sans CJK SC",
@@ -222,7 +222,7 @@
       "lang": "zh",
       "theme": "light",
       "width": 768,
-      "heading": "核查下一次已披露的临床进展。",
+      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
       "fonts": [
         {
           "familyName": "Noto Sans CJK SC",
@@ -236,7 +236,7 @@
       "lang": "zh",
       "theme": "light",
       "width": 1440,
-      "heading": "核查下一次已披露的临床进展。",
+      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
       "fonts": [
         {
           "familyName": "Noto Sans CJK SC",
@@ -252,23 +252,24 @@
   "api_candidate": "ec5c2e2544576f20348c6eadf834fe3cefae8039",
   "direct_node_checks": 53,
   "pytest_wrapper": {
-    "passed": 1,
-    "runtime": "M2 Studio Python 3.12.13; existing pytest runtime",
-    "scope": "invokes the 53 direct JavaScript cases"
+    "passed": 16,
+    "runtime": "M2 Python 3.12",
+    "scope": "component wrapper invokes 53 JavaScript cases; 15 additional first-party import contracts"
   },
   "principal_review": {
     "verdict": "ACCEPT_COMPONENT_SCOPE",
     "blocking_issue_repaired": "superseded revision is distinct from event withdrawal",
-    "runtime_admission": false
+    "runtime_admission": false,
+    "note": "Prior component review; current refresh changes CI registration, checker naming and radius tokens."
   },
   "source_sha256": {
-    "templates/biocatalyst_decision_desk.js": "dc4057de1f8c40a505d12a0c86e8b9b9bda36fa1972dfd0d22dc6305b8d02d70",
-    "templates/biocatalyst_decision_desk.css": "3851ced297ead697958b7abcf6fe7a535026629c37e95782e11a7e3adacf32c6",
+    "templates/biocatalyst_decision_desk.js": "afbd048a8e0dd7f9694b510fcef9059ce69127bc1e4c2285e85c649047a7ab0e",
+    "templates/biocatalyst_decision_desk.css": "f6cfa6356dc18710a16b0ead1ef821f9cdfbe145c1d9628fb697b1311ec36176",
     "tests/test_biocatalyst_decision_desk.cjs": "fa5e77bd9d355447a709bee26ee19ac67af3ac2d99590a0ec6f6fea731f99ee9",
     "tests/test_biocatalyst_decision_desk.py": "6472c451690433c3cb0ed8e86c924e02ee8b176efae720891fc460718f0e222f",
     "tests/verify_biocatalyst_decision_desk.cjs": "97b735f44dce4dbe143af4c5e32e09224a7dde045ee23c530c0dd6f066a3419c",
     "research/catalyst_intelligence/decision_desk_r1/preview_shell.html": "f578ac47e1e096ee648876b09bb8594b6995da4d70df642aebf3381a3ddf04fa",
-    "research/catalyst_intelligence/decision_desk_r1/IMPLEMENTATION.md": "766056a199d0b9ea7cac85a006adab4b5aa8877623dcebba15227ac4d6da0f32"
+    "research/catalyst_intelligence/decision_desk_r1/IMPLEMENTATION.md": "6c0942a0029e98167212547c83b23ea9047b4a665d637e4ef25a444ed6f88ddf"
   },
   "qa_font": {
     "family": "Noto Sans CJK SC",
@@ -279,15 +280,21 @@
   "visual_review": {
     "verdict": "accepted for component replay",
     "inspected": [
-      "desk-zh-dark-390.png",
-      "detail-zh-light-1440.png",
-      "desk-en-dark-390.png"
+      "desk-en-dark-1440.png",
+      "detail-zh-light-390.png"
     ],
     "findings": [
-      "Readable Chinese glyphs replace the earlier missing-font boxes",
-      "Main task, unresolved evidence and review action remain clear on mobile",
-      "Sources task preserves supplied wording and exposes unavailable company evidence links"
+      "Clear main research task, unresolved evidence and case action",
+      "Readable Chinese glyphs and complete Sources detail on mobile",
+      "Uncertainty stays visible before the action"
     ],
-    "scope": "Not an authenticated integrated workbench or production source review"
+    "scope": "Not authenticated workbench or production source admission"
+  },
+  "ci_repair_checks": {
+    "source_claims": "passed",
+    "design_token_ratchet": "zero blocking",
+    "manifest_contract": "validated with Python 3.12 and Node 20",
+    "prior_head_unrelated_failure": "reference-integrity reproduced on PR and base for MP-20261018-sector-central-capability-crosswalk.md",
+    "hosted_status": "Read the current PR head; local checks are not hosted CI acceptance"
   }
 }
