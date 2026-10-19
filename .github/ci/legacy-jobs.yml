@@ -7348,6 +7348,7 @@ jobs:
           tests/test_stock_dashboard_first_frame_data.py
           tests/test_stock_dashboard_css.py
           tests/test_debt_maturity.py
+          tests/test_ipo.py
           tests/test_cash_runway.py
           tests/test_capital_need.py
           tests/test_hk_v37_composer.py

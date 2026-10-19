@@ -459,7 +459,6 @@
     "tests/test_intl_sleeve_c2.py",
     "tests/test_intl_special_situations.py",
     "tests/test_intraday_flow_spotlight_flicker.py",
-    "tests/test_ipo.py",
     "tests/test_jodi.py",
     "tests/test_kalshi_releases.py",
     "tests/test_kernel.py",
