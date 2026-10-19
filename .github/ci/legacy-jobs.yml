@@ -9426,12 +9426,18 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyyaml requests
+        run: pip install pytest pandas numpy pyyaml requests jinja2 fastapi httpx
       - name: china_news collector tests (incl. adapter-registered-without-akshare)
         run: python -m pytest tests/test_china_news.py -q
       - name: optional news provider semantics and actual ordering consumer
         # Source-only fixtures: no live data, vendor credentials or activation.
         run: python -m pytest tests/test_news_ai_feed_contract.py tests/test_build_news.py -q
+      - name: News desk intake and authenticated delivery contracts
+        run: python -m pytest tests/test_research_news_intake.py tests/test_news_desk_api.py tests/test_gdelt_client.py tests/test_news_desk_js.py -q
+      - name: Mounted News desk and company lifecycle contracts
+        run: |
+          npm --prefix tests/news-desk ci --ignore-scripts --no-audit --no-fund
+          npm --prefix tests/news-desk test
       - name: strict SEC filing parser, extraction, and sealed attestation contracts
         run: |
           python -m pytest \
