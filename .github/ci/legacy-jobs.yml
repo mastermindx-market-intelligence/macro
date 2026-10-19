@@ -453,6 +453,7 @@ jobs:
       - "engine/fundamental_forensics/issuer_sic.py"
       - "engine/fundamental_forensics/ixbrl_extraction.py"
       - "engine/fundamental_forensics/ixbrl_raw_ledger.py"
+      - "engine/fundamental_forensics/latency.py"
       - "engine/fundamental_forensics/lineage_evidence.py"
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
@@ -2748,6 +2749,7 @@ jobs:
       - "engine/earnings_narrative/__init__.py"
       - "engine/earnings_release/__init__.py"
       - "engine/fundamental_forensics/__init__.py"
+      - "engine/fundamental_forensics/latency.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
       - "engine/market_ontology/__init__.py"
       - "engine/marketing/__init__.py"
@@ -3662,6 +3664,7 @@ jobs:
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
       - "engine/capital_structure/listing_facts.py"
+      - "engine/fundamental_forensics/latency.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -8851,6 +8854,8 @@ jobs:
       - "contracts/capital_structure_registration_lifecycle.schema.json"
       - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
       - "contracts/capital_structure_source_manifest.schema.json"
+      - "contracts/fundamental_forensics_cost_ledger.v1.schema.json"
+      - "contracts/fundamental_forensics_coverage_proof.v1.schema.json"
       - "engine/capital_structure/authorized_shares.py"
       - "engine/capital_structure/capacity.py"
       - "engine/capital_structure/capacity_joint.py"
@@ -8877,6 +8882,13 @@ jobs:
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
       - "engine/capital_structure/listing_facts.py"
+      - "scripts/check_validated_claims.py"
+      - "scripts/fif_cost_ledger.py"
+      - "scripts/fif_coverage_proof.py"
+      - "scripts/fif_finding_judgments.py"
+      - "scripts/fif_latency_benchmark.py"
+      - "scripts/fif_pack_quality_report.py"
+      - "scripts/fif_recovery_drill.py"
       - engine/theme_graph/economic_context.py
       - engine/theme_graph/issuer_economic_context.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -8916,6 +8928,8 @@ jobs:
       - "tests/test_fif_pf_health_entity.py"
       - "tests/test_fif_pf_health_pointer.py"
       - "tests/test_fif_a0_production_mode_unit.py"
+      - "scripts/fif_coverage_writer.py"
+      - "tests/test_fif_coverage_writer.py"
       - "app/deploy/macro-api.service"
       - "tests/fixtures/fundamental_forensics/**"
       - "tests/fixtures/fundamental_forensics_held_out/**"
@@ -9642,6 +9656,8 @@ jobs:
       - "tests/test_fif_p2_evidence_capture.py"
       - "tests/test_fif_publication_workflow_shape.py"
       - "tests/test_fif_se_receipts.py"
+      - "tests/test_fif_g_pack_gold.py"
+      - "tests/test_fif_g_pack_kernel.py"
       - "tests/test_filing_forensics_broad_sec_lane.py"
       - "tests/test_filing_forensics_sec_lane.py"
       - "tests/test_forensics_api.py"
@@ -9725,6 +9741,7 @@ jobs:
           tests/test_fif_pf_health_entity.py
           tests/test_fif_pf_health_pointer.py
           tests/test_fif_a0_production_mode_unit.py
+          tests/test_fif_coverage_writer.py
           tests/test_filing_forensics_broad_sec_lane.py
           tests/test_filing_forensics_sec_lane.py
           tests/test_forensics_api.py
@@ -9740,6 +9757,8 @@ jobs:
           tests/test_fundamental_forensics_companyfacts.py
           tests/test_fundamental_forensics_companyfacts_ledger.py
           tests/test_fundamental_forensics_contract.py
+          tests/test_fundamental_forensics_coverage_proof.py
+          tests/test_fundamental_forensics_cost_ledger.py
           tests/test_fundamental_forensics_detector_applicability.py
           tests/test_fundamental_forensics_detectors.py
           tests/test_fundamental_forensics_disclosure_alignment_e1.py
@@ -9750,6 +9769,7 @@ jobs:
           tests/test_fundamental_forensics_excel_export.py
           tests/test_fundamental_forensics_filing_observation_state.py
           tests/test_fundamental_forensics_filing_package.py
+          tests/test_fundamental_forensics_finding_judgments.py
           tests/test_fundamental_forensics_financial_intelligence_packet.py
           tests/test_fundamental_forensics_financial_intelligence_packet_r2.py
           tests/test_fundamental_forensics_financial_intelligence_packet_r3.py
@@ -9763,13 +9783,17 @@ jobs:
           tests/test_fundamental_forensics_health.py
           tests/test_fundamental_forensics_held_out_isolation.py
           tests/test_fundamental_forensics_ingest.py
+          tests/test_fundamental_forensics_latency.py
           tests/test_fundamental_forensics_member_capture.py
           tests/test_fundamental_forensics_metric_qualification.py
           tests/test_fundamental_forensics_metric_registry.py
+          tests/test_fundamental_forensics_no_request_time_sec.py
           tests/test_fundamental_forensics_normalize.py
           tests/test_fundamental_forensics_p0_view_contract.py
+          tests/test_fundamental_forensics_pack_evaluation.py
           tests/test_fundamental_forensics_page.py
           tests/test_fundamental_forensics_peer_cohort.py
+          tests/test_fundamental_forensics_peer_comparability.py
           tests/test_fundamental_forensics_periods.py
           tests/test_fundamental_forensics_private_state.py
           tests/test_fundamental_forensics_production_api_chain.py
@@ -9785,6 +9809,8 @@ jobs:
           tests/test_fundamental_forensics_query_snapshots.py
           tests/test_fundamental_forensics_raw_ledger.py
           tests/test_fundamental_forensics_refusal_entry_readers.py
+          tests/test_fundamental_forensics_release_reconciliation.py
+          tests/test_fundamental_forensics_recovery_drill.py
           tests/test_fundamental_forensics_saved_store_schema.py
           tests/test_fundamental_forensics_sec_request_pacer.py
           tests/test_fundamental_forensics_source_sync.py
@@ -9809,6 +9835,11 @@ jobs:
       # PR that imports tests.tools is caught by the main ci.yml baseline, not here.
       - name: FIF P2 evidence-capture suite (code half)
         run: python -m pytest tests/test_fif_p2_evidence_capture.py -q -m "not data_gate"
+      # tests/test_fif_g_pack_{gold,kernel}.py (FIF G1-G4, 2026-10-19): the hermetic gold and
+      # pack rules run on the code gate; the staged-byte checks skip without
+      # FIF_GSRC_STAGE_ROOT and the kernel-over-gold comparison is data_gate.
+      - name: FIF G-pack gold and kernel suites (hermetic half)
+        run: python -m pytest tests/test_fif_g_pack_gold.py tests/test_fif_g_pack_kernel.py -q -m "not data_gate"
       - name: FIF desk page health and financial compare Node regressions
         run: node --test tests/fundamental_forensics_pf_page.test.mjs tests/fundamental_forensics_pf_health.test.mjs tests/fundamental_forensics_statement_withheld.test.mjs tests/institutional_holding_research.test.mjs
   collector-registry:
@@ -21649,6 +21680,7 @@ jobs:
       - "engine/capital_structure/transactions.py"
       - "engine/capital_structure/variable_terms.py"
       - "engine/capital_structure/verified_projection_generation.py"
+      - "engine/fundamental_forensics/latency.py"
       - "scripts/compile_capital_structure_events.py"
       - contracts/theme_graph/activity_membership_proposal.v1.schema.json
       - "engine/market_ontology/__init__.py"
@@ -24726,7 +24758,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: page/render builders whose output ships to the site
-        run: python -m pytest tests/test_ai_desk_page.py tests/test_build_chart_data.py tests/test_build_odds_observability.py tests/test_build_sector_map.py tests/test_committee_template.py tests/test_confluence_screener_page.py tests/test_contagion_card_render.py tests/test_darkpool_desk.py tests/test_options_estate_redirect_stubs.py tests/test_macro_signals_render.py tests/test_nav_icon_refresh.py tests/test_nav_submenu_icons.py tests/test_sector_nav_links.py tests/test_site_semantics_refs.py tests/test_sp500_heatmap_caps.py tests/test_stage_analysis_page.py tests/test_stocktable_data.py tests/test_template_items_footgun.py tests/test_trading_journal_xlsx.py tests/test_us_stocks_w8g_table.py -q
+        run: python -m pytest tests/test_ai_desk_page.py tests/test_build_chart_data.py tests/test_build_odds_observability.py tests/test_build_sector_map.py tests/test_committee_template.py tests/test_confluence_screener_page.py tests/test_contagion_card_render.py tests/test_darkpool_desk.py tests/test_options_estate_redirect_stubs.py tests/test_macro_signals_render.py tests/test_nav_icon_refresh.py tests/test_nav_submenu_icons.py tests/test_sector_nav_links.py tests/test_site_semantics_refs.py tests/test_sp500_heatmap_caps.py tests/test_stage_analysis_page.py tests/test_stocktable_data.py tests/test_template_items_footgun.py tests/test_trading_journal_xlsx.py tests/test_us_stocks_w8g_table.py tests/test_factor_seasonality.py tests/test_seasonality_now_call_strip.py -q
 
   unrun-nav-chrome:
     # The two-family navigation law and the chrome around it: every product
@@ -30048,6 +30080,7 @@ jobs:
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
       - "engine/capital_structure/listing_facts.py"
+      - "engine/fundamental_forensics/latency.py"
       - engine/theme_graph/economic_context.py
       - engine/theme_graph/issuer_economic_context.py
       # R15: the existing phase1 tests now reach both native 30m pivot families.
@@ -32965,6 +32998,7 @@ jobs:
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      - "engine/fundamental_forensics/latency.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - "scripts/compile_capital_structure_events.py"
