@@ -913,3 +913,249 @@ def test_semantic_validator_rejects_empty_observed_or_unbound_lifecycle_artifact
         match="semantic invariant failed: lifecycle .* coverage does not bind",
     ):
         validate_registration_lifecycle_bundle(partial)
+
+
+def _enrichment_pair(
+    suffix: int,
+    *,
+    current_file_number: str,
+    source_suffix: str,
+    current_issuer_id: str = "sec:cik:0000000001",
+) -> tuple[dict, dict]:
+    original = _event(
+        suffix,
+        "S-3",
+        accepted_at="2026-08-01T10:00:00Z",
+        file_number=None,
+    )
+    correction = _event(
+        suffix,
+        "S-3",
+        accepted_at="2026-08-01T10:00:00Z",
+        seen_at="2026-08-04T10:00:00Z",
+        file_number=current_file_number,
+        issuer_id=current_issuer_id,
+        cik="2" if current_issuer_id != "sec:cik:0000000001" else "1",
+        ticker="DEF" if current_issuer_id != "sec:cik:0000000001" else "ABC",
+        correction_version=2,
+        correction_of=original["event_id"],
+        source_suffix=source_suffix,
+    )
+    return original, correction
+
+
+def test_correction_that_only_adds_a_trusted_file_number_keeps_the_lifecycle():
+    original, correction = _enrichment_pair(
+        111,
+        current_file_number="333-297912",
+        source_suffix="enriched",
+    )
+    effect = _event(
+        112,
+        "EFFECT",
+        accepted_at="2026-08-02T10:00:00Z",
+        file_number="333-297912",
+    )
+    lifecycle_edge = _edge(effect, original, "effectuates")
+    correction_edge = _edge(
+        correction,
+        original,
+        "supersedes",
+        observed_at="2026-08-04T10:00:00Z",
+    )
+
+    bundle = _compile(
+        [original, effect, correction],
+        [correction_edge, lifecycle_edge],
+        as_of="2026-08-05T00:00:00Z",
+    )
+
+    assert bundle["deferred"] == []
+    assert len(bundle["records"]) == 1
+    record = bundle["records"][0]
+    assert record["registration"] == {
+        "file_number": "333-297912",
+        "file_number_provenance": {
+            "state": "observed",
+            "value": "333-297912",
+            "candidate_values": ["333-297912"],
+            "sources": ["sec_header_file_number"],
+        },
+        "registration_family": "registration_s3",
+    }
+    assert [row["transition"] for row in record["timeline"]] == [
+        "filed",
+        "effective",
+    ]
+    assert (
+        record["timeline"][1]["relationship"]["to_event_id"]
+        == original["event_id"]
+    )
+    assert (
+        record["timeline"][1]["relationship"]["resolved_to_event_id"]
+        == correction["event_id"]
+    )
+
+
+def test_file_number_enrichment_without_trusted_provenance_still_defers():
+    original, correction = _enrichment_pair(
+        113,
+        current_file_number="333-297912",
+        source_suffix="enriched-untrusted",
+    )
+    provenance = correction["filing"]["file_number_provenance"]
+    provenance["candidate_values"] = [provenance["value"], "333-999999"]
+    _rehash_event(correction)
+
+    bundle = _compile(
+        [original, correction],
+        [
+            _edge(
+                correction,
+                original,
+                "supersedes",
+                observed_at="2026-08-04T10:00:00Z",
+            )
+        ],
+        as_of="2026-08-05T00:00:00Z",
+    )
+
+    assert bundle["records"] == []
+    assert {item["reason"] for item in bundle["deferred"]} == {
+        "correction_group_changed"
+    }
+
+
+def test_correction_that_replaces_one_trusted_file_number_still_defers():
+    original = _event(
+        114, "S-3", accepted_at="2026-08-01T10:00:00Z", file_number="333-1"
+    )
+    correction = _event(
+        114,
+        "S-3",
+        accepted_at="2026-08-01T10:00:00Z",
+        seen_at="2026-08-04T10:00:00Z",
+        file_number="333-2",
+        correction_version=2,
+        correction_of=original["event_id"],
+        source_suffix="renumbered",
+    )
+
+    bundle = _compile(
+        [original, correction],
+        [
+            _edge(
+                correction,
+                original,
+                "supersedes",
+                observed_at="2026-08-04T10:00:00Z",
+            )
+        ],
+        as_of="2026-08-05T00:00:00Z",
+    )
+
+    assert bundle["records"] == []
+    assert {item["reason"] for item in bundle["deferred"]} == {
+        "correction_group_changed"
+    }
+
+
+def test_file_number_enrichment_that_also_changes_the_issuer_still_defers():
+    original, correction = _enrichment_pair(
+        115,
+        current_file_number="333-297912",
+        source_suffix="enriched-cross-issuer",
+        current_issuer_id="sec:cik:0000000002",
+    )
+
+    bundle = _compile(
+        [original, correction],
+        [
+            _edge(
+                correction,
+                original,
+                "supersedes",
+                observed_at="2026-08-04T10:00:00Z",
+            )
+        ],
+        as_of="2026-08-05T00:00:00Z",
+    )
+
+    assert bundle["records"] == []
+    assert {item["reason"] for item in bundle["deferred"]} == {
+        "correction_group_changed"
+    }
+
+
+def test_correction_that_drops_the_file_number_still_defers():
+    original = _event(
+        116,
+        "S-3",
+        accepted_at="2026-08-01T10:00:00Z",
+        file_number="333-123",
+    )
+    correction = _event(
+        116,
+        "S-3",
+        accepted_at="2026-08-01T10:00:00Z",
+        seen_at="2026-08-04T10:00:00Z",
+        file_number=None,
+        correction_version=2,
+        correction_of=original["event_id"],
+        source_suffix="dropped",
+    )
+
+    bundle = _compile(
+        [original, correction],
+        [
+            _edge(
+                correction,
+                original,
+                "supersedes",
+                observed_at="2026-08-04T10:00:00Z",
+            )
+        ],
+        as_of="2026-08-05T00:00:00Z",
+    )
+
+    assert bundle["records"] == []
+    assert {item["reason"] for item in bundle["deferred"]} == {
+        "correction_group_changed"
+    }
+
+
+def test_parentless_pos_am_enrichment_defers_missing_lifecycle_edge_only():
+    original = _event(
+        117,
+        "POS AM",
+        accepted_at="2026-08-01T10:00:00Z",
+        file_number=None,
+    )
+    correction = _event(
+        117,
+        "POS AM",
+        accepted_at="2026-08-01T10:00:00Z",
+        seen_at="2026-08-04T10:00:00Z",
+        file_number="333-297912",
+        correction_version=2,
+        correction_of=original["event_id"],
+        source_suffix="pos-am-enriched",
+    )
+
+    bundle = _compile(
+        [original, correction],
+        [
+            _edge(
+                correction,
+                original,
+                "supersedes",
+                observed_at="2026-08-04T10:00:00Z",
+            )
+        ],
+        as_of="2026-08-05T00:00:00Z",
+    )
+
+    assert bundle["records"] == []
+    assert {item["reason"] for item in bundle["deferred"]} == {
+        "missing_lifecycle_edge"
+    }
