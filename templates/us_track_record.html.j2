@@ -359,7 +359,7 @@
           <td class="n-col" data-tip-en="Raw observations = {{ row.raw_n }} rows; independent entry-date windows = {{ row.effective_n }} (used for interval estimation)" data-tip-zh="原始样本={{ row.raw_n }}行；独立入场日窗口={{ row.effective_n }}（用于区间估计）">
             {{ row.raw_n }} / {{ row.effective_n }}
           </td>
-          <td><span class="accruing-chip" style="border-color:color-mix(in srgb,var(--up) 50%,var(--line));color:var(--ink-up, var(--up));background:color-mix(in srgb,var(--up) 10%,transparent)">{{ t('GRADED', '已出结果') }}</span></td>
+          <td><span class="accruing-chip" style="--warn:var(--up);--ink-warn:var(--ink-up, var(--up));">{{ t('GRADED', '已出结果') }}</span></td>
           {% endif %}
         </tr>
         {% endfor %}
