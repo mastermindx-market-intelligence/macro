@@ -343,3 +343,101 @@ identity. Fresh independent review, the RIG approval, deployment admission, actu
 new visual/authenticated proof and natural market-session proof remain open.
 Mission complete: **false**. Full source, validation, preservation and gate details
 are in [the current-main integration receipt](evidence/asia-heatmap-quality-20261018/current-main-integration-20261019.json).
+
+
+## 2026-10-19 hosted CI corrections and authenticated production observation — release remains held
+
+Completed live CI [39191442324](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39191442324)
+is bound to published head `f5b1440836615cbb609717e362e948326aa8084e`, tested PR merge
+`0f188d86e9020ecc39d3a092b5e614f8efd9a19a` and base
+`973dc08ad77861affff852479f8473ed22d6f192`. Its semantic plan selected all 255 code jobs
+across 12 packs. The China job passed in pack 4: Python groups of 77 and 112
+passed, and 79 JavaScript tests passed per renderer mirror. Fences and the active
+ci-authority/main context also passed. The final CI gate failed in packs 0, 5, 8
+and 11; these passes do not qualify the later correction head.
+
+Pack 5's sole failed logical job was reference-integrity. Both its tested head
+and native tested base reported the same three Sector Central
+packet-without-rig-receipt findings. The owner boundary remains binding.
+This run's pack numbering differs from original settled run 39114047414:
+the old failed pack 4 and passed pack 5 remain preserved without a rerun.
+
+Five concrete integration defects are corrected in original live source
+`a58c4a150cbae97af1d1a8820028f94553afb481`, tree
+`6877ad74251821a8be5ababe6df87d95137535f7`:
+
+- Remove the absent settled test path from the standalone declaration only.
+  The combined rehearsal retains its existing settled test selector and command.
+- Declare the 20 newly introduced ancestor dependency pairs across the existing
+  China and washout jobs. All 327 jobs and every non-path field are preserved.
+  The census moves from 356 total / 145 substantive to 336 / 131, below the
+  unchanged ceilings of 344 / 138.
+- Replace the unsupported affirmative fallback copy with “Last available daily
+  close” / “上次可用日线” in both renderer mirrors. Integrity checks remain intact.
+- Make the existing watchlist serving assertion check exact public-access
+  membership separately from integer and content-hash cache membership.
+  Its gated set, dedicated cache predicates and the Caddy source remain unchanged.
+- Correct the final known safe fixed-proxy line from 793 to 804 for the eleven
+  added cache-policy lines. Preserve the other six positions and all proxy
+  classifications and boundary mutation checks.
+
+All four canonical CI declaration checks pass on the corrected live source.
+The 22 selected serving/Caddy tests and 28 renderer tests per mirror pass.
+Seven in-memory missing-membership/duplicate-matcher mutations are all rejected
+by the actual watchlist assertion. Both renderer SHA-256 values are
+`437d832068e0f2227db961f02e02b59fd85068e05a94da1e9df67d43ce947494`.
+The first local source-claims attempt could not find the allowlist in the sparse
+checkout. Its failure is preserved. Restoring the exact existing HEAD blob
+`0fcfa15663937c4caaee4db3b805c38678795b9f` made the unchanged source-claims guard pass.
+No allowlist content, sparse policy, census ceiling, exemption or gate changed.
+
+The SAME combined rehearsal now ends at local-only commit
+`8f752163d15c5e43519c9e588ad2ac9abc857b42`, tree
+`3834a6d543004bf0b1f4daa671de061d06827f88`, with parents `7109774a` and `a58c4a15`.
+It preserves original `ef873ccf`, settled `00eca5c4` and original live `96233ea0` as
+ancestors. The four canonical declaration checks pass on this exact tree; the
+961-path China scope retains the settled selector. The renderer and serving
+components exactly match the qualified live inputs. The rehearsal is clean
+with no pending merge. It qualifies source a58c4a15 and does not contain this
+later evidence-only publication commit. No new full 432-test or 168-JavaScript
+pair sweep is claimed. A non-mutating merge of the corrected source against
+main `80f270c44bcdf11f5e71dacc05b11a0875a01d7f` is conflict-free.
+
+The selected production Chrome session now provides positive authenticated HK
+access evidence: the normal Hong Kong heatmap loaded and its Account panel
+showed “Sign out.” This supersedes the earlier signed-out observation. The page
+still names old renderer `heatmap.js?v=d76e68a7`, displays the 2026-10-16 daily
+close and retains the legacy approximately 15-minute delayed banner. The new
+candidate is not served. One ordinary China navigation timed out; reading that
+same newly created tab established an actual HTTP 524 error. The navigation was
+not retried. The HK task tab remains available; the captured China error tab was
+closed. No credential was entered or read, and no alternate browser or refused
+preview route was used. These are current-production observations, not new
+candidate visual, authenticated or natural-session acceptance.
+
+The final prepublication owner read consumed two updates to existing comments:
+[#9592 comment6248814344](https://github.com/mastermindx-market-intelligence/macro/pull/9592#issuecomment-6248814344),
+updated 04:40:45 UTC, classifies the changed capability hierarchy as Full RIG.
+The original owner must bind frozen before/after artifacts and the complete
+capability manifest, obtain independent product-regression and visual/taste
+two-pass reviews, and obtain the designated authority verdict before citing a
+genuine approved receipt in all three packets. It supplies no approval receipt.
+[#7646 comment6247254582](https://github.com/mastermindx-market-intelligence/macro/issues/7646#issuecomment-6247254582),
+updated 04:30:24 UTC, reports actual native Paper/Terminal progress while
+explicitly retaining the original Macro RIG gates. The three packet blobs remain
+unchanged at the inspected main. This consumes the original owners' returns;
+it creates no replacement review, worker or source owner.
+
+Mastermind #1391 has no new or updated return in the final read. The original
+audit run remains EFFECT_UNKNOWN, with UNKNOWN worker state and UNVERIFIED
+lineage; it was neither duplicated nor resubmitted. A bounded principal patch
+consultation ended INCOMPLETE without a completed independent patch inspection;
+it is not approval. The denied predecessor recovery-comment write was not
+retried or republished.
+
+The original draft PR remains held for native correction-head CI, the RIG-owner
+receipts, the original audit's terminal return, fresh independent review,
+protected integration/deployment admission and actual candidate proof.
+Mission complete: **false**. Exact source, logs, observed failures, checkout
+resolution and effect fences are recorded in
+[the hosted CI correction receipt](evidence/asia-heatmap-quality-20261018/hosted-ci-correction-20261019.json).
