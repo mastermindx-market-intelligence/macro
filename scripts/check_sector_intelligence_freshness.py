@@ -222,6 +222,18 @@ def _validate_breadth_measurements(breadth: dict[str, Any], errors: list[str]) -
         if (observed is None or observed == 0 or adv is None or
                 dec is None or dec == 0 or above50 is None):
             errors.append(f"{prefix}: claimed verdict has unmeasured prerequisite")
+        elif (observed > 0 and adv + dec <= observed and
+              verdict in ("narrow", "broad", "mixed")):
+            observed_ad = round(adv / dec, 2)
+            expected = (
+                "narrow" if observed_ad < 0.95 and above50 < 45 else
+                "broad" if observed_ad > 1.3 and above50 > 58 else "mixed"
+            )
+            if verdict != expected:
+                errors.append(
+                    f"{prefix}: verdict {verdict!r} contradicts measured "
+                    f"S&P 500 A/D and 50-day participation (expected {expected!r})"
+                )
 
 
 def evaluate(
