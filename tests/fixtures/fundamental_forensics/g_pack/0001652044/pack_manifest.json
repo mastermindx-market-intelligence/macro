@@ -1,0 +1,2516 @@
+{
+ "schema": "fif.g_pack/v1",
+ "cik10": "0001652044",
+ "entity_id": "ISS:US-XNAS-GOOG",
+ "legal_name": "Alphabet Inc.",
+ "security_ids": [
+  "SEC:US-XNAS-GOOGL"
+ ],
+ "listing_keys": [
+  "US-XNAS-GOOGL"
+ ],
+ "issuer_class": "software",
+ "attested": false,
+ "historical_attestation": "unavailable_until_d2_admission",
+ "admission_state": "admitted",
+ "admitted_accessions": [
+  "0001652044-26-000071",
+  "0001652044-26-000048",
+  "0001652044-26-000018",
+  "0001652044-25-000014"
+ ],
+ "packet_basis": {
+  "view": "as_filed",
+  "source_accession": "0001652044-26-000071",
+  "knowledge_time": "2026-07-23T01:15:54.000Z",
+  "knowledge_time_source": "sec_submissions_witness.json:acceptanceDateTime"
+ },
+ "gold_source": {
+  "lane": "fif-ggold-20261013/r2",
+  "files": {
+   "GOOGL/GOOGL_gold_sheet.md": "4851dbaaa5d33bf075cf56b2140c3e2df4d827045fbb8848db92b53911b136b8",
+   "GOOGL/expected_financial_intelligence_packet_v1.draft.json": "0d294bf030a3d74f85b2620732782966e10060884b1b2343c828dd1b756db264",
+   "GOOGL/expected_run_v1.draft.json": "5e47bf83dfe6ef7b2c5018833e7d2bf7b46db371ce065f6b2291de96a650c447",
+   "GOOGL/gold_facts.jsonl": "9219876c08058fed06844f0978ad128bc89f005188c3b08a53da1b644f2c06c1",
+   "GOOGL/statement_roles.json": "9560d0e3a1b194e1e673552f9493fc65a14e005b6d45bf417338fef561eb7a56",
+   "GOOGL/tagged_facts.jsonl": "972f8149349de4c9c7d78eefbeb241cea71a2547ccb6e911fb7962c5f6e65267"
+  }
+ },
+ "pins": [
+  {
+   "type": "dual_listing",
+   "ruling": "G_PACK_BUILD_SPEC.md §3 (dual_listing); G_PACK_FROZEN_SPEC.md §7 Identity (A14/A32): one issuer filing truth per CIK, GOOG (Class C) and GOOGL (Class A) are security projections onto the same issuer packet",
+   "attested": false,
+   "listing_keys": [
+    "US-XNAS-GOOG",
+    "US-XNAS-GOOGL"
+   ],
+   "key_source": {
+    "US-XNAS-GOOG": "config/issuer_group_allowlist.yml groups[cik 0001652044].members; data/reference/_receipt.json multi_security_groups[issuer_id ISS:US-XNAS-GOOG].security_ids carries SEC:US-XNAS-GOOG",
+    "US-XNAS-GOOGL": "config/issuer_group_allowlist.yml groups[cik 0001652044].members; data/reference/_receipt.json multi_security_groups[issuer_id ISS:US-XNAS-GOOG].security_ids carries SEC:US-XNAS-GOOGL; also the listing_key recorded on every committed g_src package_manifest.json of this cik"
+   },
+   "per_manifest_data": [
+    {
+     "accession": "0001652044-26-000018",
+     "form": "10-K",
+     "admission": "ADMITTED",
+     "manifest_sha256": "020717667a072222c70292155eb1050377ebc7c2b75c06225494b71b77f9112e",
+     "entity_id": "ISS:US-XNAS-GOOG",
+     "listing_key": "US-XNAS-GOOGL",
+     "cik": "0001652044"
+    },
+    {
+     "accession": "0001652044-25-000014",
+     "form": "10-K",
+     "admission": "ADMITTED",
+     "manifest_sha256": "be8ea37891071eec6cf5afc68f74beacf6d7df897e0250d029a156dd22b27d46",
+     "entity_id": "ISS:US-XNAS-GOOG",
+     "listing_key": "US-XNAS-GOOGL",
+     "cik": "0001652044"
+    },
+    {
+     "accession": "0001652044-26-000071",
+     "form": "10-Q",
+     "admission": "ADMITTED",
+     "manifest_sha256": "3f652297a35d6bafbf479044a0815df8752155d00fcf86c18488eb726722e892",
+     "entity_id": "ISS:US-XNAS-GOOG",
+     "listing_key": "US-XNAS-GOOGL",
+     "cik": "0001652044"
+    },
+    {
+     "accession": "0001652044-26-000048",
+     "form": "10-Q",
+     "admission": "ADMITTED",
+     "manifest_sha256": "837db3ff4356a88ee6acdff8d673177af9a5be4571b53279c215ed0780397c09",
+     "entity_id": "ISS:US-XNAS-GOOG",
+     "listing_key": "US-XNAS-GOOGL",
+     "cik": "0001652044"
+    },
+    {
+     "accession": "0001652044-25-000062",
+     "form": "10-Q",
+     "admission": "not_admitted:capture_only",
+     "manifest_sha256": "859847e57dfef0b7e7dc6ae3c8b376fbe9628f20963b356258108008b523ddbb",
+     "entity_id": "ISS:US-XNAS-GOOG",
+     "listing_key": "US-XNAS-GOOGL",
+     "cik": "0001652044"
+    }
+   ],
+   "both_listings_map_to_same_admitted_accession_set": {
+    "admitted_accessions": [
+     "0001652044-26-000018",
+     "0001652044-25-000014",
+     "0001652044-26-000071",
+     "0001652044-26-000048"
+    ],
+    "evidence": "every committed g_src manifest of CIK 0001652044 carries the identical entity_id ISS:US-XNAS-GOOG and listing_key US-XNAS-GOOGL, so the GOOG and GOOGL projections resolve to the same four ADMITTED capture_index rows (tests/fixtures/fundamental_forensics/g_src/0001652044/capture_index.json); no second packet exists for either listing",
+    "peer_note": "peer dedup by CIK already collapses GOOG/GOOGL (_collapse_share_classes, peer_cohort.py:161-197, test_goog_googl_collapse_one_member_and_a35_i1, frozen spec §7 Identity)"
+   },
+   "key_source_note": "the issuer id is an issuer identifier, not a listing key; listing keys are sourced from the committed issuer-group data, and the captured listing is a member of that group"
+  },
+  {
+   "type": "errata_absence",
+   "ruling": "G_CENSUS_ERRATA.md E3 (GOOGL operating_expenses = NOT_EVALUABLE_DIMENSION; G0-c adds NO axis for operating_expenses; the G0-c axis list is closed: frozen spec §2 G0-c); G_PACK_BUILD_SPEC.md §2 gold rules",
+   "attested": false,
+   "metric_id": "operating_expenses",
+   "code": "disallowed_dimension",
+   "r1_code": "NOT_EVALUABLE_DIMENSION",
+   "cell_classes_as_r2_records_them": {
+    "view_a": {
+     "description": "every View A duration cell of operating_expenses in all four admitted packages",
+     "cells": [
+      {
+       "source_accession": "0001652044-26-000018",
+       "period_key": [
+        "duration",
+        "2023-01-01",
+        "2023-12-31"
+       ]
+      },
+      {
+       "source_accession": "0001652044-26-000018",
+       "period_key": [
+        "duration",
+        "2024-01-01",
+        "2024-12-31"
+       ]
+      },
+      {
+       "source_accession": "0001652044-26-000018",
+       "period_key": [
+        "duration",
+        "2025-01-01",
+        "2025-12-31"
+       ]
+      },
+      {
+       "source_accession": "0001652044-25-000014",
+       "period_key": [
+        "duration",
+        "2022-01-01",
+        "2022-12-31"
+       ]
+      },
+      {
+       "source_accession": "0001652044-25-000014",
+       "period_key": [
+        "duration",
+        "2023-01-01",
+        "2023-12-31"
+       ]
+      },
+      {
+       "source_accession": "0001652044-25-000014",
+       "period_key": [
+        "duration",
+        "2024-01-01",
+        "2024-12-31"
+       ]
+      },
+      {
+       "source_accession": "0001652044-26-000071",
+       "period_key": [
+        "duration",
+        "2025-01-01",
+        "2025-06-30"
+       ]
+      },
+      {
+       "source_accession": "0001652044-26-000071",
+       "period_key": [
+        "duration",
+        "2025-04-01",
+        "2025-06-30"
+       ]
+      },
+      {
+       "source_accession": "0001652044-26-000071",
+       "period_key": [
+        "duration",
+        "2026-01-01",
+        "2026-06-30"
+       ]
+      },
+      {
+       "source_accession": "0001652044-26-000071",
+       "period_key": [
+        "duration",
+        "2026-04-01",
+        "2026-06-30"
+       ]
+      },
+      {
+       "source_accession": "0001652044-26-000048",
+       "period_key": [
+        "duration",
+        "2025-01-01",
+        "2025-03-31"
+       ]
+      },
+      {
+       "source_accession": "0001652044-26-000048",
+       "period_key": [
+        "duration",
+        "2026-01-01",
+        "2026-03-31"
+       ]
+      }
+     ],
+     "all_carry": {
+      "code": "disallowed_dimension",
+      "r1_code": "NOT_EVALUABLE_DIMENSION",
+      "verification_state": "typed_absence_verified"
+     }
+    },
+    "view_b": {
+     "description": "r2 records disallowed_dimension for the four durations resolved from the newest 10-Q (0001652044-26-000071) and missing_standard_fact (r1 MISSING_CONCEPT, cross-package zero-hit detail) for the six durations no admitted package reports dimension-free; both classes are recorded here as r2 has them",
+     "disallowed_dimension_cells": [
+      {
+       "period_key": [
+        "duration",
+        "2025-01-01",
+        "2025-06-30"
+       ]
+      },
+      {
+       "period_key": [
+        "duration",
+        "2025-04-01",
+        "2025-06-30"
+       ]
+      },
+      {
+       "period_key": [
+        "duration",
+        "2026-01-01",
+        "2026-06-30"
+       ]
+      },
+      {
+       "period_key": [
+        "duration",
+        "2026-04-01",
+        "2026-06-30"
+       ]
+      }
+     ],
+     "missing_standard_fact_cells": [
+      {
+       "period_key": [
+        "duration",
+        "2022-01-01",
+        "2022-12-31"
+       ]
+      },
+      {
+       "period_key": [
+        "duration",
+        "2023-01-01",
+        "2023-12-31"
+       ]
+      },
+      {
+       "period_key": [
+        "duration",
+        "2024-01-01",
+        "2024-12-31"
+       ]
+      },
+      {
+       "period_key": [
+        "duration",
+        "2025-01-01",
+        "2025-12-31"
+       ]
+      },
+      {
+       "period_key": [
+        "duration",
+        "2025-01-01",
+        "2025-03-31"
+       ]
+      },
+      {
+       "period_key": [
+        "duration",
+        "2026-01-01",
+        "2026-03-31"
+       ]
+      }
+     ]
+    }
+   },
+   "cited_dimensioned_only_fact": {
+    "accession": "0001652044-26-000018",
+    "member_file": "goog-20251231.htm",
+    "member_sha256": "34a5db240851fab80a2ed1bf7d01b5c9c648b1290148ba4030acf2da89071172",
+    "byte_offset": 2390206,
+    "raw_text": "158,193",
+    "contextRef": "c-74",
+    "concept": "us-gaap:OperatingExpenses",
+    "axis": "us-gaap:StatementBusinessSegmentsAxis",
+    "axis_member": "goog:GoogleServicesMember",
+    "period": [
+     "2025-01-01",
+     "2025-12-31"
+    ],
+    "value_exact": "158193000000",
+    "decimals": "-6",
+    "scale": "6",
+    "sign": null,
+    "unitRef": "usd",
+    "element_id": "f-1805"
+   },
+   "dimensional_inventory_from_bytes": {
+    "0001652044-26-000018": {
+     "OperatingExpenses_facts": 6,
+     "dimension_free": 0,
+     "axes": [
+      "us-gaap:StatementBusinessSegmentsAxis"
+     ]
+    },
+    "0001652044-25-000014": {
+     "OperatingExpenses_facts": 6,
+     "dimension_free": 0,
+     "axes": [
+      "us-gaap:StatementBusinessSegmentsAxis"
+     ]
+    },
+    "0001652044-26-000071": {
+     "OperatingExpenses_facts": 8,
+     "dimension_free": 0,
+     "axes": [
+      "us-gaap:StatementBusinessSegmentsAxis"
+     ]
+    },
+    "0001652044-26-000048": {
+     "OperatingExpenses_facts": 4,
+     "dimension_free": 0,
+     "axes": [
+      "us-gaap:StatementBusinessSegmentsAxis"
+     ]
+    }
+   },
+   "no_new_axis": "confirmed: every OperatingExpenses fact in every admitted package sits on us-gaap:StatementBusinessSegmentsAxis, which is already a G0-c allowed axis for revenue and operating income (loss); no axis is added for operating_expenses (E3 ruling)"
+  },
+  {
+   "type": "errata_absence",
+   "ruling": "G_CENSUS_ERRATA.md E2 (half-printed leverage pair: GOOGL long_term_debt resolves while total_debt is MISSING_DEPENDENCY; never derived from a partial input set; the resolved component prints under its own label, never as \"debt\"); G_PACK_BUILD_SPEC.md §2 gold rules",
+   "attested": false,
+   "metric_id": "total_debt",
+   "code": "missing_dependency",
+   "r1_code": "MISSING_DEPENDENCY",
+   "missing_input_named": "short_term_debt",
+   "cells": [
+    {
+     "view": "as_filed",
+     "source_accession": "0001652044-26-000018",
+     "metric_id": "total_debt",
+     "period_key": [
+      "instant",
+      "2025-12-31"
+     ],
+     "code": "missing_dependency",
+     "missing_inputs": [
+      {
+       "dependency": "short_term_debt",
+       "state": "typed_absence_verified",
+       "code": "missing_standard_fact",
+       "dep_period": [
+        "instant",
+        "2025-12-31"
+       ]
+      }
+     ]
+    }
+   ],
+   "short_term_debt_absence_evidence": {
+    "metric_id": "short_term_debt",
+    "code": "missing_standard_fact",
+    "r1_code": "MISSING_CONCEPT",
+    "concepts_searched": [
+     "us-gaap:ShortTermBorrowings"
+    ],
+    "byte_check": "us-gaap:ShortTermBorrowings occurrences in each admitted primary member: 0001652044-26-000018 goog-20251231.htm 0 facts / 0 raw substrings; 0001652044-25-000014 goog-20241231.htm 0 / 0; 0001652044-26-000071 goog-20260630.htm 0 / 0; 0001652044-26-000048 goog-20260331.htm 0 / 0"
+   },
+   "resolved_component_own_label_evidence": {
+    "metric_id": "long_term_debt",
+    "label": "Long-term debt (LongTermDebtNoncurrent; never printed as \"debt\")",
+    "accession": "0001652044-26-000018",
+    "member_file": "goog-20251231.htm",
+    "member_sha256": "34a5db240851fab80a2ed1bf7d01b5c9c648b1290148ba4030acf2da89071172",
+    "byte_offset": 877723,
+    "raw_text": "46,547",
+    "contextRef": "c-20",
+    "concept": "us-gaap:LongTermDebtNoncurrent",
+    "period": [
+     "2025-12-31",
+     "2025-12-31"
+    ],
+    "value_exact": "46547000000",
+    "decimals": "-6",
+    "scale": "6",
+    "sign": null,
+    "unitRef": "usd",
+    "element_id": "f-131"
+   }
+  },
+  {
+   "type": "errata_absence",
+   "ruling": "G_PACK_FROZEN_SPEC.md §7 GOOGL census misses (GrossProfit not reported; typed absence, no derivation) + §0 gate 5 (typed absence, never invention); G_CENSUS_ERRATA.md preamble (GrossProfit typed absence for GOOGL already covered by the frozen spec)",
+   "attested": false,
+   "metric_id": "gross_profit",
+   "code": "missing_standard_fact",
+   "r1_code": "MISSING_CONCEPT",
+   "concepts_searched": [
+    "us-gaap:GrossProfit"
+   ],
+   "grossprofit_occurrence_counts_per_admitted_package": {
+    "0001652044-26-000018": {
+     "member_file": "goog-20251231.htm",
+     "member_sha256": "34a5db240851fab80a2ed1bf7d01b5c9c648b1290148ba4030acf2da89071172",
+     "facts": 0,
+     "raw_substring_count": 0
+    },
+    "0001652044-25-000014": {
+     "member_file": "goog-20241231.htm",
+     "member_sha256": "e7a921220a2f7fac9be140be11844c520ce57b2b573e2aee66945c47d72d40a7",
+     "facts": 0,
+     "raw_substring_count": 0
+    },
+    "0001652044-26-000071": {
+     "member_file": "goog-20260630.htm",
+     "member_sha256": "d9046d6fe9355dfb46942dc51ebc947b62787d9f06635745cd3da54167c697ea",
+     "facts": 0,
+     "raw_substring_count": 0
+    },
+    "0001652044-26-000048": {
+     "member_file": "goog-20260331.htm",
+     "member_sha256": "2f35fe23025361aae60228d9b6f11db1e007b85e06e8b9bbd11d1a7dc99fa2a9",
+     "facts": 0,
+     "raw_substring_count": 0
+    }
+   },
+   "expected_zero_confirmed": true,
+   "no_derivation": "gross_margin also stays missing_dependency (naming gross_profit); neither is ever computed from revenue - cost_of_revenue"
+  },
+  {
+   "type": "decimals_precision",
+   "ruling": "G_PACK_BUILD_SPEC.md §3 (decimals_precision); G_PACK_FROZEN_SPEC.md §7 (COGS: Alphabet tags CostOfRevenue; verify CLOSED) + §0 gate 5 / A25 (serve the tagged value with its decimals precision)",
+   "attested": false,
+   "metric_id": "cost_of_revenue",
+   "concept": "us-gaap:CostOfRevenue",
+   "period_key": [
+    "duration",
+    "2025-01-01",
+    "2025-12-31"
+   ],
+   "source_accession": "0001652044-26-000018",
+   "contextRef": "c-1",
+   "value_exact": "162535000000",
+   "decimals": "-6",
+   "scale": "6",
+   "sign": null,
+   "unitRef": "usd",
+   "format": "ixt:num-dot-decimal",
+   "member_file": "goog-20251231.htm",
+   "member_sha256": "34a5db240851fab80a2ed1bf7d01b5c9c648b1290148ba4030acf2da89071172",
+   "byte_offset": 909036,
+   "raw_text": "162,535",
+   "element_id": "f-193"
+  },
+  {
+   "type": "segment_as_filed",
+   "ruling": "G_PACK_FROZEN_SPEC.md §2 G0-c A31 no-sum fence + R6 (G serves segment facts as filed; the consolidated cell is the filing's own undimensioned fact; no consolidated value is a sum of segments); G_PACK_BUILD_SPEC.md §2 R6",
+   "attested": false,
+   "period_key": [
+    "duration",
+    "2025-01-01",
+    "2025-12-31"
+   ],
+   "source_accession": "0001652044-26-000018",
+   "statement": "Information about Segments and Geographic Areas, revenues by reportable segment (rendered rows: Google Services / Google Cloud / Other Bets / Hedging gains (losses) / Total revenues)",
+   "segments": [
+    {
+     "member": "goog:GoogleServicesMember",
+     "reported_name": "Google Services",
+     "axis": "us-gaap:StatementBusinessSegmentsAxis",
+     "value": "342721000000",
+     "trace": {
+      "accession": "0001652044-26-000018",
+      "member_file": "goog-20251231.htm",
+      "member_sha256": "34a5db240851fab80a2ed1bf7d01b5c9c648b1290148ba4030acf2da89071172",
+      "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+      "contextRef": "c-74",
+      "byte_offset": 2364193,
+      "raw_text": "342,721",
+      "decimals": "-6",
+      "scale": "6",
+      "sign": null,
+      "unitRef": "usd",
+      "element_id": "f-1772"
+     }
+    },
+    {
+     "member": "goog:GoogleCloudMember",
+     "reported_name": "Google Cloud",
+     "axis": "us-gaap:StatementBusinessSegmentsAxis",
+     "value": "58705000000",
+     "trace": {
+      "accession": "0001652044-26-000018",
+      "member_file": "goog-20251231.htm",
+      "member_sha256": "34a5db240851fab80a2ed1bf7d01b5c9c648b1290148ba4030acf2da89071172",
+      "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+      "contextRef": "c-77",
+      "byte_offset": 2366185,
+      "raw_text": "58,705",
+      "decimals": "-6",
+      "scale": "6",
+      "sign": null,
+      "unitRef": "usd",
+      "element_id": "f-1775"
+     }
+    },
+    {
+     "member": "us-gaap:AllOtherSegmentsMember",
+     "reported_name": "Other Bets",
+     "axis": "us-gaap:StatementBusinessSegmentsAxis",
+     "value": "1537000000",
+     "trace": {
+      "accession": "0001652044-26-000018",
+      "member_file": "goog-20251231.htm",
+      "member_sha256": "34a5db240851fab80a2ed1bf7d01b5c9c648b1290148ba4030acf2da89071172",
+      "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+      "contextRef": "c-80",
+      "byte_offset": 2368172,
+      "raw_text": "1,537",
+      "decimals": "-6",
+      "scale": "6",
+      "sign": null,
+      "unitRef": "usd",
+      "element_id": "f-1778"
+     }
+    }
+   ],
+   "consolidated": {
+    "value": "402836000000",
+    "trace": {
+     "accession": "0001652044-26-000018",
+     "member_file": "goog-20251231.htm",
+     "member_sha256": "34a5db240851fab80a2ed1bf7d01b5c9c648b1290148ba4030acf2da89071172",
+     "concept": "us-gaap:Revenues",
+     "contextRef": "c-1",
+     "byte_offset": 2372761,
+     "raw_text": "402,836",
+     "decimals": "-6",
+     "scale": "6",
+     "sign": null,
+     "unitRef": "usd",
+     "element_id": "f-1784",
+     "note": "segment-table occurrence; the same undimensioned fact also appears on the income-statement face at byte_offset 906568 (the r2 gold trace occurrence) and elsewhere"
+    },
+    "is_filing_own_undimensioned_fact": true
+   },
+   "reconciling_items": [
+    {
+     "reported_name": "Hedging gains (losses)",
+     "concept": "us-gaap:RevenueNotFromContractWithCustomer",
+     "contextRef": "c-1",
+     "undimensioned": true,
+     "value": "-127000000",
+     "trace": {
+      "accession": "0001652044-26-000018",
+      "member_file": "goog-20251231.htm",
+      "member_sha256": "34a5db240851fab80a2ed1bf7d01b5c9c648b1290148ba4030acf2da89071172",
+      "byte_offset": 2370075,
+      "raw_text": "127",
+      "decimals": "-6",
+      "scale": "6",
+      "sign": "-",
+      "unitRef": "usd",
+      "element_id": "f-1781"
+     }
+    }
+   ],
+   "sum_check_only": {
+    "sum_of_segments_plus_reconciling": "342721000000 + 58705000000 + 1537000000 + (-127000000) = 402836000000",
+    "equals_consolidated_fact": true,
+    "note": "check only; the consolidated cell is served from the filing's own undimensioned Revenues fact, never as a sum (A31 no-sum fence)"
+   },
+   "operating_income_as_filed_note": "the same note's operating income (loss) rows as filed: Google Services c-417 139404000000 and Google Cloud c-420 13910000000 and Other Bets c-423 -7515000000 (axis srt:ConsolidationItemsAxis us-gaap:OperatingSegmentsMember + StatementBusinessSegmentsAxis) and Alphabet-level activities c-426 -16760000000 (srt:ConsolidationItemsAxis us-gaap:CorporateNonSegmentMember); recorded for the K boundary (PK03), not G analytics"
+  }
+ ],
+ "gold_corrections": [
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_shares_outstanding",
+    "period_key": [
+     "instant",
+     "2025-01-28"
+    ]
+   },
+   "field": "code",
+   "op": "set",
+   "r2_value": "missing_standard_fact",
+   "corrected_value": "disallowed_dimension",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0111"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-5",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassAMember"
+       },
+       "byte_offset": 205543
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-6",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassBMember"
+       },
+       "byte_offset": 205793
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-7",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "goog:CapitalClassCMember"
+       },
+       "byte_offset": 206016
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_shares_outstanding",
+    "period_key": [
+     "instant",
+     "2025-01-28"
+    ]
+   },
+   "field": "r1_code",
+   "op": "set",
+   "r2_value": "MISSING_CONCEPT",
+   "corrected_value": "NOT_EVALUABLE_DIMENSION",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0111"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-5",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassAMember"
+       },
+       "byte_offset": 205543
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-6",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassBMember"
+       },
+       "byte_offset": 205793
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-7",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "goog:CapitalClassCMember"
+       },
+       "byte_offset": 206016
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_shares_outstanding",
+    "period_key": [
+     "instant",
+     "2025-01-28"
+    ]
+   },
+   "field": "detail",
+   "op": "set",
+   "r2_value": "zero-hit search across every admitted package: no dimension-free fact for any mapped concept of common_shares_outstanding for this period (concepts searched: dei:EntityCommonStockSharesOutstanding)",
+   "corrected_value": "facts exist only on dimensioned contexts in this package; G0-c allowed axes do not apply to the headline cell",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0111"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-5",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassAMember"
+       },
+       "byte_offset": 205543
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-6",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassBMember"
+       },
+       "byte_offset": 205793
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-7",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "goog:CapitalClassCMember"
+       },
+       "byte_offset": 206016
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_shares_outstanding",
+    "period_key": [
+     "instant",
+     "2025-01-28"
+    ]
+   },
+   "field": "axes_seen",
+   "op": "add",
+   "corrected_value": [
+    "us-gaap:StatementClassOfStockAxis"
+   ],
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0111"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-5",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassAMember"
+       },
+       "byte_offset": 205543
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-6",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassBMember"
+       },
+       "byte_offset": 205793
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-7",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "goog:CapitalClassCMember"
+       },
+       "byte_offset": 206016
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_shares_outstanding",
+    "period_key": [
+     "instant",
+     "2026-01-28"
+    ]
+   },
+   "field": "code",
+   "op": "set",
+   "r2_value": "missing_standard_fact",
+   "corrected_value": "disallowed_dimension",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0112"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-16",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassAMember"
+       },
+       "byte_offset": 265642
+      },
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-17",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassBMember"
+       },
+       "byte_offset": 265893
+      },
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-18",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "goog:CapitalClassCMember"
+       },
+       "byte_offset": 266117
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_shares_outstanding",
+    "period_key": [
+     "instant",
+     "2026-01-28"
+    ]
+   },
+   "field": "r1_code",
+   "op": "set",
+   "r2_value": "MISSING_CONCEPT",
+   "corrected_value": "NOT_EVALUABLE_DIMENSION",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0112"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-16",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassAMember"
+       },
+       "byte_offset": 265642
+      },
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-17",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassBMember"
+       },
+       "byte_offset": 265893
+      },
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-18",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "goog:CapitalClassCMember"
+       },
+       "byte_offset": 266117
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_shares_outstanding",
+    "period_key": [
+     "instant",
+     "2026-01-28"
+    ]
+   },
+   "field": "detail",
+   "op": "set",
+   "r2_value": "zero-hit search across every admitted package: no dimension-free fact for any mapped concept of common_shares_outstanding for this period (concepts searched: dei:EntityCommonStockSharesOutstanding)",
+   "corrected_value": "facts exist only on dimensioned contexts in this package; G0-c allowed axes do not apply to the headline cell",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0112"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-16",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassAMember"
+       },
+       "byte_offset": 265642
+      },
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-17",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassBMember"
+       },
+       "byte_offset": 265893
+      },
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-18",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "goog:CapitalClassCMember"
+       },
+       "byte_offset": 266117
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_shares_outstanding",
+    "period_key": [
+     "instant",
+     "2026-01-28"
+    ]
+   },
+   "field": "axes_seen",
+   "op": "add",
+   "corrected_value": [
+    "us-gaap:StatementClassOfStockAxis"
+   ],
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0112"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-16",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassAMember"
+       },
+       "byte_offset": 265642
+      },
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-17",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassBMember"
+       },
+       "byte_offset": 265893
+      },
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-18",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "goog:CapitalClassCMember"
+       },
+       "byte_offset": 266117
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_shares_outstanding",
+    "period_key": [
+     "instant",
+     "2026-04-22"
+    ]
+   },
+   "field": "code",
+   "op": "set",
+   "r2_value": "missing_standard_fact",
+   "corrected_value": "disallowed_dimension",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0113"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-20",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassAMember"
+       },
+       "byte_offset": 225159
+      },
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-21",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassBMember"
+       },
+       "byte_offset": 225409
+      },
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-22",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "goog:CapitalClassCMember"
+       },
+       "byte_offset": 225626
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_shares_outstanding",
+    "period_key": [
+     "instant",
+     "2026-04-22"
+    ]
+   },
+   "field": "r1_code",
+   "op": "set",
+   "r2_value": "MISSING_CONCEPT",
+   "corrected_value": "NOT_EVALUABLE_DIMENSION",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0113"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-20",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassAMember"
+       },
+       "byte_offset": 225159
+      },
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-21",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassBMember"
+       },
+       "byte_offset": 225409
+      },
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-22",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "goog:CapitalClassCMember"
+       },
+       "byte_offset": 225626
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_shares_outstanding",
+    "period_key": [
+     "instant",
+     "2026-04-22"
+    ]
+   },
+   "field": "detail",
+   "op": "set",
+   "r2_value": "zero-hit search across every admitted package: no dimension-free fact for any mapped concept of common_shares_outstanding for this period (concepts searched: dei:EntityCommonStockSharesOutstanding)",
+   "corrected_value": "facts exist only on dimensioned contexts in this package; G0-c allowed axes do not apply to the headline cell",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0113"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-20",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassAMember"
+       },
+       "byte_offset": 225159
+      },
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-21",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassBMember"
+       },
+       "byte_offset": 225409
+      },
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-22",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "goog:CapitalClassCMember"
+       },
+       "byte_offset": 225626
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_shares_outstanding",
+    "period_key": [
+     "instant",
+     "2026-04-22"
+    ]
+   },
+   "field": "axes_seen",
+   "op": "add",
+   "corrected_value": [
+    "us-gaap:StatementClassOfStockAxis"
+   ],
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0113"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-20",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassAMember"
+       },
+       "byte_offset": 225159
+      },
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-21",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "us-gaap:CommonClassBMember"
+       },
+       "byte_offset": 225409
+      },
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-22",
+       "members": {
+        "us-gaap:StatementClassOfStockAxis": "goog:CapitalClassCMember"
+       },
+       "byte_offset": 225626
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2022-01-01",
+     "2022-12-31"
+    ]
+   },
+   "field": "code",
+   "op": "set",
+   "r2_value": "missing_standard_fact",
+   "corrected_value": "disallowed_dimension",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0157",
+     "CAT-C6_cat_25_000008_period_attribution-0786"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-61",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2333094
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-64",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2341008
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2022-01-01",
+     "2022-12-31"
+    ]
+   },
+   "field": "r1_code",
+   "op": "set",
+   "r2_value": "MISSING_CONCEPT",
+   "corrected_value": "NOT_EVALUABLE_DIMENSION",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0157",
+     "CAT-C6_cat_25_000008_period_attribution-0786"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-61",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2333094
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-64",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2341008
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2022-01-01",
+     "2022-12-31"
+    ]
+   },
+   "field": "detail",
+   "op": "set",
+   "r2_value": "zero-hit search across every admitted package: no dimension-free fact for any mapped concept of operating_expenses for this period (concepts searched: us-gaap:OperatingExpenses)",
+   "corrected_value": "facts exist only on dimensioned contexts in this package; G0-c allowed axes do not apply to the headline cell",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0157",
+     "CAT-C6_cat_25_000008_period_attribution-0786"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-61",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2333094
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-64",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2341008
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2022-01-01",
+     "2022-12-31"
+    ]
+   },
+   "field": "axes_seen",
+   "op": "add",
+   "corrected_value": [
+    "us-gaap:StatementBusinessSegmentsAxis"
+   ],
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0157",
+     "CAT-C6_cat_25_000008_period_attribution-0786"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-61",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2333094
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-64",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2341008
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2023-01-01",
+     "2023-12-31"
+    ]
+   },
+   "field": "code",
+   "op": "set",
+   "r2_value": "missing_standard_fact",
+   "corrected_value": "disallowed_dimension",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0158"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-72",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2389070
+      },
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-75",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2396984
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-62",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2333662
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-65",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2341575
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2023-01-01",
+     "2023-12-31"
+    ]
+   },
+   "field": "r1_code",
+   "op": "set",
+   "r2_value": "MISSING_CONCEPT",
+   "corrected_value": "NOT_EVALUABLE_DIMENSION",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0158"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-72",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2389070
+      },
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-75",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2396984
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-62",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2333662
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-65",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2341575
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2023-01-01",
+     "2023-12-31"
+    ]
+   },
+   "field": "detail",
+   "op": "set",
+   "r2_value": "zero-hit search across every admitted package: no dimension-free fact for any mapped concept of operating_expenses for this period (concepts searched: us-gaap:OperatingExpenses)",
+   "corrected_value": "facts exist only on dimensioned contexts in this package; G0-c allowed axes do not apply to the headline cell",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0158"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-72",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2389070
+      },
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-75",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2396984
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-62",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2333662
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-65",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2341575
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2023-01-01",
+     "2023-12-31"
+    ]
+   },
+   "field": "axes_seen",
+   "op": "add",
+   "corrected_value": [
+    "us-gaap:StatementBusinessSegmentsAxis"
+   ],
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0158"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-72",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2389070
+      },
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-75",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2396984
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-62",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2333662
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-65",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2341575
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2024-01-01",
+     "2024-12-31"
+    ]
+   },
+   "field": "code",
+   "op": "set",
+   "r2_value": "missing_standard_fact",
+   "corrected_value": "disallowed_dimension",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0159"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-73",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2389638
+      },
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-76",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2397551
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-63",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2334230
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-66",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2342142
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2024-01-01",
+     "2024-12-31"
+    ]
+   },
+   "field": "r1_code",
+   "op": "set",
+   "r2_value": "MISSING_CONCEPT",
+   "corrected_value": "NOT_EVALUABLE_DIMENSION",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0159"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-73",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2389638
+      },
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-76",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2397551
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-63",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2334230
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-66",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2342142
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2024-01-01",
+     "2024-12-31"
+    ]
+   },
+   "field": "detail",
+   "op": "set",
+   "r2_value": "zero-hit search across every admitted package: no dimension-free fact for any mapped concept of operating_expenses for this period (concepts searched: us-gaap:OperatingExpenses)",
+   "corrected_value": "facts exist only on dimensioned contexts in this package; G0-c allowed axes do not apply to the headline cell",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0159"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-73",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2389638
+      },
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-76",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2397551
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-63",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2334230
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-66",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2342142
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2024-01-01",
+     "2024-12-31"
+    ]
+   },
+   "field": "axes_seen",
+   "op": "add",
+   "corrected_value": [
+    "us-gaap:StatementBusinessSegmentsAxis"
+   ],
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0159"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-73",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2389638
+      },
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-76",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2397551
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-63",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2334230
+      },
+      {
+       "accession": "0001652044-25-000014",
+       "member_file": "goog-20241231.htm",
+       "contextRef": "c-66",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2342142
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2025-01-01",
+     "2025-03-31"
+    ]
+   },
+   "field": "code",
+   "op": "set",
+   "r2_value": "missing_standard_fact",
+   "corrected_value": "disallowed_dimension",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0160"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-64",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 1404109
+      },
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-66",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 1410291
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2025-01-01",
+     "2025-03-31"
+    ]
+   },
+   "field": "r1_code",
+   "op": "set",
+   "r2_value": "MISSING_CONCEPT",
+   "corrected_value": "NOT_EVALUABLE_DIMENSION",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0160"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-64",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 1404109
+      },
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-66",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 1410291
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2025-01-01",
+     "2025-03-31"
+    ]
+   },
+   "field": "detail",
+   "op": "set",
+   "r2_value": "zero-hit search across every admitted package: no dimension-free fact for any mapped concept of operating_expenses for this period (concepts searched: us-gaap:OperatingExpenses)",
+   "corrected_value": "facts exist only on dimensioned contexts in this package; G0-c allowed axes do not apply to the headline cell",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0160"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-64",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 1404109
+      },
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-66",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 1410291
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2025-01-01",
+     "2025-03-31"
+    ]
+   },
+   "field": "axes_seen",
+   "op": "add",
+   "corrected_value": [
+    "us-gaap:StatementBusinessSegmentsAxis"
+   ],
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0160"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-64",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 1404109
+      },
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-66",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 1410291
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2025-01-01",
+     "2025-12-31"
+    ]
+   },
+   "field": "code",
+   "op": "set",
+   "r2_value": "missing_standard_fact",
+   "corrected_value": "disallowed_dimension",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0161"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-74",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2390206
+      },
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-77",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2398118
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2025-01-01",
+     "2025-12-31"
+    ]
+   },
+   "field": "r1_code",
+   "op": "set",
+   "r2_value": "MISSING_CONCEPT",
+   "corrected_value": "NOT_EVALUABLE_DIMENSION",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0161"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-74",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2390206
+      },
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-77",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2398118
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2025-01-01",
+     "2025-12-31"
+    ]
+   },
+   "field": "detail",
+   "op": "set",
+   "r2_value": "zero-hit search across every admitted package: no dimension-free fact for any mapped concept of operating_expenses for this period (concepts searched: us-gaap:OperatingExpenses)",
+   "corrected_value": "facts exist only on dimensioned contexts in this package; G0-c allowed axes do not apply to the headline cell",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0161"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-74",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2390206
+      },
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-77",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2398118
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2025-01-01",
+     "2025-12-31"
+    ]
+   },
+   "field": "axes_seen",
+   "op": "add",
+   "corrected_value": [
+    "us-gaap:StatementBusinessSegmentsAxis"
+   ],
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0161"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-74",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 2390206
+      },
+      {
+       "accession": "0001652044-26-000018",
+       "member_file": "goog-20251231.htm",
+       "contextRef": "c-77",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 2398118
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2026-01-01",
+     "2026-03-31"
+    ]
+   },
+   "field": "code",
+   "op": "set",
+   "r2_value": "missing_standard_fact",
+   "corrected_value": "disallowed_dimension",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0162"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-65",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 1404676
+      },
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-67",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 1410857
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2026-01-01",
+     "2026-03-31"
+    ]
+   },
+   "field": "r1_code",
+   "op": "set",
+   "r2_value": "MISSING_CONCEPT",
+   "corrected_value": "NOT_EVALUABLE_DIMENSION",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0162"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-65",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 1404676
+      },
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-67",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 1410857
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2026-01-01",
+     "2026-03-31"
+    ]
+   },
+   "field": "detail",
+   "op": "set",
+   "r2_value": "zero-hit search across every admitted package: no dimension-free fact for any mapped concept of operating_expenses for this period (concepts searched: us-gaap:OperatingExpenses)",
+   "corrected_value": "facts exist only on dimensioned contexts in this package; G0-c allowed axes do not apply to the headline cell",
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0162"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-65",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 1404676
+      },
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-67",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 1410857
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "operating_expenses",
+    "period_key": [
+     "duration",
+     "2026-01-01",
+     "2026-03-31"
+    ]
+   },
+   "field": "axes_seen",
+   "op": "add",
+   "corrected_value": [
+    "us-gaap:StatementBusinessSegmentsAxis"
+   ],
+   "evidence": {
+    "kr_ids": [
+     "GOOGL-C4b_dimension_vs_missing-0162"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-65",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleServicesMember"
+       },
+       "byte_offset": 1404676
+      },
+      {
+       "accession": "0001652044-26-000048",
+       "member_file": "goog-20260331.htm",
+       "contextRef": "c-67",
+       "members": {
+        "us-gaap:StatementBusinessSegmentsAxis": "goog:GoogleCloudMember"
+       },
+       "byte_offset": 1410857
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  }
+ ],
+ "packet_corrections": [],
+ "defects": []
+}
