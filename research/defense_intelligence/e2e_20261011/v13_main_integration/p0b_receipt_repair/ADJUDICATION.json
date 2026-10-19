@@ -1,0 +1,58 @@
+{
+  "schema": "defense.p0b_shared_dependency_receipt_repair.v1",
+  "source_before": "fc04588278e12b5e693cbea72fea3193986f78d1",
+  "checked_at": "2026-10-14T10:39:08.421380+00:00",
+  "root_cause": "Integration adopted incoming main browser receipts while retaining fixture dependency hashes for Defense shared navigation. Prior receipts no longer matched current theme assets.",
+  "repair": "Existing fixture renderer and browser verifier re-executed for HK/CA; repair_extension aggregated only from verified tool output. No excluded product implementation changed.",
+  "baseline_preserved": {
+    "head": "3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86",
+    "tree": "b4dd8fd9b29b4eb769239d35df2a7911e793c7ec"
+  },
+  "browser": {
+    "markets": 2,
+    "primary_pass": 96,
+    "degraded_pass": 32,
+    "screenshots": 16,
+    "all_input_and_loaded_asset_hashes_verified": true,
+    "screenshots_unchanged": true
+  },
+  "tests": {
+    "passed": 136,
+    "warnings": 14,
+    "exit": 0,
+    "command": "python3 -m pytest tests/test_stock_dashboard_first_frame.py tests/test_check_p0b_receipt_closure.py -q"
+  },
+  "closure": {
+    "exit": 0,
+    "base": "04028b3030205b6f7508d7f0d16e2a2ecaa6f4c6"
+  },
+  "govrev_witness": {
+    "identity": "01f5e8b87ec5e313a1d0ba3991e348b6fa21279a51153739a0fb22c36236ec10",
+    "verified_committed": true,
+    "runtime": "/Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/proof-venv/bin/python",
+    "initial_wrong_runtime_refused": true
+  },
+  "invocation_errors_retained": [
+    "Invalid copied historical SHA refused by CLI before CA browser launch; fixed from HK baseline.",
+    "Misspelled optional closure test path collected zero tests; corrected.",
+    "Manifest aggregation first Python snippet had a reserved-keyword syntax error before any write; corrected."
+  ],
+  "receipt_sha256": {
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json": "8b3bb8015939a7a4e14516340fb0ee53c0dba43b9152ae9dd406e33358018ad3",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json": "6d6163253265f37e629f78dd2cb047ea7e315d1c0dfcebbf0a8238042c60526d",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json": "1725731bc40f71217f1adc1cda0feccfe02c1934498b664b5ad4d190fafafff9",
+    "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json": "c21c26f8c75a945916017929dd524a2670264ca5f6efb112d39752137966812b"
+  },
+  "hosted_red": {
+    "3": {
+      "sanitized_log_sha256": "52689824f096a1cdc3341df87bf9760f165c5745a032d341d08ade8f7f8891a5",
+      "run": 38544633791
+    },
+    "10": {
+      "sanitized_log_sha256": "d5dc578d54185c4bceb3616c9788706153e0f5911b6e1b39a9809713b2110d1c",
+      "run": 38544633791
+    }
+  },
+  "production": "not claimed",
+  "next": "Push same PR9066 and conclude exact new-head protected CI/review; preserve natural-publisher-before-CAS sequence"
+}

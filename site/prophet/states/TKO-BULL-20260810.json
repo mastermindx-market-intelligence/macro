@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "TKO-BULL-20260810",
-  "asof": "2026-10-09",
-  "phase": "overtime",
-  "detection_phase": "overtime",
-  "management_confidence": 26.7,
-  "raw_confidence": 30.9,
-  "delta_vs_base": -33.3,
-  "recommended_action": "trim",
-  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "asof": "2026-10-18",
+  "phase": "invalidated",
+  "detection_phase": "invalidated",
+  "management_confidence": 11.0,
+  "raw_confidence": 8.0,
+  "delta_vs_base": -49.0,
+  "recommended_action": "invalidated",
+  "human_state": "Invalidated",
   "components": {
-    "validity": 38.6,
+    "validity": 0.0,
     "progress": 0.0,
-    "pace": 10.0,
+    "pace": 0.0,
     "retention": 0.0,
-    "overlay": 59.0
+    "overlay": 32.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.494,
+    "dist_to_stop_r": -0.109,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 133.3,
-    "p1": -0.3375,
-    "p2": -0.1687,
+    "horizon_pct_used": 153.3,
+    "p1": -0.7392,
+    "p2": -0.3696,
     "p3": null,
-    "move_r": -0.506,
+    "move_r": -1.109,
     "mfe_r": 0.801,
-    "mae_r": -0.9
+    "mae_r": -1.109
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 12.290002441406244,
-  "_mae": -13.819998168945318,
+  "_mae": -17.019995117187506,
   "_max_p1": 0.5337677498982081,
   "_first_trigger_ts": "2026-08-10",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 60,
-  "tau": 1.3333
+  "days_elapsed": 69,
+  "tau": 1.5333
 }

@@ -42,6 +42,7 @@ from engine.fundamental_forensics.fif_member_capture import (
 )
 from engine.fundamental_forensics.lineage_evidence import LineageEvidenceError
 from engine.fundamental_forensics.production_datasets import (
+    ProductionDatasetError,
     load_generation,
     lineage_from_role_payload,
 )
@@ -49,7 +50,12 @@ from engine.fundamental_forensics.production_lineage import (
     mint_production_lineage_evidence,
 )
 from engine.fundamental_forensics.sec_document_spine import build_filing_manifests
-from engine.fundamental_forensics.statement_graph import GOLDEN_AAPL_FIXTURES
+from engine.fundamental_forensics import statement_graph
+from engine.fundamental_forensics.statement_graph import (
+    GOLDEN_AAPL_FIXTURES,
+    StatementGraphError,
+    load_golden_aapl_package,
+)
 from engine.fundamental_forensics.query_service import CanonicalEntityBinding
 import scripts.publish_fif_production_datasets as producer
 
@@ -4243,3 +4249,690 @@ def test_c0c_m4_partial_report_coverage_reflects_commit_outcome(
         item["served"] is False and item["served_withheld"] == "commit_not_attempted"
         for item in skipped_row["accessions"]
     )
+
+
+# ---------------------------------------------------------------------------
+# A0 repair: a statement-reconstruction refusal excludes ONE issuer, typed,
+# instead of aborting the whole publication (2026-10-13 schedule run: one
+# SNOW 10-Q ragged grid killed AAPL's publish).
+
+def _three_issuer_contract(tmp_path: Path, identity: dict) -> tuple[Path, list[str]]:
+    """The m4 shape: one coverage row per issuer _stage_three_issuers makes."""
+    base_cik = identity["cik"]
+    ciks = [base_cik] + [
+        base_cik[:-1] + str((int(base_cik[-1]) + step) % 10) for step in (2, 3)
+    ]
+    accessions = [
+        {
+            "accession": a,
+            "form": str(identity["manifests"][a]["form"]),
+            "filing_date": _row_value(identity, a, "filing_date"),
+        }
+        for a in identity["accessions"]
+    ]
+    issuers = []
+    for cik, suffix in zip(ciks, ("", "2", "3")):
+        entity_id = identity["entity_id"] + suffix
+        issuers.append(
+            {
+                "cik": cik,
+                "ticker": identity["ticker"] + suffix,
+                "legal_name": "Synthetic Lane Issuer",
+                "security_master_binding": {
+                    "issuer_id": entity_id,
+                    "issuer_cik": cik,
+                    "security_id": identity["security_id"],
+                    "listing_key": identity["listing_key"],
+                    "mic": "XNAS",
+                    "effective_at": "2023-05-09T00:00:00",
+                },
+                "accessions": accessions,
+            }
+        )
+    document = {
+        "schema": "fundamental_forensics.coverage_contract/v1",
+        "contract_id": "synthetic-a0-statement-refusal-test",
+        "issuers": issuers,
+    }
+    contract = tmp_path / "contract-three.json"
+    contract.write_text(json.dumps(document, indent=1), encoding="utf-8")
+    return contract, ciks
+
+
+def _stage_three_issuers_coherently(monkeypatch) -> None:
+    """_stage_three_issuers minus the real stage's ``no_retained_package`` rows
+    for the CIKs it fabricates. Those issuers ARE staged here, so a coherent
+    report must not also list them excluded (verify_report refuses an issuer
+    that appears twice)."""
+    _stage_three_issuers(monkeypatch)
+    fabricated_stage = producer._stage_contract_issuers
+
+    def _staged(issuers, *, archive_root, capture_failures=None):
+        staged, excluded = fabricated_stage(
+            issuers, archive_root=archive_root, capture_failures=capture_failures
+        )
+        staged_ciks = {row.binding.cik for row in staged}
+        return staged, [row for row in excluded if row["cik"] not in staged_ciks]
+
+    monkeypatch.setattr(producer, "_stage_contract_issuers", _staged)
+
+
+def _disclosure_roles() -> dict:
+    return {
+        "income_statement": {
+            "role_uri": "http://fasb.org/us-gaap/role/ParentCompanyInformationIncomeStatementDetails",
+            "title": "99556 - Disclosure - Parent Company Information - Income Statement (Details)",
+            "title_search": "Parent",
+        },
+        "balance_sheet": {
+            "role_uri": "http://fasb.org/us-gaap/role/ParentCompanyInformationBalanceSheetDetails",
+            "title": "99557 - Disclosure - Parent Company Information - Balance Sheet (Details)",
+            "title_search": "Parent",
+        },
+        "cash_flow": {
+            "role_uri": "http://fasb.org/us-gaap/role/ParentCompanyInformationCashFlowDetails",
+            "title": "99558 - Disclosure - Parent Company Information - Cash Flow (Details)",
+            "title_search": "Parent",
+        },
+    }
+
+
+def _pin_partial_income_refusal(accession: str):
+    return (
+        {(accession, "income_statement"): "statement_role_not_consolidated"},
+        {(accession, "income_statement", "statement_role_not_consolidated")},
+        frozenset(),
+    )
+
+
+def _pin_disclosure_accession(accession: str):
+    by_pair = {
+        (accession, kind): "statement_role_not_consolidated"
+        for kind in ("income_statement", "balance_sheet", "cash_flow")
+    }
+    triples = {
+        (accession, kind, "statement_role_not_consolidated")
+        for kind in ("income_statement", "balance_sheet", "cash_flow")
+    }
+    return by_pair, triples, frozenset()
+
+
+def _mutate_lane_manifest(lane: dict, accession: str, statement_roles: dict) -> None:
+    archive_pkg = (
+        lane["archive_root"] / "fif-packages" / lane["identity"]["cik"] / accession
+    )
+    manifest_path = archive_pkg / "package_manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["statement_roles"] = statement_roles
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+
+
+def test_r6_statement_refusal_slug_reads_kernel_refusal_code() -> None:
+    layout = statement_graph._layout_unsupported(
+        "ragged grid at row 1 column 18", refusal_code="displayed_layout_unsupported"
+    )
+    assert producer.statement_refusal_slug(layout) == "displayed_layout_unsupported"
+    assert (
+        producer.statement_refusal_slug(
+            StatementGraphError(
+                "displayed statement table is absent: X", refusal_code="displayed_table_absent"
+            )
+        )
+        == "displayed_table_absent"
+    )
+    assert producer.statement_refusal_slug(StatementGraphError("no numeric rows")) is None
+    assert set(producer.STATEMENT_REFUSAL_SLUGS) == set(statement_graph.STATEMENT_REFUSAL_CODES)
+
+
+def _partial_refusal_roles(identity: dict, accession: str) -> dict:
+    golden = load_golden_aapl_package(ROOT, accession)
+    from engine.fundamental_forensics.statement_graph import (
+        PRIMARY_STATEMENT_ROLES,
+        STATEMENT_TITLES,
+    )
+
+    extras = golden.manifest.get("statement_roles") or {}
+    roles = {key: dict(value) for key, value in extras.items()}
+    for kind in ("income_statement", "balance_sheet", "cash_flow"):
+        roles.setdefault(
+            kind,
+            {
+                "role_uri": PRIMARY_STATEMENT_ROLES[kind],
+                "title": STATEMENT_TITLES[kind],
+                "title_search": STATEMENT_TITLES[kind],
+            },
+        )
+    roles["income_statement"] = _disclosure_roles()["income_statement"]
+    return roles
+
+
+def test_r6_partial_publish_reports_real_kernel_refusals(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    accession = identity["accessions"][0]
+    contract, _ = _three_issuer_contract(tmp_path, identity)
+    assert _capture_cli(lane, contract) == 0
+    _mutate_lane_manifest(lane, accession, _partial_refusal_roles(identity, accession))
+    store = tmp_path / "store"
+    report_path = tmp_path / "r.json"
+    _stage_three_issuers_coherently(monkeypatch)
+    monkeypatch.setattr(
+        producer,
+        "_load_statement_refusal_pin",
+        lambda: _pin_partial_income_refusal(accession),
+    )
+    rc = _publish_cli(lane, contract, store, report_path)
+    captured = capsys.readouterr()
+    assert rc == 0
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert report["statement_refusals"]
+    assert any(
+        line.startswith("::warning title=fif_production_datasets-statement_refusals::")
+        for line in captured.err.splitlines()
+    )
+
+
+def test_r6_all_refused_issuer_excluded_with_reason_and_detail(
+    tmp_path, monkeypatch, offline_collector
+) -> None:
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract, ciks = _three_issuer_contract(tmp_path, identity)
+    assert _capture_cli(lane, contract) == 0
+    for accession in identity["accessions"]:
+        _mutate_lane_manifest(lane, accession, _disclosure_roles())
+    store = tmp_path / "store"
+    report_path = tmp_path / "r.json"
+    _stage_three_issuers_coherently(monkeypatch)
+    rc = _publish_cli(lane, contract, store, report_path)
+    assert rc == 1
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert report["published"] == []
+    assert all(
+        row["reason"].startswith("statement_reconstruction_refused:")
+        for row in report["excluded"]
+    )
+    assert isinstance(report["excluded"][0]["detail"], list)
+
+
+def test_r6_all_refused_accession_flagged_in_report(
+    tmp_path, monkeypatch, offline_collector
+) -> None:
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    accession = identity["accessions"][0]
+    contract, _ = _three_issuer_contract(tmp_path, identity)
+    assert _capture_cli(lane, contract) == 0
+    _mutate_lane_manifest(lane, accession, _disclosure_roles())
+    for other in identity["accessions"][1:]:
+        golden = load_golden_aapl_package(ROOT, other)
+        roles = golden.manifest.get("statement_roles") or {}
+        _mutate_lane_manifest(
+            lane,
+            other,
+            {key: dict(value) for key, value in roles.items()},
+        )
+    report_path = tmp_path / "r.json"
+    _stage_three_issuers_coherently(monkeypatch)
+    monkeypatch.setattr(
+        producer,
+        "_load_statement_refusal_pin",
+        lambda: _pin_disclosure_accession(accession),
+    )
+    rc = _publish_cli(lane, contract, tmp_path / "store", report_path)
+    assert rc == 0
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert report.get("accession_all_refused", {}).get(accession) is True
+
+
+def test_r6_all_refused_issuer_exclusion_warns_on_stderr(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract, _ = _three_issuer_contract(tmp_path, identity)
+    assert _capture_cli(lane, contract) == 0
+    for accession in identity["accessions"]:
+        _mutate_lane_manifest(lane, accession, _disclosure_roles())
+    report_path = tmp_path / "r.json"
+    _stage_three_issuers_coherently(monkeypatch)
+    rc = _publish_cli(lane, contract, tmp_path / "store", report_path)
+    captured = capsys.readouterr()
+    assert rc == 1
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    warnings = [
+        line
+        for line in captured.err.splitlines()
+        if line.startswith(
+            "::warning title=fif_production_datasets-statement_reconstruction_refused::"
+        )
+    ]
+    assert len(warnings) == len(report["excluded"]) > 0
+    for row in report["excluded"]:
+        assert any(row["ticker"] in line for line in warnings)
+
+
+def test_r6_all_refused_reason_and_detail_use_statement_order(
+    tmp_path, monkeypatch, offline_collector
+) -> None:
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    accession = identity["accessions"][0]
+    contract, _ = _three_issuer_contract(tmp_path, identity)
+    assert _capture_cli(lane, contract) == 0
+    _stage_three_issuers_coherently(monkeypatch)
+
+    def _rows(_store, plan, *, registry):
+        binding = plan.staged.binding
+        # Alphabetical order on purpose: balance_sheet < cash_flow < income_statement.
+        return [
+            {
+                "ticker": binding.ticker,
+                "cik": binding.cik,
+                "accession": accession,
+                "statement_type": statement_type,
+                "code": code,
+                "message": "",
+            }
+            for statement_type, code in (
+                ("balance_sheet", "displayed_columns_absent"),
+                ("cash_flow", "displayed_columns_absent"),
+                ("income_statement", "statement_role_not_consolidated"),
+            )
+        ]
+
+    monkeypatch.setattr(producer, "_issuer_all_statements_refused", lambda *_a: True)
+    monkeypatch.setattr(producer, "_readback_issuer_refusals", _rows)
+    report_path = tmp_path / "r.json"
+    rc = _publish_cli(lane, contract, tmp_path / "store", report_path)
+    assert rc == 1
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert report["excluded"]
+    for row in report["excluded"]:
+        assert row["reason"] == "statement_reconstruction_refused:statement_role_not_consolidated"
+        assert [item["statement_type"] for item in row["detail"]] == [
+            "income_statement",
+            "balance_sheet",
+            "cash_flow",
+        ]
+
+
+def test_r6_shipped_refusal_pin_golden_set_is_the_golden_fixtures() -> None:
+    from engine.fundamental_forensics.statement_graph import GOLDEN_AAPL_FIXTURES
+
+    _by_pair, _triples, golden = producer._load_statement_refusal_pin()
+    assert golden == frozenset(GOLDEN_AAPL_FIXTURES)
+
+
+def test_r6_refusal_pin_without_golden_key_fails_closed(tmp_path, monkeypatch) -> None:
+    pin = tmp_path / "statement_refusals.v1.json"
+    pin.write_text(
+        json.dumps(
+            {
+                "refusals": [
+                    {
+                        "accession": "0000070858-24-000122",
+                        "statement_type": "income_statement",
+                        "code": "statement_role_not_consolidated",
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(producer, "_STATEMENT_REFUSAL_PIN_PATH", pin)
+    with pytest.raises(producer.PublisherError) as caught:
+        producer._load_statement_refusal_pin()
+    assert caught.value.code == "publish_failed"
+    assert "golden_accessions" in str(caught.value)
+
+
+@pytest.mark.parametrize(
+    ("raise_on", "reason"),
+    (
+        ("statement_accessions", "latest_accessions_unreadable"),
+        ("statement_trees", "latest_entry_unreadable"),
+    ),
+)
+def test_r6_l_read_failures_name_their_reason(raise_on: str, reason: str) -> None:
+    accession = "0000070858-24-000122"
+
+    class _Latest:
+        def statement_accessions(self):
+            if raise_on == "statement_accessions":
+                raise ProductionDatasetError("torn")
+            return (accession,)
+
+        def statement_trees(self, _accession):
+            raise ProductionDatasetError("torn")
+
+    with pytest.raises(producer.PublisherError) as caught:
+        producer._classify_statement_refusal(
+            ticker="BAC",
+            cik="0000070858",
+            accession=accession,
+            statement_type="income_statement",
+            code="statement_role_not_consolidated",
+            latest=_Latest(),
+            pin_by_pair={},
+            pin_triples=set(),
+            golden_accessions=frozenset(),
+        )
+    assert caught.value.code == "statement_refusal_unpinned"
+    assert reason in str(caught.value)
+
+
+def test_r6_uncoded_kernel_error_fails_the_run(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    lane = _materialize_lane(tmp_path)
+    contract, _ = _three_issuer_contract(tmp_path, lane["identity"])
+    assert _capture_cli(lane, contract) == 0
+    _stage_three_issuers_coherently(monkeypatch)
+
+    def _boom(*_args, **_kwargs):
+        raise StatementGraphError("displayed statement has no numeric rows: X")
+
+    monkeypatch.setattr(statement_graph, "reconstruct_primary_statements", _boom)
+    rc = _publish_cli(lane, contract, tmp_path / "store", tmp_path / "r.json")
+    assert rc == 1
+    assert not (tmp_path / "r.json").exists()
+
+
+def test_r6_unpinned_refusal_on_new_accession_with_latest_publishes_false_and_warning() -> None:
+    class _Latest:
+        def statement_accessions(self):
+            return ()
+
+    assert (
+        producer._classify_statement_refusal(
+            ticker="SYN",
+            cik="0000000001",
+            accession="0000000001-26-000099",
+            statement_type="income_statement",
+            code="displayed_table_absent",
+            latest=_Latest(),
+            pin_by_pair={},
+            pin_triples=set(),
+            golden_accessions=frozenset(),
+        )
+        is False
+    )
+
+
+def test_r6_unpinned_refusal_regressed_from_latest_fails(monkeypatch) -> None:
+    class _Latest:
+        def statement_accessions(self):
+            return ("0000000001-26-000001",)
+
+        def statement_trees(self, accession):
+            return {
+                "statements": [
+                    {
+                        "statement_type": "income_statement",
+                        "role_uri": "r",
+                        "title": "t",
+                        "columns": [],
+                        "row_count": 1,
+                        "rows": [{"cells": []}],
+                    }
+                ]
+            }
+
+    with pytest.raises(producer.PublisherError) as caught:
+        producer._classify_statement_refusal(
+            ticker="SYN",
+            cik="0000000001",
+            accession="0000000001-26-000001",
+            statement_type="income_statement",
+            code="displayed_table_absent",
+            latest=_Latest(),
+            pin_by_pair={},
+            pin_triples=set(),
+            golden_accessions=frozenset(),
+        )
+    assert caught.value.code == "statement_refusal_unpinned"
+
+
+def test_r6_unpinned_refusal_first_publication_fails() -> None:
+    with pytest.raises(producer.PublisherError) as caught:
+        producer._classify_statement_refusal(
+            ticker="SYN",
+            cik="0000000001",
+            accession="0000000001-26-000001",
+            statement_type="income_statement",
+            code="displayed_table_absent",
+            latest=None,
+            pin_by_pair={},
+            pin_triples=set(),
+            golden_accessions=frozenset(),
+        )
+    assert caught.value.code == "statement_refusal_unpinned"
+    assert "first_publication" in str(caught.value)
+
+
+def test_r6_unpinned_refusal_golden_accession_fails() -> None:
+    accession = sorted(GOLDEN_AAPL_FIXTURES)[0]
+
+    class _Latest:
+        def statement_accessions(self):
+            return ()
+
+    with pytest.raises(producer.PublisherError) as caught:
+        producer._classify_statement_refusal(
+            ticker="AAPL",
+            cik="0000320193",
+            accession=accession,
+            statement_type="income_statement",
+            code="displayed_table_absent",
+            latest=_Latest(),
+            pin_by_pair={},
+            pin_triples=set(),
+            golden_accessions=frozenset({accession}),
+        )
+    assert "golden_accession" in str(caught.value)
+
+
+def test_r6_pinned_code_changed_fails() -> None:
+    class _Latest:
+        def statement_accessions(self):
+            return ()
+
+    with pytest.raises(producer.PublisherError) as caught:
+        producer._classify_statement_refusal(
+            ticker="BAC",
+            cik="0000070858",
+            accession="0000070858-24-000122",
+            statement_type="income_statement",
+            code="displayed_table_absent",
+            latest=_Latest(),
+            pin_by_pair={("0000070858-24-000122", "income_statement"): "statement_role_not_consolidated"},
+            pin_triples=set(),
+            golden_accessions=frozenset(),
+        )
+    assert "pinned_code_changed" in str(caught.value)
+
+
+def test_r6_resolved_pinned_refusal_reported_with_warning() -> None:
+    class _Package:
+        manifest = {"accession": "0000070858-24-000122"}
+
+    class _Staged:
+        binding = type("B", (), {"ticker": "BAC", "cik": "0000070858"})()
+        admitted_packages = (_Package(),)
+
+    plan = producer._IssuerPlan(
+        staged=_Staged(),
+        outcome="published",
+        clock_basis="content",
+        admitted_at=datetime.now(timezone.utc),
+        generation_id="gen",
+        manifest_key="m",
+        lineage_receipt_count=0,
+    )
+    resolved = producer._resolved_pin_rows_for_issuer(
+        plan,
+        {("0000070858-24-000122", "income_statement", "statement_role_not_consolidated")},
+        set(),
+    )
+    assert resolved == [
+        {
+            "ticker": "BAC",
+            "cik": "0000070858",
+            "accession": "0000070858-24-000122",
+            "statement_type": "income_statement",
+            "code": "statement_role_not_consolidated",
+        }
+    ]
+
+
+def test_r6_k_pinned_regressed_from_latest_fails() -> None:
+    class _Latest:
+        def statement_accessions(self):
+            return ("0000070858-24-000122",)
+
+        def statement_trees(self, accession):
+            return {
+                "statements": [
+                    {
+                        "statement_type": "income_statement",
+                        "role_uri": "r",
+                        "title": "t",
+                        "columns": [],
+                        "row_count": 1,
+                        "rows": [{"cells": []}],
+                    }
+                ]
+            }
+
+    with pytest.raises(producer.PublisherError):
+        producer._classify_statement_refusal(
+            ticker="BAC",
+            cik="0000070858",
+            accession="0000070858-24-000122",
+            statement_type="income_statement",
+            code="statement_role_not_consolidated",
+            latest=_Latest(),
+            pin_by_pair={},
+            pin_triples={
+                ("0000070858-24-000122", "income_statement", "statement_role_not_consolidated")
+            },
+            golden_accessions=frozenset(),
+        )
+
+
+def test_r6_l_latest_pointer_unreadable_fails() -> None:
+    class _Latest:
+        def statement_accessions(self):
+            raise ProductionDatasetError("torn")
+
+        def statement_trees(self, accession):
+            raise ProductionDatasetError("torn")
+
+    with pytest.raises(producer.PublisherError) as caught:
+        producer._classify_statement_refusal(
+            ticker="BAC",
+            cik="0000070858",
+            accession="0000070858-24-000122",
+            statement_type="income_statement",
+            code="statement_role_not_consolidated",
+            latest=_Latest(),
+            pin_by_pair={},
+            pin_triples={
+                ("0000070858-24-000122", "income_statement", "statement_role_not_consolidated")
+            },
+            golden_accessions=frozenset(),
+        )
+    assert caught.value.code == "statement_refusal_unpinned"
+
+
+def test_r6_readback_production_dataset_error_fails_run(monkeypatch) -> None:
+    def _boom(*_a, **_k):
+        raise ProductionDatasetError("malformed")
+
+    monkeypatch.setattr(producer, "load_generation", _boom)
+    plan = producer._IssuerPlan(
+        staged=type(
+            "S",
+            (),
+            {
+                "binding": type("B", (), {"entity_id": "ISS:X", "ticker": "X", "cik": "0000000000"})(),
+                "admitted_packages": (),
+            },
+        )(),
+        outcome="published",
+        clock_basis="content",
+        admitted_at=datetime.now(timezone.utc),
+        generation_id="gen",
+        manifest_key="m",
+        lineage_receipt_count=0,
+    )
+    with pytest.raises(producer.PublisherError):
+        producer._readback_issuer_refusals(None, plan, registry=object())
+
+
+def test_r6_unchanged_plan_reports_refusals_from_comparison(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    accession = identity["accessions"][0]
+    contract, _ = _three_issuer_contract(tmp_path, identity)
+    assert _capture_cli(lane, contract) == 0
+    _mutate_lane_manifest(lane, accession, _partial_refusal_roles(identity, accession))
+    store = tmp_path / "store"
+    first_report = tmp_path / "r1.json"
+    _stage_three_issuers_coherently(monkeypatch)
+    monkeypatch.setattr(
+        producer,
+        "_load_statement_refusal_pin",
+        lambda: _pin_partial_income_refusal(accession),
+    )
+    assert _publish_cli(lane, contract, store, first_report) == 0
+    second_report = tmp_path / "r2.json"
+    rc = _publish_cli(lane, contract, store, second_report, clock=RUN_CLOCK)
+    assert rc == 0
+    report = json.loads(second_report.read_text(encoding="utf-8"))
+    assert report["statement_refusals"]
+
+
+def _minimal_refusal_report(reason: str, served: bool = False) -> dict:
+    return {
+        "published": [],
+        "excluded": [{"ticker": "SNOW", "cik": "0001640147", "reason": reason}],
+        "coverage": [
+            {
+                "cik": "0001640147",
+                "served": int(served),
+                "accessions": [
+                    {
+                        "accession": "0001640147-26-000001",
+                        "admitted": True,
+                        "served": served,
+                    }
+                ],
+            }
+        ],
+    }
+
+
+def test_a0_verify_admits_only_the_closed_refusal_vocabulary(tmp_path) -> None:
+    store = producer.build_production_dataset_store(local_dir=tmp_path / "store")
+    for slug in sorted(producer.STATEMENT_REFUSAL_SLUGS):
+        producer.verify_report(
+            _minimal_refusal_report(f"statement_reconstruction_refused:{slug}"), store
+        )
+    for bad in ("statement_reconstruction_refused:bogus", "statement_reconstruction_refused"):
+        with pytest.raises(producer.PublisherError) as caught:
+            producer.verify_report(_minimal_refusal_report(bad), store)
+        assert caught.value.code == "verify_failed"
+    with pytest.raises(producer.PublisherError, match="excluded issuer") as caught:
+        producer.verify_report(
+            _minimal_refusal_report(
+                "statement_reconstruction_refused:displayed_table_absent", served=True
+            ),
+            store,
+        )
+    assert caught.value.code == "verify_failed"

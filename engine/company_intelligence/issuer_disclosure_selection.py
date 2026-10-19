@@ -90,15 +90,46 @@ def _resolve(owner: SelectionOwner, issuer_id: str, purpose: str, audience: str)
     return selection
 
 
-def read_issuer_selection(owner: SelectionOwner, authority: native.DisclosureAuthority,
-                          store_factory: Callable[[], object], issuer_id: str, *, purpose: str, audience: str) -> dict:
-    """Authenticate upstream; admit every row before constructing private Store."""
+@dataclass(frozen=True)
+class SelectedDisclosureRead:
+    """Request-local native read; not a portable permission or cached admission."""
+    request: native.Request
+    admission: native.Admission
+    payload: dict
+
+
+@dataclass(frozen=True)
+class IssuerDisclosureReadBundle:
+    """Verified whole selection; constructed only after all native rechecks.
+
+    This holds request-local results already read by the selection algorithm.
+    It is not a new source owner/store or permission to reuse data for a new
+    request. Consumers must call the read function under existing host auth.
+    """
+    selection: IssuerSelection
+    disclosures: tuple[SelectedDisclosureRead, ...]
+
+
+def read_issuer_disclosure_bundle(
+    owner: SelectionOwner, authority: native.DisclosureAuthority,
+    store_factory: Callable[[], object], issuer_id: str, *, purpose: str,
+    audience: str, required_fields: frozenset[str] = frozenset(),
+) -> IssuerDisclosureReadBundle:
+    """Run the existing selection/read transaction once and retain its results.
+
+    Additional required fields are a consumer restriction, never a grant.
+    Every selected fact must satisfy it before any private store is opened.
+    No partial bundle is returned if any fact, selection or admission changes.
+    """
     issuer_identity(issuer_id)
+    native._require(type(required_fields) is frozenset and required_fields <= native._FIELDS,
+                    "PROJECTION_FIELD_REQUIREMENT_INVALID")
     snapshot = _resolve(owner, issuer_id, purpose, audience)
     requests, admissions = [], []
     for entry in snapshot.selections:
         req = native.Request(entry.fact_id, purpose, audience)
         admission = native.preflight(authority, req)
+        native._require(required_fields <= admission.allowed_fields, "PROJECTION_FIELDS_NOT_ADMITTED")
         native._require(admission.reference == entry.fact_reference and admission.edition == entry.edition_reference
                         and admission.generation == snapshot.generation and admission.identity_mode == 'current'
                         and 'subject_id' in admission.allowed_fields, "SELECTION_ADMISSION_MISMATCH")
@@ -111,15 +142,25 @@ def read_issuer_selection(owner: SelectionOwner, authority: native.DisclosureAut
                         "SELECTION_IDENTITY_MISMATCH")
         requests.append(req); admissions.append(admission)
     store = store_factory() if requests else None
+    completed_reads = []
     for entry, req, admission in zip(snapshot.selections, requests, admissions):
         result = native.read_disclosure(store, authority, req, expected_admission=admission)
         native._require(result['reference'] == entry.fact_reference.payload()
                         and result['edition'] == entry.edition_reference.payload()
                         and result['generation'] == snapshot.generation
                         and result['fact'].get('subject_id') == issuer_id, "SELECTION_ARTIFACT_MISMATCH")
+        completed_reads.append(SelectedDisclosureRead(req, admission, result))
     native._require(_resolve(owner, issuer_id, purpose, audience) == snapshot, "SELECTION_CHANGED")
     for req, admission in zip(requests, admissions):
         native._require(native.preflight(authority, req) == admission, "SELECTION_ADMISSION_CHANGED")
+    return IssuerDisclosureReadBundle(snapshot, tuple(completed_reads))
+
+
+def read_issuer_selection(owner: SelectionOwner, authority: native.DisclosureAuthority,
+                          store_factory: Callable[[], object], issuer_id: str, *, purpose: str, audience: str) -> dict:
+    """Existing exact metadata-only response, using the shared native read path."""
+    snapshot = read_issuer_disclosure_bundle(owner, authority, store_factory, issuer_id,
+        purpose=purpose, audience=audience).selection
     return {'schema': SCHEMA, 'generation': snapshot.generation, 'identity_mode': 'current',
             'issuer_role': 'subject_disclosing_company',
             'issuer_binding': {'issuer_id': issuer_id, 'evidenced_cik': snapshot.evidenced_cik,

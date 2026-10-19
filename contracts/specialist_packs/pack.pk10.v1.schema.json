@@ -19,6 +19,7 @@
   "catalogue_state": "unspecified",
   "fields": [],
   "checks": [],
+  "reason_codes": [],
   "type": "object",
   "additionalProperties": false
 }

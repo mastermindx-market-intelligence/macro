@@ -1,0 +1,87 @@
+{
+  "schema": "tiingo.terminal955_indexfd4f_independent_review/v1",
+  "recorded_at_utc": "2026-10-13T21:43:23.193583+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "reviewer": "01a13462-0222-7131-a4c7-4442ae8e62bd",
+  "scope": "Independent exact whole-index tree preservation and canonical972 integration review; no source/index mutation or added tests",
+  "verdict": "PASS_SOURCE_PRESERVATION_AND_INTEGRATION; COMMIT_PUSH_CONDITIONAL_ON_ACTUAL_T01_ACCEPTANCE",
+  "tree": "fd4f70155161ebb945ae10ff585e1881736b7064",
+  "ordered_parents": [
+    "f72127ba65d5f6a464d12acea2cf657796b01737",
+    "34e3902571f26f16efb93b17058d1b85f1832199"
+  ],
+  "checks": {
+    "all5312_index_entries_match_named_tree": true,
+    "all5312_tree_entries_equal_current_master_plus82_preserved_candidates": true,
+    "all82_candidate_blobs_and_modes_preserved": true,
+    "all82_original_accepted_blob_ids_preserved": true,
+    "tree_changes_exactly164_canonical_paths_from_f721": true,
+    "tree_differs_from_master_only_at82_candidate_paths": true,
+    "no_unmerged_entries": true,
+    "no_unstaged_changes": true,
+    "twoCI_paths_exact_master": {
+      ".github/workflows/ci.yml": true,
+      "tests/test_ci_e2e_shards.py": true
+    },
+    "Pine_and_ChartPanel_exact_master": {
+      "terminal/lib/pine-engine/host.ts": true,
+      "terminal/lib/pine-engine/worker.ts": true,
+      "terminal/e2e/pine-htf-temporal.spec.ts": true,
+      "terminal/lib/__tests__/pineHost.test.ts": true,
+      "terminal/components/ChartPanel.tsx": true
+    }
+  },
+  "custody": {
+    "original_root_is_incumbent": true,
+    "disarm_receipt_verified_sha256": "ec2a24d7210de21153d4a428bc23294964b8f09a7bb3839d90acbe03b455e5f4",
+    "disarm_state": "autoMergeRequest null; merge-on-green removed; retained observed controller runs completed; head f721",
+    "current_local_parents_independently_read": true,
+    "no_new_custody_authority_created": true
+  },
+  "validation": {
+    "affected_units": {
+      "accepted_count": 77,
+      "pineHost": 75,
+      "chartPanelSessionAnchor": 2,
+      "actual_retained_log_verified": true,
+      "child_exit_code": 0,
+      "native_terminal_consumption": "parent commission confirms original78998 rc0 chunk94efad; child-wait metadata intentionally does not claim native consumption"
+    },
+    "T01_tablet": {
+      "state": "RUNNING_AT_PARENT_COMMISSION; NOT_ADJUDICATED_HERE",
+      "owner_original_session": 20381,
+      "required_before_commit_push": "Actual terminal success and parent acceptance for single-worker, zero-retry, unchanged canonical assertions/budgets against this exact tree. Pending status is not success.",
+      "observer_or_duplicate_test_created": false
+    }
+  },
+  "conditional_next_action": "Original root may commit and push only this tree with ordered parents f721 and34e, after consuming and accepting actual T01 success. Confirm tree and custody remain unchanged immediately before effect; if changed, this verdict does not transfer.",
+  "holds": [
+    "T01 pending is a commit/push condition, not accepted result.",
+    "No hosted955 CI or protected merge acceptance is implied.",
+    "Prior rejected workflow approval remains held.",
+    "No approval/rerun/newdispatch/admin/protection/deploy authority is granted."
+  ],
+  "falsifiers": [
+    "Any index/tree or ordered parent change.",
+    "Any of82 candidate mode/blob changes.",
+    "Noncandidate divergence from reviewed34e master.",
+    "T01 failure, ambiguous terminal result, assertions/budgets weakened, or source drift during test.",
+    "New competing writer/controller refresh or unresolved source effect."
+  ],
+  "evidence_sha256": {
+    "terminal955-indexfd4f-independent-tree-comparison.json": "d782ff4cbd9d1d7bf75d6e326d2d974436798b430e59bc907f0d91b0b3653212",
+    "terminal955-canonical972-actual-index-tree-and-82-preserved-blobs.json": "57bc6c0e7cb7358576b6fc7568319daca14d911ed24b72eedf29d971b8c33182",
+    "terminal955-actual-disarm-before-canonical972-integration.json": "ec2a24d7210de21153d4a428bc23294964b8f09a7bb3839d90acbe03b455e5f4",
+    "terminal955-fresh-canonical972-integration-compatibility.json": "dff9c8970bc3442e618ffcca186ae1b534bd0d12e512582d16032a34e3bdc67f",
+    "terminal955-canonical972-affected-Pine-unit-child-wait.json": "61370fdb093772ff755941e67a560a8746491b0f714c2482b0d5130875fe273b",
+    "terminal955-canonical972-affected-Pine-unit-original.log": "fe3fb8ba549f668159d7d7eb262c29d1f1dffb076777ca9d470479a14d918bb9",
+    "terminal955-972-canonical-integration-ruling.json": "c69b82d32a44b95c605a411fddb19d62a845b4bb8f315e6ed8765d8edcb92456"
+  },
+  "review_tool_chunks": [
+    "595471",
+    "4da904",
+    "d7527f"
+  ],
+  "source_or_index_mutations": 0,
+  "tests_launched": 0
+}

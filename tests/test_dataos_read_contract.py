@@ -876,3 +876,497 @@ def test_heal_fix_ro_served_rows_are_read_only() -> None:
         evidence=_evidence())
     with pytest.raises(TypeError):
         holdings.values["holdings"][0]["qty"] = 2
+
+
+# ── C02: the fixed-population coverage account ───────────────────────────────
+# Appended as its own section with its OWN import block — new names from the
+# modules already imported above; the existing import block is never edited.
+import dataclasses
+import json
+from fractions import Fraction
+
+from lib.dataos.nulls import MissingReason, NullPolicy
+from lib.dataos.read_contract import (
+    CoverageResult,
+    Disposition,
+    MemberDisposition,
+    ReadResult,
+    SourceSegment,
+    account_coverage,
+)
+
+
+def _cohort_contract() -> ViewContract:
+    return _contract(
+        identity={"security_id": "BASKET-1", "listing_id": "BASKET-1"},
+        adjustment_reference={"basis": "tradj"},
+        coverage="synthetic C02 cohort local to this suite",
+    )
+
+
+def _cohort_population() -> tuple[str, ...]:
+    return tuple(f"LST-{letter}" for letter in "ABCDEFGH")
+
+
+def _cohort_dispositions() -> tuple[MemberDisposition, ...]:
+    """A deliberately INCOMPLETE eight-member cohort, one per disposition.
+
+    LST-A SERVED, LST-B FALLBACK (declared ``vendor_b``), LST-C ZERO, LST-D
+    NO_TRADE (receipt in detail), LST-E STALE, LST-F MISSING (vendor failed),
+    LST-G NEVER_INSPECTED, LST-H REFUSED (the absent-field case).
+    """
+    return (
+        MemberDisposition("LST-A", Disposition.SERVED,
+                          segments=(SourceSegment("primary", "tradj", "LST-A"),)),
+        MemberDisposition("LST-B", Disposition.FALLBACK,
+                          segments=(SourceSegment("vendor_b", "tradj", "LST-B"),),
+                          detail="primary outage"),
+        MemberDisposition("LST-C", Disposition.ZERO,
+                          segments=(SourceSegment("primary", "tradj", "LST-C"),)),
+        MemberDisposition("LST-D", Disposition.NO_TRADE,
+                          detail="venue print count 0, receipt rcpt:nt-1"),
+        MemberDisposition("LST-E", Disposition.STALE,
+                          segments=(SourceSegment("primary", "tradj", "LST-E"),),
+                          detail="last row 2026-01-02, required 2026-01-05"),
+        MemberDisposition("LST-F", Disposition.MISSING,
+                          missing_reason=MissingReason.VENDOR_FAILED),
+        MemberDisposition("LST-G", Disposition.NEVER_INSPECTED),
+        MemberDisposition("LST-H", Disposition.REFUSED,
+                          refusal=RefusalCode.KEY_TYPE_MISMATCH,
+                          detail="absent close field"),
+    )
+
+
+def _cohort(**over) -> CoverageResult:
+    fields = dict(
+        contract=_cohort_contract(),
+        population=_cohort_population(),
+        dispositions=_cohort_dispositions(),
+        fallback_sources={"vendor_b"},
+    )
+    fields.update(over)
+    return CoverageResult(**fields)
+
+
+def _replacing(member: str, *entries: MemberDisposition) -> tuple[MemberDisposition, ...]:
+    """The cohort with ONE member's disposition replaced — never duplicated."""
+    out: list[MemberDisposition] = []
+    for entry in _cohort_dispositions():
+        if entry.member == member:
+            out.extend(entries)
+        else:
+            out.append(entry)
+    return tuple(out)
+
+
+def _demoted_cohort(**over) -> CoverageResult:
+    """The same cohort with LST-A's deepest-history segment in another basis —
+    ``account_coverage`` demotes the member instead of refusing the account."""
+    drifted = (
+        MemberDisposition(
+            "LST-A", Disposition.SERVED,
+            segments=(SourceSegment("primary", "tradj", "LST-A"),
+                      SourceSegment("deep_vendor", "raw", "LST-A"))),
+    ) + _cohort_dispositions()[1:]
+    fields = dict(contract=_cohort_contract(), population=_cohort_population(),
+                  dispositions=drifted, fallback_sources={"vendor_b"})
+    fields.update(over)
+    return account_coverage(**fields)
+
+
+# ── C02.01: the account reconciles EXACTLY to the frozen population ──────────
+def test_C02_01_every_member_has_exactly_one_disposition_and_counts_sum_to_requested() -> None:
+    counts = _cohort().counts
+    assert len(counts) == 8
+    assert all(count == 1 for count in counts.values())
+    assert sum(counts.values()) == _cohort().requested == 8
+
+
+def test_C02_01_qualified_plus_nonqualified_is_the_population() -> None:
+    account = _cohort()
+    qualified, nonqualified = account.qualified, account.nonqualified
+    assert set(qualified).isdisjoint(nonqualified)
+    assert qualified + nonqualified == account.population
+    assert qualified == ("LST-A",)
+    assert nonqualified == tuple(f"LST-{letter}" for letter in "BCDEFGH")
+
+
+def test_C02_01_a_duplicate_population_member_refuses_DUPLICATE_MEMBER() -> None:
+    with pytest.raises(ReadRefusal) as exc:
+        _cohort(population=("LST-A", "LST-A") + _cohort_population()[1:])
+    assert exc.value.code is RefusalCode.DUPLICATE_MEMBER
+    assert "LST-A" in str(exc.value)
+
+
+def test_C02_01_two_dispositions_for_one_member_refuse_DUPLICATE_MEMBER() -> None:
+    twice = _cohort_dispositions() + (
+        MemberDisposition("LST-A", Disposition.SERVED,
+                          segments=(SourceSegment("primary", "tradj", "LST-A"),)),)
+    with pytest.raises(ReadRefusal) as exc:
+        _cohort(dispositions=twice)
+    assert exc.value.code is RefusalCode.DUPLICATE_MEMBER
+    assert "LST-A" in str(exc.value)
+
+
+def test_C02_01_a_disposition_outside_the_population_refuses_COVERAGE_UNRECONCILED() -> None:
+    stray = _cohort_dispositions() + (MemberDisposition("LST-Z", Disposition.NEVER_INSPECTED),)
+    with pytest.raises(ReadRefusal) as exc:
+        _cohort(dispositions=stray)
+    assert exc.value.code is RefusalCode.COVERAGE_UNRECONCILED
+    assert "LST-Z" in str(exc.value)
+
+
+def test_C02_01_qualified_fraction_is_exact() -> None:
+    account = _cohort()
+    assert isinstance(account.qualified_fraction, Fraction)
+    assert account.qualified_fraction == Fraction(1, 8)
+    with_zero = _cohort(policy=NullPolicy(zero_is_meaningful=True))
+    assert with_zero.qualified_fraction == Fraction(1, 4)
+
+
+def test_C02_01_summary_arithmetic_reconciles() -> None:
+    summary = _cohort().summary()
+    assert summary["requested"] == sum(summary["dispositions"].values()) == 8
+    assert summary["qualified"] + summary["nonqualified"] == summary["requested"]
+    assert sum(summary["fallback"].values()) == summary["dispositions"]["FALLBACK"]
+    assert sum(summary["refused"].values()) == summary["dispositions"]["REFUSED"]
+    assert sum(summary["missing"].values()) == summary["dispositions"]["MISSING"]
+    assert json.dumps(summary)
+    again = _cohort().summary()
+    assert again == summary
+    assert again is not summary
+
+
+def test_C02_01_input_order_never_changes_the_account() -> None:
+    straight = _cohort()
+    reversed_input = _cohort(dispositions=tuple(reversed(_cohort_dispositions())))
+    assert reversed_input == straight
+    assert reversed_input.summary() == straight.summary()
+
+
+def test_C02_01_an_empty_population_is_malformed() -> None:
+    with pytest.raises(ReadContractError) as exc:
+        _cohort(population=())
+    assert not isinstance(exc.value, ReadRefusal)
+
+
+# ── C02.02: a member is never dropped; fallback is context ───────────────────
+def test_C02_02_a_dropped_member_refuses_COVERAGE_UNRECONCILED_naming_it() -> None:
+    without_g = tuple(d for d in _cohort_dispositions() if d.member != "LST-G")
+    with pytest.raises(ReadRefusal) as exc:
+        _cohort(dispositions=without_g)
+    assert exc.value.code is RefusalCode.COVERAGE_UNRECONCILED
+    assert "LST-G" in str(exc.value)
+
+
+def test_C02_02_a_demoted_member_stays_in_the_denominator() -> None:
+    account = _demoted_cohort()
+    assert account.requested == 8
+    assert len(account.dispositions) == 8
+    assert account.disposition_of("LST-A").disposition is Disposition.REFUSED
+    assert account.counts[Disposition.REFUSED] == 2  # LST-A demoted + LST-H already refused
+
+
+def test_C02_02_fallback_is_displayable_but_never_qualified() -> None:
+    account = _cohort()
+    assert "LST-B" in account.displayable
+    assert "LST-B" not in account.qualified
+    assert "LST-B" in account.nonqualified
+    assert set(account.qualified) <= set(account.displayable)
+
+
+def test_C02_02_every_nonqualified_member_is_still_accounted() -> None:
+    account = _cohort()
+    for member in (f"LST-{letter}" for letter in "BCDEFGH"):
+        entry = account.disposition_of(member)
+        assert entry.member == member
+        assert account.counts[entry.disposition] == 1
+        assert member in account.nonqualified
+
+
+# ── C02.03: absence stays DISTINCT — zero/missing/no-trade/stale/unasked ─────
+def test_C02_03_zero_missing_no_trade_stale_never_inspected_are_distinct() -> None:
+    account = _cohort()
+    distinct = (Disposition.ZERO, Disposition.MISSING, Disposition.NO_TRADE,
+                Disposition.STALE, Disposition.NEVER_INSPECTED)
+    assert len(set(distinct)) == 5
+    counts = account.counts
+    assert all(counts[disposition] == 1 for disposition in distinct)
+    for member in ("LST-C", "LST-D", "LST-E", "LST-F", "LST-G"):
+        assert member not in account.qualified
+
+
+def test_C02_03_zero_qualifies_only_when_the_policy_says_zero_is_meaningful() -> None:
+    assert "LST-C" not in _cohort().qualified
+    with_zero = _cohort(policy=NullPolicy(zero_is_meaningful=True))
+    assert "LST-C" in with_zero.qualified
+    assert "LST-C" not in with_zero.nonqualified
+    assert "LST-C" in with_zero.displayable
+
+
+def test_C02_03_missing_requires_a_reason_and_never_OK() -> None:
+    with pytest.raises(ReadContractError):
+        MemberDisposition("LST-F", Disposition.MISSING)
+    with pytest.raises(ReadContractError):
+        MemberDisposition("LST-F", Disposition.MISSING, missing_reason=MissingReason.OK)
+
+
+def test_C02_03_a_halt_is_no_trade_evidence_not_a_missing_reason() -> None:
+    with pytest.raises(ReadContractError):
+        MemberDisposition("LST-D", Disposition.MISSING, missing_reason=MissingReason.HALTED)
+    lawful = MemberDisposition("LST-D", Disposition.NO_TRADE,
+                               detail="halted 2026-01-05, receipt rcpt:halt-1")
+    assert lawful.disposition is Disposition.NO_TRADE
+
+
+@pytest.mark.parametrize(
+    "disposition",
+    [Disposition.FALLBACK, Disposition.NO_TRADE, Disposition.STALE, Disposition.REFUSED],
+)
+def test_C02_03_detail_is_required(disposition: Disposition) -> None:
+    segments = ()
+    if disposition in (Disposition.FALLBACK, Disposition.STALE):
+        segments = (SourceSegment("primary", "tradj", "LST-A"),)
+    refusal = RefusalCode.KEY_TYPE_MISMATCH if disposition is Disposition.REFUSED else None
+    with pytest.raises(ReadContractError):
+        MemberDisposition("LST-A", disposition, segments=segments,
+                          refusal=refusal, detail="   ")
+    stated = MemberDisposition("LST-A", disposition, segments=segments,
+                               refusal=refusal, detail="receipt rcpt:1")
+    assert stated.detail == "receipt rcpt:1"
+
+
+def test_C02_03_never_inspected_names_no_source() -> None:
+    with pytest.raises(ReadContractError):
+        MemberDisposition("LST-G", Disposition.NEVER_INSPECTED,
+                          segments=(SourceSegment("primary", "tradj", "LST-G"),))
+    assert _cohort().disposition_of("LST-G").segments == ()
+
+
+@pytest.mark.parametrize(
+    "disposition",
+    [Disposition.SERVED, Disposition.FALLBACK, Disposition.ZERO, Disposition.STALE],
+)
+def test_C02_03_a_value_disposition_needs_a_source(disposition: Disposition) -> None:
+    with pytest.raises(ReadContractError):
+        MemberDisposition("LST-A", disposition, detail="receipt rcpt:1")
+
+
+def test_C02_03_a_missing_reason_on_another_disposition_is_malformed() -> None:
+    with pytest.raises(ReadContractError):
+        MemberDisposition("LST-A", Disposition.SERVED,
+                          segments=(SourceSegment("primary", "tradj", "LST-A"),),
+                          missing_reason=MissingReason.VENDOR_FAILED)
+
+
+def test_C02_03_a_bare_string_disposition_is_malformed() -> None:
+    with pytest.raises(ReadContractError):
+        MemberDisposition("LST-A", "SERVED",
+                          segments=(SourceSegment("primary", "tradj", "LST-A"),))
+
+
+@pytest.mark.parametrize(
+    "reason",
+    [r for r in MissingReason if r not in (MissingReason.OK, MissingReason.HALTED)],
+)
+def test_C02_03_missing_composes_the_closed_nulls_vocabulary(reason: MissingReason) -> None:
+    account = _cohort(
+        population=("LST-F",),
+        dispositions=(MemberDisposition("LST-F", Disposition.MISSING,
+                                        missing_reason=reason),),
+    )
+    assert account.counts[Disposition.MISSING] == 1
+    assert account.summary()["missing"] == {reason.value: 1}
+
+
+# ── C02.04: a deepest-history/first-available source cannot splice ───────────
+def test_C02_04_deepest_history_in_another_basis_refuses_BASIS_CHANGED() -> None:
+    deep = MemberDisposition(
+        "LST-A", Disposition.SERVED,
+        segments=(SourceSegment("primary", "tradj", "LST-A"),
+                  SourceSegment("deep_vendor", "raw", "LST-A")))
+    with pytest.raises(ReadRefusal) as exc:
+        _cohort(dispositions=(deep,) + _cohort_dispositions()[1:])
+    assert exc.value.code is RefusalCode.BASIS_CHANGED
+
+
+def test_C02_04_deepest_history_under_another_listing_refuses_IDENTITY_CHANGED() -> None:
+    deep = MemberDisposition(
+        "LST-A", Disposition.SERVED,
+        segments=(SourceSegment("primary", "tradj", "LST-A"),
+                  SourceSegment("deep_vendor", "tradj", "LST-A-OLD")))
+    with pytest.raises(ReadRefusal) as exc:
+        _cohort(dispositions=(deep,) + _cohort_dispositions()[1:])
+    assert exc.value.code is RefusalCode.IDENTITY_CHANGED
+
+
+def test_C02_04_account_coverage_demotes_basis_drift_to_a_member_refusal() -> None:
+    account = _demoted_cohort()
+    entry = account.disposition_of("LST-A")
+    assert entry.disposition is Disposition.REFUSED
+    assert entry.refusal is RefusalCode.BASIS_CHANGED
+    assert account.requested == 8
+    assert "LST-A" not in account.qualified
+    assert "LST-A" not in account.displayable
+    assert len(entry.segments) == 2  # the segments stay as the receipt
+
+
+def test_C02_04_an_aliased_member_resolving_to_another_listing_is_refused() -> None:
+    aliased = _cohort_dispositions() + (
+        MemberDisposition("LST-X", Disposition.SERVED,
+                          segments=(SourceSegment("primary", "tradj", "LST-A"),)),)
+    account = account_coverage(
+        _cohort_contract(), _cohort_population() + ("LST-X",), aliased,
+        fallback_sources={"vendor_b"})
+    entry = account.disposition_of("LST-X")
+    assert entry.disposition is Disposition.REFUSED
+    assert entry.refusal is RefusalCode.IDENTITY_CHANGED
+    assert account.disposition_of("LST-A").disposition is Disposition.SERVED
+    assert account.requested == 9
+
+
+def test_C02_04_a_first_available_raw_fallback_is_refused_not_shown() -> None:
+    raw_b = MemberDisposition(
+        "LST-B", Disposition.FALLBACK,
+        segments=(SourceSegment("vendor_b", "raw", "LST-B"),), detail="primary outage")
+    account = account_coverage(
+        _cohort_contract(), _cohort_population(), _replacing("LST-B", raw_b),
+        fallback_sources={"vendor_b"})
+    entry = account.disposition_of("LST-B")
+    assert entry.disposition is Disposition.REFUSED
+    assert entry.refusal is RefusalCode.BASIS_CHANGED
+    assert "LST-B" not in account.displayable
+    assert account.requested == 8
+
+
+def test_C02_04_an_undeclared_fallback_source_refuses_FALLBACK_NOT_DECLARED() -> None:
+    undeclared = _replacing(
+        "LST-B",
+        MemberDisposition("LST-B", Disposition.FALLBACK,
+                          segments=(SourceSegment("vendor_c", "tradj", "LST-B"),),
+                          detail="primary outage"))
+    with pytest.raises(ReadRefusal) as exc:
+        _cohort(dispositions=undeclared)  # fallback_sources is still {"vendor_b"}
+    assert exc.value.code is RefusalCode.FALLBACK_NOT_DECLARED
+    demoted = account_coverage(
+        _cohort_contract(), _cohort_population(), undeclared,
+        fallback_sources={"vendor_b"})
+    entry = demoted.disposition_of("LST-B")
+    assert entry.refusal is RefusalCode.FALLBACK_NOT_DECLARED
+    assert demoted.requested == 8
+
+
+def test_C02_04_a_contract_without_a_basis_is_malformed() -> None:
+    bare = _contract(
+        identity={"security_id": "BASKET-1", "listing_id": "BASKET-1"},
+        adjustment_reference={},
+        coverage="synthetic C02 cohort local to this suite",
+    )
+    with pytest.raises(ReadContractError):
+        _cohort(contract=bare)
+    with pytest.raises(ReadContractError):
+        account_coverage(bare, ("LST-A",), _cohort_dispositions()[:1])
+
+
+# ── C02 threading: the account rides on the result owner ─────────────────────
+def test_C02_read_result_carries_the_coverage_account() -> None:
+    cov = _cohort()
+    result = ReadResult(mode=ReadMode.RECONSTRUCT, label="reconstruction",
+                        contract=cov.contract, evidence={}, values={}, coverage=cov)
+    assert result.coverage is cov
+
+
+def test_C02_read_result_refuses_coverage_under_another_contract() -> None:
+    cov = _cohort()
+    with pytest.raises(ReadContractError):
+        ReadResult(mode=ReadMode.RECONSTRUCT, label="reconstruction",
+                   contract=_contract(), evidence={}, values={}, coverage=cov)
+
+
+def test_C02_existing_reads_carry_no_coverage() -> None:
+    assert _reconstruct([REV1], clock="published_at").coverage is None
+
+
+def test_C02_new_refusal_codes_keep_value_equals_name() -> None:
+    for code in (RefusalCode.DUPLICATE_MEMBER, RefusalCode.COVERAGE_UNRECONCILED,
+                 RefusalCode.BASIS_CHANGED, RefusalCode.IDENTITY_CHANGED,
+                 RefusalCode.FALLBACK_NOT_DECLARED):
+        assert code.value == code.name
+
+
+def test_C02_the_account_is_frozen() -> None:
+    account = _cohort()
+    with pytest.raises(dataclasses.FrozenInstanceError):
+        account.population = ("LST-A",)
+    with pytest.raises(TypeError):
+        account.counts[Disposition.SERVED] = 2
+
+
+# ── W5 — package root surface: lazy read/view layers, complete export list ───────
+# wire-5 (seat 972d2923, Q03 GAP 1): ``import lib.dataos`` must execute only the six
+# contract modules; ``price_views``/``read_contract``/``basket_read`` resolve on first
+# access.  A fresh interpreter is the only honest witness — this process already holds
+# every module.  ``-I`` keeps the subprocess off this test run's sys.path and env.
+import subprocess
+import sys
+
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+_W5_PROG = """
+import json, sys
+sys.path.insert(0, sys.argv[1])
+import lib.dataos as d
+loaded = sorted(m for m in sys.modules if m.startswith("lib.dataos."))
+third = sorted(m for m in sys.modules if m.split(".")[0] in ("pandas", "numpy", "pyarrow", "yaml"))
+missing = [n for n in d.__all__ if not hasattr(d, n)]
+after = sorted(m for m in sys.modules if m.startswith("lib.dataos."))
+ns = {}
+exec("from lib.dataos import *", ns)
+print(json.dumps({
+    "n_all": len(d.__all__), "n_unique": len(set(d.__all__)),
+    "loaded_at_import": loaded, "third_party": third, "missing": missing,
+    "loaded_after_touch": after,
+    "star": sorted(k for k in ns if not k.startswith("__")),
+    "dir_has_lazy": "read_basket" in dir(d) and "basket_read" in dir(d),
+    "submodule_attr": d.basket_read.__name__,
+}))
+"""
+
+
+def _w5_fresh_import_report() -> dict:
+    run = subprocess.run(
+        [sys.executable, "-I", "-c", _W5_PROG, str(_REPO_ROOT)],
+        capture_output=True, text=True, cwd=str(_REPO_ROOT), check=False, timeout=120,
+    )
+    assert run.returncode == 0, run.stderr[-2000:]
+    return json.loads(run.stdout)
+
+
+def test_W5_package_import_executes_only_the_contract_modules() -> None:
+    rep = _w5_fresh_import_report()
+    loaded = {m.removeprefix("lib.dataos.") for m in rep["loaded_at_import"]}
+    assert not (loaded & {"price_views", "read_contract", "basket_read"}), sorted(loaded)
+    # The thin lane's closure claim: these six, and nothing third-party.
+    assert {"identity", "temporal", "nulls", "price", "registry", "quality"} <= loaded
+    assert rep["third_party"] == []
+
+
+def test_W5_every_export_resolves_and_star_import_is_complete() -> None:
+    rep = _w5_fresh_import_report()
+    assert rep["missing"] == []
+    assert rep["n_all"] == rep["n_unique"] == 152  # the seat renumbers this per wire
+    assert set(rep["star"]) == set(__import__("lib.dataos", fromlist=["__all__"]).__all__)
+    touched = {m.removeprefix("lib.dataos.") for m in rep["loaded_after_touch"]}
+    assert {"price_views", "read_contract", "basket_read"} <= touched
+    assert rep["dir_has_lazy"] is True
+    assert rep["submodule_attr"] == "lib.dataos.basket_read"
+
+
+def test_W5_the_seven_U04_names_are_exported_and_unknown_names_still_raise() -> None:
+    import lib.dataos as d
+    for name in ("PopulationKind", "EvidenceMode", "BasketRefusalCode", "BasketReadRefusal",
+                 "BasketRead", "read_basket", "population_delta"):
+        assert name in d.__all__
+        assert getattr(d, name) is getattr(d.basket_read, name)
+    with pytest.raises(AttributeError, match="no attribute"):
+        d.no_such_export  # noqa: B018 — the access IS the assertion
+    assert not hasattr(d, "definitely_not_a_dataos_name")
