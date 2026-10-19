@@ -87,6 +87,30 @@ class _SectorHeroParser(HTMLParser):
             self.heroes.append(attrs)
 
 
+def _read_sector_runtime_js(
+    path: Path, sector_raw: bytes | None, errors: list[str],
+) -> bytes | None:
+    """Pin the actual browser-consumed JS to the same exact JSON generation.
+
+    build_sector_central writes both files from the SAME compact JSON value.
+    Parsing only sectordata/sector_central.json cannot prove what the page
+    actually executes; a stale JS file otherwise survives a good JSON check.
+    """
+    try:
+        actual = path.read_bytes()
+    except OSError as exc:
+        errors.append(f"SECTOR INTELLIGENCE RUNTIME ASSET MISSING: {path.name}: {exc}")
+        return None
+    if sector_raw is not None:
+        expected = b"window.SECTOR_CENTRAL=" + sector_raw + b";\n"
+        if actual != expected:
+            errors.append(
+                "SECTOR INTELLIGENCE CLIENT-DATA SPLIT: sector_central_data.js "
+                "does not match the exact sectordata/sector_central.json generation"
+            )
+    return actual
+
+
 def _html_metadata(path: Path, errors: list[str]) -> dict[str, str | None]:
     try:
         text = path.read_text(encoding="utf-8")
@@ -162,7 +186,10 @@ def evaluate(
     warnings: list[str] = []
     baskets, baskets_raw = _read_json(site / "basketdata" / "baskets.json", errors)
     action, action_raw = _read_json(site / "basketdata" / "action_board.json", errors)
-    sector, _ = _read_json(site / "sectordata" / "sector_central.json", errors)
+    sector, sector_raw = _read_json(site / "sectordata" / "sector_central.json", errors)
+    sector_js_raw = _read_sector_runtime_js(
+        site / "sector_central_data.js", sector_raw, errors,
+    )
     premium, _ = _read_json(site / "premiumdata" / "sector_central.json", errors)
     html = _html_metadata(site / "sector_central.html", errors)
 
@@ -312,6 +339,8 @@ def evaluate(
         "dates": {label: value.isoformat() for label, value in dates.items()},
         "baskets_sha256": actual_baskets_sha,
         "action_board_sha256": actual_action_sha,
+        "sector_json_sha256": _sha256(sector_raw) if sector_raw is not None else None,
+        "sector_js_sha256": _sha256(sector_js_raw) if sector_js_raw is not None else None,
     }
     return {
         "ok": not errors,
