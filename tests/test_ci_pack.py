@@ -2006,6 +2006,45 @@ def _single_run_step_job(run: str) -> object:
     )
 
 
+def test_named_suite_closure_is_traversed_once_per_command(monkeypatch) -> None:
+    suite = "tests/test_scope_fixture.py"
+    script = "scripts/scope_fixture.py"
+    monkeypatch.setattr(AUDIT, "discover_suites", lambda: [suite])
+    monkeypatch.setattr(PACK, "planner_path_is_file", lambda path: str(path) in {suite, script})
+    calls = []
+
+    def closure(path, *, pytest_command=None):
+        calls.append((path, pytest_command))
+        return DEPS.DependencyClosure(
+            (str(path), "engine/scope_fixture.py"),
+            (f"{path}:1: subprocess roots=scripts,tests",),
+        )
+
+    monkeypatch.setattr(DEPS, "suite_dependency_closure", closure)
+    command = f"python -m pytest {suite} {suite}::test_second -q && python {script}"
+    [job], _ = PACK.infer_job_scopes([_single_run_step_job(command)])
+    assert calls == [(suite, command), (script, None)]
+    assert set(job.paths) == {suite, script, "engine/scope_fixture.py"}
+    assert job.fallback_paths == ("scripts/**",)
+
+    # Reuse is confined to this command, never a stale result across calls.
+    calls.clear()
+    [again], _ = PACK.infer_job_scopes([_single_run_step_job(command)])
+    assert again == job
+    assert calls == [(suite, command), (script, None)]
+
+
+def test_opaque_pytest_target_still_refuses_before_closure_reuse(monkeypatch) -> None:
+    monkeypatch.setattr(AUDIT, "discover_suites", lambda: ["tests/test_scope_fixture.py"])
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("opaque pytest discovery must not infer a narrow closure")
+
+    monkeypatch.setattr(DEPS, "suite_dependency_closure", unexpected)
+    [job], _ = PACK.infer_job_scopes([_single_run_step_job("python -m pytest tests/")])
+    assert not job.is_scoped
+
+
 @pytest.mark.parametrize(("commented", "comment_free"), _COMMENT_QUOTE_RUN_BLOCKS)
 def test_full_line_comment_apostrophe_resolves_the_comment_free_targets(
     commented: str, comment_free: str
@@ -4827,6 +4866,8 @@ CURATED_EXCLUSIVE = {
     #  scripts/build_sector_central.py via ast and the T18 panel template, so inference smeared it onto
     #  scripts/build_free_content.py (135 > 134). Register the reviewed 199-path owner (rates_command_basis.py added after #9317 widened the closure); closure audits and ceilings stay fixed.
     "leadership-rotation-countercases",
+    # Fixed-runtime helpers have a separate source-only CI owner.
+    "research-codegen-runtime-qualification",
     # 2026-10-17 C19 WP22: the DHI traversal suite's app/engine imports made
     # inference select it, at the fallback tier only, on the index-template
     # (137 > 136 jobs) and build_free_content (135 > 134) packing probes;
@@ -4839,6 +4880,12 @@ CURATED_EXCLUSIVE = {
     # 2 introduced. scope: exclusive pins it to its declared static import
     # closure plus ancestor inits; ceilings stay fixed.
     "c19-wp31-incremental-information",
+    # 2026-10-18 C19 WP32: the P5/P6 integrated-answer pins import app/ and
+    # engine/ modules, so inference selected the new job on the
+    # build_free_content (135 > 134) and index-template (137 > 136) packing
+    # probes. scope: exclusive pins it to its declared static import closure
+    # plus ancestor inits; ceilings stay fixed.
+    "c19-wp32-integrated-answer-correction-denial-pins",
 }
 
 

@@ -55,15 +55,40 @@ _WITNESS_SHA = "6449489eef577b096abeb79f5375b7df9c95c23e4765a075222a765a19124d83
 _WITNESS_BYTES = 364
 _FIXTURE_RECORDED_AT = "2026-08-23T00:32:31Z"
 
-_HASH_AS_REPORTED_T1_T2 = "358d44741632d74ff76dd8771bb78b34295a08d62d2a0a8566a6abe5feac1442"
-_HASH_LATEST_KNOWN_T1_T2 = "191c49a37998052f17eec78113b5bd8bf0dcaaa52239c406cdb4c27cda5ad1a7"
-_HASH_LATEST_KNOWN_T3 = "83df03e99f570bacfab94fc9373861f14c1895c9aa9435b7dd7249a13c1e67fa"
-_HASH_LATEST_RESTATED_T3 = "c1095c7994c67f11ed602d15c2956bc24271cdce4d39d7869ed642713a6ed549"
-_HASH_MIXED_T3 = "5513f17260f98d261920d658be25bf319ace90a0580ad8f2e94931c518c5a20b"
-_RICH_PACKET_ID = "fip_49718dcaf4c6855592b6ba0a"
-_RICH_CONTENT_SHA = "49718dcaf4c6855592b6ba0a160851c608b4733b44f8ac9a6cf7d907df7565e5"
-_RICH_RESPONSE_SHA = "310f6579ab0014e6af16a3341f005078eab3fdcc70ebe67ec83cf138b9e6c23a"
-_GOLDEN_FIP1_PACKET_ID = "fip_18e2f725f6ba20678d0612bb"
+# The five FIP1 query hashes were re-captured at the FIF G0-r1p3 re-pin
+# commit with the same hermetic industrial resolver the FIP1 packet-service
+# tests inject — byte-equal to that already-pinned family
+# (tests/test_fundamental_forensics_financial_packet_service.py:78,
+# tests/test_fundamental_forensics_financial_revision_service.py:70) over the
+# same scenario, per the G0-r1p3 seat ruling on same-input families.
+_HASH_AS_REPORTED_T1_T2 = "58d438ec81d287f81e6981cf01ac6d16d57cf50689cc826cad39962742efa821"
+_HASH_LATEST_KNOWN_T1_T2 = "f275a7e02aff6e1119f1275365549e1fa9aa2d3f45dbc3cd0f4ba5fdb76f1d37"
+_HASH_LATEST_KNOWN_T3 = "2f8d30baf2d49aef0cc6936613eca1f9aa980e10ed56da135a75dd4238349915"
+_HASH_LATEST_RESTATED_T3 = "531309e192ac923e466365b05380a197f67d6df01c1d5fd9062a0e93aaf20b9f"
+_HASH_MIXED_T3 = "26a7ed7d95f861d3352c3a7e5fb6a0f52833ccf69947b10ca9da1f9662c44133"
+# The rich packet keeps the production default (no injected resolver): FIP1
+# has no shipped coverage record, so gross_margin (class-restricted under the
+# G0 catalog) reads NOT_EVALUABLE(issuer_class_unknown) — the formula never
+# assembles dependencies, so the gross_profit evidence cell and revision row
+# leave the packet and the body shrinks accordingly; re-captured at the same
+# commit.
+_RICH_PACKET_ID = "fip_5d77c1349de4f829db2c422a"
+_RICH_CONTENT_SHA = "5d77c1349de4f829db2c422a3000049cb12b6f0c16dbcd57686a0c0cd41c0af0"
+_RICH_RESPONSE_SHA = "a9c5a8657e7c5cb7e6789cd6d2ea4f78a1c14100c33a00d959856d7375045ca8"
+_RICH_BODY_BYTES = 15065
+# Golden FIP1 fixture identity re-captured at the FIF G0-r1p3 re-pin commit e94ba62aa89
+# (P2-E G-c: bytes written via canonical_packet_bytes only).
+_GOLDEN_FIP1_PACKET_ID = "fip_efe52d02d4a72a5a19f85a60"
+
+# FIP1 is a synthetic industrial issuer with no shipped coverage record, so
+# the five-hash family injects its SIC hermetically (same shape as the FIP1
+# packet-service tests); the fixture ledger's entity id is its CIK.
+_FIP1_CIK = "0000999999"
+_INDUSTRIAL_SIC = "3571"
+
+
+def _fip1_issuer_sic_resolver(cik: str) -> str | None:
+    return _INDUSTRIAL_SIC if cik == _FIP1_CIK else None
 
 T1_SOURCE = "2024-12-31T23:59:59Z"
 T2_SOURCE = "2025-12-31T23:59:59Z"
@@ -73,11 +98,23 @@ T3_RECORDED = "2026-08-05T12:00:02Z"
 FY2023 = {"kind": "duration", "start": "2023-01-01", "end": "2023-12-31", "label": "FY2023"}
 AR_INSTANT = {"kind": "instant", "start": None, "end": "2023-12-31", "label": "2023-12-31"}
 
+# FIF G0 shared-kernel integrator (seat ruling 2026-10-13, frozen spec
+# e7b0286c) releases this freeze for the authorized G0 change:
+# ``engine/fundamental_forensics/financial_intelligence_packet.py`` (G0 wired
+# the optional issuer-SIC resolver seam through the production entity
+# construction) and the golden fixture
+# ``expected_financial_intelligence_packet_v1.json`` (P2-E G-c re-capture via
+# canonical_packet_bytes) leave ``_FROZEN_FIF1``.  What the freeze protected
+# is still asserted directly: packet schema validity and content addressing
+# plus canonical rebuild equality in
+# tests/test_fundamental_forensics_financial_intelligence_packet.py:540-546,
+# cross-process byte equality in law11 (:444-449), the fixture packet_id
+# regression witness in tests/test_fundamental_forensics_financial_packet_service.py:200,
+# and this file's own ``golden["packet_id"]`` pin below.  The packet schema
+# and the synthetic fixture package remain byte-frozen.
 _FROZEN_FIF1 = (
     "contracts/financial_intelligence_packet.schema.json",
-    "engine/fundamental_forensics/financial_intelligence_packet.py",
     "engine/fundamental_forensics/synthetic_filing_package.py",
-    "tests/fixtures/fundamental_forensics/expected_financial_intelligence_packet_v1.json",
 )
 
 
@@ -113,7 +150,9 @@ def _query_hash(*, selection: str, source: str, recorded: str, metric_ids: list,
         },
         separators=(",", ":"),
     ).encode("utf-8")
-    result = execute_financial_query(body=body, provider=_P())
+    result = execute_financial_query(
+        body=body, provider=_P(), issuer_sic_resolver=_fip1_issuer_sic_resolver
+    )
     return result.envelope["receipt"]["query_hash"]
 
 
@@ -534,7 +573,7 @@ def test_fif2b_and_fif2c_accepted_packet_behavior_unchanged() -> None:
     assert rich.packet["packet_id"] == _RICH_PACKET_ID
     assert rich.packet["content_sha256"] == _RICH_CONTENT_SHA
     assert rich.response_sha256 == _RICH_RESPONSE_SHA
-    assert len(rich.body) == 18270
+    assert len(rich.body) == _RICH_BODY_BYTES
 
 
 def test_frozen_fif1_paths_are_empty_diff() -> None:
@@ -1422,6 +1461,34 @@ class _ForgedTreeProvider(GoldenAaplStatementProvider):
     def resolve(self, entity_id: str, accession: str) -> GoldenFilingPackage:
         super().resolve(entity_id, accession)  # keeps the golden admission gates
         return _forged_tree_package(self._tree)
+
+
+def test_production_refusal_entry_passes_through_without_message_text() -> None:
+    package = load_golden_aapl_package(ROOT, accession=_GOLDEN_ACCESSION)
+    registry = load_core_registry(ROOT)
+    reconstructed = reconstruct_primary_statements(package=package, registry=registry)
+    statements = [dict(item) for item in reconstructed["statements"]]
+    statements[0] = {
+        "statement_type": "income_statement",
+        "role_uri": None,
+        "title": None,
+        "columns": [],
+        "row_count": 0,
+        "rows": [],
+        "refusal": {"code": "statement_role_not_consolidated"},
+    }
+    tree = {
+        "parsed_document_kind": reconstructed["parsed_document_kind"],
+        "fact_count": reconstructed["fact_count"],
+        "context_count": reconstructed["context_count"],
+        "statements": statements,
+    }
+    provider = _ForgedTreeProvider(tree)
+    result = _execute(provider=provider)
+    served = result.envelope["statements"][0]
+    assert served["refusal"] == {"code": "statement_role_not_consolidated"}
+    assert "message" not in served
+    assert "message" not in result.body.decode("utf-8")
 
 
 def test_statement_cell_values_are_canonical_decimal_text_or_none() -> None:
