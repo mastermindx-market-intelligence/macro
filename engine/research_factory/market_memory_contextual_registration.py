@@ -276,6 +276,7 @@ _DOMAIN_KEYS = ("tasks_ref", "source_coverage_ref", "interval_split_ref", "desig
                 "reviewer_plan_ref", "outcome_definition_ref", "metrics_ref", "access_rules_ref")
 _REFERENCE_KEYS = {"schema", "object_id", "sha256", "bytes"}
 _TASK_SCHEMA = "research_factory.market_memory_e0_tasks.v1"
+_REVIEWER_PLAN_SCHEMA = "research_factory.market_memory_e0_reviewer_plan.v1"
 
 
 @lru_cache(maxsize=1)
@@ -346,6 +347,88 @@ def _validate_task_bindings(value: object, body: bytes, membership: dict | None)
             "usefulness_verified": False}
 
 
+@lru_cache(maxsize=1)
+def _reviewer_plan_validator():
+    schema_path = Path(__file__).resolve().parents[2] / "contracts" / "market_memory" / "e0_reviewer_plan.v1.schema.json"
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    Draft202012Validator.check_schema(schema)
+    return _INTEGER_VALIDATOR(schema, format_checker=FormatChecker())
+
+
+def _validate_reviewer_plan_declaration(value: object, body: bytes, reg: dict) -> dict:
+    """Check a supplied plan's declarations, not the people or their evidence.
+
+    Opaque principal/qualification/independence references are bounded immutable
+    inputs. Distinct reference identities cannot prove distinct humans, expertise
+    or independence. Neither a caller's clock nor declared blinding authenticates
+    preregistration, actual packet suppression or annotation isolation.
+    """
+    plan, canonical = _snapshot(value)
+    if next(_reviewer_plan_validator().iter_errors(plan), None) is not None:
+        raise E0ControlError("reviewer_plan_schema_violation")
+    if canonical != body:
+        raise E0ControlError("noncanonical_reviewer_plan_bytes")
+    if plan["study_id"] != reg["study_id"]:
+        raise E0ControlError("reviewer_plan_study_mismatch")
+    if _clock(plan["preregistered_at"]) > _clock(reg["registered_at"]):
+        raise E0ControlError("reviewer_plan_declared_after_registration")
+    if (plan["protocol_sha256"] != reg["design_ref"]["sha256"]
+            or plan["membership_sha256"] != reg["corpus"]["membership_sha256"]
+            or plan["tasks_ref"] != reg["tasks_ref"]):
+        raise E0ControlError("reviewer_plan_domain_binding_mismatch")
+    participants = [*plan["reviewers"], plan["adjudicator"]]
+    principals = [participant["principal_ref"] for participant in participants]
+    if (len({ref["object_id"] for ref in principals}) != 3
+            or len({ref["sha256"] for ref in principals}) != 3):
+        raise E0ControlError("reviewer_plan_distinct_principal_references_required")
+    reviewers = {ref["object_id"] for ref in principals[:2]}
+    adjudicator = principals[2]["object_id"]
+    task_ids = [assignment["task_id"] for assignment in plan["assignments"]]
+    if len(set(task_ids)) != len(task_ids):
+        raise E0ControlError("reviewer_plan_duplicate_task_assignment")
+    for assignment in plan["assignments"]:
+        if (set(assignment["reviewer_principal_ids"]) != reviewers
+                or assignment["adjudicator_principal_id"] != adjudicator):
+            raise E0ControlError("reviewer_plan_assignment_principal_mismatch")
+    return plan
+
+
+def _reviewer_plan_evidence_references(plan: dict) -> list[tuple[str, dict]]:
+    """One fixed, nonrecursive evidence layer; never discover identity stores."""
+    participants = [*plan["reviewers"], plan["adjudicator"]]
+    return [(f"reviewer_plan.participant.{index}.{key}", participant[key])
+            for index, participant in enumerate(participants)
+            for key in ("principal_ref", "qualification_ref", "independence_ref")]
+
+
+def _reviewer_plan_binding_checks(plan: dict, *, tasks: dict | None,
+                                  membership: dict | None, parsed: dict) -> dict:
+    assigned = {assignment["task_id"] for assignment in plan["assignments"]}
+    if tasks is not None and assigned != {task["task_id"] for task in tasks["tasks"]}:
+        raise E0ControlError("reviewer_plan_exact_task_coverage_mismatch")
+    evidence = _reviewer_plan_evidence_references(plan)
+    unresolved = []
+    if tasks is None:
+        unresolved.append("declared_tasks_bytes")
+    if membership is None:
+        unresolved.append("frozen_membership_bytes")
+    if _FROZEN_DOMAIN_DIGESTS["annotation_guide"] not in parsed:
+        unresolved.append("frozen_annotation_guide_bytes")
+    if any(ref["sha256"] not in parsed for _role, ref in evidence):
+        unresolved.append("reviewer_identity_qualification_independence_evidence_bytes")
+    return {"schema": _REVIEWER_PLAN_SCHEMA, "object_id": plan["object_id"],
+            "declared_reviewer_count": 2, "declared_adjudicator_count": 1,
+            "declared_principal_references_distinct": True,
+            "assigned_task_count": len(assigned),
+            "exact_task_coverage_checked": tasks is not None,
+            "frozen_membership_binding_checked": membership is not None,
+            "declared_blinding_matches_guide": True, "unresolved": unresolved,
+            "authenticated_identities_verified": False, "qualifications_verified": False,
+            "independence_verified": False, "packet_blinding_verified": False,
+            "prelabel_timing_authenticated": False, "actual_assignment_executed": False,
+            "operational_admission": False}
+
+
 def _domain_reference(value: object) -> dict:
     if (type(value) is not dict or set(value) != _REFERENCE_KEYS
             or any(type(value.get(key)) is not str or _ID.fullmatch(value[key]) is None
@@ -390,13 +473,16 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
     code/text and unknown schemas stay opaque, never imported or executed.
     The optional original prelabel_design bytes are a diagnostic input, never
     a substitute for a registration reference or a reviewer plan. They share
-    the object/byte bounds. Only registration references and known guide digest
-    links are followed; this is not a recursive object loader.
+    the object/byte bounds. Only registration references, the known reviewer
+    plan's fixed evidence layer and guide digest links are followed; this is not
+    a recursive object loader.
 
     The known task contract checks supplied question bytes, exact frozen source
     identities and original availability clocks. It does not select actual tasks
-    or establish answerability/usefulness. Splits, reviewers and allocation still
-    lack payload contracts; reference closure never certifies admission.
+    or establish answerability/usefulness. The reviewer plan checks declared
+    roles, task coverage and blinding rules, never actual independence or
+    annotation. Splits and allocation still lack payload contracts; reference
+    closure never certifies admission.
     """
     reg = validate_e0_registration(registration)
     extra = int(prelabel_design is not None)
@@ -432,6 +518,7 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
     parsed: dict[str, object] = {}
     missing: set[str] = set()
     linked_digests: set[str] = set()
+    reviewer_plan = None
 
     for _role, ref in roots:
         clean = _domain_reference(ref)
@@ -451,6 +538,8 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
             raise E0ControlError("frozen_domain_schema_reference_mismatch")
         if clean["schema"] == _TASK_SCHEMA and _role != "tasks_ref":
             raise E0ControlError("task_reference_role_mismatch")
+        if clean["schema"] == _REVIEWER_PLAN_SCHEMA and _role != "reviewer_plan_ref":
+            raise E0ControlError("reviewer_plan_reference_role_mismatch")
         if digest in references:
             if references[digest] != clean:
                 raise E0ControlError("domain_reference_alias_mismatch")
@@ -468,7 +557,8 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
         # semantic schemas stay opaque. Only known payload contracts are parsed.
         json_digests = {_FROZEN_DOMAIN_DIGESTS[key]
                         for key in ("membership", "design", "prelabel_binding")}
-        value = _domain_json(body) if digest in json_digests or clean["schema"] == _TASK_SCHEMA else None
+        value = (_domain_json(body) if digest in json_digests
+                 or clean["schema"] in {_TASK_SCHEMA, _REVIEWER_PLAN_SCHEMA} else None)
         if type(value) is dict:
             declared_schema = value.get("schema", value.get("document_type"))
             if declared_schema != clean["schema"]:
@@ -477,6 +567,10 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
             if identity is not None and identity != clean["object_id"]:
                 raise E0ControlError("domain_object_identity_mismatch")
         parsed[digest] = value
+        if clean["schema"] == _REVIEWER_PLAN_SCHEMA:
+            reviewer_plan = _validate_reviewer_plan_declaration(value, body, reg)
+            roots.extend(_reviewer_plan_evidence_references(reviewer_plan))
+            linked_digests.add(_FROZEN_DOMAIN_DIGESTS["annotation_guide"])
 
     binding = None
     if prelabel_design is not None:
@@ -538,6 +632,10 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
     task_checks = []
     if tasks_ref["schema"] == _TASK_SCHEMA and tasks_ref["sha256"] in parsed:
         task_checks.append(_validate_task_bindings(task_value, objects[tasks_ref["sha256"]], membership))
+    reviewer_checks = []
+    if reviewer_plan is not None:
+        reviewer_checks.append(_reviewer_plan_binding_checks(
+            reviewer_plan, tasks=task_value, membership=membership, parsed=parsed))
 
     return {"schema": "research_factory.market_memory_e0_reference_resolution.v1",
             "authority": "display_only", "study_id": reg["study_id"],
@@ -553,6 +651,7 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
                 if key in references and parsed[key] is None}),
             "frozen_metadata_gaps": gaps,
             "task_binding_checks": task_checks,
+            "reviewer_plan_binding_checks": reviewer_checks,
             "domain_metadata_complete": False, "operational_admission": False,
             "unresolved_semantics": ["tasks_and_query_selection", "source_coverage_and_feature_intervals",
                 "episode_clusters_and_interval_splits", "reviewer_plan_and_independence",

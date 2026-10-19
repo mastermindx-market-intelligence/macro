@@ -1636,6 +1636,66 @@ def test_visible_metadata_is_frozen_bound_and_clocked_at_engine_construction() -
     )
 
 
+@pytest.mark.parametrize(
+    ("accepted_at", "latest_filed"),
+    (
+        # Real after-17:30-EDT 10-Q acceptances whose SEC filing date is the
+        # next calendar day (the UTC acceptance date is still the prior day).
+        ("2024-07-23T23:12:07Z", "2024-07-26"),
+        ("2024-10-29T23:33:10Z", "2024-11-01"),
+        ("2025-07-23T23:44:01Z", "2025-07-28"),
+        # Within filing hours the filing date may not follow the ET date.
+        ("2026-07-31T20:00:00Z", "2026-07-31"),
+        # Under EST the cutoff is 22:30Z (21:30Z under EDT): 17:15 EST is in
+        # hours, while exactly 17:30:00 and 17:45 EST are past the cutoff.
+        ("2025-01-15T22:15:00Z", "2025-01-15"),
+        ("2025-01-15T22:30:00Z", "2025-01-20"),
+        ("2025-01-15T22:45:00Z", "2025-01-20"),
+        # Tuesday 20:30 EDT: the UTC date is already Wednesday, and the bound
+        # rolls from the Eastern date, not the UTC date.
+        ("2025-07-16T00:30:00Z", "2025-07-18"),
+        # Friday 18:00 EDT, Saturday and Sunday acceptances roll over the weekend.
+        ("2026-07-31T22:00:00Z", "2026-08-05"),
+        ("2026-08-01T15:00:00Z", "2026-08-05"),
+        ("2026-08-02T15:00:00Z", "2026-08-05"),
+    ),
+)
+def test_latest_edgar_filed_date_follows_regulation_st_cutoff(
+    accepted_at: str, latest_filed: str
+) -> None:
+    accepted = datetime.fromisoformat(accepted_at.replace("Z", "+00:00"))
+    assert query_module._latest_edgar_filed_date(accepted).isoformat() == latest_filed
+
+
+def test_metadata_admits_edgar_next_business_day_filed_at() -> None:
+    def metadata(fact, filed_at: str):
+        return {
+            fact.occurrence_id: {
+                "accession": fact.source.accession,
+                "document_id": fact.source.document_id,
+                "source_body_sha256": fact.source.body_sha256,
+                "available_at": fact.recorded_at,
+                "form": "10-Q",
+                "filed_at": filed_at,
+            }
+        }
+
+    # Friday 18:00 EDT: SEC deems it filed Monday, a UTC date it never had.
+    after_hours = _fact(accepted_at="2026-07-31T22:00:00Z")
+    cell = _engine(
+        after_hours, filing_metadata=metadata(after_hours, "2026-08-03")
+    ).query_cell("AAA", "revenue", PERIOD, _policy())
+    assert cell.state is CellState.VALUE
+    assert cell.provenance.filed_at.isoformat() == "2026-08-03"
+    with pytest.raises(QueryValidationError, match="follows the EDGAR filing date"):
+        _engine(after_hours, filing_metadata=metadata(after_hours, "2026-08-06"))
+
+    in_hours = _fact(accepted_at="2026-07-31T20:00:00Z")
+    _engine(in_hours, filing_metadata=metadata(in_hours, "2026-07-31"))
+    with pytest.raises(QueryValidationError, match="follows the EDGAR filing date"):
+        _engine(in_hours, filing_metadata=metadata(in_hours, "2026-08-03"))
+
+
 def test_metadata_rejects_wrong_binding_digest_clock_and_late_resolver() -> None:
     fact = _fact()
     base = {
