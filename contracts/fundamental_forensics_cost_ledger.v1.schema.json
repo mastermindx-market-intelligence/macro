@@ -153,7 +153,7 @@
         "usd_per_unit": {"type": ["null", "number"], "minimum": 0},
         "rate_status": {"enum": ["declared_rate", "unmeasured"]},
         "rate_verified": {"type": "boolean"},
-        "basis_period": {"enum": ["one_time", "per_month", "query_window"]},
+        "basis_period": {"enum": ["one_time", "per_month", "query_window", "undeclared_window"]},
         "rate_basis_period": {"enum": ["one_time", "per_month"]},
         "cost_usd": {"type": ["null", "number"]},
         "cost_status": {

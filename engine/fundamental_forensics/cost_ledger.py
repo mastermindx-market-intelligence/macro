@@ -20,8 +20,14 @@ queries counting window is absent (``queries_window_absent``).  Windowed
 inference cost forms its own ``query_window`` basis group and is never mixed
 into the one-time / per-month quotients; the inference read must have used
 the same window the queries denominator declares
-(``inference_window_mismatch``), and a window whose start does not precede
-its end is refused (``window_inverted``).
+(``inference_window_mismatch`` — also raised when a measured or estimated
+inference quantity carries no window claim of its own against a declared
+queries window), and a window whose start does not precede its end is
+refused (``window_inverted``).  With no declared queries window an
+inference total is a lifetime figure: it is labelled
+``undeclared_window``, excluded from the ``query_window`` group (which is
+then incomplete), and the printed per-unit lines carry only the groups in
+their basis.
 
 Purity
 ------
@@ -882,20 +888,35 @@ def build_cost_ledger(
     # The inference rows must have been read against the same window the
     # queries denominator declares: a windowed cost divided by a differently
     # windowed count is not a quotient.  One side declared and the other not
-    # is the same refusal.  (A quantity that carries no ``declared_window``
-    # claim — not produced by the usage reader — is not compared.)
+    # is the same refusal — and a measured or estimated quantity that carries
+    # no ``declared_window`` claim at all (not produced by the usage reader)
+    # is refused against a declared queries window too: it cannot prove its
+    # rows sit inside that window.
     inference_counts = quantities["inference"].counts
-    if isinstance(inference_counts, dict) and "declared_window" in inference_counts:
+    queries_window = _normalized_window(
+        checked_denominators["queries"].get("window")
+    )
+    queries_window_declared = queries_window is not None
+    carries_window_claim = (
+        isinstance(inference_counts, dict) and "declared_window" in inference_counts
+    )
+    if carries_window_claim:
         inference_window = _normalized_window(inference_counts.get("declared_window"))
-        queries_window = _normalized_window(
-            checked_denominators["queries"].get("window")
-        )
         if inference_window != queries_window:
             raise CostLedgerError(
                 "inference_window_mismatch",
                 f"inference rows were read with window {inference_window} "
                 f"but the queries denominator declares {queries_window}",
             )
+    elif queries_window_declared and quantities["inference"].status in (
+        MEASURED,
+        ESTIMATED,
+    ):
+        raise CostLedgerError(
+            "inference_window_mismatch",
+            "a measured or estimated inference quantity used against a "
+            "declared queries window must carry counts.declared_window",
+        )
 
     components_out: dict[str, dict] = {}
     for component in COMPONENTS:
@@ -916,9 +937,14 @@ def build_cost_ledger(
             cost_status = "declared"
         rate_basis = rate["basis_period"]
         # Windowed inference is never mixed into the one-time / per-month
-        # quotients: it forms its own ``query_window`` basis group, while
+        # quotients: it forms its own basis group — ``query_window`` when a
+        # queries window was declared, else ``undeclared_window``, because
+        # the figure is then a lifetime total — while
         # ``rate_basis_period`` still echoes the rate's own declared basis.
-        basis_period = "query_window" if component == "inference" else rate_basis
+        if component == "inference":
+            basis_period = "query_window" if queries_window_declared else "undeclared_window"
+        else:
+            basis_period = rate_basis
         components_out[component] = {
             "quantity_value": quantity.value,
             "quantity_unit": quantity.unit,
@@ -939,20 +965,38 @@ def build_cost_ledger(
         "one_time": [],
         "per_month": [],
         "query_window": [],
+        "undeclared_window": [],
     }
     for component in COMPONENTS:
         periods[components_out[component]["basis_period"]].append(
             (component, components_out[component])
         )
     totals: dict[str, dict] = {}
-    for period, members in periods.items():
-        known = [entry["cost_usd"] for _, entry in members if entry["cost_usd"] is not None]
-        incomplete = sorted(
-            component
-            for component, entry in members
-            if entry["cost_status"] == "incomplete"
-            or entry["incomplete_reason"] is not None
-        )
+    for period in ("one_time", "per_month", "query_window"):
+        members = periods[period]
+        if period == "query_window" and not queries_window_declared:
+            # With no declared queries window an inference total is a
+            # lifetime figure, never a window total: the undeclared members
+            # stay in the group's accounting — named in
+            # incomplete_components, forcing complete=False — but their
+            # costs never enter known_usd.  The per-query quotient is
+            # separately refused (queries_window_absent).
+            members = members + periods["undeclared_window"]
+            members_with_cost: list[tuple[str, dict]] = []
+            incomplete = sorted(component for component, _ in members)
+        else:
+            members_with_cost = members
+            incomplete = sorted(
+                component
+                for component, entry in members
+                if entry["cost_status"] == "incomplete"
+                or entry["incomplete_reason"] is not None
+            )
+        known = [
+            entry["cost_usd"]
+            for _, entry in members_with_cost
+            if entry["cost_usd"] is not None
+        ]
         totals[period] = {
             "known_usd": sum(known) if known else None,
             "complete": not incomplete,
@@ -962,9 +1006,6 @@ def build_cost_ledger(
         totals[period]["complete"] for period in ("one_time", "per_month", "query_window")
     )
 
-    queries_window_declared = (
-        _window_bounds(checked_denominators["queries"].get("window")) is not None
-    )
     per_unit: dict[str, dict] = {}
     for key in _DENOMINATOR_KEYS:
         denominator = checked_denominators[key]["value"]
@@ -1075,11 +1116,20 @@ def render_print(ledger: Mapping[str, Any]) -> str:
         denominator = ledger["denominators"][key]["value"]
         denominator_text = "UNMEASURED" if denominator is None else str(denominator)
         reason = entry["reason"] if entry["reason"] is not None else "none"
+        # Only the groups in the entry's basis print: a group the quotient
+        # never divides is not an UNMEASURED measurement, and printing it
+        # as one would read as a missing measurement.  (The JSON output is
+        # unchanged — a non-applicable group stays null there.)
+        quotient_tokens = []
+        for period in entry["basis"]:
+            value = entry[f"{period}_usd"]
+            period_complete = ledger["totals"][period]["complete"]
+            quotient_tokens.append(
+                f"{period}_usd={_fmt_quotient(value, period_complete)}"
+            )
         lines.append(
             f"per_unit {key}: denominator={denominator_text}"
-            f" one_time_usd={_fmt_quotient(entry['one_time_usd'], ledger['totals']['one_time']['complete'])}"
-            f" per_month_usd={_fmt_quotient(entry['per_month_usd'], ledger['totals']['per_month']['complete'])}"
-            f" query_window_usd={_fmt_quotient(entry['query_window_usd'], ledger['totals']['query_window']['complete'])}"
+            f" {' '.join(quotient_tokens)}"
             f" complete={entry['complete']} reason={reason}"
         )
     burden = ledger["operator_burden"]

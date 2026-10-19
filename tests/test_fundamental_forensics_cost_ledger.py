@@ -645,7 +645,13 @@ def test_declared_queries_window_lets_cost_per_query_compute() -> None:
     denominators = _denominators(
         queries={"value": 10, "source": "coverage proof", "window": _QUERIES_WINDOW},
     )
-    ledger = _build_ledger(denominators=denominators)
+    # A measured inference quantity used against the declared window must
+    # carry its own window claim (r4 N1); with the claim the quotient stands.
+    inference = Quantity(2.5, "usd", MEASURED, counts={"declared_window": _QUERIES_WINDOW})
+    ledger = _build_ledger(
+        quantities={**_base_quantities(), "inference": inference},
+        denominators=denominators,
+    )
     entry = ledger["per_unit"]["queries"]
     assert entry["reason"] != "queries_window_absent"
     # Only the windowed inference total is per-query (r3 R4).
@@ -701,6 +707,54 @@ def test_queries_window_declared_but_inference_window_absent_refused() -> None:
             denominators=denominators,
         )
     assert excinfo.value.code == "inference_window_mismatch"
+
+
+# ── 4c'. a hand-built inference quantity cannot skip the window match (r4 N1) ─
+
+
+def test_hand_built_measured_inference_without_window_claim_refused() -> None:
+    # r4 N1: a hand-built Quantity(9.0, "usd", MEASURED) with no counts used
+    # to slip past the window match and compute a per-query quotient nobody
+    # had windowed (0.9 complete=True).  Against a declared queries window a
+    # measured or estimated inference must carry counts.declared_window.
+    denominators = _denominators(
+        queries={"value": 10, "source": "coverage proof", "window": _QUERIES_WINDOW}
+    )
+    for status in (MEASURED, ESTIMATED):
+        inference = Quantity(9.0, "usd", status)
+        with pytest.raises(CostLedgerError) as excinfo:
+            _build_ledger(
+                quantities={**_base_quantities(), "inference": inference},
+                denominators=denominators,
+            )
+        assert excinfo.value.code == "inference_window_mismatch", status
+
+
+def test_unmeasured_inference_without_counts_under_declared_window_unaffected() -> None:
+    # The refusal is for quantities that claim a number: an unmeasured
+    # inference with no counts never offered a windowed cost, so it builds.
+    inference = Quantity(None, "usd", UNMEASURED, notes=("inference_rows_absent",))
+    ledger = _build_ledger(
+        quantities={**_base_quantities(), "inference": inference},
+        denominators=_denominators(
+            queries={"value": 10, "source": "coverage proof", "window": _QUERIES_WINDOW}
+        ),
+    )
+    assert ledger["components"]["inference"]["basis_period"] == "query_window"
+    assert "inference" in ledger["totals"]["query_window"]["incomplete_components"]
+    assert ledger["per_unit"]["queries"]["reason"] == "components_incomplete"
+
+
+def test_reader_built_quantity_with_equal_window_still_computes() -> None:
+    inference = _windowed_inference(_QUERIES_WINDOW)  # 1.5 in window
+    ledger = _build_ledger(
+        quantities={**_base_quantities(), "inference": inference},
+        denominators=_denominators(
+            queries={"value": 10, "source": "coverage proof", "window": _QUERIES_WINDOW}
+        ),
+    )
+    assert ledger["per_unit"]["queries"]["query_window_usd"] == pytest.approx(0.15)
+    assert ledger["per_unit"]["queries"]["reason"] is None
 
 
 def test_matching_window_in_offset_notation_accepted() -> None:
@@ -1126,19 +1180,53 @@ def test_per_unit_positive_denominator_with_incomplete_components() -> None:
 def test_totals_carry_three_basis_groups() -> None:
     ledger = _build_ledger()
     assert set(ledger["totals"]) == {"one_time", "per_month", "query_window"}
-    # Inference (2.5 measured, verified declared rate) is a query_window
-    # member only; one_time keeps source+licence+parse+review.
-    assert ledger["totals"]["query_window"]["known_usd"] == pytest.approx(2.5)
-    assert ledger["totals"]["query_window"]["complete"] is True
+    # No queries window is declared here, so the measured inference 2.5 is a
+    # lifetime total: labelled undeclared_window, excluded from the
+    # query_window group, which is then incomplete naming inference (r4 N3).
+    assert ledger["totals"]["query_window"]["known_usd"] is None
+    assert ledger["totals"]["query_window"]["complete"] is False
+    assert ledger["totals"]["query_window"]["incomplete_components"] == ["inference"]
     assert ledger["totals"]["one_time"]["known_usd"] == pytest.approx(0.0)
     inference = ledger["components"]["inference"]
-    assert inference["basis_period"] == "query_window"
+    assert inference["basis_period"] == "undeclared_window"
     assert inference["rate_basis_period"] == "one_time"
     for component in ("source", "licence", "parse", "review", "storage"):
         entry = ledger["components"][component]
         assert entry["rate_basis_period"] == entry["basis_period"], component
     assert ledger["components"]["storage"]["basis_period"] == "per_month"
     assert ledger["components"]["source"]["basis_period"] == "one_time"
+
+
+def test_no_window_inference_is_undeclared_window_lifetime_total() -> None:
+    # r4 N3: with no declared queries window the inference figure is a
+    # lifetime total — labelled undeclared_window, excluded from the
+    # query_window group (which is then incomplete), while the per-query
+    # quotient is refused with queries_window_absent.
+    ledger = _build_ledger()
+    inference = ledger["components"]["inference"]
+    assert inference["basis_period"] == "undeclared_window"
+    assert inference["rate_basis_period"] == "one_time"
+    assert inference["cost_usd"] == pytest.approx(2.5)  # still on the component
+    assert ledger["totals"]["query_window"]["known_usd"] is None
+    assert ledger["totals"]["query_window"]["complete"] is False
+    assert ledger["totals"]["query_window"]["incomplete_components"] == ["inference"]
+    assert ledger["per_unit"]["queries"]["reason"] == "queries_window_absent"
+
+
+def test_declared_window_inference_keeps_query_window_label() -> None:
+    # r4 N3: the declared-window case is unchanged — the label stays
+    # query_window and the windowed total still feeds the group.
+    inference = _windowed_inference(_QUERIES_WINDOW)
+    ledger = _build_ledger(
+        quantities={**_base_quantities(), "inference": inference},
+        denominators=_denominators(
+            queries={"value": 10, "source": "coverage proof", "window": _QUERIES_WINDOW}
+        ),
+    )
+    assert ledger["components"]["inference"]["basis_period"] == "query_window"
+    assert ledger["totals"]["query_window"]["known_usd"] == pytest.approx(1.5)
+    assert ledger["totals"]["query_window"]["complete"] is True
+    assert ledger["per_unit"]["queries"]["query_window_usd"] == pytest.approx(0.15)
 
 
 def test_per_issuer_quotient_excludes_measured_inference() -> None:
@@ -1226,6 +1314,46 @@ def test_render_print_never_prints_zero_for_unmeasured() -> None:
     # The query_window basis group prints its own total and quotient column.
     assert "total query_window:" in text
     assert "query_window_usd=" in text
+
+
+def _per_unit_line(text: str, key: str) -> str:
+    for line in text.splitlines():
+        if line.startswith(f"per_unit {key}:"):
+            return line
+    raise AssertionError(f"no per_unit line for {key}")
+
+
+def test_render_print_per_unit_shows_only_basis_groups() -> None:
+    # r4 N2: a group the quotient never divides is not an UNMEASURED
+    # measurement.  The per-issuer line carries no query_window token and
+    # the per-query line no one_time / per_month tokens; the JSON output is
+    # unchanged (a non-applicable group stays null there).
+    text = render_print(_build_ledger())
+    per_issuer = _per_unit_line(text, "qualified_issuers_deep")
+    assert "query_window_usd" not in per_issuer
+    assert "one_time_usd=" in per_issuer
+    assert "per_month_usd=" in per_issuer
+    per_query = _per_unit_line(text, "queries")
+    assert "one_time_usd" not in per_query
+    assert "per_month_usd" not in per_query
+    assert "query_window_usd=" in per_query
+
+
+def test_render_print_unmeasured_applicable_group_still_prints() -> None:
+    # UNMEASURED still prints for a group in the basis that is not measured:
+    # here the windowed inference is unmeasured, so the per-query line says so.
+    inference = Quantity(None, "usd", UNMEASURED, notes=("inference_rows_absent",))
+    ledger = _build_ledger(
+        quantities={**_base_quantities(), "inference": inference},
+        denominators=_denominators(
+            queries={"value": 10, "source": "coverage proof", "window": _QUERIES_WINDOW}
+        ),
+    )
+    text = render_print(ledger)
+    per_query = _per_unit_line(text, "queries")
+    assert "query_window_usd=UNMEASURED" in per_query
+    per_issuer = _per_unit_line(text, "qualified_issuers_deep")
+    assert "one_time_usd=" in per_issuer  # applicable groups keep their tokens
 
 
 # ── 9. contract ──────────────────────────────────────────────────────────────
