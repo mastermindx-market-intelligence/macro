@@ -6227,6 +6227,7 @@ def main() -> int:
                   "theme.css", "navigation-refresh.css", "product-nav-icons.css", "dashboard-icons.css", "dashboard-icons.js",
                   "theme.js", "terminal_overlay.js", "mtf.js", "chart_i18n.js", "timemachine.js",
                   "illus.css", "illus.js",
+                  "mm_brain.js", "mm_brain_visuals.js", "mm_brain_visuals.css",
                   "account.js",
                   "market_memory.css", "market_memory.js", "market_memory_intent.js",
                   "market_memory_retained.css", "market_memory_retained.js",

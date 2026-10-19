@@ -484,6 +484,7 @@ jobs:
       - "engine/neuralweb/brain_analogues.py"
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
+      - "engine/neuralweb/brain_visuals.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
@@ -2582,6 +2583,7 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "engine/neuralweb/brain_visuals.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - "tests/test_c19_wp22_dhi_traversal.py"
@@ -8486,6 +8488,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/neuralweb/brain_visuals.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - "engine/government_revenue/program_dossier.py"
@@ -20583,6 +20586,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/neuralweb/brain_visuals.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - "engine/government_revenue/program_dossier.py"
@@ -27031,9 +27035,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx playwright
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx playwright rjsmin==1.2.5
       - name: brain gateway — lane routing, quota ledger, tool allowlist, SSE event order
-        run: node --version && python -m pytest tests/test_market_memory_brain_citations.py tests/test_market_memory_brain_citation_validation.py tests/test_brain_gateway.py tests/test_brain_history_availability.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_mm_brain_inspector_freshness_source.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py -q
+        run: node --version && python -m pytest tests/test_market_memory_brain_citations.py tests/test_market_memory_brain_citation_validation.py tests/test_brain_gateway.py tests/test_brain_history_availability.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_mm_brain_inspector_freshness_source.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py tests/test_brain_visuals.py tests/test_brain_visuals_review.py tests/test_brain_visuals_integration.py tests/test_brain_visuals_assets.py tests/test_brain_visuals_ci_ownership.py -q
       - name: W1-A typed datapoint registry — owners, PIT, rights, consumers, mutations, batching
         run: >-
           python -m pytest
@@ -27052,7 +27056,7 @@ jobs:
       - name: install Brain browser
         run: python -m playwright install --with-deps chromium
       - name: Brain history, principal isolation and narrow-screen controls
-        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py -q
+        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py tests/test_brain_visuals_browser.py tests/test_brain_visuals_widget.py -q
 
   ric-y0-yield-momentum:
     if: ${{ false }}
@@ -28767,6 +28771,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/neuralweb/brain_visuals.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - lib/dataos/web_history.py
@@ -31601,6 +31606,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/neuralweb/brain_visuals.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # MI W14 (2026-10-17): scripts/build_qbus_news_universe.py reads via the native parquet helper.
